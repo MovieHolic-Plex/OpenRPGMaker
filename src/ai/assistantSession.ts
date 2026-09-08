@@ -4493,11 +4493,8 @@ export class AssistantSession {
       if (phase === "review" || !(assistantMsg.tool_calls?.length)) {
         this.adoptAcceptance(undefined, onEvent);
         if (this.milestoneAutoApply) {
-          const decision = ralphContinuationDecision(this.workPlan, { autoStepsUsed: 0, assistantText: messageText ?? "" });
-          if (decision === "awaiting-user") {
-            this.recordWorkPlanDecision(decision);
-            return { assistantText: sanitizeAssistantText(messageText ?? ""), proposedCalls: [], stoppedReason: "final" };
-          }
+          // Model quick replies are not a user boundary or evidence of missing input.
+          // Authorized execution settles from applied predicates or recovers below.
           const checkpoint = await this.checkpoint(onEvent, signal);
           if (checkpoint) return checkpoint;
           this.recoverSegment("candidate-final-incomplete", onEvent);

@@ -105,17 +105,109 @@ describe("main request/apply/result seams", () => {
     } finally { unsubscribe(); }
   });
 
-  it("retains main's explicit quick-reply user wait without waiving the source", async () => {
-    const project = projectFixture(), raw = 'Set title to "Required"'; let calls = 0;
+  it.each([1, 3])("continues past %s model quick replies and applies the anchored request exactly once", async markers => {
+    const project = projectFixture(), raw = 'Set title to "Required"'; let calls = 0, plannerCalls = 0;
+    const events: SessionEvent[] = [], checkpoints: string[] = [];
+    const session = new AssistantSession(project, { config: { ...config, maxToolCalls: 3 }, yieldToUi: async () => {},
+      declareIntent: fixedDeclarer({ mode: "modify", requestRequirements: titleContract(raw, "Required") }),
+      chat: async (_config, request) => {
+        if (!request.tools?.length) {
+          plannerCalls++;
+          return { message: { role: "assistant", content: JSON.stringify({ action: "resume" }) }, finishReason: "stop" };
+        }
+        calls++;
+        if (calls === 1) return tool("set_work_plan", { goal: "Title", layers: [{ title: "Edit", items: [
+          { title: "Title", instruction: "Set title", successTools: ["set_title_screen"] },
+        ] }] });
+        expect(session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("in_progress");
+        expect(session.getHarnessSnapshot().requests).toMatchObject([{ requestId: "request-1", rawInstruction: raw, authoring: true,
+          units: [{ coverage: "declared", source: anchor(raw), criteria: titleContract(raw, "Required").entries[0]!.criteria }] }]);
+        expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
+        expect(store.getCurrent().meta.title).toBe(project.meta.title);
+        if (calls <= markers + 1) return { message: { role: "assistant", content: `${QUICK_REPLY_MARKER} A | B` }, finishReason: "stop" };
+        if (calls === markers + 2) return tool("set_title_screen", { title: "Required" });
+        throw new Error("Unexpected replay after the required title write");
+      },
+    });
+    const result = await session.sendUserMessage(raw, event => {
+      events.push(event);
+      if (event.type === "milestone_applied") checkpoints.push(store.getCurrent().meta.title);
+    }, undefined, { autonomous: true });
+    expect(result.error).toBeUndefined();
+    expect(result.runOutcome).toEqual({ execution: "response-final", goal: "satisfied", delivery: "applied" });
+    expect(result.execution).toMatchObject({ requestId: "request-1", state: "verified-local", segment: markers + 1 });
+    expect(calls).toBe(markers + 2); expect(result.proposedCalls).toEqual([]);
+    expect(plannerCalls).toBe(markers === 3 ? 1 : 0);
+    expect(result.appliedCalls).toMatchObject([{ name: "set_title_screen", args: { title: "Required" } }]);
+    expect(result.appliedCalls).toHaveLength(1);
+    expect(checkpoints).toEqual(["Required"]);
+    expect(events.filter(event => event.type === "tool_call" && event.name === "set_title_screen")).toHaveLength(1);
+    expect(store.getCurrent().meta.title).toBe("Required");
+    expect(session.getAcceptanceSnapshot()?.status).toBe("verified");
+    expect(session.getHarnessSnapshot().requests).toHaveLength(1);
+    expect(session.getAuditEntries().filter(entry => entry.kind === "user")).toHaveLength(1);
+  });
+
+  it.each(["aborted", "queued", "project-switch", "external-blocker"] as const)("preserves %s after a model quick reply", async boundary => {
+    const project = projectFixture(), raw = 'Set title to "Required"', controller = new AbortController();
+    let calls = 0, queued: string | null = null;
+    const states: string[] = [];
+    const session = new AssistantSession(project, { config: { ...config, maxToolCalls: 3 }, yieldToUi: async () => {},
+      peekPendingUserMessage: () => queued,
+      declareIntent: fixedDeclarer({ mode: "modify", requestRequirements: titleContract(raw, "Required") }),
+      chat: async () => {
+        if (++calls === 1) return tool("set_work_plan", { goal: "Title", layers: [{ title: "Edit", items: [{ title: "Title", instruction: "Set title" }] }] });
+        if (calls === 2) return { message: { role: "assistant", content: `${QUICK_REPLY_MARKER} A | B` }, finishReason: "stop" };
+        if (boundary === "external-blocker") throw Object.assign(new Error("fixture provider authorization"), { status: 401 });
+        return tool("set_title_screen", { title: "Required" });
+      },
+    });
+    try {
+      const result = await session.sendUserMessage(raw, event => {
+        if (event.type !== "run_state") return;
+        states.push(event.execution.state);
+        if (event.execution.state !== "recovering") return;
+        if (boundary === "aborted") controller.abort();
+        if (boundary === "queued") queued = 'Set title to "Correction"';
+        if (boundary === "project-switch") store.replaceProject(createBlankProject());
+      }, controller.signal, { autonomous: true });
+      expect(states).toContain("recovering");
+      expect(result.execution?.state).toBe(boundary);
+      expect(result.runOutcome?.goal).not.toBe("satisfied");
+      expect(result.appliedCalls ?? []).toEqual([]);
+      expect(result.proposedCalls).toEqual([]);
+      expect(store.getCurrent().meta.title).toBe(project.meta.title);
+      expect(calls).toBe(boundary === "external-blocker" ? 3 : 2);
+      if (boundary === "external-blocker") expect(result.execution?.blocker).toMatchObject({ kind: "auth", requestId: "request-1",
+        obligationIds: ["request-1:source:0"], sourceSpans: [anchor(raw)], evidence: { origin: "transport", code: "401" } });
+    } finally { controller.abort(); }
+  });
+
+  it("keeps detached quick-reply scheduling finite without applying the source", async () => {
+    const project = createBlankProject(), raw = 'Set title to "Required"'; let calls = 0;
     const session = new AssistantSession(project, { config: { ...config, maxToolCalls: 3 }, yieldToUi: async () => {},
       declareIntent: fixedDeclarer({ mode: "modify", requestRequirements: titleContract(raw, "Required") }),
       chat: async () => ++calls === 1 ? tool("set_work_plan", { goal: "Title", layers: [{ title: "Edit", items: [{ title: "Title", instruction: "Set title" }] }] })
         : { message: { role: "assistant", content: `${QUICK_REPLY_MARKER} A | B` }, finishReason: "stop" },
     });
-    const result = await session.sendUserMessage(raw, undefined, undefined, { autonomous: true });
+    const result = await session.sendUserMessage(raw, undefined, undefined, { autonomous: false });
     expect(result.runOutcome).toEqual({ execution: "awaiting-user", goal: "incomplete", delivery: "no-change" });
-    expect(calls).toBe(2); expect(result.proposedCalls).toEqual([]);
-    expect(session.getHarnessSnapshot().requests?.[0]?.authoring).toBe(true);
+    expect(calls).toBe(2); expect(result.appliedCalls ?? []).toEqual([]);
+    expect(result.proposedCalls).toEqual([]);
+    expect(session.getProposedProject().meta.title).toBe(project.meta.title);
+  });
+
+  it("does not turn an Ask quick reply into authorized execution", async () => {
+    const project = projectFixture(); let calls = 0;
+    const session = new AssistantSession(project, { config, yieldToUi: async () => {},
+      declareIntent: fixedDeclarer({ mode: "question" }),
+      chat: async () => ++calls === 1 ? { message: { role: "assistant", content: `${QUICK_REPLY_MARKER} A | B` }, finishReason: "stop" }
+        : tool("set_title_screen", { title: "Forbidden" }),
+    });
+    const result = await session.sendUserMessage("What is the title?", undefined, undefined, { autonomous: true, composerMode: "ask" });
+    expect(result.execution?.state).toBe("answer"); expect(calls).toBe(1);
+    expect(result.appliedCalls ?? []).toEqual([]); expect(result.proposedCalls).toEqual([]);
+    expect(store.getCurrent().meta.title).toBe(project.meta.title);
   });
 
   it.each(["chat", "auto"] as const)("Do crosses finite segments in %s mode without losing authorization", async agentMode => {
@@ -144,31 +236,59 @@ describe("main request/apply/result seams", () => {
     let release!: () => void, enter!: () => void, stage = 0;
     const entered = new Promise<void>(resolve => { enter = resolve; });
     const held = new Promise<void>(resolve => { release = resolve; });
-    const declarations: string[] = [];
+    const declarations: string[] = [], writerTitles: string[] = [], events: SessionEvent[] = [];
+    const preparationError = new Error("Held preparation failed");
     const session = new AssistantSession(project, { config, yieldToUi: async () => {},
-      prepareProjectWiki: async () => { if (stage) { enter(); await held; if (fail) throw new Error("Held preparation failed"); } return undefined; },
+      prepareProjectWiki: async () => { if (stage) { enter(); await held; if (fail) throw preparationError; } return undefined; },
       declareIntent: facts => { declarations.push(facts.userText); return fixedDeclarer({ mode: "modify",
         requestRequirements: titleContract(facts.userText, stage ? "New" : "Old"),
         ...(!stage ? { npcRewards: [{ target: { eventId: "missing-old-npc" }, grants: [{ kind: "item", id: "item_potion", count: 2 }] }] } : {}),
       })(facts); },
-      chat: async () => tool("set_title_screen", { title: stage ? "New" : "Old" }),
+      chat: async () => { const title = stage ? "New" : "Old"; writerTitles.push(title); return tool("set_title_screen", { title }); },
     });
     const old = await session.sendUserMessage(oldRaw), history = session.getAcceptanceSnapshot();
     expect(old.proposedCalls).toHaveLength(1); expect(history?.status).not.toBe("verified");
+    const oldRequests = session.getHarnessSnapshot().requests;
+    expect(session.getRunEndProof()).toBeNull();
     const frozen = structuredClone(old); stage = 1;
     const controller = new AbortController();
-    const running = session.sendUserMessage(newRaw, undefined, controller.signal, { autonomous: true, goalAction: "new-goal" });
+    const running = session.sendUserMessage(newRaw, event => events.push(event), controller.signal, { autonomous: true, goalAction: "new-goal" });
     try {
       expect(session.getHarnessSnapshot().requests?.map(request => request.rawInstruction)).toEqual([newRaw]);
       expect(session.getAcceptanceHistory()).toEqual([history]);
       expect(session.getRequestHistory()[0]?.[0]?.rawInstruction).toBe(oldRaw);
       expect(session.getProposedProject().meta.title).toBe(project.meta.title);
       expect(await Promise.race([entered.then(() => true), running.then(() => false)])).toBe(true);
+      const captured = session.getAcceptanceSnapshot();
+      expect(captured).toMatchObject({ status: "blocked", items: [{ id: "request-2:source:0", required: true,
+        status: "blocked", coverage: "uncovered", source: { requestId: "request-2", text: newRaw, scope: null }, sourceSpan: anchor(newRaw) }] });
+      expect(captured?.items).toHaveLength(1);
+      const newRequests = session.getHarnessSnapshot().requests;
+      expect(newRequests).toEqual([{ requestId: "request-2", rawInstruction: newRaw, authoring: true,
+        units: [{ id: "request-2:source:0", source: anchor(newRaw), coverage: "uncovered", criteria: null }] }]);
+      expect(writerTitles).toEqual(["Old"]);
+      expect(session.getRunEndProof()).toBeNull();
       release(); const result = await running;
-      expect(result.runOutcome).toMatchObject({ execution: fail ? "failed" : "response-final", goal: fail ? "unassessed" : "satisfied", delivery: fail ? "no-change" : "applied" });
+      expect(result.runOutcome).toMatchObject({ execution: fail ? "failed" : "response-final", goal: fail ? "incomplete" : "satisfied", delivery: fail ? "no-change" : "applied" });
       expect(result.appliedCalls?.length ?? 0).toBe(fail ? 0 : 1);
       expect(declarations).toEqual(fail ? [oldRaw] : [oldRaw, newRaw]);
+      expect(writerTitles).toEqual(fail ? ["Old"] : ["Old", "New"]);
+      expect(result.proposedCalls).toEqual([]);
+      expect(result.execution?.requestId).toBe("request-2");
+      expect(session.getAcceptanceHistory()).toEqual([history]);
+      expect(session.getRequestHistory()).toEqual([oldRequests]);
       expect(old).toEqual(frozen);
+      if (fail) {
+        expect(result.stoppedReason).toBe("error");
+        expect(result.error).toBe(preparationError.message);
+        expect(session.getAcceptanceSnapshot()).toEqual(captured);
+        expect(session.getHarnessSnapshot().requests).toEqual(newRequests);
+        expect(session.getWorkPlan()).toBeNull();
+        expect(session.getProposedProject().meta.title).toBe(project.meta.title);
+        expect(store.getCurrent().meta.title).toBe(project.meta.title);
+        expect(session.getRunEndProof()).toBeNull();
+        expect(events.filter(event => event.type === "tool_call" || event.type === "milestone_applied" || event.type === "persistence_proof")).toEqual([]);
+      }
       if (!fail) expect(store.getCurrent().meta.title).toBe("New");
     } finally { controller.abort(); release(); await running; }
   });

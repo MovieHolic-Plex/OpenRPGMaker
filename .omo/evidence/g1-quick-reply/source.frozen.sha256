@@ -1,0 +1,4 @@
+bdec78e1c244efcc6b6d5470ae2aff2b82ba858517b8078c42faee86f635c4ac  src/ai/assistantSession.ts
+c21f248b539694585abfe5e4580ccf882af03e6450b751bbf48f422438e330ea  src/ai/workPlan.ts
+8fb15c89c00bc6e218abeb11f4fa3bebf4816f001f80ceaffbdfe9bf54d5160b  test/assistantCoreIntegration.test.ts
+c20f899be7a11a2a9a9edb7bcec36dc4d67d86378743a0f401c701e3dac6e624  openwiki/editor-ai-panel.md

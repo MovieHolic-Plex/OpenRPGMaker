@@ -88,10 +88,14 @@ and mutable result/recap owners. There is no second scheduler or completion ledg
   remains exported solely for legacy UI parsing; it is not consulted by the driver.
   Repair thresholds select refreshed prerequisites, corrected arguments or another
   strategy. Replan and unrelated writes do not erase excluded failing candidates.
-  Detached/manual callers remain finite. Actual abort, project switch, queued input,
-  main's explicit quick-reply user wait and evidenced provider/store failures retain
-  their boundaries. Project identity takes precedence over coincident abort,
-  including after-await and terminal-publication callbacks.
+  Detached/manual callers remain finite, including their legacy quick-reply pause.
+  In authorized autonomous execution, model quick-reply markers alone cannot pause
+  unfinished work: candidate finals check applied predicates and otherwise recover
+  without another user message. Markers are not evidence of missing input. Actual
+  abort, project switch, queued input and evidenced provider/store failures retain
+  their boundaries; Ask/Plan/Confirm previews remain non-executing. Project identity
+  takes precedence over coincident abort, including after-await and
+  terminal-publication callbacks.
 - Complete received tool batches retain paired responses and partial successful
   work. Checkpoints apply pending snapshots through native `applyProposedProject`.
   **Main `recordAppliedProject` is the only pending-to-applied accounting transfer.**

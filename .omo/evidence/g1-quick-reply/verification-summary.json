@@ -1,0 +1,106 @@
+{
+  "fixed": [
+    {
+      "test": "main request/apply/result seams continues past 1 model quick replies and applies the anchored request exactly once",
+      "red": "failed",
+      "green": "passed"
+    },
+    {
+      "test": "main request/apply/result seams continues past 3 model quick replies and applies the anchored request exactly once",
+      "red": "failed",
+      "green": "passed"
+    },
+    {
+      "test": "main request/apply/result seams preserves aborted after a model quick reply",
+      "red": "failed",
+      "green": "passed"
+    },
+    {
+      "test": "main request/apply/result seams preserves queued after a model quick reply",
+      "red": "failed",
+      "green": "passed"
+    },
+    {
+      "test": "main request/apply/result seams preserves project-switch after a model quick reply",
+      "red": "failed",
+      "green": "passed"
+    },
+    {
+      "test": "main request/apply/result seams preserves external-blocker after a model quick reply",
+      "red": "failed",
+      "green": "passed"
+    }
+  ],
+  "compatibility": [
+    {
+      "test": "main request/apply/result seams keeps detached quick-reply scheduling finite without applying the source",
+      "status": "passed"
+    },
+    {
+      "test": "main request/apply/result seams does not turn an Ask quick reply into authorized execution",
+      "status": "passed"
+    }
+  ],
+  "completeFileResults": [
+    {
+      "file": "test/aiRunOutcomeIntegration.test.ts",
+      "passed": 7,
+      "failed": 0
+    },
+    {
+      "file": "test/aiUnboundedExecution.test.ts",
+      "passed": 18,
+      "failed": 0
+    },
+    {
+      "file": "test/autonomyHarness.test.ts",
+      "passed": 7,
+      "failed": 0
+    },
+    {
+      "file": "test/workPlan.test.ts",
+      "passed": 40,
+      "failed": 0
+    },
+    {
+      "file": "test/assistantCoreIntegration.test.ts",
+      "passed": 25,
+      "failed": 0
+    }
+  ],
+  "currentUnion": {
+    "passed": 97,
+    "failed": 0,
+    "total": 97,
+    "skipped": 0
+  },
+  "fixtureCorrection": {
+    "test": "main request/apply/result seams explicit new goal retires old source/domain/draft before held preparation (fail=true)",
+    "classification": "own-goal captured-source fixture correction, distinct from six G1 RED cases",
+    "priorExpectedGoal": "unassessed",
+    "correctedGoal": "incomplete",
+    "redReceipt": "green-final.json",
+    "red": "failed",
+    "greenReceipt": "fixture-green.json",
+    "green": "passed"
+  },
+  "historicalFailure": {
+    "test": "main request/apply/result seams explicit new goal retires old source/domain/draft before held preparation (fail=true)",
+    "expected": {
+      "execution": "failed",
+      "goal": "unassessed",
+      "delivery": "no-change"
+    },
+    "received": {
+      "execution": "failed",
+      "goal": "incomplete",
+      "delivery": "no-change"
+    },
+    "normalizedStackAndMessageEqual": true
+  },
+  "scope": [
+    "openwiki/editor-ai-panel.md",
+    "src/ai/assistantSession.ts",
+    "test/assistantCoreIntegration.test.ts"
+  ]
+}
