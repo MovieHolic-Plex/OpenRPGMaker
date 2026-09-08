@@ -70,6 +70,22 @@
   and full build/gates remain lead-owned. Native camera scrolling has no matching
   animated catalog mechanism and intentionally adds no motion.
 
+## Event validation diagnostic rows (2026-09-08)
+
+- Reuse the titlebar validation bell, existing bounded popover/list, native `btn small`
+  actions, labelled format select and cream tokens. Rows show code, current nested path,
+  field, cause, expected value and correction hint, without a new panel or theme.
+- The existing 420px/76vw popover and 320px/46vh list cap remain; metadata wraps within
+  the current grid. Copy-format/copy/assistant controls wrap rather than expand the frame.
+- Selecting an issue focuses its actual command field after revealing the command.
+  Custom-select enhancement preserves that focus instead of stranding it on the body.
+- Assistant handoff uses the existing editable composer and retains the minimized event
+  editor. It appends to existing instructions, marks the diagnostic UNSENT and never
+  submits. Copying includes only rule-owned diagnostics and generated numeric locations.
+- Personas: nested-event author, keyboard repair author, author with unfinished assistant
+  instructions. Existing severity labels and focus states remain. Browser geometry and
+  interaction evidence cover 1024x768, 1280x800 and 1440x900; lead owns visual approval.
+
 ## Monster resource metadata editor (2026-09-07)
 
 - Database > 전투 몬스터 exposes 몬스터 소재 even with no gameplay records.

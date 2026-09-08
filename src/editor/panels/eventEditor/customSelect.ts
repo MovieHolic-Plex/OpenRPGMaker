@@ -376,6 +376,7 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
     const parent = select.parentElement;
     if (!parent || typeof parent.insertBefore !== "function") return;
 
+    const hadFocus = select.ownerDocument.activeElement === select;
     const wrapper = document.createElement("span");
     wrapper.className = "event-custom-select";
     const trigger = document.createElement("button");
@@ -448,6 +449,9 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
     };
     instances.set(select, instance);
     sync();
+    // Reparenting a focused native select drops focus in Chromium. Transfer it only
+    // when this control owned focus before enhancement, never on background refresh.
+    if (hadFocus) trigger.focus({ preventScroll: true });
   };
 
   const refresh = (): void => {

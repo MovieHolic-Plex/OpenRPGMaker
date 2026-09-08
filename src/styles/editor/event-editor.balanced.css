@@ -1786,6 +1786,14 @@ footer {
   text-align: center;
 }
 
+.event-editor-modal-header .event-draft-validation-message > span {
+  display: block;
+}
+
+.event-editor-modal-header .event-draft-validation-head {
+  flex-wrap: wrap;
+}
+
 .event-editor-modal-header .event-draft-validation-message {
   color: var(--text-2);
   overflow-wrap: anywhere;

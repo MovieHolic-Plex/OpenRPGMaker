@@ -2979,8 +2979,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // Welcome boot target — prefill and optional auto-send (writes still proposal-gated).
   registerAiBootIntentTarget({
     open: () => restoreCollapsed(),
+    getDraft: () => input.value,
     prefill: (text: string) => {
       input.value = text;
+      syncInputHeight();
+      refreshComposerPlaceholder();
+      refreshSendEnabled();
       try {
         input.focus();
       } catch {

@@ -14,6 +14,8 @@ import { openEventRailGroupFor } from "./pageProps";
 import { navigateToEventCommand } from "./content";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 
+import { renderEventValidationActions } from "./validationActions";
+
 const closeBell = new WeakMap<HTMLDetailsElement, () => void>();
 
 const BELL_ICON = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
@@ -73,6 +75,7 @@ export function renderEventValidationBell(): HTMLDetailsElement {
       }),
     ],
   }) as HTMLDetailsElement;
+  details.querySelector(".event-draft-validation-popover")?.append(renderEventValidationActions(() => closeBell.get(details)?.()));
   details.hidden = true;
   installOutsideDismiss(details);
   return details;
@@ -115,21 +118,29 @@ export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
   if (issue.commandPath) {
     const mapId = modal?.dataset.mapId;
     const eventId = modal?.dataset.eventId;
-    if (mapId && eventId) navigateToEventCommand(mapId, eventId, issue.pageId, issue.commandPath);
-    return;
+    if (!mapId || !eventId || !navigateToEventCommand(mapId, eventId, issue.pageId, issue.commandPath)) return;
+  } else if (issue.pageId) {
+    editorState.set({ selectedEventPageId: issue.pageId });
   }
-  if (issue.pageId) editorState.set({ selectedEventPageId: issue.pageId });
   if (!issue.field) return;
-  const root = modal ?? document.body;
-  const scope = issue.field.scopeTestId
-    ? root.querySelector<HTMLElement>(`[data-testid="${issue.field.scopeTestId}"]`)
-    : root;
-  const field = scope?.querySelector<HTMLElement>(`[data-testid="${issue.field.testId}"]`);
+  const root = (issue.commandPath
+    ? modal?.querySelector<HTMLElement>('[data-testid="event-editor-inspector"]') : modal) ?? document.body;
+  const scope = issue.field.conditionPath
+    ? Array.from(root.querySelectorAll<HTMLElement>("[data-condition-path]"))
+      .find(form => form.dataset.conditionPath === JSON.stringify(issue.field?.conditionPath))
+    : issue.field.scopeTestId
+      ? root.querySelector<HTMLElement>(`[data-testid="${issue.field.scopeTestId}"]`)
+      : root;
+  const findField = () => scope?.querySelector<HTMLElement>(`[data-testid="${issue.field?.testId}"]`);
+  const initialField = findField();
+  if (issue.field.selectBeforeFocus) initialField?.click();
+  const field = findField();
   if (!field) return;
   // Both custom selects and record pickers keep a hidden native select for form state.
   const target = scope?.querySelector<HTMLElement>(`[data-custom-select-for="${issue.field.testId}"]`)
     ?? (field.tagName === "SELECT" && field.classList.contains("event-record-modal-select")
       ? field.parentElement?.querySelector<HTMLElement>(".event-record-picker-trigger") : null)
+    ?? field.querySelector<HTMLElement>(".event-record-picker-trigger, input[type=search], button")
     ?? field;
   openEventRailGroupFor(target);
   for (let ancestor: HTMLElement | null = target; ancestor; ancestor = ancestor.parentElement) {
@@ -154,10 +165,18 @@ function renderIssueRow(issue: EventDraftIssue, index: number, details: HTMLDeta
       testid: `event-draft-validation-issue-${index}`,
       issueCode: issue.code,
       severity: issue.severity,
+      commandPath: JSON.stringify(issue.commandPath ?? []),
+      field: issue.field?.testId ?? "",
     },
     children: [
       el("span", { class: "event-draft-validation-severity", text: SEVERITY_LABEL[issue.severity] }),
-      el("span", { class: "event-draft-validation-message", text: issue.message }),
+      el("span", { class: "event-draft-validation-message", children: [
+        el("span", { text: `${issue.code} · ${issue.pageId} · ${JSON.stringify(issue.commandPath ?? [])}` }),
+        el("span", { text: `${issue.field?.testId ?? ""}${issue.field?.conditionPath ? ` · 조건 ${JSON.stringify(issue.field.conditionPath)}` : ""}` }),
+        el("span", { text: issue.cause ?? issue.message }),
+        el("span", { text: issue.expected ? `기대값: ${issue.expected}` : "" }),
+        el("span", { text: issue.hint ?? "" }),
+      ] }),
     ],
     on: {
       click: () => {

@@ -1,3 +1,4 @@
+import { commandReferenceField, m2ReferenceField, withEventDraftIssueDetails } from "./eventDraftIssueDetails";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
@@ -29,6 +30,8 @@ export type EventDraftFieldLocator = {
   readonly testId: string;
   /** Scopes reusable condition-form controls to their exact authored row. */
   readonly scopeTestId?: string;
+  readonly conditionPath?: readonly number[];
+  readonly selectBeforeFocus?: boolean;
 };
 
 export type EventDraftIssue = {
@@ -36,6 +39,9 @@ export type EventDraftIssue = {
   /** Stable machine-readable rule id. */
   readonly code: string;
   readonly message: string;
+  readonly cause?: string;
+  readonly expected?: string;
+  readonly hint?: string;
   readonly pageId: string;
   /** Path uses the same nested branch encoding as rendered command rows. */
   readonly commandPath?: readonly number[];
@@ -166,7 +172,7 @@ function validationFromIssues(issues: readonly EventDraftIssue[]): EventDraftVal
   const errorCount = issues.filter((issue) => issue.severity === "error").length;
   const warningCount = issues.filter((issue) => issue.severity === "warning").length;
   const infoCount = issues.filter((issue) => issue.severity === "info").length;
-  return { issues, errorCount, warningCount, infoCount, canCommit: errorCount === 0 };
+  return { issues: issues.map(withEventDraftIssueDetails), errorCount, warningCount, infoCount, canCommit: errorCount === 0 };
 }
 
 function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
@@ -571,6 +577,32 @@ function validateCondition(
   void exhaustive;
 }
 
+/** Preserve repeated condition positions independently of the owning command path. */
+function validateForkCondition(
+  condition: Condition, pageId: string, refs: ReferenceSets, issues: EventDraftIssue[],
+  commandPath: readonly number[], conditionPath: readonly number[] = [],
+): void {
+  if ((condition.kind === "all" || condition.kind === "any") && condition.conditions.length) {
+    condition.conditions.forEach((child, index) =>
+      validateForkCondition(child, pageId, refs, issues, commandPath, [...conditionPath, index]));
+    return;
+  }
+  if (condition.kind === "not") {
+    validateForkCondition(condition.condition, pageId, refs, issues, commandPath, [...conditionPath, 0]);
+    return;
+  }
+  const found: EventDraftIssue[] = [];
+  validateCondition(condition, pageId, refs, found, commandPath);
+  const anchors: Readonly<Record<string, string>> = {
+    switch: "event-condition-switch-target", variable: "event-condition-variable-target",
+    actor: "event-condition-actor-select", item: "event-condition-item-select",
+    friendshipAtLeast: "event-condition-friendship-npc-key", relationshipAtLeast: "event-condition-relationship-npc-key",
+  };
+  issues.push(...found.map(issue => ({ ...issue, field: {
+    testId: anchors[condition.kind] ?? issue.field?.testId ?? "event-condition-form", conditionPath,
+  } })));
+}
+
 function conditionHasLeaf(condition: Condition): boolean {
   if (condition.kind === "all" || condition.kind === "any") {
     return condition.conditions.some(conditionHasLeaf);
@@ -809,7 +841,7 @@ function validateCommand(
 
   const require = (code: string, label: string, id: string | undefined, known: ReadonlySet<string>, allowEmpty = false) => {
     if (allowEmpty && !id?.trim()) return;
-    requireReference(issues, pageId, code, label, id ?? "", known, undefined, path);
+    requireReference(issues, pageId, code, label, id ?? "", known, commandReferenceField(command.kind, label), path);
   };
   const variableOperand = (value: unknown, label: string) => {
     if (typeof value === "object" && value !== null && "kind" in value && value.kind === "var" && "id" in value) {
@@ -819,7 +851,7 @@ function validateCommand(
 
   switch (command.kind) {
     case "changeFace": require("reference.resource.missing", "얼굴 리소스", command.resourceId, refs.resources, true); return;
-    case "fork": validateCondition(command.condition, pageId, refs, issues, path); return;
+    case "fork": validateForkCondition(command.condition, pageId, refs, issues, path); return;
     case "wait": require("reference.variable.missing", "대기 변수", command.variableId, refs.variables, true); return;
     case "inputWait": require("reference.variable.missing", "입력 대기 변수", command.variableId, refs.variables, true); return;
     case "inputNumber": require("reference.variable.missing", "숫자 입력 변수", command.variableId, refs.variables); return;
@@ -833,11 +865,11 @@ function validateCommand(
       return;
     case "transfer":
       require("reference.map.missing", "맵", command.mapId, refs.maps);
-      validateMapPosition(project, command.mapId, command.x, command.y, pageId, path, "맵 이동 목적지", issues);
+      validateMapPosition(project, command.mapId, command.x, command.y, pageId, path, "맵 이동 목적지", issues, { testId: "transfer-player-map-preview" });
       return;
     case "changeTile":
       require("reference.map.missing", "맵", command.mapId, refs.maps);
-      validateMapPosition(project, command.mapId, command.x, command.y, pageId, path, "타일 변경 위치", issues);
+      validateMapPosition(project, command.mapId, command.x, command.y, pageId, path, "타일 변경 위치", issues, { testId: "change-tile-x-input" });
       return;
     case "moveEvent":
       if (command.eventId && command.eventId !== PLAYER_MOVE_TARGET) require("reference.event.missing", "이동 대상 이벤트", command.eventId, refs.events);
@@ -909,6 +941,7 @@ function validateCommand(
             path,
             "빛 위치",
             issues,
+            { testId: "add-light-x-input" },
           );
         }
       }
@@ -928,6 +961,7 @@ function validateCommand(
             path,
             "애니메이션 대상 위치",
             issues,
+            { testId: "show-animation-x-input" },
           );
         }
       }
@@ -1066,7 +1100,7 @@ function validateM2CommandReferences(
       rule.label,
       typeof value === "string" ? value : String(value),
       rule.known(refs),
-      { testId: `m2-command-${field.key}-input` },
+      m2ReferenceField(entry.title, field.key),
       commandPath,
     );
   }
@@ -1160,6 +1194,7 @@ function validateM2CommandCoordinates(
       commandPath,
       `${entry.label} 위치`,
       issues,
+      m2ReferenceField(entry.title, "x"),
     );
     return;
   }
@@ -1173,6 +1208,7 @@ function validateM2CommandCoordinates(
       commandPath,
       `${entry.label} 위치`,
       issues,
+      m2ReferenceField(entry.title, "x"),
     );
   }
 }
@@ -1191,13 +1227,15 @@ function validateMapPosition(
   const map = project.maps[mapId];
   if (!map) return;
   if (Number.isInteger(x) && Number.isInteger(y) && x >= 0 && y >= 0 && x < map.width && y < map.height) return;
+  const positionField = field && Number.isInteger(x) && x >= 0 && x < map.width
+    ? { ...field, testId: field.testId.replace(/-x(?=-|$)/u, "-y") } : field;
   issues.push({
     severity: "error",
     code: "map.position.out-of-bounds",
     message: `${label} (${x}, ${y})가 '${map.name}' 맵 범위를 벗어났습니다.`,
     pageId,
     ...(commandPath ? { commandPath: [...commandPath] } : {}),
-    ...(field ? { field } : {}),
+    ...(positionField ? { field: positionField } : {}),
   });
 }
 
@@ -1241,19 +1279,20 @@ function validateMoveRoute(
   issues: EventDraftIssue[],
   field?: EventDraftFieldLocator,
 ): void {
-  for (const move of route?.moves ?? []) {
+  for (const [index, move] of (route?.moves ?? []).entries()) {
+    const moveField = field ?? { testId: `move-route-command-${index + 1}`, selectBeforeFocus: true };
     if (move.kind === "setSwitch") {
-      requireReference(issues, pageId, "reference.switch.missing", "이동 경로 스위치", move.switchId, refs.switches, field, commandPath);
+      requireReference(issues, pageId, "reference.switch.missing", "이동 경로 스위치", move.switchId, refs.switches, moveField, commandPath);
     }
     if (move.kind === "changeGraphic") {
-      requireReference(issues, pageId, "reference.resource.missing", "이동 경로 그래픽", move.spriteId, refs.resources, field, commandPath);
+      requireReference(issues, pageId, "reference.resource.missing", "이동 경로 그래픽", move.spriteId, refs.resources, moveField, commandPath);
     }
     if (move.kind === "npcTransfer") {
-      requireReference(issues, pageId, "reference.map.missing", "이동 경로 목적지 맵", move.mapId, refs.maps, field, commandPath);
-      validateMapPosition(project, move.mapId, move.x, move.y, pageId, commandPath, "이동 경로 목적지", issues, field);
+      requireReference(issues, pageId, "reference.map.missing", "이동 경로 목적지 맵", move.mapId, refs.maps, moveField, commandPath);
+      validateMapPosition(project, move.mapId, move.x, move.y, pageId, commandPath, "이동 경로 목적지", issues, moveField);
     }
     if (move.kind === "playSe") {
-      requireReference(issues, pageId, "reference.resource.missing", "이동 경로 효과음", move.resourceId, refs.resources, field, commandPath);
+      requireReference(issues, pageId, "reference.resource.missing", "이동 경로 효과음", move.resourceId, refs.resources, moveField, commandPath);
     }
   }
 }

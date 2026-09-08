@@ -58,6 +58,8 @@ export const SCHEMA_RENDERED_KINDS: ReadonlySet<string> = new Set<string>([
   "cutsceneControl",
   "changeGold",
   "changeItem",
+  // Validation must reach the already-declared skill/operand fields, not an empty inspector.
+  "changeLifeSkillExp",
 ]);
 
 /** 프로젝트 상태에서 요약문 조회기를 만든다. */

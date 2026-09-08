@@ -53,10 +53,10 @@ export const SEASON_OPTIONS = [
  */
 const conditionModeCache = new Map<string, Condition>();
 
-export function conditionForm(cond: Condition, onChange: (condition: Condition) => void): HTMLElement {
+export function conditionForm(cond: Condition, onChange: (condition: Condition) => void, path: readonly number[] = []): HTMLElement {
   const wrap = el("div", {
     class: "event-condition-form",
-    dataset: { testid: "event-condition-form" },
+    dataset: { testid: "event-condition-form", conditionPath: JSON.stringify(path) },
   });
 
   const mode = selectWithOptions(CONDITION_MODE_OPTIONS, cond.kind, "event-condition-mode");
@@ -168,10 +168,10 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       break;
     case "all":
     case "any":
-      wrap.append(labeledGroup(cond, onChange));
+      wrap.append(labeledGroup(cond, onChange, path));
       break;
     case "not":
-      wrap.append(labeledNot(cond, onChange));
+      wrap.append(labeledNot(cond, onChange, path));
       break;
   }
 
@@ -494,7 +494,8 @@ export function renderRunCondition(
 
 function labeledGroup(
   cond: Extract<Condition, { kind: "all" | "any" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  path: readonly number[],
 ): HTMLElement {
   const box = el("div", {
     class: "event-condition-group",
@@ -531,7 +532,7 @@ function labeledGroup(
             currentChildren.map((entry, i) => (i === index ? nextChild : entry)),
             nextChild.kind !== child.kind
           );
-        }),
+        }, [...path, index]),
         el("button", {
           class: "btn danger",
           text: "제거",
@@ -569,7 +570,8 @@ function labeledGroup(
 
 function labeledNot(
   cond: Extract<Condition, { kind: "not" }>,
-  onChange: (condition: Condition) => void
+  onChange: (condition: Condition) => void,
+  path: readonly number[],
 ): HTMLElement {
   const box = el("div", {
     class: "event-condition-group event-condition-not",
@@ -577,7 +579,7 @@ function labeledNot(
   });
   box.append(
     el("div", { class: "event-condition-group-item-title", text: "반대 조건" }),
-    conditionForm(cond.condition, (nextChild) => onChange({ kind: "not", condition: nextChild }))
+    conditionForm(cond.condition, (nextChild) => onChange({ kind: "not", condition: nextChild }), [...path, 0])
   );
   return box;
 }

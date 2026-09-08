@@ -1,5 +1,32 @@
 # Editor Validation Expectations
 
+## Event validation location and UNSENT handoff (issue 693, 2026-09-08)
+
+- The existing aggregate validator enriches issues with cause, expected value, correction
+  hint and form locators. Index-based command paths are recalculated on every validation;
+  repeated fork conditions additionally carry `conditionPath`. Native/M2 record pickers,
+  coordinate axes and command movement steps use the existing form anchors.
+- Bell navigation first reveals/selects the command, then focuses its inspector field.
+  The shared custom-select enhancer transfers an already-focused native select to its
+  trigger when reparenting it; no delayed focus job or polling is used.
+- Copy offers Markdown/JSON from one `eventValidationDiagnosticReport` projection. It
+  includes current-event errors only: rule-owned text, page ordinals, numeric paths and
+  generated field anchors, never authored names/values, raw messages, logs or project data.
+  This is separate from opt-in session diagnostics/export and needs no session recording.
+- Ask local assistant minimizes (retains) the event editor and appends an editable UNSENT
+  report through `prefillAiAssistantInput(..., {preserveDraft:true})`. Existing composer
+  bytes survive. No send hook is called; an unavailable target restores the editor.
+- `changeLifeSkillExp` now renders its existing schema fields rather than an empty
+  inspector, allowing its missing skill/variable references to be corrected. Commands
+  without a field editor still retain command-level navigation; this patch does not
+  introduce a new field-spawn command editor.
+- Focused contracts: `eventValidationDiagnostics`, `eventValidationFieldAnchors`,
+  `eventValidationSelectFocus`, `eventValidationNavigationContract`, `aiBootIntent`.
+  Replay: `QA_BASE_URL=http://127.0.0.1:<isolated-port> node scripts/qa/issue693-validation.mjs`.
+  It asserts disabled remote persistence, uses real editor/store/composer surfaces, and
+  captures 1024/1280/1440 geometry and identical sanitized clipboard formats. Its local
+  GET relay forwards actual Vite bytes to avoid workstation Chromium network-change errors.
+
 ## AI blocked-event relocation recovery (2026-09-06)
 
 - `projectLint` now distinguishes known characters from interaction objects. A character's

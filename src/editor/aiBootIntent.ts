@@ -4,6 +4,7 @@
 export type AiBootIntentTarget = {
   readonly open: () => void;
   readonly prefill: (text: string) => void;
+  readonly getDraft?: () => string;
   /** Optional: send a user turn. Must not bypass proposal approval for write tools. */
   readonly send?: (text: string) => void | Promise<void>;
 };
@@ -120,10 +121,12 @@ export function applyPendingAiBootIntent(): boolean {
 }
 
 /** Prefill an already-mounted panel. Never sends. */
-export function prefillAiAssistantInput(text: string): boolean {
+export function prefillAiAssistantInput(text: string, options?: { readonly preserveDraft?: boolean }): boolean {
   const trimmed = text.trim();
   if (!trimmed || !target) return false;
-  return applyIntentToTarget(trimmed, target, false);
+  if (options?.preserveDraft && !target.getDraft) return false;
+  const existing = options?.preserveDraft ? target.getDraft?.() ?? "" : "";
+  return applyIntentToTarget(existing ? `${existing}\n\n${trimmed}` : trimmed, target, false);
 }
 
 /** Auto-send on an already-mounted panel when send handler exists. */

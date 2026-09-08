@@ -463,7 +463,7 @@ describe("event draft aggregate validator", () => {
       expect.objectContaining({ commandPath: [2] }),
       expect.objectContaining({ commandPath: [4] }),
       expect.objectContaining({ commandPath: [5] }),
-      expect.objectContaining({ field: { testId: "event-page-living-target-x" } }),
+      expect.objectContaining({ field: { testId: "event-page-living-target-y" } }),
     ]));
     expect(result.issues).toContainEqual(expect.objectContaining({
       code: "map.area.out-of-bounds",
