@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **51쪽 / 2089KB / 약 585,980 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **51쪽 / 2092KB / 약 586,828 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -194,20 +194,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` 함정 목록
 - `L161` 실린 자산의 실측값
 
-### `openwiki/bgm-catalog.md` — 20KB · 298줄 · ~5,045 토큰
+### `openwiki/bgm-catalog.md` — 23KB · 336줄 · ~5,789 토큰
 
 - `L6` Why this exists
 - `L17` Facts an agent needs
 - `L34` Files and ownership
 - `L55` Release pack installation (2026-09-07)
-- `L86` Producing and publishing the pinned pack
-- `L113` Regenerating
-  - `L123` sha256 caveat
-- `L131` CDN wiring
-- `L160` How authors reach the tracks
-- `L192` Project audio descriptions
-  - `L224` Shared AI analysis drafts (2026-09-08)
-- `L265` Traps
+- `L87` In-editor installation and live inventory (2026-09-09)
+- `L123` Producing and publishing the pinned pack
+- `L150` Regenerating
+  - `L160` sha256 caveat
+- `L168` CDN wiring
+- `L198` How authors reach the tracks
+- `L230` Project audio descriptions
+  - `L262` Shared AI analysis drafts (2026-09-08)
+- `L303` Traps
 
 ### `openwiki/castle-map.md` — 4KB · 69줄 · ~1,003 토큰
 
@@ -622,16 +623,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` Combat acceptance slice
 - `L82` Verification
 
-### `openwiki/quickstart.md` — 16KB · 176줄 · ~4,637 토큰
+### `openwiki/quickstart.md` — 16KB · 179줄 · ~4,741 토큰
 
 - `L6` 0. 여기서 에이전트가 실제로 헤매는 이유 (실측 2026-08-30)
 - `L17` 1. 환경 — 여기가 틀리면 이후 전부 헛수고
 - `L45` 1a. Mac novice launcher / private setup (Phase 1, 2026-09-06)
 - `L81` 1b. 전체 BGM은 Release 팩으로 설치
-- `L93` 2. 검증 — 무엇이 진짜 게이트인가
-- `L113` 3. 어디를 고치나 — 기능 → 진입 파일
-- `L158` 4. 위키를 읽는 법
-- `L170` 5. 끝났다고 말할 수 있는 조건
+- `L96` 2. 검증 — 무엇이 진짜 게이트인가
+- `L116` 3. 어디를 고치나 — 기능 → 진입 파일
+- `L161` 4. 위키를 읽는 법
+- `L173` 5. 끝났다고 말할 수 있는 조건
 
 ### `openwiki/runtime-action-combat.md` — 26KB · 300줄 · ~6,633 토큰
 
