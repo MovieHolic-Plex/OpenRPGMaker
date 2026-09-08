@@ -96,6 +96,9 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     : catalog[0]?.id ?? options.currentId ?? "";
   let characterIndex = clampIndex(options.currentCharacterIndex ?? 0, CHARSET_CHARACTER_COUNT - 1);
   let hue = clampHue(options.currentHue ?? 0);
+  let confirmButton: HTMLButtonElement | null = null;
+  const isUnsupportedAudio = (id: string): boolean =>
+    (options.kind === "music" || options.kind === "sound") && audioPlayback(id, store.getCurrent()).midi;
 
   const search = el("input", {
     class: "db-resource-picker-search",
@@ -120,6 +123,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     list.replaceChildren(
       ...filtered.map((entry) =>
         resourceButton(entry, selectedId, options.kind, project, characterIndex, () => {
+          if (isUnsupportedAudio(entry.id)) return;
           selectedId = entry.id;
           refreshList();
           refreshPreview();
@@ -134,6 +138,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
 
   const refreshPreview = (): void => {
     const project = store.getCurrent();
+    if (confirmButton) confirmButton.disabled = !selectedId || isUnsupportedAudio(selectedId);
     preview.replaceChildren(
       resourceVisual(selectedId, options.kind, project, "선택 리소스", "db-resource-picker-preview-visual", {
         characterIndex,
@@ -188,7 +193,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
       label: "선택",
       testid: `${prefix}-ok`,
       action: () => {
-        if (!selectedId) return;
+        if (!selectedId || isUnsupportedAudio(selectedId)) return;
         options.onConfirm({
           resourceId: selectedId,
           characterIndex: options.kind === "charset" ? characterIndex : undefined,
@@ -218,6 +223,8 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     el("div", { class: "db-resource-picker-grid", children: [list, preview] }),
     indexPanel,
   ], actions, undefined, () => unsubscribe?.());
+  confirmButton = preview.closest('[role="dialog"]')?.querySelector<HTMLButtonElement>(`[data-testid="${prefix}-ok"]`) ?? null;
+  if (confirmButton) confirmButton.disabled = !selectedId || isUnsupportedAudio(selectedId);
   if (options.kind === "music" || options.kind === "sound" || options.kind === "monster") {
     unsubscribe = store.subscribe((_project, change) => {
       if (change.projectSwitch) {
@@ -278,16 +285,22 @@ export function resourcePickerControl(input: {
     value: input.resourceId ?? "",
     dataset: { testid: input.testid },
   }) as HTMLInputElement;
-  const commitText = (): void => {
+  const commitText = (): boolean => {
+    const resourceId = idInput.value.trim();
+    if ((input.kind === "music" || input.kind === "sound") && audioPlayback(resourceId, store.getCurrent()).midi) return false;
     input.onChange({
-      resourceId: idInput.value.trim(),
+      resourceId,
       characterIndex: input.currentCharacterIndex,
       graphicHue: input.currentHue,
     });
+    return true;
   };
   idInput.addEventListener("input", commitText);
   idInput.addEventListener("change", () => {
-    commitText();
+    if (!commitText()) {
+      idInput.value = input.resourceId ?? "";
+      return;
+    }
     input.rerender();
   });
   const pick = (): void => {
@@ -364,7 +377,10 @@ function resourceButton(
 ): HTMLElement {
   return el("button", {
     class: option.id === selectedId ? "active" : "",
-    attrs: { type: "button", title: `${option.name} (${option.id})` },
+    attrs: {
+      type: "button", title: `${option.name} (${option.id})`,
+      ...((kind === "music" || kind === "sound") && audioPlayback(option.id, project).midi ? { disabled: "" } : {}),
+    },
     dataset: { resourceId: option.id, testid: `${prefix}-option-${option.id}` },
     children: [
       resourceVisual(option.id, kind, project, option.name, "db-resource-picker-option-thumb", { characterIndex }),

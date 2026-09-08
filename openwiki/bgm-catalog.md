@@ -160,13 +160,28 @@ VITE_BGM_CDN_BASE=https://cheapcdn.sgp1.cdn.digitaloceanspaces.com
 ## How authors reach the tracks
 
 - **Map properties → BGM tab → 지정 곡.** This used to be a bare resource-id text field; with 281
-  tracks that is unusable, so it now opens the shared resource picker. `resourcePickerControl`
-  keeps a hidden text input on the original `map-bgm-resource` testid, so existing e2e paths still
-  work.
+  tracks that is unusable, so it now opens the shared resource picker through
+  `map-bgm-resource-set`; `map-bgm-resource` displays the current resource name.
 - **Resource picker (`kind: "music"`)** lists the catalog first, then the older CC0 five, then
   EasyRPG, registered generated resources, project profiles and uploads. Search uses the effective
   project description alongside names, IDs and independent tags. The selected resource displays
   its description and source; preview playback remains available.
+- **Unsupported MIDI authoring (issue 693 R2):** shared music/sound picker rows and confirmation,
+  the shared hidden ID input, and native/M2 event audio dropdowns reject MIDI using the existing
+  `audioPlayback` resolver. Legacy rows/selected descriptions remain visible; opening, searching,
+  or cancelling does not replace the saved ID. The command dialog can retain an unchanged legacy
+  command, but cannot newly select MIDI. Supported audio and explicit clearing remain available.
+  Catalog enumeration, resource IDs, load repair and persistence are unchanged. Regression:
+  `test/unsupportedMidiAuthoring.test.ts`; native proof: `scripts/qa/issue693-midi-authoring.mjs`.
+  From the assigned worktree, use separate terminals (no remote content writes):
+
+  ```sh
+  mkdir -p /dev/shm/rpg-zzu-issue693-audio-r2/{tmp,vite}
+  TMPDIR=/dev/shm/rpg-zzu-issue693-audio-r2/tmp DEV_SERVER_PORT=38422 DEV_SERVER_NO_TLS=1 VITE_BGM_CDN_BASE='' VITE_CACHE_DIR=/dev/shm/rpg-zzu-issue693-audio-r2/vite node node_modules/vite/bin/vite.js --configLoader runner --host 127.0.0.1 --port 38422 --strictPort
+  # Second terminal: native Firefox; JSON and screenshots stay in owned /dev/shm.
+  TMPDIR=/dev/shm/rpg-zzu-issue693-audio-r2/tmp VITE_CACHE_DIR=/dev/shm/rpg-zzu-issue693-audio-r2/vite node scripts/qa/issue693-midi-authoring.mjs
+  ```
+
 - **`searchResources("bgm", query)`** exposes the same catalog to AI tools (`list_resources`).
   Labels are `title — category (m:ss)`.
 - **Default project**: map and battle BGM point at starter catalog tracks; the default title is
