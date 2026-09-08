@@ -103,7 +103,7 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   display: -webkit-box;
-  font: 500 11px/14px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 11px/14px var(--font-ui);
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -113,7 +113,7 @@
 
 /* 갤러리 카드도 UA 폰트(Arial 13.33px)로 렌더되고 있었다. */
 .database-modal-body .oprn-record-list-pane [data-testid^="db-record-card-"] {
-  font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 11px;
 }
 
