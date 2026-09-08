@@ -1068,6 +1068,31 @@
   height: var(--space-6);
 }
 
+/* 되돌리기·다시실행은 한 쌍으로 읽혀야 한다 — 각 행위 단추와 그 펼쳐보기를 도구 간격(2px)
+   보다 좁게 붙여, 「도구가 네 개 늘었다」 가 아니라 「두 짝」 으로 보이게 한다. */
+.left-panel-stack[data-testid="left-palette-root"] .oprn-tile-history-group {
+  align-items: center;
+  display: inline-flex;
+  gap: 0;
+  margin-right: 2px;
+}
+
+/* 펼쳐보기는 행위 단추의 종속물이다. 높이는 도구와 맞추고 폭만 줄인다 — 같은 정사각형을
+   주면 눌러야 할 것이 둘인지 하나인지 알 수 없다.
+   **위치가 규칙의 일부다**: 바로 위 `.oprn-tile-tool` 정사각형 규칙이 이 시트의 마지막
+   세대이고 명시도가 (0,4,0) 로 같다. 파일 앞쪽(도구막대 3절)에 두면 클래스 하나를 더 얹어도
+   순서에서 져서 폭이 --space-6 으로 되돌아간다(실측으로 걸렀다). .editor-layout 접두를
+   붙여 명시도로 이기지 않는 이유: 클래식 셸(08-rm-…)은 그 접두 없이 같은 좌패널을 그린다. */
+.left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.oprn-tile-history-toggle {
+  color: var(--text-3);
+  width: 15px;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .oprn-tile-history-toggle > svg {
+  height: 12px;
+  width: 12px;
+}
+
 .editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-toolbar-separator {
   margin-inline: 0;
 }
