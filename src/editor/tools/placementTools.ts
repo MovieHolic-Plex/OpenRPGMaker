@@ -160,7 +160,9 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
         if (allowed.length >= allowedCap) break;
         if (!footprintFits(map, stepFootprint, origin, protectedCells)) continue;
         // 숲: 레이어가 다르면 발자국이 겹쳐도 됨(수관 upper + 밑동 lower).
-        if (!layeredSpaced(rectAt(origin, stepFootprint), stepFootprint, placed, footprints, args.minGap)) continue;
+        if (picker
+          ? !spaced(rectAt(origin, stepFootprint), placed, args.minGap)
+          : !layeredSpaced(rectAt(origin, stepFootprint), stepFootprint, placed, footprints, args.minGap)) continue;
         allowed.push(origin);
       }
       if (allowed.length === 0) break;
@@ -400,7 +402,7 @@ function oneInstance(sample: GroupSample, group: TileGroupMetadata, tileset: Til
   for (let index = 0; index < sample.w * sample.h; index += 1) {
     const upper = sample.upper[index] ?? TILE.EMPTY;
     const lower = sample.lower[index] ?? TILE.EMPTY;
-    if ((hasUpper && upper !== TILE.EMPTY) || (!hasUpper && lower !== TILE.EMPTY)) occupied.add(index);
+    if (upper !== TILE.EMPTY || (lower !== TILE.EMPTY && (!hasUpper || group.tileIds.includes(lower)))) occupied.add(index);
   }
   const first = [...occupied].sort((a, b) => a - b)[0];
   if (first === undefined) throw new ToolError(`타일 그룹 '${group.name}'에는 배치할 타일이 없습니다.`, { code: "empty-group" });
@@ -430,7 +432,7 @@ function oneInstance(sample: GroupSample, group: TileGroupMetadata, tileset: Til
       const source = y * sample.w + x;
       const sourceUpper = component.has(source) ? sample.upper[source] ?? TILE.EMPTY : TILE.EMPTY;
       const sourceLower = component.has(source) ? sample.lower[source] ?? TILE.EMPTY : TILE.EMPTY;
-      lower.push(hasUpper ? backingLower(tileset, sourceUpper) : sourceLower);
+      lower.push(hasUpper && !group.tileIds.includes(sourceLower) ? backingLower(tileset, sourceUpper) : sourceLower);
       upper.push(sourceUpper);
     }
   }

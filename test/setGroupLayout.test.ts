@@ -87,7 +87,8 @@ describe("set_group_layout", () => {
     expect(sample.w).toBe(5);
     expect(sample.h).toBe(2);
     expect(sample.upper[0]).toBe(260);
-    expect(sample.upper[sample.w]).toBe(290);
+    expect(sample.lower[sample.w]).toBe(290);
+    expect(sample.upper[sample.w]).toBe(TILE.EMPTY);
     expect(sample.lower[0]).toBe(TILE.GRASS);
   });
 

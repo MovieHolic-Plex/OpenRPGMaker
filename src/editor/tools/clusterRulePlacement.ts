@@ -1,5 +1,5 @@
 import { TILE } from "@/project/defaults/constants";
-import { isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
+import { isCombinedTownTileset, isTreeTrunkTileId, isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
 import type { ClusterRule, GameMap, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { inMapBounds, type Point } from "./mapHelpers";
 
@@ -182,6 +182,7 @@ function oppositeRelation(relation: ClusterRelation): ClusterRelation {
 }
 
 function layerForClusterTile(tileset: TilesetDef, group: TileGroupMetadata, tile: number): Layer {
+  if (isCombinedTownTileset(tileset) && isTreeTrunkTileId(tile)) return "lower";
   if (group.defaultLayer === "upper" || group.role === "prop" || isUpperOnlyOverlayTile(tileset, tile)) return "upper";
   return tileset.priority[tile] === "upper" ? "upper" : "lower";
 }

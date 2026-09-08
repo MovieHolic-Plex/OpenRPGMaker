@@ -7,7 +7,7 @@ import { autotileEditTriggersGroup, shapeAutotileGroupAround } from "@/project/d
 import { resolveForestCanopyReplacementExemptTileIds } from "@/editor/tools/forestComposition";
 import { repairTreePairsOnMap } from "@/project/lint/repairTreePairs";
 import { clearTileStack } from "@/project/mapOverlayTiles";
-import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
+import { isCombinedTownTileset, isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { expandHardClusterPlacement, type HardClusterTileEdit } from "@/editor/tools/clusterRulePlacement";
 import { toast } from "@/util/toast";
@@ -87,6 +87,16 @@ export function paintTilesBulk(
     if (!plan.ok) {
       rejection = plan.reason;
       continue;
+    }
+    const previous = tileAt(currentMap, targetLayer, stroke.x, stroke.y);
+    if (tileset && isCombinedTownTileset(tileset)
+      && targetLayer === "upper" && previous !== undefined && isTreeCanopyTileId(previous)
+      && !isTreeCanopyTileId(stroke.tile)) {
+      // Replacing a canopy replaces its tree, just like erasing it. Otherwise
+      // pair repair immediately restores the old canopy over the new prop.
+      const removed = expandEraseCompanions(currentMap, tileset, [{ layer: targetLayer, x: stroke.x, y: stroke.y }], clusterExpand);
+      const lower = new Set(removed.filter((cell) => cell.layer === "lower").map((cell) => `${cell.x},${cell.y}`));
+      planned.push(...planEraseWrites(currentMap, tileset, removed, lower));
     }
     planned.push(...plan.edits);
   }

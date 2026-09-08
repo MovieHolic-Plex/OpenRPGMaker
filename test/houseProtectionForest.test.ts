@@ -146,7 +146,7 @@ describe("direct forest composition writers", () => {
     for (let y = selected!.y; y < selected!.y + 2; y += 1) {
       for (let x = selected!.x; x < selected!.x + 2; x += 1) expect(map.lowerTiles[y * map.width + x]).toBe(BODY);
     }
-    expect(map.lowerTiles.filter(isLakeAutotileTile)).toHaveLength(4);
+    expect(map.lowerTiles.filter((tile) => isLakeAutotileTile(tile))).toHaveLength(4);
   });
 
   it.each([4, 8] as const)("protects %i-neighbor autotile writes outside the requested area", (neighborhood) => {
