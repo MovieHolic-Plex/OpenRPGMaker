@@ -42,3 +42,48 @@ it.each(["dev", "preview"])("serves real media bytes/ranges and missing-media 40
     await rm(root, { recursive: true, force: true });
   }
 }, 20000);
+
+// 에디터에서 팩을 설치하면 파일은 public/ 으로 들어가지만 preview 는 dist/ 를 서빙한다.
+// 폴백이 없으면 재빌드 전까지 새로 받은 281곡이 전부 404 다.
+it("preview 는 dist 에 없는 카탈로그 파일을 public 에서 서빙한다", async () => {
+  const root = await mkdtemp(join(tmpdir(), "audio-preview-fallback-"));
+  const bytes = await readFile("public/assets/cc0/audio/ui-confirm.wav");
+  await mkdir(join(root, "public/assets/cc0/audio/catalog"), { recursive: true });
+  await mkdir(join(root, "dist/assets"), { recursive: true });
+  // public 에만 둔다 — 설치 직후 재빌드 전 상태를 그대로 재현한다.
+  await copyFile("public/assets/cc0/audio/ui-confirm.wav", join(root, "public/assets/cc0/audio/catalog/late.wav"));
+  await writeFile(join(root, "index.html"), "<!doctype html><title>SPA shell</title>");
+  await copyFile(join(root, "index.html"), join(root, "dist/index.html"));
+  const server = await preview({ configFile: false, root, cacheDir: join(root, ".cache"), logLevel: "silent",
+    optimizeDeps: { noDiscovery: true, include: [] }, plugins: [audioDeliveryPlugin()],
+    preview: { host: "127.0.0.1", port: 0 } });
+  try {
+    const address = server.httpServer?.address();
+    if (!address || typeof address === "string") throw new Error("Missing isolated TCP server");
+    const request = (path: string, init?: RequestInit) =>
+      fetch(`http://127.0.0.1:${address.port}${path}`, { ...init, signal: AbortSignal.timeout(10000) });
+    const response = await request("/assets/cc0/audio/catalog/late.wav");
+    expect(response.status).toBe(200);
+    expect(Buffer.from(await response.arrayBuffer())).toEqual(bytes);
+    // 폴백은 기본 정적 미들웨어를 안 거치므로 Range 를 직접 지켜야 한다.
+    const range = await request("/assets/cc0/audio/catalog/late.wav", { headers: { Range: "bytes=0-31" } });
+    expect(range.status).toBe(206);
+    expect(Buffer.from(await range.arrayBuffer())).toEqual(bytes.subarray(0, 32));
+    const suffix = await request("/assets/cc0/audio/catalog/late.wav", { headers: { Range: "bytes=-32" } });
+    expect(suffix.status).toBe(206);
+    expect(Buffer.from(await suffix.arrayBuffer())).toEqual(bytes.subarray(-32));
+    const head = await request("/assets/cc0/audio/catalog/late.wav", { method: "HEAD" });
+    expect(head.headers.get("content-length")).toBe(String(bytes.length));
+    expect(await head.text()).toBe("");
+    for (const value of [`bytes=${bytes.length}-`, "bytes=-0"]) {
+      const invalid = await request("/assets/cc0/audio/catalog/late.wav", { headers: { Range: value } });
+      expect(invalid.status).toBe(416);
+      expect(invalid.headers.get("content-range")).toBe(`bytes */${bytes.length}`);
+      expect(await invalid.text()).toBe("");
+    }
+    expect((await request("/assets/cc0/audio/catalog/absent.mp3")).status).toBe(404);
+  } finally {
+    await server.close();
+    await rm(root, { recursive: true, force: true });
+  }
+}, 20000);

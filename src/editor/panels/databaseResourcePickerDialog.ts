@@ -18,6 +18,7 @@ import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { listMonsterResources } from "@/assets/monsterResourceCatalog";
 import { audioPlayback } from "./audioResourcePresentation";
 import { createAudioResourcePreview, releaseAudioPreviewOnRemoval } from "./audioResourcePreview";
+import { bgmInstallBanner } from "./bgmInstallBanner";
 import { monsterResourceSummary } from "./monsterResourcePresentation";
 import {
   SCARLOXY_BACKDROP_ASSETS,
@@ -227,9 +228,14 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     });
   }
 
+  // 설치가 끝나면 배지만 갱신해서는 안 된다. audioResourceCatalog 가 미설치 곡을 목록에서
+  // 아예 빼므로, refreshList 로 카탈로그를 다시 읽어야 항목 수가 3 → 281 로 바뀐다.
+  const installBanner = bgmInstallBanner({ kind: options.kind, onInstalled: () => { refreshList(); } });
+
   let unsubscribe: (() => void) | undefined;
   const closeDialog = openDialog(prefix, options.title, [
     search,
+    ...(installBanner ? [installBanner] : []),
     el("div", { class: "db-resource-picker-grid", children: [list, preview] }),
     indexPanel,
   ], actions, undefined, () => { unsubscribe?.(); audioPreview?.dispose(); });

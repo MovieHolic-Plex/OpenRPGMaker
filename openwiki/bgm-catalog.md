@@ -80,8 +80,45 @@ Ctrl-C/termination clean owned staging and locks. After forced termination, remo
 
 An already verified complete installation returns without gh/network. To use the installed
 audio, leave `VITE_BGM_CDN_BASE` unset: an explicit CDN still wins. Restart dev after env
-changes. Install before `npm run build` or web export; rebuild an existing production bundle
-after installing audio. Offline audio does not imply offline Supabase/AI.
+changes. Install before `npm run build` or web export so portable/static output contains the
+pack. Vite dev/preview can also discover and serve a later install without rebuilding (below).
+Offline audio does not imply offline Supabase/AI.
+
+## In-editor installation and live inventory (2026-09-09)
+
+The shared music resource picker (`databaseResourcePickerDialog.ts`) mounts
+`bgmInstallBanner.ts`. Sound/graphics pickers do not install this music-only pack. The banner
+fetches `/api/bgm/status`; static hosts returning HTML/404 omit it. `bgmInstallPlugin`, wired
+in `vite.config.ts`, mounts the same endpoint in dev and preview:
+
+- `POST /api/bgm/install` reserves one job synchronously, before loading the trusted manifest,
+  and returns 202. Concurrent POSTs return 409, including during that first manifest read.
+  Every accepted job goes through the existing `installRelease` digest checks; a file count
+  is never a reason to report a verified complete install or bypass repair. A verified rerun
+  remains offline through the installer itself. Errors appear in status; DELETE aborts the
+  reserved/running job without reporting cancellation as an install failure.
+- Loopback addresses are allowed by default. Remote use requires server-only
+  `RPG_ZZU_BGM_INSTALL_REMOTE=1` and a restart. The plugin uses Vite `loadEnv` with resolved
+  mode/envDir, including preview; `.env.local` values are not automatically in `process.env`.
+  Forwarded request headers cannot opt a client in. This is a host-wide permission, not user
+  authentication; enable it only on a trusted editor network. Credentials stay in server gh.
+- Status is lightweight nonempty-file inventory plus job/progress/error facts, not an offline
+  digest audit (`npm run bgm:verify` owns that). The build-time installed filenames only seed
+  `installedBgm.ts`. Both installation polling and the initial fetch on every picker opening
+  apply live inventory. The initial fetch rebuilds the picker rows before removing a completed
+  banner, so installation while the dialog was closed does not strand the old catalog.
+- Preview's `audioDeliveryPlugin` serves catalog files missing from dist directly from public.
+  The fallback is catalog-only, preserves GET/HEAD and byte/suffix ranges (206), emits 416 with
+  `Content-Range: bytes */<size>` for unsatisfiable ranges, and keeps missing media out of SPA
+  fallback. Other assets and normal dist delivery still use Vite's existing static handling.
+  Pure static deployments/exports still need installation before build/export.
+
+Focused regressions: `bgmInstallEndpoint`, `bgmInstallBanner`, `bgmInstallClient`,
+`bgmCatalogDir`, `installedBgmRuntime`, `audioDeliveryHttp`, and `bgmReleasePack`. Endpoint
+completion tests await the injected install promise's settlement; cold-manifest contention
+uses explicit request/manifest gates, and picker refresh awaits a DOM mutation signal.
+No fixed settling sleeps are needed. This workflow does not change project defaults,
+resource IDs, saved references, Image2 routing, new-project allocation, or review contracts.
 
 ## Producing and publishing the pinned pack
 
@@ -148,8 +185,9 @@ VITE_BGM_CDN_BASE=https://cheapcdn.sgp1.cdn.digitaloceanspaces.com
 - Vite snapshots installed, nonempty pack filenames at startup/build into the existing
   shared editor catalog. Without a CDN, only installed pack entries are advertised in
   pickers/search; the three starters remain available on a normal checkout. Install the
-  existing Release pack and restart dev/rebuild to expose more. No runtime IDs, saved
-  references, generated catalogs, or project descriptions are deleted. Headless metadata
+  existing Release pack and reopen the music picker to refresh the live catalog in dev/preview;
+  static deployments need a rebuild. No runtime IDs, saved references, generated catalogs,
+  or project descriptions are deleted. Headless metadata
   tools without a deployment snapshot still enumerate the complete catalog. Legacy MIDI
   remains explicitly non-playable inspection metadata, not advertised playable audio.
 - Upload sets `x-amz-acl: public-read` and `Cache-Control: immutable` (file names carry a content
