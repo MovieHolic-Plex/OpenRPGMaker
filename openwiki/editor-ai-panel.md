@@ -45,6 +45,20 @@ and mutable result/recap owners. There is no second scheduler or completion ledg
   predicates need no model approval. Regression/evidence:
   `assistantQuestionAuthority.test.ts`, `assistantCoreIntegration.test.ts` and
   `.omo/evidence/core-integration/ANSWER-OMISSION-VERIFICATION.md`.
+- **Current-question explicit checks (2026-09-08):** answer-only requests use a
+  request-scoped instance of the existing `ToolVerificationEvidence` owner. Native
+  `ToolResult.ok` still means execution, not a passing checker verdict. Failed or
+  stale current checks replace model success through the existing final-response,
+  audit and recap publication path; `RunOutcome.execution` becomes `blocked` while
+  request execution stays `answer` (no authoring recovery). Passing checks do not
+  invent goal satisfaction, applied delivery or persistence proof. A new request
+  clears this answer evidence; Resume also clears it when restoring a different
+  request ID. Non-authorizing continuation of the same Ask keeps its own evidence.
+  Applied-state refresh invalidates it on a changed project, and only a real
+  exact-scope recheck renews it. Old authoring requirements, verifier evidence,
+  WorkPlan and draft remain separate: an unrelated question does not report their
+  old failures, and its successful check cannot satisfy their canonical obligations.
+  Regression: `assistantFinalAudit.test.ts`, `assistantQuestionVerification.test.ts`.
 - `get_request_contract` is now exposed and dispatched read-only. Omitting
   `requestId` lists identities/lengths; a named request pages exact raw UTF-16 text
   with `offset >= 0`, `limit` in `1..8192`, `nextOffset` and overlapping source units.

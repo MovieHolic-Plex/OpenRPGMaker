@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { AssistantSession } from "@/ai/assistantSession";
+import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
+import { parseToolVerdict } from "@/ai/agentVerification";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
 import { fixedDeclarer } from "./intentFixture";
@@ -48,6 +49,8 @@ describe("authoritative final response audit", () => {
   });
 
   it("does not lead with model success when explicit verification still fails", async () => {
+    // Given a native lint failure, not a transport failure or a model verdict.
+    const events: SessionEvent[] = [];
     const project = createBlankProject();
     const map = project.maps[project.startMapId];
     map.upperTiles[map.width + 5] = 260;
@@ -61,8 +64,24 @@ describe("authoritative final response audit", () => {
         ] } }
         : { finishReason: "stop", message: { role: "assistant", content: "MODEL_SUCCESS_SENTINEL" } },
     });
-    const result = await session.sendUserMessage("Check the authored map");
+    const before = structuredClone(project);
+    // When the current question explicitly executes the registered checker.
+    const result = await session.sendUserMessage("Check the authored map", event => events.push(event));
+    // Then the real negative verdict owns the final response and its publications.
+    const lint = events.find(event => event.type === "tool_call" && event.name === "run_lint");
+    expect(lint).toMatchObject({ result: { ok: true, data: { counts: { errors: expect.any(Number) } } } });
+    if (lint?.type !== "tool_call") throw new Error("Missing native lint result");
+    expect(parseToolVerdict(lint.name, lint.result).pass).toBe(false);
     expect(result.assistantText).not.toContain("MODEL_SUCCESS_SENTINEL");
+    expect(result.assistantText).toContain("run_lint");
+    expect(result.runOutcome).toEqual({ execution: "blocked", goal: "unassessed", delivery: "no-change" });
+    expect(result.recap?.runOutcome).toEqual(result.runOutcome);
+    expect(session.getHarnessSnapshot().runOutcome).toEqual(result.runOutcome);
+    expect(events.at(-1)).toEqual({ type: "run_outcome", runOutcome: result.runOutcome });
+    expect(events.filter(event => event.type === "assistant_message").at(-1)).toMatchObject({ content: result.assistantText });
     expect(session.getAuditEntries().filter(entry => entry.kind === "assistant").at(-1)?.text).toBe(result.assistantText);
+    expect(project).toEqual(before);
+    expect(session.getProposedProject()).toEqual(before);
+    expect(session.getHarnessSnapshot().requests).toMatchObject([{ rawInstruction: "Check the authored map", authoring: false }]);
   });
 });

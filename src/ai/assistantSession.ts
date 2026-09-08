@@ -951,6 +951,8 @@ export class AssistantSession {
   private readonly readEvidence = new ToolReadEvidence();
   private originalContext: OriginalContextStore | null = null;
   private readonly verificationEvidence = new ToolVerificationEvidence();
+  /** Current answer request only; never supplies retained authoring/work-item proof. */
+  private readonly answerVerificationEvidence = new ToolVerificationEvidence();
   private readonly workItemVerificationEvidence = new ToolVerificationEvidence();
   /** 이번 턴이 손댈 선택 사각형(있으면). 패널·영역 작업이 사실로 넘긴다. */
   private turnScope: SessionTurnScope | null = null;
@@ -1348,11 +1350,13 @@ export class AssistantSession {
   refreshAcceptance(project: Project, onEvent?: (event: SessionEvent) => void): void {
     if (project === store.getCurrent()) this.storeBacked = true;
     this.imageEvidence.current(project);
-    if (!this.acceptance && !this.verificationEvidence.hasChecks()) return;
+    const hasChecks = this.verificationEvidence.hasChecks() || this.answerVerificationEvidence.hasChecks();
+    if (!this.acceptance && !hasChecks) return;
     // A verdict may precede declaration; late adoption must not revive pre-edit proof.
     const previous = this.acceptanceAppliedProject ?? this.acceptanceRequestBaseline;
-    if (this.verificationEvidence.hasChecks() && previous !== project && acceptanceFingerprint(previous) !== acceptanceFingerprint(project)) {
+    if (hasChecks && previous !== project && acceptanceFingerprint(previous) !== acceptanceFingerprint(project)) {
       this.verificationEvidence.invalidateAfterWrite();
+      this.answerVerificationEvidence.invalidateAfterWrite();
     }
     this.acceptanceAppliedProject = structuredClone(project);
     this.publishAcceptance(onEvent);
@@ -2007,6 +2011,7 @@ export class AssistantSession {
     }
     if (continuing && this.resumableAuthoringRequest) {
       const request = this.resumableAuthoringRequest;
+      if (this.currentRequestId !== request.requestId) this.answerVerificationEvidence.clear();
       this.currentRequestId = request.requestId;
       this.requestIntent = request.intent;
       this.requestIntentFacts = request.facts;
@@ -2016,6 +2021,7 @@ export class AssistantSession {
       this.originalContext = request.originalContext;
     }
     if (!retainingRequest) {
+      this.answerVerificationEvidence.clear();
       this.currentRequestId = `request-${++this.requestSequence}`;
       this.requestScope = opts?.scope ?? null;
       this.requestIntent = null;
@@ -3081,7 +3087,10 @@ export class AssistantSession {
 
   /** Keep transport/execution ok intact; only actual passing checks satisfy successTools. */
   private recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult, countAsSuccess = true): void {
-    if (this.isAnswerOnlyTurn()) return;
+    if (this.isAnswerOnlyTurn()) {
+      this.answerVerificationEvidence.observe(name, args, result, countAsSuccess ? "explicit" : "advisory");
+      return;
+    }
     this.syncSuccessfulToolsToCurrentWorkItem();
     if (result.ok) for (const [tool, field, collection] of [["upsert_item", "item", "items"], ["upsert_equipment", "equipment", "equipment"]] as const) {
       const record = args[field] as { id?: unknown } | undefined;
@@ -3657,8 +3666,9 @@ export class AssistantSession {
       result = { ...result, assistantText: `요청한 구성이 아직 미완성입니다.\n${adventureProblems.map(p => `- ${p}`).join("\n")}` };
       onEvent({ type: "assistant_message", content: result.assistantText });
     }
-    const verificationProblems = this.isAnswerOnlyTurn() ? [] : this.verificationEvidence.problems();
+    const verificationProblems = (this.isAnswerOnlyTurn() ? this.answerVerificationEvidence : this.verificationEvidence).problems();
     if (verificationProblems.length > 0) {
+      if (this.isAnswerOnlyTurn() && this.runExecution === "response-final") this.runExecution = "blocked";
       const notice = `검증이 아직 통과되지 않았습니다.\n${verificationProblems.slice(0, 8).map((problem) => `- ${problem}`).join("\n")}`;
       result = { ...result, assistantText: notice };
       onEvent({ type: "assistant_message", content: result.assistantText });
