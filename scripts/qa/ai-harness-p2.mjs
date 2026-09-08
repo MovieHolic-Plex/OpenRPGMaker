@@ -127,6 +127,21 @@ export function createP2Contracts(harness) {
       const button = page.locator(`[data-testid="ai-requirement-withdraw"][data-requirement-id="${spec.withdrawId}"]`);
       // Missing UI is a violated assertion, not a conditional skip or a fake user action.
       assert.equal(await button.count(), 1, `${spec.id}: genuine user withdrawal control exists`);
+      const gateNotice = page.getByTestId('ai-gate-modal');
+      if (await gateNotice.isVisible()) {
+        record('p2-withdrawal-gate-dismissed', { case: spec.id, kind: await gateNotice.getAttribute('data-gate-kind') });
+        await gateNotice.getByTestId('ai-gate-modal-close').click();
+      }
+      const toggle = page.getByTestId('ai-sticky-toggle');
+      const item = page.locator(`[data-testid="ai-sticky-item"][data-item-id="${spec.withdrawId}"]`);
+      record('p2-withdrawal-control', { case: spec.id, stage: 'before-expansion',
+        expanded: await toggle.getAttribute('aria-expanded'), itemOpen: await item.getAttribute('open'), visible: await button.isVisible() });
+      if (await toggle.getAttribute('aria-expanded') !== 'true') await toggle.click();
+      if (await item.getAttribute('open') === null) await item.locator('summary').click();
+      await button.waitFor({ state: 'visible' });
+      record('p2-withdrawal-control', { case: spec.id, stage: 'after-expansion',
+        expanded: await toggle.getAttribute('aria-expanded'), itemOpen: await item.getAttribute('open'), visible: await button.isVisible() });
+      await page.screenshot({ path: `${harness.out}/${spec.id}-expanded.png` });
       await button.click();
       const withdrawn = await observations.capture(`${spec.id}-withdrawn`);
       observations.check(`${spec.id}: user withdrawal closes required denominator`, () => assert.equal(withdrawn.getter?.goal, 'satisfied'));
