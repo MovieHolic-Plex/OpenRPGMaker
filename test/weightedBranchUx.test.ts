@@ -85,10 +85,16 @@ describe("weighted branch command UX", () => {
     expect(fields().custom).toBe("preserved");
   });
   it("preserves exact authored table when only the destination changes", () => {
+    const project = createBlankProject();
+    const variable = project.variables[0];
+    if (!variable) throw new Error("Missing fixture variable");
+    project.variables.push({ ...variable, id: "roll", name: "Roll" });
+    store.replace(project);
     const table = " =2\r\na=3=legacy\r\nbad\r\nz=0";
     const body = render(table);
     const picker = control(body, "weighted-branch-result-variable").querySelector("select");
     if (!picker) throw new Error("Missing picker select");
+    expect(picker.options.map(option => option.value)).toContain("roll");
     change(picker, "roll", "change");
     expect(fields().table).toBe(table);
     expect(fields().resultVariableId).toBe("roll");
