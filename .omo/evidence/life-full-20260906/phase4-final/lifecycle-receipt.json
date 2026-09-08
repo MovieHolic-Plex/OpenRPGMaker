@@ -1,0 +1,13 @@
+{
+  "code": 0,
+  "signal": null,
+  "launchError": null,
+  "timedOut": false,
+  "started": 1788907709494,
+  "settled": 1788907734313,
+  "pid": 166484,
+  "ownedAfterClose": [],
+  "cleanup": true,
+  "identityStable": true,
+  "testExecuted": true
+}
