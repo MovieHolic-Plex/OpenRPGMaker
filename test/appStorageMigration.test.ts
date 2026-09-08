@@ -6,6 +6,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import ts from "typescript";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   migrateLegacyStorageKeys,
@@ -192,11 +193,19 @@ describe("저장 키 접두사 회귀", () => {
     for (const file of walk(join(REPO_ROOT, "src"))) {
       const rel = relative(REPO_ROOT, file).replace(/\\/g, "/");
       if (EXEMPT.has(rel)) continue;
-      readFileSync(file, "utf8")
-        .split(/\r?\n/)
-        .forEach((line, index) => {
-          if (/rpg-zzu[:.]/.test(line)) offenders.push(`${rel}:${index + 1} ${line.trim().slice(0, 100)}`);
-        });
+      const text = readFileSync(file, "utf8");
+      if (!/rpg-zzu[:.]/.test(text)) continue;
+      const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
+      const visit = (node: ts.Node): void => {
+        // Storage keys are executable strings/templates, not explanatory comments.
+        if ((ts.isStringLiteralLike(node) || ts.isTemplateHead(node) || ts.isTemplateMiddle(node) || ts.isTemplateTail(node))
+          && /rpg-zzu[:.]/.test(node.text)) {
+          const { line } = source.getLineAndCharacterOfPosition(node.getStart(source));
+          offenders.push(`${rel}:${line + 1} ${node.text.slice(0, 100)}`);
+        }
+        ts.forEachChild(node, visit);
+      };
+      visit(source);
     }
     expect(offenders, `구 접두사 ${offenders.length}건:\n${offenders.join("\n")}`).toEqual([]);
   });

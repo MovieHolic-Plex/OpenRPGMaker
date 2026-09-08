@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import ts from "typescript";
 
 type DirentLike = {
   readonly name: string;
@@ -26,7 +27,6 @@ const removedLocalDbFiles = [
 ] as const;
 
 const forbiddenRuntimePatterns = [
-  "indexedDB",
   "openDatabase(",
   "sqlite",
   "sql.js",
@@ -51,6 +51,18 @@ describe("canonical project persistence has no local DB fallback", () => {
 
     for (const file of files) {
       const text = fs.readFileSync(file, "utf8");
+      if (text.includes("indexedDB")) {
+        const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
+        const visit = (node: ts.Node): void => {
+          // AI records may inspect browser durability; opening/using a local project DB remains forbidden.
+          if (((ts.isIdentifier(node) && !ts.isTypeOfExpression(node.parent)) || ts.isStringLiteralLike(node))
+            && node.text === "indexedDB") {
+            offenders.push(`${file}: indexedDB access`);
+          }
+          ts.forEachChild(node, visit);
+        };
+        visit(source);
+      }
       for (const pattern of forbiddenRuntimePatterns) {
         if (text.includes(pattern)) offenders.push(`${file}: ${pattern}`);
       }

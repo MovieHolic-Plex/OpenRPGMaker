@@ -10,7 +10,13 @@ describe("serialize → deserialize 왕복", () => {
   it("빈 프로젝트가 동일하게 복원된다", () => {
     const p = createBlankProject();
     const restored = deserialize(serialize(p));
-    expect(serialize(restored)).toBe(serialize(p));
+    // The loader intentionally omits the seed's redundant, resource-free text graphic.
+    expect(p.system.titleScreen?.titleGraphic).toEqual({ mode: "text", x: 32, y: 62 });
+    const expected = structuredClone(p);
+    if (!expected.system.titleScreen) throw new Error("Blank project title screen is missing");
+    delete expected.system.titleScreen.titleGraphic;
+    expect(serialize(restored)).toBe(serialize(expected));
+    expect(serialize(deserialize(serialize(restored)))).toBe(serialize(restored));
   });
 
   it("중첩 choices 명령이 보존된다", () => {

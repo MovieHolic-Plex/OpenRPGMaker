@@ -1,15 +1,16 @@
+// @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AutoSaveState } from "@/project/store";
-import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
+import { nextAutoSaveState } from "./persistenceTestSignals";
 
 type FetchControl = {
   readonly calls: readonly (RequestInfo | URL)[];
   resolveFirst: (response: Response) => void;
 };
 
-type ListenerMap = Map<string, EventListener[]>;
-
 afterEach(() => {
+  document.body.replaceChildren();
+  localStorage.clear();
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
@@ -34,13 +35,12 @@ describe("autosave status", () => {
     vi.advanceTimersByTime(3999);
     expect(store.getAutoSaveState()).toEqual({ kind: "pending" });
 
+    const saving = nextAutoSaveState(store, (state) => state.kind === "saving");
     vi.advanceTimersByTime(1);
-    await Promise.resolve();
-    expect(store.getAutoSaveState()).toEqual({ kind: "saving" });
+    expect(await saving).toEqual({ kind: "saving" });
+    const saved = nextAutoSaveState(store, (state) => state.kind === "saved");
     fetchControl.resolveFirst(new Response(null, { status: 201 }));
-    await vi.waitFor(() => {
-      expect(store.getAutoSaveState().kind).toBe("saved");
-    });
+    await saved;
 
     expect(store.getAutoSaveState().kind).toBe("saved");
     expect(states.map((state) => state.kind)).toEqual(["pending", "saving", "saved"]);
@@ -58,65 +58,64 @@ describe("autosave status", () => {
     const states: AutoSaveState[] = [];
     store.subscribeAutoSave((state) => states.push(state));
 
+    const firstError = nextAutoSaveState(store, (state) => state.kind === "error" && state.retryCount === 1);
     store.update((draft) => {
       draft.meta.title = "retry once";
     });
     vi.advanceTimersByTime(4000);
-    await vi.waitFor(() => {
-      expect(store.getAutoSaveState()).toEqual({ kind: "error", message: "network down", retryCount: 1 });
-    });
+    expect(await firstError).toEqual({ kind: "error", message: "network down", retryCount: 1 });
 
     expect(projectSaveCalls(fetchSpy)).toHaveLength(1);
 
     vi.advanceTimersByTime(19_999);
     expect(projectSaveCalls(fetchSpy)).toHaveLength(1);
+    const secondError = nextAutoSaveState(store, (state) => state.kind === "error" && state.retryCount === 2);
     vi.advanceTimersByTime(1);
-    await vi.waitFor(() => {
-      expect(projectSaveCalls(fetchSpy)).toHaveLength(2);
-    });
-
-    await vi.waitFor(() => {
-      expect(store.getAutoSaveState()).toEqual({ kind: "error", message: "network down", retryCount: 2 });
-    });
+    expect(await secondError).toEqual({ kind: "error", message: "network down", retryCount: 2 });
+    expect(projectSaveCalls(fetchSpy)).toHaveLength(2);
     vi.advanceTimersByTime(39_999);
     expect(projectSaveCalls(fetchSpy)).toHaveLength(2);
+    const thirdError = nextAutoSaveState(store, (state) => state.kind === "error" && state.retryCount === 3);
     vi.advanceTimersByTime(1);
-    await vi.waitFor(() => {
-      expect(projectSaveCalls(fetchSpy)).toHaveLength(3);
-      expect(store.getAutoSaveState()).toEqual({ kind: "error", message: "network down", retryCount: 3 });
-    });
+    expect(await thirdError).toEqual({ kind: "error", message: "network down", retryCount: 3 });
+    expect(projectSaveCalls(fetchSpy)).toHaveLength(3);
     expect(states.map((state) => state.kind)).toEqual([
       "pending", "saving", "error", "saving", "error", "saving", "error",
     ]);
   });
 
   it("keeps autosave state out of the map-focused editor statusbar", async () => {
-    const restoreDom = installFakeDom();
-    const windowListeners = installBrowserGlobals();
+    vi.useFakeTimers();
     const fetchControl = installControlledFetch();
     const renderTilePalette = vi.fn((node: HTMLElement) => {
       node.textContent = "tiles";
     });
     mockEditorDependencies(renderTilePalette);
     const { store } = await importStoreForAutosave();
-    const { renderEditor } = await import("@/editor/panels/editor");
+    const { renderEditor, teardownEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
+    document.body.append(main);
     renderEditor(main);
-    renderTilePalette.mockClear();
+    try {
+      expect(main.querySelector('[data-testid="edit-canvas"]')).not.toBeNull();
+      expect(renderTilePalette).toHaveBeenCalled();
+      renderTilePalette.mockClear();
+      const saving = nextAutoSaveState(store, (state) => state.kind === "saving");
+      const flushPromise = store.flush();
+      await saving;
 
-    const flushPromise = store.flush();
-    await Promise.resolve();
+      expect(main.querySelector('[data-testid="db-autosave-state"]')).toBeNull();
+      expect(renderTilePalette).not.toHaveBeenCalled();
 
-    expect(findByTestId(fakeElement(main), "db-autosave-state")).toBeNull();
-    expect(renderTilePalette).not.toHaveBeenCalled();
+      fetchControl.resolveFirst(new Response(null, { status: 201 }));
+      await flushPromise;
 
-    fetchControl.resolveFirst(new Response(null, { status: 201 }));
-    await flushPromise;
-
-    expect(findByTestId(fakeElement(main), "db-autosave-state")).toBeNull();
-    expect(renderTilePalette).not.toHaveBeenCalled();
-    windowListeners.clear();
-    restoreDom();
+      expect(store.getAutoSaveState().kind).toBe("saved");
+      expect(main.querySelector('[data-testid="db-autosave-state"]')).toBeNull();
+      expect(renderTilePalette).not.toHaveBeenCalled();
+    } finally {
+      teardownEditor();
+    }
   });
 });
 
@@ -125,7 +124,7 @@ async function importStoreForAutosave(): Promise<typeof import("@/project/store"
   vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-house-template-gallery");
   vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
   vi.doMock("@/assets/supabaseResourceCache", () => ({
-    cacheSupabaseRootResources: vi.fn(async () => undefined),
+    cacheSupabaseRootResources: vi.fn(async () => ({ cached: [], skipped: [] })),
   }));
   const [{ createBlankProject }, storeModule] = await Promise.all([
     import("@/project/defaults"),
@@ -143,6 +142,7 @@ function installControlledFetch(): FetchControl {
     resolveFirst = resolve;
   });
   vi.stubGlobal("fetch", (async (input) => {
+    if (!String(input).includes("/rest/v1/")) return new Response("{}", { status: 200 });
     calls.push(input);
     if (calls.length === 1) return await firstResponse;
     return new Response(null, { status: 201 });
@@ -159,41 +159,20 @@ function projectSaveCalls(fetchSpy: ReturnType<typeof vi.fn<typeof fetch>>): unk
   );
 }
 
-function installBrowserGlobals(): ListenerMap {
-  const listeners: ListenerMap = new Map();
-  Object.defineProperty(globalThis, "window", {
-    configurable: true,
-    writable: true,
-    value: {
-      addEventListener: (type: string, listener: EventListenerOrEventListenerObject | null) => {
-        if (listener === null) return;
-        const callable = typeof listener === "function" ? listener : (event: Event) => listener.handleEvent(event);
-        listeners.set(type, [...(listeners.get(type) ?? []), callable]);
-      },
-      confirm: vi.fn(() => true),
-      dispatchEvent: (event: Event) => {
-        for (const listener of listeners.get(event.type) ?? []) listener(event);
-        return !event.defaultPrevented;
-      },
-      innerWidth: 1200,
-      localStorage: null,
-      removeEventListener: (type: string, listener: EventListenerOrEventListenerObject | null) => {
-        if (listener === null) return;
-        const callable = typeof listener === "function" ? listener : (event: Event) => listener.handleEvent(event);
-        listeners.set(type, (listeners.get(type) ?? []).filter((item) => item !== callable));
-      },
-    },
-  });
-  return listeners;
-}
-
 function mockEditorDependencies(renderTilePalette: (node: HTMLElement) => void): void {
+  // Opening the database is not part of the canvas/save subscription contract.
+  vi.doMock("@/editor/panels/databaseModal", () => ({ openDatabaseModal: vi.fn() }));
+  vi.doMock("@/assets/editorAssetWarmup", () => ({ scheduleEditorAssetWarmup: vi.fn() }));
+  vi.doMock("@/editor/panels/aiConnectionStatus", () => ({ refreshAiConnectionStatus: vi.fn(async () => undefined) }));
   vi.doMock("@/app/mode", () => ({
     destroyGame: vi.fn(),
     getGame: vi.fn(() => null),
     startEditGame: vi.fn(async () => ({ scale: { resize: vi.fn() } })),
   }));
-  vi.doMock("@/editor/editorToolHook", () => ({ installEditorToolHook: vi.fn() }));
+  vi.doMock("@/editor/editorToolHook", () => ({
+    installEditorToolHook: vi.fn(),
+    cleanupProjectE2EBridge: vi.fn(),
+  }));
   vi.doMock("@/editor/mapEditLocks", () => ({
     ensureCurrentMapLock: vi.fn(),
     getMapEditLockStatus: () => ({ kind: "idle" }),
@@ -204,6 +183,7 @@ function mockEditorDependencies(renderTilePalette: (node: HTMLElement) => void):
   }));
   vi.doMock("@/editor/panels/aiChatPanel", () => ({
     renderAiChatPanel: () => document.createElement("div"),
+    teardownAiChatPanel: vi.fn(),
   }));
   vi.doMock("@/editor/panels/editorZoomToolbar", () => ({
     renderCanvasToolbar: (node: HTMLElement) => {
@@ -220,9 +200,4 @@ function mockEditorDependencies(renderTilePalette: (node: HTMLElement) => void):
     openTestPlayModal: vi.fn(),
   }));
   vi.doMock("@/editor/panels/tilePalette", () => ({ renderTilePalette }));
-}
-
-function fakeElement(node: HTMLElement): FakeElement {
-  if (node instanceof FakeElement) return node;
-  throw new Error("Expected fake element");
 }
