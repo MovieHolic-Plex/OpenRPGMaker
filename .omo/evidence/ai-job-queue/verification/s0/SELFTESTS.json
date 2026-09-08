@@ -1,0 +1,598 @@
+{
+  "base": "d4303a65fa738c5bf4bf8ebc2f020368cdf18b26",
+  "final": {
+    "allScratchRemoved": true,
+    "boundary": {
+      "caps": true,
+      "clean": true,
+      "code": true,
+      "descendants": true,
+      "env_clean": true,
+      "hidden": true,
+      "no_routes": true,
+      "own_loopback": true,
+      "parent_blocked": true,
+      "same_uid": true
+    },
+    "exit": 0,
+    "failures": 0,
+    "log": "/var/tmp/s0-boundary-green-sKyrzx0B/tests.log",
+    "logSha256": "7906a246a0695b54ba504a21f37b8cfdc2469fcc1d4a317e126e201cddb2f3f9",
+    "remainingOwnedWorkProcesses": [],
+    "tests": 12
+  },
+  "intermediate": {
+    "cause": "npm user/global config double-loading",
+    "exit": 1,
+    "failures": 1,
+    "log": "/var/tmp/s0-boundary-evidence-ChOZJJa5/tests.log",
+    "tests": 11
+  },
+  "receipts": [
+    {
+      "receipt": {
+        "boundary": {
+          "capabilities": 0,
+          "loopbackOnly": true,
+          "noNewPrivileges": true,
+          "nonlocalRoutes": 0,
+          "uid": 1000
+        },
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": 0,
+        "commandSha256": "19947d173136f75c5114bf0c2b2620df1a5981eea2c59bbb77d653222f8ef0e6",
+        "dependenciesSha256": "81dc37f4226707b9351cebdd86ece58ffbbbe192333e5baa68e9562dd6e68afc",
+        "error": null,
+        "expectedHead": "UNBORN",
+        "launcherExit": 0,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609650,
+          "scratch": "/var/tmp/s0-test-giuoar3t/s0-mo51tf3z",
+          "uid": 1000
+        },
+        "runId": "596884a2-ae03-46aa-9c2d-085dc667333c",
+        "sandboxExit": 0,
+        "sourceSha256": "16bf0f909a40a1402eb9f91ebe52c44b1d1a926252dea7b19f0af94e373211ab",
+        "uid": 1000,
+        "version": 1,
+        "workIdentity": {
+          "device": 2050,
+          "inode": 1609653
+        }
+      },
+      "test": "test_boundary/receipt-0"
+    },
+    {
+      "receipt": {
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": null,
+        "commandSha256": "8894cdad26ef749f311249c169d54f2f48118502d7fdacfad532d5d190fb98ff",
+        "dependenciesSha256": "81dc37f4226707b9351cebdd86ece58ffbbbe192333e5baa68e9562dd6e68afc",
+        "error": "test-launch-denied",
+        "expectedHead": "UNBORN",
+        "launcherExit": 125,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609660,
+          "scratch": "/var/tmp/s0-test-_4fbd0fc/s0-1xii8t54",
+          "uid": 1000
+        },
+        "runId": "ba8d896f-18d3-477d-a294-8d79129fcd92",
+        "sourceSha256": "16bf0f909a40a1402eb9f91ebe52c44b1d1a926252dea7b19f0af94e373211ab",
+        "uid": 1000,
+        "version": 1,
+        "workIdentity": {
+          "device": 2050,
+          "inode": 1609662
+        }
+      },
+      "test": "test_capture_write_restore_and_launch_failure/direct-launch"
+    },
+    {
+      "receipt": {
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": null,
+        "commandSha256": "8894cdad26ef749f311249c169d54f2f48118502d7fdacfad532d5d190fb98ff",
+        "error": "input-changed-during-capture",
+        "expectedHead": "UNBORN",
+        "launcherExit": 125,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609650,
+          "scratch": "/var/tmp/s0-test-_4fbd0fc/s0-l68oqypr",
+          "uid": 1000
+        },
+        "runId": "148e0b39-c801-425a-a80a-1e80cac47e9c",
+        "uid": 1000,
+        "version": 1
+      },
+      "test": "test_capture_write_restore_and_launch_failure/direct-race"
+    },
+    {
+      "receipt": {
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": null,
+        "commandSha256": "8894cdad26ef749f311249c169d54f2f48118502d7fdacfad532d5d190fb98ff",
+        "dependenciesSha256": "81dc37f4226707b9351cebdd86ece58ffbbbe192333e5baa68e9562dd6e68afc",
+        "error": "launcher-interrupted",
+        "expectedHead": "UNBORN",
+        "launcherExit": 125,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609664,
+          "scratch": "/var/tmp/s0-test-_4fbd0fc/s0-4vhep386",
+          "uid": 1000
+        },
+        "runId": "c41de096-8c38-4344-8cdb-03eafbda0fd2",
+        "sourceSha256": "16bf0f909a40a1402eb9f91ebe52c44b1d1a926252dea7b19f0af94e373211ab",
+        "uid": 1000,
+        "version": 1,
+        "workIdentity": {
+          "device": 2050,
+          "inode": 1609666
+        }
+      },
+      "test": "test_capture_write_restore_and_launch_failure/direct-signal"
+    },
+    {
+      "receipt": {
+        "boundary": {
+          "capabilities": 0,
+          "loopbackOnly": true,
+          "noNewPrivileges": true,
+          "nonlocalRoutes": 0,
+          "uid": 1000
+        },
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": null,
+        "commandSha256": "04e17475e2227295ea097e09ed0462b675587eb8c0c71838aeb1b037f20957eb",
+        "dependenciesSha256": "81dc37f4226707b9351cebdd86ece58ffbbbe192333e5baa68e9562dd6e68afc",
+        "error": "command-launch-failed",
+        "expectedHead": "UNBORN",
+        "launcherExit": 125,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609650,
+          "scratch": "/var/tmp/s0-test-b66cahwd/s0-9nutoww6",
+          "uid": 1000
+        },
+        "runId": "5e6284d9-d421-4074-93fb-46b0a43ded26",
+        "sandboxExit": 127,
+        "sourceSha256": "16bf0f909a40a1402eb9f91ebe52c44b1d1a926252dea7b19f0af94e373211ab",
+        "uid": 1000,
+        "version": 1,
+        "workIdentity": {
+          "device": 2050,
+          "inode": 1609660
+        }
+      },
+      "test": "test_command_exec_failure_cleanup/receipt-0"
+    },
+    {
+      "receipt": {
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": null,
+        "commandSha256": "8894cdad26ef749f311249c169d54f2f48118502d7fdacfad532d5d190fb98ff",
+        "error": "dependency-link-outside-input",
+        "expectedHead": "UNBORN",
+        "launcherExit": 125,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609664,
+          "scratch": "/var/tmp/s0-test-ft48inhz/s0-wat15bml",
+          "uid": 1000
+        },
+        "runId": "5f06582f-f168-4aaf-a5dd-a3792dfe0fe2",
+        "uid": 1000,
+        "version": 1
+      },
+      "test": "test_dependency_realpath_escape_rejected/receipt-0"
+    },
+    {
+      "receipt": {
+        "boundary": {
+          "capabilities": 0,
+          "loopbackOnly": true,
+          "noNewPrivileges": true,
+          "nonlocalRoutes": 0,
+          "uid": 1000
+        },
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": 23,
+        "commandSha256": "8dcdd1f989125bf8f6243f7226fbd16cb6a7a11c3f973bcf614a296493c67afe",
+        "dependenciesSha256": "81dc37f4226707b9351cebdd86ece58ffbbbe192333e5baa68e9562dd6e68afc",
+        "error": null,
+        "expectedHead": "UNBORN",
+        "launcherExit": 23,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609650,
+          "scratch": "/var/tmp/s0-test-5ikdt412/s0-iey7uu8p",
+          "uid": 1000
+        },
+        "runId": "672063e1-7e25-48a0-8c32-6df7067fb0ce",
+        "sandboxExit": 23,
+        "sourceSha256": "16bf0f909a40a1402eb9f91ebe52c44b1d1a926252dea7b19f0af94e373211ab",
+        "uid": 1000,
+        "version": 1,
+        "workIdentity": {
+          "device": 2050,
+          "inode": 1609670
+        }
+      },
+      "test": "test_exact_nonzero_exit/receipt-0"
+    },
+    {
+      "receipt": {
+        "boundary": {
+          "capabilities": 0,
+          "loopbackOnly": true,
+          "noNewPrivileges": true,
+          "nonlocalRoutes": 0,
+          "uid": 1000
+        },
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": 0,
+        "commandSha256": "639300b9d179505e0134dfd6fb6da3e1d22fad58c27d6dedef18472eafeea521",
+        "dependenciesSha256": "81dc37f4226707b9351cebdd86ece58ffbbbe192333e5baa68e9562dd6e68afc",
+        "error": null,
+        "expectedHead": "UNBORN",
+        "launcherExit": 0,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609672,
+          "scratch": "/var/tmp/s0-test-b58igo3n/s0-9sndrreg",
+          "uid": 1000
+        },
+        "runId": "9ef3d863-b474-4c59-88b5-a259949a59e4",
+        "sandboxExit": 0,
+        "sourceSha256": "7ca6e063fc7139f02c7e6bb8c4bc025867ca1042f5d3090a5c61051cd4817c73",
+        "uid": 1000,
+        "version": 1,
+        "workIdentity": {
+          "device": 2050,
+          "inode": 1609674
+        }
+      },
+      "test": "test_explicit_new_file_and_source_fingerprint/receipt-0"
+    },
+    {
+      "receipt": {
+        "boundary": {
+          "capabilities": 0,
+          "loopbackOnly": true,
+          "noNewPrivileges": true,
+          "nonlocalRoutes": 0,
+          "uid": 1000
+        },
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": 0,
+        "commandSha256": "8894cdad26ef749f311249c169d54f2f48118502d7fdacfad532d5d190fb98ff",
+        "dependenciesSha256": "81dc37f4226707b9351cebdd86ece58ffbbbe192333e5baa68e9562dd6e68afc",
+        "error": null,
+        "expectedHead": "UNBORN",
+        "launcherExit": 0,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609677,
+          "scratch": "/var/tmp/s0-test-b58igo3n/s0-kt21l3ne",
+          "uid": 1000
+        },
+        "runId": "80de9310-59f8-4b00-a5cc-ed8ccf9efdbe",
+        "sandboxExit": 0,
+        "sourceSha256": "7ca6e063fc7139f02c7e6bb8c4bc025867ca1042f5d3090a5c61051cd4817c73",
+        "uid": 1000,
+        "version": 1,
+        "workIdentity": {
+          "device": 2050,
+          "inode": 1609679
+        }
+      },
+      "test": "test_explicit_new_file_and_source_fingerprint/receipt-1"
+    },
+    {
+      "receipt": {
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": null,
+        "commandSha256": "8894cdad26ef749f311249c169d54f2f48118502d7fdacfad532d5d190fb98ff",
+        "error": "source-fingerprint-mismatch",
+        "expectedHead": "UNBORN",
+        "launcherExit": 125,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609681,
+          "scratch": "/var/tmp/s0-test-b58igo3n/s0-twhlpzgc",
+          "uid": 1000
+        },
+        "runId": "085ee25e-fcca-4bfd-8b48-0744ac1b4f15",
+        "sourceSha256": "4847a14aebe54eee404131da457dc6200f664837e77aa7210450ed98f356b45b",
+        "uid": 1000,
+        "version": 1
+      },
+      "test": "test_explicit_new_file_and_source_fingerprint/receipt-2"
+    },
+    {
+      "receipt": {
+        "boundary": {
+          "capabilities": 0,
+          "loopbackOnly": true,
+          "noNewPrivileges": true,
+          "nonlocalRoutes": 0,
+          "uid": 1000
+        },
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": 0,
+        "commandSha256": "4b8aabe2496db8b47c7cabeaf07c70ab58d5c11192bec07e91e97b77d9e6cde0",
+        "dependenciesSha256": "1dd9f189dd10627c4f12180e2a34cb1d1b1d8791d4bdafadaabd102797838324",
+        "error": null,
+        "expectedHead": "UNBORN",
+        "launcherExit": 0,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609676,
+          "scratch": "/var/tmp/s0-test-krr9bs3t/s0-mg6s98vk",
+          "uid": 1000
+        },
+        "runId": "4fc41ea2-cb0f-4f8e-be6a-404e59c76cde",
+        "sandboxExit": 0,
+        "sourceSha256": "16bf0f909a40a1402eb9f91ebe52c44b1d1a926252dea7b19f0af94e373211ab",
+        "uid": 1000,
+        "version": 1,
+        "workIdentity": {
+          "device": 2050,
+          "inode": 1609680
+        }
+      },
+      "test": "test_explicit_supplemental_package/receipt-0"
+    },
+    {
+      "receipt": {
+        "boundary": {
+          "capabilities": 0,
+          "loopbackOnly": true,
+          "noNewPrivileges": true,
+          "nonlocalRoutes": 0,
+          "uid": 1000
+        },
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": 0,
+        "commandSha256": "f683c9828b5b81863532293e0582865c85499181e45780fd299cfbab48c5f9ac",
+        "dependenciesSha256": "81dc37f4226707b9351cebdd86ece58ffbbbe192333e5baa68e9562dd6e68afc",
+        "error": null,
+        "expectedHead": "UNBORN",
+        "launcherExit": 0,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609650,
+          "scratch": "/var/tmp/s0-test-sxsrfp6g/s0-g5_s2e3h",
+          "uid": 1000
+        },
+        "runId": "45ea6a3f-c215-4312-9c1c-516cc83225ea",
+        "sandboxExit": 0,
+        "sourceSha256": "16bf0f909a40a1402eb9f91ebe52c44b1d1a926252dea7b19f0af94e373211ab",
+        "uid": 1000,
+        "version": 1,
+        "workIdentity": {
+          "device": 2050,
+          "inode": 1609676
+        }
+      },
+      "test": "test_installed_tools_only/receipt-0"
+    },
+    {
+      "receipt": {
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": null,
+        "commandSha256": "8894cdad26ef749f311249c169d54f2f48118502d7fdacfad532d5d190fb98ff",
+        "error": "excluded-include",
+        "expectedHead": "UNBORN",
+        "launcherExit": 125,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609650,
+          "scratch": "/var/tmp/s0-test-zh0esm5h/s0-jb7jkauz",
+          "uid": 1000
+        },
+        "runId": "6c3d3e60-3b68-458f-9173-02e5e9989b94",
+        "uid": 1000,
+        "version": 1
+      },
+      "test": "test_missing_private_and_unrequested_inputs_fail_closed/receipt-0"
+    },
+    {
+      "receipt": {
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": null,
+        "commandSha256": "8894cdad26ef749f311249c169d54f2f48118502d7fdacfad532d5d190fb98ff",
+        "error": "missing-include",
+        "expectedHead": "UNBORN",
+        "launcherExit": 125,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609689,
+          "scratch": "/var/tmp/s0-test-zh0esm5h/s0-znzh7oaq",
+          "uid": 1000
+        },
+        "runId": "90a3682c-2b7d-415f-bd23-c7eb67ee94fe",
+        "uid": 1000,
+        "version": 1
+      },
+      "test": "test_missing_private_and_unrequested_inputs_fail_closed/receipt-1"
+    },
+    {
+      "receipt": {
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": null,
+        "commandSha256": "8894cdad26ef749f311249c169d54f2f48118502d7fdacfad532d5d190fb98ff",
+        "error": "source-head-mismatch",
+        "expectedHead": "0000000000000000000000000000000000000000",
+        "launcherExit": 125,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609693,
+          "scratch": "/var/tmp/s0-test-zh0esm5h/s0-0k18d224",
+          "uid": 1000
+        },
+        "runId": "8ab1e983-e97b-4962-afbe-afe3c65f83e7",
+        "uid": 1000,
+        "version": 1
+      },
+      "test": "test_missing_private_and_unrequested_inputs_fail_closed/receipt-2"
+    },
+    {
+      "receipt": {
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": null,
+        "commandSha256": "8894cdad26ef749f311249c169d54f2f48118502d7fdacfad532d5d190fb98ff",
+        "error": "OSError",
+        "expectedHead": "UNBORN",
+        "launcherExit": 125,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609688,
+          "scratch": "/var/tmp/s0-test-sspwa6iy/s0-2dzi8lu4",
+          "uid": 1000
+        },
+        "runId": "2c74cede-e5c4-4515-aa76-306e2b3b5d81",
+        "uid": 1000,
+        "version": 1
+      },
+      "test": "test_source_symlink_and_private_output_rejected/receipt-0"
+    },
+    {
+      "receipt": {
+        "boundary": {
+          "capabilities": 0,
+          "loopbackOnly": true,
+          "noNewPrivileges": true,
+          "nonlocalRoutes": 0,
+          "uid": 1000
+        },
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": 0,
+        "commandSha256": "369a8cbe741b768ecde438f9cc6b5565d763c47a499a3dcaeb96f70d74d71b17",
+        "dependenciesSha256": "81dc37f4226707b9351cebdd86ece58ffbbbe192333e5baa68e9562dd6e68afc",
+        "error": "invalid-retained-file",
+        "expectedHead": "UNBORN",
+        "launcherExit": 125,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609697,
+          "scratch": "/var/tmp/s0-test-sspwa6iy/s0-m99amty5",
+          "uid": 1000
+        },
+        "runId": "d6e32b37-7e1e-4b33-9aef-79bc58e32163",
+        "sandboxExit": 0,
+        "sourceSha256": "16bf0f909a40a1402eb9f91ebe52c44b1d1a926252dea7b19f0af94e373211ab",
+        "uid": 1000,
+        "version": 1,
+        "workIdentity": {
+          "device": 2050,
+          "inode": 1609699
+        }
+      },
+      "test": "test_source_symlink_and_private_output_rejected/receipt-1"
+    },
+    {
+      "receipt": {
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": null,
+        "commandSha256": "2c8ee1363830e557e6f0587ad05043aaa4d2b563e005ce7a1b41dcaea95c16c3",
+        "dependenciesSha256": "81dc37f4226707b9351cebdd86ece58ffbbbe192333e5baa68e9562dd6e68afc",
+        "error": "command-timeout",
+        "expectedHead": "UNBORN",
+        "launcherExit": 125,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609650,
+          "scratch": "/var/tmp/s0-test-66ttm5om/s0-i8gbe6ir",
+          "uid": 1000
+        },
+        "runId": "42c91a70-2369-44cd-8587-ca9156a31f57",
+        "sourceSha256": "16bf0f909a40a1402eb9f91ebe52c44b1d1a926252dea7b19f0af94e373211ab",
+        "uid": 1000,
+        "version": 1,
+        "workIdentity": {
+          "device": 2050,
+          "inode": 1609696
+        }
+      },
+      "test": "test_timeout_cleanup/receipt-0"
+    },
+    {
+      "receipt": {
+        "cleanup": {
+          "removed": true
+        },
+        "commandExit": null,
+        "commandSha256": "8894cdad26ef749f311249c169d54f2f48118502d7fdacfad532d5d190fb98ff",
+        "error": "unrequested-source-change",
+        "expectedHead": "UNBORN",
+        "launcherExit": 125,
+        "ownership": {
+          "device": 2050,
+          "inode": 1609688,
+          "scratch": "/var/tmp/s0-test-kl4_bltw/s0-6b14vdso",
+          "uid": 1000
+        },
+        "runId": "8285879f-76cd-4c71-8cb5-f02a1c4bcb26",
+        "uid": 1000,
+        "version": 1
+      },
+      "test": "test_unrequested_modified_file/receipt-0"
+    }
+  ],
+  "red": {
+    "assertion": "checkout privacy boundary absent",
+    "exit": 1,
+    "fixtureOnly": true
+  },
+  "scope": "S0 lightweight fixtures only; no project gates/build/browser launch",
+  "sourceFiles": {
+    "scripts/qa/isolated-validation.py": "c193abf7f4c92b80f685a786034d6a994c0f991b4c14a9540504742296dc8ad4",
+    "scripts/qa/test_isolated_validation.py": "66b279df5cc3ce5d74c61d3a068d8152a9eeaf91eb8618c48879656f7dd8751d"
+  },
+  "toolingCleanup": {
+    "bytecodeInode": 41961185,
+    "removedOwnedNewModuleBytecode": true,
+    "scope": "Exact new launcher bytecode only; no shared cache deletion or process action",
+    "validationTreeLanguageServers": []
+  }
+}
