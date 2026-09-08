@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { chromium } from "playwright";
+import { chromium, firefox } from "playwright";
+import { installMediaWriteGuard, observeMediaUi } from "./issue693-media-guard.mjs";
 
 // Default is read-only remotely. The lead may explicitly permit creating ONE NEW
 // project; this script never selects or writes an existing/shared remote project.
@@ -9,36 +10,18 @@ const permitRemoteCopy = process.argv.includes("--permit-new-remote-project");
 const baseUrl = process.env.MEDIA_QA_URL ?? "http://127.0.0.1:38421";
 const output = resolve(process.env.MEDIA_QA_OUTPUT ?? "output/evidence/issue693-media/browser");
 await mkdir(output, { recursive: true });
-const browser = await chromium.launch({ headless: true });
-const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-const page = await context.newPage();
-page.setDefaultTimeout(90_000);
-const report = { permitRemoteCopy, baseUrl, checks: [], remoteProjectId: null, remoteWrites: 0, completed: false };
-let configuredProjectId;
+const browserName = process.env.MEDIA_QA_BROWSER ?? "chromium";
+const relayGets = process.env.MEDIA_QA_GET_RELAY === "1";
+const report = { permitRemoteCopy, browser: browserName, relayGets, baseUrl, checks: [], blockedMutations: [], bodyObservations: [], remoteProjectId: null, remoteWrites: 0, completed: false };
+let configuredTarget;
+let browser;
+let page;
+let guard;
 
 /** Subscribe to a real DOM state transition before triggering the UI action. */
-async function observe(selector, fresh = false) {
-  const token = crypto.randomUUID();
-  await page.evaluate(({ selector, token, fresh }) => {
-    window.mediaQaSignals ??= {};
-    const previous = fresh ? new Set(document.querySelectorAll(selector)) : new Set();
-    window.mediaQaSignals[token] = new Promise((resolve, reject) => {
-      const deadline = setTimeout(() => { observer.disconnect(); reject(new Error(`Missing ${selector}`)); }, 90_000);
-      const check = () => {
-        if (![...document.querySelectorAll(selector)].some(node => !previous.has(node))) return;
-        clearTimeout(deadline);
-        observer.disconnect();
-        resolve();
-      };
-      const observer = new MutationObserver(check);
-      observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true });
-      check();
-    }).then(() => ({ ok: true }), error => ({ ok: false, message: error.message }));
-  }, { selector, token, fresh });
-  return async () => {
-    const result = await page.evaluate(token => window.mediaQaSignals[token], token);
-    assert.equal(result.ok, true, result.message);
-  };
+async function observe(selector, fresh = false, rejectOnError = false) {
+  return observeMediaUi(page, selector, { fresh, rejectOnError,
+    guardFailure: guard?.failure });
 }
 
 const audio = Buffer.alloc(8 * 1024 * 1024);
@@ -50,20 +33,16 @@ audio.writeUInt32LE(audio.length - 44, 40);
 const fileName = `issue693-media-${Date.now()}.wav`;
 
 try {
-  await context.route("**/*", route => {
-    const request = route.request();
-    const url = new URL(request.url());
-    if (!url.pathname.includes("/rest/v1/") || ["GET", "HEAD", "OPTIONS"].includes(request.method())) return route.continue();
-    if (!permitRemoteCopy) return route.abort("blockedbyclient");
-    const body = request.postDataJSON();
-    const target = url.searchParams.get("project_id")?.replace(/^eq\./, "")
-      ?? (Array.isArray(body) ? body[0]?.project_id : body?.project_id);
-    assert(target && /^oprn-[a-f0-9]{10}$/.test(target), "Refuse non-new-project mutation");
-    assert.notEqual(target, configuredProjectId, "Refuse configured/shared project mutation");
-    report.remoteProjectId ??= target;
-    assert.equal(target, report.remoteProjectId, "Refuse a second remote target");
-    report.remoteWrites += 1;
-    return route.continue();
+  const browserType = { firefox, chromium }[browserName];
+  assert(browserType, `Unsupported MEDIA_QA_BROWSER: ${browserName}`);
+  browser = await browserType.launch({ headless: true,
+    ...(process.env.MEDIA_QA_CHANNEL ? { channel: process.env.MEDIA_QA_CHANNEL } : {}) });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, serviceWorkers: "block" });
+  page = await context.newPage();
+  page.setDefaultTimeout(90_000);
+  guard = await installMediaWriteGuard(context, {
+    report, permitRemoteCopy, getConfig: () => configuredTarget,
+    relayOrigin: relayGets ? new URL(baseUrl).origin : undefined,
   });
   await page.addInitScript(() => {
     localStorage.setItem("oprn:editor-ui-mode", "expert");
@@ -71,7 +50,7 @@ try {
   });
   await page.goto(`${baseUrl}/?devProject=1&sampleAdventure=1`, { waitUntil: "domcontentloaded", timeout: 180_000 });
   await (await observe('[data-testid="toolbar-resource-manager"]'))();
-  configuredProjectId = await page.evaluate(async () => {
+  configuredTarget = await page.evaluate(async () => {
     const { store } = await import("/src/project/store.ts");
     const { supabaseProjectConfig } = await import("/src/project/supabaseProjectConfig.ts");
     const { saveDevProjectOverride } = await import("/src/project/devProjectPersistence.ts");
@@ -82,7 +61,9 @@ try {
     saveDevProjectOverride(store.getCurrent());
     window.mediaQaBefore = JSON.stringify(store.getCurrent());
     window.mediaQaRecovery = Object.fromEntries(Object.entries(localStorage).filter(([key]) => key.startsWith("oprn:dev-project:")));
-    return supabaseProjectConfig()?.projectId;
+    const config = supabaseProjectConfig();
+    return config ? { projectId: config.projectId,
+      restUrl: new URL(`${config.url.replace(/\/$/, "")}/rest/v1/`, location.href).href } : null;
   });
   const quota = await page.evaluate(async dataUrl => {
     const { store } = await import("/src/project/store.ts");
@@ -133,7 +114,7 @@ try {
   const secondConfirm = await observe('[data-testid="app-confirm-modal"]', true);
   await page.getByTestId("resource-file-input").setInputFiles({ name: fileName, mimeType: "audio/wav", buffer: audio });
   await secondConfirm();
-  const completed = await observe(`[data-testid="toast"].${permitRemoteCopy ? "ok" : "error"}`, true);
+  const completed = await observe(`[data-testid="toast"].${permitRemoteCopy ? "ok" : "error"}`, true, permitRemoteCopy);
   await page.getByTestId("app-modal-confirm").click();
   await completed();
   await page.screenshot({ path: `${output}/${permitRemoteCopy ? "durable-copy" : "network-denied"}.png` });
@@ -164,8 +145,11 @@ try {
   }
   report.completed = true;
   console.log(JSON.stringify(report, null, 2));
+} catch (error) {
+  report.error = { code: error.code ?? "qa-failed", message: error.message };
+  throw error;
 } finally {
   // Retain the new target ID even if later verification fails. Never auto-delete it.
-  await writeFile(`${output}/report.json`, JSON.stringify(report, null, 2));
-  await browser.close();
+  try { await writeFile(`${output}/report.json`, JSON.stringify(report, null, 2)); }
+  finally { await browser?.close(); }
 }
