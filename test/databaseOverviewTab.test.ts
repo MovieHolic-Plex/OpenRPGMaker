@@ -184,13 +184,22 @@ describe("database overview tab shell", () => {
     expect(findByTestId(panelRoot, "db-overview-stat-actors")).not.toBeNull();
     expect(findByTestId(panelRoot, "db-overview-charts")).not.toBeNull();
   });
+});
 
-  it("stat chips are buttons that switch to the matching tab (G006)", async () => {
+// Keep acquisition case-local without changing the reported test name.
+describe("database overview tab shell", () => {
+  let renderDatabasePanel: typeof import("@/editor/panels/database").renderDatabasePanel;
+  let getDatabaseActiveTab: typeof import("@/editor/panels/database").getDatabaseActiveTab;
+
+  beforeEach(async () => {
     const { store } = await import("@/project/store");
     store.replace(createBlankProject());
     storage.set(ACTIVE_TAB_KEY, "overview");
 
-    const { renderDatabasePanel, getDatabaseActiveTab } = await import("@/editor/panels/database");
+    ({ renderDatabasePanel, getDatabaseActiveTab } = await import("@/editor/panels/database"));
+  });
+
+  it("stat chips are buttons that switch to the matching tab (G006)", async () => {
     const panelRoot = renderPanelHost(renderDatabasePanel);
 
     const chip = findByTestId(panelRoot, "db-overview-stat-actors");
@@ -199,7 +208,9 @@ describe("database overview tab shell", () => {
     expect(getDatabaseActiveTab()).toBe("actors");
     expect(findByTestId(panelRoot, "db-tab-actors")?.classList.contains("active")).toBe(true);
   });
+});
 
+describe("database overview tab shell", () => {
   it("databaseTabLabel resolves the overview label for the AI footer", async () => {
     const { store } = await import("@/project/store");
     store.replace(createBlankProject());
