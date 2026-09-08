@@ -46,6 +46,8 @@ import type {
   BattleCaptureResultSnapshot,
   BattleFlow,
   BattleEventChoiceSnapshot,
+  BattleEventPauseSnapshot,
+  BattleEventPauseResponse,
   BattlePhase,
   BattleRoundActionLogSnapshot,
   BattleRoundLogSnapshot,
@@ -106,13 +108,26 @@ export type {
   EquipmentUseTarget,
 } from "@/battle/types";
 
-/** Synchronous simulations cannot invent an answer to a player-owned choice. */
+/** Synchronous simulations cannot invent player input. */
 export class BattleEventInputRequiredError extends Error {
   readonly code = "BATTLE_EVENT_INPUT_REQUIRED";
-  constructor(readonly choice: BattleEventChoiceSnapshot) {
-    super(`BATTLE_EVENT_INPUT_REQUIRED: ${choice.pageId}/${choice.id}`);
+  constructor(readonly choice: BattleEventChoiceSnapshot | Extract<BattleEventPauseSnapshot, { kind: "inputWait" }>) {
+    super(`BATTLE_EVENT_INPUT_REQUIRED: ${"pageId" in choice ? choice.pageId : choice.kind}/${choice.id}`);
     this.name = "BattleEventInputRequiredError";
   }
+}
+
+/** Headless policy skips presentation only, including consecutive nested requests. */
+export function headlessBattleSnapshot(runtime: BattleRuntime): BattleSnapshot {
+  let snapshot = runtime.snapshot();
+  while (snapshot.eventPause && snapshot.eventPause.kind !== "inputWait") {
+    const request = snapshot.eventPause;
+    if (!runtime.resumeEventPause(request.id, { kind: request.kind })) throw new Error("Invalid headless battle continuation");
+    snapshot = runtime.snapshot();
+  }
+  if (snapshot.eventChoice) throw new BattleEventInputRequiredError(snapshot.eventChoice);
+  if (snapshot.eventPause?.kind === "inputWait") throw new BattleEventInputRequiredError(snapshot.eventPause);
+  return snapshot;
 }
 
 const FALLBACK_SKILL_POWER = 12;
@@ -275,6 +290,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let result: BattleResult | undefined;
   let cancelled = false;
   let eventChoice: BattleEventChoiceSnapshot | undefined;
+  let eventPause: BattleEventPauseSnapshot | undefined;
   let afterBattleEvents: (() => void) | undefined;
   let strictResolution: { readonly round: number; readonly actions: StrictQueuedAction[]; index: number; grantedExtraActions: number } | undefined;
   let drainingStrictActions = false;
@@ -282,8 +298,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let turn = 0;
   let currentActorCommandKind: ActorCommand["kind"] | undefined;
   let lastCaptureResult: BattleCaptureResultSnapshot | undefined;
-  // 배틀 이벤트 wait 가 적립한 일시정지 시간(ms). tick 이 소진하기 전까지 게이지/턴 진행을 멈춘다.
-  let pendingWaitMs = 0;
   let targetSelection: BattleTargetSelectionSnapshot | undefined;
   let strictActorCommands: StrictQueuedActorCommand[] = [];
   let strictPendingActorIds: ActorId[] = [];
@@ -308,6 +322,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const rawSessionState = options.sessionState ?? startStateOf(options.project);
   const sessionState = rawSessionState as BattleSessionState;
   const battleEventState: BattleEventRuntimeState = {
+    messageWindowSettings: sessionState.messageWindowSettings ? { ...sessionState.messageWindowSettings } : undefined,
     switches: { ...sessionState.switches },
     variables: { ...sessionState.variables },
     // 세션 셀프 스위치 스냅샷 사본(깊은 복사). setSelfSwitch 가 여기 기록하고
@@ -373,19 +388,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     },
     showBattleAnimation: (target, animationId) => {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, animationId, target);
-    },
-    wait: (ms) => {
-      // 배틀 이벤트 wait: 전투 흐름을 ms 동안 일시정지. 동기식 실행이라 명령 자체는 계속되지만,
-      // gauge: tick 이 pendingWaitMs 를 읽어 소진한다(게이지 흐름은 종전 그대로).
-      // strict: 라운드를 동기로 해결하고 tick 이 돌지 않으므로, 일시정지를 타임라인 사실로 남긴다.
-      //   시퀀서가 이 엔트리를 만나면 다음 비트를 waitMs 만큼 늦춘다 — JS 스레드를 막지 않고,
-      //   이미 해결된 행동 순서도 바꾸지 않는다.
-      const waitMs = Math.max(0, Math.trunc(ms));
-      if (battleFlow === "strict") {
-        if (waitMs > 0) recordTimeline({ kind: "wait", waitMs });
-        return;
-      }
-      pendingWaitMs = Math.max(pendingWaitMs, waitMs);
     },
     // changeEquipment/promoteActor 후 파생 스탯 재계산 — battleBattlers 생성 산식과 공유.
     // HP/MP/게이지/상태이상은 refreshActorBattlerDerivedStats 가 보존(새 최대치 클램프만).
@@ -653,11 +655,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function tick(deltaMs: number): void {
     if (battleFlow === "strict") return;
     if (phase !== "charging" || result) return;
-    // Visual wait: 배틀 이벤트 연출 대기. 게이지/턴 로직은 그대로 흐르게 하여
-    // "연출 때문에 ATB가 멈춘다"는 혼란을 방지. snapshot에 visualWaitMs 노출.
-    let visualWaitMs = pendingWaitMs;
-    pendingWaitMs = 0;
-    void visualWaitMs;
     if (beginForcedSwitchIfNeeded()) return;
     const enemiesInBattle = visibleEnemies();
     const battlerAgilityMultiplier = (battler: MutableBattler): number => agilityMultiplierForStates(options.project, battler);
@@ -692,7 +689,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function performActorCommand(command: ActorCommand): void {
-    if (cancelled || eventChoice || result) return;
+    if (cancelled || eventChoice || eventPause || result) return;
     const forcedActor = forcedSwitchActor();
     if (forcedActor) {
       if (command.kind !== "switch") return;
@@ -1211,7 +1208,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (drainingStrictActions) return;
     drainingStrictActions = true;
     try {
-      while (strictResolution && !eventChoice && !cancelled) {
+      while (strictResolution && !eventChoice && !eventPause && !cancelled) {
         const queue = strictResolution;
         if (result || queue.index >= queue.actions.length) {
           strictResolution = undefined;
@@ -1421,6 +1418,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return {
       phase,
       eventChoice,
+      eventPause,
       battleFlow,
       activeActorId,
       activeSlots,
@@ -2191,6 +2189,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function consumeBattleEventStep(step: BattleEventRuntimeResult): void {
+    eventChoice = undefined;
+    eventPause = undefined;
+    if (step.kind === "pause") {
+      eventPause = step.request;
+      phase = "eventPause";
+      return;
+    }
     if (step.kind === "choice") {
       eventChoice = step.request;
       phase = "eventChoice";
@@ -2216,11 +2221,20 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return true;
   }
 
+  function resumeEventPause(requestId: number, response: BattleEventPauseResponse): boolean {
+    if (cancelled || result || !eventPause) return false;
+    const step = battleEvents.resumePause(requestId, response);
+    if (!step) return false;
+    consumeBattleEventStep(step);
+    return true;
+  }
+
   function cancel(): void {
     if (cancelled) return;
     cancelled = true;
     battleEvents.cancel();
     eventChoice = undefined;
+    eventPause = undefined;
     afterBattleEvents = undefined;
     strictResolution = undefined;
     strictActorCommands = [];
@@ -2444,6 +2458,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   return {
     resumeEventChoice,
+    resumeEventPause,
     cancel,
     tick,
     beginActorCommand,

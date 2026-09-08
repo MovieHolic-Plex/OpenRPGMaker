@@ -8,6 +8,8 @@ import type {
   BattleFlow,
   ChoiceCancelBehavior,
   EnemyId,
+  FaceGraphic,
+  MessageWindowSettings,
   ItemId,
   MonsterSpeciesId,
   Project,
@@ -24,7 +26,7 @@ import type { RoguelikeRunState } from "@/project/roguelikeRun";
 
 export type { BattleFlow } from "@/project/types";
 
-export type BattlePhase = "charging" | "actorCommand" | "targetSelect" | "roundResolve" | "eventChoice" | "resolved";
+export type BattlePhase = "charging" | "actorCommand" | "targetSelect" | "roundResolve" | "eventChoice" | "eventPause" | "resolved";
 
 export interface BattleEventChoiceSnapshot {
   readonly id: number;
@@ -33,7 +35,23 @@ export interface BattleEventChoiceSnapshot {
   readonly prompt?: string;
   readonly options: readonly { readonly text: string }[];
   readonly cancelBehavior?: ChoiceCancelBehavior;
+  readonly settings?: MessageWindowSettings;
 }
+
+export type BattleEventPauseSnapshot =
+  | { readonly id: number; readonly kind: "wait"; readonly ms: number }
+  | { readonly id: number; readonly kind: "inputWait"; readonly variableId?: string }
+  | {
+      readonly id: number; readonly kind: "text"; readonly body: string;
+      readonly speaker?: string; readonly face?: FaceGraphic;
+      readonly settings?: MessageWindowSettings; readonly autoAdvance?: boolean;
+      readonly emotion?: string;
+    };
+
+export type BattleEventPauseResponse =
+  | { readonly kind: "wait" }
+  | { readonly kind: "text" }
+  | { readonly kind: "inputWait"; readonly keyCode: number };
 export type { BattleResult } from "@/project/gameTime";
 
 export type EquipmentUseTarget =
@@ -120,6 +138,7 @@ export interface BattleRuntimeOptions {
 }
 
 export interface BattleSessionState {
+  readonly messageWindowSettings?: MessageWindowSettings;
   readonly switches: Readonly<Record<string, boolean>>;
   readonly variables: Readonly<Record<string, number>>;
   readonly inventory: Readonly<Record<string, number>>;
@@ -382,6 +401,8 @@ export interface BattleRewardsSnapshot {
 }
 
 export interface BattleEventStateSnapshot {
+  /** Present only when this battle authored a settings change. */
+  readonly messageWindowSettings?: MessageWindowSettings;
   readonly switches: Readonly<Record<string, boolean>>;
   readonly variables: Readonly<Record<string, number>>;
   readonly inventory: Readonly<Record<string, number>>;
@@ -412,6 +433,7 @@ export interface BattleEventStateSnapshot {
 }
 
 export interface BattleSnapshot {
+  readonly eventPause?: BattleEventPauseSnapshot;
   readonly eventChoice?: BattleEventChoiceSnapshot;
   readonly phase: BattlePhase;
   readonly battleFlow: BattleFlow;
@@ -450,6 +472,7 @@ export interface BattleSnapshot {
 }
 
 export interface BattleRuntime {
+  resumeEventPause(requestId: number, response: BattleEventPauseResponse): boolean;
   resumeEventChoice(requestId: number, index: number): boolean;
   /** Dispose suspended execution without creating a battle outcome. */
   cancel(): void;

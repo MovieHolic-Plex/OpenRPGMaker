@@ -88,6 +88,7 @@ export function playBattle(
     // 랜덤 인카운터/필드 스폰(playSceneMovement/playSceneFieldSpawns) 스텝에는 없어 undefined 유지.
     ownerEventId: step.ownerEventId,
     sessionState: {
+      messageWindowSettings: session.messageWindowSettings,
       switches: scene.session.switches,
       variables: scene.session.variables,
       inventory: scene.session.inventory,
@@ -175,6 +176,16 @@ export function playBattle(
       battleScene = mountBattleScene({
         host, runtime,
         audioContext: { project, session },
+        showEventText: (request, inputSignal) => {
+          if (!current()) { abort(); return Promise.reject(new DOMException("Battle cancelled", "AbortError")); }
+          const dialogue = dialogueUi(scene);
+          if (!dialogue) return Promise.reject(new Error("Battle text input host missing"));
+          const eventState = runtime.snapshot().eventState;
+          return dialogue.showText({
+            ...request, signal: inputSignal, playerTileY: scene.tileY, mapHeight: scene.map.height,
+            textContext: { project, session: { variables: eventState.variables, gold: eventState.gold, actorNames: session.actorNames } },
+          });
+        },
         showEventChoices: (request, inputSignal) => {
           if (!current()) { abort(); return Promise.reject(new DOMException("Battle cancelled", "AbortError")); }
           const dialogue = dialogueUi(scene);
@@ -183,7 +194,7 @@ export function playBattle(
           return dialogue.showChoices({
             prompt: request.prompt, options: request.options.map(option => ({ ...option })),
             cancelBehavior: request.cancelBehavior, signal: inputSignal,
-            settings: session.messageWindowSettings, playerTileY: scene.tileY, mapHeight: scene.map.height,
+            settings: request.settings, playerTileY: scene.tileY, mapHeight: scene.map.height,
             textContext: { project, session: { variables: eventState.variables, gold: eventState.gold, actorNames: session.actorNames } },
           });
         },

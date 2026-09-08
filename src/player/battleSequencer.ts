@@ -1,5 +1,5 @@
 import type { ActorCommand, BattleRuntime, BattleSnapshot } from "@/battle/runtime";
-import type { BattleActionResultSnapshot, BattleAnimationSnapshot, BattleEventChoiceSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
+import type { BattleActionResultSnapshot, BattleAnimationSnapshot, BattleEventChoiceSnapshot, BattleEventPauseSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
 import { withJosa } from "@/util/josa";
 import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import {
@@ -60,6 +60,7 @@ export type ScheduleFn = (callback: () => void, delayMs: number) => number;
 export type ClearScheduleFn = (timerId: number) => void;
 
 export interface BattleSequencerHooks {
+  readonly onEventPause?: (request: Exclude<BattleEventPauseSnapshot, { kind: "wait" }>) => void;
   readonly onEventChoice?: (request: BattleEventChoiceSnapshot) => void;
   readonly onDirectorState: (state: BattleDirectorState) => void;
   readonly onSyncView: () => void;
@@ -101,6 +102,7 @@ export function createBattleSequencer(
   // appended during strict-round setup remain pending for the first sequence.
   let consumedTimeline = 0;
   let announcedChoiceId: number | undefined;
+  let announcedPauseId: number | undefined;
   let generation = 0;
 
   function setBusy(next: boolean): void {
@@ -118,7 +120,7 @@ export function createBattleSequencer(
     timers.clear();
   }
 
-  function delay(callback: () => void, ms: number): void {
+  function delay(callback: () => void, ms: number, authored = false): void {
     const reduced = typeof window !== "undefined" && typeof window.matchMedia === "function"
       && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const scaledMs = reduced ? 10 : Math.max(10, Math.round(ms / Math.max(0.2, speedMultiplier)));
@@ -129,7 +131,7 @@ export function createBattleSequencer(
       fired = true;
       if (timer !== undefined) timers.delete(timer);
       if (generation === scheduledGeneration) callback();
-    }, scaledMs);
+    }, authored ? ms : scaledMs);
     if (!fired) trackTimer(timer);
   }
 
@@ -192,6 +194,21 @@ export function createBattleSequencer(
   function finishTurn(previous: BattleDirectorState): void {
     clearMotion();
     const snapshot = runtime.snapshot();
+    if (snapshot.eventPause) {
+      hooks.onDamageFeedback(undefined);
+      hooks.onSyncView();
+      const request = snapshot.eventPause;
+      if (announcedPauseId !== request.id) {
+        announcedPauseId = request.id;
+        if (request.kind === "wait") {
+          delay(() => {
+            const before = runtime.snapshot();
+            if (runtime.resumeEventPause(request.id, { kind: "wait" })) resumeEvents(before, runtime.snapshot());
+          }, request.ms, true);
+        } else hooks.onEventPause?.(request);
+      }
+      return;
+    }
     if (snapshot.eventChoice) {
       hooks.onDamageFeedback(undefined);
       hooks.onSyncView();
@@ -426,6 +443,19 @@ export function createBattleSequencer(
     }, BATTLE_RESOLVE_MS);
   }
 
+  function resumeEvents(_before: BattleSnapshot, after: BattleSnapshot): void {
+    clearTimers();
+    setBusy(true);
+    const entries = after.timeline.slice(consumedTimeline);
+    consumedTimeline = after.timeline.length;
+    playTimelineEntries(entries, after, () => {
+      const current = runtime.snapshot();
+      if (current.battleFlow === "gauge" && current.phase === "charging" && !current.result) {
+        resolveEnemyTurns(commandPromptState(current));
+      } else finishTurn(commandPromptState(current));
+    });
+  }
+
   return {
     get busy() {
       return busy;
@@ -477,7 +507,7 @@ export function createBattleSequencer(
       const finish = (): void => {
         clearMotion();
         hooks.onDamageFeedback(undefined);
-        if (after.battleFlow === "strict" || runtime.snapshot().result || runtime.snapshot().eventChoice) {
+        if (after.battleFlow === "strict" || runtime.snapshot().result || runtime.snapshot().eventChoice || runtime.snapshot().eventPause) {
           finishTurn(actingState);
         } else {
           resolveEnemyTurns(actingState);
@@ -499,25 +529,12 @@ export function createBattleSequencer(
     runAfterEnemyAdvance(_before: BattleSnapshot, after: BattleSnapshot): void {
       if (busy) return;
       const entries = after.timeline.slice(consumedTimeline);
-      if (entries.length === 0 && !after.eventChoice && !after.result) return;
+      if (entries.length === 0 && !after.eventChoice && !after.eventPause && !after.result) return;
       consumedTimeline = after.timeline.length;
       setBusy(true);
       playTimelineEntries(entries, after, () => finishTurn(commandPromptState(after)));
     },
-    runAfterEventChoice(_before: BattleSnapshot, after: BattleSnapshot): void {
-      clearTimers();
-      setBusy(true);
-      const entries = after.timeline.slice(consumedTimeline);
-      consumedTimeline = after.timeline.length;
-      playTimelineEntries(entries, after, () => {
-        const current = runtime.snapshot();
-        if (current.battleFlow === "gauge" && current.phase === "charging" && !current.result) {
-          resolveEnemyTurns(commandPromptState(current));
-        } else {
-          finishTurn(commandPromptState(current));
-        }
-      });
-    },
+    runAfterEventChoice: resumeEvents,
     cancel(): void {
       clearTimers();
       clearMotion();

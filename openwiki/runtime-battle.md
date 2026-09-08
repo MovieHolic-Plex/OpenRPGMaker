@@ -18,6 +18,41 @@ Shipping-player QA: `node scripts/qa-event-command-repairs.mjs --scenario battle
 The VX Ace skin intentionally hides maximum-vital text; screenshots show the
 level/current vitals, while DOM/session observations verify the maxima.
 
+## Sequential battle event completion (2026-09-08)
+
+The existing choice frames/API remain intact. `snapshot.eventPause` adds typed
+`wait` (`ms`), `inputWait` (`variableId?`), and `text` (body/speaker/face/settings/
+autoAdvance/emotion) requests. `resumeEventPause(id, response)` accepts only the
+matching kind/id; input responses additionally require an integer key code 0-19.
+Stale, duplicate, mismatched, and cancelled responses cannot run a tail.
+
+All native/M2 common calls and troop-page calls retain their frames at these
+boundaries. Strict queues/RNG/extra actions and gauge progress stay frozen until
+acknowledgement. The sequencer first drains preceding action facts, then schedules
+each authored wait separately at its unscaled duration (including reduced motion,
+AUTO, and skip speed). Waits no longer pre-execute their tails or become deferred
+strict timeline entries. Zero/negative durations continue immediately.
+
+The player uses its real abortable `DialogueUI.showText`; every page must complete.
+Face changes are battle-local, including clearing. Text/choices inherit captured
+settings and subsequent battle-local changes. Only authored settings changes enter
+the returning event write-set: victory/escape/canLose defeat apply them; cancellation
+and nonreturning defeat do not. Transparent dialogue owns the message surface only
+after earlier beats drain, hiding the old battle director text underneath.
+
+`headlessBattleSnapshot` explicitly bypasses wait/text presentation in balance,
+scene, and walkthrough simulations, but throws `BATTLE_EVENT_INPUT_REQUIRED` at
+choices/inputWait. Scene/walkthrough reward bridges pass `canLose` so returning
+defeat preserves executed event mutations rather than silently discarding them.
+
+Focused contracts: `battleEventSequentialWait`, `battleEventDialoguePresentation`,
+`battleEventSequentialHost`, `battleEventTextHost`, `battleEventSimulationInput`,
+`battleEventWaitAudio`. Shipping QA extends `scripts/qa-event-command-battle-flow.mjs`
+with `--case sequential --port <owned-port>` (optional `--pass`); observations are
+read-only and gameplay uses real keyboard input through player.html/export shim.
+Evidence and final-browser infrastructure limits:
+`output/evidence/event-command-completion/battle/VERIFICATION.md`.
+
 ## Battle-event continuation and cancellation (2026-09-06)
 
 Battle execution remains synchronous between input boundaries. `battleEvents.ts`
@@ -33,7 +68,7 @@ unsupported and continue without inventing a branch.
 callers and remaining pages. The first terminal wins. Gauge resumes only its
 post-action epilogue; strict retains its already-sorted queue, extra-action
 count, RNG decisions, and round timeline boundary. A terminal completes only
-the executed strict prefix. Existing wait/text/inputWait semantics are unchanged.
+the executed strict prefix. Wait/text/inputWait now use the sequential contract above.
 
 The sequencer drains preceding timeline facts before requesting input, remains
 busy while choices are open, and consumes only appended facts after resumption.
