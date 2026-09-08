@@ -5,6 +5,8 @@ const sceneHarness = vi.hoisted(() => {
   type Listener = (...args: unknown[]) => void;
 
   class FakeScene {
+    active = false;
+    readonly sys = { isActive: (): boolean => this.active };
     readonly loaderListeners = new Map<string, Listener[]>();
     readonly registryValues = new Map<string, unknown>();
     readonly textureKeys = new Set<string>();
@@ -53,7 +55,7 @@ const sceneHarness = vi.hoisted(() => {
         };
       }),
     };
-    readonly events = { once: vi.fn() };
+    readonly events = { once: vi.fn<(event: string, listener: Listener) => void>() };
   }
 
   return { FakeScene };
@@ -170,6 +172,7 @@ const diagnostics = new LocalDiagnosticSession();
 afterEach(() => { diagnostics.clear(); vi.restoreAllMocks(); });
 
 beforeEach(() => {
+  mapRuntime.fireAutoTriggers.mockClear();
   clearRecentPlayBootDiagnosticsForTest();
   vi.spyOn(console, "error").mockImplementation(() => undefined);
   Object.defineProperty(HTMLCanvasElement.prototype, "getContext", {
@@ -193,6 +196,18 @@ describe("PlayScene asset load resilience", () => {
     scene.preload();
     scene.load.emit("loaderror", { key: "missing-texture", url: "/assets/missing.png" });
     scene.create();
+
+    expect(scene.sys.isActive()).toBe(false);
+    expect(mapRuntime.fireAutoTriggers).not.toHaveBeenCalled();
+    const createListener = scene.events.once.mock.calls.find(([event]) => event === "create")?.[1];
+    expect(createListener).toEqual(expect.any(Function));
+    if (!createListener) throw new Error("Missing deferred create listener");
+    // Phaser marks the scene running after create() returns, then emits create.
+    scene.active = true;
+    createListener(scene);
+    expect(scene.sys.isActive()).toBe(true);
+    expect(mapRuntime.fireAutoTriggers).toHaveBeenCalledOnce();
+    expect(mapRuntime.fireAutoTriggers).toHaveBeenCalledWith(scene);
 
     expect(scene.failedAssets).toEqual([
       { key: "missing-texture", url: "/assets/missing.png" },
