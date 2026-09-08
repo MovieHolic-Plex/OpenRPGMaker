@@ -1,4 +1,5 @@
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
+import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import {
   adjustEffectiveFactionStance,
   setEffectiveFactionStance,
@@ -397,15 +398,22 @@ export function executeCommand(
   command: Command
 ): CommandExecution {
   switch (command.kind) {
-    case "changeFace":
+    case "changeFace": {
+      if (command.appearanceId !== undefined) {
+        const face = state.project ? resolveAppearancePortrait(state.project, command.appearanceId, command.presentation ?? "face") : undefined;
+        state.currentFace = face ? { ...face, position: command.position, flipHorizontally: command.flipHorizontally } : undefined;
+        return resumeNext(frame);
+      }
       state.currentFace = command.resourceId
         ? {
             resourceId: command.resourceId,
+            ...(command.presentation ? { presentation: command.presentation } : {}),
             position: command.position,
             flipHorizontally: command.flipHorizontally,
           }
         : undefined;
       return resumeNext(frame);
+    }
     case "text":
       return pause("text", {
         kind: "text",

@@ -5,6 +5,7 @@ import type {
   UploadedAsset,
 } from "@/project/types";
 import { getAudioDescriptionOverride } from "@/project/audioDescriptions";
+import { getAudioAiDescription } from "./audioAiDescriptions";
 import { BGM_CATALOG, bgmTrackLabel } from "./bgmCatalog";
 import { CC0_AUDIO_ASSETS } from "./cc0AudioAssets";
 import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "./easyrpgRtp";
@@ -23,12 +24,14 @@ export type AudioResourceProject = {
 
 export type AudioDescriptionSource =
   | "project"
+  | "ai-listening"
   | "catalog-brief"
   | "metadata-derived"
   | "missing";
 
 export const AUDIO_DESCRIPTION_SOURCE_LABELS = {
   project: "프로젝트 설명",
+  "ai-listening": "AI 분석 초안",
   "catalog-brief": "곡 기획 설명",
   "metadata-derived": "메타데이터 기반 설명",
   missing: "설명 없음",
@@ -146,8 +149,12 @@ export function listAudioResources(
       kind,
       resourceId: resource.id,
     });
-    return override === undefined
+    if (override !== undefined) {
+      return { ...resource, description: override, descriptionSource: "project" };
+    }
+    const draft = getAudioAiDescription(kind, resource.id);
+    return draft === undefined
       ? resource
-      : { ...resource, description: override, descriptionSource: "project" };
+      : { ...resource, description: draft, descriptionSource: "ai-listening" };
   });
 }

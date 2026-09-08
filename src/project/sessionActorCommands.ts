@@ -4,6 +4,7 @@ import type { Project } from "@/project/types";
 import { effectiveActorClassId } from "@/project/sessionClass";
 import { transitionActorEquipment, type EquipmentTransitionResult } from "@/project/equipmentRules";
 import { recoverMonsterInstance } from "@/project/monsterCollection";
+import { getCharacterAppearance } from "./characterAppearances";
 
 type ActorVitalKind = "hp" | "mp";
 type ActorVitalCommand = Extract<Command, { kind: "changeActorHp" | "changeActorMp" }>;
@@ -55,9 +56,12 @@ export function resolveActorNickname(
 
 export function resolveActorFaceResourceId(
   session: Pick<PlaySessionLike, "actorFaceResourceIds">,
-  actor: { readonly id: ActorId; readonly faceResourceId?: string }
+  actor: { readonly id: ActorId; readonly faceResourceId?: string; readonly appearanceId?: string },
+  project?: Pick<Project, "database">,
 ): string | undefined {
-  return session.actorFaceResourceIds?.[actor.id] ?? actor.faceResourceId;
+  return session.actorFaceResourceIds?.[actor.id]
+    ?? (project ? getCharacterAppearance(project, actor.appearanceId)?.face?.resourceId : undefined)
+    ?? actor.faceResourceId;
 }
 
 export function recoverAll(session: PlaySessionLike, actorId: ActorId | undefined, project?: Project): void {

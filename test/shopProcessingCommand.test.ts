@@ -22,10 +22,10 @@ function mkSession(): PlaySessionLike {
 
 describe("Shop Processing command options", () => {
   it("creates RM-style shop processing defaults", () => {
-    // 첫 화면부터 잡화점 진열이 깔린다 — 판매 목록 0개 상점으로 시작하지 않는다.
+    // 진열은 상품 추가·서식이 채운다. 없는 잡화 ID를 기본값으로 심지 않는다.
     expect(newCommand("shop")).toMatchObject({
       kind: "shop",
-      itemIds: ["item_potion", "item_ether", "item_antidote"],
+      itemIds: [],
       shopType: "normal",
       messageType: "welcome",
       branchOnTransaction: false,

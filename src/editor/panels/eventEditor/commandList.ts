@@ -98,7 +98,11 @@ function renderCommandTree(
 ): void {
   host.append(renderCommandItem(cmd, path, containerPath, actions, depth, faceState, options));
   if (cmd.kind === "changeFace") {
-    faceState.current = cmd.resourceId ? { resourceId: cmd.resourceId } : undefined;
+    faceState.current = cmd.resourceId ? {
+      resourceId: cmd.resourceId,
+      position: cmd.position,
+      flipHorizontally: cmd.flipHorizontally,
+    } : undefined;
   }
   appendCommandChildren(host, cmd, path, containerPath, actions, depth, faceState, options);
 }

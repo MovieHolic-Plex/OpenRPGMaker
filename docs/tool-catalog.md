@@ -2,6 +2,7 @@
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
 > 총 237개 툴 — 쓰기 176, 읽기 61.
+> 총 231개 툴 — 쓰기 174, 읽기 57.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -235,6 +236,7 @@
 | `list_resources` | `kind: tile\|charset\|monster\|backdrop\|bgm\|se`, `query: string`, `offset?: integer`, `limit?: integer` | 리소스를 시맨틱 검색한다(resourceSearch 위임). kind: tile/charset/monster/backdrop/bgm/se. |
 | `query_tiles` | `tilesetId?: string`, `role?: string`, `category?: string`, `presetId?: string`, `limit?: integer` | 타일셋의 타일 상세를 role/category/presetId로 조회한다. 프리셋이 있으면 배치 전에 개별 tile id 대신 presetId+paletteRole 후보를 확인하라. |
 | `get_database_records` | `collection: actors\|classes\|skills\|items\|equipment\|enemies\|troops\|states\|battleAnimations\|switches\|variables\|commonEvents\|quests\|maps\|elements\|monsterSpecies\|lifeSkills\|farmAnimalSpecies\|crops`, `include?: ids\|full`, `ids?: array`, `limit?: integer`, `offset?: integer` | 컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만 조회, limit/offset으로 페이지 조회 가능. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies/lifeSkills/farmAnimalSpecies/crops. |
+| `get_database_records` | `collection: actors\|classes\|skills\|items\|equipment\|enemies\|troops\|states\|battleAnimations\|switches\|variables\|commonEvents\|quests\|maps\|elements\|monsterSpecies\|lifeSkills\|farmAnimalSpecies\|crops\|characterAppearances`, `include?: ids\|full`, `ids?: array`, `limit?: integer`, `offset?: integer` | 컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만 조회, limit/offset으로 페이지 조회 가능. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies/lifeSkills/farmAnimalSpecies/crops/characterAppearances. |
 | `run_lint` | `reachability?: array` | projectLint, 타일셋 팔레트 lint, 타일 후검증을 실행해 무결성 issue 목록(error/warning/info)을 반환한다. |
 | `check_reachability` | `mapId: string`, `from: object`, `targets: array` | 지정 맵에서 from 지점으로부터 targets 각각에 인접 도달 가능한지 검사한다. |
 | `list_project_commits` | `limit?: integer` | Supabase project_commits의 최근 변경 이력을 반환한다. 브라우저 PostgREST 연결에서만 지원된다. |
@@ -250,5 +252,6 @@
 | `show_map_region` | `mapId: string`, `x: integer`, `y: integer`, `w: integer`, `h: integer` | 맵 영역을 하위/상위 타일 2D 배열로 반환하고 실제 타일 이미지로 보여준다. 맵에 뭔가 깐 뒤 말로 단정하지 말고 이 툴로 결과를 눈으로 확인하라. 한 변 최대 24타일(초과분은 중심 기준으로 잘림). 호수 위치는 get_map_region의 water.bounds를 쓰고, 전체 맵을 반복 스캔하지 마라. |
 | `find_similar_tiles` | `tilesetId: string`, `tileId: integer`, `limit?: integer` | 기준 타일과 같이 쓰기 좋은 비슷한 타일 인덱스를 추천한다. 이미지 픽셀을 읽을 수 없는 환경에서는 시트 근접도, role/label, terrainTag, 그룹 정보를 결정적으로 점수화한다. |
 | `focus_editor_view` | `query?: string`, `mapId?: string`, `x?: integer`, `y?: integer`, `w?: integer`, `h?: integer` | 사용자 화면을 특정 위치로 옮긴다. 이름만 주면(query) 프로젝트에서 그 맵·NPC·건물을 찾아 그곳으로 데려간다. '어디야?', '어디에 있어?', '보여줘', '거기로 가자' 같은 요청에는 설명하기 전에 먼저 호출하라. 좌표를 이미 알고 있으면 mapId 와 x·y·w·h 로 직접 지정한다. mapId 가 있으면 query 는 무시한다. |
+| `generate_character_appearance` | `appearanceId: string`, `slot?: face\|bust` | 캐릭터 외형의 비어 있는 얼굴 또는 상반신 그림 후보를 만든다. 편집기에서는 캐릭터 외형 DB를 열고 생성을 시작한다. 후보는 사용자가 DB에서 적용해야 저장된다. 걷기 캐릭터칩은 생성·변경하지 않는다. 헤드리스에서는 UI 필요 상태만 반환한다. |
 | `suggest_group_from_range` | `tilesetId: string`, `rect?: object`, `tileIds?: array` | 시트 좌표 rect 또는 tileIds 범위를 읽어 새 타일 그룹의 kind/role/name/parts 초안을 휴리스틱으로 제안한다. 확정 전 render_group_sample로 미리보기를 보여줘라. |
 

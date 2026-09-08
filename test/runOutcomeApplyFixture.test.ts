@@ -30,16 +30,17 @@ it("awaits real manual writer body handling when proof is cancelled at the recei
   const stream = new TransformStream<Uint8Array, Uint8Array>();
   const bodyWriter = stream.writable.getWriter();
   const response = new Response(stream.readable, { status: 404 });
-  const reading = Promise.withResolvers<void>();
+  let signalReading: () => void = () => { throw new Error("Read signal not initialized"); };
+  const reading = new Promise<void>(resolve => { signalReading = resolve; });
   const readBody = response.text.bind(response);
-  vi.spyOn(response, "text").mockImplementation(() => { reading.resolve(); return readBody(); });
+  vi.spyOn(response, "text").mockImplementation(() => { signalReading(); return readBody(); });
   f.setCommitResponse(() => response);
   store.update(project => { project.meta.title = "New manual edit requiring a commit"; });
   const controller = new AbortController();
   await f.session.proveAppliedRevision(event => {
     if (event.type === "persistence_proof" && event.state.receipt) controller.abort();
   }, controller.signal);
-  await bounded(reading.promise);
+  await bounded(reading);
   const call = commits.mock.results[0];
   if (!call || call.type !== "return") throw new Error("Real background writer did not start");
   let completed = false;

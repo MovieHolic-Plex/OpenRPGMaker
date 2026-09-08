@@ -490,11 +490,23 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       } else {
         ghostPreviewUpdater.flush();
       }
-      // 정산은 아래 적용 분기가 끝난 뒤에 한다 — 오류로 끝난 턴도 제안이 남아 있으면 적용된다.
+      // A successful write is not authority to apply an errored or unreviewed draft.
+      if (result.proposedCalls.length > 0 && (result.stoppedReason !== "final"
+        || result.review?.status !== "approved" || !session.isDraftReviewApproved())) {
+        turnFailed = true;
+        ghostPreviewUpdater.cancel();
+        clearAgentGhostPreview();
+        settleBlueprintForTurnEnd(null);
+        deps.surface.appendBubble("system", result.error ?? "독립 검수가 승인되지 않아 초안을 적용하지 않았습니다.");
+        deps.surface.setStatus("검수 미완료");
+        if (result.error) appendErrorWithRetry(result.error, session, requestText, runOpts);
+        return;
+      }
       // Count applied milestones for accounting; only proposedCalls may be replayed.
       const changeExpectedByMode = (runOpts?.composerMode ?? "do") === "do";
       const turnWrites = [...(result.appliedCalls ?? []), ...result.proposedCalls];
-      const completenessWarnings = result.stoppedReason === "error" || !changeExpectedByMode
+      const appearanceRequested = result.appearanceGeneration?.status === "generating" && result.stoppedReason !== "error";
+      const completenessWarnings = result.stoppedReason === "error" || !changeExpectedByMode || (appearanceRequested && turnWrites.length === 0)
         ? []
         : proposalCompletenessWarnings({
             requestText,
@@ -556,6 +568,10 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         if (turnWrites.length > 0) {
           if (completenessWarnings.length > 0) deps.surface.appendBubble("system", completenessWarnings.join("\n"));
           deps.surface.setStatus(result.stoppedReason === "error" ? "오류" : "대기");
+        } else if (appearanceRequested) {
+          // A detached candidate request is neither a failed empty turn nor an
+          // applied edit. Its turn-scoped receipt never auto-applies the image.
+          deps.surface.setStatus("외형 후보 요청 전달됨 · 캐릭터 외형 DB에서 확인");
         } else {
           deps.noteNoChanges(result, completenessWarnings);
           if (result.stoppedReason !== "error") {

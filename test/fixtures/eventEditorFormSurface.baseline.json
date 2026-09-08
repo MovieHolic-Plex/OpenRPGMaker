@@ -222,6 +222,7 @@
  "changeFace": {
   "testids": [
    "event-command-edit-summary",
+   "event-command-face-appearance",
    "event-command-face-bust-preset",
    "event-command-face-crop",
    "event-command-face-editor",
@@ -344,6 +345,7 @@
    "event-command-face-option-generated-actor-hero-02-face-15",
    "event-command-face-option-generated-actor-hero-03-face",
    "event-command-face-position",
+   "event-command-face-presentation",
    "event-command-face-preview",
    "event-command-face-preview-host",
    "event-command-face-resource",
@@ -354,6 +356,7 @@
   "classes": [
    "btn",
    "cream-command-form-head",
+   "db-field",
    "event-command-face-bust-preset",
    "event-command-face-clear",
    "event-command-face-crop",
@@ -502,15 +505,26 @@
    "event-command-face-position": "select{}",
    "event-command-face-resource": "input[text]{}",
    "event-command-face-resource-clear": "button{}",
-   "event-command-face-resource-set": "button{}"
+   "event-command-face-resource-set": "button{}",
+   "event-command-face-appearance": "select{}",
+   "event-command-face-presentation": "select{disabled}"
   },
   "selectOptions": {
    "event-command-face-position": [
     "left",
     "right"
+   ],
+   "event-command-face-appearance": [
+    ""
+   ],
+   "event-command-face-presentation": [
+    "face",
+    "bust"
    ]
   },
   "labels": [
+   "공유 외형 표시얼굴흉상 (없으면 얼굴)",
+   "공유 캐릭터 외형연결 안 함 · 직접 지정한 그림",
    "얼굴 고르기…",
    "전신",
    "좌우 반전",
@@ -523,11 +537,11 @@
    "div": 127,
    "img": 113,
    "input": 2,
-   "label": 2,
-   "option": 2,
+   "label": 4,
+   "option": 5,
    "p": 1,
-   "select": 1,
-   "span": 3,
+   "select": 3,
+   "span": 5,
    "strong": 1
   },
   "tagByTestid": {
@@ -659,15 +673,17 @@
    "event-command-face-resource": "input",
    "event-command-face-resource-clear": "button",
    "event-command-face-resource-set": "button",
-   "faceset-crop-sheet": "img"
+   "faceset-crop-sheet": "img",
+   "event-command-face-appearance": "select",
+   "event-command-face-presentation": "select"
   },
   "texts": {
    "event-command-edit-summary": "얼굴 바꾸기",
    "event-command-face-preview": "res#미리보기를 찾을 수 없습니다.",
    "event-command-face-preview-host": "res#미리보기를 찾을 수 없습니다."
   },
-  "testidCount": 129,
-  "controlCount": 120
+  "testidCount": 131,
+  "controlCount": 122
  },
  "choices": {
   "testids": [

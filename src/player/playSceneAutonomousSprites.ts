@@ -6,6 +6,7 @@ import {
 } from "@/player/charsetMotion";
 import type { Dir } from "@/player/input";
 import type { AutonomousNpcSprite } from "@/player/playSceneAutonomousTypes";
+import { store } from "@/project/store";
 
 export function setNpcWalkFrame(
   sprite: AutonomousNpcSprite | undefined,
@@ -17,7 +18,7 @@ export function setNpcWalkFrame(
 ): void {
   if (!animationEnabled) return;
   if (animationType === "fixedGraphic") return;
-  if (!sprite || !isEasyRpgCharsetTextureKey(sprite.texture.key)) return;
+  if (!sprite || !isCharsetSprite(sprite.texture.key)) return;
   sprite.setFrame(charsetWalkFrameIndex(baseFrame, dir, charsetWalkStepFromElapsedMs(elapsedMs)));
 }
 
@@ -31,7 +32,11 @@ export function setNpcIdleFrame(
   if (!animationEnabled) return;
   if (animationType === "fixedGraphic") return;
   if (!sprite) return;
-  if (isEasyRpgCharsetTextureKey(sprite.texture.key)) sprite.setFrame(charsetIdleFrameIndex(baseFrame, dir));
+  if (isCharsetSprite(sprite.texture.key)) sprite.setFrame(charsetIdleFrameIndex(baseFrame, dir));
+}
+
+function isCharsetSprite(key: string): boolean {
+  return isEasyRpgCharsetTextureKey(key) || store.getCurrent().assets.uploaded[key]?.kind === "charset";
 }
 
 export function applySpriteAlpha(sprite: AutonomousNpcSprite | undefined, opacity: number): void {

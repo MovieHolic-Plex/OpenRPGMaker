@@ -27,19 +27,21 @@ export interface AiActionMenuActions {
   readonly compactContext: () => void;
   readonly openSettings: () => void;
   readonly refreshWiki?: () => void;
+  readonly showAcceptanceChecklist?: () => void;
 }
 
 export interface AiActionMenuItems {
   /** 메뉴 컨테이너에 그대로 넣을 항목들(선언 순서 = 표시 순서). */
   readonly items: readonly HTMLButtonElement[];
   readonly setHistoryOpen: (open: boolean) => void;
+  readonly setAcceptanceState: (hasSnapshot: boolean, hidden: boolean) => void;
 }
 
 /** 항목 오른쪽 메타(맥락 사용률·지침 줄 수·도구 수·현재 모델). 값이 null 이면 비운다. */
 export type AiActionMenuMeta = Partial<Record<"compact" | "instructions" | "tools" | "settings", () => string | null>>;
 
 interface ItemSpec {
-  readonly key: keyof AiActionMenuMeta | "export" | "history" | "wiki";
+  readonly key: keyof AiActionMenuMeta | "export" | "history" | "wiki" | "acceptance";
   readonly label: string;
   readonly icon: DeckIconName;
   readonly testid: string | null;
@@ -58,7 +60,7 @@ export function createAiActionMenuItems(options: {
   const itemClass = header ? "ai-more-menu-item" : "ai-command-menu-item";
   // 데크(2026-09-03): 아이콘 + 라벨 + 오른쪽 메타. 텍스트만 있던 6줄 목록이 640px 팝오버의 절반을 비웠다.
   const build = (spec: ItemSpec): HTMLButtonElement => {
-    const metaText = spec.key === "export" || spec.key === "history" || spec.key === "wiki" ? null : options.meta?.[spec.key]?.() ?? null;
+    const metaText = spec.key === "export" || spec.key === "history" || spec.key === "wiki" || spec.key === "acceptance" ? null : options.meta?.[spec.key]?.() ?? null;
     return el("button", {
       class: itemClass,
       attrs: {
@@ -136,8 +138,21 @@ export function createAiActionMenuItems(options: {
     run: options.actions.openSettings,
   });
 
+  const acceptance = options.actions.showAcceptanceChecklist ? build({
+    key: "acceptance", icon: "check", label: "완료 기준 다시 보기",
+    testid: header ? "ai-more-acceptance-show" : "ai-command-menu-acceptance-show",
+    run: options.actions.showAcceptanceChecklist,
+  }) : null;
+  const setAcceptanceState = (hasSnapshot: boolean, hidden: boolean): void => {
+    if (!acceptance) return;
+    acceptance.hidden = !hasSnapshot;
+    acceptance.disabled = !hasSnapshot || !hidden;
+  };
+  setAcceptanceState(false, false);
+
   return {
     setHistoryOpen,
+    setAcceptanceState,
     items: [
       compact, instructions,
       ...(options.actions.refreshWiki ? [build({
@@ -145,7 +160,7 @@ export function createAiActionMenuItems(options: {
         testid: header ? "ai-more-wiki" : "ai-command-menu-wiki",
         run: options.actions.refreshWiki,
       })] : []),
-      exportItem, history, tools, settings,
+      exportItem, history, tools, settings, ...(acceptance ? [acceptance] : []),
     ],
   };
 }

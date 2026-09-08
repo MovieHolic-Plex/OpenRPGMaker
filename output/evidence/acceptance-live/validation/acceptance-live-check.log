@@ -1,8 +1,0 @@
-{
-  "output": "/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live/handoff",
-  "projectId": "oprn-qa-functional-48c68b5f-2d4",
-  "sha256": "b03e73c068b972a35221b3e84447f296f54986552da1743997a1f32e452ce30c",
-  "coreChecks": "3 passed",
-  "combinedSceneSteps": 16,
-  "goal": "working"
-}

@@ -75,6 +75,8 @@ Non-AI explicit-art/rename and reliable legacy identity-query behavior are prese
 `ToolReadEvidence` enforces this independently of the generic read-before-write
 contract. The session registers current-request read call IDs, then consumes only
 full successful results actually present in the post-compaction model request.
+Registration alone grants no credit: native and monster reads are credited only
+after that writer request succeeds without cancellation, before its response executes.
 Index pages, missing/failed results, unreturned IDs, stale metadata, historical user
 requests and same-batch unobserved reads cannot authorize a new selection. Budget
 compaction cannot turn an executed-but-undelivered full read into permission.
@@ -154,6 +156,30 @@ common-event cycles; declared database/battle/system and quest/world tasks broad
 authored context. Runtime session, credentials/configuration and asset transport blobs are
 outside this projection. Existing resource tools remain the resource lookup surface.
 
+The authored `ProjectStartState` (`startStateOf(project)`, serialized as `project.session`)
+and authored `project.testPresets` are complete `/session` and `/testPresets` entries,
+not live `PlaySession` data. Both use the same whole-entry budget and exact paging route.
+Their keys/values seed the reference closure, including inventory IDs, party actors/classes,
+flag definitions and referenced maps/events/common-event cycles. Referenced maps reuse the
+target-map projection; maps and shared tilesets appear once. Summary/map-tree navigation
+does not expand unrelated maps. Runtime-exclusion tests mutate a separate `startSession` result.
+
+Independent review supplies explicit `mapReferenceRoots` from the current/changed maps
+and actual before/after edits. `reviewMapReferenceRoots` compares presets by authored ID:
+changed/added/deleted presets include their complete old/new references and effective start
+maps, not unchanged sibling maps. Changed start state/position includes the effective start
+maps. Other changed collections are compared recursively, cancelling unchanged array
+members with multiplicity before descending into changed records/commands. Coordinate-only
+edits retain their containing map target; edited world entities retain their own refs,
+not unchanged sibling entities. Explicit review roots can follow common-event call chains,
+but an included map is evidence, not a traversal root for its unchanged transfers or calls.
+Only the default writer mode traverses referenced map contents transitively. Complete `/session`
+and `/testPresets` values and record references remain in both projections. The writer's
+default start/preset closure and exact paging are unchanged. This prevents the R5+R6
+six-map rename overflow without a map cap, truncation or capacity-guard change. Contracts:
+`independentReviewMapDeltas`, `independentReviewReferenceScope`, `assistantIndependentReviewCapacity`,
+`independentReviewLinkedMaps` (chain/star rename, changed transfers/calls, world-record scope).
+
 `buildGroundedRequest` appends JSON `originalContext` after history compaction, so the
 first writer sees its original values even with `budgetChars: 1`. It accounts for complete
 native schemas, history, originals and the existing 16,384-token response reserve against
@@ -169,12 +195,26 @@ Whole entries that do not fit remain explicitly omitted with a `get_original_con
 list/read route, stable entry paths, snapshot ID and UTF-16 offsets. Concatenate exact JSON
 pages before parsing. Only successfully delivered whole originals or fully covered page
 ranges count at the existing `ToolReadEvidence` seam; partial/omitted/failed reads do not.
+Malformed or rewritten historical tool JSON is refused as evidence without aborting the
+model response; original text, total length and pagination metadata must match exactly.
 Original receipts cannot replace a subsequent fresh read; existing fingerprint/reference
 checks and ask-mode refusal remain. Irreducible mandatory requests fail explicitly without
 pruning tools. A huge latest write result may still exceed a small window; paging originals
 does not claim arbitrary tool-result paging. Task recipes accompany the catalog for NPC,
 map/interior, database/battle, quest/world and life read-write-verify work. Tests:
 `originalContext`, `assistantOriginalContext`, `assistantReadContract`, `aiToolDiscoveryEscalation`.
+
+Native reads follow the same delivery boundary: `ToolReadEvidence.queue` captures the
+executed result without granting credit. After the actual writer request returns, before
+its tools execute, `observeDelivered` matches the pending call ID/name and complete exact
+data against the outgoing messages. Execution, summarizer/reviewer context, sampled grids,
+stripped data and same-response reads cannot grant first-delivery credit. Previously
+delivered credit survives history compaction, but existing current-record fingerprints still
+invalidate changed data. Pending receipts share the goal lifecycle (`begin` clears them;
+genuine continuations retain them), and project switching drops the session as before.
+Regressions: `assistantNativeReadDelivery`, `toolReadDelivery`; the 512,029-character native
+read plus six summaries is refused after real compaction/clamping, then complete original
+paging or a complete current native result enables the subsequent writer response.
 
 ## Full native tool exposure (2026-09-06)
 
@@ -202,6 +242,24 @@ Regression seams: `aiToolDiscoveryEscalation`, `toolExposureQuota`, `toolDomainS
 `aiToolCapabilityIndex`, `aiComposerModeSession`, and `ohMyPiFullCatalog.bun.test.ts`.
 The transport fixture crosses counts 40/41, 127/128/129 and 198/207 using the installed
 adapters and verifies names, descriptions, nested schemas and explicit upstream errors.
+
+## Review approval lifetime (R3, 2026-09-06)
+
+`AssistantSession.runTurnLoop` owns each attempt's original abort signal and wraps
+the writer/review execution. Non-final stops, cancellation, failed milestone apply
+and thrown execution/subscriber errors retire that attempt's approval permanently.
+Replacing the UI's active signal cannot revive a completed approval whose original
+signal was aborted. `result_review` publishes the independent verdict, not immediate
+apply authority: admission follows the callback, current-candidate/owner checks and
+the existing output budget check. Review evidence and audit entries remain retained.
+
+`retryLastTurn` re-enters the existing writer/review loop when unapplied, unapproved
+draft calls remain, even without a provider error. It preserves the draft and original
+request; application requires a fresh current review. `canRetryLastTurn` retains its
+provider-error meaning. Already-applied persistence-proof retries still avoid writer,
+reviewer and edit replay. Regression: `assistantReviewApprovalLifecycle` drives real
+session, direct proposal host, autonomous apply, undo and local save/read proof paths;
+`assistantIndependentReview` retains held late-approval and budget/error cases.
 
 ## Audio description tools and event candidates
 
@@ -255,6 +313,11 @@ Keep description-heavy prompt imports in the prompt module, not the shared eligi
 module used by other consumers.
 
 Descriptions are JSON-escaped reference data, not instructions or proof of listening.
+Source `ai-listening` means **AI 분석 초안**, not verified acoustic facts. The static editor-only
+overlay retains model/review/evidence provenance in `src/assets/audioAiDescriptions.json`;
+instrument, vocal and numerical claims are not independent measurements. Most drafts are
+Flash outputs; the Pro recoveries and human-corrected Vanguard remain drafts. Project
+overrides, including explicit empty strings, take precedence; reset inherits the draft again.
 Escaping doesn't replace write approval or tool validation. `src/ai/contextBuilder.ts`
 directs fresh detail reads when full/current evidence is needed, including after conversation
 compaction. Each request uses the current project rather than a description cache or an
@@ -278,6 +341,59 @@ map/title proposal does not own codex edits made after its preview. Explicit
 failure/cancellation as `failed`/`cancelled`, never successful response completion.
 Explicit Ask/Plan retains the coordinator's read-only path; intent is still selected
 after the wiki checkpoint, and blocked-work reactivation remains after that decision.
+## Character appearance image candidates v1 (2026-09-06)
+
+`get_database_records` exposes `characterAppearances` for real set IDs.
+`generate_character_appearance {appearanceId,slot?}` generates only a missing
+`face` (default) or `bust`; it never generates or modifies walking charsets.
+Generic synchronous runners return an honest `ui-required` preparation result.
+The in-app assistant awaits the registered Database-opening callback, checks
+the session's actual ProjectIdentity and current record, then starts the shared
+`characterAppearanceGeneration` controller. Ask mode excludes and rejects this
+capability even though its generic preparation is read-only.
+`AssistantSession` imports the generation controller only inside this tool's
+execution branch. Ordinary sessions and load-recovery imports must not initialize
+the image UI or its history/store subscriptions.
+
+Candidates remain outside the project until explicit DB Apply. Occupied slots
+can only be replaced through the human slot action; fresh asset IDs preserve
+old images. Apply rechecks the target snapshot and project identity, updates the
+current cloned store draft atomically, and creates one undo checkpoint.
+Cancelled, late, failed and stale requests do not write project assets.
+Leaving the set/tab/modal disposes UI subscriptions and cancels its candidate.
+
+The image request carries at most two bounded raster references: a read-only
+crop of the selected manual charset cell and an existing face when present.
+Appearance generation uses full-sentence paragraphs rather than keyword lists.
+The prompt separates the character brief from composition/background rules:
+explicit written traits take priority, then detailed face identity, then walking
+sprite clothing/palette. Reference backgrounds and occupation-related scenery
+must not be copied. It requests a square dialogue asset, complete headwear and
+shoulders with safety margins, restrained cel shading, and an opaque uniform
+sRGB #D9D9D9 background without scenery, texture, gradients or cast shadows.
+These are model instructions, not an alpha-channel or exact-pixel guarantee;
+judge generated images separately and do not pin prompt prose with unit tests.
+`imageReferences.ts` validates the external payload;
+`ohMyPiImageRuntime.ts` sends real SDK image parts and marks this image-generation
+model as vision-capable so the SDK does not replace them with omission text.
+Image provider/model selections are independent AI settings. Antigravity uses
+the selected catalog model and rejects unknown explicit IDs without a fallback;
+response metadata identifies the resolved model. Its default is
+gemini-3.1-flash-image. Pro Image is unavailable on the tested subscription routes.
+The worker also dispatches openai-codex / codex-image-default to
+codexImageRuntime.ts, using the existing server-side Codex OAuth credentials.
+That native route is text-only: nonempty references fail explicitly with 409,
+not silently omitted. The internal selection ID is never sent upstream; the
+provider does not report its image-model version. Original raster bytes remain
+unchanged, with a 180-second request/body deadline and no provider fallback.
+Client cancellation discards output; it does not claim upstream work has stopped.
+
+`TurnResult.appearanceGeneration` is a per-turn handoff receipt, not an applied
+write. `aiTurnRunner` uses it to report the DB request without false zero-change
+retry warnings; global proposal auto-apply is unchanged. Contracts:
+`characterAppearanceGeneration`, `characterAppearanceReferences`,
+`characterAppearanceAssistant`, `characterAppearanceLifecycle`,
+`aiTurnAppliedAccounting`, and the existing provider SDK suite.
 
 ## Completed-house transaction protection - Phase 1 (2026-09-05)
 

@@ -1,0 +1,47 @@
+{
+  "incoming-first": {
+    "numPassedTests": 44,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "numTotalTests": 44,
+    "success": false,
+    "testFiles": 8,
+    "exit": 1
+  },
+  "combined-red": {
+    "numPassedTests": 32,
+    "numFailedTests": 3,
+    "numPendingTests": 0,
+    "numTotalTests": 35,
+    "success": false,
+    "testFiles": 4,
+    "exit": 1
+  },
+  "composition-first": {
+    "numPassedTests": 9,
+    "numFailedTests": 1,
+    "numPendingTests": 0,
+    "numTotalTests": 10,
+    "success": false,
+    "testFiles": 1,
+    "exit": 1
+  },
+  "focused-final": {
+    "numPassedTests": 719,
+    "numFailedTests": 1,
+    "numPendingTests": 0,
+    "numTotalTests": 720,
+    "success": false,
+    "testFiles": 56,
+    "exit": 1
+  },
+  "verified-final": {
+    "numPassedTests": 212,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "numTotalTests": 212,
+    "success": true,
+    "testFiles": 11,
+    "exit": 0
+  }
+}

@@ -325,8 +325,35 @@ describe("이전 대화 진입점", () => {
 
       expect(open, dock).toBeTruthy();
       expect(open?.getAttribute("aria-label")).toBe("이전 대화 열기");
+      expect(findByTestId(open as unknown as FakeElement, "ai-map-history-open")).not.toBeNull();
       expect(findByTestId(rail!, "ai-open-conversations")).toBe(open);
+      expect(findByTestId(panel, "ai-map-history-open")).toBe(findByTestId(open as unknown as FakeElement, "ai-map-history-open"));
     }
+  });
+
+  it("Given an open conversation When the current map changes Then the conversation id is unchanged", async () => {
+    const project = twoMapProject();
+    store.replace(project);
+    editorState.set({ currentMapId: project.startMapId, selection: null });
+    await saveConversation({
+      id: "conv_keep_map",
+      title: "유지",
+      model: "m",
+      savedAt: 100,
+      projectContextKey: conversationScopeKey(store.getProjectIdentity(), project),
+      entries: [
+        { kind: "user", text: "광장 요청", context: { mapId: project.startMapId, mapName: "마을 광장", mapWidth: 20, mapHeight: 15 } },
+        { kind: "assistant", text: "네." },
+      ],
+    });
+
+    const panel = renderPanel();
+    await whenAiChatPanelSettled();
+    expect(panel.dataset.aiConversationId).toBe("conv_keep_map");
+
+    editorState.set({ currentMapId: "map_forest" });
+    expect(panel.dataset.aiConversationId).toBe("conv_keep_map");
+    expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("광장 요청");
   });
 });
 

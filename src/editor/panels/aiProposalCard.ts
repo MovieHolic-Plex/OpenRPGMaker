@@ -30,7 +30,6 @@ import { getEditorChrome } from "@/editor/editorUiMode";
 import { sanitizeUserFacingToolId } from "@/editor/uiCopy";
 import {
   collectVocabSoftConfirms,
-  markSoftVocabApprovalsOnProject,
 } from "./aiProposalFusion";
 import {
   proposalHumanSummaryLine,
@@ -239,6 +238,11 @@ export function createProposalHost(options: {
   ): Promise<ProposalApplyOutcome> => {
     const session = controller.session;
     if (!session || calls.length === 0) return "rejected";
+    if (!session.isDraftReviewApproved()) {
+      appendBubble("system", "독립 검수가 승인되지 않았거나 초안이 바뀌어 적용하지 않았습니다.");
+      setStatus("검수 미완료");
+      return "rejected";
+    }
     ensureGuestIdentityForAiSurface();
     const before = store.getCurrent();
     const proposed = session.getProposedProject();
@@ -257,10 +261,11 @@ export function createProposalHost(options: {
     }
     const humanSummary = proposalHumanSummaryLine(calls);
     pendingProposalMessage = { calls, assistantBubble, summary: humanSummary };
-    // 재료(어휘) 합의도 AI 가 마무리한다 — 사람이 확정할 버튼이 없어졌고, 미합의로 남기면
-    // 다음 턴이 같은 재료를 다시 제안한다. 되돌리면 배치와 함께 합의도 원복된다.
+    // 재료(어휘) 합의는 검수 전 세션이 초안에 새긴다(reviewCurrentDraft) — 승인 뒤에
+    // 후보를 고치면 검수 대상과 적용 대상이 갈라진다(R2). 여기는 합의 건수만 세어 알린다.
+    // 되돌리면 배치와 함께 합의도 원복된다(단일 undo 경계).
     const softList = collectVocabSoftConfirms(calls);
-    const softMarked = markSoftVocabApprovalsOnProject(proposed, calls);
+    const softMarked = softList.length;
 
     // 배치 검증은 진단이다. 적용을 막지도, AI 가 깐 타일을 옮기거나 지우지도 않는다.
     const lastUser = [...(controller.session?.getAuditEntries() ?? [])].reverse().find((entry) => entry.kind === "user");
@@ -291,6 +296,7 @@ export function createProposalHost(options: {
     const completionInstruction = instruction.trim();
     clearAgentGhostPreview();
     const applied = await applyProposedProject(applyProject, {
+      baseline: session.getDraftBaseline(),
       source: "agent",
       agentName: loadAiConfig().model,
       summary: aiHistoryLabel(calls),
@@ -302,6 +308,7 @@ export function createProposalHost(options: {
       reason: calls.map((call) => call.reason).filter((value): value is string => typeof value === "string" && value.trim().length > 0).join(" · ") || `AI 제안 적용: ${aiHistoryLabel(calls)}`,
     });
     if (!applied.ok) {
+      if (applied.reason === "stale-baseline") session.refreshAcceptance(store.getCurrent());
       session.recordApplyRejected();
       setStatus("적용 실패");
       toast(`적용 실패: ${applied.issue ?? "무결성 오류"}`, "error");

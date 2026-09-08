@@ -19,6 +19,15 @@ import type { Season, TimePhase, TimeSystemConfig } from "../gameTime";
 import type { GenrePackId } from "../genrePackId";
 import type { CinematicSequence, GameOverSettings } from "../cinematicSettings";
 
+export interface CharacterAppearanceRecord {
+  id: string;
+  name: string;
+  description: string;
+  charset?: { resourceId: string; characterIndex: number };
+  face?: { resourceId: string };
+  bust?: { resourceId: string };
+}
+
 export interface ActorRecord {
   id: ActorId;
   name: string;
@@ -31,6 +40,7 @@ export interface ActorRecord {
   characterResourceId?: string;
   /** Optional charset character index (0..7). Omitted means 0 for legacy projects. */
   characterIndex?: number;
+  appearanceId?: string;
   characterTransparent: boolean;
   battleCharacterResourceId?: string;
   critical: ActorCritical;
@@ -897,6 +907,7 @@ export interface HomeDecorationTypeRecord {
 }
 
 export interface ProjectDatabaseRecords extends DatabaseRecords {
+  characterAppearances?: CharacterAppearanceRecord[];
   /** Optional additive catalog; built-in slots always remain available. */
   equipmentSlots?: EquipmentSlotRecord[];
   elements?: DatabaseElementRecord[];
