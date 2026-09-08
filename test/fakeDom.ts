@@ -137,6 +137,43 @@ export class FakeElement extends FakeNode {
   style: FakeStyle = createFakeStyle();
   type = "";
   value = "";
+  /** Number-input conversion, including HTML's rejection of blank/hex/nonfinite values. */
+  get valueAsNumber(): number {
+    if (this.tagName !== "INPUT" || (this.getAttribute("type") ?? this.type) !== "number") return NaN;
+    if (!/^-?(?:\d+(?:\.\d+)?|\.\d+)(?:[eE][+-]?\d+)?$/u.test(this.value)) return NaN;
+    const value = Number(this.value);
+    return Number.isFinite(value) ? value : NaN;
+  }
+
+  /** Numeric constraint validation; native validation bubbles are not rendered by this DOM. */
+  checkValidity(): boolean {
+    if (this.disabled || this.getAttribute("disabled") !== null || this.getAttribute("readonly") !== null) return true;
+    const value = this.valueAsNumber;
+    let valid = true;
+    if (Number.isNaN(value)) {
+      valid = this.getAttribute("required") === null;
+    } else {
+      const numberAttribute = (name: string, fallback: string): number | undefined => {
+        const raw = this.getAttribute(name) ?? fallback;
+        return raw !== "" && Number.isFinite(Number(raw)) ? Number(raw) : undefined;
+      };
+      const min = numberAttribute("min", this.min);
+      const max = numberAttribute("max", this.max);
+      const stepAttribute = this.getAttribute("step");
+      const step = numberAttribute("step", "1");
+      const unit = step !== undefined && step > 0 ? step : 1;
+      const base = min ?? numberAttribute("value", "") ?? 0;
+      const steps = (value - base) / unit;
+      valid = (min === undefined || value >= min) && (max === undefined || value <= max)
+        && (stepAttribute === "any" || Math.abs(steps - Math.round(steps)) < 1e-8);
+    }
+    if (!valid) this.dispatchEvent(new Event("invalid", { cancelable: true }));
+    return valid;
+  }
+
+  reportValidity(): boolean {
+    return this.checkValidity();
+  }
   isContentEditable = false;
   readonly attrs: Record<string, string> = {};
   readonly tagName: string;

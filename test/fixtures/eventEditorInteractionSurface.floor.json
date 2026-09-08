@@ -168,10 +168,10 @@
   "initialTestidCount": 12
  },
  "changeLifeSkillExp": {
-  "probeCount": 0,
-  "reactingCount": 0,
-  "classCount": 1,
-  "initialTestidCount": 1
+  "probeCount": 5,
+  "reactingCount": 2,
+  "classCount": 19,
+  "initialTestidCount": 16
  },
  "promoteActor": {
   "probeCount": 2,
@@ -396,10 +396,10 @@
   "initialTestidCount": 1
  },
  "spawnFieldEnemy": {
-  "probeCount": 0,
-  "reactingCount": 0,
-  "classCount": 1,
-  "initialTestidCount": 1
+  "probeCount": 7,
+  "reactingCount": 2,
+  "classCount": 10,
+  "initialTestidCount": 11
  },
  "despawnFieldEnemy": {
   "probeCount": 0,

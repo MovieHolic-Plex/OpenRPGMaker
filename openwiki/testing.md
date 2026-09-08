@@ -1,3 +1,27 @@
+## Issue 693 verification contracts (2026-09-08)
+
+The commit probe's fake DOM implements number-input `valueAsNumber` and numeric
+constraint validation, including required, range and step rejection. Keep native
+production numeric APIs intact; do not add optional validation fallbacks for test
+doubles. `fakeDomNumericInput.test.ts` and `eventSpawnNumericProbe.test.ts` cover
+invalid/no-commit and valid/commit behavior, including the existing faction
+consumer. The gate-repair evidence also compares these semantics to native Chromium.
+
+Spawn and life-skill recovery fields have explicit form, interaction and commit
+fixtures with raised floors. Update only their entries, not unrelated snapshot
+drift. All no-commit and crash gates remain active. Local diagnostic entry works
+with an empty conversation and opens a registered consent layer; it does not emit
+the historical `conversation-export` event or export a transcript. The modal gate's
+narrow exemption covers only the persistent indicator/download anchor; actual
+Escape routing is exercised through the visible assistant menu.
+
+Focused contracts: `npm test -- test/fakeDomNumericInput.test.ts
+ test/eventSpawnNumericProbe.test.ts test/aiEmptyExportFeedback.test.ts
+ test/aiUiEventContract.test.ts test/playBootRecovery.test.ts
+ test/selectedEventTestModal.test.ts test/databaseSystemView.test.ts --maxWorkers=1`.
+Full gates and production build remain lead-owned; the exhaustive main/candidate
+failure disposition is in `.omo/evidence/issue-693/gate-repairs/`.
+
 ## Real large-world player QA (2026-09-07)
 
 `npm run qa:runtime -- --scenario live-world-start --project <saved-project.json>`

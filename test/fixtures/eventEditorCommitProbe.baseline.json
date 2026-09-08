@@ -300,9 +300,15 @@
   "noCommitCount": 0
  },
  "changeLifeSkillExp": {
-  "probes": {},
-  "probeCount": 0,
-  "commitCount": 0,
+  "probes": {
+   "change-life-skill-exp-skill-id-input": "replaceCommand {\"amount\":10,\"kind\":\"changeLifeSkillExp\",\"op\":\"+=\",\"skillId\":\"__p_432eab__\"}",
+   "change-life-skill-exp-op-select": "replaceCommand {\"amount\":10,\"kind\":\"changeLifeSkillExp\",\"op\":\"-=\",\"skillId\":\"skill_farming\"}",
+   "change-life-skill-exp-amount-mode": "replaceCommand {\"amount\":{\"id\":\"\",\"kind\":\"var\"},\"kind\":\"changeLifeSkillExp\",\"op\":\"+=\",\"skillId\":\"skill_farming\"}",
+   "change-life-skill-exp-amount-input": "replaceCommand {\"amount\":7595,\"kind\":\"changeLifeSkillExp\",\"op\":\"+=\",\"skillId\":\"skill_farming\"}",
+   "change-life-skill-exp-amount-select": "replaceCommand {\"amount\":{\"id\":\"var_0020\",\"kind\":\"var\"},\"kind\":\"changeLifeSkillExp\",\"op\":\"+=\",\"skillId\":\"skill_farming\"}"
+  },
+  "probeCount": 5,
+  "commitCount": 5,
   "noCommitCount": 0
  },
  "promoteActor": {
@@ -441,10 +447,10 @@
  },
  "changeFactionStance": {
   "probes": {
-   "event-command-faction-a": "replaceCommand {\"a\":\"enemy\",\"b\":\"enemy\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":0}",
-   "event-command-faction-b": "replaceCommand {\"a\":\"player\",\"b\":\"player\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":0}",
-   "event-command-faction-op": "replaceCommand {\"a\":\"player\",\"b\":\"enemy\",\"kind\":\"changeFactionStance\",\"op\":\"-=\",\"value\":0}",
-   "event-command-faction-value": "replaceCommand {\"a\":\"player\",\"b\":\"enemy\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":0}"
+   "event-command-faction-a": "replaceCommand {\"a\":\"enemy\",\"b\":\"enemy\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":1}",
+   "event-command-faction-b": "replaceCommand {\"a\":\"player\",\"b\":\"player\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":1}",
+   "event-command-faction-op": "replaceCommand {\"a\":\"player\",\"b\":\"enemy\",\"kind\":\"changeFactionStance\",\"op\":\"-=\",\"value\":1}",
+   "event-command-faction-value": "replaceCommand {\"a\":\"player\",\"b\":\"enemy\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":3.75}"
   },
   "probeCount": 4,
   "commitCount": 4,
@@ -694,9 +700,17 @@
   "noCommitCount": 0
  },
  "spawnFieldEnemy": {
-  "probes": {},
-  "probeCount": 0,
-  "commitCount": 0,
+  "probes": {
+   "event-command-spawn-troop": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":0,\"y\":0},\"id\":\"spawn1\",\"troopId\":\"troop_bat_swarm\"}}",
+   "event-command-spawn-switch": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":0,\"y\":0},\"id\":\"spawn1\",\"onKillSwitchId\":\"sw_0020\",\"troopId\":\"troop1\"}}",
+   "event-command-spawn-graphic": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":0,\"y\":0},\"graphic\":{\"sprite\":{\"id\":\"__p_5acc74__\",\"type\":\"bundled\"}},\"id\":\"spawn1\",\"troopId\":\"troop1\"}}",
+   "event-command-spawn-area-x": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":7237,\"y\":0},\"id\":\"spawn1\",\"troopId\":\"troop1\"}}",
+   "event-command-spawn-area-y": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":0,\"y\":7854},\"id\":\"spawn1\",\"troopId\":\"troop1\"}}",
+   "event-command-spawn-area-w": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":7778,\"x\":0,\"y\":0},\"id\":\"spawn1\",\"troopId\":\"troop1\"}}",
+   "event-command-spawn-area-h": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":7640,\"w\":4,\"x\":0,\"y\":0},\"id\":\"spawn1\",\"troopId\":\"troop1\"}}"
+  },
+  "probeCount": 7,
+  "commitCount": 7,
   "noCommitCount": 0
  },
  "despawnFieldEnemy": {

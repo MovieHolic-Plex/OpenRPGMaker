@@ -39,18 +39,14 @@ const NO_FIELD_KINDS: readonly CommandKind[] = [
 /**
  * 알려진 제품 결함 래칫 — 편집할 필드가 분명히 있는데 컨트롤이 0개다.
  *
- *  changeLifeSkillExp : skillId / op / amount 세 필드를 갖는 커맨드인데 폼이 아무 입력도 안 낸다.
- *  spawnFieldEnemy    : spawn(id/troopId/area) 를 편집할 수단이 없다.
  *  despawnFieldEnemy  : spawnId 를 편집할 수단이 없다.
  *
- * 이 3종은 제품 결함이며 이번 라운드에서는 고치지 않는다(src 는 읽기 전용이다).
+ * spawnFieldEnemy and changeLifeSkillExp now expose validated recovery fields.
  * 게이트가 영구히 빨갛지 않도록 명시적 래칫으로 격리한다 — 대신 "고쳐지면 실패"시켜서
  * 고친 사실이 반드시 커밋에 남게 한다(래칫이 조용히 녹지 않게 하는 유일한 방법이다).
  */
 const ZERO_CONTROL_DEFECT_RATCHET: readonly CommandKind[] = [
-  "changeLifeSkillExp",
   "despawnFieldEnemy",
-  "spawnFieldEnemy",
 ];
 
 function sorted(list: readonly string[]): string[] {
