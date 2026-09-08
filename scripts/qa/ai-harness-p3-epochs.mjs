@@ -26,8 +26,21 @@ export function createEpochContracts(harness) {
   async function respond(body) {
     assert.ok(current, 'Unarmed LLM request is setup failure');
     const script = current;
+    const system = body.messages?.[0]?.content;
+    if (typeof system === 'string' && system.startsWith('REQUEST_COVERAGE_AUDIT\n')) {
+      assert.equal(typeof script.instruction, 'string');
+      assert.ok(body.messages.some(message => typeof message.content === 'string'
+        && message.content.includes(script.instruction)), 'Coverage must belong to the exact armed request');
+      // Current coverage has no exact title/item/wiki-policy evaluator. Report
+      // that missing authority honestly rather than approving unrelated criteria.
+      const requirements = [{ text: script.instruction, criteria: [{ kind: 'functionalUnresolved',
+        reason: `Native ${script.id}: exact ${script.tool} value/preservation requirements have no evaluator in the current coverage schema`,
+      }] }];
+      record('epoch-request-coverage', { owner: script.id, requirements });
+      return { role: 'assistant', content: JSON.stringify({ requirements }) };
+    }
     if (!body.tools?.length) return { role: 'assistant', content: JSON.stringify({
-      mode: 'modify', space: 'none', useSelection: false, needsPlan: false, clarify: null,
+      mode: script.tool === 'get_project_summary' ? 'question' : 'modify', space: 'none', useSelection: false, needsPlan: false, clarify: null,
       resetsContext: false, tools: [script.tool], summary: script.id, action: 'direct',
     }) };
     const first = round++ === 0;
@@ -177,6 +190,8 @@ export function createEpochContracts(harness) {
   }
   async function start(id, text) {
     const instruction = `${projectId}/${id}: ${text}`;
+    assert.equal(current.id, id);
+    current.instruction = instruction;
     await page.evaluate(({ id, instruction }) => { qa.epochs.nextOwner = id; qa.epochs.arm(instruction, id); }, { id, instruction });
     await harness.send(instruction);
     return instruction;
