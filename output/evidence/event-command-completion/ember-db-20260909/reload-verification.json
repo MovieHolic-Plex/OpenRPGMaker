@@ -1,15 +1,15 @@
 {
   "projectId": "rpg-zzu-event-command-ember-20260908",
   "mode": "--verify",
-  "processId": 192771,
-  "startedAt": "2026-09-08T18:08:20.101Z",
-  "sourceCommit": "95513f0b009b4f22b106e931072129c07e3f317f",
+  "processId": 2655393,
+  "startedAt": "2026-09-08T20:46:36.386Z",
+  "sourceCommit": "e8a691fad5ce5c60a3f8b83c18a8c876dc639891",
   "requests": [
     {
       "method": "GET",
       "table": "projects",
       "query": "select=project_id&limit=0",
-      "startedAt": "2026-09-08T18:08:20.113Z",
+      "startedAt": "2026-09-08T20:46:36.399Z",
       "status": 200,
       "ok": true
     },
@@ -17,7 +17,7 @@
       "method": "GET",
       "table": "projects",
       "query": "project_id=eq.rpg-zzu-event-command-ember-20260908&select=project_id%2Ccurrent_json%2Ccurrent_sha256%2Cmap_count%2Ctileset_count%2Cupdated_at",
-      "startedAt": "2026-09-08T18:08:20.174Z",
+      "startedAt": "2026-09-08T20:46:36.498Z",
       "status": 200,
       "ok": true
     },
@@ -25,7 +25,7 @@
       "method": "GET",
       "table": "projects",
       "query": "select=current_json%2Ccurrent_sha256&project_id=eq.rpg-zzu-event-command-ember-20260908",
-      "startedAt": "2026-09-08T18:08:26.301Z",
+      "startedAt": "2026-09-08T20:46:43.066Z",
       "status": 200,
       "ok": true
     },
@@ -33,7 +33,7 @@
       "method": "GET",
       "table": "maps",
       "query": "project_id=eq.rpg-zzu-event-command-ember-20260908&select=map_id%2Cmap_json",
-      "startedAt": "2026-09-08T18:08:26.810Z",
+      "startedAt": "2026-09-08T20:46:43.509Z",
       "status": 200,
       "ok": true
     },
@@ -41,7 +41,7 @@
       "method": "GET",
       "table": "project_commits",
       "query": "project_id=eq.rpg-zzu-event-command-ember-20260908&limit=1&order=created_at.desc&select=commit_id%2Cmessage%2Csummary%2Creview_status%2Cauthor_id%2Cauthor_label%2Cauthor_kind%2Cagent_name%2Ccreated_at",
-      "startedAt": "2026-09-08T18:08:26.849Z",
+      "startedAt": "2026-09-08T20:46:43.604Z",
       "status": 200,
       "ok": true
     }
@@ -53,7 +53,7 @@
   "target": {
     "status": 200,
     "rowCount": 1,
-    "observedAt": "2026-09-08T18:08:20.333Z"
+    "observedAt": "2026-09-08T20:46:37.026Z"
   },
   "saveProcessId": 188199,
   "rawRow": {
@@ -269,6 +269,6 @@
   },
   "persistencePath": "loadProjectFromSupabase -> projects current_json deserialize/repair -> maps mirror overlay",
   "passed": true,
-  "finishedAt": "2026-09-08T18:08:27.159Z",
+  "finishedAt": "2026-09-08T20:46:43.716Z",
   "exitCode": 0
 }
