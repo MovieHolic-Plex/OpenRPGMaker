@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
+import { createRequestSource } from "@/ai/assistantRequestContract";
 import { AI_CONFIG_STORAGE_KEY, chatCompletion } from "@/ai/llmClient";
 import * as focus from "@/editor/agentFocus";
 import { editorState } from "@/editor/editorState";
@@ -13,7 +14,76 @@ import * as commits from "@/project/projectCommitLog";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 import { completedHouseProject, houseMap } from "./fixtures/completedHouse";
+import { declaredIntent } from "./intentFixture";
 import { isWikiExtraction } from "./wikiTransportFixture";
+
+const PRESERVATION = /\b(?:preserve|unchanged|without|never|not|no|keep|don't|cannot)\b|유지|보존|금지|말고|없이|하지\s*마/giu;
+
+function classifyKickoffIntent(facts: { readonly userText: string }) {
+  const request = createRequestSource("preview", facts.userText);
+  const entries = request.units.flatMap(unit => {
+    const marks = [...unit.source.quote.matchAll(PRESERVATION)];
+    if (marks.length === 0) return [];
+    const digits = [...unit.source.quote.matchAll(/\d+(?:\.\d+)?/g)];
+    const criteria = [
+      { kind: "entityPreserve" as const, subject: { kind: "project" as const } },
+      ...digits.map(match => ({
+        kind: "entityCount" as const,
+        collection: { kind: "database" as const, collection: "items" as const },
+        selector: { all: true as const },
+        comparison: "eq" as const,
+        count: Number(match[0]),
+        basis: "current" as const,
+      })),
+    ];
+    const bindings = [
+      ...marks.map(match => ({
+        source: {
+          start: unit.source.start + match.index,
+          end: unit.source.start + match.index + match[0].length,
+          quote: match[0],
+        },
+        role: "prohibit" as const,
+        criterionIndex: 0,
+        fieldPath: [] as const,
+      })),
+      ...digits.map((match, index) => ({
+        source: {
+          start: unit.source.start + match.index,
+          end: unit.source.start + match.index + match[0].length,
+          quote: match[0],
+        },
+        role: "count" as const,
+        criterionIndex: 1 + index,
+        fieldPath: ["count"],
+      })),
+    ];
+    return [{ source: [unit.source], criteria, bindings }];
+  });
+  return {
+    intent: declaredIntent({
+      mode: "modify",
+      needsPlan: true,
+      tools: ["upsert_tile_group"],
+      requestRequirements: { entries },
+      summary: facts.userText.slice(0, 200),
+    }),
+    elapsedMs: 0,
+  };
+}
+
+vi.mock("@/ai/assistantSession", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/ai/assistantSession")>();
+  class ClusterSession extends actual.AssistantSession {
+    constructor(
+      project: ConstructorParameters<typeof actual.AssistantSession>[0],
+      options: ConstructorParameters<typeof actual.AssistantSession>[1] = {},
+    ) {
+      super(project, { ...options, declareIntent: options.declareIntent ?? classifyKickoffIntent });
+    }
+  }
+  return { ...actual, AssistantSession: ClusterSession };
+});
 
 // Only model transport, UI yielding and transient notifications are substituted.
 // The modal, session, registered tool, application guard, store and undo are real.

@@ -210,8 +210,11 @@ describe("진행 상태와 중단", () => {
   it("AssistantSession은 AbortSignal을 LLM 호출에 전달하고 중단 결과로 종료한다", async () => {
     const controller = new AbortController();
     let receivedSignal: AbortSignal | undefined;
+    let entered!: () => void;
+    const chatEntered = new Promise<void>(resolve => { entered = resolve; });
     const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
       receivedSignal = req.signal;
+      entered();
       return await new Promise((_resolve, reject) => {
         req.signal?.addEventListener("abort", () => reject(new LlmAbortError()));
       });
@@ -222,7 +225,7 @@ describe("진행 상태와 중단", () => {
     });
 
     const pending = session.sendUserMessage("길 깔아줘", () => {}, controller.signal);
-    await Promise.resolve();
+    await chatEntered;
     controller.abort();
     const result = await pending;
 

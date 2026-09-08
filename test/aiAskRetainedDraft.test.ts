@@ -137,18 +137,25 @@ it("keeps ordinary Do auto-apply and pending/applied coexistence without replay"
     { title: "Second", instruction: "Draft only", successTools: ["upsert_item"] },
   ] }] }), tool("set_title_screen", { title: "APPLIED_FIRST" }), tool("set_title_screen", { title: "PENDING_SECOND" })];
   let round = 0;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
-    chat: async () => responses[round++] ?? final });
+  const instruction = "Set titles";
+  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({
+    mode: "other",
+    requestRequirements: { entries: [{ source: [{ start: 0, end: instruction.length, quote: instruction }],
+      criteria: [{ kind: "valueEquals", subject: { kind: "project" }, path: ["system", "titleScreen", "title"], value: "PENDING_SECOND" }],
+      bindings: [] }] },
+  }), chat: async () => responses[round++] ?? final });
   const f = runnerFor(session);
   const actualApply = vi.spyOn(apply, "applyProposedProject");
-  const result = await f.send("Set titles", { autonomous: true }, "PENDING_SECOND");
+  const result = await f.send(instruction, { autonomous: true }, "PENDING_SECOND");
   expect(result.runOutcome?.delivery).toBe("draft");
   expect(result.appliedCalls?.map(call => call.args.title)).toEqual(["APPLIED_FIRST"]);
-  expect(result.proposedCalls.map(call => call.args.title)).toEqual(["PENDING_SECOND"]);
+  expect(result.proposedCalls).toEqual([]);
+  expect(session.getProposedProject().system.titleScreen?.title).toBe("PENDING_SECOND");
   expect(store.getCurrent().system.titleScreen?.title).toBe("APPLIED_FIRST");
   expect(actualApply).toHaveBeenCalledTimes(1);
+  expect(session.syncBaselineFromStoreIfClean(store.getCurrent())).toBe(false);
   // When: ordinary Do resumes the retained work without another successful write.
-  await f.send("Continue", { goalAction: "resume" });
+  await f.send("Continue", { composerMode: "do", goalAction: "resume" });
   // Then: the pending call alone reaches ordinary apply; the milestone is not replayed.
   expect(f.applyProposal).toHaveBeenCalledTimes(1);
   expect(f.applyProposal.mock.calls[0]?.[0].map(call => call.args.title)).toEqual(["PENDING_SECOND"]);

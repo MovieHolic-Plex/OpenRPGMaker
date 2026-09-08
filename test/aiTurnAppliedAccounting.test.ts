@@ -53,6 +53,8 @@ function setup(sessionOverride?: AssistantSession) {
     getCompletionSpecs: () => [],
     getWorkPlan: () => null,
     getActiveSpec: () => null, getAuditEntries: () => [], getProposedProject: () => store.getCurrent(),
+    getHarnessSnapshot: () => ({ execution: undefined, requests: undefined }),
+    getAcceptanceSnapshot: () => null,
   } as unknown as AssistantSession;
   const controller = { session, auditHistory: [] };
   const surface = {

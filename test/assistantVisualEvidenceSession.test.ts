@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { AssistantSession, type SessionEvent, type ToolImageRenderer } from "@/ai/assistantSession";
+import { AssistantSession, type SessionEvent, type SessionTurnOptions, type ToolImageRenderer } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
 import { fixedDeclarer } from "./intentFixture";
@@ -10,6 +10,23 @@ beforeEach(resetIntentDeclarationCache);
 type Call = { readonly name: string; readonly args: Record<string, unknown> };
 type Stop = "final" | "max-tool-calls" | "token-budget";
 const image = { label: "Map render", dataUrl: "data:image/png;base64,AA==" };
+const INSPECT = "Inspect both authored maps";
+const SOURCE_ITEM = "request-1:source:0";
+
+function inspectRequirements(maps: ReadonlyArray<{ readonly id: string }>) {
+  return {
+    entries: [{
+      source: [{ start: 0, end: INSPECT.length, quote: INSPECT }],
+      criteria: maps.map(map => ({ kind: "imageReviewed" as const, target: { mapId: map.id } })),
+      bindings: [],
+    }],
+  };
+}
+
+function statusById(session: AssistantSession): Record<string, string | undefined> {
+  return Object.fromEntries((session.getAcceptanceSnapshot()?.items ?? []).map(item => [item.id, item.status]));
+}
+
 function fixture(options: { readonly stop?: Stop; readonly render?: ToolImageRenderer; readonly requireBattle?: boolean } = {}) {
   const project = createBlankProject();
   const start = project.maps[project.startMapId];
@@ -20,7 +37,10 @@ function fixture(options: { readonly stop?: Stop; readonly render?: ToolImageRen
     acceptance: maps.map(map => ({ id: map.id, title: map.name, criteria: [{ kind: "imageReviewed", target: { mapId: map.id } }] })),
   } }, { name: "skip_work_item", args: {} }];
   const shows: Call[] = maps.map(map => ({ name: "show_map_region", args: { mapId: map.id, x: 0, y: 0, w: map.width, h: map.height } }));
-  const reviews: Call[] = maps.map(map => ({ name: "review_acceptance", args: { itemId: map.id, verdict: "pass", note: "Inspected delivered image" } }));
+  const reviews: Call[] = [
+    ...maps.map(map => ({ name: "review_acceptance", args: { itemId: map.id, verdict: "pass", note: "Inspected delivered image" } })),
+    { name: "review_acceptance", args: { itemId: SOURCE_ITEM, verdict: "pass", note: "Inspected delivered image" } },
+  ];
   const dbWrite: Call[] = [{ name: "upsert_skill", args: { skill: { id: "visual_test_skill", name: "DB only" } } }];
   const rounds: Call[][] = [plan, shows, reviews, dbWrite];
   const events: SessionEvent[] = [];
@@ -29,7 +49,12 @@ function fixture(options: { readonly stop?: Stop; readonly render?: ToolImageRen
   const session = new AssistantSession(project, {
     config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test",
       maxToolCalls: options.stop === "max-tool-calls" ? 4 : 20, maxTokens: 10000 },
-    declareIntent: fixedDeclarer({ mode: "modify", targetMapId: start.id, adventure: { village: false, dungeon: false, party: false, battle: options.requireBattle ?? false } }),
+    declareIntent: fixedDeclarer({
+      mode: "modify",
+      targetMapId: start.id,
+      requestRequirements: inspectRequirements(maps),
+      adventure: { village: false, dungeon: false, party: false, battle: options.requireBattle ?? false },
+    }),
     renderImages: options.render ?? (async () => [image]),
     chat: async (_config, request): Promise<ChatResult> => {
       deliveredImages = request.messages.flatMap(message => Array.isArray(message.content) ? message.content : []).filter(part => part.type === "image_url").length;
@@ -39,8 +64,8 @@ function fixture(options: { readonly stop?: Stop; readonly render?: ToolImageRen
         : { message: { role: "assistant", content: "SCRIPTED_FINAL" }, finishReason: "stop" };
     },
   });
-  return { project, session, events, rounds, shows, reviews, deliveredImages: () => deliveredImages,
-    run: () => session.sendUserMessage("Inspect both authored maps", event => events.push(event)) };
+  return { project, session, events, rounds, shows, reviews, startId: start.id, deliveredImages: () => deliveredImages,
+    run: (opts?: SessionTurnOptions) => session.sendUserMessage(INSPECT, event => events.push(event), undefined, opts) };
 }
 
 describe("one visual evidence lifecycle", () => {
@@ -53,6 +78,10 @@ describe("one visual evidence lifecycle", () => {
     expect(f.events.find(event => event.type === "tool_call" && event.name === "upsert_skill")).toMatchObject({ result: { ok: true } });
     expect(f.session.getProposedProject().database.skills.some(skill => skill.id === "visual_test_skill")).toBe(true);
     expect(f.deliveredImages()).toBe(2);
+    const statuses = statusById(f.session);
+    expect(statuses[SOURCE_ITEM]).toBe("verified");
+    expect(statuses[f.startId]).toBe("verified");
+    expect(statuses.second).toBe("verified");
     expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
     expect(f.session["adventureProblems"]()).toEqual([]);
     expect(result.stoppedReason).toBe(stop);
@@ -67,6 +96,10 @@ describe("one visual evidence lifecycle", () => {
     await f.run();
     // Then neither reporting surface credits the metadata as coverage.
     expect(f.deliveredImages()).toBe(0);
+    const statuses = statusById(f.session);
+    expect(statuses[SOURCE_ITEM]).toBe("blocked");
+    expect(statuses[f.startId]).toBe("blocked");
+    expect(statuses.second).toBe("blocked");
     expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
     expect(f.session["adventureProblems"]()).toHaveLength(2);
   });
@@ -80,11 +113,17 @@ describe("visual evidence invalidation and review boundaries", () => {
     // When finalizing and then undoing to the previously reviewed project.
     await f.run();
     expect(f.events.find(event => event.type === "tool_call" && event.name === "resize_map")).toMatchObject({ result: { ok: true } });
-    expect(f.session.getAcceptanceSnapshot()?.items.map(item => item.status)).toEqual(["blocked", "verified"]);
+    const afterResize = statusById(f.session);
+    expect(afterResize[f.startId]).toBe("blocked");
+    expect(afterResize.second).toBe("verified");
+    expect(afterResize[SOURCE_ITEM]).toBe("blocked");
     expect(f.session["adventureProblems"]()).toHaveLength(1);
     f.session.rebaseProject(f.project);
     // Then undo cannot recreate either the retired image receipt or its review.
-    expect(f.session.getAcceptanceSnapshot()?.items.map(item => item.status)).toEqual(["blocked", "verified"]);
+    const afterUndo = statusById(f.session);
+    expect(afterUndo[f.startId]).toBe("blocked");
+    expect(afterUndo.second).toBe("verified");
+    expect(afterUndo[SOURCE_ITEM]).toBe("blocked");
     expect(f.session["adventureProblems"]()).toHaveLength(1);
   });
 
@@ -93,8 +132,12 @@ describe("visual evidence invalidation and review boundaries", () => {
     const f = fixture();
     await f.run();
     // When another non-resetting user turn has no render-input changes.
-    const result = await f.run();
+    const result = await f.run({ goalAction: "resume" });
     // Then both reports reuse the same current receipts rather than resetting just one.
+    const statuses = statusById(f.session);
+    expect(statuses[SOURCE_ITEM]).toBe("verified");
+    expect(statuses[f.startId]).toBe("verified");
+    expect(statuses.second).toBe("verified");
     expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
     expect(f.session["adventureProblems"]()).toEqual([]);
     expect(result.assistantText).toBe("SCRIPTED_FINAL");
@@ -111,9 +154,12 @@ describe("visual evidence invalidation and review boundaries", () => {
     const result = await f.run();
     // Then delivered coverage is not equivalent to a passing visual assessment.
     expect(f.session["adventureProblems"]()).toEqual([]);
-    expect(f.session.getAcceptanceSnapshot()?.items.map(item => item.status)).toEqual(["blocked", "blocked"]);
+    const statuses = statusById(f.session);
+    expect(statuses[SOURCE_ITEM]).toBe("blocked");
+    expect(statuses[f.startId]).toBe("blocked");
+    expect(statuses.second).toBe("blocked");
     expect(result.assistantText).not.toBe("SCRIPTED_FINAL");
-    if (mode === "same-response") expect(f.events.filter(event => event.type === "tool_call" && event.name === "review_acceptance").map(event => event.type === "tool_call" && event.result.ok)).toEqual([false, false]);
+    if (mode === "same-response") expect(f.events.filter(event => event.type === "tool_call" && event.name === "review_acceptance").map(event => event.type === "tool_call" && event.result.ok)).toEqual([false, false, false]);
   });
 
   it("requires coverage of every promised map", async () => {
@@ -123,7 +169,10 @@ describe("visual evidence invalidation and review boundaries", () => {
     // When the model reviews and finalizes.
     await f.run();
     // Then unrelated coverage cannot stand in for the missing second map.
-    expect(f.session.getAcceptanceSnapshot()?.items.map(item => item.status)).toEqual(["verified", "blocked"]);
+    const statuses = statusById(f.session);
+    expect(statuses[f.startId]).toBe("verified");
+    expect(statuses.second).toBe("blocked");
+    expect(statuses[SOURCE_ITEM]).toBe("blocked");
     expect(f.session["adventureProblems"]()).toHaveLength(1);
   });
 
@@ -133,7 +182,11 @@ describe("visual evidence invalidation and review boundaries", () => {
     // When the model claims completion.
     const result = await f.run();
     // Then static adventure requirements remain independent of image verification.
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
+    const statuses = statusById(f.session);
+    expect(statuses[SOURCE_ITEM]).toBe("verified");
+    expect(statuses[f.startId]).toBe("verified");
+    expect(statuses.second).toBe("verified");
+    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
     expect(f.session["adventureRequirements"]?.battle).toBe(true);
     expect(f.session["adventureProblems"]()).toHaveLength(1);
     expect(result.assistantText).not.toBe("SCRIPTED_FINAL");

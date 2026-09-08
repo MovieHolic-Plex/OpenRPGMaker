@@ -541,14 +541,12 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     assistantMock.holdNextTurn();
     const sending = bridgeSend("안녕");
     await flushAsync();
-    // 계획이 오면 모드와 상관없이 보인다 — 예산(드라이버 턴 수)만 자율 런의 것이라 없다.
+    // C1: chat Do still enters the driver. Checklist is independent of agentMode.
     expect(findByTestId(panel, "ai-work-plan-checklist")).not.toBeNull();
-    expect(findByTestId(panel, "ai-autonomous-budget")).toBeNull();
-    expect(findByTestId(panel, "ai-autonomous-chip")?.textContent).toBe("할 일 목록");
+    expect(findByTestId(panel, "ai-autonomous-chip")?.textContent).toBe("자율 실행 중");
     findByTestId(panel, "ai-plan-book-open")?.click();
     expect(document.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(4);
-    // 패널은 autonomous 와 함께 사용자 원문(instruction)·선택 스코프를 사실로 넘긴다.
-    expect(assistantMock.getLastOpts()).toMatchObject({ autonomous: false, instruction: "안녕", scope: null });
+    expect(assistantMock.getLastOpts()).toMatchObject({ autonomous: true, instruction: "안녕", scope: null });
     assistantMock.releaseHeldTurn();
     await sending;
     expect(findByTestId(panel, "ai-work-plan-checklist")).toBeNull();

@@ -160,10 +160,46 @@ export class FakeElement extends FakeNode {
   get children(): FakeElement[] {
     return this.childNodes.filter((child): child is FakeElement => child instanceof FakeElement);
   }
+  get options(): FakeElement[] {
+    if (this.tagName !== "SELECT") return [];
+    const list = this.children.filter((child) => child.tagName === "OPTION");
+    const item = (index: number): FakeElement | null => list[index] ?? null;
+    const namedItem = (name: string): FakeElement | null =>
+      list.find((option) => option.getAttribute("id") === name || option.getAttribute("name") === name) ?? null;
+    return Object.assign(list, { item, namedItem });
+  }
+  get selectedIndex(): number {
+    if (this.tagName !== "SELECT") return -1;
+    const options = this.options;
+    if (options.length === 0) return -1;
+    const explicit = options.findIndex((option) => option.value === this.value && this.value !== "");
+    if (explicit >= 0) return explicit;
+    const flagged = options.findIndex((option) => option.getAttribute("selected") !== null);
+    if (flagged >= 0) return flagged;
+    return this.getAttribute("multiple") !== null ? -1 : 0;
+  }
+  set selectedIndex(value: number) {
+    if (this.tagName !== "SELECT") return;
+    const options = this.options;
+    if (!Number.isInteger(value) || value < 0 || value >= options.length) {
+      this.value = "";
+      return;
+    }
+    this.value = options[value]!.value;
+  }
   get selectedOptions(): FakeElement[] {
     if (this.tagName !== "SELECT") return [];
-    const options = this.children.filter((child) => child.tagName === "OPTION");
-    return options.filter((option, index) => option.value === this.value || (this.value === "" && index === 0));
+    const options = this.options;
+    const index = this.selectedIndex;
+    return index >= 0 && options[index] ? [options[index]!] : [];
+  }
+  get index(): number {
+    if (this.tagName !== "OPTION") return 0;
+    let parent: FakeElement | null = this.parentElement;
+    while (parent && parent.tagName !== "SELECT") parent = parent.parentElement;
+    if (!parent) return 0;
+    const found = parent.options.indexOf(this);
+    return found >= 0 ? found : 0;
   }
   private readonly listeners: Partial<Record<string, EventListenerOrEventListenerObject[]>> = {};
   readonly classList = {
