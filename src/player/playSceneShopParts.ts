@@ -1,5 +1,6 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
+import { resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import {
@@ -490,8 +491,7 @@ export function partyPreview(scene: PlaySceneContext): HTMLElement {
       attrs: { role: "img", "aria-label": name },
     });
     sprite.dataset.actorSlot = String(index);
-    const resourceId = scene.session.actorFaceResourceIds?.[actorId]
-      ?? record?.faceResourceId
+    const resourceId = (record ? resolveActorFaceResourceId(scene.session, record, project) : scene.session.actorFaceResourceIds?.[actorId])
       ?? (record ? defaultActorFaceResourceId(record) : undefined);
     const url = resourceId ? resolveAssetResourceUrl(resourceId, { project }) : undefined;
     if (url) {

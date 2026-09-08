@@ -1,4 +1,5 @@
 import { BUNDLED_EASYRPG_CHARSET_ASSETS } from "@/assets/bundled";
+import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import type { Project } from "@/project/types";
 import type { Dir } from "@/player/input";
@@ -7,6 +8,7 @@ import { charsetIdleFrameIndex, isEasyRpgCharsetTextureKey } from "@/player/char
 export type EventSpriteTexture = {
   readonly texture: string;
   readonly frame: string | number;
+  readonly charset?: boolean;
   /** Static battler art is fitted to a field-sized box before authored scale. */
   readonly fitSize?: number;
 };
@@ -24,7 +26,10 @@ export function resolveEventSpriteTexture(
   if (spriteDef) return { texture: spriteId, frame };
 
   const uploadedKind = project.assets.uploaded[spriteId]?.kind;
+  if (uploadedKind === "charset") return { texture: spriteId, frame, charset: true };
   if (isSpriteLikeUpload(uploadedKind)) return { texture: spriteId, frame };
+  const charset = findCharsetAsset(spriteId);
+  if (charset) return { texture: charset.textureKey, frame };
   if (isBundledCharsetTexture(spriteId)) return { texture: spriteId, frame };
 
   const bundledSprite = Object.values(project.assets.sprites).find(
@@ -60,7 +65,7 @@ export function eventSpriteFrameForDirection(
   if (!texture) return undefined;
   if (!direction) return texture.frame;
   if (typeof texture.frame !== "number") return texture.frame;
-  if (!isEasyRpgCharsetTextureKey(texture.texture)) return texture.frame;
+  if (!texture.charset && !isEasyRpgCharsetTextureKey(texture.texture)) return texture.frame;
   return charsetIdleFrameIndex(texture.frame, direction);
 }
 

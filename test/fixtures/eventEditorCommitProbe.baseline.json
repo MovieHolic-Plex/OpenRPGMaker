@@ -14,9 +14,11 @@
   "probes": {
    "event-command-face-resource": "replaceCommand {\"flipHorizontally\":false,\"kind\":\"changeFace\",\"position\":\"left\",\"resourceId\":\"__p_a66b5f__\"}",
    "event-command-face-position": "replaceCommand {\"flipHorizontally\":false,\"kind\":\"changeFace\",\"position\":\"right\",\"resourceId\":\"res1\"}",
-   "event-command-face-flip-horizontal": "replaceCommand {\"flipHorizontally\":true,\"kind\":\"changeFace\",\"position\":\"left\",\"resourceId\":\"res1\"}"
+   "event-command-face-flip-horizontal": "replaceCommand {\"flipHorizontally\":true,\"kind\":\"changeFace\",\"position\":\"left\",\"resourceId\":\"res1\"}",
+   "event-command-face-appearance": "single-option",
+   "event-command-face-presentation": "disabled"
   },
-  "probeCount": 3,
+  "probeCount": 5,
   "commitCount": 3,
   "noCommitCount": 0
  },

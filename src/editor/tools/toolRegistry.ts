@@ -48,6 +48,7 @@ import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
+import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { AUTHOR_HOUSE_TOOL } from "./authorHouseToolDef";
@@ -214,6 +215,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(VISION_QUERY_TOOLS, "map"),
   // View focus is domain-independent.
   ...VIEW_FOCUS_TOOLS,
+  ...withDomain(CHARACTER_APPEARANCE_TOOLS, "database"),
   ...withDomain(PLACEMENT_TOOLS, "tile"),
   ...withDomain(RANGE_CLASSIFY_TOOLS, "tile"),
 ]);

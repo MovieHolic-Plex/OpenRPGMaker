@@ -305,6 +305,50 @@ describe("event draft aggregate validator", () => {
     expect(result.canCommit).toBe(false);
   });
 
+  it("accepts shop goods that exist as equipment and still rejects unknown ids", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const equipmentId = project.database.equipment[0]?.id;
+    if (!equipmentId) throw new Error("blank project has no equipment");
+    const event = gameEvent(page({
+      commands: [
+        {
+          kind: "shop",
+          itemIds: [equipmentId],
+          allowSell: true,
+          quantityMode: "single",
+          shopType: "normal",
+          messageType: "welcome",
+          branchOnTransaction: false,
+          transactionBranch: [],
+        },
+        {
+          kind: "shop",
+          itemIds: ["item_does_not_exist"],
+          allowSell: true,
+          quantityMode: "single",
+          shopType: "normal",
+          messageType: "welcome",
+          branchOnTransaction: false,
+          transactionBranch: [],
+        },
+      ],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+    const missing = result.issues.filter((issue) => issue.code === "reference.item.missing");
+
+    expect(missing).toEqual([
+      expect.objectContaining({
+        code: "reference.item.missing",
+        commandPath: [1],
+        message: "상점 아이템 'item_does_not_exist'을(를) 찾을 수 없습니다.",
+      }),
+    ]);
+    expect(result.issues.some((issue) => issue.commandPath?.[0] === 0 && issue.code === "reference.item.missing")).toBe(false);
+  });
+
   it("accepts numeric M2 values and requires a variable reference only in variable mode", () => {
     const project = createBlankProject();
     const mapId = project.startMapId;

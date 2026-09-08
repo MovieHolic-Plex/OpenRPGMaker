@@ -214,14 +214,17 @@ the `RULES` table in `build-se-labels.py`, then re-run the last two scripts.
 
 ## Project sound descriptions
 
-`src/assets/audioResourceCatalog.ts` derives SE defaults from existing title, category,
-duration and tags, with `descriptionSource: "metadata-derived"`. This preserves the limits
-of the underlying provisional labels. It doesn't add listening verification or infer new
-instruments, moods or acoustic properties. Don't hand-edit generated `src/assets/seCatalog.ts`
+`src/assets/audioResourceCatalog.ts` first overlays accepted shared AI analysis drafts from
+the editor-only static `audioAiDescriptions.json`, labeled **AI 분석 초안** (`ai-listening`).
+These are unverified model claims, not verified acoustic facts or independently measured
+numbers. Missing/failed/withheld drafts retain title/category/duration/tag-derived defaults
+with `descriptionSource: "metadata-derived"` and the limits of the provisional labels.
+See `openwiki/bgm-catalog.md` for strict acceptance, model provenance and recovery accounting.
+Don't hand-edit generated `src/assets/seCatalog.ts`
 or rerun asset pipelines just to author a project description.
 
 `Project.audioDescriptions.sound[rawId]` is the only project override store. A missing key
-inherits the derived default; `""` explicitly clears it and still has source `project`;
+inherits the AI draft when present, otherwise the derived default; `""` explicitly clears it and still has source `project`;
 reset removes the key. Uploads without trusted description data have an empty description
 and source `missing`. Neither upload `meta` nor `ResourceProfile` stores a duplicate override.
 Search uses the effective description while retaining independent tags.

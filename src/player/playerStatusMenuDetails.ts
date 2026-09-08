@@ -152,7 +152,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
           unavailableReason: anyTarget ? undefined : preview.reason,
           description: anyTarget ? "사용 가능한 파티원 모두에게 적용됩니다." : preview.reason,
           face: {
-            resourceId: resolveActorFaceResourceId(session, actor) ?? defaultActorFaceResourceId(actor),
+            resourceId: resolveActorFaceResourceId(session, actor, project) ?? defaultActorFaceResourceId(actor),
             alt: resolveActorName(session, actor),
             testId: `status-menu-target-face-${actor.id}`,
           },

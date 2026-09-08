@@ -380,6 +380,66 @@ the existing cool-white/slate/indigo Database Studio, not a new theme.
   checked in the actual game. Empty action-label edits restore runtime defaults.
 - Cinematic tab views are disposed and evicted on departure instead of retaining
   live media/callbacks in the Database cache. Other tab caching is unchanged.
+## Independent image options (2026-09-07)
+
+- Existing AI settings adds an Image generation section between Model and Behavior.
+  Reuse settingsSection/settingsRow, ai-config-select, ai-config-help and the
+  existing keyboard-capable custom select; no CSS, typography, token or modal
+  geometry changes. Existing settings-body remains the vertical scroll owner.
+- Image provider/model are separately labelled and autosaved without changing
+  the chat provider, supervisor model or execution model. Chat changes preserve
+  image choices, including saved unsupported choices.
+- Only image-output models belong in this list. Unsupported models stay visibly
+  disabled; a status explanation distinguishes route support from actual login.
+  No connected state is inferred from the catalog; credentials stay server-side.
+- Codex uses the labelled default image route, not an asserted GPT Image version;
+  the provider does not report one. Login help follows the image provider and
+  calls out unverified reference-image support without claiming it works.
+- Firefox isolated real-settings checks cover 1024x768 and 1440x900, keyboard
+  provider selection, reopen persistence and no horizontal overflow. Screenshots
+  are in output/evidence/image-options; final editor visual review is lead-owned.
+
+## Character appearance workspace (2026-09-06)
+
+- Party navigation adds `캐릭터 외형`. This is a visual catalog, not a metrics
+  dashboard: searchable list, selected document, three optional graphic slots,
+  dialogue specimen and reference list, in that reading order.
+- Reuse `workspaceShell`, `listPane`, `listRow`, `detailPane`, `sectionCard`,
+  `listToolbar`, labeled native database controls and the resource picker.
+  The list and `.db-ws-detail-body` independently own vertical scrolling.
+  Modal header/footer remain fixed; every shrinking pane has min-size zero.
+- Keep the cool-white Studio `--db-studio-*` surface/text/border/accent tokens,
+  `--font-ui`, 13px/1.5 controls, 12px help, 14px section headings, 32px minimum
+  targets, `--radius-s`, and `--space-1` through `--space-6`. Media wells use
+  128px portrait height and 192px dialogue specimen height; these are preview
+  geometry, not a new typography or spacing scale. No decorative motion.
+- This catalog keeps its list beside the document throughout the desktop matrix:
+  the list is 192–240px, the detail consumes remaining width, and slot cards
+  stack within it. It overrides the generic DB 980px stacked-pane breakpoint,
+  which would leave too little vertical space for this document.
+- Slot cards wrap intrinsically at 192px available width. Long identifiers wrap.
+  The supported desktop matrix is 1024x768, 1280x800 and 1440x900. Preserve the
+  same mounted search and metadata fields while typing, including IME input;
+  refresh list rows and derived previews separately.
+- Each slot has actual image/charset preview, choose, upload and clear actions.
+  Charset selection includes the manual character slot and never AI generation.
+  Face/bust generation stays detached until explicit Apply. Occupied slots have
+  an explicit replacement action. Pending/error/cancel states are visible and
+  announced; cancellation never claims the upstream provider stopped.
+- Changing the selected record, creating/duplicating/deleting it, leaving the
+  appearance tab, or actually closing Database cancels pending generation and
+  disposes candidate subscriptions. Ordinary same-record refresh preserves the
+  candidate. Assistant requests await Database opening before starting a new
+  generation, so disposal of an old view cannot cancel the incoming request.
+- Actor and event-page bindings retain direct graphics and reveal linked source
+  rather than presenting legacy controls as effective. Unlink restores direct
+  graphics. Portrait commands choose either a shared set and presentation or
+  their existing direct resource.
+- Personas: first-time author discovering upload, dense-catalog author searching
+  without losing selection, and keyboard/IME author retaining caret and focus.
+  Disabled deletion explains each use; missing slots are valid, not errors.
+  Lead owns final Firefox visual/keyboard evidence and runtime acceptance.
+  No mobile editor, Lighthouse score or unobserved visual approval is claimed.
 
 ## System settings workspace (2026-09-06)
 

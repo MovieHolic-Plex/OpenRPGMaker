@@ -80,6 +80,7 @@ type ActorResourceDefaults = {
 };
 
 type LegacyActorRecord = {
+  readonly appearanceId?: string;
   readonly id: string;
   readonly name: string;
   readonly nickname?: string;
@@ -146,6 +147,7 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
   const characterResourceId = cleanOptionalId(actor.characterResourceId) ?? defaultActorCharacterResourceId(actor);
   return {
     id: actor.id,
+    ...(actor.appearanceId !== undefined ? { appearanceId: actor.appearanceId } : {}),
     name: actor.name,
     nickname: actor.nickname ?? "None",
     classId: actor.classId,

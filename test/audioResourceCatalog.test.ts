@@ -7,6 +7,9 @@ import * as generatedRegistry from "@/assets/generatedAssetResourceResolver";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
 import { SE_CATALOG } from "@/assets/seCatalog";
 
+// Preserve baseline-provider coverage; audioAiDescriptions.test.ts exercises real drafts.
+vi.mock("@/assets/audioAiDescriptions", () => ({ getAudioAiDescription: () => undefined }));
+
 // The real manifest currently has no audio entries. Substitute only its metadata
 // provider so promotion eligibility is exercised rather than vacuously passing.
 vi.mock("@/assets/oprnGeneratedAssetPlan", () => ({

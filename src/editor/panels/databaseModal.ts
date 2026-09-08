@@ -1,4 +1,5 @@
 import { dismissCoachMarks } from "@/editor/coachMarks";
+import { disposeAppearanceSlots } from "@/editor/panels/databaseAppearanceSlots";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
 import {
@@ -309,6 +310,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   const close = (): void => {
     if (modalClosed) return;
     modalClosed = true;
+    disposeAppearanceSlots();
     if (graceFlushTimer !== null) clearTimeout(graceFlushTimer);
     unsubscribeCodex();
     unsubscribeStore(); // 구독 해제 — 리스너 누수 금지(1파 M11 교훈).

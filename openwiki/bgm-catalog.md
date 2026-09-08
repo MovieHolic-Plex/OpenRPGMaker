@@ -197,12 +197,13 @@ VITE_BGM_CDN_BASE=https://cheapcdn.sgp1.cdn.digitaloceanspaces.com
 resources, profiles and uploads. Entries are deduplicated by kind/raw ID; an upload's explicit
 kind and name take precedence over its matching profile.
 
-- BGM defaults reuse `BGM_CATALOG[].brief` unchanged, with source `catalog-brief`. These are
-  creative briefs, not listening reports. Don't edit generated `src/assets/bgmCatalog.ts`
-  to store project prose.
-- `Project.audioDescriptions.music[rawId]` overrides the brief. No key means inherit; `""`
+- Shared defaults first use the editor-only AI draft overlay described below. Without an
+  accepted draft, BGM reuses `BGM_CATALOG[].brief` unchanged with source `catalog-brief`:
+  creative briefs, not listening reports. Don't edit generated `src/assets/bgmCatalog.ts`.
+- `Project.audioDescriptions.music[rawId]` overrides the effective default. No key means inherit; `""`
   means intentionally empty, with source `project`; reset removes the key. Even a value equal
-  to the current brief remains an explicit override.
+  to the current default remains an explicit override. Reset returns the AI draft if present,
+  otherwise the original metadata; clearing never exposes a hidden draft in search.
 - Other source values are `metadata-derived` and `missing`. Generated/uploaded entries without
   trusted description data start empty; their filenames aren't invented listening evidence.
 - Search uses the effective description, not a hidden copy of an overridden or cleared brief.
@@ -219,6 +220,47 @@ shared catalog and effective-description search.
 This feature doesn't change asset bytes, codecs, URLs, licenses, resource IDs or automatic
 scene BGM selection. Keep metadata out of the player dependency graph; runtime playback
 continues to use `src/assets/bgmCatalogRuntime.ts`.
+
+### Shared AI analysis drafts (2026-09-08)
+
+`src/assets/audioAiDescriptions.ts` statically imports `audioAiDescriptions.json` inside
+the editor metadata graph. `listAudioResources` stays synchronous: project own value (including
+empty) > accepted AI draft > original metadata. The overlay changes only description/source,
+not IDs, kind partitions, labels, tags, ordering, playback or project storage. Do not import
+this provider or JSON from runtime/player or persistence modules, or introduce a public fetch
+and loading race. Character count is not a UTF-8 byte-size measurement.
+
+The source token is `ai-listening`; every shared UI source label says **AI 분석 초안**.
+These are unverified model outputs, not verified acoustic facts. Instrument, vocal, timing,
+frequency and other numeric claims are AI assertions, not independent measurements.
+JSON entries retain model, review state and evidence reference; most are
+`gemini-3.8-flash-high`, not Pro. Acceptance requires `status === "ok"`,
+`result.audio_available === true` and a nonblank description of at most 4,000 UTF-16 units.
+Missing audio flags are never success. Invalid/no-audio/failed/missing drafts leave metadata
+alone. The provider looks up only already-enumerated IDs; it cannot register orphan IDs.
+
+- Three vocal-claim BGM drafts remain withheld: `cc0-bgm-rtp-lft-001`,
+  `cc0-bgm-rtp-rad-001`, `cc0-bgm-rtp-prx-006`. They retain creative briefs.
+- Vanguard (`cc0-bgm-rtp-btl-001`) replaces the rejected Flash analysis with the supplied
+  Gemini 3.1 Pro draft after human correction removing its voice claim. The user preferred
+  this sound description; that does not independently verify every instrument. The original
+  independent command used `gemini-3.1-pro-high` (confirmed by lead); no timestamp is invented.
+- Slime8, carpet003 and ice9 replace original no-audio records with explicitly approved
+  `gemini-3.1-pro-high` recovery drafts, still unverified.
+- Interface1 restores the original successful Flash smoke description verbatim from
+  `output/evidence/agy-interface-smoke-transcript.json`, because the prior phase deleted its
+  temporary JSONL. Two later Pro attempts (repository and isolated cwd) reported no audio;
+  neither is treated as a successful analysis. The restored record has no invented timestamp.
+- Thirty MIDI failures retain metadata; no MIDI playback capability was added.
+
+The shipped set contains 1,016 drafts: 278 catalog BGM, 635 catalog SE, 103 other audio.
+The remaining 33 built-ins use fallback metadata (30 MIDI and the three withheld BGM).
+The JSON records exclusions separately from accepted replacements. Input hashes, status
+counts and failed recovery receipts are in `output/evidence/audio-ai-final/ingestion-report.json`.
+Tests compare effective values with shipped data, never pin descriptive prose. The old
+baseline-provider suites mock only the new provider to empty; the unmocked
+`test/audioAiDescriptions.test.ts` proves actual integration, search, source DOM,
+override/clear/reset, kind isolation, strict acceptance and absence from project serialization.
 
 ## Traps
 

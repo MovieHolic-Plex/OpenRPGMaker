@@ -61,9 +61,11 @@ describe("nameEntry 문자표 순수 로직", () => {
 });
 
 function mkProject(actorName: string): Project {
-  return {
-    database: { actors: [{ id: "a1", name: actorName }] },
-  } as unknown as Project;
+  const project = createBlankProject();
+  const template = project.database.actors[0];
+  if (!template) throw new Error("Name entry fixture requires an actor");
+  project.database.actors.unshift({ ...template, id: "a1", name: actorName });
+  return project;
 }
 
 function mkSession(): PlaySessionLike {

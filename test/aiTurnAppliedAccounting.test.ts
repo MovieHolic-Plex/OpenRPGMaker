@@ -175,6 +175,40 @@ describe("턴 표면의 이미 적용된 쓰기 정산", () => {
     expect(h.appendBubble.mock.calls.filter(([, text]) => isProposalCompletenessWarning(text))).toHaveLength(expected);
   });
 
+  it("keeps this turn's detached appearance handoff out of zero-change failure reporting", async () => {
+    const h = setup();
+    const before = JSON.stringify(store.getCurrent());
+    const result = {
+      assistantText: "Review the candidate in the database.",
+      proposedCalls: [],
+      stoppedReason: "final" as const,
+      appearanceGeneration: { status: "generating" as const, appearanceId: "appearance", slot: "face" as const },
+    };
+
+    await h.runner.executeTurn(h.session, "캐릭터 외형의 얼굴 그림을 만들어줘", async () => result);
+
+    expect(h.deps.noteNoChanges).not.toHaveBeenCalled();
+    expect(h.deps.applyProposal).not.toHaveBeenCalled();
+    expect(JSON.stringify(store.getCurrent())).toBe(before);
+    expect(observed.preference).toHaveBeenLastCalledWith(expect.objectContaining({ changed: false }));
+  });
+
+  it("does not carry a previous appearance handoff into a later empty turn", async () => {
+    const h = setup();
+    const pending = {
+      assistantText: "", proposedCalls: [], stoppedReason: "final" as const,
+      appearanceGeneration: { status: "generating" as const, appearanceId: "appearance", slot: "face" as const },
+    };
+    await h.runner.executeTurn(h.session, "first", async () => pending);
+    h.deps.noteNoChanges.mockClear();
+
+    await h.runner.executeTurn(h.session, "second", async () => ({
+      assistantText: "", proposedCalls: [], stoppedReason: "final",
+    }));
+
+    expect(h.deps.noteNoChanges).toHaveBeenCalledTimes(1);
+  });
+
   it("활동 로그 변환기와 JSON 왕복이 적용 건수를 보존한다", () => {
     const record = buildAiActivityLogRecord({
       channel: "chat", instruction: "타이틀 변경", toolCalls: [], audit: [],
