@@ -458,7 +458,6 @@
 .database-modal-backdrop .database-modal-window .db-system-form .db-resource-picker-control-meta { display: flex; flex: 1; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-resource-picker-inline-name { flex: 1 0 100%; font: 500 13px/1.5 var(--font-ui); color: var(--db-studio-text-1); white-space: normal; overflow-wrap: anywhere; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-resource-picker-inline-thumb { width: 64px; height: 48px; object-fit: contain; flex-shrink: 0; }
-.database-modal-backdrop .database-modal-window .db-system-form .db-resource-picker-audio { width: auto; height: auto; display: grid; gap: 4px; background: transparent; padding: 0; }
 /* Resolution analysis: real ratio frame and compact definitions. */
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-resolution-diagnostics { display: grid; gap: 12px; padding: 16px; border-radius: 6px; background: var(--db-studio-inset); }
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-resolution-diagram { display: grid; place-items: center; min-height: 140px; }
