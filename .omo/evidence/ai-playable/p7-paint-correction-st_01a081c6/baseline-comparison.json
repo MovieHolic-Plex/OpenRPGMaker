@@ -1,0 +1,12 @@
+{
+  "base": "b139e4e24144ad48c298f06e32fe7fa66892f7ac",
+  "sameFailures": true,
+  "failureCount": 5,
+  "failures": {
+    "hard cluster rule placement paint_tiles가 침엽수 하단(290) 단독 칠하기를 상단(260) 동반 배치로 보정한다": "AssertionError: expected -1 to be 260 // Object.is equality",
+    "hard cluster rule placement 동반 타일 위치에 같은 타일이 이미 있으면 재배치를 허용한다(멱등)": "AssertionError: expected -1 to be 290 // Object.is equality",
+    "hard cluster rule placement paint_tiles가 활엽수 하단 좌측(292)에서 2x2 전체를 원자 배치한다": "AssertionError: expected -1 to be 262 // Object.is equality",
+    "hard cluster rule placement scatter_object가 침엽수를 1x2 원자 풋프린트로 배치하고 summary에 동반 타일을 표시한다": "AssertionError: expected +0 to be 3 // Object.is equality",
+    "hard cluster rule placement scatter_object가 활엽수를 source_rect 기반 2x2 원자 풋프린트로 배치한다": "AssertionError: expected -1 to be 292 // Object.is equality"
+  }
+}

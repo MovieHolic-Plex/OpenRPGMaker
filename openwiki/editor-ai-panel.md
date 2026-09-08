@@ -1168,10 +1168,18 @@ already-satisfied `paint_tiles(mode:"cells")` maintenance for rectangular `terra
 assets with an explicit layer. Session automatic completion/review and `aiTurnRunner`
 supply the host's current tool-applied project (including pending drafts and applied
 milestones). A native successful zero-diff operation needs a non-skipped touch receipt,
-exact requested cells, effective layer (`tileLayerHome`), and matching current tile
-content covering every asset cell. Missing/partial/wrong/stale evidence stays a warning;
-a later changed rectangle cannot hide invalidated maintenance. `cells` never borrows
-its optional `from/to` bounding box, including in ordinary changed-region accounting.
+exact requested cells, and matching current tile content covering every asset cell.
+The painter freezes `data.effectiveLayer` with its native touch metrics at execution;
+completeness consumes that historical layer, never current `tileLayerHome` metadata,
+the requested layer alone, or summary prose. Later `set_tile_rules` cannot move coverage:
+an upper-home paint requested lower remains upper coverage after a lower-home metadata
+edit with zero cell changes, even when both layers contain the same tile numbers.
+Validated changed `cells` operations for the same maintenance tile and executed asset
+layer may contribute exact currently matching cells. Thus a one-cell no-op does not
+veto a later full twelve-cell repair with eleven real changes. Missing/partial/wrong/
+skipped/failed/stale evidence stays a warning; a changed rectangle or different tile
+cannot hide invalidated maintenance. `cells` never borrows its optional `from/to`
+bounding box, including in ordinary changed-region accounting.
 No prose, asset style, or overwrite policy grants preservation authority. This only
 satisfies spatial placement coverage: meaningful diffs, new quantity, canonical
 `targetChange`, scene verification, acceptance and delivery remain separate. Other

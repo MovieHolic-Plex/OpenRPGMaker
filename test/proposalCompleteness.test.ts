@@ -10,6 +10,8 @@ import {
 import type { BuildSpec } from "@/ai/buildSpec";
 import { declaredIntent } from "./intentFixture";
 import type { ChangeSummary } from "@/editor/tools/types";
+import { runTool } from "@/editor/tools";
+import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { HISTORICAL_PLACEMENT_CORRECTION } from "./fixtures/placementRequests";
 import { FLOOR_PAINT_ARGS, WALL_PAINT_ARGS, PRESERVED_PAINT_SPEC, nativePaintCall, preservedPaintContext } from "./fixtures/preservedPaint";
 
@@ -70,7 +72,7 @@ describe("native preserved paint completeness", () => {
     expect(proposalCompletenessWarnings({ buildSpec: PRESERVED_PAINT_SPEC, calls: [floor, walls] })).toHaveLength(1);
   });
 
-  it.each(["missing", "failed", "missing-diff", "missing-receipt", "short-receipt", "skipped", "wrong-tile", "wrong-map"] as const)("retains the warning for %s operation evidence", (failure) => {
+  it.each(["missing", "failed", "missing-diff", "missing-receipt", "missing-layer", "invalid-layer", "short-receipt", "skipped", "wrong-tile", "wrong-map"] as const)("retains the warning for %s operation evidence", (failure) => {
     const ctx = preservedPaintContext();
     const floor = nativePaintCall(ctx, FLOOR_PAINT_ARGS);
     const walls = nativePaintCall(ctx, WALL_PAINT_ARGS);
@@ -81,6 +83,8 @@ describe("native preserved paint completeness", () => {
         ...walls.result, ok: failure !== "failed",
         diff: failure === "missing-diff" ? undefined : walls.result.diff,
         data: failure === "missing-receipt" ? undefined : {
+          ...(walls.result.data as Record<string, unknown>),
+          ...(failure === "missing-layer" ? { effectiveLayer: undefined } : failure === "invalid-layer" ? { effectiveLayer: "both" } : {}),
           tilesTouched: failure === "short-receipt" ? 23 : 24, skippedClusterCells: failure === "skipped" ? 1 : 0,
         },
       },
@@ -108,6 +112,79 @@ describe("native preserved paint completeness", () => {
     const wallSpec = { ...PRESERVED_PAINT_SPEC, assets: PRESERVED_PAINT_SPEC.assets.slice(1) };
     expect(proposalCompletenessWarnings({ buildSpec: wallSpec, calls: [walls], project: ctx.project })).toEqual([]);
     expect(proposalCompletenessWarnings({ buildSpec: { ...wallSpec, assets: wallSpec.assets.map(asset => ({ ...asset, layer: "upper" })) }, calls: [walls], project: ctx.project })).toHaveLength(1);
+  });
+
+  it.each(["complete", "partial", "wrong-tile", "rect", "skipped", "failed"] as const)("checks a native %s repair after an earlier one-cell no-op", (repairKind) => {
+    const ctx = preservedPaintContext();
+    const cells = WALL_PAINT_ARGS.cells.filter(cell => cell.y === 0);
+    const spec = { ...PRESERVED_PAINT_SPEC, assets: [PRESERVED_PAINT_SPEC.assets[1]] };
+    const seed = nativePaintCall(ctx, { ...WALL_PAINT_ARGS, tile: 112, cells: cells.slice(1) });
+    expect(seed.result).toMatchObject({ ok: true, diff: { tilesChanged: 11 } });
+    const partial = nativePaintCall(ctx, { ...WALL_PAINT_ARGS, cells: [cells[0]] });
+    expect(partial.result).toMatchObject({ ok: true, diff: { tilesChanged: 0 }, data: { tilesTouched: 1, skippedClusterCells: 0 } });
+    const repair = nativePaintCall(ctx, {
+      ...WALL_PAINT_ARGS,
+      cells: repairKind === "partial" ? [cells[1]] : repairKind === "skipped" ? [...cells, { x: 12, y: 0 }] : cells,
+      tile: repairKind === "wrong-tile" ? 342 : 306,
+      ...(repairKind === "rect" ? { mode: "rect", from: cells[0], to: cells[11] } : {}),
+      ...(repairKind === "failed" ? { layer: "invalid" } : {}),
+    });
+    expect(repair.result.ok).toBe(repairKind !== "failed");
+    if (repairKind === "complete") {
+      expect(repair.result).toMatchObject({ diff: { tilesChanged: 11 }, data: { tilesTouched: 12, skippedClusterCells: 0 } });
+      expect(ctx.project.maps.map_basement.lowerTiles.slice(0, 12)).toEqual(Array(12).fill(306));
+      expect(proposalCompletenessWarnings({ buildSpec: spec, calls: [repair], project: ctx.project })).toEqual([]);
+      expect(proposalCallChangedSomething(partial)).toBe(false);
+      expect(proposalCallChangedSomething(repair)).toBe(true);
+      expect(proposalChangedRegions([partial, repair])).toHaveLength(12);
+      expect(proposalCompletenessWarnings({ requestText: "타일 160개 추가해줘", calls: [partial, repair], project: ctx.project })).toHaveLength(1);
+      for (const failure of ["missing", "short", "layer", "skipped", "failed"] as const) {
+        const invalid: ProposalCompletenessCall = { ...repair, result: { ...repair.result,
+          ok: failure !== "failed",
+          data: failure === "missing" ? undefined : { ...(repair.result.data as Record<string, unknown>),
+            ...(failure === "short" ? { tilesTouched: 11 } : {}),
+            ...(failure === "layer" ? { effectiveLayer: "upper" } : {}),
+            ...(failure === "skipped" ? { skippedClusterCells: 1 } : {}),
+          },
+        } };
+        expect(proposalCompletenessWarnings({ buildSpec: spec, calls: [partial, invalid], project: ctx.project }), failure).toHaveLength(1);
+      }
+    }
+    if (repairKind === "skipped") expect(repair.result.data).toMatchObject({ tilesTouched: 12, skippedClusterCells: 1 });
+    expect(proposalCompletenessWarnings({ buildSpec: spec, calls: [partial, repair], project: ctx.project }))
+      .toHaveLength(repairKind === "complete" ? 0 : 1);
+  });
+
+  it.each(["lower", "upper"] as const)("keeps historical upper execution coverage after native metadata moves the tile home to lower (%s asset)", (assetLayer) => {
+    const ctx = preservedPaintContext();
+    const cells = WALL_PAINT_ARGS.cells.filter(cell => cell.y === 0);
+    const tilesetId = ctx.project.maps.map_basement.tilesetId;
+    const setup = runTool(ctx, "set_tile_rules", { tilesetId, entries: [{ tile: 306, layer: "upper" }], confirmedByUser: true });
+    expect(setup).toMatchObject({ ok: true, diff: { tilesChanged: 0, tilesetsChanged: 1 } });
+    expect(tileLayerHome(ctx.project.tilesets[tilesetId], 306)).toBe("upper");
+    const upper = nativePaintCall(ctx, { ...WALL_PAINT_ARGS, cells, layer: "upper" });
+    expect(upper.result).toMatchObject({ ok: true, diff: { tilesChanged: 12 } });
+    const historical = nativePaintCall(ctx, { ...WALL_PAINT_ARGS, cells, layer: "lower" });
+    expect(historical.result).toMatchObject({ ok: true, diff: { tilesChanged: 0 }, data: { tilesTouched: 12, skippedClusterCells: 0 } });
+    const before = structuredClone(ctx.project.maps.map_basement);
+    expect(before.lowerTiles.slice(0, 12)).toEqual(Array(12).fill(306));
+    expect(before.upperTiles.slice(0, 12)).toEqual(Array(12).fill(306));
+    const spec = { ...PRESERVED_PAINT_SPEC, assets: [{ ...PRESERVED_PAINT_SPEC.assets[1], layer: assetLayer }] };
+    const expectedWarnings = assetLayer === "upper" ? 0 : 1;
+    expect(proposalCompletenessWarnings({ buildSpec: spec, calls: [historical], project: ctx.project })).toHaveLength(expectedWarnings);
+    const args = { tilesetId, entries: [{ tile: 306, layer: "lower" }], confirmedByUser: true };
+    const metadata = { name: "set_tile_rules", args, result: runTool(ctx, "set_tile_rules", args) };
+    expect(metadata.result).toMatchObject({ ok: true, diff: { tilesChanged: 0, tilesetsChanged: 1 } });
+    expect(tileLayerHome(ctx.project.tilesets[tilesetId], 306)).toBe("lower");
+    expect(ctx.project.maps.map_basement.lowerTiles).toEqual(before.lowerTiles);
+    expect(ctx.project.maps.map_basement.upperTiles).toEqual(before.upperTiles);
+    expect(proposalCompletenessWarnings({ buildSpec: spec, calls: [historical, metadata], project: ctx.project })).toHaveLength(expectedWarnings);
+    expect(historical.result.data).toMatchObject({ effectiveLayer: "upper" });
+    expect(Object.isFrozen(historical.result.data)).toBe(true);
+    // Ledger serialization keeps structured execution evidence, without summary prose.
+    const serialized: ProposalCompletenessCall = JSON.parse(JSON.stringify({ name: historical.name, args: historical.args,
+      result: { ok: historical.result.ok, diff: historical.result.diff, data: historical.result.data } }));
+    expect(proposalCompletenessWarnings({ buildSpec: spec, calls: [serialized, metadata], project: ctx.project })).toHaveLength(expectedWarnings);
   });
 
   it("checks the current applied cells after later native edits, not the old success or the invalidating diff", () => {

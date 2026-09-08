@@ -7,7 +7,6 @@ import { stripContextFooter } from "./contextFooter";
 import type { IntentDeclaration } from "./intentDeclaration";
 import { QUICK_REPLY_MARKER } from "./interviewPrompt";
 import type { ChangeSummary } from "@/editor/tools/types";
-import { tileLayerHome } from "@/editor/tileLayerClassification";
 import type { Project } from "@/project/types";
 
 export const PROPOSAL_COMPLETENESS_WARNING_PREFIX = "⚠ 미이행:";
@@ -114,8 +113,8 @@ export function buildSpecCompletenessWarnings(buildSpec: BuildSpec, calls: reado
 
 /**
  * Explicit-cell terrain maintenance is placement coverage, not construction/change evidence.
- * A partial or subsequently invalidated maintenance operation must not borrow a later
- * changed rectangle. Other asset kinds and unbounded paint modes retain the old lint.
+ * Matching host-verified repairs may contribute exact cells, never an unrelated changed
+ * rectangle or replacement tile. Other asset kinds and unbounded paint modes retain the old lint.
  */
 function alreadySatisfiedPaintCoverage(mapId: string, asset: SpecAsset, calls: readonly ProposalCompletenessCall[], project?: Project): boolean | null {
   if (!project || asset.kind !== "terrain" || !asset.layer || (asset.shape && asset.shape !== "rect")) return null;
@@ -129,21 +128,26 @@ function alreadySatisfiedPaintCoverage(mapId: string, asset: SpecAsset, calls: r
   if (candidates.length === 0) return null;
   const map = project.maps[mapId];
   if (!map) return false;
-  const tileset = project.tilesets[map.tilesetId];
+  const repairs = calls.filter(call => call.name === "paint_tiles" && call.args.mapId === mapId
+    && call.args.mode === "cells" && (call.result.diff?.tilesChanged ?? 0) > 0 && Array.isArray(call.args.cells));
   const covered = new Set<string>();
-  for (const call of candidates) {
+  const targets = new Set<number>();
+  // Validate maintenance targets first so a real matching repair can recover partial coverage.
+  for (const call of [...candidates, ...repairs]) {
     const data = isRecord(call.result.data) ? call.result.data : null;
     const tile = numberValue(call.args.tile);
     const requestedLayer = call.args.layer;
     if (!call.result.ok || data?.skippedClusterCells !== 0 || tile === null || !Number.isInteger(tile) || tile < 0
       || (requestedLayer !== "lower" && requestedLayer !== "upper")) continue;
-    const home = tileset ? tileLayerHome(tileset, tile) : "both";
-    const layer = home === "both" ? requestedLayer : home;
-    if (layer !== asset.layer) continue;
+    // Historical execution evidence, not requested layer or mutable tileset metadata.
+    const layer = data.effectiveLayer;
+    if ((layer !== "lower" && layer !== "upper") || layer !== asset.layer) continue;
     const cells = (call.args.cells as unknown[]).map(pointValue);
     if (cells.some(cell => cell === null || !Number.isInteger(cell.x) || !Number.isInteger(cell.y))) continue;
     const uniqueCells = new Set(cells.flatMap(cell => cell ? [`${cell.x},${cell.y}`] : []));
     if (typeof data.tilesTouched !== "number" || data.tilesTouched < uniqueCells.size) continue;
+    if (call.result.diff?.tilesChanged === 0) targets.add(tile);
+    else if (!targets.has(tile)) continue;
     const tiles = layer === "lower" ? map.lowerTiles : map.upperTiles;
     for (const cell of cells) {
       if (cell && cell.x >= 0 && cell.y >= 0 && cell.x < map.width && cell.y < map.height
