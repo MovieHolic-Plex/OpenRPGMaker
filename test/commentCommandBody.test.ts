@@ -34,21 +34,25 @@ describe("comment command UX", () => {
     restoreDom?.();
   });
 
-  it("renders dedicated comment editor with color select and preview", () => {
-    const cmd = newM2Command("m2-088-comment");
-    const body = renderWithFakeDom(() =>
-      renderCommandBody({ path: [0], actions, lockKind: true }, {
-        ...cmd,
-        fields: { comment: "문 연 뒤 대사", color: "yellow" },
-      })
-    );
+  it("edits comment text and color through catalog controls without losing either field", () => {
+    let cmd: Command = { ...newM2Command("m2-088-comment"), fields: { comment: "문 연 뒤 대사", color: "yellow" } };
+    const body = renderWithFakeDom(() => renderCommandBody({
+      path: [0], lockKind: true, getCurrentCommand: () => cmd,
+      actions: { ...actions, replaceCommand: (_path, next) => { cmd = next; } },
+    }, cmd));
 
     expect(findByTestId(body, "m2-command-body-m2-088-comment")).toBeTruthy();
     expect(findByTestId(body, "m2-command-comment-textarea")).toBeTruthy();
-    expect(findByTestId(body, "m2-command-comment-color")).toBeTruthy();
-    expect(findByTestId(body, "m2-command-comment-preview")?.textContent).toContain("문 연 뒤 대사");
-    expect(body.textContent).toContain("글자색");
-    expect(body.textContent).toContain("Ctrl+/");
+    const text = findByTestId(body, "m2-command-comment-textarea");
+    const color = findByTestId(body, "m2-command-color-option-select");
+    if (!text || !color) throw new Error("missing comment controls");
+    expect(text.value).toBe("문 연 뒤 대사");
+    expect(color.value).toBe("yellow");
+    text.value = "수정된 주석";
+    text.dispatchEvent(new Event("change"));
+    color.value = "cyan";
+    color.dispatchEvent(new Event("change"));
+    expect(cmd).toEqual({ kind: "m2Command", commandId: "m2-088-comment", fields: { comment: "수정된 주석", color: "cyan" } });
   });
 
   it("summarizes comments without dumping field keys", () => {
@@ -66,14 +70,10 @@ describe("comment command UX", () => {
   it("Ctrl+/ inserts a comment command via shortcut", () => {
     const item = new FakeElement("div");
     item.className = "cmd-item";
-    const event = {
-      ctrlKey: true,
-      altKey: false,
-      key: "/",
-      preventDefault() {},
-    } as KeyboardEvent;
+    const event = new Event("keydown", { bubbles: true, cancelable: true });
+    Object.defineProperties(event, { ctrlKey: { value: true }, altKey: { value: false }, key: { value: "/" } });
 
-    handleCommandShortcut(event, {
+    handleCommandShortcut(event as KeyboardEvent, {
       x: 0,
       y: 0,
       item: item as unknown as HTMLElement,
@@ -83,10 +83,13 @@ describe("comment command UX", () => {
       openEditor: () => {},
     });
 
-    // openNewEventCommandDialog stages a modal; insert happens on apply.
-    // Shortcut path must at least open without throwing and create a default comment.
-    const cmd = newM2Command("m2-088-comment");
-    expect(cmd.commandId).toBe("m2-088-comment");
-    expect(cmd.fields).toMatchObject({ comment: "", color: "green" });
+    expect(event.defaultPrevented).toBe(true);
+    expect(inserted).toBeUndefined();
+    const text = document.querySelector<HTMLTextAreaElement>('[data-testid="m2-command-comment-textarea"]');
+    if (!text) throw new Error("shortcut did not open comment editor");
+    text.value = "shortcut comment";
+    text.dispatchEvent(new Event("change"));
+    document.querySelector<HTMLButtonElement>('[data-testid="event-command-edit-ok"]')?.click();
+    expect(inserted).toEqual({ kind: "m2Command", commandId: "m2-088-comment", fields: { comment: "shortcut comment", color: "green" } });
   });
 });

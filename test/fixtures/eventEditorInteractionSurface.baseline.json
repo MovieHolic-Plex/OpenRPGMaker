@@ -293,6 +293,8 @@
     "event-command-edit-summary",
     "event-command-face-ai-generate",
     "event-command-face-ai-prompt",
+    "event-command-face-ai-queue",
+    "event-command-face-ai-queue-list",
     "event-command-face-bust-preset",
     "event-command-face-crop",
     "event-command-face-editor",
@@ -423,6 +425,10 @@
     "faceset-crop-sheet"
    ],
    "classes": [
+    "ai-image-queue",
+    "ai-image-queue-composer",
+    "ai-image-queue-empty",
+    "ai-image-queue-list",
     "btn",
     "cream-command-form-head",
     "event-command-face-bust-preset",
@@ -595,12 +601,12 @@
    ],
    "tags": {
     "button": 118,
-    "div": 129,
+    "div": 131,
     "img": 113,
     "input": 3,
     "label": 2,
     "option": 2,
-    "p": 1,
+    "p": 2,
     "select": 1,
     "span": 3,
     "strong": 1
@@ -609,6 +615,8 @@
     "event-command-edit-summary": "div",
     "event-command-face-ai-generate": "button",
     "event-command-face-ai-prompt": "input",
+    "event-command-face-ai-queue": "div",
+    "event-command-face-ai-queue-list": "div",
     "event-command-face-bust-preset": "button",
     "event-command-face-crop": "div",
     "event-command-face-editor": "div",
@@ -743,10 +751,14 @@
     "event-command-face-preview": "res#미리보기를 찾을 수 없습니다.",
     "event-command-face-preview-host": "res#미리보기를 찾을 수 없습니다."
    },
-   "testidCount": 131,
+   "testidCount": 133,
    "controlCount": 122
   },
   "classes": [
+   "ai-image-queue",
+   "ai-image-queue-composer",
+   "ai-image-queue-empty",
+   "ai-image-queue-list",
    "btn",
    "cream-command-form-head",
    "event-command-face-bust-preset",
@@ -4000,9 +4012,12 @@
  },
  "changeExp": {
   "reactions": {
-   "change-exp-actor-select": "태그 개수 [img 등장(2), span 10→14] | 검증텍스트 변경 1개 [change-level-preview: \"주인공을 선택하면 전/후 값이 표시됩니다.시작값 기준\"→\"주인공 · 경험치 #→#시작값 기준\"] | 클래스 소실 2개 [empty, rich-record-initial] | 클래스 신규 5개 [record-picker-card-copy, record-picker-card-subtitle, rich-preview-after, rich-preview-arrow, rich-record-icon]",
+   "change-exp-actor-select": "태그 개수 [img 등장(1), span 16→17] | 검증텍스트 변경 1개 [change-level-preview: \"파티 전체 · 경험치 += #실행할 경험치 조작\"→\"주인공 · 경험치 += #실행할 경험치 조작\"] | 클래스 소실 2개 [empty, rich-record-initial] | 클래스 신규 3개 [record-picker-card-copy, record-picker-card-subtitle, rich-record-icon]",
    "change-exp-amount-input": "no-change",
-   "change-exp-op-select": "no-change"
+   "change-exp-amount-source": "컨트롤 값 변경 5개 [change-exp-amount-input: input[number]{}→input[number]{hidden}, change-exp-amount-minus: button{}→button{hidden}, change-exp-amount-plus: button{}→button{hidden}, change-exp-amount-variable-select: select{hidden}→select{}, event-variable-picker-open: button{hidden}→button{}] | 검증텍스트 변경 …(절단: 총 388자)",
+   "change-exp-amount-variable-select": "라벨 소실 1개 [(이름 없음)] | 라벨 신규 1개 [(선택)]",
+   "change-exp-op-select": "검증텍스트 변경 1개 [change-level-preview: \"파티 전체 · 경험치 += #실행할 경험치 조작\"→\"파티 전체 · 경험치 = #실행할 경험치 조작\"]",
+   "change-exp-target-mode": "컨트롤 값 변경 1개 [change-exp-actor-select: select{}→select{hidden}]"
   },
   "initial": {
    "testids": [
@@ -4011,20 +4026,33 @@
     "change-exp-amount-input",
     "change-exp-amount-minus",
     "change-exp-amount-plus",
+    "change-exp-amount-source",
+    "change-exp-amount-source-segment-number",
+    "change-exp-amount-source-segment-variable",
+    "change-exp-amount-variable",
+    "change-exp-amount-variable-select",
     "change-exp-op-select",
     "change-exp-op-select-segment-dec",
     "change-exp-op-select-segment-inc",
     "change-exp-op-select-segment-set",
-    "change-level-command-body",
+    "change-exp-target-mode",
+    "change-exp-target-mode-segment-actor",
+    "change-exp-target-mode-segment-party",
     "change-level-preview",
-    "event-command-edit-summary"
+    "event-command-edit-summary",
+    "event-command-exp-form",
+    "event-variable-picker-open"
    ],
    "classes": [
     "actor-amount-command-body",
     "actor-amount-controls",
+    "btn",
     "cream-command-form",
     "cream-command-form-head",
     "empty",
+    "event-record-modal-select",
+    "event-record-picker-trigger",
+    "event-record-select",
     "party-member-intent",
     "party-member-intent-body",
     "party-member-intent-title",
@@ -4043,17 +4071,26 @@
     "rich-segment-group",
     "rich-stepper",
     "rich-stepper-button",
-    "selected"
+    "selected",
+    "small"
    ],
    "controls": {
     "change-exp-actor-select": "select{}",
     "change-exp-amount-input": "input[number]{}",
     "change-exp-amount-minus": "button{}",
     "change-exp-amount-plus": "button{}",
+    "change-exp-amount-source": "select{hidden}",
+    "change-exp-amount-source-segment-number": "button{}",
+    "change-exp-amount-source-segment-variable": "button{}",
+    "change-exp-amount-variable-select": "select{hidden}",
     "change-exp-op-select": "select{hidden}",
     "change-exp-op-select-segment-dec": "button{}",
     "change-exp-op-select-segment-inc": "button{}",
-    "change-exp-op-select-segment-set": "button{}"
+    "change-exp-op-select-segment-set": "button{}",
+    "change-exp-target-mode": "select{hidden}",
+    "change-exp-target-mode-segment-actor": "button{}",
+    "change-exp-target-mode-segment-party": "button{}",
+    "event-variable-picker-open": "button{hidden}"
    },
    "selectOptions": {
     "change-exp-actor-select": [
@@ -4062,27 +4099,63 @@
      "actor_guardian",
      "actor_mage"
     ],
+    "change-exp-amount-source": [
+     "number",
+     "variable"
+    ],
+    "change-exp-amount-variable-select": [
+     "",
+     "var_0001",
+     "var_0002",
+     "var_0003",
+     "var_0004",
+     "var_0005",
+     "var_0006",
+     "var_0007",
+     "var_0008",
+     "var_0009",
+     "var_0010",
+     "var_0011",
+     "var_0012",
+     "var_0013",
+     "var_0014",
+     "var_0015",
+     "var_0016",
+     "var_0017",
+     "var_0018",
+     "var_0019",
+     "var_0020"
+    ],
     "change-exp-op-select": [
      "=",
      "+=",
      "-="
+    ],
+    "change-exp-target-mode": [
+     "party",
+     "actor"
     ]
    },
    "labels": [
+    "(이름 없음)",
     "+",
     "−",
     "− 감소",
+    "변수",
+    "숫자",
+    "주인공",
+    "파티 전체",
     "＋ 증가",
     "＝ 대입"
    ],
    "tags": {
-    "button": 5,
+    "button": 10,
     "div": 8,
     "input": 1,
-    "option": 7,
+    "option": 32,
     "p": 1,
-    "select": 2,
-    "span": 10
+    "select": 5,
+    "span": 16
    },
    "tagByTestid": {
     "change-exp-actor-select": "select",
@@ -4090,27 +4163,40 @@
     "change-exp-amount-input": "input",
     "change-exp-amount-minus": "button",
     "change-exp-amount-plus": "button",
+    "change-exp-amount-source": "select",
+    "change-exp-amount-source-segment-number": "button",
+    "change-exp-amount-source-segment-variable": "button",
+    "change-exp-amount-variable": "span",
+    "change-exp-amount-variable-select": "select",
     "change-exp-op-select": "select",
     "change-exp-op-select-segment-dec": "button",
     "change-exp-op-select-segment-inc": "button",
     "change-exp-op-select-segment-set": "button",
-    "change-level-command-body": "div",
+    "change-exp-target-mode": "select",
+    "change-exp-target-mode-segment-actor": "button",
+    "change-exp-target-mode-segment-party": "button",
     "change-level-preview": "span",
-    "event-command-edit-summary": "div"
+    "event-command-edit-summary": "div",
+    "event-command-exp-form": "div",
+    "event-variable-picker-open": "button"
    },
    "texts": {
-    "change-level-preview": "주인공을 선택하면 전/후 값이 표시됩니다.시작값 기준",
+    "change-level-preview": "파티 전체 · 경험치 += #실행할 경험치 조작",
     "event-command-edit-summary": "경험치 변경"
    },
-   "testidCount": 12,
-   "controlCount": 8
+   "testidCount": 21,
+   "controlCount": 16
   },
   "classes": [
    "actor-amount-command-body",
    "actor-amount-controls",
+   "btn",
    "cream-command-form",
    "cream-command-form-head",
    "empty",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
    "party-member-intent",
    "party-member-intent-body",
    "party-member-intent-title",
@@ -4122,8 +4208,6 @@
    "rich-command-form",
    "rich-form-row",
    "rich-native-select",
-   "rich-preview-after",
-   "rich-preview-arrow",
    "rich-preview-body",
    "rich-preview-caption",
    "rich-preview-hint",
@@ -4134,10 +4218,11 @@
    "rich-segment-group",
    "rich-stepper",
    "rich-stepper-button",
-   "selected"
+   "selected",
+   "small"
   ],
-  "probeCount": 3,
-  "reactingCount": 1
+  "probeCount": 6,
+  "reactingCount": 5
  },
  "changeLevel": {
   "reactions": {
@@ -6221,9 +6306,9 @@
    "selectOptions": {
     "give-monster-species-select": [
      "",
-     "species_wild_slime",
-     "species_king_slime",
-     "species_cave_bat"
+     "species_leafling",
+     "species_sparkit",
+     "species_aqualing"
     ]
    },
    "labels": [
@@ -6379,9 +6464,9 @@
    "selectOptions": {
     "evolve-monster-species-select": [
      "",
-     "species_wild_slime",
-     "species_king_slime",
-     "species_cave_bat"
+     "species_leafling",
+     "species_sparkit",
+     "species_aqualing"
     ]
    },
    "labels": [],
@@ -7506,6 +7591,8 @@
     "event-command-edit-summary",
     "show-picture-ai-generate",
     "show-picture-ai-prompt",
+    "show-picture-ai-queue",
+    "show-picture-ai-queue-list",
     "show-picture-command-body",
     "show-picture-duration-input",
     "show-picture-id-input",
@@ -7540,6 +7627,10 @@
     "actor-m2-preview",
     "actor-m2-preview-line",
     "actor-m2-preview-note",
+    "ai-image-queue",
+    "ai-image-queue-composer",
+    "ai-image-queue-empty",
+    "ai-image-queue-list",
     "btn",
     "change-parameters-field",
     "change-parameters-field-label",
@@ -7596,9 +7687,9 @@
    "tags": {
     "button": 7,
     "details": 1,
-    "div": 31,
+    "div": 33,
     "input": 9,
-    "p": 3,
+    "p": 4,
     "span": 2,
     "summary": 1
    },
@@ -7606,6 +7697,8 @@
     "event-command-edit-summary": "div",
     "show-picture-ai-generate": "button",
     "show-picture-ai-prompt": "input",
+    "show-picture-ai-queue": "div",
+    "show-picture-ai-queue-list": "div",
     "show-picture-command-body": "div",
     "show-picture-duration-input": "input",
     "show-picture-id-input": "input",
@@ -7635,7 +7728,7 @@
     "show-picture-preview-marker": "자리 pic#",
     "show-picture-preview-stage": "자리 pic#"
    },
-   "testidCount": 24,
+   "testidCount": 26,
    "controlCount": 16
   },
   "classes": [
@@ -7650,6 +7743,10 @@
    "actor-m2-preview",
    "actor-m2-preview-line",
    "actor-m2-preview-note",
+   "ai-image-queue",
+   "ai-image-queue-composer",
+   "ai-image-queue-empty",
+   "ai-image-queue-list",
    "btn",
    "change-parameters-field",
    "change-parameters-field-label",

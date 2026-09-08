@@ -48,6 +48,7 @@ const EXPECTED_COMMAND_KINDS = [
   "equipTool",
   "openChest",
   "changeFriendship",
+  "setRelationship",
   "changeFactionStance",
   "getFriendship",
   "changeParty",

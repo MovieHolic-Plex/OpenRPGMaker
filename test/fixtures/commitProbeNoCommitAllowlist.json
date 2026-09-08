@@ -6,6 +6,8 @@
   "UNTRIAGED 란": "아직 정상인지 결함인지 판정되지 않았거나, 결함으로 확인됐지만 아직 고쳐지지 않은 것. 이 숫자는 매 실행 stdout 에 찍힌다.",
   "라디오는 왜 없나": "이미 켜진 라디오를 반전하면 꺼지는데 실제 브라우저는 클릭으로 라디오를 끌 수 없고 폼도 `if (!input.checked) return` 으로 막는다. 프로브가 그 상태를 no-commit 이 아니라 radio-uncheck 로 따로 기록하므로 이 목록에 오지 않는다.",
   "intentional 근거": {
+   "changeFace :: event-command-face-ai-prompt": "Generation draft, not a command operand. The generate button enqueues this value; only a completed image calls onInserted and commits the resource reference (aiImageGenerateField.ts).",
+   "showPicture :: show-picture-ai-prompt": "Generation draft consumed by the queue's generate button, not by input/change. showPictureForm.test.ts mounts the real form and awaits the generated resource command commit.",
    "inputNumber :: input-number-digits": "type=hidden 인 레거시 e2e 선택자용 거울(commandBodyInputNumber.ts:44-51, class input-number-digits-mirror). 리스너가 없고, 실제 자릿수 입력은 chip radiogroup(같은 파일 65-69)이 replaceCommand 로 처리한다.",
    "loop :: event-loop-body-add-kind": "'무엇을 추가할지' 고르는 종류 select(commandBodyLoop.ts:129-130). 리스너가 없고 값은 형제 버튼 event-loop-body-add 의 click 핸들러(141-143)만 읽는다.",
    "setEventGraphicPattern :: set-event-graphic-pattern-frame-input": "렌더 직후 hidden 으로 감추는 읽기 전용 거울(commandBodyAdvanced.ts:861, 867). apply() 가 pattern.value 에 계산된 절대 프레임을 써넣는 방향이라 이 입력에서 읽지 않는다. 실제 커밋은 슬롯 그리드·방향 그룹·패턴 라디오가 만든다.",
@@ -24,6 +26,12 @@
   }
  },
  "intentional": {
+  "changeFace": [
+   "event-command-face-ai-prompt"
+  ],
+  "showPicture": [
+   "show-picture-ai-prompt"
+  ],
   "changeEquipment": [
    "change-equipment-search"
   ],

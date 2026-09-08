@@ -31,7 +31,11 @@
    "change-equipment-slot-select"
   ],
   "changeExp": [
-   "change-exp-actor-select"
+   "change-exp-actor-select",
+   "change-exp-amount-source",
+   "change-exp-amount-variable-select",
+   "change-exp-op-select",
+   "change-exp-target-mode"
   ],
   "changeFace": [
    "event-command-face-flip-horizontal",

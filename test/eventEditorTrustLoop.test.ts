@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
@@ -11,9 +12,7 @@ import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
 import { store } from "@/project/store";
 import type { EventPage, GameEvent } from "@/project/types";
-import { FakeElement, installFakeDom } from "./fakeDom";
 
-let restoreDom: () => void = () => undefined;
 let originalStorage: PropertyDescriptor | undefined;
 
 function memoryStorage(): Storage {
@@ -53,19 +52,11 @@ function gameEvent(eventPage: EventPage): GameEvent {
 }
 
 function fakeContainer(): HTMLElement {
-  return new FakeElement("div") as unknown as HTMLElement;
+  return document.createElement("div");
 }
 
 function keyEvent(key: string, options: { ctrlKey?: boolean; metaKey?: boolean; shiftKey?: boolean } = {}): KeyboardEvent {
-  const event = new Event("keydown", { bubbles: true, cancelable: true });
-  Object.defineProperties(event, {
-    altKey: { value: false },
-    ctrlKey: { value: options.ctrlKey ?? false },
-    key: { value: key },
-    metaKey: { value: options.metaKey ?? false },
-    shiftKey: { value: options.shiftKey ?? false },
-  });
-  return event as KeyboardEvent;
+  return new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key, ...options });
 }
 
 beforeEach(() => {
@@ -73,7 +64,7 @@ beforeEach(() => {
   vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
   vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "event-editor-trust-loop");
   _resetEventDraftVaultForTest();
-  restoreDom = installFakeDom();
+  document.body.replaceChildren();
   originalStorage = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
   Object.defineProperty(globalThis, "localStorage", { configurable: true, value: memoryStorage() });
   store.replaceProject(createBlankProject());
@@ -88,7 +79,8 @@ afterEach(() => {
   else Reflect.deleteProperty(globalThis, "localStorage");
   _resetEventDraftVaultForTest();
   vi.unstubAllEnvs();
-  restoreDom();
+  document.querySelector('[data-testid="event-editor-modal"]')?.dispatchEvent(new CustomEvent("oprn:event-editor-close"));
+  document.body.replaceChildren();
 });
 
 describe("event editor trust loop", () => {
@@ -141,7 +133,7 @@ describe("event editor trust loop", () => {
     expect(document.querySelector('[data-testid="event-command-transfer"]')?.className).toContain("selected");
   });
 
-  it("navigates fatal event-position and schedule issues to editable controls", () => {
+  it("navigates position issues to coordinates and schedule issues to the visible map picker", () => {
     const project = createBlankProject();
     const mapId = project.startMapId;
     const event = gameEvent(page([{ kind: "text", body: "hello" }]));
@@ -153,12 +145,12 @@ describe("event editor trust loop", () => {
     openEventEditorModal(mapId, event.id);
 
     document.querySelector<HTMLElement>('[data-issue-code="event.position.out-of-bounds"]')?.click();
-    expect(document.activeElement).toBe(document.querySelector('[data-testid="event-position-x"]'));
+    expect(document.activeElement).toBe(document.querySelector('[data-testid="event-editor-coords"]'));
 
     document.querySelector<HTMLElement>('[data-issue-code="reference.map.missing"]')?.click();
     const scheduleEditor = document.querySelector<HTMLDetailsElement>('[data-testid="event-schedule-editor"]');
     expect(scheduleEditor?.open).toBe(true);
-    expect(document.activeElement).toBe(document.querySelector('[data-testid="event-schedule-map-0"]'));
+    expect(document.activeElement).toBe(document.querySelector('[data-custom-select-for="event-schedule-map-0"]'));
   });
 
   it("discards a working edit on Cancel without changing the canonical event", async () => {
@@ -172,12 +164,14 @@ describe("event editor trust loop", () => {
       working.maps[mapId].events[0]!.pages![0]!.commands = [{ kind: "text", body: "working" }];
     });
 
+    const closed = Promise.withResolvers<void>();
+    const modal = document.querySelector('[data-testid="event-editor-modal"]');
+    if (!modal) throw new Error("missing editor modal");
+    modal.addEventListener("oprn:event-editor-close", () => closed.resolve(), { once: true });
+    const deadline = setTimeout(() => closed.reject(new Error("editor did not close")), 2000);
     document.querySelector<HTMLElement>('[data-testid="event-editor-cancel"]')?.click();
-    // 2026-08-19 닫기 의미론: 미적용 변경이 있으면 확인 다이얼로그를 거친다.
-    // (window 전역이 없는 이 테스트 환경에서는 headless 규약으로 자동 확인될 수 있다.)
-    await Promise.resolve();
     document.querySelector<HTMLElement>('[data-testid="app-modal-confirm"]')?.click();
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    try { await closed.promise; } finally { clearTimeout(deadline); }
 
     expect(document.querySelector('[data-testid="event-editor-modal"]')).toBeNull();
     expect(store.getCurrent().maps[mapId].events[0]?.draft).toBeUndefined();
@@ -350,7 +344,7 @@ describe("event editor trust loop", () => {
     editorState.set({ currentMapId: mapId, selectedEventId: "event-1", selectedEventPageId: "page-1" });
     openEventEditorModal(mapId, "event-1");
 
-    const nameInput = document.querySelector<HTMLInputElement>('[data-testid="event-page-name-input"]');
+    const nameInput = document.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]');
     // 열린 details 복원은 `data-testid` 가 있는 아무 details 에나 걸리는 일반 계약이다.
     // 예전 표본은 플로우차트 아코디언이었는데, 플로우가 보기 방식으로 승격되면서 details 가 아니게 됐다.
     const details = document.querySelector<HTMLDetailsElement>('[data-testid="event-editor-aux-tools"]');
@@ -366,7 +360,7 @@ describe("event editor trust loop", () => {
       working.meta.author = "rerender";
     });
 
-    const restoredInput = document.querySelector<HTMLInputElement>('[data-testid="event-page-name-input"]');
+    const restoredInput = document.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]');
     const restoredDetails = document.querySelector<HTMLDetailsElement>('[data-testid="event-editor-aux-tools"]');
     const restoredList = document.querySelector<HTMLElement>(".cmd-list");
     expect(document.activeElement).toBe(restoredInput);
