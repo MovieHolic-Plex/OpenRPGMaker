@@ -1,7 +1,8 @@
 import type { Project } from "@/project/types";
 import type { AiConfig, ChatRequest, ChatResult, ContentPart } from "./llmClient";
+import type { IntentDeclaration } from "./intentDeclaration";
 import type { OriginalContext } from "./originalContext";
-import { originalContextWindow } from "./originalContext";
+import { extractOriginalContext, originalContextWindow } from "./originalContext";
 import { estimateContextTokens } from "./contextCompaction";
 export { requiresVisualReview } from "./mapVisualEvidence";
 
@@ -128,6 +129,35 @@ export function reviewMapReferenceRoots(before: Project, after: Project, changes
     }
   }
   return roots;
+}
+
+export interface ReviewEvidenceOptions {
+  readonly snapshotId: string;
+  /** Every map this review must be able to inspect, changed or targeted. */
+  readonly mapIds: Iterable<string>;
+  readonly targetMapId: string;
+  readonly mapReferenceRoots: readonly unknown[];
+  readonly intent: IntentDeclaration | null;
+}
+
+/** One context per side, carrying every reviewed map.
+ *
+ * A context repeats the whole project-wide payload — summary, system, start state, world
+ * documents, growth, factions, the database reference closure and the tileset — because that
+ * payload is relevance for any map. Building one context per map therefore paid it once per
+ * map on each side: measured on a 43-map village, 2,069 of 2,079 entries per context were
+ * shared, so four changed maps cost ~950K tokens and `buildIndependentReviewRequest` refused
+ * the envelope with no way to recover. Map ids in `mapReferenceRoots` already make
+ * `extractOriginalContext` include each map (`addMap` dedupes), so one context is complete
+ * evidence and the shared payload is paid once.
+ */
+export function reviewEvidenceContexts(project: Project, options: ReviewEvidenceOptions): OriginalContext[] {
+  return [extractOriginalContext(project, {
+    snapshotId: options.snapshotId,
+    currentMapId: options.targetMapId,
+    mapReferenceRoots: [...options.mapIds, ...options.mapReferenceRoots],
+    intent: options.intent ? { ...options.intent, targetMapId: options.targetMapId } : null,
+  })];
 }
 
 const REVIEW_SYSTEM = `You are an independent read-only result reviewer, not the writer.
