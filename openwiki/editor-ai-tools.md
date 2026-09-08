@@ -932,3 +932,27 @@ NPC 고수준 commands의 `text.lines`는 실제 줄바꿈을 포함한 `text.bo
 서로 다른 단색 이미지가 구분되는지 먼저 확인한 뒤 원본 그림을 전달한다.
 몬스터 카탈로그의 원본 해시와 관측 근거는 `src/assets/monsterCatalogReview.json` 및
 `output/evidence/monster-catalog/README.md`를 참조한다.
+
+## Physical tile passage exposure (2026-09-08)
+
+`set_tile_passability({tilesetId?, tile, passable})` is an active native write tool
+again. `V1_TILE_SUPERSEDED` no longer redirects this technical primitive to the
+hidden `propose_tile_vocabulary`, whose semantic items cannot express passage.
+The full `toOpenAiTools` catalog, capability index and ordinary `find_tools`
+(exact name or `특정 타일 통행`) now reach the same registered setter.
+
+This edits one tileset chip's four direction flags together, affecting every map
+using that chip, not a selected map cell. It does not author vocabulary, names,
+roles, groups, layers or generic metadata. Semantic teaching and superseded
+painting tools remain hidden. The native setter and its existing persistent
+passage metadata/provenance are unchanged: `markUserTileRuntimeMetadata` records
+the passage override so reload/harness seeding cannot silently undo it. Those
+native user-origin metadata flags are not a new approval or acceptance receipt.
+Normal argument validation, detached dispatch, ask-mode refusal, transaction
+ownership and acceptance/application checks are unchanged.
+
+`test/tilePassabilityExposure.test.ts` covers real catalog/discovery schemas,
+normal session dispatch in both directions on a three-chip fixture, unrelated
+project/meta equality, native refusals and JSON/harness persistence. The offline
+session fixture stops after dispatch; it neither applies to a live project nor
+claims final acceptance. Real AI repair and final build/gates remain parent-owned.

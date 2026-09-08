@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **50쪽 / 2027KB / 약 570,285 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **50쪽 / 2029KB / 약 570,671 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 327KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 1217 | ~93,219 |
-| `openwiki/editor-ai-tools.md` | 144KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 935 | ~40,054 |
+| `openwiki/editor-ai-tools.md` | 146KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 959 | ~40,440 |
 | `openwiki/editor-database.md` | 248KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 1285 | ~71,443 |
 | `openwiki/editor-event-authoring.md` | 125KB | 75KB ⚠상한 초과 — 절을 더 쪼개라 | 626 | ~36,040 |
 | `openwiki/editor-event-commands.md` | 50KB | 32KB | 132 | ~13,431 |
@@ -269,7 +269,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1176` 모험 완료와 실제 적용 횟수 (2026-09-05)
 - `L1181` Assistant clean conversation — Phase 1 (2026-09-06)
 
-### `openwiki/editor-ai-tools.md` — 144KB · 935줄 · ~40,054 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 146KB · 959줄 · ~40,440 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` Measured zero-prop rejection diagnostics (2026-09-07)
 - `L100` Logical walkthrough versus real player traversal (2026-09-07)
@@ -300,6 +300,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L885` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
 - `L892` 모험 저작 완료와 재시도 (2026-09-05)
 - `L922` 실제 이미지 입력 보존 (2026-09-07)
+- `L936` Physical tile passage exposure (2026-09-08)
 
 ### `openwiki/editor-database.md` — 248KB · 1285줄 · ~71,443 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
