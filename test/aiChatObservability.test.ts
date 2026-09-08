@@ -10,6 +10,7 @@ import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { completeChatTurn } from "./helpers/aiChatTestSignals";
 
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
@@ -44,14 +45,17 @@ afterEach(async () => {
   Reflect.deleteProperty(globalThis, "localStorage");
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
-async function flushAsync(): Promise<void> {
-  for (let i = 0; i < 40; i += 1) await Promise.resolve();
+function intentResponse(mode: "question" | "create", tools: string[]): Response {
+  return new Response(JSON.stringify({ choices: [{ message: { role: "assistant", content: JSON.stringify({
+    mode, space: "none", needsPlan: false, useSelection: false, clarify: null, tools, summary: "test intent",
+  }) } }] }), { headers: { "Content-Type": "application/json" } });
 }
 
 function renderPanel(): FakeElement {
-  return renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
+  return renderAiChatPanel() as unknown as FakeElement;
 }
 
 describe("글자 크기 3단 (V3C ①)", () => {
@@ -200,8 +204,11 @@ describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
     // (2026-09-03 실측: `.env.local` 있는 워크트리에서만 실패, 키를 지우면 통과).
     vi.stubGlobal(
       "fetch",
-      vi.fn(async (url: unknown) => {
+      vi.fn(async (url: unknown, init?: { body?: unknown }) => {
         if (!String(url).includes("chat/completions")) return new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } });
+        const request = JSON.parse(String(init?.body));
+        if (!request.tools?.length) return intentResponse("question", ["get_project_summary"]);
+        expect(request.stream).toBe(true);
         return new Response(bodies.shift() ?? sse([]), { status: 200, headers: { "Content-Type": "text/event-stream" } });
       })
     );
@@ -209,8 +216,8 @@ describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "요약해줘";
-    (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-    for (let i = 0; i < 10; i += 1) await flushAsync();
+    const receipt = await completeChatTurn(() => findByTestId(panel, "ai-send")?.click());
+    expect(receipt.result, JSON.stringify(receipt)).toMatchObject({ ok: true });
 
     const reasoningBox = findByTestId(panel, "ai-reasoning") as unknown as FakeElement;
     expect(reasoningBox).toBeTruthy();
@@ -256,11 +263,16 @@ describe("실시간 고스트 프리뷰 연결", () => {
     let rounds = 0;
     vi.stubGlobal(
       "fetch",
-      vi.fn(async (_url: unknown, init?: { body?: unknown }) => {
-        rounds += 1;
+      vi.fn(async (url: unknown, init?: { body?: unknown }) => {
+        if (!String(url).includes("chat/completions")) return new Response("{}", { headers: { "Content-Type": "application/json" } });
         const payload = JSON.parse(typeof init?.body === "string" ? init.body : "{}") as {
           messages?: { role?: string }[];
+          tools?: unknown[];
+          stream?: boolean;
         };
+        if (!payload.tools?.length) return intentResponse("create", ["create_map"]);
+        expect(payload.stream).toBe(true);
+        rounds += 1;
         const toolRan = (payload.messages ?? []).some((message) => message?.role === "tool");
         // rounds 상한은 무한 루프 방지용 안전핀이다(스텁이 계속 툴콜을 주면 세션이 계속 돈다).
         const body = toolRan || rounds > 3
@@ -296,8 +308,8 @@ describe("실시간 고스트 프리뷰 연결", () => {
     });
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "새 맵 만들어줘";
-    (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-    for (let i = 0; i < 16; i += 1) await flushAsync();
+    const receipt = await completeChatTurn(() => findByTestId(panel, "ai-send")?.click());
+    expect(receipt.result, JSON.stringify(receipt)).toMatchObject({ ok: true });
     unsubscribe();
 
     expect(observed).toEqual(

@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { renderTileGroupPanel } from "@/editor/panels/tilesetGroupEditor";
@@ -18,7 +19,12 @@ import { resetTilesetAiConversation } from "@/editor/tilesetAiConversationSessio
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
-import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
+import { fieldByTestId as findByTestId, mountField as renderWithFakeDom } from "./helpers/aiTestSignals";
+type FakeElement = HTMLElement;
+function installFakeDom(): () => void {
+  document.body.replaceChildren();
+  return () => document.body.replaceChildren();
+}
 
 let cleanupDom: (() => void) | null = null;
 let tilesetId = "";

@@ -8,6 +8,8 @@ import {
   proposalHumanSummaryLine,
   proposalSummaryLines,
   renderAiChatPanel,
+  teardownAiChatPanel,
+  whenAiChatPanelSettled,
 } from "@/editor/panels/aiChatPanel";
 import { computeMapTileChangeBounds, renderProposalMapThumbnail } from "@/editor/panels/aiProposalCard";
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
@@ -16,6 +18,7 @@ import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
+import { completeChatTurn } from "./helpers/aiChatTestSignals";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -77,7 +80,7 @@ function installBrowserGlobals(): void {
   Object.defineProperty(globalThis, "window", {
     configurable: true,
     writable: true,
-    value: {
+    value: Object.assign(new EventTarget(), {
       localStorage: storage,
       location: { search: "?aiBridge=0", href: "http://localhost/?aiBridge=0" },
       setTimeout: (handler: TimerHandler) => {
@@ -85,11 +88,9 @@ function installBrowserGlobals(): void {
         return 0;
       },
       clearTimeout: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
       innerWidth: 1280,
       innerHeight: 800,
-    },
+    }),
   });
   Object.defineProperty(document, "addEventListener", { configurable: true, value: vi.fn() });
   Object.defineProperty(document, "removeEventListener", { configurable: true, value: vi.fn() });
@@ -105,11 +106,7 @@ function renderPanel(): FakeElement {
     baseUrl: "x",
     model: "m",
   }));
-  return renderAiChatPanel({ clock: () => 1_000, getChatDock: () => "side" }) as unknown as FakeElement;
-}
-
-async function flushAsync(): Promise<void> {
-  for (let i = 0; i < 25; i += 1) await Promise.resolve();
+  return renderAiChatPanel({ clock: () => 1_000 }) as unknown as FakeElement;
 }
 
 function turn(proposedCalls: ProposedCall[], assistantText = "완료"): TurnResult {
@@ -128,7 +125,9 @@ beforeEach(() => {
   resetMapEditHistory();
 });
 
-afterEach(() => {
+afterEach(async () => {
+  await whenAiChatPanelSettled();
+  teardownAiChatPanel();
   restoreDom?.();
   restoreDom = null;
   clearAgentGhostPreview();
@@ -190,8 +189,7 @@ describe("AI 변경 즉시 적용", () => {
       const panel = renderPanel();
       const input = findByTestId(panel, "ai-input") as FakeElement;
       input.value = `${toolName} 실행`;
-      findByTestId(panel, "ai-send")?.click();
-      await flushAsync();
+      await completeChatTurn(() => findByTestId(panel, "ai-send")?.click());
       const root = document.body as unknown as Parameters<typeof findByTestId>[0];
       expect(findByTestId(root, "app-confirm-modal"), "확인 모달이 뜨면 안 된다").toBeNull();
 
@@ -227,8 +225,7 @@ describe("AI 변경 즉시 적용", () => {
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "재료 합의 실행";
-    findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
+    await completeChatTurn(() => findByTestId(panel, "ai-send")?.click());
 
     const root = document.body as unknown as Parameters<typeof findByTestId>[0];
     expect(findByTestId(root, "app-confirm-modal"), "승인 메타데이터만으로 확인 모달이 뜨면 안 된다").toBeNull();
@@ -249,8 +246,7 @@ describe("AI 변경 즉시 적용", () => {
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "여기 NPC 3명 넣고 길 깔아줘";
-    findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
+    await completeChatTurn(() => findByTestId(panel, "ai-send")?.click());
 
     const map = store.getCurrent().maps[mapId];
     expect(map.lowerTiles[2 * map.width + 2]).toBe(TILE.PATH);
@@ -277,8 +273,7 @@ describe("AI 변경 즉시 적용", () => {
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "길 한 칸";
-    findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
+    await completeChatTurn(() => findByTestId(panel, "ai-send")?.click());
     expect(store.getCurrent().maps[mapId].lowerTiles[2 * store.getCurrent().maps[mapId].width + 2]).toBe(TILE.PATH);
 
     findByTestId(panel, "ai-undo-last")?.click();

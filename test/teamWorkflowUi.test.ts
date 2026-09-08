@@ -79,13 +79,13 @@ function installWindow(): void {
   Object.defineProperty(globalThis, "window", {
     configurable: true,
     writable: true,
-    value: {
+    value: Object.assign(new EventTarget(), {
       localStorage: storage,
       setTimeout: (handler: TimerHandler) => {
         if (typeof handler === "function") handler();
         return 0;
       },
-    },
+    }),
   });
   Object.defineProperty(document, "addEventListener", {
     configurable: true,

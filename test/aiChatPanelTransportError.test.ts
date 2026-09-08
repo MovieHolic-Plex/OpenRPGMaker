@@ -3,10 +3,12 @@
 // alongside ai-abort (not hidden swap).
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig, LLM_RETRY_BACKOFF_MS } from "@/ai/llmClient";
-import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
+import { completeChatTurn } from "./helpers/aiChatTestSignals";
+import { signal } from "./helpers/aiTestSignals";
 
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
@@ -31,6 +33,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  teardownAiChatPanel();
   vi.useRealTimers();
   restoreDom?.();
   restoreDom = null;
@@ -40,16 +43,27 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-async function flushAsync(): Promise<void> {
-  for (let i = 0; i < 80; i++) await Promise.resolve();
-}
-
 describe("transport failure paints recovery CTA and keeps Send mounted", () => {
   it("refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible", async () => {
-    vi.useFakeTimers();
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     // Any transport failure counts — network throw
-    vi.stubGlobal("fetch", vi.fn(async () => { throw new TypeError("Failed to fetch"); }));
-    const panel = renderWithFakeDom(() => renderAiChatPanel({ clock: () => 37_000, getChatDock: () => "glass" })) as unknown as FakeElement;
+    const refused = vi.fn(() => { throw new TypeError("Failed to fetch"); });
+    const fetchMock = vi.fn(async (_url: unknown, init?: { body?: unknown }) => {
+      const request = JSON.parse(typeof init?.body === "string" ? init.body : "{}");
+      if (!request.tools?.length) return new Response(JSON.stringify({ choices: [{ message: {
+        role: "assistant", content: JSON.stringify({ mode: "question", space: "none", needsPlan: false, tools: [], summary: "transport fixture" }),
+      } }] }), { headers: { "Content-Type": "application/json" } });
+      return refused();
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const retryDelays = [1, 2, 3].map((attempt) => ({ ms: LLM_RETRY_BACKOFF_MS * attempt, scheduled: signal(`retry ${attempt} scheduled`) }));
+    const schedule = globalThis.setTimeout;
+    vi.spyOn(globalThis, "setTimeout").mockImplementation((handler, ms, ...args) => {
+      const timer = schedule(handler, ms, ...args);
+      retryDelays.find((retry) => retry.ms === ms)?.scheduled.resolve();
+      return timer;
+    });
+    const panel = renderWithFakeDom(() => renderAiChatPanel({ clock: () => 37_000 })) as unknown as FakeElement;
     // expand if collapsed
     findByTestId(panel, "ai-collapsed-restore")?.click();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
@@ -59,12 +73,17 @@ describe("transport failure paints recovery CTA and keeps Send mounted", () => {
     expect(send).toBeTruthy();
     expect(abort).toBeTruthy();
     input.value = "hello";
-    send.click();
+    const completed = completeChatTurn(() => send.click());
     expect(findByTestId(panel, "ai-send")).toBeTruthy();
-    for (let attempt = 0; attempt < 8 && !findByTestId(panel, "ai-error-open-settings"); attempt += 1) {
-      await vi.advanceTimersByTimeAsync(LLM_RETRY_BACKOFF_MS);
-      await flushAsync();
+    expect(send.disabled).toBe(true);
+    expect(abort.hidden).toBe(false);
+    // Advance only after the actual retry timer is registered.
+    for (const retry of retryDelays) {
+      await retry.scheduled.promise;
+      await vi.advanceTimersByTimeAsync(retry.ms);
     }
+    await completed;
+    expect(refused).toHaveBeenCalledTimes(4);
     expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
     expect(panel.classList.contains("is-turn-running")).toBe(false);
     expect((status.textContent ?? "")).not.toContain("계획 중");
@@ -77,12 +96,11 @@ describe("transport failure paints recovery CTA and keeps Send mounted", () => {
 
   it("401 also mounts settings opener", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response("no", { status: 401, headers: { "Content-Type": "text/plain" } })));
-    const panel = renderWithFakeDom(() => renderAiChatPanel({ clock: () => 37_000, getChatDock: () => "glass" })) as unknown as FakeElement;
+    const panel = renderWithFakeDom(() => renderAiChatPanel({ clock: () => 37_000 })) as unknown as FakeElement;
     findByTestId(panel, "ai-collapsed-restore")?.click();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "hello";
-    (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-    await flushAsync();
+    await completeChatTurn(() => findByTestId(panel, "ai-send")?.click());
     expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
     expect(panel.classList.contains("is-turn-running")).toBe(false);
   });

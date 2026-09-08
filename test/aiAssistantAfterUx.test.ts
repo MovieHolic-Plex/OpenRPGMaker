@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type ProposedCall, type TurnResult } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
-import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
@@ -10,6 +10,7 @@ import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { type ToolContext, type ToolResult } from "@/editor/tools";
 import type { ChangeSummary } from "@/editor/tools/types";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
+import { completeChatTurn } from "./helpers/aiChatTestSignals";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -65,7 +66,7 @@ function installBrowserGlobals(): void {
   Object.defineProperty(globalThis, "window", {
     configurable: true,
     writable: true,
-    value: {
+    value: Object.assign(new EventTarget(), {
       localStorage: storage,
       location: { search: "?aiBridge=0", href: "http://localhost/?aiBridge=0" },
       setTimeout: (handler: TimerHandler) => {
@@ -73,11 +74,9 @@ function installBrowserGlobals(): void {
         return 0;
       },
       clearTimeout: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
       innerWidth: 1280,
       innerHeight: 800,
-    },
+    }),
   });
   Object.defineProperty(document, "addEventListener", { configurable: true, value: vi.fn() });
   Object.defineProperty(document, "removeEventListener", { configurable: true, value: vi.fn() });
@@ -96,10 +95,6 @@ function renderPanel(): FakeElement {
     agentMode: "chat",
   }));
   return renderAiChatPanel({ clock: () => 1_000 }) as unknown as FakeElement;
-}
-
-async function flushAsync(): Promise<void> {
-  for (let i = 0; i < 25; i += 1) await Promise.resolve();
 }
 
 function turn(result: Partial<TurnResult>): TurnResult {
@@ -123,7 +118,9 @@ beforeEach(() => {
   resetMapEditHistory();
 });
 
-afterEach(() => {
+afterEach(async () => {
+  await whenAiChatPanelSettled();
+  teardownAiChatPanel();
   restoreDom?.();
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
@@ -178,8 +175,7 @@ describe("Assistant After UX contracts", () => {
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "동굴 입구 만들어줘";
-    findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
+    await completeChatTurn(() => findByTestId(panel, "ai-send")?.click());
 
     const log = findByTestId(panel, "ai-chat-log") as FakeElement;
     const workLog = log.querySelector("details.ai-work-log, details.work, [data-testid=ai-work-log]");
@@ -199,8 +195,7 @@ describe("Assistant After UX contracts", () => {
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "길 깔아";
-    findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
+    await completeChatTurn(() => findByTestId(panel, "ai-send")?.click());
 
     // Message has badge applied
     expect(findByTestId(panel, "ai-msg-badge-applied")?.textContent).toBe("적용됨");

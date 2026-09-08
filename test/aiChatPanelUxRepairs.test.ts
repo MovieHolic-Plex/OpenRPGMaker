@@ -17,6 +17,8 @@ import { clearConversations, conversationScopeKey, loadLatestConversation, saveC
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { signal } from "./helpers/aiTestSignals";
+import { completeChatTurn, completeRegionTurn } from "./helpers/aiChatTestSignals";
 
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
@@ -36,12 +38,8 @@ function installFakeLocalStorage(): void {
   });
 }
 
-async function flushAsync(): Promise<void> {
-  for (let i = 0; i < 20; i += 1) await Promise.resolve();
-}
-
 function renderPanel(options: Parameters<typeof renderAiChatPanel>[0] = {}): FakeElement {
-  return renderAiChatPanel({ clock: () => 37_000, getChatDock: () => "side", ...options }) as unknown as FakeElement;
+  return renderAiChatPanel({ clock: () => 37_000, ...options }) as unknown as FakeElement;
 }
 
 function installFakeWindow(): void {
@@ -145,8 +143,7 @@ describe("선택 영역 AI 직결 칩", () => {
     requestAiSelectionContext(editorState.get().selection);
 
     input.value = "여기를 모래밭으로";
-    dispatchInputKey(input, "Enter");
-    await flushAsync();
+    await completeRegionTurn(panel, () => dispatchInputKey(input, "Enter"));
 
     expect(runner).toHaveBeenCalledTimes(1);
     expect(runner.mock.calls[0]?.[0]).toMatchObject({
@@ -209,11 +206,13 @@ describe("진행 상태와 중단", () => {
 
   it("AssistantSession은 AbortSignal을 LLM 호출에 전달하고 중단 결과로 종료한다", async () => {
     const controller = new AbortController();
+    const started = signal();
     let receivedSignal: AbortSignal | undefined;
     const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
       receivedSignal = req.signal;
       return await new Promise((_resolve, reject) => {
-        req.signal?.addEventListener("abort", () => reject(new LlmAbortError()));
+        req.signal?.addEventListener("abort", () => reject(new LlmAbortError()), { once: true });
+        started.resolve();
       });
     };
     const session = new AssistantSession(createBlankProject(), {
@@ -222,7 +221,7 @@ describe("진행 상태와 중단", () => {
     });
 
     const pending = session.sendUserMessage("길 깔아줘", () => {}, controller.signal);
-    await Promise.resolve();
+    await started.promise;
     controller.abort();
     const result = await pending;
 
@@ -306,7 +305,10 @@ describe("대화 복원과 내보내기", () => {
     expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
     expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
     expect(findByTestId(panel, "ai-resume-conversation")).toBeNull();
-    expect(findByTestId(panel, "ai-composer-chips")).toBeTruthy();
+    const input = findByTestId(panel, "ai-input");
+    expect(input?.value).toBe("");
+    expect(input?.disabled).toBe(false);
+    expect(findByTestId(panel, "ai-context-chips")).toBeTruthy();
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).not.toContain("다른 요청");
   });
 
@@ -350,17 +352,18 @@ describe("키 온보딩과 설정 접근성", () => {
     expect((globalThis.document as unknown as { body: FakeElement }).body.classList.contains("ai-command-bar-active")).toBe(true);
   });
 
-  it("OAuth 는 전송 전에 'API 키' 안내로 막지 않는다 (키 온보딩 개념 자체가 없다)", () => {
+  it("OAuth 는 전송 전에 'API 키' 안내로 막지 않는다 (키 온보딩 개념 자체가 없다)", async () => {
     // 옛 스펙은 apiKey 모드 + 빈 키를 저장해 전송 전 키 안내·apiKey 입력 포커스를 요구했다.
     // 인증이 무조건 OAuth 가 된 뒤 저장값은 OAuth 로 승격되므로(loadAiConfig) 그 경로가 없다 —
     // 미로그인은 전송 전 안내가 아니라 요청 시점 401 로 드러난다(아래 401 버블 스펙이 담당).
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("no", { status: 401 })));
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://example.invalid/v1", apiKey: "" }));
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     const send = findByTestId(panel, "ai-send");
     input.value = "마을 만들어줘";
 
-    send?.click();
+    await completeChatTurn(() => send?.click());
 
     const logText = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
     expect(logText).not.toContain("API 키가 필요합니다");
@@ -374,14 +377,8 @@ describe("키 온보딩과 설정 접근성", () => {
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "테스트";
-    findByTestId(panel, "ai-send")?.click();
-
-    // 전송은 fetch → Response → 스트림 판독을 지나므로 마이크로태스크 flush 만으로는
-    // 오류 버블이 붙기 전에 단정이 돌았다(실측: 이 단정이 기준선에서 null 로 실패). 조건 자체를
-    // 기다린다 — 고정 sleep 이 아니라 상한이 있는 조건 대기다.
-    await vi.waitFor(() => {
-      expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
-    }, { timeout: 2_000, interval: 5 });
+    await completeChatTurn(() => findByTestId(panel, "ai-send")?.click());
+    expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
     // OAuth 경로의 401 문구는 Google Gemini 로그인을 안내한다 — apiKey 시절의 "인증 실패" 가 아니다.
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).toContain("Gemini");
   });

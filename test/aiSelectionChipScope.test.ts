@@ -12,6 +12,7 @@ import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPa
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { completeChatTurn, completeRegionTurn } from "./helpers/aiChatTestSignals";
 
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
@@ -44,14 +45,6 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-async function flushAsync(): Promise<void> {
-  // 턴 후처리(말풍선·되돌리기 카드)는 마이크로태스크 뒤 매크로태스크에서도 이어진다 — DOM 을 걷기 전에 끝내 둔다.
-  for (let round = 0; round < 4; round += 1) {
-    for (let i = 0; i < 30; i += 1) await Promise.resolve();
-    await new Promise((resolve) => setTimeout(resolve, 5));
-  }
-}
-
 describe("선택 칩 해제와 턴 스코프", () => {
   it("× 로 해제한 뒤 보내면 세션 스코프가 null 이고 영역 실행부를 타지 않는다", async () => {
     const sendSpy = vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue({
@@ -69,8 +62,7 @@ describe("선택 칩 해제와 턴 스코프", () => {
 
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "나무 세 그루 심어줘";
-    (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-    await flushAsync();
+    await completeChatTurn(() => findByTestId(panel, "ai-send")?.click());
 
     expect(regionRunner).not.toHaveBeenCalled();
     expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -94,8 +86,7 @@ describe("선택 칩 해제와 턴 스코프", () => {
     editorState.set({ selection: { mapId, x: 2, y: 2, width: 4, height: 4 } });
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "여기 물 채워줘";
-    (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-    await flushAsync();
+    await completeRegionTurn(panel, () => findByTestId(panel, "ai-send")?.click());
     expect(regionRunner).toHaveBeenCalledTimes(1);
     expect(sendSpy).not.toHaveBeenCalled();
   });
@@ -130,7 +121,7 @@ describe("대기 상태에서도 선택 칩은 보인다", () => {
       scoped.className = "ai-context-chips has-selection-scope";
       panel.append(plain, scoped);
       doc.body.append(panel);
-      expect(window.getComputedStyle(plain).display).toBe("none");
+      expect(window.getComputedStyle(plain).display).not.toBe("none");
       expect(window.getComputedStyle(scoped).display).not.toBe("none");
     } finally {
       window.close();
@@ -139,25 +130,13 @@ describe("대기 상태에서도 선택 칩은 보인다", () => {
 });
 
 describe("컴포저 힌트는 숨을 때 자리를 비운다", () => {
-  it("입력 포커스가 없을 때 힌트의 사용 display 는 none 이다(visibility:hidden 은 156px 를 먹었다)", () => {
-    const css = readFileSync(resolve("src/styles/database/tabs-b-assistant-panel/14-assistant-ux-repair.css"), "utf8");
-    const window = new Window();
-    try {
-      const doc = window.document;
-      const style = doc.createElement("style");
-      style.textContent = css;
-      doc.head.append(style);
-      const actions = doc.createElement("div");
-      actions.className = "ai-composer-actions";
-      const hint = doc.createElement("span");
-      hint.className = "ai-composer-hint";
-      actions.append(hint);
-      doc.body.append(actions);
-      expect(window.getComputedStyle(hint).display).toBe("none");
-      actions.classList.add("is-input-focused");
-      expect(window.getComputedStyle(hint).display).not.toBe("none");
-    } finally {
-      window.close();
-    }
+  it("키 힌트는 별도 행 없이 입력창 title로 제공된다", () => {
+    const panel = renderAiChatPanel() as unknown as FakeElement;
+    const input = findByTestId(panel, "ai-input");
+    expect(panel.querySelector(".ai-composer-hint")).toBeNull();
+    expect(input?.getAttribute("title")).toBeTruthy();
+    input?.dispatchEvent(new Event("focus"));
+    expect(panel.querySelector(".ai-composer-hint")).toBeNull();
+    expect(findByTestId(panel, "ai-send")).toBeTruthy();
   });
 });
