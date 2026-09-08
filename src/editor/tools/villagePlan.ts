@@ -3,6 +3,7 @@
 
 import type { BuildSpec, SpecAsset } from "@/ai/buildSpec";
 import { MIXABLE_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId } from "@/editor/houseKit";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { Project } from "@/project/types";
 import { DEFAULT_WORLD_GEN_RULES, type ResolvedWorldGenRules } from "@/project/worldGenRules";
 import { isYardDecorKind, type YardDecorKind } from "./houseLotDecor";
@@ -707,8 +708,14 @@ function optionalSize(value: unknown, label: string, issues: PlanIssue[]): numbe
     issues.push({ severity: "error", message: `${label}는 정수여야 한다.` });
     return undefined;
   }
-  if (value < 36 || value > 256) {
-    issues.push({ severity: "warning", message: `${label}=${value}는 시공 시 36~256으로 클램프된다.` });
+  // 상한 초과는 error 다 — 계획서가 warning 으로 통과시키면 모델은 그 크기를 그대로 다시
+  // 들고 오고, 시공(build_village)에서 조용히 줄어들어 계획과 결과가 어긋난다(OPRN-OUT-018).
+  if (value > MAX_TOOL_MAP_DIMENSION) {
+    issues.push({ severity: "error", message: `${label}=${value}는 상한 ${MAX_TOOL_MAP_DIMENSION}을 넘는다 — 여러 맵으로 나누고 transfer 이벤트로 연결하라.` });
+    return undefined;
+  }
+  if (value < 36) {
+    issues.push({ severity: "warning", message: `${label}=${value}는 시공 시 36~${MAX_TOOL_MAP_DIMENSION}으로 클램프된다.` });
   }
   return value;
 }

@@ -3,6 +3,7 @@
 
 import { evaluateCastle, stampCastle, type Rect } from "@/editor/castleKit";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { GameMap, Project } from "@/project/types";
 import { EVENT_TOOLS } from "./eventTools";
 import { assertMapIdAvailable } from "./mapHelpers";
@@ -13,7 +14,7 @@ const DEFAULT_W = 48;
 const DEFAULT_H = 40;
 const MIN_W = 28;
 const MIN_H = 24;
-const MAX_SIZE = 256;
+const MAX_SIZE = MAX_TOOL_MAP_DIMENSION;
 
 const createMapTool = requireTool(MAP_TOOLS, "create_map");
 const paintRoadTool = requireTool(MAP_TOOLS, "paint_road");
@@ -35,8 +36,8 @@ export const CASTLE_TOOLS: readonly ToolDefinition[] = [
         mapId: { type: "string", description: "기존 맵 id. 생략 시 새 맵 생성." },
         name: { type: "string", description: "새 맵 이름(기본: 성채)" },
         id: { type: "string", description: "새 맵 id(생략 시 자동)" },
-        width: { type: "integer", description: "새 맵 가로(기본 48, 28~256)" },
-        height: { type: "integer", description: "새 맵 세로(기본 40, 24~256)" },
+        width: { type: "integer", description: `새 맵 가로(기본 ${DEFAULT_W}, ${MIN_W}~${MAX_SIZE})` },
+        height: { type: "integer", description: `새 맵 세로(기본 ${DEFAULT_H}, ${MIN_H}~${MAX_SIZE})` },
         bounds: {
           type: "object",
           description: "기존/새 맵 안 시공 사각형. 생략 시 맵 전체(가장자리 여유 포함).",

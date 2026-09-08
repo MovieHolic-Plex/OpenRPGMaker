@@ -53,6 +53,8 @@
     "ontology:evaluate": "node scripts/ontology-query.mjs evaluate",
     "ontology:docs": "node scripts/ontology-query.mjs docs --write docs/ontology/development-ontology.md",
     "ontology:check": "node scripts/ontology-check.mjs",
+    "terminology:check": "node scripts/terminology-check.mjs",
+    "terminology:docs": "node scripts/terminology-docs.mjs --write docs/terminology/product-terminology.md",
     "fixture:sync": "vite-node --script scripts/sync-fixture-default-database.mts",
     "generate:window-skin": "node scripts/generate-window-skin.mjs",
     "assets:slice-faces": "node scripts/slice-faceset-sheets.mjs",

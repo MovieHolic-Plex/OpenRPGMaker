@@ -1,5 +1,6 @@
 import { MIN_BOUNDS_SIZE } from "@/editor/tools/village/constants";
 import { isHouseKitId } from "@/editor/houseKit";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { ToolError } from "@/editor/tools/types";
 
 import {
@@ -36,7 +37,7 @@ const RESIDENT_KEYS = ["name", "role", "lines"] as const;
 const MIN_HOUSES = 1;
 const MAX_HOUSES = 32;
 const MIN_MAP_SIZE = 20;
-const MAX_MAP_SIZE = 256;
+const MAX_MAP_SIZE = MAX_TOOL_MAP_DIMENSION;
 const MAX_NPCS = 512;
 
 export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest {
@@ -172,7 +173,7 @@ function parsePlannedMap(value: unknown): PlannedMapDescriptor {
 function parseMapDimension(record: BoundaryRecord, key: string, scope: string): number {
   const value = requiredInteger(record, key, scope);
   if (value < MIN_MAP_SIZE || value > MAX_MAP_SIZE) {
-    throw new ToolError(`${scope}.${key} must be between 20 and 256.`, { code: "invalid-args" });
+    throw new ToolError(`${scope}.${key} must be between ${MIN_MAP_SIZE} and ${MAX_MAP_SIZE}.`, { code: "invalid-args" });
   }
   return value;
 }

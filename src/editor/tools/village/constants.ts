@@ -9,6 +9,7 @@
 import { protectedHouseCells } from "../houseProtection";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { FootprintWing, HouseKitId } from "@/editor/houseKit";
 import { MIXABLE_HOUSE_KIT_IDS } from "@/editor/houseKit";
 import type { HouseInteriorProgram } from "@/editor/houseInteriors";
@@ -65,7 +66,7 @@ export interface VillageIntent {
 export const MIN_SIZE = 20;
 /** 기존 맵 bounds 하한 — 새 맵 전체(20)보다 작게, 뷰포트(16)까지 허용. 16 미만은 집 1채도 못 놓는다. */
 export const MIN_BOUNDS_SIZE = 16;
-export const MAX_SIZE = 256;
+export const MAX_SIZE = MAX_TOOL_MAP_DIMENSION;
 export const DEFAULT_SIZE = 50;
 export const DEFAULT_HOUSES = 8;
 export const MIN_HOUSES = 1;

@@ -19,6 +19,7 @@ import { store, type AutoSaveState } from "@/project/store";
 import type { EventPage, MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
+import { renderEventIdReadout } from "./eventIdReadout";
 import { isTopModal, hasOpenModalLayer, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { clearEventAiLiveDock } from "./aiAssist";
 import {
@@ -545,6 +546,16 @@ function renderModalHeader(
                     el("span", { text: profileName, dataset: { testid: "event-editor-npc-name" } }),
                   ],
                 }),
+              ]
+            : []),
+          // 위 주석이 말한 `0007` 의 **올바른 대체물**. 저장된 `event.id` 를 읽기 전용으로
+          // 세운다 — 순번이 아니라 정본이라 앞 이벤트를 지워도 변하지 않는다(OPRN-OUT-014).
+          // 줄 끝에 두는 이유: 값 길이가 가변(레거시 `EV003` ~ `ev_`+UUID 39자)이라
+          // 남는 폭을 흡수하는 자리에 있어야 앞의 이름·맵·좌표가 밀리지 않는다.
+          ...(ev
+            ? [
+                el("span", { class: "dot-sep" }),
+                renderEventIdReadout(ev.id, { scope: "event-editor", variant: "chip" }),
               ]
             : []),
         ],
