@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { deserialize, ProjectFormatError, serialize } from "@/project/io";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { loadProjectFromSupabase, saveProjectMapPatchToSupabase } from "@/project/supabaseProjectSync";
-import type { Project } from "@/project/types";
+import type { GameEvent, Project } from "@/project/types";
 import { animalProject } from "./fixtures/p1FarmAnimals";
 
 const config = { url: "https://memory.invalid", anonKey: "test-only", projectId: "housing-recovery" };
@@ -133,6 +133,137 @@ describe("map-patch baseline contracts", () => {
     expect(collectProjectReferenceIssues(remote)).toHaveLength(2);
     expect(serialize(transport.project)).toBe(original);
     expect(transport.writes).toEqual([]);
+  });
+});
+
+describe("map-patch reference-dependent event retention", () => {
+  it.each([true, false])("retains remote common-event calls restored by local roots (invalid housing: %s)", async (invalidHousing) => {
+    const base = housingProject();
+    if (invalidHousing) invalidateHousing(base);
+    const local = housingProject();
+    local.commonEvents.push({ id: "ce_restored", name: "Restored", trigger: "none", commands: [] });
+    const remote = structuredClone(base);
+    const concurrent: GameEvent = {
+      id: "concurrent_call", name: "Concurrent call", x: 1, y: 1,
+      trigger: { kind: "action" },
+      commands: [{ kind: "callCommonEvent", commonEventId: "ce_restored" }],
+      pages: [{
+        id: "concurrent_page", name: "Concurrent page", conditions: [], graphic: {},
+        trigger: { kind: "action" }, priority: "same",
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "loop", body: [{ kind: "callCommonEvent", commonEventId: "ce_restored" }] }],
+      }],
+    };
+    const remoteMap = remote.maps.remote;
+    if (!remoteMap) throw new Error("Fixture requires remote map");
+    remoteMap.events.push(concurrent);
+    const validLocal = deserialize(serialize(local));
+    const intended = { ...validLocal, maps: structuredClone(remote.maps), mapTree: structuredClone(remote.mapTree) };
+    expect(collectProjectReferenceIssues(validLocal)).toEqual([]);
+    expect(collectProjectReferenceIssues(intended)).toEqual([]);
+    expect(deserialize(serialize(intended)).maps.remote?.events).toEqual([concurrent]);
+    const originals = [base, validLocal, remote].map(serialize);
+    const transport = remoteTransport(remote);
+    const pending = settled(saveProjectMapPatchToSupabase({ project: validLocal, baseProject: base }, config));
+    await releaseRead(transport);
+    const result = await pending;
+    expect([base, validLocal, remote].map(serialize)).toEqual(originals);
+    expect(result.ok && result.value.kind).toBe("saved");
+    expect(transport.project.maps.remote?.events).toEqual([concurrent]);
+    expect(transport.project.commonEvents).toEqual(validLocal.commonEvents);
+    expect(transport.writes.map((call) => call.method)).toEqual(["PATCH"]);
+    expect(transport.writes[0]?.body).toMatchObject({ current_json: { maps: { remote: { events: [concurrent] } } } });
+    expect(transport.writes[0]?.url.searchParams.get("current_sha256")).toBe("eq.remote-sha-0");
+  });
+
+  it("retains remote commands and movement targeting a locally restored map and event", async () => {
+    const base = housingProject();
+    invalidateHousing(base);
+    const local = housingProject();
+    const template = local.maps.remote;
+    if (!template) throw new Error("Fixture requires remote map");
+    local.maps.restored = { ...structuredClone(template), id: "restored", name: "Restored map", events: [{
+      id: "restored_target", x: 1, y: 1, trigger: { kind: "action" }, commands: [],
+    }] };
+    local.mapTree.children.push({ mapId: "restored", children: [] });
+    const remote = structuredClone(base);
+    const concurrent: GameEvent = {
+      id: "concurrent_movement", x: 1, y: 1, trigger: { kind: "action" },
+      commands: [
+        { kind: "transfer", mapId: "restored", x: 1, y: 1 },
+        { kind: "showEmote", target: { eventId: "restored_target" }, emote: "heart" },
+      ],
+      schedule: [{ when: { hourRange: [6, 18] }, at: { mapId: "restored", x: 1, y: 1 } }],
+      pages: [{
+        id: "movement_page", name: "Movement", conditions: [], graphic: {},
+        trigger: { kind: "action" }, priority: "same", commands: [],
+        movement: { type: "living", speed: 3, frequency: 3,
+          living: { destinations: [{ mapId: "restored", x: 1, y: 1 }], repeat: true } },
+      }],
+    };
+    const remoteMap = remote.maps.remote;
+    if (!remoteMap) throw new Error("Fixture requires remote map");
+    remoteMap.events.push(concurrent);
+    const intended = { ...local, maps: { ...remote.maps, restored: local.maps.restored } };
+    expect(collectProjectReferenceIssues(local)).toEqual([]);
+    expect(collectProjectReferenceIssues(intended)).toEqual([]);
+    expect(deserialize(serialize(intended)).maps.remote?.events).toEqual([concurrent]);
+    const originals = [base, local, remote].map(serialize);
+    const transport = remoteTransport(remote);
+    const pending = settled(saveProjectMapPatchToSupabase({ project: local, baseProject: base }, config));
+    await releaseRead(transport);
+    const result = await pending;
+    expect([base, local, remote].map(serialize)).toEqual(originals);
+    expect(result.ok && result.value.kind).toBe("saved");
+    expect(transport.project.maps.remote?.events).toEqual([concurrent]);
+    expect(transport.project.maps.restored).toEqual(local.maps.restored);
+    expect(transport.writes[0]?.body).toMatchObject({ current_json: { maps: { remote: { events: [concurrent] } } } });
+  });
+
+  it("refuses unresolved remote calls instead of publishing repaired command loss", async () => {
+    const local = housingProject();
+    const remote = structuredClone(local);
+    invalidateHousing(remote);
+    const remoteMap = remote.maps.remote;
+    if (!remoteMap) throw new Error("Fixture requires remote map");
+    remoteMap.events.push({ id: "unresolved_call", x: 1, y: 1, trigger: { kind: "action" },
+      commands: [{ kind: "callCommonEvent", commonEventId: "ce_missing" }] });
+    const originals = [local, remote].map(serialize);
+    const transport = remoteTransport(remote);
+    const pending = settled(saveProjectMapPatchToSupabase({ project: local, baseProject: local }, config));
+    await releaseRead(transport);
+    const result = await pending;
+    expect([local, remote].map(serialize)).toEqual(originals);
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("Expected unresolved-reference rejection");
+    expect(result.error).toBeInstanceOf(ProjectFormatError);
+    expect(transport.writes).toEqual([]);
+    expect(transport.project).toEqual(remote);
+  });
+
+  it("does not hide a same-map command-only remote change during conflict detection", async () => {
+    const base = housingProject();
+    const baseMap = base.maps.remote;
+    if (!baseMap) throw new Error("Fixture requires remote map");
+    baseMap.events.push({ id: "existing_event", x: 1, y: 1, trigger: { kind: "action" }, commands: [] });
+    const local = structuredClone(base);
+    const localMap = local.maps.remote;
+    if (!localMap) throw new Error("Fixture requires local map");
+    localMap.name = "Local edit";
+    local.commonEvents.push({ id: "ce_restored", name: "Restored", trigger: "none", commands: [] });
+    const remote = structuredClone(base);
+    const remoteEvent = remote.maps.remote?.events[0];
+    if (!remoteEvent) throw new Error("Fixture requires remote event");
+    remoteEvent.commands.push({ kind: "callCommonEvent", commonEventId: "ce_restored" });
+    const originals = [base, local, remote].map(serialize);
+    const transport = remoteTransport(remote);
+    const pending = settled(saveProjectMapPatchToSupabase({ project: local, baseProject: base }, config));
+    await releaseRead(transport);
+    const result = await pending;
+    expect(result.ok && result.value).toEqual({ kind: "conflict", conflicts: [{ mapId: "remote", name: "Local edit" }] });
+    expect(transport.writes).toEqual([]);
+    expect(transport.project).toEqual(remote);
+    expect([base, local, remote].map(serialize)).toEqual(originals);
   });
 });
 

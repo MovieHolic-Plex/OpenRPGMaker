@@ -1,5 +1,5 @@
 import { PRODUCT_BRAND } from "@/brand";
-import { deserialize, ProjectFormatError, serialize } from "./io";
+import { deserialize, serialize } from "./io";
 import { readProjectV4MapMergeSnapshot } from "./io/shape";
 import { SCHEMA_VERSION } from "./types";
 import { defaultResourceProfiles, removeLegacySpriteReferences } from "./defaults/defaultAssets";
@@ -278,17 +278,10 @@ export async function saveProjectMapPatchToSupabase(
   const baseProject = projectWithoutEventDrafts(input.baseProject);
   removeLegacySpriteReferences(persistedProject);
   removeLegacySpriteReferences(baseProject);
-  // 비교 정규화(todo 8 실측 결함): 로드 경로(repairSupabaseCurrentJson + deserialize →
-  // validateProjectV4)는 저장본을 로드할 때 맵을 **변형**한다 — normalizeShopCommands가
-  // shop 커맨드에 branchOnTransaction/transactionBranch/branchOnFailedTransaction/
-  // failedTransactionBranch 기본 필드를 주입하고, stampCharacterIdsForSocialEvents가
-  // characterId를 스탬프하며, repairProjectReferences가 끊긴 참조를 정리한다. 에디터
-  // 메모리의 persistedBaseline/로컬 프로젝트는 이 변형을 거치지 않으므로 같은 논리 맵도
-  // JSON 문자열이 달라져 매 flush가 가짜 conflict로 끝났다(데모 행이 첫 마일스톤 이후
-  // 저장 불가). base/로컬을 동일한 serialize→deserialize 파이프라인에 통과시켜 비교를
-  // 대칭으로 만든다 — 로드가 이미 정규형인 latest와 어느 쪽도 깨지지 않는다.
-  // 검증을 통과하지 못하는 중간 상태(끊긴 참조 등)는 원본 그대로 폴백해 기존 conflict
-  // 동작을 유지한다(새 예외를 만들지 않는다).
+  // Compare all three snapshots with the same shape/compatibility normalization
+  // (shop defaults, social IDs, load foundation), without pruning references.
+  // Remote roots may lack targets restored by local edits; repairing here would
+  // erase concurrent commands before conflict detection or candidate validation.
   const canonicalBase = canonicalizeForMapComparison(baseProject);
   const canonicalLocal = canonicalizeForMapComparison(persistedProject);
   const changedMapIds = input.changedMapIds ?? changedMapIdsBetween(canonicalBase, canonicalLocal);
@@ -1070,23 +1063,9 @@ function mapSaveConflicts(
 }
 
 /**
- * 맵 스냅샷 비교를 위한 정규화(todo 8 실측 결함 수정).
- *
- * 로드 경로(loadProjectSnapshotFromSupabase)는 저장본을 deserialize(→ validateProjectV4)
- * 로 통과시키면서 맵을 **변형**한다: normalizeShopCommands가 shop 커맨드에 branch
- * 필드(branchOnTransaction/transactionBranch/...)를 주입하고,
- * stampCharacterIdsForSocialEvents가 소셜 이벤트에 characterId를 스탬프하며,
- * repairProjectReferences가 끊긴 참조를 정리한다. 에디터 메모리의 persistedBaseline/로컬
- * 프로젝트는 이 변형을 거치지 않으므로, 같은 논리 맵이라도 원본 JSON 문자열이 달라져
- * 매 flush가 가짜 conflict로 끝났다(데모 행이 첫 마일스톤 이후 저장 불가).
- *
- * 세 주체(base/local/latest)를 같은 serialize→repair→deserialize 파이프라인에 통과시키면
- * 비교가 대칭이 된다 — 실제 동시 수정만 conflict로 감지하고, 로드 정규화 차이는
- * 사라진다. repairSupabaseCurrentJson을 함께 통과시키는 이유: 로드 경로가 먼저
- * villageInfoDocuments 를 prune 하고 resourceProfiles 를 보충하는데, deserialize(serialize)
- * 만 돌리면 stale villageInfoDocuments 를 검증 단계에서 거부해 새 예외가 된다 — 로드와
- * 완전히 같은 파이프라인을 써야 대칭이다. 검증을 통과하지 못하는 중간 상태(끊긴 참조 등)는
- * 원본 그대로 폴백해 기존 conflict 동작을 유지한다(새 예외를 만들지 않는다).
+ * Symmetric map comparison keeps load-compatible shape defaults without erasing
+ * references before root ownership is resolved. Malformed local intermediates
+ * retain the existing comparison fallback; the completed candidate must validate.
  */
 function canonicalizeForMapComparison(project: Project): Pick<Project, "maps" | "mapTree"> {
   try {
@@ -1097,14 +1076,12 @@ function canonicalizeForMapComparison(project: Project): Pick<Project, "maps" | 
 }
 
 function readMapPatchSnapshot(value: unknown): Pick<Project, "maps" | "mapTree"> {
-  try {
-    return deserializeSupabaseCurrentJson(value);
-  } catch (error) {
-    if (!(error instanceof ProjectFormatError) || !isRecord(value) || value.version !== SCHEMA_VERSION) throw error;
-    // Only structurally valid current-schema maps/tree can participate in a
-    // merge. Never return the invalid remote roots or bypass final validation.
-    return readProjectV4MapMergeSnapshot(value);
-  }
+  if (!isRecord(value) || value.version !== SCHEMA_VERSION) return deserializeSupabaseCurrentJson(value);
+  const snapshot = structuredClone(value);
+  // Keep compatibility foundation changes, but never use ordinary load repair
+  // to prune map references against roots that the local candidate may restore.
+  repairSupabaseLoadFoundation(snapshot);
+  return readProjectV4MapMergeSnapshot(snapshot);
 }
 
 function mergeProjectMaps(
