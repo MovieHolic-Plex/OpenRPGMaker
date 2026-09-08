@@ -1,0 +1,38 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventEditorStagedState.test.ts test/weightedBranchUx.test.ts test/databaseCinematics.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-audio-preview-ux
+
+ ✓ test/weightedBranchUx.test.ts (19 tests) 2579ms
+ ✓ test/databaseCinematics.test.ts (25 tests) 47130ms
+   ✓ Database cinematic authoring > renders a detached initial cinematic tab without enabling edits before attachment  881ms
+   ✓ Database cinematic authoring > keeps a controller created during a replacement notification active  368ms
+   ✓ Database cinematic authoring > registers dedicated cinematic tabs in the System group in beginner mode  382ms
+   ✓ Database cinematic authoring > registers dedicated cinematic tabs in the System group in expert mode  327ms
+   ✓ Database cinematic authoring > opening selection and navigation retain disabled content without writes  515ms
+   ✓ Database cinematic authoring > game-over selection and navigation retain disabled content without writes  600ms
+   ✓ Database cinematic authoring > opening enabled/skippable changes retain scenes and are undoable  1437ms
+   ✓ Database cinematic authoring > game-over enabled/skippable changes retain scenes and are undoable  1730ms
+   ✓ Database cinematic authoring > commits image-to-text without leaking motion or required media fields  1346ms
+   ✓ Database cinematic authoring > keeps text valid until a image resource is confirmed  4688ms
+   ✓ Database cinematic authoring > keeps text valid until a video resource is confirmed  849ms
+   ✓ Database cinematic authoring > replaces image with video atomically and removes image motion  1021ms
+   ✓ Database cinematic authoring > does not allow clearing required image media into an invalid variant  1217ms
+   ✓ Database cinematic authoring > does not allow clearing required video media into an invalid variant  418ms
+   ✓ Database cinematic authoring > allows optional voice to be selected and cleared without changing the variant  11021ms
+   ✓ Database cinematic authoring > opening reorders and deletes the selected scene without losing values  2398ms
+   ✓ Database cinematic authoring > game-over reorders and deletes the selected scene without losing values  1981ms
+   ✓ Database cinematic authoring > adds valid unique text scenes and enforces the shared scene limit  1677ms
+   ✓ Database cinematic authoring > bounds authored duration using the shipped limits  747ms
+   ✓ Database cinematic authoring > retains the narration input, focus and caret while coalescing typing  1691ms
+   ✓ Database cinematic authoring > does not commit an old picker confirmation after its scene is deleted  10106ms
+   ✓ Database cinematic authoring > rejects a pending picker confirmation after tab replacement  489ms
+   ✓ Database cinematic authoring > rejects a pending picker confirmation after project replacement  711ms
+ ✓ test/eventEditorStagedState.test.ts (14 tests) 2185ms
+
+ Test Files  3 passed (3)
+      Tests  58 passed (58)
+   Start at  22:00:32
+   Duration  89.68s (transform 24.29s, setup 0ms, collect 35.71s, tests 51.89s, environment 1ms, prepare 491ms)
