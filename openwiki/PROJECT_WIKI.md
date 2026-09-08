@@ -49,6 +49,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - CC0 BGM catalog (281 tracks, CDN wiring, audio defaults): `openwiki/bgm-catalog.md`
    - CC0 SE catalog (635 sounds, in-repo assets, provisional labels): `openwiki/se-catalog.md`
    - Test and evidence strategy: `openwiki/testing.md`
+   - Screenshot-only agent UI discovery pilot: `openwiki/ui-discovery-pilot.md`
    - CPEN/OpenWiki refresh behavior: `openwiki/cpen-openwiki.md`
    - Community site (Next.js asset/game sharing, Supabase tables `openrpg_*`): `openwiki/community-site.md`
 4. Inspect the actual source files named by the focused page before editing.
