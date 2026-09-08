@@ -231,6 +231,38 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "rect", attrs: { x: "13.3", y: "11.2", width: "4.2", height: "3.4", rx: "0.6" } },
     { tag: "path", attrs: { d: "M2.8 18.6c3.2 0 3.6-2.2 6.8-2.2s4.2 2.2 8.2 2.2" } },
   ],
+  spatialTiles: [
+    { tag: "rect", attrs: { x: "3.4", y: "3.4", width: "15.2", height: "15.2", rx: "1.6" } },
+    { tag: "path", attrs: { d: "M8.5 3.4v15.2M13.5 3.4v15.2M3.4 8.5h15.2M3.4 13.5h15.2" } },
+  ],
+  spatialObjects: [
+    { tag: "path", attrs: { d: "M11 2.9l7 4v8.2l-7 4-7-4V6.9z" } },
+    { tag: "path", attrs: { d: "M4 6.9 11 10.9 18 6.9" } },
+    { tag: "path", attrs: { d: "M11 10.9v8.2" } },
+  ],
+  spatialSpaces: [
+    { tag: "path", attrs: { d: "M4.2 18.2V7.2L11 3.6l6.8 3.6v11" } },
+    { tag: "rect", attrs: { x: "8.4", y: "11.2", width: "5.2", height: "7", rx: "0.6" } },
+  ],
+  spatialPlaces: [
+    { tag: "circle", attrs: { cx: "11", cy: "4.6", r: "2" } },
+    { tag: "path", attrs: { d: "M11 6.6v4.2" } },
+    { tag: "path", attrs: { d: "M11 10.8 6.4 14.2" } },
+    { tag: "path", attrs: { d: "M11 10.8 15.6 14.2" } },
+    { tag: "circle", attrs: { cx: "6.4", cy: "16.2", r: "1.8" } },
+    { tag: "circle", attrs: { cx: "15.6", cy: "16.2", r: "1.8" } },
+  ],
+  spatialRegions: [
+    { tag: "path", attrs: { d: "M2.8 15.6c1.6-1.5 3.2-1.5 4.8 0s3.2 1.5 4.8 0 3.2-1.5 4.8 0" } },
+    { tag: "path", attrs: { d: "M2.8 18.6c1.6-1.5 3.2-1.5 4.8 0s3.2 1.5 4.8 0 3.2-1.5 4.8 0" } },
+    { tag: "path", attrs: { d: "M7.6 11.8 4.4 11.8 7.6 3.4 10.8 11.8z" } },
+    { tag: "path", attrs: { d: "M14.6 11.8a2.8 2.8 0 1 1 0-5.6 2.8 2.8 0 0 1 0 5.6z" } },
+  ],
+  spatialWorlds: [
+    { tag: "circle", attrs: { cx: "11", cy: "11", r: "7.4" } },
+    { tag: "path", attrs: { d: "M11 3.6c2.4 2.2 3.8 4.8 3.8 7.4s-1.4 5.2-3.8 7.4C8.6 16.2 7.2 13.6 7.2 11s1.4-5.2 3.8-7.4z" } },
+    { tag: "path", attrs: { d: "M3.6 11h14.8" } },
+  ],
   // 지형 — 산
   terrain: [
     { tag: "path", attrs: { d: "M2.6 17.4l5.5-8.5 4 6" } },

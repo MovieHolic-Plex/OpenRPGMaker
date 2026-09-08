@@ -42,9 +42,13 @@ const EXPECTED_TABS = [
   "db-tab-farm-animals",
   "db-tab-farm-spatial",
   "db-tab-life-collections",
-  // 맵 — two primary workspaces, no folder
-  "db-tab-scratch-concepts",
-  "db-tab-tilesets",
+  // 맵 — six visual spatial destinations
+  "db-tab-spatial-tiles",
+  "db-tab-spatial-objects",
+  "db-tab-spatial-spaces",
+  "db-tab-spatial-places",
+  "db-tab-spatial-regions",
+  "db-tab-spatial-worlds",
   // 시스템
   "db-tab-common-events",
   "db-tab-system",
@@ -125,10 +129,10 @@ describe("database sidebar navigation", () => {
     const panelRoot = renderPanelHost();
     const buttons = panelRoot.querySelectorAll(".db-tab");
     expect(buttons.length).toBe(EXPECTED_TABS.length);
-    expect(EXPECTED_TABS.length).toBe(35);
+    expect(EXPECTED_TABS.length).toBe(39);
     expect(buttons.map((button) => button.dataset.testid)).toEqual(EXPECTED_TABS);
     // 중복 없음 — 등장 순서 자체가 기대 순서와 일치하면 중복이 섞일 수 없다(배열 비교).
-    expect(new Set(EXPECTED_TABS).size).toBe(35);
+    expect(new Set(EXPECTED_TABS).size).toBe(39);
     for (const button of buttons) {
       expect(button.tagName).toBe("BUTTON");
       const label = (button.textContent ?? "").trim();
@@ -165,7 +169,10 @@ describe("database sidebar navigation", () => {
     const search = findByTestId(panelRoot, "db-tab-search")!;
     search.value = "worldGen";
     search.dispatchEvent(new Event("input"));
-    expect(findTab(panelRoot, "db-tab-world-gen").dataset.count).toBe("1");
+    const visible = panelRoot.querySelectorAll(".db-tab").filter((node) => !node.hidden);
+    expect(visible.map((node) => node.dataset.tab)).toEqual(["spatialRegions"]);
+    expect(findByTestId(panelRoot, "db-tab-world-gen")).toBeNull();
+    expect(findTab(panelRoot, "db-tab-spatial-regions").dataset.count).toBeUndefined();
   });
 
   // Break caught: the new navigation entry has no aggregate count or routed view.

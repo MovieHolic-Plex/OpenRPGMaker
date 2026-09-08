@@ -42,16 +42,39 @@ function crumbText(): string {
 }
 
 describe("데이터베이스 모달 헤더 — 현재 위치 브레드크럼", () => {
-  it("keeps the primary and nested Map ancestors in the real modal breadcrumb", () => {
+  it.each([
+    ["tilesets", "spatialTiles", "spatial-shell-tiles"],
+    ["structureKits", "spatialObjects", "spatial-shell-objects"],
+    ["tilesetSpaces", "spatialSpaces", "spatial-shell-spaces"],
+    ["scratchConcepts", "spatialPlaces", "spatial-shell-places"],
+    ["villages", "spatialPlaces", "spatial-shell-places"],
+    ["worldGen", "spatialRegions", "spatial-shell-regions"],
+  ] as const)("opens the canonical breadcrumb and destination when legacy %s is requested", (legacy, canonical, sentinel) => {
+    // Given: a blank project and a legacy caller, not a primary rail entry.
+    // When: the caller opens the real modal.
+    openDatabaseModal(legacy);
+    // Then: both the breadcrumb and authoring surface identify its replacement.
+    const crumb = document.querySelector<HTMLElement>("[data-testid='database-modal-crumb']");
+    const parts = Array.from(crumb?.querySelectorAll<HTMLElement>(".database-modal-crumb-tab") ?? []);
+    expect(parts.map((part) => part.dataset.tab)).toEqual([canonical]);
+    expect(parts.map((part) => part.textContent)).toEqual([databaseTabLabel(canonical)]);
+    const destination = document.querySelector(`[data-testid='${sentinel}']`);
+    expect(destination).not.toBeNull();
+    expect(destination?.querySelector("[data-testid='spatial-canvas']")).not.toBeNull();
+  });
+
+  it.each([
+    ["terrain", ["spatialTiles", "terrain"]],
+    ["tilesetAutotile", ["spatialTiles"]],
+  ] as const)("keeps the tiles ancestor when navigating to %s", (tab, expectedPath) => {
+    // Given: an open modal on a different spatial destination.
     openDatabaseModal("worldGen");
-    const crumb = document.querySelector<HTMLElement>("[data-testid='database-modal-crumb']")!;
-    const parts = Array.from(crumb.querySelectorAll<HTMLElement>(".database-modal-crumb-tab"));
-    expect(parts.map((part) => part.dataset.tab)).toEqual(["scratchConcepts", "villages", "worldGen"]);
-    expect(parts.map((part) => part.textContent)).toEqual(["scratchConcepts", "villages", "worldGen"].map((tab) => databaseTabLabel(tab as "scratchConcepts" | "villages" | "worldGen")));
-    setDatabaseActiveTab("terrain");
-    expect(Array.from(crumb.querySelectorAll<HTMLElement>(".database-modal-crumb-tab")).map((part) => part.dataset.tab)).toEqual(["tilesets", "terrain"]);
-    setDatabaseActiveTab("tilesetAutotile");
-    expect(Array.from(crumb.querySelectorAll<HTMLElement>(".database-modal-crumb-tab")).map((part) => part.dataset.tab)).toEqual(["tilesets"]);
+    const crumb = document.querySelector<HTMLElement>("[data-testid='database-modal-crumb']");
+    // When: an existing facet caller changes the active tab.
+    setDatabaseActiveTab(tab);
+    // Then: the subscribed breadcrumb uses the canonical tiles parent.
+    const parts = Array.from(crumb?.querySelectorAll<HTMLElement>(".database-modal-crumb-tab") ?? []);
+    expect(parts.map((part) => part.dataset.tab)).toEqual(expectedPath);
   });
 
   it("열 때 활성 탭의 그룹 › 탭 을 적는다", () => {

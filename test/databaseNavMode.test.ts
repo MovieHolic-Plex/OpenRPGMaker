@@ -78,8 +78,8 @@ describe("database navigation by editor mode", () => {
     // (`.db-tab-group-peek`)도 들어 있어서, 헤더 textContent 를 그대로 재면 라벨 계약이 아니라
     // 헤더 전체를 재게 된다. 잡으려는 것은 "라벨이 그대로인가" 이므로 이게 맞다.
     expect(world.querySelector(".db-tab-group-label")?.textContent).toBe("맵");
-    expect(world.getAttribute("title")).toContain("개념 꾸러미");
-    expect(world.getAttribute("title")).toContain("타일셋");
+    expect(world.getAttribute("title")).toContain("타일");
+    expect(world.getAttribute("title")).toContain("장소");
 
     // 빈 프로젝트도 타일셋·공통 이벤트가 있으므로 세계 그룹은 합계를 들고 있다.
     const worldCount = Number(world.dataset.tabCount ?? "0");
@@ -103,7 +103,7 @@ describe("database navigation by editor mode", () => {
     if (!nav) throw new Error("missing database navigation");
 
     expect(findByTestId(host, "db-nav-all")).toBeNull();
-    expect(directTabIds(nav)).toContain("db-tab-tilesets");
-    expect(findByTestId(nav, "db-tab-tilesets")?.closest("details")).toBeNull();
+    expect(directTabIds(nav)).toContain("db-tab-spatial-tiles");
+    expect(findByTestId(nav, "db-tab-spatial-tiles")?.closest("details")).toBeNull();
   });
 });

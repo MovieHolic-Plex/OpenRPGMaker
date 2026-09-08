@@ -51,10 +51,11 @@ function renderOnTileset(tilesetId: string): FakeElement {
 }
 
 describe("scratchConceptTab 레일", () => {
-  it("맵 그룹의 주 진입점에 개념 꾸러미가 있다 — 임시 그룹은 졸업", () => {
-    expect(TAB_GROUPS.some((group) => group.slug === "scratch")).toBe(false);
+  it("registers exactly six spatial primaries when reading the Map rail, not legacy aliases", () => {
+    // Given: the registered database groups. When: reading the Map primary rail. Then:
     const world = TAB_GROUPS.find((group) => group.slug === "world");
-    expect(world?.tabs).toContain("scratchConcepts");
+    expect(TAB_GROUPS.some((group) => group.slug === "scratch")).toBe(false);
+    expect(world?.tabs).toEqual(["spatialTiles", "spatialObjects", "spatialSpaces", "spatialPlaces", "spatialRegions", "spatialWorlds"]);
   });
 
   it("제목은 개념 꾸러미이고 구조물 앨범이 아니다", () => {
