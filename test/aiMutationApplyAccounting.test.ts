@@ -1,3 +1,4 @@
+import { reviewingChat } from "./aiEpochFixture";
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { AssistantSession, type TurnResult } from '@/ai/assistantSession';
 import { defaultAiConfig, type ChatResult } from '@/ai/llmClient';
@@ -27,7 +28,7 @@ it('malformed current tool arguments and misleading completion prose grant no ap
   // Given: a malformed real tool call, followed by untrusted completion prose.
   const before = JSON.stringify(store.getCurrent()); let round = 0;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }), yieldToUi: async () => {},
-    chat: async () => round++ === 0 ? tool('set_title_screen', '{') : final });
+    chat: reviewingChat(async () => round++ === 0 ? tool('set_title_screen', '{') : final) });
   // When: the session processes that model response.
   const result = await bounded(session.sendUserMessage('Set title'));
   // Then: no real mutation, apply or save authority was produced.
@@ -41,7 +42,7 @@ it('live content changes without a generation increment still reject an old prop
   // Given: an authored proposal followed by an in-place human edit.
   let round = 0;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }), yieldToUi: async () => {},
-    chat: async () => round++ === 0 ? tool('set_title_screen', JSON.stringify({ title: 'OLD_DRAFT' })) : final });
+    chat: reviewingChat(async () => round++ === 0 ? tool('set_title_screen', JSON.stringify({ title: 'OLD_DRAFT' })) : final) });
   await bounded(session.sendUserMessage('Set title'));
   const version = store.getVersionToken();
   const item = store.getCurrent().database.items.find(item => item.id === 'item_potion');
@@ -49,7 +50,7 @@ it('live content changes without a generation increment still reject an old prop
   item.price = 149;
   expect(store.getVersionToken()).toEqual(version);
   // When: the real adapter attempts the stale proposal.
-  const applied = await applyProposedProject(session.getProposedProject(), { base: session.getProposalBase(), operation: session.getRunOperation(), source: 'agent', summary: 'Old title', toolNames: ['set_title_screen'] });
+  const applied = await applyProposedProject(session.getProposedProject(), { base: session.getProposalBase(), baseline: session.getDraftBaseline(), operation: session.getRunOperation(), source: 'agent', summary: 'Old title', toolNames: ['set_title_screen'] });
   // Then: the human value survives with no application history.
   expect(applied).toMatchObject({ ok: false, reason: 'stale-base' });
   expect(store.getCurrent().database.items.find(item => item.id === 'item_potion')?.price).toBe(149);
@@ -61,8 +62,8 @@ it.each([false, true])('finishes store notification when the real applied-outcom
   const observerError = new Error('Applied outcome observer failed');
   let round = 0; let outcomeNotifications = 0;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }),
-    yieldToUi: async () => {}, chat: async () => round++ === 0
-      ? tool('set_title_screen', JSON.stringify({ title: 'APPLIED_BEFORE_THROW' })) : final });
+    yieldToUi: async () => {}, chat: reviewingChat(async () => round++ === 0
+      ? tool('set_title_screen', JSON.stringify({ title: 'APPLIED_BEFORE_THROW' })) : final) });
   const result = await bounded(session.sendUserMessage('Set title', event => {
     if (event.type === 'run_outcome' && event.runOutcome.delivery === 'applied') {
       outcomeNotifications += 1;
@@ -80,7 +81,7 @@ it.each([false, true])('finishes store notification when the real applied-outcom
   try {
     // When: the actual adapter invokes session accounting, which publishes to the throwing observer.
     const applying = applyProposedProject(session.getProposedProject(), {
-      base: session.getProposalBase(), operation: session.getRunOperation(), source: 'agent', resetProject,
+      base: session.getProposalBase(), baseline: session.getDraftBaseline(), operation: session.getRunOperation(), source: 'agent', resetProject,
       summary: 'Observer throw', toolNames: ['set_title_screen'],
       onApplied: mutation => session.recordAppliedMutation(mutation),
     });
@@ -106,11 +107,11 @@ it('cancellation from the actual store mutation subscriber accounts the already-
   // Given: the real autonomous title tool and a subscriber installed before mutation.
   let round = 0; let replacing = false; let b: Promise<TurnResult> | undefined; let retired: TurnResult | undefined;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }), yieldToUi: async () => {},
-    chat: async () => {
+    chat: reviewingChat(async () => {
       if (replacing) return final;
       return round++ === 0 ? tool('set_work_plan', JSON.stringify({ goal: 'Title', layers: [{ title: 'Title', items: [{ title: 'Title', instruction: 'Title', successTools: ['set_title_screen'] }] }] }))
-        : tool('set_title_screen', JSON.stringify({ title: 'A_ACTUALLY_APPLIED' }));
-    } });
+        : round === 2 ? tool('set_title_screen', JSON.stringify({ title: 'A_ACTUALLY_APPLIED' })) : final;
+    }) });
   const unsubscribe = store.subscribe(() => {
     if (replacing || store.getCurrent().system.titleScreen?.title !== 'A_ACTUALLY_APPLIED') return;
     replacing = true;
@@ -149,7 +150,7 @@ it.each([false, true])('accounts current host application exactly once when auto
   ];
   let round = 0;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }),
-    yieldToUi: async () => {}, chat: async () => responses[round++] ?? final });
+    yieldToUi: async () => {}, chat: reviewingChat(async () => responses[round++] ?? final) });
   const host = epochRunner(session);
   try {
     // When: the existing runner applies the current turn through the shared adapter.
@@ -171,8 +172,8 @@ it('preserves ordinary applied A through duplicate and nested mutation notificat
   let round = 0; let replacing = false; let notifications = 0;
   let b: Promise<TurnResult> | undefined; let retired: TurnResult | undefined;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }),
-    yieldToUi: async () => {}, chat: async () => round++ === 0
-      ? tool('set_title_screen', JSON.stringify({ title: 'ORDINARY_A' })) : final });
+    yieldToUi: async () => {}, chat: reviewingChat(async () => round++ === 0
+      ? tool('set_title_screen', JSON.stringify({ title: 'ORDINARY_A' })) : final) });
   const host = epochRunner(session);
   const replaceOwner = () => {
     notifications += 1;
@@ -210,8 +211,8 @@ it.each([false, true])('credits A before activity observers retire its owner whe
   // Given: a completed real proposal and the activity observer preceding store subscribers.
   let round = 0; let b: Promise<TurnResult> | undefined; let replacing = false;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }),
-    yieldToUi: async () => {}, chat: async () => round++ === 0
-      ? tool('set_title_screen', JSON.stringify({ title: 'ACTIVITY_A' })) : final });
+    yieldToUi: async () => {}, chat: reviewingChat(async () => round++ === 0
+      ? tool('set_title_screen', JSON.stringify({ title: 'ACTIVITY_A' })) : final) });
   const resultA = await bounded(session.sendUserMessage('A set title'));
   const operation = session.getRunOperation();
   const unsubscribe = subscribeEditActivity(entry => {
@@ -223,7 +224,7 @@ it.each([false, true])('credits A before activity observers retire its owner whe
   try {
     // When: the shared adapter crosses either actual replacement boundary.
     const applied = await bounded(applyProposedProject(session.getProposedProject(), {
-      base: session.getProposalBase(), operation, source: 'agent', summary: 'Activity accounting',
+      base: session.getProposalBase(), baseline: session.getDraftBaseline(), operation, source: 'agent', summary: 'Activity accounting',
       toolNames: ['set_title_screen'], resetProject,
       onApplied: mutation => session.recordAppliedMutation(mutation),
     }));
@@ -247,14 +248,14 @@ it('keeps a genuine draft unapplied when cancellation precedes mutation', async 
   let round = 0; let appliedNotifications = 0;
   const before = structuredClone(store.getCurrent());
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }),
-    yieldToUi: async () => {}, chat: async () => round++ === 0
-      ? tool('set_title_screen', JSON.stringify({ title: 'CANCELLED_DRAFT' })) : final });
+    yieldToUi: async () => {}, chat: reviewingChat(async () => round++ === 0
+      ? tool('set_title_screen', JSON.stringify({ title: 'CANCELLED_DRAFT' })) : final) });
   const cancelled = await bounded(session.sendUserMessage('Set title', event => {
     if (event.type === 'tool_call' && event.name === 'set_title_screen' && event.result.ok) session.retireRun();
   }));
   // When: a retired owner attempts the real adapter.
   const applied = await bounded(applyProposedProject(session.getProposedProject(), {
-    base: session.getProposalBase(), operation: session.getRunOperation(), source: 'agent',
+    base: session.getProposalBase(), baseline: session.getDraftBaseline(), operation: session.getRunOperation(), source: 'agent',
     summary: 'Retired title', toolNames: ['set_title_screen'],
     onApplied: mutation => { appliedNotifications += 1; session.recordAppliedMutation(mutation); },
   }));

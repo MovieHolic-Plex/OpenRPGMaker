@@ -7,8 +7,8 @@ import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
-import { type ToolContext, type ToolResult } from "@/editor/tools";
-import type { ChangeSummary } from "@/editor/tools/types";
+import { runTool, type ToolContext } from "@/editor/tools";
+import type { Project } from "@/project/types";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 class MemoryStorage implements Storage {
@@ -23,41 +23,6 @@ class MemoryStorage implements Storage {
 
 let restoreDom: (() => void) | null = null;
 let storage: MemoryStorage;
-
-function changeSummary(overrides: Partial<ChangeSummary> = {}): ChangeSummary {
-  return {
-    tilesChanged: 0,
-    eventsAdded: 0,
-    eventsModified: 0,
-    eventsRemoved: 0,
-    mapsAdded: 0,
-    mapsRemoved: 0,
-    dbRecordsChanged: 0,
-    tilesetsChanged: 0,
-    switchesAdded: 0,
-    variablesAdded: 0,
-    worldEntitiesAdded: 0,
-    worldEntitiesModified: 0,
-    palettePresetsAdded: 0,
-    palettePresetsModified: 0,
-    endingsChanged: 0,
-    sessionChanged: false,
-    systemChanged: false,
-    warnings: [],
-    ...overrides,
-  };
-}
-
-function proposed(
-  name: string,
-  args: Record<string, unknown>,
-  diff: Partial<ChangeSummary>,
-  summary = `${name} summary`,
-  data?: unknown
-): ProposedCall {
-  const result: ToolResult = { ok: true, summary, diff: changeSummary(diff), data };
-  return { name, args, summary, result, destructive: false };
-}
 
 function installBrowserGlobals(): void {
   storage = new MemoryStorage();
@@ -75,6 +40,7 @@ function installBrowserGlobals(): void {
       clearTimeout: vi.fn(),
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(() => true),
       innerWidth: 1280,
       innerHeight: 800,
     },
@@ -109,6 +75,38 @@ function turn(result: Partial<TurnResult>): TurnResult {
     stoppedReason: result.stoppedReason ?? "final",
     ...(result.error ? { error: result.error } : {}),
   };
+}
+
+/**
+ * 독립 검수를 통과한 후보를 모델링한다. sendUserMessage 가 돌려주는 턴에 승인 리뷰를
+ * 싣고, getProposedProject 는 검수 대상 초안의 불변 스냅샷을 돌려준다 — 실제 적용
+ * 경로의 승인 확인(isDraftReviewApproved)과 stale 베이스라인 검사는 그대로 탄다.
+ * 검수를 끄거나 베이스라인을 다시 캡처하지 않는다.
+ */
+function reviewedTurn(result: Partial<TurnResult>): TurnResult {
+  return {
+    ...turn(result),
+    review: { status: "approved", revision: 1, summary: "독립 검수 승인", findings: [] },
+  };
+}
+
+/**
+ * 검수 후보 모의는 캡처된 불변 스냅샷에만 묶는다. getProposedProject 는 후보의
+ * 복제본만 내주고(원본 별칭 유출 금지), isDraftReviewApproved 는 그 스냅샷의
+ * 직렬화 동일성으로만 판정한다 — 무조건 true 가 아니라 달라진 후보는 거부한다.
+ */
+function mockReviewedCandidate(candidate: Project): void {
+  const reviewedIdentity = JSON.stringify(candidate);
+  vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(candidate));
+  vi.spyOn(AssistantSession.prototype, "isDraftReviewApproved").mockImplementation((project?: Project) => {
+    return JSON.stringify(project ?? structuredClone(candidate)) === reviewedIdentity;
+  });
+}
+
+function runProposed(ctx: ToolContext, name: string, args: Record<string, unknown>): ProposedCall {
+  const result = runTool(ctx, name, args, { dryRun: false });
+  if (!result.ok) throw new Error(result.summary);
+  return { name, args, summary: result.summary, result, destructive: false };
 }
 
 beforeEach(() => {
@@ -171,13 +169,16 @@ describe("Assistant After UX contracts", () => {
     const lintDump = "- id map_dungeon_1\n✓ lint: error 0 / warning 226 / info 4\n✓ 출입구 쌍: 빈 맵(49,20) ↔ 어두운 동굴 던전(15,28)\n✓ 게임 품질 평가 통과 (객관 차단 오류 없음)";
     const assistantText = `동쪽 길 끝에 입구를 열고, 새 던전 맵과 양방향 이동을 붙였습니다.\n\n\`\`\`\n${lintDump}\n\`\`\``;
 
-    const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 2 }, "타일 2칸")];
-    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText, proposedCalls: calls }));
-    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
+    const ctx: ToolContext = { project: structuredClone(store.getCurrent()) };
+    const calls = [
+      runProposed(ctx, "paint_tiles", { mapId, layer: "lower", mode: "cells", tile: TILE.PATH, cells: [{ x: 2, y: 2 }] }),
+    ];
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(reviewedTurn({ assistantText, proposedCalls: calls }));
+    mockReviewedCandidate(ctx.project);
 
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
-    input.value = "동굴 입구 만들어줘";
+    input.value = "동굴 입구에 길 1칸 깔아줘";
     findByTestId(panel, "ai-send")?.click();
     await flushAsync();
 
@@ -192,13 +193,15 @@ describe("Assistant After UX contracts", () => {
     const baseline = store.getCurrent();
     const mapId = baseline.startMapId;
     const ctx: ToolContext = { project: structuredClone(baseline) };
-    const calls = [proposed("paint_tiles", { mapId, layer: "lower", mode: "cells", tile: TILE.PATH, cells: [{ x: 2, y: 2 }] }, { tilesChanged: 1 }, "길")];
-    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "적용 준비", proposedCalls: calls }));
-    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
+    const calls = [
+      runProposed(ctx, "paint_tiles", { mapId, layer: "lower", mode: "cells", tile: TILE.PATH, cells: [{ x: 2, y: 2 }] }),
+    ];
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(reviewedTurn({ assistantText: "길 1칸을 놓았습니다.", proposedCalls: calls }));
+    mockReviewedCandidate(ctx.project);
 
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
-    input.value = "길 깔아";
+    input.value = "길 1칸 깔아줘";
     findByTestId(panel, "ai-send")?.click();
     await flushAsync();
 

@@ -92,10 +92,14 @@ describe("통행 그리드는 항상 최신 턴 컨텍스트에만 실린다", (
 
     const request = stub.requests[0];
     if (!request) throw new Error("LLM 요청이 없다");
-    const userTurn = [...request.messages].reverse().find((message) => message.role === "user");
-    const content = typeof userTurn?.content === "string"
-      ? userTurn.content
-      : (userTurn?.content ?? []).map((part) => (part.type === "text" ? part.text : "")).join("\n");
+    // Grounded originals are appended after the live viewport message. Select the
+    // machine grid, not the final user message (which now contains original JSON).
+    const grids = request.messages.filter((message) => message.role === "user")
+      .map((message) => typeof message.content === "string" ? message.content
+        : (message.content ?? []).flatMap((part) => part.type === "text" ? [part.text] : []).join("\n"))
+      .filter((content) => content.includes(VIEWPORT_PASSABILITY_ORIGIN_PREFIX));
+    expect(grids).toHaveLength(1);
+    const content = grids[0];
 
     expect(content).toContain(VIEWPORT_PASSABILITY_ORIGIN_PREFIX);
     expect(markAt(content, viewport, 3, 3)).toBe(VIEWPORT_PASSABILITY_MARK.blocked);

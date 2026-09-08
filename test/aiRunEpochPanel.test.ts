@@ -13,6 +13,7 @@ import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { installFakeDom } from "./fakeDom";
 import { bounded, deferred } from "./aiEpochFixture";
 import { emptyWikiResponse, isWikiExtraction } from "./wikiTransportFixture";
+import { independentReviewPayload } from "./independentReviewFixture";
 
 vi.mock("@/ai/preferenceSignals", () => ({ observeTurn: () => ({}), shouldDistillPreferences: () => false }));
 let restoreDom: (() => void) | undefined;
@@ -37,15 +38,27 @@ it("the actual Panel Abort frees B and its public bridge result before A's late 
     { headers: { "Content-Type": "text/event-stream" } });
   vi.stubGlobal("fetch", vi.fn<typeof fetch>(async (url, init) => {
     if (!String(url).endsWith("/v1/chat/completions")) return Response.json({});
-    const payload: { stream?: boolean; response_format?: { type: string }; messages: { role: string; content?: unknown }[] } = JSON.parse(String(init?.body));
+    const payload: { stream?: boolean; response_format?: { type: "json_object" }; messages: llm.ChatRequest["messages"] } = JSON.parse(String(init?.body));
     if (isWikiExtraction(payload.messages)) return emptyWikiResponse();
+    const review = independentReviewPayload(payload);
+    if (review) {
+      expect(review.requiredProblems).toEqual([]);
+      return Response.json({ choices: [{ message: { role: "assistant", content: JSON.stringify({
+        revision: review.revision, verdict: "approved", summary: "Reviewed B", findings: [],
+      }) }, finish_reason: "stop" }] });
+    }
     if (payload.response_format?.type === "json_object") return Response.json({ choices: [{ message: { role: "assistant",
       content: JSON.stringify({ mode: "other", space: "none", needsPlan: false, tools: ["set_title_screen"] }) }, finish_reason: "stop" }] });
     if (round++ === 0) { entered.resolve(); return late.promise; }
-    if (round === 2) return sse({ tool_calls: [{ index: 0, id: "B", type: "function", function: {
-      name: "set_title_screen", arguments: JSON.stringify({ title: "B_CURRENT" }),
-    } }] });
-    return sse({ content: "RESULT" });
+    if (round === 2) {
+      const message: llm.ChatMessage = { role: "assistant", content: null, tool_calls: [{ id: "B", type: "function", function: {
+        name: "set_title_screen", arguments: JSON.stringify({ title: "B_CURRENT" }),
+      } }] };
+      return payload.stream ? sse({ tool_calls: message.tool_calls?.map(call => ({ ...call, index: 0 })) })
+        : Response.json({ choices: [{ message, finish_reason: "tool_calls" }] });
+    }
+    return payload.stream ? sse({ content: "RESULT" })
+      : Response.json({ choices: [{ message: { role: "assistant", content: "RESULT" }, finish_reason: "stop" }] });
   }));
   const completions = vi.spyOn(llm, "chatCompletion");
   const applying = vi.spyOn(adapter, "applyProposedProject");

@@ -1,3 +1,4 @@
+import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getMapEditHistoryEntries, redoMapEdit, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { applyProposedProject, captureProposalBase, applyToolSequenceToStore, applyToolToStore, previewTool } from "@/editor/tools/applyChangesetToStore";
@@ -49,6 +50,7 @@ describe("audio description store adapter", () => {
     // When
     const applied = await applyProposedProject(ctx.project, {
       base,
+      baseline: new AuthoredProjectBaseline(before),
       source: "agent", agentName: "test-agent", summary: "fixture",
       toolNames: ["set_audio_description"],
     });

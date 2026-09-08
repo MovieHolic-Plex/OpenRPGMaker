@@ -15,6 +15,7 @@ import { resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { _resetEditActivityForTest } from "@/editor/editActivityLog";
 import { installFakeDom } from "./fakeDom";
 import { fixedDeclarer } from "./intentFixture";
+import { approvedReviewResponse } from "./independentReviewFixture";
 
 // Telemetry is not the apply boundary. Session, registered tools, runner, apply and undo stay real.
 vi.mock("@/ai/activityLog", async original => ({
@@ -46,8 +47,9 @@ function runnerFor(session: AssistantSession) {
   const noop = () => {};
   const log = document.createElement("div");
   const applyProposal = vi.fn<AiTurnRunnerDeps["applyProposal"]>(async calls => {
-    const applied = await apply.applyProposedProject(session.getProposedProject(), { base: session.getProposalBase(),
-      source: "agent", summary: "R1 title", toolNames: calls.map(call => call.name),
+    expect(session.isDraftReviewApproved()).toBe(true);
+    const applied = await apply.applyProposedProject(session.getProposedProject(), {
+      base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: "agent", summary: "R1 title", toolNames: calls.map(call => call.name),
     });
     if (!applied.ok) throw new Error(applied.issue);
     session.recordAppliedProject(applied);
@@ -93,7 +95,7 @@ it.each(["explicit", "inferred", "inferred-plan"] as const)("does not apply a ca
   let asking = false;
   const session = new AssistantSession(store.getCurrent(), { config,
     declareIntent: facts => fixedDeclarer({ mode: asking && mode !== "explicit" ? "question" : "other" })(facts),
-    chat: async () => round++ === 0 ? tool("set_title_screen", { title: "CANCELLED_DRAFT" }) : final });
+    chat: async (_config, request) => approvedReviewResponse(request) ?? (round++ === 0 ? tool("set_title_screen", { title: "CANCELLED_DRAFT" }) : final) });
   const f = runnerFor(session);
   const actualApply = vi.spyOn(apply, "applyProposedProject");
   const before = structuredClone(store.getCurrent());
@@ -134,14 +136,17 @@ it("keeps ordinary Do auto-apply and pending/applied coexistence without replay"
   // Given: a real first milestone and a second write cancelled before ordinary application.
   const responses = [tool("set_work_plan", { goal: "Titles", layers: [{ title: "Titles", items: [
     { title: "First", instruction: "First title", successTools: ["set_title_screen"] },
-    { title: "Second", instruction: "Draft only", successTools: ["upsert_item"] },
-  ] }] }), tool("set_title_screen", { title: "APPLIED_FIRST" }), tool("set_title_screen", { title: "PENDING_SECOND" })];
+  ] }] }), tool("set_title_screen", { title: "APPLIED_FIRST" }), final, tool("set_title_screen", { title: "PENDING_SECOND" })];
   let round = 0;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
-    chat: async () => responses[round++] ?? final });
+    chat: async (_config, request) => approvedReviewResponse(request)
+      ?? (!request.tools?.length ? { message: { role: "assistant", content: JSON.stringify({ action: "resume" }) }, finishReason: "stop" }
+        : responses[round++] ?? final) });
   const f = runnerFor(session);
   const actualApply = vi.spyOn(apply, "applyProposedProject");
-  const result = await f.send("Set titles", { autonomous: true }, "PENDING_SECOND");
+  const first = await f.send("Set title", { autonomous: true });
+  expect(first.review?.status).toBe("approved");
+  const result = await f.send("Continue", { goalAction: "resume" }, "PENDING_SECOND");
   expect(result.runOutcome?.delivery).toBe("draft");
   expect(result.appliedCalls?.map(call => call.args.title)).toEqual(["APPLIED_FIRST"]);
   expect(result.proposedCalls.map(call => call.args.title)).toEqual(["PENDING_SECOND"]);

@@ -73,6 +73,16 @@ export class FakeNode {
     if (index >= 0) this.childNodes.splice(index, 1);
   }
 
+  insertBefore(child: FakeNode, reference: FakeNode | null): FakeNode {
+    if (reference !== null && reference.parentNode !== this) throw new DOMException("Reference is not a child", "NotFoundError");
+    if (child === reference) return child;
+    child.remove();
+    const index = reference === null ? this.childNodes.length : this.childNodes.indexOf(reference);
+    this.childNodes.splice(index, 0, child);
+    child.parentNode = this;
+    return child;
+  }
+
   remove(): void {
     this.parentNode?.removeChild(this);
     this.parentNode = null;

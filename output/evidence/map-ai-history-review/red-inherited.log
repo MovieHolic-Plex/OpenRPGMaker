@@ -1,0 +1,66 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiStickyChecklist.test.ts -t manual saved-history adoption retires outgoing
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-map-ai-history-review-fix
+
+ ❯ test/aiStickyChecklist.test.ts (34 tests | 2 failed | 32 skipped) 3945ms
+   ↓ renders acceptance outside chat and retains verified evidence after the turn
+   ↓ preserves disclosure and focused navigation while backend status and evidence change
+   ↓ projects pending without a mutable checkbox
+   ↓ projects working without a mutable checkbox
+   ↓ projects verifying without a mutable checkbox
+   ↓ projects verified without a mutable checkbox
+   ↓ projects blocked without a mutable checkbox
+   ↓ defaults to compact with compact media match=false
+   ↓ defaults to compact with compact media match=true
+   ↓ preserves a manual expansion through tight viewport changes and clears on disposal
+   ↓ navigates through the actual map and camera event seam
+   ↓ disables navigation for a deleted map without inventing a destination
+   ↓ ignores late acceptance events after the real new-chat boundary
+   ↓ refreshes backend acceptance on a store mutation without manufacturing verification
+   ↓ retains the backend blocked snapshot when the actual abort button ends a held turn
+   ↓ hides without discarding live updates and reopens the latest backend evidence
+   ↓ does not reopen retired acceptance after clear
+   ↓ does not reopen retired acceptance after dispose
+   ↓ exposes a blocked reason with item details closed and keeps source and evidence inside
+   ↓ folds verified rows separately and retains disclosure and focus when a row becomes active again
+   ↓ returns collapsed detail focus to the toggle without stealing native navigation keys
+   ↓ ends captured checklist drag on pointercancel
+   ↓ ends captured checklist drag on lostpointercapture
+   ↓ ends captured checklist drag on hide
+   ↓ ends captured checklist drag on clear
+   ↓ ends captured checklist drag on dispose
+   ↓ reopens hidden fresh acceptance through the actual header AI menu
+   ↓ reopens hidden fresh acceptance through the actual composer AI menu
+   ↓ orders active required work first and keeps compact activity live even while hidden
+   ↓ clamps a primary captured drag and resets position, disclosure and hiding on new acceptance
+   × manual saved-history adoption retires outgoing live acceptance through real controls 2212ms
+     → Missing rendered ai-history-open
+   × manual saved-history adoption retires outgoing terminal acceptance through real controls 1710ms
+     → Missing rendered ai-history-open
+   ↓ rejects old live and terminal acceptance immediately after project retirement
+   ↓ rejects old live and terminal acceptance immediately after dispose retirement
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiStickyChecklist.test.ts > manual saved-history adoption retires outgoing live acceptance through real controls
+ FAIL  test/aiStickyChecklist.test.ts > manual saved-history adoption retires outgoing terminal acceptance through real controls
+Error: Missing rendered ai-history-open
+ ❯ node test/aiStickyChecklist.test.ts:56:21
+     54| function node<T extends HTMLElement>(testid: string): T {
+     55|   const found = document.querySelector<T>(`[data-testid='${testid}']`);
+     56|   if (!found) throw new Error(`Missing rendered ${testid}`);
+       |                     ^
+     57|   return found;
+     58| }
+ ❯ test/aiStickyChecklist.test.ts:522:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 32 skipped (34)
+   Start at  05:05:58
+   Duration  48.13s (transform 29.81s, setup 0ms, collect 41.51s, tests 3.95s, environment 601ms, prepare 343ms)

@@ -16,6 +16,7 @@ import { resetMapEditHistory } from '@/editor/mapEditHistory';
 import { _resetEditActivityForTest } from '@/editor/editActivityLog';
 import { installFakeDom } from './fakeDom';
 import { fixedDeclarer } from './intentFixture';
+import { approvedReviewResponse } from './independentReviewFixture';
 
 // Only telemetry is stubbed. Session, registered tool, runner, apply adapter and store are real.
 vi.mock('@/ai/activityLog', async original => ({
@@ -39,8 +40,9 @@ const config = { ...defaultAiConfig(), agentMode: 'chat', model: 'test', liteMod
 function runnerFor(session: AssistantSession) {
   const noop = () => {}; const log = document.createElement('div');
   const applyProposal = vi.fn<AiTurnRunnerDeps['applyProposal']>(async calls => {
-    const applied = await apply.applyProposedProject(session.getProposedProject(), { base: session.getProposalBase(),
-      source: 'agent', summary: 'Reviewer owned isolated title', toolNames: calls.map(call => call.name),
+    expect(session.isDraftReviewApproved()).toBe(true);
+    const applied = await apply.applyProposedProject(session.getProposedProject(), {
+      base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: 'agent', summary: 'Reviewer owned isolated title', toolNames: calls.map(call => call.name),
     });
     if (!applied.ok) throw new Error(applied.issue);
     session.recordAppliedProject(applied); session.rebaseProject(store.getCurrent()); return 'applied';
@@ -112,7 +114,9 @@ function draftFixture(detached = false) {
   const session = new AssistantSession(project, { config,
     prepareProjectWiki: async input => { hook('wiki', input.signal); return undefined; },
     declareIntent: async (facts, signal) => { hook('intent', signal); return fixedDeclarer({ mode: 'other' })(facts); },
-    chat: async () => responses.shift() ?? final,
+    chat: async (_config, request) => approvedReviewResponse(request)
+      ?? (!request.tools?.length ? { message: { role: 'assistant', content: JSON.stringify({ action: 'resume' }) }, finishReason: 'stop' }
+        : responses.shift() ?? final),
   });
   return { session, ...runnerFor(session),
     respond(...next: ChatResult[]) { responses = next; },
@@ -210,10 +214,12 @@ it('archives applied-plus-pending history before rebase, preserves applied conte
     criteria: [{ kind: 'mapDimensions', target: { mapId: map.id }, width: map.width, height: map.height }] }],
     layers: [{ title: 'Titles', items: [
       { title: 'First', instruction: 'First title', successTools: ['set_title_screen'] },
-      { title: 'Second', instruction: 'Draft only', successTools: ['upsert_item'] },
-    ] }] }), tool('set_title_screen', { title: 'APPLIED_FIRST' }), tool('set_title_screen', { title: 'PENDING_SECOND' }));
+    ] }] }), tool('set_title_screen', { title: 'APPLIED_FIRST' }));
   const actualApply = vi.spyOn(apply, 'applyProposedProject');
-  const old = await f.send('Set titles', { autonomous: true }, 'PENDING_SECOND');
+  const first = await f.send('Set title', { autonomous: true });
+  expect(first.result.review?.status).toBe('approved');
+  f.respond(tool('set_title_screen', { title: 'PENDING_SECOND' }));
+  const old = await f.send('Continue', { goalAction: 'resume' }, 'PENDING_SECOND');
   expect(old.result.appliedCalls?.map(call => call.args.title)).toEqual(['APPLIED_FIRST']);
   expect(old.result.proposedCalls.map(call => call.args.title)).toEqual(['PENDING_SECOND']);
   expect(old.result.runOutcome?.delivery).toBe('draft');
@@ -240,14 +246,27 @@ it('archives applied-plus-pending history before rebase, preserves applied conte
   expect(old.result).toEqual(resultHistory);
 });
 
-it('still applies current successful proposals on a new-goal authoring error exactly once', async () => {
+it('retains current successful proposals on a new-goal error and applies once only after resumed review', async () => {
   let round = 0;
+  let failed = true;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }),
-    chat: async () => { if (round++ === 0) return disjoint; throw new Error('current-authoring-fault'); } });
+    chat: async (_config, request) => {
+      const review = approvedReviewResponse(request);
+      if (review) return review;
+      if (round++ === 0) return disjoint;
+      if (failed) throw new Error('current-authoring-fault');
+      return final;
+    } });
   const f = runnerFor(session);
   const result = await f.send('Create an item', { goalAction: 'new-goal' });
   expect(result.result.stoppedReason).toBe('error');
-  expect(result.result.runOutcome).toEqual({ execution: 'failed', goal: 'unassessed', delivery: 'applied' });
+  expect(result.result.runOutcome).toEqual({ execution: 'failed', goal: 'unassessed', delivery: 'draft' });
+  expect(session.isDraftReviewApproved()).toBe(false);
+  expect(f.applyProposal).not.toHaveBeenCalled();
+  expect(store.getCurrent().database.items.find(item => item.id === 'item_new_owner')).toBeUndefined();
+  failed = false;
+  const resumed = await f.send('Continue', { goalAction: 'resume' });
+  expect(resumed.result.review?.status).toBe('approved');
   expect(f.applyProposal).toHaveBeenCalledTimes(1);
   expect(store.getCurrent().database.items.find(item => item.id === 'item_new_owner')?.name).toBe('New owner item');
   await f.send('Continue', { goalAction: 'resume' });

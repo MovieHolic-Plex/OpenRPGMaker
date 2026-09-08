@@ -882,7 +882,7 @@ class ProjectStore {
   /** Read-only verification of a store-issued save receipt. Failed attempts are always retryable. */
   async verifyPersistedRevision(
     receipt: ProjectPersistenceReceipt,
-    options: { readonly signal?: AbortSignal } = {},
+    options: { readonly signal?: AbortSignal; readonly validate?: (project: Project) => string | undefined } = {},
   ): Promise<ProjectPersistenceProof> {
     const target = this.persistenceTargets.get(receipt)?.target;
     if (!target) return { kind: "failed", receipt, message: "Unknown accepted revision" };
@@ -898,6 +898,10 @@ class ProjectStore {
       if (options.signal?.aborted) return { kind: "cancelled", receipt };
       if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
       if (observedIdentity !== receipt.contentIdentity) return { kind: "mismatch", receipt, reason: "content" };
+      // Trusted run-end validators see only the canonical read that matched this receipt.
+      const validationProblem = options.validate?.(read.project);
+      if (options.signal?.aborted) return { kind: "cancelled", receipt };
+      if (validationProblem) return { kind: "failed", receipt, message: validationProblem };
       return { kind: "verified", receipt, isCurrent: this.isPersistenceReceiptCurrent(receipt) };
     } catch (error) {
       if (options.signal?.aborted || (error instanceof Error && error.name === "AbortError")) {

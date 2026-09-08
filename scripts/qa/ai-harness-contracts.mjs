@@ -21,6 +21,7 @@ import { createWikiContracts } from './ai-harness-wiki.mjs';
 import { createHumanEditRaceContracts } from './ai-harness-p3-stale.mjs';
 import { deleteOwnedFixture } from './ai-harness-cleanup.mjs';
 import { isWikiExtraction } from '../../test/wikiTransportFixture.ts';
+import { independentReviewPayload } from '../../test/independentReviewFixture.ts';
 
 const { values } = parseArgs({ options: { scenario: { type: 'string' } } });
 assert.ok(['proof-failure', 'required-skip', 'outcome-matrix', 'retained-draft-ask', 'wiki-delivery', 'new-goal-draft', 'late-cancel', 'human-edit-race'].includes(values.scenario), 'Unknown contract scenario');
@@ -105,10 +106,17 @@ async function runRoute(route) {
     // Incoming main adds a separate tool-free wiki checkpoint before intent.
     // These scoped contract instructions introduce no lasting wiki facts.
     const wikiExtraction = isWikiExtraction(body.messages);
-    const message = wikiExtraction ? p2?.extract ? p2.extract(body) : wiki ? wiki.extract(body) : { role: 'assistant', content: JSON.stringify({ upserts: [] }) }
+    const review = !body.tools?.length && !wikiExtraction ? independentReviewPayload(body) : null;
+    if (review) record('scripted-independent-review', { revision: review.revision,
+      changedPaths: review.changes.map(change => change.path), requiredProblems: review.requiredProblems });
+    const findings = review?.requiredProblems.map((problem, index) => ({ id: `required-${index}`,
+      target: 'draft', problem, requestedChange: 'Resolve the required problem', validation: problem })) ?? [];
+    const message = review ? { role: 'assistant', content: JSON.stringify({ revision: review.revision,
+      verdict: findings.length ? 'changes_requested' : 'approved', summary: 'Scoped native review', findings }) }
+      : wikiExtraction ? p2?.extract ? p2.extract(body) : wiki ? wiki.extract(body) : { role: 'assistant', content: JSON.stringify({ upserts: [] }) }
       : p2 ? await p2.respond(body) : p1Response(body);
     record('scripted-llm-http', { round: ++llmRound, hasTools: !!body.tools?.length, wikiExtraction, tool: message.tool_calls?.[0]?.function.name ?? null });
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ choices: [{ message }] }) });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ choices: [{ message, finish_reason: message.tool_calls?.length ? "tool_calls" : "stop" }] }) });
     return;
   }
   if (url.pathname.includes('/rest/v1/')) {

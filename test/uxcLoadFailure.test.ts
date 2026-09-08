@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 let restoreDom: (() => void) | null = null;
@@ -12,11 +12,15 @@ function mockModeDependencies(): {
   readonly discardDevProjectOverride: ReturnType<typeof vi.fn>;
   readonly loadFallbackProject: ReturnType<typeof vi.fn<(project: unknown) => Promise<void>>>;
   readonly renderEditor: ReturnType<typeof vi.fn>;
+  readonly rendered: Promise<void>;
 } {
   const loadFallbackProject = vi.fn(async () => undefined);
   const discardDevProjectOverride = vi.fn();
+  let markRendered: () => void = () => {};
+  const rendered = new Promise<void>((resolve) => { markRendered = resolve; });
   const renderEditor = vi.fn((node: HTMLElement) => {
     node.append(document.createElement("div"));
+    markRendered();
   });
   vi.doMock("@/project/store", () => ({
     DbConnectionRequiredError: class DbConnectionRequiredError extends Error {},
@@ -92,7 +96,7 @@ function mockModeDependencies(): {
     createSampleAdventureProject: () => ({ kind: "sample-fallback" }),
     createBlankProject: () => ({ kind: "blank-fallback" }),
   }));
-  return { discardDevProjectOverride, loadFallbackProject, renderEditor };
+  return { discardDevProjectOverride, loadFallbackProject, renderEditor, rendered };
 }
 
 async function bootFailureScreen(): Promise<{
@@ -100,6 +104,7 @@ async function bootFailureScreen(): Promise<{
   readonly discardDevProjectOverride: ReturnType<typeof vi.fn>;
   readonly loadFallbackProject: ReturnType<typeof vi.fn<(project: unknown) => Promise<void>>>;
   readonly renderEditor: ReturnType<typeof vi.fn>;
+  readonly rendered: Promise<void>;
 }> {
   const mocks = mockModeDependencies();
   const { bootApp } = await import("@/app/mode");
@@ -109,6 +114,21 @@ async function bootFailureScreen(): Promise<{
 }
 
 describe("UXC D01 프로젝트 로드 실패 폴백", () => {
+  // Compile the large app graph before timing the recovery interactions.
+  // Each test still resets module state and retains its normal timeout.
+  beforeAll(async () => {
+    const restore = installFakeDom();
+    Reflect.deleteProperty(globalThis, "window");
+    try {
+      mockModeDependencies();
+      await import("@/app/mode");
+    } finally {
+      restore();
+      vi.restoreAllMocks();
+      vi.resetModules();
+    }
+  }, 180000);
+
   beforeEach(() => {
     vi.resetModules();
     restoreDom = installFakeDom();
@@ -139,26 +159,27 @@ describe("UXC D01 프로젝트 로드 실패 폴백", () => {
   });
 
   it("예제 프로젝트 폴백은 저장본을 폐기하지 않고 메모리 프로젝트로 부팅한다", async () => {
-    const { root, discardDevProjectOverride, loadFallbackProject, renderEditor } = await bootFailureScreen();
+    const { root, discardDevProjectOverride, loadFallbackProject, renderEditor, rendered } = await bootFailureScreen();
     const sample = findByTestId(root, "load-error-start-sample");
     if (!sample) throw new Error("sample fallback missing");
 
     sample.click();
 
-    await vi.waitFor(() => expect(loadFallbackProject).toHaveBeenCalledTimes(1));
-    // renderEditor는 loadFallbackProject 완료 후 비동기로 호출되므로 함께 waitFor로 기다린다.
-    await vi.waitFor(() => expect(renderEditor).toHaveBeenCalledTimes(1));
+    await rendered;
+    expect(loadFallbackProject).toHaveBeenCalledTimes(1);
+    expect(renderEditor).toHaveBeenCalledTimes(1);
     expect(discardDevProjectOverride).not.toHaveBeenCalled();
   });
 
   it("새 프로젝트 폴백도 기존 저장본을 폐기하지 않는다", async () => {
-    const { root, discardDevProjectOverride, loadFallbackProject } = await bootFailureScreen();
+    const { root, discardDevProjectOverride, loadFallbackProject, rendered } = await bootFailureScreen();
     const blank = findByTestId(root, "load-error-start-blank");
     if (!blank) throw new Error("blank fallback missing");
 
     blank.click();
 
-    await vi.waitFor(() => expect(loadFallbackProject).toHaveBeenCalledTimes(1));
+    await rendered;
+    expect(loadFallbackProject).toHaveBeenCalledTimes(1);
     expect(discardDevProjectOverride).not.toHaveBeenCalled();
   });
 });

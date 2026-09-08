@@ -1,3 +1,4 @@
+import { reviewingChat } from "./aiEpochFixture";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent, type AssistantSessionOptions, type TurnResult } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult, type ChatRequest } from "@/ai/llmClient";
@@ -38,17 +39,17 @@ it("cancelled A's late model tool response cannot mutate a real replacement B", 
   const eventsA: SessionEvent[] = [];
   const eventsB: SessionEvent[] = [];
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
-    yieldToUi: async () => {}, chat: async () => {
+    yieldToUi: async () => {}, chat: reviewingChat(async () => {
       if (round++ === 0) { entered.resolve(); return response.promise; }
       return round === 2 ? title("B_CURRENT") : final;
-    } });
+    }) });
   const a = session.sendUserMessage("A", event => eventsA.push(event), abort.signal);
   try {
     await bounded(entered.promise);
     abort.abort();
     const b = await bounded(session.sendUserMessage("B", event => eventsB.push(event), undefined, { goalAction: "new-goal" }));
     expect(b.proposedCalls.map(call => call.args.title)).toEqual(["B_CURRENT"]);
-    const applied = await applyProposedProject(session.getProposedProject(), { base: session.getProposalBase(), source: "agent", summary: "B", toolNames: ["set_title_screen"] });
+    const applied = await applyProposedProject(session.getProposedProject(), { base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: "agent", summary: "B", toolNames: ["set_title_screen"] });
     if (!applied.ok) throw new Error(applied.issue);
     session.recordAppliedProject(applied); session.rebaseProject(store.getCurrent());
     const before = structuredClone(session.getHarnessSnapshot());
@@ -76,7 +77,7 @@ it.each(["intent", "wiki", "yield"])("retires A at the real %s await before B wi
     declareIntent: async facts => { if (seam === "intent") await pause(); return fixedDeclarer({ mode: "other" })(facts); },
     prepareProjectWiki: async () => { if (seam === "wiki") await pause(); return undefined; },
     yieldToUi: async () => { if (seam === "yield") await pause(); },
-    chat: async () => round++ === 0 ? title(seam === "yield" ? "A_NOT_STARTED" : "B_CURRENT") : seam === "yield" && round === 2 ? title("B_CURRENT") : final };
+    chat: reviewingChat(async () => round++ === 0 ? title(seam === "yield" ? "A_NOT_STARTED" : "B_CURRENT") : seam === "yield" && round === 2 ? title("B_CURRENT") : final) };
   const session = new AssistantSession(store.getCurrent(), options);
   const f = epochRunner(session);
   const apply = vi.spyOn(adapter, "applyProposedProject");
@@ -107,7 +108,7 @@ it("the public runner ignores duplicate late events/results while B is actually 
   const releaseA = deferred<TurnResult>();
   let eventsA: (event: SessionEvent) => void = () => { throw new Error("A not started"); };
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
-    chat: async () => { enteredB.resolve(); return releaseB.promise; } });
+    chat: reviewingChat(async () => { enteredB.resolve(); return releaseB.promise; }) });
   const f = epochRunner(session);
   const a = f.runner.executeTurn(session, "A", onEvent => { eventsA = onEvent; return releaseA.promise; });
   let b: Promise<TurnResult> | undefined;
@@ -146,7 +147,7 @@ it("late viewport images cannot rebuild B's messages or start A intent/tools", a
     renderImages: async () => {
       if (first) { first = false; entered.resolve(); await release.promise; completed.resolve(); }
       return [];
-    }, chat: async () => final });
+    }, chat: reviewingChat(async () => final) });
   const abort = new AbortController();
   const a = session.sendUserMessage("A", undefined, abort.signal);
   try {
@@ -163,16 +164,27 @@ it("cancellation at the actual advisory yield prevents the old verification tool
   const entered = deferred<void>(); const release = deferred<void>(); const completed = deferred<void>();
   let holding = false;
   let round = 0;
+  let priming = true;
   const calls: ChatResult[] = [{ message: { role: "assistant", content: null, tool_calls: [{ id: "plan", type: "function", function: {
     name: "set_work_plan", arguments: JSON.stringify({ goal: "Title", layers: [{ title: "Title", items: [{ title: "Title", instruction: "Title", successTools: ["set_title_screen"] }] }] }),
   } }] }, finishReason: "tool_calls" }, title("A_APPLIED")];
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
-    chat: async () => calls[round++] ?? final, yieldToUi: async () => {
+    chat: reviewingChat(async () => priming ? round++ === 0 ? title("A_APPLIED") : final : calls[round++] ?? final), yieldToUi: async () => {
       if (holding) { holding = false; entered.resolve(); await release.promise; completed.resolve(); }
     } });
+  const seed = await session.sendUserMessage("Apply the first milestone");
+  expect(seed.review?.status).toBe("approved");
+  const applied = await applyProposedProject(session.getProposedProject(), {
+    base: session.getProposalBase(), baseline: session.getDraftBaseline(), operation: session.getRunOperation(),
+    source: "agent", summary: "First milestone", toolNames: ["set_title_screen"],
+    onApplied: mutation => session.recordAppliedMutation(mutation),
+  });
+  if (!applied.ok) throw new Error(applied.issue);
+  session.recordAppliedProject(applied); session.rebaseProject(store.getCurrent());
+  priming = false; round = 0;
   const events: SessionEvent[] = [];
   const abort = new AbortController();
-  const a = session.sendUserMessage("A", event => {
+  const a = session.sendUserMessage("Continue", event => {
     events.push(event);
     if (event.type === "tool_started" && event.name === "run_lint") holding = true;
   }, abort.signal, { autonomous: true });
@@ -192,7 +204,7 @@ it("cancellation at the actual advisory yield prevents the old verification tool
 it("the actual proposal owner consumes duplicate application requests once", async () => {
   let round = 0;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
-    chat: async () => round++ === 0 ? title("ONCE") : final });
+    chat: reviewingChat(async () => round++ === 0 ? title("ONCE") : final) });
   const result = await session.sendUserMessage("Apply once");
   const f = epochRunner(session);
   const appliedNotifications = vi.spyOn(session, "recordAppliedProject");
@@ -215,10 +227,10 @@ it("late stream notifications and model responses cannot publish after a real B"
   let requestA: ChatRequest | undefined;
   let round = 0;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
-    chat: async (_config, request) => {
+    chat: reviewingChat(async (_config, request) => {
       if (round++ === 0) { requestA = request; entered.resolve(); return response.promise; }
       return round === 2 ? title("B_CURRENT") : final;
-    }, yieldToUi: async () => {} });
+    }), yieldToUi: async () => {} });
   const f = epochRunner(session);
   const a = f.send("A");
   try {
@@ -250,7 +262,7 @@ it("keeps an applied A milestone but starts no late application/wiki work after 
   } }] }, finishReason: "tool_calls" }, title("A_APPLIED")];
   let round = 0;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
-    chat: async () => responses[round++] ?? final });
+    chat: reviewingChat(async () => responses[round++] ?? final) });
   const f = epochRunner(session);
   const applying = vi.spyOn(adapter, "applyProposedProject");
   const a = f.send("A", { autonomous: true });

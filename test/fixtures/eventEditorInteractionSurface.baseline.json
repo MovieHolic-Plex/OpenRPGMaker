@@ -286,13 +286,16 @@
    "event-command-face-ai-prompt": "no-change",
    "event-command-face-flip-horizontal": "컨트롤 값 변경 1개 [event-command-face-flip-horizontal: input[checkbox]{}→input[checkbox]{checked}] | 클래스 신규 1개 [flipped]",
    "event-command-face-position": "no-change",
-   "event-command-face-resource": "검증텍스트 변경 2개 [event-command-face-preview: \"res#미리보기를 찾을 수 없습니다.\"→\"__probe__미리보기를 찾을 수 없습니다.\", event-command-face-preview-host: \"res#미리보기를 찾을 수 없습니다.\"→\"__probe__미리보기를 찾을 수 없습니다.\"]"
+   "event-command-face-resource": "검증텍스트 변경 2개 [event-command-face-preview: \"res#미리보기를 찾을 수 없습니다.\"→\"__probe__미리보기를 찾을 수 없습니다.\", event-command-face-preview-host: \"res#미리보기를 찾을 수 없습니다.\"→\"__probe__미리보기를 찾을 수 없습니다.\"]",
+   "event-command-face-appearance": "single-option",
+   "event-command-face-presentation": "no-change"
   },
   "initial": {
    "testids": [
     "event-command-edit-summary",
     "event-command-face-ai-generate",
     "event-command-face-ai-prompt",
+    "event-command-face-appearance",
     "event-command-face-bust-preset",
     "event-command-face-crop",
     "event-command-face-editor",
@@ -415,6 +418,7 @@
     "event-command-face-option-generated-actor-hero-02-face-15",
     "event-command-face-option-generated-actor-hero-03-face",
     "event-command-face-position",
+    "event-command-face-presentation",
     "event-command-face-preview",
     "event-command-face-preview-host",
     "event-command-face-resource",
@@ -425,6 +429,7 @@
    "classes": [
     "btn",
     "cream-command-form-head",
+    "db-field",
     "event-command-face-bust-preset",
     "event-command-face-clear",
     "event-command-face-crop",
@@ -576,16 +581,27 @@
     "event-command-face-position": "select{}",
     "event-command-face-resource": "input[text]{}",
     "event-command-face-resource-clear": "button{}",
-    "event-command-face-resource-set": "button{}"
+    "event-command-face-resource-set": "button{}",
+    "event-command-face-appearance": "select{}",
+    "event-command-face-presentation": "select{disabled}"
    },
    "selectOptions": {
     "event-command-face-position": [
      "left",
      "right"
+    ],
+    "event-command-face-appearance": [
+     ""
+    ],
+    "event-command-face-presentation": [
+     "face",
+     "bust"
     ]
    },
    "labels": [
     "AI로 만들기",
+    "공유 외형 표시얼굴흉상 (없으면 얼굴)",
+    "공유 캐릭터 외형연결 안 함 · 직접 지정한 그림",
     "얼굴 고르기…",
     "전신",
     "좌우 반전",
@@ -598,11 +614,11 @@
     "div": 129,
     "img": 113,
     "input": 3,
-    "label": 2,
-    "option": 2,
+    "label": 4,
+    "option": 5,
     "p": 1,
-    "select": 1,
-    "span": 3,
+    "select": 3,
+    "span": 5,
     "strong": 1
    },
    "tagByTestid": {
@@ -736,19 +752,22 @@
     "event-command-face-resource": "input",
     "event-command-face-resource-clear": "button",
     "event-command-face-resource-set": "button",
-    "faceset-crop-sheet": "img"
+    "faceset-crop-sheet": "img",
+    "event-command-face-appearance": "select",
+    "event-command-face-presentation": "select"
    },
    "texts": {
     "event-command-edit-summary": "얼굴 바꾸기",
     "event-command-face-preview": "res#미리보기를 찾을 수 없습니다.",
     "event-command-face-preview-host": "res#미리보기를 찾을 수 없습니다."
    },
-   "testidCount": 131,
-   "controlCount": 122
+   "testidCount": 133,
+   "controlCount": 124
   },
   "classes": [
    "btn",
    "cream-command-form-head",
+   "db-field",
    "event-command-face-bust-preset",
    "event-command-face-clear",
    "event-command-face-crop",
@@ -779,7 +798,7 @@
    "page3-resource-row",
    "small"
   ],
-  "probeCount": 4,
+  "probeCount": 6,
   "reactingCount": 2
  },
  "choices": {
@@ -3536,8 +3555,8 @@
    "battle-processing-flow-select": "no-change",
    "battle-processing-lose-checkbox": "컨트롤 값 변경 1개 [battle-processing-lose-checkbox: input[checkbox]{hidden}→input[checkbox]{checked,hidden}] | 검증텍스트 변경 1개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔(적 그룹 선택)·도망 가능패배 허용확인 시 전투 시작 → battle\"]",
    "battle-processing-lose-select": "컨트롤 값 변경 1개 [battle-processing-lose-checkbox: input[checkbox]{hidden}→input[checkbox]{checked,hidden}] | 검증텍스트 변경 1개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔(적 그룹 선택)·도망 가능패배 허용확인 시 전투 시작 → battle\"]",
-   "battle-processing-troop-select": "태그 개수 [img 등장(1), span 17→19] | 검증텍스트 변경 1개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔슬라임 정찰대·도망 가능지면 게임 끝EXP # · Gold #확인 시 \"] | 클래스 소실 3개 [empty, is-empty, rich-record-initial] | 클래스 신규 4개 [record-picker-card-copy, record-picker-card-subtitle, rich-preview-caption-in…(절단: 총 323자)",
-   "battle-processing-troop-source": "testid 소실 2종 [battle-processing-troop-select, battle-processing-troop-select-card] | testid 신규 3종 [battle-processing-troop-variable, battle-processing-troop-variable-browse, battle-processing-troop-variable-empty-hint] | 태그 개수 [button 12→13, option 13→10, span 17→15] | 컨트롤 소실 1개 [battle-processing-t…(절단: 총 969자)"
+   "battle-processing-troop-select": "태그 개수 [img 등장(1), span 17→19] | 검증텍스트 변경 2개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔슬라임 정찰대·도망 가능지면 게임 끝EXP # · Gold #확인 시 \", battle-processing-warning: \"전투를 시작할 수 없습니다. 적 그룹을 선택하세요.\"→\"\"] | 클래스 소실 3개 [empty, is-empty, rich-record-initial] | 클래스 신규 4개 [record-picker-c…(절단: 총 385자)",
+   "battle-processing-troop-source": "testid 소실 2종 [battle-processing-troop-select, battle-processing-troop-select-card] | testid 신규 3종 [battle-processing-troop-variable, battle-processing-troop-variable-browse, battle-processing-troop-variable-empty-hint] | 태그 개수 [button 12→13, option 13→10, span 17→15] | 컨트롤 소실 1개 [battle-processing-t…(절단: 총 1061자)"
   },
   "initial": {
    "testids": [
@@ -3723,7 +3742,7 @@
     "battle-processing-branch-hint": "켜면 명령 리스트에 승리·패배·도망 마커가 생깁니다. 본문은 마커 아래에서 편집하세요.",
     "battle-processing-intent": "이 이벤트에서 전투를 시작합니다",
     "battle-processing-preview": "⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → battleResult 저장",
-    "battle-processing-warning": "적 그룹을 선택하세요. 빈 전투는 실행 시 실패합니다.",
+    "battle-processing-warning": "전투를 시작할 수 없습니다. 적 그룹을 선택하세요.",
     "event-command-edit-summary": "전투"
    },
    "testidCount": 31,

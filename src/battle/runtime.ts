@@ -1,4 +1,5 @@
 import { effectiveActorClassId } from '@/project/sessionClass';
+import { battleTroopError } from '@/project/battleAdmission';
 import { activeItemEffects, itemAllowsBattle } from "@/project/itemUsage";
 // SIZE_OK: Battle runtime keeps turn state, troop-event callbacks, and snapshot
 // assembly together so battle-event regressions can verify one state machine.
@@ -146,6 +147,8 @@ type StrictQueuedAction =
   | ({ readonly side: "enemy"; readonly index: number; readonly enemy: MutableBattler; readonly action?: EnemyActionChoice } & Gen1TurnOrderEntry);
 
 export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntime {
+  const admissionError = battleTroopError(options.project, options.troopId);
+  if (admissionError) throw admissionError;
   const troop = options.project.database.troops.find((record) => record.id === options.troopId);
   if (!troop) throw new Error(`Missing troop: ${options.troopId}`);
   const troopRecord = troop;

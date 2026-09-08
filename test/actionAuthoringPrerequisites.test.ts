@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ACTION_TOOLS } from "@/editor/tools/actionTools";
 import { runTool } from "@/editor/tools/toolRunner";
+import { toOpenAiTools } from "@/editor/tools/toolRegistry";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import { resolveActionCombatConfig } from "@/project/actionCombat";
@@ -18,6 +19,13 @@ function fixture() {
     spawn: { id: "arena_spawn", mapId: ctx.project.startMapId, troopId: troop.id, area: { x: 1, y: 1, w: 3, h: 3 } },
   };
   return { ctx, args };
+}
+
+function seededFixture() {
+  const state = fixture();
+  const result = runTool(state.ctx, "make_action_enemy", state.args);
+  expect(result.ok, result.summary).toBe(true);
+  return state;
 }
 
 describe("action authoring prerequisites", () => {
@@ -104,5 +112,145 @@ describe("action authoring prerequisites", () => {
       expect(result.ok, result.summary).toBe(true);
     }
     expect(ctx.project.maps[ctx.project.startMapId]?.fieldSpawns?.[0]?.troopId).toBe("arena_troop");
+  });
+
+  it.each([
+    { mode: "update", id: "missing_spawn", code: "spawn-not-found" },
+    { mode: "update", id: undefined, code: "invalid-args" },
+    { mode: "update", id: " ", code: "invalid-args" },
+    { mode: "add", id: "arena_spawn", code: "spawn-already-exists" },
+    { mode: "udpate", id: "arena_spawn", code: "invalid-args" },
+  ])("rejects explicit $mode with target $id before any mutation", ({ mode, id, code }) => {
+    const { ctx, args } = seededFixture();
+    const before = structuredClone(ctx.project);
+    const input = {
+      ...args,
+      actionProfile: { contactDamage: 11 },
+      spawnMode: mode,
+      spawn: { ...args.spawn, id },
+    };
+
+    const result = runTool(ctx, "make_action_enemy", input);
+
+    expect(result.ok).toBe(false);
+    expect(result.issues).toEqual(expect.arrayContaining([expect.objectContaining({ code })]));
+    expect(ctx.project).toEqual(before);
+    const tool = ACTION_TOOLS.find((entry) => entry.name === "make_action_enemy");
+    if (!tool) throw new Error("Missing action tool");
+    expect(() => tool.run(ctx.project, input)).toThrowError(expect.objectContaining({ code }));
+    expect(ctx.project).toEqual(before);
+  });
+
+  it("rejects a spawn mode without a spawn before changing the enemy", () => {
+    const { ctx, args } = seededFixture();
+    const before = structuredClone(ctx.project);
+    const input = { enemyId: args.enemyId, actionProfile: { contactDamage: 11 }, spawnMode: "update" };
+
+    const result = runTool(ctx, "make_action_enemy", input);
+
+    expect(result.ok).toBe(false);
+    expect(result.issues).toEqual(expect.arrayContaining([expect.objectContaining({ code: "invalid-args" })]));
+    expect(ctx.project).toEqual(before);
+    const tool = ACTION_TOOLS.find((entry) => entry.name === "make_action_enemy");
+    if (!tool) throw new Error("Missing action tool");
+    expect(() => tool.run(ctx.project, input)).toThrowError(expect.objectContaining({ code: "invalid-args" }));
+    expect(ctx.project).toEqual(before);
+  });
+
+  it("does not update a spawn identity that only exists on another map", () => {
+    const { ctx, args } = seededFixture();
+    const map = ctx.project.maps[args.spawn.mapId];
+    if (!map) throw new Error("Missing map");
+    ctx.project.maps.other_map = { ...structuredClone(map), id: "other_map" };
+    ctx.project.mapTree.children.push({ mapId: "other_map", children: [] });
+    map.fieldSpawns = [];
+    const before = structuredClone(ctx.project);
+
+    const result = runTool(ctx, "make_action_enemy", { ...args, spawnMode: "update" });
+
+    expect(result.ok).toBe(false);
+    expect(result.issues).toEqual(expect.arrayContaining([expect.objectContaining({ code: "spawn-not-found" })]));
+    expect(ctx.project).toEqual(before);
+  });
+
+  it("updates exact spawns and explicitly adds another without losing authored settings", () => {
+    const { ctx, args } = seededFixture();
+    const map = ctx.project.maps[args.spawn.mapId];
+    const spawn = map?.fieldSpawns?.[0];
+    if (!map || !spawn) throw new Error("Missing spawn");
+    spawn.maxAlive = 3;
+    spawn.respawnSec = 600;
+    spawn.persistKill = true;
+    spawn.chase = false;
+
+    const updated = runTool(ctx, "make_action_enemy", {
+      ...args,
+      spawnMode: "update",
+      spawn: { ...args.spawn, area: { x: "6", y: "5", width: "2", height: "2" } },
+    });
+
+    expect(updated.ok, updated.summary).toBe(true);
+    expect(updated.data).toMatchObject({ mapId: map.id, spawnId: "arena_spawn", spawnOutcome: "modified" });
+    expect(ctx.project.maps[map.id]?.fieldSpawns).toEqual([
+      { ...spawn, area: { x: 6, y: 5, w: 2, h: 2 } },
+    ]);
+
+    const added = runTool(ctx, "make_action_enemy", {
+      ...args,
+      spawnMode: "add",
+      spawn: { ...args.spawn, id: "intentional_second_spawn" },
+    });
+    expect(added.ok, added.summary).toBe(true);
+    expect(added.data).toMatchObject({ mapId: map.id, spawnId: "intentional_second_spawn", spawnOutcome: "added" });
+    expect(ctx.project.maps[map.id]?.fieldSpawns?.map((entry) => entry.id)).toEqual(["arena_spawn", "intentional_second_spawn"]);
+  });
+
+  it("removes only the exact authored spawn and preserves enemies and other entries", () => {
+    const { ctx, args } = seededFixture();
+    expect(runTool(ctx, "make_action_enemy", { ...args, spawn: { ...args.spawn, id: "keep_spawn" } }).ok).toBe(true);
+    const before = structuredClone(ctx.project);
+    const map = before.maps[args.spawn.mapId];
+    if (!map) throw new Error("Missing map");
+
+    const result = runTool(ctx, "remove_field_spawn", { mapId: map.id, spawnId: "arena_spawn" });
+
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.data).toEqual({ mapId: map.id, spawnId: "arena_spawn" });
+    expect(ctx.project).toEqual({
+      ...before,
+      maps: { ...before.maps, [map.id]: { ...map, fieldSpawns: map.fieldSpawns?.filter((entry) => entry.id !== "arena_spawn") } },
+    });
+  });
+
+  it.each([
+    { referenced: false, spawnId: "missing_spawn", code: "spawn-not-found" },
+    { referenced: true, spawnId: "arena_spawn", code: "spawn-in-use" },
+  ])("rejects removal of $spawnId with referenced=$referenced without mutation", ({ referenced, spawnId, code }) => {
+    const { ctx, args } = seededFixture();
+    const map = ctx.project.maps[args.spawn.mapId];
+    if (!map) throw new Error("Missing map");
+    if (referenced) map.roguelikeRoom = { encounterSlots: [{ id: "slot", choices: [{ fieldSpawnId: "arena_spawn" }] }] };
+    const before = structuredClone(ctx.project);
+    const input = { mapId: map.id, spawnId };
+
+    const result = runTool(ctx, "remove_field_spawn", input);
+
+    expect(result.ok).toBe(false);
+    expect(result.issues).toEqual(expect.arrayContaining([expect.objectContaining({ code })]));
+    expect(ctx.project).toEqual(before);
+    const tool = ACTION_TOOLS.find((entry) => entry.name === "remove_field_spawn");
+    if (!tool) throw new Error("Missing removal tool");
+    expect(() => tool.run(ctx.project, input)).toThrowError(expect.objectContaining({ code }));
+    expect(ctx.project).toEqual(before);
+  });
+
+  it("exposes explicit spawn intent and targeted removal in model-facing schemas", () => {
+    const schemas = toOpenAiTools();
+
+    const make = schemas.find((entry) => entry.function.name === "make_action_enemy");
+    const remove = schemas.find((entry) => entry.function.name === "remove_field_spawn");
+
+    expect(make?.function.parameters.properties?.spawnMode?.enum).toEqual(["add", "update"]);
+    expect(remove?.function.parameters.required).toEqual(["mapId", "spawnId", "reason"]);
   });
 });

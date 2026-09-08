@@ -1,3 +1,4 @@
+import { reviewingChat } from "./aiEpochFixture";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
@@ -59,7 +60,7 @@ function humanEdits() {
 function sessionForTitle(value = "AI_TITLE") {
   let round = 0;
   return new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
-    yieldToUi: async () => {}, chat: async () => round++ === 0 ? title(value) : final });
+    yieldToUi: async () => {}, chat: reviewingChat(async () => round++ === 0 ? title(value) : final) });
 }
 
 it("refuses an old real session proposal after human non-house tile and database record edits", async () => {
@@ -74,7 +75,7 @@ it("refuses an old real session proposal after human non-house tile and database
   const snapshot = vi.spyOn(history, "recordProjectSnapshot");
   const commit = vi.spyOn(commits, "recordProjectCommit");
   const replace = vi.spyOn(store, "replace");
-  const applied = await applyProposedProject(proposed, { base: session.getProposalBase(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+  const applied = await applyProposedProject(proposed, { base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
   // Both values must be measured even when the old implementation overwrites both.
   expect.soft(liveValues().tile).toBe(7);
   expect.soft(liveValues().price).toBe(137);
@@ -95,7 +96,7 @@ it("applies a current-base real proposal exactly once and undo restores its orig
   const turn = await session.sendUserMessage("Set title");
   const commit = vi.spyOn(commits, "recordProjectCommit");
   const applied = await applyProposedProject(session.getProposedProject(), {
-    base: session.getProposalBase(),
+    base: session.getProposalBase(), baseline: session.getDraftBaseline(),
     source: "agent", summary: "Title", toolNames: turn.proposedCalls.map(call => call.name),
   });
   expect(applied.ok).toBe(true);
@@ -118,7 +119,7 @@ it("rechecks the actual synchronous write boundary after validation, before undo
   });
   const snapshot = vi.spyOn(history, "recordProjectSnapshot");
   const applied = await applyProposedProject(session.getProposedProject(), {
-    base: session.getProposalBase(), source: "agent", summary: "Title", toolNames: ["set_title_screen"],
+    base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"],
   });
   expect(applied).toMatchObject({ ok: false, reason: "stale-base" });
   expect(liveValues()).toEqual({ tile: 7, width: 336, itemId: "item_potion", price: 137 });
@@ -132,7 +133,7 @@ it.each([false, true])("same-byte project replacement retires the old base, rese
   store.replaceProject(structuredClone(store.getCurrent()));
   expect(store.getVersionToken().lineage).not.toBe(token.lineage);
   const applied = await applyProposedProject(session.getProposedProject(), {
-    base: session.getProposalBase(), source: "agent", summary: "Title", toolNames: ["set_title_screen"], resetProject,
+    base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"], resetProject,
   });
   expect(applied).toMatchObject({ ok: false, reason: "stale-base" });
   expect(history.getMapEditHistoryEntries()).toHaveLength(0);
@@ -146,8 +147,7 @@ it("context refresh cannot relabel a retained stale draft as current", async () 
   session.refreshProjectContext(store.getCurrent());
   expect(session.syncBaselineFromStoreIfClean(store.getCurrent())).toBe(false);
   expect(session.getProposalBase()).toBe(base);
-  const applied = await applyProposedProject(session.getProposedProject(), {
-    base, source: "agent", summary: "Title", toolNames: ["set_title_screen"],
+  const applied = await applyProposedProject(session.getProposedProject(), { base, baseline: session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"],
   });
   expect(applied).toMatchObject({ ok: false, reason: "stale-base" });
   expect(liveValues().price).toBe(137);
@@ -162,7 +162,7 @@ it("a no-op update and a real accepted own save do not invalidate a current prop
   const saved = await store.flush();
   expect(saved.kind).toBe("saved");
   const applied = await applyProposedProject(f.session.getProposedProject(), {
-    base: f.session.getProposalBase(), source: "agent", summary: "Title", toolNames: ["set_title_screen"],
+    base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"],
   });
   expect(applied.ok).toBe(true);
   expect(store.getCurrent().system.titleScreen?.title).toBe("Run-owned title");
@@ -200,7 +200,7 @@ it.each(["record", "map", "world"])("object-key reorder in a live %s is not a st
   expect(store.getCurrent()).toEqual(before);
   expect(serialize(store.getCurrent())).not.toBe(bytes);
   const applied = await applyProposedProject(session.getProposedProject(), {
-    base: session.getProposalBase(), source: "agent", summary: "Title", toolNames: ["set_title_screen"], resetProject: target === "world",
+    base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"], resetProject: target === "world",
   });
   expect(applied.ok).toBe(true);
   expect(store.getCurrent().system.titleScreen?.title).toBe("AI_TITLE");
@@ -217,7 +217,7 @@ it("array reordering is still an authored change, not an object-key no-op", asyn
   const currentIds = store.getCurrent().database.items.map(item => item.id);
   expect(currentIds).not.toEqual(originalIds);
   const applied = await applyProposedProject(session.getProposedProject(), {
-    base: session.getProposalBase(), source: "agent", summary: "Title", toolNames: ["set_title_screen"],
+    base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"],
   });
   expect(applied).toMatchObject({ ok: false, reason: "stale-base" });
   expect(store.getCurrent().database.items.map(item => item.id)).toEqual(currentIds);
@@ -227,10 +227,10 @@ it("array reordering is still an authored change, not an object-key no-op", asyn
 it.each([false, true])("wiki ownership survives an old ordinary base without granting reset authority, resetProject=%s", async resetProject => {
   const session = sessionForTitle();
   await session.sendUserMessage("Set title");
-  store.update(project => { project.world = { entities: [{ id: "human_wiki", type: "guideline", name: "Human", summary: "Current", origin: "user" }], relations: [] }; });
+  store.update(project => { project.world = { entities: [{ id: "w_human_wiki", type: "guideline", name: "Human", summary: "Current", origin: "user" }], relations: [] }; });
   const world = structuredClone(store.getCurrent().world);
   const applied = await applyProposedProject(session.getProposedProject(), {
-    base: session.getProposalBase(), source: "agent", summary: "Title", toolNames: ["set_title_screen"], resetProject,
+    base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"], resetProject,
   });
   expect(applied.ok).toBe(!resetProject);
   if (!applied.ok) expect(applied.reason).toBe("stale-base");
@@ -245,12 +245,12 @@ it("own wiki preparation and post-tool progress retain their actual save/proof o
   }] }) });
   let round = 0;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
-    prepareProjectWiki: coordinator.prepare, yieldToUi: async () => {}, chat: async () => round++ === 0 ? title("OWNED_TITLE") : final });
+    prepareProjectWiki: coordinator.prepare, yieldToUi: async () => {}, chat: reviewingChat(async () => round++ === 0 ? title("OWNED_TITLE") : final) });
   const turn = await session.sendUserMessage("Set title");
   expect(turn.proposedCalls).toHaveLength(1);
   expect(store.getCurrent().world?.entities.some(entity => entity.id === "w_owned_wiki")).toBe(true);
   const applied = await applyProposedProject(session.getProposedProject(), {
-    base: session.getProposalBase(), operation: session.getRunOperation(), source: "agent", summary: "Title", toolNames: ["set_title_screen"],
+    base: session.getProposalBase(), baseline: session.getDraftBaseline(), operation: session.getRunOperation(), source: "agent", summary: "Title", toolNames: ["set_title_screen"],
   });
   if (!applied.ok) throw new Error(applied.issue);
   expect(applied.wikiDelivery?.kind).toBe("persisted");
@@ -271,11 +271,11 @@ it("human edits across a held commit await survive while a second old-base appli
     entered.resolve(); await release.promise;
     return original(input);
   });
-  const applying = applyProposedProject(proposed, { base, source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+  const applying = applyProposedProject(proposed, { base, baseline: session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
   try {
     await bounded(entered.promise);
     humanEdits();
-    const second = await applyProposedProject(proposed, { base, source: "agent", summary: "Replay", toolNames: ["set_title_screen"] });
+    const second = await applyProposedProject(proposed, { base, baseline: session.getDraftBaseline(), source: "agent", summary: "Replay", toolNames: ["set_title_screen"] });
     expect(second).toMatchObject({ ok: false, reason: "stale-base" });
     release.resolve();
     const first = await bounded(applying);
@@ -291,12 +291,12 @@ it("retired apply authority refuses the old proposal while a fresh replacement a
   await session.sendUserMessage("A");
   const proposed = session.getProposedProject(); const base = session.getProposalBase();
   const operation = new RunOperation(); operation.retire(); humanEdits();
-  expect(await applyProposedProject(proposed, { base, operation, source: "agent", summary: "A", toolNames: ["set_title_screen"] }))
+  expect(await applyProposedProject(proposed, { base, baseline: session.getDraftBaseline(), operation, source: "agent", summary: "A", toolNames: ["set_title_screen"] }))
     .toMatchObject({ ok: false, reason: "retired-run" });
   const replacement = sessionForTitle("B_CURRENT");
   await replacement.sendUserMessage("B");
   const applied = await applyProposedProject(replacement.getProposedProject(), {
-    base: replacement.getProposalBase(), operation: replacement.getRunOperation(), source: "agent", summary: "B", toolNames: ["set_title_screen"],
+    base: replacement.getProposalBase(), baseline: replacement.getDraftBaseline(), operation: replacement.getRunOperation(), source: "agent", summary: "B", toolNames: ["set_title_screen"],
   });
   expect(applied.ok).toBe(true);
   expect(liveValues()).toEqual({ tile: 7, width: 336, itemId: "item_potion", price: 137 });
@@ -310,7 +310,7 @@ it("the real runner rejects late authoring, retains it through Ask, then recalcu
   let round = 0; let mode = "initial";
   let freshContext: ReturnType<typeof liveValues> | undefined;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
-    chat: async () => {
+    chat: reviewingChat(async () => {
       if (mode === "ask") return final;
       if (mode === "fresh") {
         mode = "done";
@@ -324,7 +324,7 @@ it("the real runner rejects late authoring, retains it through Ask, then recalcu
       if (mode === "done") return final;
       if (round++ === 0) return title("STALE_TITLE");
       entered.resolve(); return release.promise;
-    } });
+    }) });
   const f = epochRunner(session);
   const initial = f.send("Set title");
   try {
@@ -359,12 +359,12 @@ it("the real autonomous milestone rejects non-house/database edits and never rep
   const events: SessionEvent[] = [];
   let round = 0;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
-    chat: async () => {
+    chat: reviewingChat(async () => {
       if (round++ === 0) return { message: { role: "assistant", content: null, tool_calls: [{ id: "plan", type: "function", function: {
         name: "set_work_plan", arguments: JSON.stringify({ goal: "Title", layers: [{ title: "Title", items: [{ title: "Title", instruction: "Title", successTools: ["set_title_screen"] }] }] }),
       } }] }, finishReason: "tool_calls" };
       return round === 2 ? title("STALE_MILESTONE") : final;
-    } });
+    }) });
   const result = await session.sendUserMessage("Set title", event => {
     events.push(event);
     if (event.type === "tool_call" && event.name === "set_title_screen" && event.result.ok) humanEdits();

@@ -1,4 +1,5 @@
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import { battleTroopError } from "@/project/battleAdmission";
 import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
@@ -848,7 +849,14 @@ function validateCommand(
     case "callMapEvent": require("reference.event.missing", "맵 위 이벤트", command.eventId, refs.events); return;
     case "battleProcessing":
       if (command.troopSource === "variable") require("reference.variable.missing", "적 그룹 변수", command.troopVariableId, refs.variables);
-      else require("reference.troop.missing", "적 그룹", command.troopId, refs.troops);
+      else {
+        require("reference.troop.missing", "적 그룹", command.troopId, refs.troops);
+        const error = battleTroopError(project, command.troopId);
+        if (error?.code === "BATTLE_TROOP_EMPTY") issues.push({
+          severity: "error", code: "battle.troop.empty", message: error.message,
+          pageId, commandPath: path, field: { testId: "battle-processing-troop-select" },
+        });
+      }
       return;
     case "learnSkill": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); require("reference.skill.missing", "스킬", command.skillId, refs.skills); return;
     case "changeExp": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); variableOperand(command.amount, "경험치 변수"); return;
@@ -941,7 +949,7 @@ function validateCommand(
     case "playAudio": require("reference.resource.missing", "오디오 리소스", command.resourceId, refs.resources); return;
     // 동영상도 그림·오디오와 같은 기준이다 — 미지정·없는 리소스는 둘 다 오류로 말한다.
     case "playMovie": require("reference.resource.missing", "동영상 리소스", command.resourceId, refs.resources); return;
-    case "shop":
+    case "shop": {
       if (command.itemIds.length === 0 && (command.stock?.length ?? 0) === 0) {
         issues.push({
           severity: "error",
@@ -951,8 +959,10 @@ function validateCommand(
           commandPath: path,
         });
       }
-      command.itemIds.forEach((id) => require("reference.item.missing", "상점 아이템", id, refs.items));
-      command.stock?.forEach((entry) => require("reference.item.missing", "상점 재고 아이템", entry.itemId, refs.items));
+      // 상점 카탈로그·로드 검증과 같이 아이템+장비를 판다. items만 보면 무기점이 전부 «찾을 수 없음»이다.
+      const sellable = new Set([...refs.items, ...refs.equipment]);
+      command.itemIds.forEach((id) => require("reference.item.missing", "상점 아이템", id, sellable));
+      command.stock?.forEach((entry) => require("reference.item.missing", "상점 재고 아이템", entry.itemId, sellable));
       if (command.stock) {
         const idSet = new Set(command.itemIds);
         for (const entry of command.stock) {
@@ -968,6 +978,7 @@ function validateCommand(
         }
       }
       return;
+    }
     case "m2Command": {
       const entry = validateM2CommandReferences(command, pageId, path, refs, issues);
       if (entry) validateM2CommandCoordinates(project, mapId, command, pageId, path, entry, issues);

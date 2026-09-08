@@ -1,3 +1,4 @@
+import { reviewingChat } from "./aiEpochFixture";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent, type TurnResult } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
@@ -35,11 +36,11 @@ it.each(["cancelled", "response-final"])("settles A before a synchronous %s outc
   let bRound = 0;
   const abort = new AbortController();
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
-    chat: async () => {
+    chat: reviewingChat(async () => {
       if (!replacing && ending === "cancelled") { entered.resolve(); return release.promise; }
       if (replacing && bRound++ === 0) return tools({ name: "set_title_screen", args: { title: "B_CURRENT" } });
       return final;
-    } });
+    }) });
   const a = session.sendUserMessage("A", event => {
     eventsA.push(event);
     if (event.type !== "run_outcome" || replacing) return;
@@ -74,11 +75,11 @@ it("an old successful tool callback cannot start image work or reacquire B's hel
   let aRound = 0; let bRound = 0;
   const images = vi.fn(async () => []);
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {}, renderImages: images,
-    chat: async () => replacing
+    chat: reviewingChat(async () => replacing
       ? bRound++ === 0 ? tools({ name: "set_title_screen", args: { title: "B_CURRENT" } }) : final
       : aRound++ === 0 ? tools({ name: "set_title_screen", args: { title: "A_DRAFT" } },
         { name: "show_map_region", args: { mapId, x: 0, y: 0, w: 2, h: 2 } },
-        { name: "set_title_screen", args: { title: "A_MUST_NOT_START" } }) : final });
+        { name: "set_title_screen", args: { title: "A_MUST_NOT_START" } }) : final) });
   const a = session.sendUserMessage("A", event => {
     if (event.type !== "tool_call" || event.name !== "show_map_region" || replacing) return;
     expect(event.result.ok).toBe(true);
@@ -108,7 +109,7 @@ it("acceptance reentry retains the just-successful write and its real protocol r
   let b: Promise<TurnResult> | undefined; let cancelled: TurnResult | undefined;
   let atRetirement: ReturnType<AssistantSession["getHarnessSnapshot"]> | undefined;
   const session = new AssistantSession(project, { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
-    chat: async () => replacing ? final : round++ === 0 ? tools(plan) : tools({ name: "set_title_screen", args: { title: "A_DRAFT" } }) });
+    chat: reviewingChat(async () => replacing ? final : round++ === 0 ? tools(plan) : tools({ name: "set_title_screen", args: { title: "A_DRAFT" } })) });
   const a = session.sendUserMessage("A", event => {
     if (event.type !== "acceptance" || replacing || session.getProposedProject().system.titleScreen?.title !== "A_DRAFT") return;
     replacing = true;
@@ -125,7 +126,7 @@ it("acceptance reentry retains the just-successful write and its real protocol r
     if (typeof response?.content !== "string") throw new Error("Successful A protocol response missing");
     expect(JSON.parse(response.content)).toMatchObject({ ok: true });
     expect(resultB.proposedCalls.map(call => call.args.title)).toEqual(["A_DRAFT"]);
-    const applied = await applyProposedProject(session.getProposedProject(), { base: session.getProposalBase(), source: "agent", summary: "Resume A draft", toolNames: ["set_title_screen"], operation: session.getRunOperation() });
+    const applied = await applyProposedProject(session.getProposedProject(), { base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: "agent", summary: "Resume A draft", toolNames: ["set_title_screen"], operation: session.getRunOperation() });
     expect(applied.ok).toBe(true);
     expect(store.getCurrent().system.titleScreen?.title).toBe("A_DRAFT");
   } finally { await bounded(a); if (b) await bounded(b); }
@@ -138,7 +139,7 @@ it("a replacement requested from retirement publication wins over the suspended 
   const instructions: string[] = [];
   const session = new AssistantSession(store.getCurrent(), { config,
     declareIntent: facts => { instructions.push(facts.userText); return fixedDeclarer({ mode: "other" })(facts); },
-    chat: async () => { if (!replacing) { entered.resolve(); return release.promise; } return final; } });
+    chat: reviewingChat(async () => { if (!replacing) { entered.resolve(); return release.promise; } return final; }) });
   const a = session.sendUserMessage("A", event => {
     if (event.type !== "run_outcome" || replacing) return;
     replacing = true;
@@ -159,7 +160,7 @@ it("a replacement requested from retirement publication wins over the suspended 
 it("a terminal subscriber exception after starting B cannot terminalize B on A's stack", async () => {
   let b: Promise<TurnResult> | undefined; let replacing = false;
   const fault = new Error("SUBSCRIBER_FAILURE");
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), chat: async () => final });
+  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), chat: reviewingChat(async () => final) });
   const a = session.sendUserMessage("A", event => {
     if (event.type !== "run_outcome" || replacing) return;
     replacing = true;
@@ -183,7 +184,7 @@ it("duplicate same-owner retirement retains normal terminal callback delivery ex
   const retired: (TurnResult | undefined)[] = [];
   let token: ((delta: string) => void) | undefined;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
-    chat: async (_config, request) => { token = request.onToken; return final; } });
+    chat: reviewingChat(async (_config, request) => { token = request.onToken; return final; }) });
   const result = await session.sendUserMessage("A", event => {
     events.push(event);
     if (event.type === "run_outcome") {
@@ -205,11 +206,11 @@ it("retry cancellation is settled before its recap callback synchronously starts
   let b: Promise<TurnResult> | undefined; let nested: TurnResult | undefined;
   const events: SessionEvent[] = [];
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
-    chat: async () => {
+    chat: reviewingChat(async () => {
       if (priming) { priming = false; throw new Error("AUTHORING_FAILURE"); }
       if (!replacing) { entered.resolve(); return release.promise; }
       return final;
-    } });
+    }) });
   const failed = await session.sendUserMessage("Prime failed authoring");
   expect(failed.stoppedReason).toBe("error");
   const abort = new AbortController();
@@ -237,12 +238,12 @@ it("milestone callback replacement preserves actual A content and applies only B
   let replacing = false; let aRound = 0; let bRound = 0;
   let b: Promise<TurnResult> | undefined;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
-    chat: async () => {
+    chat: reviewingChat(async () => {
       if (replacing) return bRound++ === 0 ? tools({ name: "upsert_item", args: { item: { id: "item_B", name: "B item", price: 37 } } }) : final;
       if (aRound++ === 0) return tools({ name: "set_work_plan", args: { goal: "Title", layers: [{ title: "Title",
         items: [{ title: "Title", instruction: "Title", successTools: ["set_title_screen"] }] }] } });
-      return tools({ name: "set_title_screen", args: { title: "A_APPLIED" } });
-    } });
+      return aRound === 2 ? tools({ name: "set_title_screen", args: { title: "A_APPLIED" } }) : final;
+    }) });
   const a = session.sendUserMessage("A", event => {
     if (event.type !== "milestone_applied" || replacing) return;
     replacing = true;
@@ -256,7 +257,7 @@ it("milestone callback replacement preserves actual A content and applies only B
     expect(cancelled.appliedCalls?.map(call => call.args.title)).toEqual(["A_APPLIED"]);
     expect(cancelled.proposedCalls).toEqual([]);
     expect(resultB.proposedCalls.map(call => call.name)).toEqual(["upsert_item"]);
-    const applied = await applyProposedProject(session.getProposedProject(), { base: session.getProposalBase(), source: "agent", summary: "B", toolNames: ["upsert_item"], operation: session.getRunOperation() });
+    const applied = await applyProposedProject(session.getProposedProject(), { base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: "agent", summary: "B", toolNames: ["upsert_item"], operation: session.getRunOperation() });
     expect(applied.ok).toBe(true);
     expect(store.getCurrent().system.titleScreen?.title).toBe("A_APPLIED");
     expect(store.getCurrent().database.items.find(item => item.id === "item_B")?.price).toBe(37);
@@ -270,10 +271,10 @@ it("the runner continuation cannot apply or prove with a session operation repla
   let replacing = false; let round = 0;
   let b: Promise<TurnResult> | undefined;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
-    chat: async () => {
+    chat: reviewingChat(async () => {
       if (replacing) { enteredB.resolve(); return releaseB.promise; }
       return round++ === 0 ? tools({ name: "set_title_screen", args: { title: "A_DRAFT" } }) : final;
-    } });
+    }) });
   const f = epochRunner(session);
   const proof = vi.spyOn(session, "proveAppliedRevision");
   const a = f.runner.executeTurn(session, "A", (onEvent, signal) => session.sendUserMessage("A", event => {

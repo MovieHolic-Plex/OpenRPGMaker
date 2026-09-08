@@ -1,10 +1,24 @@
 import { setTimeout, clearTimeout } from "node:timers";
 import { vi } from "vitest";
-import type { AssistantSession, SessionTurnOptions, TurnResult } from "@/ai/assistantSession";
+import type { AssistantSession, AssistantSessionOptions, SessionTurnOptions, TurnResult } from "@/ai/assistantSession";
 import { createAiTurnRunner, type AiTurnRunnerDeps } from "@/editor/panels/aiTurnRunner";
 import { createProposalHost } from "@/editor/panels/aiProposalCard";
 import type { AiRunSurface } from "@/editor/panels/aiRunSurface";
 import { appendConversationBubble } from "@/editor/panels/aiConversationLog";
+import { independentReviewPayload } from "./independentReviewFixture";
+
+/** Script the reviewer transport, not approval authority: echo the exact revision
+ * and fail any actual required problem. All session/apply checks remain real. */
+export function reviewingChat(writer: NonNullable<AssistantSessionOptions["chat"]>): NonNullable<AssistantSessionOptions["chat"]> {
+  return async (config, request) => {
+    const input = independentReviewPayload(request);
+    if (!input) return writer(config, request);
+    const findings = input.requiredProblems.map((problem, index) => ({ id: `required-${index}`,
+      target: "draft", problem, requestedChange: "Resolve the required problem", validation: problem }));
+    return { message: { role: "assistant", content: JSON.stringify({ revision: input.revision,
+      verdict: findings.length ? "changes_requested" : "approved", summary: "Scoped fixture review", findings }) }, finishReason: "stop" };
+  };
+}
 
 export function deferred<T>() {
   let resolve: (value: T) => void = () => { throw new Error("Deferred not initialized"); };

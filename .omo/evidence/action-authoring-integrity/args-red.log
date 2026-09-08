@@ -1,0 +1,23 @@
+action combat AI tools rejects malformed action profiles without mutation: 'quoted attack key'
+AssertionError: expected true to be false // Object.is equality
+
+action combat AI tools rejects malformed action profiles without mutation: 'unknown profile key'
+AssertionError: expected true to be false // Object.is equality
+
+action combat AI tools rejects malformed action profiles without mutation: 'unknown attack kind'
+AssertionError: expected true to be false // Object.is equality
+
+action combat AI tools rejects malformed action profiles without mutation: 'missing attack fields'
+AssertionError: expected true to be false // Object.is equality
+
+action combat AI tools rejects malformed action profiles without mutation: 'unknown attack key'
+AssertionError: expected true to be false // Object.is equality
+
+action combat AI tools rejects malformed action profiles without mutation: 'invalid movement value'
+AssertionError: expected true to be false // Object.is equality
+
+action combat AI tools rejects malformed action profiles without mutation: 'non-finite damage'
+AssertionError: expected true to be false // Object.is equality
+
+action combat AI tools rejects malformed action profiles without mutation: 'non-object attack'
+AssertionError: expected true to be false // Object.is equality

@@ -16,7 +16,7 @@ afterEach(async () => {
 it.each(["save", "proof"])("A's delayed real %s result cannot change B, issue another proof, or rewrite historical A", async boundary => {
   const f = applyFixture();
   const a = await f.run();
-  const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), source: "agent", summary: "A", toolNames: ["set_title_screen"] });
+  const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "A", toolNames: ["set_title_screen"] });
   if (!applied.ok) throw new Error(applied.issue);
   f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
   const entered = deferred<void>(); const release = deferred<void>();

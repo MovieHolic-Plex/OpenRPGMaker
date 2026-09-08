@@ -1,0 +1,24 @@
+{
+  "related": {
+    "total": 98,
+    "passed": 98,
+    "failed": 0
+  },
+  "typecheck": {
+    "exitCode": 0,
+    "monitor": "mon_0Q4ATV5YSHSN1KA8"
+  },
+  "finalBuild": {
+    "exitCode": 0,
+    "monitor": "mon_MK7QGWGV1E7B4KDF"
+  },
+  "catalog": {
+    "passed": 4,
+    "monitor": "mon_PDZYW6A3YEY3BPE8"
+  },
+  "lsp": {
+    "actionTools": "No diagnostics found before canonical area projection",
+    "actionArenaAuthoring": "No diagnostics found",
+    "test": "No diagnostics found"
+  }
+}

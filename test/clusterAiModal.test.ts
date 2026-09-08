@@ -2,6 +2,7 @@ import { RunOperation } from "@/ai/runOperation";
 import { captureProposalBase, type ProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { SessionEvent, TurnResult } from "@/ai/assistantSession";
+import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
@@ -18,8 +19,10 @@ type MockSession = {
   readonly getRunOperation: () => RunOperation;
   readonly getProposalBase: () => ProposalBase;
   readonly recordApplyRejected: () => void;
-  readonly sendUserMessage: ReturnType<typeof vi.fn<(text: string, onEvent: (event: SessionEvent) => void) => Promise<TurnResult>>>;
+  readonly sendUserMessage: ReturnType<typeof vi.fn<(text: string, onEvent: (event: SessionEvent) => void, signal?: AbortSignal) => Promise<TurnResult>>>;
   readonly getProposedProject: ReturnType<typeof vi.fn<() => Project>>;
+  readonly isDraftReviewApproved: ReturnType<typeof vi.fn<(candidate: Project) => boolean>>;
+  readonly getDraftBaseline: ReturnType<typeof vi.fn<() => AuthoredProjectBaseline>>;
   readonly rebaseProject: ReturnType<typeof vi.fn<(project: Project) => void>>;
 };
 
@@ -38,20 +41,38 @@ const mocks = vi.hoisted<{
 }));
 
 vi.mock("@/ai/assistantSession", () => ({
-  AssistantSession: vi.fn().mockImplementation(function MockAssistantSession(_project: unknown, options: unknown) {
+  AssistantSession: vi.fn().mockImplementation(function MockAssistantSession(project: Project, options: unknown) {
     mocks.constructorOptions.push(options);
     const operation = new RunOperation();
     const base = captureProposalBase(store.getCurrent());
+    // Captured immutable baseline plus review approval bound to the exact draft
+    // candidate, mirroring the production contract without its LLM reviewer:
+    // only the reviewed candidate applies, and only while the live store still
+    // matches the captured baseline.
+    let baseline = new AuthoredProjectBaseline(project);
+    let approvedIdentity: string | null = null;
     const session: MockSession = {
       getRunOperation: () => operation,
       getProposalBase: () => base,
       recordApplyRejected: vi.fn(),
       sendUserMessage: vi.fn(async (_text: string, onEvent: (event: SessionEvent) => void) => {
         onEvent({ type: "assistant_token", delta: "확인했습니다. " });
-        return mocks.nextResult ?? { assistantText: "완료", proposedCalls: [], stoppedReason: "final" };
+        const result = mocks.nextResult ?? { assistantText: "완료", proposedCalls: [], stoppedReason: "final" };
+        if (result.proposedCalls.length > 0) {
+          approvedIdentity = JSON.stringify(mocks.proposedProject ?? store.getCurrent());
+        }
+        return result;
       }),
       getProposedProject: vi.fn(() => mocks.proposedProject ?? store.getCurrent()),
-      rebaseProject: vi.fn(),
+      isDraftReviewApproved: vi.fn((candidate: Project) =>
+        approvedIdentity !== null
+        && JSON.stringify(candidate) === approvedIdentity
+        && baseline.matches(store.getCurrent())),
+      getDraftBaseline: vi.fn(() => baseline),
+      rebaseProject: vi.fn((next: Project) => {
+        baseline = new AuthoredProjectBaseline(next);
+        approvedIdentity = null;
+      }),
     };
     mocks.instances.push(session);
     return session;
@@ -171,8 +192,11 @@ describe("cluster AI modal", () => {
     expect(mocks.instances).toHaveLength(1);
     expect(mocks.instances[0].sendUserMessage).toHaveBeenCalledWith(
       expect.stringContaining("클러스터 수정"),
-      expect.any(Function)
+      expect.any(Function),
+      expect.anything()
     );
+    const kickoff = mocks.instances[0].sendUserMessage.mock.calls[0]?.[0] ?? "";
+    expect(kickoff).toContain("render_group_sample");
     expect((mocks.constructorOptions[0] as { config?: { model?: string } }).config?.model).toBe("gemini-3.7-flash");
   });
 
@@ -258,8 +282,11 @@ describe("cluster AI modal", () => {
     expect(requireTestId(modal, "cluster-ai-tile-4")).toBeTruthy();
     expect(mocks.instances[0].sendUserMessage).toHaveBeenCalledWith(
       expect.stringContaining("미분류 분석"),
-      expect.any(Function)
+      expect.any(Function),
+      expect.anything()
     );
+    const analysisKickoff = mocks.instances[0].sendUserMessage.mock.calls[0]?.[0] ?? "";
+    expect(analysisKickoff).toContain("render_group_sample");
   });
 });
 

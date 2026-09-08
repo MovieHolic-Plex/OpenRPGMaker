@@ -69,13 +69,18 @@ normalization, derived from `result.project ?? submittedProject`, not live
 editor. The optional wire/server hash alone doesn't establish content equality.
 If accepted content can't normalize, saving logs the error and returns no receipt.
 
-`store.verifyPersistedRevision(receipt, { signal? })` accepts the exact
+`store.verifyPersistedRevision(receipt, { signal?, validate? })` accepts the exact
 store-issued object. A private WeakMap holds its captured Supabase configuration
 and load/adoption lineage; copied or reconstructed tokens fail. `loadProjectForPersistenceProof` reuses the
 normalized/hybrid loader with observed `project_id` and cancellation, without
 commit-tip hydration. It performs a remote read, not `reloadFromRemote()`: no
 live-project replacement, dirty reset, draft change, URL change, or store event.
-Manual reload retains its separate contract.
+Manual reload retains its separate contract. The optional trusted synchronous
+`validate(project)` callback runs on the canonical read only after target and
+normalized content identity match. Returning a diagnostic produces `failed`;
+throwing or cancellation cannot produce success. Assistant functional acceptance
+uses this hook to re-run immutable gameplay expectations, not to accept worker
+scripts or pass flags. The callback does not persist or replace project data.
 
 Results are `verified` with `isCurrent`, `mismatch` with `reason: target | content`,
 `disabled`, `cancelled`, or `failed` with a message. Missing rows and read errors
@@ -237,6 +242,42 @@ using real save/load/merge functions aren't evidence of a live Supabase write.
 `characterGraphics.validateCharacterGraphicsProject` runs in `validateProjectV4`, rejecting malformed attributes, duplicate canonical sprite slots and unknown mapped face IDs. Non-mapped states require an explicit null face ID; pending/no-face are distinct. Existing projects keep these optional fields absent; display-only literal-label suggestions do not write metadata on load. Texture-key/resource-ID profile aliases resolve to the annotated profile rather than hiding edits. Whole-project serialize/deserialize, packages and Supabase current_json retain the fields; the existing missing-only bundled-profile supplementation preserves annotated profiles.
 
 Metadata JSON import validates all v1/v2 rows before a single mutation, retains pending labels and exact supplied face IDs, and never invokes automatic face matching or rewrites authored event commands. V2 exports both independent attribute sets. Focused contracts: `test/characterGraphics.test.ts`, `test/characterGraphicsLoad.test.ts`, `test/databaseCharacterGraphics.test.ts`.
+## Character appearance sets v1 (2026-09-06)
+
+`database.characterAppearances?` is an additive v4 catalog of
+`{id,name,description,charset?:{resourceId,characterIndex},face?:{resourceId},bust?:{resourceId}}`.
+It is independent of social `project.characters` / `characterId`. All graphic
+slots are optional; legacy projects keep the catalog absent. Actors and active
+event-page graphics reference a set with optional `appearanceId`, retaining their
+direct graphic fields for unlink/fallback. Both `actorModel` normalization and
+`databaseActions`' actor patch whitelist must preserve that link.
+
+`characterAppearanceValidation.ts` validates shape, unique IDs, slot bounds,
+resource kinds and dangling links. Face resources are standalone facesets, busts
+are pictures, charsets use the supported 288x256 sheet with eight 24x32-frame
+characters. Known mismatched uploaded metadata is rejected; actual decoded
+dimensions are checked before runtime frame registration. Built-in bust/full
+aliases and promoted portrait metadata match the resource picker. No migration,
+SQL table, or save-slot field is added.
+
+`characterAppearances.ts` owns shared projections and usage scanning. Session
+actor overrides still win; linked slots override legacy actor/page resources,
+and missing slots keep their legacy fallback. The player now uses the selected
+charset index rather than always cell zero. Uploaded charsets are loaded and
+registered by the existing asset loader and recognized by NPC animation.
+
+An event starts with its active page's set face as default. Explicit `changeFace`,
+including clear, takes precedence. The existing command supports optional
+`appearanceId` and `presentation:"face"|"bust"`; a missing bust uses that set's
+face, then no portrait. Explicit presentation takes precedence over old filename
+inference. Names are never used to infer speaker identity.
+
+Contracts: `characterAppearanceSets`, `characterAppearanceRuntime`, and
+`characterAppearanceScenario` tests; the dedicated
+`scripts/qa/runtime/character-appearance-sets.scenario.mjs` exercises player.html.
+`node scripts/qa/appearance-runtime-proof.mjs` uses that same harness with an
+isolated Firefox context where Chromium has host-level ERR_NETWORK_CHANGED
+asset failures. The scenario removes its temporary fixture on cleanup/exit.
 
 ## New-project save/reload verification (2026-09-05)
 

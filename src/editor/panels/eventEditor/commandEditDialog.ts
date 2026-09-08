@@ -5,8 +5,9 @@ import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderCommandBody } from "./commandBody";
 import { validateWeightedBranchForm } from "./commandBodyWeightedBranch";
+import { validateBattleProcessingForm } from "./commandBodyDatabase";
 import { renderCommandPreview } from "./commandPreview";
-import { createPreviewSimState, type PreviewSimState } from "./previewSimulation";
+import { createPreviewSimState, type ActiveFace, type PreviewSimState } from "./previewSimulation";
 import { commandLabel } from "./commandPicker";
 import { openEventSubdialog } from "./subdialog";
 import type { CommandListActions } from "./types";
@@ -18,7 +19,7 @@ type EventCommandEditDialogRequest = {
   // 명령 추가/편집 모두 종류 select 를 잠근다(분기 유실·내부 kind 노출 방지).
   readonly lockKind?: boolean;
   // [중간-3] 이 명령 시점의 활성 얼굴(직전 changeFace). 문장 표시 프리뷰에 반영.
-  readonly previewFace?: { readonly resourceId: string };
+  readonly previewFace?: ActiveFace;
 };
 
 /** 상점은 진열·재고·옵션이 한 화면에 다 들어야 하는 특수 케이스 — 전체화면으로 연다. */
@@ -156,7 +157,7 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         dataset: { testid: "event-command-edit-ok" },
         on: {
           click: () => {
-            if (!validateWeightedBranchForm(formHost)) return;
+            if (!validateWeightedBranchForm(formHost) || !validateBattleProcessingForm(formHost, stagedCommand)) return;
             request.onApply(structuredClone(stagedCommand));
             close();
           },

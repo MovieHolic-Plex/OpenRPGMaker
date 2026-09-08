@@ -1,4 +1,5 @@
 import { resolveEventPage } from "@/project/io";
+import { resolveEventAppearanceGraphic } from "./characterAppearances";
 import {
   footprintBounds,
   normalizeCharacterFootprint,
@@ -102,9 +103,13 @@ export function setRuntimeEventPositionDirection(
 export function runtimeEventView(
   event: GameEvent,
   session: PlaySessionLike,
-  positions: RuntimeEventPositions
+  positions: RuntimeEventPositions,
+  project?: Pick<Project, "database" | "assets">,
 ): RuntimeEventView {
-  const page = resolveEventPage(event, session);
+  const authoredPage = resolveEventPage(event, session);
+  const page = authoredPage && project
+    ? { ...authoredPage, graphic: resolveEventAppearanceGraphic(project, authoredPage.graphic) }
+    : authoredPage;
   const location = session.eventLocations?.[event.id];
   const runtimePosition = positions[event.id];
   const position = location ? { x: location.x, y: location.y } : runtimePosition ?? { x: event.x, y: event.y };
@@ -144,12 +149,13 @@ export function runtimeEventView(
  * 1~3회 불려 O(N²) 가 됐다(실측 0.04~0.16ms/호출).
  */
 function forEachRuntimeEventView(
-  project: Pick<Project, "maps">,
+  project: Pick<Project, "maps"> & Partial<Pick<Project, "database" | "assets">>,
   map: GameMap,
   session: PlaySessionLike,
   positions: RuntimeEventPositions,
   visit: (view: RuntimeEventView) => boolean | void
 ): void {
+  const appearanceProject = project.database && project.assets ? { database: project.database, assets: project.assets } : undefined;
   const erased = idSet(session.erasedEventIds);
   const removedOnCurrentMap = removedEventSet(session, map.id);
   const locations = session.eventLocations;
@@ -160,7 +166,7 @@ function forEachRuntimeEventView(
     const location = locations?.[event.id];
     if (location && location.mapId !== map.id) continue;
     included.add(event.id);
-    if (visit(runtimeEventView(event, session, positions)) === true) return;
+    if (visit(runtimeEventView(event, session, positions, appearanceProject)) === true) return;
   }
   // 다른 맵의 이벤트는 **이 맵으로 옮겨진 것만** 후보다. 옮겨진 이벤트가 없으면
   // 맵 전체 순회를 건너뛴다(대부분의 프레임이 여기에 해당한다). 후보 집합은 다른 맵이
@@ -180,7 +186,7 @@ function forEachRuntimeEventView(
       if (included.has(event.id)) continue;
       if (removedOnSourceMap?.has(event.id)) continue;
       included.add(event.id);
-      if (visit(runtimeEventView(event, session, positions)) === true) return;
+      if (visit(runtimeEventView(event, session, positions, appearanceProject)) === true) return;
     }
   }
   const spawned = session.spawnedEvents;
@@ -192,7 +198,7 @@ function forEachRuntimeEventView(
     const event = materializeSpawnedEvent(project, spawnedEventId, spawn);
     if (!event) continue;
     included.add(spawnedEventId);
-    if (visit(runtimeEventView(event, session, positions)) === true) return;
+    if (visit(runtimeEventView(event, session, positions, appearanceProject)) === true) return;
   }
 }
 

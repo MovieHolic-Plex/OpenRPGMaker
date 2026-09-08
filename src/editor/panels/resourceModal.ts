@@ -6,14 +6,15 @@ import { handleHistoryHotkey, isHistoryHotkeyChord, isTextEditingElement } from 
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import type { ResourceKind } from "@/project/types";
 
 let activeResourceModal: {
   readonly element: HTMLElement;
   readonly dispose: () => void;
 } | null = null;
 
-export function openResourceModal(): void {
-  if (activeResourceModal?.element.isConnected) {
+export function openResourceModal(initialKind?: ResourceKind): void {
+  if (activeResourceModal?.element.isConnected && !initialKind) {
     activeResourceModal.element.querySelector<HTMLElement>('[data-testid="resource-modal-close"]')?.focus();
     return;
   }
@@ -117,14 +118,14 @@ export function openResourceModal(): void {
   // Escape 는 공용 모달 스택이 라우팅한다. 자체 document 리스너로 잡으면 도크 모드에서
   // 데이터베이스를 켠 채 이 창을 열었을 때 데이터베이스까지 함께 닫혔다.
   registerModal(backdrop, escape);
-  renderResourceManager(body);
+  renderResourceManager(body, initialKind);
   unsubscribe = store.subscribe((_project, change) => {
     const current = store.getProjectIdentity();
     if (change.projectSwitch || current.kind !== identity.kind || current.id !== identity.id) {
       dispose();
       return;
     }
-    if (change.scope === "project" || change.scope === "assets") renderResourceManager(body);
+    if (change.scope === "project" || change.scope === "assets") renderResourceManager(body, initialKind);
   });
   activeResourceModal = { element: backdrop, dispose };
   closeButton.focus();

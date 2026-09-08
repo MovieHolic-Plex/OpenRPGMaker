@@ -80,7 +80,12 @@ export function createHumanEditRaceContracts(harness) {
     const observed = await observations.capture(label);
     const values = await evaluate(() => ({
       live: qa.humanValues(qa.store.getCurrent()), draft: qa.humanValues(qa.session.getProposedProject()),
-      counters: structuredClone(qa.humanCounters), mutations: structuredClone(qa.humanMutations),
+      counters: { ...structuredClone(qa.humanCounters),
+        applyRejectedNotifications: qa.humanCounters.rejectedNotifications,
+        reviewRejections: qa.events.filter(event => event.type === 'result_review' && event.review.status !== 'approved').length,
+        rejectedNotifications: qa.humanCounters.rejectedNotifications
+          + qa.events.filter(event => event.type === 'result_review' && event.review.status !== 'approved').length },
+      mutations: structuredClone(qa.humanMutations),
       sameBefore: JSON.stringify(qa.store.getCurrent()) === qa.humanBefore,
       sameHuman: JSON.stringify(qa.store.getCurrent()) === qa.humanEdited,
     }));
@@ -336,7 +341,7 @@ export function createHumanEditRaceContracts(harness) {
         && afterRemote.values.itemPrice === report.humanItem.price,
       released: true, humanEditsThroughControls: true, transportOnlyScripted: true,
       counters: released.counters, remoteValues: afterRemote.values,
-      limits: 'Single local client only; no distributed/two-tab lock guarantee. Counters observe successful apply receipts and rejection notifications (Panel and runner may both notify), not adapter invocation counts.' };
+      limits: 'Single local client only; no distributed/two-tab lock guarantee. Counters observe successful apply receipts and actual apply-rejected or typed independent-review rejection notifications (Panel and runner may both notify), not adapter invocation counts.' };
     record('human-race-result', report.race);
     assert.deepEqual(report.errors, [], 'No hidden route or browser failure');
     assert.equal(report.contractChecks.filter(check => !check.pass).length, 0,

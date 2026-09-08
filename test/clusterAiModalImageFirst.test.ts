@@ -212,7 +212,7 @@ describe("cluster AI image-first modal", () => {
     choices[0]?.click();
     await flushAsync();
 
-    expect(mocks.instances[0].sendUserMessage).toHaveBeenLastCalledWith("적용", expect.any(Function));
+    expect(mocks.instances[0].sendUserMessage).toHaveBeenLastCalledWith("적용", expect.any(Function), expect.any(AbortSignal));
   });
 
   it("keeps long assistant prose as a single caption line", async () => {

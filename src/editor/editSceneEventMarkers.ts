@@ -3,6 +3,7 @@ import { TILE_SIZE } from "@/assets/bundled";
 import { editorState, type Layer } from "@/editor/editorState";
 import { resolveEventSpriteTexture, type EventSpriteTexture } from "@/player/eventSpriteResources";
 import { editorWorkingEvents } from "@/project/eventDrafts";
+import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { overlappingEventPairs } from "@/project/eventFootprintQuery";
 import {
   UNIT_FOOTPRINT,
@@ -89,8 +90,9 @@ export type EventLayerClickFeedback = {
 
 export function editorEventMarkerTexture(project: Project, graphic: EventPageGraphic | undefined): EventSpriteTexture | null {
   if (graphic?.transparent === true) return null;
-  const sprite = graphic?.sprite;
-  return sprite ? resolveEventSpriteTexture(project, sprite.id, graphic.pattern) : null;
+  const effective = graphic ? resolveEventAppearanceGraphic(project, graphic) : undefined;
+  const sprite = effective?.sprite;
+  return sprite ? resolveEventSpriteTexture(project, sprite.id, effective.pattern) : null;
 }
 
 /**

@@ -19,8 +19,10 @@ describe("run outcome actual application", () => {
     // Given a real returned title draft and the native apply response.
     const f = applyFixture();
     const result = await f.run();
-    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(),
-      source: "agent", summary: "Title", toolNames: result.proposedCalls.map(call => call.name),
+    expect(result.review?.status).toBe("approved");
+    expect(f.session.isDraftReviewApproved()).toBe(true);
+    const applied = await applyProposedProject(f.session.getProposedProject(), {
+      base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: result.proposedCalls.map(call => call.name),
     });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied);
@@ -45,8 +47,10 @@ describe("run outcome actual application", () => {
   it("refreshes the compact recap when proof settles after the returned draft", async () => {
     // Given a returned draft with an already published recap.
     const f = applyFixture();
-    await f.run();
-    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+    const result = await f.run();
+    expect(result.review?.status).toBe("approved");
+    expect(f.session.isDraftReviewApproved()).toBe(true);
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
     // When proof finishes after the original session return.
@@ -76,7 +80,9 @@ describe("run outcome actual application", () => {
     // Given a verified applied run.
     const f = applyFixture();
     const result = await f.run();
-    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+    expect(result.review?.status).toBe("approved");
+    expect(f.session.isDraftReviewApproved()).toBe(true);
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
     await f.session.proveAppliedRevision();
@@ -94,7 +100,9 @@ describe("run outcome actual application", () => {
     // Given an applied and verified earlier run in the same session.
     const f = applyFixture();
     const first = await f.run();
-    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+    expect(first.review?.status).toBe("approved");
+    expect(f.session.isDraftReviewApproved()).toBe(true);
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
     await f.session.proveAppliedRevision();

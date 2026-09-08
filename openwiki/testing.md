@@ -1,3 +1,39 @@
+## Native event battle reliability QA (2026-09-08)
+
+Focused regressions are `eventBattleAdmission.test.ts` (actual command modal and
+aggregate draft validation), `eventBattleFailure.test.ts` (real foreground,
+autorun readiness, parallel, random/field admission and stale-owner handling),
+and `battleInitializationAdmission.test.ts` (real constructor/audio, transition
+failure, empty monster party and corrected starter retry). Domain runtime and
+interpreter behavior stay real; only Phaser I/O, result presentation or a specific
+transition fault are adapted. New async tests subscribe before triggering and
+await completion/lease release with bounded deadlines, never fixed sleeps.
+
+Reproducible exported-player matrix (no DB writes, scratch/evidence in worktree):
+
+```bash
+mkdir -p .scratch/battle-reliability
+TMPDIR=$PWD/.scratch/battle-reliability QA_BROWSER=firefox \
+  node scripts/qa/runtime/event-battle-reliability.probe.mjs
+```
+
+The probe owns an ephemeral `startPlayerQaServer` unless `QA_BASE_URL` is supplied.
+`QA_OUT_DIR` selects evidence output; `QA_CASES` selects comma-separated case IDs.
+It uses diagnostic copies of the historical battle fixture through `player.html`
+and the export-store shim, not editor Play mode. It covers invalid-variable and
+valid action/auto/parallel starts, empty troops/monster parties, hidden enemies,
+legacy enemyIds, numeric 0, and a real correction event followed by retry.
+Observers subscribe before input and watch DOM/state changes; no polling/sleeps.
+Valid starts must expose the actor command menu after transition removal. Error
+cases must retain a nonzero, nontransparent notice entirely inside the viewport;
+DOM presence alone previously passed while every error sat below the canvas.
+Read `SUMMARY.md`, `results.json`, and the named screenshots. Page errors fail;
+console errors are retained because reported admission faults intentionally log.
+Chromium on the shared host can fail with `ERR_NETWORK_CHANGED`; the browser
+selector permits Firefox without weakening the scenario's assertions. This is
+behavioral evidence, not independent visual approval. The lead still owns the
+real editor picker/Confirm/reopen checks, full gates/build and final browser QA.
+
 ## Real large-world player QA (2026-09-07)
 
 `npm run qa:runtime -- --scenario live-world-start --project <saved-project.json>`
@@ -37,6 +73,33 @@ before clicking Send, including old attribute values for transitions batched
 into one observer delivery. The bounded timer only rejects a missing transition;
 the observer and timer are always disposed. CSS/DOM mutation probes confirm
 that the visibility and row-layout assertions reject actual regressions.
+
+## P3/current-main composition fixtures (2026-09-08)
+
+Composition tests must supply both captured proposal base and authored baseline.
+The epoch fixture scripts independent review as a separate revision-bound request,
+returning findings for the actual required problems rather than granting approval
+unconditionally. Main's real reviewer parser, acceptance checks and apply gates
+remain connected. An advisory cancellation that preserves a previous milestone
+must first produce a real reviewed application: advisory checks now precede approval
+of the next batch. Host Continue retains that applied ledger without replay.
+
+Native HTTP adapters distinguish tool-free independent review from normal writer
+messages and report the actual `finish_reason` (`stop` or `tool_calls`). Multimodal
+writer viewport text is not JSON review input. Stale-race rejection counters expose
+both actual apply-rejection calls and typed independent-review rejection events;
+neither is a successful application receipt. Keep all original value, undo, remote
+readback, owner and terminal assertions. Clear all six unit history fields:
+`VITE_SUPABASE_USE_PROXY=0`, `VITE_SUPABASE_URL=`, `VITE_SUPABASE_ANON_KEY=`,
+`VITE_SUPABASE_PROJECT_ID=`, `SUPABASE_ANON_KEY=`, `SUPABASE_UPSTREAM_URL=`.
+Native authored fixtures instead use fresh isolated remote IDs and absence-proven cleanup.
+
+Legacy QA `modify` declarations without request-coverage responses fail closed on
+current main. Never substitute empty requirements, unconditional approval or a
+non-authoring classification to obtain an epoch PASS. The current coverage schema
+has no exact title-screen or item-price evaluator; `functionalUnresolved` cannot
+be approved away. Such a native fixture incompatibility is an explicit producer
+blocker, not independent approval or permission to change acceptance policy.
 
 ## AI turn observation contracts (2026-09-06)
 
@@ -953,6 +1016,7 @@ Evidence expectations:
   `playSurface.css` 의 inset 목록에 든 것은 cover/crop 모드가 생길 때를 위한 대비다.
   측정 함정 하나: 디밍은 `--dialogue-scrim-ms`(140~260ms) 전이라서 창이 뜬 **직후**에 읽으면
   `::before` opacity 가 `0.26` 처럼 중간값으로 잡힌다. 정착값을 볼 거면 400ms 쯤 기다려라.
+- `test/eventPreviewPaintCssom.test.ts` — 명령 미리보기 페인트. Chromium `getComputedStyle` 로 이름표 `backgroundImage`/그림자 리스트를 읽고, 글자만 `color: transparent` 로 숨긴 샷과 비교해 글리프 대 실제 배경(그라디언트 포함) 대비를 잰다. 테두리·그림자를 전역 min/max 로 통과시키지 않는다. `EVENT_PREVIEW_PAINT_FROM=HEAD` 는 수정 전 CSS 를 `git show` 로 주입한다.
 - `test/dialoguePreviewPresentationCss.test.ts` — 에디터 프리뷰와 게임의 감정→keyframe 짝을
   두 CSS 파일에서 뽑아 대조한다. 프리뷰 창은 `.ecp-message-window`, 게임 창은 `.dialogue-box` 라
   규칙을 두 번 적어야 하고, 그 중복은 조용히 어긋난다 — 프리뷰만 옛 곡선으로 튀어도 예외가 없고,
@@ -1231,6 +1295,74 @@ Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 �
 - `.env.local`에 실 Supabase 키가 있는 상태의 전체 검사 중 `rpg-zzu-house-template-gallery`에 테스트 문구(`증발 위험 변경`, `마일스톤: 1차 제목` 등)가 저장되고 저작한 꾸러미가 다시 사라졌다. 여러 워크트리에서 동시에 전체 검사가 돌았으므로 어느 실행이 썼는지는 확정하지 못했다. `lakeVillageRebuildFinal`만 제외돼 있어도 안전하다고 보지 마라.
 - 이 세션의 무격리 게이트를 중단하고, 환경의 Supabase URL/키/프록시를 비운 뒤 Node `--import`로 **실 네트워크 fetch 차단**을 설치해 다시 실행했다. `.env.local`을 직접 읽는 테스트도 있으므로 환경 변수만 비우는 것으로 충분하지 않다. 네트워크 모의 응답은 그대로 쓰며 실 DB URL과 외부 주소 요청을 거절한다. 로컬 HTTP 하네스는 허용하되 `.env.local`의 실제 DB origin은 로컬이어도 막는다.
 - 세션 증거: `output/evidence/concept-expansion/README.md`, 원격 저장 직후 증명 `supabase-proof-first-save.json`. 후속 저장에서는 CAS가 동시 변경을 감지해 덮어쓰기를 거절했다. 실 콘텐츠 작업과 전체 검사를 같은 공유 프로젝트에서 병행하지 말고, 외부 쓰기가 끝난 뒤 최신 스냅샷으로 추가하고 재로드하라.
+
+## Request-bound functional acceptance verification (2026-09-07)
+
+Live followup: `requestCoverage` exercises independent omission, exact-quote gaps,
+empty/malformed/failed audits, immutable worker replacement, Ask, grouped R2
+refinement and failed resume audit provenance. `fakeDomInsertBefore` supplies the
+real row-move semantics now needed when fail-closed fallback exposes the sticky
+in existing panel tests; the actual `agentBlueprintTurnEnd` suite remains intact.
+The focused serial command in `output/evidence/acceptance-live/README.md` passed
+153 assertions in 14 suites. A concurrent-build run had all assertions pass but
+exited nonzero on Vitest's `onTaskUpdate` IPC timeout; it is retained, not counted
+as green. No assertion, timeout, test or warning was suppressed.
+
+`scripts/qa/acceptance-live.mjs` uses real companion models, declaration/parser,
+planner/session and the actual apply/store/Supabase save/reload path, with an
+exclusively owned project ID and collision/revision checks. Its before/negative
+cases do not write. Authored features come only from model tools. The initial
+10-gold potion stock hit the production half-catalog-price floor (50 -> 25), not
+a scene/player pricing divergence; a real Codex tool call set the catalog price
+to 10. `acceptance-live-check.mjs` independently reloads the exact final revision,
+evaluates the captured original live criteria through the canonical ledger and
+runs a combined 16-step real-interpreter scenario. It is not a fresh model call,
+not a fabricated declaration, and not graphical-player evidence. The latter and
+full-gate baseline comparison are separate lead-owned gates. See the evidence
+README for the canonical JSON, model IDs, receipt, hashes and player checkpoints.
+
+Focused suites: `functionalScenePurchase`, `functionalAcceptance`,
+`functionalAcceptanceSession`, `functionalPersistenceProof`, `npcRewardSession`,
+`functionalWalkSuspension`, `functionalClarification`, and `functionalInterpreterResume`.
+They exercise the public scene tool, real interpreter/production transactions,
+live declaration parser and session gates, immutable plan replacement, actual
+proposal apply, and the canonical persistence-read boundary (only transport/model
+responses are scripted). Red/green logs live under
+`output/evidence/functional-acceptance/`; no sleeps synchronize these tests.
+
+Run the executable public-API browser smoke against an isolated worktree server:
+
+```bash
+npm run dev:worktree -- --port 9841
+node scripts/qa/functional-acceptance-smoke.mjs http://127.0.0.1:9841
+```
+
+The script uses Playwright Firefox (`npx playwright install firefox` if absent),
+avoiding this Linux host's documented Chromium `ERR_NETWORK_CHANGED` cancellation.
+It loads public session/parser/runtime modules without booting the editor,
+uses only `test/fixtures/functionalAcceptance.ts`, blocks all network writes and
+external requests, and records `output/evidence/functional-acceptance/public-smoke.json`.
+It verifies exact purchase deltas, outgoing/return travel, one-time rewards,
+broken variants, stale applied evidence and attempted contract replacement.
+The review regressions force travel through a touch-shop corridor, compare split
+and unsplit walks, retain post-shop game-over behavior, and refuse nested held
+interpreter replacement. Clarification coverage includes original-source linkage,
+partial completion, retained known expectations, explicit user corrections,
+host-resume clarification, and rejected worker/concrete-contract replacement.
+The public smoke also exercises the corridor and a three-message clarification
+(`blocked -> blocked -> verified`) with the same requirement ID.
+Consumed-hold regressions cover purchase/choice/animation resuming through transfer
+into a non-suspending variable initializer, a second suspension under the same
+owner, and retained rejection of newly suspended nested interpreters. Animation
+tests advance deterministic engine ticks derived from its authored duration;
+no wall-clock sleep or polling is used. The public smoke additionally verifies
+purchase -> transfer -> initializer ends with 80 gold, two potions and var_0001=1.
+It does NOT claim live-model semantic extraction, graphical-player QA or a real
+Supabase-authored project. Canonical reload behavior is covered by the focused
+transport-boundary tests; independent full gates/build/player QA remain lead gates.
+Check the server's worktree identity, not just an HTTP 200; another checkout on the
+same port serves different modules. Pass an explicit free port if the assigned
+port belongs to another running checkout; do not kill that server.
 
 ## 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
 

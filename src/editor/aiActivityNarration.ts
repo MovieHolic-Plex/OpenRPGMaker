@@ -59,6 +59,7 @@ const ACTIONS = {
   battle: forms("전투를 구성하는 중", "전투를 구성했어요", "전투 구성을 실패했어요"),
   world: forms("월드를 구성하는 중", "월드를 구성했어요", "월드 구성을 실패했어요"),
   resource: forms("리소스를 정리하는 중", "리소스를 정리했어요", "리소스 정리를 실패했어요"),
+  appearance: forms("외형 그림 후보를 요청하는 중", "외형 그림 후보를 요청했어요", "외형 그림 후보를 요청하지 못했어요"),
   export: forms("게임을 내보내는 중", "게임을 내보냈어요", "게임 내보내기를 실패했어요"),
   play: forms("게임을 시험하는 중", "게임을 시험했어요", "게임 시험을 실패했어요"),
   history: forms("편집 내용을 되돌리는 중", "편집 내용을 되돌렸어요", "편집 내용 되돌리기를 실패했어요"),
@@ -110,7 +111,7 @@ addFamily(ACTIONS.deleteDatabase, "delete_database_record delete_craft_recipe de
 addFamily(ACTIONS.createMap, "create_map duplicate_map generate_map");
 addFamily(ACTIONS.resizeMap, "resize_map");
 addFamily(ACTIONS.deleteMap, "remove_map");
-addFamily(ACTIONS.editMap, "manage_map_tree set_map_properties shift_map set_start_position set_tile_passability set_encounter_table create_farm_plot make_hunting_ground configure_roguelike_room upsert_map_connection delete_map_connection link_maps");
+addFamily(ACTIONS.editMap, "manage_map_tree set_map_properties shift_map set_start_position set_tile_passability set_encounter_table create_farm_plot make_hunting_ground remove_field_spawn configure_roguelike_room upsert_map_connection delete_map_connection link_maps");
 addFamily(ACTIONS.validate, "lint_world lint_quest run_lint verify_quest evaluate_game_quality evaluate_dungeon_room evaluate_interior_room evaluate_village_layer evaluate_village_look critique_village");
 addFamily(ACTIONS.document, "present_doc upsert_village_document delete_village_document generate_walkthrough");
 addFamily(ACTIONS.plan, "plan_world propose_tile_vocabulary");
@@ -119,6 +120,7 @@ addFamily(ACTIONS.story, "author_story_arc make_horror_loop script_cutscene scri
 addFamily(ACTIONS.battle, "set_action_combat make_action_enemy set_factions simulate_battle tune_enemy author_boss_phases");
 addFamily(ACTIONS.world, "build_world link_maps author_world_bridge author_world_mountain");
 addFamily(ACTIONS.resource, "upsert_resource delete_resource upsert_resource_profile delete_resource_profile create_tileset set_tileset_properties upsert_autotile_group delete_autotile_group upsert_palette_preset upsert_tile_group delete_tile_group set_audio_description");
+addFamily(ACTIONS.appearance, "generate_character_appearance");
 addFamily(ACTIONS.export, "export_game");
 addFamily(ACTIONS.play, "play_walkthrough run_scene_test run_action_combat_test");
 addFamily(ACTIONS.history, "revert_last_edit");

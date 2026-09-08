@@ -157,7 +157,9 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       }),
     ],
   });
+  let activeTurn: AbortController | null = null;
   const close = (): void => {
+    activeTurn?.abort();
     clearAgentGhostPreview();
     root.remove();
     document.removeEventListener?.("keydown", onKeyDown);
@@ -184,6 +186,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     if (!state.session) {
       state.session = new AssistantSession(store.getCurrent(), {
         config: resolveSurfaceAiConfig("cluster"),
+        reviewConfig: resolveSurfaceAiConfig("chat"),
         prepareProjectWiki: createProjectWikiCoordinator({ getConfig: () => resolveSurfaceAiConfig("cluster") }).prepare,
         contextOptions: {
           currentMapId: currentMapId() ?? undefined,
@@ -289,7 +292,9 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       log.scrollTop = log.scrollHeight;
     };
     try {
-      const result = await ensureSession().sendUserMessage(trimmed, onEvent);
+      activeTurn = new AbortController();
+      const result = await ensureSession().sendUserMessage(trimmed, onEvent, activeTurn.signal);
+      if (activeTurn.signal.aborted) return;
       if (result.assistantText) assistantText = result.assistantText;
       if (result.assistantText && !assistantBubble) appendBubble("assistant", result.assistantText);
       renderQuickReplies(assistantText);
@@ -313,11 +318,17 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     const warnings = proposalApprovalWarnings(calls);
     if (warnings.length > 0 && !(await confirmRuleApproval(warnings))) return;
     if (state.session !== session || session.getRunOperation() !== operation || operation.signal.aborted) return;
+    if (!session.isDraftReviewApproved(proposed)) {
+      appendBubble("system", "독립 검수가 승인되지 않았거나 초안이 바뀌어 적용하지 않았습니다.");
+      status.textContent = "검수 미완료";
+      return;
+    }
     const label = `클러스터 수정: ${model.group?.name ?? model.title}`;
     clearAgentGhostPreview();
     const applied = await applyProposedProject(proposed, {
       base,
       operation,
+      baseline: session.getDraftBaseline(),
       source: "agent",
       agentName: resolveSurfaceAiConfig("cluster").model,
       summary: label,
@@ -328,6 +339,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     if (state.session !== session || session.getRunOperation() !== operation || operation.signal.aborted) return;
     if (!applied.ok) {
       session.recordApplyRejected(undefined, applied.reason);
+      if (applied.reason === "stale-baseline") session.refreshAcceptance(store.getCurrent());
       const message = `적용 실패: ${applied.issue ?? "무결성 오류"}`;
       status.textContent = "적용 실패";
       appendBubble("system", message);

@@ -1,0 +1,2 @@
+Exit: 0. All eight malformed-profile cases reject without project mutation.
+See profile-green.json for exact test identities and timings.

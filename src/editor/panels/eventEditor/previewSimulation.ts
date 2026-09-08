@@ -14,6 +14,7 @@ export interface PreviewSimState {
   partyActorIds: string[];
   selfSwitches: Record<string, Partial<Record<string, boolean>>>;
   flags: Record<string, boolean>;
+  face?: ActiveFace;
   actorVitals: PlaySession["actorVitals"];
   currentMapId: PlaySession["currentMapId"];
   x: number;
@@ -44,6 +45,8 @@ export interface SimulatedStep {
 
 export interface ActiveFace {
   readonly resourceId: string;
+  readonly position?: "left" | "right";
+  readonly flipHorizontally?: boolean;
 }
 
 export interface SimulationResult {
@@ -99,6 +102,7 @@ function cloneState(state: PreviewSimState): PreviewSimState {
     partyActorIds: [...state.partyActorIds],
     selfSwitches: structuredClone(state.selfSwitches),
     flags: { ...state.flags },
+    ...(state.face ? { face: { ...state.face } } : {}),
     actorVitals: structuredClone(state.actorVitals),
     currentMapId: state.currentMapId,
     x: state.x,
@@ -220,6 +224,18 @@ function evalForkCondition(
 
 function applyCommandToState(command: Command, state: PreviewSimState, hostEventId: string | undefined): void {
   switch (command.kind) {
+    case "changeFace": {
+      if (command.resourceId) {
+        state.face = {
+          resourceId: command.resourceId,
+          position: command.position,
+          flipHorizontally: command.flipHorizontally,
+        };
+      } else {
+        delete state.face;
+      }
+      break;
+    }
     case "setSwitch": {
       if (command.value === "toggle") {
         state.switches[command.switchId] = !state.switches[command.switchId];

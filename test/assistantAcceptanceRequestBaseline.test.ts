@@ -2,12 +2,15 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import type { AcceptancePromise } from "@/ai/assistantAcceptance";
-import * as applyStore from "@/editor/tools/applyChangesetToStore";
+import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
+import * as commits from "@/project/projectCommitLog";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { fixedDeclarer } from "./intentFixture";
+import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
+import type { ReviewInput } from "@/ai/independentReview";
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 type Call = { readonly name: string; readonly args: Record<string, unknown> };
 const room = { mapId: "request-a-room" };
@@ -28,21 +31,27 @@ const skip: Call = { name: "skip_work_item", args: {} };
 const rename = (mapId: string, name: string): Call => ({ name: "set_map_properties", args: { mapId, name } });
 
 async function afterRequestA() {
-  // Only the external persistence boundary is replaced; session/tools/adoption are real.
-  vi.spyOn(store, "isRemotePersistenceEnabled").mockReturnValue(false);
-  vi.spyOn(applyStore, "applyProposedProject").mockImplementation(async applied => ({
-    ok: true, applied,
-    commit: { commitId: null, persisted: false, reviewStatus: "approved", summary: "local test", toolNames: [], recordedAt: "2026-09-06T00:00:00.000Z" },
-  }));
+  // Keep the real captured-baseline apply guard, store, undo, and commit adapter.
+  const project = createBlankProject();
+  store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+  store.replace(project);
+  resetMapEditHistory();
+  vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
+  const commit = vi.spyOn(commits, "recordProjectCommit");
   let rounds: readonly (readonly Call[])[] = [];
   let index = 0;
   const events: SessionEvent[] = [];
+  const reviews: ReviewInput[] = [];
   const declareIntent = vi.fn(fixedDeclarer({ mode: "modify", targetMapId: start.mapId }));
-  const config = { ...defaultAiConfig(), model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 12 };
-  const session = new AssistantSession(createBlankProject(), {
+  const config = { ...defaultAiConfig(), maxToolCalls: 12 };
+  const session = new AssistantSession(project, {
     config: { ...config, agentMode: "chat" },
     declareIntent,
+    renderImages: async () => [{ label: "Request A room", dataUrl: "data:image/png;base64,AA==" }],
     chat: async (_config, request): Promise<ChatResult> => {
+      const review = independentReviewPayload(request);
+      const approval = approvedReviewResponse(request);
+      if (review && approval) { reviews.push(review); return approval; }
       // New user requests are adopted by the main planner, not by resetting IDs in a generator repair.
       if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify({ action: "replan", ...rounds[0]?.find(call => call.name === "set_work_plan")?.args }) }, finishReason: "stop" };
       const batch = rounds[index++];
@@ -53,7 +62,7 @@ async function afterRequestA() {
     },
   });
   const run = async (batches: readonly (readonly Call[])[], autonomous = true) => {
-    rounds = batches; index = 0; events.length = 0;
+    rounds = batches; index = 0; events.length = 0; reviews.length = 0;
     const targetMapId = batches.flat().find(call => call.name === "set_map_properties")?.args.mapId;
     if (typeof targetMapId === "string") declareIntent.mockImplementation(fixedDeclarer({ mode: "modify", targetMapId }));
     return session.sendUserMessage("Edit the requested map", event => events.push(event), undefined, { autonomous });
@@ -64,10 +73,11 @@ async function afterRequestA() {
       { id: "original-change", title: "Original change", criteria: [{ kind: "targetChange", target: start }] },
     ])],
     [{ name: "create_map", args: { id: room.mapId, name: "Request A room", width: 20, height: 15 } }, rename(start.mapId, "Request A start"), skip],
+    [{ name: "show_map_region", args: { mapId: room.mapId, x: 0, y: 0, w: 20, h: 15 } }],
   ]);
   expect(session.getAcceptanceSnapshot()?.status).toBe("verified");
   expect(session.baselineProject.maps[room.mapId]).toBeDefined();
-  return { session, events, run, declareIntent, config };
+  return { session, events, reviews, run, declareIntent, config, commit };
 }
 
 describe("per-request acceptance baselines", () => {
@@ -98,62 +108,81 @@ describe("per-request acceptance baselines", () => {
     ] });
   });
 
-  it.each([false, true])("late adoption cannot baseline away B's earlier write (applied=%s)", async applied => {
-    // Given B writes before declaring its new promises, possibly applying a milestone.
-    const { session, run, events } = await afterRequestA();
+  it.each([false, true])("late adoption cannot baseline away B's earlier write (completed=%s)", async completed => {
+    // Completing an item cannot apply B before its late promises are reviewed.
+    const { session, run, events, reviews, commit } = await afterRequestA();
+    const authored = structuredClone(store.getCurrent());
+    const history = getMapEditHistoryEntries();
+    commit.mockClear();
     // When the late plan protects both the whole map and its untouched tile region.
-    await run([
-      [plan(), rename(room.mapId, "Changed before adoption"), ...(applied ? [{ name: "complete_work_item", args: {} }] : [])],
+    const result = await run([
+      [plan(), rename(room.mapId, "Changed before adoption"), ...(completed ? [{ name: "complete_work_item", args: {} }] : [])],
       [plan([
         { id: "keep-room", title: "Keep room", criteria: [{ kind: "preserve", target: room }] },
         { id: "keep-region", title: "Keep region", criteria: [{ kind: "preserve", target: room, region }] },
         { id: "changed-room", title: "Changed room", criteria: [{ kind: "targetChange", target: room }] },
       ]), skip],
     ]);
-    // Then the baseline contains A's room, not the already-mutated B draft/applied map.
+    // The reviewer checks against A's applied room, not B's already-mutated draft.
     expect(events.filter(event => event.type === "tool_call" && event.name === "set_map_properties")).toMatchObject([{ result: { ok: true } }]);
-    if (applied) {
-      const milestone = events.findIndex(event => event.type === "milestone_applied");
-      const latePlan = events.map(event => event.type === "tool_call" && event.name === "set_work_plan").lastIndexOf(true);
-      expect(milestone).toBeGreaterThan(-1);
-      expect(milestone).toBeLessThan(latePlan);
-    }
-    expect(session.getAcceptanceSnapshot()?.items.slice(2)).toMatchObject([
-      { id: "keep-room", evidence: [{ passed: false }] },
-      { id: "keep-region", status: "verified" },
+    if (completed) expect(events.find(event => event.type === "tool_call" && event.name === "complete_work_item")).toMatchObject({ result: { ok: true } });
+    expect(reviews.at(-1)?.acceptance).toMatchObject({ items: [
+      { id: "created" }, { id: "original-change" },
+      { id: "keep-room", evidence: [{ passed: false }] }, { id: "keep-region", status: "verified" },
       { id: "changed-room", status: "verified" },
-    ]);
+    ] });
+    expect(result.stoppedReason).toBe("error");
+    expect(result.review?.status).toBe("changes_requested");
+    expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
+    expect(result.appliedCalls ?? []).toEqual([]);
+    expect(events.some(event => event.type === "milestone_applied")).toBe(false);
+    expect(store.getCurrent()).toEqual(authored);
+    expect(getMapEditHistoryEntries()).toEqual(history);
+    expect(commit).not.toHaveBeenCalled();
   });
 
   it("retains B's pre-write baseline across budget-driven synthetic continuation", async () => {
-    // Given B has two steps and only one tool fits each execution turn.
-    const { session, run, events, config } = await afterRequestA();
-    session.updateConfig({ ...config, agentMode: "chat", maxToolCalls: 1 });
-    // When the first step applies a change and a synthetic continuation adopts new promises.
-    await run([
+    // B's first item consumes the writer budget, with another item still open.
+    const { session, run, events, reviews, config, commit } = await afterRequestA();
+    const authored = structuredClone(store.getCurrent());
+    const history = getMapEditHistoryEntries();
+    commit.mockClear();
+    session.updateConfig({ ...config, agentMode: "chat", maxToolCalls: 4 });
+    const result = await run([
       [plan(undefined, twoStepItems)],
       [rename(room.mapId, "Changed in first step")],
       [{ name: "complete_work_item", args: {} }],
+      [{ name: "get_project_summary", args: {} }],
       [plan([
         { id: "keep-room", title: "Keep room", criteria: [{ kind: "preserve", target: room }] },
         { id: "changed-room", title: "Changed room", criteria: [{ kind: "targetChange", target: room }] },
-      ], twoStepItems)],
-      [skip],
+      ], twoStepItems), skip],
     ]);
-    // Then the applied milestone and continuation cannot turn changed content into a baseline.
-    expect(events.some(event => event.type === "milestone_applied")).toBe(true);
-    expect(session.getAcceptanceSnapshot()?.items.slice(2)).toMatchObject([
+    // One continuation adopts the late promise; another retries the rejected review.
+    expect(result.recap?.process.filter(step => step.kind === "continue")).toHaveLength(2);
+    expect(reviews.at(-1)?.acceptance).toMatchObject({ items: [
+      { id: "created" }, { id: "original-change" },
       { id: "keep-room", evidence: [{ passed: false }] }, { id: "changed-room", status: "verified" },
-    ]);
+    ] });
+    expect(result.review?.status).toBe("changes_requested");
+    expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
+    expect(result.appliedCalls ?? []).toEqual([]);
+    expect(events.some(event => event.type === "milestone_applied")).toBe(false);
+    expect(store.getCurrent()).toEqual(authored);
+    expect(getMapEditHistoryEntries()).toEqual(history);
+    expect(commit).not.toHaveBeenCalled();
   });
 
-  it("retains B's baseline when a manual continuation repairs and replans after application", async () => {
-    // Given B's missing-criteria promise is adopted before a real write is applied.
-    const { session, run, declareIntent } = await afterRequestA();
+  it("retains B's baseline when a manual continuation repairs and replans an unapplied draft", async () => {
+    // Missing criteria must block application, not become a new baseline on repair.
+    const { session, run, declareIntent, reviews, commit } = await afterRequestA();
+    const authored = structuredClone(store.getCurrent());
+    const history = getMapEditHistoryEntries();
+    commit.mockClear();
     await run([[plan([{ id: "repair", title: "Original repair", criteria: null }]), rename(room.mapId, "B changed room"), skip]]);
     declareIntent.mockImplementation(fixedDeclarer({ mode: "modify", targetMapId: room.mapId, source: "continuation" }));
     // When a continuation repairs the old promise and adds a new one without new writes.
-    await run([
+    const result = await run([
       [plan([
         { id: "repair", title: "Replacement", criteria: [{ kind: "eventCount", target: room, count: 0 }] },
         { id: "changed-room", title: "Changed room", criteria: [{ kind: "targetChange", target: room }] },
@@ -161,9 +190,16 @@ describe("per-request acceptance baselines", () => {
       [{ name: "repair_acceptance", args: { itemId: "repair", criteria: [{ kind: "preserve", target: room }] } }, skip],
     ]);
     // Then repair and duplicate IDs retain the old baseline; new continuation promises use B's too.
-    expect(session.getAcceptanceSnapshot()?.items.slice(2)).toMatchObject([
+    expect(reviews.at(-1)?.acceptance).toMatchObject({ items: [
+      { id: "created" }, { id: "original-change" },
       { id: "repair", title: "Original repair", evidence: [{ passed: false }] },
       { id: "changed-room", status: "verified" },
-    ]);
+    ] });
+    expect(result.review?.status).toBe("changes_requested");
+    expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
+    expect(result.appliedCalls ?? []).toEqual([]);
+    expect(store.getCurrent()).toEqual(authored);
+    expect(getMapEditHistoryEntries()).toEqual(history);
+    expect(commit).not.toHaveBeenCalled();
   });
 });
