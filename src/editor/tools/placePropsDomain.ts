@@ -114,8 +114,8 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
     ? denseCells(input.area)
     : poissonScatter(
       { x: input.area.x, y: input.area.y, width: input.area.w, height: input.area.h },
-      input.count,
-      minGap,
+      input.area.w * input.area.h,
+      0,
       rngForTool(args, signature),
     ).points;
   const declared = tileset.tileMeta?.[tileId]?.defaultLayer;
@@ -134,6 +134,7 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
     );
   }
   let placed = 0;
+  const placedCells: { readonly x: number; readonly y: number }[] = [];
   for (const cell of targets) {
     if (placed >= input.count) break;
     if (!inMapBounds(map, cell.x, cell.y)) continue;
@@ -144,8 +145,10 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
     if (protectedCells.has(`${cell.x},${cell.y}`)) continue;
     // Ungrouped tree bases still acquire a canopy one row north during repair.
     if (isTreeTrunkTileId(tileId) && protectedCells.has(`${cell.x},${cell.y - 1}`)) continue;
+    if (minGap > 0 && placedCells.some((other) => (cell.x - other.x) ** 2 + (cell.y - other.y) ** 2 < minGap ** 2)) continue;
     if (home === "upper") setUpper(map, cell.x, cell.y, tileId);
     else setLower(map, cell.x, cell.y, tileId);
+    if (minGap > 0) placedCells.push(cell);
     placed += 1;
   }
   if (placed === 0) {

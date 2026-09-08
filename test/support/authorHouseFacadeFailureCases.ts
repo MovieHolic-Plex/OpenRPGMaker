@@ -18,7 +18,7 @@ export function registerAuthorHouseFailureCases(): void {
     },
     {
       label: "invalid wing",
-      request: { ...exteriorSingle, wings: [{ x: 3, y: 3, w: 2, h: 6 }] },
+      request: { ...exteriorSingle, wings: [{ x: 3, y: 3, w: 2.5, h: 6 }] },
       issueCode: "invalid-args",
     },
     {
@@ -124,7 +124,7 @@ export function registerAuthorHouseFailureCases(): void {
     expect(projectHash(ctx.project)).toBe(before);
   });
 
-  it("rolls back a zero-placement yard shortfall", () => {
+  it("rolls back an incomplete yard even when door clearance leaves one free cell", () => {
     const ctx = { project: preparedProject() };
     const map = ctx.project.maps.m1;
     if (map === undefined) throw new Error("fixture map missing");

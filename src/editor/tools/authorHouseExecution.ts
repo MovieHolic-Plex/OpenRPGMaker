@@ -259,6 +259,7 @@ function requestedCount(request: AuthorHouseRequest): number {
 function constructionDiff(diff: ChangeSummary): ConstructionDiffTotals {
   return {
     tilesChanged: diff.tilesChanged,
+    mapPropertiesChanged: diff.mapPropertiesChanged,
     eventsAdded: diff.eventsAdded,
     eventsModified: diff.eventsModified,
     eventsRemoved: diff.eventsRemoved,
