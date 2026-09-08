@@ -1,0 +1,74 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiConversationHistoryModal.test.ts test/aiStickyChecklist.test.ts test/aiChatSessionScope.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-map-ai-history-review-fix
+
+ ✓ test/aiConversationHistoryModal.test.ts (25 tests) 435ms
+ ✓ test/aiChatSessionScope.test.ts (18 tests) 10310ms
+   ✓ 대화 저장 범위 > Given local sessions across reloads When the project shape is unchanged Then the scope is stable  600ms
+   ✓ 새 대화 진입점 > Given an in-flight turn with a queued send When 새 대화 is clicked Then the outgoing turn cannot contaminate or replay into the new chat  2895ms
+   ✓ 프로젝트 전환 > Given an open conversation When the project identity changes Then the chat resets and the old chat keeps its own scope  374ms
+   ✓ 프로젝트 전환 > Given an in-flight turn When the project identity changes Then it can only persist to its captured scope  1232ms
+   ✓ 프로젝트 전환 > Given the new project has its own saved conversation When the identity changes Then it is resumed instead of blanked  573ms
+   ✓ 턴 상황 스냅샷 > Given a turn on a map When it is recorded Then the audit entry carries map, viewport and selection  695ms
+   ✓ 턴 상황 스냅샷 > Given the user moves to another map When the next turn runs Then the transition is recorded and the system prompt follows  1068ms
+   ✓ 턴 상황 스냅샷 > Given the same map across turns When turns run Then no transition noise is recorded  934ms
+ ❯ test/aiStickyChecklist.test.ts (34 tests | 1 failed) 14767ms
+   ✓ renders acceptance outside chat and retains verified evidence after the turn  1490ms
+   ✓ preserves disclosure and focused navigation while backend status and evidence change 219ms
+   ✓ projects pending without a mutable checkbox 179ms
+   ✓ projects working without a mutable checkbox 143ms
+   ✓ projects verifying without a mutable checkbox 116ms
+   ✓ projects verified without a mutable checkbox 166ms
+   ✓ projects blocked without a mutable checkbox 141ms
+   ✓ defaults to compact with compact media match=false 150ms
+   ✓ defaults to compact with compact media match=true 118ms
+   ✓ preserves a manual expansion through tight viewport changes and clears on disposal 83ms
+   ✓ navigates through the actual map and camera event seam 163ms
+   ✓ disables navigation for a deleted map without inventing a destination 125ms
+   ✓ ignores late acceptance events after the real new-chat boundary  1012ms
+   ✓ refreshes backend acceptance on a store mutation without manufacturing verification  1183ms
+   ✓ retains the backend blocked snapshot when the actual abort button ends a held turn  913ms
+   ✓ hides without discarding live updates and reopens the latest backend evidence 219ms
+   ✓ does not reopen retired acceptance after clear 114ms
+   ✓ does not reopen retired acceptance after dispose 143ms
+   ✓ exposes a blocked reason with item details closed and keeps source and evidence inside 198ms
+   ✓ folds verified rows separately and retains disclosure and focus when a row becomes active again 152ms
+   ✓ returns collapsed detail focus to the toggle without stealing native navigation keys 187ms
+   ✓ ends captured checklist drag on pointercancel 117ms
+   ✓ ends captured checklist drag on lostpointercapture 129ms
+   ✓ ends captured checklist drag on hide 261ms
+   ✓ ends captured checklist drag on clear  314ms
+   ✓ ends captured checklist drag on dispose 126ms
+   ✓ reopens hidden fresh acceptance through the actual header AI menu  1091ms
+   ✓ reopens hidden fresh acceptance through the actual composer AI menu  1105ms
+   ✓ orders active required work first and keeps compact activity live even while hidden 119ms
+   ✓ clamps a primary captured drag and resets position, disclosure and hiding on new acceptance 125ms
+   ✓ manual saved-history adoption retires outgoing live acceptance through real controls  1342ms
+   × manual saved-history adoption retires outgoing terminal acceptance through real controls 1197ms
+     → Missing rendered ai-history-open
+   ✓ rejects old live and terminal acceptance immediately after project retirement  823ms
+   ✓ rejects old live and terminal acceptance immediately after dispose retirement  800ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiStickyChecklist.test.ts > manual saved-history adoption retires outgoing terminal acceptance through real controls
+Error: Missing rendered ai-history-open
+ ❯ node test/aiStickyChecklist.test.ts:56:21
+     54| function node<T extends HTMLElement>(testid: string): T {
+     55|   const found = document.querySelector<T>(`[data-testid='${testid}']`);
+     56|   if (!found) throw new Error(`Missing rendered ${testid}`);
+       |                     ^
+     57|   return found;
+     58| }
+ ❯ test/aiStickyChecklist.test.ts:524:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 76 passed (77)
+   Start at  05:10:17
+   Duration  78.34s (transform 82.10s, setup 0ms, collect 125.85s, tests 25.51s, environment 604ms, prepare 808ms)

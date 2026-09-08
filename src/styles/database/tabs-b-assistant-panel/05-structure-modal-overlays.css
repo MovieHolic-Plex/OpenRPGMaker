@@ -200,7 +200,8 @@
 .ai-history-filter,
 .ai-history-map-option,
 .ai-history-recover,
-.ai-history-load-more {
+.ai-history-load-more,
+.ai-history-legacy-inspect {
   background: var(--control-bg);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-s);
@@ -219,7 +220,8 @@
 .ai-history-filter:focus-visible,
 .ai-history-map-option:focus-visible,
 .ai-history-recover:focus-visible,
-.ai-history-load-more:focus-visible {
+.ai-history-load-more:focus-visible,
+.ai-history-legacy-inspect:focus-visible {
   box-shadow: var(--focus-ring);
   outline: none;
 }
@@ -293,6 +295,35 @@
   align-items: stretch;
   display: flex;
   gap: var(--space-1);
+}
+.ai-history-legacy-card {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  display: grid;
+  flex: 1 1 auto;
+  gap: 2px;
+  min-width: 0;
+  padding: 6px 9px;
+  text-align: left;
+}
+.ai-history-legacy-inspect {
+  justify-self: start;
+}
+.ai-history-legacy-body {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.ai-history-legacy-turn {
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: keep-all;
 }
 .ai-history-open {
   background: var(--control-bg);

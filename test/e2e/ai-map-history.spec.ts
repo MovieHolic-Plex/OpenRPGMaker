@@ -14,9 +14,11 @@ import {
   expectFilterActive,
   historyRow,
   historySettled,
+  LEGACY,
   openHistory,
   seedExtraCurrentMapRows,
   seedMapsAndHistory,
+  seedUnscopedLegacy,
   selectHistoryFilter,
   selectKnownMapInHistory,
   selectMap,
@@ -211,5 +213,54 @@ test.describe("map-scoped AI conversation history", () => {
     await expect(historyRow(page, TITLES.foreign)).toBeHidden();
     await captureHistoryShot(page, "green-history-scrolled", { width: 1440, height: 900 });
     await captureHistoryShot(page, "green-history-scrolled", { width: 1024, height: 768 });
+  });
+
+  test("legacy unscoped view reads the retained transcript without adopting it", async ({ page }) => {
+    await bootEditor(page);
+    await seedMapsAndHistory(page);
+    await seedUnscopedLegacy(page);
+    await openHistory(page);
+    const mixed = historyRow(page, TITLES.mixed);
+    await expect(mixed).toBeVisible();
+    const closed = page.getByTestId("ai-history-modal").waitFor({ state: "hidden", timeout: 15_000 });
+    await mixed.getByTestId("ai-history-open").click();
+    await closed;
+    const conversationId = await page.getByTestId("ai-panel").getAttribute("data-ai-conversation-id");
+    expect(conversationId, "active conversation id must exist before legacy browse").toBeTruthy();
+    await openHistory(page);
+    await captureHistoryShot(page, "legacy-normal-current", { width: 1440, height: 900 });
+    await captureHistoryShot(page, "legacy-normal-current", { width: 1024, height: 768 });
+    await expect(historyRow(page, LEGACY.user)).toBeHidden();
+    await selectHistoryFilter(page, "ai-history-filter-legacy");
+    await expect(historyRow(page, LEGACY.user)).toBeVisible();
+    await expect(historyRow(page, TITLES.mixed)).toBeHidden();
+    await expect(page.getByTestId("ai-history-recover")).toBeHidden();
+    await expect(page.getByTestId("ai-history-open")).toHaveCount(0);
+    await expect(page.getByTestId("ai-history-delete")).toHaveCount(0);
+    await expect(historyRow(page, LEGACY.user)).toContainText(LEGACY.mapId);
+    await expect(historyRow(page, LEGACY.user)).not.toContainText(MAP_A_NAME);
+    await page.getByTestId("ai-history-legacy-inspect").click();
+    await historySettled(page);
+    const body = page.getByTestId("ai-history-legacy-body");
+    await expect(body).toBeVisible();
+    await expect(body).toContainText(LEGACY.user);
+    await expect(body).toContainText(LEGACY.assist);
+    await expect(page.getByTestId("ai-history-modal")).toBeVisible();
+    await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-ai-conversation-id", conversationId ?? "");
+    await captureHistoryShot(page, "legacy-view", { width: 1440, height: 900 });
+    await captureHistoryShot(page, "legacy-view", { width: 1024, height: 768 });
+  });
+
+  test("older deleted map remains selectable beyond 200 project records", async ({ page }) => {
+    await bootEditor(page);
+    await seedMapsAndHistory(page);
+    await seedExtraCurrentMapRows(page, 200);
+    await openHistory(page);
+    const gone = page.getByTestId("ai-history-modal").locator(`[data-map-id="${MAP_DELETED}"]`).first();
+    await expect(gone).toBeVisible();
+    await gone.click();
+    await historySettled(page);
+    await expect(historyRow(page, TITLES.deleted)).toBeVisible();
+    await expect(page.getByTestId("ai-history-open")).toHaveCount(1);
   });
 });
