@@ -79,6 +79,7 @@ export class FakeNode {
       this.childNodes.push(node);
     }
     notifyChildList(this, nodes, [], previousSibling, null);
+    this.childrenChanged(nodes.at(-1));
   }
 
   removeChild(child: FakeNode): FakeNode {
@@ -89,6 +90,7 @@ export class FakeNode {
     this.childNodes.splice(index, 1);
     child.parentNode = null;
     notifyChildList(this, [], [child], previousSibling, nextSibling);
+    this.childrenChanged();
   }
 
   insertBefore(child: FakeNode, reference: FakeNode | null): FakeNode {
@@ -99,6 +101,7 @@ export class FakeNode {
     this.childNodes.splice(index, 0, child);
     child.parentNode = this;
     notifyChildList(this, [child], [], this.childNodes[index - 1] ?? null, reference);
+    this.childrenChanged(child);
     return child;
   }
 
@@ -116,6 +119,7 @@ export class FakeNode {
     parent.childNodes.splice(index, 1, ...nodes);
     this.parentNode = null;
     notifyChildList(parent, nodes, [this], parent.childNodes[index - 1] ?? null, parent.childNodes[index + nodes.length] ?? null);
+    parent.childrenChanged(nodes.at(-1));
   }
 
   prepend(...children: FakeNode[]): void {
@@ -126,6 +130,7 @@ export class FakeNode {
       this.childNodes.unshift(child);
     }
     notifyChildList(this, nodes, [], null, nextSibling);
+    this.childrenChanged(nodes.at(-1));
   }
 
   replaceChildren(...children: (FakeNode | string)[]): void {
@@ -137,6 +142,7 @@ export class FakeNode {
     for (const node of nodes) node.parentNode = this;
     this.childNodes.push(...nodes);
     notifyChildList(this, nodes, removed, null, null);
+    this.childrenChanged(nodes.at(-1));
   }
 
   protected childrenChanged(inserted?: FakeNode): void {
