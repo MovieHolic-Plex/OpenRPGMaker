@@ -6,6 +6,7 @@ import type { SpatialCompiledBinding, SpatialOccurrence } from "@/project/spatia
 import type { Project } from "@/project/types";
 import { compileObjects, objectPorts, placedObject } from "./compileObjects";
 import { compileSpaces } from "./compileSpaces";
+import { compilePlaces } from "./compilePlaces";
 import { compileObjectEvents, requireSpaceOwnership, spatialRasterDigest, validateRasterAccess } from "./compilerValidation";
 import { SpatialCompileError, type SpatialRasterProposal } from "./compilerTypes";
 import { parseCompileRequest } from "./compileRequest";
@@ -43,7 +44,10 @@ export function compileSpatialOccurrence(input: Project, value: unknown): Projec
       raster = compileSpaces(context);
       requireSpaceOwnership(context, raster);
       break;
-    case "place": case "region": case "world": throw new SpatialCompileError("kind", occurrence.id);
+    case "place":
+      if (request.target) throw new SpatialCompileError("target", occurrence.id);
+      return compilePlaces(context);
+    case "region": case "world": throw new SpatialCompileError("kind", occurrence.id);
     default: return assertNever(occurrence);
   }
   const members = new Set([occurrence.id, ...raster.objects.map(object => object.occurrence.id), ...raster.omitted]);

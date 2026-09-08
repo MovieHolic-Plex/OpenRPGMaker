@@ -1,4 +1,4 @@
-# Object and space compilation
+# Object, space and nested place compilation
 
 `compileSpatialOccurrence(project, { occurrenceId, target? })` returns a detached,
 fully project-validated `Project`. It does not access store, history, remote state,
@@ -39,13 +39,47 @@ or the editor canvas. Acceptance remains a separate operation.
 - Missing mandatory objects/entries/ports return no partial proposal. Optional
   unplaced objects retain their occurrence but have no binding. A named port is
   mandatory even on an optional object.
-- Place/region/world compilation, explicit connections and transfer chips belong
-  to subsequent connection-compiler work. This entry rejects them rather than
-  creating a fake self-transfer. Non-transfer chip events reuse the existing
-  event builder and may not silently relocate their anchor.
+- Place compilation walks actual associated children, not live or frozen slot
+  quantities. Facility, settlement and natural places use the same containment
+  traversal. Navigation cycles do not enter that traversal.
+- Outdoor spaces and frozen exteriors share a canvas only when atlas and level
+  agree. Child x/y/level accumulate below the requested root's local origin;
+  negative canvas extents receive one common translation. Interior children keep
+  distinct maps with the existing floor/shell adapter's local coordinates. Frozen
+  exterior cells come from snapshot resolution's house/section adapter, never a
+  new random house or a live kit lookup. An exterior cannot invent ground for an
+  authored blocked landing.
+- Spaces/exteriors own exclusive raster rectangles and their generated events.
+  Containers and object children project coordinates without owning pixels.
+  Place ports resolve through persisted local-port associations to an exact
+  passable, reachable outdoor cell on their declared plane; ambiguous surfaces
+  reject. Different-map interiors connect only through explicit named ports.
+- Explicit connections emit deterministic house-step events and mapConnections
+  in the requested direction(s). Transfer chips require a declared connection;
+  containment never emits a transfer. Every emitting endpoint must have a raster
+  owner in the requested subtree; a destination can already be compiled outside
+  it. Use the encompassing place when both source owners need recompilation.
+- Place recompilation checks all owned digests before releasing any pixels or
+  events. Unmanaged maps, events, mapConnections, metadata and existing tree
+  placement survive. Missing/edited owned transfer projections reject. Map-tree
+  hierarchy uses real maps, because ordinary serializer reload does not retain
+  folder metadata. Repeated compilation after serialize/deserialize is stable.
+- Automatic object slots retain the established 0,0 unplaced convention. Actual
+  nonzero object coordinates override it; fixed slots always use actual x/y.
+  Regions/worlds remain unsupported. No schema, persistence or store hook changes
+  are part of this compiler.
 
 Numeric QA: `bun run scripts/qa/spatial-compile.mts --scenario spaces --seeds 7,19,31`.
 It saves actual `GameMap` JSON, ownership/port contracts and access/rejection
 receipts under `output/evidence/tile-to-world/task-8/backend-v2/`. These maps are
 regression fixtures, not published content. No image generation or inspection is
-part of this backend. Whole task8 still needs separate Grok 4.6 rendered approval.
+part of this backend. Visual approval is a separate Grok 4.6 lane.
+
+Nested backend QA:
+`bun run scripts/qa/spatial-compile.mts --scenario nested-places --seeds 7,19,31`.
+The driver writes actual maps, complete proposals, exact ports, reconstructed
+walking routes checked with `canMove`, and executed interpreter transfer results.
+`--fault blocked-port --seeds 7` must exit 1 with `rejection.json` and no proposal.
+The interpreter receipt is not a browser/Phaser scene-load or visual receipt.
+The old deliberately RED output-contract script is archived under
+`.omo/evidence/task-9/backend-v2/historical/`, not active success tooling.

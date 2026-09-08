@@ -1,0 +1,60 @@
+import { compileSpatialOccurrence } from "../../src/editor/spatial/compileSpatialOccurrence";
+import { createHouseDoorStepEvent } from "../../src/editor/houseInteriors";
+import { spatialRasterDigest } from "../../src/editor/spatial/compilerValidation";
+import { isOwnedSpatialBinding } from "../../src/project/spatial/bindings";
+import { own } from "../../src/project/spatial/domain";
+import type { SpatialConnection, SpatialOccurrence } from "../../src/project/spatial/types";
+import type { MapConnection, Project } from "../../src/project/types";
+import { fixtureDocument } from "./spatialSpaceCompilerFixture";
+import { placeChild, placeCompilerFixture, placeRoot, stairFloors, withStairConnections } from "./spatialPlaceCompilerFixture";
+
+/** Output-contract witness, NOT a place compiler or an accepted project.
+ * The existing compiler creates each actual space. Only the proposed event/binding
+ * relationship under test is assembled here, to isolate the schema prerequisite.
+ */
+export function projectedStairOutput(seed = 7) {
+  const input = placeCompilerFixture(seed);
+  let rasterProject = compileSpatialOccurrence(input, { occurrenceId: placeChild(input, placeRoot, "square") });
+  for (const floor of stairFloors(input)) rasterProject = compileSpatialOccurrence(rasterProject, { occurrenceId: floor.roomId });
+  const connected = withStairConnections(rasterProject);
+  const document = fixtureDocument(connected);
+  const mapConnections: MapConnection[] = [];
+  const project: Project = { ...connected, maps: structuredClone(connected.maps), mapConnections };
+  const occurrences: Record<string, SpatialOccurrence> = { ...document.occurrences };
+  const ports = document.connections.flatMap(link => [link.from, link.to]).map(endpoint => {
+    const occurrence = own(document.occurrences, endpoint.occurrenceId);
+    const binding = occurrence.bindings.find(binding => binding.ports.some(port => port.portId === endpoint.portId));
+    const port = binding?.ports.find(port => port.portId === endpoint.portId);
+    if (!binding || !port) throw new TypeError("Missing actual compiled fixture port");
+    return { ...endpoint, mapId: binding.mapId, x: port.x, y: port.y, ownerId: occurrence.parentId };
+  });
+  const routes = document.connections.flatMap(link => {
+    const directions: readonly (readonly [SpatialConnection["from"], SpatialConnection["to"]])[] = [[link.from, link.to], [link.to, link.from]];
+    return directions.map(([source, destination]) => {
+      const from = ports.find(port => port.portId === source.portId);
+      const to = ports.find(port => port.portId === destination.portId);
+      if (!from || !to || !from.ownerId) throw new TypeError("Missing actual compiled fixture endpoint");
+      const eventId = `transfer:${source.occurrenceId.length}:${source.occurrenceId}:${source.portId}`;
+      const event = createHouseDoorStepEvent({ eventId, x: from.x, y: from.y,
+        interiorMapId: to.mapId, entryX: to.x, entryY: to.y });
+      const map = own(project.maps, from.mapId);
+      map.events.push(event);
+      const owner = own(occurrences, from.ownerId);
+      occurrences[owner.id] = { ...owner, bindings: owner.bindings.map(binding => {
+        if (!isOwnedSpatialBinding(binding) || binding.mapId !== map.id) return binding;
+        const extent = { ...binding, eventIds: [...binding.eventIds, eventId], connectionIds: [...binding.connectionIds, link.id] };
+        return { ...extent, contentDigest: spatialRasterDigest(map, extent) };
+      }) };
+      mapConnections.push({ id: eventId, from: { mapId: from.mapId, x: from.x, y: from.y },
+        to: { mapId: to.mapId, x: to.x, y: to.y }, playerEnabled: true, npcEnabled: true });
+      return { connectionId: link.id, from, to, eventId, commands: event.pages?.flatMap(page => page.commands) ?? event.commands };
+    });
+  });
+  const proposal: Project = { ...project, spatialAuthoring: { ...document, occurrences } };
+  // Control changes only connection bookkeeping, not maps/events/ports/ownership extents.
+  const control: Project = { ...proposal, spatialAuthoring: { ...document, occurrences: Object.fromEntries(
+    Object.values(occurrences).map(occurrence => [occurrence.id, { ...occurrence, bindings: occurrence.bindings.map(binding =>
+      isOwnedSpatialBinding(binding) ? { ...binding, connectionIds: [] } : binding) }]),
+  ) } };
+  return { input, rasterProject, proposal, control, ports, routes };
+}

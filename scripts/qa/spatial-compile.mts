@@ -13,15 +13,21 @@ import { fixtureDocument, spaceCompilerFixture, objectStampFixture, reinstantiat
 import { outdoorShapeFixture } from "../../test/support/spatialOutdoorShapeFixture";
 import { inspectOutdoorShape } from "../../test/support/spatialOutdoorAssertions";
 
-const { values } = parseArgs({ options: { scenario: { type: "string" }, seeds: { type: "string" }, evidence: { type: "string" } }, strict: true });
-assert.equal(values.scenario, "spaces");
+const { values } = parseArgs({ options: { scenario: { type: "string" }, seeds: { type: "string" }, evidence: { type: "string" }, fault: { type: "string" } }, strict: true });
+assert.ok(values.scenario === "spaces" || values.scenario === "nested-places");
 assert.ok(typeof values.seeds === "string" && /^\d+(,\d+)*$/.test(values.seeds));
 const seeds = values.seeds.split(",").map(value => {
   const seed = Number(value);
   assert.ok(Number.isSafeInteger(seed) && seed >= 0 && seed <= 2147483647);
   return seed;
 });
-const directory = resolve(values.evidence ?? "output/evidence/tile-to-world/task-8/backend-v3");
+const directory = resolve(values.evidence ?? (values.scenario === "nested-places"
+  ? "output/evidence/tile-to-world/task-9/backend-v2" : "output/evidence/tile-to-world/task-8/backend-v3"));
+if (values.scenario === "nested-places") {
+  const { runNestedPlaces } = await import("./spatial-nested-places.mts");
+  await runNestedPlaces(seeds, directory, values.fault);
+} else {
+assert.equal(values.fault, undefined);
 await mkdir(`${directory}/maps`, { recursive: true });
 await mkdir(`${directory}/contract`, { recursive: true });
 const sha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
@@ -127,3 +133,4 @@ const report = { scenario: values.scenario, sourceSHA: sha, compilerImplemented:
   renderer: { requiredModel: "xai/grok-4.6", status: "separate approval outstanding" }, seeds, receipts, rejections };
 await writeFile(`${directory}/accessibility.json`, `${JSON.stringify(report, null, 2)}\n`);
 console.log(JSON.stringify(report, null, 2));
+}

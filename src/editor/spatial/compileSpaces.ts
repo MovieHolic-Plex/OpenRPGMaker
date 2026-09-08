@@ -31,7 +31,9 @@ export function compileSpaces(context: SpatialCompileContext): SpatialRasterProp
       if (id !== child.id) throw new SpatialCompileError("kind", child.id);
       const frozen = frozenObject(child);
       if (frozen.raster.tilesetId !== map.tilesetId) throw new SpatialCompileError("atlas", child.id);
-      return { slot, child, ...frozen };
+      // Nonzero actual coordinates override an auto slot's unplaced 0,0 placeholder.
+      const placement = child.x !== 0 || child.y !== 0 ? { mode: "fixed" as const, x: child.x, y: child.y } : slot.placement;
+      return { slot: { ...slot, placement }, child, ...frozen };
     }));
   const objects: CompiledObject[] = [];
   const omitted: SpatialId[] = [];

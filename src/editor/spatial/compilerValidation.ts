@@ -1,7 +1,7 @@
 import { isPassableLanding } from "@/project/collision";
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
 import { isOwnedSpatialBinding } from "@/project/spatial/bindings";
-import type { SpatialCompiledBinding } from "@/project/spatial/types";
+import type { SpatialCompiledBinding, SpatialId } from "@/project/spatial/types";
 import type { GameMap, Project } from "@/project/types";
 import { sha256HexTextSync } from "@/util/sha256";
 import { buildConceptEvents } from "../interiorConceptEvents";
@@ -58,11 +58,14 @@ export function validateRasterAccess(project: Project, raster: SpatialRasterProp
 }
 
 /** Existing chip backend, one concrete object per call for identity independent of repetition gaps. */
-export function compileObjectEvents(raster: SpatialRasterProposal): void {
+export function compileObjectEvents(raster: SpatialRasterProposal, connectedObjects: ReadonlySet<SpatialId> = new Set()): void {
   for (const object of raster.objects) {
     const { placement } = object;
-    if (placement.chips.includes("transfer")) throw new SpatialCompileError("connection", `${object.occurrence.id}: transfer requires the connection compiler`);
-    const result = buildConceptEvents(raster.map, [placement], { door: raster.entry });
+    if (placement.chips.includes("transfer") && !connectedObjects.has(object.occurrence.id)) {
+      throw new SpatialCompileError("connection", `${object.occurrence.id}: transfer requires the connection compiler`);
+    }
+    // Declared transfers are emitted only by the exact-port connection compiler.
+    const result = buildConceptEvents(raster.map, [{ ...placement, chips: placement.chips.filter(chip => chip !== "transfer") }], { door: raster.entry });
     if (result.warnings.length) throw new SpatialCompileError("required", object.occurrence.id);
     for (const event of result.events) {
       if (event.x !== placement.anchor.x || event.y !== placement.anchor.y) throw new SpatialCompileError("blocked", `${object.occurrence.id}: event anchor occupied`);
