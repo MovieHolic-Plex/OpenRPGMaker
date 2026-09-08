@@ -3,8 +3,22 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 repo=$PWD
-mkdir -p "$repo/output/evidence/tile-to-world/task-30"
-evidence=$(mktemp -d "$repo/output/evidence/tile-to-world/task-30/run.XXXXXX")
+task=task-30
+if [[ "${1:-}" == task20 ]]; then
+  task=task-20
+  # Never inherit application credentials, proxy mode, or libpq connection defaults.
+  for key in ${!VITE_SUPABASE_@} ${!SUPABASE_@} ${!PG@}; do unset "$key"; done
+  # flock's supervising process owns the lock. Detached postgres must not inherit
+  # its descriptor and retain the lock after an interrupted launcher has exited.
+  for descriptor in /proc/$$/fd/*; do
+    if [[ "$(readlink "$descriptor")" == /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock ]]; then
+      fd=${descriptor##*/}
+      exec {fd}<&-
+    fi
+  done
+fi
+mkdir -p "$repo/output/evidence/tile-to-world/$task"
+evidence=$(mktemp -d "$repo/output/evidence/tile-to-world/$task/run.XXXXXX")
 printf 'Evidence: %s\n' "$evidence"
 export LC_ALL=C
 owned=$(mktemp -d /tmp/spatial-sql-st_01a07acd.XXXXXX)
@@ -49,6 +63,29 @@ for migration in supabase/migrations/2026*.sql; do
   esac
   psql "$SPATIAL_TEST_DATABASE_URL" -X -v ON_ERROR_STOP=1 -f "$migration" >> "$evidence/bootstrap.log" 2>&1
 done
+if [[ "${1:-}" == task20 ]]; then
+  read -r server_pid < "$owned/data/postmaster.pid"
+  for descriptor in /proc/"$server_pid"/fd/*; do
+    target=$(readlink "$descriptor")
+    printf '%s %s\n' "$descriptor" "$target" >> "$evidence/lock-inheritance.log"
+    [[ "$target" != /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock ]]
+  done
+  psql "$SPATIAL_TEST_DATABASE_URL" -X -v ON_ERROR_STOP=1 -f supabase/migrations/20260907000000_spatial_authoring_cas.sql > "$evidence/migration.log" 2>&1
+  psql "$SPATIAL_TEST_DATABASE_URL" -X -v ON_ERROR_STOP=1 >> "$evidence/bootstrap.log" <<'SQL'
+CREATE FUNCTION rpg_zzu.task20_session() RETURNS jsonb LANGUAGE sql SECURITY INVOKER AS $$
+ SELECT jsonb_build_object('pid',pg_backend_pid(),'caller',current_user,'session',session_user,
+   'writerMember',pg_has_role(current_user,'spatial_project_writer','MEMBER'))
+$$;
+GRANT EXECUTE ON FUNCTION rpg_zzu.task20_session() TO anon;
+SQL
+  export SPATIAL_TEST_EVIDENCE="$evidence"
+  git diff --exit-code -- src supabase > "$evidence/product-source-diff.log"
+  git rev-parse HEAD HEAD:src HEAD:supabase/migrations > "$evidence/source-trees.txt"
+  sha256sum scripts/qa/spatial-{db-*,http-*,postgrest.mts,persistence.mts,migration.mts,sql-local.sh,sql-lock-wait.mts} src/project/spatial/{persistence,persistenceHttp,saveRouting}.ts src/project/{store,supabaseProjectSync}.ts supabase/migrations/20260907000000_spatial_authoring_cas.sql > "$evidence/source-sha256.txt"
+  bun build scripts/qa/spatial-db-proof.mts --target bun --outdir "$owned/build" > "$evidence/build.log" 2>&1
+  bun scripts/qa/spatial-db-proof.mts "${2:-all}"
+  exit 0
+fi
 set +e
 psql "$SPATIAL_TEST_DATABASE_URL" -X -v ON_ERROR_STOP=1 -v red=1 -f test/integration/spatial-publication.sql > "$evidence/schema-red.log" 2>&1
 red=$?

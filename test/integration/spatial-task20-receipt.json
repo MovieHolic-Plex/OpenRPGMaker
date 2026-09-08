@@ -1,0 +1,90 @@
+{
+  "task": 20,
+  "taskId": "st_01a081db",
+  "result": "local Q7-Q9 persistence boundaries verified; separate audit defect reported",
+  "deploymentProven": false,
+  "sourceHead": "c9739691fcb0ff078f54ac1ba2777e681f5c74ab",
+  "unchangedSourceTree": "aa62be36d997a07cfa0360693b797f69945834c8",
+  "unchangedMigrationTree": "117699794d51102932d91441203deff763a3be59",
+  "sourceSHA256": {
+    "src/project/spatial/persistence.ts": "109790bd8e0b08e35336650e15a5a01f57ba07e7cc2386be7270aa53aa98b198",
+    "src/project/spatial/persistenceHttp.ts": "37a7179be231c8543eb38c1ccb3cc965a01b5104f526aa216ac8d93def727407",
+    "src/project/spatial/saveRouting.ts": "2b52f017773687073d93fd6bb1852f433e059ad17c868ab2bbdc1834a1fb2389",
+    "src/project/store.ts": "3240176c3e862ce5aeb319596eeb04c2163f9825c2d423f1dbd7150e2b3a7fd3",
+    "src/project/supabaseProjectSync.ts": "d05c4805bbaecbcaccae776b68dbae56d8c35c19ce974e66ecb97b8bc706d57e",
+    "supabase/migrations/20260907000000_spatial_authoring_cas.sql": "70ce773972d6bc42b2acd39d4c6655f41101dbb91cac1f4dcd3bf1ab1f9ae93b"
+  },
+  "evidenceRoot": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-persistence-races/output/evidence/tile-to-world/task-20",
+  "artifactIndex": {
+    "path": "raw-artifact-sha256.txt",
+    "files": 151,
+    "sha256": "ee6701ced432a2125bffaf93d3eef59061d9736b9a83fc4986119918e45968b1"
+  },
+  "sourceIndex": {
+    "path": "current-source-sha256.txt",
+    "sha256": "11c6bb49dd2d13a3d0eeb99708d91f102326c8f05e5b65d7c1d286e841d58fd8"
+  },
+  "verification": {
+    "diagnostics": "No diagnostics on all 12 changed/new MTS files; bash -n passed",
+    "unitCommand": "bun test scripts/qa/spatial-db-proof.test.mts scripts/qa/spatial-sql-lock-wait.test.mts",
+    "unitResult": { "passed": 10, "failed": 0, "runs": 1, "log": "final-monitor.log" },
+    "noExcuseChecker": { "files": 10, "violations": 0, "log": "q7-final-monitor.log" },
+    "build": "Focused Bun bundle: 323 modules, exit 0; product builds reused because product tree is unchanged",
+    "Q7": { "monitor": "mon_Y6BKT0MKFQ25MVA7", "exit": 0, "run": "run.fBmvC9", "log": "q7-final-monitor.log" },
+    "Q8": { "monitor": "mon_YVA0JXCSAKY2S6NN", "exit": 0, "run": "run.Up40U0", "log": "q8-final-monitor.log" },
+    "Q9": { "monitor": "mon_36RVR7DBWHJ0HN49", "exit": 0, "run": "run.BnkIUp", "log": "q9-final-monitor.log" }
+  },
+  "commands": {
+    "workingDirectory": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-persistence-races",
+    "monitor": "node /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/authoring-monitor.mjs",
+    "invocation": "flock -w 60 /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock env SPATIAL_TEST_POSTGREST_BIN=/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-persistence-races/output/evidence/tile-to-world/task-20/prerequisites/postgrest timeout 180 bash scripts/qa/spatial-sql-local.sh task20",
+    "separateScopeArguments": ["Q7", "Q8", "Q9"],
+    "literalInnerCommands": [
+      "bun scripts/qa/spatial-persistence.mts --project task20 --scenario stale-writers --evidence <run>/Q7",
+      "bun scripts/qa/spatial-persistence.mts --project task20 --scenario mirror-failure --evidence <run>/Q8",
+      "bun scripts/qa/spatial-migration.mts --scenario legacy-matrix --evidence <run>/Q9"
+    ],
+    "runtimeDifferenceFromPlan": "Bun replaces unavailable npx tsx; script names/scenarios/argument surfaces retained. Absolute expanded argv are in each monitor log."
+  },
+  "coverage": {
+    "safeSameQueryHttpLockRaces": ["stale store flush", "duplicate create", "legacy map first", "legacy root first", "activation first"],
+    "additionalMutantLockRace": "legacy map first accepts stale conversion only with baseline guard removed",
+    "guardRedGreen": ["loaded SHA", "spatial version", "marker removal", "mirror fence", "insert-only create", "pre-existing upsert", "effective raw baseline", "HTTP error rejection"],
+    "realActivationMatrix": ["missing", "empty", "custom", "collision"],
+    "dirtyStoreRetained": true,
+    "coherentCanonicalReloadAndPreviewData": true,
+    "unrelatedLegacyWrites": true,
+    "rawStatusHeadersBodies": true,
+    "sqlGuardDefinitionsRestoredExactly": true,
+    "httpGuardMutationOnlyInDisposableBundle": true,
+    "actualLocalRoles": "JWT anon -> authenticator session -> anon current_user; no spatial_project_writer membership"
+  },
+  "baselineReuse": {
+    "receipt": "/home/main/z-project/rpg-zzu-tile-to-world/output/evidence/tile-to-world/ParentFoundationAssetsSql.json",
+    "head": "74d2cfda0730557b3f7bbd84623e80a89898b8d0",
+    "exactBlobComparison": "No differences in CAS migration, SQL fixtures/assertions, psql race driver or lock subscription helper",
+    "priorSqlAssertions": 66,
+    "priorPsqlRaces": 5,
+    "recountedAsNewCoverage": false
+  },
+  "limitationsAndFailures": [
+    "Anon store audit POST /project_commits remains HTTP 401 / SQLSTATE 42501: product insertRows sends merge-duplicates although migration revoked anon UPDATE. No production code or grants changed; this is not counted green.",
+    "Headless edit-activity disk mirroring logs its unsupported relative dev-server URL. No dev server or browser was run.",
+    "The combined mon_2Z3FAAP3ZY4RJNVH run was interrupted during Q9 after unit/Q7/Q8 completion; it is not an overall pass. Final Q scopes passed separately without assertion changes or test deadline inflation.",
+    "Interrupted Postgres inherited the flock descriptor. One attempted monitored reacquisition timed out. Exact owned-cluster lightweight teardown released the inherited lock; no foreign process was touched. The harness now closes that descriptor and asserts non-inheritance.",
+    "A loopback byte recorder strips /rest/v1 and redacts only run-owned JWT/key header values; actual PostgREST supplies responses. Local JWT/ACL proof is not deployed Supabase gateway, credentials, RLS or migration deployment proof.",
+    "Q8 preview.json is data, not preview.png; browser/image work was explicitly excluded. Deployed Q7-pre remains task23."
+  ],
+  "cleanup": {
+    "finalClustersRemoved": ["/tmp/spatial-sql-st_01a07acd.2KJPnX", "/tmp/spatial-sql-st_01a07acd.ADvn7z", "/tmp/spatial-sql-st_01a07acd.9Q7f2n"],
+    "interruptedClusterRemoved": "/tmp/spatial-sql-st_01a07acd.9pIk7E",
+    "allTenCreatedClusterDirectoriesAbsent": true,
+    "allRecordedPostgrestPidsAbsent": true,
+    "rolesRemovedWithClusters": true,
+    "isolatedBundlesRemovedWithOwnedDirectories": true,
+    "downloadedBinaryArchiveDependencySymlinkAndJournalRemoved": true,
+    "finalCleanupReceipt": "cleanup-final.md",
+    "rawEvidenceRetained": true,
+    "productionOrForeignResourcesTouched": false
+  }
+}

@@ -196,7 +196,11 @@ for (const { name, input } of canonicalPreservation) {
   assert.equal(JSON.stringify(input), before);
   await writeFile(resolve(output, `${name}-preserved.json`), JSON.stringify(result.raw, null, 2));
 }
-const report = { scenario: "legacy-matrix", status: "passed", converterImplemented: true, canonicalPreservation: canonicalPreservation.map(({ name }) => name), laneSha: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(), remoteWrites: 0, reports, rejections, unverified: ["activation RPC and concurrent remote writers (separate persistence task)"] };
+if (process.env["SPATIAL_TEST_DATABASE_URL"]) {
+  const { activateMatrix } = await import("./spatial-db-q9.mts");
+  await activateMatrix(cases, output);
+}
+const report = { scenario: "legacy-matrix", status: "passed", converterImplemented: true, canonicalPreservation: canonicalPreservation.map(({ name }) => name), laneSha: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(), remoteWrites: 0, reports, rejections, unverified: process.env["SPATIAL_TEST_DATABASE_URL"] ? ["deployed authorization and browser pixels"] : ["activation RPC and concurrent remote writers (separate persistence task)"] };
 await writeFile(resolve(output, "conversion-diff.json"), `${JSON.stringify(report, null, 2)}\n`);
 console.log(JSON.stringify({ scenario: report.scenario, status: report.status, cases: reports.map(entry => ({ scenario: entry.scenario, inventory: entry.inventory })), rejections, evidence: output }));
 

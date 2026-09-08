@@ -710,6 +710,12 @@ Evidence expectations:
 - 배경/전경 층 순서를 만질 때는 `.ecp-message-window` 를 공유하는 문장 표시·선택지·문장
   표시 설정 미리보기도 같이 눈으로 확인한다.
 
+## Tile-to-world persistence concurrency (task20)
+
+- Real PostgREST/owned-PostgreSQL Q7-Q9, same-query lock barriers, guard-removal sensitivity, raw receipts and limitations: [`test/integration/spatial-persistence-races.md`](../test/integration/spatial-persistence-races.md).
+- Focused harness tests: `bun test scripts/qa/spatial-db-proof.test.mts scripts/qa/spatial-sql-lock-wait.test.mts`.
+- The anon append-only audit writer's observed 401/42501 remains a separately reported production defect; passing root persistence checks do not make that audit write successful.
+
 ## P2 spatial focused gate (2026-08-25)
 
 - Schema/legacy/roundtrip: `test/p2SpatialSchema.test.ts`.

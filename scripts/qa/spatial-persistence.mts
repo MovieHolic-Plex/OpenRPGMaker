@@ -22,8 +22,13 @@ assert(values.scenario === "transport" || values.scenario === "stale-writers" ||
 const evidence = resolve(values.evidence ?? "output/evidence/tile-to-world/task-6/transport");
 await mkdir(evidence, { recursive: true });
 const sourceSHA = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
-if (values.scenario !== "transport") {
-  assert.equal(values["local-only"], true, "Q7/Q8 are loopback-only: pass --local-only");
+if (process.env["SPATIAL_TEST_DATABASE_URL"]) {
+  assert.equal(values.project, "task20", "Owned DB scenarios reserve the task20 fixture namespace");
+  assert(values.scenario === "stale-writers" || values.scenario === "mirror-failure");
+  const { runDatabaseProof } = await import("./spatial-db-proof.mts");
+  await runDatabaseProof(values.scenario, evidence);
+} else if (values.scenario !== "transport") {
+  assert.equal(values["local-only"], true, "Fixture Q7/Q8 are loopback-only: pass --local-only; real DB mode requires the owned-cluster harness");
   switch (values.scenario) {
     case "stale-writers": case "mirror-failure":
       await runSpatialStoreScenario({ scenario: values.scenario, projectId: values.project ?? "transport-fixture", evidence, sourceSHA });
