@@ -145,15 +145,31 @@ interface EditorSession {
  * 상태 플래그가 아니라 DOM 부착 여부로 판정한다 — 백드롭 클릭·Escape 처럼
  * 우리 콜백을 거치지 않는 닫기 경로가 있어 플래그는 새기 쉽다.
  */
+export type StructureKitEditorAccess = {
+  read(): SectionStructureKitDef | undefined;
+  write(kit: SectionStructureKitDef): void;
+};
+
+let detachedKitAccess: StructureKitEditorAccess | null = null;
+
 export function isStructureKitEditorOpen(): boolean {
   if (typeof document === "undefined") return false;
   return document.querySelector(`[data-testid="${EDITOR_DIALOG_TESTID}"]`) !== null;
 }
 
-export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onClosed: () => void): void {
+export function openStructureKitEditor(
+  tilesetId: TilesetId,
+  kitId: string,
+  onClosed: () => void,
+  access?: StructureKitEditorAccess,
+): void {
+  detachedKitAccess = access ?? null;
   const tileset = store.getCurrent().tilesets[tilesetId];
   const kit = findKit(tilesetId, kitId);
-  if (!tileset || !kit) return;
+  if (!tileset || !kit) {
+    detachedKitAccess = null;
+    return;
+  }
 
   let overlay: Element | null = null;
   let closed = false;
@@ -168,6 +184,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
       unregisterModal(overlay);
       overlay.remove();
     }
+    detachedKitAccess = null;
     onClosed();
   };
 
@@ -213,7 +230,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
   const commitKit = (before: SectionStructureKitDef, next: SectionStructureKitDef): void => {
     if (next === before) return;
     pushHistory(before);
-    replaceStructureKit(session.tilesetId, next);
+    writeKit(session.tilesetId, next);
   };
 
   const canvasWrap = el("div", { class: "structure-kit-editor-canvas-wrap" });
@@ -362,7 +379,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     const current = session.requireKit();
     if (!current) return;
     future.push(current);
-    replaceStructureKit(session.tilesetId, previous);
+    writeKit(session.tilesetId, previous);
     redraw();
   }
 
@@ -372,7 +389,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     const current = session.requireKit();
     if (!current) return;
     past.push(current);
-    replaceStructureKit(session.tilesetId, next);
+    writeKit(session.tilesetId, next);
     redraw();
   }
 
@@ -389,7 +406,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     if (!current) return false;
     const tile = session.tool === "erase" ? TILE.EMPTY : session.tile;
     if (tileAt(current, cx, cy, session.layer) === tile) return false;
-    replaceStructureKit(session.tilesetId, paintCell(current, cx, cy, session.layer, tile));
+    writeKit(session.tilesetId, paintCell(current, cx, cy, session.layer, tile));
     return true;
   };
 
@@ -555,7 +572,8 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
       testid: "structure-kit-editor-close",
       action: () => {
         closed = true;
-        onClosed();
+        detachedKitAccess = null;
+    onClosed();
       },
     }],
   );
@@ -700,8 +718,17 @@ function resolveScale(kit: SectionStructureKitDef, session: EditorSession, wrap:
 }
 
 function findKit(tilesetId: TilesetId, kitId: string): SectionStructureKitDef | undefined {
+  if (detachedKitAccess) {
+    const kit = detachedKitAccess.read();
+    return kit?.kind === "section" ? kit : undefined;
+  }
   const kit = store.getCurrent().tilesets[tilesetId]?.structureKits?.find((candidate) => candidate.id === kitId);
   return kit?.kind === "section" ? kit : undefined;
+}
+
+function writeKit(tilesetId: TilesetId, kit: SectionStructureKitDef): void {
+  if (detachedKitAccess) detachedKitAccess.write(kit);
+  else replaceStructureKit(tilesetId, kit);
 }
 
 const AI_ROLES: readonly TileGroupRole[] = ["building", "castle", "fence", "roof", "terrain", "water", "wall", "prop"];

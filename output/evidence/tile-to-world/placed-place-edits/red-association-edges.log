@@ -1,0 +1,142 @@
+monitor_id=mon_BN960T5NFKX620JQ
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceAssociationEdges.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":" ❯ test/placedPlaceAssociationEdges.test.ts (2 tests | 2 failed) 4396ms"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"   × moves the actual override when the requested position equals its unchanged template 2385ms"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"     → expected { x: 8, y: 10, …(10) } to match object { x: 2, y: 3 }"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"(19 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"   × rejects an unrelated compile scope when a parent composition changes 2008ms"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"     → expected { kind: 'ok', value: { …(2) } } to match object { kind: 'error' }"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"(3 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":" FAIL  test/placedPlaceAssociationEdges.test.ts > moves the actual override when the requested position equals its unchanged template"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"AssertionError: expected { x: 8, y: 10, …(10) } to match object { x: 2, y: 3 }"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"(19 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"\u001b[2m  {\u001b[22m"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"\u001b[32m-   \"x\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"\u001b[32m-   \"y\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"\u001b[31m+   \"x\": 8,\u001b[39m"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"\u001b[31m+   \"y\": 10,\u001b[39m"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"\u001b[2m  }\u001b[22m"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":" ❯ test/placedPlaceAssociationEdges.test.ts:35:73"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"     33|     edit: { kind: \"move\", parentId: placeRoot, slot: { slotId: spatial…"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"     34|   // Then actual placement and the compiled surface move despite the u…"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"     35|   expect(own(fixtureDocument(preview.project).occurrences, f.squareId)…"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"       |                                                                         ^"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"     36|   expect(own(fixtureDocument(preview.project).occurrences, f.squareId)…"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"     37| });"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":" FAIL  test/placedPlaceAssociationEdges.test.ts > rejects an unrelated compile scope when a parent composition changes"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"AssertionError: expected { kind: 'ok', value: { …(2) } } to match object { kind: 'error' }"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"(3 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"\u001b[2m  {\u001b[22m"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"\u001b[32m-   \"kind\": \"error\",\u001b[39m"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"\u001b[31m+   \"kind\": \"ok\",\u001b[39m"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"\u001b[2m  }\u001b[22m"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":" ❯ test/placedPlaceAssociationEdges.test.ts:47:18"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"     45|     edit: { kind: \"move\", parentId: placeRoot, slot: { slotId: spatial…"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"     46|   // Then no uncompiled geometry can be offered for adoption."}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"     47|   expect(result).toMatchObject({ kind: \"error\" });"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"       |                  ^"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"     48|   expect(f.draft.project).toEqual(before);"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"     49|   expect(store.getCurrent()).toEqual(before);"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"      Tests  2 failed (2)"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"   Start at  06:33:01"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":"   Duration  12.84s (transform 4.82s, setup 0ms, collect 6.94s, tests 4.40s, environment 1.04s, prepare 98ms)"}
+{"type":"line","id":"authoring-3458904","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3458904","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceAssociationEdges.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit
+
+ ❯ test/placedPlaceAssociationEdges.test.ts (2 tests | 2 failed) 4396ms
+   × moves the actual override when the requested position equals its unchanged template 2385ms
+     → expected { x: 8, y: 10, …(10) } to match object { x: 2, y: 3 }
+(19 matching properties omitted from actual)
+   × rejects an unrelated compile scope when a parent composition changes 2008ms
+     → expected { kind: 'ok', value: { …(2) } } to match object { kind: 'error' }
+(3 matching properties omitted from actual)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/placedPlaceAssociationEdges.test.ts > moves the actual override when the requested position equals its unchanged template
+AssertionError: expected { x: 8, y: 10, …(10) } to match object { x: 2, y: 3 }
+(19 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "x": 2,[39m
+[32m-   "y": 3,[39m
+[31m+   "x": 8,[39m
+[31m+   "y": 10,[39m
+[2m  }[22m
+
+ ❯ test/placedPlaceAssociationEdges.test.ts:35:73
+     33|     edit: { kind: "move", parentId: placeRoot, slot: { slotId: spatial…
+     34|   // Then actual placement and the compiled surface move despite the u…
+     35|   expect(own(fixtureDocument(preview.project).occurrences, f.squareId)…
+       |                                                                         ^
+     36|   expect(own(fixtureDocument(preview.project).occurrences, f.squareId)…
+     37| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/placedPlaceAssociationEdges.test.ts > rejects an unrelated compile scope when a parent composition changes
+AssertionError: expected { kind: 'ok', value: { …(2) } } to match object { kind: 'error' }
+(3 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "kind": "error",[39m
+[31m+   "kind": "ok",[39m
+[2m  }[22m
+
+ ❯ test/placedPlaceAssociationEdges.test.ts:47:18
+     45|     edit: { kind: "move", parentId: placeRoot, slot: { slotId: spatial…
+     46|   // Then no uncompiled geometry can be offered for adoption.
+     47|   expect(result).toMatchObject({ kind: "error" });
+       |                  ^
+     48|   expect(f.draft.project).toEqual(before);
+     49|   expect(store.getCurrent()).toEqual(before);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  06:33:01
+   Duration  12.84s (transform 4.82s, setup 0ms, collect 6.94s, tests 4.40s, environment 1.04s, prepare 98ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

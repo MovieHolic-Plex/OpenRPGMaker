@@ -1,0 +1,17 @@
+UI1 SHA256 dff1c8fc901c8350befaa5817cf7fab9c827ef24a35fb66d049377aa6c138383 test/spatialPlaceActions.test.ts
+UI1 SHA256 36079df50ad1a548919931bb0504b429d539534c5da8e45824e1494fe6083227 src/editor/spatial/authoringTypes.ts
+UI1 replay uses original test and direct authoringTypes contract; other dependencies, compiler and options are current. This is not a full historical-tree build.
+UI1-test-and-contract: 4 diagnostics
+test/spatialPlaceActions.test.ts(353,25): error TS2339: Property 'operation' does not exist on type 'never'.
+test/spatialPlaceActions.test.ts(354,25): error TS2339: Property 'compile' does not exist on type 'never'.
+test/spatialPlaceActions.test.ts(360,25): error TS2339: Property 'operation' does not exist on type 'never'.
+test/spatialPlaceActions.test.ts(367,25): error TS2339: Property 'operation' does not exist on type 'never'.
+
+current: 4 diagnostics
+test/spatialPlaceActions.test.ts(354,25): error TS2339: Property 'operation' does not exist on type 'never'.
+test/spatialPlaceActions.test.ts(355,25): error TS2339: Property 'compile' does not exist on type 'never'.
+test/spatialPlaceActions.test.ts(361,25): error TS2339: Property 'operation' does not exist on type 'never'.
+test/spatialPlaceActions.test.ts(368,25): error TS2339: Property 'operation' does not exist on type 'never'.
+
+
+EXIT=1

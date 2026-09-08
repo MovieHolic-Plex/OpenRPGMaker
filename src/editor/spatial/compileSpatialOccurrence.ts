@@ -4,7 +4,7 @@ import { isOwnedSpatialBinding } from "@/project/spatial/bindings";
 import { assertNever, checkedDocument, own, requireOccurrenceAssociations } from "@/project/spatial/domain";
 import type { SpatialCompiledBinding, SpatialOccurrence } from "@/project/spatial/types";
 import type { Project } from "@/project/types";
-import { compileObjects, objectPorts, placedObject } from "./compileObjects";
+import { compileObjects, frozenObject, objectPorts, placedObject, stampFrozenObject } from "./compileObjects";
 import { compileSpaces } from "./compileSpaces";
 import { compilePlaces } from "./compilePlaces";
 import { compileRegions } from "./compileRegions";
@@ -18,7 +18,7 @@ export { SpatialCompileError } from "./compilerTypes";
 export type { SpatialCompileRequest } from "./compilerTypes";
 
 /** Pure proposal boundary: no store, history, browser, remote writes, or live design expansion. */
-export function compileSpatialOccurrence(input: Project, value: unknown): Project {
+export function compileSpatialOccurrence(input: Project, value: unknown, previousOccurrence?: SpatialOccurrence): Project {
   const request = parseCompileRequest(value);
   const project = deserialize(JSON.stringify(input));
   const document = checkedDocument(project.spatialAuthoring, project);
@@ -37,7 +37,22 @@ export function compileSpatialOccurrence(input: Project, value: unknown): Projec
           || previous.rect.x !== target.x || previous.rect.y !== target.y || previous.rect.width !== target.width || previous.rect.height !== target.height
           || spatialRasterDigest(map, previous) !== previous.contentDigest) throw new SpatialCompileError("ownership", occurrence.id);
         const object = placedObject(occurrence, target, true);
-        map.events = map.events.filter(event => !previous.eventIds.includes(event.id));
+        if (frozenObject(occurrence).raster.tilesetId !== map.tilesetId) throw new SpatialCompileError("atlas", occurrence.id);
+        if (previousOccurrence) {
+          const oldBinding = previousOccurrence.bindings[0];
+          if (previousOccurrence.id !== occurrence.id || previousOccurrence.bindings.length !== 1 || !oldBinding
+            || !isOwnedSpatialBinding(oldBinding) || oldBinding.mapId !== previous.mapId
+            || oldBinding.rect.x !== target.x || oldBinding.rect.y !== target.y
+            || oldBinding.rect.width !== target.width || oldBinding.rect.height !== target.height
+            || JSON.stringify(oldBinding.eventIds) !== JSON.stringify(previous.eventIds)
+            || spatialRasterDigest(map, oldBinding) !== oldBinding.contentDigest) throw new SpatialCompileError("ownership", occurrence.id);
+          const oldObject = placedObject(requireOccurrenceAssociations(previousOccurrence), target, true);
+          map.events = map.events.filter(event => !previous.eventIds.includes(event.id));
+          stampFrozenObject({ project, map, area: target }, object, oldObject);
+        } else {
+          // Without a protected prior snapshot, validation permits only already-matching cells.
+          map.events = map.events.filter(event => !previous.eventIds.includes(event.id));
+        }
         raster = { map, entry: request.target.entry, rect: target, objects: [object], ports: objectPorts(object), omitted: [] };
       } else {
         raster = compileObjects(context, request.target);

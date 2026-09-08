@@ -1,0 +1,56 @@
+monitor_id=mon_HSTGNC9A50DHTQD1
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuildContinuation.test.ts test/spatialManualBuild.test.ts --maxWorkers=1"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":" ✓ test/spatialManualBuildContinuation.test.ts (4 tests) 7432ms"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"   ✓ builds the same allocated root when source correction follows a failed compile  1255ms"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"   ✓ freezes the issued request when a caller mutates its original entry input  1189ms"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"   ✓ clears redo when a new build is accepted after Undo  2344ms"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"   ✓ retains the first frozen occurrence when a second root is explicitly built after a source edit  2643ms"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":" ✓ test/spatialManualBuild.test.ts (7 tests) 8749ms"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > displays exact raster without adoption when an explicit object target is built  993ms"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > adopts one undo step and selects the exact root when Apply accepts a space build  1827ms"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > retains the allocated root when a displayed build is previewed again  1798ms"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > preserves continuation when a build is edited without replaying instantiate  1641ms"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > creates no occurrence when ordinary source-save Preview is used  697ms"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > rejects stale Apply without adoption when a live target tile changes  1012ms"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > keeps Apply unavailable when an occupied object target is rejected  779ms"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":" Test Files  2 passed (2)"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"      Tests  11 passed (11)"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"   Start at  06:41:29"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":"   Duration  23.97s (transform 4.02s, setup 0ms, collect 6.98s, tests 16.18s, environment 1ms, prepare 154ms)"}
+{"type":"line","id":"authoring-3647010","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3647010","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuildContinuation.test.ts test/spatialManualBuild.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core
+
+ ✓ test/spatialManualBuildContinuation.test.ts (4 tests) 7432ms
+   ✓ builds the same allocated root when source correction follows a failed compile  1255ms
+   ✓ freezes the issued request when a caller mutates its original entry input  1189ms
+   ✓ clears redo when a new build is accepted after Undo  2344ms
+   ✓ retains the first frozen occurrence when a second root is explicitly built after a source edit  2643ms
+ ✓ test/spatialManualBuild.test.ts (7 tests) 8749ms
+   ✓ manual source build through the real controller > displays exact raster without adoption when an explicit object target is built  993ms
+   ✓ manual source build through the real controller > adopts one undo step and selects the exact root when Apply accepts a space build  1827ms
+   ✓ manual source build through the real controller > retains the allocated root when a displayed build is previewed again  1798ms
+   ✓ manual source build through the real controller > preserves continuation when a build is edited without replaying instantiate  1641ms
+   ✓ manual source build through the real controller > creates no occurrence when ordinary source-save Preview is used  697ms
+   ✓ manual source build through the real controller > rejects stale Apply without adoption when a live target tile changes  1012ms
+   ✓ manual source build through the real controller > keeps Apply unavailable when an occupied object target is rejected  779ms
+
+ Test Files  2 passed (2)
+      Tests  11 passed (11)
+   Start at  06:41:29
+   Duration  23.97s (transform 4.02s, setup 0ms, collect 6.98s, tests 16.18s, environment 1ms, prepare 154ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

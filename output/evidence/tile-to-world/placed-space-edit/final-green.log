@@ -1,0 +1,98 @@
+monitor_id=mon_CDV1FSH77Z6KX0BA
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-space-edit"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceMembers.test.ts > moves only the associated repetition when a member move is previewed 2108ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceMembers.test.ts > emits selected action chips when a repeated member changes 1620ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceMembers.test.ts > removes only the selected member when lifecycle deletion is previewed 2195ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceMembers.test.ts > adds exactly an explicit fixed object when its source is outside the frozen closure 1467ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceMembers.test.ts > extends quantity beyond the old capacity when deleted repetitions exist 1469ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceMembers.test.ts > leaves an empty compiled composition when the last recipe is removed 2384ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceMembers.test.ts > rejects a blocked required placement atomically when an actual member moves 1441ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceMembers.test.ts > restores exact projects in one history step when a member edit is accepted 2964ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceMembers.test.ts > rejects a missing repetition when a deleted member is selected 1253ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceMembers.test.ts > rejects association-incomplete history when a member edit needs identity 785ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceBoundaries.test.ts > uses frozen definitions when quantity grows after source removal 1719ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceBoundaries.test.ts > preserves concrete port identity when reordered named ports move 1480ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceBoundaries.test.ts > rejects a blocked port atomically when a named landing enters an object 1651ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceBoundaries.test.ts > rejects conflicting frozen identity when a novel source reuses a frozen space ID 1096ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceBoundaries.test.ts > preserves manual raster when an owned target was painted before drafting 1631ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceBoundaries.test.ts > preserves connections when a nested room compiles through its known containing root 1782ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceQuantity.test.ts > deletes out-of-capacity actual indices when quantity shrinks 2381ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceQuantity.test.ts > removes the slot closure when explicit quantity reaches zero 2348ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceQuantity.test.ts > rejects omitted fixed positions when quantity grows 1260ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceQuantity.test.ts > rejects an occupied optional member when its slot becomes required 1955ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/spatialSpaceActions.test.ts > spatial space actions > keeps the issued draft handle so reconstructed wrappers are foreign-draft 1225ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/spatialSpaceActions.test.ts > spatial space actions > does not apply clone/delete/refresh until explicit preview 740ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/spatialSpaceActions.test.ts > spatial space actions > refuses apply without a visible preview 369ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/spatialSpaceActions.test.ts > spatial space actions > compiles placed edits through the preview request 1266ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/spatialSpaceActions.test.ts > spatial space actions > empties slots through preview/apply then compile 1075ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/spatialSpaceActions.test.ts > spatial space actions > nudges a slot by pointer tiles and Escape restores the origin 411ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/spatialSpaceActions.test.ts > spatial space actions > adds a source space and clones a placed occurrence without silent no-op 1028ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/spatialSpaceActions.test.ts > spatial space actions > does not reuse a library-wide id on repeated add or clone allocation 497ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceEdits.test.ts > moves compiled mixed cells when a placed fixed slot moves 1317ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceEdits.test.ts > changes effective event chips when a placed slot recipe changes 965ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceEdits.test.ts > moves the concrete landing when the named entry moves 902ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/placedSpaceCommands.test.ts > displays typed missing feedback when an obsolete placed selection is edited 1205ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/spatialOccurrenceDraft.test.ts > preserves space contained associations when its occurrence snapshot is edited 191ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/spatialOccurrenceDraft.test.ts > preserves space root associations when its occurrence snapshot is edited 128ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/spatialOccurrenceDraft.test.ts > preserves space legacy associations when its occurrence snapshot is edited 108ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/spatialOccurrenceDraft.test.ts > preserves place contained associations when its occurrence snapshot is edited 94ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/spatialOccurrenceDraft.test.ts > preserves place root associations when its occurrence snapshot is edited 93ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" ✓ test/spatialOccurrenceDraft.test.ts > preserves place legacy associations when its occurrence snapshot is edited 98ms"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":" Test Files  7 passed (7)"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":"      Tests  38 passed (38)"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":"   Start at  06:40:20"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":"   Duration  67.82s (transform 8.01s, setup 0ms, collect 16.83s, tests 46.71s, environment 1.66s, prepare 538ms)"}
+{"type":"line","id":"authoring-3642512","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3642512","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-space-edit
+
+ ✓ test/placedSpaceMembers.test.ts > moves only the associated repetition when a member move is previewed 2108ms
+ ✓ test/placedSpaceMembers.test.ts > emits selected action chips when a repeated member changes 1620ms
+ ✓ test/placedSpaceMembers.test.ts > removes only the selected member when lifecycle deletion is previewed 2195ms
+ ✓ test/placedSpaceMembers.test.ts > adds exactly an explicit fixed object when its source is outside the frozen closure 1467ms
+ ✓ test/placedSpaceMembers.test.ts > extends quantity beyond the old capacity when deleted repetitions exist 1469ms
+ ✓ test/placedSpaceMembers.test.ts > leaves an empty compiled composition when the last recipe is removed 2384ms
+ ✓ test/placedSpaceMembers.test.ts > rejects a blocked required placement atomically when an actual member moves 1441ms
+ ✓ test/placedSpaceMembers.test.ts > restores exact projects in one history step when a member edit is accepted 2964ms
+ ✓ test/placedSpaceMembers.test.ts > rejects a missing repetition when a deleted member is selected 1253ms
+ ✓ test/placedSpaceMembers.test.ts > rejects association-incomplete history when a member edit needs identity 785ms
+ ✓ test/placedSpaceBoundaries.test.ts > uses frozen definitions when quantity grows after source removal 1719ms
+ ✓ test/placedSpaceBoundaries.test.ts > preserves concrete port identity when reordered named ports move 1480ms
+ ✓ test/placedSpaceBoundaries.test.ts > rejects a blocked port atomically when a named landing enters an object 1651ms
+ ✓ test/placedSpaceBoundaries.test.ts > rejects conflicting frozen identity when a novel source reuses a frozen space ID 1096ms
+ ✓ test/placedSpaceBoundaries.test.ts > preserves manual raster when an owned target was painted before drafting 1631ms
+ ✓ test/placedSpaceBoundaries.test.ts > preserves connections when a nested room compiles through its known containing root 1782ms
+ ✓ test/placedSpaceQuantity.test.ts > deletes out-of-capacity actual indices when quantity shrinks 2381ms
+ ✓ test/placedSpaceQuantity.test.ts > removes the slot closure when explicit quantity reaches zero 2348ms
+ ✓ test/placedSpaceQuantity.test.ts > rejects omitted fixed positions when quantity grows 1260ms
+ ✓ test/placedSpaceQuantity.test.ts > rejects an occupied optional member when its slot becomes required 1955ms
+ ✓ test/spatialSpaceActions.test.ts > spatial space actions > keeps the issued draft handle so reconstructed wrappers are foreign-draft 1225ms
+ ✓ test/spatialSpaceActions.test.ts > spatial space actions > does not apply clone/delete/refresh until explicit preview 740ms
+ ✓ test/spatialSpaceActions.test.ts > spatial space actions > refuses apply without a visible preview 369ms
+ ✓ test/spatialSpaceActions.test.ts > spatial space actions > compiles placed edits through the preview request 1266ms
+ ✓ test/spatialSpaceActions.test.ts > spatial space actions > empties slots through preview/apply then compile 1075ms
+ ✓ test/spatialSpaceActions.test.ts > spatial space actions > nudges a slot by pointer tiles and Escape restores the origin 411ms
+ ✓ test/spatialSpaceActions.test.ts > spatial space actions > adds a source space and clones a placed occurrence without silent no-op 1028ms
+ ✓ test/spatialSpaceActions.test.ts > spatial space actions > does not reuse a library-wide id on repeated add or clone allocation 497ms
+ ✓ test/placedSpaceEdits.test.ts > moves compiled mixed cells when a placed fixed slot moves 1317ms
+ ✓ test/placedSpaceEdits.test.ts > changes effective event chips when a placed slot recipe changes 965ms
+ ✓ test/placedSpaceEdits.test.ts > moves the concrete landing when the named entry moves 902ms
+ ✓ test/placedSpaceCommands.test.ts > displays typed missing feedback when an obsolete placed selection is edited 1205ms
+ ✓ test/spatialOccurrenceDraft.test.ts > preserves space contained associations when its occurrence snapshot is edited 191ms
+ ✓ test/spatialOccurrenceDraft.test.ts > preserves space root associations when its occurrence snapshot is edited 128ms
+ ✓ test/spatialOccurrenceDraft.test.ts > preserves space legacy associations when its occurrence snapshot is edited 108ms
+ ✓ test/spatialOccurrenceDraft.test.ts > preserves place contained associations when its occurrence snapshot is edited 94ms
+ ✓ test/spatialOccurrenceDraft.test.ts > preserves place root associations when its occurrence snapshot is edited 93ms
+ ✓ test/spatialOccurrenceDraft.test.ts > preserves place legacy associations when its occurrence snapshot is edited 98ms
+
+ Test Files  7 passed (7)
+      Tests  38 passed (38)
+   Start at  06:40:20
+   Duration  67.82s (transform 8.01s, setup 0ms, collect 16.83s, tests 46.71s, environment 1.66s, prepare 538ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

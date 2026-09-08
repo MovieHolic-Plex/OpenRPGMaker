@@ -1,0 +1,102 @@
+monitor_id=mon_6F90PB7XKQSRF239
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuildOwnership.test.ts --maxWorkers=1"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":" ❯ test/spatialManualBuildOwnership.test.ts (5 tests | 1 failed) 5370ms"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"   ✓ rejects atlas mismatch when an explicit object build targets a different atlas  1046ms"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"   ✓ rejects stale Apply when a separately accepted source edit changes the baseline  1180ms"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"   ✓ preserves manual raster rejection when a nested edit resolves to its root owner  1574ms"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"   × retains external overview write-set rejection when the actual parent chain excludes an owner 755ms"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"     → expected { kind: 'error', error: { …(2) } } to match object { kind: 'error', …(1) }"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"(1 matching property omitted from actual)"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"   ✓ rejects association-incomplete historical data when resolving a compile scope  813ms"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":" FAIL  test/spatialManualBuildOwnership.test.ts > retains external overview write-set rejection when the actual parent chain excludes an owner"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"AssertionError: expected { kind: 'error', error: { …(2) } } to match object { kind: 'error', …(1) }"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"(1 matching property omitted from actual)"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"\u001b[2m  {\u001b[22m"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"\u001b[2m    \"error\": {\u001b[22m"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"\u001b[32m-     \"code\": \"ownership\",\u001b[39m"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"\u001b[31m+     \"code\": \"invalid\",\u001b[39m"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"\u001b[2m    },\u001b[22m"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"\u001b[2m    \"kind\": \"error\",\u001b[22m"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"\u001b[2m  }\u001b[22m"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":" ❯ test/spatialManualBuildOwnership.test.ts:88:18"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"     86|   const result = previewAuthoringDraft();"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"     87|   // Then"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"     88|   expect(result).toMatchObject({ kind: \"error\", error: { code: \"owners…"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"       |                  ^"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"     89|   expect(store.getCurrent()).toEqual(project);"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"     90|   expect(getMapEditHistoryEntries()).toHaveLength(0);"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"      Tests  1 failed | 4 passed (5)"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"   Start at  07:03:09"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":"   Duration  12.86s (transform 4.99s, setup 0ms, collect 7.08s, tests 5.37s, environment 0ms, prepare 70ms)"}
+{"type":"line","id":"authoring-3861763","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3861763","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuildOwnership.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core
+
+ ❯ test/spatialManualBuildOwnership.test.ts (5 tests | 1 failed) 5370ms
+   ✓ rejects atlas mismatch when an explicit object build targets a different atlas  1046ms
+   ✓ rejects stale Apply when a separately accepted source edit changes the baseline  1180ms
+   ✓ preserves manual raster rejection when a nested edit resolves to its root owner  1574ms
+   × retains external overview write-set rejection when the actual parent chain excludes an owner 755ms
+     → expected { kind: 'error', error: { …(2) } } to match object { kind: 'error', …(1) }
+(1 matching property omitted from actual)
+   ✓ rejects association-incomplete historical data when resolving a compile scope  813ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialManualBuildOwnership.test.ts > retains external overview write-set rejection when the actual parent chain excludes an owner
+AssertionError: expected { kind: 'error', error: { …(2) } } to match object { kind: 'error', …(1) }
+(1 matching property omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "error": {[22m
+[32m-     "code": "ownership",[39m
+[31m+     "code": "invalid",[39m
+[2m    },[22m
+[2m    "kind": "error",[22m
+[2m  }[22m
+
+ ❯ test/spatialManualBuildOwnership.test.ts:88:18
+     86|   const result = previewAuthoringDraft();
+     87|   // Then
+     88|   expect(result).toMatchObject({ kind: "error", error: { code: "owners…
+       |                  ^
+     89|   expect(store.getCurrent()).toEqual(project);
+     90|   expect(getMapEditHistoryEntries()).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  07:03:09
+   Duration  12.86s (transform 4.99s, setup 0ms, collect 7.08s, tests 5.37s, environment 0ms, prepare 70ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

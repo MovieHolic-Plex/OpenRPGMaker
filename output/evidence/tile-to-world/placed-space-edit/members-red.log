@@ -1,0 +1,308 @@
+monitor_id=mon_2RD6FY8H9TK9CVPD
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-space-edit"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" × test/placedSpaceMembers.test.ts > moves only the associated repetition when a member move is previewed 1196ms"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"   → previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" × test/placedSpaceMembers.test.ts > emits selected action chips when a repeated member changes 953ms"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"   → previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" × test/placedSpaceMembers.test.ts > removes only the selected member when lifecycle deletion is previewed 807ms"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"   → previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" × test/placedSpaceMembers.test.ts > adds exactly an explicit fixed object when its source is outside the frozen closure 854ms"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"   → previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" × test/placedSpaceMembers.test.ts > extends quantity beyond the old capacity when deleted repetitions exist 856ms"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"   → previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" × test/placedSpaceMembers.test.ts > leaves an empty compiled composition when the last recipe is removed 779ms"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"   → previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" × test/placedSpaceMembers.test.ts > rejects a blocked required placement atomically when an actual member moves 810ms"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"   → previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" × test/placedSpaceMembers.test.ts > restores exact projects in one history step when a member edit is accepted 979ms"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"   → previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" × test/placedSpaceMembers.test.ts > rejects a missing repetition when a deleted member is selected 914ms"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"   → previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" × test/placedSpaceMembers.test.ts > rejects association-incomplete history when a member edit needs identity 850ms"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"   → previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" FAIL  test/placedSpaceMembers.test.ts > moves only the associated repetition when a member move is previewed"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"TypeError: previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" ❯ test/placedSpaceMembers.test.ts:19:40"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     17|   const before = structuredClone(store.getCurrent());"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     18|   // When the selected actual repetition moves one tile."}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     19|   const preview = authoringValue(edits.previewPlacedSpaceEdit(f.contro…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"       |                                        ^"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     20|     edit: { kind: \"move\", member: selectedMember, position: { x: 9, y:…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     21|   // Then exact mixed cells move, without changing the slot recipe or …"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" FAIL  test/placedSpaceMembers.test.ts > emits selected action chips when a repeated member changes"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"TypeError: previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" ❯ test/placedSpaceMembers.test.ts:40:40"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     38|   const before = structuredClone(store.getCurrent());"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     39|   // When the actual selected member gains event behavior."}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     40|   const preview = authoringValue(edits.previewPlacedSpaceEdit(f.contro…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"       |                                        ^"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     41|     edit: { kind: \"chips\", member: selectedMember, chips: [\"event\"] } …"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     42|   // Then only its own frozen chips and event change, with the event a…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" FAIL  test/placedSpaceMembers.test.ts > removes only the selected member when lifecycle deletion is previewed"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"TypeError: previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" ❯ test/placedSpaceMembers.test.ts:56:40"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     54|   const before = structuredClone(store.getCurrent());"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     55|   // When repetition two is removed through the controller lifecycle."}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     56|   const preview = authoringValue(edits.previewPlacedSpaceEdit(f.contro…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"       |                                        ^"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     57|     edit: { kind: \"remove\", member: selectedMember } }));"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     58|   // Then neither deleted repetition exists and the survivor keeps its…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" FAIL  test/placedSpaceMembers.test.ts > adds exactly an explicit fixed object when its source is outside the frozen closure"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"TypeError: previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" ❯ test/placedSpaceMembers.test.ts:71:40"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     69|   const before = structuredClone(store.getCurrent());"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     70|   // When an explicit fixed bed is added, without re-expanding existin…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     71|   const preview = authoringValue(edits.previewPlacedSpaceEdit(f.contro…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"       |                                        ^"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     72|     edit: { kind: \"add\", slot: { id: spatialId(\"new-bed\"), objectDesig…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     73|       required: true, placement: { mode: \"fixed\", x: 5, y: 1 } } } }));"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" FAIL  test/placedSpaceMembers.test.ts > extends quantity beyond the old capacity when deleted repetitions exist"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"TypeError: previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" ❯ test/placedSpaceMembers.test.ts:88:40"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     86|   const f = placedSpaceFixture();"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     87|   // When capacity explicitly grows by one with a fixed location for t…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     88|   const preview = authoringValue(edits.previewPlacedSpaceEdit(f.contro…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"       |                                        ^"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     89|     edit: { kind: \"quantity\", slotId: repeatedSlot, quantity: 4, posit…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"     90|   // Then index three is added at the input location, without resurrec…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" FAIL  test/placedSpaceMembers.test.ts > leaves an empty compiled composition when the last recipe is removed"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"TypeError: previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" ❯ test/placedSpaceMembers.test.ts:104:40"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    102|   const space = own(root.snapshot.library.spaces, root.source.id);"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    103|   // When the recipe is explicitly cleared through lifecycle continuat…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    104|   const preview = authoringValue(edits.previewPlacedSpaceEdit(f.contro…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"       |                                        ^"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    105|     edit: { kind: \"recipe\", space: { ...space, objectSlots: [] } } }));"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    106|   // Then no actual children or object events remain, and the closed s…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" FAIL  test/placedSpaceMembers.test.ts > rejects a blocked required placement atomically when an actual member moves"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"TypeError: previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" ❯ test/placedSpaceMembers.test.ts:118:24"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    116|   const before = structuredClone(store.getCurrent());"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    117|   // When the selected required object is moved onto its surviving sib…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    118|   const result = edits.previewPlacedSpaceEdit(f.controller, f.draft, {…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"       |                        ^"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    119|     edit: { kind: \"move\", member: selectedMember, position: { x: 1, y:…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    120|   // Then the real compiler refuses and no project/history subset is a…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" FAIL  test/placedSpaceMembers.test.ts > restores exact projects in one history step when a member edit is accepted"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"TypeError: previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" ❯ test/placedSpaceMembers.test.ts:130:40"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    128|   const f = placedSpaceFixture();"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    129|   const before = structuredClone(store.getCurrent());"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    130|   const preview = authoringValue(edits.previewPlacedSpaceEdit(f.contro…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"       |                                        ^"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    131|     edit: { kind: \"chips\", member: selectedMember, chips: [\"event\"] } …"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    132|   // When the real controller accepts the single final proposal and hi…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" FAIL  test/placedSpaceMembers.test.ts > rejects a missing repetition when a deleted member is selected"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"TypeError: previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" ❯ test/placedSpaceMembers.test.ts:151:24"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    149|   const before = structuredClone(store.getCurrent());"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    150|   // When an identity-dependent edit addresses that absent index."}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    151|   const result = edits.previewPlacedSpaceEdit(f.controller, f.draft, {…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"       |                        ^"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    152|     edit: { kind: \"move\", member: { slotId: repeatedSlot, index: 1 }, …"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    153|   // Then a typed missing error replaces identity guessing or implicit…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" FAIL  test/placedSpaceMembers.test.ts > rejects association-incomplete history when a member edit needs identity"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"TypeError: previewPlacedSpaceEdit is not a function"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" ❯ test/placedSpaceMembers.test.ts:168:24"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    166|   const before = structuredClone(store.getCurrent());"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    167|   // When a real controller proposal requests an associated member mov…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    168|   const result = edits.previewPlacedSpaceEdit(f.controller, f.draft, {…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"       |                        ^"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    169|     edit: { kind: \"move\", member: selectedMember, position: { x: 9, y:…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"    170|   // Then no association is reconstructed from a source, order or gene…"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"      Tests  10 failed (10)"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"   Start at  06:22:37"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":"   Duration  18.78s (transform 5.99s, setup 0ms, collect 8.71s, tests 9.00s, environment 358ms, prepare 133ms)"}
+{"type":"line","id":"authoring-3214665","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3214665","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-space-edit
+
+ × test/placedSpaceMembers.test.ts > moves only the associated repetition when a member move is previewed 1196ms
+   → previewPlacedSpaceEdit is not a function
+ × test/placedSpaceMembers.test.ts > emits selected action chips when a repeated member changes 953ms
+   → previewPlacedSpaceEdit is not a function
+ × test/placedSpaceMembers.test.ts > removes only the selected member when lifecycle deletion is previewed 807ms
+   → previewPlacedSpaceEdit is not a function
+ × test/placedSpaceMembers.test.ts > adds exactly an explicit fixed object when its source is outside the frozen closure 854ms
+   → previewPlacedSpaceEdit is not a function
+ × test/placedSpaceMembers.test.ts > extends quantity beyond the old capacity when deleted repetitions exist 856ms
+   → previewPlacedSpaceEdit is not a function
+ × test/placedSpaceMembers.test.ts > leaves an empty compiled composition when the last recipe is removed 779ms
+   → previewPlacedSpaceEdit is not a function
+ × test/placedSpaceMembers.test.ts > rejects a blocked required placement atomically when an actual member moves 810ms
+   → previewPlacedSpaceEdit is not a function
+ × test/placedSpaceMembers.test.ts > restores exact projects in one history step when a member edit is accepted 979ms
+   → previewPlacedSpaceEdit is not a function
+ × test/placedSpaceMembers.test.ts > rejects a missing repetition when a deleted member is selected 914ms
+   → previewPlacedSpaceEdit is not a function
+ × test/placedSpaceMembers.test.ts > rejects association-incomplete history when a member edit needs identity 850ms
+   → previewPlacedSpaceEdit is not a function
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/placedSpaceMembers.test.ts > moves only the associated repetition when a member move is previewed
+TypeError: previewPlacedSpaceEdit is not a function
+ ❯ test/placedSpaceMembers.test.ts:19:40
+     17|   const before = structuredClone(store.getCurrent());
+     18|   // When the selected actual repetition moves one tile.
+     19|   const preview = authoringValue(edits.previewPlacedSpaceEdit(f.contro…
+       |                                        ^
+     20|     edit: { kind: "move", member: selectedMember, position: { x: 9, y:…
+     21|   // Then exact mixed cells move, without changing the slot recipe or …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  test/placedSpaceMembers.test.ts > emits selected action chips when a repeated member changes
+TypeError: previewPlacedSpaceEdit is not a function
+ ❯ test/placedSpaceMembers.test.ts:40:40
+     38|   const before = structuredClone(store.getCurrent());
+     39|   // When the actual selected member gains event behavior.
+     40|   const preview = authoringValue(edits.previewPlacedSpaceEdit(f.contro…
+       |                                        ^
+     41|     edit: { kind: "chips", member: selectedMember, chips: ["event"] } …
+     42|   // Then only its own frozen chips and event change, with the event a…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  test/placedSpaceMembers.test.ts > removes only the selected member when lifecycle deletion is previewed
+TypeError: previewPlacedSpaceEdit is not a function
+ ❯ test/placedSpaceMembers.test.ts:56:40
+     54|   const before = structuredClone(store.getCurrent());
+     55|   // When repetition two is removed through the controller lifecycle.
+     56|   const preview = authoringValue(edits.previewPlacedSpaceEdit(f.contro…
+       |                                        ^
+     57|     edit: { kind: "remove", member: selectedMember } }));
+     58|   // Then neither deleted repetition exists and the survivor keeps its…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  test/placedSpaceMembers.test.ts > adds exactly an explicit fixed object when its source is outside the frozen closure
+TypeError: previewPlacedSpaceEdit is not a function
+ ❯ test/placedSpaceMembers.test.ts:71:40
+     69|   const before = structuredClone(store.getCurrent());
+     70|   // When an explicit fixed bed is added, without re-expanding existin…
+     71|   const preview = authoringValue(edits.previewPlacedSpaceEdit(f.contro…
+       |                                        ^
+     72|     edit: { kind: "add", slot: { id: spatialId("new-bed"), objectDesig…
+     73|       required: true, placement: { mode: "fixed", x: 5, y: 1 } } } }));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  test/placedSpaceMembers.test.ts > extends quantity beyond the old capacity when deleted repetitions exist
+TypeError: previewPlacedSpaceEdit is not a function
+ ❯ test/placedSpaceMembers.test.ts:88:40
+     86|   const f = placedSpaceFixture();
+     87|   // When capacity explicitly grows by one with a fixed location for t…
+     88|   const preview = authoringValue(edits.previewPlacedSpaceEdit(f.contro…
+       |                                        ^
+     89|     edit: { kind: "quantity", slotId: repeatedSlot, quantity: 4, posit…
+     90|   // Then index three is added at the input location, without resurrec…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  test/placedSpaceMembers.test.ts > leaves an empty compiled composition when the last recipe is removed
+TypeError: previewPlacedSpaceEdit is not a function
+ ❯ test/placedSpaceMembers.test.ts:104:40
+    102|   const space = own(root.snapshot.library.spaces, root.source.id);
+    103|   // When the recipe is explicitly cleared through lifecycle continuat…
+    104|   const preview = authoringValue(edits.previewPlacedSpaceEdit(f.contro…
+       |                                        ^
+    105|     edit: { kind: "recipe", space: { ...space, objectSlots: [] } } }));
+    106|   // Then no actual children or object events remain, and the closed s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  test/placedSpaceMembers.test.ts > rejects a blocked required placement atomically when an actual member moves
+TypeError: previewPlacedSpaceEdit is not a function
+ ❯ test/placedSpaceMembers.test.ts:118:24
+    116|   const before = structuredClone(store.getCurrent());
+    117|   // When the selected required object is moved onto its surviving sib…
+    118|   const result = edits.previewPlacedSpaceEdit(f.controller, f.draft, {…
+       |                        ^
+    119|     edit: { kind: "move", member: selectedMember, position: { x: 1, y:…
+    120|   // Then the real compiler refuses and no project/history subset is a…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  test/placedSpaceMembers.test.ts > restores exact projects in one history step when a member edit is accepted
+TypeError: previewPlacedSpaceEdit is not a function
+ ❯ test/placedSpaceMembers.test.ts:130:40
+    128|   const f = placedSpaceFixture();
+    129|   const before = structuredClone(store.getCurrent());
+    130|   const preview = authoringValue(edits.previewPlacedSpaceEdit(f.contro…
+       |                                        ^
+    131|     edit: { kind: "chips", member: selectedMember, chips: ["event"] } …
+    132|   // When the real controller accepts the single final proposal and hi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  test/placedSpaceMembers.test.ts > rejects a missing repetition when a deleted member is selected
+TypeError: previewPlacedSpaceEdit is not a function
+ ❯ test/placedSpaceMembers.test.ts:151:24
+    149|   const before = structuredClone(store.getCurrent());
+    150|   // When an identity-dependent edit addresses that absent index.
+    151|   const result = edits.previewPlacedSpaceEdit(f.controller, f.draft, {…
+       |                        ^
+    152|     edit: { kind: "move", member: { slotId: repeatedSlot, index: 1 }, …
+    153|   // Then a typed missing error replaces identity guessing or implicit…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  test/placedSpaceMembers.test.ts > rejects association-incomplete history when a member edit needs identity
+TypeError: previewPlacedSpaceEdit is not a function
+ ❯ test/placedSpaceMembers.test.ts:168:24
+    166|   const before = structuredClone(store.getCurrent());
+    167|   // When a real controller proposal requests an associated member mov…
+    168|   const result = edits.previewPlacedSpaceEdit(f.controller, f.draft, {…
+       |                        ^
+    169|     edit: { kind: "move", member: selectedMember, position: { x: 9, y:…
+    170|   // Then no association is reconstructed from a source, order or gene…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed (10)
+   Start at  06:22:37
+   Duration  18.78s (transform 5.99s, setup 0ms, collect 8.71s, tests 9.00s, environment 358ms, prepare 133ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

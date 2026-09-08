@@ -1,6 +1,7 @@
 import { deserialize } from "@/project/io";
 import { assertNever, checkedDocument, freezeSpatial, own, spatialId } from "@/project/spatial/domain";
 import { occurrenceSubtree } from "@/project/spatial/ownership";
+import type { SpatialConnection } from "@/project/spatial/types";
 import type { Project } from "@/project/types";
 import type { SpatialAuthoringPreview, SpatialAuthoringRequest } from "./authoringTypes";
 import { applySpatialAuthoringOperation } from "./authoringOperations";
@@ -25,6 +26,25 @@ export function previewSpatialAuthoring(input: Project, request: SpatialAuthorin
     }
   }
   switch (request.operation.kind) {
+    case "edit-connection": {
+      if (!request.compile) throw new SpatialCompileError("target", "Connection edits require explicit containing compilation");
+      if (JSON.stringify(document.connections) !== JSON.stringify(protectedDocument.connections)) {
+        throw new SpatialCompileError("ownership", "Connection edits require the checkpoint's exact old graph");
+      }
+      const edit = request.operation.request;
+      let links: readonly SpatialConnection[];
+      switch (edit.kind) {
+        case "create": links = [edit.connection]; break;
+        case "replace": links = [...document.connections.filter(link => link.id === edit.connection.id), edit.connection]; break;
+        case "remove": links = document.connections.filter(link => link.id === edit.connectionId); break;
+        default: return assertNever(edit);
+      }
+      const members = new Set(occurrenceSubtree(document, request.compile.occurrenceId));
+      if (links.some(link => !members.has(link.from.occurrenceId) || !members.has(link.to.occurrenceId))) {
+        throw new SpatialCompileError("ownership", "Compilation must contain the old and new connection endpoints");
+      }
+      break;
+    }
     case "refresh": {
       const members = occurrenceSubtree(document, request.operation.request.occurrenceId);
       if (!request.compile && members.some(id => own(document.occurrences, id).bindings.length > 0)) {
@@ -46,10 +66,11 @@ export function previewSpatialAuthoring(input: Project, request: SpatialAuthorin
       project.spatialAuthoring = cleaned.after;
       break;
     }
-    case "edit": case "instantiate": case "clone-occurrence": case "clone-design": case "delete-design": case "detach": break;
+    case "edit": case "edit-connection": case "instantiate": case "clone-occurrence": case "clone-design": case "delete-design": case "detach": break;
     default: return assertNever(request.operation);
   }
-  const proposed = request.compile ? compileSpatialOccurrence(project, request.compile) : deserialize(JSON.stringify(project));
+  const proposed = request.compile ? compileSpatialOccurrence(project, request.compile,
+    protectedDocument.occurrences[request.compile.occurrenceId]) : deserialize(JSON.stringify(project));
   const mapIds = [...new Set([...Object.keys(baseline.maps), ...Object.keys(proposed.maps)])]
     .filter(id => JSON.stringify(baseline.maps[id]) !== JSON.stringify(proposed.maps[id]));
   const original = checkedDocument(baseline.spatialAuthoring, baseline);

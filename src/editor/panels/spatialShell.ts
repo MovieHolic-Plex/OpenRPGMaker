@@ -27,7 +27,7 @@ export function renderSpatialAuthoringShell(
   tab: SpatialShellTab,
   rerender: () => void,
 ): void {
-  if (spatialSession().tab !== tab) setSpatialTab(tab);
+  if (spatialSession().tab !== tab && spatialSession().breadcrumb.length === 0) setSpatialTab(tab);
   let session = spatialSession();
   const cards = listSpatialGalleryCards(session);
   const requested = session.mode === "instances" ? session.occurrenceId : session.designId;
@@ -78,7 +78,7 @@ export function renderSpatialAuthoringShell(
     class: `spatial-stage${session.inspectorOpen ? " is-inspector-open" : ""}`,
     children: [
       renderSpatialCanvas(session, selected, refresh),
-      renderSpatialInspector(selected, session.inspectorOpen),
+      renderSpatialInspector(selected, session.inspectorOpen, refresh),
     ],
   });
 

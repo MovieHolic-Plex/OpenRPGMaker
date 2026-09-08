@@ -2,6 +2,15 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { listSpatialGalleryCards, spatialCardById, spatialPresentationId } from "@/editor/panels/spatialCatalog";
 import {
+  bindSpatialAuthoringControllerFactory,
+  editAuthoringDraft,
+  previewAuthoringDraft,
+  visibleAuthoringProject,
+} from "@/editor/panels/spatialAuthoringAccess";
+import type { SpatialAuthoringController, SpatialAuthoringDraft, SpatialAuthoringPreview } from "@/editor/spatial/authoringTypes";
+import { validateSpatialAuthoring } from "@/project/spatial/guards";
+import { placeDesign } from "./support/spatialSchemaFixture";
+import {
   resetSpatialAuthoringSessions,
   setSpatialTab,
   spatialSession,
@@ -40,6 +49,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  bindSpatialAuthoringControllerFactory(null);
   resetSpatialAuthoringSessions();
   store.replace(previous, { preserveEventDrafts: false });
 });
@@ -256,5 +266,130 @@ describe("spatial catalog source fidelity", () => {
     expect(tiles.every((card) => card.mapUsage === true)).toBe(true);
     expect(tiles.map((card) => card.mapId).sort()).toEqual([...mapIds].sort());
     expect(tiles.every((card) => card.subtitle === "맵 사용")).toBe(true);
+  });
+});
+
+describe("spatial catalog draft and preview galleries", () => {
+  function bindViewController(): void {
+    const drafts = new WeakSet<SpatialAuthoringDraft>();
+    const previews = new WeakSet<SpatialAuthoringPreview>();
+    const controller: SpatialAuthoringController = {
+      createDraft() {
+        const value = { project: structuredClone(store.getCurrent()) };
+        drafts.add(value);
+        return { kind: "ok", value };
+      },
+      continueDraft(preview) {
+        if (!previews.has(preview)) return { kind: "error", error: { code: "foreign-preview", message: "foreign" } };
+        const value = { project: structuredClone(preview.project) };
+        drafts.add(value);
+        return { kind: "ok", value };
+      },
+      preview(draft) {
+        if (!drafts.has(draft)) return { kind: "error", error: { code: "foreign-draft", message: "foreign" } };
+        const value = { project: structuredClone(draft.project), impact: { mapIds: [], occurrenceIds: [], events: [] } };
+        previews.add(value);
+        return { kind: "ok", value };
+      },
+      apply() {
+        return { kind: "error", error: { code: "unsupported", message: "catalog-view-only" } };
+      },
+      undo: () => false,
+      redo: () => false,
+    };
+    bindSpatialAuthoringControllerFactory(() => controller);
+  }
+
+  it("lists a draft place without writing the live store", () => {
+    // Given
+    const { project, document } = spatialFixture();
+    store.replace({ ...project, spatialAuthoring: validateSpatialAuthoring(document) }, { preserveEventDrafts: false });
+    bindViewController();
+    const before = structuredClone(store.getCurrent());
+    const placeId = "dock";
+
+    // When
+    const edited = editAuthoringDraft((current) => {
+      const spatial = current.spatialAuthoring;
+      if (!spatial) return current;
+      return {
+        ...current,
+        spatialAuthoring: {
+          ...spatial,
+          library: {
+            ...spatial.library,
+            places: { ...spatial.library.places, [placeId]: placeDesign(placeId, "room") },
+          },
+        },
+      };
+    });
+
+    // Then
+    expect(edited.kind).toBe("ok");
+    expect(store.getCurrent()).toEqual(before);
+    const cards = listSpatialGalleryCards(sessionFor({ tab: "places", source: "own", mode: "design" }));
+    expect(cards.some((card) => card.localId === placeId)).toBe(true);
+    expect(visibleAuthoringProject().spatialAuthoring?.library.places[placeId]).toBeDefined();
+    expect(store.getCurrent().spatialAuthoring?.library.places[placeId]).toBeUndefined();
+  });
+
+  it("lists a previewed cloned occurrence without writing the live store", () => {
+    // Given
+    const { project, document } = spatialFixture();
+    store.replace({ ...project, spatialAuthoring: validateSpatialAuthoring(document) }, { preserveEventDrafts: false });
+    bindViewController();
+    const before = structuredClone(store.getCurrent());
+    const cloneId = "occ-clone";
+
+    // When
+    editAuthoringDraft((current) => {
+      const spatial = current.spatialAuthoring;
+      const source = spatial?.occurrences["occ-a"];
+      if (!spatial || !source) return current;
+      return {
+        ...current,
+        spatialAuthoring: {
+          ...spatial,
+          occurrences: { ...spatial.occurrences, [cloneId]: { ...structuredClone(source), id: cloneId } },
+          rootOccurrenceIds: [...spatial.rootOccurrenceIds, cloneId],
+        },
+      };
+    });
+    const previewed = previewAuthoringDraft();
+
+    // Then
+    expect(previewed.kind).toBe("ok");
+    expect(store.getCurrent()).toEqual(before);
+    const cards = listSpatialGalleryCards(sessionFor({ tab: "spaces", mode: "instances", source: "all" }));
+    expect(cards.some((card) => card.id === cloneId)).toBe(true);
+    expect(store.getCurrent().spatialAuthoring?.occurrences[cloneId]).toBeUndefined();
+  });
+
+  it("resets hierarchy galleries when the project session switches", () => {
+    // Given
+    const { project, document } = spatialFixture();
+    store.replace({ ...project, spatialAuthoring: validateSpatialAuthoring(document) }, { preserveEventDrafts: false });
+    bindViewController();
+    editAuthoringDraft((current) => {
+      const spatial = current.spatialAuthoring;
+      if (!spatial) return current;
+      return {
+        ...current,
+        spatialAuthoring: {
+          ...spatial,
+          library: {
+            ...spatial.library,
+            places: { ...spatial.library.places, dock: placeDesign("dock", "room") },
+          },
+        },
+      };
+    });
+    expect(listSpatialGalleryCards(sessionFor({ tab: "places", source: "own", mode: "design" })).some((card) => card.localId === "dock")).toBe(true);
+
+    // When
+    store.replaceProject(createBlankProject());
+
+    // Then
+    expect(listSpatialGalleryCards(sessionFor({ tab: "places", source: "own", mode: "design" })).some((card) => card.localId === "dock")).toBe(false);
   });
 });

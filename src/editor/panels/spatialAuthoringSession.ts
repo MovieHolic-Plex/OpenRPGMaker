@@ -164,6 +164,25 @@ export function selectSpatialOccurrence(occurrenceId: string | null): SpatialAut
   return patchSpatialSession({ occurrenceId, mode: "instances" });
 }
 
+type SpatialTabReveal = (tab: SpatialShellTab) => void;
+let tabReveal: SpatialTabReveal | null = null;
+
+export function onSpatialTabReveal(listener: SpatialTabReveal | null): void {
+  tabReveal = listener;
+}
+
+/** Change destination without clearing breadcrumb. Database rail clicks still use setSpatialTab. */
+export function openSpatialDestination(tab: SpatialShellTab, designId: string | null): SpatialAuthoringSession {
+  const next = patchSpatialSession({
+    tab,
+    designId,
+    occurrenceId: null,
+    camera: DEFAULT_CAMERA,
+  });
+  tabReveal?.(tab);
+  return next;
+}
+
 export function setSpatialCamera(camera: SpatialCamera): SpatialAuthoringSession {
   return patchSpatialSession({ camera });
 }
@@ -184,7 +203,7 @@ export function popSpatialBreadcrumb(): SpatialAuthoringSession {
   const current = spatialSession();
   const previous = current.breadcrumb[current.breadcrumb.length - 1];
   if (!previous) return current;
-  return patchSpatialSession({
+  const next = patchSpatialSession({
     tab: previous.tab,
     mode: previous.mode,
     designId: previous.designId,
@@ -192,4 +211,6 @@ export function popSpatialBreadcrumb(): SpatialAuthoringSession {
     camera: previous.camera,
     breadcrumb: current.breadcrumb.slice(0, -1),
   });
+  tabReveal?.(previous.tab);
+  return next;
 }

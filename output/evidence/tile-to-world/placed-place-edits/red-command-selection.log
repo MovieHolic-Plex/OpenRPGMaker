@@ -1,0 +1,152 @@
+monitor_id=mon_XWBXZKTMRR1GA6K1
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceCommandSelection.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":" ❯ test/placedPlaceCommandSelection.test.ts (2 tests | 2 failed) 2022ms"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"   × selects the actual proposed clone when the placed duplicate command succeeds 1482ms"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"     → expected { tab: 'places', …(9) } to match object { mode: 'instances', …(1) }"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"(11 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"   × preserves explicit instance selection when a previously created design is still remembered 539ms"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"     → expected { …(7) } to deeply equal { id: 'nested-village', …(5) }"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":" FAIL  test/placedPlaceCommandSelection.test.ts > selects the actual proposed clone when the placed duplicate command succeeds"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"AssertionError: expected { tab: 'places', …(9) } to match object { mode: 'instances', …(1) }"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"(11 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[2m  {\u001b[22m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[2m    \"mode\": \"instances\",\u001b[22m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[32m-   \"occurrenceId\": \"place_4580122b-c7be-4dd6-980d-9372400372f4\",\u001b[39m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[31m+   \"occurrenceId\": \"nested-village\",\u001b[39m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[2m  }\u001b[22m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":" ❯ test/placedPlaceCommandSelection.test.ts:52:28"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"     50|   const cloneIds = doc.rootOccurrenceIds.filter(id => id !== placeRoot…"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"     51|   expect(cloneIds).toHaveLength(1);"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"     52|   expect(spatialSession()).toMatchObject({ mode: \"instances\", occurren…"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"       |                            ^"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"     53|   expect(own(doc.occurrences, spatialSession().occurrenceId ?? \"missin…"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"     54|   expect(store.getCurrent()).toEqual(before);"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":" FAIL  test/placedPlaceCommandSelection.test.ts > preserves explicit instance selection when a previously created design is still remembered"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"AssertionError: expected { …(7) } to deeply equal { id: 'nested-village', …(5) }"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[2m  {\u001b[22m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[32m-   \"id\": \"nested-village\",\u001b[39m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[31m+   \"id\": \"library-place/library/nested-village-design\",\u001b[39m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[2m    \"kind\": \"places\",\u001b[22m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[2m    \"localId\": \"nested-village-design\",\u001b[22m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[32m-   \"name\": \"Placed village\",\u001b[39m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[32m-   \"source\": \"placed\",\u001b[39m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[31m+   \"name\": \"Village\",\u001b[39m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[31m+   \"placeKind\": \"settlement\",\u001b[39m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[31m+   \"source\": \"own\",\u001b[39m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[2m    \"usage\": 0,\u001b[22m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"\u001b[2m  }\u001b[22m"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":" ❯ test/placedPlaceCommandSelection.test.ts:64:20"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"     62|   const selected = visiblePlaceSelection(f.card);"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"     63|   // Then the remembered source card cannot replace the selected occur…"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"     64|   expect(selected).toEqual(f.card);"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"       |                    ^"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"     65| });"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"     66| "}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"      Tests  2 failed (2)"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"   Start at  06:38:24"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":"   Duration  8.94s (transform 4.25s, setup 0ms, collect 6.20s, tests 2.02s, environment 285ms, prepare 83ms)"}
+{"type":"line","id":"authoring-3577696","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3577696","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceCommandSelection.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit
+
+ ❯ test/placedPlaceCommandSelection.test.ts (2 tests | 2 failed) 2022ms
+   × selects the actual proposed clone when the placed duplicate command succeeds 1482ms
+     → expected { tab: 'places', …(9) } to match object { mode: 'instances', …(1) }
+(11 matching properties omitted from actual)
+   × preserves explicit instance selection when a previously created design is still remembered 539ms
+     → expected { …(7) } to deeply equal { id: 'nested-village', …(5) }
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/placedPlaceCommandSelection.test.ts > selects the actual proposed clone when the placed duplicate command succeeds
+AssertionError: expected { tab: 'places', …(9) } to match object { mode: 'instances', …(1) }
+(11 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "mode": "instances",[22m
+[32m-   "occurrenceId": "place_4580122b-c7be-4dd6-980d-9372400372f4",[39m
+[31m+   "occurrenceId": "nested-village",[39m
+[2m  }[22m
+
+ ❯ test/placedPlaceCommandSelection.test.ts:52:28
+     50|   const cloneIds = doc.rootOccurrenceIds.filter(id => id !== placeRoot…
+     51|   expect(cloneIds).toHaveLength(1);
+     52|   expect(spatialSession()).toMatchObject({ mode: "instances", occurren…
+       |                            ^
+     53|   expect(own(doc.occurrences, spatialSession().occurrenceId ?? "missin…
+     54|   expect(store.getCurrent()).toEqual(before);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/placedPlaceCommandSelection.test.ts > preserves explicit instance selection when a previously created design is still remembered
+AssertionError: expected { …(7) } to deeply equal { id: 'nested-village', …(5) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "id": "nested-village",[39m
+[31m+   "id": "library-place/library/nested-village-design",[39m
+[2m    "kind": "places",[22m
+[2m    "localId": "nested-village-design",[22m
+[32m-   "name": "Placed village",[39m
+[32m-   "source": "placed",[39m
+[31m+   "name": "Village",[39m
+[31m+   "placeKind": "settlement",[39m
+[31m+   "source": "own",[39m
+[2m    "usage": 0,[22m
+[2m  }[22m
+
+ ❯ test/placedPlaceCommandSelection.test.ts:64:20
+     62|   const selected = visiblePlaceSelection(f.card);
+     63|   // Then the remembered source card cannot replace the selected occur…
+     64|   expect(selected).toEqual(f.card);
+       |                    ^
+     65| });
+     66|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  06:38:24
+   Duration  8.94s (transform 4.25s, setup 0ms, collect 6.20s, tests 2.02s, environment 285ms, prepare 83ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

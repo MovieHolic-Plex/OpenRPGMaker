@@ -1,0 +1,60 @@
+monitor_id=mon_2K10NKA2CXNYRERB
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"VALIDATION_STARTED"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceEdits.test.ts test/placedPlaceLifecycle.test.ts test/placedPlaceRejections.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":" ✓ test/placedPlaceLifecycle.test.ts (4 tests) 12893ms"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"   ✓ instantiates only the selected subtree when adding another shared-descendant inn  4045ms"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"   ✓ deletes exact actual descendants when removing one nested inn  2993ms"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"   ✓ uses actual level and frozen child identity when moving a facility room  2660ms"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"   ✓ compiles an empty actual composition when the last surviving child is deleted  3195ms"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":" ✓ test/placedPlaceRejections.test.ts (6 tests) 10283ms"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"   ✓ rejects missing source additions without partial subtree or history writes  1565ms"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"   ✓ rejects ancestor source additions without partial subtree or history writes  1804ms"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"   ✓ rejects conflict source additions without partial subtree or history writes  1572ms"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"   ✓ requires persisted associations when a historical child has incomplete identity  1272ms"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"   ✓ rejects fresh recompilation when owned output was manually painted  2246ms"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"   ✓ rejects a deleted child slot instead of resurrecting its template  1822ms"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":" ✓ test/placedPlaceEdits.test.ts (1 test) 2534ms"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"   ✓ moves the associated actual child and compiled surface when a placed slot moves  2532ms"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":" Test Files  3 passed (3)"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"      Tests  11 passed (11)"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"   Start at  07:06:48"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":"   Duration  36.15s (transform 4.31s, setup 0ms, collect 8.38s, tests 25.71s, environment 855ms, prepare 236ms)"}
+{"type":"line","id":"authoring-3892880","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3892880","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+VALIDATION_STARTED
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceEdits.test.ts test/placedPlaceLifecycle.test.ts test/placedPlaceRejections.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit
+
+ ✓ test/placedPlaceLifecycle.test.ts (4 tests) 12893ms
+   ✓ instantiates only the selected subtree when adding another shared-descendant inn  4045ms
+   ✓ deletes exact actual descendants when removing one nested inn  2993ms
+   ✓ uses actual level and frozen child identity when moving a facility room  2660ms
+   ✓ compiles an empty actual composition when the last surviving child is deleted  3195ms
+ ✓ test/placedPlaceRejections.test.ts (6 tests) 10283ms
+   ✓ rejects missing source additions without partial subtree or history writes  1565ms
+   ✓ rejects ancestor source additions without partial subtree or history writes  1804ms
+   ✓ rejects conflict source additions without partial subtree or history writes  1572ms
+   ✓ requires persisted associations when a historical child has incomplete identity  1272ms
+   ✓ rejects fresh recompilation when owned output was manually painted  2246ms
+   ✓ rejects a deleted child slot instead of resurrecting its template  1822ms
+ ✓ test/placedPlaceEdits.test.ts (1 test) 2534ms
+   ✓ moves the associated actual child and compiled surface when a placed slot moves  2532ms
+
+ Test Files  3 passed (3)
+      Tests  11 passed (11)
+   Start at  07:06:48
+   Duration  36.15s (transform 4.31s, setup 0ms, collect 8.38s, tests 25.71s, environment 855ms, prepare 236ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

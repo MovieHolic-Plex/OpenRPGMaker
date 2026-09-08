@@ -1,0 +1,122 @@
+monitor_id=mon_NSWNRHH98FXSBSSA
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceLifecycle.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":" ❯ test/placedPlaceLifecycle.test.ts (3 tests | 3 failed) 4719ms"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"   × instantiates only the selected subtree when adding another shared-descendant inn 1950ms"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"     → previewPlacedPlaceEdit is not a function"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"   × deletes exact actual descendants when removing one nested inn 1327ms"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"     → previewPlacedPlaceEdit is not a function"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"   × uses actual level and frozen child identity when moving a facility room 1441ms"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"     → previewPlacedPlaceEdit is not a function"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":" FAIL  test/placedPlaceLifecycle.test.ts > instantiates only the selected subtree when adding another shared-descendant inn"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"TypeError: previewPlacedPlaceEdit is not a function"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":" ❯ test/placedPlaceLifecycle.test.ts:51:41"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"     49|   const slotId = spatialId(\"new-inn-slot\");"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"     50|   // When a repeated source is explicitly added through the real contr…"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"     51|   const preview = authoringValue(placed.previewPlacedPlaceEdit(f.contr…"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"       |                                         ^"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"     52|     compile: { occurrenceId: placeRoot }, edit: { kind: \"add\", parentI…"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"     53|       slot: { id: slotId, source: { kind: \"place\", id: own(doc.occurre…"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":" FAIL  test/placedPlaceLifecycle.test.ts > deletes exact actual descendants when removing one nested inn"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"TypeError: previewPlacedPlaceEdit is not a function"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":" ❯ test/placedPlaceLifecycle.test.ts:80:41"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"     78|   const removed = occurrenceSubtree(doc, f.innId);"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"     79|   // When the selected slot is deleted using the canonical lifecycle."}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"     80|   const preview = authoringValue(placed.previewPlacedPlaceEdit(f.contr…"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"       |                                         ^"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"     81|     compile: { occurrenceId: placeRoot }, edit: { kind: \"delete\", pare…"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"     82|       slot: { slotId: spatialId(\"inn\"), index: 0 }, externalConnection…"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":" FAIL  test/placedPlaceLifecycle.test.ts > uses actual level and frozen child identity when moving a facility room"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"TypeError: previewPlacedPlaceEdit is not a function"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":" ❯ test/placedPlaceLifecycle.test.ts:103:41"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"    101|   const before = structuredClone(store.getCurrent());"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"    102|   // When floor 2 is deliberately moved to supported level 3."}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"    103|   const preview = authoringValue(placed.previewPlacedPlaceEdit(f.contr…"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"       |                                         ^"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"    104|     compile: { occurrenceId: placeRoot }, edit: { kind: \"move\", parent…"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"    105|       slot: { slotId: spatialId(\"floor-2\"), index: 0 }, position: { x:…"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"      Tests  3 failed (3)"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"   Start at  06:24:53"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":"   Duration  15.12s (transform 6.67s, setup 0ms, collect 9.25s, tests 4.72s, environment 428ms, prepare 176ms)"}
+{"type":"line","id":"authoring-3305794","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3305794","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceLifecycle.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit
+
+ ❯ test/placedPlaceLifecycle.test.ts (3 tests | 3 failed) 4719ms
+   × instantiates only the selected subtree when adding another shared-descendant inn 1950ms
+     → previewPlacedPlaceEdit is not a function
+   × deletes exact actual descendants when removing one nested inn 1327ms
+     → previewPlacedPlaceEdit is not a function
+   × uses actual level and frozen child identity when moving a facility room 1441ms
+     → previewPlacedPlaceEdit is not a function
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/placedPlaceLifecycle.test.ts > instantiates only the selected subtree when adding another shared-descendant inn
+TypeError: previewPlacedPlaceEdit is not a function
+ ❯ test/placedPlaceLifecycle.test.ts:51:41
+     49|   const slotId = spatialId("new-inn-slot");
+     50|   // When a repeated source is explicitly added through the real contr…
+     51|   const preview = authoringValue(placed.previewPlacedPlaceEdit(f.contr…
+       |                                         ^
+     52|     compile: { occurrenceId: placeRoot }, edit: { kind: "add", parentI…
+     53|       slot: { id: slotId, source: { kind: "place", id: own(doc.occurre…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/placedPlaceLifecycle.test.ts > deletes exact actual descendants when removing one nested inn
+TypeError: previewPlacedPlaceEdit is not a function
+ ❯ test/placedPlaceLifecycle.test.ts:80:41
+     78|   const removed = occurrenceSubtree(doc, f.innId);
+     79|   // When the selected slot is deleted using the canonical lifecycle.
+     80|   const preview = authoringValue(placed.previewPlacedPlaceEdit(f.contr…
+       |                                         ^
+     81|     compile: { occurrenceId: placeRoot }, edit: { kind: "delete", pare…
+     82|       slot: { slotId: spatialId("inn"), index: 0 }, externalConnection…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  test/placedPlaceLifecycle.test.ts > uses actual level and frozen child identity when moving a facility room
+TypeError: previewPlacedPlaceEdit is not a function
+ ❯ test/placedPlaceLifecycle.test.ts:103:41
+    101|   const before = structuredClone(store.getCurrent());
+    102|   // When floor 2 is deliberately moved to supported level 3.
+    103|   const preview = authoringValue(placed.previewPlacedPlaceEdit(f.contr…
+       |                                         ^
+    104|     compile: { occurrenceId: placeRoot }, edit: { kind: "move", parent…
+    105|       slot: { slotId: spatialId("floor-2"), index: 0 }, position: { x:…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  06:24:53
+   Duration  15.12s (transform 6.67s, setup 0ms, collect 9.25s, tests 4.72s, environment 428ms, prepare 176ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

@@ -50,21 +50,33 @@ export function placedObject(occurrence: SpatialAssociatedOccurrence, origin: Sp
 }
 
 /** Mutates only the compiler's detached raster after preflight of the entire assembly. */
-export function stampFrozenObject(context: { readonly project: Project; readonly map: GameMap; readonly area: SpatialRect }, object: CompiledObject): void {
+export function stampFrozenObject(context: { readonly project: Project; readonly map: GameMap; readonly area: SpatialRect },
+  object: CompiledObject, previous?: CompiledObject): void {
   const { raster } = frozenObject(object.occurrence);
   const { map, project, area } = context;
   if (raster.tilesetId !== map.tilesetId) throw new SpatialCompileError("atlas", object.occurrence.id);
   const extent = { x: object.rect.x + object.rect.width - 1, y: object.rect.y + object.rect.height - 1 };
   if (!containsPoint(area, object.rect) || !containsPoint(area, extent)) throw new SpatialCompileError("clipped", object.occurrence.id);
-  for (const cell of object.placement.cells) {
+  const oldCells = previous?.placement.cells ?? [];
+  const oldPoints = new Set(oldCells.map(cell => `${cell.x},${cell.y}`));
+  const oldUpper = new Set(oldCells.filter(cell => cell.layer === "upper").map(cell => `${cell.x},${cell.y}`));
+  for (const cell of oldCells) {
     const i = cell.y * map.width + cell.x;
-    if (!isPassableLanding(project, map, cell.x, cell.y) || map.upperTiles[i] !== -1
+    const tile = cell.layer === "lower" ? map.lowerTiles[i] : map.upperTiles[i];
+    if (!containsPoint(area, cell) || tile !== cell.tile) throw new SpatialCompileError("ownership", object.occurrence.id);
+  }
+  for (const cell of [...oldCells, ...object.placement.cells]) {
+    const i = cell.y * map.width + cell.x;
+    const point = `${cell.x},${cell.y}`;
+    if ((!oldPoints.has(point) && !isPassableLanding(project, map, cell.x, cell.y))
+      || (map.upperTiles[i] !== -1 && !oldUpper.has(point))
       || map.lowerTileStacks?.[i]?.length || map.upperTileStacks?.[i]?.length
       || map.events.some(event => event.x === cell.x && event.y === cell.y)) {
       throw new SpatialCompileError("blocked", `${object.occurrence.id}@${cell.x},${cell.y}`);
     }
   }
-  for (const cell of object.placement.cells) {
+  // No underlay is stored: erase only the old graphic's exact layer cells, never its reservation.
+  for (const cell of [...oldCells.map(cell => ({ ...cell, tile: -1 })), ...object.placement.cells]) {
     const i = cell.y * map.width + cell.x;
     switch (cell.layer) {
       case "lower": map.lowerTiles[i] = cell.tile; break;

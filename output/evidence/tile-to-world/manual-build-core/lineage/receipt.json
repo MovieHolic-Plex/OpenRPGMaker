@@ -1,0 +1,26 @@
+{
+  "finding": "MB-HANDOFF-SESSION-LINEAGE",
+  "status": "fixed-candidate-awaiting-original-reviewer",
+  "baseCommit": "6271dcebe53e1f34f30c1b0dd9c0d28b7c26a653",
+  "scope": "Shared session generations and controller-private issuance ancestry only; no schema, apply, compiler, sibling adapter or UI changes",
+  "fix": "Every shared edit forks/continues a fresh issued generation instead of mutating an older issued shared handle. Private parent edges span forks, preview issuance and all adapter continuations. Retention requires descent from the current shared preview or draft before replacing any session state. An obsolete same-controller handle returns stale/authoring-session-lineage. Independent controller branches remain usable without the optional shared fence.",
+  "api": {
+    "createDraft": "createDraft(from?: SpatialAuthoringDraft): SpatialAuthoringResult<SpatialAuthoringDraft>",
+    "continueDraft": "continueDraft(preview: SpatialAuthoringPreview, ancestor?: SpatialAuthoringDraft | SpatialAuthoringPreview): SpatialAuthoringResult<SpatialAuthoringDraft>",
+    "retainAuthoringPreview": "Unchanged signature; shared access supplies the active ancestry fence internally",
+    "placedAdapters": "Signatures unchanged. Obtain the latest editAuthoringDraft result.value, pass it with the shared controller to either placed adapter, continue intermediate issued handles normally, retain the exact final preview. Do not reuse a draft from a previous shared edit."
+  },
+  "verification": {
+    "permanentRegression": "test/spatialAuthoringHandoffLineage.test.ts: original lost-build/source case, byte-identical ABA source edits, multi-step real clone/compile adapter continuation, independent branch isolation",
+    "red": "lineage/red.log: 3 genuine behavioral failures, 1 valid continuation pass",
+    "relatedGreen": "lineage/green.log: 11/11 across lineage, existing preview handoff and manual build continuation",
+    "finalRegressionAndTypes": "lineage/final-types-regression.log: app typecheck exit 0 and 4/4 permanent lineage tests",
+    "originalFiveProbes": "lineage/final-original-probes.log and lineage-probes/final-results.json: 5/5, monitor exit 0, original deadlines and shared lock",
+    "originalEvidencePreserved": "lineage/original-sha256.txt verified all six original independent artifacts unchanged; relocated adversarial.test.ts is byte-identical to original. Separate config changes only include path. Original writeFileSync emits into lineage-probes, not the independent RED observation.",
+    "diagnostics": "No diagnostics on three modified source files, permanent regression, relocated probe and config. A transient access diagnostic request timed out at 3000ms; later request succeeded without changed limits.",
+    "intermediateTypeFailure": "lineage/original-probes-types.log preserves TS18047/TS2322 nullability failure after 5/5 probes. Corrected by matching the issued-result union directly, no assertion/suppression.",
+    "broadBuildUiDb": "Not run, per requested narrow correction scope"
+  },
+  "review": "All modified source/permanent test files below 200 pure LOC (actions 111, types 56, shared access 154, regression 93). Single responsibilities retained; no untyped escapes, speculative checks, one-off helpers, logging, parameter bloat, negative naming or persisted authority. Exact frozen preview and build disclosure preserved. Compiler checkpoints survive guarded forks.",
+  "remaining": "Original independent reviewer must recheck candidate. UI acceptance remains pending. No claim that separately unverified sibling candidates are accepted."
+}

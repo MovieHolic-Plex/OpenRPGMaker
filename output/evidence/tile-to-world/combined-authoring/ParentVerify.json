@@ -1,0 +1,56 @@
+{
+  "plan": "tile-to-world-authoring",
+  "task": "11: combined backend and UI foundation prerequisite",
+  "verdict": "confirmed-integration-prerequisite",
+  "wholeTask11Accepted": false,
+  "base": "b57c8a4f0597b4974fa78ac8e523af15d62597fd",
+  "inputs": [
+    "1efacf9765412fcf51a255eaea21ea2049280307",
+    "3f774c76c4e587d5bb33ebb745fbb222b3da462a",
+    "0d15992118948c35968404ac485efafe2259b934",
+    "69ba241247c6caba7f5800452270d75ef3d4f7af",
+    "834d5e5e75778d95deb67f91acb560e7ca25819e",
+    "c93a9f5c68d72d480588ce452a40e5ca6354d2dd",
+    "6271dcebe53e1f34f30c1b0dd9c0d28b7c26a653",
+    "0fa84df41067d95dee202903ba07fa2cb9c5d7d9",
+    "0c2b086b8f4cfd54a67f63ebd5ceb3ca2e49faed",
+    "7f9bb2e5a8e2475d2d688164c7c5728c477a8b38"
+  ],
+  "parentVerification": {
+    "combinedTests": {"passed": 5, "failed": 0, "exitCode": 0},
+    "controllerCli": {
+      "domains": ["object", "space", "place"],
+      "exactUndoRedo": true,
+      "oneHistoryEntry": true,
+      "staleRejected": true,
+      "remoteWrites": 0
+    },
+    "fullBuild": {"app": true, "player": true, "standalone": true, "exitCode": 0},
+    "cssGate": {"exitCode": 0, "regressions": []},
+    "repairedPlaceSurface": {
+      "originalTestsPassed": 7,
+      "appTypecheckExitCode": 0,
+      "appRebuildExitCode": 0,
+      "canvasSha256": "d35db7bf4592722b8ad14569c81ca507fd62ffe23da1ee23767f1e5e1b724aba",
+      "browserReceipt": "place-canvas-contract.json",
+      "browserModel": "xai/grok-4.6",
+      "viewport": "1280x800"
+    },
+    "placeForkContract": {
+      "parentTestsPassed": 16,
+      "parentExitCode": 0,
+      "finalExhaustiveOperationTestsPassed": 15,
+      "finalExhaustiveOperationTestExitCode": 0,
+      "newRealControllerCase": "test/spatialPlaceForkContract.test.ts",
+      "finalTestSha256": "66b0f9abef5b0dbf43f62c017b9b107161514066b79d7b751582e208c92ccaba"
+    }
+  },
+  "limits": [
+    "Surface gate exited 1. Six event assertions match preserved baseline text exactly; relevant event/runtime source and five baseline tests have no delta from 2e2b76a. The new missing Places spatial-canvas contract was fixed and its original seven-test file passed.",
+    "Four TS2339 diagnostics in spatialPlaceActions.test.ts reproduce using UI1 original test and direct authoring contract with current transitive dependencies. No full historical-tree or all-test typecheck pass is claimed. Integration-owned TS2345 was fixed.",
+    "Individual backend and combined characterization evidence do not prove remaining manual controls, Q2/Q3, full browser matrix, provider generation, remote examples or shipment.",
+    "Three raw log files are shipped losslessly compressed; evidence-encoding.json records their decompressed names and hashes."
+  ],
+  "cleanup": "All parent validation monitors exited. Grok browser, owned Vite process, private cache and port were closed. No active product writer remains at this checkpoint.",
+  "next": "Implement manual Build, explicit targets, actual member/child controls and persisted drill navigation on this verified integration."
+}

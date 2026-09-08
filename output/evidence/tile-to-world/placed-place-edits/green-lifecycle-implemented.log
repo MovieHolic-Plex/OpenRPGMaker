@@ -1,0 +1,38 @@
+monitor_id=mon_1A1RSA9X7BTJ7VG9
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceLifecycle.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit"}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":" ✓ test/placedPlaceLifecycle.test.ts (3 tests) 10866ms"}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":"   ✓ instantiates only the selected subtree when adding another shared-descendant inn  4889ms"}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":"   ✓ deletes exact actual descendants when removing one nested inn  2928ms"}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":"   ✓ uses actual level and frozen child identity when moving a facility room  3047ms"}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":" Test Files  1 passed (1)"}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":"      Tests  3 passed (3)"}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":"   Start at  06:27:19"}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":"   Duration  20.35s (transform 5.89s, setup 0ms, collect 8.68s, tests 10.87s, environment 326ms, prepare 85ms)"}
+{"type":"line","id":"authoring-3335799","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3335799","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceLifecycle.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit
+
+ ✓ test/placedPlaceLifecycle.test.ts (3 tests) 10866ms
+   ✓ instantiates only the selected subtree when adding another shared-descendant inn  4889ms
+   ✓ deletes exact actual descendants when removing one nested inn  2928ms
+   ✓ uses actual level and frozen child identity when moving a facility room  3047ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  06:27:19
+   Duration  20.35s (transform 5.89s, setup 0ms, collect 8.68s, tests 10.87s, environment 326ms, prepare 85ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

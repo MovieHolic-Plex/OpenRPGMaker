@@ -1,0 +1,210 @@
+{
+  "taskId": "st_01a0834d",
+  "parentSession": "01a07858-5330-7a2d-a1e3-7cf50e54cea1",
+  "status": "confirmed-scoped-integration",
+  "sourceFrozen": true,
+  "readyForParentBuild": true,
+  "recordedAt": "2026-09-08T23:30:36Z",
+  "worktree": "/home/main/z-project/rpg-zzu-tile-to-world",
+  "scope": "Real shared authoring access, containing compile scope, placed-space/place adapters, retained controller authority, protected standalone refresh, atomic acceptance/history and canonical project IO. This is not whole task11 or UI acceptance.",
+  "outcome": "Five complementary integration cases pass. No product defect reproduced and no product logic repair made. Three initial new-test failures were corrected as invalid fixture placement and incidental event ordering, with the original failed execution retained. All 39 selected existing seam cases passed once against the identical product source.",
+  "candidate": {
+    "head": "b57c8a4f0597b4974fa78ac8e523af15d62597fd",
+    "stagedBinaryDiffSha256BeforeAndAfter": "5ed11c2b049f638e62b04293be8567c4d6c2344ba359f3d6fad48491b0f695ad",
+    "indexPreserved": true,
+    "parentOwnedDirtyPath": ".omo/ulw-execute/ledger.jsonl",
+    "parentOwnedPathEdited": false,
+    "commitsCreated": 0,
+    "gitStageOperations": 0,
+    "productEdits": [],
+    "newTestSources": [
+      "test/spatialCombinedAuthoring.test.ts",
+      "test/spatialCombinedRefresh.test.ts",
+      "test/support/combinedAuthoringFixture.ts"
+    ]
+  },
+  "sourceHashes": {
+    "algorithm": "SHA-256",
+    "allProductSourceManifest": "output/evidence/tile-to-world/combined-authoring/product-source-sha256.txt",
+    "allProductSourceManifestEntries": 2019,
+    "allProductSourceManifestSha256": "f2cc409db029b15c871070380fde7b164329ece530646c9309fe27c8f853d0d0",
+    "verificationSourceManifest": "output/evidence/tile-to-world/combined-authoring/verification-source-sha256.txt",
+    "verificationSourceManifestSha256": "34d6339d29f74e151c083aa57826c9bd01d9295b3f7711fb117acb4ab08a8d99",
+    "newTestSources": {
+      "test/spatialCombinedAuthoring.test.ts": "3d53bf121812eca9ca8d18fd1e829538c91e2cfd47354f83b958cd7d1ff114dc",
+      "test/spatialCombinedRefresh.test.ts": "3f26b9b07ef0c11e98f38633c2ad38c0408f098d84090216a67668fd87dad692",
+      "test/support/combinedAuthoringFixture.ts": "3047b7c53615d5ed61eae8fe09531180c15277034cf82b52bb8cfe631723a467"
+    }
+  },
+  "cases": [
+    {
+      "file": "test/spatialCombinedAuthoring.test.ts",
+      "name": "accepts one nested transaction when shared space and place adapters move delete and add actual members",
+      "status": "passed",
+      "durationMs": 9007.505029000002,
+      "proof": "Actual village -> inn -> room -> hearth resolves to the independently known village root. Shared space member move, shared place room move, exact room-subtree deletion and explicit new room addition chain through issued previews and retainAuthoringPreview. Deleted descendants stay absent; surviving peer and source library remain exact. Final shared Apply, one Undo, one Redo and both canonical serialization forms preserve the full project."
+    },
+    {
+      "file": "test/spatialCombinedAuthoring.test.ts",
+      "name": "preserves the continuing build when an obsolete member adapter hands off after a newer shared edit",
+      "status": "passed",
+      "durationMs": 7544.6913330000025,
+      "proof": "A real manual build is followed by an external placed-member deletion preview. A newer shared edit makes that exact same-controller handle session-obsolete. Retention rejects with stale/authoring-session-lineage while preserving active project identity, build disclosure, selection and history. The valid current generation then removes and adds a member, retains its allocated root and newer edit, re-previews and applies once with exact IO/history and placed-space selection."
+    },
+    {
+      "file": "test/spatialCombinedAuthoring.test.ts",
+      "name": "retains opaque transfer identities when an ordinary shared containing edit moves their actual destination",
+      "status": "passed",
+      "durationMs": 4120.621523000002,
+      "proof": "Real persisted opaque transfer pairs survive an ordinary previewPlacedPlaceEdit move through the known actual root, without explicit connection editing. Logical connections and pair IDs remain exact; all four interpreter traversal routes exist and target the new concrete port landing, not the old landing. Shared acceptance/history and both canonical IO forms are exact."
+    },
+    {
+      "file": "test/spatialCombinedRefresh.test.ts",
+      "name": "uses the retained protected checkpoint when shared edits refresh a standalone graphic twice before acceptance",
+      "status": "passed",
+      "durationMs": 3755.4627249999994,
+      "proof": "Two real graphic refreshes with different source cells are connected by retainAuthoringPreview and editAuthoringDraft. The second uses the retained protected raster rather than the live baseline. Selected frozen ports, sibling occurrence, every event keyed by actual ID, unmanaged cells/stacks and full transaction/IO state remain exact."
+    },
+    {
+      "file": "test/spatialCombinedRefresh.test.ts",
+      "name": "rejects editable raster adoption when a shared continuation follows a retained graphic refresh",
+      "status": "passed",
+      "durationMs": 1788.3409789999996,
+      "proof": "A legitimate retained graphic checkpoint does not authorize an arbitrary later raw draft pixel. The next real refresh rejects with ownership and preserves the active editable draft, original issued frozen pixels, live project and empty history."
+    }
+  ],
+  "validation": {
+    "executionPolicy": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/execution-policy.md",
+    "monitor": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/authoring-monitor.mjs",
+    "monitorMechanism": "TerminalRuntimeSession plus MonitorRegistry, subscribed line/exit events and await waitExit; no sleep or polling. All child processes exited normally. Monitor backend was pipe-fallback.",
+    "lock": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock",
+    "lockWaitSeconds": 30,
+    "killGraceSeconds": 10,
+    "workers": 1,
+    "testTimeoutMs": 15000,
+    "hookTimeoutMs": 90000,
+    "config": "output/evidence/tile-to-world/combined-authoring/verification.config.ts",
+    "filterDiscipline": "Config test.include is replaced via object spread, never mergeConfig/array concatenation. Every test execution also supplies exact positional test FILE filters. No unfiltered test run.",
+    "initialRun": {
+      "monitorId": "mon_6RN82A7SR946CPN0",
+      "exitCode": 1,
+      "deadlineSeconds": 240,
+      "durationSeconds": 111.89,
+      "total": 44,
+      "passed": 41,
+      "failed": 3,
+      "existingSeamCasesPassed": 39,
+      "newCasesPassed": 2,
+      "log": "output/evidence/tile-to-world/combined-authoring/tests-monitor.log",
+      "json": "output/evidence/tile-to-world/combined-authoring/tests.json",
+      "command": "node node_modules/vitest/vitest.mjs run --config output/evidence/tile-to-world/combined-authoring/verification.config.ts --configLoader bundle test/spatialCombinedAuthoring.test.ts test/spatialCombinedRefresh.test.ts test/spatialAuthoringScope.test.ts test/spatialAuthoringPreviewHandoff.test.ts test/spatialAuthoringHandoffLineage.test.ts test/spatialManualBuildContinuation.test.ts test/placedSpaceMembers.test.ts test/placedPlaceLifecycle.test.ts test/spatialConnectionRecompile.test.ts test/spatialOwnedObjectRefresh.test.ts --reporter=verbose --reporter=json --outputFile=output/evidence/tile-to-world/combined-authoring/tests.json"
+    },
+    "finalFocusedRun": {
+      "exitCode": 0,
+      "deadlineSeconds": 120,
+      "total": 5,
+      "passed": 5,
+      "failed": 0,
+      "log": "output/evidence/tile-to-world/combined-authoring/focused-tests-monitor.log",
+      "json": "output/evidence/tile-to-world/combined-authoring/focused-tests.json",
+      "command": "node node_modules/vitest/vitest.mjs run --config output/evidence/tile-to-world/combined-authoring/verification.config.ts --configLoader bundle test/spatialCombinedAuthoring.test.ts test/spatialCombinedRefresh.test.ts --reporter=verbose --reporter=json --outputFile=output/evidence/tile-to-world/combined-authoring/focused-tests.json",
+      "rerunReason": "Only new tests changed following diagnosed fixture/assertion mistakes. No unchanged existing seam file was repeated."
+    },
+    "appTypes": {
+      "monitorId": "mon_KSE6K3VDN68ER304",
+      "exitCode": 0,
+      "deadlineSeconds": 240,
+      "command": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.app.json",
+      "log": "output/evidence/tile-to-world/combined-authoring/app-types-monitor.log"
+    },
+    "changedTypes": {
+      "monitorId": "mon_YD5CMHM9YPZHF23Q",
+      "exitCode": 0,
+      "deadlineSeconds": 240,
+      "command": "node node_modules/typescript/bin/tsc --noEmit -p output/evidence/tile-to-world/combined-authoring/tsconfig.verify.json",
+      "log": "output/evidence/tile-to-world/combined-authoring/changed-types-monitor.log",
+      "scope": "All five new TypeScript files plus their real imports and project ambient declarations; explicit replacement include list."
+    },
+    "lspDiagnostics": {
+      "initialAllThreeTestSources": "No diagnostics found",
+      "finalSupportFixture": "No diagnostics found",
+      "finalVerificationConfig": "No diagnostics found",
+      "finalPlacementDiagnostic": "No diagnostics found",
+      "finalCombinedAuthoringTest": "Timed out waiting for fresh diagnostics within 3000ms",
+      "finalCombinedRefreshTest": "Timed out waiting for fresh diagnostics within 3000ms",
+      "resolution": "No retry-until-green. Final scoped tsc check passed for every new TS file and imported dependency; LSP timeout remains recorded as a tool limitation, not relabeled success."
+    },
+    "gitDiffCheck": "passed",
+    "fullBuildAndGates": "Not run here; parent-owned after this source freeze."
+  },
+  "redOrCharacterization": {
+    "classification": "characterization; no product RED and no production repair",
+    "initialFailureSourceHashes": "output/evidence/tile-to-world/combined-authoring/initial-test-sha256.txt",
+    "initialFailures": [
+      {
+        "cases": ["nested transaction", "continuing build"],
+        "output": "TypeError: code invalid, detail required; selected/new hearth required interaction anchor was unreachable at x=6,y=4.",
+        "diagnosis": "Real compileSpaces plus validateRasterAccess and computeReachableCells reported the moved hearth anchor (9,10) unreachable at (6,4), while (2,4) yielded reachable anchor (5,10) and validation ok. No mock, compiler change or weaker required guard.",
+        "correction": "Move fixture now uses valid (2,4). The remove/add build reuses the just-freed original valid (1,4) reservation rather than requesting the invalid (6,4) location. Identity, lifecycle, shared handoff and exact transaction assertions remain."
+      },
+      {
+        "cases": ["standalone refresh continuation"],
+        "output": "AssertionError on full map.events array equality: selected owned event is released/re-emitted after sibling and unmanaged events.",
+        "diagnosis": "compileSpatialOccurrence explicitly filters the selected owned event and compileObjectEvents appends it. All IDs and complete event values are retained; unrelated ordering was not the asserted contract.",
+        "correction": "Compare every complete event keyed by its actual event ID, without imposing incidental array order. Full project equality after acceptance, undo, redo and compact/pretty IO is still asserted."
+      }
+    ],
+    "diagnostic": {
+      "source": "output/evidence/tile-to-world/combined-authoring/placement-diagnostic.ts",
+      "log": "output/evidence/tile-to-world/combined-authoring/placement-diagnostic.log",
+      "monitorId": "mon_165CZZG92JD709FS",
+      "exitCode": 0,
+      "deadlineSeconds": 120,
+      "command": "node_modules/.bin/vite-node output/evidence/tile-to-world/combined-authoring/placement-diagnostic.ts",
+      "note": "Vite config printed missing-provider-key proxy registration notices. No provider request, browser action, database operation or content publication occurred."
+    },
+    "unresolvedProductFindings": []
+  },
+  "architecturalReview": {
+    "singleResponsibility": "Composition integration scenarios; protected refresh integration scenarios; reusable transaction fixture; scoped validator configuration; placement diagnostic.",
+    "pureLoc": {
+      "test/spatialCombinedAuthoring.test.ts": 121,
+      "test/spatialCombinedRefresh.test.ts": 63,
+      "test/support/combinedAuthoringFixture.ts": 48,
+      "output/evidence/tile-to-world/combined-authoring/verification.config.ts": 23,
+      "output/evidence/tile-to-world/combined-authoring/placement-diagnostic.ts": 27
+    },
+    "boundaryPurity": "Real public shared-access/controller APIs and canonical deserialize/serialize boundaries; no untyped domain payload bypass.",
+    "variantDiscrimination": "No new tagged-variant dispatch.",
+    "escapeHatches": "No any, unsafe assertions, non-null assertions or suppressed diagnostics.",
+    "defensiveLayers": "Only fixture precondition narrowing for nullable controller/actual parent/landing; no new production checks.",
+    "helpers": "All three added fixture helpers have multiple callers; no one-off production abstraction.",
+    "tests": "Five real integration scenarios; expected new states derive from fixture inputs, with real compiler/interpreter/history/IO and explicit negative paths.",
+    "parameterBloat": "No new function has more than three parameters.",
+    "redundantVerification": "No redundant production verification. Post-transaction reads are test assertions of the requested observable history contract.",
+    "negativeNaming": "No new negative-form flags or helper names.",
+    "logging": "No production logging changes. Diagnostic stdout is machine-readable evidence only."
+  },
+  "cleanup": {
+    "testTeardown": "Shared controller factory unbound, authoring sessions/history reset, prior project and editor state restored, fake background timers cleared and real timers restored. Existing fixture install disables remote persistence.",
+    "controllerCompilerMocks": false,
+    "timerPolicy": "Only background timer scheduling is faked; no timer advancement, sleep, wait loop or timing-based assertion. Every domain action is synchronous and real.",
+    "monitorProcesses": "All invoked monitors exited and disposed their runtimes; final process inspection found no matching validation process.",
+    "externalResources": "No browser, DB, provider or content operation; no server intentionally started or left running.",
+    "gitOperations": "No reset, checkout, stash, commit, merge, push, unstage or stage operation. Parent staged binary diff unchanged.",
+    "evidenceRetention": "All logs and initial failures preserved. Evidence directory is ignored by repository rules; parent must explicitly force-add selected evidence when preparing its commit.",
+    "newEvidenceDirectory": "output/evidence/tile-to-world/combined-authoring"
+  },
+  "handoff": {
+    "productAndTestSourceFrozen": true,
+    "parentMayBuildAndGate": true,
+    "parentCommitRequired": true,
+    "task11Complete": false,
+    "uiAcceptanceClaimed": false,
+    "assumptions": [
+      "This assignment verifies the specified nonvisual shared-access and adapter seams, not UI event-handler reachability or pixels.",
+      "Parent owns the full integration build/gates, UI acceptance and eventual staging/commit.",
+      "Existing backend verification is reused only for unchanged product sources; this receipt supplies complementary shared integration coverage."
+    ]
+  }
+}

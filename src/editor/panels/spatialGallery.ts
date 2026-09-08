@@ -3,16 +3,16 @@ import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSugg
 import { INTERIOR_OBJECT_THUMB_BACKGROUND_TILE } from "@/editor/panels/structureKitDbSources";
 import { interiorObjectCanvas } from "@/editor/panels/structureKitInspector";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
-import { createMapThumbnail } from "@/editor/panels/mapThumbnail";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
+import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
+import { renderPlaceCardThumb } from "@/editor/panels/spatialPlacePreview";
 import { resolveSpatialGraphic } from "@/project/spatial/assets";
-import { store } from "@/project/store";
 import type { SectionStructureKitDef, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
 function tilesetOf(card: SpatialGalleryCard): TilesetDef | undefined {
   if (!card.tilesetId) return undefined;
-  const tilesets = store.getCurrent().tilesets;
+  const tilesets = visibleAuthoringProject().tilesets;
   return Object.hasOwn(tilesets, card.tilesetId) ? tilesets[card.tilesetId] : undefined;
 }
 
@@ -29,7 +29,7 @@ function renderObjectThumb(card: SpatialGalleryCard): HTMLElement {
   const tileset = tilesetOf(card);
   const kitId = card.objectId ?? card.localId;
   if (tileset && kitId) {
-    const resolved = resolveSpatialGraphic(store.getCurrent(), { tilesetId: tileset.id, kitId });
+    const resolved = resolveSpatialGraphic(visibleAuthoringProject(), { tilesetId: tileset.id, kitId });
     if (card.source === "default") {
       const builtin = renderBuiltinObject(tileset, kitId);
       if (builtin) return builtin;
@@ -78,15 +78,21 @@ function renderSpaceThumb(card: SpatialGalleryCard): HTMLElement {
   });
 }
 
+function renderMapThumb(card: SpatialGalleryCard): HTMLElement {
+  const project = visibleAuthoringProject();
+  const map = card.mapId && Object.hasOwn(project.maps, card.mapId) ? project.maps[card.mapId] : undefined;
+  const tilesetId = map?.tilesetId ?? card.tilesetId;
+  const tileset = tilesetId && Object.hasOwn(project.tilesets, tilesetId) ? project.tilesets[tilesetId] : undefined;
+  if (!tileset) return el("div", { class: "spatial-card-fallback" });
+  return el("img", {
+    class: "spatial-card-image",
+    attrs: { src: tilesetImageUrl(tileset), alt: "", draggable: "false" },
+  });
+}
+
 export function renderSpatialCardThumb(card: SpatialGalleryCard): HTMLElement {
-  if (card.mapId) {
-    return createMapThumbnail(card.mapId, {
-      width: 160,
-      height: 120,
-      className: "spatial-card-map",
-      testId: `spatial-thumb-map-${card.mapId}`,
-    });
-  }
+  if (card.kind === "places") return renderPlaceCardThumb(card);
+  if (card.mapId) return renderMapThumb(card);
   if (card.kind === "tiles") {
     const tileset = tilesetOf(card);
     if (!tileset) return el("div", { class: "spatial-card-fallback" });
@@ -95,7 +101,7 @@ export function renderSpatialCardThumb(card: SpatialGalleryCard): HTMLElement {
       attrs: { src: tilesetImageUrl(tileset), alt: "", draggable: "false" },
     });
   }
-  if (card.kind === "objects" || card.kind === "places") return renderObjectThumb(card);
+  if (card.kind === "objects") return renderObjectThumb(card);
   if (card.kind === "spaces") return renderSpaceThumb(card);
   const tileset = tilesetOf(card);
   if (!tileset) return el("div", { class: "spatial-card-fallback" });

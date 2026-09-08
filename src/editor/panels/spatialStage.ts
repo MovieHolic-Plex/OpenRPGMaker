@@ -1,7 +1,6 @@
 import { renderWorldGenTab } from "@/editor/panels/databaseWorldGenView";
 import { renderVillageTab } from "@/editor/panels/databaseVillageView";
 import { renderTilesetSpacesTab } from "@/editor/panels/tilesetSpacesTab";
-import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
 import { listSpatialGalleryCards, spatialCardById, type SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { renderSpatialCardThumb } from "@/editor/panels/spatialGallery";
 import {
@@ -10,6 +9,23 @@ import {
   spatialSession,
   type SpatialAuthoringSession,
 } from "@/editor/panels/spatialAuthoringSession";
+import {
+  renderSpatialObjectsCanvas,
+  renderSpatialObjectsInspector,
+  spatialObjectsChrome,
+} from "@/editor/panels/spatialObjectsTab";
+import {
+  renderSpatialPlacesCanvas,
+  renderSpatialPlacesInspector,
+  spatialPlacesChrome,
+  visiblePlaceSelection,
+} from "@/editor/panels/spatialPlacesTab";
+import {
+  renderSpatialSpacesCanvas,
+  renderSpatialSpacesInspector,
+  spatialSpacesChrome,
+} from "@/editor/panels/spatialSpacesTab";
+import { renderSpatialTilesCanvas, spatialTilesChrome, type SpatialDomainChrome } from "@/editor/panels/spatialTilesTab";
 import { el } from "@/util/dom";
 
 const TAB_LABEL = {
@@ -46,12 +62,23 @@ export function inspectorSourceLabel(card: SpatialGalleryCard): string {
   }
 }
 
+function domainChrome(session: SpatialAuthoringSession, onChange: () => void): SpatialDomainChrome | undefined {
+  const selected = visibleSpatialSelection(session);
+  if (session.tab === "tiles") return spatialTilesChrome();
+  if (session.tab === "objects") return spatialObjectsChrome(selected, onChange);
+  if (session.tab === "spaces") return spatialSpacesChrome(selected, onChange);
+  if (session.tab === "places") return spatialPlacesChrome(visiblePlaceSelection(selected), onChange);
+  return undefined;
+}
+
 export function renderSpatialChrome(
   session: SpatialAuthoringSession,
   onChange: () => void,
 ): HTMLElement {
   const selected = visibleSpatialSelection(session);
   const crumbLabel = selected?.name ?? TAB_LABEL[session.tab];
+  const chrome = domainChrome(session, onChange);
+  const previewError = chrome?.previewError ?? null;
   return el("div", {
     class: "spatial-chrome",
     children: [
@@ -111,18 +138,29 @@ export function renderSpatialChrome(
       el("div", {
         class: "spatial-actions",
         children: [
-          actionButton("spatial-add", "추가", false),
-          actionButton("spatial-duplicate", "복제", false),
-          actionButton("spatial-delete", "삭제", false),
-          actionButton("spatial-preview", "미리보기", false),
-          actionButton("spatial-apply", "적용", false),
-          actionButton("spatial-refresh", "새로고침", false),
-          actionButton("spatial-detach", "분리", false),
-          actionButton("spatial-undo", "되돌리기", false),
-          actionButton("spatial-redo", "다시 실행", false),
-          el("span", { class: "spatial-save-state", text: "읽기", dataset: { testid: "spatial-save-state" } }),
-          el("button", { class: "spatial-delete-confirm", text: "확인", attrs: { type: "button", hidden: "" }, dataset: { testid: "spatial-delete-confirm" } }),
-          el("span", { class: "spatial-preview-error", attrs: { hidden: "" }, dataset: { testid: "spatial-preview-error" } }),
+          actionButton("spatial-add", "추가", Boolean(chrome?.add), chrome?.add),
+          actionButton("spatial-duplicate", "복제", Boolean(chrome?.duplicate), chrome?.duplicate),
+          actionButton("spatial-delete", "삭제", Boolean(chrome?.delete), chrome?.delete),
+          actionButton("spatial-preview", "미리보기", Boolean(chrome?.preview), chrome?.preview),
+          actionButton("spatial-apply", "적용", Boolean(chrome?.apply), chrome?.apply),
+          actionButton("spatial-refresh", "새로고침", Boolean(chrome?.refresh), chrome?.refresh),
+          actionButton("spatial-detach", "분리", Boolean(chrome?.detach), chrome?.detach),
+          actionButton("spatial-undo", "되돌리기", Boolean(chrome?.undo), chrome?.undo),
+          actionButton("spatial-redo", "다시 실행", Boolean(chrome?.redo), chrome?.redo),
+          el("span", { class: "spatial-save-state", text: chrome?.saveState ?? "읽기", dataset: { testid: "spatial-save-state" } }),
+          el("button", {
+            class: "spatial-delete-confirm",
+            text: "확인",
+            attrs: { type: "button", ...(chrome?.deleteOpen ? {} : { hidden: "" }) },
+            dataset: { testid: "spatial-delete-confirm" },
+            on: chrome?.onDeleteConfirm ? { click: chrome.onDeleteConfirm } : undefined,
+          }),
+          el("span", {
+            class: "spatial-preview-error",
+            text: previewError ?? "",
+            attrs: previewError ? {} : { hidden: "" },
+            dataset: { testid: "spatial-preview-error" },
+          }),
         ],
       }),
     ],
@@ -131,10 +169,6 @@ export function renderSpatialChrome(
 
 function renderLegacyStage(session: SpatialAuthoringSession, rerender: () => void): HTMLElement | null {
   const host = el("div", { class: "spatial-legacy-host" });
-  if (session.tab === "tiles") {
-    renderTilesetsTab(host, rerender);
-    return host;
-  }
   if (session.legacyOrigin === "tilesetSpaces" && session.tab === "spaces") {
     renderTilesetSpacesTab(host, rerender);
     return host;
@@ -155,6 +189,10 @@ export function renderSpatialCanvas(
   card: SpatialGalleryCard | undefined,
   rerender: () => void,
 ): HTMLElement {
+  if (session.tab === "tiles") return renderSpatialTilesCanvas(session, card, rerender);
+  if (session.tab === "objects") return renderSpatialObjectsCanvas(session, card);
+  if (session.tab === "spaces") return renderSpatialSpacesCanvas(session, card, rerender);
+  if (session.tab === "places") return renderSpatialPlacesCanvas(session, visiblePlaceSelection(card), rerender);
   const legacy = renderLegacyStage(session, rerender);
   const art = card ? renderSpatialCardThumb(card) : el("div", { class: "spatial-canvas-empty" });
   art.classList.add("spatial-canvas-art");
@@ -175,7 +213,16 @@ export function renderSpatialCanvas(
   });
 }
 
-export function renderSpatialInspector(card: SpatialGalleryCard | undefined, open: boolean): HTMLElement {
+export function renderSpatialInspector(
+  card: SpatialGalleryCard | undefined,
+  open: boolean,
+  onChange: () => void = () => undefined,
+): HTMLElement {
+  if (spatialSession().tab === "objects") return renderSpatialObjectsInspector(card, open, onChange);
+  if (spatialSession().tab === "spaces") return renderSpatialSpacesInspector(card, open, onChange);
+  if (spatialSession().tab === "places") {
+    return renderSpatialPlacesInspector(visiblePlaceSelection(card), open, onChange);
+  }
   const body: HTMLElement[] = [];
   if (card) {
     body.push(el("h3", { class: "spatial-inspector-name", text: card.name }));

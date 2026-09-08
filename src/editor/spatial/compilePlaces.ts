@@ -7,6 +7,7 @@ import { occurrenceSubtree } from "@/project/spatial/ownership";
 import type { SpatialOccurrence } from "@/project/spatial/types";
 import type { Project } from "@/project/types";
 import { compileConnections } from "./compileConnections";
+import { inspectRemovedAuthoringTransfers } from "./authoringConnections";
 import { objectPorts } from "./compileObjects";
 import { spatialRasterDigest } from "./compilerValidation";
 import { SpatialCompileError, type SpatialCompileContext } from "./compilerTypes";
@@ -21,6 +22,10 @@ export function compilePlaces(context: SpatialCompileContext): Project {
   const { positions, surfaces } = placeLayout(context);
   const eventOrder = new Map(Object.values(project.maps).map(map => [map.id, new Map(map.events.map((event, index) => [event.id, index]))]));
   const connectionOrder = new Map(project.mapConnections?.map((connection, index) => [connection.id, index]));
+  // Capture exact ordinary transfers before their raster owners release them. Outside links are not this write set.
+  const transfers = inspectRemovedAuthoringTransfers(project, document, { ...document,
+    connections: document.connections.filter(link => !members.has(link.from.occurrenceId) && !members.has(link.to.occurrenceId)),
+  });
   releasePlaceOwnership(project, document, members);
   const placed = placeCanvases({ project, document, rootId: context.occurrence.id }, surfaces);
   const occurrences: Record<string, SpatialOccurrence> = { ...document.occurrences };
@@ -79,7 +84,7 @@ export function compilePlaces(context: SpatialCompileContext): Project {
     }
     appendToTree(project.mapTree, map.id, parentMapId);
   }
-  const connected = compileConnections(project, { ...document, occurrences }, members);
+  const connected = compileConnections(project, { ...document, occurrences }, { members, transfers });
   for (const map of new Set(placed.map(item => item.map))) {
     const order = eventOrder.get(map.id);
     map.events.sort((a, b) => (order?.get(a.id) ?? Infinity) - (order?.get(b.id) ?? Infinity));

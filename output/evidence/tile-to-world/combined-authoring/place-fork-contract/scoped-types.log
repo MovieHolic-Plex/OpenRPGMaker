@@ -1,0 +1,18 @@
+test/.spatialPlaceActions.before-st_01a08368.ts: 5 diagnostics
+test/.spatialPlaceActions.before-st_01a08368.ts(174,30): error TS2345: Argument of type '{ readonly kind: "edit-connection"; readonly request: SpatialConnectionEdit; }' is not assignable to parameter of type 'never'.
+test/.spatialPlaceActions.before-st_01a08368.ts(353,25): error TS2339: Property 'operation' does not exist on type 'never'.
+test/.spatialPlaceActions.before-st_01a08368.ts(354,25): error TS2339: Property 'compile' does not exist on type 'never'.
+test/.spatialPlaceActions.before-st_01a08368.ts(360,25): error TS2339: Property 'operation' does not exist on type 'never'.
+test/.spatialPlaceActions.before-st_01a08368.ts(367,25): error TS2339: Property 'operation' does not exist on type 'never'.
+
+test/spatialPlaceActions.test.ts: 5 diagnostics
+test/spatialPlaceActions.test.ts(174,30): error TS2345: Argument of type '{ readonly kind: "edit-connection"; readonly request: SpatialConnectionEdit; }' is not assignable to parameter of type 'never'.
+test/spatialPlaceActions.test.ts(353,25): error TS2339: Property 'operation' does not exist on type 'never'.
+test/spatialPlaceActions.test.ts(354,25): error TS2339: Property 'compile' does not exist on type 'never'.
+test/spatialPlaceActions.test.ts(360,25): error TS2339: Property 'operation' does not exist on type 'never'.
+test/spatialPlaceActions.test.ts(367,25): error TS2339: Property 'operation' does not exist on type 'never'.
+
+test/spatialPlaceForkContract.test.ts: 0 diagnostics
+
+
+EXIT=1

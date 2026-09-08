@@ -39,23 +39,41 @@ export function createSpatialAuthoringController(): SpatialAuthoringController {
   const checkpoints = new WeakMap<SpatialAuthoringDraft, SpatialAuthoringPreview>();
   const previews = new WeakMap<SpatialAuthoringPreview, string>();
   const applied = new WeakSet<SpatialAuthoringPreview>();
+  // Immutable issuance edges, not source/content equality. Forks are distinct edit generations.
+  type Handle = SpatialAuthoringDraft | SpatialAuthoringPreview;
+  const parents = new WeakMap<Handle, Handle>();
   return {
-    createDraft() {
+    createDraft(from) {
+      const expected = from ? drafts.get(from) : baseline();
+      if (expected === undefined) return { kind: "error", error: { code: "foreign-draft", message: "Draft belongs to another controller" } };
+      if (expected !== baseline()) return { kind: "error", error: { code: "stale", message: "Project changed since draft creation" } };
       return result(() => {
-        const draft = { project: structuredClone(store.getCurrent()) };
-        drafts.set(draft, baseline());
+        const draft = { project: structuredClone(from?.project ?? store.getCurrent()) };
+        drafts.set(draft, expected);
+        if (from) {
+          parents.set(draft, from);
+          const checkpoint = checkpoints.get(from);
+          if (checkpoint) checkpoints.set(draft, checkpoint);
+        }
         return draft;
       });
     },
-    continueDraft(preview) {
+    continueDraft(preview, ancestor) {
       const expected = previews.get(preview);
       if (expected === undefined) return { kind: "error", error: { code: "foreign-preview", message: "Preview belongs to another controller" } };
       if (applied.has(preview)) return { kind: "error", error: { code: "already-applied", message: "Preview has already been accepted" } };
       if (expected !== baseline()) return { kind: "error", error: { code: "stale", message: "Project changed since preview" } };
+      if (ancestor) {
+        let cursor: Handle | undefined = preview;
+        while (cursor && cursor !== ancestor) cursor = parents.get(cursor);
+        if (!cursor) return { kind: "error", error: { code: "stale", message: "Preview superseded by shared authoring edits",
+          detail: "authoring-session-lineage" } };
+      }
       return result(() => {
         const draft = { project: structuredClone(preview.project) };
         drafts.set(draft, expected);
         checkpoints.set(draft, preview);
+        parents.set(draft, preview);
         return draft;
       });
     },
@@ -69,6 +87,7 @@ export function createSpatialAuthoringController(): SpatialAuthoringController {
           original, checkpoint: checkpoints.get(draft)?.project ?? original,
         });
         previews.set(preview, expected);
+        parents.set(preview, draft);
         return preview;
       });
     },

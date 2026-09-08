@@ -1,0 +1,60 @@
+monitor_id=mon_HG5CNZS6JM41RFSA
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuild.test.ts test/spatialManualBuildBoundary.test.ts test/spatialAuthoringScope.test.ts --maxWorkers=1"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":" ✓ test/spatialManualBuildBoundary.test.ts (10 tests) 3558ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"   ✓ builds canonical place maps when the gallery carries explicit library identity  1190ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"   ✓ discloses the original frozen proposal when source and seed controls change  697ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"   ✓ drops transient build inputs when project identity changes  728ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringScope.test.ts (2 tests) 2274ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"   ✓ compiles the connected containing root when a nested actual room is edited  1571ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"   ✓ uses actual containment when an object belongs to a standalone room  702ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":" ✓ test/spatialManualBuild.test.ts (7 tests) 8187ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > displays exact raster without adoption when an explicit object target is built  1077ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > adopts one undo step and selects the exact root when Apply accepts a space build  1999ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > retains the allocated root when a displayed build is previewed again  1316ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > preserves continuation when a build is edited without replaying instantiate  1422ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > creates no occurrence when ordinary source-save Preview is used  583ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > rejects stale Apply without adoption when a live target tile changes  1014ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > keeps Apply unavailable when an occupied object target is rejected  774ms"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":" Test Files  3 passed (3)"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"      Tests  19 passed (19)"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"   Start at  06:37:03"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":"   Duration  23.35s (transform 4.06s, setup 0ms, collect 8.15s, tests 14.02s, environment 1ms, prepare 228ms)"}
+{"type":"line","id":"authoring-3544110","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3544110","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuild.test.ts test/spatialManualBuildBoundary.test.ts test/spatialAuthoringScope.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core
+
+ ✓ test/spatialManualBuildBoundary.test.ts (10 tests) 3558ms
+   ✓ builds canonical place maps when the gallery carries explicit library identity  1190ms
+   ✓ discloses the original frozen proposal when source and seed controls change  697ms
+   ✓ drops transient build inputs when project identity changes  728ms
+ ✓ test/spatialAuthoringScope.test.ts (2 tests) 2274ms
+   ✓ compiles the connected containing root when a nested actual room is edited  1571ms
+   ✓ uses actual containment when an object belongs to a standalone room  702ms
+ ✓ test/spatialManualBuild.test.ts (7 tests) 8187ms
+   ✓ manual source build through the real controller > displays exact raster without adoption when an explicit object target is built  1077ms
+   ✓ manual source build through the real controller > adopts one undo step and selects the exact root when Apply accepts a space build  1999ms
+   ✓ manual source build through the real controller > retains the allocated root when a displayed build is previewed again  1316ms
+   ✓ manual source build through the real controller > preserves continuation when a build is edited without replaying instantiate  1422ms
+   ✓ manual source build through the real controller > creates no occurrence when ordinary source-save Preview is used  583ms
+   ✓ manual source build through the real controller > rejects stale Apply without adoption when a live target tile changes  1014ms
+   ✓ manual source build through the real controller > keeps Apply unavailable when an occupied object target is rejected  774ms
+
+ Test Files  3 passed (3)
+      Tests  19 passed (19)
+   Start at  06:37:03
+   Duration  23.35s (transform 4.06s, setup 0ms, collect 8.15s, tests 14.02s, environment 1ms, prepare 228ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

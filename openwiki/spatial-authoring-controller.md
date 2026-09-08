@@ -1,5 +1,8 @@
 # Shared spatial authoring controller
 
+Manual source-build API, frozen-input disclosure and compile-owner routing:
+[Manual spatial source-build core](spatial-manual-build.md).
+
 ## Status and ownership
 
 Task11's backend supports object, space and place authoring through the real project
@@ -29,12 +32,20 @@ There is no panel-specific persistence, history, activation or save-token author
    not an extra history step.
 6. `undo()` and `redo()` traverse the existing global editor history. They are not
    private panel undo stacks.
+Shared edit generations use the additive `createDraft(fromDraft?)` guarded fork.
+It preserves the original live baseline and compiler-protected checkpoint, but
+issues a new detached handle. `continueDraft(preview, ancestor?)` can require that
+the preview descends from an exact active draft/proposal generation. Its issuer,
+spent and live-stale checks retain priority. Private ancestry spans all intermediate
+previews/continuations; no persisted schema or independent-branch invalidation is
+introduced. See the manual-build page for both placed adapters' handoff recipe.
+
 
 Results discriminate on `kind: "ok" | "error"`. Errors expose `code`, `message`
 and optional `detail`; expected invalid input, unsupported compilation, stale
 baselines and ownership rejection do not mutate live state.
 
-Operations are `edit`, `instantiate`, `clone-occurrence`, `clone-design`,
+Operations are `edit`, `edit-connection`, `instantiate`, `clone-occurrence`, `clone-design`,
 `delete-occurrence`, `delete-design`, `detach` and `refresh`. Instantiation,
 duplication and deletion use the existing domain request types. Source deletion
 rejects strong references but retains historical snapshots. Duplication copies
@@ -66,6 +77,35 @@ release ownership while retaining pixels, events and navigation. Compilation sti
 rejects stale owned raster; this controller does not implement an implicit force
 replace. A compiled projected child must be recompiled through its actual owning
 composition when its rendered output needs to change.
+
+## Selective standalone-object graphic replacement
+
+`compileSpatialOccurrence(project, request, previousOccurrence?)` accepts the prior
+occurrence as compiler-only authorization for replacing an owned standalone graphic.
+`previewSpatialAuthoring` supplies it only from `protectedDocument.occurrences`:
+for a continuation this is the latest issued preview checkpoint, never the editable
+draft or refreshed snapshot. A newly instantiated root has no checkpoint entry and
+retains the original first-stamp path. Direct compiler calls without prior context
+retain matching-raster validation; they do not guess an old footprint.
+
+Both old and current owned bindings must match the explicit target and their stored
+raster digests. Replacement clears only the prior frozen graphic's exact layer
+cells, then paints the selected new frozen cells inside the same reservation.
+There is no stored underlay: a vacated graphic layer becomes `-1`, not invented
+floor terrain. Unused reservation cells, other layers, stacks, unmanaged events
+and disjoint sibling bindings remain untouched. New occupied cells use the normal
+blocked-cell checks; atlas mismatch, oversize, stale content, overlapping unmanaged
+events and inaccessible ports reject the detached proposal. Projection bindings
+still confer no replacement authority. Source-only edits do not refresh instances.
+
+Compiler regressions are in `test/spatialOwnedObjectCompile.test.ts`; they build
+two actual mixed-layer authored objects before editing their shared source, and
+cover selective repaint, shrink, preservation, digest-adoption rejection and
+invalid targets. `test/spatialOwnedObjectRefresh.test.ts` separately exercises the
+real controller bridge: selective mixed-layer refresh, exact sibling/outside-cell
+preservation, whole-project apply/undo/redo, continued refresh, forged editable
+footprints, first builds, and stored/forged digest rejection. Compiler-only tests
+are not substituted for this controller/history acceptance.
 
 ## Editable preview continuation
 
@@ -107,6 +147,55 @@ entry. Rejected store writes preserve both undo and redo stacks. Event-draft,
 canonical activation, raw snapshot and CAS recovery behavior remains in the store.
 
 ## Exact connection cleanup
+
+Placed ordinary links use `operation: { kind: "edit-connection", request }`.
+`SpatialConnectionEdit` in `authoringTypes.ts` accepts exactly these intents:
+
+- `{ kind: "create", connection: { id, from, to, bidirectional } }` allocates the
+  caller's fresh actual edge ID; collisions with any spatial ID reject.
+- `{ kind: "replace", connection: { id, from, to, bidirectional } }` replaces
+  the existing edge at that exact ID, including endpoint or direction changes.
+- `{ kind: "remove", connectionId }` unlinks that exact existing edge.
+
+Both endpoints contain actual `{ occurrenceId, portId }` values. Resolve named
+ports with the existing `localPortId` associations before this boundary. Ordinary
+links have no mandatory local-connection provenance: do not parse edge IDs or
+attach `overviewRoute`. This API rejects overview routes; their geography-owned
+association and write-set rules remain unchanged.
+
+Every connection edit requires the normal explicit `compile: { occurrenceId }`
+request covering all old and new endpoints in that occurrence's actual subtree.
+For connected rooms, use the containing place, not a leaf room. Keep the draft's
+connection graph unchanged and send the intended change in the operation; old
+proof comes from the controller checkpoint, not a caller-rewritten graph.
+Use `continueDraft` for subsequent operations on an unapplied proposal.
+
+Replace/remove preflight the old concrete landings, exact owned event IDs,
+raster digests and strict transfer/mapConnection pairs. Missing authority is not
+treated as uncompiled when an old pair or another direction's claim exists.
+Only the selected edge's authorized transfers and binding connection IDs are
+released before the new graph is validated and compiled. Invalid ports, blocked
+landings, unknown edge IDs, unmanaged ambiguity or insufficient compilation scope
+reject without changing live project/history. All existing compiler guards still
+apply; this is not implicit source refresh or generic graph reconciliation.
+
+Containing place recompilation also preserves the persisted identities of retained
+ordinary transfers. Before raster release, it captures their exact logical edge,
+concrete source/target ports, actual event owner, raster digest and validated
+event/mapConnection pair. Emission uses that transient proof, not the spelling of
+an event ID. Unchanged associations retain the complete event/page and projection
+payloads, including opaque saved IDs. If the same concrete port moves, only source
+coordinates and transfer destination coordinates change; saved IDs and other
+payload fields remain intact. Mismatched old endpoints or ownership reject rather
+than being hidden by restoring old commands after compilation. No persisted
+provenance or schema field is added.
+
+`test/spatialConnectionIdentity.test.ts` promotes the independent AV-CONNECTION-01
+fixture and its seven passing controls. `test/spatialConnectionRecompile.test.ts`
+covers moved-port identity retention with real interpreter destinations and rejects
+mismatched old graph/pair proof. The original independent RED report remains under
+`output/evidence/tile-to-world/connection-edit/independent/`; correction evidence is
+separate under `connection-edit/identity-fix/`.
 
 Delete/refresh consumes `inspectOverviewEntryChanges` and the actual event-owner
 records. Both source and return owners, their raster digests, actual automatic

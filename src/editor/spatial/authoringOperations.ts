@@ -5,12 +5,15 @@ import { deleteSpatialDesign, deleteSpatialOccurrence, detachSpatialOccurrence }
 import type { Project } from "@/project/types";
 import type { SpatialAuthoringOperation } from "./authoringTypes";
 import { refreshSpatialAuthoring } from "./authoringRefresh";
+import { editSpatialAuthoringConnection } from "./authoringConnectionEdit";
 
 /** Mutates only the private proposal builder. Domain APIs keep frozen identity semantics. */
 export function applySpatialAuthoringOperation(project: Project, operation: SpatialAuthoringOperation): void {
   const document = checkedDocument(project.spatialAuthoring, project);
   switch (operation.kind) {
     case "edit": return;
+    case "edit-connection":
+      editSpatialAuthoringConnection(project, operation.request); return;
     case "instantiate":
       project.spatialAuthoring = instantiateSpatialDesign(document, project, operation.request); return;
     case "clone-occurrence":

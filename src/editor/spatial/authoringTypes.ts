@@ -1,5 +1,5 @@
 import type { Project } from "@/project/types";
-import type { SpatialDesignReference, SpatialId } from "@/project/spatial/types";
+import type { SpatialConnection, SpatialDesignReference, SpatialId } from "@/project/spatial/types";
 import type { SpatialInstantiation } from "@/project/spatial/instances";
 import type { SpatialDuplication } from "@/project/spatial/duplicate";
 import type { SpatialDeletion } from "@/project/spatial/ownership";
@@ -7,8 +7,13 @@ import type { SpatialCompileRequest } from "./compilerTypes";
 
 /** Detached working copy. Panels may edit project; baseline is controller-owned. */
 export type SpatialAuthoringDraft = { readonly project: Project };
+/** Actual ordinary edge identities and concrete ports only; named ports are resolved by callers. */
+export type SpatialConnectionEdit =
+  | { readonly kind: "create" | "replace"; readonly connection: Omit<SpatialConnection, "overviewRoute"> }
+  | { readonly kind: "remove"; readonly connectionId: SpatialId };
 export type SpatialAuthoringOperation =
   | { readonly kind: "edit" }
+  | { readonly kind: "edit-connection"; readonly request: SpatialConnectionEdit }
   | { readonly kind: "instantiate"; readonly request: SpatialInstantiation }
   | { readonly kind: "clone-occurrence"; readonly request: SpatialDuplication }
   | { readonly kind: "clone-design"; readonly source: SpatialDesignReference; readonly id: SpatialId; readonly name: string }
@@ -43,9 +48,11 @@ export type SpatialAuthoringResult<T> =
 export type SpatialAuthoringApplied = { readonly changed: boolean; readonly impact: SpatialAuthoringImpact };
 /** Uses the existing singleton project store and project history, not panel persistence. */
 export interface SpatialAuthoringController {
-  createDraft(): SpatialAuthoringResult<SpatialAuthoringDraft>;
-  /** Continue an issued, unapplied preview without adopting it or resetting its live baseline. */
-  continueDraft(preview: SpatialAuthoringPreview): SpatialAuthoringResult<SpatialAuthoringDraft>;
+  /** Optional guarded fork: new edit generation, same live baseline and protected checkpoint. */
+  createDraft(from?: SpatialAuthoringDraft): SpatialAuthoringResult<SpatialAuthoringDraft>;
+  /** Continue an issued, unapplied preview; an optional ancestor fences a shared session's
+   * active generation without invalidating independent controller branches. */
+  continueDraft(preview: SpatialAuthoringPreview, ancestor?: SpatialAuthoringDraft | SpatialAuthoringPreview): SpatialAuthoringResult<SpatialAuthoringDraft>;
   preview(draft: SpatialAuthoringDraft, request: SpatialAuthoringRequest): SpatialAuthoringResult<SpatialAuthoringPreview>;
   apply(preview: SpatialAuthoringPreview): SpatialAuthoringResult<SpatialAuthoringApplied>;
   undo(): boolean;

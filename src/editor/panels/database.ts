@@ -46,10 +46,13 @@ import { renderScratchConceptTab } from "@/editor/panels/scratchConceptTab";
 import { interiorRoomKindCount, renderTilesetSpacesTab } from "@/editor/panels/tilesetSpacesTab";
 import { renderSpatialAuthoringShell } from "@/editor/panels/spatialShell";
 import {
+  onSpatialTabReveal,
   rememberLegacySpatialRoute,
   setSpatialTab,
   type SpatialShellTab,
 } from "@/editor/panels/spatialAuthoringSession";
+import { bindSpatialAuthoringControllerFactory } from "@/editor/panels/spatialAuthoringAccess";
+import { createSpatialAuthoringController } from "@/editor/spatial/actions";
 import { spatialAllSourceDesignCount } from "@/editor/panels/spatialCatalog";
 import { listUnlabeledTileIds } from "@/editor/panels/tilesetMetadataControls";
 import { renderWorldCanonTab } from "@/editor/panels/databaseWorldCanonView";
@@ -209,6 +212,17 @@ const SHELL_TAB_BY_SPATIAL: Partial<Record<DatabaseTab, SpatialShellTab>> = {
   spatialWorlds: "worlds",
 };
 
+const DATABASE_TAB_BY_SHELL: Record<SpatialShellTab, DatabaseTab> = {
+  tiles: "spatialTiles",
+  objects: "spatialObjects",
+  spaces: "spatialSpaces",
+  places: "spatialPlaces",
+  regions: "spatialRegions",
+  worlds: "spatialWorlds",
+};
+
+bindSpatialAuthoringControllerFactory(createSpatialAuthoringController);
+
 export function resolveCanonicalDatabaseTab(tab: DatabaseTab): DatabaseTab {
   if (tab === "equipment") return "items";
   return LEGACY_SPATIAL_ROUTE[tab] ?? tab;
@@ -348,6 +362,7 @@ const DATABASE_ACTIVE_TAB_KEY = "oprn:database.activeTab";
 const DATABASE_COLLAPSED_GROUPS_KEY = "oprn:database.collapsedTabGroups";
 
 let activeTab: DatabaseTab = readStoredActiveTab();
+let spatialDatabaseHost: HTMLElement | null = null;
 
 type DatabaseTabRenderCache = {
   readonly project: Project;
@@ -363,6 +378,19 @@ const tabRenderCaches = new WeakMap<HTMLElement, DatabaseTabRenderCache>();
 // 하는 표면용. DOM 이벤트 대신 순수 Set 인 이유: fake DOM 테스트에는 `document.dispatchEvent`
 // 가 없고, 구독자는 어차피 이 모듈 안의 setter 한 곳만 알면 된다.
 const activeTabListeners = new Set<(tab: DatabaseTab) => void>();
+
+onSpatialTabReveal((tab) => {
+  const requested = DATABASE_TAB_BY_SHELL[tab];
+  if (activeTab === requested) return;
+  activeTab = requested;
+  if (typeof window !== "undefined") window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, activeTab);
+  for (const listener of activeTabListeners) listener(activeTab);
+  const host = spatialDatabaseHost;
+  if (!host?.isConnected) return;
+  const header = host.querySelector(".db-tabs");
+  if (header instanceof HTMLElement) updateTabButtons(header);
+  refreshDatabasePanel(host);
+});
 
 export function subscribeDatabaseActiveTab(listener: (tab: DatabaseTab) => void): () => void {
   activeTabListeners.add(listener);
@@ -423,6 +451,7 @@ export function databaseTabLabel(tab: DatabaseTab): string {
 }
 
 export function renderDatabasePanel(container: HTMLElement): void {
+  spatialDatabaseHost = container;
   const cache = tabRenderCaches.get(container);
   if (cache) for (const tab of cache.views.keys()) evictDatabaseTabView(cache, tab);
   clearChildren(container);

@@ -1,10 +1,11 @@
 import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { BUILTIN_INTERIOR_ROOM_KINDS } from "@/project/defaults/interiorRoomKinds";
-import { store } from "@/project/store";
+import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
 import { placeCards, placedCards, regionCards, worldCards } from "@/editor/panels/spatialCatalogHierarchy";
 import type { SpatialAuthoringSession, SpatialShellTab, SpatialSourceFilter } from "@/editor/panels/spatialAuthoringSession";
 import { spatialPresentationId } from "@/editor/panels/spatialPresentation";
+import type { SpatialDesignReference } from "@/project/spatial/types";
 
 export { spatialCardDomSelector, spatialPresentationId } from "@/editor/panels/spatialPresentation";
 
@@ -18,6 +19,8 @@ export type SpatialGalleryCard = {
   readonly kind: SpatialShellTab;
   readonly usage: number;
   readonly localId?: string;
+  /** Present only for an actual canonical library record, never inferred from localId. */
+  readonly canonicalSource?: SpatialDesignReference;
   readonly subtitle?: string;
   readonly tilesetId?: string;
   readonly objectId?: string;
@@ -35,13 +38,13 @@ function matchesSource(card: SpatialGalleryCard, filter: SpatialSourceFilter): b
 }
 
 function boundInteriorTilesetId(): string | undefined {
-  const tilesets = store.getCurrent().tilesets;
+  const tilesets = visibleAuthoringProject().tilesets;
   return Object.hasOwn(tilesets, INTERIOR_ROOM_TILESET_ID) ? INTERIOR_ROOM_TILESET_ID : undefined;
 }
 
 function tilesetUsage(): Map<string, number> {
   const counts = new Map<string, number>();
-  for (const map of Object.values(store.getCurrent().maps)) {
+  for (const map of Object.values(visibleAuthoringProject().maps)) {
     counts.set(map.tilesetId, (counts.get(map.tilesetId) ?? 0) + 1);
   }
   return counts;
@@ -49,7 +52,7 @@ function tilesetUsage(): Map<string, number> {
 
 function tileCards(): SpatialGalleryCard[] {
   const usage = tilesetUsage();
-  return Object.values(store.getCurrent().tilesets).map((tileset) => ({
+  return Object.values(visibleAuthoringProject().tilesets).map((tileset) => ({
     id: tileset.id,
     localId: tileset.id,
     name: tileset.name || tileset.id,
@@ -61,7 +64,7 @@ function tileCards(): SpatialGalleryCard[] {
 }
 
 function objectCards(): SpatialGalleryCard[] {
-  const project = store.getCurrent();
+  const project = visibleAuthoringProject();
   const tilesetId = boundInteriorTilesetId();
   const cards: SpatialGalleryCard[] = INTERIOR_OBJECT_CATALOG.map((object) => ({
     id: object.id,
@@ -98,6 +101,7 @@ function objectCards(): SpatialGalleryCard[] {
     cards.push({
       id,
       localId: object.id,
+      canonicalSource: { kind: "object", id: object.id },
       name: object.name,
       source: "own",
       kind: "objects",
@@ -110,7 +114,7 @@ function objectCards(): SpatialGalleryCard[] {
 }
 
 function spaceCards(): SpatialGalleryCard[] {
-  const project = store.getCurrent();
+  const project = visibleAuthoringProject();
   const tilesetId = boundInteriorTilesetId();
   const cards: SpatialGalleryCard[] = BUILTIN_INTERIOR_ROOM_KINDS.map((kind) => ({
     id: kind.id,
@@ -148,6 +152,7 @@ function spaceCards(): SpatialGalleryCard[] {
     cards.push({
       id,
       localId: space.id,
+      canonicalSource: { kind: "space", id: space.id },
       name: space.name,
       source: "own",
       kind: "spaces",
