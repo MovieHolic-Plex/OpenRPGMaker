@@ -1,4 +1,4 @@
-import type { M2CommandFields, Project } from "@/project/types";
+import type { AudioCommandChannel, M2CommandFields, Project } from "@/project/types";
 import type { M2RuntimeState, PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { nextSessionRandom } from "@/project/session";
 import { evaluateM2Expression } from "./m2Expression";
@@ -115,16 +115,34 @@ export function waitConditionMet(
   return false;
 }
 
+/** Ambient shares the looping BGS channel, independently of BGM. */
+export function soundLayerChannel(authored: string): AudioCommandChannel {
+  if (authored === "bgs" || authored === "ambient") return "bgs";
+  if (authored === "me") return "me";
+  if (authored === "se") return "se";
+  return "bgm";
+}
+
+/** 루프 여부는 채널이 정한다 — 배경(bgm/bgs)은 반복, 원샷(me/se)은 1회. */
+export function soundLayerLoops(channel: AudioCommandChannel): boolean {
+  return channel === "bgm" || channel === "bgs";
+}
+
 function recordSoundLayer(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {
-  const channel = fieldString(fields, "channel", "bgm");
+  const authored = fieldString(fields, "channel", "bgm");
+  const channel = soundLayerChannel(authored);
   const layer = {
     resourceId: fieldString(fields, "resourceId", ""),
     volume: fieldNumber(fields, "volume", 100),
     fadeMs: fieldNumber(fields, "fadeMs", 0),
   };
-  runtime.audio[channel] = layer;
+  runtime.audio[authored] = layer;
   session.audio ??= {};
-  session.audio[channel] = { resourceId: layer.resourceId, loop: channel === "bgm" || channel === "bgs" || channel === "ambient" };
+  session.audio[channel] = {
+    resourceId: layer.resourceId,
+    loop: soundLayerLoops(channel),
+    ...(fields.volume === undefined ? {} : { volume: Math.min(100, Math.max(0, layer.volume)) / 100 }),
+  };
 }
 
 function recordCutsceneControl(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {

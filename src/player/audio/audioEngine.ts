@@ -28,6 +28,8 @@ const UNLOCK_EVENTS: readonly string[] = ["pointerdown", "keydown", "touchstart"
 
 // 요청 단위 재생 옵션. 전부 선택적이므로 기존 호출부(playAudioCommand 등)는 그대로 동작한다.
 export interface AudioPlayOptions {
+  /** Per-track gain (0..1), independent of the user's group volume. */
+  readonly volume?: number;
   // 이 요청의 페이드인 길이(ms). 생략 시 DEFAULT_FADE_MS.
   readonly fadeInMs?: number;
   // 재생 속도(템포). 지정하면 이 요청이 실제 재생될 때 적용된다.
@@ -74,6 +76,7 @@ export class AudioEngine {
   private queue: AudioQueueState = createAudioQueueState();
   private readonly loopTracks: Map<AudioChannel, ManagedTrack> = new Map();
   private readonly oneShots: Set<HTMLAudioElement> = new Set();
+  private readonly trackOptions = new WeakMap<HTMLAudioElement, { readonly channel: AudioChannel; readonly volume: number }>();
   private volumes: Record<AudioVolumeGroup, number> = { bgm: 0.7, se: 0.8 };
   private playbackRate = 1;
   private pan = 0;
@@ -125,15 +128,16 @@ export class AudioEngine {
     for (const track of this.loopTracks.values()) {
       if (volumeGroupForChannel(track.channel) !== group) continue;
       if (track.fadeTimer === null) {
-        track.audio.volume = this.targetVolumeFor(track.channel);
+        track.audio.volume = this.targetVolumeFor(track.channel, track.audio);
       } else if (track.fadeTarget > 0) {
         // 페이드인 진행 중 — 도달할 지점만 바꿔 페이드를 깨지 않게 적용한다.
-        track.fadeTarget = this.targetVolumeFor(track.channel);
+        track.fadeTarget = this.targetVolumeFor(track.channel, track.audio);
       }
     }
-    if (group === "se") {
-      for (const audio of this.oneShots) {
-        audio.volume = this.volumes.se;
+    for (const audio of this.oneShots) {
+      const options = this.trackOptions.get(audio);
+      if (options && volumeGroupForChannel(options.channel) === group) {
+        audio.volume = this.targetVolumeFor(options.channel, audio);
       }
     }
   }
@@ -204,6 +208,7 @@ export class AudioEngine {
       url,
       loop,
       ...(fadeInMs === undefined ? {} : { fadeInMs: Math.max(0, fadeInMs) }),
+      ...(options?.volume === undefined ? {} : { volume: clampVolume(options.volume) }),
       ...(playbackRate === undefined ? {} : { playbackRate }),
       ...(pan === undefined ? {} : { pan }),
     };
@@ -241,7 +246,7 @@ export class AudioEngine {
 
   // 세이브 상태의 루프 채널(BGM/BGS) 재개. 원샷은 복원하지 않는다.
   resumeFromState(
-    audio: Partial<Record<AudioChannel, { readonly resourceId: string; readonly loop: boolean }>>,
+    audio: Partial<Record<AudioChannel, { readonly resourceId: string; readonly loop: boolean; readonly volume?: number }>>,
     resolve: (resourceId: string) => string | null,
     options?: AudioPlayOptions
   ): void {
@@ -253,7 +258,7 @@ export class AudioEngine {
         this.warnMissing(track.resourceId);
         continue;
       }
-      this.play(channel, track.resourceId, url, track.loop, options);
+      this.play(channel, track.resourceId, url, track.loop, track.volume === undefined ? options : { volume: track.volume, ...options });
     }
   }
 
@@ -296,6 +301,11 @@ export class AudioEngine {
     if (existing && existing.resourceId === request.resourceId) {
       existing.audio.playbackRate = playbackRate;
       this.applyPan(existing.audio, pan);
+      const volume = request.volume ?? 1;
+      if (request.volume !== undefined || this.trackOptions.get(existing.audio)?.volume !== volume) {
+        this.trackOptions.set(existing.audio, { channel: request.channel, volume });
+        this.fadeTo(existing, existing.audio.volume, this.targetVolumeFor(request.channel, existing.audio), fadeInMs);
+      }
       return;
     }
     if (existing) {
@@ -303,7 +313,8 @@ export class AudioEngine {
       this.fadeOutAndDispose(existing, DEFAULT_FADE_MS);
     }
     const audio = this.createElement(request.url, true, playbackRate, pan);
-    const target = this.targetVolumeFor(request.channel);
+    this.trackOptions.set(audio, { channel: request.channel, volume: request.volume ?? 1 });
+    const target = this.targetVolumeFor(request.channel, audio);
     audio.volume = 0;
     const track: ManagedTrack = {
       channel: request.channel,
@@ -322,7 +333,8 @@ export class AudioEngine {
     const playbackRate = this.resolvePlaybackRate(request);
     const pan = this.resolvePan(request);
     const audio = this.createElement(request.url, false, playbackRate, pan);
-    audio.volume = this.targetVolumeFor(request.channel);
+    this.trackOptions.set(audio, { channel: request.channel, volume: request.volume ?? 1 });
+    audio.volume = this.targetVolumeFor(request.channel, audio);
     this.oneShots.add(audio);
     const cleanup = (): void => {
       this.oneShots.delete(audio);
@@ -432,8 +444,8 @@ export class AudioEngine {
     }
   }
 
-  private targetVolumeFor(channel: AudioChannel): number {
-    return this.volumes[volumeGroupForChannel(channel)];
+  private targetVolumeFor(channel: AudioChannel, audio: HTMLAudioElement): number {
+    return this.volumes[volumeGroupForChannel(channel)] * (this.trackOptions.get(audio)?.volume ?? 1);
   }
 
   private fadeOutAndDispose(track: ManagedTrack, fadeMs: number): void {

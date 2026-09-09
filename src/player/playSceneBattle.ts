@@ -2,7 +2,7 @@ import type { BattleResult } from "@/battle/runtime";
 import { createBattleRuntime } from "@/battle/runtime";
 import type { StepResult } from "@/player/interpreter";
 import { exitBattleAudio, enterBattleAudio } from "@/player/battleAudio";
-import { playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
 import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
 import { createSkinBattleTransition } from "@/player/battleTransition";
 import { resolveSkinId, getBattleSkin } from "@/battle/skins/registry";
@@ -13,7 +13,7 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
 import { markBattleEntry } from "@/app/perfMetrics";
 import { giveMonster } from "@/project/monsterCollection";
-import { nextSessionRandom } from "@/project/session";
+import { clearAudioState, nextSessionRandom, setAudioState } from "@/project/session";
 import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 
@@ -121,13 +121,15 @@ export function playBattle(
       });
     },
     rng: () => nextSessionRandom(scene.session, "battle"),
-    playAudio: (resourceId, loop) => {
-      playAudioCommand({ resourceId, loop }, project);
-      scene.session.audio.bgm = { resourceId, loop };
+    playAudio: (resourceId, loop, command) => {
+      const track = command ?? { resourceId, loop };
+      playAudioCommand(track, project);
+      setAudioState(scene.session, track);
     },
-    stopAudio: () => {
-      stopAudioCommand();
-      scene.session.audio.bgm = undefined;
+    stopAudio: (channel) => {
+      if (channel === undefined) stopAudioCommand();
+      else stopAudioChannel(channel);
+      clearAudioState(scene.session, channel);
     },
   });
   return new Promise<BattleResult>((resolve) => {
@@ -140,6 +142,7 @@ export function playBattle(
       battleScene = mountBattleScene({
         host,
         runtime,
+        audioSession: scene.session,
         onResult: (result, snapshot) => {
           if (settled) return;
           settled = true;

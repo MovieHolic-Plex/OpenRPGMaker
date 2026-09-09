@@ -17,6 +17,8 @@
 import type { AudioCommandState } from "@/project/session";
 import type { GameMap, MapId, MapTreeNode, Project } from "@/project/types";
 import { playAudioCommand, stopAudioChannel } from "@/player/audio";
+import { systemAudioOverride } from "@/player/systemAudioSlots";
+import type { M2RuntimeState } from "@/project/sessionRuntimeTypes";
 
 /** 맵 BGM 해석 결과. */
 export type MapBgmResolution =
@@ -65,14 +67,19 @@ function decide(map: GameMap | undefined): MapBgmResolution | null {
 }
 
 /** 맵 진입 시 어떤 BGM 이어야 하는지 결정한다. */
-export function resolveMapBgm(project: BgmProject, mapId: MapId): MapBgmResolution {
+export function resolveMapBgm(
+  project: BgmProject,
+  mapId: MapId,
+  overrides: { readonly defaultBgmResourceId?: string } = {},
+): MapBgmResolution {
   const own = decide(project.maps[mapId]);
   if (own) return own;
   for (const ancestorId of mapAncestorIds(project.mapTree, mapId)) {
     const inherited = decide(project.maps[ancestorId]);
     if (inherited) return inherited;
   }
-  const fallback = project.system.defaultBgmResourceId?.trim() || FALLBACK_BGM_RESOURCE_ID;
+  const fallback =
+    overrides.defaultBgmResourceId?.trim() || project.system.defaultBgmResourceId?.trim() || FALLBACK_BGM_RESOURCE_ID;
   return fallback ? { kind: "play", resourceId: fallback } : { kind: "silence" };
 }
 
@@ -91,10 +98,12 @@ export function applyMapBgmToSession(audio: AudioCommandState, resolution: MapBg
 /** 맵 진입 시 호출 — 해석 → 세션 기록 → 엔진 재생/정지. loadMap 이 유일한 호출자다. */
 export function startMapBgm(
   project: BgmProject & Pick<Project, "assets">,
-  session: { audio: AudioCommandState },
+  session: { audio: AudioCommandState; m2Runtime?: Pick<M2RuntimeState, "system"> },
   mapId: MapId,
 ): MapBgmResolution {
-  const resolution = resolveMapBgm(project, mapId);
+  const resolution = resolveMapBgm(project, mapId, {
+    defaultBgmResourceId: systemAudioOverride(session.m2Runtime, "field"),
+  });
   const previous = session.audio.bgm?.resourceId;
   applyMapBgmToSession(session.audio, resolution);
   if (resolution.kind === "silence") {

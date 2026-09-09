@@ -1,5 +1,6 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
+import type { PlaySession } from "@/project/session";
 import { beginBattleResultAudio, playAuthoredBattleResultCue } from "@/player/battleAudio";
 import { playBattleSfx as playSynthVoice, type BattleSfxKind } from "@/player/battleSfx";
 import { HIT_INTENSITY_STYLE, hitIntensityStageVariables, type BattleHitIntensity } from "@/player/battleHitIntensity";
@@ -72,8 +73,8 @@ const SYNTH_VOICE: Record<BattleJuiceEvent, BattleSfxKind> = {
 // 샘플은 원음이 커서 0.4 에서 대략 같은 라우드니스로 들린다.
 const DEFAULT_VOLUME = 0.4;
 
-export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | null): void {
-  playBattleCue(event);
+export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | null, session?: Pick<PlaySession, "m2Runtime">): void {
+  playBattleCue(event, session);
   if (!target) return;
   const motion =
     event === "hit-critical"
@@ -99,10 +100,10 @@ export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | 
  * 전투 사건 1개에 소리 1개. 프로젝트 샘플 → 대체 샘플 → 합성 보이스 순으로
  * **처음 성공한 하나만** 낸다. 호출자는 여기 말고 다른 오디오 경로를 겹치지 말 것.
  */
-export function playBattleCue(event: BattleJuiceEvent): void {
+export function playBattleCue(event: BattleJuiceEvent, session?: Pick<PlaySession, "m2Runtime">): void {
   if (event === "victory" || event === "defeat" || event === "escape") {
     beginBattleResultAudio();
-    if (playAuthoredBattleResultCue(store.getCurrent(), event)) return;
+    if (playAuthoredBattleResultCue(store.getCurrent(), event, session)) return;
   }
   // 저작 슬롯이 비었을 때: 승리는 합성 팡파레(전투곡에 묻히지 않게 BGM 을 먼저 끊는다).
   if (event === "victory") {

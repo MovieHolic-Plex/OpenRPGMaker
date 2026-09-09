@@ -20,6 +20,12 @@ import type { RelationshipCondition, RelationshipState } from "../relationshipSt
 import type { EmoteKind } from "@/project/emotes";
 
 
+/**
+ * 오디오 명령이 겨누는 채널. `project/session` 의 `AudioChannel` 과 같은 집합이며
+ * 그쪽이 이 타입을 재수출한다(선언은 여기 하나뿐).
+ */
+export type AudioCommandChannel = "bgm" | "bgs" | "me" | "se";
+
 export type Trigger =
   | { kind: "action" }
   | { kind: "touch" }
@@ -351,8 +357,25 @@ export type Command =
       waitForPicture?: boolean;
     }
   | { kind: "erasePicture"; pictureId: string }
-  | { kind: "playAudio"; resourceId: string; loop: boolean }
-  | { kind: "stopAudio" }
+  | {
+      kind: "playAudio";
+      resourceId: string;
+      loop: boolean;
+      /** 재생 채널. 생략하면 loop 로 유도한다(true=bgm, false=se) — 기존 저작물 계약. */
+      channel?: AudioCommandChannel;
+      /** 이 요청의 페이드인 길이(ms). 생략하면 엔진 기본값. */
+      fadeInMs?: number;
+      /** Track gain (0..1), multiplied by the user's group volume. */
+      volume?: number;
+    }
+  | {
+      kind: "stopAudio";
+      /**
+       * 정지 대상 채널. 생략하면 **모든 채널**을 정지한다(기존 「소리 정지」 계약).
+       * `"bgm"` 은 RM2K3 「BGM 페이드아웃」 — 효과음·환경음은 계속 흐른다.
+       */
+      channel?: AudioCommandChannel;
+    }
   | { kind: "cutsceneControl"; mode: "begin" | "end"; skippable?: boolean }
   | ({ kind: "displayTextSettings" } & MessageWindowSettings)
   | {

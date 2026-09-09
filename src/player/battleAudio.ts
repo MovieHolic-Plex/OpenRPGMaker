@@ -1,22 +1,23 @@
 import { playAudioCommand, playMusicEffect, playSoundEffect, stopAudioChannel } from "@/player/audio";
-import type { PlaySession } from "@/project/session";
+import type { AudioTrackState, PlaySession } from "@/project/session";
 import type { Project, SystemRecords } from "@/project/types";
+import { systemAudioOverride } from "@/player/systemAudioSlots";
 
 export type BattleResultCueKind = "victory" | "defeat" | "escape";
 
 export interface BattleAudioSession {
-  readonly fieldBgmResourceId?: string;
+  readonly fieldBgm?: AudioTrackState;
 }
 
 /** 필드 BGM 을 기억하고 전투곡으로 갈아탄다. 같은 곡이면 건드리지 않는다. */
 export function enterBattleAudio(project: Project, session: PlaySession): BattleAudioSession {
-  const fieldBgmResourceId = session.audio.bgm?.resourceId;
-  const battleBgmResourceId = project.system.battleBgmResourceId;
-  if (battleBgmResourceId && battleBgmResourceId !== fieldBgmResourceId) {
+  const fieldBgm = session.audio.bgm;
+  const battleBgmResourceId = systemAudioOverride(session.m2Runtime, "battle") ?? project.system.battleBgmResourceId;
+  if (battleBgmResourceId && battleBgmResourceId !== fieldBgm?.resourceId) {
     playAudioCommand({ resourceId: battleBgmResourceId, loop: true }, project);
     session.audio.bgm = { resourceId: battleBgmResourceId, loop: true };
   }
-  return { fieldBgmResourceId };
+  return { fieldBgm };
 }
 
 /**
@@ -37,8 +38,9 @@ export function authoredBattleResultResourceId(
 }
 
 /** 자료집에서 고른 승패 큐를 재생한다. 없거나 URL 을 못 풀면 false → 호출부가 폴백. */
-export function playAuthoredBattleResultCue(project: Project, kind: BattleResultCueKind): boolean {
-  const resourceId = authoredBattleResultResourceId(project.system, kind);
+export function playAuthoredBattleResultCue(project: Project, kind: BattleResultCueKind, session?: Pick<PlaySession, "m2Runtime">): boolean {
+  const resourceId = (kind === "victory" ? undefined : systemAudioOverride(session?.m2Runtime, kind))
+    ?? authoredBattleResultResourceId(project.system, kind);
   if (kind === "victory") return playMusicEffect(resourceId, project);
   return playSoundEffect(resourceId, project);
 }
@@ -50,9 +52,9 @@ export function playAuthoredBattleResultCue(project: Project, kind: BattleResult
  */
 export function exitBattleAudio(project: Project, session: PlaySession, saved: BattleAudioSession): void {
   stopAudioChannel("bgm");
-  if (saved.fieldBgmResourceId) {
-    playAudioCommand({ resourceId: saved.fieldBgmResourceId, loop: true }, project);
-    session.audio.bgm = { resourceId: saved.fieldBgmResourceId, loop: true };
+  if (saved.fieldBgm) {
+    playAudioCommand({ ...saved.fieldBgm, channel: "bgm" }, project);
+    session.audio.bgm = saved.fieldBgm;
     return;
   }
   session.audio.bgm = undefined;

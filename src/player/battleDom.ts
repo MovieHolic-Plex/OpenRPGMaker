@@ -39,12 +39,14 @@ import {
 import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 import { store } from "@/project/store";
 import { bindBattleStageScale } from "@/player/battleStageScale";
+import type { PlaySession } from "@/project/session";
 
 export interface BattleDomOptions {
   readonly host: HTMLElement;
   readonly runtime: BattleRuntime;
   readonly onResult: (result: BattleResult, snapshot: BattleSnapshot) => void;
   readonly introHold?: boolean;
+  readonly audioSession?: Pick<PlaySession, "m2Runtime">;
 }
 
 export interface BattleDomController {
@@ -790,7 +792,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       for (const popup of root.querySelectorAll(".battle-damage-popup")) popup.remove();
       // 결과 팡파레도 사건 1개 = 소리 1개. emitBattleJuice 가 큐를 울리므로
       // 여기서 합성 보이스를 겹쳐 부르지 않는다(예전 결함).
-      emitBattleJuice(snapshot.result === "victory" ? "victory" : snapshot.result === "defeat" ? "defeat" : "escape", root);
+      emitBattleJuice(snapshot.result === "victory" ? "victory" : snapshot.result === "defeat" ? "defeat" : "escape", root, options.audioSession);
       flashBattleField(root, snapshot.result === "victory" ? "victory" : "defeat");
     }
     syncBattleResultPanel(panel, snapshot, resultRevealStage);
@@ -832,7 +834,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     } else if (command.kind === "defend") {
       emitBattleJuice("defend", actorNode ?? undefined);
     } else if (command.kind === "escape") {
-      emitBattleJuice("escape", actorNode ?? undefined);
+      emitBattleJuice("escape", actorNode ?? undefined, options.audioSession);
     }
   }
 

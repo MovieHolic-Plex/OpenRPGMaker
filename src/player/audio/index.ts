@@ -37,22 +37,25 @@ export function getAudioEngine(): AudioEngine {
 }
 
 // playAudio 명령: 리소스 해석 후 재생. 해석 실패 시 조용히 no-op.
-// options 는 선택적이다 — 기존 호출부(플레이어 런타임 전량)는 그대로 동작한다.
+// Explicit channel/options override the legacy loop-derived channel.
 export function playAudioCommand(
-  step: { readonly resourceId: string; readonly loop: boolean },
+  step: { readonly resourceId: string; readonly loop: boolean; readonly channel?: AudioChannel; readonly volume?: number; readonly fadeInMs?: number },
   project: Pick<Project, "assets">,
   options?: AudioPlayOptions
 ): void {
   const url = resolveAudioSource(step.resourceId, project);
   if (url === null) return;
-  const channel = audioChannelForCommand(step.loop);
-  // options 가 없으면 5번짜 인자를 **전달하지 않는다** — `undefined` 도 인자로 기록되서
-  // 기존 호출 계약을 단정하는 테스트(test/cc0AudioPlayback.test.ts)가 깨진다.
-  if (options === undefined) {
+  const channel = step.channel ?? audioChannelForCommand(step.loop);
+  const playback = step.volume === undefined && step.fadeInMs === undefined ? options : {
+    ...(step.volume === undefined ? {} : { volume: step.volume }),
+    ...(step.fadeInMs === undefined ? {} : { fadeInMs: step.fadeInMs }),
+    ...options,
+  };
+  if (playback === undefined) {
     getAudioEngine().play(channel, step.resourceId, url, step.loop);
     return;
   }
-  getAudioEngine().play(channel, step.resourceId, url, step.loop, options);
+  getAudioEngine().play(channel, step.resourceId, url, step.loop, playback);
 }
 
 // stopAudio 명령: 모든 채널 정지(페이드아웃).

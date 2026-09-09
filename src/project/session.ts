@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, CharacterFootprint, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, FarmBuildingPlacement, HomeDecorationPlacement, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, StateId, Condition, MessageWindowSettings, WeatherKind } from "./types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, AudioCommandChannel, CharacterFootprint, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, FarmBuildingPlacement, HomeDecorationPlacement, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, StateId, Condition, MessageWindowSettings, WeatherKind } from "./types";
 import type { FactionStanceOverrides } from "@/project/factionRuntime";
 import type { M2RuntimeState,
 PlaySessionLike,
@@ -34,11 +34,12 @@ import { applyDailyWeatherForDate } from "@/project/dailyWeather";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 
-export type AudioChannel = "bgm" | "bgs" | "me" | "se";
+export type AudioChannel = AudioCommandChannel;
 
 export type AudioTrackState = {
   readonly resourceId: string;
   readonly loop: boolean;
+  readonly volume?: number;
 };
 
 export type AudioCommandState = {
@@ -721,17 +722,23 @@ export function getMapTile(
 
 export function setAudioState(
   session: PlaySession,
-  state: { readonly channel?: AudioChannel; readonly resourceId: string; readonly loop: boolean }
+  state: { readonly channel?: AudioChannel; readonly resourceId: string; readonly loop: boolean; readonly volume?: number }
 ): void {
   const channel = state.channel ?? (state.loop ? "bgm" : "se");
   session.audio[channel] = {
     resourceId: state.resourceId,
     loop: state.loop,
+    ...(state.volume === undefined ? {} : { volume: state.volume }),
   };
 }
 
-export function clearAudioState(session: PlaySession): void {
-  session.audio = {};
+/** Omitted channel preserves the legacy stop-all behavior. */
+export function clearAudioState(session: PlaySession, channel?: AudioChannel): void {
+  if (channel === undefined) {
+    session.audio = {};
+    return;
+  }
+  session.audio[channel] = undefined;
 }
 
 export function showPictureState<T extends PictureState>(

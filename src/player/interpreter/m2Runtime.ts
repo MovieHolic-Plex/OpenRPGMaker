@@ -9,6 +9,7 @@ import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
 import { terrainTagAt } from "@/project/terrainAt";
 import { runtimeEventViewsForMap, type RuntimeEventPositions } from "@/project/runtimeEventState";
 import { ensureM2Runtime } from "./m2RuntimeState";
+import { isSystemAudioSlot, systemAudioOverrideKey } from "@/player/systemAudioSlots";
 
 type M2RuntimeCommand = {
   readonly commandId: string;
@@ -224,12 +225,8 @@ function executeByTitle(
     runtime.system[`vehicle_graphic_${vehicle}`] = fieldString(fields, "value", "");
     return;
   }
-  if (title === "Change System BGM") {
-    runtime.system["system_bgm"] = fieldString(fields, "value", "");
-    return;
-  }
-  if (title === "Change System SE") {
-    runtime.system["system_se"] = fieldString(fields, "value", "");
+  if (title === "Change System BGM" || title === "Change System SE") {
+    recordSystemAudioChange(runtime, title, fields);
     return;
   }
   if (title === "Change System Graphic") {
@@ -301,6 +298,15 @@ function hasField(fields: M2CommandFields, key: string): boolean {
 function toDurationMs(value: number): number {
   if (!Number.isFinite(value) || value <= 0) return 0;
   return value <= 60 ? Math.round(value * 1000) : Math.round(value);
+}
+
+// The picker writes resourceId; older commands may still carry value.
+function recordSystemAudioChange(runtime: M2RuntimeState, title: string, fields: M2CommandFields): void {
+  const bgm = title === "Change System BGM";
+  const resourceId = fieldString(fields, "resourceId", fieldString(fields, "value", ""));
+  const slot = fieldString(fields, "slot", bgm ? "battle" : "defeat");
+  runtime.system[bgm ? "system_bgm" : "system_se"] = resourceId;
+  if (isSystemAudioSlot(slot)) runtime.system[systemAudioOverrideKey(slot)] = resourceId;
 }
 
 function currentBgm(session: PlaySessionLike): string {

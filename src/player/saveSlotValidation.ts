@@ -545,5 +545,9 @@ function parseAudioTrack(value: unknown): ParsedAudioTrack {
   if (!isRecord(value)) return { ok: false };
   if (typeof value.resourceId !== "string") return { ok: false };
   if (typeof value.loop !== "boolean") return { ok: false };
-  return { ok: true, value: { resourceId: value.resourceId, loop: value.loop } };
+  if (value.volume !== undefined && (typeof value.volume !== "number" || !Number.isFinite(value.volume) || value.volume < 0 || value.volume > 1)) return { ok: false };
+  return { ok: true, value: {
+    resourceId: value.resourceId, loop: value.loop,
+    ...(value.volume === undefined ? {} : { volume: value.volume }),
+  } };
 }

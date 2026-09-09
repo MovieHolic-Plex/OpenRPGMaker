@@ -1,6 +1,6 @@
 import { executeM2BattleCommand as executeM2Command } from "@/battle/battleM2CommandExecutor";
 import type { MutableBattler } from "@/battle/battleBattlers";
-import type { BattleEventLogSnapshot, BattleEventStateSnapshot } from "@/battle/types";
+import type { BattleEventLogSnapshot, BattleEventStateSnapshot, BattleRuntimeOptions } from "@/battle/types";
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "@/project/gameTime";
 import { clampFriendship } from "@/project/session";
@@ -103,8 +103,8 @@ export type BattleEventRuntimeOptions = {
   // (applyBattleRewardsToSession/playSceneBattle)이 결정한다.
   readonly endBattleAsDefeat?: () => void;
   // playAudio/stopAudio 명령: 호스트가 실제 오디오 엔진으로 라우팅.
-  readonly playAudio?: (resourceId: string, loop: boolean) => void;
-  readonly stopAudio?: () => void;
+  readonly playAudio?: BattleRuntimeOptions["playAudio"];
+  readonly stopAudio?: BattleRuntimeOptions["stopAudio"];
   // wait 명령(ms): 런타임이 전투 흐름을 지정 ms 동안 일시정지.
   // 배틀 이벤트 루프는 동기식이라 wait 이후의 명령도 즉시 실행되지만,
   // 런타임이 그 일시정지를 소비한다 — gauge 는 tick(pendingWaitMs), strict 는 타임라인 wait 엔트리.
@@ -642,11 +642,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: "inputWait" });
         return false;
       case "playAudio":
-        options.playAudio?.(command.resourceId, command.loop);
+        options.playAudio?.(command.resourceId, command.loop, command);
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `playAudio ${command.resourceId}` });
         return false;
       case "stopAudio":
-        options.stopAudio?.();
+        options.stopAudio?.(command.channel);
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: "stopAudio" });
         return false;
       case "setFlag":

@@ -15,6 +15,7 @@ import type { BattleResult } from "@/project/gameTime";
 export type RuntimeAudioState = {
   readonly resourceId: string;
   readonly loop: boolean;
+  readonly volume?: number;
 };
 
 export type RuntimePictureState = {

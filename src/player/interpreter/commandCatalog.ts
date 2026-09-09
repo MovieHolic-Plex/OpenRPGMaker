@@ -23,7 +23,7 @@ import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
 import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
-import { waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
+import { soundLayerChannel, soundLayerLoops, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
@@ -145,11 +145,26 @@ function executeM2Command(
   }
 
   if (entry.title === "Sound Layer" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    const channel = soundLayerChannel(fieldString(command.fields, "channel", "bgm"));
+    const fadeMs = Math.max(0, Math.round(fieldNumber(command.fields, "fadeMs", 0)));
     return pause("playAudio", {
       kind: "playAudio",
       resourceId: fieldString(command.fields, "resourceId", ""),
-      loop: true,
+      loop: soundLayerLoops(channel),
+      channel,
+      fadeInMs: fadeMs,
+      volume: Math.min(100, Math.max(0, fieldNumber(command.fields, "volume", 100))) / 100,
     });
+  }
+
+  if (entry.title === "Fadeout BGM") return pause("stopAudio", { kind: "stopAudio", channel: "bgm" });
+
+  if (entry.title === "Play Memorized BGM" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    const memorized = state.session.m2Runtime?.audio?.playedMemorizedBgm;
+    if (typeof memorized === "string" && memorized.length > 0) {
+      return pause("playAudio", { kind: "playAudio", resourceId: memorized, loop: true, channel: "bgm" });
+    }
+    return resumeNext(frame);
   }
 
   if (entry.title === "Wait Until") {
@@ -557,9 +572,16 @@ export function executeCommand(
     case "erasePicture":
       return pause("erasePicture", { kind: "erasePicture", pictureId: command.pictureId });
     case "playAudio":
-      return pause("playAudio", { kind: "playAudio", resourceId: command.resourceId, loop: command.loop });
+      return pause("playAudio", {
+        kind: "playAudio",
+        resourceId: command.resourceId,
+        loop: command.loop,
+        ...(command.channel === undefined ? {} : { channel: command.channel }),
+        ...(command.fadeInMs === undefined ? {} : { fadeInMs: command.fadeInMs }),
+        ...(command.volume === undefined ? {} : { volume: command.volume }),
+      });
     case "stopAudio":
-      return pause("stopAudio", { kind: "stopAudio" });
+      return pause("stopAudio", command.channel === undefined ? { kind: "stopAudio" } : { kind: "stopAudio", channel: command.channel });
     case "cutsceneControl":
       if (command.mode === "begin") beginCutsceneControl(state.session, state.currentEventId, command.skippable === true);
       else endCutsceneControl(state.session);

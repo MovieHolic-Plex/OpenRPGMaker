@@ -399,13 +399,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           : undefined,
       });
     },
-    playAudio: (resourceId, loop) => {
-      // 오디오 재생 자체는 호스트가 담당. 런타임은 옵션 콜백으로 위임만 한다.
-      options.playAudio?.(resourceId, loop);
-    },
-    stopAudio: () => {
-      options.stopAudio?.();
-    },
+    playAudio: options.playAudio,
+    stopAudio: options.stopAudio,
   });
   markActiveParticipants();
 
