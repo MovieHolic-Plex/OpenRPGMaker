@@ -34,6 +34,8 @@
 //   CSS_LIVE_BASELINE_UPDATE=1 node scripts/check-css-live-classes.mjs --save-baseline
 //                                                           # 기준선 갱신(의도적으로 exit 1)
 //   node scripts/check-css-live-classes.mjs --report-unused  # 렌더로 증명되지 않은 클래스
+//   node scripts/check-css-live-classes.mjs --print-rendered-classes
+//                                                           # 정본 축이 증명한 클래스 집합(JSON) — 사각지대 계산용
 //   CSS_LIVE_STYLES_DIR=<dir> node scripts/check-css-live-classes.mjs
 //                                                           # 게이트 자체를 검증할 때 시트 루트를 갈아끼운다
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "node:fs";
@@ -205,6 +207,14 @@ if (!existsSync(STYLES_DIR)) {
 const cssFiles = walk(STYLES_DIR);
 const index = cssClassIndex(cssFiles);
 const { set: rendered, used: canonUsed } = renderedClasses();
+
+// 정본 축이 증명한 클래스 집합을 그대로 내보내는 출구.
+// measure-css-deletable.mjs 가 CANON_AXES 를 복제하지 않고 이 한 곳을 읽게 하려고 있다 —
+// 복제하면 축이 늘어날 때 두 파일이 조용히 어긋나고, 어긋난 쪽이 «사각지대 없음»을 보고한다.
+if (args.includes("--print-rendered-classes")) {
+  process.stdout.write(`${JSON.stringify([...rendered].sort())}\n`);
+  process.exit(0);
+}
 
 // 렌더로 증명된 클래스 중 CSS 선언을 가진 것 = 보호 대상.
 const live = {};
