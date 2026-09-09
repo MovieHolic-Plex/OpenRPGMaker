@@ -1,162 +1,23 @@
-monitor_id=mon_FS1VPS44BZEBTM92
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialTools.test.ts test/spatialAiContext.test.ts test/spatialToolAcceptance.test.ts test/spatialLegacyTools.test.ts test/placeConceptTool.test.ts test/interiorConceptRoutes.test.ts"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":" ✓ test/spatialAiContext.test.ts (1 test) 197ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts (14 tests) 3897ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > author_house preserves shipped inn flights and connects only the authored descent on each floor  990ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > run_interior_room_pipeline records edited concept contents before building  359ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > start_interior_room_session records edited concept contents before building  308ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > author_house uses edited facility layout, objects, and keeps its return transfer  496ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > re-furnishing a room replaces only its generated interactions without duplicate ids  731ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > new unknown facilities can be built by combining the returned sources  344ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":" ✓ test/spatialToolAcceptance.test.ts (7 tests) 8902ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > accepts the authored source in one reversible transaction  2526ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live source before any publication  1297ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live map before any publication  1286ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live identity before any publication  1272ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a forged project snapshot even when its spatial document is unchanged  469ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects map tampering after a valid tool proposal was issued  1105ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a stale generic map proposal in canonical mode  944ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":" ✓ test/spatialTools.test.ts (13 tests) 9230ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > changes only the source when a revision is explicitly replaced  968ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > compiles only on the detached draft when an issued preview is applied  1479ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects forged preview acceptance without mutation  924ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects stale preview acceptance without mutation  1097ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects foreign preview acceptance without mutation  887ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects spent preview acceptance without mutation  1508ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects malformed hierarchy when a generic write bypasses spatial tools  325ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > retains preview lineage when the normal assistant draft is cloned  1229ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":" ✓ test/placeConceptTool.test.ts (36 tests) 11469ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ place_concept > 이전에 저작된 여관으로 침실·복도·식당을 짓고 침대를 놓는다  563ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ place_concept > 사용자가 피아노를 빼고 책장을 넣으면 시공이 그 나무를 따른다  383ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ place_concept > 장소를 지우면 그 방과 물건을 시공하지 않는다  411ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ place_concept 도면 > 시공된 여관은 문에서 모든 방에 닿고 plan 경고가 없다  319ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ place_concept 구성과 칩 집행 > loot 칩은 뒤지는 소리 →사이 → 동전 소리 → 금화 → 문장 순으로 소리가 보상에 앞서다  387ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ place_concept plan — 모델이 설계하고 코드가 시공한다 (2026-09-03) > 자유 칩은 plan 을 통과하고 모르는 장소 참조는 invalid-plan 이다  307ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ place_concept plan — 모델이 설계하고 코드가 시공한다 (2026-09-03) > seed 가 다르면 같은 설계라도 배치가 달라질 수 있고, 같은 mapId 는 seed 없이도 같은 결과다  2422ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ place_concept plan — 모델이 설계하고 코드가 시공한다 (2026-09-03) > 어느 seed 로 지어도 초안 여관의 물건은 전부 자리를 얻는다  2313ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":" ❯ test/spatialLegacyTools.test.ts (8 tests | 1 failed) 14282ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs  940ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > places canonical sources without reviving retired furniture  2920ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions  683ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade  3667ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > builds village-linked interiors from the same canonical frozen source  1647ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   × legacy tools with active canonical designs > authors a village through the registered facade with canonical interiors 3860ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"     → 'author_village' 실행 실패: Village added an undeclared map: spatial:child:25:map_house_interior_7_m1_169:legacy:[\"easyrpg_chipset_interior\",\"house\",\"child\",\"[\\\"house\\\",1,0]\"]:0. [{\"severity\":\"error\",\"code\":\"village-scope-violation\",\"mapId\":\"spatial:child:25:map_house_interior_7_m1_169:legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"child\\\",\\\"[\\\\\\\"house\\\\\\\",1,0]\\\"]:0\",\"message\":\"Village added an undeclared map: spatial:child:25:map_house_interior_7_m1_169:legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"child\\\",\\\"[\\\\\\\"house\\\\\\\",1,0]\\\"]:0.\"}]: expected false to be true // Object.is equality"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections  434ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > preserves explicit empty legacy rejection when canonical authoring is absent 125ms"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":" FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > authors a village through the registered facade with canonical interiors"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"AssertionError: 'author_village' 실행 실패: Village added an undeclared map: spatial:child:25:map_house_interior_7_m1_169:legacy:[\"easyrpg_chipset_interior\",\"house\",\"child\",\"[\\\"house\\\",1,0]\"]:0. [{\"severity\":\"error\",\"code\":\"village-scope-violation\",\"mapId\":\"spatial:child:25:map_house_interior_7_m1_169:legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"child\\\",\\\"[\\\\\\\"house\\\\\\\",1,0]\\\"]:0\",\"message\":\"Village added an undeclared map: spatial:child:25:map_house_interior_7_m1_169:legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"child\\\",\\\"[\\\\\\\"house\\\\\\\",1,0]\\\"]:0.\"}]: expected false to be true // Object.is equality"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"\u001b[32m- true\u001b[39m"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"\u001b[31m+ false\u001b[39m"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":" ❯ test/spatialLegacyTools.test.ts:99:77"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"     97|     });"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"     98|     // Then"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"     99|     expect(result.ok, `${result.summary} ${JSON.stringify(result.issue…"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"       |                                                                             ^"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"    100|     expect(Object.values(ctx.project.spatialAuthoring.occurrences).fil…"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"    101|     expect(ctx.project.spatialAuthoring.library).toEqual(project.spati…"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":" Test Files  1 failed | 5 passed (6)"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"      Tests  1 failed | 78 passed (79)"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   Start at  01:57:29"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":"   Duration  27.02s (transform 13.37s, setup 0ms, collect 70.67s, tests 47.98s, environment 2ms, prepare 1.34s)"}
-{"type":"line","id":"authoring-3242875","description":"task11 scoped validation","line":""}
-{"type":"summary","id":"authoring-3242875","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
 
-> rpg-zzu@0.1.0 test
-> node scripts/run-vitest.mjs run --configLoader bundle test/spatialTools.test.ts test/spatialAiContext.test.ts test/spatialToolAcceptance.test.ts test/spatialLegacyTools.test.ts test/placeConceptTool.test.ts test/interiorConceptRoutes.test.ts
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world
 
+ ✓ test/interiorConceptRoutes.test.ts (14 tests) 2677ms
+   ✓ all AI interior routes consume concept bundles > author_house preserves shipped inn flights and connects only the authored descent on each floor  615ms
+   ✓ all AI interior routes consume concept bundles > author_house uses edited facility layout, objects, and keeps its return transfer  331ms
+   ✓ all AI interior routes consume concept bundles > re-furnishing a room replaces only its generated interactions without duplicate ids  569ms
+ ✓ test/spatialTools.test.ts (13 tests) 7360ms
+   ✓ registered canonical spatial tools > changes only the source when a revision is explicitly replaced  715ms
+   ✓ registered canonical spatial tools > compiles only on the detached draft when an issued preview is applied  1115ms
+   ✓ registered canonical spatial tools > rejects forged preview acceptance without mutation  704ms
+   ✓ registered canonical spatial tools > rejects stale preview acceptance without mutation  836ms
+   ✓ registered canonical spatial tools > rejects foreign preview acceptance without mutation  682ms
+   ✓ registered canonical spatial tools > rejects spent preview acceptance without mutation  1244ms
+   ✓ registered canonical spatial tools > retains preview lineage when the normal assistant draft is cloned  1129ms
+ ✓ test/spatialAiContext.test.ts (1 test) 146ms
 
- RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools
+ Test Files  3 passed (3)
+      Tests  28 passed (28)
+   Start at  16:32:30
+   Duration  24.17s (transform 7.01s, setup 0ms, collect 13.00s, tests 10.18s, environment 1ms, prepare 207ms)
 
- ✓ test/spatialAiContext.test.ts (1 test) 197ms
- ✓ test/interiorConceptRoutes.test.ts (14 tests) 3897ms
-   ✓ all AI interior routes consume concept bundles > author_house preserves shipped inn flights and connects only the authored descent on each floor  990ms
-   ✓ all AI interior routes consume concept bundles > run_interior_room_pipeline records edited concept contents before building  359ms
-   ✓ all AI interior routes consume concept bundles > start_interior_room_session records edited concept contents before building  308ms
-   ✓ all AI interior routes consume concept bundles > author_house uses edited facility layout, objects, and keeps its return transfer  496ms
-   ✓ all AI interior routes consume concept bundles > re-furnishing a room replaces only its generated interactions without duplicate ids  731ms
-   ✓ all AI interior routes consume concept bundles > new unknown facilities can be built by combining the returned sources  344ms
- ✓ test/spatialToolAcceptance.test.ts (7 tests) 8902ms
-   ✓ spatial proposals at the actual shared acceptance boundary > accepts the authored source in one reversible transaction  2526ms
-   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live source before any publication  1297ms
-   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live map before any publication  1286ms
-   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live identity before any publication  1272ms
-   ✓ spatial proposals at the actual shared acceptance boundary > rejects a forged project snapshot even when its spatial document is unchanged  469ms
-   ✓ spatial proposals at the actual shared acceptance boundary > rejects map tampering after a valid tool proposal was issued  1105ms
-   ✓ spatial proposals at the actual shared acceptance boundary > rejects a stale generic map proposal in canonical mode  944ms
- ✓ test/spatialTools.test.ts (13 tests) 9230ms
-   ✓ registered canonical spatial tools > changes only the source when a revision is explicitly replaced  968ms
-   ✓ registered canonical spatial tools > compiles only on the detached draft when an issued preview is applied  1479ms
-   ✓ registered canonical spatial tools > rejects forged preview acceptance without mutation  924ms
-   ✓ registered canonical spatial tools > rejects stale preview acceptance without mutation  1097ms
-   ✓ registered canonical spatial tools > rejects foreign preview acceptance without mutation  887ms
-   ✓ registered canonical spatial tools > rejects spent preview acceptance without mutation  1508ms
-   ✓ registered canonical spatial tools > rejects malformed hierarchy when a generic write bypasses spatial tools  325ms
-   ✓ registered canonical spatial tools > retains preview lineage when the normal assistant draft is cloned  1229ms
- ✓ test/placeConceptTool.test.ts (36 tests) 11469ms
-   ✓ place_concept > 이전에 저작된 여관으로 침실·복도·식당을 짓고 침대를 놓는다  563ms
-   ✓ place_concept > 사용자가 피아노를 빼고 책장을 넣으면 시공이 그 나무를 따른다  383ms
-   ✓ place_concept > 장소를 지우면 그 방과 물건을 시공하지 않는다  411ms
-   ✓ place_concept 도면 > 시공된 여관은 문에서 모든 방에 닿고 plan 경고가 없다  319ms
-   ✓ place_concept 구성과 칩 집행 > loot 칩은 뒤지는 소리 →사이 → 동전 소리 → 금화 → 문장 순으로 소리가 보상에 앞서다  387ms
-   ✓ place_concept plan — 모델이 설계하고 코드가 시공한다 (2026-09-03) > 자유 칩은 plan 을 통과하고 모르는 장소 참조는 invalid-plan 이다  307ms
-   ✓ place_concept plan — 모델이 설계하고 코드가 시공한다 (2026-09-03) > seed 가 다르면 같은 설계라도 배치가 달라질 수 있고, 같은 mapId 는 seed 없이도 같은 결과다  2422ms
-   ✓ place_concept plan — 모델이 설계하고 코드가 시공한다 (2026-09-03) > 어느 seed 로 지어도 초안 여관의 물건은 전부 자리를 얻는다  2313ms
- ❯ test/spatialLegacyTools.test.ts (8 tests | 1 failed) 14282ms
-   ✓ legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs  940ms
-   ✓ legacy tools with active canonical designs > places canonical sources without reviving retired furniture  2920ms
-   ✓ legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions  683ms
-   ✓ legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade  3667ms
-   ✓ legacy tools with active canonical designs > builds village-linked interiors from the same canonical frozen source  1647ms
-   × legacy tools with active canonical designs > authors a village through the registered facade with canonical interiors 3860ms
-     → 'author_village' 실행 실패: Village added an undeclared map: spatial:child:25:map_house_interior_7_m1_169:legacy:["easyrpg_chipset_interior","house","child","[\"house\",1,0]"]:0. [{"severity":"error","code":"village-scope-violation","mapId":"spatial:child:25:map_house_interior_7_m1_169:legacy:[\"easyrpg_chipset_interior\",\"house\",\"child\",\"[\\\"house\\\",1,0]\"]:0","message":"Village added an undeclared map: spatial:child:25:map_house_interior_7_m1_169:legacy:[\"easyrpg_chipset_interior\",\"house\",\"child\",\"[\\\"house\\\",1,0]\"]:0."}]: expected false to be true // Object.is equality
-   ✓ legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections  434ms
-   ✓ legacy tools with active canonical designs > preserves explicit empty legacy rejection when canonical authoring is absent 125ms
-
-⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
-
- FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > authors a village through the registered facade with canonical interiors
-AssertionError: 'author_village' 실행 실패: Village added an undeclared map: spatial:child:25:map_house_interior_7_m1_169:legacy:["easyrpg_chipset_interior","house","child","[\"house\",1,0]"]:0. [{"severity":"error","code":"village-scope-violation","mapId":"spatial:child:25:map_house_interior_7_m1_169:legacy:[\"easyrpg_chipset_interior\",\"house\",\"child\",\"[\\\"house\\\",1,0]\"]:0","message":"Village added an undeclared map: spatial:child:25:map_house_interior_7_m1_169:legacy:[\"easyrpg_chipset_interior\",\"house\",\"child\",\"[\\\"house\\\",1,0]\"]:0."}]: expected false to be true // Object.is equality
-
-[32m- Expected[39m
-[31m+ Received[39m
-
-[32m- true[39m
-[31m+ false[39m
-
- ❯ test/spatialLegacyTools.test.ts:99:77
-     97|     });
-     98|     // Then
-     99|     expect(result.ok, `${result.summary} ${JSON.stringify(result.issue…
-       |                                                                             ^
-    100|     expect(Object.values(ctx.project.spatialAuthoring.occurrences).fil…
-    101|     expect(ctx.project.spatialAuthoring.library).toEqual(project.spati…
-
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
-
-
- Test Files  1 failed | 5 passed (6)
-      Tests  1 failed | 78 passed (79)
-   Start at  01:57:29
-   Duration  27.02s (transform 13.37s, setup 0ms, collect 70.67s, tests 47.98s, environment 2ms, prepare 1.34s)
-
-
-monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}
+JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/output/evidence/tile-to-world/task-17/green.json
