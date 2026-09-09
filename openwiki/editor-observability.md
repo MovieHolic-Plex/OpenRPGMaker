@@ -362,6 +362,14 @@ cat output/edit-activity/index.json  # CLI 표가 읽는 최근 200건 요약
 편집은 분당 수십 건이라 한 채널에 섞으면 AI 턴이 묻힌다. AI 턴을 조사할 때는 `ai:log`,
 사람 편집을 조사할 때는 `edit:log` 를 본다.
 
+**사용자 창구는 ☰ 「사용 로그 내려받기」다 (2026-09-09).** 위 두 줄은 워크트리에 손이 닿는
+에이전트·개발자용이다. 브라우저만 있는 사용자에게는 경로가 없었으므로, AI 패널 두 ☰ 표면
+(`ai-more-usage-log` / `ai-command-menu-usage-log`)에서 링버퍼 전체를 그 자리에서
+`ai-usage-log-<시각>.txt` 로 내려받는다. 서식은 `src/ai/activityLogText.ts` — **JSON 이 아니라
+사람이 통독하는 글**이고(한 턴이 한 문단), 예산에 걸려 잘린 몫은 `잘린 기록:` 으로 밝히고,
+기록이 0건이면 빈 파일 대신 안내 토스트를 띄운다. 기계 판독용 `serializeAiActivityLogs()` 는
+그대로 남는다. 상세: `openwiki/editor-ai-panel.md` 「사용 로그는 그 자리에서 .txt 로 나온다」.
+
 ### 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
 
 위의 두 채널은 **세션 자산**이다. 링버퍼는 새로고침에 끊기고, 디스크 미러는 워크트리를 바꾸면

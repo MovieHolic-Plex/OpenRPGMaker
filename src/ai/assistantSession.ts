@@ -169,6 +169,7 @@ import {
   type ProposalCompletenessCall,
 } from "./proposalCompleteness";
 import { defaultYieldToUi, type YieldToUi } from "./yieldToUi";
+import { defaultFreezeGuard, type FreezeGuard } from "./pageFreezeGuard";
 import {
   MAX_RALPH_ATTEMPTS_PER_ITEM,
   MAX_WORK_PLAN_AUTO_STEPS_PER_TURN,
@@ -913,6 +914,11 @@ export interface AssistantSessionOptions {
    * Node/테스트는 즉시. 주입하면 테스트가 양보 횟수를 셀 수 있다.
    */
   yieldToUi?: YieldToUi;
+  /**
+   * 턴 수명 동안 탭 freeze 를 막는 keep-alive. 기본은 Web Lock 을 쥔다.
+   * Node/테스트는 no-op. 주입하면 테스트가 획득·해제 시점을 셀 수 있다.
+   */
+  freezeGuard?: FreezeGuard;
 }
 
 /** 수동 압축(compactNow) 결과. 건너뜀은 사유를 사람 문장으로 돌려준다(UI 가 그대로 보여준다). */
@@ -1132,6 +1138,7 @@ export class AssistantSession {
   // 비전 렌더러(브라우저 전용). 주입되면 '보여줘' 툴 이미지가 모델에 전달된다.
   private readonly renderImages?: ToolImageRenderer;
   private readonly yieldToUi: YieldToUi;
+  private readonly freezeGuard: FreezeGuard;
   /** 이번 턴이 플래너 왕복을 건너뛰었는가 — 계획 툴·검수·Ralph 도 같이 끈다. */
   private skipPlannerThisTurn = false;
   /** 이번 턴의 컴포저 모드. ask 는 쓰기 툴을 노출·실행하지 않고, plan 은 계획만 세우고 멈춘다. */
@@ -1428,6 +1435,7 @@ export class AssistantSession {
     this.contextOptions = options.contextOptions ?? {};
     this.renderImages = options.renderImages;
     this.yieldToUi = options.yieldToUi ?? defaultYieldToUi;
+    this.freezeGuard = options.freezeGuard ?? defaultFreezeGuard;
     this.getTurnSelection = options.getTurnSelection;
     this.declareIntent = options.declareIntent ?? null;
     this.prepareProjectWiki = options.prepareProjectWiki;
@@ -2375,6 +2383,10 @@ export class AssistantSession {
       composerMode: opts?.composerMode ?? "do",
       ...(this.recoveryOperation === operation ? { driverContinue: true } : {}),
     };
+    // 백그라운드 탭이 얼면 런이 통째로 선다(fetch 기반이라 타이머 스로틀로는 설명되지 않는다).
+    // 런 수명 — 플래너 라운드부터 자율 드라이버·회수까지 — 동안만 keep-alive 를 쥔다.
+    // 획득 실패는 런을 막지 않는다: 이 가드는 편의일 뿐 실행 조건이 아니다.
+    const releaseFreezeGuard = await this.freezeGuard().catch(() => () => {});
     try {
       await this.beginCheckpoint(entryInstruction, text, turnOptions);
       operation.assertCurrent();
@@ -2424,6 +2436,7 @@ export class AssistantSession {
         stoppedReason: this.runExecution === "cancelled" ? "aborted" : "error",
       }), startedAt, usageBefore, auditFrom, subscriber);
     } finally {
+      releaseFreezeGuard();
       authoring = false;
       if (this.cancelPendingRun === cancel) this.cancelPendingRun = undefined;
     }
@@ -4273,6 +4286,8 @@ export class AssistantSession {
       onEvent(event);
       operation.assertCurrent();
     };
+    // 재시도도 사용자가 자리를 비운 채 도는 런이다 — 송신 경로와 같게 얼지 않도록 쥔다.
+    const releaseFreezeGuard = await this.freezeGuard().catch(() => () => {});
     try {
       operation.assertCurrent();
       if (!this.lastTurnFailed && !(this.turnProposals.size > 0 && !this.isDraftReviewApproved())) {
@@ -4298,6 +4313,7 @@ export class AssistantSession {
       if (operation.signal.aborted) return cancelled ?? cancel();
       throw cause;
     } finally {
+      releaseFreezeGuard();
       if (this.cancelPendingRun === cancel) this.cancelPendingRun = undefined;
       if (this.runOperation === operation) this.removeOrchestrationMessages();
     }
