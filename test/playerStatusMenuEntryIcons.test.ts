@@ -4,6 +4,7 @@ import { createStatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
+import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import type { StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
@@ -23,6 +24,72 @@ function renderDetail(project: Project, session: PlaySession, overrides: DetailO
 }
 
 describe("status menu entry icons", () => {
+  it.each([
+    { frameWidth: 384, frameHeight: 384, columns: 10, width: 100, height: 100 },
+    { frameWidth: 96, frameHeight: 48, columns: 3, width: 100, height: 50 },
+    { frameWidth: 48, frameHeight: 96, columns: 3, width: 50, height: 100 },
+    { frameWidth: 96, frameHeight: 96, columns: 5, width: 100, height: 100, legacy: true },
+  ])("crops one skill animation cell in the row and showcase for $frameWidth x $frameHeight", (sheet) => {
+    const project = createBlankProject();
+    const actor = project.database.actors[0];
+    const skill = project.database.skills[0];
+    if (!actor || !skill) throw new Error("The starter project must have an actor and skill");
+    const animation = normalizeBattleAnimationRecord({
+      id: "anim_menu_crop",
+      name: "Menu crop",
+      resourceId: "generated-battle-anim-fire-burst",
+      sheet,
+    });
+    if ("legacy" in sheet) delete animation.sheet;
+    project.database.battleAnimations.push(animation);
+    skill.animationId = animation.id;
+    actor.learnedSkills = [{ level: 1, skillId: skill.id }];
+    const session = startSession(project);
+    const detail = createStatusMenuDetail({
+      project, session, slots: [], waitModeEnabled: true,
+      selectedCommand: "skills", skillActorId: actor.id, onSelectSkill: () => {},
+    });
+    const restoreDom = installFakeDom();
+    try {
+      const panel = renderWithFakeDom(() => renderStatusMenuDetailPanel(project, detail, { showcase: true }));
+      for (const testId of [`status-menu-entry-icon-skill-${skill.id}`, "status-menu-showcase-art"]) {
+        const icon = findByTestId(panel, testId);
+        const crop = icon?.children[0];
+        expect(crop, `${testId} must isolate one cell instead of containing the entire sheet`).toBeDefined();
+        expect(crop?.getAttribute("style")).toContain(`width:${sheet.width}%`);
+        expect(crop?.getAttribute("style")).toContain(`height:${sheet.height}%`);
+        expect(crop?.getAttribute("style")).toContain(`background-size:${sheet.columns * 100}% auto`);
+        expect(crop?.getAttribute("style")).toContain("background-position:0 0");
+        expect(crop?.getAttribute("style")).toContain('background-image:url("/assets/generated/effects/effect-fire-burst.png")');
+      }
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it.each(["missing-animation", "missing-resource"])("keeps the skill placeholder for %s", (missing) => {
+    const project = createBlankProject();
+    const actor = project.database.actors[0];
+    const skill = project.database.skills[0];
+    if (!actor || !skill) throw new Error("The starter project must have an actor and skill");
+    skill.animationId = "anim_menu_missing";
+    if (missing === "missing-resource") {
+      project.database.battleAnimations.push({ id: skill.animationId, name: "Missing resource" });
+    }
+    actor.learnedSkills = [{ level: 1, skillId: skill.id }];
+    const restoreDom = installFakeDom();
+    try {
+      const { panel } = renderDetail(project, startSession(project), {
+        selectedCommand: "skills", skillActorId: actor.id,
+      });
+      const icon = findByTestId(panel, `status-menu-entry-icon-skill-${skill.id}`);
+      expect(icon?.className).toContain("missing");
+      expect(icon?.getAttribute("style") ?? "").not.toContain("background-image");
+    } finally {
+      restoreDom();
+    }
+  });
+
   it("carries the authored item icon resource id on every inventory row", () => {
     const project = createBlankProject();
     const session = startSession(project);

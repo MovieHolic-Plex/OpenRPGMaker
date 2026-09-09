@@ -93,6 +93,7 @@ import {
   type MinimapRuntimeState,
 } from "@/player/minimap";
 import { recordPlayBootDiagnostic } from "@/player/playBootDiagnostics";
+import { diagnosticToken } from "@/util/diagnosticObserver";
 import { createRuntimePerfCounters, type RuntimePerfCounters } from "@/player/runtimePerfCounters";
 import { onRegistryValue } from "@/player/registryReady";
 
@@ -111,6 +112,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   declare playerSprite: PlayerSpriteResource;
   declare input_: Input;
   declare session: PlaySession;
+  battleAbortController?: AbortController;
   declare map: GameMap;
   inputEnabled = true;
   running = false;
@@ -184,6 +186,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   preload(): void {
+    const diagnosticOwner = diagnosticToken();
     const reportProgress = (ratio: number): void => {
       const handler: unknown = this.game.registry.get("onPlayLoadProgress");
       if (typeof handler === "function") {
@@ -200,7 +203,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
         stage: "assets",
         ok: false,
         detail: `에셋 로드 실패: ${failure.key} (${failure.url})`,
-      });
+      }, undefined, diagnosticOwner);
     });
     reportProgress(0);
     loadBundledAssets(this, store.getCurrent());
@@ -455,10 +458,22 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.showRuntimeOverlay("battle-scene", troopId || "battle");
   }
 
-  playBattle(step: Extract<StepResult, { kind: "battleProcessing" }>): Promise<BattleResult> {
+  playBattle(step: Extract<StepResult, { kind: "battleProcessing" }>, isCurrent?: () => boolean): Promise<BattleResult | null> {
+    this.battleAbortController?.abort();
+    const controller = new AbortController();
+    this.battleAbortController = controller;
+    const abort = (): void => controller.abort();
+    this.events.once("shutdown", abort);
+    this.events.once("destroy", abort);
+    const session = this.session;
     const startedAt = performance.now();
     return import("@/player/playSceneBattle").then(({ playBattle }) => {
-      return playBattle(this, step, startedAt);
+      if (controller.signal.aborted || this.session !== session || isCurrent?.() === false) return null;
+      return playBattle(this, step, startedAt, isCurrent);
+    }).finally(() => {
+      this.events.off("shutdown", abort);
+      this.events.off("destroy", abort);
+      if (this.battleAbortController === controller) this.battleAbortController = undefined;
     });
   }
 
@@ -538,6 +553,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   applySession(session: PlaySession): void {
+    this.battleAbortController?.abort();
     this.session = structuredClone(session);
     // Loading replaces the old event run; its pending menu must not own the new session.
     this.running = false;
@@ -600,7 +616,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   // player.ts가 게임 생성 후 비동기로 dialogue를 registry에 넣기 때문에,
   // create 시점에는 아직 없을 수 있다. 준비되면 fireAutoTriggers를 호출한다.
   private async fireAutoTriggersWhenReady(): Promise<void> {
-    this.whenDialogueReady(() => void this.fireAutoTriggers());
+    this.whenDialogueReady(() => {
+      const fire = (): void => { void this.fireAutoTriggers(); };
+      // During create(), sys.isActive() is still false. A synchronous battle
+      // rejection would otherwise be mistaken for a cancelled scene.
+      if (this.sys.isActive()) fire();
+      else this.events.once("create", fire);
+    });
   }
 
   /**

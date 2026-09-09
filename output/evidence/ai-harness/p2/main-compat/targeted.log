@@ -1,0 +1,547 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=2 --reporter=default --reporter=json --outputFile=output/evidence/ai-harness/p2/main-compat/targeted-vitest.json test/aiRequiredOutcomes.test.ts test/aiRequiredQuestionDispatch.test.ts test/aiRunOutcome.test.ts test/aiRunOutcomeIntegration.test.ts test/aiRunOutcomeApply.test.ts test/aiRunOutcomeLifecycle.test.ts test/aiRunOutcomeOwnership.test.ts test/aiOutcomeApplyPolicy.test.ts test/aiOutcomeEntryOwnership.test.ts test/aiOutcomeContinuationDelivery.test.ts test/aiOutcomePresentation.test.ts test/runOutcomeApplyFixture.test.ts test/aiRunEndProof.test.ts test/aiContinueUserAction.test.ts test/aiBlockedContinue.test.ts test/assistantAcceptance.test.ts test/assistantAcceptanceSession.test.ts test/assistantAcceptanceRequestBaseline.test.ts test/assistantAcceptancePromiseBaseline.test.ts test/assistantAcceptanceCost.test.ts test/toolSchemaProviderCompat.test.ts test/assistantSessionIntent.test.ts test/actionAcceptanceRequirements.test.ts test/actionAcceptanceProof.test.ts test/actionCombatProof.test.ts test/actionCombatRuntimeProof.test.ts test/actionRpgAuthoringAcceptance.test.ts test/assistantMultiMapSpec.test.ts test/assistantDependencyRetry.test.ts test/assistantBatchCompletion.test.ts test/sceneVerificationRepair.test.ts test/npcRewardAcceptance.test.ts test/npcRewardSession.test.ts test/projectWikiSession.test.ts test/projectWikiApplication.test.ts test/projectWikiClient.test.ts test/projectWikiRouting.test.ts test/projectWikiCodex.test.ts test/projectWikiCombat.test.ts test/assistantOriginalContext.test.ts test/originalContext.test.ts test/aiToolDiscoveryEscalation.test.ts test/toolExposureQuota.test.ts test/toolRegistry.test.ts test/storePersistenceProof.test.ts test/storePersistenceLineage.test.ts test/audioDescriptionPersistence.test.ts test/audioDescriptionConcurrentPersistence.test.ts test/aiBlockedEventRelocation.test.ts test/aiAutonomousRunSurface.test.ts test/aiTurnAppliedAccounting.test.ts test/aiCompletionAccounting.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906
+
+ ✓ test/npcRewardSession.test.ts (19 tests) 18037ms
+   ✓ NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  350ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  1125ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  867ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  1164ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  653ms
+   ✓ NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  774ms
+   ✓ NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  975ms
+   ✓ NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  1976ms
+   ✓ NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  1592ms
+   ✓ NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  1462ms
+   ✓ NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  1471ms
+   ✓ NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  989ms
+   ✓ NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  1158ms
+   ✓ NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  1024ms
+   ✓ NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  458ms
+   ✓ NPC reward request lifetime in AssistantSession > clears old obligations for new-request  746ms
+   ✓ NPC reward request lifetime in AssistantSession > clears old obligations for ask  701ms
+ ✓ test/aiBlockedEventRelocation.test.ts (48 tests) 17626ms
+   ✓ AI blocked entity relocation > uses traversal blockers, not body reservations, for a wall sign's sole approach (below)  436ms
+   ✓ AI blocked entity relocation > uses traversal blockers, not body reservations, for a wall sign's sole approach (overlap-allowed)  301ms
+   ✓ AI blocked entity relocation > uses traversal blockers, not body reservations, for a wall sign's sole approach (overhang)  303ms
+   ✓ AI blocked entity relocation > recovers a steppable touch through the public API without recommending an unreachable directional tile  697ms
+   ✓ AI blocked entity relocation > recovers a steppable playerTouch through the public API without recommending an unreachable directional tile  939ms
+   ✓ AI blocked entity relocation > reports npc enclosed without painting its own tile through AssistantSession  1047ms
+   ✓ AI blocked entity relocation > reports floor-object enclosed without painting its own tile through AssistantSession  1055ms
+   ✓ AI blocked entity relocation > reports disconnected enclosed without painting its own tile through AssistantSession  986ms
+   ✓ AI blocked entity relocation > revalidates recommendations consumed in one assistant batch against current occupancy  952ms
+   ✓ AI blocked entity relocation > retains fixed NPC semantics after uploaded graphics and a serialized reload  859ms
+   ✓ AI blocked entity relocation > diagnoses a movable wide NPC's local immobility even with a reachable player approach  346ms
+   ✓ AI blocked entity relocation > shares lazy flood and body scans within lint, but refreshes after mutations  344ms
+   ✓ AI blocked entity relocation > delivers relocation after terrain strands an NPC, without forcing the choice (relocate=true)  1369ms
+   ✓ AI blocked entity relocation > delivers relocation after terrain strands an NPC, without forcing the choice (relocate=false)  1058ms
+   ✓ AI blocked entity relocation > offers a real move for a sealed wall object while lint itself leaves authored data untouched  406ms
+   ✓ AI blocked entity relocation > preserves an explicit reachability origin through the real move and scene interaction  417ms
+   ✓ AI blocked entity relocation > preserves completed-house tiles and metadata when recovering an existing NPC  381ms
+ ❯ test/assistantSessionIntent.test.ts (15 tests | 1 failed) 8028ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언이 질문을 냈으면 chat 모드는 모델을 부르지 않고 그 질문으로 턴을 끝낸다  351ms
+   × 의도 선언이 세션 라우팅을 정한다 > auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05) 463ms
+     → expected '완료 검증이 아직 미완성입니다.\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언자가 없으면 폴백 선언이다 — 되묻지 않고, 계획 여부는 플래너(direct)에게 넘긴다  567ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 질문 선언은 플래너를 건너뛰고, 계획 필요 선언은 플래너를 돈다  572ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 플래너의 direct 는 존중한다 — 「마을」이라도 코드가 계획을 강제하지 않는다  614ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 플래너가 volume 을 선언한 계획만 막대를 세우고, 막대 미달로 끝내면 재주입한다  1068ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > volume 없는 계획은 막대가 없다  581ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언한 툴은 도메인 상한과 무관하게 이번 라운드 스키마에 실린다 257ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 지시 모드의 툴 이름 언급은 사용자 발화에서만 읽고 footer 는 보지 않는다 (explicit instruction=false) 267ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 지시 모드의 툴 이름 언급은 사용자 발화에서만 읽고 footer 는 보지 않는다 (explicit instruction=true) 253ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > ask 는 언급·선언된 쓰기도 노출하거나 실행하지 않고 조회는 허용한다  540ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > question 는 언급·선언된 쓰기도 노출하거나 실행하지 않고 조회는 허용한다  523ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선택 영역은 사실로 붙고 선언에 따라 경계 또는 참고용 노트가 된다  629ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 수정 선언은 계획의 대상 맵을 현재 맵으로 고정하고, 생성 선언은 고정하지 않는다  939ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 「계속」은 모델을 부르지 않고 진행 중 계획을 이어간다(continuation)  403ms
+ ✓ test/assistantOriginalContext.test.ts (5 tests) 4233ms
+   ✓ grounded first working request > delivers complete target originals and grants only their real read evidence before the first write  1194ms
+   ✓ session original snapshot lifecycle > pages an oversized original through the actual session tool and waits for delivered full evidence  1663ms
+   ✓ session original snapshot lifecycle > retains original identity over continuation, recaptures a new request and keeps ask mode read-only  798ms
+   ✓ session original snapshot lifecycle > stops before calling a provider when the actual native model window cannot fit the full catalog  365ms
+ ✓ test/actionAcceptanceRequirements.test.ts (9 tests) 1462ms
+ ✓ test/projectWikiSession.test.ts (3 tests) 599ms
+ ✓ test/toolSchemaProviderCompat.test.ts (73 tests) 145ms
+ ✓ test/audioDescriptionConcurrentPersistence.test.ts (22 tests) 71519ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'missing' while an old save completes  4368ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'cleared' while an old save completes  3472ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'authored' while an old save completes  3558ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'unchanged local key'  2966ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote clear'  2837ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote reset'  3209ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote addition to an absent field'  2850ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'different keys in one kind'  2871ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same raw ID in different kinds'  3293ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local edit wins'  3350ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local clear wins'  3157ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local reset wins'  3215ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'own raw IDs and exact stored whitespa…'  3212ms
+   ✓ audio description concurrent persistence > preserves 'remote edit' through consecutive map saves without recording a user edit  4451ms
+   ✓ audio description concurrent persistence > preserves 'remote clear' through consecutive map saves without recording a user edit  4482ms
+   ✓ audio description concurrent persistence > preserves 'remote reset' through consecutive map saves without recording a user edit  4244ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'set' when a response arrives late  4353ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'clear' when a response arrives late  4588ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'reset' when a response arrives late  4365ms
+   ✓ audio description concurrent persistence > retains the baseline and fresh local input when a deferred write fails  2395ms
+ ✓ test/aiRunEndProof.test.ts (29 tests) 52108ms
+   ✓ AssistantSession accepted-revision proof > projects initialized proof events and rechecks freshness after the final status subscriber  1572ms
+   ✓ AssistantSession accepted-revision proof > rechecks edit from a synchronous proof subscriber  1337ms
+   ✓ AssistantSession accepted-revision proof > rechecks cancel from a synchronous proof subscriber  1232ms
+   ✓ AssistantSession accepted-revision proof > does not publish success after a proof subscriber starts a cancelled proof  1345ms
+   ✓ AssistantSession accepted-revision proof > returns the latest emitted state when a status subscriber starts a cancelled proof  1325ms
+   ✓ AssistantSession accepted-revision proof > preserves cancellation superseding the receipt callback  801ms
+   ✓ AssistantSession accepted-revision proof > preserves cancellation superseding the failure callback  832ms
+   ✓ AssistantSession accepted-revision proof > preserves cancellation superseding the success-throw callback  1341ms
+   ✓ AssistantSession accepted-revision proof > does not resume publication after a pending flush is superseded  799ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'cancelled' proof when an overlapping read ends 'verified'  1387ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'cancelled' proof when an overlapping read ends 'mismatch'  1528ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'succeeded' proof when an overlapping read ends 'verified'  2053ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'succeeded' proof when an overlapping read ends 'mismatch'  1852ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'succeeded' proof when an overlapping read ends 'cancelled'  1694ms
+   ✓ AssistantSession accepted-revision proof > does not claim verified after a failed proof read through actual session completion  2052ms
+   ✓ AssistantSession accepted-revision proof > retries failed proof for the same plan/revision, deduplicates success, and reproves a changed revision  4624ms
+   ✓ AssistantSession accepted-revision proof > does not promote cancelled during the read or replace editor state  2149ms
+   ✓ AssistantSession accepted-revision proof > does not promote disabled during the read or replace editor state  2369ms
+   ✓ AssistantSession accepted-revision proof > does not promote target during the read or replace editor state  2252ms
+   ✓ AssistantSession accepted-revision proof > does not promote content during the read or replace editor state  2316ms
+   ✓ AssistantSession accepted-revision proof > does not promote local-edit during the read or replace editor state  2438ms
+   ✓ AssistantSession accepted-revision proof > uses the real apply commit, not a newest remote commit read  2298ms
+   ✓ AssistantSession accepted-revision proof > project proof can succeed when the separate commit log fails  2678ms
+   ✓ AssistantSession accepted-revision proof > proves a normal no-plan apply through the reusable path without replaying the tool  2380ms
+   ✓ AssistantSession accepted-revision proof > does not correlate a later human edit with an in-flight apply commit  2327ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn retries failed proof without replaying the LLM or applied tools  2319ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn proves already applied milestones after a recovered LLM failure  2351ms
+ ✓ test/storePersistenceLineage.test.ts (8 tests) 69904ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reload during PATCH  11602ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after load during PATCH  9160ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reconnect during PATCH  10600ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reload even for identical content  9476ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on load even for identical content  7888ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reconnect even for identical content  9220ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on adopt even for identical content  6494ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on fallback even for identical content  5462ms
+ ❯ test/assistantDependencyRetry.test.ts (12 tests | 1 failed) 21412ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=false)  2027ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=true)  1668ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=false)  1513ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=true)  1586ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=false)  1987ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=true)  1672ms
+   ✓ batch prerequisites through AssistantSession > keeps the failed-read whole-batch contract and excludes deferred writes from the failure budget  1041ms
+   ✓ stable target retry budgets through AssistantSession > bounds fresh-batch lookup refusals without claiming they executed  1283ms
+   ✓ stable target retry budgets through AssistantSession > does not charge downstream same-batch refusals against their independent retry target  1825ms
+   × stable target retry budgets through AssistantSession > bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user 3082ms
+     → expected 'blocked' to be 'done' // Object.is equality
+   ✓ stable target retry budgets through AssistantSession > successful correction resets that target's accumulated failures  2177ms
+   ✓ stable target retry budgets through AssistantSession > does not execute attempts beyond the bound even within one model batch  1548ms
+ ❯ test/assistantMultiMapSpec.test.ts (18 tests | 1 failed) 17451ms
+   ✓ map-owned construction contracts through AssistantSession > retains A after B, including a continued turn=false  1467ms
+   ✓ map-owned construction contracts through AssistantSession > retains A after B, including a continued turn=true  1474ms
+   ✓ map-owned construction contracts through AssistantSession > isolates failed updates, keeps both historical warnings, and selects both changed maps  1759ms
+   ✓ map-owned construction contracts through AssistantSession > commits only successful map-local expansion after invalid-args  1150ms
+   × map-owned construction contracts through AssistantSession > commits only successful map-local expansion after throwing-runner 796ms
+     → expected [Function] to throw error including 'injected runner failure' but got 'expected \'error\' to be \'max-tool-c…'
+   ✓ map-owned construction contracts through AssistantSession > expires implicit A selection without evicting explicit B  1209ms
+   ✓ map-owned construction contracts through AssistantSession > uses per-map completeness precedence and does not merge identical asset IDs  1674ms
+   ✓ map-owned construction contracts through AssistantSession > preserves future planned maps through rebase and checks their own dimensions after B  1007ms
+   ✓ map-owned construction contracts through AssistantSession > prunes a successful removal before ID reuse, not failed removal or surviving maps  1556ms
+   ✓ map-owned construction contracts through AssistantSession > prunes external rebase deletions while preserving surviving and never-created maps  1463ms
+   ✓ map-owned construction contracts through AssistantSession > builds pending NPC assets from every current map, never historical specs  1304ms
+   ✓ map-owned construction contracts through AssistantSession > clears every spec on successful reset, including reused start ID and future plans  1245ms
+   ✓ ordered terrain background and road overlay > validates explicit order undefined without weakening house overlap 33ms
+   ✓ ordered terrain background and road overlay > validates explicit order [] without weakening house overlap 42ms
+   ✓ ordered terrain background and road overlay > validates explicit order [ 'road', 'terrain' ] without weakening house overlap 34ms
+   ✓ ordered terrain background and road overlay > validates explicit order [ 'terrain' ] without weakening house overlap 38ms
+   ✓ ordered terrain background and road overlay > validates explicit order [ 'terrain', 'road' ] without weakening house overlap 36ms
+   ✓ ordered terrain background and road overlay > executes the terrain then road batch with no dependency deferral  1161ms
+ ✓ test/aiRequiredOutcomes.test.ts (39 tests) 17618ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  582ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  458ms
+   ✓ canonical requirements > fails closed for malformed declarations null  551ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  498ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  520ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  541ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}  526ms
+   ✓ canonical requirements > keeps a bare legacy scheduler plan unassessed  320ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  549ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=false  605ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=true  545ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  492ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=false  601ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=true  594ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  497ms
+   ✓ canonical requirements > keeps sibling obligations when the user withdraws just one  515ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  556ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  506ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  651ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  760ms
+   ✓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict  334ms
+   ✓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone  914ms
+   ✓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase  989ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  440ms
+   ✓ question-safe continuation > preserves blocked work and counters for ask  437ms
+   ✓ question-safe continuation > preserves blocked work and counters for question  376ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  787ms
+   ✓ question-safe continuation > does not reactivate from fabricated continuation source  433ms
+   ✓ question-safe continuation > reactivates blocked work only with explicit user resume  469ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  567ms
+ ✓ test/storePersistenceProof.test.ts (18 tests) 17185ms
+   ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  1323ms
+   ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  845ms
+   ✓ accepted revision persistence proof > uses the ordinary normalized remote load and map-overlay contract  988ms
+   ✓ accepted revision persistence proof > does not verify a matching projects row when the ordinary map read fails  898ms
+   ✓ accepted revision persistence proof > binds the receipt to the accepted merged project, not the unmerged live store  1445ms
+   ✓ accepted revision persistence proof > keeps open event drafts local and out of accepted content identity  3591ms
+   ✓ accepted revision persistence proof > rejects a copied token without issuing a read  567ms
+   ✓ accepted revision persistence proof > does not verify a failed read  591ms
+   ✓ accepted revision persistence proof > does not verify a missing read  672ms
+   ✓ accepted revision persistence proof > does not verify a disabled read  637ms
+   ✓ accepted revision persistence proof > does not verify a cancelled read  576ms
+   ✓ accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged  717ms
+   ✓ accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged  794ms
+   ✓ accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision  781ms
+   ✓ accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them  783ms
+   ✓ accepted revision persistence proof > pins the original target across a configuration change during read  707ms
+   ✓ accepted revision persistence proof > does not verify when cancelled while the read is in flight  620ms
+   ✓ accepted revision persistence proof > does not verify when disabled while the read is in flight  648ms
+ ✓ test/aiOutcomeEntryOwnership.test.ts (12 tests) 9036ms
+   ✓ early cancelled entry > settles delivery for 'fresh request' before the intent transport can reject  1026ms
+   ✓ early cancelled entry > settles delivery for 'explicit continuation' before the intent transport can reject  756ms
+   ✓ early cancelled entry > settles delivery for 'Ask continuation token' before the intent transport can reject  751ms
+   ✓ early cancelled entry > settles delivery for 'new goal continuation token' before the intent transport can reject  738ms
+   ✓ early cancelled entry > settles delivery for 'fresh instruction override' before the intent transport can reject  693ms
+   ✓ early cancelled entry > settles delivery for 'continuation instruction override' before the intent transport can reject  713ms
+   ✓ early failed entry > settles delivery for 'fresh request' before the intent transport can reject  710ms
+   ✓ early failed entry > settles delivery for 'explicit continuation' before the intent transport can reject  849ms
+   ✓ early failed entry > settles delivery for 'Ask continuation token' before the intent transport can reject  744ms
+   ✓ early failed entry > settles delivery for 'new goal continuation token' before the intent transport can reject  693ms
+   ✓ early failed entry > settles delivery for 'fresh instruction override' before the intent transport can reject  659ms
+   ✓ early failed entry > settles delivery for 'continuation instruction override' before the intent transport can reject  702ms
+ ✓ test/assistantAcceptanceSession.test.ts (12 tests) 8285ms
+   ✓ acceptance controls actual session termination > does not schedule run-end persistence proof for a completed plan with unmet acceptance  538ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  716ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  882ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  508ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  580ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  955ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  1951ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  473ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  743ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  526ms
+ ✓ test/assistantAcceptanceRequestBaseline.test.ts (6 tests) 12898ms
+   ✓ per-request acceptance baselines > preserves a map created in A while B changes another map  2177ms
+   ✓ per-request acceptance baselines > does not credit A's change toward a newly accepted B change promise  1460ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=false)  2075ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=true)  2366ms
+   ✓ per-request acceptance baselines > retains B's pre-write baseline across budget-driven synthetic continuation  2262ms
+   ✓ per-request acceptance baselines > retains B's baseline when a manual continuation repairs and replans after application  2557ms
+ ✓ test/assistantBatchCompletion.test.ts (8 tests) 11566ms
+   ✓ audit batch dependency and completion lifecycle > defers same-map spec-free props after a rejected spec but allows another map  1447ms
+   ✓ audit batch dependency and completion lifecycle > defers premature completion, then accepts correction of the failed write in the same batch  1673ms
+   ✓ audit batch dependency and completion lifecycle > acknowledges an already completed plan without an item ID or another application  1638ms
+   ✓ audit batch dependency and completion lifecycle > does not acknowledge a missing plan  729ms
+   ✓ audit batch dependency and completion lifecycle > does not acknowledge an explicitly unknown item  1627ms
+   ✓ audit batch dependency and completion lifecycle > does not acknowledge skipped work as already completed  572ms
+   ✓ audit batch dependency and completion lifecycle > does not bypass open acceptance when every work item is done  2252ms
+   ✓ audit batch dependency and completion lifecycle > does not acknowledge completion after a later explicit verification failure  1626ms
+ ❯ test/aiCompletionAccounting.test.ts (8 tests | 7 failed) 12421ms
+   ✓ completion accounting through real assistant sessions > auto-completes a later spatial milestone using applied plus pending writes without reapplying the first  3736ms
+   × completion accounting through real assistant sessions > active spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime 1438ms
+     → expected 'error' to be 'final' // Object.is equality
+   × completion accounting through real assistant sessions > active spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime 1567ms
+     → expected 'error' to be 'final' // Object.is equality
+   × completion accounting through real assistant sessions > active spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime 1438ms
+     → expected 'error' to be 'final' // Object.is equality
+   × completion accounting through real assistant sessions > implicit spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime 1239ms
+     → expected 'error' to be 'final' // Object.is equality
+   × completion accounting through real assistant sessions > implicit spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime 1201ms
+     → expected 'error' to be 'final' // Object.is equality
+   × completion accounting through real assistant sessions > implicit spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime 1188ms
+     → expected 'error' to be 'final' // Object.is equality
+   × completion accounting through real assistant sessions > does not commit expansion when the runner itself throws, and preserves the failed tool response 614ms
+     → promise resolved "{ …(7) }" instead of rejecting
+ ✓ test/aiRunOutcomeApply.test.ts (7 tests) 4787ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is verified  980ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is failed  690ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is cancelled  630ms
+   ✓ run outcome actual application > refreshes the compact recap when proof settles after the returned draft  705ms
+   ✓ run outcome actual application > rechecks current proof without mutating the historical returned result  740ms
+   ✓ run outcome actual application > does not credit an old receipt when another user run only queries  778ms
+ ❯ test/aiOutcomeApplyPolicy.test.ts (6 tests | 1 failed) 5873ms
+   ✓ settles the same verified requirement with milestone=false  1486ms
+   × settles the same verified requirement with milestone=true 875ms
+     → expected 'blocked' to be 'verified' // Object.is equality
+   ✓ uses the existing quick-reply stop decision without reclassifying response prose 201ms
+   ✓ preserves genuine blocked execution when an applied draft later verifies  1181ms
+   ✓ preserves genuine failed execution when an applied draft later verifies  1151ms
+   ✓ preserves genuine cancelled execution when an applied draft later verifies  977ms
+ ✓ test/audioDescriptionPersistence.test.ts (37 tests) 4272ms
+   ✓ audio description recovery snapshots > preserves description states when restoring a backup into an editor package: undefined  599ms
+   ✓ audio description recovery snapshots > preserves description states when restoring a backup into an editor package: {"music":{"orphan":" \tBACKUP_VALUE\n ","cleared":"","__proto__":"OWN_ID"},"sound":{"orphan":"SOUND_VALUE","terrainTemplates":""}}  665ms
+ ✓ test/aiTurnAppliedAccounting.test.ts (16 tests) 5380ms
+   ✓ panel map completeness selection > uses the real session's plural selection instead of the most recent spec  1491ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > max-tool-calls 이후 원장만 남아도 변경 없음으로 기록하지 않는다  439ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > token-budget 이후 원장만 남아도 변경 없음으로 기록하지 않는다  458ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > error 이후 원장만 남아도 변경 없음으로 기록하지 않는다  466ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 원장과 종료 시 적용한 제안을 모두 세되 원장은 다시 적용하지 않는다  501ms
+ ✓ test/npcRewardAcceptance.test.ts (43 tests) 1686ms
+ ✓ test/aiOutcomeContinuationDelivery.test.ts (7 tests) 5715ms
+   ✓ preserves delivery ownership for 'continue' with verified=false  948ms
+   ✓ preserves delivery ownership for 'continue' with verified=true  835ms
+   ✓ preserves delivery ownership for 'proof-retry' with verified=false  769ms
+   ✓ preserves delivery ownership for 'query' with verified=true  794ms
+   ✓ preserves delivery ownership for 'ask' with verified=true  831ms
+   ✓ distinguishes continue after a failed milestone proof  838ms
+   ✓ distinguishes query after a failed milestone proof  699ms
+ ✓ test/assistantAcceptanceCost.test.ts (6 tests) 2914ms
+   ✓ bounded canonical project comparisons > compares shared project content once for same-content  391ms
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=false  936ms
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=true  927ms
+ ✓ test/aiBlockedContinue.test.ts (4 tests) 2943ms
+   ✓ offers the real Continue control when required work blocks without a budget stop  710ms
+   ✓ keeps one Continue control when a question follows blocked work  681ms
+   ✓ does not publish a Continue control when the blocked owner is retired  589ms
+   ✓ publishes the resumed unfinished result instead of the preceding question outcome  961ms
+ ✓ test/projectWikiCodex.test.ts (8 tests) 1902ms
+   ✓ sourced codex manual editing > retains legacy manual document behavior  312ms
+ ✓ test/aiAutonomousRunSurface.test.ts (12 tests) 1736ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > does not promote quick-reply presets but retains their transcript text  303ms
+ ✓ test/aiRunOutcomeIntegration.test.ts (7 tests) 1445ms
+   ✓ run outcome session boundaries > publishes one unassessed projection when a query returns  350ms
+   ✓ run outcome session boundaries > captures blocked execution when required work is skipped  608ms
+ ✓ test/aiRequiredQuestionDispatch.test.ts (4 tests) 3432ms
+   ✓ question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=false  895ms
+   ✓ question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=true  834ms
+   ✓ question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=false  804ms
+   ✓ question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=true  898ms
+ ✓ test/assistantAcceptancePromiseBaseline.test.ts (13 tests) 1787ms
+ ✓ test/toolRegistry.test.ts (17 tests) 2002ms
+   ✓ toolRegistry > dry-run이 원본 project를 변형하지 않는다  333ms
+   ✓ toolRegistry > place_npc의 graphic.query가 charset 시맨틱으로 해석된다  326ms
+ ✓ test/assistantAcceptance.test.ts (23 tests) 1633ms
+ ✓ test/aiRunOutcomeLifecycle.test.ts (6 tests) 2166ms
+   ✓ projects budget exhaustion when the tools limit ends execution  348ms
+   ✓ retains both applied milestones and pending calls when a later transport fails  624ms
+   ✓ routes an explicit user withdrawal to the sole session authority  493ms
+ ✓ test/sceneVerificationRepair.test.ts (7 tests) 1950ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: []  356ms
+ ✓ test/aiRunOutcomeOwnership.test.ts (2 tests) 1413ms
+   ✓ does not settle a newer query when an old run's proof is cancelled  955ms
+   ✓ rechecks a canonical no-write pass when the live assessed map changes  456ms
+ ✓ test/runOutcomeApplyFixture.test.ts (2 tests) 770ms
+   ✓ awaits real manual writer body handling when proof is cancelled at the receipt  424ms
+   ✓ finishes drainage without a new changes row when a save is deduplicated  344ms
+ ✓ test/originalContext.test.ts (18 tests) 1326ms
+ ✓ test/actionRpgAuthoringAcceptance.test.ts (2 tests) 1486ms
+   ✓ action authoring acceptance through the real session > does not replace declared attack and dodge proof with a passing wait-only scene  794ms
+   ✓ action authoring acceptance through the real session > keeps a failed mandatory scene unverified even when spatial criteria pass and work is skipped  690ms
+ ✓ test/projectWikiApplication.test.ts (2 tests) 1026ms
+   ✓ wiki ownership at authoring application > preserves the live wiki when a region draft is applied  419ms
+   ✓ wiki ownership at authoring application > preserves newer manual wiki edits when an older authoring proposal is applied  605ms
+ ✓ test/projectWikiCombat.test.ts (5 tests) 1270ms
+   ✓ wiki decisions constrain actual monster authoring > uses visible contact battles for an existing JRPG without an explicit override  421ms
+   ✓ wiki decisions constrain actual monster authoring > creates action field combat without random encounters  338ms
+ ✓ test/projectWikiClient.test.ts (8 tests) 510ms
+ ✓ test/aiToolDiscoveryEscalation.test.ts (7 tests) 2814ms
+   ✓ AI tool discovery escalation > exposes every active native schema on the first google-antigravity request without evicting core reads  440ms
+   ✓ AI tool discovery escalation > exposes every active native schema on the first openai-codex request without evicting core reads  367ms
+   ✓ AI tool discovery escalation > retains build, plan and acceptance schemas alongside the full catalog under a minimal prompt budget  711ms
+   ✓ AI tool discovery escalation > reports provider rejection instead of retrying with a pruned catalog  510ms
+   ✓ AI tool discovery escalation > keeps discovered schemas available without changing the complete working catalog  402ms
+ ✓ test/aiRunOutcome.test.ts (437 tests) 79ms
+ ✓ test/projectWikiRouting.test.ts (3 tests) 150ms
+ ✓ test/toolExposureQuota.test.ts (8 tests) 16ms
+ ✓ test/actionAcceptanceProof.test.ts (3 tests) 3593ms
+   ✓ action acceptance receipt lifecycle > accepts only the authentic current-map receipt and rejects serialized copies  1281ms
+   ✓ action acceptance receipt lifecycle > retires proof after content changes even if undo restores the exact content  1105ms
+   ✓ action acceptance receipt lifecycle > revokes a passing map proof when its later harness run fails  1205ms
+ ✓ test/actionCombatProof.test.ts (13 tests) 5061ms
+   ✓ runtime-owned action proof > binds fingerprints to authored content, not object identity or key order  661ms
+   ✓ runtime-owned action proof > matches exact unsigned FNV-1a 64-bit arithmetic including Unicode input  384ms
+   ✓ runtime-owned action proof > owns only the returned immutable receipt, bound to current revision and map  679ms
+   ✓ runtime-owned action proof > rejects runtime wrong-map responses  398ms
+   ✓ runtime-owned action proof > rejects runtime missing-outcome responses  374ms
+   ✓ runtime-owned action proof > rejects runtime failed responses  459ms
+   ✓ runtime-owned action proof > allows a cold exported-player deployment within the two-minute ceiling  428ms
+   ✓ runtime-owned action proof > does not label an in-flight project revision change as verified  374ms
+ ✓ test/actionCombatRuntimeProof.test.ts (7 tests) 964ms
+   ✓ action dispatcher observations > stationary Shift takes damage; the same strike is rejected only by an actual dodge  305ms
+ ✓ test/aiOutcomePresentation.test.ts (93 tests) 1819ms
+   ✓ withdraws the exact real requirement only on user activation, retaining source and failed evidence  595ms
+   ✓ keeps rejected and busy actions from changing the canonical obligation  585ms
+   ✓ does not offer a user action for legacy read-only callers  565ms
+ ✓ test/aiContinueUserAction.test.ts (1 test) 1306ms
+   ✓ the real Continue control updates both the panel send mode and composer presentation after Ask  1304ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiCompletionAccounting.test.ts > completion accounting through real assistant sessions > active spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime
+ FAIL  test/aiCompletionAccounting.test.ts > completion accounting through real assistant sessions > active spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime
+ FAIL  test/aiCompletionAccounting.test.ts > completion accounting through real assistant sessions > active spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime
+ FAIL  test/aiCompletionAccounting.test.ts > completion accounting through real assistant sessions > implicit spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime
+ FAIL  test/aiCompletionAccounting.test.ts > completion accounting through real assistant sessions > implicit spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime
+ FAIL  test/aiCompletionAccounting.test.ts > completion accounting through real assistant sessions > implicit spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime
+AssertionError: expected 'error' to be 'final' // Object.is equality
+
+Expected: [32m"final"[39m
+Received: [31m"error"[39m
+
+ ❯ test/aiCompletionAccounting.test.ts:164:34
+    162|       const nextEvents: ToolEvent[] = [];
+    163|       const next = await session.sendUserMessage("다음 칸 칠해줘", (event) =…
+    164|       expect(next.stoppedReason).toBe("final");
+       |                                  ^
+    165|       expect(chat).toHaveBeenCalledTimes(steps.length);
+    166|       expect(session.getAcceptanceSnapshot()).toMatchObject({ status: …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  test/aiCompletionAccounting.test.ts > completion accounting through real assistant sessions > does not commit expansion when the runner itself throws, and preserves the failed tool response
+AssertionError: promise resolved "{ …(7) }" instead of rejecting
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ {[39m
+[31m+   "appliedCalls": [],[39m
+[31m+   "assistantText": "완료 검증이 아직 미완성입니다.[39m
+[31m+ - 지형 칠해줘: Missing or malformed criteria: repair_acceptance required[39m
+[31m+ ",[39m
+[31m+   "error": "injected runner failure",[39m
+[31m+   "proposedCalls": [],[39m
+[31m+   "recap": {[39m
+[31m+     "elapsedMs": 266,[39m
+[31m+     "process": [[39m
+[31m+       {[39m
+[31m+         "at": "2026-09-07T00:18:48.117Z",[39m
+[31m+         "kind": "tool",[39m
+[31m+         "text": "set_build_spec ok",[39m
+[31m+       },[39m
+[31m+     ],[39m
+[31m+     "proposedWrites": 0,[39m
+[31m+     "ralphContinues": 0,[39m
+[31m+     "runOutcome": {[39m
+[31m+       "delivery": "no-change",[39m
+[31m+       "execution": "failed",[39m
+[31m+       "goal": "incomplete",[39m
+[31m+     },[39m
+[31m+     "stoppedReason": "error",[39m
+[31m+     "toolCalls": 1,[39m
+[31m+     "toolFailures": 0,[39m
+[31m+     "usage": {[39m
+[31m+       "byModel": [[39m
+[31m+         {[39m
+[31m+           "calls": 2,[39m
+[31m+           "callsWithoutUsage": 2,[39m
+[31m+           "completionTokens": 0,[39m
+[31m+           "model": "stub-model",[39m
+[31m+           "promptTokens": 0,[39m
+[31m+         },[39m
+[31m+       ],[39m
+[31m+       "calls": 2,[39m
+[31m+       "callsWithoutUsage": 2,[39m
+[31m+       "completionTokens": 0,[39m
+[31m+       "promptTokens": 0,[39m
+[31m+     },[39m
+[31m+     "volumeContinues": 0,[39m
+[31m+   },[39m
+[31m+   "runOutcome": {[39m
+[31m+     "delivery": "no-change",[39m
+[31m+     "execution": "failed",[39m
+[31m+     "goal": "incomplete",[39m
+[31m+   },[39m
+[31m+   "stoppedReason": "error",[39m
+[2m  }[22m
+
+ ❯ test/aiCompletionAccounting.test.ts:188:61
+    186|     ]) });
+    187| 
+    188|     await expect(session.sendUserMessage("지형 칠해줘", () => {})).rejects.…
+       |                                                             ^
+    189|     expect(session.getActiveSpec()).toEqual(SPEC);
+    190|     expect(session.getProposedProject().maps.m1).toEqual(project.maps.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  test/aiOutcomeApplyPolicy.test.ts > settles the same verified requirement with milestone=true
+AssertionError: expected 'blocked' to be 'verified' // Object.is equality
+
+Expected: [32m"[7mverifi[27med"[39m
+Received: [31m"[7mblock[27med"[39m
+
+ ❯ test/aiOutcomeApplyPolicy.test.ts:57:53
+     55|   // Then both paths use the same post-apply completion policy and P1 …
+     56|   const expected = { execution: "response-final", goal: "satisfied", d…
+     57|   expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
+       |                                                     ^
+     58|   expect(result.runOutcome).toEqual(expected);
+     59|   expect(result.recap?.runOutcome).toEqual(expected);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  test/assistantDependencyRetry.test.ts > stable target retry budgets through AssistantSession > bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user
+AssertionError: expected 'blocked' to be 'done' // Object.is equality
+
+Expected: [32m"done"[39m
+Received: [31m"blocked"[39m
+
+ ❯ test/assistantDependencyRetry.test.ts:191:56
+    189|     ]);
+    190|     const second = await session.sendUserMessage("같은 주민 명령을 다시 고쳐줘", c…
+    191|     expect(second.workPlan?.layers[0].items[0].status).toBe("done");
+       |                                                        ^
+    192|     expect(state.batches).toBe(8);
+    193|     expect(events.find((event) => event.name === "repair_acceptance")?…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  test/assistantMultiMapSpec.test.ts > map-owned construction contracts through AssistantSession > commits only successful map-local expansion after throwing-runner
+AssertionError: expected [Function] to throw error including 'injected runner failure' but got 'expected \'error\' to be \'max-tool-c…'
+
+Expected: [32m"[7minj[27mected [7mrunner failure[27m"[39m
+Received: [31m"[7mexp[27mected [7m'error' to be 'max-tool-calls' // Object.is equality[27m"[39m
+
+ ❯ test/assistantMultiMapSpec.test.ts:81:7
+     79|         return original(ctx, name, args, options);
+     80|       });
+     81|       await expect(h.send([fill("a")])).rejects.toThrow("injected runn…
+       |       ^
+     82|       spy.mockRestore();
+     83|     } else {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  test/assistantSessionIntent.test.ts > 의도 선언이 세션 라우팅을 정한다 > auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)
+AssertionError: expected '완료 검증이 아직 미완성입니다.\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 야외 집으로 진행합니다.[39m
+[31m+ 완료 검증이 아직 미완성입니다.[39m
+[31m+ - 집 하나 만들어줘: Missing or malformed criteria: repair_acceptance required[39m
+[31m+[39m
+
+ ❯ test/assistantSessionIntent.test.ts:114:34
+    112|     const result = await session.sendUserMessage("집 하나 만들어줘", () => {}…
+    113|     expect(seen.length).toBeGreaterThan(0);
+    114|     expect(result.assistantText).toBe("야외 집으로 진행합니다.");
+       |                                  ^
+    115|     expect(statuses(session).some((text) => text.startsWith("의도 확인 건너뜀…
+    116|   }, 30000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+
+ Test Files  5 failed | 47 passed (52)
+      Tests  11 failed | 1187 passed (1198)
+   Start at  09:15:18
+   Duration  302.84s (transform 33.50s, setup 0ms, collect 128.63s, tests 446.76s, environment 1.58s, prepare 3.98s)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/output/evidence/ai-harness/p2/main-compat/targeted-vitest.json

@@ -1,0 +1,33 @@
+{
+  "base": "a9dcbf32c",
+  "finding": "G1-F18",
+  "sourceBlobs": {
+    "test/eventCommandRemediation/U28.test.ts": "496a68a988329a520941da321ff85275f3bdac22",
+    "src/editor/panels/eventEditor/commandBodyCore.ts": "36005a79711b49d0294fa6e424a73390204d14f7",
+    "src/editor/panels/eventEditor/recordPickerPanel.ts": "e012dd8540dec34e91603fe9f6a5e9c7828ffb33",
+    "test/eventCommandRemediation/U28.fixture.ts": "94ff21307dc36e56d2bacadfeda7ddf2e7071211"
+  },
+  "red": "red.json",
+  "basicFixtureCorrection": "fixture-correction.md",
+  "availabilityRed": "availability-red.json",
+  "unit": {
+    "report": "edge-green.json",
+    "passed": 12,
+    "failed": 0
+  },
+  "adjacent": {
+    "report": "adjacent.json",
+    "passed": 51,
+    "failed": 0
+  },
+  "typecheckApp": 0,
+  "buildApp": 0,
+  "buildSeconds": 38.05,
+  "remaining": [
+    "actual editor and standalone player proof",
+    "owned build/cache cleanup",
+    "verified commit"
+  ],
+  "buildOutput": "/tmp/event-remediation-text-tools-build",
+  "buildCache": "/tmp/event-remediation-text-tools-build-cache"
+}

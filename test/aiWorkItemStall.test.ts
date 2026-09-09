@@ -8,7 +8,7 @@
 //   (b) 자율 드라이버는 막힌 항목에서 자동 계속하지 않는다.
 //   (c) 사용자의 다음 메시지가 막힌 항목을 되살린다(드라이버의 합성 「계속」은 되살리지 않는다).
 //   (d) 쓰기가 성공하면 그 항목의 시도 수가 0으로 돌아간다 — 여러 턴에 걸친 정상 진행은 막히지 않는다.
-//   (e) 이름이 어긋난 successTools 로 교착되지 않게, 명시 complete_work_item 은 성공한 쓰기를 근거로 인정한다.
+//   (e) 다른 쓰기가 성공해도 필수 시공 도구의 증거가 없으면 명시 complete_work_item 을 거부한다.
 //
 // 실제 세션 루프 + 실제 툴 실행기 + 가짜 LLM(scriptedChat, aiAutonomousRunSmoke 와 같은 패턴).
 // 라이브 LLM/API 키 없음, 타이밍 대기 없음.
@@ -18,8 +18,12 @@ import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { MAX_RALPH_ATTEMPTS_PER_ITEM } from "@/ai/workPlan";
 import { fixedDeclarer } from "./intentFixture";
+import type { SessionEvent } from "@/ai/assistantSession";
+import type { ReviewInput } from "@/ai/independentReview";
+import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
+type ToolEvent = Extract<import("@/ai/assistantSession").SessionEvent, { type: "tool_call" }>;
 
 function installHermeticEnv(project: Project): void {
   vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
@@ -102,15 +106,15 @@ const statusTexts = (session: { getAuditEntries(): readonly { kind: string; text
   session.getAuditEntries().filter((e) => e.kind === "status").map((e) => String(e.text));
 
 /** successTools 가 이 대본에서 절대 성공하지 않는 1항목 계획 — 교착을 결정적으로 만든다. */
-const STUCK_PLAN = {
+const STUCK_PLAN = (mapId: string) => ({
   goal: "연못 만들기",
   layers: [
     {
       title: "연못",
-      items: [{ title: "연못 채우기", instruction: "fill_region 으로 광장에 연못", successTools: ["fill_region"] }],
+      items: [{ title: "연못 채우기", instruction: "fill_region 으로 광장에 연못", successTools: ["fill_region"], mapTargets: [mapId] }],
     },
   ],
-};
+});
 
 const planDeclarer = fixedDeclarer({ needsPlan: true, mode: "create" });
 
@@ -119,9 +123,10 @@ describe("진행이 멈춘 항목은 사람에게 넘긴다", () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installHermeticEnv(project);
+    const plan = STUCK_PLAN(project.startMapId);
     // 계획을 세운 뒤에는 계속 「끝났습니다」만 답한다 — Ralph 가 재주입하는 상황 그대로.
     const { chat, state } = scriptedChat(
-      [final(JSON.stringify({ action: "new_plan", ...STUCK_PLAN })), toolCall("set_work_plan", STUCK_PLAN, "c_plan")],
+      [final(JSON.stringify({ action: "new_plan", ...plan })), toolCall("set_work_plan", plan, "c_plan")],
       final("끝났습니다."),
     );
     const session = new AssistantSession(project, { config: CONFIG, chat, declareIntent: planDeclarer });
@@ -183,8 +188,9 @@ describe("진행이 멈춘 항목은 사람에게 넘긴다", () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installHermeticEnv(project);
+    const plan = STUCK_PLAN(project.startMapId);
     const { chat } = scriptedChat(
-      [final(JSON.stringify({ action: "new_plan", ...STUCK_PLAN })), toolCall("set_work_plan", STUCK_PLAN, "c_plan")],
+      [final(JSON.stringify({ action: "new_plan", ...plan })), toolCall("set_work_plan", plan, "c_plan")],
       final("끝났습니다."),
     );
     const session = new AssistantSession(project, { config: CONFIG, chat, declareIntent: planDeclarer });
@@ -206,56 +212,117 @@ describe("진행이 멈춘 항목은 사람에게 넘긴다", () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installHermeticEnv(project);
+    const baseline = structuredClone(store.getCurrent());
+    const requestText = "타이틀 좀 다듬고 시작 골드는 200으로 해줘";
+    const events: SessionEvent[] = [];
+    const reviews: ReviewInput[] = [];
     const plan = {
       goal: "타이틀 다듬기",
       layers: [
         {
           title: "타이틀",
-          items: [{ title: "제목 확정", instruction: "set_title_screen", successTools: ["set_title_screen"] }],
+          items: [{ title: "제목 확정", instruction: "set_title_screen 후 set_session_start", successTools: ["set_title_screen", "set_session_start"] }],
         },
       ],
     };
-    // 헛된 종료 2회 → 쓰기 성공(시도 수 리셋) → 헛된 종료 2회 → 쓰기로 완료.
-    const { chat } = scriptedChat([
+    // 실제 초안 쓰기 후 Ralph 2회 → 쓰기 성공(리셋) → Ralph 2회 → 마지막 필수 쓰기.
+    // 처음부터 쓰기가 없는 종료는 별도의 acceptance 게이트이므로 여기서는 구분한다.
+    const writer = scriptedChat([
       final(JSON.stringify({ action: "new_plan", ...plan })),
       toolCall("set_work_plan", plan, "c_plan"),
+      toolCall("set_title_screen", { title: "초안" }, "c_first"),
       final("끝났습니다."),
       final("끝났습니다."),
       toolCall("set_title_screen", { title: "중간" }, "c_mid"),
+      final("끝났습니다."),
+      final("끝났습니다."),
+      toolCall("set_session_start", { gold: 200 }, "c_gold"),
       final("모두 끝났습니다."),
     ]);
-    const session = new AssistantSession(project, { config: CONFIG, chat, declareIntent: planDeclarer });
+    const session = new AssistantSession(project, {
+      // Writer rounds and the separate reviewer share this budget.
+      config: { ...CONFIG, maxToolCalls: 16, maxTokens: 16000 },
+      declareIntent: planDeclarer,
+      chat: async (_config, request) => {
+        const review = independentReviewPayload(request);
+        const approval = approvedReviewResponse(request);
+        if (review && approval) {
+          expect(request.tools).toEqual([]);
+          expect(request.tool_choice).toBe("none");
+          expect(store.getCurrent()).toEqual(baseline);
+          expect(session.getProposedProject().meta.title).toBe("중간");
+          expect(session.getProposedProject().session.gold).toBe(200);
+          expect(session.isDraftReviewApproved()).toBe(false);
+          reviews.push(review);
+          return approval;
+        }
+        return writer.chat();
+      },
+    });
 
-    const result = await session.sendUserMessage("타이틀 좀 다듬어줘", () => {}, undefined, { autonomous: true });
+    const result = await session.sendUserMessage(requestText, event => events.push(event), undefined, { autonomous: true });
 
     const audits = statusTexts(session);
     expect(audits.some((t) => t.startsWith("ralph:stalled"))).toBe(false);
+    expect(audits.filter(t => t.startsWith("ralph:continue"))).toHaveLength(4);
+    expect(result.stoppedReason, result.error).toBe("final");
     expect(result.workPlan?.layers[0]?.items[0]?.status).toBe("done");
+    expect(result.review?.status).toBe("approved");
+    expect(reviews).toHaveLength(1);
+    expect(reviews[0]?.originalRequest).toBe(requestText);
+    expect(reviews[0]?.requiredProblems).toEqual([]);
+    expect(reviews[0]?.toolResults).toEqual(expect.arrayContaining([
+      expect.objectContaining({ name: "set_title_screen", args: { title: "초안" }, result: expect.objectContaining({ ok: true }) }),
+      expect.objectContaining({ name: "set_title_screen", args: { title: "중간" }, result: expect.objectContaining({ ok: true }) }),
+      expect.objectContaining({ name: "set_session_start", args: { gold: 200 }, result: expect.objectContaining({ ok: true }) }),
+    ]));
+    expect(events.filter(event => event.type === "result_review" || event.type === "milestone_applied")
+      .map(event => event.type)).toEqual(["result_review", "milestone_applied"]);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["set_title_screen", "set_title_screen", "set_session_start"]);
+    expect(result.proposedCalls).toEqual([]);
     expect(store.getCurrent().meta?.title).toBe("중간");
+    expect(store.getCurrent().session.gold).toBe(200);
   }, 30000);
 
   it("(e) 다른 쓰기가 성공해도 필수 도구를 실행하지 않은 항목은 완료할 수 없다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installHermeticEnv(project);
+    const plan = STUCK_PLAN(project.startMapId);
     // 타이틀 변경은 연못 시공의 증거가 아니다. 계획 수정 또는 실제 시공이 필요하다.
     const { chat } = scriptedChat([
-      final(JSON.stringify({ action: "new_plan", ...STUCK_PLAN })),
-      toolCall("set_work_plan", STUCK_PLAN, "c_plan"),
+      final(JSON.stringify({ action: "new_plan", ...plan })),
+      toolCall("set_work_plan", plan, "c_plan"),
       toolCall("set_title_screen", { title: "연못 광장" }, "c_title"),
       toolCall("complete_work_item", { note: "다른 툴로 처리함" }, "c_done"),
       final("끝냈습니다."),
     ]);
     const session = new AssistantSession(project, { config: CONFIG, chat, declareIntent: planDeclarer });
 
-    const result = await session.sendUserMessage("광장에 연못 만들어줘", () => {}, undefined, { autonomous: true });
+    const events: ToolEvent[] = [];
+    const result = await session.sendUserMessage("광장에 연못 만들어줘", (event) => {
+      if (event.type === "tool_call") events.push(event);
+    }, undefined, { autonomous: true });
 
-    expect(result.workPlan?.layers[0]?.items[0]?.status).not.toBe("done");
+    expect(events.find((event) => event.name === "complete_work_item")?.result).toMatchObject({
+      ok: false, issues: [{ code: "work-item-incomplete" }],
+      data: { targetIssues: [{ code: "missing-map-outcome", mapId: project.startMapId, tool: "fill_region" }] },
+    });
+    expect(result.workPlan?.layers[0]?.items[0]).toMatchObject({
+      status: "in_progress", successTools: ["fill_region"], mapTargets: [project.startMapId],
+    });
+    expect(session.getAuditEntries().find((entry) => entry.kind === "tool" && entry.name === "set_work_plan")).toMatchObject({ ok: true });
+    expect(session.getAuditEntries().find((entry) => entry.kind === "tool" && entry.name === "set_title_screen")).toMatchObject({ ok: true });
+    expect(session.getProposedProject().maps[project.startMapId]).toEqual(project.maps[project.startMapId]);
     const audits = statusTexts(session);
     const evidence = audits.find((t) => t.startsWith("work-item:complete-by-write-evidence"));
     expect(evidence).toBeUndefined();
     const completion = session.getAuditEntries().find((entry) => entry.kind === "tool" && entry.name === "complete_work_item");
-    expect(completion).toMatchObject({ ok: false });
-    expect(completion?.summary).toContain("fill_region");
+    expect(completion).toMatchObject({ ok: false, issueCodes: ["work-item-incomplete"] });
+    expect(completion?.kind === "tool" ? completion.summary : undefined).toContain("fill_region");
+    expect(session.getProposedProject().meta.title).toBe("연못 광장");
+    expect(store.getCurrent().meta.title).toBe(project.meta.title);
+    expect(session.isDraftReviewApproved()).toBe(false);
+    expect(result.appliedCalls ?? []).toEqual([]);
   }, 30000);
 });

@@ -11,6 +11,8 @@ import type { AutonomyLevel } from "@/ai/autonomyLevels";
 import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
 import { PRODUCT_BRAND } from "@/brand";
 import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { parseImageDelivery, type ImageDelivery } from "./imageDelivery";
+import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
 export interface ToolCall { id: string; type: "function"; function: { name: string; arguments: string } }
@@ -38,6 +40,9 @@ export interface AiConfig {
   authMode: "chatgpt" | "apiKey";
   /** oh-my-pi 제공자 id. 토큰/키는 브라우저에 두지 않고 동반 서비스가 보관한다. */
   providerId?: string;
+  /** Image output selection is independent of both chat models; credentials remain server-side. */
+  imageProviderId?: string;
+  imageModel?: string;
   baseUrl: string;
   // 감독 모델: 계획/공간추론/스펙 작성/검수 AssistantSession 대화 루프.
   model: string;
@@ -86,7 +91,7 @@ export const DEFAULT_LITE_MODEL = "gemini-3.7-flash";
 export const DEFAULT_MAX_TOKENS = 200_000;
 export const DEFAULT_MAX_TOOL_CALLS = 2000;
 
-/** 저장 blob·주입 config 의 autonomyLevel 검증. 4단계 id 만 통과한다. */
+/** 저장 blob·주입 config 의 autonomyLevel 검증. AUTONOMY_LEVEL_IDS(5단계) 만 통과한다. */
 export function isAutonomyLevel(raw: unknown): raw is AutonomyLevel {
   return (AUTONOMY_LEVEL_IDS as readonly unknown[]).includes(raw);
 }
@@ -118,6 +123,8 @@ export function defaultAiConfig(): AiConfig {
   return {
     authMode: "chatgpt",
     providerId: DEFAULT_OH_MY_PI_PROVIDER,
+    imageProviderId: DEFAULT_IMAGE_PROVIDER_ID,
+    imageModel: DEFAULT_IMAGE_MODEL,
     baseUrl: DEFAULT_BASE_URL,
     model: DEFAULT_MODEL,
     liteModel: DEFAULT_LITE_MODEL,
@@ -228,6 +235,11 @@ export function loadAiConfig(): AiConfig {
     return {
       authMode,
       providerId,
+      // Preserve explicit image choices, even unsupported ones; never silently demote them.
+      imageProviderId: typeof parsed.imageProviderId === "string" && parsed.imageProviderId.trim()
+        ? parsed.imageProviderId.trim() : DEFAULT_IMAGE_PROVIDER_ID,
+      imageModel: typeof parsed.imageModel === "string" && parsed.imageModel.trim()
+        ? parsed.imageModel.trim() : DEFAULT_IMAGE_MODEL,
       // 저장된 baseUrl 은 버린다. OAuth 는 동반 서비스 경로가 고정이고(endpoint() 가
       // usesOhMyPiCompanion 이면 DEFAULT_CHATGPT_BASE_URL 을 쓴다), 죽은 게이트웨이 URL 을
       // 남겨 두면 설정 화면·가용성 검지가 그것을 계속 진실처럼 보여 준다.
@@ -252,7 +264,7 @@ export function loadAiConfig(): AiConfig {
       // agentMode 백필(위 liteModel 패턴과 동일): 필드가 없는 옛 blob과 이상한 값은
       // 기본값 "auto"로 정규화한다. "chat"만 명시적으로 유지된다.
       agentMode: parsed.agentMode === "chat" ? "chat" : "auto",
-      // 자율성 다이얼 백필: 4단계 id 만 인정하고, 없는 옛 blob·이상한 값은 "balanced".
+      // 자율성 다이얼 백필: 알려진 id 만 인정하고, 없는 옛 blob·이상한 값은 "balanced".
       autonomyLevel: isAutonomyLevel(parsed.autonomyLevel) ? parsed.autonomyLevel : "balanced",
     };
   } catch {
@@ -307,7 +319,7 @@ export interface ChatRequest {
   temperature?: number;
 }
 
-export interface ChatResult { message: ChatMessage; finishReason: string | null; usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } }
+export interface ChatResult { message: ChatMessage; finishReason: string | null; imageDelivery?: readonly ImageDelivery[]; usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } }
 
 // 사람이 읽을 수 있는 LLM 오류. status로 401/402/429/5xx를 구분한다.
 export class LlmError extends Error {
@@ -742,6 +754,7 @@ function parseNonStream(json: Record<string, unknown>, requestedModel?: string):
   return {
     message,
     finishReason: typeof choice?.finish_reason === "string" ? choice.finish_reason : null,
+    imageDelivery: parseImageDelivery(json.image_delivery),
     usage: json.usage as ChatResult["usage"] | undefined,
   };
 }

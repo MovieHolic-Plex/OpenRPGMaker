@@ -25,6 +25,8 @@ import {
 } from "./resourceManagerImageImport";
 import { resourceKindFromUpload } from "./resourceManagerUtils";
 import { importMediaResource, mediaImportRuleFor } from "./resourceManagerMediaImport";
+import { AudioDescriptionEditor } from "./audioDescriptionEditor";
+import { deleteManagedAudioAsset } from "./resourceManagerAudioDelete";
 
 type TilesetEnsureResult = {
   readonly id: TilesetDef["id"];
@@ -50,7 +52,26 @@ export const RESOURCE_MANAGER_CATEGORIES = [
   { kind: "title", label: "타이틀" },
 ] as const satisfies readonly ResourceCategory[];
 
-let selectedResourceKind: ResourceKind = "backdrop";
+const audioEditors = new WeakMap<HTMLElement, AudioDescriptionEditor>();
+
+function audioEditorFor(container: HTMLElement): AudioDescriptionEditor {
+  const existing = audioEditors.get(container);
+  if (existing) return existing;
+  const editor = new AudioDescriptionEditor(() => renderResourceManager(container));
+  audioEditors.set(container, editor);
+  return editor;
+}
+
+export function requestResourceManagerClose(container: HTMLElement, close: () => void): void {
+  const editor = audioEditors.get(container);
+  if (editor) editor.request(close);
+  else close();
+}
+
+export function disposeResourceManager(container: HTMLElement): void {
+  audioEditors.get(container)?.dispose();
+  audioEditors.delete(container);
+}
 
 function makeTilesetFromUpload(asset: UploadedAsset): TilesetDef {
   const kind = resourceKindFromUpload(asset.kind);
@@ -83,19 +104,25 @@ function makeTilesetFromUpload(asset: UploadedAsset): TilesetDef {
   };
 }
 
-export function renderResourceManager(container: HTMLElement): void {
+export function renderResourceManager(container: HTMLElement, initialKind?: ResourceKind): void {
+  const focused = document.activeElement;
+  const editor = audioEditorFor(container);
+  if (initialKind) editor.selectKind(initialKind);
+  const selectedResourceKind = editor.kind;
   clearChildren(container);
   const project = store.getCurrent();
   const uploaded = Object.values(project.assets.uploaded);
   const kindSel = el("select", { dataset: { testid: "resource-kind-select" } }) as HTMLSelectElement;
   kindSel.className = "rm-hidden-kind-select";
+  kindSel.tabIndex = -1;
+  kindSel.setAttribute("aria-hidden", "true");
   for (const spec of RESOURCE_PROFILE_SPECS.filter((profile) => profile.media === "image")) {
     kindSel.append(el("option", { text: spec.label, attrs: { value: spec.kind } }));
   }
   kindSel.value = selectedResourceKind;
   kindSel.addEventListener("change", () => {
-    selectedResourceKind = kindSel.value as ResourceKind;
-    renderResourceManager(container);
+    const profile = RESOURCE_PROFILE_SPECS.find(spec => spec.kind === kindSel.value);
+    if (profile) editor.selectKind(profile.kind);
   });
 
   const fileInput = document.createElement("input");
@@ -108,13 +135,14 @@ export function renderResourceManager(container: HTMLElement): void {
     const file = fileInput.files?.[0];
     if (!file) return;
     if (mediaRule !== null) {
-      importMediaResource(file, mediaRule, () => renderResourceManager(container));
+      editor.request(() => importMediaResource(file, mediaRule, asset => editor.imported(asset)));
     } else {
       importImageResource(file, selectedResourceKind, container);
     }
     fileInput.value = "";
   });
 
+  const onImport = (): void => editor.request(() => fileInput.click());
   renderResourceWorkbench(container, {
     categories: RESOURCE_MANAGER_CATEGORIES,
     selectedKind: selectedResourceKind,
@@ -127,11 +155,11 @@ export function renderResourceManager(container: HTMLElement): void {
       applyTileset: applyTilesetToCurrentMap,
       deleteAsset: deleteUploadedAsset,
     },
-    onSelectKind: (kind) => {
-      selectedResourceKind = kind;
-      renderResourceManager(container);
-    },
-    onImport: () => fileInput.click(),
+    ...(selectedResourceKind === "music" || selectedResourceKind === "sound"
+      ? { audioPanes: editor.render(selectedResourceKind, { import: onImport, delete: deleteUploadedAsset }) }
+      : {}),
+    onSelectKind: kind => editor.selectKind(kind),
+    onImport,
   });
   container.append(
     el("div", {
@@ -139,6 +167,9 @@ export function renderResourceManager(container: HTMLElement): void {
       text: `기본 포함 리소스: ${DEFAULT_TILESET_ID}, EasyRPG 타일 그림판·캐릭터 그림.`,
     })
   );
+  if (focused instanceof HTMLElement && container.contains(focused)) {
+    focused.focus({ preventScroll: true });
+  }
 }
 
 function importImageResource(file: File, kind: ResourceKind, container: HTMLElement): void {
@@ -278,6 +309,10 @@ function applyTilesetToCurrentMap(asset: UploadedAsset): void {
 }
 
 function deleteUploadedAsset(asset: UploadedAsset): void {
+  if (asset.kind === "music" || asset.kind === "sound") {
+    deleteManagedAudioAsset(asset);
+    return;
+  }
   const blocker = uploadedResourceDeleteBlocker(asset.id);
   if (blocker) {
     toast(blocker, "error");

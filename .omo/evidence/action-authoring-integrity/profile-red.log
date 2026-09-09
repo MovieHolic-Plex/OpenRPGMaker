@@ -1,0 +1,30 @@
+Exit: 1; 32 tests, 22 passed, 10 failed
+action combat AI tools preserves authored attacks during partial action profile edits
+AssertionError: expected { id: 'enemy_slime', …(16) } to deeply equal { id: 'enemy_slime', …(16) }
+
+action combat AI tools replaces a supplied attack without discarding other authored profile fields
+AssertionError: expected { id: 'enemy_slime', …(16) } to deeply equal { id: 'enemy_slime', …(16) }
+
+action combat AI tools rejects malformed action profiles without mutation: 'quoted attack key'
+AssertionError: expected true to be false // Object.is equality
+
+action combat AI tools rejects malformed action profiles without mutation: 'unknown profile key'
+AssertionError: expected true to be false // Object.is equality
+
+action combat AI tools rejects malformed action profiles without mutation: 'unknown attack kind'
+AssertionError: expected true to be false // Object.is equality
+
+action combat AI tools rejects malformed action profiles without mutation: 'missing attack fields'
+AssertionError: expected true to be false // Object.is equality
+
+action combat AI tools rejects malformed action profiles without mutation: 'unknown attack key'
+AssertionError: expected true to be false // Object.is equality
+
+action combat AI tools rejects malformed action profiles without mutation: 'invalid movement value'
+AssertionError: expected true to be false // Object.is equality
+
+action combat AI tools rejects malformed action profiles without mutation: 'non-finite damage'
+AssertionError: expected true to be false // Object.is equality
+
+action combat AI tools rejects malformed action profiles without mutation: 'non-object attack'
+AssertionError: expected true to be false // Object.is equality

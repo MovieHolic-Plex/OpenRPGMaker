@@ -15,7 +15,7 @@ import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./
 
 type ShowPicture = Extract<Command, { kind: "showPicture" }>;
 
-function stagedContext(initial: ShowPicture): {
+function stagedContext(initial: ShowPicture, onCommit?: (command: ShowPicture) => void): {
   readonly context: CommandEditContext;
   readonly current: () => ShowPicture;
 } {
@@ -26,7 +26,11 @@ function stagedContext(initial: ShowPicture): {
       actions: {
         addCommand: vi.fn(),
         insertCommand: vi.fn(),
-        replaceCommand: (_path, command) => { staged = structuredClone(command) as ShowPicture; },
+        replaceCommand: (_path, command) => {
+          if (command.kind !== "showPicture") throw new Error("unexpected command");
+          staged = structuredClone(command);
+          onCommit?.(staged);
+        },
         deleteCommand: vi.fn(),
         moveCommand: vi.fn(),
         moveCommandTo: vi.fn(),
@@ -52,6 +56,7 @@ beforeEach(() => {
   store.replace(createBlankProject());
 });
 afterEach(() => {
+  vi.unstubAllGlobals();
   restoreDom?.();
 });
 
@@ -180,15 +185,21 @@ describe("그림 표시 폼", () => {
         ),
       ),
     );
-    const { context, current } = stagedContext(BASE);
+    const committed = Promise.withResolvers<ShowPicture>();
+    const { context, current } = stagedContext(BASE, committed.resolve);
     const body = renderWithFakeDom(() => showPictureBody(context, BASE));
+    document.body.append(body as unknown as HTMLElement);
     const prompt = findByTestId(body, "show-picture-ai-prompt");
     expect(prompt).not.toBeNull();
     if (prompt) prompt.value = "달빛 창가";
     findByTestId(body, "show-picture-ai-generate")?.click();
-    await vi.waitFor(() => {
-      expect(current().resourceId.length).toBeGreaterThan(0);
-    });
+    const deadline = setTimeout(() => committed.reject(new Error("image command was not committed")), 2000);
+    try {
+      await committed.promise;
+    } finally {
+      clearTimeout(deadline);
+    }
+    expect(current().resourceId.length).toBeGreaterThan(0);
     const resourceId = current().resourceId;
     expect(store.getCurrent().assets.uploaded[resourceId]?.kind).toBe("picture");
     expect(store.getCurrent().assets.uploaded[resourceId]?.dataUrl).toBe(png);

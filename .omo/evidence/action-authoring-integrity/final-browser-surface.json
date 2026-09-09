@@ -1,0 +1,92 @@
+{
+  "projectId": "oprn-1a8ac23163",
+  "aiCalls": [
+    {
+      "args": {
+        "spawn": {
+          "id": "qa_spawn_1",
+          "area": {
+            "h": 2,
+            "w": 2,
+            "x": 6,
+            "y": 5
+          },
+          "mapId": "map_blank_start",
+          "troopId": "qa_troop"
+        },
+        "enemyId": "qa_enemy",
+        "spawnMode": "update",
+        "actionProfile": {
+          "aggroRange": 7
+        }
+      },
+      "ok": true,
+      "at": "2026-09-07T11:46:01.889Z"
+    }
+  ],
+  "attack": {
+    "kind": "projectile",
+    "windupMs": 600,
+    "recoverMs": 400,
+    "damage": 5,
+    "range": 8,
+    "cooldownMs": 1600,
+    "projectileSpeedTilesPerSec": 7
+  },
+  "statsPreserved": true,
+  "rewardsPreserved": true,
+  "spawn": {
+    "id": "qa_spawn_1",
+    "area": {
+      "h": 2,
+      "w": 2,
+      "x": 6,
+      "y": 5
+    },
+    "chase": false,
+    "troopId": "qa_troop",
+    "maxAlive": 1,
+    "respawnSec": 600
+  },
+  "projectileCount": 1,
+  "position": {
+    "x": 1,
+    "y": 5
+  },
+  "input": [
+    "Enter",
+    "ArrowLeft down",
+    "ArrowLeft up"
+  ],
+  "pageErrors": [],
+  "transportErrors": [
+    {
+      "url": "http://127.0.0.1:17831/v1/browser/hello",
+      "error": "Error: route.fetch: connect ECONNREFUSED 127.0.0.1:17831\nCall log:\n\u001b[2m  - → POST http://127.0.0.1:17831/v1/browser/hello\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/146.0.0.0 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - content-type: application/json\u001b[22m\n\u001b[2m    - origin: http://127.0.0.1:45991\u001b[22m\n\u001b[2m    - referer: http://127.0.0.1:45991/\u001b[22m\n\u001b[2m    - sec-ch-ua: \"Chromium\";v=\"146\", \"Not-A.Brand\";v=\"24\", \"Google Chrome\";v=\"146\"\u001b[22m\n\u001b[2m    - sec-ch-ua-mobile: ?0\u001b[22m\n\u001b[2m    - sec-ch-ua-platform: \"Linux\"\u001b[22m\n\u001b[2m    - content-length: 49\u001b[22m\n"
+    },
+    {
+      "url": "http://127.0.0.1:17831/v1/browser/hello",
+      "error": "Error: route.fetch: connect ECONNREFUSED 127.0.0.1:17831\nCall log:\n\u001b[2m  - → POST http://127.0.0.1:17831/v1/browser/hello\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/146.0.0.0 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - content-type: application/json\u001b[22m\n\u001b[2m    - origin: http://127.0.0.1:45991\u001b[22m\n\u001b[2m    - referer: http://127.0.0.1:45991/\u001b[22m\n\u001b[2m    - sec-ch-ua: \"Chromium\";v=\"146\", \"Not-A.Brand\";v=\"24\", \"Google Chrome\";v=\"146\"\u001b[22m\n\u001b[2m    - sec-ch-ua-mobile: ?0\u001b[22m\n\u001b[2m    - sec-ch-ua-platform: \"Linux\"\u001b[22m\n\u001b[2m    - content-length: 49\u001b[22m\n"
+    },
+    {
+      "url": "http://127.0.0.1:17831/v1/browser/hello",
+      "error": "Error: route.fetch: connect ECONNREFUSED 127.0.0.1:17831\nCall log:\n\u001b[2m  - → POST http://127.0.0.1:17831/v1/browser/hello\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/146.0.0.0 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - content-type: application/json\u001b[22m\n\u001b[2m    - origin: http://127.0.0.1:45991\u001b[22m\n\u001b[2m    - referer: http://127.0.0.1:45991/\u001b[22m\n\u001b[2m    - sec-ch-ua: \"Chromium\";v=\"146\", \"Not-A.Brand\";v=\"24\", \"Google Chrome\";v=\"146\"\u001b[22m\n\u001b[2m    - sec-ch-ua-mobile: ?0\u001b[22m\n\u001b[2m    - sec-ch-ua-platform: \"Linux\"\u001b[22m\n\u001b[2m    - content-length: 49\u001b[22m\n"
+    },
+    {
+      "url": "http://127.0.0.1:17831/v1/browser/hello",
+      "error": "Error: route.fetch: connect ECONNREFUSED 127.0.0.1:17831\nCall log:\n\u001b[2m  - → POST http://127.0.0.1:17831/v1/browser/hello\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/146.0.0.0 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - content-type: application/json\u001b[22m\n\u001b[2m    - origin: http://127.0.0.1:45991\u001b[22m\n\u001b[2m    - referer: http://127.0.0.1:45991/\u001b[22m\n\u001b[2m    - sec-ch-ua: \"Chromium\";v=\"146\", \"Not-A.Brand\";v=\"24\", \"Google Chrome\";v=\"146\"\u001b[22m\n\u001b[2m    - sec-ch-ua-mobile: ?0\u001b[22m\n\u001b[2m    - sec-ch-ua-platform: \"Linux\"\u001b[22m\n\u001b[2m    - content-length: 49\u001b[22m\n"
+    },
+    {
+      "url": "http://127.0.0.1:17831/v1/browser/hello",
+      "error": "Error: route.fetch: connect ECONNREFUSED 127.0.0.1:17831\nCall log:\n\u001b[2m  - → POST http://127.0.0.1:17831/v1/browser/hello\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/146.0.0.0 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - content-type: application/json\u001b[22m\n\u001b[2m    - origin: http://127.0.0.1:45991\u001b[22m\n\u001b[2m    - referer: http://127.0.0.1:45991/\u001b[22m\n\u001b[2m    - sec-ch-ua: \"Chromium\";v=\"146\", \"Not-A.Brand\";v=\"24\", \"Google Chrome\";v=\"146\"\u001b[22m\n\u001b[2m    - sec-ch-ua-mobile: ?0\u001b[22m\n\u001b[2m    - sec-ch-ua-platform: \"Linux\"\u001b[22m\n\u001b[2m    - content-length: 49\u001b[22m\n"
+    },
+    {
+      "url": "http://127.0.0.1:17831/v1/browser/hello",
+      "error": "Error: route.fetch: connect ECONNREFUSED 127.0.0.1:17831\nCall log:\n\u001b[2m  - → POST http://127.0.0.1:17831/v1/browser/hello\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/146.0.0.0 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - content-type: application/json\u001b[22m\n\u001b[2m    - origin: http://127.0.0.1:45991\u001b[22m\n\u001b[2m    - referer: http://127.0.0.1:45991/\u001b[22m\n\u001b[2m    - sec-ch-ua: \"Chromium\";v=\"146\", \"Not-A.Brand\";v=\"24\", \"Google Chrome\";v=\"146\"\u001b[22m\n\u001b[2m    - sec-ch-ua-mobile: ?0\u001b[22m\n\u001b[2m    - sec-ch-ua-platform: \"Linux\"\u001b[22m\n\u001b[2m    - content-length: 49\u001b[22m\n"
+    }
+  ],
+  "screenshots": [
+    "output/action-integrity-final-editor.png",
+    "output/action-integrity-normal-projectile.png"
+  ]
+}

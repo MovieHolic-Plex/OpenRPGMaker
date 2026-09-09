@@ -9,6 +9,9 @@
    "add-light-flicker-select",
    "add-light-id-input"
   ],
+  "applyItemUpgrade": [
+   "apply-item-upgrade-result-variable>select#0"
+  ],
   "battleProcessing": [
    "battle-processing-branch-on-result",
    "battle-processing-escape-checkbox",
@@ -31,7 +34,11 @@
    "change-equipment-slot-select"
   ],
   "changeExp": [
-   "change-exp-actor-select"
+   "change-exp-actor-select",
+   "change-exp-amount-source",
+   "change-exp-amount-variable-select",
+   "change-exp-op-select",
+   "change-exp-target-mode"
   ],
   "changeFace": [
    "event-command-face-flip-horizontal",
@@ -49,6 +56,10 @@
   "changeLevel": [
    "change-level-actor-select"
   ],
+  "changeLifeSkillExp": [
+   "change-life-skill-exp-amount-mode",
+   "change-life-skill-exp-amount-select"
+  ],
   "changeParty": [
    "change-party-actor-select"
   ],
@@ -60,6 +71,9 @@
   "choices": [
    "event-choice-cancel-branch",
    "event-choice-cancel-disallow"
+  ],
+  "craftRecipe": [
+   "craft-recipe-result-variable>select#0"
   ],
   "enterHeroName": [
    "enter-hero-name-actor-select"
@@ -175,6 +189,10 @@
    "show-picture-id-input",
    "show-picture-resource-input",
    "show-picture-rotation-input"
+  ],
+  "spawnFieldEnemy": [
+   "event-command-spawn-switch",
+   "event-command-spawn-troop"
   ],
   "text": [
    "event-command-text-body",

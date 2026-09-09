@@ -16,6 +16,16 @@
 //   --per-sheet  시트를 하나씩 비워 본다. "이 시트 하나만 지워도 게이트가 조용한가."
 //                이 저장소는 8세대가 겹쳐 있어서 이 수치는 대체로 **중복성**을 잰다.
 //                단독 통과를 "죽은 코드"로 읽으면 안 된다.
+//
+//                초록을 **네 갈래로 쪼갠다.** 예전에는 통과/잡힘 두 갈래였고, 그래서 게이트가
+//                «판정할 수 없는» 시트가 «삭제 가능»으로 집계됐다. 실측(이벤트 에디터 57장):
+//                통과로 보고된 8장이 전부 허위였다 — 허브 5장 + 사각지대 3장.
+//                  통과      게이트가 보고 있고, 비워도 속성이 안 사라진다. 유일하게 후속 검토 대상.
+//                  잡힘      비우면 속성이 사라진다. 이 시트가 그 속성의 유일한 공급자다.
+//                  허브      @import 를 가진 배럴. 비우면 하위 시트가 미도달인데 게이트는
+//                            디렉터리 순회로 인덱싱하므로 그 손실을 **구조적으로** 못 본다.
+//                  사각지대  정본 축이 이 시트의 클래스를 하나도 증명하지 않는다. 초록의 뜻이
+//                            «죽었다»가 아니라 «측정하지 못했다»다. 축을 넓혀야 판정이 생긴다.
 //   --combined   개별 통과한 시트를 **동시에** 비운다. 여기서도 초록이면 그때 비로소
 //                "이만큼은 게이트 기준으로 정말 죽어 있다"고 말할 수 있다.
 //
@@ -38,6 +48,12 @@ const COPY_REL = ".omo/tmp/css-deletable-probe";
 const COPY = join(ROOT, COPY_REL);
 const OUT = join(ROOT, ".omo/evidence/event-editor-guard/css-deletable-headroom.json");
 
+/**
+ * 시트의 클래스 중 정본 축이 증명한 비율의 하한. 이 아래면 게이트의 초록은 판정이 아니다.
+ * 0.5 는 «절반 이상은 실제로 렌더에서 봤다»는 뜻이고, 넘기려면 축을 넓히는 수밖에 없다.
+ */
+const MIN_COVERAGE = 0.5;
+
 const argv = process.argv.slice(2);
 const mode = argv.includes("--combined") ? "combined" : "per-sheet";
 const filterIdx = argv.indexOf("--filter");
@@ -50,6 +66,43 @@ function walk(dir, out = []) {
     else if (name.endsWith(".css")) out.push(p);
   }
   return out;
+}
+
+/** 정본 축이 증명한 클래스 집합. 축 목록은 게이트가 단독 소유한다 — 복제하면 조용히 어긋난다. */
+function renderedSet() {
+  const r = spawnSync("node", ["scripts/check-css-live-classes.mjs", "--print-rendered-classes"], {
+    cwd: ROOT,
+    encoding: "utf8",
+    maxBuffer: 32 * 1024 * 1024,
+  });
+  if (r.status !== 0) {
+    console.error("정본 축 클래스 집합을 못 읽었다 — 사각지대 판정 불가.");
+    console.error(`${r.stdout ?? ""}${r.stderr ?? ""}`.split("\n").slice(0, 10).join("\n"));
+    process.exit(2);
+  }
+  return new Set(JSON.parse(r.stdout));
+}
+
+/**
+ * 시트 한 장에 대해 «판정에 필요한 사실» 두 가지.
+ *
+ *  - imports: 이 시트가 등록하는 하위 시트 수. 배럴(허브)을 비우면 하위 시트가 미도달이 되는데,
+ *    라이브 클래스 게이트는 `src/styles` 를 **디렉터리 순회**로 인덱싱하고 @import 를 따라가지
+ *    않으므로(check-css-live-classes.mjs 의 walk) 그 손실을 못 본다. 그래서 허브는 항상
+ *    «삭제 가능»으로 보고됐다 — 실측: 이벤트 에디터 후보 8개 중 5개가 허브였다.
+ *
+ *  - classes: 이 시트가 스타일하는 클래스. 정본 축에 하나도 없으면 게이트는 이 시트를 애초에
+ *    보지 않는다. 그때의 초록은 «죽었다»가 아니라 «측정하지 못했다»다 — 실측:
+ *    07-actor-battle-authoring-surface.css 는 55종 중 0종이 축에 있었다.
+ */
+function sheetFacts(text) {
+  const src = text.replace(/\/\*[\s\S]*?\*\//g, " ");
+  const imports = [...src.matchAll(/@import\s/gi)].length;
+  const classes = new Set();
+  for (const m of src.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    for (const c of m[1].matchAll(/\.(-?[_a-zA-Z][\w-]*)/g)) classes.add(c[1]);
+  }
+  return { imports, classes };
 }
 
 function gate() {
@@ -96,33 +149,94 @@ const lineCount = (text) => text.split("\n").length;
 let result;
 
 if (mode === "per-sheet") {
+  const rendered = renderedSet();
   const deletable = [];
   const caught = [];
+  const hubs = [];
+  const blind = [];
   for (const src of files) {
     const rel = relative(SRC, src);
     const target = join(COPY, rel);
     const original = readFileSync(src, "utf8");
+    const facts = sheetFacts(original);
+    const entry = { rel, lines: lineCount(original) };
+
+    // 허브는 게이트에 물어볼 필요조차 없다 — 게이트가 구조적으로 못 보는 손실이다.
+    if (facts.imports > 0) {
+      hubs.push({ ...entry, imports: facts.imports });
+      continue;
+    }
+
     writeFileSync(target, "");
     const r = gate();
     writeFileSync(target, original);
-    (r.code === 0 ? deletable : caught).push({ rel, lines: lineCount(original) });
+
+    if (r.code !== 0) {
+      caught.push(entry);
+      continue;
+    }
+    // 초록이지만 축이 이 시트의 클래스를 거의 증명하지 않았다면 «측정 실패»다.
+    //
+    // 0종만 걸러서는 부족하다. 실측: event-editor-legacy.part-1.css 는 52종을 스타일하는데
+    // 축에 있는 건 `active`·`db-field` 2종뿐이고, 둘 다 수십 개 시트가 공유하는 범용 클래스다.
+    // 그 2종이 중복이라는 사실은 나머지 50종에 대해 아무것도 말해 주지 않는다 — 지우면
+    // 아무도 측정하지 않은 50종의 스타일이 함께 사라진다. 그래서 **비율**로 판정한다.
+    const covered = [...facts.classes].filter((c) => rendered.has(c)).sort();
+    const ratio = facts.classes.size ? covered.length / facts.classes.size : 0;
+    if (ratio < MIN_COVERAGE) {
+      blind.push({
+        ...entry,
+        styledClasses: facts.classes.size,
+        coveredClasses: covered.length,
+        covered,
+      });
+      continue;
+    }
+    deletable.push({ ...entry, covered, ratio });
   }
   const sum = (list) => list.reduce((n, f) => n + f.lines, 0);
+  const fmt = (list) => list.map((f) => `${f.rel} (${f.lines}줄)`);
   result = {
     mode,
     filter,
     total: files.length,
     deletable: deletable.length,
     caught: caught.length,
+    hub: hubs.length,
+    blind: blind.length,
     deletableLines: sum(deletable),
     caughtLines: sum(caught),
-    deletableFiles: deletable.map((f) => `${f.rel} (${f.lines}줄)`),
+    hubLines: sum(hubs),
+    blindLines: sum(blind),
+    deletableFiles: deletable.map((f) => `${f.rel} (${f.lines}줄) [축이 증명한 클래스 ${f.covered.length}종]`),
+    caughtFiles: fmt(caught),
+    hubFiles: hubs.map((f) => `${f.rel} (${f.lines}줄) [@import ${f.imports}건]`),
+    minCoverage: MIN_COVERAGE,
+    blindFiles: blind.map(
+      (f) => `${f.rel} (${f.lines}줄) [스타일 ${f.styledClasses}종 중 축 증명 ${f.coveredClasses}종${f.covered.length ? `: ${f.covered.join(", ")}` : ""}]`,
+    ),
     note:
-      "개별 통과는 «죽은 코드»가 아니라 «세대 간 중복»일 수 있다. --combined 로 동시에 비워 " +
-      "확인해야 삭제 가능 여부가 정해진다.",
+      "«삭제 가능»조차 죽은 코드 증명이 아니다 — 세대 간 중복일 수 있으므로 --combined 로 동시에 " +
+      "비워 확인해야 한다. hub/blind 는 게이트가 판정할 수 없는 시트이며 초록으로 세지 않는다.",
   };
-  console.log(`\n개별 비움: ${files.length}개 중 ${deletable.length}개 통과 / ${caught.length}개 잡힘`);
-  console.log(`  통과분 총 ${sum(deletable)}줄 — 이 수치는 중복성이지 삭제 허가가 아니다.`);
+  console.log(
+    `\n개별 비움: ${files.length}개 중 통과 ${deletable.length} / 잡힘 ${caught.length} / ` +
+      `허브 ${hubs.length} / 사각지대 ${blind.length}`,
+  );
+  console.log(`  통과분 총 ${sum(deletable)}줄 — 중복성이지 삭제 허가가 아니다.`);
+  if (hubs.length) {
+    console.log(`  허브 ${hubs.length}개(${sum(hubs)}줄) — 비우면 하위 시트가 미도달. 게이트가 구조적으로 못 본다:`);
+    for (const f of hubs) console.log(`    ${f.rel} [@import ${f.imports}건]`);
+  }
+  if (blind.length) {
+    console.log(
+      `  사각지대 ${blind.length}개(${sum(blind)}줄) — 축 증명 비율이 ${MIN_COVERAGE} 미만이라 초록이 판정이 아니다:`,
+    );
+    for (const f of blind) {
+      const names = f.covered.length ? `: ${f.covered.slice(0, 6).join(", ")}` : "";
+      console.log(`    ${f.rel} [스타일 ${f.styledClasses}종 중 축 증명 ${f.coveredClasses}종${names}]`);
+    }
+  }
 } else {
   const previous = (() => {
     try {
@@ -131,14 +245,27 @@ if (mode === "per-sheet") {
       return null;
     }
   })();
+  const ranPerSheet = Boolean(previous?.perSheet ?? previous?.deletableFiles);
   const candidates = previous?.perSheet?.deletableFiles ?? previous?.deletableFiles;
-  if (!candidates?.length) {
+  if (!ranPerSheet) {
     console.error("--combined 는 --per-sheet 결과가 먼저 필요하다. 먼저 --per-sheet 로 돌려라.");
     rmSync(COPY, { recursive: true, force: true });
     process.exit(2);
   }
+  // 후보 0개는 «아직 안 돌렸다»가 아니라 «판정 가능한 시트가 없다»는 결과다. 둘을 섞으면
+  // 사람이 --per-sheet 를 다시 돌리며 같은 0 을 반복해서 본다.
+  if (!candidates?.length) {
+    const p = previous?.perSheet ?? {};
+    console.log(
+      `\n동시 비움 후보 0개 — --per-sheet 가 판정 가능한 시트를 찾지 못했다` +
+        `(잡힘 ${p.caught ?? "?"} / 허브 ${p.hub ?? "?"} / 사각지대 ${p.blind ?? "?"}).`,
+    );
+    console.log("  허브는 @import 등록을 잃고, 사각지대는 정본 축이 안 보는 시트다 — 둘 다 축을 넓혀야 판정이 생긴다.");
+    rmSync(COPY, { recursive: true, force: true });
+    process.exit(0);
+  }
   const rels = candidates
-    .map((entry) => entry.replace(/ \(\d+줄\)$/, ""))
+    .map((entry) => entry.replace(/ \(\d+줄\).*$/, ""))
     .filter((rel) => (filter ? rel.includes(filter) : true));
   let lines = 0;
   for (const rel of rels) {

@@ -131,9 +131,12 @@ describe("database type chart chip matrix", () => {
     input.value = "2";
     const escapeEvent = new Event("keydown");
     Object.defineProperty(escapeEvent, "key", { configurable: true, value: "Escape" });
-    input.dispatchEvent(escapeEvent);
+    // fakeDom does not bubble keyboard events. The browser regression exercises
+    // the native input-to-editor path; this unit invokes the editor's handler.
+    popover.dispatchEvent(escapeEvent);
     expect(popover.hidden).toBe(true);
     expect(multiplier("fire", "water")).toBe(1.25);
+    expect(document.activeElement).toBe(fireWater);
   });
 
   it("blank type list still deletes system.typeChart after confirm", () => {
@@ -141,7 +144,7 @@ describe("database type chart chip matrix", () => {
     vi.stubGlobal("confirm", confirm);
     const host = renderSystem();
     expect(findByTestId(host, "db-type-chart-matrix")).not.toBeNull();
-    expect(host.textContent).toContain("칸을 누르면 배율이 바로 바뀝니다");
+    expect(findByTestId(host, "db-type-chart-direct-edit")).not.toBeNull();
 
     const types = findByTestId(host, "db-field-system-type-chart-types");
     if (!types) throw new Error("missing types input");

@@ -1,6 +1,7 @@
+import { growthEffects, permanentActorSkillIds } from '@/project/growth/runtime';
 import { executeM2BattleCommand as executeM2Command } from "@/battle/battleM2CommandExecutor";
 import type { MutableBattler } from "@/battle/battleBattlers";
-import type { BattleEventLogSnapshot, BattleEventStateSnapshot } from "@/battle/types";
+import type { BattleEventChoiceSnapshot, BattleEventPauseSnapshot, BattleEventPauseResponse, BattleEventLogSnapshot, BattleEventStateSnapshot, BattleRuntimeOptions } from "@/battle/types";
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "@/project/gameTime";
 import { clampFriendship } from "@/project/session";
@@ -10,10 +11,11 @@ import { transitionItemState } from "@/project/itemTransitions";
 import { transitionActorEquipment } from "@/project/equipmentRules";
 import { evalRoguelikeRunCondition, type RoguelikeRunState } from "@/project/roguelikeRun";
 import { effectiveActorClassId, promoteActor as promoteActorClass, type ClassOverrideSession } from "@/project/sessionClass";
-import type { ActorId, ActorInitialEquipment, Command, Condition, Project, ShowAnimationTarget, VariableOperand } from "@/project/types";
+import type { ActorId, ActorInitialEquipment, Command, Condition, FaceGraphic, MessageWindowSettings, Project, ShowAnimationTarget, VariableOperand } from "@/project/types";
 import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
 
 export type BattleEventRuntimeState = {
+  messageWindowSettings?: MessageWindowSettings;
   readonly switches: Record<string, boolean>;
   readonly variables: Record<string, number>;
   // 세션 셀프 스위치 스냅샷 사본(eventId → key → on). setSelfSwitch 가 여기 기록하고
@@ -38,11 +40,14 @@ export type BattleEventRuntimeState = {
   // 전투 종료 시 applyBattleRewardsToSession 이 세션 actorEquipment 로 write-back.
   actorEquipment?: Record<string, ActorInitialEquipment>;
   // 런타임 직업 오버라이드 사본(actorId → classId). promoteActor 가 여기 기록하고
-  // 전투 종료 시 세션 classOverrides 로 write-back(맵 changeActorClass 와 동일 의미).
+  // 전투 종료 시 경로·영구 스킬과 함께 권위 상태로 write-back.
   classOverrides?: Record<string, string>;
+  promotionLineage?: import('@/project/growth/types').PromotionLineage;
+  growthProgress?: import('@/project/growth/types').GrowthProgress;
   readonly gameTime?: GameTime;
   readonly npcActivities?: Record<string, string>;
   readonly friendship?: Record<string, number>;
+  friendshipWrites?: Record<string, number>;
   readonly relationships?: Record<string, RelationshipState>;
   // 전투가 실제로 쓴 관계 키만 모은다. 스냅숏에 지도 전체를 실으면 전투 중 맵에서 지운
   // 관계를 write-back 이 되살린다(setRelationshipState 는 single 을 삭제로 처리한다).
@@ -103,8 +108,9 @@ export type BattleEventRuntimeOptions = {
   // (applyBattleRewardsToSession/playSceneBattle)이 결정한다.
   readonly endBattleAsDefeat?: () => void;
   // playAudio/stopAudio 명령: 호스트가 실제 오디오 엔진으로 라우팅.
-  readonly playAudio?: (resourceId: string, loop: boolean) => void;
-  readonly stopAudio?: () => void;
+  // Reuse the runtime option contract so authored channel/volume/fade reach the host engine.
+  readonly playAudio?: BattleRuntimeOptions["playAudio"];
+  readonly stopAudio?: BattleRuntimeOptions["stopAudio"];
   // wait 명령(ms): 런타임이 전투 흐름을 지정 ms 동안 일시정지.
   // 배틀 이벤트 루프는 동기식이라 wait 이후의 명령도 즉시 실행되지만,
   // 런타임이 그 일시정지를 소비한다 — gauge 는 tick(pendingWaitMs), strict 는 타임라인 wait 엔트리.
@@ -116,12 +122,17 @@ export type BattleEventRuntimeOptions = {
   readonly refreshActorDerivedStats?: (battler: MutableBattler, options?: { readonly refreshSkills?: boolean }) => void;
 };
 
-export type BattleEventRuntimeResult = {
-  readonly forceEscape: boolean;
-};
+export type BattleEventRuntimeResult =
+  | { readonly kind: "complete" }
+  | { readonly kind: "choice"; readonly request: BattleEventChoiceSnapshot }
+  | { readonly kind: "pause"; readonly request: BattleEventPauseSnapshot }
+  | { readonly kind: "terminated"; readonly result: "defeat" | "escape" };
 
 export type BattleEventRuntime = {
   applyTroopEvents(context: BattleEventContext): BattleEventRuntimeResult;
+  resumeChoice(requestId: number, index: number): BattleEventRuntimeResult | undefined;
+  resumePause(requestId: number, response: BattleEventPauseResponse): BattleEventRuntimeResult | undefined;
+  cancel(): void;
   consumeExtraActorAction(actorId: ActorId): boolean;
   logExternal(message: string): void;
   snapshot(): BattleEventStateSnapshot;
@@ -132,7 +143,7 @@ export type BattleEventRuntime = {
 // promoteActor 는 잎이 아니라 여기 속한다 — success/failure 분기를 fork 와 같은 활성 프레임으로
 // 쌓아야 분기 안 gotoLabel 이 상위 라벨로 점프할 수 있다(맵 인터프리터 pushFrame 과 동형).
 // 나머지(잎) kind 만 executeBattleEventCommand 로 위임 — assertNever 전수 분류는 잎 유니온 기준.
-type BattleControlFlowKind = "fork" | "choices" | "label" | "gotoLabel" | "loop" | "breakLoop" | "promoteActor";
+type BattleControlFlowKind = "wait" | "inputWait" | "text" | "fork" | "choices" | "label" | "gotoLabel" | "loop" | "breakLoop" | "promoteActor";
 type BattleLeafCommand = Exclude<Command, { kind: BattleControlFlowKind }>;
 
 // pc 기반 실행 프레임: 트룹 페이지/커먼 이벤트 본문과 fork/choices 분기, 루프 본문이 쌓인다.
@@ -144,6 +155,15 @@ type BattleExecFrame = {
 
 // 배틀 이벤트는 한 액션 비트 안에서 동기 실행되므로 맵 인터프리터(maxLoopIterations=100000,
 // 프레임 단위 yield)보다 엄격한 상한을 둔다. 도달 시 unsupported 로그 후 해당 흐름을 끝낸다.
+type BattleInvocation = {
+  readonly page: BattleEventPageRecord;
+  readonly context: BattleEventContext;
+  readonly depth: number;
+  readonly frames: BattleExecFrame[];
+  loopIterations: number;
+  labelJumps: number;
+};
+
 const MAX_BATTLE_LOOP_ITERATIONS = 10_000;
 const MAX_BATTLE_LABEL_JUMPS = 10_000;
 
@@ -152,6 +172,15 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   const firedBattleEventPageRoundKeys = new Set<string>();
   const extraActorActions: Record<string, number> = {};
   const logs: BattleEventLogSnapshot[] = [];
+  const invocations: BattleInvocation[] = [];
+  let batch: { readonly context: BattleEventContext; nextPage: number } | undefined;
+  let pendingChoice: { readonly command: Extract<Command, { kind: "choices" }>; readonly request: BattleEventChoiceSnapshot } | undefined;
+  let nextChoiceId = 0;
+  let pendingPause: BattleEventPauseSnapshot | undefined;
+  let nextPauseId = 0;
+  let face: FaceGraphic | undefined;
+  let settingsChanged = false;
+  let stopped = false;
   const ownerEvent = options.ownerEvent ?? findProjectEvent(options.project, options.ownerEventId);
   const conditionState: BattleConditionRuntimeState = options.state;
   // 소유 이벤트 없는 전투에서 소유자 의존 조건이 평가되면 종류별로 1회만 추적 로그를 남긴다
@@ -173,17 +202,71 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   }
 
   function applyTroopEvents(context: BattleEventContext): BattleEventRuntimeResult {
-    let forceEscape = false;
-    if (options.troopRecord.battleEventPages.length === 0) return { forceEscape };
-    for (const page of options.troopRecord.battleEventPages) {
+    if (stopped) return { kind: "complete" };
+    if (pendingChoice) return { kind: "choice", request: pendingChoice.request };
+    if (pendingPause) return { kind: "pause", request: pendingPause };
+    batch ??= { context: { ...context }, nextPage: 0 };
+    return drainBatch();
+  }
+
+  function drainBatch(): BattleEventRuntimeResult {
+    while (batch) {
+      const invocation = invocations.at(-1);
+      if (invocation) {
+        const step = executeBattleEventCommands(invocation);
+        if (step.kind === "terminated") { cancel(); return step; }
+        if (step.kind === "choice" || step.kind === "pause") return step;
+        if (invocations.at(-1) === invocation && invocation.frames.length === 0) invocations.pop();
+        continue;
+      }
+      const page = options.troopRecord.battleEventPages[batch.nextPage++];
+      if (!page) { batch = undefined; break; }
+      const context = batch.context;
       if (!shouldRunBattleEventPage(page, context)) continue;
       logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "fired" });
-      // Empty authored pages have no effects; compatibility must never invent commands.
-      forceEscape = executeBattleEventCommands(page, page.commands, context, 0) || forceEscape;
       if (pageRunsOnce(page)) firedBattleEventPageIds.add(page.id);
       if (pageHasRoundCadenceCondition(page)) firedBattleEventPageRoundKeys.add(pageRoundKey(page, context));
+      pushInvocation(page, page.commands, context, 0);
     }
-    return { forceEscape };
+    return { kind: "complete" };
+  }
+
+  function pushInvocation(page: BattleEventPageRecord, commands: readonly Command[], context: BattleEventContext, depth: number): void {
+    if (depth > 8) { logUnsupported(page, context, "common event recursion limit"); return; }
+    invocations.push({ page, context, depth, frames: [{ commands, pc: 0 }], loopIterations: 0, labelJumps: 0 });
+  }
+
+  function resumeChoice(requestId: number, index: number): BattleEventRuntimeResult | undefined {
+    if (stopped || !pendingChoice || pendingChoice.request.id !== requestId || !Number.isInteger(index)) return;
+    const { command } = pendingChoice;
+    const branch = index === -1 && command.cancelBehavior === "branch"
+      ? command.cancelBranch ?? [] : command.options[index]?.branch;
+    if (!branch) return;
+    const invocation = invocations.at(-1);
+    if (!invocation) return;
+    pendingChoice = undefined;
+    if (branch.length > 0) invocation.frames.push({ commands: branch, pc: 0 });
+    return drainBatch();
+  }
+
+  function resumePause(requestId: number, response: BattleEventPauseResponse): BattleEventRuntimeResult | undefined {
+    if (stopped || !pendingPause || pendingPause.id !== requestId || pendingPause.kind !== response.kind) return;
+    if (response.kind === "inputWait") {
+      if (!Number.isInteger(response.keyCode) || response.keyCode < 0 || response.keyCode > 19) return;
+      if (pendingPause.kind === "inputWait" && pendingPause.variableId) {
+        options.state.variables[pendingPause.variableId] = response.keyCode;
+      }
+    }
+    pendingPause = undefined;
+    return drainBatch();
+  }
+
+  function cancel(): void {
+    stopped = true;
+    batch = undefined;
+    pendingChoice = undefined;
+    pendingPause = undefined;
+    invocations.length = 0;
   }
 
   function consumeExtraActorAction(actorId: ActorId): boolean {
@@ -195,6 +278,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
 
   function snapshot(): BattleEventStateSnapshot {
     return {
+      messageWindowSettings: settingsChanged && options.state.messageWindowSettings ? { ...options.state.messageWindowSettings } : undefined,
       switches: options.state.switches,
       variables: options.state.variables,
       selfSwitches: Object.fromEntries(
@@ -204,10 +288,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       itemUseCharges: { ...(options.state.itemUseCharges ?? {}) },
       gold: options.state.gold ?? 0,
       partyActorIds: [...(options.state.partyActorIds ?? [])],
-      actorSkillIds: { ...(options.state.actorSkillIds ?? {}) },
+      actorSkillIds: structuredClone(options.state.actorSkillIds ?? {}),
       actorExperience: { ...(options.state.actorExperience ?? {}) },
       actorLevels: { ...(options.state.actorLevels ?? {}) },
       actorBattleCommands: { ...(options.state.actorBattleCommands ?? {}) },
+      friendship: { ...(options.state.friendshipWrites ?? {}) },
       relationships: { ...(options.state.relationshipWrites ?? {}) },
       flags: { ...(options.state.flags ?? {}) },
       timers: { ...(options.state.timers ?? {}) },
@@ -215,6 +300,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         Object.entries(options.state.actorEquipment ?? {}).map(([actorId, equipment]) => [actorId, { ...equipment }])
       ),
       classOverrides: { ...(options.state.classOverrides ?? {}) },
+      promotionLineage: structuredClone(options.state.promotionLineage),
+      growthProgress: structuredClone(options.state.growthProgress),
     };
   }
 
@@ -284,32 +371,19 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     }
   }
 
-  function executeBattleEventCommands(
-    page: BattleEventPageRecord,
-    commands: readonly Command[],
-    context: BattleEventContext,
-    depth: number
-  ): boolean {
-    let forceEscape = false;
-    if (depth > 8) {
-      logUnsupported(page, context, "common event recursion limit");
-      return false;
-    }
-    // pc(program counter) 기반 프레임 머신: label/gotoLabel/loop/breakLoop 를 이 호출 본문
-    // (트룹 페이지 또는 커먼 이벤트 본문) 로컬로 실행한다. 라벨 탐색 범위는 맵 인터프리터
-    // gotoLabel(src/player/interpreter/stack.ts)과 동형 — "현재 활성 프레임 스택"이다.
-    const frames: BattleExecFrame[] = [{ commands, pc: 0 }];
-    let loopIterations = 0;
-    let labelJumps = 0;
-    while (frames.length > 0) {
+  function executeBattleEventCommands(invocation: BattleInvocation): BattleEventRuntimeResult {
+    const { page, context, depth, frames } = invocation;
+    // Each call owns its label/loop scope. A pushed child yields to drainBatch;
+    // a choice retains the complete invocation stack until explicit input.
+    while (frames.length > 0 && invocations.at(-1) === invocation) {
       const frame = frames[frames.length - 1];
       if (!frame) break;
       if (frame.pc >= frame.commands.length) {
         frames.pop();
         if (frame.loopBody) {
           // 루프 본문이 정상 완료(breakLoop/gotoLabel 이탈 없이)되면 재진입한다.
-          loopIterations += 1;
-          if (loopIterations >= MAX_BATTLE_LOOP_ITERATIONS) {
+          invocation.loopIterations += 1;
+          if (invocation.loopIterations >= MAX_BATTLE_LOOP_ITERATIONS) {
             logUnsupported(page, context, "loop iteration limit reached");
           } else {
             frames.push({ commands: frame.commands, pc: 0, loopBody: true });
@@ -324,6 +398,25 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       }
       frame.pc += 1;
       switch (command.kind) {
+        case "wait": {
+          const ms = Math.max(0, Math.trunc(command.ms));
+          logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `wait ${ms}ms` });
+          if (!(ms > 0)) break;
+          pendingPause = { id: ++nextPauseId, kind: "wait", ms };
+          return { kind: "pause", request: pendingPause };
+        }
+        case "inputWait":
+          pendingPause = { id: ++nextPauseId, kind: "inputWait", variableId: command.variableId };
+          return { kind: "pause", request: pendingPause };
+        case "text":
+          logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: [command.speaker, command.body].filter(Boolean).join(": ") });
+          pendingPause = {
+            id: ++nextPauseId, kind: "text", body: command.body, speaker: command.speaker,
+            face: face ? { ...face } : undefined,
+            settings: options.state.messageWindowSettings ? { ...options.state.messageWindowSettings } : undefined,
+            autoAdvance: command.autoAdvance, emotion: command.emotion,
+          };
+          return { kind: "pause", request: pendingPause };
         case "fork": {
           const branch = evaluateCondition(command.condition) ? command.then : command.else ?? [];
           if (branch.length > 0) frames.push({ commands: branch, pc: 0 });
@@ -331,19 +424,26 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         }
         case "choices": {
           logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "choices", detail: [command.prompt, command.options.map((option) => option.text).join("/")].filter(Boolean).join(" ") });
-          const firstOption = command.options[0];
-          if (firstOption && firstOption.branch.length > 0) frames.push({ commands: firstOption.branch, pc: 0 });
-          break;
+          if (command.options.length === 0) { logUnsupported(page, context, "choices has no options"); break; }
+          const request: BattleEventChoiceSnapshot = {
+            id: ++nextChoiceId, pageId: page.id, round: context.turn,
+            prompt: command.prompt, options: command.options.map(option => ({ text: option.text })),
+            cancelBehavior: command.cancelBehavior,
+            settings: options.state.messageWindowSettings ? { ...options.state.messageWindowSettings } : undefined,
+          };
+          pendingChoice = { command, request };
+          return { kind: "choice", request };
         }
         case "label":
           // 라벨 자체는 no-op(맵 인터프리터와 동일). gotoLabel 의 착지점.
           break;
         case "gotoLabel": {
-          labelJumps += 1;
-          if (labelJumps >= MAX_BATTLE_LABEL_JUMPS) {
+          invocation.labelJumps += 1;
+          if (invocation.labelJumps >= MAX_BATTLE_LABEL_JUMPS) {
             // label↔gotoLabel 역방향 순환 가드: 페이지 실행을 여기서 종료한다.
             logUnsupported(page, context, "gotoLabel jump limit reached");
-            return forceEscape;
+            frames.length = 0;
+            return { kind: "complete" };
           }
           if (!jumpToLabel(frames, command.name)) {
             logUnsupported(page, context, `missing label: ${command.name}`);
@@ -379,11 +479,13 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           }
           break;
         }
-        default:
-          forceEscape = executeBattleEventCommand(page, command, context, depth) || forceEscape;
+        default: {
+          const terminal = executeBattleEventCommand(page, command, context, depth);
+          if (terminal) return { kind: "terminated", result: terminal === "defeat" ? "defeat" : "escape" };
+        }
       }
     }
-    return forceEscape;
+    return { kind: "complete" };
   }
 
   // 맵 인터프리터 gotoLabel(stack.ts)과 동형: 활성 프레임 스택을 위에서부터 훑어
@@ -424,6 +526,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     }
     const view: ClassOverrideSession = {
       classOverrides: state.classOverrides,
+      promotionLineage: state.promotionLineage,
+      growthProgress: state.growthProgress,
       actorLevels: state.actorLevels,
       actorSkillIds: state.actorSkillIds,
       actorVitals: {},
@@ -434,6 +538,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     };
     const result = promoteActorClass(view, options.project, command.actorId, command.toClassId || undefined);
     // promoteActor 는 아이템 소모 시 inventory/itemUseCharges 참조를 교체한다 — state 로 되받는다.
+    state.promotionLineage = view.promotionLineage;
+    state.actorSkillIds = view.actorSkillIds;
     state.inventory = view.inventory;
     state.itemUseCharges = view.itemUseCharges;
     // 맵 인터프리터와 동일한 성공 플래그(session.flags.promoteActorSuccess 대응, write-back 포함).
@@ -452,11 +558,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     return result.ok;
   }
 
-  function executeBattleEventCommand(page: BattleEventPageRecord, command: BattleLeafCommand, context: BattleEventContext, depth: number): boolean {
+  function executeBattleEventCommand(page: BattleEventPageRecord, command: BattleLeafCommand, context: BattleEventContext, depth: number): boolean | "defeat" {
     switch (command.kind) {
-      case "text":
-        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: [command.speaker, command.body].filter(Boolean).join(": ") });
-        return false;
       case "setSwitch": {
         const raw = command.value;
         const next = typeof raw === "boolean"
@@ -498,6 +601,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           return false;
         }
         options.state.friendship[npcKey] = clampFriendship((options.state.friendship[npcKey] ?? 0) + command.delta);
+        options.state.friendshipWrites ??= {};
+        options.state.friendshipWrites[npcKey] = options.state.friendship[npcKey];
         return false;
       }
       case "setRelationship": {
@@ -522,7 +627,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           logUnsupported(page, context, `missing common event: ${command.commonEventId}`);
           return false;
         }
-        return executeBattleEventCommands(page, commonEvent.commands, context, depth + 1);
+        pushInvocation(page, commonEvent.commands, context, depth + 1);
+        return false;
       }
       case "changeActorHp":
         changeActorVital(command.actorId, "hp", command.op, command.amount, command.amountMode);
@@ -562,8 +668,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         options.state.actorLevels ??= {};
         for (const actor of resolveActorTargets(command.actorId)) {
           const id = actor.recordId;
-          const current = options.state.actorLevels[id] ?? 1;
-          options.state.actorLevels[id] = Math.max(1, Math.min(99, applyVitalOperation(current, command.op, command.amount)));
+          const current = options.state.actorLevels[id] ?? actor.level ?? 1;
+          const level = Math.max(1, Math.min(99, applyVitalOperation(current, command.op, command.amount)));
+          options.state.actorLevels[id] = level;
+          actor.level = level;
+          options.refreshActorDerivedStats?.(actor, { refreshSkills: true });
         }
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `changeLevel ${command.actorId}` });
         return false;
@@ -574,11 +683,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         const targets = resolveActorTargets(command.actorId);
         for (const actor of targets) {
           const id = actor.recordId;
-          const known = new Set(options.state.actorSkillIds[id] ?? actor.skillIds);
+          const known = new Set(permanentActorSkillIds(options.project, options.state, id));
           if (action === "forget") {
             known.delete(command.skillId);
             options.state.actorSkillIds[id] = [...known];
-            actor.skillIds = actor.skillIds.filter((skillId) => skillId !== command.skillId);
+            actor.skillIds = [...new Set([...actor.skillIds.filter((skillId) => skillId !== command.skillId), ...growthEffects(options.project, options.state, id).skillIds])];
             continue;
           }
           known.add(command.skillId);
@@ -631,22 +740,12 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `selfSwitch ${command.key}=${command.value}` });
         return false;
       }
-      case "wait": {
-        const ms = "ms" in command ? command.ms : 0;
-        options.wait?.(ms);
-        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `wait ${ms}ms` });
-        return false;
-      }
-      case "inputWait":
-        // 전투 중 입력 대기는 UI 연동이 필요. acknowledged 로그.
-        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: "inputWait" });
-        return false;
       case "playAudio":
-        options.playAudio?.(command.resourceId, command.loop);
+        options.playAudio?.(command.resourceId, command.loop, command);
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `playAudio ${command.resourceId}` });
         return false;
       case "stopAudio":
-        options.stopAudio?.();
+        options.stopAudio?.(command.channel);
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: "stopAudio" });
         return false;
       case "setFlag":
@@ -678,13 +777,13 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         // canLose 의미론에 따라 호스트가 결정한다(battleRewardsToSession/playSceneBattle).
         options.endBattleAsDefeat?.();
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: "gameOver→defeat" });
-        return false;
+        return "defeat";
       case "killPlayer":
         // killPlayer: 파티 전멸과 동일 의미 — 액터 HP 0 + defeat 종결(자연 패배 경로와 정합).
         for (const actor of options.actors) actor.hp = 0;
         options.endBattleAsDefeat?.();
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: ["killPlayer→defeat", command.message].filter(Boolean).join(" ") });
-        return false;
+        return "defeat";
       case "changeEquipment": {
         // RM2K3 배틀 허용 커맨드 Change Equipment: 맵 changeActorEquipment 와 동일한
         // 원자적 전이 권위자(transitionActorEquipment)를 배틀 이벤트 state 오버레이로 실행.
@@ -712,12 +811,19 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return false;
       }
       case "changeFace":
-        // 메시지 스트립 프레젠테이션 상태 — 이벤트 로그 detail 로 반영
-        // (battleDirectorDom 의 message 소비 경로와 동일한 채널, DOM 수정 없음).
+        face = command.resourceId ? {
+          resourceId: command.resourceId, position: command.position,
+          flipHorizontally: command.flipHorizontally,
+        } : undefined;
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: command.resourceId ? `changeFace ${command.resourceId}` : "changeFace clear" });
         return false;
       case "displayTextSettings":
-        // 메시지 표시 설정 프레젠테이션 상태 — 이벤트 로그 detail 로 반영.
+        options.state.messageWindowSettings = {
+          format: command.format, position: command.position,
+          preventObscuringPlayer: command.preventObscuringPlayer,
+          allowEventMovementDuringWait: command.allowEventMovementDuringWait,
+        };
+        settingsChanged = true;
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `displayTextSettings ${command.format}/${command.position}` });
         return false;
       case "transfer":
@@ -947,29 +1053,29 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "unsupported", detail });
   }
 
-  // m2-106 Call Common Event (M2 형식): 커먼 이벤트 commands 를 동일한 배틀 컨텍스트에서 재귀 실행.
-  function executeCommonEventById(page: BattleEventPageRecord, commonEventId: string, context: BattleEventContext, depth: number): boolean {
+  // M2 calls enqueue their own invocation, preserving the caller across input.
+  function executeCommonEventById(page: BattleEventPageRecord, commonEventId: string, context: BattleEventContext, depth: number): void {
     const commonEvent = options.project.commonEvents.find((entry) => entry.id === commonEventId);
     if (!commonEvent) {
       logUnsupported(page, context, `missing common event: ${commonEventId}`);
-      return false;
+      return;
     }
     logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "fired", detail: `commonEvent ${commonEventId}` });
-    return executeBattleEventCommands(page, commonEvent.commands, context, depth);
+    pushInvocation(page, commonEvent.commands, context, depth);
   }
 
   // m2-104 Battle Events: 같은 트룹의 지정한 배틀 이벤트 페이지를 즉시 실행(RM2K3 전투 이벤트 호출).
-  function executeTroopPageById(page: BattleEventPageRecord, pageId: string, context: BattleEventContext, depth: number): boolean {
+  function executeTroopPageById(page: BattleEventPageRecord, pageId: string, context: BattleEventContext, depth: number): void {
     const targetPage = options.troopRecord.battleEventPages.find((entry) => entry.id === pageId);
     if (!targetPage) {
       logUnsupported(page, context, `missing troop page: ${pageId}`);
-      return false;
+      return;
     }
     logs.push({ pageId: page.id, round: context.turn, triggerId: pageId, kind: "fired", detail: `troopPage ${pageId}` });
-    return executeBattleEventCommands(page, targetPage.commands, context, depth);
+    pushInvocation(page, targetPage.commands, context, depth);
   }
 
-  return { applyTroopEvents, consumeExtraActorAction, logExternal, snapshot, logs: eventLogs };
+  return { applyTroopEvents, resumeChoice, resumePause, cancel, consumeExtraActorAction, logExternal, snapshot, logs: eventLogs };
 }
 
 // playSceneInterpreter 의 default: assertNever(step) 전례를 따르는 로컬 전수 검증 헬퍼.

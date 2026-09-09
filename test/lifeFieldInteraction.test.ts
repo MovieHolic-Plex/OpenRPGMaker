@@ -176,6 +176,27 @@ describe("real confirmation life-field routing", () => {
 });
 
 describe("runner parity", () => {
+  it.each(["fishing", "forage", "chest", "farm"] as const)("does not certify an explicit feet event when front %s owns input", owner => {
+    const f = fixture();
+    f.map.events.push(event("feet", 2, 2, [page("p", "below", { kind: "action" })]));
+    if (owner === "farm") {
+      f.fishing.spots = [];
+      f.map.farmableArea = [{ x: 2, y: 3, w: 1, h: 1 }];
+      f.project.database.crops = [{ id: "ready", name: "Ready", seedItemId: "item_reward", harvestItemId: "item_reward", harvestCount: 1, stages: [{ days: 1 }], seasons: ["spring"] }];
+    }
+    const createSession = sessionModule.startSession;
+    vi.spyOn(sessionModule, "startSession").mockImplementationOnce((project, seed) => {
+      const session = createSession(project, seed);
+      if (owner === "forage") expect(advanceSeasonalForage(project, session, session.gameTime!)).toMatchObject({ ok: true, spawned: 1 });
+      if (owner === "chest") ensureChest(session, { id: "storage", mapId: f.map.id, x: 2, y: 3 });
+      if (owner === "farm") session.farmPlots = { [f.map.id]: { "2,3": { tilled: true, watered: false, cropId: "ready", growthDays: 1, stage: 1 } } };
+      return session;
+    });
+    const result = runSceneTest(f.project, { mapId: f.map.id, start: { x: 2, y: 2 }, steps: [{ kind: "interact", eventId: "feet" }] });
+    expect(result.ok).toBe(false);
+    expect(result.failedStepIndex).toBe(0);
+  });
+
   it("shares fish tool refusal and honors chest priority without awarding a fish", () => {
     const f = fixture(); f.project.system.toolActions = [{ id: "rod", action: "fish", itemId: "item_reward" }];
     const refused = runSceneTest(f.project, { mapId: f.map.id, start: { x: 2, y: 2 }, steps: [{ kind: "interact" }] });

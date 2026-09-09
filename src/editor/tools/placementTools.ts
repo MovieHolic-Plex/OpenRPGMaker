@@ -1,5 +1,7 @@
 import { buildGroupSample, type GroupSample } from "@/ai/groupSampleBuilder";
 import { TILE } from "@/project/defaults/constants";
+import { tileAt, tilePassability } from "@/project/collision";
+import { protectedHouseCells } from "./houseProtection";
 import { isRoadTile } from "@/project/defaults/roadAutotile";
 import { isSandTile } from "@/project/defaults/sandAutotile";
 import { isCobbleTile } from "@/project/defaults/cobbleAutotile";
@@ -24,6 +26,78 @@ type ScatterMode = "uniform" | "poisson" | "cluster";
 type RecordValue = { readonly [key: string]: unknown };
 /** natural = 지금까지의 자연 산포. dense = 빈틈 없이 채워 통행을 막는다. */
 export type ScatterPacking = "natural" | "dense";
+export type PropRejectionReason = "outOfBounds" | "upperOccupied" | "lowerImpassable"
+  | "protectedSurface" | "blockedLowerSurface" | "lowerIncompatible" | "protectedEvent"
+  | "protectedOwnership" | "trunkVisibility";
+export type PropPlacementDiagnostics = {
+  readonly unit: "candidate-origin";
+  readonly scope: "area-candidate-origins" | "explicit-candidate-origins";
+  readonly footprint: { readonly w: number; readonly h: number };
+  readonly candidateOrigins: number;
+  readonly rejectedOrigins: number;
+  readonly eligibleOrigins: number;
+  /** An origin counts once per reason; reasons can overlap across its footprint. */
+  readonly rejectedBy: Partial<Record<PropRejectionReason, number>>;
+  readonly upperErase: { readonly recommended: boolean; readonly upperOnlyOrigins: number };
+};
+
+/** Zero-placement errors keep the existing runner contract. The full issue message
+ * carries a JSON record; callers must not parse the human summary (it is clipped). */
+export class PropPlacementError extends ToolError {
+  constructor(message: string, mapId: string, readonly diagnostics: PropPlacementDiagnostics) {
+    const recovery = diagnostics.upperErase.recommended
+      ? ' tile_erase(layer:"upper") 로 상위 레이어를 비운 뒤 재시도할 수 있습니다.'
+      : " 상위 레이어만 비워서는 해결되지 않습니다. 다른 영역·배치 조건을 확인하세요.";
+    const labels: Record<PropRejectionReason, string> = {
+      outOfBounds: "맵/영역 밖", upperOccupied: "상위 점유", lowerImpassable: "하층 통행 불가",
+      protectedSurface: "길/모래/포석 보호", blockedLowerSurface: "물/벽 표면 보호",
+      lowerIncompatible: "하층 배치 불일치", protectedEvent: "시작/이벤트/전이 보호",
+      protectedOwnership: "집/구조물 소유 보호", trunkVisibility: "밑동 가림",
+    };
+    const causes = Object.entries(diagnostics.rejectedBy)
+      .map(([reason, count]) => `${labels[reason as PropRejectionReason]} ${count}`).join(", ");
+    super(`${message}${recovery} 배치 원점 ${diagnostics.candidateOrigins}개 검사: ${causes || "들어가는 발자국 없음"}.`
+      + `\nplacement_diagnostics: ${JSON.stringify(diagnostics)}`, { code: "placement-zero", mapId });
+  }
+}
+
+/** Used only after zero placement, before any writes. This is an area census,
+ * not a claim that the sampler tried every origin or that eligible origins pack. */
+export function measurePropRejections(
+  candidates: readonly Point[],
+  footprint: { readonly w: number; readonly h: number },
+  inspect: (origin: Point, reasons: Set<PropRejectionReason>) => void,
+  scope: PropPlacementDiagnostics["scope"] = "area-candidate-origins",
+): PropPlacementDiagnostics {
+  const rejectedBy: Partial<Record<PropRejectionReason, number>> = {};
+  let rejectedOrigins = 0;
+  let upperOnlyOrigins = 0;
+  for (const origin of candidates) {
+    const reasons = new Set<PropRejectionReason>();
+    inspect(origin, reasons);
+    if (reasons.size === 0) continue;
+    rejectedOrigins += 1;
+    for (const reason of reasons) rejectedBy[reason] = (rejectedBy[reason] ?? 0) + 1;
+    if (reasons.size === 1 && reasons.has("upperOccupied")) upperOnlyOrigins += 1;
+  }
+  return {
+    unit: "candidate-origin", scope, footprint: { w: footprint.w, h: footprint.h },
+    candidateOrigins: candidates.length, rejectedOrigins, eligibleOrigins: candidates.length - rejectedOrigins,
+    rejectedBy, upperErase: { recommended: candidates.length > 0 && upperOnlyOrigins === candidates.length, upperOnlyOrigins },
+  };
+}
+
+/** Keep event opt-out and unconditional ownership protection distinct in diagnostics. */
+export function propProtectionReasons(project: Project, map: GameMap, avoidEvents = true): Map<string, PropRejectionReason[]> {
+  const reasons = new Map<string, PropRejectionReason[]>();
+  if (avoidEvents) for (const cell of protectedEventCells(project, map)) reasons.set(cell, ["protectedEvent"]);
+  for (const { x, y } of protectedHouseCells(map)) {
+    const cell = key(x, y);
+    reasons.set(cell, [...(reasons.get(cell) ?? []), "protectedOwnership"]);
+  }
+  return reasons;
+}
+
 type ScatterArgs = {
   readonly mapId: string;
   readonly groupId?: string;
@@ -103,7 +177,25 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
             tileIds: group.tileIds,
             patternGrammar: group.patternGrammar,
           }), group, tileset);
-    const protectedCells = args.avoidProtected ? protectedEventCells(draft, map) : new Set<string>();
+    const protectionReasons = propProtectionReasons(draft, map, args.avoidProtected);
+    if (footprint.lower.some(isTreeTrunkTileId)) {
+      // Tree pairs need valid ground across the whole object, not just at the trunk.
+      // Otherwise cleanup removes a canopy over a wall and runner repair recreates it
+      // after the house is sealed. A trunk write also clears upper, so occupied upper
+      // cells are not free ground. Existing lower trunks still allow canopy overlap.
+      for (let y = Math.max(0, args.area.y); y < Math.min(map.height, args.area.y + args.area.h); y += 1) {
+        for (let x = Math.max(0, args.area.x); x < Math.min(map.width, args.area.x + args.area.w); x += 1) {
+          const { lower, upper } = tileAt(map, x, y);
+          const pass = tilePassability(tileset, lower, TILE.EMPTY);
+          const reasons = protectionReasons.get(key(x, y)) ?? [];
+          if (upper !== TILE.EMPTY) reasons.push("upperOccupied");
+          if (lower !== TILE.EMPTY && !isTreeTrunkTileId(lower)
+            && !(pass.up || pass.down || pass.left || pass.right)) reasons.push("lowerImpassable");
+          if (reasons.length > 0) protectionReasons.set(key(x, y), reasons);
+        }
+      }
+    }
+    const protectedCells = new Set(protectionReasons.keys());
     const candidates = origins(map, args.area, footprint).filter((origin) => footprintFits(map, footprint, origin, protectedCells));
     // 배치 면 채점용 프로브는 루프 밖에서 한 번 만든다 — 스텝마다 만들면 후보 수만큼 재생성된다.
     // 루프 안에서는 맵을 쓰지 않으므로(쓰기는 touched 로 뒤에 한 번) 찍기 전 지형을 보는 것이 맞다.
@@ -143,7 +235,9 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
         if (allowed.length >= allowedCap) break;
         if (!footprintFits(map, stepFootprint, origin, protectedCells)) continue;
         // 숲: 레이어가 다르면 발자국이 겹쳐도 됨(수관 upper + 밑동 lower).
-        if (!layeredSpaced(rectAt(origin, stepFootprint), stepFootprint, placed, footprints, args.minGap)) continue;
+        if (picker
+          ? !spaced(rectAt(origin, stepFootprint), placed, args.minGap)
+          : !layeredSpaced(rectAt(origin, stepFootprint), stepFootprint, placed, footprints, args.minGap)) continue;
         allowed.push(origin);
       }
       if (allowed.length === 0) break;
@@ -177,11 +271,44 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
     if (placed.length === 0) {
       // 라이브 QA 사고: '키큰 풀' 로 채운 영역에 침엽수를 깔면 0그루가 놓이는데도 ok 로 끝나
       // 나무 한 그루 없는 "빽빽한 숲" 이 완성으로 보고됐다. 0개 배치는 성공이 아니다.
-      throw new ToolError(
-        `${sourceNameOf(picker, group)}를 ${args.count}개 요청했지만 영역 (${args.area.x},${args.area.y}) ${args.area.w}×${args.area.h} 에 한 개도 놓지 못했습니다`
-        + " — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다."
-        + " tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
-        { code: "placement-zero", mapId: map.id },
+      const explicitOrigins = args.packing === "dense" ? parseExplicitOrigins(rawArgs.origins) : undefined;
+      const diagnosticOrigins = explicitOrigins
+        ? [...new Map(explicitOrigins.map((origin) => [pointKey(origin), origin])).values()]
+        : origins(map, args.area, footprint);
+      const diagnostics = measurePropRejections(diagnosticOrigins, footprint, (origin, reasons) => {
+        if (origin.x < args.area.x || origin.y < args.area.y
+          || origin.x + footprint.w > args.area.x + args.area.w || origin.y + footprint.h > args.area.y + args.area.h) {
+          reasons.add("outOfBounds");
+          return;
+        }
+        const probe = { reasons, protectionReasons };
+        // Natural candidates pass the base footprint filter before the first
+        // bag-prop choice. Dense uses only the actual first-step footprint.
+        if (args.packing !== "dense") footprintFits(map, footprint, origin, protectedCells, probe);
+        footprintFits(map, stepFootprintAt(0), origin, protectedCells, probe);
+        if (args.packing === "dense" && args.trunkVisible && !explicitOrigins
+          && !trunkStaysVisible(map, stepFootprintAt(0), origin, new Set(), new Set())) reasons.add("trunkVisibility");
+        if (reasons.has("upperOccupied")) {
+          // The ordinary upper-only furniture predicate is intentionally not
+          // broadened here. Recovery must still not propose exposing blocked
+          // lower ground anywhere in the footprint (including another cell).
+          const firstFootprint = stepFootprintAt(0);
+          for (let y = 0; y < firstFootprint.h; y += 1) {
+            for (let x = 0; x < firstFootprint.w; x += 1) {
+              const index = y * firstFootprint.w + x;
+              if (firstFootprint.lower[index] === TILE.EMPTY && firstFootprint.upper[index] === TILE.EMPTY) continue;
+              const lower = tileAt(map, origin.x + x, origin.y + y).lower;
+              // Existing trunks legitimately support overlapping tree canopies.
+              if (isTreeTrunkTileId(lower) && isTreeCanopyTileId(firstFootprint.upper[index] ?? TILE.EMPTY)) continue;
+              const pass = tilePassability(tileset, lower, TILE.EMPTY);
+              if (!(pass.up || pass.down || pass.left || pass.right)) reasons.add("lowerImpassable");
+            }
+          }
+        }
+      }, explicitOrigins ? "explicit-candidate-origins" : "area-candidate-origins");
+      throw new PropPlacementError(
+        `${sourceNameOf(picker, group)}를 ${args.count}개 요청했지만 영역 (${args.area.x},${args.area.y}) ${args.area.w}×${args.area.h} 에 한 개도 놓지 못했습니다`,
+        map.id, diagnostics,
       );
     }
     const warning = passabilityWarning(draft, map, [...touched, ...structureTouched]);
@@ -383,7 +510,7 @@ function oneInstance(sample: GroupSample, group: TileGroupMetadata, tileset: Til
   for (let index = 0; index < sample.w * sample.h; index += 1) {
     const upper = sample.upper[index] ?? TILE.EMPTY;
     const lower = sample.lower[index] ?? TILE.EMPTY;
-    if ((hasUpper && upper !== TILE.EMPTY) || (!hasUpper && lower !== TILE.EMPTY)) occupied.add(index);
+    if (upper !== TILE.EMPTY || (lower !== TILE.EMPTY && (!hasUpper || group.tileIds.includes(lower)))) occupied.add(index);
   }
   const first = [...occupied].sort((a, b) => a - b)[0];
   if (first === undefined) throw new ToolError(`타일 그룹 '${group.name}'에는 배치할 타일이 없습니다.`, { code: "empty-group" });
@@ -413,7 +540,7 @@ function oneInstance(sample: GroupSample, group: TileGroupMetadata, tileset: Til
       const source = y * sample.w + x;
       const sourceUpper = component.has(source) ? sample.upper[source] ?? TILE.EMPTY : TILE.EMPTY;
       const sourceLower = component.has(source) ? sample.lower[source] ?? TILE.EMPTY : TILE.EMPTY;
-      lower.push(hasUpper ? backingLower(tileset, sourceUpper) : sourceLower);
+      lower.push(hasUpper && !group.tileIds.includes(sourceLower) ? backingLower(tileset, sourceUpper) : sourceLower);
       upper.push(sourceUpper);
     }
   }
@@ -667,13 +794,22 @@ function origins(map: GameMap, area: Area, footprint: Footprint): readonly Point
  * 레이어별 적합 — upper 만 쓸 칸은 기존 lower(밑동) 위를 허용(숲 겹침).
  * lower 에 밑동을 쓸 칸은 잔디/빈 칸만(물·길·벽·다른 구조 금지).
  */
-function footprintFits(map: GameMap, footprint: Footprint, origin: Point, protectedCells: ReadonlySet<string>): boolean {
-  if (!inMapBounds(map, origin.x, origin.y) || !inMapBounds(map, origin.x + footprint.w - 1, origin.y + footprint.h - 1)) return false;
+function footprintFits(map: GameMap, footprint: Footprint, origin: Point, protectedCells: ReadonlySet<string>, probe?: {
+  readonly reasons: Set<PropRejectionReason>;
+  readonly protectionReasons: ReadonlyMap<string, readonly PropRejectionReason[]>;
+}): boolean {
+  if (!inMapBounds(map, origin.x, origin.y) || !inMapBounds(map, origin.x + footprint.w - 1, origin.y + footprint.h - 1)) {
+    probe?.reasons.add("outOfBounds");
+    return false;
+  }
   for (let y = 0; y < footprint.h; y += 1) {
     for (let x = 0; x < footprint.w; x += 1) {
       const mx = origin.x + x;
       const my = origin.y + y;
-      if (protectedCells.has(key(mx, my))) return false;
+      if (protectedCells.has(key(mx, my))) {
+        if (!probe) return false;
+        for (const reason of probe.protectionReasons.get(key(mx, my)) ?? []) probe.reasons.add(reason);
+      }
       const source = y * footprint.w + x;
       const wantLower = footprint.lower[source] ?? TILE.EMPTY;
       const wantUpper = footprint.upper[source] ?? TILE.EMPTY;
@@ -681,20 +817,33 @@ function footprintFits(map: GameMap, footprint: Footprint, origin: Point, protec
       const index = my * map.width + mx;
       const haveLower = map.lowerTiles[index];
       const haveUpper = map.upperTiles[index];
-      if (isLakeAutotileTile(haveLower) || isPathSurfaceTile(haveLower) || haveLower === TILE.WALL) return false;
+      if (isLakeAutotileTile(haveLower) || haveLower === TILE.WALL) {
+        if (!probe) return false;
+        probe.reasons.add("blockedLowerSurface");
+      }
+      if (isPathSurfaceTile(haveLower)) {
+        if (!probe) return false;
+        probe.reasons.add("protectedSurface");
+      }
       if (wantUpper !== TILE.EMPTY) {
-        if (haveUpper !== TILE.EMPTY) return false;
+        if (haveUpper !== TILE.EMPTY) {
+          if (!probe) return false;
+          probe.reasons.add("upperOccupied");
+        }
         // 상위 소품: 물·길·벽만 금지. 실내 나무바닥(72) 등 비-잔디 통행 바닥 위에도 놓인다.
         // (예전 잔디/빈칸/나무밑동 제한은 야외 수관 전제 — 실내 가구 place_props가 0개 스킵되던 원인)
       }
       if (wantLower !== TILE.EMPTY) {
         // 밑동 자리: 잔디/빈 칸만. 이미 밑동이 있으면 겹침 금지.
-        if (haveLower !== TILE.EMPTY && haveLower !== TILE.GRASS && haveLower !== wantLower) return false;
-        if (isTreeTrunkTileId(haveLower) && isTreeTrunkTileId(wantLower)) return false;
+        if ((haveLower !== TILE.EMPTY && haveLower !== TILE.GRASS && haveLower !== wantLower)
+          || (isTreeTrunkTileId(haveLower) && isTreeTrunkTileId(wantLower))) {
+          if (!probe) return false;
+          probe.reasons.add("lowerIncompatible");
+        }
       }
     }
   }
-  return true;
+  return !probe || probe.reasons.size === 0;
 }
 
 function rectAt(origin: Point, footprint: Footprint): Rect {

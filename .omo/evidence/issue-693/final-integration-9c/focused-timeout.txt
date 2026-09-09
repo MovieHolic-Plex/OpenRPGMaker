@@ -1,0 +1,1 @@
+Prior focused command was terminated by the tool at 600 seconds, with 18 files reported and no terminal report. It is incomplete, not a pass. Restarted the identical 31-file batch without an observer kill deadline; no code, test timeout, retry, or worker-count change.

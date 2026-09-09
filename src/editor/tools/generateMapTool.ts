@@ -5,16 +5,17 @@
 
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
-import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
+import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { genId } from "@/util/id";
 import type { GameMap } from "@/project/types";
-import { assertMapIdAvailable, inMapBounds, lineCells, setLower, type Point } from "./mapHelpers";
+import { assertMapIdAvailable, inMapBounds, lineCells, setLower, setUpper, type Point } from "./mapHelpers";
 import { assignCreatedMapBgm } from "./mapTools";
 import {
-  applyMapGenerationPassage,
+  resolveMapGenerationPalette,
   requireMapGenerationProfile,
   type MapGenerationLayout,
-  type MapGenerationPalette,
+  type MapGenerationPaletteResolver,
+  type MapGenerationTile,
 } from "./mapGenerationProfiles";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
@@ -29,19 +30,10 @@ type MapTheme = "village" | "forest" | "cave";
 // 맵 4변이 통행 불가 벽으로 봉인됐다.
 type MapBorder = "none" | "wall";
 
-interface ThemePalette {
-  readonly floor: number;
-  readonly obstacle: number;
-  readonly decor: number;
+function paintPaletteTile(map: GameMap, x: number, y: number, choice: MapGenerationTile): void {
+  if (choice.layer === "upper") setUpper(map, x, y, choice.tile);
+  else setLower(map, x, y, choice.tile);
 }
-
-const BUSH_OBSTACLE = 289;
-
-const THEME_PALETTES: Record<MapTheme, ThemePalette> = {
-  village: { floor: TILE.GRASS, obstacle: BUSH_OBSTACLE, decor: TILE.FLOWERS },
-  forest: { floor: TILE.GRASS, obstacle: BUSH_OBSTACLE, decor: TILE.DARK_GRASS },
-  cave: { floor: 421, obstacle: TILE.WALL, decor: TILE.WATER },
-};
 
 // 결정적 PRNG(mulberry32) — Math.random 미사용(재현성).
 function mulberry32(seed: number): () => number {
@@ -60,7 +52,7 @@ function blankThemedMap(
   width: number,
   height: number,
   tilesetId: string,
-  palette: ThemePalette,
+  palette: MapGenerationPaletteResolver,
   border: MapBorder,
 ): GameMap {
   const size = width * height;
@@ -71,63 +63,56 @@ function blankThemedMap(
     height,
     tilesetId,
     tileSize: DEFAULT_TILE_SIZE,
-    lowerTiles: new Array<number>(size).fill(palette.floor),
+    lowerTiles: new Array<number>(size).fill(palette("base").tile),
     upperTiles: new Array<number>(size).fill(TILE.EMPTY),
     events: [],
   };
   if (border === "wall") {
     for (let x = 0; x < width; x += 1) {
-      setLower(map, x, 0, palette.obstacle);
-      setLower(map, x, height - 1, palette.obstacle);
+      paintPaletteTile(map, x, 0, palette("obstacle"));
+      paintPaletteTile(map, x, height - 1, palette("obstacle"));
     }
     for (let y = 0; y < height; y += 1) {
-      setLower(map, 0, y, palette.obstacle);
-      setLower(map, width - 1, y, palette.obstacle);
+      paintPaletteTile(map, 0, y, palette("obstacle"));
+      paintPaletteTile(map, width - 1, y, palette("obstacle"));
     }
   }
   return map;
 }
 
-function themePalette(profile: MapGenerationPalette): ThemePalette {
-  return { floor: profile.base, obstacle: profile.obstacle, decor: profile.accent };
-}
-
-function paintLayoutGrammar(map: GameMap, layout: MapGenerationLayout, palette: ThemePalette): void {
+function paintLayoutGrammar(map: GameMap, layout: MapGenerationLayout, palette: MapGenerationPaletteResolver): void {
   if (layout === "rooms") {
     const splitX = Math.floor(map.width / 2);
-    for (let y = 2; y < map.height - 2; y += 1) setLower(map, splitX, y, palette.obstacle);
-    setLower(map, splitX, Math.floor(map.height / 2), palette.floor);
+    for (let y = 2; y < map.height - 2; y += 1) paintPaletteTile(map, splitX, y, palette("obstacle"));
+    setLower(map, splitX, Math.floor(map.height / 2), palette("base").tile);
     return;
   }
   if (layout === "ship") {
     for (let x = 2; x < map.width - 2; x += 1) {
-      setLower(map, x, 2, palette.obstacle);
-      setLower(map, x, map.height - 3, palette.obstacle);
+      paintPaletteTile(map, x, 2, palette("obstacle"));
+      paintPaletteTile(map, x, map.height - 3, palette("obstacle"));
     }
     return;
   }
   if (layout === "city") {
     for (let y = 3; y < map.height - 1; y += 6) {
-      for (let x = 1; x < map.width - 1; x += 1) setLower(map, x, y, palette.floor);
+      for (let x = 1; x < map.width - 1; x += 1) setLower(map, x, y, palette("base").tile);
     }
     for (let x = 4; x < map.width - 1; x += 7) {
-      for (let y = 1; y < map.height - 1; y += 1) setLower(map, x, y, palette.floor);
+      for (let y = 1; y < map.height - 1; y += 1) setLower(map, x, y, palette("base").tile);
     }
     return;
   }
   if (layout === "world") {
     for (let y = 4; y < map.height - 1; y += 7) {
-      for (let x = 1; x < map.width - 1; x += 1) setLower(map, x, y, palette.decor);
+      for (let x = 1; x < map.width - 1; x += 1) paintPaletteTile(map, x, y, palette("accent"));
     }
   }
 }
 
 function assertGeneratedMapSize(width: number, height: number): void {
-  if (width > MAX_TOOL_MAP_DIMENSION || height > MAX_TOOL_MAP_DIMENSION) {
-    throw new ToolError(
-      `생성 맵 크기는 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}까지 가능합니다. 넓은 지역은 여러 맵으로 나누고 transfer 이벤트로 연결하세요.`,
-      { code: "map-too-large" }
-    );
+  if (exceedsMapDimensionLimit(width, height)) {
+    throw new ToolError(mapSizeLimitMessage("생성 맵 크기"), { code: "map-too-large" });
   }
 }
 
@@ -147,7 +132,7 @@ function carvePath(map: GameMap, from: Point, to: Point, floor: number, border: 
 const generateMap: ToolDefinition = {
   name: "generate_map",
   description:
-    "테마(village/forest/cave) 맵을 생성한다(기본은 테두리 없는 평지, 최대 256×256). 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프). "
+    `테마(village/forest/cave) 맵을 생성한다(기본은 테두리 없는 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프). `
     + "테마에 맞는 BGM을 CC0 카탈로그에서 고른다(같은 seed면 같은 곡, bgm/bgmResourceId가 있으면 그걸 쓴다). "
     + "동굴/던전처럼 외곽이 막혀야 할 때만 border:\"wall\"을 지정한다 — 지정하면 맵 4변이 통행 불가 장애물로 봉인된다.",
   mode: "write",
@@ -158,8 +143,8 @@ const generateMap: ToolDefinition = {
       border: { type: "string", enum: ["none", "wall"], description: "테두리 처리(기본 none, wall이면 외곽 4변을 테마 장애물 타일로 봉인)" },
       tilesetId: { type: "string", description: "이 맵에 사용할 타일셋. 타일셋별 전용 생성 로직을 선택한다." },
       name: { type: "string" },
-      width: { type: "integer", description: "가로 타일 수(최대 256)" },
-      height: { type: "integer", description: "세로 타일 수(최대 256)" },
+      width: { type: "integer", description: `가로 타일 수(최대 ${MAX_TOOL_MAP_DIMENSION})` },
+      height: { type: "integer", description: `세로 타일 수(최대 ${MAX_TOOL_MAP_DIMENSION})` },
       entrance: { ...COORD_SCHEMA, description: "{x,y} 입구(생략 시 좌측 중앙)" },
       pois: { type: "array", description: "[{x,y}] 관심 지점", items: COORD_SCHEMA },
       chokepoints: { type: "integer", description: "장애물 밀도(0~100, 기본 12)" },
@@ -180,13 +165,16 @@ const generateMap: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const theme = args.theme as MapTheme;
-    const fallbackPalette = THEME_PALETTES[theme];
-    if (!fallbackPalette) throw new ToolError(`알 수 없는 테마: ${theme}`, { code: "unknown-theme" });
+    if (!["village", "forest", "cave"].includes(theme)) throw new ToolError(`알 수 없는 테마: ${theme}`, { code: "unknown-theme" });
     const tilesetId = (args.tilesetId as string | undefined) ?? DEFAULT_TILESET_ID;
     const generationProfile = requireMapGenerationProfile(draft, tilesetId);
-    const generationPalette = generationProfile.palettes[theme];
-    const palette = themePalette(generationPalette);
-    applyMapGenerationPassage(draft, generationProfile, generationPalette);
+    if (generationProfile.layout === "rooms") {
+      throw new ToolError(
+        "실내는 개념 꾸러미로 시공합니다. get_concept_facility로 장소·물건을 읽고 place_concept(plan, 새 mapId)을 사용하세요. 현재 개념 시공은 실내 칩셋을 지원합니다.",
+        { code: "concept-interior-required" },
+      );
+    }
+    const palette = resolveMapGenerationPalette(draft, generationProfile, generationProfile.palettes[theme]);
     const width = args.width as number;
     const height = args.height as number;
     if (width < 6 || height < 6) throw new ToolError("생성 맵은 최소 6x6 이상이어야 합니다.");
@@ -232,14 +220,15 @@ const generateMap: ToolDefinition = {
     for (let y = 1; y < height - 1; y += 1) {
       for (let x = 1; x < width - 1; x += 1) {
         if (protectedCells.has(`${x},${y}`)) continue;
-        if (rng() * 100 < density) setLower(map, x, y, palette.obstacle);
+        if (rng() * 100 < density) paintPaletteTile(map, x, y, palette("obstacle"));
       }
     }
     // 입구 확보.
-    setLower(map, entrance.x, entrance.y, generationPalette.path);
+    const path = palette("path").tile;
+    setLower(map, entrance.x, entrance.y, path);
 
     // 입구→각 POI 통로 카빙.
-    for (const poi of pois) carvePath(map, entrance, poi, generationPalette.path, border);
+    for (const poi of pois) carvePath(map, entrance, poi, path, border);
 
     // 도달성 수리 루프: 미도달 POI가 없어질 때까지 통로를 다시 판다.
     let repairs = 0;
@@ -248,7 +237,7 @@ const generateMap: ToolDefinition = {
       const unreachable = pois.filter((poi) => !isAdjacentOrOn(reachable, poi.x, poi.y));
       if (unreachable.length === 0) break;
       for (const poi of unreachable) {
-        carvePath(map, entrance, poi, generationPalette.path, border);
+        carvePath(map, entrance, poi, path, border);
         repairs += 1;
       }
     }

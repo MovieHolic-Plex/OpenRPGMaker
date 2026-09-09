@@ -15,7 +15,10 @@ import {
   type CombinedTownHarnessGroup,
 } from "./combinedTownGroups";
 import { applyEasyRpgThemeMetadataPacks } from "./themePacks";
+import { hasInteriorCabinetOverride } from "@/project/defaults/interiorTransparentPropLayerRepair";
+import { hasInteriorLongTableOverride } from "./interiorLongTableLegacy";
 import { roleCapabilities } from "@/project/tileRoles";
+import { chipsetLabelCorrection, seedChipsetLabelCorrections } from "@/project/defaults/chipsetLabelCorrections";
 
 const passable: PassFlag = { up: true, down: true, left: true, right: true };
 const solid: PassFlag = { up: false, down: false, left: false, right: false };
@@ -42,6 +45,7 @@ export function ensureTilesetHarnesses(project: Pick<Project, "tilesets">): bool
       changed = applyCustomChipsetMinimalHarness(tileset) || changed;
     }
     changed = applyEasyRpgThemeMetadataPacks(tileset) || changed;
+    changed = seedChipsetLabelCorrections(tileset) || changed;
   }
   return changed;
 }
@@ -49,7 +53,12 @@ export function ensureTilesetHarnesses(project: Pick<Project, "tilesets">): bool
 function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
   let changed = false;
   ensureTileMetaLength(tileset);
+  const cabinetOverride = tileset.image.type === "bundled"
+    && tileset.image.id === "tex_easyrpg_chipset_interior" && hasInteriorCabinetOverride(tileset);
+  const tableOverride = hasInteriorLongTableOverride(tileset);
   for (let tile = 0; tile < tileset.count; tile += 1) {
+    if (cabinetOverride && (tile === 148 || tile === 178)) continue;
+    if (tableOverride && (tile === 325 || tile === 326 || tile === 327)) continue;
     if (!isTransparentChipsetTile(tile)) continue;
     if (isTreeTrunkTileId(tile)) continue;
     const meta = tileset.tileMeta?.[tile];
@@ -90,6 +99,7 @@ export function applyCombinedTownHarness(tileset: TilesetDef): boolean {
     tileset.tileGroups = next;
     changed = true;
   }
+  changed = seedChipsetLabelCorrections(tileset) || changed;
   return changed;
 }
 
@@ -182,6 +192,7 @@ function applyTileContract(tileset: TilesetDef, group: CombinedTownHarnessGroup,
     confidence: group.confidence,
     source: "bundled-default",
     ...(meta?.userLocked ? { userLocked: true } : {}),
+    ...chipsetLabelCorrection(tileset.image.id, tile),
   };
   if (meta?.userLocked !== true && meta?.source !== "user" && JSON.stringify(meta) !== JSON.stringify(nextMeta)) {
     tileset.tileMeta![tile] = nextMeta;

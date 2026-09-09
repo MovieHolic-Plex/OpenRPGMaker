@@ -1,0 +1,18 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/historyRecoveryAdmission.test.ts test/mapConversationRemote.test.ts test/mapConversationStore.test.ts test/conversationStore.test.ts --maxWorkers=2 --minWorkers=1 --reporter=default --reporter=json --outputFile=.omo/evidence/integration-st01a08238/history-store-green.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238
+
+ ✓ test/mapConversationStore.test.ts (14 tests) 96ms
+ ✓ test/conversationStore.test.ts (25 tests) 135ms
+ ✓ test/historyRecoveryAdmission.test.ts (32 tests) 93ms
+ ✓ test/mapConversationRemote.test.ts (18 tests) 114ms
+
+ Test Files  4 passed (4)
+      Tests  89 passed (89)
+   Start at  04:01:34
+   Duration  5.44s (transform 3.49s, setup 0ms, collect 9.15s, tests 438ms, environment 1ms, prepare 306ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238/.omo/evidence/integration-st01a08238/history-store-green.json

@@ -1,0 +1,43 @@
+{
+  "red": {
+    "before": {
+      "originalAttached": false,
+      "active": "ai-config-save"
+    },
+    "after": {
+      "originalAttached": false,
+      "active": null
+    }
+  },
+  "green": [
+    {
+      "scenario": "F6 F7 changed settings restore topbar opener",
+      "inside": true,
+      "originalAttached": true,
+      "active": "topbar-ai-settings",
+      "font": "large"
+    },
+    {
+      "scenario": "F8 panel choice",
+      "value": "map-first"
+    },
+    {
+      "scenario": "F8 panel choice",
+      "value": "ink-only"
+    },
+    {
+      "scenario": "F8 panel choice",
+      "value": "quiet-gold"
+    },
+    {
+      "scenario": "F7 nested select and panel opener",
+      "restored": true
+    },
+    {
+      "scenario": "F7 history focus",
+      "inside": true,
+      "restored": true
+    }
+  ],
+  "note": "The replacement-opener branch is also pinned by a deterministic native-DOM regression; normal attached opener, panel menu and nested Escape were exercised on the real page."
+}

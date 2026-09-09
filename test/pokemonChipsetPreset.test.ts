@@ -121,8 +121,9 @@ describe("헤드리스 장면 조립 — 잔디 맵 + 흙길 + 키큰풀 구역"
     const map = ctx.project.maps[MAP_ID];
     const at = (x: number, y: number) => map.lowerTiles[y * map.width + x];
 
-    // 키큰 풀 구역: DARK_GRASS 로 채워지고 통행 가능(조우 로직은 타일에 없음).
-    expect(at(4, 3)).toBe(TILE.DARK_GRASS);
+    // Auto-connect selects the interior variant, not the palette's representative tile.
+    expect(at(4, 3)).toBe(304);
+    expect(CHIPSET_TILE_GROUPS.tallGrass).toContain(at(4, 3));
     expect(isPassable(ctx.project, map, 4, 3)).toBe(true);
 
     // 흙길 루트: 가운데 줄(내부 칸)은 오토타일 바디 타일.

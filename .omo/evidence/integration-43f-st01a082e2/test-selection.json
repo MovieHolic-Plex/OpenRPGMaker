@@ -1,0 +1,317 @@
+{
+  "selected": [
+    {
+      "name": "seams-green",
+      "exit": 0,
+      "passed": 14,
+      "failed": 0,
+      "unselected": 63,
+      "files": [
+        {
+          "path": "aiAssistantSession.test.ts",
+          "passed": 1,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "assistantReviewImageBudget.test.ts",
+          "passed": 5,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "wholeMapCoverageRender.test.ts",
+          "passed": 8,
+          "failed": [],
+          "unselected": 0
+        }
+      ]
+    },
+    {
+      "name": "upstream-focused",
+      "exit": 0,
+      "passed": 288,
+      "failed": 0,
+      "unselected": 0,
+      "files": [
+        {
+          "path": "agentVerification.test.ts",
+          "passed": 41,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "cameraScrollbars.test.ts",
+          "passed": 6,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "escapeToPanEventLayerDrag.test.ts",
+          "passed": 29,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "eventIdReadout.test.ts",
+          "passed": 19,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "imageAdmissionTokens.test.ts",
+          "passed": 6,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "mapEditRedoEntries.test.ts",
+          "passed": 10,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "mapHistoryPanel.test.ts",
+          "passed": 4,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "mapRegionWaterAndCompact.test.ts",
+          "passed": 4,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "mapSizeGuard.test.ts",
+          "passed": 25,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "mapTreeRootWording.test.ts",
+          "passed": 11,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "moveRouteEventTarget.test.ts",
+          "passed": 22,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "moveRouteEventTargetPicker.test.ts",
+          "passed": 19,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "productTerminology.test.ts",
+          "passed": 21,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "projectLint.test.ts",
+          "passed": 15,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "runtimePlayerRouteThrough.test.ts",
+          "passed": 12,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "surfaceGateSupport.test.ts",
+          "passed": 18,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "tileToolbarHistoryMenus.test.ts",
+          "passed": 26,
+          "failed": [],
+          "unselected": 0
+        }
+      ]
+    },
+    {
+      "name": "core-focused",
+      "exit": 1,
+      "passed": 466,
+      "failed": 1,
+      "unselected": 0,
+      "files": [
+        {
+          "path": "aiCompletionAccounting.test.ts",
+          "passed": 12,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "aiConversationHistoryStartup.test.ts",
+          "passed": 4,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "aiTurnAppliedAccounting.test.ts",
+          "passed": 29,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "approachCorrection.test.ts",
+          "passed": 61,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "assistantAcceptanceRequestBaseline.test.ts",
+          "passed": 6,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "assistantAcceptanceSession.test.ts",
+          "passed": 21,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "assistantImageTransport.test.ts",
+          "passed": 6,
+          "failed": [
+            {
+              "id": "session to companion image delivery keeps aborted delivery blocked on later turns and retries",
+              "body": [
+                "AssertionError: expected 0 to be greater than 0"
+              ]
+            }
+          ],
+          "unselected": 0
+        },
+        {
+          "path": "assistantIndependentReview.test.ts",
+          "passed": 29,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "assistantVerificationEvidence.test.ts",
+          "passed": 24,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "canonicalAcceptanceOwnership.test.ts",
+          "passed": 7,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "generateMap.test.ts",
+          "passed": 16,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "generateMapPaletteAuthority.test.ts",
+          "passed": 42,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "generateMapPaletteReload.test.ts",
+          "passed": 4,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "independentReview.test.ts",
+          "passed": 23,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "independentReviewEvidenceScale.test.ts",
+          "passed": 7,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "independentReviewReferenceScope.test.ts",
+          "passed": 11,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "nonHistoryIntegrationSeams.test.ts",
+          "passed": 5,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "pr687VerificationIntegration.test.ts",
+          "passed": 26,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "proposalCompleteness.test.ts",
+          "passed": 73,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "runtimeMovementStability.test.ts",
+          "passed": 51,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "storePersistenceLineage.test.ts",
+          "passed": 8,
+          "failed": [],
+          "unselected": 0
+        },
+        {
+          "path": "toolImageEventAcceptanceSession.test.ts",
+          "passed": 1,
+          "failed": [],
+          "unselected": 0
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "files": 42,
+    "passed": 768,
+    "failed": 1,
+    "unselected": 63
+  },
+  "baseline": {
+    "commit": "d86f4485b3c00b2497cd321d73f17245f34c42a7",
+    "method": "git archive exact src/test/scripts/config; isolated offline source projection, one selected assertion, unchanged timeout",
+    "failures": [
+      {
+        "id": "session to companion image delivery keeps aborted delivery blocked on later turns and retries",
+        "body": [
+          "AssertionError: expected 0 to be greater than 0"
+        ]
+      }
+    ]
+  },
+  "finalFailures": [
+    {
+      "id": "session to companion image delivery keeps aborted delivery blocked on later turns and retries",
+      "body": [
+        "AssertionError: expected 0 to be greater than 0"
+      ]
+    }
+  ],
+  "comparison": "same exact failure ID and first-line assertion body; stack checkout roots differ"
+}

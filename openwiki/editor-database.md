@@ -1,4 +1,282 @@
+## Monster resource metadata worksheet (2026-09-07)
+
+Database > 전투 몬스터 > 몬스터 소재 uses the full resource catalog independently
+of gameplay enemies. Draft, Apply/reset, project-switch safety and focused QA
+ownership: [monster-resource-editor.md](monster-resource-editor.md).
+
+## Shared database CSS ownership (2026-09-06)
+
+`studio-v2.css` owns the shared numeric composite: one 32px border box and
+28px side buttons, with the existing 120px container collapse. Its generic
+input, focus, disabled and card-input rules exclude the composite interior.
+The earlier duplicate stepper chrome in `modern-controls.css` is removed;
+that sheet retains native checkbox/radio/range/select behavior. Animation's
+vertical scroll belongs to `animation-editor.css`; `battle-studio.css` no
+longer overrides it with visible overflow. No playback or mutation paths change.
+Rendered regressions: `test/e2e/database-css-ownership.spec.ts`, run with
+`playwright.db-css.config.ts` (Chromium and Firefox supported, zero retries).
+A frozen dev server caches transforms: after an edit restart only the owned
+worktree server before measuring, and bind evidence to its cwd/revision.
+
+Shared section navigation now belongs to `workspace-modern.css`; equivalent
+actor/enemy controls reuse its 34px grammar. CRUD chrome and 12.5px captions
+belong to `studio-v2.css`, with document/System variants kept scoped. Bare Life
+numeric inputs retain native spinners and their change-only commit semantics.
+Modal-body overflow belongs to `sidebar.css`; cards, legends and list ordinals
+to `studio-v2.css`; ordinary 24px DB rows to `record-list-modern.css`; 36px actor
+portraits to `desktop-record-shell/13-actor-studio.css`. `record-thumbs.css` keeps
+non-DB 32px defaults. Grid-card actions retain intrinsic width through the
+workspace's direct-child `justify-self: start` constraint.
+The shared danger token is #B91C1C after the earlier color failed contrast on
+its actual hover tint. Database close restores the connected opener, or its
+logical replacement after a topbar rerender, without stealing focus on tab reuse.
+
+`npm run audit:db-css-ownership` records the import graph, scoped role owners,
+retained-important reasons and removed-declaration mappings. Owner proof requires
+the exact normalized selector, file, at-rule context and property (including
+valid shorthand coverage); descendant/prefix matches are not replacements.
+Narrowed rules split retained and excluded consumers rather than assigning an
+unrelated intrinsic default. Required DB surface execution consumes per-file
+Vitest results and rejects missing, zero-assertion, skipped or failed coverage.
+The audit defaults to the merge-base with `origin/main`, so unrelated upstream
+style changes are not attributed to this branch. An explicit positional revision
+replays a historical comparison. A valid baseline missing a newly added sheet
+contributes zero declarations; invalid revisions and unreadable existing blobs
+remain errors. Historical comparisons spanning unrelated removals fail closed
+until those removals have real ownership evidence.
+
+## 전투 몬스터 표시 크기 (2026-09-06)
+
+- 전투 몬스터 → 외형 → 그래픽의 `전투 표시 크기 (%)`는 기존 `sliderStepperField`를 사용한다. 숫자/슬라이더 testid는 `db-field-enemy-battle-scale-stepper` / `-slider`; 10~300%, 1% 단위, 기본 100%다.
+- `EnemyRecord.battleScalePercent?`를 기존 `updateDatabaseRecord` → `updateEnemyRecord` 경로로 편집하므로 저장·감사 로그·병합 실행 취소를 공유한다. `upsert_enemy`의 동일 이름 정수 필드도 같은 정규화를 거친다. 기본값 100%는 정규화 시 필드를 생략한다. 다른 적·종족·능력치·이미지 매핑은 바꾸지 않는다.
+- 이 값은 전투 이미지 크기만 바꾼다. 100%를 초과해 전투 화면을 넘는 요청은 종횡비를 유지하며 화면 안에 맞춰 표시하고, 저장된 요청 백분율은 바꾸지 않는다. 안내에도 이 상한을 명시한다. 작업실 미리보기는 소재 확인용 고정 크기를 유지하고, 그래픽 카드 안내대로 `시험 전투`에서 실제 크기를 확인한다. 맵 스프라이트 크기는 별도다.
+- 회귀: `test/enemyBattleScale.test.ts`의 실제 폼 입력/포커스/독립 레코드 보존/프로젝트 저장→로드→저장 및 RM·몬스터 대치 렌더 계약. 브라우저에서는 1024/1280/1440 폭에서 외형 탭 숫자·슬라이더를 조작하고 시험 전투 진입·복귀·재열기를 확인한다.
+
+## 전투 명령 배치 스튜디오 (2026-09-05)
+
+- Custom CSS는 `databaseBattleCommandCss.ts`가 소유한다. 직업 배치 아래의 프로젝트 공통 편집기로 유효한 입력만 스타일 샘플에 즉시 반영하며 적용 시 history + store 변경을 남긴다. 잘못된 입력은 적용을 막고 마지막 유효 미리보기를 유지한다. 저장된 CSS 복원·다크 프리셋·기본 스킨 복귀를 제공한다.
+- 미적용 초안과 마지막 유효 미리보기는 프로젝트 식별자·저장된 CSS가 같은 동안 재렌더링에 보존한다. 직업 배치 직후 예약된 DB 렌더나 미리보기 토글이 입력을 지우면 안 된다. 프로젝트 또는 저장된 CSS가 바뀌면 초안을 새 기준으로 초기화한다. 기본 스킨 복귀는 아직 적용하지 않은 프리셋도 지우며 이 경우 불필요한 history를 만들지 않는다.
+- 공용 `restoreFocusAfterRerender`는 두 번의 DOM 교체를 계속 지원하되, 사용자가 다른 살아 있는 컨트롤로 포커스를 옮기면 남은 복귀 프레임을 중단한다. 새 복귀 요청은 이전 요청을 대체한다. 이전의 무조건 8프레임 복귀는 빠른 다음 클릭과 CSS 타이핑을 빼앗았다. `test/databaseFocusRestoration.test.ts`는 프레임 큐를 직접 진행해 타이밍 운에 기대지 않고 검증한다.
+- 저장 필드는 `system.battleCommandCss`이며 `battleCommandCss.ts`의 제한된 선택자·시각 속성 문법을 편집기/출하 플레이어가 공유한다. 임의 선택자, URL, CSS 변수, at-rule은 허용하지 않는다. `test/e2e/battle-command-css.spec.ts`는 패키지 내보내기/재가져오기, `scripts/qa-battle-command-css.mjs`는 편집한 데이터를 별도 player.html 하네스로 넘겨 실제 메뉴·키보드 실행을 검증한다.
+- `databaseUtilityRecordViews.ts`는 기존 카탈로그 CRUD/필드/testid와 지형·전투 화면을 유지한다. 새 `databaseBattleCommandStudio.ts`가 직업 선택, 네이티브 드래그 배치/재정렬, 버튼 대안, 상태 안내와 실제 메뉴 해석을 소유한다.
+- 카탈로그 팔레트와 선택한 직업의 저장된 `battleCommands` 보드가 나란히 온다. 카탈로그 편집은 그 아래의 기존 입력 필드이며 카드의 `원본 편집`으로 바로 이동한다. 카탈로그 순서는 직업 메뉴 순서가 아니다. 배치는 id를 유지한 값 복사이며 기존 직업 덮어쓰기를 전역 편집으로 동기화하지 않는다.
+- 직업 선택과 교체 가능 상황 체크는 편집기 상태뿐이다. `insertCatalogClassCommand` / `reorderEditableClassCommand`의 검증 모델을 사용하고 성공 때만 snapshot + labeled `store.update`를 남긴다. 제거는 남은 배열(기존 초과 행 포함)을 보존한다. 고정 `cmd_change`는 이동/제거 불가, 편집 가능한 행은 최대 6개다.
+- 드래그는 인메모리 세션 토큰과 DataTransfer 값, 시작 당시 직업 배열/카탈로그를 현재 store와 비교한다. malformed/stale/cross-class/duplicate/full은 데이터·history 무변경이다. 삽입 위치에 텍스트와 indigo 선을 표시하며 추가/위/아래/제거 버튼, 포커스 복귀, polite live 상태가 같은 편집 경로를 제공한다.
+- 리뷰 후 안전성 계약: 삭제된 선택 직업의 남은 버튼은 다른 직업으로 대체하지 않고 편집을 거부한 뒤 화면만 갱신한다. 기존 중복 ID 행은 직업 ID·메뉴 스냅샷·편집 행 인덱스로 구분하여 한 행만 삭제/이동하며, 모호한 ID 전용 이동은 거부한다. 카탈로그 새 ID는 모든 직업의 잔존 참조까지 예약한다. 포커스 복귀는 `data-testid` 문자열을 정확히 비교하므로 따옴표·역슬래시가 있는 저작 ID도 바꾸지 않는다.
+- 미리보기는 `battleCommandsForActor`를 선택 직업으로 호출한다. 주인공이 없는 프로젝트는 저장되지 않는 임시 주인공으로 해석한다. 빈 배열 기본 행동, 포획 gate, 교체 상황을 그대로 반영하며 실행 버튼처럼 보이지 않는다. 몬스터 전용 메뉴/스킨 및 실제 동료 상태는 이 편집기 미리보기와 별도다. 스키마/전투 런타임은 변경하지 않는다.
+- 집중 계약: `test/databaseBattleCommandStudio.test.ts`, `test/databaseBattleCommandsTab.test.ts`, `test/databaseBattleStudio.test.ts`, `test/e2e/battle-command-studio.spec.ts`. 브라우저는 실제 편집기, dragTo, 키보드, 제거/undo, 프로젝트 패키지 다운로드/재가져오기를 사용한다. evidence: `output/evidence/battle-command-studio-p1`.
+- 리뷰 회귀: `databaseBattleCommandStaleClass.test.ts`, `databaseBattleCommandDuplicateRows.test.ts`, `databaseBattleCommandCatalogIds.test.ts`, `test/e2e/battle-command-focus.spec.ts`. 미리보기 표시 이름은 `battleCommandKindLabel`과 프로젝트 용어를 사용한다.
+
 # Editor Database
+
+## 캐릭터·얼굴 메타데이터 (2026-09-06)
+
+- System 그룹의 `characterGraphics` (`db-tab-character-graphics`)는 `databaseCharacterGraphicsView.ts`가 기존 workspace/list/detail 빌더로 렌더한다. 주민 관계(`characters`)와 다른 면이며, 새로운 자산 목록이나 자동 이벤트 변경 경로를 만들지 않는다.
+- `project/characterGraphics.ts`가 기존 `resourceProfiles`의 얼굴 `graphicAttributes`/`graphicNote`, charset `characterSlots`를 읽고 쓴다. 이름은 sprite의 경우 기존 `charsetLabels`, 얼굴은 profile.name이다. 두 그림의 종류·나이·성별·피부·머리·의상·역할은 독립이며 명확한 글자 특징만 기본 표시한다. 모호함은 빈칸이다.
+- 상태는 pending/mapped/no-face, 품질은 unspecified/exact/approximate다. pending 이름 편집은 검토 완료가 아니며, no-face는 명시적인 값이다. 그림으로 얼굴을 지정해도 속성을 복사하지 않고 기존 맵·이벤트 명령을 바꾸지 않는다.
+- `rpg-zzu-npc-face-mapping` v1 `mappings`를 가져올 때 label/note/status/faceResourceId를 보존하며 품질 생략은 unspecified다. v2는 같은 mappings에 attributes/quality를 더하고 `faces: [{resourceId,label,note,attributes}]`를 갖는다. 전체 검증 후 history + labeled store.update 한 번으로 적용한다. 중복·잘못된 칸·알 수 없는 얼굴은 전체 가져오기를 거부한다.
+- QA 진입: 기존 데이터베이스 → 시스템 → 캐릭터·얼굴. `db-cg-view-sprites`/`db-cg-view-faces`, `db-cg-import-file`, `db-cg-import-json`/`db-cg-import-apply`, `db-cg-export`가 공개 표면이다. 이름·속성 필터와 얼굴 후보 필터는 독립된 editor-only 상태다. 테스트: `characterGraphics.test.ts`, `characterGraphicsLoad.test.ts`, `databaseCharacterGraphics.test.ts`; 브라우저/원격 저장 검증은 별도다.
+## Character appearance catalog v1 (2026-09-06)
+
+Database > Party > `캐릭터 외형` (`characterAppearances`,
+`db-tab-character-appearances`) is a reusable visual catalog, separate from
+resident relationships. `databaseAppearanceView.ts` and
+`databaseAppearanceSlots.ts` reuse the Database Studio list/detail primitives.
+Authors create partial records, edit name/appearance description, search without
+replacing the input, duplicate independently, and see actor/page/portrait-command
+usage before deletion. Deletion is blocked while referenced and never deletes
+the underlying images.
+
+Each set has a manually chosen walking charset/cell, a standalone face and an
+optional bust. Slot upload opens the existing resource manager with the correct
+kind; the author then selects the imported resource. Actor and event-page
+selectors retain direct graphics and store only an appearance link. The existing
+portrait command can select a shared set and explicit face/bust presentation.
+
+Event-page selectors are upgraded to custom dropdown buttons. Before committing
+an appearance change, focus that logical trigger so the event modal's existing
+interaction snapshot can restore it after rerender. Keyboard QA must target
+`data-custom-select-for`, not the hidden native select's testid. Choosing an
+option through the actual popup is distinct from programmatic `selectOption`.
+
+Event previews accept both canonical charset resource IDs and legacy texture
+keys through the shared charset catalog lookup. Editor map markers also project
+the appearance before resolving their texture/frame; reading only the stored
+direct sprite would leave a linked NPC invisible in the event layer.
+`characterAppearancePreview` and `editSceneRender` tests cover both boundaries;
+`xvfb-run -a node scripts/qa/appearance-preview-proof.mjs` exercises the real UI.
+
+AI generation is limited to face/bust candidates. Walking charsets are reference
+inputs only, never generation outputs. The DB shows generated artwork before
+explicit Apply; an occupied slot has an explicit replacement action. Existing
+art remains until application, and a candidate image must load successfully
+before Apply is enabled. The shared generation controller owns stale-target and
+project-switch checks. World/lore coupling, expression variants and automatic
+cutscene insertion are not part of v1.
+
+Tests: `characterAppearanceEditor`, `characterAppearanceLifecycle`,
+`databaseTabIcons` and `databaseSidebarNav`. The supported viewport matrix is
+1024x768, 1280x800 and 1440x900; list and detail have independent bounded scrolls.
+
+## Concept navigation integration (2026-09-06)
+
+PR617's concept-first Map rail is integrated with the current unified inventory
+catalog: 34 primary destinations including Opening and Game Over, only
+`scratchConcepts` and `tilesets` under Map,
+catalog: 33 primary destinations after adding Character appearance v1, only `scratchConcepts` and `tilesets` under Map,
+and `commonEvents` under System. Legacy Map destinations remain contextual/search
+routes. `equipment` search finds the single `items` destination; programmatic
+`equipment` navigation retains the catalog's equipment-filter/selection behavior.
+The navigation setter applies tileset facets once without bypassing that alias.
+The current multi-floor inn template remains authoritative (`dorm_bed_a`,
+`upper_stair`); snapshot tests use those IDs, not the retired bedroom/stairs IDs.
+Validation and replay boundaries are in `reports/pr617-621-integration.md`.
+
+## Opening and game-over authoring (2026-09-06)
+
+The System group contains dedicated `opening` / `gameOver` tabs, labelled
+`오프닝` / `게임 오버` (`db-tab-opening` / `db-tab-game-over`). Their source of
+truth is `project.system.opening` and `project.system.gameOver`, never
+`project.database.system`. Existing System title controls retain their owner.
+
+- `databaseCinematicView.ts` coordinates list/selection/revision and disposal.
+  `databaseCinematicForms.ts`, `databaseCinematicMediaFields.ts` and
+  `databaseCinematicControls.ts` build the focused form/picker primitives.
+- `databaseCinematicActions.ts` owns ordinary scene edits and history;
+  `databaseCinematicActionModel.ts` owns union/model helpers;
+  `databaseCinematicMediaActions.ts` owns ticketed media selection/import.
+  Reading an absent sequence does not materialize defaults. Settings are
+  created only by edits; disabling does not delete authored scenes or media.
+- New scenes are valid text records. Image/video intent remains view-local
+  until a valid resource is ready. Kind conversion copies only common fields,
+  so image motion cannot leak into a text/video record. The shared scene/time
+  limits are enforced. Optional voice/background can be cleared; required
+  media cannot become an empty or unknown reference.
+- Every authored update has `scope: "system"` and a readable label. Typing uses
+  coalesced history without replacing the active input; selection/navigation
+  do not create history. A prepared upload adds asset, profile and consuming
+  reference atomically, after project/scene/request freshness checks.
+- The store emits over a live listener Set. An Actions controller mounted
+  during a project-replacement notification tracks the project it already
+  observes, rather than disposing itself on that same event. Later replacement,
+  undo/import and explicit view disposal still invalidate old callbacks.
+- `databaseCinematicPreview.ts` reuses `playCinematicSequence` and
+  `createPlaySurface(resolvePlayResolution(project.system), "fit")`. Its Escape
+  handler is installed before runtime keyboard capture, so Escape stops even
+  an authored unskippable preview without also closing Database. Start reveals
+  the stage; stop removes media, player surface and subscriptions and restores
+  the active opener. Preview does not enable disabled settings in the project.
+- `database.ts` and `databaseModal.ts` call `disposeDatabaseCinematicsIn` before
+  leaving/evicting/closing cinematic views. These views are not reused from
+  detached cache. Other Database caching stays unchanged.
+- Scoped editor presentation lives in `src/styles/database/system-studio.css`;
+  runtime stage presentation still belongs to the existing runtime CSS closure.
+
+Tests: `databaseCinematics.test.ts`, `cinematicMediaImport.test.ts`,
+`databaseCinematicResources.test.ts`, and
+`test/e2e/database-cinematics.spec.ts`. Real editor QA uses a fresh unique port,
+`?blankProject=1&aiBridge=0`, and local-only fixtures. Serialization/reload is
+tested through the real project codec and restored UI, not described as a
+remote Supabase save. The blank-project `session-not-persisted` warning remains
+an explicit fixture condition; other browser errors and remote write attempts
+are failures. Optional disk mirroring can be disabled for QA with
+`VITE_EDIT_ACTIVITY_DISK_MIRROR=0`, without disabling in-memory edit annotations.
+
+## Cinematic media preparation boundary (2026-09-06)
+
+`prepareCinematicUpload(file, kind, signal)` in `src/editor/cinematicMediaImport.ts`
+prepares an `UploadedAsset` without accessing or mutating the current project.
+Input image/video/audio maps to picture/movie/sound. Image limits and formats
+come from the existing image decision helper; audio/movie rules come from
+`mediaImportRuleFor`. GIF/WebP payloads are preserved, not canvas-flattened.
+Native readers and decoders are abortable and have one bounded preparation
+deadline. Audio/video must expose decodable first data; video also needs valid
+dimensions but may report an as-yet-unknown positive duration. Preparation
+never starts playback.
+
+The authoring action owns cancellation, stale-project/scene/request checks after
+await, and one labelled history transaction adding asset, resource profile and
+scene reference. Do not call `importMediaResource` for this atomic workflow.
+The shared picker adds `movie` beside existing `image`/`sound`: movie profiles
+and uploads are deduplicated, and movie visuals are static labels, not images
+or another video player. Shared cinematic preview remains the playback owner.
+
+## System settings workspace (2026-09-06)
+
+`databaseSystemView.ts` and `databaseSystemStudio.ts` own all ten mounted System
+sections: overview, party, display, font, resources, startup, optin, time,
+typechart and title. This contract supersedes the older nine-section/card-grid
+notes below. The shared Database header/rail/footer/save path is unchanged.
+
+- Section navigation is a nonshrinking horizontal reel. `.db-system-section-nav`
+  belongs only to the container; buttons use `.db-system-section-button` and
+  `aria-current`. `.db-system-sections` owns vertical scrolling; matrix content
+  alone owns horizontal scrolling. `requestSystemSection` and host dataset state
+  remain the navigation boundary; switching sections never creates history.
+- Overview indexes every editing destination, with authored summaries and a
+  searchable no-results/reset state. Progress state links are subordinate. Title
+  summary and workbench both call `listTitleMenuOptions` with an explicit
+  autosave-available preview context: resume is configured, not always available
+  in a real runtime. Optional initial troop/day-end event are not warnings.
+- Party is four numbered face/selector rows. Clearing a slot compacts the roster
+  in existing order and synchronizes `session.partyActorIds`. Fonts keep registry
+  IDs/default omission and pair each selector with its role specimen. Display
+  keeps custom resolution, bounds and real partial-tile/small-map diagnostics.
+- System-local resource presentation wraps the shared picker, shows catalog
+  names and explicit clear/change controls, and preserves historic ID testids.
+  Legacy title-resource changes still update the title background; background
+  override changes do not delete `system.titleResourceId`.
+- Action combat remains a support-ended legacy feature. Enabling applies the
+  requested boolean after the stored config, and disabling preserves all details.
+  Supported RM and Gen1 rule choices are distinct from the battle skin selector.
+- Time disable now stores `enabled:false` rather than deleting its config. This
+  intentionally fixes the audit's silent 31-day-to-28-day reset. The normalizer
+  preserves disabled calendars; `resolveTimeSystem` returns undefined while off.
+  The summary reports the configured day, not a running clock.
+- Matrix clicks retain multiplier cycling and disabled diagonals. A visible
+  direct-entry action and F2 open the same labelled 0–4 entry group; Enter applies,
+  Escape cancels and restores focus. Clearing types still requires confirmation.
+- Title keeps display/menu/audio/effects and all layer/parallax/audio hooks.
+  Explicit `undefined` patches clear logo/sound keys; omitted patch keys preserve
+  them. Coordinates remain legacy 320×240 proportions at any authored resolution.
+  Nonstructural typing updates preview output without replacing the focused field;
+  native numeric typing commits on change while shared steppers commit immediately.
+- Each System numeric binding supplies a canonical-value reader. After a commit,
+  the same input and its steppers reflect domain normalization and default
+  omission; intermediate native digits remain untouched. Action/care fields reuse
+  their existing project normalizers rather than inventing editor-only bounds.
+- Title value refresh updates the live stage's ratio and proportional positions.
+  Effect refresh and Replay share a stage controller that replaces only the
+  stage, never Play/Stop/Replay controls. Replacing the whole preview during blur
+  would swallow the pending pointer click. Do not infer refresh kind from the
+  transient `document.activeElement`, which can be BODY during native change.
+- CSS ownership is consolidated in `system-studio.css`. Only conflicting System
+  declarations were removed from older sheets; outer modal/global controls and
+  runtime preview styling remain shared. Responsive rows use available pane width.
+- Regression coverage: `databaseSystemModern`, `databaseSystemSections`,
+  `databaseSystemView`, `databaseSystemStudio`, related font/resolution/title tests,
+  and `test/e2e/system-studio-visual.spec.ts`,
+  `system-interaction-regressions.spec.ts`, `system-round2-regressions.spec.ts`.
+  Evidence lives under
+  `.omo/evidence/system-modern/`; frozen BEFORE is never overwritten. Firefox
+  supplies real geometry/interactions/screenshots; no pixel visual approval or
+  Lighthouse score is inferred on this host. Final gates and review are supervisor-owned.
+
+## Graphic 칩 사용자 교정 29건 (2026-09-05)
+
+- 정본은 `src/project/defaults/chipsetLabelCorrections.ts`. 사용자 교정 보고서
+  `reports/chipset-label-confirmed-v2-2026-09-05.html`의 6종 칩셋·29개 칩을 반영한다.
+  84번은 스테인드 글라스, 돌무더기는 캐기 전/후, 월드 317·347은 폭 1칸 벽이다.
+- 여섯 `tileSemantics*.ts` 배열은 원래 판독 결과 위에 정본 교정을 적용한다.
+  `scripts/build-tile-semantics.mts`도 같은 래퍼를 생성하므로 재생성으로 교정이 사라지지 않는다.
+- 하네스의 메타 생성 단계와 검색 테이블이 같은 교정을 사용한다. 이름·태그·역할·설명·반복성만
+  교정하며 맵 배치·통행성·레이어·그림은 바꾸지 않는다. 사용자 메타 및 이식한 칩은 보존한다.
+- 던전 255·256·257은 광산 벽 하단 좌/중/우이며 반복성은 `fixed / center / fixed`.
+  기본 구조는 가로 3칸·세로 2칸, 가운데 열을 가로 확장한다. 상단 칩 ID는 미확정이다.
+- 실내와 던전 소용돌이는 각각 125→155→185→215 순서다. 기존
+  `chipsetAnimation.ts`의 4fps 스트립이 이미 이 순서를 구현하므로 재생 로직은 변경하지 않는다.
+- 검증: `test/chipsetLabelCorrections.test.ts`에서 검색 대상 ID·반복성·바닥 계약·재생 순서·
+  사용자 메타 보존을 검사한다. UI와 프로젝트 저장명은 `tileMeta`를 소비한다.
 
 ## Custom equipment slot authoring (2026-09-05)
 
@@ -26,6 +304,26 @@ Actor initial-equipment pickers, build previews, equipment gallery/filter labels
 - 요약·착용 비교·외형·권한·고급 효과는 공용 `sectionCard`의 접기 기능으로 공간을 줄인다. 장비 능력치를 기본 카드보다 먼저 배치한다. 농사 도구는 일반 물품 또는 기존 도구에, 포획은 특수 아이템에, 액션 스윙은 액션 전투가 켜진 프로젝트의 무기에만 노출한다. 외형의 적용 범위는 해당 카드에서 설명한다. 현재 인벤토리·장비 메뉴·상점은 iconResourceId → imageResourceId 우선순위로 표시하므로 지원 메타데이터도 runtime으로 표시한다. 성장 씨앗은 ‘능력치 성장’, 스위치 효과는 ‘장치 켜기 (ON)’으로 구분한다.
 - **로드 시 기본 레코드 재주입 금지:** `ensureDefaultDatabaseIconResources`는 기존 행의 레거시/누락 아이콘만 보정한다. 빠진 아이템·장비·스킬·상태를 추가하지 않는다. 전체 기본 카탈로그는 새 프로젝트 생성 때만 들어간다. 삭제한 항목이 로드 후 다시 살아나는 것을 막는 계약이며 아래 과거 backfill 기록보다 우선한다.
 - 검증: `test/itemEquipmentAuthoringTrust.test.ts` (UI→직렬화→메뉴 사용, 삭제 후 로드 정규화, 효과·스킬·소모·권한 표면), 기존 `itemRuntimeUsability`/`equipmentCatalogRuntimeAxes` (기본 카탈로그 실제 실행), `test/e2e/items-equipment-trust.spec.ts` (Firefox 1024/1280/1440 화면과 UI 변경 결과).
+
+## 전투 몬스터와 포획·성장 종족 (Phase 1)
+
+- `createSampleAdventureProject`는 `defaults/fixtures/dew-village-demo.json`을 직접 복제한다. 기본 DB만 고치면 데모의 외형은 바뀌지 않는다. 데모의 리프링·스파킷·아쿠아링도 전용 그림/색조 0을 사용하고, 이름이 `킹슬라임`인 데모 종족은 왕관 그림을 사용한다. 빈 프로젝트의 `초원 슬라임`과는 이름·저작 의도가 다르다. 회귀는 `test/dbImageMatching.test.ts`의 실제 데모 진입점 검사다.
+- 표시 탭은 `전투 몬스터` / `포획·성장 종족`이다. 기존 `enemies` / `monsterSpecies` ID와 testid는 유지한다. 전투 몬스터는 출현 전투의 고정 능력치·행동·보상, 종족은 포획·성장·종족값을 소유한다. 연결은 능력치·외형의 지속 상속이 아니다.
+- 관계 표시는 `monsterSpeciesForEnemy`를 따른다. 명시적 연결, 미설정, 누락된 ID, 같은 ID 호환 연결을 구분하며 렌더링으로 저장값을 쓰지 않는다. `연결된 종족 열기`는 실제 연결을 연다.
+- 미연결은 `이 몬스터로 종족 만들기`, 연결됨은 `새 종족으로 연결 교체`다. 생성은 이름·외형·고정 능력치를 새 종족의 이름·외형·종족값으로 한 번 복사한다. 같은 레벨의 전투 수치가 같다는 뜻은 아니다. 교체 확인은 기존 종족을 보존하고 새 종족 생성과 링크 교체를 한 번에 실행 취소한다. 취소는 데이터를 바꾸지 않는다.
+- 외형 차이는 리소스·색조·투명·비행 네 필드를 비교한다. `종족 외형을 이 몬스터로 복사`는 이 네 필드만 한 번 덮어쓰며 능력치와 종족 원본을 바꾸지 않는다.
+- 종족 상단 준비 상태는 프로젝트 전체 집계다. 명시적 연결 수와 선택 종족 연결 목록은 같은 ID 호환 연결을 제외한다고 밝힌다. 상단 연결/드롭 액션은 `전투 몬스터 탭 열기`, 출현 액션은 `첫 출현 맵 선택`, 시스템 액션은 `시스템 포획 설정 열기`로 실제 목적지를 표시한다. 선택 종족 목록의 `전투 몬스터 열기`는 해당 레코드를 선택한다.
+- 안내는 기존 hero/section hint/버튼에 배치한다. Studio 토큰·모달 크기·스크롤·키보드 계약은 그대로다. 관계 회귀는 `test/databaseEnemyRelationship.test.ts`; 문구 자체를 새 테스트로 고정하지 않는다.
+
+### 종족 검색과 관련 레코드 노출 (Phase 2)
+
+- `databaseMonsterSpeciesView.ts`의 검색은 카탈로그와 같은 부분 갱신 패턴이다. 입력 즉시 목록·개수·선택 안내만 갱신하며 검색 입력 노드/포커스/캐럿과 현재 인스펙터의 드래프트·스킬 행 신원·미리보기 레벨·스크롤은 그대로 둔다. 검색 결과가 없어도 선택 ID를 바꾸지 않는다.
+- 목록 필터 슬롯의 `db-monster-species-selection-notice`는 선택 종족이 검색 결과 밖임을 표시한다. `db-monster-species-reveal-selection`은 검색을 지우고 활성 행을 스크롤로 노출한다. 무결과 상태의 `db-monster-species-empty-clear`도 같은 복구 경로를 쓰며, 사라진 버튼 대신 유지된 검색 입력으로 포커스를 돌린다.
+- `setSelectedMonsterSpeciesId(id, { reveal: true })`는 종족 검색을 지우고 다음 렌더에서 선택 행을 노출한다. 전투 몬스터 → 종족, 진화 역참조, 종족 추가/복제, 몬스터에서 종족 생성이 이 경로를 쓴다. 진화 역참조는 선택+토스트만 내지 않고 기존 `rerender`를 즉시 호출한다.
+- 종족 목록의 스크롤은 뷰 호스트별 `WeakMap`에 보관한다. 모달의 지연 store 갱신이 목록을 다시 만들어도 마지막 위치를 복원하고, 명시적 노출은 그 위치보다 우선한 뒤 즉시 새 위치를 기록한다(비동기 scroll 이벤트에 의존하지 않는다). 노출 요청 자체는 여전히 일회성이며 사용자가 이후 스크롤한 위치(0 포함)를 존중한다. 교체되어 분리된 목록의 늦은 이벤트는 무시하고 새 모달 호스트로 위치를 넘기지 않는다. 실제 모달/스토어 구독과 101종족 회귀: `test/databaseSpeciesModalRefresh.test.ts`; B1 RED/GREEN 근거: `output/evidence/monster-concepts/b1/fix.md`.
+- 실행 취소 등으로 선택 ID가 사라져 유효한 첫 종족으로 대체되면 기존 일회성 노출 경로를 요청한다. 검색을 지우고 이전 깊은 스크롤보다 대체 행 노출을 우선하며, 결과 위치는 즉시 저장한다. 유효한 선택의 일반 갱신은 다시 노출하지 않는다. 세 생성 경로의 실제 모달 갱신 후 대체 선택 가시성 회귀와 RED/GREEN: `output/evidence/monster-concepts/r1/fix.md`.
+- 종족 → 전투 몬스터는 `setSelectedRecordId("enemies", id, { reveal: true })`와 기존 `switchDatabaseActiveTab`을 쓴다. 세션의 일회성 노출 요청은 대상 검색을 비우고 `databaseRecordViews.ts`에서 소비한다. 전투 몬스터 목록/갤러리는 가상화를 유지한 채 `databaseListVirtualizer.ts`의 `scrollToIndex`로 대상 윈도우를 만든 뒤 네이티브 스크롤로 노출한다. `enemies.part-2.css`는 바깥 스크롤 컨테이너를 block, 안쪽 행 호스트를 grid로 두어 스페이서 사이의 추가 gap을 없앤다. 실제 행 border-box 높이 + 안쪽 grid gap이 윈도우·스페이서·노출의 공통 pitch이며, 패딩은 한 번만 계산한다. 갤러리 열 수를 먼저 적용한 뒤 높이를 재측정하고 새 전체 높이로 스크롤을 clamp하므로 리사이즈 때 빈 윈도우가 되지 않는다. 일반 선택·탭 복귀의 검색/스크롤 복원은 바꾸지 않는다. 기하 회귀: `test/databaseListGeometry.test.ts`; 브라우저 RED와 수정 결과: `output/evidence/monster-concepts/p2/verification.md`, `reveal-fix.md`.
+- 탐색은 프로젝트 쓰기나 실행 취소 항목을 만들지 않는다. Phase 1의 관계 해석·확인·복사·참조 삭제 가드·원자적 실행 취소와 준비 상태/선택 종족 목적지 문구는 유지한다. 회귀 테스트: `test/databaseSpeciesSearchNavigation.test.ts` (happy-dom, 실제 패널/스토어, DOM 변경 구독과 제한 시간; 고정 sleep 없음). 브라우저 검증은 동일한 세 데스크톱 크기로 수행한다.
 
 ## 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
 
@@ -112,6 +410,18 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 - The actor Studio inspector must express hierarchy directly, without beginner guides, numbered walkthroughs, next-step buttons, or explanatory workflow copy. Its fixed structure is selected-actor hero → `기본 / 외형 / 성장 / 전투 / 결과` tab strip → one active panel. `db-actor-section-tabs`, `db-actor-tab-*`, and `db-actor-panel-*` are the navigation contract. Existing field/panel testids and `updateDatabaseRecord` ownership remain unchanged inside the panels.
 - The hero owns selected-actor identity, class, level range, and start-party membership. The table owns selection and comparison only; do not restore duplicate current-selection/party summary metrics or analytics. System remains the authority for `startActorIds`.
 - Scroll ownership is explicit: list rows scroll inside `.db-actor-studio-table`; the actor hero and section tabs remain fixed; only `.actor-section-body` scrolls. Do not return to one long inspector document where category navigation depends on scrolling.
+
+## 프로젝트 위키 출처와 수동 편집 (2026-09-07)
+
+설정집의 위키 문서는 `world-wiki-provenance`에 선언/지식/진행 기록과
+명시/추론/실제 적용 근거를 표시한다. 출처 원문은 접힌 `world-wiki-sources`에서
+읽으며 HTML로 실행하지 않는다. 대체된 문서는 이력을 남기고 현재 지침에서 제외한다.
+수동 편집은 출처를 추가하며 제목/요약/본문 변경 시 낡은 자동 combatMode를 해제한다.
+실제 적용 기록의 수동 수정은 원본 증거를 바꾸지 않고 별도 지식 메모를 만든다.
+대체 이력에 연결된 문서는 삭제를 거부해 이전 지침이 되살아나지 않게 한다.
+열린 초안은 문서 지문으로 경합을 검사하며 충돌 시 사용자 입력을 보존한다.
+테스트: `projectWikiCodex.test.ts`, `projectWikiManualEdit.test.ts`.
+전체 AI 연결과 지속성은 [프로젝트 위키](project-wiki.md)를 따른다.
 
 ## 세계관 그룹 — 세계 개요 · 설정집 (2026-09-06)
 
@@ -271,12 +581,13 @@ Database tabs, record views, battle database records, utility records, reference
     - `modernNocturneGame.ts` 는 기본 DB 의 `enemy_extra_016`/`038` 을 filter 로 건져 쓰던 유일한 소비자였다. 지금은 `enemy_neon_wraith`/`enemy_archive_custodian` 을 자기 파일에서 직접 만든다. `monsterResourceId` 의 `-enemy_extra_NNN` 접미는 **일부러 남겼다** — `generatedAssetResourceResolver.ts` 의 그 정규식이 아트를 공급한다(`test/generatedEnemyBattlers.test.ts`).
     - `test/koreanLocalizationDefaults.test.ts:90` 은 `enemies` 를 **29**개로 기대한다. 221 시절에도 틀렸고 106 이 된 뒤에도 틀리다 — 기준선 적신호이며 이 정리와 무관하다. 로스터 목표치를 정할 때 같이 고쳐라.
     - **리밸런스(2026-09): 106종 전원에 `level`·스탯·보상을 부여했다.** 권장 레벨 기준 TTK 2~7(보스 6~12)·TTD 3+(보스 2.5~6) 밴드, `exp/hp ≈ 0.42`, `mind = attack`·MP(보스 40/일반 10) 규약 유지, `actionProfile` 실시간 수치는 불변. 손저작 6종의 구 스윙 주석(공격력 45)은 실측 공격력 22와 괴리되어 두 기준선을 병기한다. 계약: `test/monsterRebalanceBands.test.ts`. `emberQuestGame` 의 튜닝 오버라이드는 그대로라 엠버 전투 스케일은 별개다.
+- **검수한 몬스터 정체성 매핑 (2026-09-06):** `generated-enemy-leaf-fox`/`fire-pup`/`sparkit-fire`는 `public/assets/generated/monsters/corrected/`의 동명 PNG로 등록했다. 기존 `skeleton-archer`/`orc-shaman`/`spirit-fire`/`spirit-earth`/`spirit-water`/`wisp-blue` ID도 그 폴더의 검수 아트로 해석한다. 한국어 `풀잎여우`·`불꽃강아지`·`불씨강아지` 태그는 해당 리소스에만 붙여 잎/사마귀 아트를 여우로 오인하지 않는다. 새 기본 DB의 리프링/스파킷/아쿠아링은 각각 `generated-enemy-leafling-01`/`generated-enemy-sparkit-fire`/`generated-enemy-aqualing-01`, hue 0이며 타입·스탯은 그대로다. `enemy_mine_skel_archer`는 활을 든 `generated-enemy-skeleton-archer`를 사용한다. 적 아트 공유는 기존 슬라임 쌍과 궁수 쌍만 ID 목록으로 허용한다(`test/dbImageMatching.test.ts`); 다른 중복은 실패다. 트룹·대형 구형 데모 fixture는 변경하지 않는다. URL/파일 등록 회귀는 `test/generatedEnemyBattlers.test.ts`.
 - **Default DB graphic matching + Notion-style image pipeline (G006):** enemies/species/items/equipment must not share one generic image for unrelated names. Extra enemies map 1:1 to generated battlers (`generated-enemy-zombie-01` ??; starter species use dedicated art (`leafling`/`sparkit`/`aqualing`/`king-slime`); tiered equipment/items use distinct `cc0-jetrel-*` icons. **Art pipeline:** shared prompt builder `scripts/lib/dbArtPrompt.ts` (`buildDbArtPrompt({ kind: "icon"|"monster", name, subject, tags? })`) enforces 16-bit JRPG / single subject / transparent / no text-UI-logo-watermark-franchise-photorealism negatives (`DB_ART_PROMPT_NEGATIVES`). **Callers of `buildDbArtPrompt` today:** `scripts/generate-default-item-icons.mts` only. The bundled title crest is registered in `generatedAssetResourceResolver.ts`; run `npm run clean:title-logo` when its generated PNG needs deterministic edge-connected checkerboard removal, then copy the inspected output into `public/assets/generated/title/title-logo-crest.png` and update the title manifest hash. Procedural `scripts/generate-db-item-monster-art.py` remains for matched battler/icon silhouettes. Register outputs in `cc0IconAssets.ts` / `generatedAssetResourceResolver.ts`, wire defaults, prove with `test/dbArtPrompt.test.ts`, `test/dbImageMatching.test.ts`, and `test/titleLogoAsset.test.ts`. Uniqueness gate is **blank-project defaults** (`createBlankProject` / `dbImageMatching`); some older demo fixtures (e.g. dew-village-demo extras) may still reuse battlers and are residual cleanup, not the blank-project contract.
 - The Crops database tab edits optional `database.crops[]` records. Keep id/name/seedItemId/harvestItemId/harvestCount/stages/seasons/regrow/graphicStages aligned with `CropRecord`, `normalizeCropRecord`, reference validation, demo defaults, farming runtime, and `define_crop`.
 - **Life authoring surface (2026-08-24):** Grouped Database navigation no longer mixes crops/residents under the ambiguous `수집` label. `전투·몬스터` owns enemies/monsterSpecies/troops plus the existing battle tabs; `생활` owns the renamed `농사·작물` and `주민 관계` tabs. Stable tab ids/testids remain `crops`/`db-tab-crops`, `characters`/`db-tab-characters`, and `monsterSpecies`/`db-tab-monster-species`. `databaseCropView.ts` reports time, farmable-map, tool, and seed/harvest-reference readiness; `databaseCharacterView.ts` reports gift/calendar/profile readiness plus orphan/unused identity warnings; `databaseMonsterSpeciesView.ts` reports the species → enemy → troop → field-spawn → drop pipeline. Each readiness card owns a direct navigation/selection action, while empty catalogs expose first-record actions (`db-crop-empty-add`, `db-character-empty-add`). The card body is the button (`action` without `onClick` promotes the whole chip); the chevron keeps the `*-action` testid but is no longer a nested button. System jumps call `requestSystemSection` before the tab click so 선물 lands on 시작 설정 (`db-field-system-gift-system`), 생일/작물 시간 land on 시간 (`db-field-system-time-enabled`), and 종족 방식 lands on 시작 설정의 몬스터 수집. Contract: `test/databaseLifeReadinessNav.test.ts`. These panels are derived editor UI only: they add no project fields, seed no authored content, and keep `characters` distinct from party Actors. Shared DOM/navigation helpers are in `databaseLifeUi.ts`; modal-scoped CSS is `desktop-record-shell/11-life-authoring.css`. Monster tabs can prepend `db-collection-gate-warn`, so the desktop grid must reserve explicit banner/header/workspace rows; otherwise the species workspace intercepts readiness-card clicks. Browser coverage is `test/e2e/stardew-life-content.spec.ts` at 1024×768 and 1440×900.
 - Item records can set `farmTool:"hoe"|"wateringCan"` from the Items tab or `upsert_item`; farming runtime checks only inventory possession of those items.
 - Monster gift, storage, and evolution event commands are `giveMonster`, `moveMonster`, and `evolveMonster`. NPC relationship commands are `changeFriendship` and `getFriendship`. Event editor labels, summaries, command bodies, branch path traversal, command factory defaults, runtime support metadata, interpreter execution, and command-reference validation should be updated together when these command shapes change.
-- Monster collection write tools live in `src/editor/tools/dbTools.ts`: `define_monster_species` upserts species records including `types` and `evolutions`, `set_type_chart` writes the system type matrix, and `give_starter_monsters` creates or updates the standard three-choice starter event using `choices` plus `giveMonster`. `define_monster_species.graphic.monsterResourceId` and `upsert_enemy.monsterResourceId` validate resource existence at tool execution time, try `monster` resource-search resolution for query-like values, and fail with `invalid-args` plus three available examples when unresolved. Regenerate the tool catalog after changing any of these schemas.
+- Monster collection write tools live in `src/editor/tools/dbTools.ts`: `define_monster_species` upserts species records including `types` and `evolutions`, `set_type_chart` writes the system type matrix, and `give_starter_monsters` creates or updates the standard three-choice starter event using `choices` plus `giveMonster`. `define_monster_species.graphic.monsterResourceId` and `upsert_enemy.monsterResourceId` share `ensureMonsterGraphic` with `make_action_enemy`: preserve registered explicit IDs, resolve only exact normalized identities or complete semantic-term matches, and reject unresolved explicit values with `invalid-args`. Missing graphics on visible records fail atomically with `monster-graphic-required` and explicit-ID recovery instructions; `transparent:true` permits intentional omission. Broad search, partial matches, wildcard browsing, and ID hashes never choose persisted art. Species graphic patches preserve omitted existing graphic fields. `make_action_enemy` accepts optional `monsterResourceId` and `transparent` on creation and update. Regenerate the tool catalog after changing any of these schemas.
 - Class promotion authoring lives on the Classes database record view and `src/editor/tools/dbTools.ts` as `define_promotion`. Keep `ClassRecord.promotions[]` validation, delete/reference scans, command summaries, nested `promoteActor` branch paths, and the tool catalog aligned whenever promotion requirements or branch semantics change.
 - **Equipment effect summary chips (G006/G004):** Equipment detail form (`databaseEquipmentRecordView.ts`) shows a live chip row (`db-equipment-summary-chips`) via pure `equipmentEffectSummaryChips(record)`: effect-flag labels (?좎젣/2??공격/?꾩껜 공격/??, badges (?묒넀 ?λ퉬, ?二?, and counts (공격 ?띿꽦 N / ?띿꽦 방�뼱 N / ?곹깭 遺??N / ?곹깭 방�뼱 N); empty state is muted ?쒗슚怨??놁쓬?? Refresh chips on flag/badge/element/state edits. Play status menu detail text still surfaces runtime-relevant authored effects (double attack, elemental defense, state resistance). If equipment effect fields are added to DB records, update record normalization, DB tools, reference validation, battle aggregation, menu detail labels, **and** the summary-chip helper in the same change.
 - Event command runtime parity badges are driven by `src/project/eventCommands/runtimeSupport.ts`. Command picker buttons and command-list rows share the badge renderer in `src/editor/panels/eventEditor/commandRuntimeBadge.ts`; keep `runtime-full | runtime-partial | editor-only` as the public support grades and update the support table when interpreter coverage changes.
@@ -338,23 +649,31 @@ The Database modal was modernized in six waves while keeping every hard contract
 - Product artwork is `/assets/farming/life-ui/decorating-card.png` (`db-spatial-hero-image`). CSS is isolated in `styles/database/desktop-record-shell/12-spatial-authoring.css`: a two-column 1440 layout collapses at a 980px container and again at 680px for the 1024 acceptance lane.
 - Stable browser entry points: `db-spatial-workspace`, `db-spatial-add-building-type`, `db-spatial-add-decoration-type`, `db-spatial-add-building-placement`, `db-spatial-add-decoration-placement`, plus record IDs prefixed `db-spatial-building-*` / `db-spatial-decoration-*`. Focused coverage: `test/p2SpatialEditorAuthoring.test.ts` and the Database sidebar suites.
 
-## 세계 그룹 — 타일셋이 중간 카테고리 (2026-09-01)
+## 맵 그룹 — 개념 우선 탐색 Phase 1 (2026-09-05)
 
-`세계` 레일은 `생성 규칙`(프로젝트 전역) 다음에 **타일셋 폴더**를 둔다. 폴더 자식은
-통행(`db-tab-tilesets`, testid 유지 — e2e 가 이 버튼을 누른다) · 오토타일 설정 ·
-미분류 모아보기 · 구조물 · 공간 종류. 마을·지형 효과·공용 이벤트는 폴더 밖 형제다.
+주 레일은 **개념 꾸러미**(`scratchConcepts`)와 **타일셋**(`tilesets`)뿐이다. 타일셋 폴더
+DOM은 삭제했고 CSS로 숨기지 않는다. `commonEvents`는 시스템 그룹으로 옮겼다.
+기존 탭 id와 렌더러는 유지한다. 검색은 새 이름·옛 이름·id를 찾으며 보조 목적지는
+검색할 때만 결과 버튼으로 만든다(검색을 비우면 제거).
 
-칩셋 선택은 `oprn:database.selectedTilesetId` 한 키를 공유한다. 「방」 단독 탭은 없다 —
-공간 종류는 통행과 같은 층의 이 칩셋 면이다. 폴더 버튼 testid `db-tileset-folder` 는
-`.db-tab` 이 아니다(키보드/DOM 순서 계약은 자식 탭만 센다). 접힌 「세계」 부제는
-자식 다섯을 나열하지 않고 「타일셋」 한 낱말로 접는다.
+본문 위 문맥 도구줄: 개념 꾸러미 → **부품 보관함**(`structureKits`)·**기존 방 규칙**
+(`tilesetSpaces`)·**기존 마을 설계**(`villages`); 마을 → **공통 생성 기본값**(`worldGen`);
+타일셋 → **지형 효과**(`terrain`). 자식은 부모로 돌아가며 주 레일 강조와 모달 경로도 부모를
+따른다. 칩셋 선택은 `oprn:database.selectedTilesetId` 한 키를 계속 공유한다.
 
-타일셋 워크스페이스 **안쪽** 섹션 탭(타일 규칙/단어장/구성)은 그대로 둔다. 레일 면은
-그 모드의 바로가기이고, 안쪽 탭을 없애면 기존 e2e 가 깨진다.
+타일셋 내부 탐색은 **통행·지형 / 자동 연결 / 타일 설명** 하나다. 옛 `tilesetAutotile`과
+`tilesetUnlabeled` 점프는 각각 autotile, ai+미분류 필터로 들어가되 주 강조는 타일셋이다.
+모드는 진입 시에만 맞추며 로컬 재렌더에서는 덮지 않는다. 맵 면은 공유 선택/모드 세션을
+반영해 새로 렌더하고, 다른 도메인의 DOM 캐시·애니메이션 정지 의도는 그대로 둔다.
+문맥 도구줄은 로컬 렌더러 호스트 밖에 있어 개념 편집 재렌더로 사라지지 않는다.
+
+Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마을 합성은 후속 단계이며
+`structureKits`·`interiorRoomKinds`·`scratchConceptBundles`·지형·마을 데이터는 그대로 둔다.
+회귀: `databaseConceptFirstNav`, `databaseTilesetFolder`, `tilesetTabActivation`, `scratchConceptTab`.
 
 ## 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
 
-`db-tab-tileset-autotile` 과 구성 탭은 같은 면이다. 예전의 멤버 번호 나열·16칸
+옛 `tilesetAutotile` 경로와 내부 자동 연결 탭은 같은 면이다. 예전의 멤버 번호 나열·16칸
 비트마스크·「템플릿에서 만들기」숫자 위저드는 기본 표면이 아니다.
 
 - **형식 카드:** 워크벤치 맨 위 전폭. 9칸(3×3) · 11칸(3×4, 외딴 점·오목 코너) · 커스텀.
@@ -392,21 +711,26 @@ The Database modal was modernized in six waves while keeping every hard contract
 `test/databaseTilesetFolder.test.ts`, `test/structureKitDbTab.test.ts` 의
 「구조물 탭은 공간 종류를 그리지 않는다」.
 
-## 맵 → 타일셋 → 개념 꾸러미 (2026-09-02 시작, Phase 4 졸업)
+## 맵 → 개념 꾸러미 (2026-09-02 시작, 2026-09-05 개념 우선 Phase 1)
 
 ~~데이터베이스 레일에 **임시** 그룹을 두고, 그 안에 `개념 꾸러미`(`scratchConcepts`) 한 탭만 둔다.~~
-**Phase 4(개념 통합)에서 임시 그룹을 졸업했다** — `개념 꾸러미`(`scratchConcepts`)는
-「맵」 그룹 타일셋 폴더(통행·오토타일·미분류·구조물·공간 종류 옆)에 있다.
+**Phase 4(개념 통합)에서 임시 그룹을 졸업했고, 개념 우선 Phase 1에서는 맵의 주 진입점이다.**
+`개념 꾸러미`(`scratchConcepts`)는 타일셋 폴더 안에 있지 않다.
 세계·공간 종류·구조물과 아직 합치지 않는다 — 시설→장소→물건→칩 나무를 그림으로
 저작하는 실험 면이다. `place_concept(query)` 가 이 필드를 읽어 시공한다.
 
 **2026-09-03 — 이 탭은 템플릿 편집기다.** 「AI 는 소비만」을 철회했다. 여기서 고친 시설은 모델이 `get_concept_facility` 로 읽는 **출발점**이고, 모델은 요청에 맞게 장소·물건을 고친 `plan` 을 `place_concept` 에 넘겨 방 수·크기·내용물이 다른 시설을 짓는다(`openwiki/editor-ai-tools.md` 2026-09-03 항목). 사용자가 `required` 로 박은 물건을 모델이 빼면 경고가 남는다. plan 없이 부르면 종전대로 템플릿 그대로다.
 
+- **2026-09-05 — 모든 AI 실내 생성의 정본:** 독립 방 세션·집·마을 연결 실내도 꾸러미를 읽는다. 미등록 시설 조회는 현재 장소·물건을 `sources`로 반환해 조합 설계를 지원한다. 삭제한 빈 꾸러미는 시공하지 않는다. 경로·검증: `openwiki/editor-interior-room-harness.md`의 「모든 AI 실내의 개념 꾸러미 계약」.
 - 데이터: `tileset.scratchConceptBundles`. undefined 는 시드 전, 빈 배열은 사용자가 지운 상태.
-- 실내 칩셋만 **시설 초안 묶음 아홉 종**을 시드한다(`CONCEPT_FACILITY_TEMPLATES`: 여관·민가·상점·술집·서재·대장간·교회·창고·길드, 여관이 첫째). 마을 칩셋에는 얹지 않는다. 옛 프로젝트에 여관만 시드돼 있으면 그대로다 — 나머지는 시설 띠의 「초안 넣기」로 골라 넣는다(재시드 아님, 사용자 선택).
+- 실내 칩셋만 **시설 초안 묶음 19종**을 시드한다(`CONCEPT_FACILITY_TEMPLATES`: 기존 여관·민가·상점·술집·서재·대장간·교회·창고·길드 + 진료소·병영·학교·관청·연금술 공방·빵집·농가·귀족 저택·사냥꾼 오두막·은행, 여관이 첫째). 마을 칩셋에는 얹지 않는다. 옛 프로젝트에 여관만 시드돼 있으면 그대로다 — 나머지는 시설 띠의 「초안 넣기」로 골라 넣는다(재시드 아님, 사용자 선택).
+- 기존 프로젝트에 일괄 추가: `npx tsx scripts/expand-concept-bundles.mts --project <id>`로 추가 예정 목록을 읽고 `--apply`로 저장한다. 기존 id/라벨은 보존하고 빈 배열은 거절한다. 프로젝트·타일셋 미러의 변경 시각을 비교해 충돌을 감지하며 저장 뒤 양쪽 원격 데이터와 앱 로드를 확인한다. 증거는 `output/evidence/concept-expansion/supabase-proof.json`.
 - 물건의 그림은 같은 타일셋 가구 킷/`INTERIOR_OBJECT_CATALOG` id 를 가리킨다. 픽셀을 복제하지 않는다.
+- **2026-09-05 — 용도 검수 보정:** 병실·병영·농가·저택·오두막 침대는 `event`만 사용한다. 현재 `sleep`은 유료 `inn` 동작이므로 수면 가능이라는 일반 의미로 붙이지 않는다. 여관·술집 객실의 숙박은 유지한다. 여관·저택의 피아노는 선택 가구다. 학교는 `study_desk`(기존 사각 탁자+앞쪽 걸상, 1×2) 두 세트를 교실마다 두고 책장은 자료실에 둔다. 은행은 거래 창구·장부·목제 보관장을 사용하며 금고 그림이나 금융 동작이 있는 것으로 표현하지 않는다. 최종 맵의 책상/걸상 쌍을 세 가지 seed로 검증한다.
+- `expand-concept-bundles.mts --baseline <이전 꾸러미 배열.json>`은 저장된 꾸러미가 검토 전 버전과 **완전히 같은 경우에만** 수정 초안으로 갱신한다. 다른 편집이 있으면 보존한다. `--evidence <경로>`로 별도 저장·재로드 증거를 남길 수 있다.
+- **2026-09-05 — 장소 구성 확장:** `conceptFacilityExpansion.ts`가 10개 시설과 30개 장소 구성을 추가해 총 19시설·51장소 레코드가 된다(반복 객실 수와 의미가 같은 장소를 합친 고유 개수는 아님). 접수·대기실과 기록 보관실은 공통 구성을 독립된 레코드로 펼친다. 농가·귀족 저택·사냥꾼 오두막은 크기·재질·가구 조합이 다른 주거 출발점이다. 새 픽셀 자산이나 진료·은행 거래 로직은 추가하지 않는다. `place_concept`/`get_concept_facility` 설명은 초안 라벨에서 생성하므로 새 시설의 자연어 도구 탐색도 같은 목록을 쓴다. 기존 저장 꾸러미와 명시적 빈 배열은 유지하며, 확장분을 기존 프로젝트에 적용하려면 「초안 넣기」 또는 명시적 데이터 저장을 사용한다.
 - 칩은 내장 8종(`pass`/`block`/`event`/`transfer`/`loot`/`sleep`/`floor`/`wall`) + 사용자 자유 칩. 산문 배치 규칙이 아니다. 자유 칩은 엔진 무동작 메모 태그 — 시공 분류·이벤트·점수·컨텍스트가 모르는 칩을 무시한다. 규칙은 `src/project/types/conceptBundle.ts` 의 `CONCEPT_FREE_CHIP_PATTERN` / `validateConceptChipId` 한 곳이다: 빈 id·32자 초과·영문·숫자·-_ 외 문자를 한글 이유로 거절하고, 내장 칩은 항상 통과한다. 인스펙터 추가·이름 변경(`scratchConceptTab`), plan `parseChips`, 타일셋 검증(`shapeResourceFields`)이 같은 검증기를 쓴다. 화면에서 내장 칩은 토글 버튼, 자유 칩은 id 입력으로 이름을 바꾸고 지우기 버튼으로 삭제한다. 잘못된 입력은 `scratch-concept-chip-error` 에 이유를 보여 주고 저장하지 않으며, 이름 변경 실패는 예전 id 로 되돌린다.
-- 화면: 타일셋 레일 + 장소 카드(가구 썸네일) + 인스펙터(큰 미리보기·이름·그림·그림 칠하기·칩 토글/자유 칩 편집·장소 소속).
+- 화면: 작은 타일셋 셀렉트(`scratch-concept-tileset-select`) + 기존 물건 그림을 쓰는 시설 선택 + 장소 카드 + 물건 인스펙터. 옛 `scratch-concept-tileset-<id>`는 옵션 testid로 남는다. 장소 선택은 그 장소 소속 물건만 검사하고, 물건 칩·칠하기는 그 칩이 있는 장소도 선택한다. 빈 장소에는 다른 장소의 인스펙터를 남기지 않는다. 좁은 데스크톱에서는 인스펙터가 장소 아래로 이어지고 문맥 도구줄은 줄바꿈한다.
 - 사용자가 고친다: 시설명, 장소 추가/삭제/이름, 물건 추가/삭제/이름/그림/그림 직접 칠하기, 칩 토글/자유 칩 추가·이름 변경·삭제, 장소 소속, 필수 여부. 모두 `store.update` 로 `scratchConceptBundles` 에 남고, 다음 `place_concept` 가 그 나무를 읽는다.
 - 물건 그림(2026-09-04): 인스펙터의 「그림」 셀렉트(`scratch-concept-thing-graphic`)가 같은 타일셋 가구 목록(`objectsForTileset` — 프로젝트 킷 → 카탈로그 순)에서 `thing.objectId` 를 갈아 끼운다. 모르는 id(옛 나무·지운 킷)는 「그림 없음」 옵션으로 남아 미리보기에 「그림 없음」이 뜬다. 이름과 달리 물건 id 는 그대로라 시공·이벤트·필수 판정이 갈라지지 않는다.
 - 그림 직접 칠하기(2026-09-05): 인스펙터의 「그림 칠하기/사본 만들어 칠하기」(`scratch-concept-thing-paint`)가 구조물 타일 에디터(`openStructureKitEditor`)를 연다. 사용자 저장 그림이면 그 킷을 바로 고치고, 카탈로그·시드(`learnedFrom: interior-catalog`) 그림이면 사본(`duplicateIntoTileset`)을 만들어 이 물건에 붙인 뒤 연다 — 원본 카탈로그는 그대로 둔다. 저장은 에디터가 즉시 하고 닫히면 인스펙터를 다시 그린다.
@@ -909,6 +1233,17 @@ MS PGothic·420px 창이 30탭 스튜디오 안에서 유일하게 다른 시대
 **값만** 고쳤다 — 예산 래칫(important 988 · hex 1677 · 파일 266)은 main 과 같거나 낮다.
 `form-hierarchy-modern.css` 는 여기로 흡수해 삭제했다(파일 수 +1 −1).
 
+**중복 선언 정리 (2026-09-06).** `light-theme.css`, `sidebar.css`, `record-list-modern.css`,
+`modern-controls.css`, `workspace-modern.css`, `desktop-record-shell/11-life-authoring.css`,
+`14-party-ux-fixes.css`, `modern/troops.css`에서 동일한 선택자·속성의 뒤쪽 선언에 가려지는
+118개 선언과 빈 규칙 16개를 제거했다. 살아 있는 규칙의 위치나 import 순서는 바꾸지 않았다.
+주석뿐이던 `troops.part-1.css`와 그 import도 제거했다. 선언별 근거는
+`.omo/evidence/css-refactor/declarations.json`, 감사와 검증 요약은
+`reports/2026-09-06-css-cascade-audit.md`를 본다. 앞으로 공용 문법을 고칠 때는
+Studio v2의 최종 소유 규칙을 먼저 확인하고 앞선 시트에 같은 속성을 다시 추가하지 않는다.
+일반 `.database-modal-window`는 다른 작업 창도 사용하므로 DB 전용으로 간주해 삭제하지 않는다.
+테마의 살아 있는 important 규칙, 동적 import 시트, 도킹·최대화 예외와 호환 폴백은 별도 계약이다.
+
 **셸.** 헤더는 `데이터베이스 | 그룹 › 탭`(`database-modal-crumb`). 활성 탭은 `database.ts` 의
 `subscribeDatabaseActiveTab` 으로 따라간다 — 레일 클릭·G006 점프·Ctrl+T 가 전부 `setDatabaseActiveTab`
 한 곳을 지나므로 DOM 이벤트가 필요 없고 fake DOM 에서도 돈다. 창 컨트롤은 `⇥ □ x` 글리프가 아니라
@@ -1000,3 +1335,10 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 - `animation-editor.css` owns animation composition using existing `--db-studio-*` tokens; the conflicting animation grids/responsive reductions were removed from `battle-studio.css` without changing other studios. The existing detail form owns vertical scroll; wide tables and pattern strips own local horizontal scroll. Computed primary controls are 13px / 32px high with indigo fill and 2px keyboard focus rings. No global resets, new framework, `!important`, runtime or data-schema changes.
 - Desktop Chromium measurement: stage 394×280 at 1024×768, 650×280 at 1280×800, 810×315 at 1440×900. Primary graphic name, choose/change and transport controls fit their clipping ancestors and pass center hit-testing at all three sizes. All Phase 1 ownership/cache-disposal and reduced-motion rules above remain unchanged.
 - Proof: `test/databaseAnimationFrameSelect.test.ts` binds the visible catalog name through cancel/confirm/clear (RED on the original configured-status string); `test/e2e/battle-animation-editor-ux.spec.ts` drives the real modal, controlled clock, picker and keyboard. Report/captures: `output/evidence/battle-animation-ux/p2-implementation.md`. The worker verified geometry, PNG integrity and changing stage pixels, not a visual verdict; independent visual approval belongs to the parent.
+## 검토한 실내 기본값의 원격 반영 (2026-09-05)
+
+`scripts/expand-concept-bundles.mts --project <id> --baseline <old-bundles.json> --tileset-baseline <old-tileset.json> --evidence <dir> --apply`는 검토 전 값과 정확히 같은 꾸러미/메타/그룹만 교체하고 새 id를 추가한다. 사용자 메타·잠금·독립 통행/priority 변경은 보존한다. 기존 furniture kit도 baseline 일치 시에만 바뀐다. 구조물 빈 배열은 사용자 삭제로 보존한다. JSON 경계를 거쳐 undefined 필드를 제거한 뒤 비교하며 projects 해시 CAS와 tileset mirror 갱신 후 원격 및 앱 재로드를 확인한다. 두 테이블 쓰기는 트랜잭션이 아니므로 중간 mirror 충돌은 오류로 남고 완료로 보고하지 않는다. 이번 대상은 `rpg-zzu-house-template-gallery`, 증거는 `output/evidence/concept-v2/supabase-proof.json`.
+
+## 특정 꾸러미의 명시적 교체 (2026-09-06)
+
+사용자가 특정 기본 꾸러미를 새로 만들라고 명시하면 `scripts/expand-concept-bundles.mts --project <id> --replace-bundle inn --evidence <dir> --apply`로 해당 id만 교체한다. 이 모드는 baseline 일치 조건 없이 지정한 꾸러미를 교체하므로 명시적 교체 요청에만 쓴다. 다른 꾸러미와 프로젝트 필드는 유지하며, 비어 있는 라이브러리에도 지정한 하나만 추가한다. CAS·저장 전 백업·raw/mirror/app 재로드 검증은 그대로 적용한다.

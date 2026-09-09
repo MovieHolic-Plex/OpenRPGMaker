@@ -157,11 +157,11 @@ describe("M2 persisted runtime classification completeness", () => {
   // --- 배지 정직성 회귀(2026-08-20): catalogRowRuntimeSupport 가 컨텍스트를 반영한다 ---
 
   it("demotes full-class commands outside M2_MAP_COMMON_FULL_IDS to runtime-partial in the map context", () => {
-    // Given: behaviorClass "full" 인데 map/common full 목록에 없는 모든 커맨드(66종).
+    // Twelve player-verified commands now join the map/common full set.
     const demotedIds = M2_PERSISTED_BEHAVIOR_IDS.full.filter(
       (commandId) => !M2_MAP_COMMON_FULL_IDS.some((fullId) => fullId === commandId)
     );
-    expect(demotedIds).toHaveLength(66);
+    expect(demotedIds).toHaveLength(54);
 
     for (const commandId of demotedIds) {
       // When: 피커/리스트가 카탈로그 행을 map 컨텍스트로 판정한다.
@@ -172,7 +172,7 @@ describe("M2 persisted runtime classification completeness", () => {
       expect(catalogRowRuntimeSupport(commandId, undefined), commandId).toBe("runtime-partial");
     }
 
-    // 그리고 map/common full 목록의 19종은 map 컨텍스트에서 full 을 유지한다.
+    expect(M2_MAP_COMMON_FULL_IDS).toHaveLength(31);
     for (const commandId of M2_MAP_COMMON_FULL_IDS) {
       expect(catalogRowRuntimeSupport(commandId, undefined, "map"), commandId).toBe("runtime-full");
     }
@@ -185,10 +185,12 @@ describe("M2 persisted runtime classification completeness", () => {
       expect(catalogRowRuntimeSupport(commandId, undefined, "troop"), commandId).toBe("runtime-full");
       expect(catalogRowRuntimeSupport(commandId, undefined, "map"), commandId).toBe("runtime-partial");
     }
-    // 네이티브 kind 변환 행은 컨텍스트와 무관하게 네이티브 실행 경로라 full 이다.
+    // Picker-native text is sequential in troop; its persisted M2 alias is still partial.
     const nativeAliasEntry = m2CommandById("m2-001-show-text");
     if (!nativeAliasEntry?.existingKind) throw new Error("Missing Show Text native alias entry");
     expect(catalogRowRuntimeSupport(nativeAliasEntry.id, nativeAliasEntry.existingKind, "troop")).toBe("runtime-full");
+    expect(catalogRowRuntimeSupport(nativeAliasEntry.id, nativeAliasEntry.existingKind, "map")).toBe("runtime-full");
+    expect(m2CommandRuntimeSupport(nativeAliasEntry.id, "troop")).toBe("runtime-partial");
   });
 
   it("lints a map event containing a map-partial full-class m2 command", () => {

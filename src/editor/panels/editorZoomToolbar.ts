@@ -6,6 +6,7 @@ import { store } from "@/project/store";
 import type { GameMap } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { openWalkEncounterList } from "@/editor/panels/walkEncounterModal";
 
 let mapScreenshotRequestSeq = 0;
 
@@ -96,6 +97,11 @@ export function renderCanvasToolbar(container: HTMLElement): void {
     );
   }
   zoomGroup.append(menu);
+  container.append(el("button", {
+    class: "btn walk-encounter-list-button", text: "걸을 때 적 만나기",
+    attrs: { type: "button", title: "범위 목록 · 추가 · 편집 · 삭제" },
+    dataset: { testid: "walk-encounter-list-open" }, on: { click: openWalkEncounterList },
+  }));
   // Basic: zoom only (always expanded). Expert: ⋯ expand + build palette + map screenshot.
   if (!chrome.canvasChromeDense) {
     container.append(zoomGroup);

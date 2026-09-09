@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankMap, createBlankProject, repairInteriorTransparentPropLayers, TILE } from "@/project/defaults";
 
 describe("repairInteriorTransparentPropLayers", () => {
-  it("moves saved interior transparent props from lower to upper and restores the floor", () => {
+  it("preserves placed lower props when no per-cell provenance proves a legacy writer error", () => {
     const project = createBlankProject();
     const map = createBlankMap("샘플 실내", 5, 5, "easyrpg_chipset_interior");
     project.maps[map.id] = map;
@@ -16,10 +16,10 @@ describe("repairInteriorTransparentPropLayers", () => {
 
     const changed = repairInteriorTransparentPropLayers(project);
 
-    expect(changed).toBe(true);
-    expect(map.lowerTiles[targetIndex]).toBe(270);
-    expect(map.upperTiles[targetIndex]).toBe(268);
-    expect(map.lowerTiles[secondTargetIndex]).toBe(270);
-    expect(map.upperTiles[secondTargetIndex]).toBe(115);
+    expect(changed).toBe(false);
+    expect(map.lowerTiles[targetIndex]).toBe(268);
+    expect(map.upperTiles[targetIndex]).toBe(TILE.EMPTY);
+    expect(map.lowerTiles[secondTargetIndex]).toBe(115);
+    expect(map.upperTiles[secondTargetIndex]).toBe(TILE.EMPTY);
   });
 });

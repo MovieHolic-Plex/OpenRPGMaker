@@ -1,3 +1,4 @@
+import { playCinematicSequence } from "@/player/cinematicSequence";
 import { LifeReconciliationError } from "@/project/lifeRecovery";
 import { openEventMenu } from "@/player/playerEventMenus";
 import type Phaser from "phaser";
@@ -26,6 +27,7 @@ import {
   readAutosave,
   readSaveSlot,
   snapshotLoadBlocker,
+  setSavePublication,
   type SaveSlotIndex,
 } from "@/player/saveSlots";
 import { resetAutosaveDebounce } from "@/player/autosave";
@@ -81,6 +83,7 @@ import {
 } from "@/player/playBootDiagnostics";
 import { mountHostFullscreenToggle, type HostBridge } from "@/player/hostBridge";
 import { resolvePlayResolution } from "@/project/playResolution";
+import { diagnosticToken } from "@/util/diagnosticObserver";
 
 let teardownShell: (() => void) | null = null;
 
@@ -96,6 +99,8 @@ export type PlayerRunControls = {
 };
 
 export type RenderPlayerOptions = {
+  /** Community listing scope derived by the exported boot entry, not project metadata. */
+  readonly saveIsolationScope?: string;
   /** Explicit export-QA capability. Normal exported players must leave this false. */
   readonly qaInstrumentation?: boolean;
   readonly onExit?: () => void;
@@ -138,9 +143,12 @@ const TITLE_CONFIRM_JUICE_MS = 180;
 
 export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {}): void {
   teardownShell?.();
+  setSavePublication(store.getCurrent().meta.publication, options.saveIsolationScope);
   clearChildren(main);
   const audioEngine = getAudioEngine({ qaInstrumentation: options.qaInstrumentation === true });
 
+  let openingController: AbortController | null = null;
+  let titleConfirmTimer: ReturnType<typeof setTimeout> | undefined;
   let game: Phaser.Game | null = null;
   let startRun = 0;
   let playStartedAt = 0;
@@ -177,6 +185,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   main.append(layout);
 
   const stopGame = (): void => {
+    openingController?.abort();
+    openingController = null;
+    clearTimeout(titleConfirmTimer);
+    titleConfirmTimer = undefined;
     startRun += 1;
     loadDetach?.();
     loadDetach = null;
@@ -237,6 +249,32 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   };
 
   const startGame = (request: PlayBootRequest = {}): void => {
+    if (!shellActive) return;
+    stopGame();
+    const opening = store.getCurrent().system.opening;
+    const bypass = request.session || options.startOverride || options.initialEventTestId || request.eventTestId;
+    if (!bypass && opening?.enabled && opening.scenes.length > 0) {
+      stopTitleBgm();
+      clearChildren(layout);
+      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode);
+      playStage = surface.stage;
+      cleanupPlaySurface = surface.cleanup;
+      layout.append(surface.viewport);
+      surface.sync();
+      const controller = new AbortController();
+      openingController = controller;
+      const playback = playCinematicSequence({ host: surface.stage, project: store.getCurrent(), sequence: opening, signal: controller.signal });
+      void playback.done.then(result => {
+        if (result === "aborted" || !shellActive || openingController !== controller) return;
+        openingController = null;
+        bootRun(request);
+      });
+      return;
+    }
+    bootRun(request);
+  };
+
+  const bootRun = (request: PlayBootRequest): void => {
     stopGame();
     // 새 플레이 런은 이전 런의 오토세이브 디바운스 기준 시각을 물려받지 않는다.
     resetAutosaveDebounce();
@@ -334,6 +372,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     repairs: readonly string[]
   ): Promise<void> => {
     let resolveReady: (() => void) | null = null;
+    const diagnosticOwner = diagnosticToken();
     const readyPromise = new Promise<void>((resolve) => {
       resolveReady = resolve;
     });
@@ -358,6 +397,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
           ...extra,
         },
         options.diagnosticSink,
+        diagnosticOwner,
       );
     };
     try {
@@ -595,12 +635,13 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const closeMenuWithJuice = (): void => {
     const menu = currentStatusMenu(layout);
     if (!menu) return;
-    emitRuntimeJuice({ event: "menu-close" });
+    emitMenuJuice("menu-close");
     closeStatusMenu(menu);
   };
 
   const emitMenuJuice = (event: RuntimeJuiceEvent, target?: HTMLElement | null): void => {
-    emitRuntimeJuice({ event, target: target ?? layout.querySelector<HTMLElement>("[data-testid='main-menu']") });
+    emitRuntimeJuice({ event, target: target ?? layout.querySelector<HTMLElement>("[data-testid='main-menu']"),
+      project: store.getCurrent(), session: activeScene()?.session });
   };
 
   const statusMenu = createPlayerStatusMenuController({
@@ -666,7 +707,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (menu && event.key === "Tab") {
       event.preventDefault();
       event.stopPropagation();
-      emitRuntimeJuice({ event: "menu-invalid", target: menu });
+      emitMenuJuice("menu-invalid", menu);
       return;
     }
     const overlayActive = isDialogueSurfaceActive() || isModalOverlayActive();
@@ -799,7 +840,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     titleConfirming = true;
     emitTitleJuice("title-confirm");
     stopTitleBgm();
-    window.setTimeout(() => {
+    titleConfirmTimer = setTimeout(() => {
+      titleConfirmTimer = undefined;
+      if (!shellActive) return;
       titleConfirming = false;
       callback();
     }, TITLE_CONFIRM_JUICE_MS);

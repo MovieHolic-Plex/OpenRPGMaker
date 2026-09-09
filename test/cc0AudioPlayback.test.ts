@@ -7,6 +7,7 @@ import { getAudioEngine, playAudioCommand, stopAllAudio } from "@/player/audio";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { installPreviewMedia, previewMedia, mediaEvent } from "./support/previewMedia";
 
 function projectPick() {
   return { assets: store.getCurrent().assets };
@@ -20,6 +21,7 @@ describe("CC0 / bundled audio playback path", () => {
   });
 
   afterEach(() => {
+    document.querySelector<HTMLButtonElement>('[data-testid="audio-test-close"]')?.click();
     stopAllAudio();
     document.querySelectorAll("[data-testid='audio-test-dialog']").forEach((node) => node.remove());
     vi.restoreAllMocks();
@@ -63,7 +65,8 @@ describe("CC0 / bundled audio playback path", () => {
     );
   });
 
-  it("audio test dialog play button uses CC0 field loop as first music track", () => {
+  it("audio test dialog auditions the first CC0 field loop without using gameplay audio", async () => {
+    installPreviewMedia();
     const engine = getAudioEngine();
     const play = vi.spyOn(engine, "play").mockImplementation(() => undefined);
     openAudioTestDialog();
@@ -73,13 +76,14 @@ describe("CC0 / bundled audio playback path", () => {
     (dialog!.querySelector('[data-testid="audio-test-option-1"]') as HTMLButtonElement).click();
     const playBtn = dialog!.querySelector('[data-testid="audio-test-play"]') as HTMLButtonElement;
     expect(playBtn).toBeTruthy();
-    playBtn.click();
-    expect(dialog!.querySelector('[data-testid="audio-test-status"]')?.textContent).toContain("재생 중");
-    expect(play).toHaveBeenCalledWith(
-      "bgm",
-      "cc0-music-field-loop",
-      "/assets/cc0/audio/field-loop.wav",
-      true
-    );
+    const media = previewMedia();
+    const requested = mediaEvent(media, "play");
+    playBtn.click(); await requested;
+    expect(media.getAttribute("src")).toBe("/assets/cc0/audio/field-loop.wav");
+    expect(media.loop).toBe(true);
+    expect(playBtn.getAttribute("aria-pressed")).toBe("false");
+    media.dispatchEvent(new Event("playing"));
+    expect(playBtn.getAttribute("aria-pressed")).toBe("true");
+    expect(play).not.toHaveBeenCalled();
   });
 });

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
+import { BATTLER_IDLE_ANIMATIONS } from "@/assets/battlerIdleAnimations";
 import { readStoredZipEntry, readStoredZipEntryNames } from "@/project/packageZip";
 import {
   WEB_PLAYER_MANIFEST,
@@ -143,6 +144,16 @@ describe("player deployment manifest", () => {
     await expect(discoverWebPlayerBundleFiles(BUNDLE_BASE, fixture.fetchBytes)).rejects.toMatchObject({
       code: "manifest-incomplete",
     });
+  });
+
+  it("includes the digest-bound collector companion in browser deployment closure", async () => {
+    const fixture = await deploymentFixture({ extraArtifact: ["dependency-collector.js", "retained collector"] });
+    const files = await discoverWebPlayerBundleFiles(BUNDLE_BASE, fixture.fetchBytes);
+    expect(files.map(file => file.zipPath)).toContain("dependency-collector.js");
+    const tampered = await deploymentFixture({ extraArtifact: ["dependency-collector.js", "retained collector"], tamperedPath: "dependency-collector.js" });
+    await expect(discoverWebPlayerBundleFiles(BUNDLE_BASE, tampered.fetchBytes)).rejects.toMatchObject({ code: "bundle-integrity-mismatch" });
+    const absent = await deploymentFixture({ extraArtifact: ["dependency-collector.js", "retained collector"], unavailablePath: "dependency-collector.js" });
+    await expect(discoverWebPlayerBundleFiles(BUNDLE_BASE, absent.fetchBytes)).rejects.toMatchObject({ code: "bundle-unavailable" });
   });
 
   it("rejects an undeclared stale chunk in the exact artifact set", async () => {
@@ -336,9 +347,10 @@ describe("player deployment manifest", () => {
     })).rejects.toMatchObject({ code: "zip-path-collision" });
   });
 
-  it("writes the exact verified deployment closure and project payload into the ZIP", async () => {
+  it.each([undefined, "pokemon", "rm2003"] as const)("writes the exact verified deployment closure and project payload into the ZIP for %s", async skin => {
     const fixture = await deploymentFixture();
     const project = createBlankProject();
+    project.system.battleUiStyle = skin;
 
     const result = await createWebPlayerExportPackage(project, {
       bundleBase: BUNDLE_BASE,
@@ -354,6 +366,13 @@ describe("player deployment manifest", () => {
     ])].sort((left, right) => left.localeCompare(right));
 
     expect(readStoredZipEntryNames(zipBytes)).toEqual(expectedPaths);
+    for (const idle of BATTLER_IDLE_ANIMATIONS.filter((entry) => entry.resourceId.endsWith("-back"))) {
+      for (const path of [idle.path.replace("/idle/", "/"), idle.path]) {
+        const bytes = readStoredZipEntry(zipBytes, path);
+        if (skin === "pokemon") expect(bytes, path).toEqual(await fixture.fetchBytes(`/${path}`));
+        else expect(bytes, path).toBeNull();
+      }
+    }
     for (const [filePath, bytes] of fixture.artifactBytes) {
       expect(await digestZipEntry(zipBytes, filePath)).toBe(await sha256HexBytes(bytes));
     }

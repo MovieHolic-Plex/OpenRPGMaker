@@ -38,6 +38,11 @@ export function isConfirmKey(key: string): boolean {
   return CONFIRM_KEYS.has(normalizeKey(key));
 }
 
+/** Cinematic advance deliberately excludes the legacy field-interaction E alias. */
+export function isCinematicAdvanceKey(key: string): boolean {
+  return ["z", "enter", " "].includes(normalizeKey(key));
+}
+
 export function isCancelKey(key: string): boolean {
   return CANCEL_KEYS.has(normalizeKey(key));
 }
@@ -121,6 +126,19 @@ export function directionForKey(key: string): Dir | null {
   }
 }
 
+/** Shop-only group traversal; do not capture Tab in unrelated runtime menus. */
+export function isShopFocusGroupKey(key: string): boolean {
+  return normalizeKey(key) === "tab";
+}
+
+export function isShopDetailScrollKey(key: string): boolean {
+  return isNavKey(key) || ["pageup", "pagedown", "home", "end"].includes(normalizeKey(key));
+}
+
+export const SHOP_FOCUS_GROUP_KEY_LABEL = "Tab/Shift+Tab";
+export const SHOP_CONFIRM_KEY_LABEL = "E/Z/Enter/Space";
+export const SHOP_DETAIL_SCROLL_KEY_LABEL = "방향키/PageUp/PageDown/Home/End";
+
 export function isNavKey(key: string): boolean {
   return directionForKey(key) !== null;
 }
@@ -201,3 +219,37 @@ export const SPEED_KEY_LABEL = "Shift";
 export const TITLE_KEY_PROMPT = "방향키로 고르고 Enter로 시작";
 export const BATTLE_KEY_PROMPT = `Z\u00a0확인 · X\u00a0취소`;
 export const CONTINUE_KEY_PROMPT = `${CONFIRM_KEY_LABEL}로 계속`;
+
+// Authoring and the HUD share this binding-derived copy; it is not NPC dialogue.
+const ACTION_GUIDE_KEYS = [
+  "arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d",
+  "z", "enter", " ", "e", "shift", "c", "q", "r", "x", "escape",
+] as const;
+
+export const ACTION_CONTROL_BINDINGS = [
+  { id: "move", keys: ACTION_GUIDE_KEYS.filter(isNavKey), label: "이동" },
+  { id: "attack", keys: ACTION_GUIDE_KEYS.filter(isAttackKey), label: "대화·조사 / 공격" },
+  { id: "dodge", keys: ACTION_GUIDE_KEYS.filter(isDashKey), label: "이동 중 회피" },
+  { id: "guard", keys: ACTION_GUIDE_KEYS.filter(isGuardKey), label: "누르고 가드" },
+  { id: "skill", keys: ACTION_GUIDE_KEYS.filter(isSkillKey), label: "스킬 사용" },
+  { id: "cycle", keys: ACTION_GUIDE_KEYS.filter(isSkillCycleKey), label: "스킬 선택" },
+  { id: "menu", keys: ACTION_GUIDE_KEYS.filter(isMenuKey), label: "메뉴·취소" },
+] as const;
+
+function actionGuideKeyLabel(key: string): string {
+  switch (key) {
+    case "arrowup": return "↑";
+    case "arrowdown": return "↓";
+    case "arrowleft": return "←";
+    case "arrowright": return "→";
+    case " ": return "Space";
+    case "enter": return "Enter";
+    case "escape": return "Esc";
+    case "shift": return "Shift";
+    default: return key.toUpperCase();
+  }
+}
+
+export const ACTION_CONTROLS_GUIDE = ACTION_CONTROL_BINDINGS.map(
+  (binding) => `${binding.keys.map(actionGuideKeyLabel).join("/")} ${binding.label}`,
+).join("\n");

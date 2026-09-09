@@ -1,0 +1,16 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/authoredSoftConfirmReviewEquality.test.ts --maxWorkers=1 --minWorkers=1 --reporter=default --reporter=json --outputFile=.omo/evidence/integration-st01a08238/soft-confirm-green.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238
+
+ ✓ test/authoredSoftConfirmReviewEquality.test.ts (1 test) 3889ms
+   ✓ direct soft-confirm route reviews the normalized values and applies them equally  3887ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  04:48:20
+   Duration  16.70s (transform 8.69s, setup 0ms, collect 12.19s, tests 3.89s, environment 235ms, prepare 64ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238/.omo/evidence/integration-st01a08238/soft-confirm-green.json

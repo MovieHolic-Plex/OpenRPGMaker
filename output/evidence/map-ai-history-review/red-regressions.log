@@ -1,0 +1,90 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiConversationHistoryModal.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-map-ai-history-review-fix
+
+ ❯ test/aiConversationHistoryModal.test.ts (25 tests | 4 failed) 174ms
+   ✓ sortConversationsForScope > Given 내 프로젝트와 남의 프로젝트가 섞임 When 정렬 Then 내 것이 먼저, 그 안에서 최근 순 6ms
+   ✓ sortConversationsForScope > Given 스코프 미기록 대화 When 정렬 Then 남의 것과 같은 뒤쪽으로 간다(내 것으로 위장하지 않는다) 1ms
+   ✓ filterConversationsByTitle > Given 빈 검색어 When 필터 Then 전부 남는다 2ms
+   ✓ filterConversationsByTitle > Given 대소문자 다른 부분 문자열 When 필터 Then 대소문자를 무시하고 찾는다 1ms
+   ✓ filterConversationsByTitle > Given 없는 제목 When 필터 Then 빈 목록 0ms
+   ✓ 모달 렌더 > Given 저장된 대화 2건 When 열기 Then 현재-맵 필터가 켜지고 행 2개가 최근 순으로 렌더된다 11ms
+   ✓ 모달 렌더 > Given 저장된 대화 없음 When 열기 Then 빈 상태가 오고 전역 부재를 주장하지 않는다 2ms
+   ✓ 모달 렌더 > Given 행 클릭 When 열기 Then 기록 전체(record)가 호출자에게 전달되고 모달이 닫힌다 5ms
+   ✓ 모달 렌더 > Given 지금 열려 있는 대화 When 렌더 Then 「현재」로 표시하고 클릭을 무시한다 2ms
+   × 모달 렌더 > keeps a failed archive open recoverable after listing: Error: ARCHIVE_READ_FAILURE 23ms
+     → expected 'idle' to be 'error' // Object.is equality
+   × 모달 렌더 > keeps a failed archive open recoverable after listing: null 4ms
+     → expected 'idle' to be 'error' // Object.is equality
+   × 모달 렌더 > reports a record removed after listing without adopting or silently losing it 3ms
+     → expected 'idle' to be 'error' // Object.is equality
+   ✓ 모달 렌더 > suppresses a late archive read failure after modal close 3ms
+   ✓ 모달 렌더 > suppresses a late archive read failure after modal replace 5ms
+   ✓ 모달 렌더 > Given 다른 프로젝트의 대화 When 모든 필터 Then 나열되지 않는다 2ms
+   ✓ 모달 렌더 > Given 삭제 클릭 When 목록 갱신 Then 저장소에서도 지워진다 2ms
+   ✓ 모달 렌더 > Given 검색어 입력 When 목록 갱신 Then 제목이 맞는 행만 남는다 6ms
+   ✓ 모달 렌더 > Given A 기원과 B 대상 대화 When 현재 맵 A Then 둘 다 전체 대화로 보이고 B 전용은 숨는다 3ms
+   ✓ 모달 렌더 > Given 맵 필드 없는 대화 When 출처 없음 Then 그것만 보이고 삭제된 맵 id 는 선택 가능하다 9ms
+   × 모달 렌더 > selects an older deleted map from the complete 201-record archive before paging 63ms
+     → expected null not to be null
+   ✓ 모달 렌더 > Given 페이지 크기보다 많은 기록 When 더 보기 Then 다음 페이지가 붙는다 11ms
+   ✓ 모달 렌더 > Given 압축·일부 출처 When 렌더 Then 표시가 붙는다 1ms
+   ✓ 모달 렌더 > Given 복구 실패 When 가져오기 Then error 상태이고 목록을 성공으로 바꾸지 않는다 3ms
+   ✓ 모달 렌더 > Given 닫힌 모달 When 늦은 열기 응답 Then onOpen 을 부르지 않는다 2ms
+   ✓ 모달 렌더 > Given 필터 전환 When 목록만 바뀜 Then onOpen 은 호출되지 않는다 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiConversationHistoryModal.test.ts > 모달 렌더 > keeps a failed archive open recoverable after listing: Error: ARCHIVE_READ_FAILURE
+ FAIL  test/aiConversationHistoryModal.test.ts > 모달 렌더 > keeps a failed archive open recoverable after listing: null
+AssertionError: expected 'idle' to be 'error' // Object.is equality
+
+Expected: [32m"error"[39m
+Received: [31m"idle"[39m
+
+ ❯ test/aiConversationHistoryModal.test.ts:236:34
+    234|     expect(backdrop.parentElement).not.toBeNull();
+    235|     const status = findByTestId(backdrop, "ai-history-recover-status")…
+    236|     expect(status.dataset.state).toBe("error");
+       |                                  ^
+    237|     expect(status.hidden).toBe(false);
+    238|     expect(status.textContent?.trim().length).toBeGreaterThan(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/aiConversationHistoryModal.test.ts > 모달 렌더 > reports a record removed after listing without adopting or silently losing it
+AssertionError: expected 'idle' to be 'error' // Object.is equality
+
+Expected: [32m"error"[39m
+Received: [31m"idle"[39m
+
+ ❯ test/aiConversationHistoryModal.test.ts:264:34
+    262|     expect(backdrop.parentElement).not.toBeNull();
+    263|     const status = findByTestId(backdrop, "ai-history-recover-status")…
+    264|     expect(status.dataset.state).toBe("error");
+       |                                  ^
+    265|     expect(status.hidden).toBe(false);
+    266|     expect(status.textContent?.trim().length).toBeGreaterThan(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  test/aiConversationHistoryModal.test.ts > 모달 렌더 > selects an older deleted map from the complete 201-record archive before paging
+AssertionError: expected null not to be null
+ ❯ test/aiConversationHistoryModal.test.ts:393:22
+    391|     );
+    392|     const gone = backdrop.querySelector('[data-map-id="map_gone"]');
+    393|     expect(gone).not.toBeNull();
+       |                      ^
+    394|     (gone as unknown as HTMLElement).click();
+    395|     await whenAiConversationHistoryModalSettled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 21 passed (25)
+   Start at  05:09:34
+   Duration  2.84s (transform 1.52s, setup 0ms, collect 1.64s, tests 174ms, environment 0ms, prepare 290ms)

@@ -1,0 +1,3671 @@
+{
+  "log": [
+    {
+      "sequence": 1,
+      "type": "port-verified-free",
+      "base": "http://127.0.0.1:19846",
+      "root": "/home/main/z-project/rpg-zzu-map-overlay-p2-browser/"
+    },
+    {
+      "sequence": 2,
+      "scenario": "completed",
+      "type": "boot-start"
+    },
+    {
+      "sequence": 3,
+      "scenario": "completed",
+      "type": "snapshot",
+      "label": "00-A-before",
+      "state": {
+        "currentMapId": "qa_map_a",
+        "blueprintMapId": null,
+        "blueprintEntries": [],
+        "blueprintLayer": 0,
+        "filteredBlueprintCount": 0,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 0,
+        "runningToolName": "",
+        "runningToolMapId": null,
+        "chip": null,
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": true,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 0,
+        "changeCards": 0
+      }
+    },
+    {
+      "sequence": 4,
+      "scenario": "completed",
+      "type": "booted",
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "agentMode": "chat"
+    },
+    {
+      "sequence": 5,
+      "scenario": "completed",
+      "type": "composer-send",
+      "text": "On QA Map A (qa_map_a), use set_build_spec then clear_region for two separate patches; explicitly skip the remaining work with skip_work_item. Leave the third planned patch untouched."
+    },
+    {
+      "sequence": 6,
+      "scenario": "completed",
+      "type": "LLM-no-tools",
+      "lookup": false
+    },
+    {
+      "sequence": 7,
+      "scenario": "completed",
+      "type": "LLM-no-tools",
+      "lookup": false
+    },
+    {
+      "sequence": 8,
+      "scenario": "completed",
+      "type": "LLM-tools",
+      "round": 1,
+      "reply": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_completed_1_0",
+            "type": "function",
+            "function": {
+              "name": "set_build_spec",
+              "arguments": "{\"mapId\":\"qa_map_a\",\"title\":\"A-only patches\",\"assets\":[{\"id\":\"patch_0\",\"kind\":\"clear\",\"x\":3,\"y\":3,\"w\":3,\"h\":3,\"confirmDestroy\":true},{\"id\":\"patch_1\",\"kind\":\"clear\",\"x\":9,\"y\":3,\"w\":3,\"h\":3,\"confirmDestroy\":true},{\"id\":\"patch_2\",\"kind\":\"clear\",\"x\":15,\"y\":3,\"w\":3,\"h\":3,\"confirmDestroy\":true}],\"buildOrder\":[\"patch_0\",\"patch_1\",\"patch_2\"],\"reason\":\"Map ownership regression fixture\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "scenario": "completed",
+      "type": "LLM-tools",
+      "round": 2,
+      "reply": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_completed_2_0",
+            "type": "function",
+            "function": {
+              "name": "clear_region",
+              "arguments": "{\"mapId\":\"qa_map_a\",\"x\":3,\"y\":3,\"w\":3,\"h\":3,\"layer\":\"lower\",\"fill\":\"empty\",\"reason\":\"Map ownership regression fixture\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "scenario": "completed",
+      "type": "signal",
+      "key": "spec"
+    },
+    {
+      "sequence": 11,
+      "scenario": "completed",
+      "type": "snapshot",
+      "label": "01-A-plan",
+      "state": {
+        "currentMapId": "qa_map_a",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [
+          {
+            "id": "patch_0",
+            "kind": "clear",
+            "label": "정리",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 1,
+            "status": "planned"
+          },
+          {
+            "id": "patch_1",
+            "kind": "clear",
+            "label": "정리",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 2,
+            "status": "planned"
+          },
+          {
+            "id": "patch_2",
+            "kind": "clear",
+            "label": "정리",
+            "x": 15,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 3,
+            "status": "planned"
+          }
+        ],
+        "blueprintLayer": 1,
+        "filteredBlueprintCount": 3,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 0,
+        "runningToolName": "set_build_spec",
+        "runningToolMapId": "qa_map_a",
+        "chip": {
+          "text": "설정을 조정하는 중 · 0/0 셀",
+          "visible": true
+        },
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": true,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 0,
+        "changeCards": 0
+      }
+    },
+    {
+      "sequence": 12,
+      "scenario": "completed",
+      "type": "release-LLM",
+      "gate": "first spatial tool"
+    },
+    {
+      "sequence": 13,
+      "scenario": "completed",
+      "type": "LLM-tools",
+      "round": 3,
+      "reply": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_completed_3_0",
+            "type": "function",
+            "function": {
+              "name": "clear_region",
+              "arguments": "{\"mapId\":\"qa_map_a\",\"x\":9,\"y\":3,\"w\":3,\"h\":3,\"layer\":\"lower\",\"fill\":\"empty\",\"reason\":\"Map ownership regression fixture\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 14,
+      "scenario": "completed",
+      "type": "signal",
+      "key": "first-write"
+    },
+    {
+      "sequence": 15,
+      "scenario": "completed",
+      "type": "signal",
+      "key": "first-ghost"
+    },
+    {
+      "sequence": 16,
+      "scenario": "completed",
+      "type": "snapshot",
+      "label": "02-A-draft-pending-tool",
+      "state": {
+        "currentMapId": "qa_map_a",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [
+          {
+            "id": "patch_0",
+            "kind": "clear",
+            "label": "정리",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 1,
+            "status": "building"
+          },
+          {
+            "id": "patch_1",
+            "kind": "clear",
+            "label": "정리",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 2,
+            "status": "planned"
+          },
+          {
+            "id": "patch_2",
+            "kind": "clear",
+            "label": "정리",
+            "x": 15,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 3,
+            "status": "planned"
+          }
+        ],
+        "blueprintLayer": 1,
+        "filteredBlueprintCount": 3,
+        "ghostLayer": 1,
+        "filteredGhostCells": 9,
+        "allGhostCells": 9,
+        "runningToolName": "clear_region",
+        "runningToolMapId": "qa_map_a",
+        "chip": {
+          "text": "영역을 지우는 중 · 6/9 셀",
+          "visible": true
+        },
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": true,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 0,
+        "changeCards": 0
+      }
+    },
+    {
+      "sequence": 17,
+      "scenario": "completed",
+      "type": "map-tree-click",
+      "id": "qa_map_b"
+    },
+    {
+      "sequence": 18,
+      "scenario": "completed",
+      "type": "snapshot",
+      "label": "03-B-pending-tool",
+      "state": {
+        "currentMapId": "qa_map_b",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [
+          {
+            "id": "patch_0",
+            "kind": "clear",
+            "label": "정리",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 1,
+            "status": "building"
+          },
+          {
+            "id": "patch_1",
+            "kind": "clear",
+            "label": "정리",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 2,
+            "status": "planned"
+          },
+          {
+            "id": "patch_2",
+            "kind": "clear",
+            "label": "정리",
+            "x": 15,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 3,
+            "status": "planned"
+          }
+        ],
+        "blueprintLayer": 0,
+        "filteredBlueprintCount": 0,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 9,
+        "runningToolName": "clear_region",
+        "runningToolMapId": "qa_map_a",
+        "chip": null,
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": true,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 0,
+        "changeCards": 0
+      }
+    },
+    {
+      "sequence": 19,
+      "scenario": "completed",
+      "type": "map-tree-click",
+      "id": "qa_map_a"
+    },
+    {
+      "sequence": 20,
+      "scenario": "completed",
+      "type": "snapshot",
+      "label": "03a-A-draft-return",
+      "state": {
+        "currentMapId": "qa_map_a",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [
+          {
+            "id": "patch_0",
+            "kind": "clear",
+            "label": "정리",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 1,
+            "status": "building"
+          },
+          {
+            "id": "patch_1",
+            "kind": "clear",
+            "label": "정리",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 2,
+            "status": "planned"
+          },
+          {
+            "id": "patch_2",
+            "kind": "clear",
+            "label": "정리",
+            "x": 15,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 3,
+            "status": "planned"
+          }
+        ],
+        "blueprintLayer": 1,
+        "filteredBlueprintCount": 3,
+        "ghostLayer": 1,
+        "filteredGhostCells": 9,
+        "allGhostCells": 9,
+        "runningToolName": "clear_region",
+        "runningToolMapId": "qa_map_a",
+        "chip": {
+          "text": "영역을 지우는 중 · 9/9 셀",
+          "visible": true
+        },
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": true,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 0,
+        "changeCards": 0
+      }
+    },
+    {
+      "sequence": 21,
+      "scenario": "completed",
+      "type": "map-tree-click",
+      "id": "qa_map_b"
+    },
+    {
+      "sequence": 22,
+      "scenario": "completed",
+      "type": "release-LLM",
+      "gate": "second spatial tool while viewing B"
+    },
+    {
+      "sequence": 23,
+      "scenario": "completed",
+      "type": "signal",
+      "key": "second-start"
+    },
+    {
+      "sequence": 24,
+      "scenario": "completed",
+      "type": "LLM-tools",
+      "round": 4,
+      "reply": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_completed_4_0",
+            "type": "function",
+            "function": {
+              "name": "skip_work_item",
+              "arguments": "{\"itemId\":\"L1-1\",\"note\":\"Two patches drafted; third patch intentionally not built.\",\"reason\":\"Map ownership regression fixture\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 25,
+      "scenario": "completed",
+      "type": "signal",
+      "key": "second-write"
+    },
+    {
+      "sequence": 26,
+      "scenario": "completed",
+      "type": "signal",
+      "key": "second-ghost"
+    },
+    {
+      "sequence": 27,
+      "scenario": "completed",
+      "type": "snapshot",
+      "label": "04-B-late-tool-draft",
+      "state": {
+        "currentMapId": "qa_map_b",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [
+          {
+            "id": "patch_0",
+            "kind": "clear",
+            "label": "정리",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 1,
+            "status": "done"
+          },
+          {
+            "id": "patch_1",
+            "kind": "clear",
+            "label": "정리",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 2,
+            "status": "building"
+          },
+          {
+            "id": "patch_2",
+            "kind": "clear",
+            "label": "정리",
+            "x": 15,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 3,
+            "status": "planned"
+          }
+        ],
+        "blueprintLayer": 0,
+        "filteredBlueprintCount": 0,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 18,
+        "runningToolName": "clear_region",
+        "runningToolMapId": "qa_map_a",
+        "chip": null,
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": true,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 0,
+        "changeCards": 0
+      }
+    },
+    {
+      "sequence": 28,
+      "scenario": "completed",
+      "type": "release-LLM",
+      "gate": "terminal tool and final response"
+    },
+    {
+      "sequence": 29,
+      "scenario": "completed",
+      "type": "LLM-tools",
+      "round": 5,
+      "reply": {
+        "role": "assistant",
+        "content": "QA_APPLIED_FINAL"
+      }
+    },
+    {
+      "sequence": 30,
+      "scenario": "completed",
+      "type": "signal",
+      "key": "applied"
+    },
+    {
+      "sequence": 31,
+      "scenario": "completed",
+      "type": "signal",
+      "key": "turn-end"
+    },
+    {
+      "sequence": 32,
+      "scenario": "completed",
+      "type": "snapshot",
+      "label": "05a-completion-focus",
+      "state": {
+        "currentMapId": "qa_map_a",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [],
+        "blueprintLayer": 0,
+        "filteredBlueprintCount": 0,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 0,
+        "runningToolName": "",
+        "runningToolMapId": null,
+        "chip": null,
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": false,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 18,
+        "changeCards": 1
+      }
+    },
+    {
+      "sequence": 33,
+      "scenario": "completed",
+      "type": "map-tree-click",
+      "id": "qa_map_b"
+    },
+    {
+      "sequence": 34,
+      "scenario": "completed",
+      "type": "snapshot",
+      "label": "05-B-applied",
+      "state": {
+        "currentMapId": "qa_map_b",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [],
+        "blueprintLayer": 0,
+        "filteredBlueprintCount": 0,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 0,
+        "runningToolName": "",
+        "runningToolMapId": null,
+        "chip": null,
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": false,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 18,
+        "changeCards": 1
+      }
+    },
+    {
+      "sequence": 35,
+      "scenario": "completed",
+      "type": "map-tree-click",
+      "id": "qa_map_a"
+    },
+    {
+      "sequence": 36,
+      "scenario": "completed",
+      "type": "snapshot",
+      "label": "06-A-applied-return",
+      "state": {
+        "currentMapId": "qa_map_a",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [],
+        "blueprintLayer": 0,
+        "filteredBlueprintCount": 0,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 0,
+        "runningToolName": "",
+        "runningToolMapId": null,
+        "chip": null,
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": false,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 18,
+        "changeCards": 1
+      }
+    },
+    {
+      "sequence": 37,
+      "scenario": "completed",
+      "type": "composer-send",
+      "text": "Read QA Map A (qa_map_a) with get_map_region; do not modify anything."
+    },
+    {
+      "sequence": 38,
+      "scenario": "completed",
+      "type": "LLM-no-tools",
+      "lookup": true
+    },
+    {
+      "sequence": 39,
+      "scenario": "completed",
+      "type": "LLM-tools",
+      "lookupRound": 1,
+      "reply": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_completed_5_1",
+            "type": "function",
+            "function": {
+              "name": "get_map_region",
+              "arguments": "{\"mapId\":\"qa_map_a\",\"x\":3,\"y\":3,\"w\":12,\"h\":3,\"reason\":\"Map ownership regression fixture\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 40,
+      "scenario": "completed",
+      "type": "LLM-tools",
+      "lookupRound": 2,
+      "reply": {
+        "role": "assistant",
+        "content": "QA_LOOKUP_FINAL"
+      }
+    },
+    {
+      "sequence": 41,
+      "scenario": "completed",
+      "type": "signal",
+      "key": "lookup-tool"
+    },
+    {
+      "sequence": 42,
+      "scenario": "completed",
+      "type": "snapshot",
+      "label": "07-A-lookup-in-flight",
+      "state": {
+        "currentMapId": "qa_map_a",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [],
+        "blueprintLayer": 0,
+        "filteredBlueprintCount": 0,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 0,
+        "runningToolName": "get_map_region",
+        "runningToolMapId": "qa_map_a",
+        "chip": {
+          "text": "맵을 살펴보는 중 · 0/0 셀",
+          "visible": true
+        },
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": false,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 18,
+        "changeCards": 1
+      }
+    },
+    {
+      "sequence": 43,
+      "scenario": "completed",
+      "type": "signal",
+      "key": "lookup-end"
+    },
+    {
+      "sequence": 44,
+      "scenario": "completed",
+      "type": "snapshot",
+      "label": "08-A-lookup-settled",
+      "state": {
+        "currentMapId": "qa_map_a",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [],
+        "blueprintLayer": 0,
+        "filteredBlueprintCount": 0,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 0,
+        "runningToolName": "",
+        "runningToolMapId": null,
+        "chip": null,
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": false,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 18,
+        "changeCards": 1
+      }
+    },
+    {
+      "sequence": 45,
+      "scenario": "completed",
+      "type": "session-evidence",
+      "events": [
+        {
+          "type": "composer-turn",
+          "options": {
+            "autonomous": false,
+            "instruction": "On QA Map A (qa_map_a), use set_build_spec then clear_region for two separate patches; explicitly skip the remaining work with skip_work_item. Leave the third planned patch untouched.",
+            "scope": null,
+            "composerMode": "do"
+          }
+        },
+        {
+          "type": "status",
+          "text": "요청을 읽는 중…",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "status",
+          "text": "플래너(main LLM)가 작업 분해를 판단 중…",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "status",
+          "text": "플래너가 1레이어 / 1항목으로 분해했습니다.",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "work_plan",
+          "plan": {
+            "id": "wp_mtp17aq2",
+            "goal": "A-only patches",
+            "createdAt": "2026-09-05T23:46:12.362Z",
+            "layers": [
+              {
+                "id": "L1",
+                "title": "A patches",
+                "items": [
+                  {
+                    "id": "L1-1",
+                    "title": "Apply patches",
+                    "instruction": "Clear two patches on qa_map_a; explicitly skip the remaining patch",
+                    "successTools": [
+                      "set_map_properties"
+                    ],
+                    "status": "in_progress"
+                  }
+                ]
+              }
+            ],
+            "currentLayerIndex": 0,
+            "currentItemId": "L1-1",
+            "targetMapId": "qa_map_a"
+          },
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "phase",
+          "value": "execute",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "tool_started",
+          "name": "set_build_spec",
+          "args": {
+            "mapId": "qa_map_a",
+            "title": "A-only patches",
+            "assets": [
+              {
+                "id": "patch_0",
+                "kind": "clear",
+                "x": 3,
+                "y": 3,
+                "w": 3,
+                "h": 3,
+                "confirmDestroy": true
+              },
+              {
+                "id": "patch_1",
+                "kind": "clear",
+                "x": 9,
+                "y": 3,
+                "w": 3,
+                "h": 3,
+                "confirmDestroy": true
+              },
+              {
+                "id": "patch_2",
+                "kind": "clear",
+                "x": 15,
+                "y": 3,
+                "w": 3,
+                "h": 3,
+                "confirmDestroy": true
+              }
+            ],
+            "buildOrder": [
+              "patch_0",
+              "patch_1",
+              "patch_2"
+            ]
+          },
+          "index": 1,
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "tool_call",
+          "name": "set_build_spec",
+          "args": {
+            "mapId": "qa_map_a",
+            "title": "A-only patches",
+            "assets": [
+              {
+                "id": "patch_0",
+                "kind": "clear",
+                "x": 3,
+                "y": 3,
+                "w": 3,
+                "h": 3,
+                "confirmDestroy": true
+              },
+              {
+                "id": "patch_1",
+                "kind": "clear",
+                "x": 9,
+                "y": 3,
+                "w": 3,
+                "h": 3,
+                "confirmDestroy": true
+              },
+              {
+                "id": "patch_2",
+                "kind": "clear",
+                "x": 15,
+                "y": 3,
+                "w": 3,
+                "h": 3,
+                "confirmDestroy": true
+              }
+            ],
+            "buildOrder": [
+              "patch_0",
+              "patch_1",
+              "patch_2"
+            ]
+          },
+          "result": {
+            "ok": true,
+            "summary": "밑그림 확정: A-only patches — 에셋 3개(clear)",
+            "data": {
+              "mapId": "qa_map_a",
+              "title": "A-only patches",
+              "assets": [
+                {
+                  "id": "patch_0",
+                  "kind": "clear",
+                  "x": 3,
+                  "y": 3,
+                  "w": 3,
+                  "h": 3,
+                  "confirmDestroy": true
+                },
+                {
+                  "id": "patch_1",
+                  "kind": "clear",
+                  "x": 9,
+                  "y": 3,
+                  "w": 3,
+                  "h": 3,
+                  "confirmDestroy": true
+                },
+                {
+                  "id": "patch_2",
+                  "kind": "clear",
+                  "x": 15,
+                  "y": 3,
+                  "w": 3,
+                  "h": 3,
+                  "confirmDestroy": true
+                }
+              ],
+              "buildOrder": [
+                "patch_0",
+                "patch_1",
+                "patch_2"
+              ]
+            }
+          },
+          "reason": "Map ownership regression fixture",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "tool_started",
+          "name": "clear_region",
+          "args": {
+            "mapId": "qa_map_a",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "layer": "lower",
+            "fill": "empty"
+          },
+          "index": 2,
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "tool_call",
+          "name": "clear_region",
+          "args": {
+            "mapId": "qa_map_a",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "layer": "lower",
+            "fill": "empty"
+          },
+          "result": {
+            "ok": true,
+            "summary": "QA Map A - AI target 영역 (3,3)~(5,5) 정리 — 9칸 (lower, 하위=빈 칸)",
+            "diff": {
+              "tilesChanged": 9,
+              "mapPropertiesChanged": 0,
+              "eventsAdded": 0,
+              "eventsModified": 0,
+              "eventsRemoved": 0,
+              "mapsAdded": 0,
+              "mapsRemoved": 0,
+              "dbRecordsChanged": 0,
+              "tilesetsChanged": 0,
+              "switchesAdded": 0,
+              "variablesAdded": 0,
+              "worldEntitiesAdded": 0,
+              "worldEntitiesModified": 0,
+              "palettePresetsAdded": 0,
+              "palettePresetsModified": 0,
+              "endingsChanged": 0,
+              "sessionChanged": false,
+              "systemChanged": false,
+              "warnings": []
+            },
+            "data": {
+              "cleared": 9,
+              "events": []
+            }
+          },
+          "reason": "Map ownership regression fixture",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "tool_started",
+          "name": "clear_region",
+          "args": {
+            "mapId": "qa_map_a",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "layer": "lower",
+            "fill": "empty"
+          },
+          "index": 3,
+          "viewedMap": "qa_map_b"
+        },
+        {
+          "type": "tool_call",
+          "name": "clear_region",
+          "args": {
+            "mapId": "qa_map_a",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "layer": "lower",
+            "fill": "empty"
+          },
+          "result": {
+            "ok": true,
+            "summary": "QA Map A - AI target 영역 (9,3)~(11,5) 정리 — 9칸 (lower, 하위=빈 칸)",
+            "diff": {
+              "tilesChanged": 9,
+              "mapPropertiesChanged": 0,
+              "eventsAdded": 0,
+              "eventsModified": 0,
+              "eventsRemoved": 0,
+              "mapsAdded": 0,
+              "mapsRemoved": 0,
+              "dbRecordsChanged": 0,
+              "tilesetsChanged": 0,
+              "switchesAdded": 0,
+              "variablesAdded": 0,
+              "worldEntitiesAdded": 0,
+              "worldEntitiesModified": 0,
+              "palettePresetsAdded": 0,
+              "palettePresetsModified": 0,
+              "endingsChanged": 0,
+              "sessionChanged": false,
+              "systemChanged": false,
+              "warnings": []
+            },
+            "data": {
+              "cleared": 9,
+              "events": []
+            }
+          },
+          "reason": "Map ownership regression fixture",
+          "viewedMap": "qa_map_b"
+        },
+        {
+          "type": "tool_started",
+          "name": "skip_work_item",
+          "args": {
+            "itemId": "L1-1",
+            "note": "Two patches drafted; third patch intentionally not built."
+          },
+          "index": 4,
+          "viewedMap": "qa_map_b"
+        },
+        {
+          "type": "work_plan",
+          "plan": {
+            "id": "wp_mtp17aq2",
+            "goal": "A-only patches",
+            "createdAt": "2026-09-05T23:46:12.362Z",
+            "layers": [
+              {
+                "id": "L1",
+                "title": "A patches",
+                "items": [
+                  {
+                    "id": "L1-1",
+                    "title": "Apply patches",
+                    "instruction": "Clear two patches on qa_map_a; explicitly skip the remaining patch",
+                    "successTools": [
+                      "set_map_properties"
+                    ],
+                    "status": "skipped",
+                    "note": "Two patches drafted; third patch intentionally not built."
+                  }
+                ]
+              }
+            ],
+            "currentLayerIndex": 0,
+            "currentItemId": null,
+            "targetMapId": "qa_map_a"
+          },
+          "viewedMap": "qa_map_b"
+        },
+        {
+          "type": "tool_call",
+          "name": "skip_work_item",
+          "args": {
+            "itemId": "L1-1",
+            "note": "Two patches drafted; third patch intentionally not built."
+          },
+          "result": {
+            "ok": true,
+            "summary": "건너뜀: Apply patches. 계획 종료.",
+            "data": {
+              "skipped": "L1-1",
+              "next": null,
+              "progress": {
+                "goal": "A-only patches",
+                "layersTotal": 1,
+                "layersDone": 1,
+                "itemsTotal": 1,
+                "itemsDone": 1,
+                "remainingTitles": []
+              }
+            }
+          },
+          "reason": "Map ownership regression fixture",
+          "viewedMap": "qa_map_b"
+        },
+        {
+          "type": "assistant_message",
+          "content": "QA_APPLIED_FINAL",
+          "viewedMap": "qa_map_b"
+        },
+        {
+          "type": "run_recap",
+          "recap": {
+            "elapsedMs": 17582,
+            "usage": {
+              "calls": 6,
+              "promptTokens": 0,
+              "completionTokens": 0,
+              "callsWithoutUsage": 6,
+              "byModel": [
+                {
+                  "model": "gemini-3.7-flash",
+                  "calls": 6,
+                  "promptTokens": 0,
+                  "completionTokens": 0,
+                  "callsWithoutUsage": 6
+                }
+              ]
+            },
+            "toolCalls": 4,
+            "toolFailures": 0,
+            "ralphContinues": 0,
+            "volumeContinues": 0,
+            "proposedWrites": 2,
+            "stoppedReason": "final",
+            "process": [
+              {
+                "kind": "planner",
+                "at": "2026-09-05T23:46:12.259Z",
+                "text": "planner:start"
+              },
+              {
+                "kind": "planner",
+                "at": "2026-09-05T23:46:12.362Z",
+                "text": "planner:new_plan items=1 layers=1"
+              },
+              {
+                "kind": "phase",
+                "at": "2026-09-05T23:46:12.365Z",
+                "text": "phase:execute"
+              },
+              {
+                "kind": "tool",
+                "at": "2026-09-05T23:46:12.876Z",
+                "text": "set_build_spec ok"
+              },
+              {
+                "kind": "tool",
+                "at": "2026-09-05T23:46:16.130Z",
+                "text": "clear_region ok ×2"
+              },
+              {
+                "kind": "tool",
+                "at": "2026-09-05T23:46:29.335Z",
+                "text": "skip_work_item ok"
+              },
+              {
+                "kind": "end",
+                "at": "2026-09-05T23:46:29.650Z",
+                "text": "턴 종료(final) — 제안 2건 · 출력 토큰 ~274"
+              }
+            ]
+          },
+          "viewedMap": "qa_map_b"
+        },
+        {
+          "type": "composer-turn",
+          "options": {
+            "autonomous": false,
+            "instruction": "Read QA Map A (qa_map_a) with get_map_region; do not modify anything.",
+            "scope": null,
+            "composerMode": "ask"
+          }
+        },
+        {
+          "type": "status",
+          "text": "요청을 읽는 중…",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "tool_started",
+          "name": "get_map_region",
+          "args": {
+            "mapId": "qa_map_a",
+            "x": 3,
+            "y": 3,
+            "w": 12,
+            "h": 3
+          },
+          "index": 1,
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "tool_call",
+          "name": "get_map_region",
+          "args": {
+            "mapId": "qa_map_a",
+            "x": 3,
+            "y": 3,
+            "w": 12,
+            "h": 3
+          },
+          "result": {
+            "ok": true,
+            "summary": "QA Map A - AI target(qa_map_a) 영역 (3,3)~(15,6) — 이벤트 0개, 물 0칸",
+            "data": {
+              "mapId": "qa_map_a",
+              "mapName": "QA Map A - AI target",
+              "grid": [
+                "###...###...",
+                "###...###...",
+                "###...###..."
+              ],
+              "legend": {
+                "#": "통행 불가/벽",
+                ".": "통행 가능",
+                "~": "물/호수",
+                "T": "나무",
+                "E": "이벤트"
+              },
+              "events": [],
+              "water": {
+                "cellCount": 0,
+                "bounds": null
+              }
+            }
+          },
+          "reason": "Map ownership regression fixture",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "assistant_message",
+          "content": "QA_LOOKUP_FINAL",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "run_recap",
+          "recap": {
+            "elapsedMs": 1191,
+            "usage": {
+              "calls": 2,
+              "promptTokens": 0,
+              "completionTokens": 0,
+              "callsWithoutUsage": 2,
+              "byModel": [
+                {
+                  "model": "gemini-3.7-flash",
+                  "calls": 2,
+                  "promptTokens": 0,
+                  "completionTokens": 0,
+                  "callsWithoutUsage": 2
+                }
+              ]
+            },
+            "toolCalls": 1,
+            "toolFailures": 0,
+            "ralphContinues": 0,
+            "volumeContinues": 0,
+            "proposedWrites": 0,
+            "stoppedReason": "final",
+            "process": [
+              {
+                "kind": "planner",
+                "at": "2026-09-05T23:46:43.202Z",
+                "text": "planner:skip composer:ask"
+              },
+              {
+                "kind": "tool",
+                "at": "2026-09-05T23:46:43.327Z",
+                "text": "get_map_region ok"
+              },
+              {
+                "kind": "end",
+                "at": "2026-09-05T23:46:44.144Z",
+                "text": "턴 종료(final) — 제안 0건 · 출력 토큰 ~40"
+              }
+            ]
+          },
+          "viewedMap": "qa_map_a"
+        }
+      ],
+      "result": {
+        "assistantText": "QA_LOOKUP_FINAL",
+        "proposedCalls": [],
+        "stoppedReason": "final",
+        "workPlan": {
+          "id": "wp_mtp17aq2",
+          "goal": "A-only patches",
+          "createdAt": "2026-09-05T23:46:12.362Z",
+          "layers": [
+            {
+              "id": "L1",
+              "title": "A patches",
+              "items": [
+                {
+                  "id": "L1-1",
+                  "title": "Apply patches",
+                  "instruction": "Clear two patches on qa_map_a; explicitly skip the remaining patch",
+                  "successTools": [
+                    "set_map_properties"
+                  ],
+                  "status": "skipped",
+                  "note": "Two patches drafted; third patch intentionally not built."
+                }
+              ]
+            }
+          ],
+          "currentLayerIndex": 0,
+          "currentItemId": null,
+          "targetMapId": "qa_map_a"
+        },
+        "recap": {
+          "elapsedMs": 1191,
+          "usage": {
+            "calls": 2,
+            "promptTokens": 0,
+            "completionTokens": 0,
+            "callsWithoutUsage": 2,
+            "byModel": [
+              {
+                "model": "gemini-3.7-flash",
+                "calls": 2,
+                "promptTokens": 0,
+                "completionTokens": 0,
+                "callsWithoutUsage": 2
+              }
+            ]
+          },
+          "toolCalls": 1,
+          "toolFailures": 0,
+          "ralphContinues": 0,
+          "volumeContinues": 0,
+          "proposedWrites": 0,
+          "stoppedReason": "final",
+          "process": [
+            {
+              "kind": "planner",
+              "at": "2026-09-05T23:46:43.202Z",
+              "text": "planner:skip composer:ask"
+            },
+            {
+              "kind": "tool",
+              "at": "2026-09-05T23:46:43.327Z",
+              "text": "get_map_region ok"
+            },
+            {
+              "kind": "end",
+              "at": "2026-09-05T23:46:44.144Z",
+              "text": "턴 종료(final) — 제안 0건 · 출력 토큰 ~40"
+            }
+          ]
+        }
+      },
+      "bViolations": []
+    },
+    {
+      "sequence": 46,
+      "scenario": "completed",
+      "type": "context-and-browser-closed"
+    },
+    {
+      "sequence": 47,
+      "scenario": "aborted",
+      "type": "boot-start"
+    },
+    {
+      "sequence": 48,
+      "scenario": "aborted",
+      "type": "snapshot",
+      "label": "00-A-before",
+      "state": {
+        "currentMapId": "qa_map_a",
+        "blueprintMapId": null,
+        "blueprintEntries": [],
+        "blueprintLayer": 0,
+        "filteredBlueprintCount": 0,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 0,
+        "runningToolName": "",
+        "runningToolMapId": null,
+        "chip": null,
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": true,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 0,
+        "changeCards": 0
+      }
+    },
+    {
+      "sequence": 49,
+      "scenario": "aborted",
+      "type": "booted",
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "agentMode": "chat"
+    },
+    {
+      "sequence": 50,
+      "scenario": "aborted",
+      "type": "composer-send",
+      "text": "On QA Map A (qa_map_a), use set_build_spec then clear_region for two separate patches; explicitly skip the remaining work with skip_work_item. Leave the third planned patch untouched."
+    },
+    {
+      "sequence": 51,
+      "scenario": "aborted",
+      "type": "LLM-no-tools",
+      "lookup": false
+    },
+    {
+      "sequence": 52,
+      "scenario": "aborted",
+      "type": "LLM-no-tools",
+      "lookup": false
+    },
+    {
+      "sequence": 53,
+      "scenario": "aborted",
+      "type": "LLM-tools",
+      "round": 1,
+      "reply": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_aborted_1_0",
+            "type": "function",
+            "function": {
+              "name": "set_build_spec",
+              "arguments": "{\"mapId\":\"qa_map_a\",\"title\":\"A-only patches\",\"assets\":[{\"id\":\"patch_0\",\"kind\":\"clear\",\"x\":3,\"y\":3,\"w\":3,\"h\":3,\"confirmDestroy\":true},{\"id\":\"patch_1\",\"kind\":\"clear\",\"x\":9,\"y\":3,\"w\":3,\"h\":3,\"confirmDestroy\":true},{\"id\":\"patch_2\",\"kind\":\"clear\",\"x\":15,\"y\":3,\"w\":3,\"h\":3,\"confirmDestroy\":true}],\"buildOrder\":[\"patch_0\",\"patch_1\",\"patch_2\"],\"reason\":\"Map ownership regression fixture\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 54,
+      "scenario": "aborted",
+      "type": "LLM-tools",
+      "round": 2,
+      "reply": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_aborted_2_0",
+            "type": "function",
+            "function": {
+              "name": "clear_region",
+              "arguments": "{\"mapId\":\"qa_map_a\",\"x\":3,\"y\":3,\"w\":3,\"h\":3,\"layer\":\"lower\",\"fill\":\"empty\",\"reason\":\"Map ownership regression fixture\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 55,
+      "scenario": "aborted",
+      "type": "signal",
+      "key": "spec"
+    },
+    {
+      "sequence": 56,
+      "scenario": "aborted",
+      "type": "snapshot",
+      "label": "01-A-plan",
+      "state": {
+        "currentMapId": "qa_map_a",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [
+          {
+            "id": "patch_0",
+            "kind": "clear",
+            "label": "정리",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 1,
+            "status": "planned"
+          },
+          {
+            "id": "patch_1",
+            "kind": "clear",
+            "label": "정리",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 2,
+            "status": "planned"
+          },
+          {
+            "id": "patch_2",
+            "kind": "clear",
+            "label": "정리",
+            "x": 15,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 3,
+            "status": "planned"
+          }
+        ],
+        "blueprintLayer": 1,
+        "filteredBlueprintCount": 3,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 0,
+        "runningToolName": "set_build_spec",
+        "runningToolMapId": "qa_map_a",
+        "chip": {
+          "text": "설정을 조정하는 중 · 0/0 셀",
+          "visible": true
+        },
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": true,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 0,
+        "changeCards": 0
+      }
+    },
+    {
+      "sequence": 57,
+      "scenario": "aborted",
+      "type": "release-LLM",
+      "gate": "first spatial tool"
+    },
+    {
+      "sequence": 58,
+      "scenario": "aborted",
+      "type": "LLM-tools",
+      "round": 3,
+      "reply": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_aborted_3_0",
+            "type": "function",
+            "function": {
+              "name": "clear_region",
+              "arguments": "{\"mapId\":\"qa_map_a\",\"x\":9,\"y\":3,\"w\":3,\"h\":3,\"layer\":\"lower\",\"fill\":\"empty\",\"reason\":\"Map ownership regression fixture\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 59,
+      "scenario": "aborted",
+      "type": "signal",
+      "key": "first-write"
+    },
+    {
+      "sequence": 60,
+      "scenario": "aborted",
+      "type": "signal",
+      "key": "first-ghost"
+    },
+    {
+      "sequence": 61,
+      "scenario": "aborted",
+      "type": "snapshot",
+      "label": "02-A-draft-pending-tool",
+      "state": {
+        "currentMapId": "qa_map_a",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [
+          {
+            "id": "patch_0",
+            "kind": "clear",
+            "label": "정리",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 1,
+            "status": "building"
+          },
+          {
+            "id": "patch_1",
+            "kind": "clear",
+            "label": "정리",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 2,
+            "status": "planned"
+          },
+          {
+            "id": "patch_2",
+            "kind": "clear",
+            "label": "정리",
+            "x": 15,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 3,
+            "status": "planned"
+          }
+        ],
+        "blueprintLayer": 1,
+        "filteredBlueprintCount": 3,
+        "ghostLayer": 1,
+        "filteredGhostCells": 9,
+        "allGhostCells": 9,
+        "runningToolName": "clear_region",
+        "runningToolMapId": "qa_map_a",
+        "chip": {
+          "text": "영역을 지우는 중 · 6/9 셀",
+          "visible": true
+        },
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": true,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 0,
+        "changeCards": 0
+      }
+    },
+    {
+      "sequence": 62,
+      "scenario": "aborted",
+      "type": "map-tree-click",
+      "id": "qa_map_b"
+    },
+    {
+      "sequence": 63,
+      "scenario": "aborted",
+      "type": "snapshot",
+      "label": "03-B-pending-tool",
+      "state": {
+        "currentMapId": "qa_map_b",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [
+          {
+            "id": "patch_0",
+            "kind": "clear",
+            "label": "정리",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 1,
+            "status": "building"
+          },
+          {
+            "id": "patch_1",
+            "kind": "clear",
+            "label": "정리",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 2,
+            "status": "planned"
+          },
+          {
+            "id": "patch_2",
+            "kind": "clear",
+            "label": "정리",
+            "x": 15,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 3,
+            "status": "planned"
+          }
+        ],
+        "blueprintLayer": 0,
+        "filteredBlueprintCount": 0,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 9,
+        "runningToolName": "clear_region",
+        "runningToolMapId": "qa_map_a",
+        "chip": null,
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": true,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 0,
+        "changeCards": 0
+      }
+    },
+    {
+      "sequence": 64,
+      "scenario": "aborted",
+      "type": "map-tree-click",
+      "id": "qa_map_a"
+    },
+    {
+      "sequence": 65,
+      "scenario": "aborted",
+      "type": "snapshot",
+      "label": "03a-A-draft-return",
+      "state": {
+        "currentMapId": "qa_map_a",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [
+          {
+            "id": "patch_0",
+            "kind": "clear",
+            "label": "정리",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 1,
+            "status": "building"
+          },
+          {
+            "id": "patch_1",
+            "kind": "clear",
+            "label": "정리",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 2,
+            "status": "planned"
+          },
+          {
+            "id": "patch_2",
+            "kind": "clear",
+            "label": "정리",
+            "x": 15,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 3,
+            "status": "planned"
+          }
+        ],
+        "blueprintLayer": 1,
+        "filteredBlueprintCount": 3,
+        "ghostLayer": 1,
+        "filteredGhostCells": 9,
+        "allGhostCells": 9,
+        "runningToolName": "clear_region",
+        "runningToolMapId": "qa_map_a",
+        "chip": {
+          "text": "영역을 지우는 중 · 9/9 셀",
+          "visible": true
+        },
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": true,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 0,
+        "changeCards": 0
+      }
+    },
+    {
+      "sequence": 66,
+      "scenario": "aborted",
+      "type": "map-tree-click",
+      "id": "qa_map_b"
+    },
+    {
+      "sequence": 67,
+      "scenario": "aborted",
+      "type": "release-LLM",
+      "gate": "second spatial tool while viewing B"
+    },
+    {
+      "sequence": 68,
+      "scenario": "aborted",
+      "type": "signal",
+      "key": "second-start"
+    },
+    {
+      "sequence": 69,
+      "scenario": "aborted",
+      "type": "LLM-tools",
+      "round": 4,
+      "reply": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_aborted_4_0",
+            "type": "function",
+            "function": {
+              "name": "skip_work_item",
+              "arguments": "{\"itemId\":\"L1-1\",\"note\":\"Two patches drafted; third patch intentionally not built.\",\"reason\":\"Map ownership regression fixture\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 70,
+      "scenario": "aborted",
+      "type": "signal",
+      "key": "second-write"
+    },
+    {
+      "sequence": 71,
+      "scenario": "aborted",
+      "type": "signal",
+      "key": "second-ghost"
+    },
+    {
+      "sequence": 72,
+      "scenario": "aborted",
+      "type": "snapshot",
+      "label": "04-B-late-tool-draft",
+      "state": {
+        "currentMapId": "qa_map_b",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [
+          {
+            "id": "patch_0",
+            "kind": "clear",
+            "label": "정리",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 1,
+            "status": "done"
+          },
+          {
+            "id": "patch_1",
+            "kind": "clear",
+            "label": "정리",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 2,
+            "status": "building"
+          },
+          {
+            "id": "patch_2",
+            "kind": "clear",
+            "label": "정리",
+            "x": 15,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 3,
+            "status": "planned"
+          }
+        ],
+        "blueprintLayer": 0,
+        "filteredBlueprintCount": 0,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 18,
+        "runningToolName": "clear_region",
+        "runningToolMapId": "qa_map_a",
+        "chip": null,
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": true,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 0,
+        "changeCards": 0
+      }
+    },
+    {
+      "sequence": 73,
+      "scenario": "aborted",
+      "type": "click-abort",
+      "viewedMap": "qa_map_b"
+    },
+    {
+      "sequence": 74,
+      "scenario": "aborted",
+      "type": "signal",
+      "key": "turn-end"
+    },
+    {
+      "sequence": 75,
+      "scenario": "aborted",
+      "type": "snapshot",
+      "label": "05-B-aborted",
+      "state": {
+        "currentMapId": "qa_map_b",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [
+          {
+            "id": "patch_0",
+            "kind": "clear",
+            "label": "정리",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 1,
+            "status": "planned"
+          },
+          {
+            "id": "patch_1",
+            "kind": "clear",
+            "label": "정리",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 2,
+            "status": "planned"
+          },
+          {
+            "id": "patch_2",
+            "kind": "clear",
+            "label": "정리",
+            "x": 15,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 3,
+            "status": "planned"
+          }
+        ],
+        "blueprintLayer": 0,
+        "filteredBlueprintCount": 0,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 0,
+        "runningToolName": "",
+        "runningToolMapId": null,
+        "chip": null,
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": true,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 0,
+        "changeCards": 0
+      }
+    },
+    {
+      "sequence": 76,
+      "scenario": "aborted",
+      "type": "release-LLM",
+      "gate": "late response after abort"
+    },
+    {
+      "sequence": 77,
+      "scenario": "aborted",
+      "type": "map-tree-click",
+      "id": "qa_map_a"
+    },
+    {
+      "sequence": 78,
+      "scenario": "aborted",
+      "type": "snapshot",
+      "label": "06-A-aborted-return",
+      "state": {
+        "currentMapId": "qa_map_a",
+        "blueprintMapId": "qa_map_a",
+        "blueprintEntries": [
+          {
+            "id": "patch_0",
+            "kind": "clear",
+            "label": "정리",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 1,
+            "status": "planned"
+          },
+          {
+            "id": "patch_1",
+            "kind": "clear",
+            "label": "정리",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 2,
+            "status": "planned"
+          },
+          {
+            "id": "patch_2",
+            "kind": "clear",
+            "label": "정리",
+            "x": 15,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "order": 3,
+            "status": "planned"
+          }
+        ],
+        "blueprintLayer": 1,
+        "filteredBlueprintCount": 3,
+        "ghostLayer": 0,
+        "filteredGhostCells": 0,
+        "allGhostCells": 0,
+        "runningToolName": "",
+        "runningToolMapId": null,
+        "chip": null,
+        "remotePersistenceEnabled": false,
+        "moduleStoreIdentity": true,
+        "mapDataUnchanged": {
+          "qa_map_a": true,
+          "qa_map_b": true
+        },
+        "changedLowerCells": 0,
+        "changeCards": 0
+      }
+    },
+    {
+      "sequence": 79,
+      "scenario": "aborted",
+      "type": "session-evidence",
+      "events": [
+        {
+          "type": "composer-turn",
+          "options": {
+            "autonomous": false,
+            "instruction": "On QA Map A (qa_map_a), use set_build_spec then clear_region for two separate patches; explicitly skip the remaining work with skip_work_item. Leave the third planned patch untouched.",
+            "scope": null,
+            "composerMode": "do"
+          }
+        },
+        {
+          "type": "status",
+          "text": "요청을 읽는 중…",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "status",
+          "text": "플래너(main LLM)가 작업 분해를 판단 중…",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "status",
+          "text": "플래너가 1레이어 / 1항목으로 분해했습니다.",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "work_plan",
+          "plan": {
+            "id": "wp_mtp196n6",
+            "goal": "A-only patches",
+            "createdAt": "2026-09-05T23:47:40.386Z",
+            "layers": [
+              {
+                "id": "L1",
+                "title": "A patches",
+                "items": [
+                  {
+                    "id": "L1-1",
+                    "title": "Apply patches",
+                    "instruction": "Clear two patches on qa_map_a; explicitly skip the remaining patch",
+                    "successTools": [
+                      "set_map_properties"
+                    ],
+                    "status": "in_progress"
+                  }
+                ]
+              }
+            ],
+            "currentLayerIndex": 0,
+            "currentItemId": "L1-1",
+            "targetMapId": "qa_map_a"
+          },
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "phase",
+          "value": "execute",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "tool_started",
+          "name": "set_build_spec",
+          "args": {
+            "mapId": "qa_map_a",
+            "title": "A-only patches",
+            "assets": [
+              {
+                "id": "patch_0",
+                "kind": "clear",
+                "x": 3,
+                "y": 3,
+                "w": 3,
+                "h": 3,
+                "confirmDestroy": true
+              },
+              {
+                "id": "patch_1",
+                "kind": "clear",
+                "x": 9,
+                "y": 3,
+                "w": 3,
+                "h": 3,
+                "confirmDestroy": true
+              },
+              {
+                "id": "patch_2",
+                "kind": "clear",
+                "x": 15,
+                "y": 3,
+                "w": 3,
+                "h": 3,
+                "confirmDestroy": true
+              }
+            ],
+            "buildOrder": [
+              "patch_0",
+              "patch_1",
+              "patch_2"
+            ]
+          },
+          "index": 1,
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "tool_call",
+          "name": "set_build_spec",
+          "args": {
+            "mapId": "qa_map_a",
+            "title": "A-only patches",
+            "assets": [
+              {
+                "id": "patch_0",
+                "kind": "clear",
+                "x": 3,
+                "y": 3,
+                "w": 3,
+                "h": 3,
+                "confirmDestroy": true
+              },
+              {
+                "id": "patch_1",
+                "kind": "clear",
+                "x": 9,
+                "y": 3,
+                "w": 3,
+                "h": 3,
+                "confirmDestroy": true
+              },
+              {
+                "id": "patch_2",
+                "kind": "clear",
+                "x": 15,
+                "y": 3,
+                "w": 3,
+                "h": 3,
+                "confirmDestroy": true
+              }
+            ],
+            "buildOrder": [
+              "patch_0",
+              "patch_1",
+              "patch_2"
+            ]
+          },
+          "result": {
+            "ok": true,
+            "summary": "밑그림 확정: A-only patches — 에셋 3개(clear)",
+            "data": {
+              "mapId": "qa_map_a",
+              "title": "A-only patches",
+              "assets": [
+                {
+                  "id": "patch_0",
+                  "kind": "clear",
+                  "x": 3,
+                  "y": 3,
+                  "w": 3,
+                  "h": 3,
+                  "confirmDestroy": true
+                },
+                {
+                  "id": "patch_1",
+                  "kind": "clear",
+                  "x": 9,
+                  "y": 3,
+                  "w": 3,
+                  "h": 3,
+                  "confirmDestroy": true
+                },
+                {
+                  "id": "patch_2",
+                  "kind": "clear",
+                  "x": 15,
+                  "y": 3,
+                  "w": 3,
+                  "h": 3,
+                  "confirmDestroy": true
+                }
+              ],
+              "buildOrder": [
+                "patch_0",
+                "patch_1",
+                "patch_2"
+              ]
+            }
+          },
+          "reason": "Map ownership regression fixture",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "tool_started",
+          "name": "clear_region",
+          "args": {
+            "mapId": "qa_map_a",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "layer": "lower",
+            "fill": "empty"
+          },
+          "index": 2,
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "tool_call",
+          "name": "clear_region",
+          "args": {
+            "mapId": "qa_map_a",
+            "x": 3,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "layer": "lower",
+            "fill": "empty"
+          },
+          "result": {
+            "ok": true,
+            "summary": "QA Map A - AI target 영역 (3,3)~(5,5) 정리 — 9칸 (lower, 하위=빈 칸)",
+            "diff": {
+              "tilesChanged": 9,
+              "mapPropertiesChanged": 0,
+              "eventsAdded": 0,
+              "eventsModified": 0,
+              "eventsRemoved": 0,
+              "mapsAdded": 0,
+              "mapsRemoved": 0,
+              "dbRecordsChanged": 0,
+              "tilesetsChanged": 0,
+              "switchesAdded": 0,
+              "variablesAdded": 0,
+              "worldEntitiesAdded": 0,
+              "worldEntitiesModified": 0,
+              "palettePresetsAdded": 0,
+              "palettePresetsModified": 0,
+              "endingsChanged": 0,
+              "sessionChanged": false,
+              "systemChanged": false,
+              "warnings": []
+            },
+            "data": {
+              "cleared": 9,
+              "events": []
+            }
+          },
+          "reason": "Map ownership regression fixture",
+          "viewedMap": "qa_map_a"
+        },
+        {
+          "type": "tool_started",
+          "name": "clear_region",
+          "args": {
+            "mapId": "qa_map_a",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "layer": "lower",
+            "fill": "empty"
+          },
+          "index": 3,
+          "viewedMap": "qa_map_b"
+        },
+        {
+          "type": "tool_call",
+          "name": "clear_region",
+          "args": {
+            "mapId": "qa_map_a",
+            "x": 9,
+            "y": 3,
+            "w": 3,
+            "h": 3,
+            "layer": "lower",
+            "fill": "empty"
+          },
+          "result": {
+            "ok": true,
+            "summary": "QA Map A - AI target 영역 (9,3)~(11,5) 정리 — 9칸 (lower, 하위=빈 칸)",
+            "diff": {
+              "tilesChanged": 9,
+              "mapPropertiesChanged": 0,
+              "eventsAdded": 0,
+              "eventsModified": 0,
+              "eventsRemoved": 0,
+              "mapsAdded": 0,
+              "mapsRemoved": 0,
+              "dbRecordsChanged": 0,
+              "tilesetsChanged": 0,
+              "switchesAdded": 0,
+              "variablesAdded": 0,
+              "worldEntitiesAdded": 0,
+              "worldEntitiesModified": 0,
+              "palettePresetsAdded": 0,
+              "palettePresetsModified": 0,
+              "endingsChanged": 0,
+              "sessionChanged": false,
+              "systemChanged": false,
+              "warnings": []
+            },
+            "data": {
+              "cleared": 9,
+              "events": []
+            }
+          },
+          "reason": "Map ownership regression fixture",
+          "viewedMap": "qa_map_b"
+        },
+        {
+          "type": "run_recap",
+          "recap": {
+            "elapsedMs": 15001,
+            "usage": {
+              "calls": 4,
+              "promptTokens": 0,
+              "completionTokens": 0,
+              "callsWithoutUsage": 4,
+              "byModel": [
+                {
+                  "model": "gemini-3.7-flash",
+                  "calls": 4,
+                  "promptTokens": 0,
+                  "completionTokens": 0,
+                  "callsWithoutUsage": 4
+                }
+              ]
+            },
+            "toolCalls": 3,
+            "toolFailures": 0,
+            "ralphContinues": 0,
+            "volumeContinues": 0,
+            "proposedWrites": 2,
+            "stoppedReason": "aborted",
+            "process": [
+              {
+                "kind": "planner",
+                "at": "2026-09-05T23:47:40.181Z",
+                "text": "planner:start"
+              },
+              {
+                "kind": "planner",
+                "at": "2026-09-05T23:47:40.394Z",
+                "text": "planner:new_plan items=1 layers=1"
+              },
+              {
+                "kind": "phase",
+                "at": "2026-09-05T23:47:40.410Z",
+                "text": "phase:execute"
+              },
+              {
+                "kind": "tool",
+                "at": "2026-09-05T23:47:40.977Z",
+                "text": "set_build_spec ok"
+              },
+              {
+                "kind": "tool",
+                "at": "2026-09-05T23:47:42.652Z",
+                "text": "clear_region ok ×2"
+              },
+              {
+                "kind": "end",
+                "at": "2026-09-05T23:47:54.824Z",
+                "text": "턴 중단(aborted): 사용자가 중단했습니다"
+              }
+            ]
+          },
+          "viewedMap": "qa_map_b"
+        }
+      ],
+      "result": {
+        "assistantText": "",
+        "proposedCalls": [
+          {
+            "name": "clear_region",
+            "args": {
+              "mapId": "qa_map_a",
+              "x": 3,
+              "y": 3,
+              "w": 3,
+              "h": 3,
+              "layer": "lower",
+              "fill": "empty"
+            },
+            "summary": "QA Map A - AI target 영역 (3,3)~(5,5) 정리 — 9칸 (lower, 하위=빈 칸)",
+            "result": {
+              "ok": true,
+              "summary": "QA Map A - AI target 영역 (3,3)~(5,5) 정리 — 9칸 (lower, 하위=빈 칸)",
+              "diff": {
+                "tilesChanged": 9,
+                "mapPropertiesChanged": 0,
+                "eventsAdded": 0,
+                "eventsModified": 0,
+                "eventsRemoved": 0,
+                "mapsAdded": 0,
+                "mapsRemoved": 0,
+                "dbRecordsChanged": 0,
+                "tilesetsChanged": 0,
+                "switchesAdded": 0,
+                "variablesAdded": 0,
+                "worldEntitiesAdded": 0,
+                "worldEntitiesModified": 0,
+                "palettePresetsAdded": 0,
+                "palettePresetsModified": 0,
+                "endingsChanged": 0,
+                "sessionChanged": false,
+                "systemChanged": false,
+                "warnings": []
+              },
+              "data": {
+                "cleared": 9,
+                "events": []
+              }
+            },
+            "reason": "Map ownership regression fixture",
+            "destructive": true,
+            "requiresApproval": true
+          },
+          {
+            "name": "clear_region",
+            "args": {
+              "mapId": "qa_map_a",
+              "x": 9,
+              "y": 3,
+              "w": 3,
+              "h": 3,
+              "layer": "lower",
+              "fill": "empty"
+            },
+            "summary": "QA Map A - AI target 영역 (9,3)~(11,5) 정리 — 9칸 (lower, 하위=빈 칸)",
+            "result": {
+              "ok": true,
+              "summary": "QA Map A - AI target 영역 (9,3)~(11,5) 정리 — 9칸 (lower, 하위=빈 칸)",
+              "diff": {
+                "tilesChanged": 9,
+                "mapPropertiesChanged": 0,
+                "eventsAdded": 0,
+                "eventsModified": 0,
+                "eventsRemoved": 0,
+                "mapsAdded": 0,
+                "mapsRemoved": 0,
+                "dbRecordsChanged": 0,
+                "tilesetsChanged": 0,
+                "switchesAdded": 0,
+                "variablesAdded": 0,
+                "worldEntitiesAdded": 0,
+                "worldEntitiesModified": 0,
+                "palettePresetsAdded": 0,
+                "palettePresetsModified": 0,
+                "endingsChanged": 0,
+                "sessionChanged": false,
+                "systemChanged": false,
+                "warnings": []
+              },
+              "data": {
+                "cleared": 9,
+                "events": []
+              }
+            },
+            "reason": "Map ownership regression fixture",
+            "destructive": true,
+            "requiresApproval": true
+          }
+        ],
+        "stoppedReason": "aborted",
+        "error": "사용자가 중단했습니다",
+        "workPlan": {
+          "id": "wp_mtp196n6",
+          "goal": "A-only patches",
+          "createdAt": "2026-09-05T23:47:40.386Z",
+          "layers": [
+            {
+              "id": "L1",
+              "title": "A patches",
+              "items": [
+                {
+                  "id": "L1-1",
+                  "title": "Apply patches",
+                  "instruction": "Clear two patches on qa_map_a; explicitly skip the remaining patch",
+                  "successTools": [
+                    "set_map_properties"
+                  ],
+                  "status": "in_progress"
+                }
+              ]
+            }
+          ],
+          "currentLayerIndex": 0,
+          "currentItemId": "L1-1",
+          "targetMapId": "qa_map_a"
+        },
+        "recap": {
+          "elapsedMs": 15001,
+          "usage": {
+            "calls": 4,
+            "promptTokens": 0,
+            "completionTokens": 0,
+            "callsWithoutUsage": 4,
+            "byModel": [
+              {
+                "model": "gemini-3.7-flash",
+                "calls": 4,
+                "promptTokens": 0,
+                "completionTokens": 0,
+                "callsWithoutUsage": 4
+              }
+            ]
+          },
+          "toolCalls": 3,
+          "toolFailures": 0,
+          "ralphContinues": 0,
+          "volumeContinues": 0,
+          "proposedWrites": 2,
+          "stoppedReason": "aborted",
+          "process": [
+            {
+              "kind": "planner",
+              "at": "2026-09-05T23:47:40.181Z",
+              "text": "planner:start"
+            },
+            {
+              "kind": "planner",
+              "at": "2026-09-05T23:47:40.394Z",
+              "text": "planner:new_plan items=1 layers=1"
+            },
+            {
+              "kind": "phase",
+              "at": "2026-09-05T23:47:40.410Z",
+              "text": "phase:execute"
+            },
+            {
+              "kind": "tool",
+              "at": "2026-09-05T23:47:40.977Z",
+              "text": "set_build_spec ok"
+            },
+            {
+              "kind": "tool",
+              "at": "2026-09-05T23:47:42.652Z",
+              "text": "clear_region ok ×2"
+            },
+            {
+              "kind": "end",
+              "at": "2026-09-05T23:47:54.824Z",
+              "text": "턴 중단(aborted): 사용자가 중단했습니다"
+            }
+          ]
+        }
+      },
+      "bViolations": []
+    },
+    {
+      "sequence": 80,
+      "scenario": "aborted",
+      "type": "context-and-browser-closed"
+    },
+    {
+      "sequence": 81,
+      "scenario": "aborted",
+      "type": "PASS",
+      "assertions": "actual composer/session/tool/apply; A-only draft and writes; B zero overlays/unchanged; completed retirement and lookup non-revival; abort rollback with no false completion"
+    },
+    {
+      "sequence": 82,
+      "scenario": "aborted",
+      "type": "cleanup",
+      "browserClosed": true,
+      "ownedServerStopped": true,
+      "reusedListener": false
+    }
+  ],
+  "states": {
+    "completed/00-A-before": {
+      "currentMapId": "qa_map_a",
+      "blueprintMapId": null,
+      "blueprintEntries": [],
+      "blueprintLayer": 0,
+      "filteredBlueprintCount": 0,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 0,
+      "runningToolName": "",
+      "runningToolMapId": null,
+      "chip": null,
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": true,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 0,
+      "changeCards": 0
+    },
+    "completed/01-A-plan": {
+      "currentMapId": "qa_map_a",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [
+        {
+          "id": "patch_0",
+          "kind": "clear",
+          "label": "정리",
+          "x": 3,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 1,
+          "status": "planned"
+        },
+        {
+          "id": "patch_1",
+          "kind": "clear",
+          "label": "정리",
+          "x": 9,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 2,
+          "status": "planned"
+        },
+        {
+          "id": "patch_2",
+          "kind": "clear",
+          "label": "정리",
+          "x": 15,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 3,
+          "status": "planned"
+        }
+      ],
+      "blueprintLayer": 1,
+      "filteredBlueprintCount": 3,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 0,
+      "runningToolName": "set_build_spec",
+      "runningToolMapId": "qa_map_a",
+      "chip": {
+        "text": "설정을 조정하는 중 · 0/0 셀",
+        "visible": true
+      },
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": true,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 0,
+      "changeCards": 0
+    },
+    "completed/02-A-draft-pending-tool": {
+      "currentMapId": "qa_map_a",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [
+        {
+          "id": "patch_0",
+          "kind": "clear",
+          "label": "정리",
+          "x": 3,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 1,
+          "status": "building"
+        },
+        {
+          "id": "patch_1",
+          "kind": "clear",
+          "label": "정리",
+          "x": 9,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 2,
+          "status": "planned"
+        },
+        {
+          "id": "patch_2",
+          "kind": "clear",
+          "label": "정리",
+          "x": 15,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 3,
+          "status": "planned"
+        }
+      ],
+      "blueprintLayer": 1,
+      "filteredBlueprintCount": 3,
+      "ghostLayer": 1,
+      "filteredGhostCells": 9,
+      "allGhostCells": 9,
+      "runningToolName": "clear_region",
+      "runningToolMapId": "qa_map_a",
+      "chip": {
+        "text": "영역을 지우는 중 · 6/9 셀",
+        "visible": true
+      },
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": true,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 0,
+      "changeCards": 0
+    },
+    "completed/03-B-pending-tool": {
+      "currentMapId": "qa_map_b",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [
+        {
+          "id": "patch_0",
+          "kind": "clear",
+          "label": "정리",
+          "x": 3,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 1,
+          "status": "building"
+        },
+        {
+          "id": "patch_1",
+          "kind": "clear",
+          "label": "정리",
+          "x": 9,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 2,
+          "status": "planned"
+        },
+        {
+          "id": "patch_2",
+          "kind": "clear",
+          "label": "정리",
+          "x": 15,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 3,
+          "status": "planned"
+        }
+      ],
+      "blueprintLayer": 0,
+      "filteredBlueprintCount": 0,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 9,
+      "runningToolName": "clear_region",
+      "runningToolMapId": "qa_map_a",
+      "chip": null,
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": true,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 0,
+      "changeCards": 0
+    },
+    "completed/03a-A-draft-return": {
+      "currentMapId": "qa_map_a",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [
+        {
+          "id": "patch_0",
+          "kind": "clear",
+          "label": "정리",
+          "x": 3,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 1,
+          "status": "building"
+        },
+        {
+          "id": "patch_1",
+          "kind": "clear",
+          "label": "정리",
+          "x": 9,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 2,
+          "status": "planned"
+        },
+        {
+          "id": "patch_2",
+          "kind": "clear",
+          "label": "정리",
+          "x": 15,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 3,
+          "status": "planned"
+        }
+      ],
+      "blueprintLayer": 1,
+      "filteredBlueprintCount": 3,
+      "ghostLayer": 1,
+      "filteredGhostCells": 9,
+      "allGhostCells": 9,
+      "runningToolName": "clear_region",
+      "runningToolMapId": "qa_map_a",
+      "chip": {
+        "text": "영역을 지우는 중 · 9/9 셀",
+        "visible": true
+      },
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": true,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 0,
+      "changeCards": 0
+    },
+    "completed/04-B-late-tool-draft": {
+      "currentMapId": "qa_map_b",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [
+        {
+          "id": "patch_0",
+          "kind": "clear",
+          "label": "정리",
+          "x": 3,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 1,
+          "status": "done"
+        },
+        {
+          "id": "patch_1",
+          "kind": "clear",
+          "label": "정리",
+          "x": 9,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 2,
+          "status": "building"
+        },
+        {
+          "id": "patch_2",
+          "kind": "clear",
+          "label": "정리",
+          "x": 15,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 3,
+          "status": "planned"
+        }
+      ],
+      "blueprintLayer": 0,
+      "filteredBlueprintCount": 0,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 18,
+      "runningToolName": "clear_region",
+      "runningToolMapId": "qa_map_a",
+      "chip": null,
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": true,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 0,
+      "changeCards": 0
+    },
+    "completed/05a-completion-focus": {
+      "currentMapId": "qa_map_a",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [],
+      "blueprintLayer": 0,
+      "filteredBlueprintCount": 0,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 0,
+      "runningToolName": "",
+      "runningToolMapId": null,
+      "chip": null,
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": false,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 18,
+      "changeCards": 1
+    },
+    "completed/05-B-applied": {
+      "currentMapId": "qa_map_b",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [],
+      "blueprintLayer": 0,
+      "filteredBlueprintCount": 0,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 0,
+      "runningToolName": "",
+      "runningToolMapId": null,
+      "chip": null,
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": false,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 18,
+      "changeCards": 1
+    },
+    "completed/06-A-applied-return": {
+      "currentMapId": "qa_map_a",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [],
+      "blueprintLayer": 0,
+      "filteredBlueprintCount": 0,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 0,
+      "runningToolName": "",
+      "runningToolMapId": null,
+      "chip": null,
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": false,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 18,
+      "changeCards": 1
+    },
+    "completed/07-A-lookup-in-flight": {
+      "currentMapId": "qa_map_a",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [],
+      "blueprintLayer": 0,
+      "filteredBlueprintCount": 0,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 0,
+      "runningToolName": "get_map_region",
+      "runningToolMapId": "qa_map_a",
+      "chip": {
+        "text": "맵을 살펴보는 중 · 0/0 셀",
+        "visible": true
+      },
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": false,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 18,
+      "changeCards": 1
+    },
+    "completed/08-A-lookup-settled": {
+      "currentMapId": "qa_map_a",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [],
+      "blueprintLayer": 0,
+      "filteredBlueprintCount": 0,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 0,
+      "runningToolName": "",
+      "runningToolMapId": null,
+      "chip": null,
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": false,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 18,
+      "changeCards": 1
+    },
+    "aborted/00-A-before": {
+      "currentMapId": "qa_map_a",
+      "blueprintMapId": null,
+      "blueprintEntries": [],
+      "blueprintLayer": 0,
+      "filteredBlueprintCount": 0,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 0,
+      "runningToolName": "",
+      "runningToolMapId": null,
+      "chip": null,
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": true,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 0,
+      "changeCards": 0
+    },
+    "aborted/01-A-plan": {
+      "currentMapId": "qa_map_a",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [
+        {
+          "id": "patch_0",
+          "kind": "clear",
+          "label": "정리",
+          "x": 3,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 1,
+          "status": "planned"
+        },
+        {
+          "id": "patch_1",
+          "kind": "clear",
+          "label": "정리",
+          "x": 9,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 2,
+          "status": "planned"
+        },
+        {
+          "id": "patch_2",
+          "kind": "clear",
+          "label": "정리",
+          "x": 15,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 3,
+          "status": "planned"
+        }
+      ],
+      "blueprintLayer": 1,
+      "filteredBlueprintCount": 3,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 0,
+      "runningToolName": "set_build_spec",
+      "runningToolMapId": "qa_map_a",
+      "chip": {
+        "text": "설정을 조정하는 중 · 0/0 셀",
+        "visible": true
+      },
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": true,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 0,
+      "changeCards": 0
+    },
+    "aborted/02-A-draft-pending-tool": {
+      "currentMapId": "qa_map_a",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [
+        {
+          "id": "patch_0",
+          "kind": "clear",
+          "label": "정리",
+          "x": 3,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 1,
+          "status": "building"
+        },
+        {
+          "id": "patch_1",
+          "kind": "clear",
+          "label": "정리",
+          "x": 9,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 2,
+          "status": "planned"
+        },
+        {
+          "id": "patch_2",
+          "kind": "clear",
+          "label": "정리",
+          "x": 15,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 3,
+          "status": "planned"
+        }
+      ],
+      "blueprintLayer": 1,
+      "filteredBlueprintCount": 3,
+      "ghostLayer": 1,
+      "filteredGhostCells": 9,
+      "allGhostCells": 9,
+      "runningToolName": "clear_region",
+      "runningToolMapId": "qa_map_a",
+      "chip": {
+        "text": "영역을 지우는 중 · 6/9 셀",
+        "visible": true
+      },
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": true,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 0,
+      "changeCards": 0
+    },
+    "aborted/03-B-pending-tool": {
+      "currentMapId": "qa_map_b",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [
+        {
+          "id": "patch_0",
+          "kind": "clear",
+          "label": "정리",
+          "x": 3,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 1,
+          "status": "building"
+        },
+        {
+          "id": "patch_1",
+          "kind": "clear",
+          "label": "정리",
+          "x": 9,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 2,
+          "status": "planned"
+        },
+        {
+          "id": "patch_2",
+          "kind": "clear",
+          "label": "정리",
+          "x": 15,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 3,
+          "status": "planned"
+        }
+      ],
+      "blueprintLayer": 0,
+      "filteredBlueprintCount": 0,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 9,
+      "runningToolName": "clear_region",
+      "runningToolMapId": "qa_map_a",
+      "chip": null,
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": true,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 0,
+      "changeCards": 0
+    },
+    "aborted/03a-A-draft-return": {
+      "currentMapId": "qa_map_a",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [
+        {
+          "id": "patch_0",
+          "kind": "clear",
+          "label": "정리",
+          "x": 3,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 1,
+          "status": "building"
+        },
+        {
+          "id": "patch_1",
+          "kind": "clear",
+          "label": "정리",
+          "x": 9,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 2,
+          "status": "planned"
+        },
+        {
+          "id": "patch_2",
+          "kind": "clear",
+          "label": "정리",
+          "x": 15,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 3,
+          "status": "planned"
+        }
+      ],
+      "blueprintLayer": 1,
+      "filteredBlueprintCount": 3,
+      "ghostLayer": 1,
+      "filteredGhostCells": 9,
+      "allGhostCells": 9,
+      "runningToolName": "clear_region",
+      "runningToolMapId": "qa_map_a",
+      "chip": {
+        "text": "영역을 지우는 중 · 9/9 셀",
+        "visible": true
+      },
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": true,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 0,
+      "changeCards": 0
+    },
+    "aborted/04-B-late-tool-draft": {
+      "currentMapId": "qa_map_b",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [
+        {
+          "id": "patch_0",
+          "kind": "clear",
+          "label": "정리",
+          "x": 3,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 1,
+          "status": "done"
+        },
+        {
+          "id": "patch_1",
+          "kind": "clear",
+          "label": "정리",
+          "x": 9,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 2,
+          "status": "building"
+        },
+        {
+          "id": "patch_2",
+          "kind": "clear",
+          "label": "정리",
+          "x": 15,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 3,
+          "status": "planned"
+        }
+      ],
+      "blueprintLayer": 0,
+      "filteredBlueprintCount": 0,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 18,
+      "runningToolName": "clear_region",
+      "runningToolMapId": "qa_map_a",
+      "chip": null,
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": true,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 0,
+      "changeCards": 0
+    },
+    "aborted/05-B-aborted": {
+      "currentMapId": "qa_map_b",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [
+        {
+          "id": "patch_0",
+          "kind": "clear",
+          "label": "정리",
+          "x": 3,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 1,
+          "status": "planned"
+        },
+        {
+          "id": "patch_1",
+          "kind": "clear",
+          "label": "정리",
+          "x": 9,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 2,
+          "status": "planned"
+        },
+        {
+          "id": "patch_2",
+          "kind": "clear",
+          "label": "정리",
+          "x": 15,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 3,
+          "status": "planned"
+        }
+      ],
+      "blueprintLayer": 0,
+      "filteredBlueprintCount": 0,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 0,
+      "runningToolName": "",
+      "runningToolMapId": null,
+      "chip": null,
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": true,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 0,
+      "changeCards": 0
+    },
+    "aborted/06-A-aborted-return": {
+      "currentMapId": "qa_map_a",
+      "blueprintMapId": "qa_map_a",
+      "blueprintEntries": [
+        {
+          "id": "patch_0",
+          "kind": "clear",
+          "label": "정리",
+          "x": 3,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 1,
+          "status": "planned"
+        },
+        {
+          "id": "patch_1",
+          "kind": "clear",
+          "label": "정리",
+          "x": 9,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 2,
+          "status": "planned"
+        },
+        {
+          "id": "patch_2",
+          "kind": "clear",
+          "label": "정리",
+          "x": 15,
+          "y": 3,
+          "w": 3,
+          "h": 3,
+          "order": 3,
+          "status": "planned"
+        }
+      ],
+      "blueprintLayer": 1,
+      "filteredBlueprintCount": 3,
+      "ghostLayer": 0,
+      "filteredGhostCells": 0,
+      "allGhostCells": 0,
+      "runningToolName": "",
+      "runningToolMapId": null,
+      "chip": null,
+      "remotePersistenceEnabled": false,
+      "moduleStoreIdentity": true,
+      "mapDataUnchanged": {
+        "qa_map_a": true,
+        "qa_map_b": true
+      },
+      "changedLowerCells": 0,
+      "changeCards": 0
+    }
+  },
+  "errors": [],
+  "routeErrors": [],
+  "blockedWrites": [
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/__oprn/ai-activity"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_conversations"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_conversations"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_conversations"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_conversations"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/project_commits"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_conversations"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_conversations"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "completed",
+      "method": "POST",
+      "path": "/rest/v1/ai_conversations"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/__oprn/ai-activity"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/rest/v1/ai_conversations"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/rest/v1/ai_conversations"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/rest/v1/ai_conversations"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/rest/v1/ai_activity_logs"
+    },
+    {
+      "scenario": "aborted",
+      "method": "POST",
+      "path": "/rest/v1/ai_conversations"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiBlockedContinue.test.ts test/aiOutcomePresentation.test.ts test/aiRunOutcomeIntegration.test.ts test/aiRunOutcomeLifecycle.test.ts test/aiNewGoalEarlyOwnership.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/aiBlockedContinue.test.ts (4 tests) 3171ms
+   ✓ offers the real Continue control when required work blocks without a budget stop  808ms
+   ✓ keeps one Continue control when a question follows blocked work  704ms
+   ✓ does not publish a Continue control when the blocked owner is retired  634ms
+   ✓ publishes the resumed unfinished result instead of the preceding question outcome  1024ms
+ ✓ test/aiRunOutcomeLifecycle.test.ts (6 tests) 2184ms
+   ✓ preserves the driver user-wait decision after a tool-budget return  345ms
+   ✓ retains both applied milestones and pending calls when a later transport fails  533ms
+   ✓ routes an explicit user withdrawal to the sole session authority  564ms
+ ❯ test/aiRunOutcomeIntegration.test.ts (7 tests | 1 failed) 1674ms
+   ✓ run outcome session boundaries > publishes one unassessed projection when a query returns  311ms
+   ✓ run outcome session boundaries > captures blocked execution when required work is skipped  629ms
+   × run outcome session boundaries > captures awaiting user when plan mode stops before execution 488ms
+     → expected { …(8) } to have property "runOutcome" with value { execution: 'awaiting-user', …(2) }
+   ✓ run outcome session boundaries > captures cancellation when the entry signal is already aborted 240ms
+   ✓ run outcome serialization > retains outcome and recap when activity crosses JSON serialization 3ms
+   ✓ run outcome serialization > roundtrips outcome when recap crosses its compact audit format 1ms
+   ✓ run outcome serialization > preserves absence when legacy activity and recap have no outcome 1ms
+ ✓ test/aiNewGoalEarlyOwnership.test.ts (16 tests) 13275ms
+   ✓ host new-goal early ownership > wiki boundary > archives real satisfaction before failure  837ms
+   ✓ host new-goal early ownership > wiki boundary > archives real satisfaction before cancel-in-boundary  691ms
+   ✓ host new-goal early ownership > wiki boundary > archives real satisfaction before already-aborted  730ms
+   ✓ host new-goal early ownership > intent boundary > archives real satisfaction before failure  682ms
+   ✓ host new-goal early ownership > intent boundary > archives real satisfaction before cancel-in-boundary  657ms
+   ✓ host new-goal early ownership > intent boundary > archives real satisfaction before already-aborted  697ms
+   ✓ host new-goal early ownership > archives once across repeated failed entries and keeps history immutable through later assessment and withdrawal  1780ms
+   ✓ host new-goal early ownership > captures the failed new owner's pre-await baseline rather than the old request or a later resume  1322ms
+   ✓ host new-goal early ownership > retains the current assessment for ask without new host authority  488ms
+   ✓ host new-goal early ownership > retains the current assessment for inferred-question without new host authority  559ms
+   ✓ host new-goal early ownership > retains the current assessment for model-reset without new host authority  582ms
+   ✓ host new-goal early ownership > retains the current assessment for model-continuation without new host authority  474ms
+   ✓ host new-goal early ownership > retains the current assessment for ask-new-goal without new host authority  516ms
+   ✓ host new-goal early ownership > does not let a model question classification undo explicit host new-goal ownership  719ms
+   ✓ host new-goal early ownership > retains genuine satisfaction and owned delivery as appropriate on same-goal failure  1364ms
+   ✓ host new-goal early ownership > retains genuine satisfaction and owned delivery as appropriate on resume failure  1173ms
+ ✓ test/aiOutcomePresentation.test.ts (93 tests) 1830ms
+   ✓ withdraws the exact real requirement only on user activation, retaining source and failed evidence  668ms
+   ✓ keeps rejected and busy actions from changing the canonical obligation  578ms
+   ✓ does not offer a user action for legacy read-only callers  533ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRunOutcomeIntegration.test.ts > run outcome session boundaries > captures awaiting user when plan mode stops before execution
+AssertionError: expected { …(8) } to have property "runOutcome" with value { execution: 'awaiting-user', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "delivery": "no-change",[22m
+[32m-   "execution": "awaiting-user",[39m
+[31m+   "execution": "blocked",[39m
+[2m    "goal": "unassessed",[22m
+[2m  }[22m
+
+ ❯ test/aiRunOutcomeIntegration.test.ts:41:20
+     39|     const result = await f.run([[plan()]], { composerMode: "plan" });
+     40|     // Then final is a wait rather than a completed goal.
+     41|     expect(result).toHaveProperty("runOutcome", { execution: "awaiting…
+       |                    ^
+     42|   });
+     43| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  1 failed | 125 passed (126)
+   Start at  02:05:50
+   Duration  34.54s (transform 15.46s, setup 0ms, collect 33.73s, tests 22.13s, environment 277ms, prepare 375ms)
+

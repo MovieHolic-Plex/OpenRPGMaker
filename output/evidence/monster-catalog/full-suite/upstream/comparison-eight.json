@@ -1,0 +1,133 @@
+[
+  {
+    "file": "aiImageGenerateField.test.ts",
+    "upstreamTests": 3,
+    "integrationTests": 3,
+    "integrationFailures": [
+      "aiImageGenerateField 종류별 프롬프트 접두사를 붙여 요청한다"
+    ],
+    "upstreamFailures": [
+      "aiImageGenerateField 종류별 프롬프트 접두사를 붙여 요청한다"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "aiImageGenerateField 종류별 프롬프트 접두사를 붙여 요청한다": true
+    }
+  },
+  {
+    "file": "databaseItemInspector.test.ts",
+    "upstreamTests": 26,
+    "integrationTests": 26,
+    "integrationFailures": [
+      "database item inspector form weapon type shows an equipment-tab door instead of the legacy equipment form"
+    ],
+    "upstreamFailures": [
+      "database item inspector form weapon type shows an equipment-tab door instead of the legacy equipment form"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "database item inspector form weapon type shows an equipment-tab door instead of the legacy equipment form": true
+    }
+  },
+  {
+    "file": "runtimePictureStacking.test.ts",
+    "upstreamTests": 8,
+    "integrationTests": 8,
+    "integrationFailures": [],
+    "upstreamFailures": [],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {}
+  },
+  {
+    "file": "toolSchemaProviderCompat.test.ts",
+    "upstreamTests": 6,
+    "integrationTests": 6,
+    "integrationFailures": [
+      "툴 스키마 프로바이더 호환(Gemini 엄격 검증) 전 툴 파라미터가 union type/비객체 properties/비배열 items 를 쓰지 않는다",
+      "툴 스키마 프로바이더 호환(Gemini 엄격 검증) 노출 스키마 어디에도 provider 금지 oneOf/anyOf 가 없다"
+    ],
+    "upstreamFailures": [
+      "툴 스키마 프로바이더 호환(Gemini 엄격 검증) 전 툴 파라미터가 union type/비객체 properties/비배열 items 를 쓰지 않는다",
+      "툴 스키마 프로바이더 호환(Gemini 엄격 검증) 노출 스키마 어디에도 provider 금지 oneOf/anyOf 가 없다"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "툴 스키마 프로바이더 호환(Gemini 엄격 검증) 전 툴 파라미터가 union type/비객체 properties/비배열 items 를 쓰지 않는다": true,
+      "툴 스키마 프로바이더 호환(Gemini 엄격 검증) 노출 스키마 어디에도 provider 금지 oneOf/anyOf 가 없다": true
+    }
+  },
+  {
+    "file": "interiorTerrainAutotiles.test.ts",
+    "upstreamTests": 4,
+    "integrationTests": 4,
+    "integrationFailures": [
+      "interior terrain autotiles (RM2k3 blocks ×6) 블랭크 프로젝트의 실내 타일셋에 지형/카펫 그룹 9종이 시드된다 (재적용은 idempotent)"
+    ],
+    "upstreamFailures": [
+      "interior terrain autotiles (RM2k3 blocks ×6) 블랭크 프로젝트의 실내 타일셋에 지형/카펫 그룹 9종이 시드된다 (재적용은 idempotent)"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "interior terrain autotiles (RM2k3 blocks ×6) 블랭크 프로젝트의 실내 타일셋에 지형/카펫 그룹 9종이 시드된다 (재적용은 idempotent)": true
+    }
+  },
+  {
+    "file": "runtimePlayWindowSkins.test.ts",
+    "upstreamTests": 13,
+    "integrationTests": 13,
+    "integrationFailures": [
+      "runtime play window skins — 상점 shop.css 의 가게 창 표면은 두 경로 모두 윈도스킨 칠 없이 유리 토큰을 쓴다"
+    ],
+    "upstreamFailures": [
+      "runtime play window skins — 상점 shop.css 의 가게 창 표면은 두 경로 모두 윈도스킨 칠 없이 유리 토큰을 쓴다"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "runtime play window skins — 상점 shop.css 의 가게 창 표면은 두 경로 모두 윈도스킨 칠 없이 유리 토큰을 쓴다": true
+    }
+  },
+  {
+    "file": "modalEscapeLayerGate.test.ts",
+    "upstreamTests": 3,
+    "integrationTests": 3,
+    "integrationFailures": [
+      "Escape 계층 게이트 body 에 오버레이를 붙이는 파일은 modalStack 에 참여하거나 이유와 함께 면제된다",
+      "Escape 계층 게이트 이번에 고친 표면들은 면제가 아니라 실제로 등록한다"
+    ],
+    "upstreamFailures": [
+      "Escape 계층 게이트 body 에 오버레이를 붙이는 파일은 modalStack 에 참여하거나 이유와 함께 면제된다",
+      "Escape 계층 게이트 이번에 고친 표면들은 면제가 아니라 실제로 등록한다"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "Escape 계층 게이트 body 에 오버레이를 붙이는 파일은 modalStack 에 참여하거나 이유와 함께 면제된다": true,
+      "Escape 계층 게이트 이번에 고친 표면들은 면제가 아니라 실제로 등록한다": true
+    }
+  },
+  {
+    "file": "npcCastSession.test.ts",
+    "upstreamTests": 2,
+    "integrationTests": 2,
+    "integrationFailures": [
+      "캐스트 라이터 세션 훅 대사 없는 NPC 3명이 놓인 라운드 뒤 캐스트 시트가 적용되고 세계관에 주민이 등록된다",
+      "캐스트 라이터 세션 훅 시트가 두 번 연속 깨지면 대체 문구 없이 모델에게 대사를 직접 쓰라고 재킥한다"
+    ],
+    "upstreamFailures": [
+      "캐스트 라이터 세션 훅 대사 없는 NPC 3명이 놓인 라운드 뒤 캐스트 시트가 적용되고 세계관에 주민이 등록된다",
+      "캐스트 라이터 세션 훅 시트가 두 번 연속 깨지면 대체 문구 없이 모델에게 대사를 직접 쓰라고 재킥한다"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "캐스트 라이터 세션 훅 대사 없는 NPC 3명이 놓인 라운드 뒤 캐스트 시트가 적용되고 세계관에 주민이 등록된다": true,
+      "캐스트 라이터 세션 훅 시트가 두 번 연속 깨지면 대체 문구 없이 모델에게 대사를 직접 쓰라고 재킥한다": true
+    }
+  }
+]

@@ -78,7 +78,7 @@ export function playShopkeeper(
         attachCursorMenu(overlay, {
           items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice, .runtime-shop-confirm")),
           cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-haggle-cancel']"),
-          sound: true,
+          sound: true, audioContext: { project: store.getCurrent(), session: scene.session },
         });
         return;
       }
@@ -86,7 +86,7 @@ export function playShopkeeper(
       attachCursorMenu(overlay, {
         items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice")),
         cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shopkeeper-close']"),
-        sound: true,
+        sound: true, audioContext: { project: store.getCurrent(), session: scene.session },
       });
     };
     const start = (customer: ShopkeeperCustomer): void => {
@@ -123,7 +123,7 @@ export function playShopkeeper(
       const customer = active;
       if (verdict.kind === "accept") {
         if (!takeSale(scene, shopKey, customer.itemId, verdict.price)) {
-          emitRuntimeJuice({ event: "menu-invalid" });
+          emitRuntimeJuice({ event: "menu-invalid", project: store.getCurrent(), session: scene.session });
           line = "선반에 물건이 없습니다.";
           active = undefined;
           setup = undefined;
@@ -136,7 +136,7 @@ export function playShopkeeper(
         active = undefined;
         setup = undefined;
         line = `${customer.name}: 이 값이면 사겠소.`;
-        emitRuntimeJuice({ event: "menu-confirm" });
+        emitRuntimeJuice({ event: "menu-confirm", project: store.getCurrent(), session: scene.session });
         render();
         return;
       }
@@ -253,7 +253,7 @@ function showNotice(scene: PlaySceneContext, _gold: string, message: string): Pr
     attachCursorMenu(overlay, {
       items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice")),
       cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-notice-close']"),
-      sound: true,
+      sound: true, audioContext: { project: store.getCurrent(), session: scene.session },
     });
   });
 }

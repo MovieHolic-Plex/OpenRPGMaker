@@ -1,19 +1,25 @@
-﻿import { declaredIntent } from "./intentFixture";
-import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
-import { runTool } from "@/editor/tools/toolRunner";
-import { TILE } from "@/project/defaults/constants";
-import { approvedVocabulary, unapprovedVocabulary } from "@/project/tileVocabulary";
-import { buildRegionTaskMessage, ensureRegionPlacementHarness, runRegionTask, type RegionTaskDeps } from "@/editor/regionTask/runRegionTask";
+import { afterEach, describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
-import { loadAiConfig, configForLiteModel, AI_CONFIG_STORAGE_KEY, DEFAULT_BASE_URL } from "@/ai/llmClient";
-import { toOpenAiTools } from "@/editor/tools";
+import type { ChatResult } from "@/ai/llmClient";
 import { beginAssistantToolDomainTurn, computeActiveToolDomains } from "@/editor/assistantToolMode";
+import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
+import { runRegionTask } from "@/editor/regionTask/runRegionTask";
+import { toOpenAiTools } from "@/editor/tools";
+import { runTool } from "@/editor/tools/toolRunner";
+import { createBlankProject, TILE } from "@/project/defaults";
+import { serialize } from "@/project/io";
 import type { Project } from "@/project/types";
-import fs from "node:fs";
+import { declaredIntent, fixedDeclarer } from "./intentFixture";
 
 const MAP_ID = "map_probe";
 const REGION = { x: 2, y: 2, width: 12, height: 10 };
+const TOOLS = ["author_house", "place_props", "place_npc"];
+const HOUSE = {
+  kind: "single", mapId: MAP_ID, kitId: "blue-stone",
+  wings: [{ x: 3, y: 3, w: 6, h: 6 }], interior: "exterior-only", door: true, yard: [],
+};
+const TREE = { mapId: MAP_ID, area: { x: 11, y: 3, w: 1, h: 2 }, material: "침엽수", count: 1, seed: 1 };
+const NPC = { mapId: MAP_ID, x: 12, y: 10, name: "테스트주민", pages: [{ lines: ["안녕"] }] };
 
 function makeMapProject(): Project {
   const context = { project: createBlankProject() };
@@ -24,207 +30,67 @@ function makeMapProject(): Project {
   return context.project;
 }
 
-function loadLLMKey(): { apiKey: string; baseUrl: string } | null {
-  try {
-    const raw = fs.readFileSync(".env.local", "utf8");
-    const key = raw.match(/^\s*VITE_LLM_API_KEY\s*=\s*(.+)\s*$/m)?.[1]?.trim().replace(/^["']|["']$/g, "");
-    const base = raw.match(/^\s*VITE_LLM_API_URL\s*=\s*(.+)\s*$/m)?.[1]?.trim().replace(/^["']|["']$/g, "") || DEFAULT_BASE_URL;
-    if (!key) return null;
-    return { apiKey: key, baseUrl: base.startsWith("http") ? base : DEFAULT_BASE_URL };
-  } catch {
-    return null;
-  }
+function expectTreeAndNpc(project: Project): void {
+  const map = project.maps[MAP_ID];
+  expect(map.upperTiles[3 * map.width + 11]).toBe(260);
+  expect(map.lowerTiles[4 * map.width + 11]).toBe(290);
+  const npc = map.events.find((event) => event.x === NPC.x && event.y === NPC.y);
+  expect(npc).toBeDefined();
+  const graphic = npc?.pages?.[0]?.graphic;
+  expect(graphic).toBeDefined();
+  expect(graphic).not.toMatchObject({ transparent: true });
+  expect(map.lowerTiles.some((tile) => tile !== TILE.GRASS && tile !== 290)).toBe(true);
 }
+
+afterEach(() => getPendingRegionApply()?.discard());
 
 describe("region AI house/tree/npc probe", () => {
   it("reports approved vocab + direct tool success for place_props/place_npc/author_house", () => {
-    const project = makeMapProject();
-    const tilesetId = project.maps[MAP_ID].tilesetId;
-    const tileset = project.tilesets[tilesetId];
-    const approved = approvedVocabulary(tileset);
-    const unapproved = unapprovedVocabulary(tileset, 20);
-    const report = {
-      tilesetId,
-      groups: (tileset.tileGroups ?? []).map((g) => ({ id: g.id, name: g.name, origin: (g as { origin?: string }).origin })),
-      approvedGroups: approved.groups.map((g) => ({ id: g.id, role: g.role })),
-      approvedTilesSample: approved.tiles.slice(0, 15),
-      unapprovedSample: unapproved,
-    };
-    // eslint-disable-next-line no-console
-    console.log("VOCAB", JSON.stringify(report, null, 2));
-
-    const ctx = { project };
-    const house = runTool(ctx, "author_house", {
-      kind: "single",
-      mapId: MAP_ID,
-      kitId: "blue-stone",
-      wings: [{ x: 3, y: 3, w: 6, h: 6 }],
-      interior: "exterior-only",
-      door: true,
-      yard: [],
-    });
-    console.log("HOUSE", house.ok, house.summary);
-
-    ensureRegionPlacementHarness(tileset);
-        const props = runTool(ctx, "place_props", {
-      mapId: MAP_ID,
-      area: { x: 10, y: 3, w: 6, h: 6 },
-      material: "침엽수",
-      count: 1,
-      seed: 1,
-    });
-    console.log("PROPS", props.ok, props.summary, "material=침엽수");
-
-    const npc = runTool(ctx, "place_npc", {
-      mapId: MAP_ID,
-      x: 12,
-      y: 12,
-      name: "테스트주민",
-      pages: [{ lines: ["안녕"] }],
-    });
-    console.log("NPC", npc.ok, npc.summary);
-    if (npc.ok) {
-      const ev = ctx.project.maps[MAP_ID].events?.find((e) => e.pages?.[0]?.name === "테스트주민");
-      console.log("NPC_GRAPHIC", JSON.stringify(ev?.pages?.[0]?.graphic ?? null));
-      expect(ev?.pages?.[0]?.graphic && "transparent" in (ev.pages[0].graphic as object)
-        ? (ev.pages[0].graphic as { transparent?: boolean }).transparent
-        : false).not.toBe(true);
+    const ctx = { project: makeMapProject() };
+    for (const [name, args] of [["author_house", HOUSE], ["place_props", TREE], ["place_npc", NPC]] as const) {
+      const result = runTool(ctx, name, args);
+      expect(result.ok, result.summary).toBe(true);
     }
-
-    // domain exposure for region message
-    const msg = buildRegionTaskMessage("집과 나무 1개, npc 배치", "프로브", MAP_ID, REGION, tileset);
-    const intent = declaredIntent({ space: "outdoor", useSelection: true, tools: ["author_house", "place_props", "place_npc"] });
+    expectTreeAndNpc(ctx.project);
+    const intent = declaredIntent({ space: "outdoor", useSelection: true, tools: TOOLS });
     beginAssistantToolDomainTurn(intent);
-    const domains = computeActiveToolDomains(intent);
-    console.log("MSG_HEAD", msg.slice(0, 80));
-    const tools = toOpenAiTools(undefined, { domains }).map((t) => t.function.name);
-    console.log("DOMAINS", [...domains]);
-    console.log("HAS_TOOLS", {
-      place_props: tools.includes("place_props"),
-      place_npc: tools.includes("place_npc"),
-      author_house: tools.includes("author_house"),
-      toolCount: tools.length,
-    });
-
-    expect(house.ok).toBe(true);
-    expect(props.ok).toBe(true);
-    expect(npc.ok).toBe(true);
-    expect(tools).toContain("place_props");
-    expect(tools).toContain("place_npc");
-    expect(tools).toContain("author_house");
+    const tools = toOpenAiTools(undefined, { domains: computeActiveToolDomains(intent) }).map((tool) => tool.function.name);
+    for (const name of TOOLS) expect(tools).toContain(name);
   });
 
-  it("live region task LLM: 집과 나무 1개 npc 배치", async () => {
-    const creds = loadLLMKey();
-    if (!creds) {
-      console.log("SKIP live LLM: no VITE_LLM_API_KEY");
-      return;
-    }
+  it("applies a deterministic model tool transcript through the real region session", async () => {
+    // Only the external model response is supplied. Intent routing, tool execution,
+    // region clipping/review and pending application remain the production path.
     const project = makeMapProject();
-    // inject config into localStorage for loadAiConfig
-    const storage = new Map<string, string>();
-    storage.set(
-      AI_CONFIG_STORAGE_KEY,
-      JSON.stringify({
-        authMode: "apiKey",
-        apiKey: creds.apiKey,
-        baseUrl: creds.baseUrl,
-        model: "stub-model",
-        liteModel: "google/gemini-3.1-flash-lite",
-        maxTokens: 8192,
-        maxToolCalls: 40,
-        reasoningEffort: "low",
-      }),
-    );
-    Object.defineProperty(globalThis, "localStorage", {
-      configurable: true,
-      value: {
-        getItem: (k: string) => storage.get(k) ?? null,
-        setItem: (k: string, v: string) => storage.set(k, v),
-        removeItem: (k: string) => storage.delete(k),
-        clear: () => storage.clear(),
-      },
-    });
-
-    const toolCalls: string[] = [];
-    const deps: RegionTaskDeps = {
+    const before = serialize(project);
+    const calls = [["author_house", HOUSE], ["place_props", TREE], ["place_npc", NPC]] as const;
+    let nextCall = 0;
+    const observed: string[] = [];
+    const result = await runRegionTask({
+      mapId: MAP_ID, region: REGION, instruction: "집과 나무 1개, npc 배치",
+      onEvent: (event) => { if (event.type === "tool_call") observed.push(event.name); },
+    }, {
       getProject: () => project,
-      applyProject: (p) => {
-        Object.assign(project, p);
-      },
-      createSession: (p, mapId) =>
-        new AssistantSession(p, {
-          config: configForLiteModel(loadAiConfig()),
-          contextOptions: { currentMapId: mapId },
-        }),
-    };
-
-    const result = await runRegionTask(
-      {
-        mapId: MAP_ID,
-        region: REGION,
-        instruction: "집과 나무 1개, npc 배치",
-        onEvent: (ev) => {
-          if (ev.type === "tool_call") toolCalls.push(ev.name);
-          if (ev.type === "status") console.log("STATUS", ev.text);
+      applyProject: (applied) => { Object.assign(project, applied); },
+      createSession: (draft, mapId) => new AssistantSession(draft, {
+        config: { authMode: "apiKey", agentMode: "chat", baseUrl: "http://model.invalid", apiKey: "test", model: "transcript", maxToolCalls: 12, maxTokens: 8192 },
+        contextOptions: { currentMapId: mapId },
+        declareIntent: fixedDeclarer({ mode: "modify", space: "outdoor", useSelection: true, tools: TOOLS }),
+        yieldToUi: async () => {},
+        chat: async (): Promise<ChatResult> => {
+          const call = calls[nextCall++];
+          if (!call) return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
+          return { message: { role: "assistant", content: null, tool_calls: [{
+            id: `call-${nextCall}`, type: "function", function: { name: call[0], arguments: JSON.stringify(call[1]) },
+          }] }, finishReason: "tool_calls" };
         },
-      },
-      deps,
-    );
-
-    // 영역 작업 자체의 pending/apply 계약은 채팅 승인 카드와 별개다. 라이브 결과를
-    // 실제 프로젝트에 반영해 배치 결과를 검증한다.
+      }),
+    });
+    expect(result.ok, result.error).toBe(true);
+    expect(observed).toEqual(TOOLS);
+    expect(result.pending).toBeDefined();
+    expect(serialize(project)).toBe(before);
     result.pending?.apply();
-
-    const map = project.maps[MAP_ID];
-    const upperNonEmpty = map.upperTiles.filter((t) => t >= 0 && t !== TILE.EMPTY).length;
-    const lowerDiff = map.lowerTiles.filter((t) => t !== TILE.GRASS).length;
-    const events = map.events ?? [];
-    console.log(
-      "LIVE_RESULT",
-      JSON.stringify(
-        {
-          ok: result.ok,
-          applied: result.applied,
-          changedCells: result.changedCells,
-          changedEvents: result.changedEvents,
-          clippedCells: result.clippedCells,
-          proposedCalls: result.proposedCalls,
-          error: result.error,
-          toolCalls,
-          assistantText: result.assistantText?.slice(0, 400),
-          upperNonEmpty,
-          lowerDiff,
-          events: events.map((e) => ({
-            id: e.id,
-            name: e.pages?.[0]?.name ?? e.id,
-            x: e.x,
-            y: e.y,
-            graphic: e.pages?.[0]?.graphic ?? null,
-          })),
-        },
-        null,
-        2,
-      ),
-    );
-
-    expect(result.ok).toBe(true);
-    expect(toolCalls.length).toBeGreaterThan(0);
-    // After harness: tree placement and non-transparent NPC are expected when lite model cooperates.
-    const treeCalls = toolCalls.filter((name) => name === "place_props").length;
-    console.log("TREE_CALLS", treeCalls, "upperNonEmpty", upperNonEmpty);
-    if (toolCalls.includes("place_props") || toolCalls.includes("author_house")) {
-      expect(result.applied || result.changedCells + result.changedEvents > 0).toBe(true);
-    }
-    const villager = events.find((event) => event.pages?.[0]?.graphic && !("transparent" in (event.pages[0].graphic as object) && (event.pages[0].graphic as { transparent?: boolean }).transparent));
-    if (toolCalls.includes("place_npc") || toolCalls.includes("make_villager")) {
-      expect(events.length).toBeGreaterThan(0);
-      // graphic may still be door object; at least one non-transparent character-ish event preferred
-      console.log("NON_TRANSPARENT_EVENTS", events.filter((e) => {
-        const g = e.pages?.[0]?.graphic as { transparent?: boolean } | undefined;
-        return g && !g.transparent;
-      }).length);
-    }
-    void villager;
-  }, 180_000);
+    expectTreeAndNpc(project);
+  });
 });

@@ -284,8 +284,10 @@
  "changeFace": {
   "reactions": {
    "event-command-face-ai-prompt": "no-change",
+   "event-command-face-appearance": "single-option",
    "event-command-face-flip-horizontal": "컨트롤 값 변경 1개 [event-command-face-flip-horizontal: input[checkbox]{}→input[checkbox]{checked}] | 클래스 신규 1개 [flipped]",
    "event-command-face-position": "no-change",
+   "event-command-face-presentation": "no-change",
    "event-command-face-resource": "검증텍스트 변경 2개 [event-command-face-preview: \"res#미리보기를 찾을 수 없습니다.\"→\"__probe__미리보기를 찾을 수 없습니다.\", event-command-face-preview-host: \"res#미리보기를 찾을 수 없습니다.\"→\"__probe__미리보기를 찾을 수 없습니다.\"]"
   },
   "initial": {
@@ -293,6 +295,9 @@
     "event-command-edit-summary",
     "event-command-face-ai-generate",
     "event-command-face-ai-prompt",
+    "event-command-face-ai-queue",
+    "event-command-face-ai-queue-list",
+    "event-command-face-appearance",
     "event-command-face-bust-preset",
     "event-command-face-crop",
     "event-command-face-editor",
@@ -415,6 +420,7 @@
     "event-command-face-option-generated-actor-hero-02-face-15",
     "event-command-face-option-generated-actor-hero-03-face",
     "event-command-face-position",
+    "event-command-face-presentation",
     "event-command-face-preview",
     "event-command-face-preview-host",
     "event-command-face-resource",
@@ -423,8 +429,13 @@
     "faceset-crop-sheet"
    ],
    "classes": [
+    "ai-image-queue",
+    "ai-image-queue-composer",
+    "ai-image-queue-empty",
+    "ai-image-queue-list",
     "btn",
     "cream-command-form-head",
+    "db-field",
     "event-command-face-bust-preset",
     "event-command-face-clear",
     "event-command-face-crop",
@@ -457,6 +468,7 @@
    "controls": {
     "event-command-face-ai-generate": "button{}",
     "event-command-face-ai-prompt": "input[text]{}",
+    "event-command-face-appearance": "select{}",
     "event-command-face-bust-preset": "button{}",
     "event-command-face-flip-horizontal": "input[checkbox]{}",
     "event-command-face-full-preset": "button{}",
@@ -574,18 +586,28 @@
     "event-command-face-option-generated-actor-hero-02-face-15": "button{}",
     "event-command-face-option-generated-actor-hero-03-face": "button{}",
     "event-command-face-position": "select{}",
+    "event-command-face-presentation": "select{disabled}",
     "event-command-face-resource": "input[text]{}",
     "event-command-face-resource-clear": "button{}",
     "event-command-face-resource-set": "button{}"
    },
    "selectOptions": {
+    "event-command-face-appearance": [
+     ""
+    ],
     "event-command-face-position": [
      "left",
      "right"
+    ],
+    "event-command-face-presentation": [
+     "face",
+     "bust"
     ]
    },
    "labels": [
     "AI로 만들기",
+    "공유 외형 표시얼굴흉상 (없으면 얼굴)",
+    "공유 캐릭터 외형연결 안 함 · 직접 지정한 그림",
     "얼굴 고르기…",
     "전신",
     "좌우 반전",
@@ -595,20 +617,23 @@
    ],
    "tags": {
     "button": 118,
-    "div": 129,
+    "div": 131,
     "img": 113,
     "input": 3,
-    "label": 2,
-    "option": 2,
-    "p": 1,
-    "select": 1,
-    "span": 3,
+    "label": 4,
+    "option": 5,
+    "p": 2,
+    "select": 3,
+    "span": 5,
     "strong": 1
    },
    "tagByTestid": {
     "event-command-edit-summary": "div",
     "event-command-face-ai-generate": "button",
     "event-command-face-ai-prompt": "input",
+    "event-command-face-ai-queue": "div",
+    "event-command-face-ai-queue-list": "div",
+    "event-command-face-appearance": "select",
     "event-command-face-bust-preset": "button",
     "event-command-face-crop": "div",
     "event-command-face-editor": "div",
@@ -731,6 +756,7 @@
     "event-command-face-option-generated-actor-hero-02-face-15": "button",
     "event-command-face-option-generated-actor-hero-03-face": "button",
     "event-command-face-position": "select",
+    "event-command-face-presentation": "select",
     "event-command-face-preview": "div",
     "event-command-face-preview-host": "div",
     "event-command-face-resource": "input",
@@ -743,12 +769,17 @@
     "event-command-face-preview": "res#미리보기를 찾을 수 없습니다.",
     "event-command-face-preview-host": "res#미리보기를 찾을 수 없습니다."
    },
-   "testidCount": 131,
-   "controlCount": 122
+   "testidCount": 135,
+   "controlCount": 124
   },
   "classes": [
+   "ai-image-queue",
+   "ai-image-queue-composer",
+   "ai-image-queue-empty",
+   "ai-image-queue-list",
    "btn",
    "cream-command-form-head",
+   "db-field",
    "event-command-face-bust-preset",
    "event-command-face-clear",
    "event-command-face-crop",
@@ -779,7 +810,7 @@
    "page3-resource-row",
    "small"
   ],
-  "probeCount": 4,
+  "probeCount": 6,
   "reactingCount": 2
  },
  "choices": {
@@ -2559,12 +2590,12 @@
    "move-route-npc-target-map-input": "single-option",
    "move-route-npc-target-x-input": "no-change",
    "move-route-npc-target-y-input": "no-change",
-   "move-route-repeat-checkbox": "태그 개수 [div 25→26, span 107→108] | 컨트롤 값 변경 1개 [move-route-repeat-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음반\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령…(절단: 총 394자)",
-   "move-route-skippable-checkbox": "태그 개수 [div 25→26, span 107→108] | 컨트롤 값 변경 1개 [move-route-skippable-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음불\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동…(절단: 총 397자)",
+   "move-route-repeat-checkbox": "태그 개수 [div 26→27, span 107→108] | 컨트롤 값 변경 1개 [move-route-repeat-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음반\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령…(절단: 총 394자)",
+   "move-route-skippable-checkbox": "태그 개수 [div 26→27, span 107→108] | 컨트롤 값 변경 1개 [move-route-skippable-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음불\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동…(절단: 총 397자)",
    "move-route-sound-id-input": "no-change",
    "move-route-switch-id-input": "no-change",
-   "move-route-target-select": "컨트롤 값 변경 1개 [move-route-event-id-input: input[text]{}→input[text]{nodisplay}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게이 이벤트시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게이 이벤트시작점 · 오른쪽에서 이동 명령을 추가하세요이동…(절단: 총 307자)",
-   "move-route-wait-checkbox": "태그 개수 [div 25→26, span 107→108] | 컨트롤 값 변경 1개 [move-route-wait-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음완\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없…(절단: 총 392자)"
+   "move-route-target-select": "컨트롤 값 변경 2개 [move-route-event-id-input: input[text]{}→input[text]{nodisplay}, move-route-event-picker-open: button{}→button{nodisplay}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게이 이벤트시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 …(절단: 총 365자)",
+   "move-route-wait-checkbox": "태그 개수 [div 26→27, span 107→108] | 컨트롤 값 변경 1개 [move-route-wait-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음완\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없…(절단: 총 392자)"
   },
   "initial": {
    "testids": [
@@ -2622,6 +2653,8 @@
     "move-route-editor",
     "move-route-event-id-input",
     "move-route-event-name",
+    "move-route-event-picker",
+    "move-route-event-picker-open",
     "move-route-graphic-id-input",
     "move-route-help",
     "move-route-hop-duration-input",
@@ -2685,6 +2718,8 @@
     "move-route-summary",
     "move-route-target-label",
     "move-route-target-name",
+    "move-route-target-picker",
+    "move-route-target-picker-open",
     "move-route-target-row",
     "move-route-toolbar",
     "small"
@@ -2737,6 +2772,7 @@
     "move-route-clear": "button{disabled}",
     "move-route-delete-selected": "button{disabled}",
     "move-route-event-id-input": "input[text]{}",
+    "move-route-event-picker-open": "button{}",
     "move-route-graphic-id-input": "input[text]{}",
     "move-route-hop-duration-input": "input[number]{}",
     "move-route-hop-dx-input": "input[number]{}",
@@ -2779,6 +2815,7 @@
     "대기",
     "막히면 건너뛰기",
     "모습",
+    "목록",
     "무작위로 이동",
     "무작위로 향함",
     "반복",
@@ -2833,10 +2870,10 @@
     "효과음 재생..."
    ],
    "tags": {
-    "button": 46,
+    "button": 47,
     "circle": 10,
     "details": 1,
-    "div": 25,
+    "div": 26,
     "input": 13,
     "label": 14,
     "option": 8,
@@ -2901,6 +2938,8 @@
     "move-route-editor": "div",
     "move-route-event-id-input": "input",
     "move-route-event-name": "span",
+    "move-route-event-picker": "div",
+    "move-route-event-picker-open": "button",
     "move-route-graphic-id-input": "input",
     "move-route-help": "p",
     "move-route-hop-duration-input": "input",
@@ -2928,8 +2967,8 @@
     "move-route-path-preview": "누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음",
     "move-route-summary": "(이동 단계 없음)"
    },
-   "testidCount": 74,
-   "controlCount": 62
+   "testidCount": 76,
+   "controlCount": 63
   },
   "classes": [
    "btn",
@@ -2975,6 +3014,8 @@
    "move-route-summary",
    "move-route-target-label",
    "move-route-target-name",
+   "move-route-target-picker",
+   "move-route-target-picker-open",
    "move-route-target-row",
    "move-route-toolbar",
    "small"
@@ -3536,8 +3577,8 @@
    "battle-processing-flow-select": "no-change",
    "battle-processing-lose-checkbox": "컨트롤 값 변경 1개 [battle-processing-lose-checkbox: input[checkbox]{hidden}→input[checkbox]{checked,hidden}] | 검증텍스트 변경 1개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔(적 그룹 선택)·도망 가능패배 허용확인 시 전투 시작 → battle\"]",
    "battle-processing-lose-select": "컨트롤 값 변경 1개 [battle-processing-lose-checkbox: input[checkbox]{hidden}→input[checkbox]{checked,hidden}] | 검증텍스트 변경 1개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔(적 그룹 선택)·도망 가능패배 허용확인 시 전투 시작 → battle\"]",
-   "battle-processing-troop-select": "태그 개수 [img 등장(1), span 17→19] | 검증텍스트 변경 1개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔슬라임 정찰대·도망 가능지면 게임 끝EXP # · Gold #확인 시 \"] | 클래스 소실 3개 [empty, is-empty, rich-record-initial] | 클래스 신규 4개 [record-picker-card-copy, record-picker-card-subtitle, rich-preview-caption-in…(절단: 총 323자)",
-   "battle-processing-troop-source": "testid 소실 2종 [battle-processing-troop-select, battle-processing-troop-select-card] | testid 신규 3종 [battle-processing-troop-variable, battle-processing-troop-variable-browse, battle-processing-troop-variable-empty-hint] | 태그 개수 [button 12→13, option 13→10, span 17→15] | 컨트롤 소실 1개 [battle-processing-t…(절단: 총 969자)"
+   "battle-processing-troop-select": "태그 개수 [img 등장(1), span 17→19] | 검증텍스트 변경 2개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔슬라임 정찰대·도망 가능지면 게임 끝EXP # · Gold #확인 시 \", battle-processing-warning: \"전투를 시작할 수 없습니다. 적 그룹을 선택하세요.\"→\"\"] | 클래스 소실 3개 [empty, is-empty, rich-record-initial] | 클래스 신규 4개 [record-picker-c…(절단: 총 385자)",
+   "battle-processing-troop-source": "testid 소실 2종 [battle-processing-troop-select, battle-processing-troop-select-card] | testid 신규 3종 [battle-processing-troop-variable, battle-processing-troop-variable-browse, battle-processing-troop-variable-empty-hint] | 태그 개수 [button 12→13, option 13→10, span 17→15] | 컨트롤 소실 1개 [battle-processing-t…(절단: 총 1061자)"
   },
   "initial": {
    "testids": [
@@ -3723,7 +3764,7 @@
     "battle-processing-branch-hint": "켜면 명령 리스트에 승리·패배·도망 마커가 생깁니다. 본문은 마커 아래에서 편집하세요.",
     "battle-processing-intent": "이 이벤트에서 전투를 시작합니다",
     "battle-processing-preview": "⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → battleResult 저장",
-    "battle-processing-warning": "적 그룹을 선택하세요. 빈 전투는 실행 시 실패합니다.",
+    "battle-processing-warning": "전투를 시작할 수 없습니다. 적 그룹을 선택하세요.",
     "event-command-edit-summary": "전투"
    },
    "testidCount": 31,
@@ -4000,9 +4041,12 @@
  },
  "changeExp": {
   "reactions": {
-   "change-exp-actor-select": "태그 개수 [img 등장(2), span 10→14] | 검증텍스트 변경 1개 [change-level-preview: \"주인공을 선택하면 전/후 값이 표시됩니다.시작값 기준\"→\"주인공 · 경험치 #→#시작값 기준\"] | 클래스 소실 2개 [empty, rich-record-initial] | 클래스 신규 5개 [record-picker-card-copy, record-picker-card-subtitle, rich-preview-after, rich-preview-arrow, rich-record-icon]",
+   "change-exp-actor-select": "태그 개수 [img 등장(1), span 16→17] | 검증텍스트 변경 1개 [change-level-preview: \"파티 전체 · 경험치 += #실행할 경험치 조작\"→\"주인공 · 경험치 += #실행할 경험치 조작\"] | 클래스 소실 2개 [empty, rich-record-initial] | 클래스 신규 3개 [record-picker-card-copy, record-picker-card-subtitle, rich-record-icon]",
    "change-exp-amount-input": "no-change",
-   "change-exp-op-select": "no-change"
+   "change-exp-amount-source": "컨트롤 값 변경 5개 [change-exp-amount-input: input[number]{}→input[number]{hidden}, change-exp-amount-minus: button{}→button{hidden}, change-exp-amount-plus: button{}→button{hidden}, change-exp-amount-variable-select: select{hidden}→select{}, event-variable-picker-open: button{hidden}→button{}] | 검증텍스트 변경 …(절단: 총 388자)",
+   "change-exp-amount-variable-select": "라벨 소실 1개 [(이름 없음)] | 라벨 신규 1개 [(선택)]",
+   "change-exp-op-select": "검증텍스트 변경 1개 [change-level-preview: \"파티 전체 · 경험치 += #실행할 경험치 조작\"→\"파티 전체 · 경험치 = #실행할 경험치 조작\"]",
+   "change-exp-target-mode": "컨트롤 값 변경 1개 [change-exp-actor-select: select{}→select{hidden}]"
   },
   "initial": {
    "testids": [
@@ -4011,20 +4055,33 @@
     "change-exp-amount-input",
     "change-exp-amount-minus",
     "change-exp-amount-plus",
+    "change-exp-amount-source",
+    "change-exp-amount-source-segment-number",
+    "change-exp-amount-source-segment-variable",
+    "change-exp-amount-variable",
+    "change-exp-amount-variable-select",
     "change-exp-op-select",
     "change-exp-op-select-segment-dec",
     "change-exp-op-select-segment-inc",
     "change-exp-op-select-segment-set",
-    "change-level-command-body",
+    "change-exp-target-mode",
+    "change-exp-target-mode-segment-actor",
+    "change-exp-target-mode-segment-party",
     "change-level-preview",
-    "event-command-edit-summary"
+    "event-command-edit-summary",
+    "event-command-exp-form",
+    "event-variable-picker-open"
    ],
    "classes": [
     "actor-amount-command-body",
     "actor-amount-controls",
+    "btn",
     "cream-command-form",
     "cream-command-form-head",
     "empty",
+    "event-record-modal-select",
+    "event-record-picker-trigger",
+    "event-record-select",
     "party-member-intent",
     "party-member-intent-body",
     "party-member-intent-title",
@@ -4043,17 +4100,26 @@
     "rich-segment-group",
     "rich-stepper",
     "rich-stepper-button",
-    "selected"
+    "selected",
+    "small"
    ],
    "controls": {
     "change-exp-actor-select": "select{}",
     "change-exp-amount-input": "input[number]{}",
     "change-exp-amount-minus": "button{}",
     "change-exp-amount-plus": "button{}",
+    "change-exp-amount-source": "select{hidden}",
+    "change-exp-amount-source-segment-number": "button{}",
+    "change-exp-amount-source-segment-variable": "button{}",
+    "change-exp-amount-variable-select": "select{hidden}",
     "change-exp-op-select": "select{hidden}",
     "change-exp-op-select-segment-dec": "button{}",
     "change-exp-op-select-segment-inc": "button{}",
-    "change-exp-op-select-segment-set": "button{}"
+    "change-exp-op-select-segment-set": "button{}",
+    "change-exp-target-mode": "select{hidden}",
+    "change-exp-target-mode-segment-actor": "button{}",
+    "change-exp-target-mode-segment-party": "button{}",
+    "event-variable-picker-open": "button{hidden}"
    },
    "selectOptions": {
     "change-exp-actor-select": [
@@ -4062,27 +4128,63 @@
      "actor_guardian",
      "actor_mage"
     ],
+    "change-exp-amount-source": [
+     "number",
+     "variable"
+    ],
+    "change-exp-amount-variable-select": [
+     "",
+     "var_0001",
+     "var_0002",
+     "var_0003",
+     "var_0004",
+     "var_0005",
+     "var_0006",
+     "var_0007",
+     "var_0008",
+     "var_0009",
+     "var_0010",
+     "var_0011",
+     "var_0012",
+     "var_0013",
+     "var_0014",
+     "var_0015",
+     "var_0016",
+     "var_0017",
+     "var_0018",
+     "var_0019",
+     "var_0020"
+    ],
     "change-exp-op-select": [
      "=",
      "+=",
      "-="
+    ],
+    "change-exp-target-mode": [
+     "party",
+     "actor"
     ]
    },
    "labels": [
+    "(이름 없음)",
     "+",
     "−",
     "− 감소",
+    "변수",
+    "숫자",
+    "주인공",
+    "파티 전체",
     "＋ 증가",
     "＝ 대입"
    ],
    "tags": {
-    "button": 5,
+    "button": 10,
     "div": 8,
     "input": 1,
-    "option": 7,
+    "option": 32,
     "p": 1,
-    "select": 2,
-    "span": 10
+    "select": 5,
+    "span": 16
    },
    "tagByTestid": {
     "change-exp-actor-select": "select",
@@ -4090,27 +4192,40 @@
     "change-exp-amount-input": "input",
     "change-exp-amount-minus": "button",
     "change-exp-amount-plus": "button",
+    "change-exp-amount-source": "select",
+    "change-exp-amount-source-segment-number": "button",
+    "change-exp-amount-source-segment-variable": "button",
+    "change-exp-amount-variable": "span",
+    "change-exp-amount-variable-select": "select",
     "change-exp-op-select": "select",
     "change-exp-op-select-segment-dec": "button",
     "change-exp-op-select-segment-inc": "button",
     "change-exp-op-select-segment-set": "button",
-    "change-level-command-body": "div",
+    "change-exp-target-mode": "select",
+    "change-exp-target-mode-segment-actor": "button",
+    "change-exp-target-mode-segment-party": "button",
     "change-level-preview": "span",
-    "event-command-edit-summary": "div"
+    "event-command-edit-summary": "div",
+    "event-command-exp-form": "div",
+    "event-variable-picker-open": "button"
    },
    "texts": {
-    "change-level-preview": "주인공을 선택하면 전/후 값이 표시됩니다.시작값 기준",
+    "change-level-preview": "파티 전체 · 경험치 += #실행할 경험치 조작",
     "event-command-edit-summary": "경험치 변경"
    },
-   "testidCount": 12,
-   "controlCount": 8
+   "testidCount": 21,
+   "controlCount": 16
   },
   "classes": [
    "actor-amount-command-body",
    "actor-amount-controls",
+   "btn",
    "cream-command-form",
    "cream-command-form-head",
    "empty",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
    "party-member-intent",
    "party-member-intent-body",
    "party-member-intent-title",
@@ -4122,8 +4237,6 @@
    "rich-command-form",
    "rich-form-row",
    "rich-native-select",
-   "rich-preview-after",
-   "rich-preview-arrow",
    "rich-preview-body",
    "rich-preview-caption",
    "rich-preview-hint",
@@ -4134,10 +4247,11 @@
    "rich-segment-group",
    "rich-stepper",
    "rich-stepper-button",
-   "selected"
+   "selected",
+   "small"
   ],
-  "probeCount": 3,
-  "reactingCount": 1
+  "probeCount": 6,
+  "reactingCount": 5
  },
  "changeLevel": {
   "reactions": {
@@ -4281,34 +4395,167 @@
   "reactingCount": 1
  },
  "changeLifeSkillExp": {
-  "reactions": {},
+  "reactions": {
+   "change-life-skill-exp-amount-input": "no-change",
+   "change-life-skill-exp-amount-mode": "컨트롤 값 변경 5개 [change-life-skill-exp-amount-input: input[number]{}→input[number]{hidden}, change-life-skill-exp-amount-minus: button{}→button{hidden}, change-life-skill-exp-amount-plus: button{}→button{hidden}, change-life-skill-exp-amount-select: select{hidden}→select{}, event-variable-picker-open: b…(절단: 총 323자)",
+   "change-life-skill-exp-amount-select": "라벨 소실 1개 [(선택)] | 라벨 신규 1개 [(이름 없음)]",
+   "change-life-skill-exp-op-select": "no-change",
+   "change-life-skill-exp-skill-id-input": "no-change"
+  },
   "initial": {
    "testids": [
-    "event-command-edit-summary"
+    "change-life-skill-exp-amount-input",
+    "change-life-skill-exp-amount-minus",
+    "change-life-skill-exp-amount-mode",
+    "change-life-skill-exp-amount-mode-segment-number",
+    "change-life-skill-exp-amount-mode-segment-variable",
+    "change-life-skill-exp-amount-plus",
+    "change-life-skill-exp-amount-select",
+    "change-life-skill-exp-amount-variable",
+    "change-life-skill-exp-editor",
+    "change-life-skill-exp-op-select",
+    "change-life-skill-exp-op-select-segment-dec",
+    "change-life-skill-exp-op-select-segment-inc",
+    "change-life-skill-exp-op-select-segment-set",
+    "change-life-skill-exp-skill-id-input",
+    "event-command-edit-summary",
+    "event-variable-picker-open"
    ],
    "classes": [
-    "cream-command-form-head"
+    "btn",
+    "cream-command-form",
+    "cream-command-form-head",
+    "event-record-modal-select",
+    "event-record-picker-trigger",
+    "event-record-select",
+    "rich-command-form",
+    "rich-form-row",
+    "rich-native-select",
+    "rich-segment",
+    "rich-segment-group",
+    "rich-stepper",
+    "rich-stepper-button",
+    "schema-command-form",
+    "schema-field",
+    "schema-field-label",
+    "schema-operand",
+    "selected",
+    "small"
    ],
-   "controls": {},
-   "selectOptions": {},
-   "labels": [],
+   "controls": {
+    "change-life-skill-exp-amount-input": "input[number]{}",
+    "change-life-skill-exp-amount-minus": "button{}",
+    "change-life-skill-exp-amount-mode": "select{hidden}",
+    "change-life-skill-exp-amount-mode-segment-number": "button{}",
+    "change-life-skill-exp-amount-mode-segment-variable": "button{}",
+    "change-life-skill-exp-amount-plus": "button{}",
+    "change-life-skill-exp-amount-select": "select{hidden}",
+    "change-life-skill-exp-op-select": "select{hidden}",
+    "change-life-skill-exp-op-select-segment-dec": "button{}",
+    "change-life-skill-exp-op-select-segment-inc": "button{}",
+    "change-life-skill-exp-op-select-segment-set": "button{}",
+    "change-life-skill-exp-skill-id-input": "input[text]{}",
+    "event-variable-picker-open": "button{hidden}"
+   },
+   "selectOptions": {
+    "change-life-skill-exp-amount-mode": [
+     "number",
+     "variable"
+    ],
+    "change-life-skill-exp-amount-select": [
+     "",
+     "var_0001",
+     "var_0002",
+     "var_0003",
+     "var_0004",
+     "var_0005",
+     "var_0006",
+     "var_0007",
+     "var_0008",
+     "var_0009",
+     "var_0010",
+     "var_0011",
+     "var_0012",
+     "var_0013",
+     "var_0014",
+     "var_0015",
+     "var_0016",
+     "var_0017",
+     "var_0018",
+     "var_0019",
+     "var_0020"
+    ],
+    "change-life-skill-exp-op-select": [
+     "=",
+     "+=",
+     "-="
+    ]
+   },
+   "labels": [
+    "(선택)",
+    "+",
+    "−",
+    "더하기",
+    "변수",
+    "빼기",
+    "숫자",
+    "이 값으로"
+   ],
    "tags": {
-    "div": 3
+    "button": 8,
+    "div": 3,
+    "input": 2,
+    "option": 26,
+    "select": 3,
+    "span": 13
    },
    "tagByTestid": {
-    "event-command-edit-summary": "div"
+    "change-life-skill-exp-amount-input": "input",
+    "change-life-skill-exp-amount-minus": "button",
+    "change-life-skill-exp-amount-mode": "select",
+    "change-life-skill-exp-amount-mode-segment-number": "button",
+    "change-life-skill-exp-amount-mode-segment-variable": "button",
+    "change-life-skill-exp-amount-plus": "button",
+    "change-life-skill-exp-amount-select": "select",
+    "change-life-skill-exp-amount-variable": "span",
+    "change-life-skill-exp-editor": "span",
+    "change-life-skill-exp-op-select": "select",
+    "change-life-skill-exp-op-select-segment-dec": "button",
+    "change-life-skill-exp-op-select-segment-inc": "button",
+    "change-life-skill-exp-op-select-segment-set": "button",
+    "change-life-skill-exp-skill-id-input": "input",
+    "event-command-edit-summary": "div",
+    "event-variable-picker-open": "button"
    },
    "texts": {
     "event-command-edit-summary": "생활 스킬 숙련도 변경"
    },
-   "testidCount": 1,
-   "controlCount": 0
+   "testidCount": 16,
+   "controlCount": 13
   },
   "classes": [
-   "cream-command-form-head"
+   "btn",
+   "cream-command-form",
+   "cream-command-form-head",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "rich-command-form",
+   "rich-form-row",
+   "rich-native-select",
+   "rich-segment",
+   "rich-segment-group",
+   "rich-stepper",
+   "rich-stepper-button",
+   "schema-command-form",
+   "schema-field",
+   "schema-field-label",
+   "schema-operand",
+   "selected",
+   "small"
   ],
-  "probeCount": 0,
-  "reactingCount": 0
+  "probeCount": 5,
+  "reactingCount": 2
  },
  "promoteActor": {
   "reactions": {
@@ -5484,129 +5731,229 @@
  },
  "craftRecipe": {
   "reactions": {
+   "craft-recipe-result-variable>select#0": "라벨 소실 1개 [(선택)] | 라벨 신규 1개 [(이름 없음)]",
    "craft-recipe-select": "single-option"
   },
   "initial": {
    "testids": [
+    "craft-recipe-result-variable",
+    "craft-recipe-result-variable-clear",
     "craft-recipe-select",
     "craft-recipe-select-card",
-    "event-command-edit-summary"
+    "event-command-edit-summary",
+    "event-variable-picker-open"
    ],
    "classes": [
+    "btn",
     "cream-command-form",
     "cream-command-form-head",
     "empty",
+    "event-record-modal-select",
+    "event-record-picker-trigger",
+    "event-record-select",
+    "inline-field",
     "record-picker",
     "record-picker-card",
     "record-picker-card-name",
     "rich-command-form",
     "rich-form-hint",
     "rich-form-row",
-    "rich-record-initial"
+    "rich-record-initial",
+    "small"
    ],
    "controls": {
-    "craft-recipe-select": "select{}"
+    "craft-recipe-result-variable-clear": "button{}",
+    "craft-recipe-result-variable>select#0": "select{}",
+    "craft-recipe-select": "select{}",
+    "event-variable-picker-open": "button{}"
    },
    "selectOptions": {
+    "craft-recipe-result-variable>select#0": [
+     "",
+     "var_0001",
+     "var_0002",
+     "var_0003",
+     "var_0004",
+     "var_0005",
+     "var_0006",
+     "var_0007",
+     "var_0008",
+     "var_0009",
+     "var_0010",
+     "var_0011",
+     "var_0012",
+     "var_0013",
+     "var_0014",
+     "var_0015",
+     "var_0016",
+     "var_0017",
+     "var_0018",
+     "var_0019",
+     "var_0020"
+    ],
     "craft-recipe-select": [
      ""
     ]
    },
-   "labels": [],
+   "labels": [
+    "(선택)",
+    "해제"
+   ],
    "tags": {
+    "button": 2,
     "div": 3,
-    "option": 1,
-    "select": 1,
-    "span": 7
+    "label": 1,
+    "option": 22,
+    "select": 2,
+    "span": 9
    },
    "tagByTestid": {
+    "craft-recipe-result-variable": "span",
+    "craft-recipe-result-variable-clear": "button",
     "craft-recipe-select": "select",
     "craft-recipe-select-card": "span",
-    "event-command-edit-summary": "div"
+    "event-command-edit-summary": "div",
+    "event-variable-picker-open": "button"
    },
    "texts": {
     "event-command-edit-summary": "제작"
    },
-   "testidCount": 3,
-   "controlCount": 1
+   "testidCount": 6,
+   "controlCount": 4
   },
   "classes": [
+   "btn",
    "cream-command-form",
    "cream-command-form-head",
    "empty",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "inline-field",
    "record-picker",
    "record-picker-card",
    "record-picker-card-name",
    "rich-command-form",
    "rich-form-hint",
    "rich-form-row",
-   "rich-record-initial"
+   "rich-record-initial",
+   "small"
   ],
-  "probeCount": 1,
-  "reactingCount": 0
+  "probeCount": 2,
+  "reactingCount": 1
  },
  "applyItemUpgrade": {
   "reactions": {
+   "apply-item-upgrade-result-variable>select#0": "라벨 소실 1개 [(선택)] | 라벨 신규 1개 [(이름 없음)]",
    "apply-item-upgrade-select": "single-option"
   },
   "initial": {
    "testids": [
+    "apply-item-upgrade-result-variable",
+    "apply-item-upgrade-result-variable-clear",
     "apply-item-upgrade-select",
     "apply-item-upgrade-select-card",
-    "event-command-edit-summary"
+    "event-command-edit-summary",
+    "event-variable-picker-open"
    ],
    "classes": [
+    "btn",
     "cream-command-form",
     "cream-command-form-head",
     "empty",
+    "event-record-modal-select",
+    "event-record-picker-trigger",
+    "event-record-select",
+    "inline-field",
     "record-picker",
     "record-picker-card",
     "record-picker-card-name",
     "rich-command-form",
     "rich-form-hint",
     "rich-form-row",
-    "rich-record-initial"
+    "rich-record-initial",
+    "small"
    ],
    "controls": {
-    "apply-item-upgrade-select": "select{}"
+    "apply-item-upgrade-result-variable-clear": "button{}",
+    "apply-item-upgrade-result-variable>select#0": "select{}",
+    "apply-item-upgrade-select": "select{}",
+    "event-variable-picker-open": "button{}"
    },
    "selectOptions": {
+    "apply-item-upgrade-result-variable>select#0": [
+     "",
+     "var_0001",
+     "var_0002",
+     "var_0003",
+     "var_0004",
+     "var_0005",
+     "var_0006",
+     "var_0007",
+     "var_0008",
+     "var_0009",
+     "var_0010",
+     "var_0011",
+     "var_0012",
+     "var_0013",
+     "var_0014",
+     "var_0015",
+     "var_0016",
+     "var_0017",
+     "var_0018",
+     "var_0019",
+     "var_0020"
+    ],
     "apply-item-upgrade-select": [
      ""
     ]
    },
-   "labels": [],
+   "labels": [
+    "(선택)",
+    "해제"
+   ],
    "tags": {
+    "button": 2,
     "div": 3,
-    "option": 1,
-    "select": 1,
-    "span": 7
+    "label": 1,
+    "option": 22,
+    "select": 2,
+    "span": 9
    },
    "tagByTestid": {
+    "apply-item-upgrade-result-variable": "span",
+    "apply-item-upgrade-result-variable-clear": "button",
     "apply-item-upgrade-select": "select",
     "apply-item-upgrade-select-card": "span",
-    "event-command-edit-summary": "div"
+    "event-command-edit-summary": "div",
+    "event-variable-picker-open": "button"
    },
    "texts": {
     "event-command-edit-summary": "업그레이드"
    },
-   "testidCount": 3,
-   "controlCount": 1
+   "testidCount": 6,
+   "controlCount": 4
   },
   "classes": [
+   "btn",
    "cream-command-form",
    "cream-command-form-head",
    "empty",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "inline-field",
    "record-picker",
    "record-picker-card",
    "record-picker-card-name",
    "rich-command-form",
    "rich-form-hint",
    "rich-form-row",
-   "rich-record-initial"
+   "rich-record-initial",
+   "small"
   ],
-  "probeCount": 1,
-  "reactingCount": 0
+  "probeCount": 2,
+  "reactingCount": 1
  },
  "equipTool": {
   "reactions": {
@@ -6221,9 +6568,9 @@
    "selectOptions": {
     "give-monster-species-select": [
      "",
-     "species_wild_slime",
-     "species_king_slime",
-     "species_cave_bat"
+     "species_leafling",
+     "species_sparkit",
+     "species_aqualing"
     ]
    },
    "labels": [
@@ -6379,9 +6726,9 @@
    "selectOptions": {
     "evolve-monster-species-select": [
      "",
-     "species_wild_slime",
-     "species_king_slime",
-     "species_cave_bat"
+     "species_leafling",
+     "species_sparkit",
+     "species_aqualing"
     ]
    },
    "labels": [],
@@ -7489,6 +7836,172 @@
   "probeCount": 6,
   "reactingCount": 3
  },
+ "showEmote": {
+  "reactions": {
+   "show-emote-duration-input": "no-change",
+   "show-emote-event-id-input": "no-change",
+   "show-emote-target-kind-select": "no-change"
+  },
+  "initial": {
+   "testids": [
+    "event-command-edit-summary",
+    "show-emote-command-body",
+    "show-emote-duration-field",
+    "show-emote-duration-input",
+    "show-emote-emote-field",
+    "show-emote-event-field",
+    "show-emote-event-id-input",
+    "show-emote-note",
+    "show-emote-swatch-anger",
+    "show-emote-swatch-ellipsis",
+    "show-emote-swatch-exclamation",
+    "show-emote-swatch-grid",
+    "show-emote-swatch-heart",
+    "show-emote-swatch-heartBroken",
+    "show-emote-swatch-idea",
+    "show-emote-swatch-music",
+    "show-emote-swatch-question",
+    "show-emote-swatch-sleep",
+    "show-emote-swatch-smile",
+    "show-emote-swatch-sparkle",
+    "show-emote-swatch-sweat",
+    "show-emote-target-field",
+    "show-emote-target-kind-select",
+    "show-emote-target-kind-select-segment-event",
+    "show-emote-target-kind-select-segment-player",
+    "show-emote-target-kind-select-segment-self"
+   ],
+   "classes": [
+    "active",
+    "actor-m2-command-body",
+    "actor-m2-field",
+    "actor-m2-field-label",
+    "actor-m2-preview-note",
+    "change-parameters-field",
+    "change-parameters-field-label",
+    "cream-command-form-head",
+    "emote-swatch",
+    "emote-swatch-grid",
+    "emote-swatch-icon",
+    "emote-swatch-label",
+    "page3-command-body",
+    "rich-command-form",
+    "rich-native-select",
+    "rich-segment",
+    "rich-segment-group",
+    "selected"
+   ],
+   "controls": {
+    "show-emote-duration-input": "input[number]{}",
+    "show-emote-event-id-input": "input[text]{hidden,nodisplay}",
+    "show-emote-swatch-anger": "button{}",
+    "show-emote-swatch-ellipsis": "button{}",
+    "show-emote-swatch-exclamation": "button{}",
+    "show-emote-swatch-heart": "button{}",
+    "show-emote-swatch-heartBroken": "button{}",
+    "show-emote-swatch-idea": "button{}",
+    "show-emote-swatch-music": "button{}",
+    "show-emote-swatch-question": "button{}",
+    "show-emote-swatch-sleep": "button{}",
+    "show-emote-swatch-smile": "button{}",
+    "show-emote-swatch-sparkle": "button{}",
+    "show-emote-swatch-sweat": "button{}",
+    "show-emote-target-kind-select": "select{hidden}",
+    "show-emote-target-kind-select-segment-event": "button{}",
+    "show-emote-target-kind-select-segment-player": "button{}",
+    "show-emote-target-kind-select-segment-self": "button{}"
+   },
+   "selectOptions": {
+    "show-emote-target-kind-select": [
+     "self",
+     "player",
+     "event"
+    ]
+   },
+   "labels": [
+    "깨진 하트",
+    "노래",
+    "놀람",
+    "다른 이벤트",
+    "땀",
+    "말줄임",
+    "물음표",
+    "미소",
+    "반짝임",
+    "생각났다",
+    "이 이벤트",
+    "졸음",
+    "주인공",
+    "하트",
+    "화남"
+   ],
+   "tags": {
+    "button": 15,
+    "div": 13,
+    "input": 2,
+    "option": 3,
+    "p": 1,
+    "select": 1,
+    "span": 25
+   },
+   "tagByTestid": {
+    "event-command-edit-summary": "div",
+    "show-emote-command-body": "div",
+    "show-emote-duration-field": "div",
+    "show-emote-duration-input": "input",
+    "show-emote-emote-field": "div",
+    "show-emote-event-field": "div",
+    "show-emote-event-id-input": "input",
+    "show-emote-note": "p",
+    "show-emote-swatch-anger": "button",
+    "show-emote-swatch-ellipsis": "button",
+    "show-emote-swatch-exclamation": "button",
+    "show-emote-swatch-grid": "div",
+    "show-emote-swatch-heart": "button",
+    "show-emote-swatch-heartBroken": "button",
+    "show-emote-swatch-idea": "button",
+    "show-emote-swatch-music": "button",
+    "show-emote-swatch-question": "button",
+    "show-emote-swatch-sleep": "button",
+    "show-emote-swatch-smile": "button",
+    "show-emote-swatch-sparkle": "button",
+    "show-emote-swatch-sweat": "button",
+    "show-emote-target-field": "div",
+    "show-emote-target-kind-select": "select",
+    "show-emote-target-kind-select-segment-event": "button",
+    "show-emote-target-kind-select-segment-player": "button",
+    "show-emote-target-kind-select-segment-self": "button"
+   },
+   "texts": {
+    "event-command-edit-summary": "이모트 표시",
+    "show-emote-note": "대사창을 열지 않고 머리 위에만 잠깐 보여줍니다. 다음 명령을 기다리지 않습니다."
+   },
+   "testidCount": 26,
+   "controlCount": 18
+  },
+  "classes": [
+   "active",
+   "actor-m2-command-body",
+   "actor-m2-field",
+   "actor-m2-field-label",
+   "actor-m2-preview-note",
+   "change-parameters-field",
+   "change-parameters-field-label",
+   "cream-command-form-head",
+   "emote-swatch",
+   "emote-swatch-grid",
+   "emote-swatch-icon",
+   "emote-swatch-label",
+   "page3-command-body",
+   "rich-command-form",
+   "rich-native-select",
+   "rich-segment",
+   "rich-segment-group",
+   "selected"
+  ],
+  "probeCount": 3,
+  "reactingCount": 0
+ },
  "showPicture": {
   "reactions": {
    "show-picture-ai-prompt": "no-change",
@@ -7506,6 +8019,8 @@
     "event-command-edit-summary",
     "show-picture-ai-generate",
     "show-picture-ai-prompt",
+    "show-picture-ai-queue",
+    "show-picture-ai-queue-list",
     "show-picture-command-body",
     "show-picture-duration-input",
     "show-picture-id-input",
@@ -7540,6 +8055,10 @@
     "actor-m2-preview",
     "actor-m2-preview-line",
     "actor-m2-preview-note",
+    "ai-image-queue",
+    "ai-image-queue-composer",
+    "ai-image-queue-empty",
+    "ai-image-queue-list",
     "btn",
     "change-parameters-field",
     "change-parameters-field-label",
@@ -7596,9 +8115,9 @@
    "tags": {
     "button": 7,
     "details": 1,
-    "div": 31,
+    "div": 33,
     "input": 9,
-    "p": 3,
+    "p": 4,
     "span": 2,
     "summary": 1
    },
@@ -7606,6 +8125,8 @@
     "event-command-edit-summary": "div",
     "show-picture-ai-generate": "button",
     "show-picture-ai-prompt": "input",
+    "show-picture-ai-queue": "div",
+    "show-picture-ai-queue-list": "div",
     "show-picture-command-body": "div",
     "show-picture-duration-input": "input",
     "show-picture-id-input": "input",
@@ -7635,7 +8156,7 @@
     "show-picture-preview-marker": "자리 pic#",
     "show-picture-preview-stage": "자리 pic#"
    },
-   "testidCount": 24,
+   "testidCount": 26,
    "controlCount": 16
   },
   "classes": [
@@ -7650,6 +8171,10 @@
    "actor-m2-preview",
    "actor-m2-preview-line",
    "actor-m2-preview-note",
+   "ai-image-queue",
+   "ai-image-queue-composer",
+   "ai-image-queue-empty",
+   "ai-image-queue-list",
    "btn",
    "change-parameters-field",
    "change-parameters-field-label",
@@ -7766,6 +8291,9 @@
   },
   "initial": {
    "testids": [
+    "audio-description",
+    "audio-description-source",
+    "audio-description-text",
     "event-command-edit-summary",
     "play-audio-channel-bgm",
     "play-audio-channel-hint",
@@ -8558,12 +9086,16 @@
    ],
    "tags": {
     "button": 5,
-    "div": 14,
+    "div": 16,
     "input": 1,
     "option": 734,
-    "select": 1
+    "select": 1,
+    "small": 1
    },
    "tagByTestid": {
+    "audio-description": "div",
+    "audio-description-source": "small",
+    "audio-description-text": "div",
     "event-command-edit-summary": "div",
     "play-audio-channel-bgm": "button",
     "play-audio-channel-hint": "div",
@@ -8584,7 +9116,7 @@
     "play-audio-channel-hint": "배경음은 반복되고, 효과음은 한 번만 재생됩니다. 미리 듣기는 브라우저가 재생할 수 있는 소리만 됩니다.",
     "play-audio-preview": "미리 듣기"
    },
-   "testidCount": 14,
+   "testidCount": 17,
    "controlCount": 7
   },
   "classes": [
@@ -9585,34 +10117,129 @@
   "reactingCount": 0
  },
  "spawnFieldEnemy": {
-  "reactions": {},
+  "reactions": {
+   "event-command-spawn-area-h": "no-change",
+   "event-command-spawn-area-w": "no-change",
+   "event-command-spawn-area-x": "no-change",
+   "event-command-spawn-area-y": "no-change",
+   "event-command-spawn-graphic": "no-change",
+   "event-command-spawn-switch": "태그 개수 [span 15→16] | 클래스 신규 1개 [record-picker-card-copy]",
+   "event-command-spawn-troop": "태그 개수 [span 15→16] | 라벨 소실 1개 [적 그룹(적 그룹 선택)슬라임 정찰대초원 슬라임 둘동굴 박쥐 떼?(적 그룹 선택)] | 라벨 신규 1개 [적 그룹(적 그룹 선택)슬라임 정찰대초원 슬라임 둘동굴 박쥐 떼슬슬라임 정찰대] | 클래스 신규 1개 [record-picker-card-copy]"
+  },
   "initial": {
    "testids": [
-    "event-command-edit-summary"
+    "event-command-edit-summary",
+    "event-command-spawn-area-h",
+    "event-command-spawn-area-w",
+    "event-command-spawn-area-x",
+    "event-command-spawn-area-y",
+    "event-command-spawn-form",
+    "event-command-spawn-graphic",
+    "event-command-spawn-switch",
+    "event-command-spawn-switch-card",
+    "event-command-spawn-troop",
+    "event-command-spawn-troop-card"
    ],
    "classes": [
-    "cream-command-form-head"
+    "cream-command-form",
+    "cream-command-form-head",
+    "empty",
+    "inline-field",
+    "record-picker",
+    "record-picker-card",
+    "record-picker-card-name",
+    "rich-command-form",
+    "rich-record-initial"
    ],
-   "controls": {},
-   "selectOptions": {},
-   "labels": [],
+   "controls": {
+    "event-command-spawn-area-h": "input[number]{required}",
+    "event-command-spawn-area-w": "input[number]{required}",
+    "event-command-spawn-area-x": "input[number]{required}",
+    "event-command-spawn-area-y": "input[number]{required}",
+    "event-command-spawn-graphic": "input[text]{}",
+    "event-command-spawn-switch": "select{}",
+    "event-command-spawn-troop": "select{}"
+   },
+   "selectOptions": {
+    "event-command-spawn-switch": [
+     "",
+     "sw_0001",
+     "sw_0002",
+     "sw_0003",
+     "sw_0004",
+     "sw_0005",
+     "sw_0006",
+     "sw_0007",
+     "sw_0008",
+     "sw_0009",
+     "sw_0010",
+     "sw_0011",
+     "sw_0012",
+     "sw_0013",
+     "sw_0014",
+     "sw_0015",
+     "sw_0016",
+     "sw_0017",
+     "sw_0018",
+     "sw_0019",
+     "sw_0020"
+    ],
+    "event-command-spawn-troop": [
+     "",
+     "troop_slime",
+     "troop_slime_pair",
+     "troop_bat_swarm"
+    ]
+   },
+   "labels": [
+    "그래픽 리소스 ID (선택)",
+    "영역 X",
+    "영역 Y",
+    "영역 너비",
+    "영역 높이",
+    "적 그룹(적 그룹 선택)슬라임 정찰대초원 슬라임 둘동굴 박쥐 떼?(적 그룹 선택)"
+   ],
    "tags": {
-    "div": 3
+    "div": 4,
+    "input": 5,
+    "label": 7,
+    "option": 25,
+    "select": 2,
+    "span": 15
    },
    "tagByTestid": {
-    "event-command-edit-summary": "div"
+    "event-command-edit-summary": "div",
+    "event-command-spawn-area-h": "input",
+    "event-command-spawn-area-w": "input",
+    "event-command-spawn-area-x": "input",
+    "event-command-spawn-area-y": "input",
+    "event-command-spawn-form": "div",
+    "event-command-spawn-graphic": "input",
+    "event-command-spawn-switch": "select",
+    "event-command-spawn-switch-card": "span",
+    "event-command-spawn-troop": "select",
+    "event-command-spawn-troop-card": "span"
    },
    "texts": {
     "event-command-edit-summary": "필드 몬스터 등장"
    },
-   "testidCount": 1,
-   "controlCount": 0
+   "testidCount": 11,
+   "controlCount": 7
   },
   "classes": [
-   "cream-command-form-head"
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty",
+   "inline-field",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-copy",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-record-initial"
   ],
-  "probeCount": 0,
-  "reactingCount": 0
+  "probeCount": 7,
+  "reactingCount": 2
  },
  "despawnFieldEnemy": {
   "reactions": {},
@@ -10310,171 +10937,5 @@
   ],
   "probeCount": 6,
   "reactingCount": 5
- },
- "showEmote": {
-  "reactions": {
-   "show-emote-duration-input": "no-change",
-   "show-emote-event-id-input": "no-change",
-   "show-emote-target-kind-select": "no-change"
-  },
-  "initial": {
-   "testids": [
-    "event-command-edit-summary",
-    "show-emote-command-body",
-    "show-emote-duration-field",
-    "show-emote-duration-input",
-    "show-emote-emote-field",
-    "show-emote-event-field",
-    "show-emote-event-id-input",
-    "show-emote-note",
-    "show-emote-swatch-anger",
-    "show-emote-swatch-ellipsis",
-    "show-emote-swatch-exclamation",
-    "show-emote-swatch-grid",
-    "show-emote-swatch-heart",
-    "show-emote-swatch-heartBroken",
-    "show-emote-swatch-idea",
-    "show-emote-swatch-music",
-    "show-emote-swatch-question",
-    "show-emote-swatch-sleep",
-    "show-emote-swatch-smile",
-    "show-emote-swatch-sparkle",
-    "show-emote-swatch-sweat",
-    "show-emote-target-field",
-    "show-emote-target-kind-select",
-    "show-emote-target-kind-select-segment-event",
-    "show-emote-target-kind-select-segment-player",
-    "show-emote-target-kind-select-segment-self"
-   ],
-   "classes": [
-    "active",
-    "actor-m2-command-body",
-    "actor-m2-field",
-    "actor-m2-field-label",
-    "actor-m2-preview-note",
-    "change-parameters-field",
-    "change-parameters-field-label",
-    "cream-command-form-head",
-    "emote-swatch",
-    "emote-swatch-grid",
-    "emote-swatch-icon",
-    "emote-swatch-label",
-    "page3-command-body",
-    "rich-command-form",
-    "rich-native-select",
-    "rich-segment",
-    "rich-segment-group",
-    "selected"
-   ],
-   "controls": {
-    "show-emote-duration-input": "input[number]{}",
-    "show-emote-event-id-input": "input[text]{hidden,nodisplay}",
-    "show-emote-swatch-anger": "button{}",
-    "show-emote-swatch-ellipsis": "button{}",
-    "show-emote-swatch-exclamation": "button{}",
-    "show-emote-swatch-heart": "button{}",
-    "show-emote-swatch-heartBroken": "button{}",
-    "show-emote-swatch-idea": "button{}",
-    "show-emote-swatch-music": "button{}",
-    "show-emote-swatch-question": "button{}",
-    "show-emote-swatch-sleep": "button{}",
-    "show-emote-swatch-smile": "button{}",
-    "show-emote-swatch-sparkle": "button{}",
-    "show-emote-swatch-sweat": "button{}",
-    "show-emote-target-kind-select": "select{hidden}",
-    "show-emote-target-kind-select-segment-event": "button{}",
-    "show-emote-target-kind-select-segment-player": "button{}",
-    "show-emote-target-kind-select-segment-self": "button{}"
-   },
-   "selectOptions": {
-    "show-emote-target-kind-select": [
-     "self",
-     "player",
-     "event"
-    ]
-   },
-   "labels": [
-    "깨진 하트",
-    "노래",
-    "놀람",
-    "다른 이벤트",
-    "땀",
-    "말줄임",
-    "물음표",
-    "미소",
-    "반짝임",
-    "생각났다",
-    "이 이벤트",
-    "졸음",
-    "주인공",
-    "하트",
-    "화남"
-   ],
-   "tags": {
-    "button": 15,
-    "div": 13,
-    "input": 2,
-    "option": 3,
-    "p": 1,
-    "select": 1,
-    "span": 25
-   },
-   "tagByTestid": {
-    "event-command-edit-summary": "div",
-    "show-emote-command-body": "div",
-    "show-emote-duration-field": "div",
-    "show-emote-duration-input": "input",
-    "show-emote-emote-field": "div",
-    "show-emote-event-field": "div",
-    "show-emote-event-id-input": "input",
-    "show-emote-note": "p",
-    "show-emote-swatch-anger": "button",
-    "show-emote-swatch-ellipsis": "button",
-    "show-emote-swatch-exclamation": "button",
-    "show-emote-swatch-grid": "div",
-    "show-emote-swatch-heart": "button",
-    "show-emote-swatch-heartBroken": "button",
-    "show-emote-swatch-idea": "button",
-    "show-emote-swatch-music": "button",
-    "show-emote-swatch-question": "button",
-    "show-emote-swatch-sleep": "button",
-    "show-emote-swatch-smile": "button",
-    "show-emote-swatch-sparkle": "button",
-    "show-emote-swatch-sweat": "button",
-    "show-emote-target-field": "div",
-    "show-emote-target-kind-select": "select",
-    "show-emote-target-kind-select-segment-event": "button",
-    "show-emote-target-kind-select-segment-player": "button",
-    "show-emote-target-kind-select-segment-self": "button"
-   },
-   "texts": {
-    "event-command-edit-summary": "이모트 표시",
-    "show-emote-note": "대사창을 열지 않고 머리 위에만 잠깐 보여줍니다. 다음 명령을 기다리지 않습니다."
-   },
-   "testidCount": 26,
-   "controlCount": 18
-  },
-  "classes": [
-   "active",
-   "actor-m2-command-body",
-   "actor-m2-field",
-   "actor-m2-field-label",
-   "actor-m2-preview-note",
-   "change-parameters-field",
-   "change-parameters-field-label",
-   "cream-command-form-head",
-   "emote-swatch",
-   "emote-swatch-grid",
-   "emote-swatch-icon",
-   "emote-swatch-label",
-   "page3-command-body",
-   "rich-command-form",
-   "rich-native-select",
-   "rich-segment",
-   "rich-segment-group",
-   "selected"
-  ],
-  "probeCount": 3,
-  "reactingCount": 0
  }
 }

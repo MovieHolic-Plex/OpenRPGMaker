@@ -7,6 +7,11 @@
 
 import { completeProvider } from "./lib/ohMyPiPiAiRuntime.ts";
 import { generateProviderImage } from "./lib/ohMyPiImageRuntime.ts";
+import { generateCodexImage } from "./lib/codexImageRuntime.ts";
+import { CODEX_PROVIDER_ID } from "../src/ai/oauth/credentials.ts";
+import { runPiAgent } from "./lib/piAgentRuntime.ts";
+import { runPiTeam } from "./lib/piTeamRuntime.ts";
+import { encodePiAgentEvent, type PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
 
 const port = Number(process.env.RPG_ZZU_OH_MY_PI_WORKER_PORT || 0);
 
@@ -30,12 +35,36 @@ const server = Bun.serve({
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
         return json(await completeProvider(provider, payload, { apiKey }));
       }
+      if (request.method === "POST" && url.pathname === "/agent/run") {
+        // Pi 에이전트 실행. 진행 이벤트를 NDJSON 으로 흘리고 마지막 줄 `done` 에 결과 프로젝트를 싣는다.
+        // 오류도 이벤트 줄로 보낸다 — 헤더가 이미 나간 뒤라 상태 코드로는 말할 수 없다.
+        const body = await request.json() as { apiKey?: string; request?: PiAgentRequest };
+        const agentRequest = body.request;
+        if (!agentRequest || typeof agentRequest !== "object" || typeof agentRequest.task !== "string" || !agentRequest.project) {
+          return json({ error: "request.task 와 request.project 가 필요합니다" }, 400);
+        }
+        const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
+        const encoder = new TextEncoder();
+        const stream = new ReadableStream<Uint8Array>({
+          start(controller) {
+            const write = (line: string) => {
+              try { controller.enqueue(encoder.encode(line)); } catch { /* 클라이언트가 끊었다 */ }
+            };
+            (agentRequest.mode === "team" ? runPiTeam : runPiAgent)(agentRequest, { apiKey, signal: request.signal, onEvent: (event) => write(encodePiAgentEvent(event)) })
+              .catch((error) => write(encodePiAgentEvent({ type: "error", message: error instanceof Error ? error.message : String(error) })))
+              .finally(() => { try { controller.close(); } catch { /* 이미 닫힘 */ } });
+          },
+        });
+        return new Response(stream, { status: 200, headers: { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-cache" } });
+      }
       if (request.method === "POST" && url.pathname === "/image") {
         const body = await request.json() as Record<string, unknown>;
         const provider = typeof body.provider === "string" ? body.provider : "google-antigravity";
         const payload = body.body && typeof body.body === "object" ? body.body as Record<string, unknown> : body;
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
-        return json(await generateProviderImage(provider, payload, { apiKey }));
+        return json(await (provider === CODEX_PROVIDER_ID
+          ? generateCodexImage(payload, { apiKey })
+          : generateProviderImage(provider, payload, { apiKey })));
       }
       return json({ error: "Not found" }, 404);
     } catch (error) {

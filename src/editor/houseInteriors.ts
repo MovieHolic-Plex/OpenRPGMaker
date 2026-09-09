@@ -8,14 +8,18 @@ import {
 import {
   floorMaskFromPlan,
   runInteriorRoomPipeline,
+  interiorVocabFromTileset,
   type InteriorRoomPlan,
   type InteriorRoomTheme,
   type InteriorWallMaterial,
   type RoomSpec,
 } from "@/editor/interiorRoomPipeline";
-import { DEFAULT_TILE_SIZE } from "@/project/defaults/constants";
+import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import type { Command, EventPageGraphic, GameEvent, GameMap, MapId, Project } from "@/project/types";
 import type { HouseKitId } from "./houseKit";
+import { conceptHouseFloorPlan, resolveHouseConcept } from "./interiorConceptPlan";
+import { conceptFacilityLevels } from "./conceptBundleResolve";
+import { convertEntranceToDescent, findConceptDescent, linkConceptTransfers, listConceptConnections } from "./interiorConceptEvents";
 
 /**
  * 마을/집 키트 실내 — villager-room-v1.
@@ -42,6 +46,19 @@ export const HOUSE_INTERIOR_ENTRY = { x: 10, y: 15 } as const;
 export const HOUSE_INTERIOR_EXIT = { x: 10, y: 16 } as const;
 
 export const HOUSE_DOOR_CHARSET_TEXTURE = "tex_easyrpg_charset_object1";
+export const HOUSE_DOOR_BACKGROUND_TILE = 359;
+
+/** Exterior house door anchors occupy the bottom cell of a two-cell opening. */
+export function stampHouseDoorBackground(map: GameMap, door: { readonly x: number; readonly y: number }): void {
+  for (const y of [door.y - 1, door.y]) {
+    const index = y * map.width + door.x;
+    map.lowerTiles[index] = HOUSE_DOOR_BACKGROUND_TILE;
+    map.upperTiles[index] = TILE.EMPTY;
+    if (map.lowerTileStacks) delete map.lowerTileStacks[index];
+    if (map.upperTileStacks) delete map.upperTileStacks[index];
+  }
+}
+
 export const HOUSE_DOOR_FRAME_WAIT_MS = 100;
 export const HOUSE_DOOR_OPEN_HOLD_MS = 180;
 /**
@@ -326,6 +343,7 @@ export function wallMaterialForKit(kitId: HouseKitId | undefined): InteriorWallM
 }
 
 export function createHouseInteriorMap(options: {
+  readonly project?: Project;
   readonly id: MapId;
   readonly name: string;
   readonly returnMapId: MapId;
@@ -341,10 +359,14 @@ export function createHouseInteriorMap(options: {
 }): InteriorMapResult {
   const seed = options.seed >>> 0;
   const exterior = options.exterior;
-  const stories: HouseStoryCount =
+  let stories: HouseStoryCount =
     exterior?.stories === 3 ? 3 : exterior?.stories === 2 ? 2 : 1;
   const scale = options.scale ?? resolveHouseInteriorScale(exterior, seed);
   const program = resolveHouseInteriorProgram(exterior, seed);
+  const concept = options.project ? resolveHouseConcept(options.project, program) : undefined;
+  if (concept) {
+    stories = Math.min(3, Math.max(stories, ...conceptFacilityLevels(concept.bundle, concept.facility))) as HouseStoryCount;
+  }
   // Luxury gold walls only for full mansions (2F+), not 1F cottage-l manor.
   // Kit wall mapping stays aligned with exterior blue-stone etc. unless scale is mansion.
   const wallMaterial =
@@ -352,7 +374,9 @@ export function createHouseInteriorMap(options: {
       ? ("gold-brick" as const)
       : wallMaterialForKit(exterior?.kitId);
 
-  const groundPlan = buildHouseInteriorPlan({
+  const groundPlan = concept ? conceptHouseFloorPlan(concept, {
+    mapId: options.id, name: stories >= 2 ? `${options.name} (1층)` : options.name, seed, level: 1,
+  }) : buildHouseInteriorPlan({
     mapId: options.id,
     name: stories >= 2 ? `${options.name} (1층)` : options.name,
     seed,
@@ -366,6 +390,7 @@ export function createHouseInteriorMap(options: {
   const entry = { x: door.x, y: Math.max(0, door.y - 1) };
 
   const groundBuilt = materializeInteriorMap({
+    project: options.project,
     plan: groundPlan,
     id: options.id,
     name: groundPlan.name,
@@ -397,7 +422,7 @@ export function createHouseInteriorMap(options: {
   let lowerMap = ground;
   let lowerMapId = options.id;
   // 계단은 복도 끝(2026-07-20 사용자 교정) — 복도가 있으면 문에서 먼 쪽 복도 끝, 없으면 기존 휴리스틱.
-  let stairCell = corridorStairCell(groundPlan) ?? pickStairCell(ground, entry, door);
+  let stairCell = listConceptConnections(ground)[0] ?? corridorStairCell(groundPlan) ?? pickStairCell(ground, entry, door);
 
   for (let floor = 2; floor <= stories; floor += 1) {
     const floorMapId = (
@@ -409,7 +434,9 @@ export function createHouseInteriorMap(options: {
     const floorScale: HouseInteriorScale =
       floor >= 3 ? "cottage2" : scale === "mansion" ? "cottage3" : "cottage2";
 
-    const floorPlan = buildHouseInteriorPlan({
+    const floorPlan = concept ? conceptHouseFloorPlan(concept, {
+      mapId: floorMapId, name: `${options.name} (${floor}층)`, seed: floorSeed, level: floor,
+    }) : buildHouseInteriorPlan({
       mapId: floorMapId,
       name: `${options.name} (${floor}층)`,
       seed: floorSeed,
@@ -419,18 +446,19 @@ export function createHouseInteriorMap(options: {
       wallMaterial,
     });
 
-    const stairDown = floorPlan.door;
+    let stairDown = floorPlan.door;
     // 착지 방향: 계단 위 칸이 바닥이면 위(남향 착지), 아니면 아래 — 복도 북단 계단은 아래로 내린다.
     const floorMask = floorMaskFromPlan(floorPlan);
     const aboveIsFloor =
       stairDown.y - 1 >= 0 && floorMask[(stairDown.y - 1) * floorPlan.width + stairDown.x] === true;
-    const floorEntry = { x: stairDown.x, y: aboveIsFloor ? stairDown.y - 1 : Math.min(floorPlan.height - 1, stairDown.y + 1) };
+    let floorEntry = { x: stairDown.x, y: aboveIsFloor ? stairDown.y - 1 : Math.min(floorPlan.height - 1, stairDown.y + 1) };
     const exitId =
       floor === 2 && options.upperExitEventId
         ? options.upperExitEventId
         : `${options.exitEventId}_f${floor}`;
 
     const floorBuilt = materializeInteriorMap({
+      project: options.project,
       plan: floorPlan,
       id: floorMapId,
       name: floorPlan.name,
@@ -444,37 +472,56 @@ export function createHouseInteriorMap(options: {
     });
     const floorMap = floorBuilt.map;
     pipelineWarnings.push(...floorBuilt.warnings);
+    const authoredDescent = findConceptDescent(floorMap);
+    if (authoredDescent) {
+      stairDown = { x: authoredDescent.x, y: authoredDescent.y };
+      floorEntry = { x: stairDown.x, y: stairDown.y + 1 };
+    }
+    const authoredAscent = listConceptConnections(lowerMap).length > 0;
+    const lowerLanding = authoredAscent ? { x: stairCell.x, y: stairCell.y + 1 } : stairCell;
 
-    stampStairsUp(lowerMap, stairCell);
-    placeStairTransfer(lowerMap, {
-      id: `${options.exitEventId}_stairs_up_f${floor - 1}`,
-      x: stairCell.x,
-      y: stairCell.y,
-      name: `${floor}층으로`,
-      mapId: floorMapId,
-      destX: floorEntry.x,
-      destY: floorEntry.y,
-    });
+    if (authoredAscent) {
+      // Keep the authored staircase picture and connect every transfer chip.
+      const lowerDoor = floor === 2 ? groundPlan.door : (lowerMap.roomHarnessPlan!.plan as InteriorRoomPlan).door;
+      linkConceptTransfers(lowerMap, lowerDoor, { mapId: floorMapId, ...floorEntry });
+    } else {
+      stampStairsUp(lowerMap, stairCell);
+      placeStairTransfer(lowerMap, {
+        id: `${options.exitEventId}_stairs_up_f${floor - 1}`,
+        x: stairCell.x,
+        y: stairCell.y,
+        name: `${floor}층으로`,
+        mapId: floorMapId,
+        destX: floorEntry.x,
+        destY: floorEntry.y,
+      });
+    }
 
-    stampStairsDown(floorMap, stairDown);
+    if (authoredDescent) {
+      convertEntranceToDescent(floorMap, { mapId: lowerMapId, ...lowerLanding });
+    } else {
+      stampStairsDown(floorMap, stairDown);
+    }
     placeStairTransfer(floorMap, {
       id: exitId,
       x: stairDown.x,
       y: stairDown.y,
       name: `${floor - 1}층으로`,
       mapId: lowerMapId,
-      destX: stairCell.x,
-      destY: stairCell.y,
+      destX: lowerLanding.x,
+      destY: lowerLanding.y,
     });
 
-    clearPassableLanding(lowerMap, stairCell.x, stairCell.y, { keepUpper: true });
-    clearPassableLanding(floorMap, stairDown.x, stairDown.y, { keepUpper: true });
-    clearPassableLanding(floorMap, floorEntry.x, floorEntry.y);
+    if (!authoredAscent) clearPassableLanding(lowerMap, stairCell.x, stairCell.y, { keepUpper: true });
+    if (!authoredDescent) {
+      clearPassableLanding(floorMap, stairDown.x, stairDown.y, { keepUpper: true });
+      clearPassableLanding(floorMap, floorEntry.x, floorEntry.y);
+    }
 
     floors.push({ floor, mapId: floorMapId, map: floorMap });
     lowerMap = floorMap;
     lowerMapId = floorMapId;
-    stairCell = corridorStairCell(floorPlan) ?? pickStairCell(floorMap, floorEntry, stairDown);
+    stairCell = listConceptConnections(floorMap)[0] ?? corridorStairCell(floorPlan) ?? pickStairCell(floorMap, floorEntry, stairDown);
   }
 
   const f2 = floors.find((f) => f.floor === 2);
@@ -915,6 +962,7 @@ function floorTileForProgram(program: HouseInteriorProgram, seed: number): numbe
 // ── materialize / stairs ─────────────────────────────────────────────
 
 function materializeInteriorMap(input: {
+  readonly project?: Project;
   readonly plan: InteriorRoomPlan;
   readonly id: MapId;
   readonly name: string;
@@ -927,14 +975,17 @@ function materializeInteriorMap(input: {
   readonly skipDefaultExit?: boolean;
   readonly seed?: number;
 }): { map: GameMap; warnings: readonly string[] } {
-  const result = runInteriorRoomPipeline(input.plan);
+  const result = runInteriorRoomPipeline(input.plan, input.project
+    ? interiorVocabFromTileset(input.project.tilesets[input.plan.tilesetId ?? "easyrpg_chipset_interior"])
+    : undefined);
   const map = result.map;
+  map.roomHarnessPlan = { kitId: "villager-room-v1", plan: structuredClone(input.plan) };
   map.id = input.id;
   map.name = input.name;
   map.tileSize = map.tileSize ?? DEFAULT_TILE_SIZE;
 
   map.events = (map.events ?? []).filter(
-    (event) => event.id !== `ev_entrance_${map.id}` && !(event.x === input.door.x && event.y === input.door.y),
+    (event) => input.skipDefaultExit || (event.id !== `ev_entrance_${map.id}` && !(event.x === input.door.x && event.y === input.door.y)),
   );
   if (!input.skipDefaultExit) {
     map.events.push(
@@ -952,7 +1003,7 @@ function materializeInteriorMap(input: {
 
   clearPassableLanding(map, input.entry.x, input.entry.y);
   if (!input.skipDefaultExit) {
-    clearPassableLanding(map, input.door.x, input.door.y);
+    clearPassableLanding(map, input.door.x, input.door.y, { keepUpper: Boolean(input.plan.concept) });
   }
   return { map, warnings: result.warnings ?? [] };
 }
@@ -1031,13 +1082,9 @@ function stampStairsUp(map: GameMap, center: { x: number; y: number }): void {
 }
 
 function stampStairsDown(map: GameMap, center: { x: number; y: number }): void {
-  if (center.y < 0 || center.y >= map.height) return;
+  if (center.x < 0 || center.x >= map.width || center.y < 0 || center.y >= map.height) return;
   clearStairLanding(map, center);
-  for (const [dx, tile] of [[0, 474], [1, 475]] as const) {
-    const x = center.x + dx;
-    if (x < 0 || x >= map.width) continue;
-    map.upperTiles[center.y * map.width + x] = tile;
-  }
+  map.upperTiles[center.y * map.width + center.x] = 474;
 }
 
 function placeStairTransfer(

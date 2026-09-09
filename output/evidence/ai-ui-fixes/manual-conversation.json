@@ -1,0 +1,28 @@
+{
+  "scenario": "long conversation through real composer",
+  "requestShapes": [
+    {
+      "tools": 0,
+      "stream": false
+    },
+    {
+      "tools": 51,
+      "stream": true
+    }
+  ],
+  "completion": {
+    "ok": true,
+    "stoppedReason": "final",
+    "appliedCalls": 0
+  },
+  "observations": [
+    {
+      "scenario": "F1 F9 long conversation",
+      "y": 227,
+      "bottom": 505,
+      "download": "ai-session-audit.json",
+      "failure": null
+    }
+  ],
+  "downloadDeleted": true
+}

@@ -1,4 +1,5 @@
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
+import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import {
   adjustEffectiveFactionStance,
   setEffectiveFactionStance,
@@ -21,9 +22,9 @@ import { resolveEventPage } from "@/project/io";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
-import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
+import { executeM2RuntimeCommand, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
-import { waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
+import { recordSoundLayer, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
@@ -61,6 +62,7 @@ function callCommonEvent(state: InterpreterState, frame: Frame, commonEventId: s
     if (pushFrame(state, commonEvent.commands)) return { kind: "continue" };
     console.warn("[interpreter] common event recursion limit");
   } else {
+    state.onUnverified?.(`Unsupported missing common event: ${commonEventId}`);
     console.warn(`[interpreter] 공통 이벤트 없음: ${commonEventId}`);
   }
   return resumeNext(frame);
@@ -114,6 +116,11 @@ function executeM2Command(
     return pause("cameraControl", cameraControlStep(command.fields, state.currentEventId));
   }
 
+  if (entry.title === "Set Event Location" || entry.title === "Swap Event Location") {
+    const eventIds = relocateM2Events(state.session, entry.title, command.fields, m2Context);
+    return eventIds.length ? pause("relocateEvents", { kind: "relocateEvents", eventIds }) : resumeNext(frame);
+  }
+
   if (entry.title === "Spawn Event" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("spawnEvent", { kind: "spawnEvent", eventId: spawnEventId(command.fields) });
   }
@@ -144,12 +151,19 @@ function executeM2Command(
     });
   }
 
-  if (entry.title === "Sound Layer" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
-    return pause("playAudio", {
-      kind: "playAudio",
-      resourceId: fieldString(command.fields, "resourceId", ""),
-      loop: true,
-    });
+  if (entry.title === "Sound Layer") {
+    const audio = recordSoundLayer(state.session, ensureM2Runtime(state.session), command.fields);
+    return pause("playAudio", { kind: "playAudio", ...audio });
+  }
+
+  if (entry.title === "Fadeout BGM") return pause("stopAudio", { kind: "stopAudio", channel: "bgm" });
+
+  if (entry.title === "Play Memorized BGM" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    const memorized = state.session.m2Runtime?.audio?.playedMemorizedBgm;
+    if (typeof memorized === "string" && memorized.length > 0) {
+      return pause("playAudio", { kind: "playAudio", resourceId: memorized, loop: true, channel: "bgm" });
+    }
+    return resumeNext(frame);
   }
 
   if (entry.title === "Wait Until") {
@@ -282,7 +296,7 @@ function executeM2Command(
   }
 
   if (entry.title === "Set Weather Effects" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
-    const weather = parseWeather(fieldString(command.fields, "value", "none"));
+    const weather = parseWeather(state.session.m2Runtime?.screen.weather);
     return pause("setWeather", {
       kind: "setWeather",
       weather: weather.kind,
@@ -394,16 +408,24 @@ export function executeCommand(
   frame: Frame,
   command: Command
 ): CommandExecution {
+  state.beforeCommand?.(command);
   switch (command.kind) {
-    case "changeFace":
+    case "changeFace": {
+      if (command.appearanceId !== undefined) {
+        const face = state.project ? resolveAppearancePortrait(state.project, command.appearanceId, command.presentation ?? "face") : undefined;
+        state.currentFace = face ? { ...face, position: command.position, flipHorizontally: command.flipHorizontally } : undefined;
+        return resumeNext(frame);
+      }
       state.currentFace = command.resourceId
         ? {
             resourceId: command.resourceId,
+            ...(command.presentation ? { presentation: command.presentation } : {}),
             position: command.position,
             flipHorizontally: command.flipHorizontally,
           }
         : undefined;
       return resumeNext(frame);
+    }
     case "text":
       return pause("text", {
         kind: "text",
@@ -557,9 +579,16 @@ export function executeCommand(
     case "erasePicture":
       return pause("erasePicture", { kind: "erasePicture", pictureId: command.pictureId });
     case "playAudio":
-      return pause("playAudio", { kind: "playAudio", resourceId: command.resourceId, loop: command.loop });
+      return pause("playAudio", {
+        kind: "playAudio",
+        resourceId: command.resourceId,
+        loop: command.loop,
+        ...(command.channel === undefined ? {} : { channel: command.channel }),
+        ...(command.fadeInMs === undefined ? {} : { fadeInMs: command.fadeInMs }),
+        ...(command.volume === undefined ? {} : { volume: command.volume }),
+      });
     case "stopAudio":
-      return pause("stopAudio", { kind: "stopAudio" });
+      return pause("stopAudio", command.channel === undefined ? { kind: "stopAudio" } : { kind: "stopAudio", channel: command.channel });
     case "cutsceneControl":
       if (command.mode === "begin") beginCutsceneControl(state.session, state.currentEventId, command.skippable === true);
       else endCutsceneControl(state.session);

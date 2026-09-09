@@ -36,12 +36,13 @@
 // 커밋 배선 변경을 CSS 변경으로 오해한다.
 import { createHash } from "node:crypto";
 import { renderCommandBody } from "@/editor/panels/eventEditor/commandBody";
+import { editorState } from "@/editor/editorState";
 import { COMMAND_KINDS, type CommandKind } from "@/project/commandKindRegistry";
 import { createDefaultM2Fields, m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { CommandListActions } from "@/editor/panels/eventEditor/types";
-import { createCaptureProject } from "./fixtures/captureProject";
+import { CAPTURE_SEED_IDS, createCommitProbeProject } from "./fixtures/captureProject";
 import { MINIMAL_COMMANDS } from "./fixtures/minimalCommands";
 import { FakeElement, installFakeDom, type FakeNode } from "./fakeDom";
 
@@ -400,6 +401,10 @@ function installProbeBrowserGlobals(): () => void {
     window: (globalThis as { window?: unknown }).window,
     Image: (globalThis as { Image?: unknown }).Image,
   };
+  const timerWindow = had.window ? window : undefined;
+  const timerDescriptors = timerWindow
+    ? (["setInterval", "clearInterval"] as const).map((key) => [key, Object.getOwnPropertyDescriptor(timerWindow, key)] as const)
+    : [];
   const define = (name: string, value: unknown): void => {
     Object.defineProperty(globalThis, name, { configurable: true, writable: true, value });
   };
@@ -415,6 +420,11 @@ function installProbeBrowserGlobals(): () => void {
       addEventListener: () => undefined,
       removeEventListener: () => undefined,
     });
+  } else if (timerWindow) {
+    Object.defineProperties(timerWindow, {
+      setInterval: { configurable: true, writable: true, value: () => 0 },
+      clearInterval: { configurable: true, writable: true, value: () => undefined },
+    });
   }
   if (!had.Image) {
     define(
@@ -426,10 +436,40 @@ function installProbeBrowserGlobals(): () => void {
     );
   }
   return () => {
+    if (timerWindow) {
+      for (const [key, descriptor] of timerDescriptors) {
+        if (descriptor) Object.defineProperty(timerWindow, key, descriptor);
+        else Reflect.deleteProperty(timerWindow, key);
+      }
+    }
     for (const name of ["window", "Image"] as const) {
       if (had[name]) define(name, previous[name]);
       else Reflect.deleteProperty(globalThis, name);
     }
+  };
+}
+
+/**
+ * **에디터의 현재 맵을 캡처 프로젝트의 시드 맵으로 가리킨다.**
+ *
+ * 왜 프로젝트만 심어서는 부족한가 (실측): callMapEvent 폼은 `project.maps` 를 훑지 않는다.
+ * `editorState.get().currentMapId` 를 읽고 그 맵의 events 만 열거한다
+ * (commandBodyAdvanced.ts:1193-1200). 기본값은 `null` 이라 맵과 이벤트를 아무리 심어도
+ * 옵션이 placeholder 한 줄뿐이고, 축은 `single-option` / commitCount 0 으로 남는다.
+ * 실제 이벤트 편집기는 맵을 고른 상태에서만 열리므로(modal.ts:174 가 currentMapId 를 세운다)
+ * 현재 맵을 세우는 것이 **덜** 인공적인 조건이다.
+ *
+ * 캡처 프로젝트 쪽이 아니라 여기서 세운다: currentMapId 는 프로젝트 데이터가 아니라 에디터
+ * 상태이고, 이 축만 그것을 필요로 한다. 픽스처 팩토리가 전역 상태를 건드리면 같은 픽스처를
+ * 쓰는 다른 축(폼/포털/셸)의 표면까지 조용히 움직인다.
+ *
+ * 복원까지 한다 — 같은 워커에서 도는 다른 테스트가 `currentMapId === null` 을 가정한다.
+ */
+function pointEditorAtSeededMap(): () => void {
+  const previous = editorState.get().currentMapId;
+  editorState.set({ currentMapId: CAPTURE_SEED_IDS.map });
+  return () => {
+    editorState.set({ currentMapId: previous });
   };
 }
 
@@ -466,8 +506,13 @@ export type ProbeRun = {
 export function probeCommandControls(cmd: Command, options: ProbeRunOptions = {}): ProbeRun {
   const restoreDom = options.installDom === false ? undefined : installFakeDom();
   const restoreBrowser = options.installDom === false ? undefined : installProbeBrowserGlobals();
+  // 프로젝트를 심는 쪽이 에디터의 현재 맵도 같이 세운다 — 두 개는 한 세트다(위 주석).
+  let restoreMap: (() => void) | undefined;
   try {
-    if (options.replaceProject !== false) store.replace(createCaptureProject());
+    if (options.replaceProject !== false) {
+      store.replace(createCommitProbeProject());
+      restoreMap = pointEditorAtSeededMap();
+    }
 
     let renderCount = 0;
     let probeRoot: FakeElement;
@@ -570,6 +615,7 @@ export function probeCommandControls(cmd: Command, options: ProbeRunOptions = {}
     }
     return { results, renderCount };
   } finally {
+    restoreMap?.();
     restoreBrowser?.();
     restoreDom?.();
   }
@@ -603,7 +649,7 @@ export function captureCommitSurface(cmd: Command, options: ProbeRunOptions = {}
 
 /**
  * 여러 커맨드를 한 환경에서 프로브한다. fake DOM 과 브라우저 스텁, 캡처 프로젝트를
- * **한 번만** 깔고 전 kind 를 돌린다 — kind 마다 store.replace(createCaptureProject()) 를
+ * **한 번만** 깔고 전 kind 를 돌린다 — kind 마다 store.replace(createCommitProbeProject()) 를
  * 다시 부르면 프로젝트 생성이 전체 시간의 대부분이 된다(폼은 프로젝트를 읽기만 한다).
  */
 export function probeMany<K extends string>(
@@ -614,8 +660,10 @@ export function probeMany<K extends string>(
   let renderCount = 0;
   const restoreDom = installFakeDom();
   const restoreBrowser = installProbeBrowserGlobals();
+  let restoreMap: (() => void) | undefined;
   try {
-    store.replace(createCaptureProject());
+    store.replace(createCommitProbeProject());
+    restoreMap = pointEditorAtSeededMap();
     for (const [key, cmd] of entries) {
       const run = probeCommandControls(cmd, {
         installDom: false,
@@ -626,6 +674,7 @@ export function probeMany<K extends string>(
       renderCount += run.renderCount;
     }
   } finally {
+    restoreMap?.();
     restoreBrowser();
     restoreDom();
   }

@@ -1,0 +1,7 @@
+{
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'timeout'\n- 'success'\n",
+  "errors": [],
+  "writes": [],
+  "beats": [],
+  "surface": "OPRN Studio — 게임 파일 열기\n\n.oprn 게임 파일 하나를 이 창에 끌어다 놓거나 아래에서 고르세요.\n\n게임 파일 고르기\n\nmap map_text_tools.events[0].trigger: 알 수 없는 trigger \"autorun\". 허용: action, touch, playerTouch, eventTouch, auto, parallel (자동 실행은 \"auto\")."
+}

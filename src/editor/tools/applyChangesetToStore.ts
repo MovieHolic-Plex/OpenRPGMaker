@@ -9,12 +9,18 @@ import { loadAiConfig } from "@/ai/llmClient";
 import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
+import { canonicalJsonString } from "@/project/supabaseProjectSync";
+import type { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
+import { createProjectWikiCoordinator, type WikiDeliveryMilestone } from "@/editor/projectWikiCoordinator";
 import type { ChangeSummary, Project } from "@/project/types";
+import { reconcileReviewedWorldForApply } from "@/project/world";
 import { commitChangeset, summarizeChanges } from "./changeset";
 import { runTool } from "./toolRunner";
-import type { ToolContext, ToolResult } from "./types";
+import { ToolError, type ToolContext, type ToolResult } from "./types";
+import { assertHouseProtection, captureHouseProtection } from "./houseProtection";
 import type { EditActivityField, EditActivityOrigin } from "@/editor/editActivityLog";
 import type { ProjectChangeAnnotation } from "@/project/store";
+import type { RunOperation } from "@/ai/runOperation";
 
 /**
  * AI/툴 적용을 행위 로그에 남길 주석으로 바꾼다.
@@ -193,7 +199,46 @@ export function applyToolSequenceToStore(
 // 남긴 뒤 반환한다 — 재실행(applyToolSequenceToStore)이 아니라 제안 스냅샷을 그대로
 // 적용하므로 자동 생성 id 프리뷰와 적용이 갈라지지 않는다.
 
+/** Captured by the proposal owner before authoring, never supplied by a model. */
+export interface ProposalBase {
+  readonly version: ReturnType<typeof store.getVersionToken>;
+  readonly identity: string;
+  readonly content: string;
+  readonly world: string;
+}
+
+function proposalContent(project: Project): string {
+  // World documents are merged from the live store, not replaced by ordinary proposals.
+  // Reuse the JSONB comparator without schema normalization: only key order is
+  // ignored, while the existing JSON projection, authored values and arrays stay intact.
+  return canonicalJsonString(JSON.parse(JSON.stringify({ ...project, world: undefined })));
+}
+
+export function captureProposalBase(project: Project): ProposalBase {
+  return Object.freeze({
+    version: store.getVersionToken(), identity: JSON.stringify(store.getProjectIdentity()),
+    content: proposalContent(project), world: canonicalJsonString(JSON.parse(JSON.stringify(project.world ?? null))),
+  });
+}
+
+function isProposalBaseCurrent(base: ProposalBase, resetProject: boolean): boolean {
+  const version = store.getVersionToken();
+  if (version.lineage !== base.version.lineage || JSON.stringify(store.getProjectIdentity()) !== base.identity) return false;
+  const current = store.getCurrent();
+  // Compare authored values even for unchanged counters: save reconciliation and
+  // detached callers do not necessarily share the current object. No-op updates
+  // and our own saves remain valid; unrelated human edits never refresh the base.
+  return proposalContent(current) === base.content
+    && (!resetProject || canonicalJsonString(JSON.parse(JSON.stringify(current.world ?? null))) === base.world);
+}
+
 export interface ApplyProposedProjectOptions {
+  readonly base: ProposalBase;
+  readonly operation?: RunOperation;
+  /** Actual local application, before synchronous observers or commit/save awaits. */
+  readonly onApplied?: (applied: Extract<ApplyProposedProjectResult, { ok: true }>) => void;
+  /** Immutable authority captured when the detached draft was created. */
+  readonly baseline: AuthoredProjectBaseline;
   readonly source: "agent" | "agent-milestone";
   /** 에이전트 신원 이름. 기본: loadAiConfig().model(카드 현행 동작과 동일). */
   readonly agentName?: string;
@@ -210,10 +255,10 @@ export interface ApplyProposedProjectOptions {
 }
 
 export type ApplyProposedProjectResult =
-  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project }
+  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly commitProject?: Project; readonly wikiWarning?: string; readonly wikiDelivery?: WikiDeliveryMilestone }
   | {
     readonly ok: false;
-    readonly reason: "commit-rejected";
+    readonly reason: "commit-rejected" | "retired-run" | "stale-base" | "stale-baseline";
     /** 대표 사유 한 줄(상태 텍스트·토스트용). */
     readonly issue?: string;
     /**
@@ -235,8 +280,38 @@ export async function applyProposedProject(
   proposed: Project,
   options: ApplyProposedProjectOptions,
 ): Promise<ApplyProposedProjectResult> {
+  if (options.operation?.signal.aborted) return { ok: false, reason: "retired-run", issue: "Run authority retired" };
+  if (!isProposalBaseCurrent(options.base, options.resetProject === true)) {
+    return { ok: false, reason: "stale-base", issue: "기준 프로젝트가 변경되었습니다. 최신 편집을 기준으로 다시 요청해주세요." };
+  }
   const before = store.getCurrent();
-  const commit = commitChangeset(proposed, before);
+  if (!options.baseline.matches(before, options.resetProject === true)) {
+    const issue = "초안을 만든 뒤 프로젝트가 수정되었습니다. 최신 프로젝트에서 다시 생성하고 독립 검수를 받아주세요.";
+    return { ok: false, reason: "stale-baseline", issue, issues: [issue] };
+  }
+  const wikiProjectIdentity = JSON.stringify(store.getProjectIdentity());
+  // Wiki checkpoints and human codex edits own world documents independently of
+  // detached authoring previews. A title/map proposal must not restore an old wiki.
+  const appliedProject = { ...proposed };
+  if (!options.resetProject) {
+    // R2: blanket live-world replacement erases approved author_npc_cast
+    // registrations. Merge instead — reviewed authored graph wins, live wiki
+    // documents survive. The R1 baseline gate above already rejected concurrent
+    // authored drift, so the reviewed partition applies cleanly by construction.
+    const merged = reconcileReviewedWorldForApply(proposed.world, before.world);
+    if (merged) appliedProject.world = merged;
+    else delete appliedProject.world;
+  }
+  // A detached preview may predate human edits or newly accepted houses.
+  // Capture the live baseline at application, before any history or store writes.
+  try {
+    assertHouseProtection(captureHouseProtection(before), appliedProject, []);
+  } catch (error) {
+    if (!(error instanceof ToolError)) throw error;
+    const issue = error.mapId ? `[${error.mapId}] ${error.message}` : error.message;
+    return { ok: false, reason: "commit-rejected", issue, issues: [issue] };
+  }
+  const commit = commitChangeset(appliedProject, before);
   if (!commit.ok) {
     const blocking = commit.blocking.map((entry) =>
       entry.mapId ? `[${entry.mapId}] ${entry.message}` : entry.message);
@@ -247,10 +322,10 @@ export async function applyProposedProject(
       issues: blocking,
     };
   }
-  recordProjectSnapshot(options.snapshotLabel, options.snapshotMapId);
+  if (options.operation?.signal.aborted) return { ok: false, reason: "retired-run", issue: "Run authority retired" };
   // diff 를 replace **전에** 계산한다 — 행위 로그 라벨이 이 시점에 확정돼야 하고,
   // summarizeChanges 는 before(교체 전 스토어)를 필요로 한다.
-  const diff = options.diff ?? summarizeChanges(before, proposed);
+  const diff = options.diff ?? summarizeChanges(before, appliedProject);
   const change = applyAnnotation(
     "ai",
     `${options.source === "agent-milestone" ? "AI 마일스톤" : "AI 제안"} 적용: ${options.summary}`,
@@ -258,11 +333,28 @@ export async function applyProposedProject(
     options.toolNames,
     options.reason ?? `AI 적용: ${options.summary}`,
   );
-  if (options.resetProject === true) store.replaceProject(proposed, { ...change, projectSwitch: false });
-  else store.replace(proposed, { change });
-  focusAcceptedAgentChanges(before, proposed);
+  // The client-owned write critical section is synchronous: no await or external
+  // callback between the last authority check, undo snapshot, and replacement.
+  // All async commit/wiki work below follows the actual local mutation.
+  if (options.operation?.signal.aborted) return { ok: false, reason: "retired-run", issue: "Run authority retired" };
+  if (!isProposalBaseCurrent(options.base, options.resetProject === true)) {
+    return { ok: false, reason: "stale-base", issue: "기준 프로젝트가 변경되었습니다. 최신 편집을 기준으로 다시 요청해주세요." };
+  }
+  recordProjectSnapshot(options.snapshotLabel, options.snapshotMapId);
+  // Correlate at the mutation boundary: synchronous subscribers and the awaited
+  // commit can both leave a later edit in the live store before this apply returns.
+  const onApplied = (project: Project): void => {
+    options.onApplied?.({ ok: true, applied: project, commitProject: project, commit: {
+      commitId: null, persisted: false, reviewStatus: options.reviewStatus ?? "approved",
+      summary: options.summary, toolNames: options.toolNames, recordedAt: new Date().toISOString(),
+    } });
+  };
+  const commitProject = options.resetProject === true
+    ? store.replaceProject(appliedProject, { ...change, projectSwitch: false }, onApplied)
+    : store.replace(appliedProject, { change, onApplied });
+  if (!options.operation?.signal.aborted) focusAcceptedAgentChanges(before, appliedProject);
   const commitInput: CommitLogInput = {
-    project: proposed,
+    project: appliedProject,
     identity: currentAgentEditorIdentity(options.agentName ?? loadAiConfig().model),
     reviewStatus: options.reviewStatus ?? "approved",
     summary: options.summary,
@@ -283,6 +375,21 @@ export async function applyProposedProject(
       recordedAt: new Date().toISOString(),
     };
   }
-  resetManualProjectCommitBaseline(proposed);
-  return { ok: true, commit: commitRow, applied: store.getCurrent() };
+  if (options.operation?.signal.aborted) return { ok: true, commit: commitRow, applied: commitProject, commitProject };
+  resetManualProjectCommitBaseline(appliedProject);
+  let wikiWarning: string | undefined;
+  let wikiDelivery: WikiDeliveryMilestone | undefined;
+  if (JSON.stringify(store.getProjectIdentity()) !== wikiProjectIdentity) {
+    return { ok: true, commit: commitRow, applied: store.getCurrent(), commitProject, wikiWarning: "프로젝트가 바뀌어 이전 작업의 위키 진행 기록을 갱신하지 않았습니다." };
+  }
+  if (appliedProject.world?.entities.some((entity) => entity.wiki)) {
+    try {
+      await createProjectWikiCoordinator().observe(options.summary, options.toolNames, options.operation?.signal,
+        milestone => { wikiDelivery = milestone; });
+    } catch (cause) {
+      wikiWarning = cause instanceof Error ? cause.message : String(cause);
+    }
+  }
+  return { ok: true, commit: commitRow, applied: store.getCurrent(), commitProject,
+    ...(wikiDelivery ? { wikiDelivery } : {}), ...(wikiWarning ? { wikiWarning } : {}) };
 }

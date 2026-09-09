@@ -1,0 +1,30 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/audioPreviewSurfaces.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-audio-preview-ux
+
+ ❯ test/audioPreviewSurfaces.test.ts (1 test | 1 failed) 440ms
+   × exposes an idle seekable transport without autoplay when a dialog resource is selected 439ms
+     → expected null not to be null
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/audioPreviewSurfaces.test.ts > exposes an idle seekable transport without autoplay when a dialog resource is selected
+AssertionError: expected null not to be null
+ ❯ test/audioPreviewSurfaces.test.ts:27:73
+     25|   )?.click();
+     26|   // Then: this assertion fails on the current UI because seek does no…
+     27|   expect(document.querySelector('[data-testid="audio-test-seek"]')).no…
+       |                                                                         ^
+     28|   expect(audioElement(document, "button", "audio-test-play").disabled)…
+     29|   expect(play).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  18:53:03
+   Duration  10.88s (transform 6.34s, setup 0ms, collect 8.76s, tests 440ms, environment 576ms, prepare 237ms)

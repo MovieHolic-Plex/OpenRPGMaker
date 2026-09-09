@@ -1,0 +1,359 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/independentReview.test.ts test/assistantIndependentReview.test.ts test/assistantReviewApprovalLifecycle.test.ts test/assistantIndependentReviewCapacity.test.ts test/independentReviewEvidenceScale.test.ts test/assistantReviewEvidenceOverflow.test.ts test/assistantTilesetVisualReview.test.ts test/assistantBackgroundReview.test.ts test/assistantFunctionalReviewIntegration.test.ts test/consumedApprovalReporting.test.ts test/storePersistenceLineage.test.ts test/storeDeferredLineage.test.ts test/transactionalRemoteSourceLineage.test.ts test/storePersistenceProof.test.ts test/functionalPersistenceProof.test.ts test/projectWikiTimeout.test.ts test/projectWikiDelivery.test.ts test/devMediaPromotion.test.ts test/mediaImportDurability.test.ts --maxWorkers=2 --minWorkers=1 --reporter=default --reporter=json --outputFile=.omo/evidence/integration-st01a08238/reviewer-persistence-initial.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238
+
+ ✓ test/devMediaPromotion.test.ts (10 tests) 17600ms
+   ✓ showcase media save-copy promotion > saves and reloads the full 8 MiB asset at a new target before adopting, without flushing the local source  3517ms
+   ✓ showcase media save-copy promotion > rejects matching content returned under the wrong target identity by the real proof reader  1353ms
+   ✓ showcase media save-copy promotion > clears a source quota error only after the new copy is durably verified  2009ms
+   ✓ showcase media save-copy promotion > preserves source and its recovery when promotion fails at save  920ms
+   ✓ showcase media save-copy promotion > preserves source and its recovery when promotion fails at reload  1137ms
+   ✓ showcase media save-copy promotion > preserves source and its recovery when promotion fails at verify  1935ms
+   ✓ showcase media save-copy promotion > preserves source and its recovery when promotion fails at concurrent-edit  1813ms
+   ✓ showcase media save-copy promotion > preserves source and its recovery when promotion fails at cancel  2019ms
+   ✓ showcase media save-copy promotion > rolls back staged config when the final selection write hits quota  1965ms
+   ✓ showcase media save-copy promotion > classifies a failed local write without replacing the previous recoverable bytes  930ms
+ ✓ test/mediaImportDurability.test.ts (5 tests) 597ms
+ ✓ test/transactionalRemoteSourceLineage.test.ts (12 tests) 46425ms
+   ✓ transactional remote source ownership > accepts its own audio metadata reconciliation through real source flush  5034ms
+   ✓ transactional remote source ownership > accepts its own monster metadata reconciliation through real source flush  4035ms
+   ✓ transactional remote source ownership > accepts its own both metadata reconciliation through real source flush  3651ms
+   ✓ transactional remote source ownership > rejects flush-time edit even when the source ends clean with the same identity  4131ms
+   ✓ transactional remote source ownership > rejects save-time edit even when the source ends clean with the same identity  4580ms
+   ✓ transactional remote source ownership > rejects reload-time edit even when the source ends clean with the same identity  5003ms
+   ✓ transactional remote source ownership > rejects flush-time replacement even when the source ends clean with the same identity  3309ms
+   ✓ transactional remote source ownership > rejects save-time replacement even when the source ends clean with the same identity  3694ms
+   ✓ transactional remote source ownership > rejects reload-time replacement even when the source ends clean with the same identity  4201ms
+   ✓ transactional remote source ownership > rejects flush-time cancel even when the source ends clean with the same identity  2504ms
+   ✓ transactional remote source ownership > rejects save-time cancel even when the source ends clean with the same identity  2817ms
+   ✓ transactional remote source ownership > rejects reload-time cancel even when the source ends clean with the same identity  3463ms
+ ✓ test/storeDeferredLineage.test.ts (13 tests) 38647ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's migration callback on clean B before any state or persistence access  3376ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's retry callback on clean B before any state or persistence access  3112ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's health callback on clean B before any state or persistence access  3119ms
+   ✓ deferred store persistence owns its scheduling lineage > A's migration callback cannot save dirty B or steal B's newer timer  3024ms
+   ✓ deferred store persistence owns its scheduling lineage > A's retry callback cannot save dirty B or steal B's newer timer  3181ms
+   ✓ deferred store persistence owns its scheduling lineage > A's health callback cannot save dirty B or steal B's newer timer  3088ms
+   ✓ deferred store persistence owns its scheduling lineage > a superseded same-lineage migration timer cannot consume the newer edit timer  2540ms
+   ✓ deferred store persistence owns its scheduling lineage > the current migration callback persists migration and catches up concurrent edits  3164ms
+   ✓ deferred store persistence owns its scheduling lineage > the current retry callback persists migration and catches up concurrent edits  3069ms
+   ✓ deferred store persistence owns its scheduling lineage > the current health callback persists migration and catches up concurrent edits  3280ms
+   ✓ deferred store persistence owns its scheduling lineage > a pending subscriber's replacement keeps its own timer registration  1934ms
+   ✓ deferred store persistence owns its scheduling lineage > an error subscriber's replacement does not acquire the old failed save's retry  2519ms
+   ✓ deferred store persistence owns its scheduling lineage > an in-flight A health response cannot clear B's retry or persist B  3239ms
+ ✓ test/storePersistenceLineage.test.ts (8 tests) 64863ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reload during PATCH  18992ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after load during PATCH  8578ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reconnect during PATCH  8863ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reload even for identical content  6380ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on load even for identical content  6326ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reconnect even for identical content  6266ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on adopt even for identical content  4962ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on fallback even for identical content  4496ms
+ ❯ test/assistantIndependentReview.test.ts (29 tests | 1 failed) 36452ms
+   ✓ independent result review > requests a change, repairs the same draft, and reviews the new revision without writer conversation  2185ms
+   ✓ review termination and isolation > stops honestly on malformed reviewer output  1091ms
+   ✓ review termination and isolation > stops honestly on transport reviewer output  846ms
+   ✓ review termination and isolation > stops honestly on write reviewer output  985ms
+   ✓ review termination and isolation > stops honestly on stale reviewer output  948ms
+   ✓ review termination and isolation > stops on repeated unchanged findings instead of granting approval  1066ms
+   ✓ review termination and isolation > shares the existing round budget  828ms
+   ✓ review termination and isolation > shares the existing writer-tokens budget  816ms
+   ✓ review termination and isolation > shares the existing review-tokens budget  878ms
+   ✓ review termination and isolation > does not review or execute writes in ask mode  686ms
+   ✓ review termination and isolation > does not review a no-write direct question  517ms
+   ✓ review termination and isolation > rejects a write after cancellation during the pre-tool UI yield  723ms
+   ✓ review termination and isolation > ignores a late approval after cancellation without further mutations  1305ms
+   ✓ review termination and isolation > invalidates approval after edits, and undo cannot revive it  2250ms
+   ✓ review termination and isolation > cannot turn a failed actual scene test into approval  1303ms
+   ✓ review termination and isolation > defers autonomous milestones until the independent verdict is approved  2690ms
+   ✓ review termination and isolation > defers autonomous milestones until the independent verdict is rejected  1105ms
+   × review evidence and final revision boundaries > requires actual visual evidence after spatial changes: delivered 1466ms
+     → expected 'changes_requested' to be 'approved' // Object.is equality
+   ✓ review evidence and final revision boundaries > requires actual visual evidence after spatial changes: empty  1434ms
+   ✓ review evidence and final revision boundaries > requires actual visual evidence after spatial changes: error  1523ms
+   ✓ review evidence and final revision boundaries > reviews the surface-prepared draft, not a pre-clipping revision  1041ms
+   ✓ review evidence and final revision boundaries > rejects a draft replaced while a review is in flight  1162ms
+   ✓ review evidence and final revision boundaries > cannot continue forever by paraphrasing failures without repairing  1277ms
+   ✓ review evidence and final revision boundaries > cannot apply an autonomous draft when cancelled by the approval event  1075ms
+   ✓ evaluation evidence integration > retains the approved independent verdict alongside actual draft scoring  1598ms
+   ✓ evaluation evidence integration > retains the rejected independent verdict alongside actual draft scoring  1580ms
+   ✓ no-write authoring and authored start-state review > blocks a no-write authoring result with unmet acceptance requirements before publishing success  1218ms
+   ✓ no-write authoring and authored start-state review > blocks a no-write authoring result with unmet completion requirements before publishing success  1042ms
+   ✓ no-write authoring and authored start-state review > reviews authored start-state party, inventory and gold as actual data  1812ms
+ ✓ test/assistantFunctionalReviewIntegration.test.ts (10 tests) 33630ms
+   ✓ functional request acceptance AND independent approval > evaluates the exact draft but only verifies applied content (autonomous=false)  2531ms
+   ✓ functional request acceptance AND independent approval > evaluates the exact draft but only verifies applied content (autonomous=true)  3601ms
+   ✓ functional request acceptance AND independent approval > model approval cannot override broken request-owned executable checks  2766ms
+   ✓ functional request acceptance AND independent approval > model approval cannot override unresolved request-owned executable checks  2833ms
+   ✓ functional request acceptance AND independent approval > functional success cannot bypass rejected independent review  2661ms
+   ✓ functional request acceptance AND independent approval > functional success cannot bypass stale independent review  2014ms
+   ✓ functional request acceptance AND independent approval > retains failing request ownership without borrowing approval on ask  3060ms
+   ✓ functional request acceptance AND independent approval > retains failing request ownership without borrowing approval on typed-continue  4097ms
+   ✓ functional request acceptance AND independent approval > retains failing request ownership without borrowing approval on host-resume  5889ms
+   ✓ functional request acceptance AND independent approval > retires previously successful functional and review evidence after a live edit  4175ms
+ ❯ test/projectWikiTimeout.test.ts (25 tests | 3 failed) 20577ms
+   × own extraction timeout through the normal user-turn boundary > defers, initializes original authoring and rejects late valid settlement 2267ms
+     → expected true to be false // Object.is equality
+   × own extraction timeout through the normal user-turn boundary > defers, initializes original authoring and rejects late malformed settlement 1870ms
+     → expected true to be false // Object.is equality
+   × own extraction timeout through the normal user-turn boundary > defers, initializes original authoring and rejects late rejected settlement 1735ms
+     → expected true to be false // Object.is equality
+   ✓ own extraction timeout through the normal user-turn boundary > drains owned operations before reset on test-abort  665ms
+   ✓ own extraction timeout through the normal user-turn boundary > drains owned operations before reset on early-exit  755ms
+   ✓ own extraction timeout through the normal user-turn boundary > drains a turn cancelled before extraction starts  497ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer caller invalidation  571ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer caller-timeout invalidation  744ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer both invalidation  662ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer deadline-then-caller invalidation  702ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer identity invalidation  613ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer an ineligible world-edit checkpoint  529ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer an ineligible map-removed checkpoint  594ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer an ineligible no-wiki checkpoint  551ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer an ineligible backfill checkpoint  428ms
+   ✓ own extraction timeout through the normal user-turn boundary > rejects same-ID map edit and its late patch  618ms
+   ✓ own extraction timeout through the normal user-turn boundary > rejects same-ID map replacement and its late patch  535ms
+   ✓ own extraction timeout through the normal user-turn boundary > keeps unknown-timeout errors fatal  491ms
+   ✓ own extraction timeout through the normal user-turn boundary > keeps network errors fatal  886ms
+   ✓ own extraction timeout through the normal user-turn boundary > keeps malformed errors fatal  653ms
+   ✓ own extraction timeout through the normal user-turn boundary > keeps protected errors fatal  507ms
+   ✓ own extraction timeout through the normal user-turn boundary > keeps supersession errors fatal  568ms
+   ✓ own extraction timeout through the normal user-turn boundary > keeps concurrent errors fatal  384ms
+   ✓ own extraction timeout through the normal user-turn boundary > keeps save errors fatal  466ms
+   ✓ own extraction timeout through the normal user-turn boundary > applies a timely valid patch and awaits persistence before ordinary authoring  2284ms
+ ✓ test/assistantReviewApprovalLifecycle.test.ts (9 tests) 24212ms
+   ✓ review approval ownership > requires fresh review after approval-event cancellation ({"autonomous":false,"freshSignal":false})  3126ms
+   ✓ review approval ownership > requires fresh review after approval-event cancellation ({"autonomous":false,"freshSignal":true})  2912ms
+   ✓ review approval ownership > requires fresh review after approval-event cancellation ({"autonomous":true,"freshSignal":false})  3095ms
+   ✓ review approval ownership > requires fresh review after approval-event cancellation ({"autonomous":true,"freshSignal":true})  4043ms
+   ✓ review approval ownership > does not admit approval inside a review event before checking its output budget  1220ms
+   ✓ review approval ownership > retires approval when the result_review subscriber throws  1229ms
+   ✓ review approval ownership > retires approval when the assistant_message subscriber throws  1436ms
+   ✓ review approval ownership > keeps a completed approval bound to its original signal on retry  1802ms
+   ✓ review approval ownership > retries an already-applied persistence proof without replaying writes or review  5347ms
+ ✓ test/consumedApprovalReporting.test.ts (4 tests) 18065ms
+   ✓ consumed approval reporting (subscribed autonomous apply) > successful consumed apply reports the recorded approval with its revision  5804ms
+   ✓ consumed approval reporting (subscribed autonomous apply) > a later rejected turn never replays the consumed approval  6254ms
+   ✓ consumed approval reporting (subscribed autonomous apply) > cancellation before any apply preserves no approval to report  1633ms
+   ✓ consumed approval reporting (subscribed autonomous apply) > consumed authority stays unusable: no approval replay for later work  4366ms
+ ✓ test/storePersistenceProof.test.ts (19 tests) 35406ms
+   ✓ accepted revision persistence proof > local diagnostics correlate accepted save generation without exporting target or content  2149ms
+   ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  2553ms
+   ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  2488ms
+   ✓ accepted revision persistence proof > uses the ordinary normalized remote load and map-overlay contract  2580ms
+   ✓ accepted revision persistence proof > does not verify a matching projects row when the ordinary map read fails  1493ms
+   ✓ accepted revision persistence proof > binds the receipt to the accepted merged project, not the unmerged live store  3627ms
+   ✓ accepted revision persistence proof > keeps open event drafts local and out of accepted content identity  6996ms
+   ✓ accepted revision persistence proof > rejects a copied token without issuing a read  1023ms
+   ✓ accepted revision persistence proof > does not verify a failed read  942ms
+   ✓ accepted revision persistence proof > does not verify a missing read  851ms
+   ✓ accepted revision persistence proof > does not verify a disabled read  909ms
+   ✓ accepted revision persistence proof > does not verify a cancelled read  1091ms
+   ✓ accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged  1561ms
+   ✓ accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged  1400ms
+   ✓ accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision  1803ms
+   ✓ accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them  1008ms
+   ✓ accepted revision persistence proof > pins the original target across a configuration change during read  847ms
+   ✓ accepted revision persistence proof > does not verify when cancelled while the read is in flight  847ms
+   ✓ accepted revision persistence proof > does not verify when disabled while the read is in flight  1235ms
+ ❯ test/assistantIndependentReviewCapacity.test.ts (2 tests | 1 failed) 27254ms
+   ✓ R5+R6 review capacity through AssistantSession > delivers scoped complete review evidence for rename with five unchanged preset maps  13899ms
+   × R5+R6 review capacity through AssistantSession > delivers scoped complete review evidence for preset with five unchanged preset maps 13345ms
+     → {"status":"changes_requested","revision":1,"summary":"Fixture review","findings":[{"id":"required-0","target":"required-evidence","problem":"⚠ 미이행: 실제 변경이 없습니다(체인지셋 0건).","requestedChange":"Repair the reported requirement on this draft and rerun its evidence tool.","validation":"The same required check must pass on the current revision."}]}: expected 'changes_requested' to be 'approved' // Object.is equality
+ ✓ test/projectWikiDelivery.test.ts (18 tests) 21943ms
+   ✓ a real wiki write preceding a checkpoint failure is applied, not no-change  1279ms
+   ✓ retains the real apply when cancellation happens in the live store subscriber  1092ms
+   ✓ owns history backfill even when its checkpoint fails before current extraction  1141ms
+   ✓ keeps empty extraction no-change without requiring an unloaded save  1072ms
+   ✓ owns successful real save, consumes its current proof, and rechecks freshness without mutating history  2030ms
+   ✓ retains the accepted wiki version when human-edit follows save before callback delivery  707ms
+   ✓ retains the accepted wiki version when cancellation follows save before callback delivery  454ms
+   ✓ retains an accepted wiki retry without current proof after human-edit  1622ms
+   ✓ retains an accepted wiki retry without current proof after cancellation  996ms
+   ✓ does not own a previous wiki write or its clean-flush receipt on empty extraction  1179ms
+   ✓ rejects stale checkpoint receipts for a real wiki apply  1017ms
+   ✓ rejects foreign checkpoint receipts for a real wiki apply  1983ms
+   ✓ rejects missing checkpoint receipts for a real wiki apply  620ms
+   ✓ does not claim an unrelated human revision saved during subscriber  1347ms
+   ✓ does not claim an unrelated human revision saved during flush  1183ms
+   ✓ ignores late old wiki callbacks after a newer run without rewriting either result  910ms
+   ✓ carries the actual observed wiki apply through the ordinary apply result with save=true  2102ms
+   ✓ carries the actual observed wiki apply through the ordinary apply result with save=false  1203ms
+ ✓ test/functionalPersistenceProof.test.ts (4 tests) 15597ms
+   ✓ functional acceptance on accepted canonical reload > reruns real functional criteria on reloaded content before publishing verified persistence  4381ms
+   ✓ functional acceptance on accepted canonical reload > does not certify a newer applied broken purchase using an earlier acceptance pass  3659ms
+   ✓ functional acceptance on accepted canonical reload > cannot publish functional proof while a newer proposal remains unapplied  3749ms
+   ✓ functional acceptance on accepted canonical reload > rejects a canonical read overtaken by a new applied edit  3805ms
+ ✓ test/assistantBackgroundReview.test.ts (8 tests) 9294ms
+   ✓ background review evidence > rejects fake approval with ordinary targetChange acceptance and none evidence  2853ms
+   ✓ background review evidence > rejects fake approval with ordinary targetChange acceptance and tile-image evidence  3378ms
+   ✓ background review evidence > rejects fake approval with ordinary targetChange acceptance and unavailable evidence  1918ms
+   ✓ background review evidence > classifies image background changes as visual and permanently retires old evidence  477ms
+ ✓ test/independentReviewEvidenceScale.test.ts (7 tests) 4824ms
+   ✓ review evidence scale > delivers the flag space through the project summary, not one record per id  363ms
+   ✓ review evidence contexts > pays the shared project payload once instead of once per map  585ms
+   ✓ review evidence contexts > fits once an unchanged context map is left out of the evidence  2800ms
+ ❯ test/assistantTilesetVisualReview.test.ts (2 tests | 1 failed) 6145ms
+   ✓ assistant tileset visual review > does not approve a used tileset column change without current map images  3283ms
+   × assistant tileset visual review > approves the same tileset column change once current map images are delivered 2851ms
+     → expected 'show_map_region: current rendered cov…' not to contain 'show_map_region'
+ ❯ test/assistantReviewEvidenceOverflow.test.ts (2 tests | 1 failed) 4332ms
+   ✓ independent review evidence overflow > reports why the draft could not be reviewed instead of its own refusal string  2404ms
+   × independent review evidence overflow > carries the deterministic problems found before the reviewer was refused 1926ms
+     → expected '독립 검수 미승인: 이번 변경의 검수 증거가 한 번에 들어가지 않아…' to contain 'run_lint'
+ ❯ test/independentReview.test.ts (23 tests | 1 failed) 817ms
+   ✓ independent review protocol > rejects malformed or stale verdict null 4ms
+   ✓ independent review protocol > rejects malformed or stale verdict {} 1ms
+   ✓ independent review protocol > rejects malformed or stale verdict {"revision":6,"verdict":"approved","summary":"Inspected","findings":[]} 0ms
+   ✓ independent review protocol > rejects malformed or stale verdict {"revision":7,"verdict":"approved","summary":"Inspected","findings":[{}]} 1ms
+   ✓ independent review protocol > rejects malformed or stale verdict {"revision":7,"verdict":"changes_requested","summary":"Inspected","findings":[]} 1ms
+   ✓ independent review protocol > rejects malformed or stale verdict {"revision":7,"verdict":"success","summary":"Inspected","findings":[]} 0ms
+   ✓ independent review protocol > rejects executable requests even alongside a valid approval 1ms
+   ✓ independent review protocol > rejects truncated and malformed responses 2ms
+   ✓ independent review protocol > cannot approve deterministic failures and does not invent checks for nonvisual work 3ms
+   ✓ independent review protocol > sends actual image parts, uses no tools and refuses an oversized complete envelope 50ms
+   ✓ independent review protocol > retains exact changed database records rather than whole unchanged collections 247ms
+   × retains advisory evidence without making it a required explicit check 16ms
+     → expected 0 to be greater than 0
+   ✓ whole-response provider JSON fences > accepts exactly one complete json fence and preserves the verdict 61ms
+   ✓ whole-response provider JSON fences > accepts exactly one complete  fence and preserves the verdict 1ms
+   ✓ whole-response provider JSON fences > rejects prose, partial or multiple fences: Here is the review:
+```json
+{"revision":7,"verdict":"approved","summary":"Inspected","findings":[]}
+``` 1ms
+   ✓ whole-response provider JSON fences > rejects prose, partial or multiple fences: ```json
+{"revision":7,"verdict":"approved","summary":"Inspected","findings":[]}
+```
+All done 1ms
+   ✓ whole-response provider JSON fences > rejects prose, partial or multiple fences: ```json
+{"revision":7,"verdict":"approved","summary":"Inspected","findings":[]} 0ms
+   ✓ whole-response provider JSON fences > rejects prose, partial or multiple fences: {"revision":7,"verdict":"approved","summary":"Inspected","findings":[]}
+``` 1ms
+   ✓ whole-response provider JSON fences > rejects prose, partial or multiple fences: ```json
+{"revision":7,"verdict":"approved","summary":"Inspected","findings":[]}
+```
+```json
+{}
+``` 0ms
+   ✓ whole-response provider JSON fences > rejects prose, partial or multiple fences: ```json
+{"revision":7,
+``` 0ms
+   ✓ whole-response provider JSON fences > rejects prose, partial or multiple fences: ```javascript
+{"revision":7,"verdict":"approved","summary":"Inspected","findings":[]}
+``` 0ms
+   ✓ whole-response provider JSON fences > does not let a valid fence bypass tool-call, revision or required-evidence checks 2ms
+   ✓ reviews the authored starting seed without reading later runtime state  418ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/assistantIndependentReview.test.ts > review evidence and final revision boundaries > requires actual visual evidence after spatial changes: delivered
+AssertionError: expected 'changes_requested' to be 'approved' // Object.is equality
+
+Expected: [32m"[7mapprov[27med"[39m
+Received: [31m"[7mchanges_request[27med"[39m
+
+ ❯ test/assistantIndependentReview.test.ts:249:35
+    247|       } });
+    248|     const result = await f.session.sendUserMessage("Resize map");
+    249|     expect(result.review?.status).toBe(mode === "delivered" ? "approve…
+       |                                   ^
+    250|     const parts = f.reviewRequests[0]?.messages.flatMap(message => Arr…
+    251|     expect(parts.filter(part => part.type === "image_url")).toHaveLeng…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  test/assistantIndependentReviewCapacity.test.ts > R5+R6 review capacity through AssistantSession > delivers scoped complete review evidence for preset with five unchanged preset maps
+AssertionError: {"status":"changes_requested","revision":1,"summary":"Fixture review","findings":[{"id":"required-0","target":"required-evidence","problem":"⚠ 미이행: 실제 변경이 없습니다(체인지셋 0건).","requestedChange":"Repair the reported requirement on this draft and rerun its evidence tool.","validation":"The same required check must pass on the current revision."}]}: expected 'changes_requested' to be 'approved' // Object.is equality
+
+Expected: [32m"[7mapprov[27med"[39m
+Received: [31m"[7mchanges_request[27med"[39m
+
+ ❯ test/assistantIndependentReviewCapacity.test.ts:42:66
+     40|     const result = await session.sendUserMessage(mode === "rename" ? "…
+     41|       () => {}, AbortSignal.timeout(60000));
+     42|     expect(result.review?.status, JSON.stringify(result.review)).toBe(…
+       |                                                                  ^
+     43|     expect(result.stoppedReason, result.error).toBe("final");
+     44|     expect(reviews).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  test/assistantReviewEvidenceOverflow.test.ts > independent review evidence overflow > carries the deterministic problems found before the reviewer was refused
+AssertionError: expected '독립 검수 미승인: 이번 변경의 검수 증거가 한 번에 들어가지 않아…' to contain 'run_lint'
+
+Expected: [32m"run_lint"[39m
+Received: [31m"독립 검수 미승인: 이번 변경의 검수 증거가 한 번에 들어가지 않아 초안을 검수하지 못했습니다. 변경 범위를 나눠 다시 요청하세요."[39m
+
+ ❯ test/assistantReviewEvidenceOverflow.test.ts:67:26
+     65|     // on, and it used to be replaced by the harness's own window-exce…
+     66|     expect(result.error).toContain("검수 증거가 한 번에 들어가지 않아");
+     67|     expect(result.error).toContain("run_lint");
+       |                          ^
+     68|   });
+     69| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  test/assistantTilesetVisualReview.test.ts > assistant tileset visual review > approves the same tileset column change once current map images are delivered
+AssertionError: expected 'show_map_region: current rendered cov…' not to contain 'show_map_region'
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- show_map_region[39m
+[31m+ show_map_region[7m: current rendered coverage of changed map map_blank_start required[27m[39m
+[31m+ show_map_region: current rendered coverage of changed map map_blank_start required[39m
+
+ ❯ test/assistantTilesetVisualReview.test.ts:143:45
+    141|     expect(reviewInputs.length).toBeGreaterThan(0);
+    142|     const requiredProblems = reviewInputs.flatMap((input) => input.req…
+    143|     expect(requiredProblems.join("\n")).not.toContain("show_map_region…
+       |                                             ^
+    144|     expect(deliveredImages).toBeGreaterThan(0);
+    145|     expect(result.review?.status).toBe("approved");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  test/independentReview.test.ts > retains advisory evidence without making it a required explicit check
+AssertionError: expected 0 to be greater than 0
+ ❯ test/independentReview.test.ts:54:38
+     52|   const failure = { ok: true, data: { ok: false, failureReason: "Unmet…
+     53|   evidence.observe("run_scene_test", { mapId: "m" }, failure, "advisor…
+     54|   expect(evidence.problems().length).toBeGreaterThan(0);
+       |                                      ^
+     55|   expect(evidence.problems("explicit")).toEqual([]);
+     56|   evidence.observe("run_scene_test", { mapId: "m" }, failure, "explici…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  test/projectWikiTimeout.test.ts > own extraction timeout through the normal user-turn boundary > defers, initializes original authoring and rejects late valid settlement
+ FAIL  test/projectWikiTimeout.test.ts > own extraction timeout through the normal user-turn boundary > defers, initializes original authoring and rejects late malformed settlement
+ FAIL  test/projectWikiTimeout.test.ts > own extraction timeout through the normal user-turn boundary > defers, initializes original authoring and rejects late rejected settlement
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/projectWikiTimeout.test.ts:208:42
+    206|     expect(h.outcomes).toEqual([{ kind: "deferred", reason: "extractio…
+    207|     expect(h.events.filter(event => event.type === "status" && event.t…
+    208|     expect(h.session.canRetryLastTurn()).toBe(false);
+       |                                          ^
+    209|     expect(h.order.slice(0, 4)).toEqual(["extraction", "intent", "plan…
+    210|     expect(h.session.getWorkPlan()?.goal).toBe(requestText);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+
+ Test Files  6 failed | 13 passed (19)
+      Tests  8 failed | 202 passed (210)
+   Start at  04:11:30
+   Duration  255.76s (transform 18.32s, setup 0ms, collect 63.48s, tests 426.68s, environment 686ms, prepare 2.43s)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238/.omo/evidence/integration-st01a08238/reviewer-persistence-initial.json

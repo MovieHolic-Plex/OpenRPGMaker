@@ -50,7 +50,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-group-title,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-life-group-title {
   color: var(--db-studio-text-3);
-  font: 700 10px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 700 10px/1.4 var(--font-ui);
   letter-spacing: 0.06em;
   min-width: 0;
   overflow: hidden;
@@ -65,14 +65,14 @@
   border-radius: 999px;
   color: var(--db-studio-text-3);
   flex: 0 0 auto;
-  font: 600 10px/15px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 10px/15px var(--font-ui);
   padding: 0 6px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-group-empty,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-life-group-empty {
   color: var(--db-studio-text-3);
-  font: 400 11px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 11px/1.5 var(--font-ui);
   margin: 0;
   padding: 2px 6px 6px;
 }
@@ -129,7 +129,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-footprint-caption {
   color: var(--db-studio-text-2);
-  font: 600 10.5px/1.4 "Cascadia Mono", Consolas, monospace;
+  font: 600 10.5px/1.4 var(--font-mono);
   white-space: nowrap;
 }
 
@@ -152,7 +152,7 @@
   border-radius: 6px;
   color: var(--db-studio-text-2);
   cursor: pointer;
-  font: 700 14px/28px "Segoe UI", system-ui, sans-serif;
+  font: 700 14px/28px var(--font-ui);
   height: 30px;
   padding: 0;
   text-align: center;
@@ -180,7 +180,7 @@
   border-radius: 6px;
   color: var(--db-studio-text-3);
   display: flex;
-  font: 700 12px/1 "Segoe UI", system-ui, sans-serif;
+  font: 700 12px/1 var(--font-ui);
   height: 30px;
   justify-content: center;
 }
@@ -204,7 +204,7 @@
   color: var(--db-studio-text-2);
   cursor: pointer;
   display: inline-flex;
-  font: 500 11.5px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 11.5px/1 var(--font-ui);
   gap: 5px;
   padding: 5px 10px;
 }
@@ -246,7 +246,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-sublabel,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-life-sublabel {
   color: var(--db-studio-text-3);
-  font: 600 10.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 10.5px/1.4 var(--font-ui);
   letter-spacing: 0.02em;
 }
 
@@ -254,7 +254,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-life-bullets {
   color: var(--db-studio-text-2);
   display: grid;
-  font: 400 12px/1.7 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 12px/1.7 var(--font-ui);
   gap: 2px;
   margin: 0;
   padding-left: 18px;
@@ -313,7 +313,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-life-rect-caption {
   color: var(--db-studio-text-2);
-  font: 600 10.5px/1.4 "Cascadia Mono", Consolas, monospace;
+  font: 600 10.5px/1.4 var(--font-mono);
   white-space: nowrap;
 }
 
@@ -346,7 +346,7 @@
   color: var(--db-studio-text-2);
   cursor: pointer;
   flex: 0 0 auto;
-  font: 500 11.5px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 11.5px/1 var(--font-ui);
   max-width: 100%;
   overflow: hidden;
   padding: 6px 11px;

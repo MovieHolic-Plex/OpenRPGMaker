@@ -1,0 +1,236 @@
+{
+  "sourceHashesVerified": 16,
+  "checks": 104,
+  "passed": 87,
+  "failures": [
+    {
+      "label": "required-skip: visible UI typed outcome",
+      "actual": [],
+      "expected": [
+        {
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        }
+      ]
+    },
+    {
+      "label": "optional-skip: visible UI typed outcome",
+      "actual": [],
+      "expected": [
+        {
+          "execution": "response-final",
+          "goal": "satisfied",
+          "delivery": "no-change"
+        }
+      ]
+    },
+    {
+      "label": "replan-preserves-required: visible UI typed outcome",
+      "actual": [],
+      "expected": [
+        {
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        }
+      ]
+    },
+    {
+      "label": "user-withdrawal: visible UI typed outcome",
+      "actual": [],
+      "expected": [
+        {
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        }
+      ]
+    },
+    {
+      "label": "blocked-ask-resume: visible UI typed outcome",
+      "actual": [],
+      "expected": [
+        {
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        }
+      ]
+    },
+    {
+      "label": "blocked-question: visible UI typed outcome",
+      "actual": [],
+      "expected": [
+        {
+          "execution": "response-final",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        }
+      ]
+    },
+    {
+      "label": "blocked-resume: user control reactivates same work item",
+      "actual": "blocked",
+      "expected": "in_progress"
+    },
+    {
+      "label": "blocked-resume: real control exits ask mode",
+      "actual": "ask",
+      "expected": "do"
+    },
+    {
+      "label": "blocked-user-resume: getter typed outcome",
+      "actual": {
+        "execution": "response-final",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      },
+      "expected": {
+        "execution": "blocked",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      }
+    },
+    {
+      "label": "blocked-user-resume: harness typed outcome",
+      "actual": {
+        "execution": "response-final",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      },
+      "expected": {
+        "execution": "blocked",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      }
+    },
+    {
+      "label": "blocked-user-resume: turn typed outcome",
+      "actual": {
+        "execution": "response-final",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      },
+      "expected": {
+        "execution": "blocked",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      }
+    },
+    {
+      "label": "blocked-user-resume: bridgeHarness typed outcome",
+      "actual": {
+        "execution": "response-final",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      },
+      "expected": {
+        "execution": "blocked",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      }
+    },
+    {
+      "label": "blocked-user-resume: activity typed outcome",
+      "actual": {
+        "execution": "response-final",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      },
+      "expected": {
+        "execution": "blocked",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      }
+    },
+    {
+      "label": "blocked-user-resume: recap typed outcome",
+      "actual": {
+        "execution": "response-final",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      },
+      "expected": {
+        "execution": "blocked",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      }
+    },
+    {
+      "label": "blocked-user-resume: activityRecap typed outcome",
+      "actual": {
+        "execution": "response-final",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      },
+      "expected": {
+        "execution": "blocked",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      }
+    },
+    {
+      "label": "blocked-user-resume: visible UI typed outcome",
+      "actual": [],
+      "expected": [
+        {
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        }
+      ]
+    },
+    {
+      "label": "blocked-user-resume: terminal typed event",
+      "actual": {
+        "execution": "response-final",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      },
+      "expected": {
+        "execution": "blocked",
+        "goal": "incomplete",
+        "delivery": "no-change"
+      }
+    }
+  ],
+  "userResume": [
+    {
+      "sequence": 93,
+      "type": "real-user-resume-click",
+      "testid": "ai-continue-run",
+      "previousComposerMode": "ask"
+    },
+    {
+      "sequence": 97,
+      "type": "real-user-resume-observed",
+      "itemId": "blocked-resume-work",
+      "actualOptions": {
+        "autonomous": true,
+        "instruction": "계속",
+        "scope": null,
+        "composerMode": "ask"
+      }
+    }
+  ],
+  "cleanup": {
+    "absentBeforeRun": true,
+    "pageListenersAndTimersClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true,
+    "portReleased": true,
+    "remote": {
+      "projectId": "qa-ai-surface-6f2b3702-d2dc-4ed9-a039-fc7ccc993cb9",
+      "kind": "deleted-and-absence-verified",
+      "commitIds": [
+        "318850c2-dc6f-484d-b237-6687f128365a"
+      ]
+    },
+    "remoteDeletedAndAbsent": true,
+    "reusedListener": false,
+    "activeRoutes": 0
+  }
+}
+Configured key-value scan passed.

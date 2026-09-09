@@ -1,9 +1,9 @@
 import { tileStackAt } from "@/project/mapOverlayTiles";
+import { loadTilesetImage, type TilesetCanvasImage } from "@/editor/mapTileDraw";
 import { isLakeAutotileTile, lakeAutotileQuarterSources } from "@/project/defaults/lakeAutotile";
 import { chipsetQuarterComposition } from "@/project/defaults/terrainQuarterAutotile";
 import {
   supportsChipsetQuarterComposition,
-  tilesetImageUrl,
 } from "@/editor/tilesetImage";
 import type { GameMap, MapId, Project, TilesetDef } from "@/project/types";
 
@@ -39,7 +39,7 @@ export async function drawTransferMapPreview(request: DrawTransferMapPreviewRequ
   const map = request.project.maps[request.mapId];
   const tileset = map ? request.project.tilesets[map.tilesetId] : undefined;
   if (!map || !tileset) return;
-  const image = await loadImage(tilesetImageUrl(tileset));
+  const image = await loadTilesetImage(tileset);
   if (request.isCurrent?.() === false) return;
   setupCanvas(request.canvas, map, request.selection.zoom, request.fitDisplay);
   const context = request.canvas.getContext("2d");
@@ -86,7 +86,7 @@ function setupCanvas(
 
 function drawLayer(
   context: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  image: TilesetCanvasImage,
   map: GameMap,
   tileset: TilesetDef,
   tiles: readonly number[],
@@ -97,8 +97,8 @@ function drawLayer(
     const x = index % map.width;
     const y = Math.floor(index / map.width);
     // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함.
-    if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
-      for (const part of lakeAutotileQuarterSources(map, x, y)) {
+    if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile, tileset)) {
+      for (const part of lakeAutotileQuarterSources(map, x, y, tileset)) {
         drawRawTile(context, image, tileset, part.tile, x, y, part.offsetX, part.offsetY, tileset.tileSize / 2);
       }
       continue;
@@ -119,7 +119,7 @@ function drawLayer(
   }
 }
 
-function drawStack(context: CanvasRenderingContext2D, image: HTMLImageElement, map: GameMap, tileset: TilesetDef, layer: "lower" | "upper"): void {
+function drawStack(context: CanvasRenderingContext2D, image: TilesetCanvasImage, map: GameMap, tileset: TilesetDef, layer: "lower" | "upper"): void {
   for (let index = 0; index < map.width * map.height; index += 1) {
     const x = index % map.width;
     const y = Math.floor(index / map.width);
@@ -127,7 +127,7 @@ function drawStack(context: CanvasRenderingContext2D, image: HTMLImageElement, m
   }
 }
 
-function drawRawTile(context: CanvasRenderingContext2D, image: HTMLImageElement, tileset: TilesetDef, tile: number, x: number, y: number, offsetX: number, offsetY: number, size: number): void {
+function drawRawTile(context: CanvasRenderingContext2D, image: TilesetCanvasImage, tileset: TilesetDef, tile: number, x: number, y: number, offsetX: number, offsetY: number, size: number): void {
   const sx = (tile % tileset.tilesPerRow) * tileset.tileSize + offsetX;
   const sy = Math.floor(tile / tileset.tilesPerRow) * tileset.tileSize + offsetY;
   context.drawImage(image, sx, sy, size, size, x * tileset.tileSize + offsetX, y * tileset.tileSize + offsetY, size, size);
@@ -193,13 +193,4 @@ function drawMarker(context: CanvasRenderingContext2D, map: GameMap, selection: 
   context.strokeStyle = "#ffffff";
   context.lineWidth = box;
   context.strokeRect(left, top, map.tileSize, map.tileSize);
-}
-
-function loadImage(url: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = reject;
-    image.src = url;
-  });
 }

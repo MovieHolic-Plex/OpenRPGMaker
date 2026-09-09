@@ -2,7 +2,7 @@
  "fork:switch": {
   "testidCount": 18,
   "controlCount": 5,
-  "selectOptionCount": 39,
+  "selectOptionCount": 40,
   "classCount": 30,
   "labelCount": 3,
   "textCount": 9
@@ -10,7 +10,7 @@
  "fork:variable": {
   "testidCount": 19,
   "controlCount": 6,
-  "selectOptionCount": 43,
+  "selectOptionCount": 44,
   "classCount": 30,
   "labelCount": 4,
   "textCount": 9
@@ -18,7 +18,7 @@
  "fork:selfSwitch": {
   "testidCount": 21,
   "controlCount": 7,
-  "selectOptionCount": 16,
+  "selectOptionCount": 17,
   "classCount": 30,
   "labelCount": 6,
   "textCount": 8
@@ -26,7 +26,7 @@
  "fork:actor": {
   "testidCount": 18,
   "controlCount": 4,
-  "selectOptionCount": 22,
+  "selectOptionCount": 23,
   "classCount": 31,
   "labelCount": 3,
   "textCount": 9
@@ -34,7 +34,7 @@
  "fork:item": {
   "testidCount": 18,
   "controlCount": 4,
-  "selectOptionCount": 22,
+  "selectOptionCount": 23,
   "classCount": 30,
   "labelCount": 3,
   "textCount": 9
@@ -42,7 +42,7 @@
  "fork:gold": {
   "testidCount": 16,
   "controlCount": 4,
-  "selectOptionCount": 22,
+  "selectOptionCount": 23,
   "classCount": 24,
   "labelCount": 3,
   "textCount": 8
@@ -50,7 +50,7 @@
  "fork:timer": {
   "testidCount": 18,
   "controlCount": 5,
-  "selectOptionCount": 18,
+  "selectOptionCount": 19,
   "classCount": 24,
   "labelCount": 1,
   "textCount": 8
@@ -58,7 +58,7 @@
  "fork:timePhase": {
   "testidCount": 16,
   "controlCount": 3,
-  "selectOptionCount": 20,
+  "selectOptionCount": 21,
   "classCount": 23,
   "labelCount": 2,
   "textCount": 8
@@ -66,15 +66,15 @@
  "fork:season": {
   "testidCount": 16,
   "controlCount": 3,
-  "selectOptionCount": 20,
+  "selectOptionCount": 21,
   "classCount": 23,
   "labelCount": 2,
   "textCount": 8
  },
  "fork:npcActivity": {
-  "testidCount": 16,
+  "testidCount": 17,
   "controlCount": 3,
-  "selectOptionCount": 16,
+  "selectOptionCount": 17,
   "classCount": 23,
   "labelCount": 2,
   "textCount": 8
@@ -82,15 +82,23 @@
  "fork:friendshipAtLeast": {
   "testidCount": 17,
   "controlCount": 4,
-  "selectOptionCount": 16,
+  "selectOptionCount": 17,
   "classCount": 24,
   "labelCount": 3,
+  "textCount": 8
+ },
+ "fork:relationshipAtLeast": {
+  "testidCount": 17,
+  "controlCount": 4,
+  "selectOptionCount": 21,
+  "classCount": 23,
+  "labelCount": 2,
   "textCount": 8
  },
  "fork:battleResult": {
   "testidCount": 16,
   "controlCount": 3,
-  "selectOptionCount": 19,
+  "selectOptionCount": 20,
   "classCount": 24,
   "labelCount": 2,
   "textCount": 8
@@ -98,7 +106,7 @@
  "fork:run": {
   "testidCount": 17,
   "controlCount": 4,
-  "selectOptionCount": 22,
+  "selectOptionCount": 23,
   "classCount": 24,
   "labelCount": 3,
   "textCount": 8
@@ -106,7 +114,7 @@
  "fork:all": {
   "testidCount": 23,
   "controlCount": 8,
-  "selectOptionCount": 55,
+  "selectOptionCount": 57,
   "classCount": 36,
   "labelCount": 5,
   "textCount": 10
@@ -114,7 +122,7 @@
  "fork:any": {
   "testidCount": 23,
   "controlCount": 8,
-  "selectOptionCount": 55,
+  "selectOptionCount": 57,
   "classCount": 36,
   "labelCount": 5,
   "textCount": 10
@@ -122,7 +130,7 @@
  "fork:not": {
   "testidCount": 19,
   "controlCount": 6,
-  "selectOptionCount": 55,
+  "selectOptionCount": 57,
   "classCount": 33,
   "labelCount": 3,
   "textCount": 10
@@ -130,7 +138,7 @@
  "fork:group-all-two": {
   "testidCount": 30,
   "controlCount": 14,
-  "selectOptionCount": 98,
+  "selectOptionCount": 101,
   "classCount": 36,
   "labelCount": 7,
   "textCount": 12
@@ -138,7 +146,7 @@
  "fork:group-any-two": {
   "testidCount": 27,
   "controlCount": 12,
-  "selectOptionCount": 77,
+  "selectOptionCount": 80,
   "classCount": 36,
   "labelCount": 7,
   "textCount": 11
@@ -146,7 +154,7 @@
  "fork:group-all-nested": {
   "testidCount": 36,
   "controlCount": 21,
-  "selectOptionCount": 136,
+  "selectOptionCount": 141,
   "classCount": 41,
   "labelCount": 9,
   "textCount": 15
@@ -154,7 +162,7 @@
  "fork:group-not-nested": {
   "testidCount": 28,
   "controlCount": 13,
-  "selectOptionCount": 93,
+  "selectOptionCount": 97,
   "classCount": 37,
   "labelCount": 7,
   "textCount": 12
@@ -162,7 +170,7 @@
  "fork:run.query=floor": {
   "testidCount": 18,
   "controlCount": 5,
-  "selectOptionCount": 26,
+  "selectOptionCount": 27,
   "classCount": 24,
   "labelCount": 4,
   "textCount": 8
@@ -170,7 +178,7 @@
  "fork:run.query=flag": {
   "testidCount": 18,
   "controlCount": 5,
-  "selectOptionCount": 22,
+  "selectOptionCount": 23,
   "classCount": 24,
   "labelCount": 4,
   "textCount": 8
@@ -178,7 +186,7 @@
  "fork:run.query=result": {
   "testidCount": 17,
   "controlCount": 4,
-  "selectOptionCount": 23,
+  "selectOptionCount": 24,
   "classCount": 24,
   "labelCount": 3,
   "textCount": 8

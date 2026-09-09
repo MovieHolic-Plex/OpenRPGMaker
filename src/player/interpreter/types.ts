@@ -1,5 +1,7 @@
 import type { EmoteKind } from "@/project/emotes";
+import type { AudioChannel, AudioTrackState } from "@/project/session";
 import type {
+  AudioCommandChannel,
   ChoiceCancelBehavior,
   Command,
   FaceGraphic,
@@ -92,8 +94,8 @@ export type StepResult =
       waitForPicture?: boolean;
     }
   | { kind: "erasePicture"; pictureId: string }
-  | { kind: "playAudio"; resourceId: string; loop: boolean }
-  | { kind: "stopAudio" }
+  | ({ kind: "playAudio"; channel?: AudioChannel } & AudioTrackState)
+  | { kind: "stopAudio"; channel?: AudioCommandChannel }
   | { kind: "setLighting"; ambient: number; color?: string; transitionMs: number }
   | { kind: "setWeather"; weather: WeatherKind; intensity: number; transitionMs: number }
   | { kind: "showAnimation"; target: ShowAnimationTarget; animationId: string; wait: boolean }
@@ -121,6 +123,7 @@ export type StepResult =
       offsetY?: number;
       zoom?: number;
     }
+  | { kind: "relocateEvents"; eventIds: readonly string[] }
   | { kind: "spawnEvent"; eventId: string }
   | { kind: "removeEvent"; eventId: string }
   | {
@@ -178,6 +181,10 @@ export interface Frame {
 }
 
 export interface InterpreterState {
+  /** Host-owned proof hooks. Absent in ordinary game execution. */
+  beforeCommand?: (command: Command) => void;
+  onUnverified?: (reason: string) => never;
+  continueAfterTransfer?: boolean;
   stack: Frame[];
   waitUntil?: { elapsedMs: number; intervalMs: number };
   isEventIdle?: (target: string) => boolean;
@@ -197,6 +204,10 @@ export interface InterpreterState {
 }
 
 export interface InterpreterOptions {
+  readonly beforeCommand?: (command: Command) => void;
+  readonly onUnverified?: (reason: string) => never;
+  /** An admitted detection command list may continue after its own transfer; legacy callers still terminate. */
+  readonly continueAfterTransfer?: boolean;
   readonly getEventPositions?: () => import("@/project/runtimeEventState").RuntimeEventPositions;
   readonly isEventIdle?: (target: string) => boolean;
   readonly eventPositions?: import("@/project/runtimeEventState").RuntimeEventPositions;

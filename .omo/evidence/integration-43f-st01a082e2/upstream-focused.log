@@ -1,0 +1,5 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/agentVerification.test.ts test/cameraScrollbars.test.ts test/escapeToPanEventLayerDrag.test.ts test/eventIdReadout.test.ts test/imageAdmissionTokens.test.ts test/mapEditRedoEntries.test.ts test/mapHistoryPanel.test.ts test/mapRegionWaterAndCompact.test.ts test/mapSizeGuard.test.ts test/mapTreeRootWording.test.ts test/moveRouteEventTarget.test.ts test/moveRouteEventTargetPicker.test.ts test/productTerminology.test.ts test/projectLint.test.ts test/runtimePlayerRouteThrough.test.ts test/surfaceGateSupport.test.ts test/tileToolbarHistoryMenus.test.ts --maxWorkers=2 --minWorkers=1 --no-cache --reporter=json --outputFile=.omo/integration-st01a082e2/upstream-focused.json
+
+JSON report written to /home/main/z-project/rpg-zzu-integration-43f-st01a082e2/.omo/integration-st01a082e2/upstream-focused.json

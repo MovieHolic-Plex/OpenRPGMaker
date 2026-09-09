@@ -1,3 +1,5 @@
+import { RunOperation } from "@/ai/runOperation";
+import { teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
@@ -7,6 +9,9 @@ import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } fro
 
 const assistantMock = vi.hoisted(() => {
   class MockAssistantSession {
+    private operation = new RunOperation();
+    getRunOperation(): RunOperation { return this.operation; }
+    retireRun(): void { this.operation.retire(); }
     constructor(_project: unknown, _options: unknown) {}
 
     async sendUserMessage(_text: string, _onEvent: (event: unknown) => void): Promise<{
@@ -14,8 +19,12 @@ const assistantMock = vi.hoisted(() => {
       proposedCalls: [];
       stoppedReason: "final";
     }> {
+      this.operation.retire();
+      this.operation = new RunOperation();
       return { assistantText: "완료.", proposedCalls: [], stoppedReason: "final" };
     }
+
+    getRunOutcome(): null { return null; }
 
     getAuditEntries(): [] {
       return [];
@@ -23,6 +32,10 @@ const assistantMock = vi.hoisted(() => {
 
     getActiveSpec(): null {
       return null;
+    }
+
+    getCompletionSpecs(): [] {
+      return [];
     }
 
 
@@ -112,9 +125,6 @@ function installFakeWindow(): () => void {
   };
 }
 
-async function flushAsync(): Promise<void> {
-  for (let i = 0; i < 20; i += 1) await Promise.resolve();
-}
 
 function renderPanel(): FakeElement {
   return renderWithFakeDom(() => renderAiChatPanel());
@@ -128,7 +138,9 @@ beforeEach(() => {
   storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-or-test" }));
 });
 
-afterEach(() => {
+afterEach(async () => {
+  teardownAiChatPanel();
+  await whenAiChatPanelSettled();
   restoreWindow?.();
   restoreWindow = null;
   restoreDom?.();
@@ -149,7 +161,7 @@ describe("조수 캡슐 넓힘/줄임", () => {
     const bridge = (globalThis.window as unknown as { __oprnAiBridge?: { send: (text: string) => Promise<unknown> } }).__oprnAiBridge;
     expect(bridge).toBeTruthy();
     await bridge!.send("여기 나무 심어줘");
-    await flushAsync();
+    await whenAiChatPanelSettled();
 
     expect(panel.classList.contains("is-assistant-idle")).toBe(false);
     expect(panel.classList.contains("is-assistant-log-open")).toBe(true);

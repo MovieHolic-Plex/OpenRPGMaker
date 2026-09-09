@@ -1,0 +1,9 @@
+{
+  "removedOwnedBuildOutput": "dist",
+  "distAbsent": true,
+  "ownedViteCacheAbsent": true,
+  "leadOwnedTmpdirPreserved": true,
+  "serversOrBrowsersStarted": false,
+  "remoteWrites": 0,
+  "sharedWorktreeEdits": false
+}

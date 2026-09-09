@@ -1,0 +1,95 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/advisoryLintProvenance.test.ts test/assistantVerificationEvidence.test.ts -t pre-write provenance|reports the exact stale scope --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/assistantVerificationEvidence.test.ts (24 tests | 23 skipped) 25ms
+ ❯ test/advisoryLintProvenance.test.ts (6 tests | 5 failed) 17466ms
+   × pre-write provenance of automatic lint findings > reports unchanged baseline defects without terminal repair of the real title-only change 2540ms
+     → expected "spy" to not be called at all, but actually been called 1 times[90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m    Array [
+      "/__oprn/edit-activity",
+      Object {
+        "body": "{"entries":[{"seq":0,"at":"2026-09-07T18:34:49.718Z","scope":"project","label":null,"origin":"human","generation":1,"reason":"사람이 편집"},{"seq":1,"at":"2026-09-07T18:34:51.220Z","scope":"project","label":"AI 마일스톤 적용: 마일스톤: Title","origin":"ai","generation":2,"fields":[{"path":"systemChanged","after":true},{"path":"tools","after":"set_title_screen"}],"reason":"이유 없음 — 모델이 reason 을 생략함"}]}",
+        "headers": Object {
+          "Content-Type": "application/json",
+        },
+        "method": "POST",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   × pre-write provenance of automatic lint findings > keeps adopted lint defects terminally blocking 6359ms
+     → actual value must be number or bigint, received "undefined"
+   × pre-write provenance of automatic lint findings > keeps introduced lint defects terminally blocking 2474ms
+     → actual value must be number or bigint, received "undefined"
+   × pre-write provenance of automatic lint findings > keeps different-identity lint defects terminally blocking 2875ms
+     → actual value must be number or bigint, received "undefined"
+   × pre-write provenance of automatic lint findings > keeps explicit lint defects terminally blocking 3031ms
+     → actual value must be number or bigint, received "undefined"
+   ✓ pre-write provenance of automatic lint findings > unknown provenance never exempts a genuine automatic lint finding 183ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/advisoryLintProvenance.test.ts > pre-write provenance of automatic lint findings > reports unchanged baseline defects without terminal repair of the real title-only change
+AssertionError: expected "spy" to not be called at all, but actually been called 1 times[90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m    Array [
+      "/__oprn/edit-activity",
+      Object {
+        "body": "{"entries":[{"seq":0,"at":"2026-09-07T18:34:49.718Z","scope":"project","label":null,"origin":"human","generation":1,"reason":"사람이 편집"},{"seq":1,"at":"2026-09-07T18:34:51.220Z","scope":"project","label":"AI 마일스톤 적용: 마일스톤: Title","origin":"ai","generation":2,"fields":[{"path":"systemChanged","after":true},{"path":"tools","after":"set_title_screen"}],"reason":"이유 없음 — 모델이 reason 을 생략함"}]}",
+        "headers": Object {
+          "Content-Type": "application/json",
+        },
+        "method": "POST",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+ ❯ titleRun test/advisoryLintProvenance.test.ts:75:23
+     73|     }
+     74|   }, undefined, { autonomous: true });
+     75|   expect(network).not.toHaveBeenCalled();
+       |                       ^
+     76|   expect(store.getCurrent().meta.title).toBe("TITLE_APPLIED");
+     77|   expect(session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("don…
+ ❯ test/advisoryLintProvenance.test.ts:90:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  test/advisoryLintProvenance.test.ts > pre-write provenance of automatic lint findings > keeps adopted lint defects terminally blocking
+ FAIL  test/advisoryLintProvenance.test.ts > pre-write provenance of automatic lint findings > keeps introduced lint defects terminally blocking
+ FAIL  test/advisoryLintProvenance.test.ts > pre-write provenance of automatic lint findings > keeps different-identity lint defects terminally blocking
+ FAIL  test/advisoryLintProvenance.test.ts > pre-write provenance of automatic lint findings > keeps explicit lint defects terminally blocking
+TypeError: actual value must be number or bigint, received "undefined"
+ ❯ test/advisoryLintProvenance.test.ts:108:73
+    106|     expect(f.result.runOutcome?.execution).toBe("blocked");
+    107|     expect(f.result.stoppedReason).toBe("final");
+    108|     expect(f.result.completionAssessment?.blockingVerification?.length…
+       |                                                                         ^
+    109|     expect(f.requests).toBeLessThanOrEqual(8);
+    110|     if (kind === "adopted") expect(f.session.getAcceptanceSnapshot()?.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  5 failed | 2 passed | 23 skipped (30)
+   Start at  03:34:30
+   Duration  36.38s (transform 13.08s, setup 0ms, collect 36.34s, tests 17.49s, environment 2ms, prepare 341ms)
+

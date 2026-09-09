@@ -440,3 +440,119 @@
   padding: 4px 6px;
   justify-content: center;
 }
+
+.resource-modal-window:has(.rm-audio-detail) {
+  --rm-resource-left-min: 192px;
+  --rm-resource-center-min: 240px;
+  --rm-resource-command-width: min(40vw, 400px);
+  --rm-resource-shell-height: 600px;
+}
+
+.rm-audio-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.rm-audio-detail > * {
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.rm-audio-detail > .rm-audio-detail-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.rm-audio-detail-scroll > * { flex-shrink: 0; min-width: 0; }
+
+.rm-audio-detail .rm-command-button {
+  min-height: var(--rm-resource-command-height);
+  padding: var(--space-2);
+  white-space: normal;
+}
+
+.rm-audio-name {
+  color: var(--text-1);
+  font: 600 18px/1.5 var(--font-ui);
+  margin: 0;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+
+.rm-audio-meta {
+  color: var(--text-2);
+  font: 400 12px/18px var(--font-ui);
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+
+.rm-audio-field {
+  color: var(--text-1);
+  display: grid;
+  font: 400 13px/20px var(--font-ui);
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.rm-audio-description,
+.rm-audio-search {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  box-sizing: border-box;
+  color: var(--text-1);
+  font: 400 13px/20px var(--font-ui);
+  min-width: 0;
+  padding: var(--space-2);
+  resize: vertical;
+  width: 100%;
+}
+
+.rm-audio-description:focus-visible,
+.rm-audio-search:focus-visible,
+.rm-audio-row:focus-visible,
+.rm-audio-filter input:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.rm-audio-filter {
+  align-items: center;
+  color: var(--text-2);
+  display: flex;
+  font: 400 13px/20px var(--font-ui);
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.rm-audio-filter input {
+  accent-color: var(--accent);
+}
+
+.rm-audio-rows {
+  display: grid;
+  min-width: 0;
+}
+
+.rm-audio-row {
+  cursor: pointer;
+  text-align: left;
+}
+
+.rm-audio-row.active {
+  background: var(--accent-muted);
+  color: var(--text-1);
+}
+
+.rm-audio-detail audio {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+}

@@ -2,12 +2,13 @@ import { equipmentSlots, equipmentSlotLabel } from "@/project/equipmentSlots";
 import { createGrowthMenu, growthMenuTabs } from "@/player/playerGrowthMenu";
 import { canUseMenuItemOnActor } from "@/player/playerItemUse";
 import { activeItemEffects, itemAllowsMenu } from "@/project/itemUsage";
-import { growthEffects } from "@/project/growth/runtime";
+import { actorOwnedSkillIds } from '@/project/growth/runtime';
+import { actorDerivedStats } from '@/battle/battleBattlers';
 import { menuItemUnavailableReason, previewMenuItemTarget } from "@/player/playerItemUse";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
-import { defaultActorFaceResourceId, normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
+import { defaultActorFaceResourceId, normalizeActorRecord } from "@/project/actorModel";
 import type { StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";
 import { effectiveActorClassId } from "@/project/sessionClass";
 import type { PlaySession } from "@/project/session";
@@ -20,7 +21,7 @@ import type {
   Project,
   SkillRecord,
 } from "@/project/types";
-import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
+import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailFact, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 import { buildQuestLog, questStateLabel } from "@/player/questLog";
 import { MONSTER_PARTY_MAX, monsterCurrentHp, monsterDisplayName, monsterMaxHp } from "@/project/monsterCollection";
 import { listFriendshipEntries } from "@/project/friendship";
@@ -34,7 +35,7 @@ import {
   type StatusMenuGroupEntryId,
 } from "@/player/playerStatusMenuModel";
 
-export type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions, StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";
+export type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailFact, StatusMenuDetailOptions, StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";
 
 const STAT_LABELS = [
   ["attack", "공격"],
@@ -155,7 +156,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
           unavailableReason: anyTarget ? undefined : preview.reason,
           description: anyTarget ? "사용 가능한 파티원 모두에게 적용됩니다." : preview.reason,
           face: {
-            resourceId: resolveActorFaceResourceId(session, actor) ?? defaultActorFaceResourceId(actor),
+            resourceId: resolveActorFaceResourceId(session, actor, project) ?? defaultActorFaceResourceId(actor),
             alt: resolveActorName(session, actor),
             testId: `status-menu-target-face-${actor.id}`,
           },
@@ -179,6 +180,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       value: `${inventory.get(item.id) ?? 0}개`,
       description: item.description,
       unavailableReason: menuItemUnavailableReason(item),
+      facts: itemFacts(project, session, item),
       testId: `status-menu-item-${item.id}`,
       onActivate: needsTarget && options.onSelectItemTarget
         ? () => options.onSelectItemTarget?.(item.id)
@@ -562,13 +564,7 @@ function partyActors(project: Project, session: PlaySession): readonly ActorReco
 }
 
 function learnedSkills(project: Project, session: PlaySession, actor: ActorRecord): readonly SkillRecord[] {
-  const skillIds = new Set<string>();
-  const classRecord = project.database.classes.find((record) => record.id === effectiveActorClassId(project, session, actor.id));
-  const level = actorLevel(session, actor);
-  for (const learned of classRecord?.learnedSkills ?? []) if (learned.level <= level) skillIds.add(learned.skillId);
-  for (const learned of actor.learnedSkills) if (learned.level <= level) skillIds.add(learned.skillId);
-  for (const skillId of session.actorSkillIds[actor.id] ?? []) skillIds.add(skillId);
-  for (const skillId of growthEffects(project, session, actor.id).skillIds) skillIds.add(skillId);
+  const skillIds = new Set(actorOwnedSkillIds(project, session, actor.id));
   return project.database.skills.filter((skill) => skillIds.has(skill.id));
 }
 
@@ -597,6 +593,70 @@ function equipmentName(equipmentById: ReadonlyMap<string, EquipmentRecord>, equi
 // 데이터베이스가 이미 저작해 둔 아이콘을 목록 행에 그린다 — 에디터의
 // databaseRecordThumbnails 와 같은 해석 우선순위(iconResourceId → imageResourceId)를 쓴다.
 // 이전에는 iconResourceId 가 src/player 어디에서도 읽히지 않아 목록이 전부 글자만 났다.
+function itemFacts(project: Project, session: PlaySession, item: ItemRecord): readonly StatusMenuDetailFact[] {
+  const usesPerCopy = item.consumptionLimit === "noLimit" ? 1 : item.consumptionLimit;
+  const remainingCopyUses = usesPerCopy - (session.itemUseCharges?.[item.id] ?? 0);
+  // Match menu dispatch precedence, not scope left over from a previous type.
+  const scope = item.careProfile ? "partyMonster"
+    : item.learnedSkillId || Object.values(item.seedParameterBonuses).some((delta) => delta !== 0) ? "ally"
+    : item.type === "switch" ? "none"
+    : item.captureProfile ? "enemy"
+    : item.scope;
+  return [
+    { id: "type", value: item.type },
+    { id: "effects", value: itemEffectTokens(project, item).join(",") },
+    {
+      id: "eligibility", value: itemEligibilityFact(item),
+      targeting: { scope, deadOnly: item.onlyEffectiveOnDeadActors },
+      consumption: item.consumable
+        ? { consumable: true, usesPerCopy, remainingCopyUses,
+          remainingUses: remainingCopyUses + ((session.inventory[item.id] ?? 0) - 1) * usesPerCopy }
+        : { consumable: false },
+    },
+  ];
+}
+
+function itemEligibilityFact(item: ItemRecord): string {
+  if (item.occasion === "battle") return "battle";
+  if (item.occasion === "never" || !itemAllowsMenu(item)) return "unusable";
+  if ((item.type === "medicine" || item.type === "book" || item.type === "seed")
+    && (item.usableActorIds.length > 0 || item.usableClassIds.length > 0)) return "restricted";
+  return "usable";
+}
+
+function itemEffectTokens(project: Project, item: ItemRecord): string[] {
+  const tokens: string[] = [];
+  if (item.hpRecovery.flat > 0) tokens.push(`hp:${item.hpRecovery.flat}`);
+  if (item.hpRecovery.percentMax > 0) tokens.push(`hp%:${item.hpRecovery.percentMax}`);
+  if (item.mpRecovery.flat > 0) tokens.push(`mp:${item.mpRecovery.flat}`);
+  if (item.mpRecovery.percentMax > 0) tokens.push(`mp%:${item.mpRecovery.percentMax}`);
+  const healedStateIds = new Set(item.healStateIds);
+  for (const stateId of healedStateIds) tokens.push(`heal:${encodeURIComponent(stateId)}`);
+  for (const effect of item.stateEffects) {
+    if (effect.operation === "remove") {
+      if (healedStateIds.has(effect.stateId)) continue;
+      healedStateIds.add(effect.stateId);
+      tokens.push(`heal:${encodeURIComponent(effect.stateId)}`);
+    } else if (effect.chance > 0 && project.database.states.some((state) => state.id === effect.stateId)) {
+      tokens.push(`state:${encodeURIComponent(effect.stateId)}:${effect.chance}`);
+    }
+  }
+  if (item.learnedSkillId) tokens.push(`learn:${encodeURIComponent(item.learnedSkillId)}`);
+  if (item.activateSkillId) tokens.push(`skill:${encodeURIComponent(item.activateSkillId)}`);
+  if (item.switchId) tokens.push(`switch:${encodeURIComponent(item.switchId)}`);
+  if (item.careProfile) tokens.push(`care:${item.careProfile.kind}:${item.careProfile.friendshipDelta}:${item.careProfile.expDelta ?? 0}`);
+  if (item.captureProfile) {
+    tokens.push(project.system.battleModel === "gen1"
+      ? `capture-class:${item.captureProfile.ballClass ?? "poke"}`
+      : `capture:${item.captureProfile.multiplier}`);
+  }
+  for (const [key] of STAT_LABELS) {
+    const delta = item.seedParameterBonuses[key];
+    if (delta !== 0) tokens.push(`seed:${key}:${delta}`);
+  }
+  return tokens.length > 0 ? tokens : ["none"];
+}
+
 function itemEntryIcon(item: ItemRecord): NonNullable<StatusMenuDetailEntry["icon"]> {
   return {
     resourceId: item.iconResourceId ?? item.imageResourceId,
@@ -614,14 +674,14 @@ function equipmentEntryIcon(equipment: EquipmentRecord | undefined): NonNullable
   };
 }
 
-// SkillRecord 는 icon/image 필드가 없다. 유일한 그래픽 경로는 animationId 가
-// 가리키는 battleAnimations 레코드의 resourceId 다(에디톰도 그렇게 잡는다).
+// 스킬은 애니메이션 시트의 첫 셀을 썸네일로 쓴다. 시트 전체를 축소하지 않도록 규격도 넘긴다.
 function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<StatusMenuDetailEntry["icon"]> {
   const animation = skill.animationId
     ? project.database.battleAnimations.find((entry) => entry.id === skill.animationId)
     : undefined;
   return {
     resourceId: animation?.resourceId,
+    sheet: animation ? animation.sheet ?? { frameWidth: 96, frameHeight: 96, columns: 5 } : undefined,
     alt: skill.name,
     testId: `status-menu-entry-icon-skill-${skill.id}`,
   };
@@ -692,12 +752,12 @@ function actorStatTotal(
 ): number {
   const { project, session } = options;
   const level = session.actorLevels[actor.id] ?? actor.initialLevel;
-  const curves = normalizeActorRecord(actor).parameterCurves;
   const worn: ActorInitialEquipment = { ...actorEquipment(project, session, actor), [slotId]: candidateId };
-  return equipmentSlots(project).reduce(
-    (total, slot) => total + equipmentStats(project, worn[slot.id])[statKey],
-    parameterValueAtLevel(curves[statKey], level) + (session.actorParamBonuses?.[actor.id]?.[statKey] ?? 0) + growthEffects(project, session, actor.id).bonuses[statKey]
-  );
+  return actorDerivedStats(project, normalizeActorRecord(actor), {
+    level, classOverrides: session.classOverrides, promotionLineage: session.promotionLineage,
+    growthProgress: session.growthProgress, paramBonuses: session.actorParamBonuses?.[actor.id],
+    equipment: effectiveActorEquipment(project, actor, worn, effectiveActorClassId(project, session, actor.id)),
+  })[statKey];
 }
 
 function equipmentStatDelta(

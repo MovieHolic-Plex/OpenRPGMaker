@@ -3,6 +3,7 @@
  * 코드 카탈로그(interiorObjectCatalog) 는 시드·폴백 전용 — 이 모듈은 프로젝트 데이터를 정본으로 본다.
  */
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
+import { repairLegacyInteriorCabinetKit } from "@/project/defaults/interiorTransparentPropLayerRepair";
 import { bakeInteriorObject } from "@/editor/harnessSuggestion/structureKitRasterModel";
 import { structureKitSize, structureKitUnitCells } from "@/editor/harnessSuggestion/structureKitModel";
 import type {
@@ -54,6 +55,7 @@ export function interiorObjectFromKit(kit: SectionStructureKitDef): InteriorObje
   return {
     id: kit.id,
     label: kit.name ?? kit.id,
+    ...(kit.ai?.description ? { description: kit.ai.description } : {}),
     role,
     width: size.width,
     height: size.height,
@@ -141,7 +143,7 @@ export function seedInteriorTilesetCatalog(
   objects: readonly InteriorObjectDef[],
   kinds: readonly InteriorRoomKindRecord[],
 ): boolean {
-  let changed = false;
+  let changed = repairLegacyInteriorCabinetKit(tileset);
   // Phase 3: 꾸러미 장소가 있으면 방 종류를 시드하지 않는다 — 파생 체인(꾸러미 → 방 종류)이
   // 살아 있어야 한다. 가구 킷 시드는 그대로 둔다(구조물 탭이 비면 안 된다).
   if (tileset.interiorRoomKinds === undefined && kindsDerivedFromConceptBundles(tileset).length === 0) {
@@ -162,7 +164,7 @@ export function seedInteriorTilesetCatalog(
         ...kit,
         learnedFrom: "interior-catalog" as const,
         ai: {
-          description: "",
+          description: object.description ?? "",
           placementRules: "",
           ...(object.role ? { interiorRole: object.role } : {}),
           snap: object.snap,

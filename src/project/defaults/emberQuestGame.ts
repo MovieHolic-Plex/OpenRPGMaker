@@ -4,7 +4,7 @@ import { PRODUCT_BRAND } from "@/brand";
 import type { ActorParameterCurves, Command, EnemyStats, EventPage, GameEvent, GameMap, Project } from "../types";
 import { SCHEMA_VERSION } from "../types";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
-import { dropCropsWithMissingItems, normalizeItemRecord } from "../databaseRecordModel";
+import { dropCropsWithMissingItems, normalizeItemRecord, normalizeTroopRecord } from "../databaseRecordModel";
 import {
   DEFAULT_ACTOR_ID,
   DEFAULT_CLASS_ID,
@@ -272,7 +272,14 @@ function emberDatabase(): Project["database"] {
         rewards: { ...enemy.rewards, exp: tuning.exp, gold: tuning.gold },
       };
     });
-  db.troops = db.troops.filter((troop) => keepTroops.has(troop.id));
+  db.troops = db.troops.filter((troop) => keepTroops.has(troop.id)).map((troop) =>
+    troop.id === EMBER_TROOP.slimes
+      ? normalizeTroopRecord({
+          ...troop,
+          members: troop.members?.map((member, index) =>
+            index === 0 ? { ...member, enemyId: "enemy_slime" } : member),
+        })
+      : troop);
   db.actors = db.actors
     .filter((actor) => actor.id === DEFAULT_ACTOR_ID)
     .map((actor) => ({

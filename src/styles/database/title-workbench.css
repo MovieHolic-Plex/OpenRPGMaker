@@ -28,13 +28,13 @@
 
 .database-modal-backdrop .db-title-workbench-group > legend {
   color: var(--db-studio-text-1);
-  font: 600 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 600 12px/1.2 var(--font-ui);
   padding: 0 4px;
 }
 
 .database-modal-backdrop .db-title-workbench-system-title-id {
   color: var(--db-studio-text-3);
-  font: 400 11px/1.4 ui-monospace, monospace;
+  font: 400 11px/1.4 var(--font-mono);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -69,7 +69,7 @@
 
 .database-modal-backdrop .db-title-workbench-preview-label {
   color: var(--db-studio-text-2);
-  font: 600 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 600 12px/1.2 var(--font-ui);
 }
 
 .database-modal-backdrop .db-title-workbench-stage {
@@ -90,7 +90,7 @@
   color: var(--db-studio-text-3);
   content: "이미지 없음";
   display: grid;
-  font: 500 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 500 11px/1.2 var(--font-ui);
   inset: 0;
   place-items: center;
   position: absolute;
@@ -184,14 +184,14 @@
 
 .database-modal-backdrop .db-title-density-value {
   color: var(--db-studio-text-2);
-  font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 400 11px/1.2 var(--font-ui);
   min-width: 24px;
   text-align: right;
 }
 
 .database-modal-backdrop .db-title-workbench-title {
   color: #fff8e7;
-  font: 700 16px/1.15 "Malgun Gothic", system-ui, sans-serif;
+  font: 700 16px/1.15 var(--font-ui);
   max-width: 90%;
   position: absolute;
   text-align: center;
@@ -226,7 +226,7 @@
 
 .database-modal-backdrop .db-title-workbench-menu-item {
   color: #f3f6ff;
-  font: 500 12px/1.35 "Malgun Gothic", system-ui, sans-serif;
+  font: 500 12px/1.35 var(--font-ui);
   white-space: nowrap;
 }
 
@@ -239,7 +239,7 @@
 
 .database-modal-backdrop .db-title-workbench-music-id {
   color: var(--db-studio-text-3);
-  font: 400 11px/1.4 ui-monospace, monospace;
+  font: 400 11px/1.4 var(--font-mono);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

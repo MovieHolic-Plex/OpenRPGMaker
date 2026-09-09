@@ -6,6 +6,7 @@ import {
   TILE_FRAME_COUNT,
 } from "@/assets/bundled";
 import { graftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
+import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { tileGraftsTextureSuffix } from "@/assets/tileGrafts";
 import { bakeTilesetTextureCanvas, tilesetTextureNeedsBake } from "@/assets/tileGraftTexture";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
@@ -14,19 +15,28 @@ import {
   LEGACY_RM_TILESET_TEXTURE_KEY,
 } from "@/project/defaults/constants";
 import { DUNGEON_TEXTURE_KEY, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness/themePacks";
+import { isWorldTileset, isWorldAnimatedTile } from "@/project/defaults/worldCoastMapping";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import type Phaser from "phaser";
+import { animationStripForTile } from "@/project/defaults/chipsetAnimation";
 
 const DEFAULT_TILESET_IMAGE_URL = `/${ASSET_TILESET}`;
 
-export function tilesetImageUrl(tileset: TilesetDef): string {
-  const baseUrl =
+/** Graft-free atlas URL (uploaded bytes or bundled path). Editor and evidence share this base. */
+export function tilesetBaseImageUrl(tileset: TilesetDef): string {
+  return withInlineAsset(
     tileset.image.type === "uploaded"
       ? store.getCurrent().assets.uploaded[tileset.image.id]?.dataUrl ?? DEFAULT_TILESET_IMAGE_URL
-      : bundledTilesetImageUrl(tileset.image.id) ?? DEFAULT_TILESET_IMAGE_URL;
+      : bundledTilesetImageUrl(tileset.image.id) ?? DEFAULT_TILESET_IMAGE_URL,
+  );
+}
+
+export function tilesetImageUrl(tileset: TilesetDef): string {
+  const baseUrl = tilesetBaseImageUrl(tileset);
   // 타일 이식이 있으면 베이크 결과(dataURL)를 반환 — 팔레트/DB 미리보기에도 이식 타일이 보인다.
   // 아직 베이크 전이면 베이스 URL 을 임시 반환(베이크는 예약되어 다음 리렌더에 반영).
+  // Evidence rendering must not use this transient fallback; see toolImageCanvas.loadTilesetImage.
   return graftedTilesetImageUrl(tileset, baseUrl) ?? baseUrl;
 }
 
@@ -62,9 +72,17 @@ export function isDefaultTilesetTexture(tileset: TilesetDef): boolean {
 }
 
 export function supportsChipsetQuarterComposition(tileset: TilesetDef): boolean {
-  return isDefaultTilesetTexture(tileset)
+  return isWorldTileset(tileset) || isDefaultTilesetTexture(tileset)
     || (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY)
     || (tileset.image.type === "bundled" && tileset.image.id === DUNGEON_TEXTURE_KEY);
+}
+
+/** Interior fire and ungrafted World strips animate without enabling town road/tree rules. */
+export function supportsChipsetTileAnimation(tileset: TilesetDef, tile: number): boolean {
+  return isDefaultTilesetTexture(tileset)
+    || (isWorldTileset(tileset) && isWorldAnimatedTile(tile, tileset))
+    || (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY
+      && animationStripForTile(tile)?.baseTile === 124);
 }
 
 function baseTilesetTextureKey(tileset: TilesetDef): string {
@@ -89,9 +107,9 @@ function previewSizeCss(previewSize: number | string): string {
 /** 타일셋에 붙이기 전 후보 그래픽의 URL — 그래픽 고르기 미리보기가 쓴다. */
 export function tilesetImageSourceUrl(image: TilesetDef["image"]): string {
   if (image.type === "uploaded") {
-    return store.getCurrent().assets.uploaded[image.id]?.dataUrl ?? DEFAULT_TILESET_IMAGE_URL;
+    return withInlineAsset(store.getCurrent().assets.uploaded[image.id]?.dataUrl ?? DEFAULT_TILESET_IMAGE_URL);
   }
-  return bundledTilesetImageUrl(image.id) ?? DEFAULT_TILESET_IMAGE_URL;
+  return withInlineAsset(bundledTilesetImageUrl(image.id) ?? DEFAULT_TILESET_IMAGE_URL);
 }
 
 function bundledTilesetImageUrl(textureKey: string): string | null {

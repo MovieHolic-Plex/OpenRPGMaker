@@ -17,6 +17,16 @@ import type {
 import type { Command, Condition, EventPageGraphic, WeatherKind } from "./events";
 import type { Season, TimePhase, TimeSystemConfig } from "../gameTime";
 import type { GenrePackId } from "../genrePackId";
+import type { CinematicSequence, GameOverSettings } from "../cinematicSettings";
+
+export interface CharacterAppearanceRecord {
+  id: string;
+  name: string;
+  description: string;
+  charset?: { resourceId: string; characterIndex: number };
+  face?: { resourceId: string };
+  bust?: { resourceId: string };
+}
 
 export interface ActorRecord {
   id: ActorId;
@@ -30,6 +40,7 @@ export interface ActorRecord {
   characterResourceId?: string;
   /** Optional charset character index (0..7). Omitted means 0 for legacy projects. */
   characterIndex?: number;
+  appearanceId?: string;
   characterTransparent: boolean;
   battleCharacterResourceId?: string;
   critical: ActorCritical;
@@ -102,6 +113,9 @@ export interface ClassPromotion {
 }
 
 export interface ClassPromotionRequirement {
+  requiredSkillIds?: SkillId[];
+  requiredNodes?: import('../growth/types').NodeRankRequirement[];
+  requiredTreePoints?: { treeId: string; points: number }[];
   level?: number;
   switchId?: string;
   itemId?: ItemId;
@@ -394,6 +408,8 @@ export interface EnemyRecord {
   speciesId?: MonsterSpeciesId;
   level?: number;
   monsterResourceId?: string;
+  /** 전투 이미지 표시 크기(10~300%, 정수). 생략 시 기존 크기 100%. */
+  battleScalePercent?: number;
   graphicHue: number;
   transparent: boolean;
   flying: boolean;
@@ -894,6 +910,7 @@ export interface HomeDecorationTypeRecord {
 }
 
 export interface ProjectDatabaseRecords extends DatabaseRecords {
+  characterAppearances?: CharacterAppearanceRecord[];
   /** Optional additive catalog; built-in slots always remain available. */
   equipmentSlots?: EquipmentSlotRecord[];
   elements?: DatabaseElementRecord[];
@@ -1088,6 +1105,8 @@ export interface SystemRecords {
   initialTroopId?: TroopId;
   battleFlow?: BattleFlow;
   battleUiStyle?: BattleUiStyle;
+  /** Project-wide, scoped battle menu CSS; absent preserves the selected skin. */
+  battleCommandCss?: string;
   battleParty?: BattleParty;
   /** 전투 규칙 엔진 선택. "rm2k3"(기본/생략) 또는 "gen1"(포켓몬 레드 스타일).
    *  생략 시 기존 RM2k3 전투 규칙이 100% 유지된다. CSS·UI 게이팅은 body[data-battle-model] 속성으로 한다. */
@@ -1095,6 +1114,10 @@ export interface SystemRecords {
   activeSlots?: number;
   rewardPolicy?: RewardPolicy;
   titleScreen?: TitleScreenSettings;
+  /** Opt-in pre-map new-game sequence. Disabled sequences retain their authored content. */
+  opening?: CinematicSequence;
+  /** Optional game-over sequence and terminal-menu presentation. */
+  gameOver?: GameOverSettings;
   monsterCollection?: boolean;
   // 전투를 몬스터 파티로 진행(옵션 A). monsterCollection(포획 게이트)과 별개 축이다.
   monsterBattleParty?: boolean;

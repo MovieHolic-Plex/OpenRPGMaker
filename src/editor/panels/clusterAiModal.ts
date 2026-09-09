@@ -9,6 +9,7 @@ import {
 import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
 import { conversationScopeKey } from "@/ai/conversationStore";
 import { resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
+import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 import { loadAiConfig } from "@/ai/llmClient";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
@@ -18,10 +19,9 @@ import {
   buildUnclassifiedAnalysisKickoff,
   type ClusterGroupSnapshot,
 } from "@/ai/clusterAssistPrompt";
-import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { editorState } from "@/editor/editorState";
-import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { store } from "@/project/store";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
@@ -39,8 +39,6 @@ type RangeClassifyRect = {
   readonly x: number;
   readonly y: number;
 };
-
-type SnapshotRecorder = (label?: string, mapId?: string | null) => void;
 
 type ModalModel = {
   readonly detail: ClusterAiModalDetail;
@@ -159,7 +157,9 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       }),
     ],
   });
+  let activeTurn: AbortController | null = null;
   const close = (): void => {
+    activeTurn?.abort();
     clearAgentGhostPreview();
     root.remove();
     document.removeEventListener?.("keydown", onKeyDown);
@@ -186,6 +186,8 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     if (!state.session) {
       state.session = new AssistantSession(store.getCurrent(), {
         config: resolveSurfaceAiConfig("cluster"),
+        reviewConfig: resolveSurfaceAiConfig("chat"),
+        prepareProjectWiki: createProjectWikiCoordinator({ getConfig: () => resolveSurfaceAiConfig("cluster") }).prepare,
         contextOptions: {
           currentMapId: currentMapId() ?? undefined,
           // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
@@ -290,7 +292,9 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       log.scrollTop = log.scrollHeight;
     };
     try {
-      const result = await ensureSession().sendUserMessage(trimmed, onEvent);
+      activeTurn = new AbortController();
+      const result = await ensureSession().sendUserMessage(trimmed, onEvent, activeTurn.signal);
+      if (activeTurn.signal.aborted) return;
       if (result.assistantText) assistantText = result.assistantText;
       if (result.assistantText && !assistantBubble) appendBubble("assistant", result.assistantText);
       renderQuickReplies(assistantText);
@@ -307,17 +311,41 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
   const acceptProposal = async (calls: readonly ProposedCall[]): Promise<void> => {
     const session = state.session;
     if (!session) return;
+    const operation = session.getRunOperation();
+    const base = session.getProposalBase();
+    const proposed = session.getProposedProject();
     if (calls.some((call) => call.destructive) && !(await confirmDestructive())) return;
     const warnings = proposalApprovalWarnings(calls);
     if (warnings.length > 0 && !(await confirmRuleApproval(warnings))) return;
-    const proposed = session.getProposedProject();
-    const mapId = currentMapId();
-    const snapshot: SnapshotRecorder = recordProjectSnapshot;
-    const before = store.getCurrent();
+    if (state.session !== session || session.getRunOperation() !== operation || operation.signal.aborted) return;
+    if (!session.isDraftReviewApproved(proposed)) {
+      appendBubble("system", "독립 검수가 승인되지 않았거나 초안이 바뀌어 적용하지 않았습니다.");
+      status.textContent = "검수 미완료";
+      return;
+    }
+    const label = `클러스터 수정: ${model.group?.name ?? model.title}`;
     clearAgentGhostPreview();
-    snapshot(`클러스터 수정: ${model.group?.name ?? model.title}`, mapId);
-    store.replace(proposed);
-    focusAcceptedAgentChanges(before, proposed);
+    const applied = await applyProposedProject(proposed, {
+      base,
+      operation,
+      baseline: session.getDraftBaseline(),
+      source: "agent",
+      agentName: resolveSurfaceAiConfig("cluster").model,
+      summary: label,
+      toolNames: calls.map((call) => call.name),
+      snapshotLabel: label,
+      snapshotMapId: currentMapId(),
+    });
+    if (state.session !== session || session.getRunOperation() !== operation || operation.signal.aborted) return;
+    if (!applied.ok) {
+      session.recordApplyRejected(undefined, applied.reason);
+      if (applied.reason === "stale-baseline") session.refreshAcceptance(store.getCurrent());
+      const message = `적용 실패: ${applied.issue ?? "무결성 오류"}`;
+      status.textContent = "적용 실패";
+      appendBubble("system", message);
+      toast(message, "error");
+      return;
+    }
     session.rebaseProject(store.getCurrent());
     proposals.replaceChildren();
     appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다.`);

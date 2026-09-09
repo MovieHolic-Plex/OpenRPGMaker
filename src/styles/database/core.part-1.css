@@ -98,7 +98,7 @@
   color: var(--text-1);
   cursor: pointer;
   display: flex;
-  font: 700 10px/1 "Cascadia Mono", Consolas, monospace;
+  font: 700 10px/1 var(--font-mono);
   height: var(--tileset-cell);
   justify-content: start;
   min-height: 0;

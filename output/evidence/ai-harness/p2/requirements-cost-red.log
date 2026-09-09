@@ -1,0 +1,190 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantAcceptanceCost.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/assistantAcceptanceCost.test.ts (6 tests | 4 failed) 9970ms
+   × bounded canonical project comparisons > compares shared project content once for same-reference 770ms
+     → expected [ [ { version: 4, …(17) } ], …(5) ] to have a length of +0 but got 6
+   × bounded canonical project comparisons > compares shared project content once for same-content 894ms
+     → expected [ [ { version: 4, …(17) } ], …(5) ] to have a length of 2 but got 6
+   × bounded canonical project comparisons > compares shared project content once for changed-content 931ms
+     → expected [ [ { version: 4, …(17) } ], …(5) ] to have a length of 2 but got 6
+   × bounded canonical project comparisons > does not compare or clone an unrelated editor update without authority or verifier evidence 1664ms
+     → expected "acceptanceFingerprint" to not be called at all, but actually been called 2 times[90m
+
+Received: 
+
+[1m  1st acceptanceFingerprint call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+    ]
+
+[1m  2nd acceptanceFingerprint call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m2[22m
+[39m
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=false  2384ms
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=true  3323ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/assistantAcceptanceCost.test.ts > bounded canonical project comparisons > compares shared project content once for same-reference
+AssertionError: expected [ [ { version: 4, …(17) } ], …(5) ] to have a length of +0 but got 6
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 6[39m
+
+ ❯ test/assistantAcceptanceCost.test.ts:30:95
+     28|     const snapshot = ledger.evaluate(applied, draft, evidence);
+     29|     // Then reference identity costs no serialization; distinct conten…
+     30|     expect(fingerprints.mock.calls.filter(([value]) => value === appli…
+       |                                                                                               ^
+     31|     expect(snapshot.items.map(item => item.status)).toEqual(Array(3).f…
+     32|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/assistantAcceptanceCost.test.ts > bounded canonical project comparisons > compares shared project content once for same-content
+ FAIL  test/assistantAcceptanceCost.test.ts > bounded canonical project comparisons > compares shared project content once for changed-content
+AssertionError: expected [ [ { version: 4, …(17) } ], …(5) ] to have a length of 2 but got 6
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 6[39m
+
+ ❯ test/assistantAcceptanceCost.test.ts:30:95
+     28|     const snapshot = ledger.evaluate(applied, draft, evidence);
+     29|     // Then reference identity costs no serialization; distinct conten…
+     30|     expect(fingerprints.mock.calls.filter(([value]) => value === appli…
+       |                                                                                               ^
+     31|     expect(snapshot.items.map(item => item.status)).toEqual(Array(3).f…
+     32|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  test/assistantAcceptanceCost.test.ts > bounded canonical project comparisons > does not compare or clone an unrelated editor update without authority or verifier evidence
+AssertionError: expected "acceptanceFingerprint" to not be called at all, but actually been called 2 times[90m
+
+Received: 
+
+[1m  1st acceptanceFingerprint call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+    ]
+
+[1m  2nd acceptanceFingerprint call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m2[22m
+[39m
+ ❯ test/assistantAcceptanceCost.test.ts:44:30
+     42|     f.session.refreshAcceptance(project);
+     43|     // Then the absent authority remains cheap without inventing an as…
+     44|     expect(fingerprints).not.toHaveBeenCalled();
+       |                              ^
+     45|     expect(clones).not.toHaveBeenCalled();
+     46|     expect(f.session.getAcceptanceSnapshot()).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 2 passed (6)
+   Start at  02:08:54
+   Duration  28.89s (transform 12.52s, setup 0ms, collect 18.10s, tests 9.97s, environment 0ms, prepare 124ms)
+

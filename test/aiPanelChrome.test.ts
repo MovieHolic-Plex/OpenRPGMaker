@@ -1,10 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { getMapEditHistoryState, recordProjectSnapshot, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { openAiAssistantPanel } from "@/editor/aiAssistantBridge";
 import {
-  directorStartPrompts,
   formatComposerPlaceholder,
   readAgentBrief,
 } from "@/editor/panels/aiAgentBrief";
@@ -89,6 +87,41 @@ function expandPanel(panel: FakeElement): void {
 // 사이드 전용 `ai-rising-overlay` 는 전부 사라졌다. 해당 케이스는 지우지 않고 「그 표면이
 // 돌아오지 않는다」는 반대 계약으로 뒤집었고, 도크별 `it.each` 는 단일 케이스로 합쳤다.
 describe("AI 패널 크롬", () => {
+  function historyAction(panel: FakeElement): FakeElement {
+    const menu = findByTestId(panel, "ai-command-menu");
+    const action = menu?.childNodes.find((node): node is FakeElement =>
+      node instanceof FakeElement && node.querySelector(".ai-command-menu-label")?.textContent === "전체 기록");
+    if (!action) throw new Error("history menu action missing");
+    return action;
+  }
+
+  it("F2 collapsing history returns to the collapsed float surface", () => {
+    const panel = renderPanel();
+    historyAction(panel).click();
+    expect(panel.classList.contains("is-history-open")).toBe(true);
+    findByTestId(panel, "ai-collapse")?.click();
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    expect(panel.classList.contains("is-history-open")).toBe(false);
+    expect(panel.classList.contains("is-docked")).toBe(false);
+  });
+
+  it("F3 entering studio clears the full-history surface", () => {
+    const panel = renderPanel();
+    historyAction(panel).click();
+    findByTestId(panel, "ai-studio-toggle")?.click();
+    expect(panel.classList.contains("is-studio")).toBe(true);
+    expect(panel.classList.contains("is-history-open")).toBe(false);
+  });
+
+  it("F4 the visible history menu action toggles open and closed", () => {
+    const panel = renderPanel();
+    const action = historyAction(panel);
+    action.click();
+    expect(panel.classList.contains("is-history-open")).toBe(true);
+    action.click();
+    expect(panel.classList.contains("is-history-open")).toBe(false);
+  });
+
   it("패널에 헤더도 얼굴도 없다", () => {
     // Break: `.ai-chat-header` 밴드나 `.ai-director-*` 명패가 되살아났다.
     // 2026-08-28 감독 지시 — 조수의 얼굴을 노출하지 않고 헤더 없는 유리면 하나로 간다.
@@ -304,104 +337,22 @@ describe("AI 패널 크롬", () => {
     expect(restore).toBeTruthy();
   });
 
-  it("빈 플로트 부팅은 오버레이 빈 키트 없이 감독 칩만 둔다", () => {
-    // Break: boot still appends ai-start-visual-gallery / ai-empty-cta, or skips ai-composer-chips.
+  it.each(["idle", "focus", "new-chat"])("%s does not mount assistant preset promotions", (path) => {
     const panel = renderPanel();
     expandPanel(panel);
-    const chips = findByTestId(panel, "ai-composer-chips");
-    const chipButtons = chips?.querySelectorAll("button") ?? [];
-    const expected = directorStartPrompts(readAgentBrief());
     const input = findByTestId(panel, "ai-input");
-
+    expect(input).not.toBeNull();
+    if (path === "focus") input?.focus();
+    if (path === "new-chat") {
+      const newChat = findByTestId(panel, "ai-new-chat");
+      expect(newChat).not.toBeNull();
+      newChat?.click();
+    }
+    expect(panel.querySelectorAll(".ai-suggest-row")).toHaveLength(0);
+    expect(panel.querySelectorAll(".ai-composer-chip")).toHaveLength(0);
+    expect(findByTestId(panel, "ai-authoring-examples")).toBeNull();
     expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
-    expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
-    expect(chips).toBeTruthy();
-    expect(chipButtons.length).toBeGreaterThanOrEqual(0);
-    expect(chipButtons.length).toBeLessThanOrEqual(3);
-    expect(chipButtons.length).toBe(expected.length);
     expect(input?.getAttribute("placeholder")).toBe(formatComposerPlaceholder(readAgentBrief()));
-  });
-
-  it("「다음에 뭘 하지」 블록은 추천 팝오버 안에 있고 안내 한 줄 + 실행 문장 행 3개를 담는다", () => {
-    // Break: 이 블록이 다시 카드 본문(`.ai-chat-main`)으로 새어 컴포저 팝오버와 두 벌로 뜬다.
-    // 또는 도크 삭제 때처럼 마운트 지점을 잃고 영구히 비어 예제 칩에 닿을 길이 없어진다.
-    const panel = renderPanel();
-    expandPanel(panel);
-    const steps = findByTestId(panel, "ai-next-steps");
-    const popover = findByTestId(panel, "ai-suggest-popover");
-    const chips = findByTestId(panel, "ai-composer-chips")?.querySelectorAll("button") ?? [];
-    const expected = directorStartPrompts(readAgentBrief());
-
-    expect(steps).toBeTruthy();
-    expect(popover?.contains(steps!)).toBe(true);
-    // 본문 컬럼에는 없다 — 한 곳에만 산다. (fakeDom 의 querySelector 는 자손 결합자를
-    //  지원하지 않으므로 부모 사슬을 직접 본다.)
-    const mainColumn = panel.querySelector(".ai-chat-main");
-    expect(mainColumn).toBeTruthy();
-    expect(mainColumn?.contains(steps!)).toBe(false);
-
-    expect(steps?.hidden).toBe(false);
-    expect(findByTestId(panel, "ai-next-steps-hint")?.textContent ?? "").not.toBe("");
-    expect(findByTestId(panel, "ai-authoring-examples")).toBeTruthy();
-    // 데크(2026-09-03, D5): 단어 칩 6개 대신 맵 진단 순서의 실행 문장 3행. 각 행은 문장 + 종류.
-    expect(steps?.querySelectorAll(".ai-authoring-example-chip").length).toBe(0);
-    const rows = steps?.querySelectorAll(".ai-suggest-row") ?? [];
-    expect(rows.length).toBe(3);
-    expect(rows[0]?.querySelector(".ai-suggest-row-text")?.textContent ?? "").not.toBe("");
-    expect(rows[0]?.querySelector(".ai-suggest-row-why")?.textContent ?? "").not.toBe("");
-    // 감독 칩도 같은 팝오버에 있다 — 추천이 갈 곳은 한 군데다.
-    expect(chips.length).toBe(expected.length);
-  });
-
-  it("감독 칩 클릭은 입력만 채우고 전송하지 않는다", () => {
-    // Break: chip click calls sendText (user row or settings modal) instead of filling the input.
-    storage.set(
-      AI_CONFIG_STORAGE_KEY,
-      JSON.stringify({ ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://example.invalid/v1", apiKey: "" }),
-    );
-    const panel = renderPanel();
-    expandPanel(panel);
-    const expected = directorStartPrompts(readAgentBrief());
-    const first = expected[0];
-    if (!first) throw new Error("directorStartPrompts returned no chips");
-    const chips = findByTestId(panel, "ai-composer-chips");
-    const chip = chips?.querySelectorAll("button")[0];
-    const input = findByTestId(panel, "ai-input") as unknown as { value: string } | null;
-    if (!chip || !input) throw new Error("composer chip or input missing");
-
-    chip.click();
-
-    expect(input.value).toBe(first.instruction);
-    expect(document.activeElement).toBe(input);
-    expect(findByTestId(panel, "ai-command-row-user")).toBeNull();
-    expect(findByTestId(panel, "ai-command-row")).toBeNull();
-    expect(findByTestId(panel, "ai-settings-modal")).toBeNull();
-  });
-
-  it("감독 칩 mousedown 은 입력을 채우고 기본 포커스 이동을 막는다", () => {
-    // Break: chip waits for click. 입력 blur 가 160ms 뒤 팝오버를 display:none 으로
-    // 접으면 실제 마우스의 click 이 유실되어 버튼이 죽은 것처럼 보인다.
-    storage.set(
-      AI_CONFIG_STORAGE_KEY,
-      JSON.stringify({ ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://example.invalid/v1", apiKey: "" }),
-    );
-    const panel = renderPanel();
-    expandPanel(panel);
-    const expected = directorStartPrompts(readAgentBrief());
-    const first = expected[0];
-    if (!first) throw new Error("directorStartPrompts returned no chips");
-    const chips = findByTestId(panel, "ai-composer-chips");
-    const chip = chips?.querySelectorAll("button")[0];
-    const input = findByTestId(panel, "ai-input") as unknown as { value: string } | null;
-    if (!chip || !input) throw new Error("composer chip or input missing");
-
-    const down = new Event("mousedown", { bubbles: true, cancelable: true });
-    chip.dispatchEvent(down);
-
-    expect(down.defaultPrevented).toBe(true);
-    expect(input.value).toBe(first.instruction);
-    expect(document.activeElement).toBe(input);
-    expect(findByTestId(panel, "ai-command-row-user")).toBeNull();
   });
 
   it("복귀 타깃으로 펼치면 저장값이 0이 된다", () => {

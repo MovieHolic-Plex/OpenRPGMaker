@@ -1,3 +1,715 @@
+## P5 delivery gates and the P4 regressions they caught (2026-09-09)
+
+### Open: checkpoint writes still slow the authoring loop
+
+`--scenario late-cancel` still fails on this branch, and the reason is measured, not guessed.
+Same-load A/B (pre-merge main `9689f74e` vs this branch, alternating runs):
+
+| | pre-merge | this branch |
+|---|---|---|
+| whole scenario | 76.7s | 101-109s (was 144.6s before the fixes below; run-to-run spread is ~10s) |
+| median gap between model rounds | 926ms | ~2s |
+| A's apply entered at | 23.3s | ~50s |
+
+The harness arms a 60s signal window when it installs the proposal observer, so a run this much
+slower trips it before the late apply is released. The window is a real budget: do not widen it.
+
+Root cause: every checkpoint write deep-clones the whole row, and the row embeds full project
+copies (`runtime.requestBaseline`, each acceptance promise baseline, and — until now — the draft
+project). Landed mitigations: capture only on `tool_call` rather than every session event, drop
+the per-round wait, cache content identity and the acceptance recovery copy, and keep draft bytes
+only in the apply-stage row. Together they removed ~40s: 144.6s → 122.1s → 117.0s → 101.4s, and dropping the duplicated
+request baseline landed inside the run-to-run spread rather than clearly below it.
+
+The remaining gap needs the structural fix: write the immutable per-request baselines **once per
+run** into a companion record and reference them from each checkpoint row, so a row write stops
+copying whole projects. That is a schema change (another additive IndexedDB version plus restore
+wiring) and is deliberately not attempted as a late patch.
+
+
+`node scripts/qa/ai-harness-all.mjs --scenario all --report <path>` runs every deterministic
+editor scenario, one owned process each (own Vite port, Firefox, isolated remote project,
+cleanup receipt), and stops at the first failure so a later pass cannot mask an earlier one.
+Membership: proof-failure, required-skip, outcome-matrix, retained-draft-ask, wiki-delivery,
+new-goal-draft, late-cancel, human-edit-race, checkpoint-upgrade (its own script) and
+crash-after-apply (the `recovery` scenario). Real remote save proof stays separate:
+`node scripts/qa/ai-harness-remote-proof.mjs --create-isolated-project --scenario all --report <path>`.
+
+That gate found four P4 regressions that unit tests and the recovery scenario had all missed;
+pre-merge main passed the same scenarios, which is how each was attributed:
+
+1. A rejected checkpoint row aborted `proveAppliedRevision` before `store.flush()`, so the
+   save and its proof disappeared entirely. Checkpoint writes are recovery convenience; the save
+   is the user's canonical work. Failures are now audit warnings (`agent_run:checkpoint-write-failed`)
+   and save/proof/turn progress continue. Only `prepareCheckpointApply` still demands durability.
+2. The same rejection killed the retry turn through `turn-boundary-error`.
+3. Content identity was recomputed twice per round at ~160ms each on the default project.
+4. `AssistantAcceptanceLedger.exportRecovery()` deep-cloned every promise baseline on every
+   capture, and the row was cloned again on top of that: 92 captures burned 13.3s, which pushed
+   the harness past its 60s settle budget and left the editor's send button disabled forever.
+
+Measure before optimizing here: the numbers above came from timing the real browser run
+(`report.checkpointCost`), not from reading the code. After the fixes required-skip is back to
+the pre-merge shape — 58 rounds, 112 contract checks, zero violations.
+
+## P4 checkpoint storage and boot admission (2026-09-09)
+
+`test/aiRunCheckpointStore.test.ts` covers additive v1/v2 to v3 IndexedDB
+migration, conversation/index/tombstone preservation, atomic checkpoint writes,
+transaction abort, stale writes, unsupported identity/version data, terminal-only
+cleanup and nondurable memory fallback. `test/aiRunRecovery.test.ts` initially
+covers transcript-only boot admission: loading interrupted history must not call
+`AssistantSession.sendUserMessage` automatically.
+
+`node scripts/qa/ai-harness-checkpoint-upgrade.mjs` uses real isolated Firefox
+IndexedDB contexts and actual Vite-served storage modules. It verifies v1/v2
+upgrade, durable checkpoint equality after page reload, unsupported rows and
+owned cleanup. `EXPECTED_HEAD` optionally pins the source; `EVIDENCE_DIR` selects
+a new output directory. Exclusive output files retain earlier failures.
+This local storage API check does not require or access a Supabase project and
+is not proof of crash-after-apply execution recovery.
+
+`aiRunRecoveryLedgers.test.ts` and `aiRunReconciliation.test.ts` cover original
+contracts/baselines, stale historical verification, latest-epoch selection and
+revalidation after baseline mutation. `aiRunRecoveryRuntime.test.ts` forks actual
+durable IDB bytes after a native event apply, recreates the session/panel and
+clicks Continue: create/apply counts must not increase. Its other controls keep
+remaining WorkPlan/requirements and reviewer budgets, and run actual ending
+quality assessment without reauthoring. `aiRunRecoveryAdmission.test.ts` checks
+ten nonresumable classes through the real panel admission boundary.
+
+The runtime fixture keeps the actual start map and its referenced tileset rather
+than twelve unused bundled tilesets. Image delivery for the authored marker is
+still required; a transparent event is a visual map change. Do not replace
+review approval, fake checkpoint durability, extend deadlines or rely on a
+sleep to reach the commit boundary. Independent real page-reload QA is a
+separate final gate; unit IDB recreation alone is not browser reload evidence.
+
+`xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario recovery` is that
+final gate. Only model HTTP is scripted: the checkpoint bytes are the ones the
+runtime wrote. It saves and reads a fresh owned remote project, refuses an
+`upsert_event` without `show_map_region` through the real independent review,
+then authors the marker with real map render acknowledgment. A QA-only Vite
+observer awaits `__qaRecoveryCommit` after the actual remote commit returns and
+before the final conversation save, so `page.reload()` lands exactly on the
+crash-after-apply image. After reload it asserts the same IDB rows and event
+count, an available Continue, and after clicking Continue zero new model calls,
+creates, applies or undo entries, the retained original request/applied history,
+a new run id with a greater epoch, exactly one final save and an unchanged
+retired row. Click-time project-description drift must report
+`needs-reconciliation` and a faulted `schemaVersion` must report
+`unsupported`, both with zero writes; each injected fault is reverted through
+the actual store or `mutateAiRecord`, never by seeding a success row.
+`EXPECTED_HEAD` pins the source, and the run rehashes an explicit 29-file
+recovery/harness scope before and after execution. Large per-step state lives in
+`<EVIDENCE_DIR>/<label>.json` with its PNG; `actions.json` keeps paths and
+byte counts, because re-embedding those snapshots overflowed `JSON.stringify`
+after a passing run. Cleanup deletes the owned project and verifies absence.
+
+## P3 request-bound fixture alignment (2026-09-08)
+
+`test/assistantAcceptanceProject.test.ts` exercises exact title/item values,
+finite preservation allowances, applied/draft state and sourced wiki declarations
+through real tool and wiki paths. Retain `context.project` after a writing tool:
+the runner replaces that object. Wiki fixture IDs must be canonical `w_` IDs.
+
+`test/aiHarnessResponderProtocol.node.test.mjs` keeps intent and
+`REQUEST_COVERAGE_AUDIT` dispatch separate without consuming tool rounds or
+releasing a held response. Native P2 requests now state their actual obligations,
+and matching planner requirements use the mandatory host coverage IDs. Assert
+their original source, required flag and real evidence, not just list length.
+Newly audited authoring is assessed; genuine legacy scheduler-only cases retain
+the legacy outcome distinction.
+
+Native commit-A requests recording a sourced preference, not implementing combat.
+Its title/wiki effects, B's item value and completion before late A, and every
+original fault/ownership assertion remain required. Preserve historical opaque
+requests and failed runs as history, not fresh passing evidence. Run
+`scripts/qa/ai-harness-contracts.mjs --scenario <name>` for `late-cancel`,
+`human-edit-race`, `proof-failure`, `required-skip` and `outcome-matrix` against the
+final combined source with isolated remote fixtures and complete cleanup.
+Reuse unchanged scoped evidence; do not rerun broad suites for documentation or
+fixture-only corrections. These commands are requirements, not a pass claim.
+
+## Issue 693 verification contracts (2026-09-08)
+
+The commit probe's fake DOM implements number-input `valueAsNumber` and numeric
+constraint validation, including required, range and step rejection. Keep native
+production numeric APIs intact; do not add optional validation fallbacks for test
+doubles. `fakeDomNumericInput.test.ts` and `eventSpawnNumericProbe.test.ts` cover
+invalid/no-commit and valid/commit behavior, including the existing faction
+consumer. The gate-repair evidence also compares these semantics to native Chromium.
+
+Spawn and life-skill recovery fields have explicit form, interaction and commit
+fixtures with raised floors. Update only their entries, not unrelated snapshot
+drift. All no-commit and crash gates remain active. Local diagnostic entry works
+with an empty conversation and opens a registered consent layer; it does not emit
+the historical `conversation-export` event or export a transcript. The modal gate's
+narrow exemption covers only the persistent indicator/download anchor; actual
+Escape routing is exercised through the visible assistant menu.
+
+Focused contracts: `npm test -- test/fakeDomNumericInput.test.ts
+ test/eventSpawnNumericProbe.test.ts test/aiEmptyExportFeedback.test.ts
+ test/aiUiEventContract.test.ts test/playBootRecovery.test.ts
+ test/selectedEventTestModal.test.ts test/databaseSystemView.test.ts --maxWorkers=1`.
+Full gates and production build remain lead-owned; the exhaustive main/candidate
+failure disposition is in `.omo/evidence/issue-693/gate-repairs/`.
+
+## Request-coverage gate follow-up (2026-09-08)
+
+The complete immutable control at `e05a99b91` accounted for 1,826 files / 18,328
+cases (18,089 passed, 216 failed, 23 skipped). The repaired `0798a67b` run accounted
+for 1,829 files / 18,363 cases (18,128 passed, 212 failed, 23 skipped). Both are
+**red** results. A 1,200-second observer deadline did not establish a hung runner:
+the four-thread instrumented runs took 2,511 and 4,250 seconds. Keep collection,
+case, module-end, child-exit and unhandled-error evidence separate.
+
+Adding a shared fake-DOM capability can activate more production code. In this
+case `insertBefore` enabled custom selects, exposing missing options/index/value
+semantics, overbroad `HTMLSelectElement` identity and duplicate node ownership.
+Preserve the enhancement and model its real contracts instead of removing the
+capability. Seed actual selectable records in fixtures (`roll`, `event-a/b`);
+native selects cannot select nonexistent IDs. Checklist tests must respect
+working-before-pending priority while still proving keyed nodes actually reorder
+when their statuses change.
+
+AI transport fixtures must distinguish intent, independent request coverage,
+author execution and independent review. Author execution may be non-streaming.
+Observe request/response and terminal events before Send; retain real forwarding
+callbacks, full-map image receipts, approval before apply, actual ghost bounds,
+one apply and cleanup. Never raise a deadline to hide a fixture-rejected request.
+
+The final full-run diagnostic stream lost one optional `collected` record for
+`undoHistory.test.ts`; its intact appended `start` record was recoverable. The
+original trace hash was unchanged, all 1,829 independently reported/queued/ended
+file identities and the terminal inventory matched, and that module's 15 cases
+passed in the untouched JSON report. Recovery retained the damaged bytes and
+did not invent a test outcome or missing diagnostic. A separate derived
+summarizer records that limitation; never silently skip malformed evidence.
+
+Bind every result to its executed source. The later selector-fixture repair and
+main integration were validated with focused tests, build and shipping-player
+checks; they are not relabeled as another full run of `0798a67b`. Preserve raw
+failure values, multiplicity, source skips, timing-sensitive cases and the red
+surface gate. Some normally included legacy tests attempt remote authoring or
+filesystem writes: keep the scoped sandbox restrictions explicit rather than
+running them against a user's configured project to make a gate green.
+
+The compact result/disposition index is
+[`output/evidence/acceptance-gate-followup/README.md`](../output/evidence/acceptance-gate-followup/README.md).
+
+## Native event battle reliability QA (2026-09-08)
+
+Focused regressions are `eventBattleAdmission.test.ts` (actual command modal and
+aggregate draft validation), `eventBattleFailure.test.ts` (real foreground,
+autorun readiness, parallel, random/field admission and stale-owner handling),
+and `battleInitializationAdmission.test.ts` (real constructor/audio, transition
+failure, empty monster party and corrected starter retry). Domain runtime and
+interpreter behavior stay real; only Phaser I/O, result presentation or a specific
+transition fault are adapted. New async tests subscribe before triggering and
+await completion/lease release with bounded deadlines, never fixed sleeps.
+
+Reproducible exported-player matrix (no DB writes, scratch/evidence in worktree):
+
+```bash
+mkdir -p .scratch/battle-reliability
+TMPDIR=$PWD/.scratch/battle-reliability QA_BROWSER=firefox \
+  node scripts/qa/runtime/event-battle-reliability.probe.mjs
+```
+
+The probe owns an ephemeral `startPlayerQaServer` unless `QA_BASE_URL` is supplied.
+`QA_OUT_DIR` selects evidence output; `QA_CASES` selects comma-separated case IDs.
+It uses diagnostic copies of the historical battle fixture through `player.html`
+and the export-store shim, not editor Play mode. It covers invalid-variable and
+valid action/auto/parallel starts, empty troops/monster parties, hidden enemies,
+legacy enemyIds, numeric 0, and a real correction event followed by retry.
+Observers subscribe before input and watch DOM/state changes; no polling/sleeps.
+Valid starts must expose the actor command menu after transition removal. Error
+cases must retain a nonzero, nontransparent notice entirely inside the viewport;
+DOM presence alone previously passed while every error sat below the canvas.
+Read `SUMMARY.md`, `results.json`, and the named screenshots. Page errors fail;
+console errors are retained because reported admission faults intentionally log.
+Chromium on the shared host can fail with `ERR_NETWORK_CHANGED`; the browser
+selector permits Firefox without weakening the scenario's assertions. This is
+behavioral evidence, not independent visual approval. The lead still owns the
+real editor picker/Confirm/reopen checks, full gates/build and final browser QA.
+
+## Real large-world player QA (2026-09-07)
+
+`npm run qa:runtime -- --scenario live-world-start --project <saved-project.json>`
+checks the real 128x128 QA world's shipped-player boot and authored harbor start.
+It does not teleport. This is only boot proof, not proof of eight-landmark reachability.
+The live-world evidence also records event-driven directional input, every actual
+tile arrival, and rendered-player agreement for the complete landmark walk.
+Read the generated `SUMMARY.md` before its relevant screenshots.
+
+## CSS budget: file count is informational
+
+`scripts/check-css-budget.mjs` reports stylesheet count and paths but does not
+treat adding or removing files as a regression or quality improvement. Keep
+styles split by ownership; do not concatenate unrelated styles to meet a count.
+The existing baseline remains valid without regeneration. Increases in hardcoded
+hex colors, `!important`, undefined custom properties and global `:root` files
+still fail. Import-graph and live-class checks remain separate active gates.
+
+Run `node --test test/cssBudget.test.mjs` for isolated CLI regression coverage,
+then `npm run gates:css` and `npm run gates -- --only css` on the real repository.
+
+## Selection and composer surface contracts (2026-09-06)
+
+`aiSelectionChipScope.test.ts` mounts the real panel/composer in happy-dom and
+processes the ordered assistant stylesheet imports with Vite, including tokens
+and the late editor UI-mode constraints. Do not test fabricated chips against
+one historical CSS fragment or load the deleted repair stylesheet.
+
+Idle current-map pins remain visible. Selection prioritizes the scope pin and
+hides only its nonselection siblings; clearing restores the map pin and removes
+the AI scope without clearing the editor selection. Keyboard help is the
+textarea title, not a separate action-row hint. Focus and blur retain the
+shipped row layout and controls.
+
+Routing tests subscribe to the panel's running-to-terminal class transition
+before clicking Send, including old attribute values for transitions batched
+into one observer delivery. The bounded timer only rejects a missing transition;
+the observer and timer are always disposed. CSS/DOM mutation probes confirm
+that the visibility and row-layout assertions reject actual regressions.
+
+## P3/current-main composition fixtures (2026-09-08)
+
+Composition tests must supply both captured proposal base and authored baseline.
+The epoch fixture scripts independent review as a separate revision-bound request,
+returning findings for the actual required problems rather than granting approval
+unconditionally. Main's real reviewer parser, acceptance checks and apply gates
+remain connected. An advisory cancellation that preserves a previous milestone
+must first produce a real reviewed application: advisory checks now precede approval
+of the next batch. Host Continue retains that applied ledger without replay.
+
+Native HTTP adapters distinguish tool-free independent review from normal writer
+messages and report the actual `finish_reason` (`stop` or `tool_calls`). Multimodal
+writer viewport text is not JSON review input. Stale-race rejection counters expose
+both actual apply-rejection calls and typed independent-review rejection events;
+neither is a successful application receipt. Keep all original value, undo, remote
+readback, owner and terminal assertions. Clear all six unit history fields:
+`VITE_SUPABASE_USE_PROXY=0`, `VITE_SUPABASE_URL=`, `VITE_SUPABASE_ANON_KEY=`,
+`VITE_SUPABASE_PROJECT_ID=`, `SUPABASE_ANON_KEY=`, `SUPABASE_UPSTREAM_URL=`.
+Native authored fixtures instead use fresh isolated remote IDs and absence-proven cleanup.
+
+Legacy QA `modify` declarations without request-coverage responses fail closed on
+current main. Never substitute empty requirements, unconditional approval or a
+non-authoring classification to obtain an epoch PASS. The current coverage schema
+has no exact title-screen or item-price evaluator; `functionalUnresolved` cannot
+be approved away. Such a native fixture incompatibility is an explicit producer
+blocker, not independent approval or permission to change acceptance policy.
+
+### Cooperative Node scheduling in long session fixtures (2026-09-08)
+
+Long scripted turns can pass their test deadline while starving Vitest's separate
+60-second `onTaskUpdate` ACK deadline. A traced budget case left a promptly posted
+ACK unread across subsequent cases even though all 54 file assertions passed.
+Use `test/cooperativeNodeYield.ts` through the existing `AssistantSession`
+`yieldToUi` option in the implicated fixtures: its native `setImmediate` permits
+RPC/IPC progress during tool work, including when UI/autosave timers are fake.
+This is a scheduling boundary, not a sleep or a replacement for a subscribed
+completion signal. Keep controlled/deferred yield callbacks, response scripts,
+assertions, budgets and all deadlines unchanged. Shared fixture adoption is
+explicit and opt-in; do not globally change the runner or suppress RPC errors.
+Verify ACK consumption during the original workload with a captured original
+monotonic clock, then require clean direct exits with effective four workers and
+the six-field isolation above. JSON success or an afterEach-only yield is not proof.
+
+## AI turn observation contracts (2026-09-06)
+
+`aiChatObservability.test.ts` and `aiChatPanelTransportError.test.ts` exercise the
+real panel/session/parser/tool pipeline. HTTP fixtures distinguish the
+non-streaming `response_format: { type: "json_object" }` intent request from chat
+responses. A single-step `needsPlan: false` intent is required when the test is
+about one chat loop: `agentMode: "chat"` alone does not disable the balanced
+autonomy planner. Do not restore obsolete API-key configuration to avoid this
+contract; the editor uses OAuth.
+
+Subscribe to terminal `recordAiActivity` publication before clicking Send. For P3
+detached late-apply races, also observe the actual proposal-host promise as described
+below; terminal publication alone can precede its completion.
+`whenAiChatPanelSettled()` covers boot and persistence, not an active chat turn.
+Do not replace the terminal signal with microtask counts, sleep loops or guessed
+retry durations. Reasoning coverage uses two distinct successful query tools;
+ghost coverage subscribes during the write and also verifies its final apply and
+cleanup; transport coverage verifies that settings recovery actually opens.
+Mutation evidence breaks those production connections independently and restores
+them before the final passing run.
+
+### P2 R1 retained-draft Ask (2026-09-07)
+
+`test/aiAskRetainedDraft.test.ts` exercises the real session, runner, registered
+write tool, apply adapter and undo. Cancellation fires on the subscribed successful
+tool result, not a delay. It asserts zero real apply invocations during explicit
+Ask and inferred questions under Do or Plan, then one on authorized Do/resume,
+no replay on repeat resume, and exact undo restoration. Other cases cover Ask at
+the acceptance-milestone boundary, early preparation failure, executor-supplied
+calls and applied/pending coexistence. Run the focused regression with
+`npm test -- test/aiAskRetainedDraft.test.ts --maxWorkers=1`.
+
+The native editor command used for R1 was:
+
+```sh
+export TMPDIR=/dev/shm/rpg-zzu-ai-harness-p2-01a07564
+QA_PORT=37047 QA_CACHE_ROOT="$TMPDIR/r1-ask-native-cache" \
+  EVIDENCE_DIR=output/evidence/ai-harness/p2/review-r1-ask/native \
+  xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario retained-draft-ask
+```
+
+Choose a free owned port and fresh evidence directory for another run.
+`QA_CACHE_ROOT` is optional and defaults to `.vite-cache` under the worktree;
+relative overrides resolve there too. The harness creates and removes a unique
+Vite cache child beneath that root. Native QA requires Firefox/Xvfb and Supabase
+access for fresh owned projects, with remote save/readback and owned cleanup.
+
+Only LLM HTTP responses are scripted. The adapter waits for the next model request
+after a successful title write, clicks Abort, then exercises explicit Ask and an
+inferred question under Do. Typed Continue in Ask stays unauthorized; selecting
+Do and typing Continue applies once, repeat Continue doesn't replay, and the real
+undo control restores the original bytes with independent remote readback. This
+scenario doesn't click `ai-continue-run`; inferred Plan is covered by the unit test.
+Native `recordAppliedProject` observations count successful apply receipts:
+**0 after cancellation, 0 after Ask, 0 after typed Continue in Ask, 1 after authorized
+resume, 1 after repeated resume**. They don't count failed apply attempts; exact
+invocation counts come from the real-adapter unit spy above. This scenario doesn't
+verify wiki delivery or establish integrated P2 approval.
+
+### P2 R3 wiki delivery (2026-09-07)
+
+Run `npm test -- test/projectWikiDelivery.test.ts --maxWorkers=1` for coordinator,
+session and real store/apply coverage: changed versus empty extraction, backfill,
+checkpoint failure, cancellation at apply, accepted save followed by edit/cancel,
+proof retry/currentness, stale/foreign/missing receipts, unrelated human revisions,
+late old-run callbacks and post-tool progress writes. Wiki-only runs keep tool-call
+arrays empty even when delivery is `applied` or `persisted`.
+
+The final producer native command was:
+
+```sh
+QA_PORT=36901 \
+  EVIDENCE_DIR=output/evidence/ai-harness/p2/review-r3-wiki/native-final \
+  xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario wiki-delivery
+```
+
+Use a free owned port and fresh evidence directory, with the same Firefox/Xvfb and
+owned Supabase setup as R1. The scenario scripts wiki extraction and a labelled
+HTTP 503 on the wiki project-save request, not a real remote outage or synthetic
+owner outcome. Actual composer submission and the default coordinator leave the
+new guideline dirty locally while independent remote readback matches the accepted
+pre-wiki baseline. Result, recap, getter, harness, bridge harness, local activity,
+terminal event and visible DOM agree on `failed / unassessed / applied`, with zero
+authoring tool calls. Owned remote deletion and browser/server/cache cleanup are
+checked. Native coverage is the failed checkpoint path, not successful wiki save,
+post-tool progress or edit/cancel races; those are unit contracts above. It doesn't
+establish pixel review, external MCP HTTP, remote telemetry or integrated P2 approval.
+
+## P3 ownership and stale-base verification (2026-09-07)
+
+Read the [P3 evidence index](../output/evidence/ai-harness/p3/README.md) for exact
+commands, source bindings and failure history. Repaired source
+`34d5b672ad30c2dec5a3d58fa761f83781a6ee35` passed the integrated 53-file / 883-test
+selection, 12 Node checks (11 lifetime cases plus the original completion wrapper),
+app typecheck/build and all eight native scenarios, each direct exit 0. The
+[repair report](../output/evidence/ai-harness/p3/repairs/integration/report.md) binds
+those results to committed bytes. These aren't independent re-verification,
+whole-goal approval or a substitute for the lead's full-gate comparison.
+
+The earlier `9b2782f18` integration's 52 files / 872 tests and eight native passes
+remain historical. Independent review of `450a1bbfb` returned needs-fix despite
+872 focused passes: the real mutation subscriber exposed R1, and human-race R2
+collected only 15 positive checks while 24 stale checks never ran. Neither that
+incomplete packet nor its zero failed-check count is a 39-check pass.
+
+Required real-seam regressions include `aiRunEpoch`, `aiRunEpochProof`,
+`aiRunEpochPanel`, `aiRunReentry`, `aiRunnerSlotCleanup`, `aiStaleProposal` and
+`aiMutationApplyAccounting` under `test/`. The accounting test retains the original
+real-store subscriber that retires A and starts B after A's actual title mutation.
+A must retain applied delivery, with no pending copy, replay or B application/proof.
+Keep malformed-current-argument, generation-bypass, pre-mutation cancellation,
+activity-observer, nested notification and throwing-outcome controls. Both replacement
+paths must finish notifications and autosave scheduling while preserving the thrown
+error. Keep the actual next runner send after B settles, not just no stale apply.
+Run the house/shared-adapter, cluster-modal, P1 receipt/current-proof and P2
+requirements/outcome/Ask/new-goal/Continue/wiki controls alongside them. Tests must
+subscribe to exact signals before actions, use bounded rejecting deadlines and
+release/drain owned deferred work. Don't add sleeps, polling, wider test deadlines,
+skips or tests that pin prose.
+
+Native entry: `xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario NAME`,
+with `TMPDIR=/dev/shm/rpg-zzu-ai-harness-p3-01a07564`, a free strict `QA_PORT`, private
+`QA_CACHE_ROOT` and fresh `EVIDENCE_DIR`. Exact recorded commands and ports are in
+the evidence index. Both scenarios use actual editor controls and fresh owned remote
+projects with real save/read and deletion/absence checks, not ambient user content.
+
+- `late-cancel`: hold A's real post-apply commit transport, click Abort and New
+  Conversation, let B apply/save/prove while A remains held, then release A. Await
+  A's original proposal-host promise and terminal activity before assertions. The
+  QA-only Vite observer preserves promise/value/error/receiver/arguments and doesn't
+  change product authority. The terminal-only apparent GREEN is an unaccepted
+  verification gap. The corrected P2 calibration retains the original eight
+  violations; integration preserves those assertions and passes all 19 checks,
+  with no late A effects.
+- `human-edit-race`: after the actual detached proposal is built, use real tile,
+  Database System width and existing Items price controls, then save/read all three
+  before releasing the model response. P2 overwrote 7/336/137 with 240/320/50;
+  integrated source retains 7/336/137, rejects the stale draft, and preserves current
+  apply/undo. Zero apply receipts and two rejection notifications aren't invocation
+  counts. All 39 collected checks pass with no page/route errors.
+
+Human-race transport waiters and retries now share the finite human edit/save/read
+owner. Only successful completion releases them. Failure, cancellation or cleanup
+rejects the hold, never returns a successful final response. Completion observers
+subscribe before Send but start this race's unchanged 60,000 ms completion timers
+immediately before release. Human actions/evaluations retain 60,000 ms bounds,
+mutation/render 10,000 ms, REST 30,000 ms, and cleanup evaluation is bounded too.
+The product request bound isn't widened; an independently terminal A fails the
+pre-release assertions. This is bounded ordering, not unlimited latency tolerance.
+`test/aiHarnessHumanLifetime.node.test.mjs` uses fake-clock advancement and exact
+events/deferred signals to cover retries, failure, cancellation, evaluation bounds
+and observer disposal beyond the old competing hold deadline.
+
+All repair validators hold the parent-owned
+`$TMPDIR/p3-independent-repair-01a07564.lock` with bounded `flock` acquisition.
+Run native scenarios serially, without competing test/build/browser jobs. This
+avoids contention but isn't the R2 fix: the original independent human race failed
+in isolation too. The first integration deadline failure and later identical-source
+isolated success both remain historical, alongside that needs-fix packet. The
+corrected QA's current/P2 calibration retains all 39 checks and the original 18 P2
+violations. No sleep, deadline increase or lucky retry establishes the correction.
+Screenshots exist, but pixel approval wasn't established by these producers.
+
+### Autosave status fixture ownership (2026-09-08)
+
+`test/autosaveStatus.test.ts` holds the exact projects POST, not the first global
+fetch (the 1500 ms edit-activity mirror arrives first). Subscribe to saved/error
+and request arrival before triggering work; start the original 1000 ms completion
+bound at response release. Preserve pending at 3999 ms, saving at 4000 ms, the
+exact state sequence, retry/backoff assertions and native save/receipt hashing.
+Join the actual in-flight save and call-through manual-history writer promises,
+flush telemetry, then detach listeners/editor/DOM before restoring globals/modules.
+The map-focused statusbar fixture isolates the unused database-modal entry point,
+not the real editor/dock/store subscriptions. Its original assertions and test/hook
+deadlines remain active. These fixture checks do not establish historical timeout
+attribution, native N1/N2/product coverage, or final P3 readiness.
+
+### Project history transport isolation
+
+Disabling `ProjectStore` remote persistence does **not** disable `recordProjectCommit`.
+It uses independent Supabase history transport. Pure-unit and supplementary probes
+must explicitly isolate/clear its URL/key/proxy settings before execution too;
+P1 transport fixtures supply their own isolated configuration. Native persistence
+checks instead use fresh owned remote projects for both project and history writes.
+
+The epoch preservation probe exposed six exact persisted commit/change pairs in an
+ambient project. Only those recorded IDs were deleted, then both tables were read
+back as empty, including independent confirmation. `project_commits` uses
+`commit_id`; `project_changes` is scoped by `commit_id` and has no `project_id`
+column. Don't generalize that cleanup to other rows or claim earlier unrecorded
+history writes were absent. No before/after remote project-row snapshot exists for
+that probe, so project-row impact wasn't measured. The
+[preservation report](../output/evidence/ai-harness/p3/epochs/reentry/preservation/report.md)
+retains the original HTTP 400 from the incorrect filter and the exact cleanup scope.
+
+Private Vitest results caching requires an explicit top-level `cacheDir` in a config
+that preserves repository test settings. `VITE_CACHE_DIR` alone doesn't configure
+this repository's Vitest cache, even though Vite native/build commands consume it.
+The integrated focused run used an explicit private override and four workers.
+Earlier QA supplementary unit runs and standard full gates aren't claimed privately
+cached. Never delete the shared dependency cache as owned cleanup.
+
+The frozen P2 full gate is still red: exit 1, 198 failed and 23 pending Vitest tests,
+one suite-only failure, and seven surface failures. Compare exact case/reason
+multiplicity and suite failures, not passing totals or old checked-in baseline labels.
+The initial watcher expiry has no command outcome and remains incomplete. The lead
+owns final gates, independent verification and protected delivery. No durable
+checkpoints, remote schema, distributed/two-tab writer guarantee or P4/P5 is verified.
+
+## Canonical project storage versus AI history (2026-09-06)
+
+`test/noLocalProjectDb.test.ts` guards project/editor source against a local
+canonical-project database. A direct `typeof indexedDB` capability check does not
+read or write project data and is allowed. Every actual IndexedDB reference,
+including an alias, guarded open, window property or computed property access,
+remains rejected by the TypeScript AST check. SQLite and removed JSON fallback
+restrictions remain unchanged.
+
+Do not remove the guard to accommodate AI history: its IndexedDB implementation
+belongs to `src/ai/aiRecordDb.ts`. The editor may report whether that history is
+durable. Negative guard fixtures and a temporary actual project-source mutation
+prove that allowing capability detection does not allow a local project store.
+
+## Action RPG authoring and runtime proof (2026-09-07)
+
+`test/actionRpgAuthoringAcceptance.test.ts` exercises the actual AssistantSession:
+wait-only scene success and failed mandatory verification followed by skipped
+work cannot publish verified acceptance. Goal-scoped action targets and required
+verification survive replanning; only an explicit context reset clears them.
+Ordinary one-page guides are not subject to a stateful-NPC quota.
+
+`run_action_combat_test({mapId})` is an asynchronous session dispatch; the normal
+synchronous tool registry deliberately fails closed. The session validates its
+arguments, invokes the copied exported player, captures the exact owned receipt
+before serialization, and publishes verification blockers with the same ledger
+used by the checklist. It never interprets model-provided receipt JSON as proof.
+
+Run `node scripts/qa/runtime/action-rpg.scenario.mjs` for the existing action
+demo through the actual compiled `/export-player/` deployment. Read
+`verify-shots/runtime-qa/action-rpg/SUMMARY.md` first. The script is not a generic
+`qa:runtime --scenario` beat file. For a newly authored game, the lead must also
+use the actual browser AI, save/reload the remote project, and exercise the
+resulting player with keyboard inputs. Unit receipts do not replace that run.
+
+## Database CSS ownership contracts (2026-09-06)
+
+The required surface gate includes `databaseAllTabsRenderWalk`, using the actual
+registry and destination-specific sentinels. The original 32 destinations are
+retained; upstream Opening and Game Over expand the current set to 34. Per-file Vitest JSON
+must contain successful, nonempty, unskipped required assertions; aggregate exit
+zero or file existence alone is not proof. `databaseRequiredSurfaceAxis` and
+`databaseCssOwnerProof` exercise missing-execution and missing-designated-owner
+failures, including unrelated descendant declarations left in place.
+
+The dedicated `playwright.db-css.config.ts` uses an explicitly started, cwd-verified
+worktree server and zero retries. Supply its `DEV_SERVER_PORT`; do not reuse the
+copied 9841 value or another checkout's server. Freeze/restart owned transforms
+after source changes and record source/harness fingerprints with browser-scoped
+PNG/JSON evidence. The primary matrix derives its complete destination set from
+the live registry (currently 34) at 1440x900 and 1024x900; separate contracts cover native controls, true wheel/keyboard access,
+fonts, focus, virtualized reveal, domain variants and deliberate CSS regressions.
+Editor boot must complete before opening Database; wait for the published boot
+metric rather than the first toolbar node. Existing whole-suite failures and
+timeouts remain explicit, with assertion/diagnostic comparison against a frozen base.
+
+## Audio description verification
+
+These are reproducible verification requirements, not a claim that every gate has passed.
+Record commands, exit codes and evidence under `output/evidence/audio-descriptions/`;
+keep baseline failures and unverified visual review separate from feature results.
+No live project backfill, SQL migration, asset conversion or catalog regeneration is needed.
+
+Focused model, persistence, tool, UI, prompt and export gates:
+
+```sh
+npm test -- test/audioDescriptions.test.ts test/audioDescriptionPersistence.test.ts test/audioDescriptionConcurrentPersistence.test.ts test/audioResourceCatalog.test.ts
+npm test -- test/audioDescriptionTools.test.ts test/audioDescriptionDiff.test.ts test/audioDescriptionToolStore.test.ts test/audioDescriptionToolExposure.test.ts test/audioResourceToolPagination.test.ts
+npm test -- test/audioDescriptionEditor.test.ts test/audioDescriptionLifecycle.test.ts test/audioDescriptionPickerSurfaces.test.ts test/audioDescriptionCommandSurfaces.test.ts test/audioDescriptionResourceLifecycle.test.ts test/audioResourceSearchContract.test.ts
+npm test -- test/audioDescriptionPrompt.test.ts test/audioDescriptionPromptTransport.test.ts test/audioDescriptionSessionPrompt.test.ts
+npm test -- test/audioDescriptionExport.test.ts test/projectPackage.test.ts test/webExportUsagePruning.test.ts test/cc0AudioPlayback.test.ts test/playerRuntimeAudioIds.test.ts test/runtimeQaAudioContract.test.ts
+npm run build
+```
+
+Assert machine-consumed fields, raw IDs, source values, truncation, input sentinels and
+state changes, not exact explanatory prose. Persistence coverage must include deferred
+save responses, repeated map saves, same/different-key conflicts, clear/reset, and edits
+made after submission. Mock only transport when asserting real serialization/load/merge
+behavior; label that evidence as mocked transport rather than live Supabase persistence.
+
+### Real editor surfaces
+
+```sh
+npx playwright test --config playwright.audio.config.ts
+```
+
+`playwright.audio.config.ts` scopes Firefox, zero retries and an isolated Vite cache to
+`test/e2e/audio-descriptions.spec.ts` and `test/e2e/audio-description-search.spec.ts`.
+It defaults to port 19847 and `.omo/audio-e2e-vite-cache`; `DEV_SERVER_PORT` and
+`VITE_CACHE_DIR` can override those values. A reused server must use the same isolated
+cache/setup. This local Firefox choice addresses Chromium module requests failing with
+host `ERR_NETWORK_CHANGED`; it doesn't change global browser policy.
+
+`test/e2e/audioDescriptionHarness.ts` waits for DOMContentLoaded, the real toolbar and
+the loaded store, rejects remote persistence, then installs a normal blank project through
+the real store. Readiness comes from actual state, not page-load timing or fixed sleeps.
+Subscribe before triggering asynchronous edits/imports/playback, then await their exact
+signal with a bounded timeout.
+
+At 1024x768 and 1440x900, verify save/reopen/search, clear/reset, modal undo/redo, dirty
+cancellation, real WAV import/edit/delete and project-import isolation. Also exercise live
+picker refresh, removed-ID confirmation blocking, listener cleanup, project-switch close,
+audio test, normal/M2 event forms and actual registered AI tool parity.
+Capture screenshots/traces with selected IDs and worktree/port information. Capturing an
+image isn't visual-review approval; keyboard/focus and layout inspection remain separate.
+Don't claim Lighthouse approval from this scoped suite.
+
+### Exported-player playback and dependency evidence
+
+`scripts/qa/prepare-audio-descriptions.mts` uses
+`test/fixtures/audioDescriptions.ts` and the real `prepareWebExport()` boundary.
+It checks source immutability and removed metadata, then writes a new fixture path with
+exclusive-create semantics. Use a fresh evidence directory for each run:
+
+```sh
+EVIDENCE=output/evidence/audio-descriptions/08-export
+mkdir -p "$EVIDENCE"
+RUN="$(mktemp -d "$EVIDENCE/run-XXXXXX")"
+CACHE="$(mktemp -d /tmp/oprn-audio-qa-cache-XXXXXX)"
+trap 'rm -rf -- "$CACHE"' EXIT
+bun scripts/qa/prepare-audio-descriptions.mts "$RUN/project.json"
+VITE_CACHE_DIR="$CACHE" npm run qa:runtime -- --scenario audio-descriptions --browser firefox --project "$RUN/project.json" --out "$RUN/runtime"
+AUDIO_QA_BROWSER=firefox AUDIO_QA_PROJECT="$PWD/$RUN/project.json" AUDIO_QA_FAILURE_OUT="$PWD/$RUN/runtime-failure" VITE_CACHE_DIR="$CACHE" node --test test/runtimeQaAudioFailure.test.mjs
+node scripts/qa/check-player-audio-dependencies.mjs "$RUN/player-dependencies.json"
+```
+
+The fixture preparer and dependency checker refuse to overwrite their output files.
+`scripts/runtime-qa.mjs` runs the dedicated `player.html` surface, not editor play mode.
+`scripts/qa/runtime/audio-descriptions.scenario.mjs` starts starter BGM
+`cc0-bgm-rtp-fld-003` through title input, then triggers local SE `cc0-sound-ui-confirm`
+through an interaction. The commands above select Firefox for this host; the runtime CLI
+defaults to Chromium. Its optional `--browser firefox` and the failure test's
+`AUDIO_QA_BROWSER=firefox` are separate from the editor Playwright configuration.
+
+`scripts/lib/runtimeQaAudio.mjs` installs native `playing`/`error` listeners before the
+action. Evidence requires a trusted event from the matching engine-owned, same-origin audio
+element, valid ready/paused/ended state, expected loop/mute state, the engine-requested ID
+and an engine snapshot. It doesn't replace `Audio`, `play()` or engine methods. A requested-ID
+log alone isn't playback evidence. `test/runtimeQaAudioFailure.test.mjs` aborts the real SE
+request and requires failed playback evidence while BGM succeeds.
+
+This proves native playback start, not human listening, full-track playback or label accuracy.
+Inspect the runtime `SUMMARY.md` and machine-readable audio evidence, including failures.
+`test/runtimeQaAudioContract.test.ts` covers the report contract.
+
+`scripts/qa/check-player-audio-dependencies.mjs` performs a production player build with
+`write: false` and records modules with positive rendered length. It rejects
+`src/assets/audioResourceCatalog.ts`, `bgmCatalog.ts` and `seCatalog.ts`, while requiring
+`src/assets/bgmCatalogRuntime.ts` and `seCatalogRuntime.ts`. This is rendered-bundle evidence,
+not a source-grep claim. Keep prompt descriptions in `src/ai/eventAudioPrompt.ts`, separate
+from shared event eligibility and player dependencies.
+
+Close owned browsers/servers and remove only owned temporary caches after verification.
+After applying documentation, the integrating lead runs `npm run openwiki:index`, then
+`npm run openwiki:index -- --check` and `npm run openwiki:verify`. Don't hand-edit INDEX.md.
+
+## Mac onboarding Phase 1 contracts (2026-09-06)
+
+`node --test test/macLauncher.test.mjs test/setupLocal.test.mjs` (also
+`npm run test:mac-onboarding`) is the focused Node 24 gate. Tests use empty temporary folders,
+synthetic anon credentials and local HTTP servers, never the provisioned private `.env.local`.
+They cover Vite env precedence/round-trip (including conflicting base `.env` values with byte,
+inode, permission and modification-time preservation), exclusive 0600 creation, preservation and races,
+masked input/cancellation, unsafe origins/admin keys/redirects, read-only `rpg_zzu.projects`
+probes, npm install failure, quoted Finder paths, listen-before-open, startup signals, and a
+real Vite strict-port collision. The collision test remaps only the occupied port so it cannot
+interfere with a user's port 9999. Subscribe to requests/listen/close before triggering actions;
+no sleeps, polling, prose-lock tests or retries as a passing strategy.
+
+Affected existing checks: `npm run typecheck:app` and
+`npm test -- test/supabaseProjectConfig.test.ts test/supabaseProxyPath.test.ts test/vitePreviewProxy.test.ts`.
+The supervisor owns the full build/gates and same-base failure comparison.
+For real surface QA, invoke the actual launcher with `--no-open`, await its owned-listen log,
+then GET `/` and `/auth/providers` and load the configured existing project in a real browser
+through `/supabase`. Do not create content or allow remote mutation. If 9999 is occupied, record
+the collision; never kill/reuse that server or change the product's fixed port to get green.
+Evidence belongs under `output/evidence/mac-onboarding`; do not capture private config/headers.
+A legacy remote-HTTP test backend requires a temporary local read-only bridge, not weakened
+URL validation or edits to the existing env file; identify that limitation in the evidence.
+
+The narrow macOS workflow uses Node 24 and no live DB secrets. Actions are disabled and the
+producer host is Linux: neither the workflow file nor Linux Bash tests prove macOS/Finder QA.
+Actual Mac execution or explicit reviewer acceptance of that gap remains a merge prerequisite.
+
 ## Task10 field-input verification and limits (2026-09-06)
 
 Recorded verification, not a new execution by this documentation update: `.omo/evidence/life-full-20260906/10/VERIFY.md` and `.omo/evidence/life-full-20260906/phase3-verification/final/VERIFY.md` confirm task10 and integrated tasks6..10 at producer `bbaf9464cad3768da057ef9909338b5cfb25aa8c`. This documentation checkout integrates that source at `d107ac24ed72902fb35980034d08aed3ab3e0553`.
@@ -46,6 +758,15 @@ JRPG 재검증에서 `roleNameComparisonGate`는 양쪽 모두 실패 1개였지
 워크트리 경로·스택 줄 번호 차이를 제외한 새 위반을 수정하고, 실패 메시지가 불완전한 기준선은
 해당 테스트만 다시 실행한다. 전체 게이트의 직접 종료 코드와 기존 실패는 보고서에 그대로 남긴다.
 
+전체 실행이 시간 제한에 걸리면 테스트 범위를 줄이는 대신 native Vitest `run --shard=i/N`으로
+나눌 수 있다. 먼저 같은 설정의 `list --filesOnly --json`으로 전체 파일 집합을 보존하고,
+각 shard의 실제 종료 코드와 JSON을 모아 합집합 일치·누락 0·중복 0을 검증한다.
+Vitest 3.2.4의 `list --shard`는 실제 실행 분할을 반영하지 않았으므로 분할 증거로 쓰지 않는다.
+완전한 수집과 테스트 통과는 별개다. JSON에 없는 unhandled error도 있으므로 종료 코드 1을
+카운터만 보고 성공으로 바꾸지 않는다. `ENOSPC`가 섞인 결과는 보존하고 해당 분할만 별도
+임시 공간에서 다시 실행한다. 기존 실패 파일 안의 새 assertion도 원본 기준선과 대조한다.
+PR678의 고정 리비전별 원본·영수증·검사기는 `output/evidence/monster-catalog/full-suite/`에 있다.
+
 ## Esc 메뉴 동작·시각 검증 (2026-09-05)
 
 - `npm run qa:runtime -- --scenario esc-menu`: 미리보기, 회복량 예고, 대상 유지·연속 사용,
@@ -62,12 +783,52 @@ JRPG 재검증에서 `roleNameComparisonGate`는 양쪽 모두 실패 1개였지
 
 # Testing
 
+## Completed-house Phase 2 verification (2026-09-06)
+
+Primary command:
+
+```sh
+npm test -- test/houseProtectionFill.test.ts test/houseProtectionForest.test.ts \
+  test/houseProtectionLifecycle.test.ts test/villageHouseProtection.test.ts --maxWorkers=2
+```
+
+Lifecycle tests wrap real stages, inject damage after their real work, and assert
+atomic rejection before restoration. Direct-stage tests observe array writes,
+not only final equality. Cover bbox gaps/ridge/deck ladder, all six kits, linked
+doors and passable fronts, snow at 50x50/100x100, real serialize/deserialize,
+preexisting houses/human stamps, exact counts/roads, and discarded pipeline
+attempts. The runnable integration exercise is
+`.omo/evidence/house-protection/p2/exercise.mts` (run with `vite-node --config
+vitest.config.ts`). No authored/shared DB content is generated by this code QA.
+
+Related house/village/road/session and producer suites must retain their existing
+assertions. Compare failures **and assertion values** with immutable Phase 1
+`e238eb1908b0f6fcdc32011d6e2419797f442704`; do not call a red command green.
+Detailed RED/GREEN, baseline comparisons, tool-surface output, static checks and
+build evidence belong in `.omo/evidence/house-protection/p2/README.md`.
+
+For the supervisor's baseline and candidate full gates, use the same supported
+Vitest pool environment on both:
+`VITEST_MAX_FORKS=2 VITEST_MIN_FORKS=1 VITEST_MAX_THREADS=2 VITEST_MIN_THREADS=1 npm run gates`.
+Only concurrency changes: test deadlines, coverage, runner configuration and
+tracked gate baselines stay unchanged. Full gates and browser/review approval
+remain supervisor-owned, separate from the focused integration evidence.
+
 ## P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
 
 - `npx vitest run test/p2ProjectSchema.test.ts test/p2LifeRuntime.test.ts test/p2DayTransition.test.ts test/p2SessionPersistence.test.ts test/p2ReferenceLifecycle.test.ts test/p2EditorAuthoring.test.ts test/p2LifeLedgerUi.test.ts --configLoader runner`를 실행하고, matching P0/P1 persistence/transition/editor/life-ledger regressions와 `npm run typecheck:app`를 뒤따르게 한다.
 - hostile cases는 failed-catch RNG rollback, no energy, unavailable season/time/weather, deterministic daily forage placement/cleanup, placeable/inventory overflow, duplicate day advance, collection counter overflow, duplicate donation/reward, aggregate reward overflow, malformed/stale save row, legacy omitted field, exact map/item deletion impact, structured editor roundtrip, long name, empty tab, pointer/keyboard tab semantics를 포함한다. Merged-root browser evidence에서는 root-owned `foraging-card.png`가 실제로 해석되는지도 확인한다.
 
 Use the lightest command that proves the change.
+
+## Map-owned overlays: actual AI-turn browser regression (2026-09-05)
+
+- Run `xvfb-run -a node scripts/qa/map-owned-ai-turns.mjs` from the checkout root. It owns a verified-free `127.0.0.1:19846` Vite listener (`DEV_SERVER_NO_TLS=1 E2E_FREEZE_DEV_SERVER=1`, strict port), headed Firefox, and separate disposable browser profiles for completion and abort. It refuses a reused listener. Set `QA_PORT` to a different free port when another worktree is using the default; the probe, server, and browser all use that port. `EVIDENCE_DIR` selects the output directory; the default is `output/evidence/map-owned-overlays/phase2/green`.
+- This is the real composer -> session -> tool loop -> proposal/store apply path, unlike the phase-1 overlay-setter probe. Only local `/v1/chat/completions` responses are scripted, routed by `body.tools`; all other non-read requests are blocked. `blankProject=1`, disabled remote persistence, and imported-store identity are asserted. No live model credentials or remote saves are needed.
+- Promise-held responses bracket actual `set_build_spec` and two `clear_region` calls. Subscribe before clicking/sending/releasing: session tool events, ghost/store subscriptions, map selection, Phaser `postrender`, and the send button's `disabled` attribute (the exact `turnBusy` projection). Do not wait on a checklist for lookup completion: question turns may have none. No sleeps or polling.
+- Checks include A -> B -> A with a real draft, another A-targeted tool delivered while viewing B, B's renderer layers/chip and map bytes, successful apply retirement with one intentionally unbuilt entry, same-session lookup non-revival, and abort reverting speculative `done/building` entries to `planned` with zero applied changes. Every rendered B frame and every store change is also observed.
+- Existing `focusAcceptedAgentChanges` moves the view to A at successful apply. The regression records that behavior and explicitly reopens B to check the final state; it does **not** claim completion preserves B selection. Autonomous milestone apply is not covered (`agentMode: "chat"` is explicit).
+- Mutation proof and exact GREEN/RED commands: `output/evidence/map-owned-overlays/phase2/BROWSER.md`. Screenshots are captured evidence; DOM/Phaser assertions are not a claim of subjective visual review.
 
 ## Editor e2e boot-overlay determinism (2026-08-31)
 
@@ -318,6 +1079,10 @@ Pick validation based on the touched boundary:
 - 조수 패널 레이아웃 회귀는 `test/e2e/assistant-single-dock.spec.ts` 가 지킨다(2026-08-31, 구 `test/e2e/chat-dock-switch.spec.ts` 대체 — 도크 축 glass/side/float 이 삭제돼 「전환」이라는 주제 자체가 없어졌다). 이 스펙이 보는 것: 1600/1100/900 폭과 새로고침에서 입력줄 캡슐이 편집 캔버스 안에 있는지, 로그 마운트가 유리 껍데기 하나이고 상승 오버레이·휘발 존이 없는지(`.ai-chat-log` 는 정확히 1개), 온도 선택이 아이콘 우선이고 닫히는지, 접기↔복귀가 `oprn:ai-panel-collapsed` 로 왕복하는지, 그리고 `chat-side-panel`·`chat-dock-toggle`·`ai-dock-mode-btn`·`ai-chat-detach` 가 **0건**인지. 폭 헬퍼 단위 커버리지는 레이아웃/패널 테스트에 있다. 자동 펼침/접힘(맵 우선 기본 접힘, 턴에서 펼침, 자동 펼침이었으면 유휴 뒤 재접힘)은 `test/aiPanelAutoExpand.test.ts` + `test/aiPanelChrome.test.ts` 가 본다. 조수 UI 를 건드렸으면 태스크 오너가 스펙 작성만 요청한 게 아닌 한 이 묶음을 돌려라.
 - The genre-neutral authoring launcher and collapsed journey chip are covered by `test/authoringTasks.test.ts` and `test/authoringJourney.test.ts`; command reuse, loaded project identity, and player-boot evidence are covered by `test/commandRegistry.test.ts`, `test/loadNewRemoteProject.test.ts`, and `test/selectedEventTestModal.test.ts`. `test/quickBattleAuthoringGate.test.ts` drives the database basic-record button and proves broken references create no Quick Battle modal, session, or runtime. A Test click or synchronous `renderPlayer` return is not completion evidence. Passing coverage must observe actual `PlayScene` readiness, bind the success event to the current project fingerprint, invalidate it after authored changes, fail closed for stale/broken-reference events, keep manual acknowledgement distinct from completion, and exercise the exact issue list/Data repair path. `test/e2e/authoring-journey.spec.ts` proves the journey stays a corner chip, the topbar launcher still reaches Data, and the open popover keeps the 1024px font/target/clipping contract.
 - Runtime/player/battle changes: run focused unit tests plus the smallest e2e or browser scenario that proves the behavior in play mode.
+- **Export gameplay acceptance:** start an isolated normal dev server, then run `npm run qa:export -- --editor-url http://127.0.0.1:<port> --out <evidence-dir>`. `scripts/qa-export-playability.mts` imports a test-only deterministic copy of `editor-authored-demo-v3.json` through the real file chooser and downloads ZIP/HTML through the actual project menu. The editor session must have remote persistence disabled; the harness blocks remote writes and never modifies the source fixture.
+- The downloaded ZIP is served at both an origin root and `/games/demo/` with no root-resource fallback; HTML runs via `file://` with HTTP blocked. Required checks are keyboard movement, NPC quest choice, authored battle victory, decoded party images/idle strips, decoded and playing BGM, map transfer, manual save, page reload and manual slot restoration. It also rejects HTML substituted for JS and a missing required image, and opens/closes editor Test Play. Results and cleanup receipts are in `results.json` with named screenshots; neither HTTP 200 nor map-entry-only evidence passes this gate.
+- Use `npm run typecheck:export-qa` for the script's Node/browser type boundary. Focused contracts include `exportAssetResolution`, `webExportBattleDependencies`, `webExportCatalogAudio`, `standaloneExport`, `standaloneCli`, `devPlayerBundles` and `playerManifestContract`; `node --test test/devPlayerDelivery.test.mjs` exercises cold normal-dev delivery on a private cache and ephemeral port.
+- On hosts producing Chromium `ERR_NETWORK_CHANGED` during the large dev-module graph, `qa:export` accepts `--api-transport`. This QA-only option forwards real same-origin HTTP responses through Playwright's API transport; it does not substitute code/data or bypass menu actions. `results.json` records the transport. Exported games still use native browser networking, and editor Test Play must also move in response to a real arrow key.
 - Weather rendering has one Phaser-owned runtime path (`playSceneWeather.ts`). Focused tests assert the pure Phaser render plan for rain, storm, snow, fog, and none. The retired DOM overlay/CSS path must not be restored.
 - Web export/player-bundle changes should cover project serialization roundtrip, used-asset collection, `export_game` summary data, `build:player` output files/HTML structure, and practical bundle string checks for editor/AI/remote-provider leakage such as `supabase` and `llm-provider`. Manifest coverage must prove the exact transitive Vite JS/CSS/assets closure, runtime asset hashes, missing/malformed/tampered/interrupted reads, and Unicode full-casefold collisions across manifest/generated ZIP sets (at minimum sharp-s, Greek final sigma, compatibility ligatures, and NFC composition). Pin the offline Unicode 15 data version, authoritative input digests, table counts, and fail-closed stream validation; keep post-version drift canaries such as U+1C89/U+1C8A and U+10D50/U+10D70. A Unicode data regeneration must independently compare every scalar key and run every NFKC relation in the official `NormalizationTest.txt`. Fetch/parser/hash and atomic serialize/open/write/fsync/close/rename/remove adapters must turn `Error` and non-`Error` throws into stable value-free typed failures while preserving the prior manifest and cleanup behavior. Keep every product/source module below the programming LOC ceiling or document an approved exception. When the task owner forbids Playwright for export smoke, stop at static output validation and report the manual serving path instead.
 - Community player pipeline changes must run `npm run test:node playerArtifactPipeline` (or `node --test test/playerArtifactPipeline.node.test.mjs test/playerArtifactPipelineRollback.node.test.mjs test/playerArtifactPipelineGuard.node.test.mjs test/playerArtifactPipelineRecovery.node.test.mjs`) in disposable roots. Cover installed tamper/missing/extra, old lock, source/runtime/deployment digest drift, redacted scan/adapter failures, copy and post-copy rehash failures, all four target/lock rename positions both before and after native rename side effects, lock serialize/open/write/fsync/close failures, guard open/write/fsync/close/remove faults, concurrent/replacement ownership, dead-PID guard recovery, interrupted backup/staging recovery, raw preflight failures, and physical Windows junction/symlink escape rejection with an unchanged outside canary. Every pre-commit failure must leave the prior target and lock byte-identical and leave no task-owned guard/staging/backup residue. Do not exercise sync against the repository's real `dist/export-player`, `community-site/public/player-static`, or lock until the final artifact-install task owns that mutation.
@@ -481,6 +1246,7 @@ Evidence expectations:
   `playSurface.css` 의 inset 목록에 든 것은 cover/crop 모드가 생길 때를 위한 대비다.
   측정 함정 하나: 디밍은 `--dialogue-scrim-ms`(140~260ms) 전이라서 창이 뜬 **직후**에 읽으면
   `::before` opacity 가 `0.26` 처럼 중간값으로 잡힌다. 정착값을 볼 거면 400ms 쯤 기다려라.
+- `test/eventPreviewPaintCssom.test.ts` — 명령 미리보기 페인트. Chromium `getComputedStyle` 로 이름표 `backgroundImage`/그림자 리스트를 읽고, 글자만 `color: transparent` 로 숨긴 샷과 비교해 글리프 대 실제 배경(그라디언트 포함) 대비를 잰다. 테두리·그림자를 전역 min/max 로 통과시키지 않는다. `EVENT_PREVIEW_PAINT_FROM=HEAD` 는 수정 전 CSS 를 `git show` 로 주입한다.
 - `test/dialoguePreviewPresentationCss.test.ts` — 에디터 프리뷰와 게임의 감정→keyframe 짝을
   두 CSS 파일에서 뽑아 대조한다. 프리뷰 창은 `.ecp-message-window`, 게임 창은 `.dialogue-box` 라
   규칙을 두 번 적어야 하고, 그 중복은 조용히 어긋난다 — 프리뷰만 옛 곡선으로 튀어도 예외가 없고,
@@ -718,6 +1484,38 @@ Unhandled Rejection 은 그 순간 실행 중이던 아무 파일에 귀속되�
 **비결정적 오귀속**의 원인이 된다. 새 브라우저 전역을 프로덕션이 쓰기 시작하면 `fakeDom` 의
 `DomGlobalName` 유니온·save/restore 목록·`defineDomGlobal` 세 곳을 같이 늘려야 한다.
 
+### Shared fake DOM enhancement contracts (2026-09-08)
+
+Adding `insertBefore` enables the real event-editor custom-select controller; it
+is not only a checklist capability. `HTMLSelectElement` identity must match the
+SELECT tag (including directly constructed `FakeElement("select")`), never every
+fake element. Single-select option state now covers direct options and optgroups,
+index/value/selected synchronization, disabled defaults and invalid selections.
+Collections are fresh arrays on access, not a complete live HTMLCollection API;
+multi-select, layout and MutationObserver simulation remain outside this fake.
+
+All insertion/replacement paths adopt nodes from their previous parent. Removal
+and text/children replacement clear parent links; wrapper disposal must restore
+exactly one select without leaving the dialog root in a wrapper. Keep the real
+enhancement enabled. `fakeDomSelectContracts` exercises actual menu selection,
+input/change bubbling, subscribed focus restoration, disposal and checklist row
+identity. Happy DOM verifies supported reference operations; Firefox additionally
+checks edge contracts where the installed Happy DOM differs (duplicate values,
+option text/label, detached index, optgroup reordering and self replacement).
+Fixtures selecting an ID must create the actual option/record first; the focused
+weighted-branch fixture now creates its `roll` variable without changing assertions.
+
+`aiChatObservability` distinguishes the `REQUEST_COVERAGE_AUDIT` sentinel from
+intent JSON and streams. Manual chat retains drafts until settlement: the bounded
+acceptance-repair execute requests are non-streaming JSON. Reply with valid audit
+requirements linked to the original request and count execute requests separately;
+do not answer audits with intent JSON or reject execute requests as bad streams.
+Subscribe before Send to transport, session and post-apply refresh events, plus
+terminal activity. Preserve the actual ghost bounds, single apply and cleanup
+assertions. The 10-second terminal deadline is unchanged; no polling or retries
+were added to tests. Exact red traces and focused/affected evidence are in
+`output/evidence/acceptance-live-fakedom-repair/`; the final full gate is lead-owned.
+
 ## bugfix-sweep 실제 표면 하네스 (2026-08-29)
 
 `node scripts/qa-bugfix-sweep-evidence.mjs` 는 **프로젝트의 Vite SSR 모듈 파이프라인**으로
@@ -754,3 +1552,90 @@ Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 �
 - `event-view-toggle-list`는 role=tab, aria-selected 계약이다. `eventStoryboardPicker.showCommandList`도 이 속성을 검사한다.
 - 표면 기준선의 최소 shop은 `item_potion`을 진열한다(`item1`은 captureProject에 없는 ID). 활성 상품 탭만 초기 DOM에 마운트되므로 form/interaction/commit 축의 shop 항목을 함께 캡처하며, 탭과 추가창의 설정 도달성은 위 단위·브라우저 시나리오에서 검사한다. 하한선·반응/no-commit 목록 변경은 별도 커밋으로 검토한다.
 - Chromium의 `ERR_NETWORK_CHANGED`가 localhost 모듈을 취소하는 호스트에서는 `SHOP_QA_ROUTE_MODULES=1`을 추가한다. 소유한 baseURL의 GET 응답만 Playwright Node 전송으로 전달하며 앱 응답·편집 동작은 그대로다. 기본 실행은 일반 브라우저 전송을 사용한다.
+## 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
+
+- `.env.local`에 실 Supabase 키가 있는 상태의 전체 검사 중 `rpg-zzu-house-template-gallery`에 테스트 문구(`증발 위험 변경`, `마일스톤: 1차 제목` 등)가 저장되고 저작한 꾸러미가 다시 사라졌다. 여러 워크트리에서 동시에 전체 검사가 돌았으므로 어느 실행이 썼는지는 확정하지 못했다. `lakeVillageRebuildFinal`만 제외돼 있어도 안전하다고 보지 마라.
+- 이 세션의 무격리 게이트를 중단하고, 환경의 Supabase URL/키/프록시를 비운 뒤 Node `--import`로 **실 네트워크 fetch 차단**을 설치해 다시 실행했다. `.env.local`을 직접 읽는 테스트도 있으므로 환경 변수만 비우는 것으로 충분하지 않다. 네트워크 모의 응답은 그대로 쓰며 실 DB URL과 외부 주소 요청을 거절한다. 로컬 HTTP 하네스는 허용하되 `.env.local`의 실제 DB origin은 로컬이어도 막는다.
+- 세션 증거: `output/evidence/concept-expansion/README.md`, 원격 저장 직후 증명 `supabase-proof-first-save.json`. 후속 저장에서는 CAS가 동시 변경을 감지해 덮어쓰기를 거절했다. 실 콘텐츠 작업과 전체 검사를 같은 공유 프로젝트에서 병행하지 말고, 외부 쓰기가 끝난 뒤 최신 스냅샷으로 추가하고 재로드하라.
+
+## Request-bound functional acceptance verification (2026-09-07)
+
+Live followup: `requestCoverage` exercises independent omission, exact-quote gaps,
+empty/malformed/failed audits, immutable worker replacement, Ask, grouped R2
+refinement and failed resume audit provenance. `fakeDomInsertBefore` supplies the
+real row-move semantics now needed when fail-closed fallback exposes the sticky
+in existing panel tests; the actual `agentBlueprintTurnEnd` suite remains intact.
+The focused serial command in `output/evidence/acceptance-live/README.md` passed
+153 assertions in 14 suites. A concurrent-build run had all assertions pass but
+exited nonzero on Vitest's `onTaskUpdate` IPC timeout; it is retained, not counted
+as green. No assertion, timeout, test or warning was suppressed.
+
+`scripts/qa/acceptance-live.mjs` uses real companion models, declaration/parser,
+planner/session and the actual apply/store/Supabase save/reload path, with an
+exclusively owned project ID and collision/revision checks. Its before/negative
+cases do not write. Authored features come only from model tools. The initial
+10-gold potion stock hit the production half-catalog-price floor (50 -> 25), not
+a scene/player pricing divergence; a real Codex tool call set the catalog price
+to 10. `acceptance-live-check.mjs` independently reloads the exact final revision,
+evaluates the captured original live criteria through the canonical ledger and
+runs a combined 16-step real-interpreter scenario. It is not a fresh model call,
+not a fabricated declaration, and not graphical-player evidence. The latter and
+full-gate baseline comparison are separate lead-owned gates. See the evidence
+README for the canonical JSON, model IDs, receipt, hashes and player checkpoints.
+
+Focused suites: `functionalScenePurchase`, `functionalAcceptance`,
+`functionalAcceptanceSession`, `functionalPersistenceProof`, `npcRewardSession`,
+`functionalWalkSuspension`, `functionalClarification`, and `functionalInterpreterResume`.
+They exercise the public scene tool, real interpreter/production transactions,
+live declaration parser and session gates, immutable plan replacement, actual
+proposal apply, and the canonical persistence-read boundary (only transport/model
+responses are scripted). Red/green logs live under
+`output/evidence/functional-acceptance/`; no sleeps synchronize these tests.
+
+Run the executable public-API browser smoke against an isolated worktree server:
+
+```bash
+npm run dev:worktree -- --port 9841
+node scripts/qa/functional-acceptance-smoke.mjs http://127.0.0.1:9841
+```
+
+The script uses Playwright Firefox (`npx playwright install firefox` if absent),
+avoiding this Linux host's documented Chromium `ERR_NETWORK_CHANGED` cancellation.
+It loads public session/parser/runtime modules without booting the editor,
+uses only `test/fixtures/functionalAcceptance.ts`, blocks all network writes and
+external requests, and records `output/evidence/functional-acceptance/public-smoke.json`.
+It verifies exact purchase deltas, outgoing/return travel, one-time rewards,
+broken variants, stale applied evidence and attempted contract replacement.
+The review regressions force travel through a touch-shop corridor, compare split
+and unsplit walks, retain post-shop game-over behavior, and refuse nested held
+interpreter replacement. Clarification coverage includes original-source linkage,
+partial completion, retained known expectations, explicit user corrections,
+host-resume clarification, and rejected worker/concrete-contract replacement.
+The public smoke also exercises the corridor and a three-message clarification
+(`blocked -> blocked -> verified`) with the same requirement ID.
+Consumed-hold regressions cover purchase/choice/animation resuming through transfer
+into a non-suspending variable initializer, a second suspension under the same
+owner, and retained rejection of newly suspended nested interpreters. Animation
+tests advance deterministic engine ticks derived from its authored duration;
+no wall-clock sleep or polling is used. The public smoke additionally verifies
+purchase -> transfer -> initializer ends with 80 gold, two potions and var_0001=1.
+It does NOT claim live-model semantic extraction, graphical-player QA or a real
+Supabase-authored project. Canonical reload behavior is covered by the focused
+transport-boundary tests; independent full gates/build/player QA remain lead gates.
+Check the server's worktree identity, not just an HTTP 200; another checkout on the
+same port serves different modules. Pass an explicit free port if the assigned
+port belongs to another running checkout; do not kill that server.
+
+## 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
+
+`npcCommandContract`, `aiCompletionAccounting`, `assistantDependencyRetry`, `npcRewardAcceptance`, `npcRewardSession`은 각각 명령 규격, 적용 완료 원장, 종속 보류/재시도, 실제 장면 보상, 세션 완료 판정을 검사한다. 보상 요구는 `IntentDeclaration.npcRewards`에서 오며 최종 이벤트 명령으로 역산하지 않는다. 페이지 두 개나 도구 성공 횟수는 지급 증거가 아니다.
+
+실제 모델 검증은 별도 원격 QA 프로젝트에서 조수를 실행하고 정상 저장 후 같은 project id로 다시 읽는다. 재로드한 JSON을 `npm run qa:runtime -- --scenario assistant-reward --project <path>`에 전달한다. 이 시나리오는 `player.html`에서 실제 상호작용 두 번으로 `item_capture_orb`와 `species_leafling`이 각각 `0/0 → 5/1 → 5/1`인지 검사한다. 맵은 `map_blank_start`, 시작점은 `(10,8)`, 고정 보상 NPC는 `(10,7)`이다. 장면 테스트가 통과해도 출하 플레이어 검증을 생략하지 않는다.
+
+런타임 QA의 선택적 `inventoryCounts`/`ownedMonsterCounts`는 요청한 ID만 manifest에 기록한다. 몬스터 수는 파티와 보관함의 소유 인스턴스를 합쳐 세며, 훅이나 관측 데이터가 없으면 0으로 간주하지 않고 실패한다. 관련 회귀는 `runtimeQaGate`, `runtimeQaInstrumentationBoundary`, `runtimeQaReport`다.
+
+실제 모델 후속 검증에서 `giveMonster`의 `speciesId`/`level`, 장면 스텝의 `dir`/`to`/`ticks`/`index`가 노출 스키마에 빠져 인자가 다른 필드로 반복 전송됐다. 해당 필드의 노출과 컴파일러 계약은 `npcCommandContract`가 검사한다. `sceneVerificationRepair`는 명시 NPC ID·단언·선택지·보상 기준점이 같은 검사에서 이동/방향을 고친 재실행이 과거 실패를 해소하는지 검사한다. 기대 보상이나 NPC 대상을 바꾼 별개 검사는 기존 실패를 지울 수 없다.
+
+## 실내 조립·형상 검증 (2026-09-05)
+
+`test/interiorConceptAssemblies.test.ts`가 19시설×3seed 시공, 상판 소품의 전체 셀, 벽시계 위치, 장소 shape 직렬화·검증, 메타/통행 사용자 오버라이드 보존을 검사한다. 관련 13파일·253테스트 및 앱 타입 게이트가 통과했다. 이번 전체 gates 실행은 최종 리포트를 남기기 전 exit 143으로 종료되어 전체 기준선 비교를 완료하지 못했다. 원인 미확정이며 전체 통과로 보고하지 않는다. 로컬 증거는 `output/evidence/concept-v2/validation.json` 및 `focused-tests.log`.

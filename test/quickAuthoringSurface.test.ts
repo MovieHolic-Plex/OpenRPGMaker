@@ -157,17 +157,16 @@ describe("quick authoring previews are identifiable", () => {
     });
   });
 
-  it("stocks a general store on the first shop screen", () => {
+  it("opens a new shop with an empty listing instead of invented catalog ids", () => {
     withProject(() => {
       const command = newCommand("shop");
       expect(command.kind).toBe("shop");
       if (command.kind !== "shop") return;
-      expect(command.itemIds.length).toBeGreaterThanOrEqual(1);
+      expect(command.itemIds).toEqual([]);
 
       const root = preview(command);
-      expect(findByTestId(root, "ecp-shop-empty-warn")).toBeNull();
-      expect(root.querySelectorAll(".ecp-shop-item-row").length).toBeGreaterThanOrEqual(1);
-      expect(root.textContent).not.toContain("상품 없음");
+      expect(findByTestId(root, "ecp-shop-empty-warn")).not.toBeNull();
+      expect(root.textContent).toContain("상품 없음");
     });
   });
 

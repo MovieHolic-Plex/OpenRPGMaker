@@ -12,7 +12,8 @@
 //                        play_walkthrough call args (do/expect steps, walkthroughRunner
 //                        shape)}] — or, if the layer has no such call,
 //                        [run_lint, verify_quest × ALL questIds in run history]
-// run_lint is always first; every layer adds nothing beyond the table.
+// run_lint is always first. Authored endings require quality assessment as well;
+// final assessment repeats earlier quality checks on the current artifact.
 //
 // CAUTION (verified in code): generate_walkthrough output is run_scene_test input
 // (`kind` steps), NOT play_walkthrough input (`do`/`expect` steps) — this module never
@@ -26,8 +27,10 @@
 // 54 pre-existing violations on every attempt. The gate burned its 3 attempts on damage the
 // agent had not caused and could not repair (every cleanup commit was refused by the commit
 // gate), killing the run at 217s with the 48-turn budget untouched.
-// evaluate_game_quality still reports blocking ONLY on projectLint errors (toolRegistry
-// evaluate_game_quality verdict contract: data.verdict.blocked).
+// evaluate_game_quality still reports blocking on its own error-severity issues only (toolRegistry
+// evaluate_game_quality verdict contract: data.verdict.blocked). That error set is projectLint
+// errors + empty-map (99081a0b1, 2026-08-28) + ending-uninvoked (419e067fa, 2026-09-06) — it was
+// projectLint alone until those two landed. This is not subjective quality or playthrough proof.
 
 export const RUN_LINT_TOOL = "run_lint";
 export const EVALUATE_GAME_QUALITY_TOOL = "evaluate_game_quality";
@@ -36,7 +39,7 @@ export const PLAY_WALKTHROUGH_TOOL = "play_walkthrough";
 /** Checks whose execution success is not evidence that the checked artifact passed. */
 export const VERIFICATION_TOOL_NAMES: ReadonlySet<string> = new Set([
   RUN_LINT_TOOL, EVALUATE_GAME_QUALITY_TOOL, VERIFY_QUEST_TOOL, PLAY_WALKTHROUGH_TOOL,
-  "check_reachability", "run_scene_test", "simulate_battle",
+  "check_reachability", "run_scene_test", "simulate_battle", "run_action_combat_test",
 ]);
 
 /** Tools that author quest records (questId = args.id / args.def.key). */
@@ -61,6 +64,8 @@ export interface LayerDescriptor {
   readonly title: string;
   readonly kind?: string;
   readonly isFinal?: boolean;
+  /** Current artifact requires quality assessment, even without authoring history. */
+  readonly assessGameQuality?: boolean;
   readonly items?: readonly {
     readonly id?: string;
     readonly title?: string;
@@ -212,6 +217,11 @@ export function selectVerificationCalls(
     return calls;
   }
 
+  if (layer.assessGameQuality || history.some(record => record.ok &&
+    (record.name === "define_ending" || (kind === "final" && record.name === EVALUATE_GAME_QUALITY_TOOL)))) {
+    calls.push({ name: EVALUATE_GAME_QUALITY_TOOL, args: {} });
+  }
+
   if (kind === "quest") {
     const questId = mostRecentQuestId(history);
     if (questId !== null) calls.push({ name: VERIFY_QUEST_TOOL, args: { questId } });
@@ -247,8 +257,8 @@ function issuesOf(result: ToolResultLike): readonly { readonly severity?: string
  * Parse ONE tool result into a verdict.
  * - Tool-level failure (ok !== true) always blocks (fail-closed on missing ok).
  * - Scenario checks block when data.ok === false; reachability uses data.reachable.
- * - evaluate_game_quality blocks ONLY on projectLint errors (data.verdict.blocked);
- *   its non-error issues are warnings.
+ * - evaluate_game_quality blocks on data.verdict.blocked, i.e. its error-severity objective issues
+ *   (projectLint errors + empty-map + ending-uninvoked); its non-error issues are warnings.
  * - Other tools (run_lint): error-severity issues block; warning/info issues are warnings.
  * - result.warnings never block.
  */
@@ -261,7 +271,11 @@ export function parseToolVerdict(name: string, result: ToolResultLike): Verdict 
     blocking.push(result.summary?.trim() !== "" && result.summary !== undefined ? result.summary : `${name} 실행 실패`);
   }
 
-  if (name === EVALUATE_GAME_QUALITY_TOOL) {
+  if (name === "run_action_combat_test") {
+    if (data?.pass !== true || data.status !== "verified") {
+      blocking.push(typeof data?.reason === "string" ? data.reason : "Action combat proof is unverified");
+    }
+  } else if (name === EVALUATE_GAME_QUALITY_TOOL) {
     const verdictData = asRecord(data?.verdict);
     if (verdictData?.blocked === true) {
       const integrity = asRecord(data?.integrity);
@@ -270,8 +284,8 @@ export function parseToolVerdict(name: string, result: ToolResultLike): Verdict 
         ? (objective.issues as readonly { readonly severity?: string; readonly message?: string }[])
         : [];
       const errors = objectiveIssues.filter((issue) => issue?.severity === "error");
-      if (errors.length > 0) blocking.push(...errors.map((issue) => issue.message || "projectLint 오류"));
-      else blocking.push("게임 품질 평가 차단: projectLint 오류");
+      if (errors.length > 0) blocking.push(...errors.map((issue) => issue.message || "객관 무결성 오류"));
+      else blocking.push("무결성 점검 차단: 객관 오류(내역 없음)");
     }
     for (const issue of issuesOf(result)) {
       if (issue?.severity !== undefined && issue.severity !== "error") warnings.push(issue.message || "경고");

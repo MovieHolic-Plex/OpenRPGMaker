@@ -1,4 +1,4 @@
-import { emitRuntimeJuice } from "@/player/runtimeJuice";
+import { emitRuntimeJuice, type RuntimeJuiceOptions } from "@/player/runtimeJuice";
 import {
   isCancelKey,
   isConfirmKey,
@@ -30,6 +30,7 @@ export type CursorMenuOptions = {
    * 거절에 버저만 울린다(scene_shop.cpp). 결정/버저 판단은 도메인 핸들러 몫이다.
    */
   readonly sound?: boolean;
+  readonly audioContext?: Pick<RuntimeJuiceOptions, "project" | "session">;
 };
 
 /** setIndex 를 부른 원인. 커서음은 키보드 이동에만 울린다 — 마우스가 스칠 때마다 삑삑거리면 못 쓴다. */
@@ -65,7 +66,7 @@ export function attachCursorMenu(root: HTMLElement, opts: CursorMenuOptions): ()
     if (clamped === index) return;
     index = clamped;
     applySelection();
-    if (opts.sound && cause === "key") emitRuntimeJuice({ event: "menu-select" });
+    if (opts.sound && cause === "key") emitRuntimeJuice({ ...opts.audioContext, event: "menu-select" });
     opts.onSelect?.(index);
   };
 
@@ -101,7 +102,7 @@ export function attachCursorMenu(root: HTMLElement, opts: CursorMenuOptions): ()
       event.stopPropagation();
       if (event.repeat) return;
       // cancelEl 이 없으면 취소키가 무시되므로 소리도 울리지 않는다(빈 약속 금지).
-      if (opts.sound && opts.cancelEl) emitRuntimeJuice({ event: "menu-back" });
+      if (opts.sound && opts.cancelEl) emitRuntimeJuice({ ...opts.audioContext, event: "menu-back" });
       opts.cancelEl?.click();
     }
   };

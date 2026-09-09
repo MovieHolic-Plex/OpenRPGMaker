@@ -149,10 +149,11 @@ describe("B2: element kind magical routes defense through mind (gen1 전용)", (
 
     // Magical divides by mind, physical by defense — gen1 코어 공식(레벨 기반)이라 뺄셈 차이가 아니다.
     // 이 스냅샷은 level 미설정이라 gen1 시전자 레벨은 1 로 폴백한다(실전 배틀러는 항상 level 을 싣는다).
-    // magical: base(L1, power 200, A 10, D=mind 5) = 18 → 랜덤 중앙값 floor(18×236/255) = 16
+    // Gen1 Special supplies both magical offense and defense, regardless of spec.statistic.
+    // magical: base(L1, power 200, A=mind 5, D=mind 5) = 10 → floor(10×236/255) = 9
     // physical: base(L1, power 200, A 10, D=defense 100) = 2 → floor(2×236/255) = 1
     expect(magicalDmg.amount).toBeGreaterThan(physicalDmg.amount);
-    const expectedMagical = Math.floor((computeGen1BaseDamage({ level: 1, power, attack: 10, defense: 5 }) * GEN1_RANDOM_MEDIAN) / GEN1_RANDOM_MAX);
+    const expectedMagical = Math.floor((computeGen1BaseDamage({ level: 1, power, attack: 5, defense: 5 }) * GEN1_RANDOM_MEDIAN) / GEN1_RANDOM_MAX);
     const expectedPhysical = Math.floor((computeGen1BaseDamage({ level: 1, power, attack: 10, defense: 100 }) * GEN1_RANDOM_MEDIAN) / GEN1_RANDOM_MAX);
     expect(magicalDmg.amount).toBe(expectedMagical);
     expect(physicalDmg.amount).toBe(expectedPhysical);

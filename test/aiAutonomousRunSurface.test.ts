@@ -1,9 +1,12 @@
+import { bounded } from "./aiEpochFixture";
+import { getAiAssistantStatus } from "@/editor/aiAssistantBridge";
 // 할 일 목록 표면(작업 계획 체크리스트) — AI 패널의 라이브 체크리스트/마일스톤 피드/예산 표시 DOM 테스트.
 // 패널은 fake DOM(테스트 전용) 위에서 렌더되고, 세션은 합성 이벤트(onEvent)를 흘려보내는
 // 목으로 대체된다 — emitWorkPlan/milestone_applied/proposal_paused/예산 status 이벤트가
 // 실제 패널 이벤트 핸들러를 통과해 표면에 반영되는지가 단언 대상이다(타이밍 대기 없음, 전부 동기).
-// 수명 계약(2026-09-03): 목록은 계획에 묶인다 — 턴이 끝나도 남고(active=false), chat 모드에도 뜨고,
-// 새 계획이 오면 바뀌고, 대화 경계(새 대화·전환·되감기)에서만 걷힌다.
+// Lifecycle: live chrome belongs to the owner turn, not to the retained session plan.
+import { RunOperation } from "@/ai/runOperation";
+import { teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import {
@@ -23,10 +26,16 @@ const assistantMock = vi.hoisted(() => {
   let emitter: ((onEvent: (event: unknown) => void, opts?: unknown) => void) | null = null;
   let lastOpts: unknown = null;
   let stopReason: "final" | "max-tool-calls" | "error" = "final";
+  let answer = "완료.";
   let holdNext = false;
   let heldResolve: (() => void) | null = null;
+  let heldSignal = Promise.resolve();
+  let signalHeld: (() => void) | null = null;
 
   class MockAssistantSession {
+    private operation = new RunOperation();
+    getRunOperation(): RunOperation { return this.operation; }
+    retireRun(): void { this.operation.retire(); heldResolve?.(); }
     constructor(_project: unknown, _options: unknown) {}
 
     async sendUserMessage(
@@ -35,6 +44,8 @@ const assistantMock = vi.hoisted(() => {
       _signal: unknown,
       opts?: unknown
     ): Promise<{ assistantText: string; proposedCalls: []; stoppedReason: "final" | "max-tool-calls" | "error" }> {
+      this.operation.retire();
+      this.operation = new RunOperation();
       sentMessages.push(text);
       lastOpts = opts;
       emitter?.(onEvent, opts);
@@ -42,10 +53,11 @@ const assistantMock = vi.hoisted(() => {
         holdNext = false;
         await new Promise<void>((resolve) => {
           heldResolve = resolve;
+          signalHeld?.();
         });
         heldResolve = null;
       }
-      return { assistantText: "완료.", proposedCalls: [], stoppedReason: stopReason };
+      return { assistantText: answer, proposedCalls: [], stoppedReason: stopReason };
     }
 
     getAuditEntries(): [] {
@@ -54,6 +66,10 @@ const assistantMock = vi.hoisted(() => {
 
     getActiveSpec(): null {
       return null;
+    }
+
+    getCompletionSpecs(): [] {
+      return [];
     }
 
 
@@ -73,6 +89,10 @@ const assistantMock = vi.hoisted(() => {
       return null;
     }
 
+    getRunOutcome(): null {
+      return null;
+    }
+
     // 패널이 새 턴 직전 저장소 기준 동기화를 부른다 — 더블은 제안 없음(false)으로 답한다.
     syncBaselineFromStoreIfClean(_project: unknown): boolean {
       return false;
@@ -87,13 +107,16 @@ const assistantMock = vi.hoisted(() => {
     setEmitter(fn: typeof emitter) {
       emitter = fn;
     },
+    setAnswer(text: string) { answer = text; },
     setStopReason(reason: typeof stopReason) { stopReason = reason; },
     getLastOpts(): unknown {
       return lastOpts;
     },
     holdNextTurn() {
       holdNext = true;
+      heldSignal = new Promise<void>((resolve) => { signalHeld = resolve; });
     },
+    whenHeld() { return heldSignal; },
     releaseHeldTurn() {
       heldResolve?.();
     },
@@ -103,6 +126,7 @@ const assistantMock = vi.hoisted(() => {
       lastOpts = null;
       holdNext = false;
       stopReason = "final";
+      answer = "완료.";
       heldResolve = null;
     },
   };
@@ -168,7 +192,7 @@ function installFakeWindow(): () => void {
 }
 
 async function flushAsync(): Promise<void> {
-  for (let i = 0; i < 20; i += 1) await Promise.resolve();
+  await bounded(assistantMock.whenHeld());
 }
 
 // 칩 접힘(`is-collapsed`)은 side·float 축이다 — glass 는 입력줄을 남기는 fold 로 갈라졌다
@@ -223,7 +247,9 @@ beforeEach(() => {
   storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-or-test" }));
 });
 
-afterEach(() => {
+afterEach(async () => {
+  teardownAiChatPanel();
+  await whenAiChatPanelSettled();
   closeWorkPlanBook();
   resetModalStackForTest();
   vi.useRealTimers();
@@ -235,6 +261,17 @@ afterEach(() => {
 });
 
 describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
+  it("does not promote quick-reply presets but retains their transcript text", async () => {
+    const panel = renderPanel();
+    const answer = "Choose a preset.\n[선택지] Village | Dungeon | Farm";
+    assistantMock.setAnswer(answer);
+    await bridgeSend("options");
+    expect(panel.querySelectorAll(".ai-quick-reply-chip")).toHaveLength(0);
+    for (const fragment of answer.split("\n")) {
+      expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain(fragment);
+    }
+  });
+
   it("(a) emitWorkPlan 이벤트로 체크리스트가 렌더된다 — 항목별 진행 + 현재 레이어 표시", async () => {
     const panel = renderPanel();
     assistantMock.setEmitter((onEvent) => {
@@ -377,14 +414,14 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     assistantMock.releaseHeldTurn();
     await sending;
     await flushAsync();
-    expect(findByTestId(panel, "ai-work-plan-checklist")?.dataset.active).toBe("false");
+    expect(findByTestId(panel, "ai-work-plan-checklist")).toBeNull();
     expect(findByTestId(panel, "ai-run-stop")).toBeNull();
     await vi.advanceTimersByTimeAsync(AUTO_COLLAPSE_AFTER_AI_MS + 50);
     await flushAsync();
     expect(panel.classList.contains("is-collapsed")).toBe(false);
   });
 
-  it("턴이 끝나도 할 일 목록은 남고, 다음 턴의 새 계획이 오면 그것으로 바뀐다", async () => {
+  it("턴이 끝나면 할 일 표면은 걷히고 다음 턴의 새 계획은 보인다", async () => {
     const panel = renderPanel();
     assistantMock.setEmitter((onEvent) => {
       onEvent({ type: "work_plan", plan: samplePlan() });
@@ -399,11 +436,8 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     await firstRun;
     await flushAsync();
     const settled = findByTestId(panel, "ai-work-plan-checklist");
-    expect(settled).not.toBeNull();
-    expect(settled?.dataset.active).toBe("false");
-    expect(findByTestId(panel, "ai-run-status")?.textContent).toBe("집 3채 — 대기 중");
-    findByTestId(panel, "ai-plan-book-open")?.click();
-    expect(document.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(4);
+    expect(settled).toBeNull();
+    expect(findByTestId(panel, "ai-autonomous-run-surface")).toBeNull();
 
     // 다음 턴: 다른 목표의 계획 — 이전 항목이 남지 않는다.
     assistantMock.setEmitter((onEvent) => {
@@ -436,11 +470,10 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     assistantMock.releaseHeldTurn();
     await running;
     await flushAsync();
-    expect(findByTestId(panel, "ai-run-status")?.textContent).toBe("작업 중단 — 실행 한도 도달");
-    expect(findByTestId(panel, "ai-work-plan-checklist")?.dataset.complete).toBe("false");
+    expect(findByTestId(panel, "ai-work-plan-checklist")).toBeNull();
   });
 
-  it("모든 항목이 끝난 계획은 「모두 완료」로 남고, 계획이 한 번도 안 온 턴은 목록을 만들지 않는다", async () => {
+  it("완료 계획은 표면에서 걷히고 계획 없는 턴도 목록을 만들지 않는다", async () => {
     const panel = renderPanel();
     const finished = samplePlan({
       currentItemId: null,
@@ -456,12 +489,8 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     await bridgeSend("RPG 만들어줘");
     await flushAsync();
     const checklist = findByTestId(panel, "ai-work-plan-checklist");
-    expect(checklist?.dataset.complete).toBe("true");
-    expect(findByTestId(panel, "ai-run-status")?.textContent).toBe("모두 완료");
-    expect(findByTestId(panel, "ai-autonomous-progress")?.textContent).toBe("4/4");
-    findByTestId(panel, "ai-plan-book-open")?.click();
-    expect([...document.querySelectorAll("[data-testid='ai-autonomous-item']")].map((item) => (item as HTMLElement).dataset.status))
-      .toEqual(["done", "done", "done", "done"]);
+    expect(checklist).toBeNull();
+    expect(document.querySelector("[data-testid=ai-plan-book]")).toBeNull();
 
     // 계획 없는 다음 턴: 끝난 계획은 이어받지 않고, 새 계획도 안 오면 목록이 없다.
     assistantMock.setEmitter(() => {});
@@ -471,7 +500,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     expect(findByTestId(panel, "ai-autonomous-run-surface")).toBeNull();
   });
 
-  it("런 중 중단하면 목록은 남되 활동이 꺼진 채로 끝난다", async () => {
+  it("런 중 중단하면 목록과 활동 표면이 함께 걷힌다", async () => {
     storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
     assistantMock.setEmitter((onEvent) => {
@@ -487,13 +516,13 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     expect(abort).not.toBeNull();
     expect(abort?.disabled).toBe(false);
     abort?.click();
-    expect(findByTestId(panel, "ai-status")?.textContent).toBe("중단 중…");
+    expect(getAiAssistantStatus().turnBusy).toBe(false);
 
     assistantMock.releaseHeldTurn();
     await sending;
     await flushAsync();
     // 중단된 런도 목록은 남는다 — 어디까지 됐는지가 곧 중단의 결과다. 활동(중지 버튼·펄스)만 꺼진다.
-    expect(findByTestId(panel, "ai-work-plan-checklist")?.dataset.active).toBe("false");
+    expect(findByTestId(panel, "ai-work-plan-checklist")).toBeNull();
     expect(findByTestId(panel, "ai-run-stop")).toBeNull();
   });
 
@@ -508,7 +537,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     const stop = findByTestId(panel, "ai-run-stop");
     expect(stop).not.toBeNull();
     stop?.click();
-    expect(findByTestId(panel, "ai-status")?.textContent).toBe("중단 중…");
+    expect(getAiAssistantStatus().turnBusy).toBe(false);
     assistantMock.releaseHeldTurn();
     await sending;
     await flushAsync();
@@ -520,7 +549,8 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     assistantMock.setEmitter((onEvent) => {
       onEvent({ type: "work_plan", plan: samplePlan() });
     });
-    await bridgeSend("안녕");
+    assistantMock.holdNextTurn();
+    const sending = bridgeSend("안녕");
     await flushAsync();
     // 계획이 오면 모드와 상관없이 보인다 — 예산(드라이버 턴 수)만 자율 런의 것이라 없다.
     expect(findByTestId(panel, "ai-work-plan-checklist")).not.toBeNull();
@@ -530,5 +560,8 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     expect(document.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(4);
     // 패널은 autonomous 와 함께 사용자 원문(instruction)·선택 스코프를 사실로 넘긴다.
     expect(assistantMock.getLastOpts()).toMatchObject({ autonomous: false, instruction: "안녕", scope: null });
+    assistantMock.releaseHeldTurn();
+    await sending;
+    expect(findByTestId(panel, "ai-work-plan-checklist")).toBeNull();
   });
 });

@@ -9,14 +9,44 @@
 // 경계: 「무엇을 원하나」(수정/생성, 실내/야외, 시설, 되묻기, 계획 필요, 쓸 툴)는 이 선언이 정한다.
 // 「무엇이 사실인가」(열린 모달, 선택 사각형, 현재 맵, 타일셋 라벨)와 「지켜졌나」(승인·클립·스펙·검증)는
 // 코드가 그대로 맡는다. 이 모듈은 순수 함수만 둔다 — 네트워크는 intentDeclarationClient 가 안다.
+import { parseFunctionalRequirements, parseFunctionalRefinements, type FunctionalCriterion, type FunctionalRefinement, type UnresolvedFunctionalRequirement } from "./functionalAcceptance";
 import type { AdventureRequirements } from "./adventureCompletion";
 import { ADVENTURE_AUTHORING_GUIDE } from "./adventureCompletion";
 import type { ToolDomain } from "@/editor/tools/types";
+import type { RequestRequirement } from "./requestCoverage";
 import { QUICK_REPLY_MARKER } from "./interviewPrompt";
+import { parseActionCombatRequirements, type AcceptanceTarget } from "./assistantAcceptance";
 
 export type IntentMode = "create" | "modify" | "question" | "other";
 export type IntentSpace = "interior" | "outdoor" | "both" | "none" | "unclear";
 export type IntentSource = "llm" | "fallback" | "continuation" | "empty";
+
+export type NpcRewardTarget = (
+  | { readonly eventId: string; readonly eventName?: never }
+  | { readonly eventName: string; readonly eventId?: never }
+) & { readonly mapId?: string };
+
+export type NpcRewardGrant = (
+  | { readonly kind: "gold"; readonly id?: never; readonly name?: never }
+  | (({ readonly id: string; readonly name?: never } | { readonly name: string; readonly id?: never }) & {
+    readonly kind: "item" | "monster";
+  })
+) & {
+  /** Exact positive delta when specified; otherwise any positive delta. */
+  readonly count?: number;
+};
+
+export interface NpcRewardRequirement {
+  readonly target: NpcRewardTarget;
+  readonly grants: readonly NpcRewardGrant[];
+  readonly oneTime?: boolean;
+  /** Zero-based choices for the first and second interaction, respectively. */
+  readonly choices?: readonly number[];
+  readonly repeatChoices?: readonly number[];
+}
+
+/** Invalid declarations stay opted in, rather than disappearing into a neutral fallback. */
+export type NpcRewardRequirements = readonly NpcRewardRequirement[] | { readonly invalidReason: string };
 
 export interface IntentDeclaration {
   /** 새로 만든다 / 있는 것을 고친다·지운다·옮긴다 / 질문·조회 / 그 외(인사·진행 지시·판단 불가). */
@@ -45,6 +75,17 @@ export interface IntentDeclaration {
     readonly references: boolean;
   };
   readonly adventure?: AdventureRequirements;
+  /** Explicit field-action behavior requested by the user, not inferred from genre words. */
+  readonly actionCombat?: { readonly targets: readonly AcceptanceTarget[] };
+  /** Only explicit state-dependent NPC behavior imposes a multipage outcome gate. */
+  readonly statefulNpcs?: boolean;
+
+  /** Only explicit create/modify NPC reward requests; never inferred from authored commands. */
+  readonly npcRewards?: NpcRewardRequirements;
+  readonly functionalAcceptance?: readonly FunctionalCriterion[];
+  readonly functionalRefinements?: readonly FunctionalRefinement[];
+  /** Host adapter's independent extraction, never accepted from worker/declaration JSON. */
+  readonly requestRequirements?: readonly RequestRequirement[];
   readonly summary: string;
   readonly source: IntentSource;
 }
@@ -66,6 +107,9 @@ export interface IntentFacts {
   readonly facilityLabels: readonly string[];
   readonly toolNames: readonly string[];
   readonly hasActivePlan: boolean;
+  readonly wikiContext?: string;
+  readonly actualStart?: { readonly mapId: string; readonly x: number; readonly y: number };
+  readonly unresolvedFunctional?: readonly UnresolvedFunctionalRequirement[];
 }
 
 export const INTENT_MODES: readonly IntentMode[] = ["create", "modify", "question", "other"];
@@ -85,7 +129,7 @@ export const INTENT_SYSTEM_PROMPT = `You classify ONE user request addressed to 
 Fields:
 - "mode": "create" (새로 만든다) | "modify" (지금 있는 것을 고친다·지운다·옮긴다·추가로 얹는다) | "question" (질문·설명·조회, 변경 없음) | "other" (인사·진행 지시·판단 불가).
 - "space": 시설·집·방을 세울 때 어디에 — "interior" (외장 없이 새로 짓는 독립 실내 방·시설 실내. 예: 여관 실내만, 빈 방 꾸미기) | "outdoor" (지금 맵 위에 건물 외장) | "both" (야외 외곽+들어가서 걷는 실내 둘 다. 예: 집 지어줘+들어갈 수 있게, 민가·상점·대장간을 짓고 안에도 들어가게) | "none" (공간 시공이 아닌 요청) | "unclear" (집·건물·방을 만들라는데 어느 쪽인지 표지가 없음).
-- "facility": 입력의 개념 꾸러미 시설 라벨 중 하나를 만들라는 요청이면 그 라벨 그대로, 아니면 null. 개념 꾸러미 시설은 get_concept_facility 로 템플릿을 읽고 place_concept(plan) 로 실내를 짓는 것이 기본이다 — 야외 표지("맵 위에", "외장", "마을에 건물")가 없으면 space="interior".
+- "facility": 입력의 개념 꾸러미 시설 라벨 중 하나를 만들라는 요청이면 그 라벨 그대로, 아니면 null. 모든 신규 실내는 get_concept_facility 로 꾸러미를 읽고 place_concept(plan) 로 짓는다. 등록되지 않은 실내도 sources의 장소·물건을 조합한다 — 야외 표지("맵 위에", "외장", "마을에 건물")가 없으면 space="interior".
 - "targetMapId": mode=modify 이고 대상 맵을 알 수 있으면 id. 「여기/이 맵/이 마을/이 방」은 현재 열린 맵. 모르면 null.
 - "useSelection": 선택 영역이 주어졌고 그 안에서 작업해야 하면 true. 새 맵을 만드는 요청이면 false. 선택 영역이 없으면 false.
 - "clarify": 도구가 실제로 갈릴 만큼 모호할 때만(예: 실내/야외 표지 없는 「집 지어줘」) 사용자에게 할 한 문장 질문. 그 외 null. 진행할 수 있으면 되묻지 않는다.
@@ -95,6 +139,12 @@ Fields:
 - "tools": 입력 툴 목록에서 이 요청에 쓸 가능성이 높은 이름만, 최대 8개. 모르면 [].
 - "readBeforeWrite": 사용자가 '기존 데이터를 먼저 읽고 이어 작업', '조회 후 실제 ID만 참조'를 명시하면 {"project":true,"collections":["items","enemies","troops"],"references":true}. project 는 프로젝트/기존 맵·이벤트 선행 조회, collections 는 작업에 필요한 DB 컬렉션 이름(실제 조회가 모두 성공하기 전 첫 쓰기 금지), references 는 참조 ID 조회 증거를 뜻한다. 필요한 컬렉션만 선택한다. 그런 조건이 없으면 생략한다. 이것은 작성 요청의 절차 계약이며 별도 허락 질문이 아니다.
 - "adventure": 시작 마을·던전 탐험·파티 모험을 구성하라는 전체 모험 저작 요청이면 {"village":true,"dungeon":true,"party":true,"battle":true}. 각 항목은 요청한 것만 true. 단순 NPC 추가/질문/DB 시드만/입구 표지판만 요청은 생략한다. 모험 JRPG 장르 프리셋 + 파티·던전 탐험 + 시작 마을·기본 전투 적은 네 항목 모두 true다.
+- "actionCombat": 실제 필드 액션 전투(공격 적중·처치·피격·회피·스태미나·원거리 적·보상)의 작동을 요구하면 {"targets":[{"mapId":"기존 실제 ID"} 또는 {"newMapName":"새로 만들 정확한 맵 이름"}]}로 필수 검증 대상을 선언한다. 턴제 전투, 장르 질문, 액션을 제외한 요청은 생략한다. 단어가 아니라 요청한 행동으로 판단한다. 이 선언은 계획 교체나 acceptance 수리로 지울 수 없는 완료 조건이다.
+- "statefulNpcs": 사용자가 상태에 따라 달라지는 NPC 행동/대사를 명시했을 때만 true. 보통의 한 페이지 안내 NPC, 인사, 상점이라는 이유로 true를 만들지 않는다.
+
+- "npcRewards": ONLY for explicit create/modify requests to make an NPC grant currency, items or collected monsters. Omit for ordinary dialogue/NPCs, questions, and reward removal requests. Array example: [{"target":{"eventId":"known_event_id"},"grants":[{"kind":"item","id":"known_item_id","count":2}],"oneTime":true}]. Grant kind may also be "monster" or "gold". Currency uses {"kind":"gold","count":20} with NO id/name, not an inventory item. Do not reinterpret an item named gold/골드 as currency or invent a gold item to represent money. When an ID is unknown, replace target eventId with eventName, or item/monster grant id with name. Each target or item/monster reference must contain exactly ONE of those keys, never both; omit unused keys rather than writing null. Optional mapId belongs inside target. Preserve every requested grant. count is a positive integer for an explicit amount; omit count for an unspecified positive amount. oneTime=true ONLY when requested. Choices are zero-based and only declared when requested; repeatChoices describes the second interaction, normally omitted. Use IDs only when known, otherwise exact names (must resolve uniquely at completion); do not invent IDs or substitute actors/changeParty for collected monsters. If the requested target/reward cannot be identified, include an incomplete requirement so completion remains blocked, not an omitted contract. These expectations come from the REQUEST, never the eventual event commands, and must not be weakened to pass completion.
+- "functionalAcceptance": ONLY requested working purchases or map round-trip travel, not a shop decoration, map listing, genre label, question, or excluded behavior. Array of immutable expectations, never success flags/scripts. Purchase: {"kind":"shopPurchase","target":{"mapId":"actual map"},"start":{"x":1,"y":1},"seller":{"eventId":"known seller"},"item":{"id":"known item"},"count":2,"unitPrice":10}. Round trip: {"kind":"mapRoundTrip","target":{"mapId":"origin"},"start":{"x":1,"y":1},"destination":{"mapId":"destination"},"outgoing":{"eventId":"outgoing transfer"},"returning":{"eventId":"return transfer"}}. Use exact eventName/name instead of invented eventId/id; a new map uses newMapName instead of mapId. Start must be the requested actual project entry, supplied in facts, never a convenient test teleport. Preserve requested seller, stock, price/count, origin/destination and both authored transfers. For missing/ambiguous/unsupported targets or unspecified price/count include {"kind":"functionalUnresolved","reason":"Identify the missing request expectations"}; do not drop the requested behavior. Existing npcRewards already creates mandatory real-interaction acceptance. Non-requested behaviors MUST be omitted.
+- "functionalRefinements": ONLY when this USER message clarifies an unresolvedFunctional requirement supplied in facts. Read its original source.text, current typed expectations and prior user refinements together with the latest message. Output [{"requirementId":"the exact supplied stable promise id","criterionIndex":3,"criterion":{...concrete or partial functional criterion},"corrections":["count"]}]. Copy criterionIndex exactly from facts (zero-based); omission is supported only for a singleton index0. Replace only that unresolved leaf, never its valid siblings. The entire refinement batch must be valid, with unique selectors. Keep the original behavior/targets and known quantities; fill missing fields without inventing them. corrections is optional and names only known top-level fields explicitly corrected by this user's message; never infer a correction to make a failing check pass. A partial criterion retains known fields and stays unresolved until complete. Do not output duplicate functionalAcceptance for this clarification. Do not refine unrelated requirements or concrete contracts; there is no worker repair/replan authority here. For a generic ending/compound-scene placeholder with no typed expectations, a later explicit user clarification may specialize to {"kind":"toolVerdict","tool":"run_scene_test","args":{"mapId":"known map","start":{"x":1,"y":1},"steps":[...]},"interactionTargets":[{"stepIndex":2,"mapId":"known owning map","eventId":"named event"}]}. Use complete native scene input and ordered map-qualified ownership for EVERY named interact step, fixed before execution. No set/debug state, checkpoint retry, arbitrary tool, or first-probe-derived ownership. Require post-interaction outcome assertions (nonzero reward/consumption delta, actual lastTransfer, or endingReached with the exact nonempty ending-ID string, never true); wait, position, interactionComplete or zero-only checks alone are not a functional outcome. Preserve the original requested chain, quantities, repeats, transfers and ending; do not convert typed shop/travel/reward expectations into a scene. The host retains the original request initial-state contract and requires a fresh exact explicit execution after refinement. For an initial unresolved request, preserve all known machine-checkable fields in functionalUnresolved.expectations (e.g. {"kind":"shopPurchase","seller":{"eventName":"Mira"},"item":{"name":"Potion"},"count":2}), not only in the reason string.
 - "summary": 요청을 한 문장으로.
 
 Rules:
@@ -121,7 +171,10 @@ export function buildIntentUserPayload(facts: IntentFacts): string {
   if (facts.maps.length > 0) {
     context.push(`맵 목록: ${facts.maps.slice(0, 16).map((map) => `${map.name}(${map.id})`).join(", ")}`);
   }
+  if (facts.actualStart) context.push(`Actual project entry: ${JSON.stringify(facts.actualStart)}`);
   lines.push(`## 사실\n${context.join("\n")}`);
+  if (facts.unresolvedFunctional?.length) lines.push(`## Unresolved functional requirements - original user context and known expectations\n${JSON.stringify(facts.unresolvedFunctional)}`);
+  if (facts.wikiContext) lines.push(`## 프로젝트 위키 — 이전에 정한 제작 방향과 현재 맵의 예외\n${facts.wikiContext}`);
   lines.push(`## 개념 꾸러미 시설 라벨\n${facts.facilityLabels.length > 0 ? facts.facilityLabels.join(", ") : "(없음)"}`);
   lines.push(`## 툴 목록\n${facts.toolNames.join(", ")}`);
   return lines.join("\n\n");
@@ -132,7 +185,7 @@ export interface IntentParseResult {
   readonly error?: string;
 }
 
-function extractJsonObject(raw: string): string | null {
+export function extractJsonObject(raw: string): string | null {
   const trimmed = raw.trim();
   if (trimmed.startsWith("{") && trimmed.endsWith("}")) return trimmed;
   const fence = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
@@ -165,6 +218,53 @@ function readStringList(value: unknown, max: number): string[] {
     if (out.length >= max) break;
   }
   return out;
+}
+
+/** Parse this boundary separately so malformed reward fields cannot disable acceptance. */
+export function parseNpcRewardRequirements(raw: unknown): NpcRewardRequirements {
+  const invalid = (detail: string): NpcRewardRequirements => ({ invalidReason: `npcRewards: ${detail}` });
+  const text = (value: unknown): value is string => typeof value === "string" && value.trim().length > 0;
+  if (!Array.isArray(raw) || raw.length === 0) return invalid("a non-empty requirement array is required");
+  const requirements: NpcRewardRequirement[] = [];
+  for (const entry of raw) {
+    if (!isRecord(entry) || !isRecord(entry.target)) return invalid("target is required");
+    if (Object.keys(entry).some(key => !["target", "grants", "oneTime", "choices", "repeatChoices"].includes(key))) return invalid("unknown requirement field");
+    const target = entry.target;
+    if (Object.keys(target).some(key => !["mapId", "eventId", "eventName"].includes(key))) return invalid("unknown target field");
+    if (target.mapId !== undefined && !text(target.mapId)) return invalid("mapId must be non-empty");
+    const map = typeof target.mapId === "string" ? { mapId: target.mapId } : {};
+    let reference: NpcRewardTarget;
+    if (text(target.eventId) && target.eventName === undefined) reference = { eventId: target.eventId, ...map };
+    else if (text(target.eventName) && target.eventId === undefined) reference = { eventName: target.eventName, ...map };
+    else return invalid("target needs exactly one eventId or exact eventName");
+    if (!Array.isArray(entry.grants) || entry.grants.length === 0) return invalid("grants are required");
+    const grants: NpcRewardGrant[] = [];
+    for (const grant of entry.grants) {
+      if (!isRecord(grant) || (grant.kind !== "item" && grant.kind !== "monster" && grant.kind !== "gold")) return invalid("grant kind must be item, monster or gold");
+      if (Object.keys(grant).some(key => !["kind", "id", "name", "count"].includes(key))) return invalid("unknown grant field");
+      if (grant.count !== undefined && (typeof grant.count !== "number" || !Number.isSafeInteger(grant.count) || grant.count <= 0)) return invalid("count must be a positive integer");
+      const count = typeof grant.count === "number" ? { count: grant.count } : {};
+      if (grant.kind === "gold") {
+        if ("id" in grant || "name" in grant) return invalid("gold grants must omit id and name");
+        if (grants.some(existing => existing.kind === "gold")) return invalid(`duplicate gold grants for target ${JSON.stringify(reference)}; declare one gold grant with the amount from the user request, preserving other grants and counts. Do not sum ambiguous amounts`);
+        grants.push({ kind: "gold", ...count });
+        continue;
+      }
+      if (text(grant.id) && grant.name === undefined) grants.push({ kind: grant.kind, id: grant.id, ...count });
+      else if (text(grant.name) && grant.id === undefined) grants.push({ kind: grant.kind, name: grant.name, ...count });
+      else return invalid("grant needs exactly one id or exact name");
+    }
+    if (entry.oneTime !== undefined && typeof entry.oneTime !== "boolean") return invalid("oneTime must be boolean");
+    const choices: { choices?: number[]; repeatChoices?: number[] } = {};
+    for (const key of ["choices", "repeatChoices"] as const) {
+      if (entry[key] === undefined) continue;
+      const indices = entry[key];
+      if (!Array.isArray(indices) || !indices.every((index): index is number => typeof index === "number" && Number.isSafeInteger(index) && index >= 0)) return invalid(`${key} must contain non-negative integer indices`);
+      choices[key] = [...indices];
+    }
+    requirements.push({ target: reference, grants, ...choices, ...(typeof entry.oneTime === "boolean" ? { oneTime: entry.oneTime } : {}) });
+  }
+  return requirements;
 }
 
 /**
@@ -200,6 +300,10 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
   const targetMapId = targetRaw && knownMaps.has(targetRaw) ? targetRaw : null;
   const clarify = readString(parsed.clarify, 300);
   const clarifyOptions = clarify ? readStringList(parsed.clarifyOptions, INTENT_MAX_CLARIFY_OPTIONS) : [];
+  const authoring = mode === "create" || mode === "modify";
+  const actionCombat = authoring && parsed.actionCombat !== undefined
+    ? parseActionCombatRequirements(parsed.actionCombat) : undefined;
+  if (actionCombat === null) return { intent: null, error: "actionCombat targets are missing or malformed" };
   return {
     intent: {
       mode: mode as IntentMode,
@@ -218,7 +322,13 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
           ["actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states", "battleAnimations", "switches", "variables", "commonEvents", "quests", "maps", "elements", "monsterSpecies", "lifeSkills", "farmAnimalSpecies", "crops"].includes(name)),
         references: parsed.readBeforeWrite.references === true,
       } } : {}),
+      ...("npcRewards" in parsed && (mode === "create" || mode === "modify")
+        ? { npcRewards: parseNpcRewardRequirements(parsed.npcRewards) } : {}),
       ...(isRecord(parsed.adventure) && (mode === "create" || mode === "modify") ? { adventure: { village: parsed.adventure.village === true, dungeon: parsed.adventure.dungeon === true, party: parsed.adventure.party === true, battle: parsed.adventure.battle === true } } : {}),
+      ...(actionCombat ? { actionCombat } : {}),
+      ...(authoring && parsed.functionalAcceptance !== undefined ? { functionalAcceptance: parseFunctionalRequirements(parsed.functionalAcceptance) } : {}),
+      ...(authoring && parsed.functionalRefinements !== undefined ? { functionalRefinements: parseFunctionalRefinements(parsed.functionalRefinements) } : {}),
+      ...(authoring && parsed.statefulNpcs === true ? { statefulNpcs: true } : {}),
       summary: readString(parsed.summary, 200) ?? facts.userText.trim().slice(0, 200),
       source: "llm",
     },
@@ -372,6 +482,13 @@ export function formatIntentNote(intent: IntentDeclaration, options: { readonly 
   if (intent.source !== "llm") return null;
   const lines: string[] = [];
   if (intent.adventure) lines.push(ADVENTURE_AUTHORING_GUIDE);
+  if (intent.actionCombat) lines.push(`[액션 완료 계약] 대상 ${JSON.stringify(intent.actionCombat.targets)}의 필드 전투를 run_action_combat_test로 검증하라. wait/스폰 장면 검사와 턴제 시뮬은 액션 증거가 아니며 계획 교체·수리로 이 의무를 지울 수 없다.`);
+  if (intent.statefulNpcs) lines.push("[NPC 완료 계약] 명시적으로 요청된 상태별 NPC 행동을 구현하라. 일반 안내 NPC까지 다중 페이지로 확대하지 않는다.");
+
+  if (intent.functionalAcceptance) lines.push(`[Functional acceptance contract] ${JSON.stringify(intent.functionalAcceptance)}. Immutable request expectations; real engine behavior on applied content decides completion, not images or success prose.`);
+  if (intent.npcRewards) {
+    lines.push(`[NPC reward contract] ${JSON.stringify(intent.npcRewards)} — preserve these request expectations. Verify real interaction goldDelta for currency and inventory/owned-monster deltas for items/monsters; inventoryDelta.gold is only an item ID, never currency. Author currency with native changeGold, not an invented gold item. Text, switches and changeParty are not grants. For oneTime, interact again in the SAME session with runtime page re-selection and prove zero additional gold/item/monster rewards. Do not remove grants or weaken this contract to complete. give_starter_monsters can author a guarded starter choice event.`);
+  }
   if (intent.readBeforeWrite) {
     lines.push(`[조회 선행 계약] 첫 쓰기 전에 ${intent.readBeforeWrite.project ? "get_project_summary와 대상 get_map_region, find_events, " : ""}${intent.readBeforeWrite.collections.map((name) => `get_database_records(collection:"${name}")`).join(", ")}를 성공시켜 반환값을 읽어라. 기존 DB 수정은 include:"full", ids:[실제 ID]로 원본을 확인한다. 새 레코드도 참조 전에 다시 조회한다. 조회 실패와 같은 응답의 쓰기는 실행되지 않는다.`);
   }
@@ -397,7 +514,7 @@ export function formatIntentNote(intent: IntentDeclaration, options: { readonly 
         `[의도] 야외 외장과 실내 둘 다이다. ${how}. 이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.`,
       );
     } else if (intent.space === "interior") {
-      const how = facilityHow ?? "start_interior_room_session(새 mapId) 로 실내를 시공한다";
+      const how = facilityHow ?? "get_concept_facility로 꾸러미의 장소·물건을 읽고 place_concept(plan, 새 mapId)으로 실내를 시공한다. 등록된 시설이 없어도 sources를 조합해 설계한다";
       lines.push(
         `[의도] 실내 시공이다(외장 없는 독립 실내). ${how}. 외장과 함께 짓는 들어가서 걷는 집이면 author_house(interior:"linked-interior")가 정답이다. `
         + "이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.",

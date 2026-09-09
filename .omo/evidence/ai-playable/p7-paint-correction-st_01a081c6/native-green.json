@@ -1,0 +1,434 @@
+{
+  "base": "b139e4e24144ad48c298f06e32fe7fa66892f7ac",
+  "revision": "st_01a081c6 working correction",
+  "cases": [
+    {
+      "label": "P7 native floor80 + unchanged walls24",
+      "expected": 0,
+      "actual": 0,
+      "passed": true,
+      "evidence": {
+        "floor": {
+          "ok": true,
+          "summary": "P7 accounting에 타일 342 페인트(cells, lower, 80칸)",
+          "diff": {
+            "tilesChanged": 80,
+            "mapPropertiesChanged": 0,
+            "audioDescriptionsChanged": 0,
+            "monsterMetadataChanged": 0,
+            "eventsAdded": 0,
+            "eventsModified": 0,
+            "eventsRemoved": 0,
+            "mapsAdded": 0,
+            "mapsRemoved": 0,
+            "dbRecordsChanged": 0,
+            "tilesetsChanged": 0,
+            "switchesAdded": 0,
+            "variablesAdded": 0,
+            "worldEntitiesAdded": 0,
+            "worldEntitiesModified": 0,
+            "palettePresetsAdded": 0,
+            "palettePresetsModified": 0,
+            "endingsChanged": 0,
+            "sessionChanged": false,
+            "systemChanged": false,
+            "warnings": [
+              "경고: 80개 칸이 통행 불가가 되었습니다(map_basement)."
+            ]
+          },
+          "data": {
+            "effectiveLayer": "lower",
+            "autoClusterTiles": 0,
+            "skippedClusterCells": 0,
+            "tilesTouched": 80
+          }
+        },
+        "walls": {
+          "ok": true,
+          "summary": "P7 accounting에 타일 306 페인트(cells, lower, 24칸)",
+          "diff": {
+            "tilesChanged": 0,
+            "mapPropertiesChanged": 0,
+            "audioDescriptionsChanged": 0,
+            "monsterMetadataChanged": 0,
+            "eventsAdded": 0,
+            "eventsModified": 0,
+            "eventsRemoved": 0,
+            "mapsAdded": 0,
+            "mapsRemoved": 0,
+            "dbRecordsChanged": 0,
+            "tilesetsChanged": 0,
+            "switchesAdded": 0,
+            "variablesAdded": 0,
+            "worldEntitiesAdded": 0,
+            "worldEntitiesModified": 0,
+            "palettePresetsAdded": 0,
+            "palettePresetsModified": 0,
+            "endingsChanged": 0,
+            "sessionChanged": false,
+            "systemChanged": false,
+            "warnings": [
+              "경고: 24개 칸이 통행 불가가 되었습니다(map_basement)."
+            ]
+          },
+          "data": {
+            "effectiveLayer": "lower",
+            "autoClusterTiles": 0,
+            "skippedClusterCells": 0,
+            "tilesTouched": 24
+          }
+        }
+      }
+    },
+    {
+      "label": "true new quantity remains unmet",
+      "expected": 1,
+      "actual": 1,
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "label": "no-op-only change remains unmet",
+      "expected": 1,
+      "actual": 1,
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "label": "sparse boundary must not cover bbox interior; changed=false",
+      "expected": 1,
+      "actual": 1,
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "label": "sparse boundary must not cover bbox interior; changed=true",
+      "expected": 1,
+      "actual": 1,
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "label": "earlier 1-cell no-op must not poison later full 12-cell native same-tile repair",
+      "expected": 0,
+      "actual": 0,
+      "passed": true,
+      "evidence": {
+        "seed": {
+          "ok": true,
+          "summary": "P7 accounting에 타일 112 페인트(cells, lower, 11칸)",
+          "diff": {
+            "tilesChanged": 11,
+            "mapPropertiesChanged": 0,
+            "audioDescriptionsChanged": 0,
+            "monsterMetadataChanged": 0,
+            "eventsAdded": 0,
+            "eventsModified": 0,
+            "eventsRemoved": 0,
+            "mapsAdded": 0,
+            "mapsRemoved": 0,
+            "dbRecordsChanged": 0,
+            "tilesetsChanged": 0,
+            "switchesAdded": 0,
+            "variablesAdded": 0,
+            "worldEntitiesAdded": 0,
+            "worldEntitiesModified": 0,
+            "palettePresetsAdded": 0,
+            "palettePresetsModified": 0,
+            "endingsChanged": 0,
+            "sessionChanged": false,
+            "systemChanged": false,
+            "warnings": []
+          },
+          "data": {
+            "effectiveLayer": "lower",
+            "autoClusterTiles": 0,
+            "skippedClusterCells": 0,
+            "tilesTouched": 11
+          }
+        },
+        "partial": {
+          "ok": true,
+          "summary": "P7 accounting에 타일 306 페인트(cells, lower, 1칸)",
+          "diff": {
+            "tilesChanged": 0,
+            "mapPropertiesChanged": 0,
+            "audioDescriptionsChanged": 0,
+            "monsterMetadataChanged": 0,
+            "eventsAdded": 0,
+            "eventsModified": 0,
+            "eventsRemoved": 0,
+            "mapsAdded": 0,
+            "mapsRemoved": 0,
+            "dbRecordsChanged": 0,
+            "tilesetsChanged": 0,
+            "switchesAdded": 0,
+            "variablesAdded": 0,
+            "worldEntitiesAdded": 0,
+            "worldEntitiesModified": 0,
+            "palettePresetsAdded": 0,
+            "palettePresetsModified": 0,
+            "endingsChanged": 0,
+            "sessionChanged": false,
+            "systemChanged": false,
+            "warnings": [
+              "경고: 1개 칸이 통행 불가가 되었습니다(map_basement)."
+            ]
+          },
+          "data": {
+            "effectiveLayer": "lower",
+            "autoClusterTiles": 0,
+            "skippedClusterCells": 0,
+            "tilesTouched": 1
+          }
+        },
+        "complete": {
+          "ok": true,
+          "summary": "P7 accounting에 타일 306 페인트(cells, lower, 12칸)",
+          "diff": {
+            "tilesChanged": 11,
+            "mapPropertiesChanged": 0,
+            "audioDescriptionsChanged": 0,
+            "monsterMetadataChanged": 0,
+            "eventsAdded": 0,
+            "eventsModified": 0,
+            "eventsRemoved": 0,
+            "mapsAdded": 0,
+            "mapsRemoved": 0,
+            "dbRecordsChanged": 0,
+            "tilesetsChanged": 0,
+            "switchesAdded": 0,
+            "variablesAdded": 0,
+            "worldEntitiesAdded": 0,
+            "worldEntitiesModified": 0,
+            "palettePresetsAdded": 0,
+            "palettePresetsModified": 0,
+            "endingsChanged": 0,
+            "sessionChanged": false,
+            "systemChanged": false,
+            "warnings": [
+              "경고: 12개 칸이 통행 불가가 되었습니다(map_basement)."
+            ]
+          },
+          "data": {
+            "effectiveLayer": "lower",
+            "autoClusterTiles": 0,
+            "skippedClusterCells": 0,
+            "tilesTouched": 12
+          }
+        },
+        "currentLower": [
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306
+        ],
+        "withoutPartial": [],
+        "withPartial": []
+      }
+    },
+    {
+      "label": "metadata-only reclassification must not credit never-touched historical lower layer",
+      "expected": 1,
+      "actual": 1,
+      "passed": true,
+      "evidence": {
+        "historical": {
+          "ok": true,
+          "summary": "P7 accounting에 타일 306 페인트(cells, upper, 12칸) — 상위 전용 칩 자동 라우팅",
+          "diff": {
+            "tilesChanged": 0,
+            "mapPropertiesChanged": 0,
+            "audioDescriptionsChanged": 0,
+            "monsterMetadataChanged": 0,
+            "eventsAdded": 0,
+            "eventsModified": 0,
+            "eventsRemoved": 0,
+            "mapsAdded": 0,
+            "mapsRemoved": 0,
+            "dbRecordsChanged": 0,
+            "tilesetsChanged": 0,
+            "switchesAdded": 0,
+            "variablesAdded": 0,
+            "worldEntitiesAdded": 0,
+            "worldEntitiesModified": 0,
+            "palettePresetsAdded": 0,
+            "palettePresetsModified": 0,
+            "endingsChanged": 0,
+            "sessionChanged": false,
+            "systemChanged": false,
+            "warnings": [
+              "타일 306은(는) 상위 레이어 전용(투명 배경 칩)이라 upper에 배치했습니다."
+            ]
+          },
+          "data": {
+            "effectiveLayer": "upper",
+            "autoClusterTiles": 0,
+            "skippedClusterCells": 0,
+            "tilesTouched": 12
+          }
+        },
+        "args": {
+          "mapId": "map_basement",
+          "mode": "cells",
+          "layer": "lower",
+          "tile": 306,
+          "from": {
+            "x": 0,
+            "y": 0
+          },
+          "to": {
+            "x": 11,
+            "y": 9
+          },
+          "cells": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 1,
+              "y": 0
+            },
+            {
+              "x": 2,
+              "y": 0
+            },
+            {
+              "x": 3,
+              "y": 0
+            },
+            {
+              "x": 4,
+              "y": 0
+            },
+            {
+              "x": 5,
+              "y": 0
+            },
+            {
+              "x": 6,
+              "y": 0
+            },
+            {
+              "x": 7,
+              "y": 0
+            },
+            {
+              "x": 8,
+              "y": 0
+            },
+            {
+              "x": 9,
+              "y": 0
+            },
+            {
+              "x": 10,
+              "y": 0
+            },
+            {
+              "x": 11,
+              "y": 0
+            }
+          ]
+        },
+        "metadata": {
+          "ok": true,
+          "summary": "타일 규칙 1건 설정 — 타일 306 레이어→lower",
+          "diff": {
+            "tilesChanged": 0,
+            "mapPropertiesChanged": 0,
+            "audioDescriptionsChanged": 0,
+            "monsterMetadataChanged": 0,
+            "eventsAdded": 0,
+            "eventsModified": 0,
+            "eventsRemoved": 0,
+            "mapsAdded": 0,
+            "mapsRemoved": 0,
+            "dbRecordsChanged": 0,
+            "tilesetsChanged": 1,
+            "switchesAdded": 0,
+            "variablesAdded": 0,
+            "worldEntitiesAdded": 0,
+            "worldEntitiesModified": 0,
+            "palettePresetsAdded": 0,
+            "palettePresetsModified": 0,
+            "endingsChanged": 0,
+            "sessionChanged": false,
+            "systemChanged": false,
+            "warnings": []
+          },
+          "data": {
+            "tilesetId": "easyrpg_chipset_combined_town",
+            "changes": [
+              "타일 306 레이어→lower"
+            ],
+            "skipped": []
+          }
+        },
+        "currentLower": [
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306
+        ],
+        "currentUpper": [
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306,
+          306
+        ],
+        "lowerWarningsAfter": [
+          "⚠ 미이행: 밑그림 에셋 'basement_wall_top_306'(terrain) (0,0) 12×1 영역을 변경하지 않았습니다."
+        ],
+        "upperWarningsAfter": []
+      }
+    },
+    {
+      "label": "metadata-only reclassification must not invalidate actually touched unchanged upper row",
+      "expected": 0,
+      "actual": 0,
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "label": "partial no-op alone remains unmet",
+      "expected": 1,
+      "actual": 1,
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "label": "later single-cell invalidation remains unmet, not blanket-OR of changed coverage",
+      "expected": 1,
+      "actual": 1,
+      "passed": true,
+      "evidence": {}
+    }
+  ],
+  "failedChecks": 0
+}

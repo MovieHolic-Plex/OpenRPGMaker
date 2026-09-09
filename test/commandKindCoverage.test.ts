@@ -94,6 +94,7 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   erasePicture: { kind: "erasePicture", pictureId: "pic1" },
   playAudio: { kind: "playAudio", resourceId: "res1", loop: false },
   stopAudio: { kind: "stopAudio" },
+  playMovie: { kind: "playMovie", resourceId: "video_intro" },
   cutsceneControl: { kind: "cutsceneControl", mode: "begin", skippable: true },
   displayTextSettings: {
     kind: "displayTextSettings",
@@ -219,7 +220,8 @@ describe("condition kind별 shape 검증 커버리지", () => {
 
 describe("condition 7종 — fork/페이지 조건 serialize→deserialize 왕복", () => {
   it("모든 condition kind가 fork 커맨드 조건 + 이벤트 페이지 조건으로 왕복 보존된다", () => {
-    const project = createBlankProject();
+    // Start from the persisted shape: loading deliberately drops redundant text-only title graphics.
+    const project = deserialize(serialize(createBlankProject()));
     const actorId = project.database.actors[0]?.id;
     const itemId = project.database.items[0]?.id;
     const switchId = project.switches[0]?.id;

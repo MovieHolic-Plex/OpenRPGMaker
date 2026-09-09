@@ -12,12 +12,15 @@ import { inspectorTitle } from "./inspectorChoicesTitle";
 import { renderCommandBody } from "./commandBody";
 import { renderCommandPreview } from "./commandPreview";
 import type { CommandListActions } from "./types";
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
+import type { ActiveFace } from "./previewSimulation";
 
 type InspectorTarget = {
   readonly command: Command;
   readonly path: number[];
   readonly actions: CommandListActions;
-  readonly previewFace?: { readonly resourceId: string };
+  readonly previewFace?: ActiveFace;
+  readonly preserveSelection?: boolean;
 };
 
 /**
@@ -32,7 +35,63 @@ const BODY_OWNED_PREVIEW_SELECTOR = [
 
 let host: HTMLElement | undefined;
 let selectedPath: number[] | undefined;
+let selectedPaths: number[][] = [];
+let selectionScope: string | HTMLElement | undefined;
+let selectionSurface: HTMLElement | undefined;
 let selectionListener: (() => void) | undefined;
+
+export function beginCommandSelectionScope(scope: string | HTMLElement): void {
+  if (selectionScope === scope) return;
+  selectionListener = undefined;
+  clearCommandInspector();
+  selectionScope = scope;
+}
+
+export function setCommandSelectionSurface(surface: HTMLElement): void {
+  selectionSurface = surface;
+}
+
+export function selectedCommandPaths(): readonly (readonly number[])[] {
+  return selectedPaths;
+}
+
+export function isCommandSelected(path: readonly number[]): boolean {
+  return selectedPaths.some(selected => sameInspectorPath(path, selected));
+}
+
+export function authoredCommandPaths(commands: readonly Command[], container: readonly number[] = []): number[][] {
+  return commands.flatMap((command, index) => {
+    const path = [...container, index];
+    return [path, ...eventCommandBranches(command).flatMap(branch =>
+      authoredCommandPaths(branch.commands, [...path, branch.branchIndex]))];
+  });
+}
+
+/** Parent selection subsumes descendants; input order follows the authored tree. */
+export function selectedCommandRoots(paths: readonly (readonly number[])[]): number[][] {
+  return paths.filter(path => !paths.some(parent => parent.length < path.length
+    && parent.every((part, index) => path[index] === part))).map(path => [...path]);
+}
+
+export function selectAllAuthoredCommands(commands: readonly Command[]): void {
+  selectedPaths = authoredCommandPaths(commands);
+  selectedPath = selectedPaths.find(path => sameInspectorPath(path, selectedPath)) ?? selectedPaths[0];
+  notifyCommandSelectionChanged();
+}
+
+export function notifyCommandSelectionChanged(): void {
+  selectionSurface?.querySelectorAll<HTMLElement>("[data-cmd-path]").forEach(row => {
+    const selected = selectedPaths.some(path => JSON.stringify(path) === row.dataset.cmdPath);
+    row.classList.toggle("selected", selected);
+    if (!row.classList.contains("cmd-item")) {
+      row.classList.toggle("sel", selected);
+      row.classList.toggle("is-selected", selected);
+      if (selected) row.setAttribute("aria-current", "step");
+      else row.removeAttribute("aria-current");
+    }
+  });
+  selectionListener?.();
+}
 
 /** content.ts 가 인스펙터 컬럼을 만들 때 호출한다. */
 export function setCommandInspectorHost(next: HTMLElement | undefined): void {
@@ -60,7 +119,8 @@ export function sameInspectorPath(a: readonly number[], b: readonly number[] | u
 /** 선택 자체를 버린다(다른 이벤트/페이지로 이동 등). */
 export function clearCommandInspector(): void {
   selectedPath = undefined;
-  selectionListener?.();
+  selectedPaths = [];
+  notifyCommandSelectionChanged();
   if (host) {
     const fallback = host.ownerDocument?.querySelector<HTMLElement>("[data-cmd-path].is-selected");
     hideInspector(host);
@@ -81,6 +141,8 @@ export function resetCommandInspectorView(): void {
 
 export function showCommandInspector(target: InspectorTarget): void {
   selectedPath = [...target.path];
+  if (!target.preserveSelection) selectedPaths = [[...target.path]];
+  notifyCommandSelectionChanged();
   if (!host) return;
   host.dataset.commandPath = JSON.stringify(target.path);
   showInspector(host);

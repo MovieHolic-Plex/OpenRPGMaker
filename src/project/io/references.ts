@@ -1,4 +1,5 @@
 import { equipmentSlots, hasEquipmentSlot } from "@/project/equipmentSlots";
+import { characterAppearanceReferenceIssues } from "./characterAppearanceValidation";
 import { resolveAnimalHome } from "../animalHousing";
 import { placementRecord } from "../spatialPlacements";
 import { growthIssues } from "@/project/growth/validation";
@@ -131,7 +132,7 @@ export function collectProjectItemReferenceIds(project: Project): ReadonlySet<st
 }
 
 export function collectProjectReferenceIssues(project: Project): string[] {
-  const issues: string[] = growthIssues(project);
+  const issues: string[] = [...growthIssues(project), ...characterAppearanceReferenceIssues(project)];
   const check = (fn: () => void): void => {
     try {
       fn();
@@ -156,6 +157,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   const mapIds = new Set(Object.keys(project.maps));
   const resourceIds = collectResourceIds(project);
   const context: ReferenceContext = {
+    appearanceIds: new Set(project.database.characterAppearances?.map((record) => record.id)),
     actorIds,
     classIds,
     enemyIds,
@@ -520,6 +522,7 @@ function validateActorRecords(
     }
     if (actor.unarmedAnimationId && !animationIds.has(actor.unarmedAnimationId)) issues.push(`actor ${actor.id}: unarmedAnimationId does not exist.`);
     capture(issues, () => validateActorResources(actor, context.resourceIds));
+    if (actor.appearanceId !== undefined && !context.appearanceIds?.has(actor.appearanceId)) issues.push(`actor ${actor.id}: appearanceId does not exist: ${actor.appearanceId}`);
   }
 }
 

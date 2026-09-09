@@ -1,0 +1,761 @@
+{
+  "base": "e07cd4f8",
+  "codeCommit": "5127fe62",
+  "browser": "146.0.7680.164",
+  "beforeCssCharacters": 2466602,
+  "afterCssCharacters": 2459277,
+  "states": {
+    "1024-overview": {
+      "equal": true,
+      "elements": 17,
+      "beforeHash": "fff22cf7b0ff11f6693f929d3afd8156042fb6caea4a27212bcbf91121dccb5f",
+      "afterHash": "fff22cf7b0ff11f6693f929d3afd8156042fb6caea4a27212bcbf91121dccb5f",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-overview.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-overview.png"
+    },
+    "1024-actors": {
+      "equal": true,
+      "elements": 52,
+      "beforeHash": "b2b1a287c76f4f3f165bfa9028b50cc472559a14012cfa03af7acbbbe8962c98",
+      "afterHash": "b2b1a287c76f4f3f165bfa9028b50cc472559a14012cfa03af7acbbbe8962c98",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-actors.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-actors.png"
+    },
+    "1024-classes": {
+      "equal": true,
+      "elements": 233,
+      "beforeHash": "3a1bda34515a701cb85eb66c27e05307c731ebf54a2f3cc3e60e9c49021e05bc",
+      "afterHash": "3a1bda34515a701cb85eb66c27e05307c731ebf54a2f3cc3e60e9c49021e05bc",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-classes.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-classes.png"
+    },
+    "1024-skills": {
+      "equal": true,
+      "elements": 217,
+      "beforeHash": "c2ea3d9505fdea84438f38ad76ae91f3296f10382a43b637c157e176c5a16edc",
+      "afterHash": "c2ea3d9505fdea84438f38ad76ae91f3296f10382a43b637c157e176c5a16edc",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-skills.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-skills.png"
+    },
+    "1024-items": {
+      "equal": true,
+      "elements": 1317,
+      "beforeHash": "cee2f8dcdb6194686783cdff3085e20ec95b04581277a1fe39306eb322fe2194",
+      "afterHash": "cee2f8dcdb6194686783cdff3085e20ec95b04581277a1fe39306eb322fe2194",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-items.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-items.png"
+    },
+    "1024-enemies": {
+      "equal": true,
+      "elements": 188,
+      "beforeHash": "3009f1346cade06e8c93d1228f3577acdf012cc49426c3f2793ad5dbae77f24b",
+      "afterHash": "3009f1346cade06e8c93d1228f3577acdf012cc49426c3f2793ad5dbae77f24b",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-enemies.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-enemies.png"
+    },
+    "1024-monster-species": {
+      "equal": true,
+      "elements": 124,
+      "beforeHash": "597547b7322ad01c92febfdfe2d2107cba9a8bd650fe83bb1babd437301c0091",
+      "afterHash": "597547b7322ad01c92febfdfe2d2107cba9a8bd650fe83bb1babd437301c0091",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-monster-species.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-monster-species.png"
+    },
+    "1024-troops": {
+      "equal": true,
+      "elements": 120,
+      "beforeHash": "cbe1eafd6127ccbe9c2c724e98d8d69a7aa9168df4ea7c88aeb79e7809433a71",
+      "afterHash": "cbe1eafd6127ccbe9c2c724e98d8d69a7aa9168df4ea7c88aeb79e7809433a71",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-troops.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-troops.png"
+    },
+    "1024-elements": {
+      "equal": true,
+      "elements": 98,
+      "beforeHash": "0c6923509f0e98a779bf72441ce5f4548000c1d96cdbcefcb81568a8552b59a5",
+      "afterHash": "0c6923509f0e98a779bf72441ce5f4548000c1d96cdbcefcb81568a8552b59a5",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-elements.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-elements.png"
+    },
+    "1024-states": {
+      "equal": true,
+      "elements": 164,
+      "beforeHash": "a9d61b0da3df36f90fedadf07a26054284f3f19b38bd935ec5d3268f5e5a44b7",
+      "afterHash": "a9d61b0da3df36f90fedadf07a26054284f3f19b38bd935ec5d3268f5e5a44b7",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-states.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-states.png"
+    },
+    "1024-animations": {
+      "equal": true,
+      "elements": 235,
+      "beforeHash": "826710373b5955afdc7dfbbc0179e6cacefe1069b213bc77e37d59b588433d8a",
+      "afterHash": "826710373b5955afdc7dfbbc0179e6cacefe1069b213bc77e37d59b588433d8a",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-animations.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-animations.png"
+    },
+    "1024-battle-screen": {
+      "equal": true,
+      "elements": 53,
+      "beforeHash": "a9be826f1e6df5dc493ae21feb833b370b989d9bd00714b5d9964c791ac6dd06",
+      "afterHash": "a9be826f1e6df5dc493ae21feb833b370b989d9bd00714b5d9964c791ac6dd06",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-battle-screen.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-battle-screen.png"
+    },
+    "1024-battle-commands": {
+      "equal": true,
+      "elements": 56,
+      "beforeHash": "74189c602f23b81539b418064f0baa508b1d44fb53b3fba67873b206a6e381d0",
+      "afterHash": "74189c602f23b81539b418064f0baa508b1d44fb53b3fba67873b206a6e381d0",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-battle-commands.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-battle-commands.png"
+    },
+    "1024-terrain": {
+      "equal": true,
+      "elements": 69,
+      "beforeHash": "6c17a1fee40416ef3f76c0a1c5466d1dc9d1b64bfeac6c06ac83f06c56d58e28",
+      "afterHash": "6c17a1fee40416ef3f76c0a1c5466d1dc9d1b64bfeac6c06ac83f06c56d58e28",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-terrain.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-terrain.png"
+    },
+    "1024-crops": {
+      "equal": true,
+      "elements": 26,
+      "beforeHash": "d337a9a8a3376fffee8167af4b59ce002ec32bb04e3aa3887d8455351fc7738e",
+      "afterHash": "d337a9a8a3376fffee8167af4b59ce002ec32bb04e3aa3887d8455351fc7738e",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-crops.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-crops.png"
+    },
+    "1024-characters": {
+      "equal": true,
+      "elements": 35,
+      "beforeHash": "2ff3c46421e231891662eb114c75e13d3d2dbb3816f54e915602cfa00dec4541",
+      "afterHash": "2ff3c46421e231891662eb114c75e13d3d2dbb3816f54e915602cfa00dec4541",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-characters.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-characters.png"
+    },
+    "1024-life-crafting": {
+      "equal": true,
+      "elements": 24,
+      "beforeHash": "dc3ec1b0b5f0bb8b562fc06cd7fbdb7e56d90feb3692400cb108388b7c313dca",
+      "afterHash": "dc3ec1b0b5f0bb8b562fc06cd7fbdb7e56d90feb3692400cb108388b7c313dca",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-life-crafting.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-life-crafting.png"
+    },
+    "1024-daily-weather": {
+      "equal": true,
+      "elements": 12,
+      "beforeHash": "7ef72ac63dea08c09555f98c4ce942870faf38a5fc606c5f56d09707d4f74a77",
+      "afterHash": "7ef72ac63dea08c09555f98c4ce942870faf38a5fc606c5f56d09707d4f74a77",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-daily-weather.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-daily-weather.png"
+    },
+    "1024-farm-animals": {
+      "equal": true,
+      "elements": 12,
+      "beforeHash": "8aa1cf0f0753fcea53caab21768fa49ce39a68e42433c4900ebf17f58bdd2f59",
+      "afterHash": "8aa1cf0f0753fcea53caab21768fa49ce39a68e42433c4900ebf17f58bdd2f59",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-farm-animals.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-farm-animals.png"
+    },
+    "1024-farm-spatial": {
+      "equal": true,
+      "elements": 29,
+      "beforeHash": "62ddb52392e29492904a0517b8bdc609800d84fb1b1c99d0a8495361efb923ad",
+      "afterHash": "62ddb52392e29492904a0517b8bdc609800d84fb1b1c99d0a8495361efb923ad",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-farm-spatial.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-farm-spatial.png"
+    },
+    "1024-life-collections": {
+      "equal": true,
+      "elements": 47,
+      "beforeHash": "9923456aa8d5eccd781396e33132e8afae9de73544b25c82fbb07108cfb0cac7",
+      "afterHash": "9923456aa8d5eccd781396e33132e8afae9de73544b25c82fbb07108cfb0cac7",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-life-collections.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-life-collections.png"
+    },
+    "1024-tilesets": {
+      "equal": true,
+      "elements": 569,
+      "beforeHash": "d17164233c203abc4b4b184fceaf9575b35fb2744b108f62e1707a03a7cef266",
+      "afterHash": "d17164233c203abc4b4b184fceaf9575b35fb2744b108f62e1707a03a7cef266",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-tilesets.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-tilesets.png"
+    },
+    "1024-structure-kits": {
+      "equal": true,
+      "elements": 25,
+      "beforeHash": "3233d02a5b3d983d5840d44ae2d8b0cc1e89d506379840907e1e5046edd23654",
+      "afterHash": "3233d02a5b3d983d5840d44ae2d8b0cc1e89d506379840907e1e5046edd23654",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-structure-kits.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-structure-kits.png"
+    },
+    "1024-villages": {
+      "equal": true,
+      "elements": 34,
+      "beforeHash": "a29b62ab4219cf15232a768974983770abd8553938bbe67a3f203dff70165872",
+      "afterHash": "a29b62ab4219cf15232a768974983770abd8553938bbe67a3f203dff70165872",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-villages.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-villages.png"
+    },
+    "1024-factions": {
+      "equal": true,
+      "elements": 52,
+      "beforeHash": "ff7182cd854536bdec67cd2436653330f0841198c5e730d18e14bd1575c6c91f",
+      "afterHash": "ff7182cd854536bdec67cd2436653330f0841198c5e730d18e14bd1575c6c91f",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-factions.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-factions.png"
+    },
+    "1024-common-events": {
+      "equal": true,
+      "elements": 15,
+      "beforeHash": "15b2cc4efdf894a53923856cee3e59cde3957d17d0a5be8b1af5ccbe14c9f2f8",
+      "afterHash": "15b2cc4efdf894a53923856cee3e59cde3957d17d0a5be8b1af5ccbe14c9f2f8",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-common-events.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-common-events.png"
+    },
+    "1024-system": {
+      "equal": true,
+      "elements": 28,
+      "beforeHash": "f655e9745f4dbe761c4cb67848453205db019caed16875c2a6c0eff6ffe35dde",
+      "afterHash": "f655e9745f4dbe761c4cb67848453205db019caed16875c2a6c0eff6ffe35dde",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-system.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-system.png"
+    },
+    "1024-terms": {
+      "equal": true,
+      "elements": 35,
+      "beforeHash": "2a24edc649d96a35bd7b6671a7b2377a6df3028ff1e087c73ed7c380a2a17ba4",
+      "afterHash": "2a24edc649d96a35bd7b6671a7b2377a6df3028ff1e087c73ed7c380a2a17ba4",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-terms.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-terms.png"
+    },
+    "1024-switches": {
+      "equal": true,
+      "elements": 45,
+      "beforeHash": "7ccd1cc4c0a48d46d4e51e23bf540097b4b00b3a4627814e14aa629801789371",
+      "afterHash": "7ccd1cc4c0a48d46d4e51e23bf540097b4b00b3a4627814e14aa629801789371",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-switches.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-switches.png"
+    },
+    "1024-variables": {
+      "equal": true,
+      "elements": 26,
+      "beforeHash": "f6b6ee3e7d10b91cf0c18c510e5d6d5b5d56e77729fbd1238ac2449270e5ed57",
+      "afterHash": "f6b6ee3e7d10b91cf0c18c510e5d6d5b5d56e77729fbd1238ac2449270e5ed57",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-variables.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-variables.png"
+    },
+    "1024-world-canon": {
+      "equal": true,
+      "elements": 62,
+      "beforeHash": "3e81a37f44c50a3d1d2fbc1e6a122daeac8d64aebb7745fd7a9edd56347e195c",
+      "afterHash": "3e81a37f44c50a3d1d2fbc1e6a122daeac8d64aebb7745fd7a9edd56347e195c",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-world-canon.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-world-canon.png"
+    },
+    "1024-world-codex": {
+      "equal": true,
+      "elements": 21,
+      "beforeHash": "8bf7707e02b890b0f36a3cfbd0231bd977f5f21d07d54a571c1a9dbbdbc14c80",
+      "afterHash": "8bf7707e02b890b0f36a3cfbd0231bd977f5f21d07d54a571c1a9dbbdbc14c80",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-world-codex.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-world-codex.png"
+    },
+    "1024-world-gen": {
+      "equal": true,
+      "elements": 33,
+      "beforeHash": "e907334803947e995d58816041215b0cd301c82b7503a743c298ac2c825e6b26",
+      "afterHash": "e907334803947e995d58816041215b0cd301c82b7503a743c298ac2c825e6b26",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1024-world-gen.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1024-world-gen.png"
+    },
+    "1440-overview": {
+      "equal": true,
+      "elements": 17,
+      "beforeHash": "5593a1df9d077d0cec55746c4150f0f23b5a538dae8d0d9b5973262f79dc80a1",
+      "afterHash": "5593a1df9d077d0cec55746c4150f0f23b5a538dae8d0d9b5973262f79dc80a1",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-overview.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-overview.png"
+    },
+    "1440-actors": {
+      "equal": true,
+      "elements": 52,
+      "beforeHash": "c042519c0b5179ec662a4e3bba40c97cc09620a8e97252959c0b29baa39f0449",
+      "afterHash": "c042519c0b5179ec662a4e3bba40c97cc09620a8e97252959c0b29baa39f0449",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-actors.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-actors.png"
+    },
+    "1440-classes": {
+      "equal": true,
+      "elements": 233,
+      "beforeHash": "35fe959d094dc3e2e10d45c9fe463aedb67bf9dc8091fd4fa5280532ef861bc2",
+      "afterHash": "35fe959d094dc3e2e10d45c9fe463aedb67bf9dc8091fd4fa5280532ef861bc2",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-classes.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-classes.png"
+    },
+    "1440-skills": {
+      "equal": true,
+      "elements": 217,
+      "beforeHash": "7ee3ce63d74a5b614e49cdae1138eeb9c8e03cd9271d86c8a31a22cb896bec4b",
+      "afterHash": "7ee3ce63d74a5b614e49cdae1138eeb9c8e03cd9271d86c8a31a22cb896bec4b",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-skills.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-skills.png"
+    },
+    "1440-items": {
+      "equal": true,
+      "elements": 1317,
+      "beforeHash": "8f997bc920cd778035c4cff5a01c8ee1971111881d9d37114ad308f9fee61733",
+      "afterHash": "8f997bc920cd778035c4cff5a01c8ee1971111881d9d37114ad308f9fee61733",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-items.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-items.png"
+    },
+    "1440-enemies": {
+      "equal": true,
+      "elements": 188,
+      "beforeHash": "a1e35190bb6e3baa05edfa4b4f42928db0a5f828d2938e6e2b4db8763e0f17a6",
+      "afterHash": "a1e35190bb6e3baa05edfa4b4f42928db0a5f828d2938e6e2b4db8763e0f17a6",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-enemies.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-enemies.png"
+    },
+    "1440-monster-species": {
+      "equal": true,
+      "elements": 124,
+      "beforeHash": "d8a583e90eebfee56c99312e14be6048be98e3394c95a96578e7c164b853aa16",
+      "afterHash": "d8a583e90eebfee56c99312e14be6048be98e3394c95a96578e7c164b853aa16",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-monster-species.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-monster-species.png"
+    },
+    "1440-troops": {
+      "equal": true,
+      "elements": 120,
+      "beforeHash": "468d7c72f30a7767c767773b47138aa3512cd2bfd58c4bba5e77d6aad4c7076e",
+      "afterHash": "468d7c72f30a7767c767773b47138aa3512cd2bfd58c4bba5e77d6aad4c7076e",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-troops.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-troops.png"
+    },
+    "1440-elements": {
+      "equal": true,
+      "elements": 98,
+      "beforeHash": "a20b67db874c10b7e6204efecec24b9d8668dd43ca04f5bd3b5a439e6dd6eb35",
+      "afterHash": "a20b67db874c10b7e6204efecec24b9d8668dd43ca04f5bd3b5a439e6dd6eb35",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-elements.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-elements.png"
+    },
+    "1440-states": {
+      "equal": true,
+      "elements": 164,
+      "beforeHash": "98fef3ddd9a58d4abbe48f7f26b074256090e86633ba9ea99a85d04b37750851",
+      "afterHash": "98fef3ddd9a58d4abbe48f7f26b074256090e86633ba9ea99a85d04b37750851",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-states.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-states.png"
+    },
+    "1440-animations": {
+      "equal": true,
+      "elements": 241,
+      "beforeHash": "0c03c8183b77161de839d3d21dae0850891c4f66f70e29cd1af0671a0611ac14",
+      "afterHash": "0c03c8183b77161de839d3d21dae0850891c4f66f70e29cd1af0671a0611ac14",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-animations.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-animations.png"
+    },
+    "1440-battle-screen": {
+      "equal": true,
+      "elements": 53,
+      "beforeHash": "a3f97b7ed4cdf6eea7e832ef91bb26628f93340f369f5254a698fccab1ce2cae",
+      "afterHash": "a3f97b7ed4cdf6eea7e832ef91bb26628f93340f369f5254a698fccab1ce2cae",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-battle-screen.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-battle-screen.png"
+    },
+    "1440-battle-commands": {
+      "equal": true,
+      "elements": 56,
+      "beforeHash": "a9706e87e67e263f5a3fb8fe03010e5660638179537aadb4213ba475ac63317f",
+      "afterHash": "a9706e87e67e263f5a3fb8fe03010e5660638179537aadb4213ba475ac63317f",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-battle-commands.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-battle-commands.png"
+    },
+    "1440-terrain": {
+      "equal": true,
+      "elements": 69,
+      "beforeHash": "68f5f29b07a029f916465ce1dacdb583d9e3cdc2a0226886dc7ac27d3152989c",
+      "afterHash": "68f5f29b07a029f916465ce1dacdb583d9e3cdc2a0226886dc7ac27d3152989c",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-terrain.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-terrain.png"
+    },
+    "1440-crops": {
+      "equal": true,
+      "elements": 26,
+      "beforeHash": "6da621f1bb120319015a0ec2a643873633bcaa8fb18cd1efa372b264058ca03a",
+      "afterHash": "6da621f1bb120319015a0ec2a643873633bcaa8fb18cd1efa372b264058ca03a",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-crops.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-crops.png"
+    },
+    "1440-characters": {
+      "equal": true,
+      "elements": 35,
+      "beforeHash": "91f04d8c87f877ed8417e315103da8615d940cd6acb0ee39bc78a939f0abfe68",
+      "afterHash": "91f04d8c87f877ed8417e315103da8615d940cd6acb0ee39bc78a939f0abfe68",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-characters.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-characters.png"
+    },
+    "1440-life-crafting": {
+      "equal": true,
+      "elements": 24,
+      "beforeHash": "5d415fde63815eb624eef581b71287e10bf325b35078b12d188aff98bf9cc632",
+      "afterHash": "5d415fde63815eb624eef581b71287e10bf325b35078b12d188aff98bf9cc632",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-life-crafting.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-life-crafting.png"
+    },
+    "1440-daily-weather": {
+      "equal": true,
+      "elements": 12,
+      "beforeHash": "0029f0e2f4b3232bd1343977af22c7b09e20809dde6525817b24a7ca3ca180ea",
+      "afterHash": "0029f0e2f4b3232bd1343977af22c7b09e20809dde6525817b24a7ca3ca180ea",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-daily-weather.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-daily-weather.png"
+    },
+    "1440-farm-animals": {
+      "equal": true,
+      "elements": 12,
+      "beforeHash": "f41f7e4a23958b8ae949eaa4960c1a60b953b927589b641ecfc753527601667f",
+      "afterHash": "f41f7e4a23958b8ae949eaa4960c1a60b953b927589b641ecfc753527601667f",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-farm-animals.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-farm-animals.png"
+    },
+    "1440-farm-spatial": {
+      "equal": true,
+      "elements": 29,
+      "beforeHash": "3e316ad9331575c7d87c22bfc50e62e4c05610e5a4ea4aebd5fec0ece2670dd2",
+      "afterHash": "3e316ad9331575c7d87c22bfc50e62e4c05610e5a4ea4aebd5fec0ece2670dd2",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-farm-spatial.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-farm-spatial.png"
+    },
+    "1440-life-collections": {
+      "equal": true,
+      "elements": 47,
+      "beforeHash": "40a4fb554c14876bdb790d470383687f3b76d633035461ee4cb2a695ad9c32f1",
+      "afterHash": "40a4fb554c14876bdb790d470383687f3b76d633035461ee4cb2a695ad9c32f1",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-life-collections.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-life-collections.png"
+    },
+    "1440-tilesets": {
+      "equal": true,
+      "elements": 569,
+      "beforeHash": "bd91d34d0693a1ac9f7f81777a5ea1188244a17330828a8a9ea4a0afe8324c3b",
+      "afterHash": "bd91d34d0693a1ac9f7f81777a5ea1188244a17330828a8a9ea4a0afe8324c3b",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-tilesets.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-tilesets.png"
+    },
+    "1440-structure-kits": {
+      "equal": true,
+      "elements": 25,
+      "beforeHash": "4272cd945e6b1354eb5988caa504ff85fd07dae6cf0db925f6c86d0bf15ab08a",
+      "afterHash": "4272cd945e6b1354eb5988caa504ff85fd07dae6cf0db925f6c86d0bf15ab08a",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-structure-kits.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-structure-kits.png"
+    },
+    "1440-villages": {
+      "equal": true,
+      "elements": 34,
+      "beforeHash": "2f0151d2081b94d0ccbf4f40d557ed4c0b8c063668a38d46f89f8452705340ef",
+      "afterHash": "2f0151d2081b94d0ccbf4f40d557ed4c0b8c063668a38d46f89f8452705340ef",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-villages.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-villages.png"
+    },
+    "1440-factions": {
+      "equal": true,
+      "elements": 52,
+      "beforeHash": "c6c58c7b7de7c2d968af38c901e82f0e20ec737d123e5292205ec2af7f75f1c6",
+      "afterHash": "c6c58c7b7de7c2d968af38c901e82f0e20ec737d123e5292205ec2af7f75f1c6",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-factions.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-factions.png"
+    },
+    "1440-common-events": {
+      "equal": true,
+      "elements": 15,
+      "beforeHash": "f1ec289e0170df8d541037d4625773514730a3ac01153d282e1f9c7147a14933",
+      "afterHash": "f1ec289e0170df8d541037d4625773514730a3ac01153d282e1f9c7147a14933",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-common-events.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-common-events.png"
+    },
+    "1440-system": {
+      "equal": true,
+      "elements": 28,
+      "beforeHash": "a6ad3c60a3c5b04de8e197d8e3e2c918a14ddae12e5cf192131726f158ee59be",
+      "afterHash": "a6ad3c60a3c5b04de8e197d8e3e2c918a14ddae12e5cf192131726f158ee59be",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-system.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-system.png"
+    },
+    "1440-terms": {
+      "equal": true,
+      "elements": 35,
+      "beforeHash": "d85e5e88c1f751d19adbb92be73497d6a5f7a9f36acd09f16201f594320b3df5",
+      "afterHash": "d85e5e88c1f751d19adbb92be73497d6a5f7a9f36acd09f16201f594320b3df5",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-terms.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-terms.png"
+    },
+    "1440-switches": {
+      "equal": true,
+      "elements": 45,
+      "beforeHash": "25648956ffaa9d3eb67f9245bd07c9cd865095f73ec29c795c8a5fad397fc469",
+      "afterHash": "25648956ffaa9d3eb67f9245bd07c9cd865095f73ec29c795c8a5fad397fc469",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-switches.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-switches.png"
+    },
+    "1440-variables": {
+      "equal": true,
+      "elements": 26,
+      "beforeHash": "b1449d3f3444dec5f9e3f1ffe4f3f6d929a89e9454a9ea6628bb1a2e19b58ec7",
+      "afterHash": "b1449d3f3444dec5f9e3f1ffe4f3f6d929a89e9454a9ea6628bb1a2e19b58ec7",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-variables.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-variables.png"
+    },
+    "1440-world-canon": {
+      "equal": true,
+      "elements": 62,
+      "beforeHash": "727da252d77dae08ced7ebaf79efaa33864aa9b469186c90bd3d047e9b942845",
+      "afterHash": "727da252d77dae08ced7ebaf79efaa33864aa9b469186c90bd3d047e9b942845",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-world-canon.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-world-canon.png"
+    },
+    "1440-world-codex": {
+      "equal": true,
+      "elements": 20,
+      "beforeHash": "f5c705f04e0048f7f72a215728d28d754cd9d9c4a36765f6f87acc9906dc0b6b",
+      "afterHash": "f5c705f04e0048f7f72a215728d28d754cd9d9c4a36765f6f87acc9906dc0b6b",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-world-codex.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-world-codex.png"
+    },
+    "1440-world-gen": {
+      "equal": true,
+      "elements": 33,
+      "beforeHash": "6e2df0990f0fb44fd2ae42b6f192193d5225f74684969f3d5f885fe2a2d503be",
+      "afterHash": "6e2df0990f0fb44fd2ae42b6f192193d5225f74684969f3d5f885fe2a2d503be",
+      "beforeImage": "output/evidence/css-refactor/pr-before/1440-world-gen.png",
+      "afterImage": "output/evidence/css-refactor/pr-after/1440-world-gen.png"
+    }
+  },
+  "shell": {
+    "1024": {
+      "equal": true,
+      "before": [
+        {
+          "class": "topbar",
+          "rect": [
+            0,
+            0,
+            1024,
+            49
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "rgb(247, 248, 248)",
+          "display": "block"
+        },
+        {
+          "class": "oprn-menu-bar editor-studio-menubar studio-bar",
+          "rect": [
+            0,
+            0,
+            1024,
+            48
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "rgb(247, 248, 248)",
+          "display": "grid"
+        },
+        {
+          "class": "left-panel",
+          "rect": [
+            0,
+            49,
+            320,
+            719
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "rgb(247, 248, 248)",
+          "display": "grid"
+        },
+        {
+          "class": "ai-deck",
+          "rect": [
+            532,
+            613,
+            480,
+            141
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "color(srgb 1 1 1 / 0.9)",
+          "display": "flex"
+        }
+      ],
+      "after": [
+        {
+          "class": "topbar",
+          "rect": [
+            0,
+            0,
+            1024,
+            49
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "rgb(247, 248, 248)",
+          "display": "block"
+        },
+        {
+          "class": "oprn-menu-bar editor-studio-menubar studio-bar",
+          "rect": [
+            0,
+            0,
+            1024,
+            48
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "rgb(247, 248, 248)",
+          "display": "grid"
+        },
+        {
+          "class": "left-panel",
+          "rect": [
+            0,
+            49,
+            320,
+            719
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "rgb(247, 248, 248)",
+          "display": "grid"
+        },
+        {
+          "class": "ai-deck",
+          "rect": [
+            532,
+            613,
+            480,
+            141
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "color(srgb 1 1 1 / 0.9)",
+          "display": "flex"
+        }
+      ]
+    },
+    "1440": {
+      "equal": true,
+      "before": [
+        {
+          "class": "topbar",
+          "rect": [
+            0,
+            0,
+            1440,
+            49
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "rgb(247, 248, 248)",
+          "display": "block"
+        },
+        {
+          "class": "oprn-menu-bar editor-studio-menubar studio-bar",
+          "rect": [
+            0,
+            0,
+            1440,
+            48
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "rgb(247, 248, 248)",
+          "display": "grid"
+        },
+        {
+          "class": "left-panel",
+          "rect": [
+            0,
+            49,
+            320,
+            851
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "rgb(247, 248, 248)",
+          "display": "grid"
+        },
+        {
+          "class": "ai-deck",
+          "rect": [
+            948,
+            745,
+            480,
+            141
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "color(srgb 1 1 1 / 0.9)",
+          "display": "flex"
+        }
+      ],
+      "after": [
+        {
+          "class": "topbar",
+          "rect": [
+            0,
+            0,
+            1440,
+            49
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "rgb(247, 248, 248)",
+          "display": "block"
+        },
+        {
+          "class": "oprn-menu-bar editor-studio-menubar studio-bar",
+          "rect": [
+            0,
+            0,
+            1440,
+            48
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "rgb(247, 248, 248)",
+          "display": "grid"
+        },
+        {
+          "class": "left-panel",
+          "rect": [
+            0,
+            49,
+            320,
+            851
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "rgb(247, 248, 248)",
+          "display": "grid"
+        },
+        {
+          "class": "ai-deck",
+          "rect": [
+            948,
+            745,
+            480,
+            141
+          ],
+          "font": "14px system-ui, Pretendard, \"Apple SD Gothic Neo\", \"Malgun Gothic\", -apple-system, \"Segoe UI\", sans-serif",
+          "color": "rgb(15, 23, 42)",
+          "background": "color(srgb 1 1 1 / 0.9)",
+          "display": "flex"
+        }
+      ]
+    }
+  }
+}

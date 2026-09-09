@@ -187,9 +187,6 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     if (result.dismiss) setEditorWelcomeDismissed(true);
     if (result.systemPresetPlan) {
       clearWelcomeIntentBootFlags();
-      const { maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } = await import("@/editor/coachMarks");
-      maybeStartBasicCoachMarks();
-      maybeStartStandardWelcomeCard();
     } else if (result.prompt) {
       // 장르 칩의 결정적 부분(system.* 토글)은 AI 보다 먼저 적용한다 — 모델이 토글 툴을 부르지
       // 않아도 장르 엔진은 켜져 있어야 한다(2026-08-30 실측: 포스터 클릭 경로에서
@@ -205,9 +202,6 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
       });
     } else {
       clearWelcomeIntentBootFlags();
-      const { maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } = await import("@/editor/coachMarks");
-      maybeStartBasicCoachMarks();
-      maybeStartStandardWelcomeCard();
     }
   }
 

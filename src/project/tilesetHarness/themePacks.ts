@@ -1,4 +1,7 @@
 import { buildEdgeCornerVariantMap } from "@/project/defaults/autotileEngine";
+import { interiorRoomTileGroups } from "./interiorRoomGroups";
+import { hasInteriorLongTableOverride, migrateLegacyInteriorLongTable } from "./interiorLongTableLegacy";
+import { hasInteriorCabinetOverride, repairLegacyInteriorCabinetKit } from "@/project/defaults/interiorTransparentPropLayerRepair";
 import {
   createDarkWallAutotileGroup,
   DARK_WALL_AUTOTILE_GROUP_ID,
@@ -7,12 +10,17 @@ import { createInteriorTerrainAutotileGroups } from "@/project/defaults/interior
 import { createDungeonTerrainAutotileGroups } from "@/project/defaults/dungeonTerrainAutotiles";
 import type { CombinedTownTileSemanticEntry } from "@/project/defaults/tileSemanticsCombinedTown";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
+import { chipsetLabelCorrection } from "@/project/defaults/chipsetLabelCorrections";
 import { RETRO_DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroDungeon";
 import { RETRO_EXTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroExterior";
 import { RETRO_HOUSE_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroHouse";
 import { RETRO_WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroWorld";
 import { SHIP_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsShip";
 import { WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsWorld";
+import { seedWorldTerrainAutotiles, worldTerrainMetadata } from "@/project/defaults/worldTerrainAutotiles";
+import { hasWorldAutotileGraft, isWorldWaterTile, seedWorldCoastMapping, WORLD_PLAIN_TILE } from "@/project/defaults/worldCoastMapping";
+import { worldTileDescription } from "@/project/defaults/worldTileDescriptions";
+import { correctedWorldBridgeDescription } from "@/project/defaults/worldStructureRules";
 import { SCARLOXY_CHIPSET_ASSETS, scarloxyChipsetGroupSeeds } from "@/assets/scarloxyPack";
 import type { AutotileGroup, PassFlag, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
 
@@ -173,7 +181,7 @@ const INTERIOR_TRANSPARENT_PROP_TILES = [
   318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329,
   348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359,
   378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389,
-  408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419,
+  411, 412, 413, 414, 415, 416, 417, 418, 419,
   438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449,
   468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479,
 ] as const;
@@ -241,7 +249,7 @@ export const DUNGEON_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(DUNGEON_HARNESS_PREFIX, "statue", "석상/비석", "building", "lower", [145, 146, 147, 148, 175, 176], "solid", "fixed", "여신상(145+175)·가고일(146+176)·왕관 비석·아궁이 비석입니다."),
   packGroup(DUNGEON_HARNESS_PREFIX, "dome", "석조 돔/화덕", "building", "lower", [438, 439, 440, 468, 469, 470, 24, 25, 26], "solid", "fixed", "3×3 대형 석조 돔(용광로) — 윗줄 438~440 · 중간 468~470 · 받침 24~26. 마법진처럼 팔레트 세로 순서가 파일 행(14→15→0)과 다르니 주의. 통행 불가."),
   packGroup(DUNGEON_HARNESS_PREFIX, "pillar", "석주", "building", "lower", [446, 476], "solid", "fixed", "석재 기둥 상·하단 세로쌍입니다."),
-  packGroup(DUNGEON_HARNESS_PREFIX, "ice-magic", "얼음 마법 블록", "building", "lower", [125, 155, 185, 215], "solid", "fixed", "빛나는 얼음 마법 블록 애니메이션입니다. 통행 불가."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "ice-magic", "소용돌이", "water", "lower", [125, 155, 185, 215], "solid", "fixed", "같은 칩셋에서 125 → 155 → 185 → 215 순으로 반복하는 소용돌이 애니메이션입니다. 통행 불가."),
   // 2026-07-27 사용자 확정 + 실측 렌더(cliff-vocab.png): 난간이 아니라 **계단**이고 통행 가능하다.
   // 예전 이름("얼음 난간/다리 턱") + solid 를 믿고 설산 관문에서 다리 바닥으로 깔았다가
   // 통행 불가라 크레바스를 못 건너 맵 위쪽 전체가 도달 불가가 됐다.
@@ -267,7 +275,7 @@ export const INTERIOR_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(INTERIOR_HARNESS_PREFIX, "floor-stone", "실내 돌바닥", "terrain", "lower", [12, 13, 42, 43, 162, 163], "passable", "repeat", "던전·지하실·석조 실내용 통행 가능한 돌바닥입니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "floor-mat", "짚 돗자리", "terrain", "lower", [108, 109, 110, 138, 139, 140, 168, 169, 170], "passable", "repeat", "3×3 짚 돗자리(멍석) 바닥입니다. 블록 단위로 깔아야 테두리가 이어집니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "carpet-red", "붉은 카펫", "terrain", "lower", [375, 376, 377, 405, 406, 407, 435, 436, 437], "passable", "repeat", "금장 테두리 붉은 카펫 9-슬라이스입니다(고립 배치는 몸통 406)."),
-  packGroup(INTERIOR_HARNESS_PREFIX, "stairs-horizontal", "가로 계단", "building", "lower", [465, 466, 467], "passable", "repeat", "가로로 늘릴 수 있는 계단입니다 — 좌 465 · 몸통 466(반복) · 우 467. (2026-07-12 사용자 확정: 카펫 술이 아니라 계단)"),
+  packGroup(INTERIOR_HARNESS_PREFIX, "stairs-grand", "붉은 카펫 대계단", "building", "lower", [465, 466, 467], "passable", "repeat", "귀족 저택용 붉은 카펫 대계단 — 좌 465 · 몸통 466 · 우 467."),
   packGroup(INTERIOR_HARNESS_PREFIX, "carpet-teal", "청록 카펫", "terrain", "lower", [249, 251, 279, 280, 281, 309, 310, 311, 339, 340, 341], "passable", "repeat", "청록 카펫 3×3 테두리 세트와 1칸(249)/몸통(251) 변형입니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "deck", "나무 단상", "terrain", "lower", [126, 128, 156, 157, 158, 186, 187, 188, 216, 217, 218], "passable", "repeat", "테두리가 있는 나무 단상(무대/데크) 바닥입니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "arrow-plate", "화살표 바닥판", "terrain", "lower", [82, 83, 112, 113], "passable", "fixed", "방향 안내용 화살표 금속 바닥판입니다(상/하/좌/우)."),
@@ -277,15 +285,18 @@ export const INTERIOR_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(INTERIOR_HARNESS_PREFIX, "wall-cream", "크림 회벽", "wall", "lower", [74, 75, 76, 77, 104, 105, 106, 107], "solid", "repeat", "주민 집 실내 크림 회벽(하우스 셸). 가로 run: 윗줄 74/75/76 · 아랫줄 104/105/106. 1칸 칸막이: 상 77 · 하 107. 105는 벽 프레임 오토타일 브러시이기도 함. 문 이남 깊은 칸막이·천장 밴드 관통은 프레임 포스트 428."),
   packGroup(INTERIOR_HARNESS_PREFIX, "wall-brick", "벽돌 벽", "wall", "lower", [14, 15, 16, 17, 44, 45, 46, 47, 134, 135, 136, 137, 164, 165, 166, 167, 314, 315, 316, 317, 344, 345, 346, 347], "solid", "repeat", "자주/밝은/금장 벽돌 벽면입니다. 방 외곽을 막습니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "wall-stone", "돌/동굴 벽", "wall", "lower", [194, 195, 196, 197, 224, 225, 226, 227, 254, 255, 256, 284, 285, 286, 287, 283, 282], "solid", "repeat", "어두운 돌벽과 동굴 암벽입니다."),
-  packGroup(INTERIOR_HARNESS_PREFIX, "wall-panel", "석벽/판자 벽", "wall", "lower", [402, 403, 404, 432, 433, 434, 462, 463, 464, 111, 141, 171, 81, 129, 159, 189, 219], "solid", "repeat", "흰 석벽·선반턱·격자 창살·판자 슬랫 등 기타 벽면입니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "wall-panel", "판자 벽", "wall", "lower", [81], "solid", "repeat", "판자 슬랫 벽면입니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "stone-hearth", "3×3 석조 화로", "building", "lower", [402,403,404,432,433,434,462,463,464], "solid", "fixed", "402·403·404 / 432·433·434 / 462·463·464를 하나로 조립합니다. 아래 가운데 463은 꺼진 화구. 켜려면 그 한 칸만 124로 교체하며 124→154→184→214 불 애니메이션이 재생됩니다. 벽이나 창살로 분류하지 않습니다."),
   // 234(반투명 그림자 오버레이)는 transparent-props 소속 — 두 그룹에 겹치면 재적용 시 tileMeta가 진동해 idempotency가 깨진다.
   packGroup(INTERIOR_HARNESS_PREFIX, "dark-zone", "암흑/어두운 벽", "wall", "lower", [366, 367, 368, 369, 370, 371, 396, 397, 398, 399, 400, 401, 426, 427, 428, 429, 430, 431, 456, 457, 458, 459, 460, 461, 116, 146, 233, 257, 258], "solid", "repeat", "어두운 벽(366 브러시) 오토타일 계열과 동굴 암흑·공허(430/116) 타일입니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "kitchen", "주방 설비", "building", "lower", [21, 51, 22, 23, 52, 53, 373], "solid", "fixed", "화덕 오븐(21+51 세로쌍)·조리대(22/23+52/53)·벽난로 아궁이(373)입니다. 통행 불가."),
-  packGroup(INTERIOR_HARNESS_PREFIX, "counter", "카운터/천 테이블", "building", "lower", [198, 199, 200, 201, 228, 229, 230, 231], "solid", "fixed", "점토·나무 카운터와 흰 천 테이블(전면 뷰)입니다. 통행 불가."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "table-surface", "확장 탁자 상판", "building", "lower", [126,128,129,156,157,158,186,187,188,216,217,218,159,160,161,189,190,191,219,220,221], "solid", "repeat", "소품은 상판 위 upper, 하단·다리는 별도 부품으로 연결하는 확장 탁자입니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "stairs-horizontal", "가로 돌계단", "building", "lower", [141,111,171], "passable", "repeat", "141(왼끝) | 111(반복) | 171(오른끝) 돌계단입니다. 목재가 아닙니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "counter", "카운터/천 테이블", "building", "lower", [198, 199, 200, 201, 228, 229, 230, 231], "solid", "fixed", "목재·흰색 탁자 하단 부품입니다. 201번은 미확정 부품이므로 자동 조립에서 제외합니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "curtain", "붉은 대형 커튼", "building", "lower", [142, 143, 172, 173, 202, 203], "solid", "fixed", "무대용 대형 붉은 커튼(2×3)입니다. 벽면에 배치합니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "pillar", "기둥/제단", "building", "lower", [312, 313, 342, 343, 372, 374], "solid", "fixed", "석재 기둥 상·하단과 석판 제단입니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "hedge", "숲/산(월드맵 겸용)", "building", "lower", [360, 362, 390, 391, 392, 420, 421, 422, 450, 451, 452, 363, 365, 393, 394, 395, 423, 424, 425, 453, 454, 455], "solid", "repeat", "숲 수풀 블롭과 산 둔덕 군집입니다 — 월드맵과 공용 표현. 통행 불가."),
-  packGroup(INTERIOR_HARNESS_PREFIX, "fire-magic", "모닥불/마법 블록/용암", "building", "lower", [124, 154, 184, 214, 125, 155, 185, 215, 232], "solid", "fixed", "모닥불·푸른 마법 블록 애니메이션과 용암 바닥입니다. 통행 불가."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "fire-magic", "모닥불/소용돌이/용암", "building", "lower", [124, 154, 184, 214, 125, 155, 185, 215, 232], "solid", "fixed", "모닥불·소용돌이 애니메이션과 용암 바닥입니다. 소용돌이는 125 → 155 → 185 → 215 순서로 재생합니다. 통행 불가."),
   packGroup(INTERIOR_HARNESS_PREFIX, "transparent-props", "실내 투명 배경 소품", "prop", "upper", INTERIOR_TRANSPARENT_PROP_TILES, "passable", "fixed", "분홍 투명 배경을 가진 실내 가구와 장식입니다. 바닥 위 레이어에 배치해야 배경색이 드러나지 않습니다."),
 ];
 
@@ -324,8 +335,15 @@ function isInteriorPackTileset(tileset: Pick<TilesetDef, "image">): boolean {
 export function applyEasyRpgThemeMetadataPacks(tileset: TilesetDef): boolean {
   const pack = themePackForTileset(tileset);
   // 하니스 팝이 없는 번들 6종(레트로 4종·배·월드맵)은 시맨핅 테이버만으로 tileMeta 를 채운다.
-  if (!pack) return seedBundledSemanticTileMeta(tileset);
-  let changed = applyThemeMetadataPack(tileset, pack);
+  if (!pack) {
+    const seeded = seedBundledSemanticTileMeta(tileset);
+    const coast = seedWorldCoastMapping(tileset);
+    const terrain = seedWorldTerrainAutotiles(tileset);
+    return coast || terrain || seeded;
+  }
+  // Inspect legacy provenance before metadata seeding can obscure an override.
+  let changed = repairLegacyInteriorCabinetKit(tileset);
+  changed = applyThemeMetadataPack(tileset, pack) || changed;
   if (pack.textureKey === INTERIOR_TEXTURE_KEY) {
     // 그룹 밖 타일 시드 + 옛 팩 개정의 잔존 라벨 청소(그룹 순회는 group.tileIds만 돌기 때문).
     changed = seedInteriorUngroupedTileMeta(tileset) || changed;
@@ -381,8 +399,14 @@ function themePackForTileset(tileset: Pick<TilesetDef, "image">): ThemeMetadataP
 function applyThemeMetadataPack(tileset: TilesetDef, pack: ThemeMetadataPack): boolean {
   let changed = false;
   ensureTileMetaLength(tileset);
+  // Overlapping groups use the last contract. Apply it once so reseeding does
+  // not temporarily replace an identical final value with an earlier group.
+  const contracts = new Map<number, PackHarnessGroup>();
   for (const group of pack.groups) {
-    for (const tile of group.tileIds) changed = applyTileContract(tileset, group, tile) || changed;
+    for (const tile of group.tileIds) contracts.set(tile, group);
+  }
+  for (const [tile, group] of contracts) {
+    changed = applyTileContract(tileset, group, tile) || changed;
   }
 
   const groups = pack.groups.map(({ passage: _passage, repeatability: _repeatability, ...group }) => ({
@@ -390,44 +414,39 @@ function applyThemeMetadataPack(tileset: TilesetDef, pack: ThemeMetadataPack): b
     tileIds: [...group.tileIds],
     patternGrammar: clonePattern(group.patternGrammar),
   }));
+  return (pack.textureKey === INTERIOR_TEXTURE_KEY
+    ? ensureInteriorProjectGroups(tileset)
+    : ensureProjectGroups(tileset, groups)) || changed;
+}
+
+/** Records are authored state; an ID/prefix or source label is not replacement authority. */
+function ensureProjectGroups(tileset: TilesetDef, desired: readonly TileGroupMetadata[]): boolean {
   const current = tileset.tileGroups ?? [];
-  const usedGroupIds = new Set(groups.map((group) => group.id));
-  const preserved: TileGroupMetadata[] = [];
-  for (const group of current.filter((candidate) => !isPackOwnedGroup(candidate, pack))) {
-    const preservedGroup = preserveUserPrefixCollision(group, pack, usedGroupIds);
-    usedGroupIds.add(preservedGroup.id);
-    preserved.push(preservedGroup);
-  }
-  const next = [...preserved, ...groups];
-  if (JSON.stringify(current) !== JSON.stringify(next)) {
-    tileset.tileGroups = next;
-    changed = true;
-  }
-  return changed;
+  const ids = new Set(current.map(group => group.id));
+  const suppressed = new Set(tileset.suppressedHarnessGroupIds ?? []);
+  const missing = desired.filter(group => !ids.has(group.id) && !suppressed.has(group.id));
+  if (missing.length === 0) return false;
+  tileset.tileGroups = [...current, ...missing];
+  return true;
 }
 
-function isPackOwnedGroup(group: TileGroupMetadata, pack: ThemeMetadataPack): boolean {
-  return group.id.startsWith(pack.prefix) && group.source === "bundled-default";
-}
-
-function preserveUserPrefixCollision(
-  group: TileGroupMetadata,
-  pack: ThemeMetadataPack,
-  usedGroupIds: ReadonlySet<string>
-): TileGroupMetadata {
-  if (!group.id.startsWith(pack.prefix) || !usedGroupIds.has(group.id)) return group;
-  let suffix = 1;
-  let id = `${group.id}-user-preserved`;
-  while (usedGroupIds.has(id)) {
-    suffix += 1;
-    id = `${group.id}-user-preserved-${suffix}`;
-  }
-  return { ...group, id };
+/** Shared PROJECT-layer composition; supplemental records never seed per-tile runtime contracts. */
+export function ensureInteriorProjectGroups(tileset: TilesetDef): boolean {
+  if (!isInteriorPackTileset(tileset)) return false;
+  const groups = INTERIOR_HARNESS_GROUPS.map(({ passage: _passage, repeatability: _repeatability, ...group }) => ({
+    ...group, tileIds: [...group.tileIds], patternGrammar: clonePattern(group.patternGrammar),
+  }));
+  const supplemental = interiorRoomTileGroups();
+  const migrated = migrateLegacyInteriorLongTable(tileset, supplemental.find(group => group.id.endsWith("-tavern-table"))!);
+  return ensureProjectGroups(tileset, [...groups, ...supplemental]) || migrated;
 }
 
 function applyTileContract(tileset: TilesetDef, group: PackHarnessGroup, tile: number): boolean {
   if (tile < 0 || tile >= tileset.count) return false;
   const meta = tileset.tileMeta?.[tile];
+  if ((tile === 325 || tile === 326 || tile === 327) && hasInteriorLongTableOverride(tileset)) return false;
+  if (isInteriorPackTileset(tileset) && (tile === 148 || tile === 178) && hasInteriorCabinetOverride(tileset)) return false;
+  if (chipsetLabelCorrection(tileset.image.id, tile) && (meta?.origin === "user" || meta?.locked || tileset.tileGrafts?.some(graft => graft.targetTile === tile))) return false;
   if (meta?.userLocked === true || meta?.source === "user") return setTileRuntimeContract(tileset, tile, group, meta);
   // 실내 팩: 라벨·태그·통행성은 타일별 큐레이션 정본에서, 레이어는 그룹에서.
   // 타일 description 은 비움 — 그룹 산문은 그룹 레코드에만 둔다.
@@ -445,6 +464,7 @@ function applyTileContract(tileset: TilesetDef, group: PackHarnessGroup, tile: n
     passage,
     confidence: "high",
     source: "bundled-default",
+    ...chipsetLabelCorrection(tileset.image.id, tile),
   };
   let changed = false;
   if (JSON.stringify(meta) !== JSON.stringify(nextMeta)) {
@@ -468,6 +488,7 @@ function seedInteriorUngroupedTileMeta(tileset: TilesetDef): boolean {
     if (covered.has(tile)) continue;
     const meta = tileset.tileMeta?.[tile];
     if (meta?.userLocked === true || meta?.source === "user") continue;
+    if (chipsetLabelCorrection(tileset.image.id, tile) && (meta?.origin === "user" || meta?.locked || tileset.tileGrafts?.some(graft => graft.targetTile === tile))) continue;
     const semantic = INTERIOR_SEMANTIC_BY_INDEX.get(tile);
     const nextMeta: TileAiMetadata = semantic
       ? {
@@ -478,6 +499,7 @@ function seedInteriorUngroupedTileMeta(tileset: TilesetDef): boolean {
           passage: semantic.passage,
           confidence: "high",
           source: "bundled-default",
+          ...chipsetLabelCorrection(tileset.image.id, tile),
         }
       : { label: "", description: "", source: "unknown" };
     if (JSON.stringify(meta) !== JSON.stringify(nextMeta)) {
@@ -563,20 +585,34 @@ function seedBundledSemanticTileMeta(tileset: TilesetDef): boolean {
     if (tile >= tileset.count) continue;
     const meta = tileset.tileMeta?.[tile];
     if (meta?.userLocked === true || meta?.source === "user") continue;
+    if (chipsetLabelCorrection(tileset.image.id, tile) && (meta?.origin === "user" || meta?.locked || tileset.tileGrafts?.some(graft => graft.targetTile === tile))) continue;
+    // A graft has different artwork; only fill untouched World slots, and keep
+    // existing prose through repeated ensure/load/save metadata seeding.
+    const description = tileset.image.id === WORLD_TEXTURE_KEY
+      ? meta?.description?.trim()
+        ? (meta?.origin === "user" || meta?.locked || hasWorldAutotileGraft(tileset, [tile]))
+          ? meta.description
+          : correctedWorldBridgeDescription(tile, meta.description) ?? meta.description
+        : hasWorldAutotileGraft(tileset, [tile]) ? "" : worldTileDescription(tile)
+      : "";
     const nextMeta: TileAiMetadata = {
       label: semantic.label,
-      description: "",
+      description,
       tags: [...semantic.tags],
       role: semantic.role,
       passage: semantic.passage,
       confidence: "high",
       source: "bundled-default",
+      ...(tileset.image.id === WORLD_TEXTURE_KEY && (isWorldWaterTile(tile) || tile === WORLD_PLAIN_TILE)
+        ? { defaultLayer: "lower" as const } : {}),
+      ...(tileset.image.id === WORLD_TEXTURE_KEY ? worldTerrainMetadata(tile) : {}),
+      ...chipsetLabelCorrection(tileset.image.id, tile),
     };
     if (JSON.stringify(meta) !== JSON.stringify(nextMeta)) {
       tileset.tileMeta![tile] = nextMeta;
       changed = true;
     }
-    const passability = semantic.passage === "solid" ? solid : passable;
+    const passability = nextMeta.passage === "solid" ? solid : passable;
     if (JSON.stringify(tileset.passability[tile]) !== JSON.stringify(passability)) {
       tileset.passability[tile] = { ...passability };
       changed = true;

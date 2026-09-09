@@ -10,16 +10,16 @@ import {
 } from "@/ai/volumeContract";
 import { parsePlannerVolume } from "@/ai/workPlan";
 import { createBlankProject } from "@/project/defaults";
-import type { Command, GameEvent, GameMap, Project } from "@/project/types";
+import type { Command, Condition, GameEvent, Project } from "@/project/types";
 
 function withEvents(events: GameEvent[]): Project {
   const project = createBlankProject();
-  const map = Object.values(project.maps)[0] as GameMap;
+  const map = project.maps[project.startMapId];
   map.events = events;
   return project;
 }
 
-function npc(id: string, pages: Array<{ conditions: unknown[]; commands?: Command[] }>): GameEvent {
+function npc(id: string, pages: Array<{ conditions: Condition[]; commands?: Command[] }>): GameEvent {
   return {
     id,
     x: 1,
@@ -33,9 +33,10 @@ function npc(id: string, pages: Array<{ conditions: unknown[]; commands?: Comman
       graphic: {},
       trigger: { kind: "action" },
       priority: "same",
+      movement: { type: "fixed", speed: 4, frequency: 3 },
       commands: page.commands ?? [],
     })),
-  } as GameEvent;
+  };
 }
 
 describe("volume contract — 막대는 플래너가 선언한다", () => {
@@ -46,7 +47,7 @@ describe("volume contract — 막대는 플래너가 선언한다", () => {
       authoredMaps: 1, multiPageNpcs: 3, shops: 1, quests: 0,
     });
     expect(parsePlannerVolume({ authoredMaps: -2, multiPageNpcs: 2.9, shops: "1", quests: 999 })).toEqual({
-      authoredMaps: 0, multiPageNpcs: 2, shops: 0, quests: 50,
+      authoredMaps: 0, multiPageNpcs: 2, shops: 0, quests: 999,
     });
     expect(parsePlannerVolume({ authoredMaps: 0, multiPageNpcs: 0, shops: 0, quests: 0 })).toBeNull();
     expect(parsePlannerVolume(undefined)).toBeNull();
@@ -73,7 +74,7 @@ describe("volume contract — 델타 측정", () => {
 
   it("상점은 shop 커맨드가 있는 이벤트로 센다", () => {
     const project = withEvents([
-      npc("ev_shop", [{ conditions: [], commands: [{ kind: "shop", stock: [] } as Command] }]),
+      npc("ev_shop", [{ conditions: [], commands: [{ kind: "shop", itemIds: [] }] }]),
     ]);
     expect(measureVolume(project).shops).toBe(1);
   });
@@ -96,6 +97,16 @@ describe("volume contract — 델타 측정", () => {
 });
 
 describe("volume contract — 상태별 NPC 게이트", () => {
+  it("allows an ordinary one-page guide without inventing stateful behavior", () => {
+    const project = withEvents([npc("guide", [{ conditions: [], commands: [{ kind: "text", body: "Go east." }] }])]);
+    expect(verifyPlacedNpcsHaveStatePages(project, ["guide"]).ok).toBe(true);
+    expect(verifyPlacedNpcsHaveStatePages(project, ["guide"], true).ok).toBe(false);
+    const before = measureVolume(createBlankProject());
+    expect(volumeUnmet(before, measureVolume(project), {
+      authoredMaps: 0, multiPageNpcs: 1, shops: 0, quests: 0,
+    })).toBe(true);
+  });
+
   it("place_npc 결과 eventId 를 뽑는다", () => {
     expect(placedNpcIdFrom("place_npc", { eventId: "ev_chief" })).toBe("ev_chief");
     expect(placedNpcIdFrom("make_villager", undefined, { eventId: "ev_from_args" })).toBe("ev_from_args");
@@ -110,10 +121,10 @@ describe("volume contract — 상태별 NPC 게이트", () => {
         { conditions: [{ kind: "switch", switchId: "story_met", value: true }] },
       ]),
     ]);
-    const blocked = verifyPlacedNpcsHaveStatePages(project, ["ev_thin"]);
+    const blocked = verifyPlacedNpcsHaveStatePages(project, ["ev_thin"], true);
     expect(blocked.ok).toBe(false);
     if (!blocked.ok) expect(blocked.reason).toContain("ev_thin");
-    expect(verifyPlacedNpcsHaveStatePages(project, ["ev_ok"]).ok).toBe(true);
+    expect(verifyPlacedNpcsHaveStatePages(project, ["ev_ok"], true).ok).toBe(true);
     expect(verifyPlacedNpcsHaveStatePages(project, []).ok).toBe(true);
   });
 });

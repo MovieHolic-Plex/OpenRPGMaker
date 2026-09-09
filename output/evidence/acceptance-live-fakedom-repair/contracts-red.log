@@ -1,0 +1,14 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/fakeDomSelectContracts.test.ts --maxWorkers=1 --reporter=default --reporter=json --outputFile=output/evidence/acceptance-live-fakedom-repair/contracts-red.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-acceptance-live-qa
+
+No test files found, exiting with code 1
+
+filter: test/fakeDomSelectContracts.test.ts
+include: test/**/*.test.ts
+exclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*, test/lakeVillageRebuildFinal.test.ts, test/**/*.bun.test.ts
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-fakedom-repair/contracts-red.json

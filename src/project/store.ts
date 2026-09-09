@@ -1,4 +1,5 @@
 import { clearCopiedEventPage } from "@/editor/eventPageClipboard";
+import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { rewriteLegacyAdvancedDialogueInProject } from "@/project/io/rewriteLegacyDialogue";
 import { createBlankProject } from "./defaults";
 import { ensureSwitchVariableSlots } from "./defaults/defaultProject";
@@ -7,16 +8,19 @@ import { hasPendingFacesetSheetRepair, repairUploadedFacesetSheets } from "@/ass
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
-import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
+import { defaultTitleScreenSettings, ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
 import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import {
   loadProjectFromSupabase,
+  loadProjectForPersistenceProof,
   saveProjectMapPatchToSupabase,
   saveProjectToSupabase,
   type SupabaseSaveResult,
 } from "./supabaseProjectSync";
 import { projectWithoutEventDrafts } from "./eventDrafts";
-import { serialize } from "./io";
+import { applyAudioDescriptionDelta } from "./audioDescriptions";
+import { applyMonsterMetadataDelta } from "./monsterMetadata";
+import { serialize, serializeForComparison } from "./io";
 import {
   applyEventDraftVault,
   clearEventDraftVault,
@@ -42,6 +46,7 @@ import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersisten
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { sha256HexText } from "@/util/sha256";
+import { structuralJson } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
 import { createLogger } from "@/util/logger";
 import {
@@ -106,16 +111,29 @@ export type AutoSaveState =
       readonly code?: "session-not-persisted";
     };
 
+/** In-memory accepted-save token; contains no credentials or mutable project data. */
+export type ProjectPersistenceReceipt = {
+  readonly revisionId: string;
+  readonly projectId: string;
+  readonly mutationGeneration: number;
+  /** SHA-256 of the existing normalized comparison, not the wire/server hash. */
+  readonly contentIdentity: string;
+  readonly sha256?: string;
+};
+
+export type ProjectPersistenceProof =
+  | { readonly kind: "verified"; readonly receipt: ProjectPersistenceReceipt; readonly isCurrent: boolean }
+  | { readonly kind: "mismatch"; readonly receipt: ProjectPersistenceReceipt; readonly reason: "target" | "content" }
+  | { readonly kind: "disabled" | "cancelled"; readonly receipt: ProjectPersistenceReceipt }
+  | { readonly kind: "failed"; readonly receipt: ProjectPersistenceReceipt; readonly message: string };
+
 export type ProjectFlushResult =
   | { readonly kind: "disabled" }
   | { readonly kind: "not-loaded" }
   | { readonly kind: "not-configured" }
   | { readonly kind: "conflict"; readonly conflicts: readonly { readonly mapId: string; readonly name: string }[] }
-  // todo 5: 성공 시 원격 저장의 sha256 증거를 담는다 — 자율 런 run-end 게이트가
-  // agent_run_saved 감사에 projectId + sha256 으로 기록한다. saveProjectToSupabase/
-  // saveProjectMapPatchToSupabase 의 결과가 그대로 흘러들어온다(commitId 는 여기 오지
-  // 않는다 — 비동기 커밋 로그 경로의 전용 row 다).
-  | { readonly kind: "saved"; readonly sha256?: string }
+  // A clean flush after load may have no accepted-save receipt. Never invent proof from it.
+  | { readonly kind: "saved"; readonly sha256?: string; readonly receipt?: ProjectPersistenceReceipt }
   | { readonly kind: "saved-local" };
 
 export type ProjectDbReconnectResult =
@@ -136,10 +154,11 @@ export type TransactionalNewRemoteProjectDependencies = {
 
 export class NewRemoteProjectTransactionError extends Error {
   constructor(
-    readonly stage: "flush" | "configuration" | "save" | "reload" | "verify" | "concurrent-edit" | "commit",
+    readonly stage: "flush" | "configuration" | "save" | "reload" | "verify" | "concurrent-edit" | "commit" | "cancelled",
     message: string,
+    cause?: unknown,
   ) {
-    super(message);
+    super(message, { cause });
     this.name = "NewRemoteProjectTransactionError";
   }
 }
@@ -204,13 +223,23 @@ class ProjectStore {
   private readonly autoSaveRetryMaxDelayMs = 120_000;
   private autoSaveRetryCount = 0;
   private healthCheckTimer: ReturnType<typeof setInterval> | null = null;
+  private healthCheckLineage = 0;
   private readonly healthCheckIntervalMs = 30_000;
   private boundOnlineHandler: (() => void) | null = null;
   private loaded = false;
   private remotePersistenceEnabled = true;
   private remotePersistenceDisabledReason: DbPersistenceDisabledReason | null = null;
   private persistedBaseline: Project | null = null;
+  private lastPersistenceReceipt: ProjectPersistenceReceipt | null = null;
+  /** Load/adoption lineage is separate from the local-edit counter used by catch-up saves. */
+  private contentLineage = 0;
+  private readonly persistenceTargets = new WeakMap<ProjectPersistenceReceipt, {
+    readonly target: SupabaseProjectConfig;
+    readonly contentLineage: number;
+    readonly projectAtSubmit: Project;
+  }>();
   private persistInFlight: Promise<ProjectFlushResult> | null = null;
+  private persistInFlightLineage = 0;
   // 마지막 "실제 저장"(원격 업서트 또는 dev override 기록) 이후 변경이 있는가 —
   // beforeunload 미저장 경고(도그푸딩 결함 ⑧)의 근거. 저장이 스킵되는 모드(fresh/blank)
   // 에서는 flush가 saved-local을 돌려줘도 실제 기록이 없으므로 true로 남는다.
@@ -274,6 +303,7 @@ class ProjectStore {
         }
       }
       // Defer remote rewrite of normalize fixes so boot is not blocked on Tailscale/dbserver RTT.
+      this.dirtySinceLastPersist = false;
       await this.normalizeCurrentProject({ persistIfChanged: false });
       this.refreshSupabaseResourceCache();
     } catch (error) {
@@ -287,7 +317,7 @@ class ProjectStore {
       throw error;
     }
     this.loaded = true;
-    this.dirtySinceLastPersist = false;
+    if (this.dirtySinceLastPersist) this.scheduleAutoSave();
     this.emit({ scope: "project" });
     return this.current;
   }
@@ -306,8 +336,8 @@ class ProjectStore {
     this.remotePersistenceDisabledReason = "load-failed";
     this.persistedBaseline = null;
     this.loaded = true;
-    await this.normalizeCurrentProject();
     this.dirtySinceLastPersist = false;
+    await this.normalizeCurrentProject();
     this.emit({ scope: "project" });
   }
 
@@ -322,7 +352,7 @@ class ProjectStore {
   ): Promise<LoadNewRemoteProjectResult> {
     const title = options.title?.trim();
     if (title) {
-      project.meta = { ...project.meta, title };
+      nameNewProject(project, title);
     }
 
     const draft = supabaseProjectConfigDraft();
@@ -371,20 +401,56 @@ class ProjectStore {
    */
   async loadNewRemoteProjectTransactionally(
     project: Project,
-    options: { readonly projectId?: string; readonly title?: string } = {},
+    options: ({ readonly source?: "remote"; readonly projectId?: string }
+      | { readonly source: "dev-showcase"; readonly projectId?: never })
+      & { readonly title?: string; readonly signal?: AbortSignal } = {},
     dependencies: TransactionalNewRemoteProjectDependencies = {
       createProjectId: () => `oprn-${randomUuid().replace(/-/g, "").slice(0, 10)}`,
-      reloadTarget: (config) => loadProjectFromSupabase(config),
+      reloadTarget: async (config) => {
+        const snapshot = await loadProjectForPersistenceProof(config);
+        if (snapshot && snapshot.projectId !== config.projectId) {
+          throw new NewRemoteProjectTransactionError("reload", "재로드한 온라인 사본의 프로젝트 ID가 일치하지 않습니다.");
+        }
+        return snapshot?.project ?? null;
+      },
       saveTarget: (candidate, config) => saveProjectToSupabase(candidate, config),
     },
   ): Promise<{ readonly projectId: string }> {
-    const flushResult = await this.flush();
-    if (flushResult.kind !== "saved") {
-      throw new NewRemoteProjectTransactionError(
-        flushResult.kind === "not-configured" ? "configuration" : "flush",
-        "현재 프로젝트를 Supabase에 저장하지 못해 새 프로젝트를 시작하지 않았습니다.",
-      );
+    const promoteShowcase = options.source === "dev-showcase";
+    // Accepted metadata reconciliation can replace the root without changing ownership.
+    const sourceLineage = this.contentLineage;
+    const sourceGeneration = this.mutationGeneration;
+    const sourceIdentity = this.getProjectIdentity();
+    const candidate = structuredClone(project);
+    const assertSourceCurrent = (): void => {
+      if (options.signal?.aborted) {
+        throw new NewRemoteProjectTransactionError("cancelled", "온라인 사본 전환을 취소했습니다. 원본은 유지됩니다.");
+      }
+      const identity = this.getProjectIdentity();
+      if (this.contentLineage !== sourceLineage || this.mutationGeneration !== sourceGeneration
+        || identity.kind !== sourceIdentity.kind || identity.id !== sourceIdentity.id) {
+        throw new NewRemoteProjectTransactionError(
+          "concurrent-edit", "준비 중 현재 프로젝트가 변경되어 전환을 취소했습니다. 변경 내용을 확인한 뒤 다시 시도하세요.",
+        );
+      }
+    };
+    assertSourceCurrent();
+    if (promoteShowcase) {
+      if (!this.loaded || this.remotePersistenceEnabled || this.remotePersistenceDisabledReason !== "dev-showcase") {
+        throw new NewRemoteProjectTransactionError("configuration", "브라우저 쇼케이스에서만 온라인 사본을 만들 수 있습니다.");
+      }
+      // Do not flush a quota-constrained source. Its live edits and previous local
+      // recovery stay untouched; the detached candidate is the explicit new copy.
+    } else {
+      const flushResult = await this.flush();
+      if (flushResult.kind !== "saved") {
+        throw new NewRemoteProjectTransactionError(
+          flushResult.kind === "not-configured" ? "configuration" : "flush",
+          "현재 프로젝트를 Supabase에 저장하지 못해 새 프로젝트를 시작하지 않았습니다.",
+        );
+      }
     }
+    assertSourceCurrent();
 
     const baseConfig = supabaseProjectConfig();
     const draft = supabaseProjectConfigDraft();
@@ -395,12 +461,13 @@ class ProjectStore {
       );
     }
 
-    const projectId = options.projectId?.trim() || dependencies.createProjectId();
+    const projectId = promoteShowcase ? dependencies.createProjectId() : options.projectId?.trim() || dependencies.createProjectId();
+    if (promoteShowcase && projectId === baseConfig.projectId) {
+      throw new NewRemoteProjectTransactionError("configuration", "온라인 사본은 기존 작업과 다른 새 프로젝트 ID가 필요합니다.");
+    }
     const targetConfig: SupabaseProjectConfig = { ...baseConfig, projectId };
-    const candidate = structuredClone(project);
     const title = options.title?.trim();
-    if (title) candidate.meta = { ...candidate.meta, title };
-    const generationAfterFlush = this.mutationGeneration;
+    if (title) nameNewProject(candidate, title);
 
     let saved: SupabaseSaveResult;
     try {
@@ -409,6 +476,7 @@ class ProjectStore {
       throw new NewRemoteProjectTransactionError(
         "save",
         error instanceof Error ? error.message : "새 Supabase 프로젝트 저장에 실패했습니다.",
+        error,
       );
     }
     if (saved.kind !== "saved") {
@@ -417,6 +485,7 @@ class ProjectStore {
         "새 Supabase 프로젝트 저장을 확인하지 못했습니다.",
       );
     }
+    assertSourceCurrent();
 
     let reloaded: Project | null;
     try {
@@ -425,6 +494,7 @@ class ProjectStore {
       throw new NewRemoteProjectTransactionError(
         "reload",
         error instanceof Error ? error.message : "새 Supabase 프로젝트 재로드에 실패했습니다.",
+        error,
       );
     }
     if (!reloaded) {
@@ -434,14 +504,15 @@ class ProjectStore {
       );
     }
 
-    const expected = projectWithoutEventDrafts(saved.project ?? candidate);
-    if (serialize(expected) !== serialize(projectWithoutEventDrafts(reloaded))) {
+    const expected = projectWithoutEventDrafts(promoteShowcase ? candidate : saved.project ?? candidate);
+    if (serializeForComparison(expected) !== serializeForComparison(projectWithoutEventDrafts(reloaded))) {
       throw new NewRemoteProjectTransactionError(
         "verify",
         "새 Supabase 프로젝트의 저장본과 재로드 결과가 일치하지 않습니다.",
       );
     }
-    if (this.mutationGeneration !== generationAfterFlush || this.dirtySinceLastPersist) {
+    assertSourceCurrent();
+    if (!promoteShowcase && this.dirtySinceLastPersist) {
       throw new NewRemoteProjectTransactionError(
         "concurrent-edit",
         "준비 중 현재 프로젝트가 변경되어 전환을 취소했습니다. 변경 내용을 저장한 뒤 다시 시도하세요.",
@@ -455,6 +526,8 @@ class ProjectStore {
       loadedRemoteProjectId: this.loadedRemoteProjectId,
       mutationGeneration: this.mutationGeneration,
       persistedBaseline: this.persistedBaseline,
+      lastPersistenceReceipt: this.lastPersistenceReceipt,
+      contentLineage: this.contentLineage,
       remotePersistenceDisabledReason: this.remotePersistenceDisabledReason,
       remotePersistenceEnabled: this.remotePersistenceEnabled,
     };
@@ -474,6 +547,7 @@ class ProjectStore {
       throw new NewRemoteProjectTransactionError(
         "commit",
         error instanceof Error ? error.message : "새 프로젝트 설정을 브라우저에 저장하지 못했습니다.",
+        error,
       );
     }
 
@@ -488,13 +562,15 @@ class ProjectStore {
       this.dirtySinceLastPersist = false;
       this.mutationGeneration += 1;
       resetManualProjectCommitBaseline(this.current);
-      syncProjectToUrl({ projectId, projectName: reloaded.meta?.title ?? null });
-      stagedConfig.commit();
+      syncProjectToUrl({ projectId, projectName: reloaded.meta?.title ?? null, clearDevProject: promoteShowcase });
       saveSupabaseSelectedProjectId(projectId);
       this.loadedRemoteProjectId = projectId;
+      stagedConfig.commit();
     } catch (error) {
       this.current = localSnapshot.current;
       this.persistedBaseline = localSnapshot.persistedBaseline;
+      this.lastPersistenceReceipt = localSnapshot.lastPersistenceReceipt;
+      this.contentLineage = localSnapshot.contentLineage;
       this.loaded = localSnapshot.loaded;
       this.loadedRemoteProjectId = localSnapshot.loadedRemoteProjectId;
       this.remotePersistenceEnabled = localSnapshot.remotePersistenceEnabled;
@@ -511,11 +587,16 @@ class ProjectStore {
       throw new NewRemoteProjectTransactionError(
         "commit",
         error instanceof Error ? error.message : "새 프로젝트의 로컬 전환을 완료하지 못했습니다.",
+        error,
       );
     }
 
     // The old draft key is removed only after the switch can no longer reject.
     persistEventDraftVaultNow(baseConfig.projectId);
+    if (promoteShowcase) {
+      this.autoSaveRetryCount = 0;
+      this.setAutoSaveState({ kind: "saved", at: Date.now() });
+    }
     try {
       this.emit({ scope: "project", projectSwitch: true });
     } catch (error) {
@@ -563,6 +644,11 @@ class ProjectStore {
 
   getCurrent(): Project {
     return this.readOnlyProjectSnapshot ?? this.current;
+  }
+
+  /** Client-local authored revision, not a save receipt or a remote writer lease. */
+  getVersionToken(): Readonly<{ lineage: number; generation: number }> {
+    return Object.freeze({ lineage: this.contentLineage, generation: this.mutationGeneration });
   }
 
   getProjectIdentity(): ProjectIdentity {
@@ -627,17 +713,19 @@ class ProjectStore {
     try {
       const project = await loadProjectFromSupabase();
       if (project) {
+        this.contentLineage += 1;
+        this.lastPersistenceReceipt = null;
         this.current = preserveEventDraftsOnProject(project, this.current);
         clearCopiedEventPage();
         syncEventDraftVaultFromProject(this.current);
         this.remotePersistenceEnabled = true;
         this.remotePersistenceDisabledReason = null;
         this.loadedRemoteProjectId = status.projectId;
-        await this.normalizeCurrentProject();
         this.loaded = true;
         this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
         resetManualProjectCommitBaseline(this.current);
         this.dirtySinceLastPersist = false;
+        await this.normalizeCurrentProject();
         this.syncProjectUrlBar();
         this.emit({ scope: "project", projectSwitch: true });
         this.refreshSupabaseResourceCache();
@@ -675,15 +763,17 @@ class ProjectStore {
       if (!project) {
         return { kind: "failed", message: "DB에서 프로젝트를 찾을 수 없습니다.", projectId };
       }
+      this.contentLineage += 1;
+      this.lastPersistenceReceipt = null;
       this.current = preserveEventDraftsOnProject(project, this.current);
       syncEventDraftVaultFromProject(this.current);
       this.remotePersistenceEnabled = true;
       this.remotePersistenceDisabledReason = null;
       if (projectId) this.loadedRemoteProjectId = projectId;
-      await this.normalizeCurrentProject();
       this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
       resetManualProjectCommitBaseline(this.current);
       this.dirtySinceLastPersist = false;
+      await this.normalizeCurrentProject();
       this.syncProjectUrlBar();
       // 같은 projectId의 원격 저장본을 다시 읽는 경로라 의도적으로 프로젝트 전환 표시를 하지 않는다.
       this.emit({ scope: "project" });
@@ -719,13 +809,24 @@ class ProjectStore {
   /**
    * `change` 는 관측용 주석이다 — undo/AI 적용/원격 병합이 서로 구분되게 라벨을 실어 보낸다.
    * 생략하면 라벨 없는 project 스코프 변경으로 기록된다(`__oprnUnlabeledEditCount()` 에 집계).
+   * Returns the applied project captured before synchronous mutation subscribers run.
    */
   replace(
     project: Project,
-    options: { readonly preserveEventDrafts?: boolean; readonly change?: ProjectChangeAnnotation } = {},
-  ): void {
+    options: {
+      readonly preserveEventDrafts?: boolean;
+      readonly change?: ProjectChangeAnnotation;
+      /** Account the actual mutation before any synchronous observers can retire its owner. */
+      readonly onApplied?: (project: Project) => void;
+    } = {},
+  ): Project {
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
+    if (options.preserveEventDrafts === false || options.change?.projectSwitch === true) {
+      this.contentLineage += 1;
+      this.lastPersistenceReceipt = null;
+      this.persistedBaseline = null;
+    }
     if (options.change?.projectSwitch === true) clearCopiedEventPage();
     // Default: keep open event editor drafts across undo/AI/accept/remote merges.
     // Pass preserveEventDrafts:false only for intentional full project switches
@@ -737,20 +838,27 @@ class ProjectStore {
       this.current = preserveEventDraftsOnProject(project, this.current);
       syncEventDraftVaultFromProject(this.current);
     }
-    this.markLocalMutation({ scope: "project", ...(options.change ?? {}) });
-    this.emit({ scope: "project", ...(options.change ?? {}) });
-    this.scheduleAutoSave();
+    const applied = this.current;
+    try {
+      this.markLocalMutation({ scope: "project", ...(options.change ?? {}) }, options.onApplied);
+    } finally {
+      // The project is already live even if application accounting's observer throws.
+      this.emit({ scope: "project", ...(options.change ?? {}) });
+      this.scheduleAutoSave();
+    }
+    return applied;
   }
 
   /** Full project switch (new/import/sample). Drops event-draft vault for the previous project. */
-  replaceProject(project: Project, change?: ProjectChangeAnnotation): void {
+  replaceProject(project: Project, change?: ProjectChangeAnnotation, onApplied?: (project: Project) => void): Project {
     clearEventDraftVault();
     clearCopiedEventPage();
     persistEventDraftVaultNow();
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
-    this.replace(project, {
+    return this.replace(project, {
       preserveEventDrafts: false,
       change: { label: "프로젝트 교체", projectSwitch: true, ...(change ?? {}) },
+      onApplied,
     });
   }
 
@@ -806,6 +914,56 @@ class ProjectStore {
     this.persistedBaseline = project;
   }
 
+  /** Historical acceptance belongs to its actual submitted owner, not the latest live revision. */
+  isPersistenceReceiptForProject(receipt: ProjectPersistenceReceipt, project: Project): boolean {
+    return this.persistenceTargets.get(receipt)?.projectAtSubmit === project;
+  }
+
+  /** Recheck at consumption time: proof can outlive the editor revision it describes. */
+  isPersistenceReceiptCurrent(receipt: ProjectPersistenceReceipt): boolean {
+    const authority = this.persistenceTargets.get(receipt);
+    const target = authority?.target;
+    const config = supabaseProjectConfig();
+    return this.loaded && this.remotePersistenceEnabled
+      && this.lastPersistenceReceipt === receipt
+      && this.mutationGeneration === receipt.mutationGeneration
+      && authority?.contentLineage === this.contentLineage
+      && !!target && !!config
+      && target.projectId === config.projectId && target.url === config.url && target.anonKey === config.anonKey;
+  }
+
+  /** Read-only verification of a store-issued save receipt. Failed attempts are always retryable. */
+  async verifyPersistedRevision(
+    receipt: ProjectPersistenceReceipt,
+    options: { readonly signal?: AbortSignal; readonly validate?: (project: Project) => string | undefined } = {},
+  ): Promise<ProjectPersistenceProof> {
+    const target = this.persistenceTargets.get(receipt)?.target;
+    if (!target) return { kind: "failed", receipt, message: "Unknown accepted revision" };
+    if (options.signal?.aborted) return { kind: "cancelled", receipt };
+    if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
+    try {
+      const read = await loadProjectForPersistenceProof(target, options.signal);
+      if (options.signal?.aborted) return { kind: "cancelled", receipt };
+      if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
+      if (!read) return { kind: "failed", receipt, message: "Saved project not found" };
+      if (read.projectId !== receipt.projectId) return { kind: "mismatch", receipt, reason: "target" };
+      const observedIdentity = await sha256HexText(serializeForComparison(projectWithoutEventDrafts(read.project)));
+      if (options.signal?.aborted) return { kind: "cancelled", receipt };
+      if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
+      if (observedIdentity !== receipt.contentIdentity) return { kind: "mismatch", receipt, reason: "content" };
+      // Trusted run-end validators see only the canonical read that matched this receipt.
+      const validationProblem = options.validate?.(read.project);
+      if (options.signal?.aborted) return { kind: "cancelled", receipt };
+      if (validationProblem) return { kind: "failed", receipt, message: validationProblem };
+      return { kind: "verified", receipt, isCurrent: this.isPersistenceReceiptCurrent(receipt) };
+    } catch (error) {
+      if (options.signal?.aborted || (error instanceof Error && error.name === "AbortError")) {
+        return { kind: "cancelled", receipt };
+      }
+      return { kind: "failed", receipt, message: error instanceof Error ? error.message : String(error) };
+    }
+  }
+
   async flush(): Promise<ProjectFlushResult> {
     if (this.autoSaveTimer) {
       clearTimeout(this.autoSaveTimer);
@@ -818,7 +976,12 @@ class ProjectStore {
     }
     // Clean flush: skip network/serialize when nothing changed since last successful persist.
     if (!this.dirtySinceLastPersist && this.autoSaveState.kind !== "error") {
-      if (this.remotePersistenceEnabled) return { kind: "saved" };
+      if (this.remotePersistenceEnabled) {
+        const receipt = this.lastPersistenceReceipt;
+        return receipt && this.isPersistenceReceiptCurrent(receipt)
+          ? { kind: "saved", receipt, ...(receipt.sha256 ? { sha256: receipt.sha256 } : {}) }
+          : { kind: "saved" };
+      }
       if (this.remotePersistenceDisabledReason === "dev-showcase") return { kind: "saved-local" };
       return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
     }
@@ -829,6 +992,9 @@ class ProjectStore {
     clearEventDraftVault();
     clearCopiedEventPage();
     persistEventDraftVaultNow();
+    this.contentLineage += 1;
+    this.lastPersistenceReceipt = null;
+    this.persistedBaseline = null;
     this.current = createBlankProject();
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
     this.markLocalMutation({ scope: "project", label: "전체 초기화" });
@@ -860,10 +1026,14 @@ class ProjectStore {
    * 외부 파일 수정 없이 계측된다. 호출자는 전부 이 클래스 안에 있다 — 이 성질을
    * test/storeMutationInstrumentation.test.ts 가 고정한다.
    */
-  private markLocalMutation(change: ProjectChangeDescriptor): void {
+  private markLocalMutation(change: ProjectChangeDescriptor, onApplied?: (project: Project) => void): void {
     this.mutationGeneration += 1;
     this.dirtySinceLastPersist = true;
-    this.recordChangeActivity(change);
+    try {
+      onApplied?.(this.current);
+    } finally {
+      this.recordChangeActivity(change);
+    }
   }
 
   /**
@@ -947,13 +1117,18 @@ class ProjectStore {
     }
     if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
     this.clearAutoSaveRetry();
-    this.setAutoSaveState({ kind: "pending" });
-    this.autoSaveTimer = setTimeout(() => {
+    const lineage = this.contentLineage;
+    const timer = setTimeout(() => {
+      // A queued callback cannot consume a replacement's timer or save its content.
+      if (this.contentLineage !== lineage || this.autoSaveTimer !== timer) return;
       this.autoSaveTimer = null;
       void this.saveCurrentWithAutoSaveState().catch((error) => {
         log.error("Supabase auto-save failed", error);
       });
     }, this.autoSaveDelayMs);
+    this.autoSaveTimer = timer;
+    // Publish after registration: a synchronous subscriber may schedule its own save.
+    this.setAutoSaveState({ kind: "pending" });
   }
 
   private clearAutoSaveRetry(): void {
@@ -962,30 +1137,34 @@ class ProjectStore {
     this.autoSaveRetryTimer = null;
   }
 
-  private scheduleAutoSaveRetry(): void {
-    if (this.autoSaveRetryTimer) return;
+  private scheduleAutoSaveRetry(lineage: number): void {
+    // The error-state subscriber may have replaced the failed save's project.
+    if (this.contentLineage !== lineage || this.autoSaveRetryTimer) return;
     const delay = Math.min(
       this.autoSaveRetryBaseDelayMs * 2 ** this.autoSaveRetryCount,
       this.autoSaveRetryMaxDelayMs,
     );
-    this.autoSaveRetryTimer = setTimeout(() => {
+    const timer = setTimeout(() => {
+      if (this.contentLineage !== lineage || this.autoSaveRetryTimer !== timer) return;
       this.autoSaveRetryTimer = null;
       void this.saveCurrentWithAutoSaveState().catch((error) => {
         log.error("Supabase auto-save retry failed", error);
       });
     }, delay);
-    this.startHealthCheck();
+    this.autoSaveRetryTimer = timer;
+    this.startHealthCheck(lineage);
   }
 
   /**
    * Periodic lightweight probe while in error state. If the DB responds we
    * immediately attempt a flush instead of waiting for the next backoff tick.
    */
-  private startHealthCheck(): void {
-    if (this.healthCheckTimer) return;
-    this.healthCheckTimer = setInterval(() => {
-      void this.runHealthCheck();
-    }, this.healthCheckIntervalMs);
+  private startHealthCheck(lineage: number): void {
+    if (this.healthCheckTimer && this.healthCheckLineage === lineage) return;
+    this.stopHealthCheck();
+    const timer = setInterval(() => this.runHealthCheck(lineage, timer), this.healthCheckIntervalMs);
+    this.healthCheckTimer = timer;
+    this.healthCheckLineage = lineage;
   }
 
   private stopHealthCheck(): void {
@@ -994,7 +1173,8 @@ class ProjectStore {
     this.healthCheckTimer = null;
   }
 
-  private async runHealthCheck(): Promise<void> {
+  private async runHealthCheck(lineage: number, timer: ReturnType<typeof setInterval>): Promise<void> {
+    if (this.contentLineage !== lineage || this.healthCheckTimer !== timer) return;
     if (!this.loaded || !this.remotePersistenceEnabled) {
       this.stopHealthCheck();
       return;
@@ -1018,6 +1198,7 @@ class ProjectStore {
         },
         signal: AbortSignal.timeout(8000),
       });
+      if (this.contentLineage !== lineage || this.healthCheckTimer !== timer) return;
       if (response.ok) {
         log.info(`Health check: DB reachable (${response.status}), attempting flush`);
         this.stopHealthCheck();
@@ -1049,14 +1230,31 @@ class ProjectStore {
   private async saveCurrentWithAutoSaveState(): Promise<ProjectFlushResult> {
     // Coalesce concurrent flush calls onto one network round-trip, then re-run
     // if the user painted more tiles while that round-trip was in flight.
-    if (this.persistInFlight) {
+    const lineage = this.contentLineage;
+    if (this.persistInFlight && this.persistInFlightLineage !== lineage) {
+      // A replacement's explicit request waits for the older transport, but
+      // neither inherits its result nor gives that old save catch-up authority.
+      try {
+        await this.persistInFlight;
+      } catch (error) {
+        // The original promise still rejects to its callers. Only this separate
+        // owner's request may proceed after the failed transport has settled.
+        log.warn("Earlier project save failed before queued replacement flush", error);
+      }
+      if (this.contentLineage !== lineage) return { kind: "disabled" };
+      return await this.saveCurrentWithAutoSaveState();
+    }
+    if (this.persistInFlight && this.persistInFlightLineage === lineage) {
       const inFlightResult = await this.persistInFlight;
-      if (this.dirtySinceLastPersist && this.loaded && this.remotePersistenceEnabled) {
+      if (this.contentLineage === lineage && this.dirtySinceLastPersist && this.loaded && this.remotePersistenceEnabled) {
         return await this.saveCurrentWithAutoSaveState();
       }
       return inFlightResult;
     }
     this.setAutoSaveState({ kind: "saving" });
+    // Status subscribers run synchronously and may replace the project (and even
+    // start its own flush). This request no longer authorizes a write after that.
+    if (this.contentLineage !== lineage) return { kind: "disabled" };
     const run = (async (): Promise<ProjectFlushResult> => {
       try {
         // Local-first catch-up: if paint lands during a save RTT, persist again
@@ -1065,31 +1263,37 @@ class ProjectStore {
         let result = await this.persistCurrent();
         while (
           this.dirtySinceLastPersist
+          && this.contentLineage === lineage
           && this.loaded
           && this.remotePersistenceEnabled
           && result.kind === "saved"
         ) {
           result = await this.persistCurrent();
         }
-        this.setAutoSaveState(autoSaveStateForFlushResult(
-          result,
-          this.remotePersistenceDisabledReason === "dev-showcase"
-            && isSaveSkippedLocation()
-            && this.dirtySinceLastPersist,
-        ));
-        this.autoSaveRetryCount = 0;
-        this.stopHealthCheck();
+        if (this.contentLineage === lineage) {
+          this.setAutoSaveState(autoSaveStateForFlushResult(
+            result,
+            this.remotePersistenceDisabledReason === "dev-showcase"
+              && isSaveSkippedLocation()
+              && this.dirtySinceLastPersist,
+          ));
+          this.autoSaveRetryCount = 0;
+          this.stopHealthCheck();
+        }
         return result;
       } catch (error) {
-        this.autoSaveRetryCount += 1;
-        this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error), retryCount: this.autoSaveRetryCount });
-        this.scheduleAutoSaveRetry();
+        if (this.contentLineage === lineage) {
+          this.autoSaveRetryCount += 1;
+          this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error), retryCount: this.autoSaveRetryCount });
+          if (this.remotePersistenceEnabled) this.scheduleAutoSaveRetry(lineage);
+        }
         throw error;
       } finally {
-        this.persistInFlight = null;
+        if (this.persistInFlightLineage === lineage) this.persistInFlight = null;
       }
     })();
     this.persistInFlight = run;
+    this.persistInFlightLineage = lineage;
     return await run;
   }
 
@@ -1103,14 +1307,21 @@ class ProjectStore {
         // fresh/blank 위치에서는 기록이 스킵되므로(false 반환) dirty를 유지한다(결함 ⑧·⑩).
         if (saveDevProjectOverride(projectWithoutEventDrafts(this.current))) {
           this.dirtySinceLastPersist = false;
+          if (diagnosticObserved("authoring")) publishDiagnostic({ category: "authoring", phase: "saved", generation: this.mutationGeneration, storage: "local" });
         }
         return { kind: "saved-local" };
       }
       return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
     }
     // Snapshot local state at submit time. Paint during await must win over the response.
+    const config = supabaseProjectConfig();
+    if (!config) return { kind: "not-configured" };
+    const target = Object.freeze({ ...config });
     const generationAtSubmit = this.mutationGeneration;
-    const submittedProject = projectWithoutEventDrafts(this.current);
+    const diagnosticOwner = diagnosticToken();
+    const lineageAtSubmit = this.contentLineage;
+    const projectAtSubmit = this.current;
+    const submittedProject = projectWithoutEventDrafts(projectAtSubmit);
     // 커밋 로그가 쓸 diff baseline — **이 저장 직전에 서버가 갖고 있던 내용**이다.
     // 아래에서 `this.persistedBaseline` 을 저장 결과로 갈아치우므로 여기서 잡아두지 않으면
     // 커밋 diff 가 "자기 자신과의 비교"(=빈 diff)로 무너진다. await 앞에서 읽는 이유는
@@ -1118,14 +1329,62 @@ class ProjectStore {
     // 부르는 경로가 있어서다 — RTT 중에 이 필드가 다른 저장에 의해 바뀔 수 있다.
     const commitBaseline = this.persistedBaseline;
     const result = commitBaseline
-      ? await saveProjectMapPatchToSupabase({ project: submittedProject, baseProject: commitBaseline })
-      : await saveProjectToSupabase(submittedProject);
+      ? await saveProjectMapPatchToSupabase({ project: submittedProject, baseProject: commitBaseline }, target)
+      : await saveProjectToSupabase(submittedProject, target);
     if (result.kind === "not-configured") return result;
     if (result.kind === "conflict") return result;
     const savedProject = result.project ?? submittedProject;
-    // Baseline tracks what the server accepted — not what the editor is showing.
-    this.persistedBaseline = structuredClone(projectWithoutEventDrafts(savedProject));
-    // Local-first: never replace live maps/project with the save response.
+    // Keep accepted content detached even if a replacement arrives during receipt hashing.
+    const acceptedBaseline = structuredClone(projectWithoutEventDrafts(savedProject));
+    let receipt: ProjectPersistenceReceipt | undefined;
+    try {
+      // Capture accepted content before the hash await; never derive it from live getCurrent().
+      const acceptedContent = serializeForComparison(acceptedBaseline);
+      receipt = Object.freeze({
+        revisionId: randomUuid(),
+        projectId: target.projectId,
+        mutationGeneration: generationAtSubmit,
+        contentIdentity: await sha256HexText(acceptedContent),
+        ...(result.sha256 ? { sha256: result.sha256 } : {}),
+      });
+      this.persistenceTargets.set(receipt, { target, contentLineage: lineageAtSubmit, projectAtSubmit });
+    } catch (error) {
+      // Intermediate projects may save but cannot supply normalized proof. Preserve flush compatibility.
+      log.warn("Accepted project could not produce a persistence receipt", error);
+    }
+    recordManualProjectCommitAfterSave(savedProject, commitBaseline);
+    // Historical saves retain proof, but cannot adopt a baseline, metadata or dirty state
+    // into a replacement project (including a replacement during the hash await).
+    if (this.contentLineage !== lineageAtSubmit) return receipt ? { ...result, receipt } : result;
+    this.persistedBaseline = acceptedBaseline;
+    this.lastPersistenceReceipt = receipt ?? null;
+    if (receipt && diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("authoring")) {
+      publishDiagnostic({ category: "authoring", phase: "saved", generation: generationAtSubmit, storage: "remote" });
+    }
+    const audioDescriptions = applyAudioDescriptionDelta(
+      submittedProject.audioDescriptions,
+      this.current.audioDescriptions,
+      savedProject.audioDescriptions,
+    );
+    const monsterMetadata = applyMonsterMetadataDelta(
+      submittedProject.monsterMetadata,
+      this.current.monsterMetadata,
+      savedProject.monsterMetadata,
+    );
+    if (JSON.stringify(audioDescriptions) !== JSON.stringify(this.current.audioDescriptions)
+      || JSON.stringify(monsterMetadata) !== JSON.stringify(this.current.monsterMetadata)) {
+      const reconciledProject = { ...this.current };
+      if (audioDescriptions === undefined) delete reconciledProject.audioDescriptions;
+      else reconciledProject.audioDescriptions = structuredClone(audioDescriptions);
+      if (monsterMetadata === undefined) delete reconciledProject.monsterMetadata;
+      else reconciledProject.monsterMetadata = structuredClone(monsterMetadata);
+      this.current = reconciledProject;
+      // Synchronization is observable, but is not a new authored mutation.
+      this.emit({ scope: "project", origin: "system", projectSwitch: false });
+    }
+    // A synchronization subscriber may itself replace the project.
+    if (this.contentLineage !== lineageAtSubmit) return receipt ? { ...result, receipt } : result;
+    // Local-first: never replace live maps with the save response.
     // Doing so rewound brush strokes that landed during the network RTT
     // (user symptom: painted tiles pop back / cancel after a moment).
     if (this.mutationGeneration === generationAtSubmit) {
@@ -1136,9 +1395,8 @@ class ProjectStore {
       // Do not arm the 4s autosave debounce here — that left a "saved" gap.
       this.dirtySinceLastPersist = true;
     }
-    recordManualProjectCommitAfterSave(savedProject, commitBaseline);
     this.refreshSupabaseResourceCache();
-    return result;
+    return receipt ? { ...result, receipt } : result;
   }
 
   /**
@@ -1146,6 +1404,8 @@ class ProjectStore {
    * for the current DB project id.
    */
   private adoptProject(project: Project, options: { readonly restoreVault: boolean }): void {
+    this.contentLineage += 1;
+    this.lastPersistenceReceipt = null;
     clearEventDraftVault();
     clearCopiedEventPage();
     if (options.restoreVault) {
@@ -1159,6 +1419,9 @@ class ProjectStore {
 
   private async normalizeCurrentProject(options: { readonly persistIfChanged?: boolean } = {}): Promise<void> {
     const persistIfChanged = options.persistIfChanged !== false;
+    // Helpers can report transient changes while reaching the same final structure.
+    // Compare raw records, not deserialize/canonical hashing: no authored fields are forgiven.
+    const before = structuralJson(this.current);
     // 어느 정규화기가 실제로 손을 댔는지 이름으로 남긴다.
     // 실측(2026-08-29): 이 13개는 `this.current` 를 in-place 로 고치면서 markLocalMutation 을
     // 부르지 않는다 — 프로젝트가 로드 중에 조용히 바뀌는데 그 사실이 어디에도 안 남아서
@@ -1181,11 +1444,9 @@ class ProjectStore {
       ["bundledBattleAnimations", ensureBundledBattleAnimations(this.current)],
     ];
     const appliedNormalizers = normalizers.filter(([, applied]) => applied).map(([name]) => name);
-    const changed = appliedNormalizers.length > 0;
+    const changed = before !== structuralJson(this.current);
     if (changed) {
-      // mutationGeneration 은 **올리지 않는다** — 그 값은 저장 경합 판정용이고(local-first),
-      // 로드 경로에서 올리면 in-flight 저장 응답 처리가 달라진다. 관측만 남긴다.
-      this.recordChangeActivity({
+      this.markLocalMutation({
         scope: "system",
         label: `프로젝트 정규화 (${appliedNormalizers.length}종)`,
         origin: "system",
@@ -1194,19 +1455,22 @@ class ProjectStore {
     }
     // 업로드 시트의 진짜 절단은 canvas 가 필수라 동기 보정 배열 밖에서 돌린다.
     // 쪼갤 것이 없으면 await 조차 하지 않는다 — 로드 경로에 자시합을 더하면 지속화 순서가 바뀐다.
-    const facesRepaired = hasPendingFacesetSheetRepair(this.current)
-      ? await repairUploadedFacesetSheets(this.current)
+    const repairTarget = this.current;
+    const repairLineage = this.contentLineage;
+    const facesRepaired = hasPendingFacesetSheetRepair(repairTarget)
+      ? await repairUploadedFacesetSheets(repairTarget)
       : false;
-    if (facesRepaired) this.emit();
+    // The repair mutates its captured object, not necessarily the current project.
+    // A normal edit can also replace that object without advancing load lineage.
+    if (this.current !== repairTarget || this.contentLineage !== repairLineage) return;
+    if (facesRepaired) {
+      this.markLocalMutation({ scope: "system", origin: "system", label: "Faceset sheet migration" });
+      this.emit();
+    }
     // Boot load must not block the editor on a full remote rewrite (~2MB+).
     // Schedule deferred auto-save so the shell can paint first.
-    if ((changed || facesRepaired) && this.remotePersistenceEnabled) {
-      if (persistIfChanged) await this.persistCurrent();
-      else {
-        this.dirtySinceLastPersist = true;
-        this.scheduleAutoSave();
-      }
-    }
+    if ((changed || facesRepaired) && persistIfChanged
+      && this.current === repairTarget && this.contentLineage === repairLineage) this.scheduleAutoSave();
   }
 
   private refreshSupabaseResourceCache(): void {
@@ -1235,6 +1499,14 @@ class ProjectStore {
 }
 
 export const store = new ProjectStore();
+
+function nameNewProject(project: Project, title: string): void {
+  const playerTitle = project.system.titleScreen?.title?.trim();
+  if (!playerTitle || playerTitle === defaultTitleScreenSettings().title) {
+    project.system.titleScreen = { ...(project.system.titleScreen ?? defaultTitleScreenSettings()), title };
+  }
+  project.meta = { ...project.meta, title };
+}
 
 function browserHref(): string | null {
   if (typeof window === "undefined") return null;

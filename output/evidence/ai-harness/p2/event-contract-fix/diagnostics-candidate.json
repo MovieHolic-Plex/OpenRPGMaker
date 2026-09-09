@@ -1,0 +1,7 @@
+{
+  "mode": "candidate",
+  "base": "6f203da81c6d9d956a0e4b8d23c3f9f0a2b23c19",
+  "typescript": "5.9.3",
+  "file": "test/assistantVerificationEvidence.test.ts",
+  "diagnostics": []
+}

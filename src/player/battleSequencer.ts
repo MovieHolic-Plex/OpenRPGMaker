@@ -1,5 +1,5 @@
 import type { ActorCommand, BattleRuntime, BattleSnapshot } from "@/battle/runtime";
-import type { BattleActionResultSnapshot, BattleAnimationSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
+import type { BattleActionResultSnapshot, BattleAnimationSnapshot, BattleEventChoiceSnapshot, BattleEventPauseSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
 import { withJosa } from "@/util/josa";
 import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import {
@@ -60,6 +60,8 @@ export type ScheduleFn = (callback: () => void, delayMs: number) => number;
 export type ClearScheduleFn = (timerId: number) => void;
 
 export interface BattleSequencerHooks {
+  readonly onEventPause?: (request: Exclude<BattleEventPauseSnapshot, { kind: "wait" }>) => void;
+  readonly onEventChoice?: (request: BattleEventChoiceSnapshot) => void;
   readonly onDirectorState: (state: BattleDirectorState) => void;
   readonly onSyncView: () => void;
   readonly onDamageFeedback: (feedback: DamageFeedback | undefined) => void;
@@ -83,6 +85,7 @@ export interface BattleSequencer {
   startIntro(snapshot: BattleSnapshot): void;
   runAfterActorCommand(command: ActorCommand, before: BattleSnapshot, after: BattleSnapshot): void;
   runAfterEnemyAdvance(before: BattleSnapshot, after: BattleSnapshot): void;
+  runAfterEventChoice(before: BattleSnapshot, after: BattleSnapshot): void;
   cancel(): void;
 }
 
@@ -98,6 +101,9 @@ export function createBattleSequencer(
   // Ordered timeline cursor. A sequencer is created with its runtime, so facts
   // appended during strict-round setup remain pending for the first sequence.
   let consumedTimeline = 0;
+  let announcedChoiceId: number | undefined;
+  let announcedPauseId: number | undefined;
+  let generation = 0;
 
   function setBusy(next: boolean): void {
     busy = next;
@@ -109,15 +115,24 @@ export function createBattleSequencer(
   }
 
   function clearTimers(): void {
+    generation += 1;
     for (const timerId of timers) clearSchedule(timerId);
     timers.clear();
   }
 
-  function delay(callback: () => void, ms: number): void {
+  function delay(callback: () => void, ms: number, authored = false): void {
     const reduced = typeof window !== "undefined" && typeof window.matchMedia === "function"
       && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const scaledMs = reduced ? 10 : Math.max(10, Math.round(ms / Math.max(0.2, speedMultiplier)));
-    trackTimer(schedule(callback, scaledMs));
+    const scheduledGeneration = generation;
+    let timer: number | undefined;
+    let fired = false;
+    timer = schedule(() => {
+      fired = true;
+      if (timer !== undefined) timers.delete(timer);
+      if (generation === scheduledGeneration) callback();
+    }, authored ? ms : scaledMs);
+    if (!fired) trackTimer(timer);
   }
 
   function clearMotion(): void {
@@ -179,7 +194,30 @@ export function createBattleSequencer(
   function finishTurn(previous: BattleDirectorState): void {
     clearMotion();
     const snapshot = runtime.snapshot();
-    consumedTimeline = snapshot.timeline.length;
+    if (snapshot.eventPause) {
+      hooks.onDamageFeedback(undefined);
+      hooks.onSyncView();
+      const request = snapshot.eventPause;
+      if (announcedPauseId !== request.id) {
+        announcedPauseId = request.id;
+        if (request.kind === "wait") {
+          delay(() => {
+            const before = runtime.snapshot();
+            if (runtime.resumeEventPause(request.id, { kind: "wait" })) resumeEvents(before, runtime.snapshot());
+          }, request.ms, true);
+        } else hooks.onEventPause?.(request);
+      }
+      return;
+    }
+    if (snapshot.eventChoice) {
+      hooks.onDamageFeedback(undefined);
+      hooks.onSyncView();
+      if (announcedChoiceId !== snapshot.eventChoice.id) {
+        announcedChoiceId = snapshot.eventChoice.id;
+        hooks.onEventChoice?.(snapshot.eventChoice);
+      }
+      return;
+    }
     if (snapshot.result) {
       delay(() => {
         revealResult(snapshot, previous);
@@ -405,6 +443,19 @@ export function createBattleSequencer(
     }, BATTLE_RESOLVE_MS);
   }
 
+  function resumeEvents(_before: BattleSnapshot, after: BattleSnapshot): void {
+    clearTimers();
+    setBusy(true);
+    const entries = after.timeline.slice(consumedTimeline);
+    consumedTimeline = after.timeline.length;
+    playTimelineEntries(entries, after, () => {
+      const current = runtime.snapshot();
+      if (current.battleFlow === "gauge" && current.phase === "charging" && !current.result) {
+        resolveEnemyTurns(commandPromptState(current));
+      } else finishTurn(commandPromptState(current));
+    });
+  }
+
   return {
     get busy() {
       return busy;
@@ -424,9 +475,10 @@ export function createBattleSequencer(
       // 파티 몬스터 전투는 "야생의 X가 나타났다!" 다음에 "가라, Y!" 를 한 비트 더 준다.
       const sendOut = sendOutDirectorState(snapshot);
       const toCommandPrompt = (): void => {
-        hooks.onDirectorState(commandPromptState(snapshot));
-        setBusy(false);
-        hooks.onSyncView();
+        const current = runtime.snapshot();
+        const entries = current.timeline.slice(consumedTimeline);
+        consumedTimeline = current.timeline.length;
+        playTimelineEntries(entries, current, () => finishTurn(commandPromptState(current)));
       };
       delay(() => {
         if (!sendOut) {
@@ -455,7 +507,7 @@ export function createBattleSequencer(
       const finish = (): void => {
         clearMotion();
         hooks.onDamageFeedback(undefined);
-        if (after.battleFlow === "strict" || runtime.snapshot().result) {
+        if (after.battleFlow === "strict" || runtime.snapshot().result || runtime.snapshot().eventChoice || runtime.snapshot().eventPause) {
           finishTurn(actingState);
         } else {
           resolveEnemyTurns(actingState);
@@ -477,24 +529,12 @@ export function createBattleSequencer(
     runAfterEnemyAdvance(_before: BattleSnapshot, after: BattleSnapshot): void {
       if (busy) return;
       const entries = after.timeline.slice(consumedTimeline);
-      if (entries.length === 0) return;
+      if (entries.length === 0 && !after.eventChoice && !after.eventPause && !after.result) return;
       consumedTimeline = after.timeline.length;
       setBusy(true);
-      playTimelineEntries(entries, after, () => {
-        clearMotion();
-        const snapshot = runtime.snapshot();
-        consumedTimeline = snapshot.timeline.length;
-        if (snapshot.result) {
-          revealResult(snapshot, commandPromptState(snapshot));
-          setBusy(false);
-          return;
-        }
-        hooks.onDirectorState(directorStateAfterTurn(snapshot, commandPromptState(snapshot)));
-        hooks.onDamageFeedback(undefined);
-        hooks.onSyncView();
-        setBusy(false);
-      });
+      playTimelineEntries(entries, after, () => finishTurn(commandPromptState(after)));
     },
+    runAfterEventChoice: resumeEvents,
     cancel(): void {
       clearTimers();
       clearMotion();

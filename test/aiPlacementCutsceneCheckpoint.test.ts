@@ -117,6 +117,7 @@ describe("script_cutscene 통행 가능 착지", () => {
     const result = getTool("script_cutscene")!.run(project, {
       mapId,
       eventId: "ev_existing_water",
+      mode: "append",
       trigger: "playerTouch",
       beats: [{ kind: "say", speaker: "나", text: "밟으면 시작한다." }],
     });
@@ -174,7 +175,10 @@ describe("체크포인트·컷신 기존 이벤트 재사용", () => {
     });
     const cutscenes = map.events.filter((event) => event.id === "ev_memory");
     expect(cutscenes).toHaveLength(1);
-    expect(cutscenes[0].pages).toHaveLength(2);
+    expect(cutscenes[0].pages).toHaveLength(1);
+    expect(cutscenes[0].pages?.[0].commands).toEqual(expect.arrayContaining([
+      expect.objectContaining({ kind: "text", body: "두 번째 장면." }),
+    ]));
     expect([cutscenes[0].x, cutscenes[0].y]).toEqual([8, 8]);
   });
 });

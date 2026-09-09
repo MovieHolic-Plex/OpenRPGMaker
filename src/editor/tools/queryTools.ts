@@ -4,6 +4,7 @@
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
 import { queryNpcGraphics } from "@/assets/charsetQuery";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { searchResources, type ResourceSearchKind } from "@/assets/resourceSearch";
 import { isPassable } from "@/project/collision";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
@@ -29,6 +30,7 @@ import { passageMarkForTile } from "@/project/tilesetPassage";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
+import { validateArgs } from "./jsonSchema";
 
 /** 호수/강 등 물 지형(레거시 WATER 상수 + 타일 그림판/오토타일). */
 export function isMapWaterTile(tile: number): boolean {
@@ -389,6 +391,11 @@ const listNpcGraphics: ToolDefinition = {
       gender: match.entry.gender,
       age: match.entry.age,
       tags: match.entry.tags,
+      nativeGraphic: {
+        sprite: { type: "bundled", id: match.entry.textureKey },
+        direction: "down",
+        pattern: charsetFrameIndex({ characterIndex: match.entry.characterIndex, direction: "down", pattern: 1 }),
+      },
     }));
     const label = query && query.trim().length > 0 ? `"${query}"` : "기본";
     return { summary: `NPC 그래픽 ${matches.length}개 조회(${label})`, data: { matches } };
@@ -402,20 +409,49 @@ const listResources: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      kind: { type: "string", enum: RESOURCE_KINDS as unknown as string[] },
+      kind: { type: "string", enum: RESOURCE_KINDS },
       query: { type: "string" },
+      offset: { type: "integer", minimum: 0, description: "시작 위치(기본 0)" },
+      limit: { type: "integer", minimum: 1, maximum: 50, description: "반환 개수(기본 20, 최대 50)" },
     },
     required: ["kind", "query"],
   },
   run(project, args): ToolExecResult {
-    const kind = args.kind as ResourceSearchKind;
-    if (!RESOURCE_KINDS.includes(kind)) throw new ToolError(`알 수 없는 리소스 종류: ${kind}`, { code: "invalid-kind" });
+    const kind = RESOURCE_KINDS.find(entry => entry === args.kind);
+    if (!kind) throw new ToolError(`알 수 없는 리소스 종류: ${String(args.kind)}`, { code: "invalid-kind" });
+    if (typeof args.query !== "string") {
+      throw new ToolError("query는 문자열이어야 합니다.", { code: "invalid-args" });
+    }
+    const offset = args.offset === undefined ? 0 : args.offset;
+    const limit = args.limit === undefined ? 20 : args.limit;
+    // The shared schema runner checks integer types, but not numeric bounds.
+    if (typeof offset !== "number" || !Number.isSafeInteger(offset) || offset < 0) {
+      throw new ToolError("offset은 0 이상의 정수여야 합니다.", { code: "invalid-args" });
+    }
+    if (typeof limit !== "number" || !Number.isInteger(limit) || limit < 1 || limit > 50) {
+      throw new ToolError("limit은 1~50의 정수여야 합니다.", { code: "invalid-args" });
+    }
     // 타일 검색은 프로젝트에 기록된 사용자 메타데이터(맵 인터뷰 결과)를 겹쳐 검색한다.
-    const matches = searchResources(kind, args.query as string, {
+    const all = searchResources(kind, args.query, {
       tileset: project.tilesets[DEFAULT_TILESET_ID],
       charsetLabels: project.charsetLabels,
-    }).slice(0, 20);
-    return { summary: `리소스 ${matches.length}개 검색됨("${args.query}", ${kind})`, data: { matches } };
+      audioProject: project,
+      monsterProject: project,
+    });
+    const matches = all.slice(offset, offset + limit).map(match =>
+      match.description === undefined
+        ? match
+        : {
+          ...match,
+          description: match.description.slice(0, 240),
+          descriptionTruncated: match.description.length > 240,
+        },
+    );
+    const nextOffset = offset + matches.length < all.length ? offset + matches.length : null;
+    return {
+      summary: `리소스 ${matches.length}개 검색됨("${args.query}", ${kind})`,
+      data: { matches, total: all.length, nextOffset },
+    };
   },
 };
 
@@ -481,6 +517,21 @@ function toReachSpecs(value: unknown): Array<{ mapId: string; from: ReachPoint; 
   return value as Array<{ mapId: string; from: ReachPoint; targets: ReachPoint[] }>;
 }
 
+/** Shared read-only producer for the registered check and host pre-write provenance. */
+export function runProjectLint(project: Project, args: Record<string, unknown>): ToolExecResult {
+  const issues: LintIssue[] = [
+    ...projectLint(project, { reachability: toReachSpecs(args.reachability) }),
+    ...lintTilesetPalettes(project),
+    ...verifyPlacedTiles(project),
+  ];
+  const errors = issues.filter((issue) => issue.severity === "error").length;
+  const warnings = issues.filter((issue) => issue.severity === "warning").length;
+  const infos = issues.filter((issue) => issue.severity === "info").length;
+  return { summary: `lint: error ${errors}건 / warning ${warnings}건 / info ${infos}건`,
+    issues: issues.filter(issue => issue.relocation !== undefined),
+    data: { counts: { errors, infos, warnings }, issues } };
+}
+
 const runLint: ToolDefinition = {
   name: "run_lint",
   description: "projectLint, 타일셋 팔레트 lint, 타일 후검증을 실행해 무결성 issue 목록(error/warning/info)을 반환한다.",
@@ -503,17 +554,7 @@ const runLint: ToolDefinition = {
       },
     },
   },
-  run(project, args): ToolExecResult {
-    const issues: LintIssue[] = [
-      ...projectLint(project, { reachability: toReachSpecs(args.reachability) }),
-      ...lintTilesetPalettes(project),
-      ...verifyPlacedTiles(project),
-    ];
-    const errors = issues.filter((issue) => issue.severity === "error").length;
-    const warnings = issues.filter((issue) => issue.severity === "warning").length;
-    const infos = issues.filter((issue) => issue.severity === "info").length;
-    return { summary: `lint: error ${errors}건 / warning ${warnings}건 / info ${infos}건`, data: { counts: { errors, infos, warnings }, issues } };
-  },
+  run: runProjectLint,
 };
 
 const checkReachabilityTool: ToolDefinition = {
@@ -532,7 +573,15 @@ const checkReachabilityTool: ToolDefinition = {
   run(project, args): ToolExecResult {
     const mapId = args.mapId as string;
     if (!project.maps[mapId]) throw new ToolError(`맵을 찾을 수 없습니다: ${mapId}`, { code: "map-not-found", mapId });
-    const result = checkReachability(project, mapId, args.from as ReachPoint, args.targets as ReachPoint[]);
+    // The runner checks only the outer shape; malformed points are argument
+    // failures, never negative artifact evidence from the reachability BFS.
+    const targets = args.targets as ReachPoint[];
+    const points = [["from", args.from], ...targets.map((point, index) => [`targets[${index}]`, point])] as const;
+    for (const [path, point] of points) {
+      const errors = validateArgs(COORD_SCHEMA, point);
+      if (errors.length > 0) throw new ToolError(`${path}: ${errors.join("; ")}`, { code: "invalid-args", mapId });
+    }
+    const result = checkReachability(project, mapId, args.from as ReachPoint, targets);
     return {
       summary: `도달성: ${result.reachable ? "전부 도달 가능" : `${result.unreachable.length}개 도달 불가`}`,
       data: { reachable: result.reachable, unreachable: result.unreachable },
@@ -620,6 +669,7 @@ const DB_COLLECTIONS = [
   "actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states",
   "battleAnimations", "switches", "variables", "commonEvents", "quests", "maps",
   "elements", "monsterSpecies", "lifeSkills", "farmAnimalSpecies", "crops",
+  "characterAppearances",
 ] as const;
 type DbCollection = (typeof DB_COLLECTIONS)[number];
 
@@ -644,7 +694,7 @@ function collectionEntries(project: Project, collection: DbCollection): { id: st
 
 const getDatabaseRecords: ToolDefinition = {
   name: "get_database_records",
-  description: "컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만 조회, limit/offset으로 페이지 조회 가능. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies/lifeSkills/farmAnimalSpecies/crops.",
+  description: "컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만 조회, limit/offset으로 페이지 조회 가능. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies/lifeSkills/farmAnimalSpecies/crops/characterAppearances.",
   mode: "read",
   parameters: {
     type: "object",

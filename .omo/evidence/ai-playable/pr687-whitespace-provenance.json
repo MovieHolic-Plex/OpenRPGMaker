@@ -1,0 +1,530 @@
+[
+  {
+    "path": ".omo/evidence/life-full-20260906/7/build.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/7/final-green.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/7/green.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/7/raw-whitespace.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/7/red.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/7/setup-failure.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/7/setup-format-failure.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/7/typecheck.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/8/build.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/8/green-attempt1.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/8/green-final.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/8/green-focused.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/8/raw-whitespace.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/8/red-corrected-fixture.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/8/red-hand-intent.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/8/red-overlap.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/8/red.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/8/setup-no-patch.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/8/typecheck.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/phase3-gate-triage/common-comparison.md",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stdout.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stdout.txt",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/phase3-verification/final/build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/phase3-verification/final/focused.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/phase3-verification/final/typecheck.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/phase3-verification/tools/build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/phase3-verification/tools/editor-unit.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/phase3-verification/tools/focused.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/phase3-verification/tools/typecheck.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/sweep7-life/focused.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/sweep7-life/typecheck-serial.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": ".omo/evidence/sweep7-life/typecheck.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/baseline-tests.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/contract-compat-fix/p2-residual-base.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/contract-compat-fix/p2-residual-current.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/contract-compat-fix/red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/event-contract-fix/green/command.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/event-contract-fix/red/command.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/event-contract-fix/source.diff",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-blocked-control-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-blocked-control-final-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-blocked-control-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-blocked-control-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-blocked-history-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-drain-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-drain-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-drain-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-driver-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-entry-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-entry-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-entry-red-small-fixture.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-entry-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-final-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-focused-attempt.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-green-attempt.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-lifecycle.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-ownership-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-policy-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-policy-final-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-policy-green-attempt.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-policy-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-settlement-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/integration-typecheck.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/main-compat/build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/main-compat/exact-invocations-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/main-compat/final-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/main-compat/initial-targeted.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/main-compat/interacting.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/main-compat/milestone-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/main-compat/targeted.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/main-compat/typecheck.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/main-compat/verified-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/main-increment/build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/outcome-model-behavior-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/outcome-model-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/outcome-model-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/outcome-model-typecheck-complete.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/outcome-model-typecheck.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-cost-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-cost-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-cost-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-cost-typecheck.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-edge-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-final-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-final-tests.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-final-typecheck.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-fixture-correction.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-green-attempt.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-late-evidence-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-legacy-fixture-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-link-independence-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-question-dispatch-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-question-dispatch-contract-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-question-dispatch-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-question-dispatch-read-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-question-dispatch-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-question-dispatch-typecheck.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-red-contracts.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-source-utterance-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-source-utterance-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-source-utterance-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-source-utterance-typecheck.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-typecheck-final.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/requirements-typecheck.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/schema-compat-fix/build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/schema-compat-fix/diagnostics-final.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/schema-compat-fix/diagnostics-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/schema-compat-fix/observed-p2-residual-base.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/schema-compat-fix/observed-p2-residual-current.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/schema-compat-fix/red-existing.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/schema-compat-fix/red-regression.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/ui-autonomous-attempt.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/ui-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/ui-explicit-resume-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/ui-explicit-resume-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/ui-explicit-resume-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/ui-final-build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/ui-final-green.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/ui-green-attempt.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/ai-harness/p2/ui-red.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/monster-catalog/final-main-integration/build.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/monster-catalog/final-main-integration/focused.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/monster-catalog/final-main-integration/index-resolution.patch",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/monster-catalog/final-main-integration/typecheck-app.log",
+    "unchangedUpstream": true
+  },
+  {
+    "path": "output/evidence/monster-catalog/final-main-integration/whitespace-check.log",
+    "unchangedUpstream": true
+  }
+]

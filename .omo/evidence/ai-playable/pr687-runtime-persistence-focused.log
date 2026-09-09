@@ -1,0 +1,193 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistenceProof.test.ts test/storePersistenceLineage.test.ts test/storeDeferredLineage.test.ts test/storeLifecycleReentrancy.test.ts test/interiorLoadConsistency.test.ts test/monsterMetadataPersistence.test.ts test/functionalInterpreterResume.test.ts test/functionalWalkSuspension.test.ts test/functionalScenePurchase.test.ts test/sceneTestRunner.test.ts test/lifeFieldInteraction.test.ts test/actionTools.test.ts test/actionAuthoringPrerequisites.test.ts test/monsterAppearanceSession.test.ts test/assistantDependencyRetry.test.ts test/tileQueryBoundaries.test.ts test/resourceSearch.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/assistantDependencyRetry.test.ts (16 tests) 38172ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=false)  2665ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=true)  2332ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=false)  1740ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=true)  1703ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=false)  2453ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=true)  2275ms
+   ✓ batch prerequisites through AssistantSession > defers new-record dependents transitively without charging their retries (read contract=false)  3016ms
+   ✓ batch prerequisites through AssistantSession > defers new-record dependents transitively without charging their retries (read contract=true)  2981ms
+   ✓ batch prerequisites through AssistantSession > keeps an existing record available after its update is deferred  1837ms
+   ✓ batch prerequisites through AssistantSession > keeps an existing record available after its update is failed  1886ms
+   ✓ batch prerequisites through AssistantSession > keeps the failed-read whole-batch contract and excludes deferred writes from the failure budget  1298ms
+   ✓ stable target retry budgets through AssistantSession > bounds fresh-batch lookup refusals without claiming they executed  1814ms
+   ✓ stable target retry budgets through AssistantSession > does not charge downstream same-batch refusals against their independent retry target  2194ms
+   ✓ stable target retry budgets through AssistantSession > bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user  5558ms
+   ✓ stable target retry budgets through AssistantSession > successful correction resets that target's accumulated failures  2427ms
+   ✓ stable target retry budgets through AssistantSession > does not execute attempts beyond the bound even within one model batch  1990ms
+ ✓ test/storePersistenceLineage.test.ts (8 tests) 83249ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reload during PATCH  25026ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after load during PATCH  11126ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reconnect during PATCH  10630ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reload even for identical content  7653ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on load even for identical content  8715ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reconnect even for identical content  8766ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on adopt even for identical content  6197ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on fallback even for identical content  5134ms
+ ✓ test/storePersistenceProof.test.ts (18 tests) 25600ms
+   ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  2178ms
+   ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  1762ms
+   ✓ accepted revision persistence proof > uses the ordinary normalized remote load and map-overlay contract  1299ms
+   ✓ accepted revision persistence proof > does not verify a matching projects row when the ordinary map read fails  800ms
+   ✓ accepted revision persistence proof > binds the receipt to the accepted merged project, not the unmerged live store  1700ms
+   ✓ accepted revision persistence proof > keeps open event drafts local and out of accepted content identity  4204ms
+   ✓ accepted revision persistence proof > rejects a copied token without issuing a read  1283ms
+   ✓ accepted revision persistence proof > does not verify a failed read  1338ms
+   ✓ accepted revision persistence proof > does not verify a missing read  682ms
+   ✓ accepted revision persistence proof > does not verify a disabled read  698ms
+   ✓ accepted revision persistence proof > does not verify a cancelled read  953ms
+   ✓ accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged  1190ms
+   ✓ accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged  1432ms
+   ✓ accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision  1323ms
+   ✓ accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them  1114ms
+   ✓ accepted revision persistence proof > pins the original target across a configuration change during read  1431ms
+   ✓ accepted revision persistence proof > does not verify when cancelled while the read is in flight  1045ms
+   ✓ accepted revision persistence proof > does not verify when disabled while the read is in flight  1166ms
+ ✓ test/storeDeferredLineage.test.ts (13 tests) 65760ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's migration callback on clean B before any state or persistence access  5153ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's retry callback on clean B before any state or persistence access  4284ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's health callback on clean B before any state or persistence access  4916ms
+   ✓ deferred store persistence owns its scheduling lineage > A's migration callback cannot save dirty B or steal B's newer timer  4908ms
+   ✓ deferred store persistence owns its scheduling lineage > A's retry callback cannot save dirty B or steal B's newer timer  4713ms
+   ✓ deferred store persistence owns its scheduling lineage > A's health callback cannot save dirty B or steal B's newer timer  4140ms
+   ✓ deferred store persistence owns its scheduling lineage > a superseded same-lineage migration timer cannot consume the newer edit timer  4281ms
+   ✓ deferred store persistence owns its scheduling lineage > the current migration callback persists migration and catches up concurrent edits  5156ms
+   ✓ deferred store persistence owns its scheduling lineage > the current retry callback persists migration and catches up concurrent edits  4582ms
+   ✓ deferred store persistence owns its scheduling lineage > the current health callback persists migration and catches up concurrent edits  5922ms
+   ✓ deferred store persistence owns its scheduling lineage > a pending subscriber's replacement keeps its own timer registration  4173ms
+   ✓ deferred store persistence owns its scheduling lineage > an error subscriber's replacement does not acquire the old failed save's retry  4164ms
+   ✓ deferred store persistence owns its scheduling lineage > an in-flight A health response cannot clear B's retry or persist B  9365ms
+ ❯ test/monsterMetadataPersistence.test.ts (5 tests | 1 failed) 47702ms
+   ✓ monster metadata concurrent persistence > merges per-field local deltas when a real conditional save loses its first SHA race  8067ms
+   ✓ monster metadata concurrent persistence > reconciles remote fields without recording an edit when consecutive map saves complete  13586ms
+   ✓ monster metadata concurrent persistence > preserves fresh fields and live maps when a save response arrives late  10519ms
+   × monster metadata concurrent persistence > does not adopt old metadata when a different project replaces the submitted lineage 8352ms
+     → expected { old: { name: 'OLD_REMOTE' } } to deeply equal { Object (replacement) }
+   ✓ monster metadata concurrent persistence > retains baseline and fresh input when a deferred write fails  7176ms
+ ✓ test/interiorLoadConsistency.test.ts (30 tests) 60301ms
+   ✓ interior authoring/load fixed point > shares all 39 group records across authoring and load without runtime reseeding by supplemental groups  983ms
+   ✓ interior authoring/load fixed point > preserves exact IDs and complete user-source group records  1388ms
+   ✓ interior authoring/load fixed point > preserves exact IDs and complete user-origin group records  5101ms
+   ✓ interior authoring/load fixed point > preserves exact IDs and complete ambiguous-bundled group records  1567ms
+   ✓ interior authoring/load fixed point > constructs an upper cabinet retaining floor 72 before any load repair  1052ms
+   ✓ interior authoring/load fixed point > constructs an upper cabinet retaining floor 102 before any load repair  976ms
+   ✓ interior authoring/load fixed point > repairs the complete untouched legacy kit before it can regain writer precedence  1217ms
+   ✓ interior authoring/load fixed point > leaves ambiguous/custom legacy kit and lower cells intact: authored  1423ms
+   ✓ interior authoring/load fixed point > leaves ambiguous/custom legacy kit and lower cells intact: graft  361ms
+   ✓ interior authoring/load fixed point > leaves ambiguous/custom legacy kit and lower cells intact: source  359ms
+   ✓ interior authoring/load fixed point > leaves ambiguous/custom legacy kit and lower cells intact: origin  342ms
+   ✓ interior authoring/load fixed point > leaves ambiguous/custom legacy kit and lower cells intact: locked  322ms
+   ✓ interior authoring/load fixed point > leaves ambiguous/custom legacy kit and lower cells intact: lower  370ms
+   ✓ interior authoring/load fixed point > leaves ambiguous/custom legacy kit and lower cells intact: priority  454ms
+   ✓ interior authoring/load fixed point > leaves ambiguous/custom legacy kit and lower cells intact: group-layer  409ms
+   ✓ interior authoring/load fixed point > keeps graphic title and authored nondefaults identity-significant  3569ms
+   ✓ interior authoring/load fixed point > keeps both title and authored nondefaults identity-significant  3447ms
+   ✓ real editor load/save migration lifecycle > room pipeline -> save -> fresh store has equal existing canonical identity and stays clean  12596ms
+   ✓ real editor load/save migration lifecycle > load marks migration pending after active load, retains dirty on failure, and catches up concurrent edits  8549ms
+   ✓ real editor load/save migration lifecycle > reconnect marks migration pending after active load, retains dirty on failure, and catches up concurrent edits  7756ms
+   ✓ real editor load/save migration lifecycle > reload marks migration pending after active load, retains dirty on failure, and catches up concurrent edits  6400ms
+ ✓ test/storeLifecycleReentrancy.test.ts (6 tests) 45894ms
+   ✓ store lifecycle callback ownership > still marks and persists a faceset repair when its target stays current  10318ms
+   ✓ store lifecycle callback ownership > a detached faceset repair cannot dirty or save the current switch target  8045ms
+   ✓ store lifecycle callback ownership > a detached faceset repair cannot dirty or save the current edit target  7663ms
+   ✓ store lifecycle callback ownership > a saving subscriber's replacement is not authorized by the old flush (own flush: false)  7441ms
+   ✓ store lifecycle callback ownership > a saving subscriber's replacement is not authorized by the old flush (own flush: true)  6739ms
+   ✓ store lifecycle callback ownership > keeps same-lineage edits from a saving subscriber in the submitted snapshot  5684ms
+ ✓ test/monsterAppearanceSession.test.ts (7 tests) 22354ms
+   ✓ 'upsert_enemy' actual assistant appearance flow > blocks unseen same-batch reads then accepts an observed full read with a custom boss name  3937ms
+   ✓ 'upsert_enemy' actual assistant appearance flow > rejects goblin intent paired with observed slime art  3255ms
+   ✓ 'define_monster_species' actual assistant appearance flow > blocks unseen same-batch reads then accepts an observed full read with a custom boss name  3860ms
+   ✓ 'define_monster_species' actual assistant appearance flow > rejects goblin intent paired with observed slime art  2784ms
+   ✓ 'make_action_enemy' actual assistant appearance flow > blocks unseen same-batch reads then accepts an observed full read with a custom boss name  2822ms
+   ✓ 'make_action_enemy' actual assistant appearance flow > rejects goblin intent paired with observed slime art  2586ms
+   ✓ delivers the complete index and full metadata through actual model-facing serialization  3094ms
+ ✓ test/tileQueryBoundaries.test.ts (43 tests) 6161ms
+   ✓ tile_query 'similar' selectors > uses the target map's distinct tileset without an explicit tileset  609ms
+   ✓ tile_query 'unclassified' selectors > uses the target map's distinct tileset without an explicit tileset  508ms
+ ✓ test/functionalScenePurchase.test.ts (9 tests) 2246ms
+   ✓ public scene purchase transaction > walks to the seller and buys exact stock with real gold and inventory deltas  697ms
+   ✓ public scene purchase transaction > buys the requested total through repeated production transactions in a single-quantity shop  426ms
+ ✓ test/actionAuthoringPrerequisites.test.ts (21 tests) 18826ms
+   ✓ action authoring prerequisites > updates an explicitly identified spawn on retry but appends when no id is supplied  2920ms
+   ✓ action authoring prerequisites > persists existing dodge and guard knobs through the runtime resolver  559ms
+   ✓ action authoring prerequisites > leaves the supplied draft untouched when the troop prerequisite fails  495ms
+   ✓ action authoring prerequisites > leaves the supplied draft untouched when the resource prerequisite fails  489ms
+   ✓ action authoring prerequisites > leaves the supplied draft untouched when the map prerequisite fails  465ms
+   ✓ action authoring prerequisites > leaves the supplied draft untouched when the membership prerequisite fails  418ms
+   ✓ action authoring prerequisites > leaves the supplied draft untouched when the area prerequisite fails  378ms
+   ✓ action authoring prerequisites > does not enable the system when the selected map does not exist  456ms
+   ✓ action authoring prerequisites > authors enemy then troop then spawn through the real tool runner  1722ms
+   ✓ action authoring prerequisites > rejects explicit 'update' with target 'missing_spawn' before any mutation  1331ms
+   ✓ action authoring prerequisites > rejects explicit 'update' with target undefined before any mutation  1449ms
+   ✓ action authoring prerequisites > rejects explicit 'update' with target ' ' before any mutation  783ms
+   ✓ action authoring prerequisites > rejects explicit 'add' with target 'arena_spawn' before any mutation  592ms
+   ✓ action authoring prerequisites > rejects explicit 'udpate' with target 'arena_spawn' before any mutation  1180ms
+   ✓ action authoring prerequisites > rejects a spawn mode without a spawn before changing the enemy  1348ms
+   ✓ action authoring prerequisites > does not update a spawn identity that only exists on another map  888ms
+   ✓ action authoring prerequisites > updates exact spawns and explicitly adds another without losing authored settings  731ms
+   ✓ action authoring prerequisites > removes only the exact authored spawn and preserves enemies and other entries  1178ms
+   ✓ action authoring prerequisites > rejects removal of 'missing_spawn' with referenced=false without mutation  695ms
+   ✓ action authoring prerequisites > rejects removal of 'arena_spawn' with referenced=true without mutation  700ms
+ ✓ test/sceneTestRunner.test.ts (15 tests) 2696ms
+   ✓ run_scene_test > cross-map reused event IDs and identical final map cannot discharge mapA using mapB  783ms
+ ✓ test/actionTools.test.ts (19 tests) 11656ms
+   ✓ action combat AI tools > set_action_combat writes system config and map opt-in  1531ms
+   ✓ action combat AI tools > make_action_enemy creates an enemy with a melee profile and spawn  1261ms
+   ✓ action combat AI tools > make_action_enemy modifies existing enemy and warns about non-opted map  780ms
+   ✓ action combat AI tools > make_action_enemy rejects invalid profiles and unknown troops  360ms
+   ✓ action combat AI tools > preserves authored attacks during partial action profile edits  744ms
+   ✓ action combat AI tools > replaces a supplied attack without discarding other authored profile fields  737ms
+   ✓ action combat AI tools > rejects malformed action profiles without mutation: 'quoted attack key'  512ms
+   ✓ action combat AI tools > rejects malformed action profiles without mutation: 'unknown profile key'  464ms
+   ✓ action combat AI tools > rejects malformed action profiles without mutation: 'unknown attack kind'  582ms
+   ✓ action combat AI tools > rejects malformed action profiles without mutation: 'missing attack fields'  431ms
+   ✓ action combat AI tools > rejects malformed action profiles without mutation: 'unknown attack key'  510ms
+   ✓ action combat AI tools > rejects malformed action profiles without mutation: 'non-object attack'  1569ms
+   ✓ action combat AI tools > accepts a complete melee attack  565ms
+   ✓ action combat AI tools > accepts a complete projectile attack  425ms
+ ✓ test/functionalInterpreterResume.test.ts (11 tests) 1959ms
+   ✓ consumed interpreter holds do not block resumed continuations > verifies the requested purchase even when its continuation transfers through a non-suspending initializer  440ms
+ ✓ test/resourceSearch.test.ts (22 tests) 219ms
+ ✓ test/functionalWalkSuspension.test.ts (5 tests) 943ms
+   ✓ functional walking preserves blocking interpreter ownership > rejects the forced-shop corridor rather than overwriting its pending continuation with the outgoing transfer  559ms
+ ✓ test/lifeFieldInteraction.test.ts (49 tests) 4084ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/monsterMetadataPersistence.test.ts > monster metadata concurrent persistence > does not adopt old metadata when a different project replaces the submitted lineage
+AssertionError: expected { old: { name: 'OLD_REMOTE' } } to deeply equal { Object (replacement) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "replacement": {[39m
+[32m-     "name": "NEW_PROJECT",[39m
+[31m+   "old": {[39m
+[31m+     "name": "OLD_REMOTE",[39m
+[2m    },[22m
+[2m  }[22m
+
+ ❯ test/monsterMetadataPersistence.test.ts:138:56
+    136|     // Then
+    137|     expect(store.getCurrent().monsterMetadata).toEqual(replacement.mon…
+    138|     expect(transport.accepted.at(-1)?.monsterMetadata).toEqual(replace…
+       |                                                        ^
+    139|     expect(store.hasUnsavedChanges()).toBe(false);
+    140|   }, 30_000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 16 passed (17)
+      Tests  1 failed | 296 passed (297)
+   Start at  01:32:23
+   Duration  270.58s (transform 21.20s, setup 0ms, collect 67.66s, tests 437.82s, environment 525ms, prepare 3.61s)
+

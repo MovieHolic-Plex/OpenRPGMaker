@@ -136,7 +136,7 @@
   .database-modal-body .oprn-record-enemies .oprn-record-list-pane h3 {
     background: transparent;
     color: var(--text-1);
-    font: 700 17px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 700 17px/1.2 var(--font-ui);
     margin: 0 0 12px;
   }
 
@@ -211,14 +211,7 @@
     padding-bottom: 24px;
   }
 
-  .database-modal-body .db-system-form {
-    grid-auto-rows: max-content;
-  }
 
-  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(4) {
-    max-height: 286px;
-    overflow: auto;
-  }
 
   .database-modal-body .animation-detail-form {
     align-content: start;
@@ -251,7 +244,7 @@
 
   .database-modal-body .db-animation-panel legend {
     color: var(--text-1);
-    font: 700 14px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 700 14px/18px var(--font-ui);
     margin: 0 0 8px;
     padding: 0;
   }
@@ -369,7 +362,7 @@
 
   .database-modal-body:has(:is(.db-parity-form, .db-common-events-workspace)) .db-body > h3 {
     color: var(--text-1);
-    font: 700 16px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 700 16px/1.2 var(--font-ui);
     margin: 0;
   }
 
@@ -423,7 +416,7 @@
   .database-modal-body .db-parity-form .oprn-db-fieldset legend {
     background: var(--bg-raised);
     color: var(--text-1);
-    font: 700 15px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 700 15px/1.2 var(--font-ui);
     padding: 0 4px;
   }
 
@@ -449,7 +442,7 @@
     box-sizing: border-box;
     color: var(--db-modern-muted);
     display: grid;
-    font: 500 13px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 500 13px/1.25 var(--font-ui);
     gap: 8px;
     grid-template-columns: minmax(72px, 0.28fr) minmax(0, 1fr);
     margin: 0;
@@ -471,7 +464,7 @@
     border-radius: 4px;
     box-sizing: border-box;
     color: var(--db-modern-text);
-    font: 400 14px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 400 14px/1.25 var(--font-ui);
     min-height: 30px;
     min-width: 0;
     padding: 4px 8px;
@@ -536,7 +529,7 @@
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
     color: var(--text-1);
-    font: 600 13px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 600 13px/1 var(--font-ui);
     min-height: 34px;
   }
 
@@ -557,7 +550,7 @@
     box-sizing: border-box;
     color: var(--text-1);
     display: grid;
-    font: 500 14px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 500 14px/1.25 var(--font-ui);
     gap: 8px;
     grid-template-columns: 54px minmax(0, 1fr) minmax(58px, auto);
     min-height: 34px;
@@ -603,7 +596,7 @@
     align-items: center;
     color: var(--db-modern-muted);
     display: grid;
-    font: 500 13px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 500 13px/1.25 var(--font-ui);
     gap: 10px;
     grid-template-columns: 72px minmax(0, 1fr);
     margin: 0;
@@ -649,8 +642,7 @@
   }
 
   .database-modal-body .db-common-event-editor .db-meta,
-  .database-modal-body .db-common-event-editor .db-id,
-  .database-modal-body .db-common-event-editor .db-field > span {
+.database-modal-body .db-common-event-editor .db-id {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -924,7 +916,7 @@
 
   .database-modal-body .oprn-record-enemies .db-enemy-rate-row span {
     color: var(--text-1);
-    font: 400 13px/18px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 400 13px/18px var(--font-ui);
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1019,48 +1011,12 @@
     padding-bottom: 16px;
   }
 
-  .database-modal-body .db-system-form {
-    padding-bottom: 96px;
-  }
 
-  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(4) {
-    display: grid;
-    gap: 8px 12px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 
-  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(4) legend {
-    grid-column: 1 / -1;
-  }
 
-  .database-modal-body .db-system-form {
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  }
 
-  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(4) {
-    max-height: none;
-    overflow: visible;
-  }
 
-  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(5) {
-    gap: 8px;
-  }
 
-  .database-modal-body .db-system-form .db-system-preview-well {
-    gap: 6px;
-    padding: 8px;
-  }
 
-  .database-modal-body .db-system-form .db-system-preview-frame {
-    aspect-ratio: 16 / 9;
-    max-height: 96px;
-  }
 
-  .database-modal-body .db-system-form .db-system-preview-well code {
-    font-size: 12px;
-    min-height: 26px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
 }

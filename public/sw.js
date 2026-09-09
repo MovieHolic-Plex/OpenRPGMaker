@@ -1,4 +1,4 @@
-const CACHE_NAME = "rpg-zzu-pwa-v1";
+const CACHE_NAME = "rpg-zzu-pwa-v2";
 const APP_SHELL_URLS = [
   "/",
   "/index.html",
@@ -36,7 +36,9 @@ self.addEventListener("fetch", (event) => {
 
 function shouldHandle(request) {
   const url = new URL(request.url);
-  return request.method === "GET" && url.origin === self.location.origin;
+  // The network owns byte ranges (including 206/416). Cache API keys ignore Range
+  // and cache.put rejects 206, so neither lookup nor insertion is safe here.
+  return request.method === "GET" && !request.headers.has("range") && url.origin === self.location.origin;
 }
 
 function shouldCacheFirst(request) {
@@ -48,7 +50,7 @@ async function networkFirst(request) {
   const cache = await caches.open(CACHE_NAME);
   try {
     const response = await fetch(request);
-    if (response.ok) await cache.put(request, response.clone());
+    if (response.status === 200) await cache.put(request, response.clone());
     return response;
   } catch (error) {
     return (await cache.match(request)) ?? (await cache.match("/index.html")) ?? Response.error();
@@ -59,7 +61,7 @@ async function cacheFirst(request) {
   const cached = await caches.match(request);
   if (cached) return cached;
   const response = await fetch(request);
-  if (response.ok) {
+  if (response.status === 200) {
     const cache = await caches.open(CACHE_NAME);
     await cache.put(request, response.clone());
   }

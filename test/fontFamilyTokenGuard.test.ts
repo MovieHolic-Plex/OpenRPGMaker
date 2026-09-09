@@ -69,19 +69,42 @@ function fontShorthandFamilies(css: string): string[] {
     const value = match[1].trim();
     // system/caret 등 시스템 단축 키워드는 패밀리를 담지 않는다.
     if (/^(inherit|initial|unset|revert|caption|icon|menu|message-box|small-caption|status-bar)$/u.test(value)) continue;
-    const size = value.match(/(?:^|\s)(?:[\d.]+(?:px|em|rem|pt|%|dvh|vh|vw)|clamp\([^)]*\)|x-large|large|medium|small)(?:\s*\/\s*[^\s]+)?\s+/u);
-    if (!size || size.index === undefined) continue;
-    families.push(value.slice(size.index + size[0].length).trim());
+    if (/^var\([^)]*\)(?:\s*!important)?$/u.test(value)) { families.push(value); continue; }
+    // Split only at top-level spaces: quoted families and clamp/var fallbacks
+    // may contain spaces. The last size candidate avoids treating a weight
+    // token (var(--font-weight-medium)) as the size in tokenized shorthands.
+    const tokens: { text: string; end: number }[] = [];
+    const bare = value.replace(/\s*!important$/u, "");
+    let start = 0, depth = 0, quote = "";
+    for (let index = 0; index <= bare.length; index += 1) {
+      const char = bare[index];
+      if (quote) { if (char === quote && bare[index - 1] !== "\\") quote = ""; }
+      else if (char === '"' || char === "'") quote = char;
+      else if (char === "(") depth += 1;
+      else if (char === ")") depth -= 1;
+      if (index === bare.length || (!quote && depth === 0 && /\s/u.test(char))) {
+        if (index > start) tokens.push({ text: bare.slice(start, index), end: index });
+        start = index + 1;
+      }
+    }
+    let familyStart: number | undefined;
+    for (let index = 0; index < tokens.length - 1; index += 1) {
+      if (tokens[index - 1]?.text === "/") continue;
+      const token = tokens[index];
+      if (!/^(?:[\d.]+(?:px|em|rem|pt|%|dvh|vh|vw)|(?:calc|min|max|clamp|var)\(.*\)|(?:xx?-)?(?:large|small)|xxx-large|medium|smaller|larger)(?:\/.*)?$/u.test(token.text)) continue;
+      familyStart = tokens[index + 1]?.text === "/" ? tokens[index + 2]?.end : token.end;
+    }
+    // Unsupported syntax must retain a consumer and fail closed.
+    families.push(familyStart === undefined ? bare : bare.slice(familyStart).trim());
   }
   return families;
 }
 
 /**
- * 단축 속성 검사는 **런타임 CSS 에 한정**한다. 플레이어가 보는 화면이 통일 대상이고,
- * 에디터 CSS(`sidebar.css`, `studio-theme.css`, `system-studio.css`, `event-editor/*`)에는
- * 리터럴 `font:` 단축 속성이 수십 건 남아 있다 — 갚아야 할 부채지만 별도 스윕 과제다.
+ * Runtime and database consumers include component-loaded stylesheets. Other
+ * editor surfaces remain outside this bounded shorthand migration.
  */
-const SHORTHAND_SCOPE = "src/styles/runtime/";
+const SHORTHAND_SCOPES = ["src/styles/runtime/", "src/styles/database/", "src/styles/editor/world-panel.css", "src/styles/editor/event-editor-legacy.part-1.css"];
 
 /**
  * 픽셀 글꼴에 없는 기하 심볼(U+25C7 U+2726 U+25C8 ...)을 그리는 슬롯. 토큰으로 바꾸면
@@ -123,7 +146,10 @@ function resolvesToRoleToken(
   const targets = declarations.get(name);
   if (!targets || targets.length === 0) return false;
   const nextSeen = new Set([...seen, name]);
-  return targets.every((target) => resolvesToRoleToken(target, declarations, nextSeen));
+  return targets.every((target) => {
+    const family = /^var\([^)]*\)$/u.test(target) ? target : fontShorthandFamilies(`a { font: ${target}; }`)[0] ?? target;
+    return resolvesToRoleToken(family, declarations, nextSeen);
+  });
 }
 
 describe("폰트 토큰 가드", () => {
@@ -150,7 +176,7 @@ describe("폰트 토큰 가드", () => {
     const violations: string[] = [];
     for (const file of files) {
       const rel = relative(repoRoot, file).split("\\").join("/");
-      if (!rel.startsWith(SHORTHAND_SCOPE)) continue;
+      if (!SHORTHAND_SCOPES.some((scope) => rel.startsWith(scope))) continue;
       if (SHORTHAND_ALLOWED.includes(rel)) continue;
       for (const family of fontShorthandFamilies(readFileSync(file, "utf8"))) {
         const bare = family.replace(/\s*!important$/u, "").trim();
@@ -181,6 +207,37 @@ describe("폰트 토큰 가드", () => {
     expect(resolvesToRoleToken(`"Malgun Gothic", "Segoe UI", sans-serif`, declarations)).toBe(false);
     expect(resolvesToRoleToken(`ui-monospace, Consolas, monospace`, declarations)).toBe(false);
     expect(resolvesToRoleToken(`var(--runtime-pixel-font)`, declarations)).toBe(true);
+  });
+
+  it("rejects DB shorthand and literal stacks hidden behind aliases", () => {
+    const declarations = new Map([
+      ["--db-hidden-font", ['"Arial", sans-serif']],
+      ["--db-hidden-shorthand", ['500 13px/1.35 "Arial"']],
+      ["--db-valid-shorthand", ['500 13px/1.35 var(--font-ui)']],
+      ["--db-weight", ["500"]],
+      ["--db-weighted-shorthand", ["var(--db-weight) 13px/1.35 var(--font-ui)"]],
+    ]);
+    for (const css of [
+      '.db-field { font: 500 13px/1.35 "Arial", sans-serif; }',
+      '.db-field { font: 500 13px/1.35 var(--db-hidden-font); }',
+      '.db-field { font: var(--db-hidden-shorthand); }',
+      '.db-field { font: 500 calc(12px + 1px) Arial; }',
+      '.db-field { font: 500 min(12px, 1rem) Arial; }',
+      '.db-field { font: xx-small Arial; }',
+      '.db-field { font: unsupported-size Arial; }',
+    ]) {
+      const families = fontShorthandFamilies(css);
+      expect(families).toHaveLength(1);
+      expect(families.filter((family) => !resolvesToRoleToken(family, declarations))).toHaveLength(1);
+    }
+    expect(resolvesToRoleToken('var(--db-valid-shorthand)', declarations)).toBe(true);
+    expect(resolvesToRoleToken('var(--db-weighted-shorthand)', declarations)).toBe(true);
+    for (const size of ['calc(12px + 1px)', 'min(12px, 1rem)', 'xx-small']) {
+      expect(fontShorthandFamilies(`a { font: 500 ${size} var(--font-mono); }`)
+        .every(family => resolvesToRoleToken(family, declarations))).toBe(true);
+    }
+    expect(fontShorthandFamilies('.db-field { font: 500 13px/1.35 var(--font-ui); }')
+      .every((family) => resolvesToRoleToken(family, declarations))).toBe(true);
   });
 
   // 소비지점이 아직 없는 리터럴 별칭은 위 규칙을 통과하므로 선언 쪽도 따로 막는다.

@@ -141,7 +141,8 @@
   border-radius: 4px;
   cursor: pointer;
   margin: 0;
-  padding: 2px 3px;
+  padding: var(--space-1);
+  min-height: var(--space-5);
   text-align: left;
   transition: color var(--transition-fast), background var(--transition-fast);
 }
@@ -632,6 +633,12 @@
   min-height: 32px;
 }
 
+/* The heading contains a 28px collapse button, not a one-line text label. */
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-header h3 {
+  min-height: 28px;
+  margin: 0;
+}
+
 /* 제목이 곧 접기 토글이다 — 갈매기 + 「맵」 + 개수. h3 안의 button 이라 heading 시맨틱은 남는다. */
 .map-tree-panel .map-tree-section-toggle {
   align-items: center;
@@ -863,8 +870,299 @@
   }
 }
 
-/* The beginner sheet measures its own flyout, not the 72px rail. */
-.editor-layout .left-panel-stack .basic-rail-flyout.is-tiles .chipset-sheet.tile-palette {
-  min-height: 120px;
+/* Beginner: persistent materials, with the sheet owning its scroll and width. */
+.editor-layout .left-panel-stack .basic-left-rail > .basic-rail-section {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  gap: var(--space-2);
+}
+
+.editor-layout .left-panel-stack .basic-left-rail .chipset-sheet.tile-palette {
   container-type: inline-size;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+}
+
+.editor-layout .basic-left-rail .basic-selected-tile,
+.editor-layout .basic-left-rail .tile-search-input,
+.editor-layout .basic-left-rail .basic-paint-guide {
+  flex: 0 0 auto;
+}
+
+.basic-paint-guide {
+  color: var(--text-2);
+  font: var(--font-weight-medium) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
+  margin: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
+  flex-wrap: wrap;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-scroll {
+  flex: 1 1 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-toolbar-menu > .oprn-tile-tool {
+  width: auto;
+  min-width: var(--space-6);
+  min-height: var(--space-6);
+  height: auto;
+  gap: var(--space-1);
+  padding: var(--space-1);
+}
+
+.sidebar-brush-controls,
+.sidebar-brush-sizes,
+.basic-tile-search-feedback {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  flex: 0 0 auto;
+  color: var(--text-2);
+  font-size: var(--font-size-sm);
+}
+
+.sidebar-brush-controls {
+  padding-block: var(--space-1);
+}
+
+.sidebar-brush-state {
+  margin-left: auto;
+}
+
+.editor-layout .sidebar-brush-controls .btn,
+.editor-layout .basic-tile-search-feedback .btn {
+  min-height: var(--space-6);
+  min-width: var(--space-6);
+  padding: var(--space-1);
+}
+
+.sidebar-tool-label {
+  font: var(--font-weight-medium) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
+  white-space: nowrap;
+}
+
+.editor-layout .left-panel-stack .tile-brush-mode-row .tile-brush-chip,
+.editor-layout .map-context-trigger,
+.editor-layout .map-tree-more {
+  min-height: var(--space-5);
+  min-width: var(--space-5);
+}
+
+/* Focus modes: fixed task chrome, one growing sheet, bounded auxiliary surfaces. */
+.editor-layout .left-panel:has(> .left-panel-stack:only-child) {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.sidebar-map-header,
+.sidebar-paint-options,
+.sidebar-utilities,
+.sidebar-inspection-controls,
+.sidebar-shape-select {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.sidebar-map-header {
+  margin-bottom: var(--space-2);
+}
+
+.sidebar-map-header > :first-child {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.sidebar-map-header .sidebar-surface-button {
+  width: 100%;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  justify-content: flex-start;
+  font-weight: var(--font-weight-semibold);
+}
+
+.sidebar-map-header .sidebar-surface-button::after {
+  content: ' ▾';
+}
+
+.sidebar-paint-options,
+.sidebar-utilities,
+.sidebar-inspection-controls {
+  flex-wrap: wrap;
+}
+
+.sidebar-inspection-controls {
+  max-width: 100%;
+}
+
+.sidebar-paint-options {
+  margin-bottom: var(--space-1);
+  font: var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
+  color: var(--text-2);
+}
+
+.sidebar-paint-options .sidebar-brush-controls {
+  padding: 0;
+}
+
+.sidebar-paint-options .sidebar-brush-state[data-tool='paint'][data-shape='pen'][data-stamp-width='0'],
+.sidebar-paint-options .sidebar-brush-state[data-tool='erase'] {
+  display: none;
+}
+
+.sidebar-paint-options .tile-brush-mode-row {
+  margin-left: auto;
+  gap: var(--space-1);
+}
+
+.sidebar-paint-options .tile-brush-hint {
+  display: none;
+}
+
+.editor-layout .left-panel-stack .sidebar-map-header .btn,
+.editor-layout .left-panel-stack .sidebar-surface-button,
+.sidebar-paint-options select,
+.editor-layout .left-panel-stack .tile-category-select {
+  min-height: var(--space-6);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  font: var(--font-weight-medium) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
+  padding: var(--space-1);
+  min-width: 0;
+}
+
+.editor-layout .left-panel-stack .palette-filter-search-row {
+  grid-template-columns: minmax(0, 1fr) 76px 30px;
+  gap: var(--space-1);
+}
+
+.editor-layout .left-panel-stack .tile-search-input {
+  min-width: 0;
+  height: var(--space-6);
+}
+
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-toolbar {
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-toolbar-scroll {
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
+  overflow: visible;
+}
+
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-tool {
+  width: var(--space-6);
+  height: var(--space-6);
+}
+
+/* 되돌리기·다시실행은 한 쌍으로 읽혀야 한다 — 각 행위 단추와 그 펼쳐보기를 도구 간격(2px)
+   보다 좁게 붙여, 「도구가 네 개 늘었다」 가 아니라 「두 짝」 으로 보이게 한다. */
+.left-panel-stack[data-testid="left-palette-root"] .oprn-tile-history-group {
+  align-items: center;
+  display: inline-flex;
+  gap: 0;
+}
+
+/* 펼쳐보기는 행위 단추의 종속물이다. 높이는 도구와 맞추고 폭만 줄인다 — 같은 정사각형을
+   주면 눌러야 할 것이 둘인지 하나인지 알 수 없다.
+   **위치가 규칙의 일부다**: 바로 위 `.oprn-tile-tool` 정사각형 규칙이 이 시트의 마지막
+   세대이고 명시도가 (0,4,0) 로 같다. 파일 앞쪽(도구막대 3절)에 두면 클래스 하나를 더 얹어도
+   순서에서 져서 폭이 --space-6 으로 되돌아간다(실측으로 걸렀다). .editor-layout 접두를
+   붙여 명시도로 이기지 않는 이유: 클래식 셸(08-rm-…)은 그 접두 없이 같은 좌패널을 그린다. */
+.left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.oprn-tile-history-toggle {
+  color: var(--text-3);
+  width: 15px;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .oprn-tile-history-toggle > svg {
+  height: 12px;
+  width: 12px;
+}
+
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-toolbar-separator {
+  margin-inline: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .selected-tile-status {
+  margin: var(--space-1) 0;
+}
+
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .sidebar-surface {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  width: min(360px, calc(100vw - 16px));
+  min-width: 0;
+  overflow: hidden;
+  z-index: var(--z-popover);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  padding: var(--space-2);
+  right: auto;
+  bottom: auto;
+}
+
+.sidebar-surface-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+  margin-bottom: var(--space-2);
+  font: var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
+}
+
+.sidebar-surface-body {
+  min-height: 0;
+  overflow: auto;
+}
+
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .sidebar-surface-maps {
+  width: min(720px, calc(100vw - 16px));
+  height: min(560px, calc(100vh - 16px));
+}
+
+.sidebar-surface-maps .sidebar-surface-body,
+.sidebar-map-explorer {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.sidebar-map-explorer .map-tree-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.sidebar-tool-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.sidebar-tool-options select {
+  min-height: var(--space-6);
+}
+
+.sidebar-surface :is(button, select, input):focus-visible,
+.sidebar-map-header button:focus-visible,
+.sidebar-paint-options select:focus-visible,
+.tile-category-select:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
 }

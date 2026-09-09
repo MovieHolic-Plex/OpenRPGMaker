@@ -1,4 +1,5 @@
 import { el } from "@/util/dom";
+import { renderEditorIcon } from "./editorIcons";
 import { store } from "@/project/store";
 import { shopGreetingText } from "@/project/shopMessages";
 import { resolveTerms } from "@/project/terms";
@@ -47,13 +48,13 @@ import { graphicForPatternPreview } from "./commandBodyAdvanced";
 import { renderEventGraphicPreview } from "./eventGraphicPreview";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { Command } from "@/project/types";
-import type { PreviewSimState } from "./previewSimulation";
+import type { ActiveFace, PreviewSimState } from "./previewSimulation";
 import { getSimSwitch, getSimVariable, getSimItem } from "./previewSimulation";
 
 const PREVIEW_FACE_SIZE = 96;
 
 export type CommandPreviewContext = {
-  readonly face?: { readonly resourceId: string };
+  readonly face?: ActiveFace;
   readonly simState?: PreviewSimState;
   readonly hostEventId?: string;
   readonly forkTaken?: "then" | "else";
@@ -108,9 +109,10 @@ type VisualPreviewHandlers = {
 
 const visualPreviewHandlers: VisualPreviewHandlers = {
   text: (cmd, context) =>
-    messageWindowMock(cmd.speaker, textBodyOf(cmd), false, context?.face, {
+    messageWindowMock(cmd.speaker, textBodyOf(cmd), context?.face, {
       emotion: cmd.emotion,
       replay: context?.replayPresentation === true,
+      simState: context?.simState,
     }),
   changeFace: faceStage,
   displayTextSettings: settingsMessageMock,
@@ -170,7 +172,10 @@ function m2VisualPreview(cmd: Extract<Command, { kind: "m2Command" }>, context?:
   if (cmd.commandId === "m2-209-advanced-dialogue") {
     const fields = cmd.fields ?? {};
     const speaker = String(fields.speaker ?? "").trim();
-    return messageWindowMock(speaker || undefined, String(fields.body ?? ""), false, context?.face);
+    return messageWindowMock(speaker || undefined, String(fields.body ?? ""), context?.face, {
+      replay: false,
+      simState: context?.simState,
+    });
   }
   const title = m2CommandById(cmd.commandId)?.title;
   const actorSurface = actorBattleM2Preview(cmd, title, previewDeps(context));
@@ -204,9 +209,8 @@ function applyPreviewPresentation(win: HTMLElement, emotion: string | undefined,
 function messageWindowMock(
   speaker: string | undefined,
   body: string,
-  faceRight: boolean,
   face?: CommandPreviewContext["face"],
-  presentation?: { readonly emotion?: string; readonly replay: boolean }
+  presentation?: { readonly emotion?: string; readonly replay: boolean; readonly simState?: PreviewSimState }
 ): HTMLElement {
   const stage = el("div", { class: "ecp-stage" });
   // System.png 전체 시트를 border-image fill 로 쓰면 팔레트/숫자 스트립이 창을 덮는다.
@@ -217,7 +221,7 @@ function messageWindowMock(
   const shownFace = face ?? sampleFace;
   const shownBody = authored ? body : SPEAK_SAMPLE_BODY;
   const faceClass = shownFace ? " with-face" : "";
-  const sideClass = faceRight ? " face-right" : "";
+  const sideClass = shownFace?.position === "right" ? " face-right" : "";
   const speakerName = (speaker?.trim() ?? "") || (authored ? "" : SPEAK_SAMPLE_SPEAKER);
   const win = el("div", {
     class: "ecp-message-window" + sideClass + faceClass + (speakerName ? " has-speaker" : ""),
@@ -229,13 +233,13 @@ function messageWindowMock(
   if (shownFace) {
     win.append(
       renderFacesetCrop({
-        resourceId: shownFace.resourceId,
+        ...shownFace,
         displaySize: PREVIEW_FACE_SIZE,
       })
     );
   }
   const textCol = el("div", { class: "ecp-message-text" });
-  textCol.append(renderPreviewDialogueBody(shownBody));
+  textCol.append(renderPreviewDialogueBody(shownBody, presentation?.simState));
   win.append(textCol);
   // 화자 네임플레이트는 창 밖(상단 가장자리)에 올려 본문과 시각적으로 분리한다.
   if (speakerName) {
@@ -270,7 +274,7 @@ function sampleSpeakerFace(): CommandPreviewContext["face"] | undefined {
 }
 
 /** Resolve RM control codes the same way play-mode dialogue does (editor preview). */
-function renderPreviewDialogueBody(body: string): HTMLElement {
+function renderPreviewDialogueBody(body: string, simState?: PreviewSimState): HTMLElement {
   const project = store.getCurrent();
   const variableDefaults: Record<string, number> = {};
   for (const entry of project.variables ?? []) {
@@ -281,7 +285,7 @@ function renderPreviewDialogueBody(body: string): HTMLElement {
     if (variableDefaults[id] === undefined) variableDefaults[id] = 0;
   }
   const segments = parseDialogueText(body || "...", {
-    session: { variables: variableDefaults, actorNames: {} },
+    session: { variables: { ...variableDefaults, ...simState?.variables }, actorNames: {} },
     project,
   });
   const bodyEl = el("div", {
@@ -546,7 +550,10 @@ function choicesMock(cmd: Extract<Command, { kind: "choices" }>): HTMLElement {
   const list = el("div", { class: "ecp-choice-list" });
   const options = cmd.options.filter((option) => option.text.trim().length > 0);
   options.forEach((option, index) =>
-    list.append(el("div", { class: "ecp-choice", text: `▶ ${option.text.trim() || `선택지 ${index + 1}`}` }))
+    list.append(el("div", { class: "ecp-choice", children: [
+      renderEditorIcon("arrowRight"),
+      el("span", { class: "ecp-choice-label", text: option.text || `선택지 ${index + 1}` }),
+    ] }))
   );
   if (options.length === 0) list.append(el("div", { class: "ecp-choice empty", text: "선택지 없음" }));
   win.append(list);

@@ -1,0 +1,18 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventCommandRemediation/U03.test.ts test/transferCommandBody.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u03
+
+ ✓ test/transferCommandBody.test.ts (1 test) 154ms
+ ✓ test/eventCommandRemediation/U03.test.ts (12 tests) 2288ms
+   ✓ U03/G1-F20 transfer liveApply regression > G1-F20 restores A after A->B->A, then Confirm and reload retain A and transition  336ms
+
+ Test Files  2 passed (2)
+      Tests  13 passed (13)
+   Start at  20:03:05
+   Duration  13.26s (transform 9.12s, setup 0ms, collect 20.77s, tests 2.44s, environment 1ms, prepare 219ms)
+
+
+DIRECT_EXIT_CODE=0

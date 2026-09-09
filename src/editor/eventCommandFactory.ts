@@ -1,7 +1,6 @@
 import type { Command } from "@/project/types";
 import { createDefaultM2Fields, M2_COMMAND_CATALOG, m2CommandById } from "@/project/eventCommands/m2Catalog";
-import { store } from "@/project/store";
-import { defaultMoveRoute, defaultShopItemIds } from "./eventCommands/quickAuthoringDefaults";
+import { defaultMoveRoute } from "./eventCommands/quickAuthoringDefaults";
 
 export function newCommand(kind: Command["kind"]): Command {
   switch (kind) {
@@ -143,8 +142,8 @@ export function newCommand(kind: Command["kind"]): Command {
     case "shop":
       return {
         kind: "shop",
-        // 첫 화면부터 잡화점 진열이 깔린다 — 판매 목록 0개 상점은 없다.
-        itemIds: [...defaultShopItemIds(store.getCurrent())],
+        // 진열은 상품 추가·서식만 채운다. 없는 잡화 ID를 기본값으로 심지 않는다.
+        itemIds: [],
         allowSell: true,
         quantityMode: "single",
         shopType: "normal",

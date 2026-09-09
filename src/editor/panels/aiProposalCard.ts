@@ -30,7 +30,6 @@ import { getEditorChrome } from "@/editor/editorUiMode";
 import { sanitizeUserFacingToolId } from "@/editor/uiCopy";
 import {
   collectVocabSoftConfirms,
-  markSoftVocabApprovalsOnProject,
 } from "./aiProposalFusion";
 import {
   proposalHumanSummaryLine,
@@ -232,6 +231,7 @@ export function createProposalHost(options: {
 
   let pendingProposalMessage: ProposalMessageState | null = null;
   let lastAppliedProposalMessage: ProposalMessageState | null = null;
+  const applyingCalls = new WeakSet<readonly ProposedCall[]>();
 
   const applyProposal = async (
     calls: readonly ProposedCall[],
@@ -239,8 +239,18 @@ export function createProposalHost(options: {
   ): Promise<ProposalApplyOutcome> => {
     const session = controller.session;
     if (!session || calls.length === 0) return "rejected";
+    if (!session.isDraftReviewApproved()) {
+      appendBubble("system", "독립 검수가 승인되지 않았거나 초안이 바뀌어 적용하지 않았습니다.");
+      setStatus("검수 미완료");
+      return "rejected";
+    }
+    const operation = session.getRunOperation();
+    const ownsApply = () => controller.session === session && session.getRunOperation() === operation && !operation.signal.aborted;
+    if (!ownsApply() || applyingCalls.has(calls) || lastAppliedProposalMessage?.calls === calls) return "rejected";
+    applyingCalls.add(calls);
     ensureGuestIdentityForAiSurface();
     const before = store.getCurrent();
+    const base = session.getProposalBase();
     const proposed = session.getProposedProject();
     // 과삽입 검토는 기록만 남기고 적용은 멈추지 않는다 — 파괴·대량 변경도 바로 적용하고
     // 복구는 되돌리기다(2026-09: 변경 확인 팝업을 띄우지 않는 정책). 취소 분기는 없다.
@@ -257,10 +267,11 @@ export function createProposalHost(options: {
     }
     const humanSummary = proposalHumanSummaryLine(calls);
     pendingProposalMessage = { calls, assistantBubble, summary: humanSummary };
-    // 재료(어휘) 합의도 AI 가 마무리한다 — 사람이 확정할 버튼이 없어졌고, 미합의로 남기면
-    // 다음 턴이 같은 재료를 다시 제안한다. 되돌리면 배치와 함께 합의도 원복된다.
+    // 재료(어휘) 합의는 검수 전 세션이 초안에 새긴다(reviewCurrentDraft) — 승인 뒤에
+    // 후보를 고치면 검수 대상과 적용 대상이 갈라진다(R2). 여기는 합의 건수만 세어 알린다.
+    // 되돌리면 배치와 함께 합의도 원복된다(단일 undo 경계).
     const softList = collectVocabSoftConfirms(calls);
-    const softMarked = markSoftVocabApprovalsOnProject(proposed, calls);
+    const softMarked = softList.length;
 
     // 배치 검증은 진단이다. 적용을 막지도, AI 가 깐 타일을 옮기거나 지우지도 않는다.
     const lastUser = [...(controller.session?.getAuditEntries() ?? [])].reverse().find((entry) => entry.kind === "user");
@@ -290,7 +301,27 @@ export function createProposalHost(options: {
       ?? applyProject.startMapId;
     const completionInstruction = instruction.trim();
     clearAgentGhostPreview();
+    // 적용 전 내구성은 기다려서 확보한다(크래시 복구의 전제). 다만 이 대기는 중단·교체된
+    // 실행에서 **거부로 터진다** — 실측(2026-09-09, late-cancel, 병합 이전 main 은 통과):
+    // 그 예외가 applyProposal 밖으로 나가 호출자의 완료 콜백조차 오지 않았고, 적용 결과가
+    // "거부"인지 "실패"인지도 사라졌다. 중단은 예외가 아니라 소유권 상실이므로 아래
+    // ownsApply() 가 판정하게 넘긴다.
+    try { await session.prepareCheckpointApply(); }
+    catch (cause) {
+      // 중단·교체는 예외가 아니라 소유권 상실이다. 그 외 실패는 적용 전 내구성이 없다는 뜻이라
+      // 그대로 올린다 — 삼키면 "적용됐는지 모르는" 상태를 만든다.
+      if (!ownsApply()) return "rejected";
+      throw cause;
+    }
+    if (!ownsApply()) return "rejected";
     const applied = await applyProposedProject(applyProject, {
+      base,
+      operation,
+      onApplied: applied => {
+        if (controller.session !== session || session.getRunOperation() !== operation) return;
+        session.recordAppliedMutation(applied);
+      },
+      baseline: session.getDraftBaseline(),
       source: "agent",
       agentName: loadAiConfig().model,
       summary: aiHistoryLabel(calls),
@@ -301,28 +332,38 @@ export function createProposalHost(options: {
       resetProject: calls.some((call) => call.name === "reset_project"),
       reason: calls.map((call) => call.reason).filter((value): value is string => typeof value === "string" && value.trim().length > 0).join(" · ") || `AI 제안 적용: ${aiHistoryLabel(calls)}`,
     });
+    if (!ownsApply()) return applied.ok ? "applied" : "rejected";
     if (!applied.ok) {
+      if (applied.reason === "stale-baseline") session.refreshAcceptance(store.getCurrent());
+      session.recordApplyRejected(undefined, applied.reason);
       setStatus("적용 실패");
       toast(`적용 실패: ${applied.issue ?? "무결성 오류"}`, "error");
+      if (applied.reason === "stale-base") {
+        appendBubble("system", applied.issue ?? "기준 프로젝트가 변경되었습니다. 최신 편집을 기준으로 다시 요청해주세요.");
+        return "rejected";
+      }
       // 예전에는 이 게이트만 채팅에 아무 기록도 남기지 않았다 — 토스트가 사라지면 흔적이 없다.
-      appendBubble("system", `❌ 무결성 검사에 막혀 적용하지 않았습니다: ${applied.issue ?? "무결성 오류"}`);
+      appendBubble("system", `무결성 검사에 막혀 적용하지 않았습니다: ${applied.issue ?? "무결성 오류"}`);
       showAiGateNotice(commitGateNotice(applied.issues ?? (applied.issue ? [applied.issue] : [])));
       return "rejected";
     }
+    session.recordAppliedProject(applied);
+    if (!ownsApply()) return "applied";
     setStatus("대기");
     setAssistantMessageBadge(assistantBubble, "applied");
     lastAppliedProposalMessage = pendingProposalMessage;
     pendingProposalMessage = null;
     appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다. 되돌리려면 [되돌리기](Ctrl+Z).`);
+    if (applied.wikiWarning) appendBubble("system", `게임 변경은 적용됐지만 위키 진행 기록은 갱신하지 못했습니다: ${applied.wikiWarning}`);
     // 배치 진단은 숨기지 않고 남긴다 — 타일은 이미 깔렸고, 마음에 안 들면 되돌리기가 답이다.
     if (layoutIssues.length > 0) {
-      appendBubble("system", `⚠️ ${formatLayoutValidationSummary(layoutIssues)}`);
+      appendBubble("system", `배치 진단: ${formatLayoutValidationSummary(layoutIssues)}`);
     }
     if (softMarked > 0) {
       appendBubble("system", `재료 ${softMarked}건 합의: ${softList.map((entry) => entry.name).join(", ")}`);
     }
     toast("AI 변경안을 적용했습니다.", "ok");
-    controller.session?.rebaseProject(store.getCurrent());
+    session.rebaseProject(store.getCurrent());
     if (completionMapId && applyProject.maps[completionMapId]) {
       onApplied?.({
         mapId: completionMapId,

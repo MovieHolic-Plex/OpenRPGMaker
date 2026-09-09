@@ -46,6 +46,7 @@ This page describes how an agent should operate on this project using the local 
     - 플래너 프롬프트(`ORCHESTRATOR_SYSTEM_PROMPT` 7-successTools)도 같이 조였다: `successTools` 는 **`doneWhen` 의 모든 절**을 덮어야 하며, 생성 툴만 적는 것은 계약 위반이다.
   - **완성도 경고 → 자동 완료 차단**: `proposalCompletenessWarnings` 는 종전에 `maybeAutoApplyMilestone` 에서 자동 *적용*만 보류시켰고 항목은 이미 done 이었다. 이제 자동 완료 게이트(`autoCompleteGate`)가 경고를 완료 차단 사유로 쓴다. 교착 방지를 위해 **명시 `complete_work_item` 은 산출물 게이트만** 통과하면 되므로, 모델이 판단해 끝낼 수 있다. 차단은 `항목id::사유` 로 중복 제거해 감사 로그(`WorkPlan 자동 완료 차단: …`)와 오케스트레이션 메시지로 알린다.
     - 테스트: `test/workItemOutcome.test.ts`(단위), `test/aiWorkItemOutcomeGateSmoke.test.ts`(세션 통합 — 차단 / 채우면 완료 / 교착 없음).
+    - **Placement quantities (2026-09-06, R4):** the no-BuildSpec fallback counts explicit placement clauses, not every numeric counter. Historical P2 falsely demanded 2 placements from two `1개` mentions (inventory and consumption), not `두 맵`. Quoted output, inventory/use/preservation clauses and existing-placement observations are not construction requests; mixed preserve-then-add requests still lint the additions. The shared boundary strips `[컨텍스트]` for both session gates and runner display. Modification/no-change warnings, BuildSpec coverage and shortfall thresholds remain active. This is conservative text lint, not a general natural-language parser. Regressions: `proposalCompleteness`, `aiMilestoneTurnAccounting`, `aiTurnAppliedAccounting`.
   - **tile_query labels/vocab 타일셋**: `tilesetId` 생략 시 `mapId` 또는 `startMap` (`resolveQueryTilesetId`). 실내 맵에서 Combined Town 라벨 place_props 사고 방지. region 가이드에 `mapId` 명시.
   - **place_npc 상점 병합**: 근접(맨하탄≤2) 유사 이름/상점 역할이면 **명시 id여도** 기존 이벤트로 합침. 일반 NPC는 id 생략 시에만 병합.
   - **place_npc graphic diversity:** generic queries (`villager`/`npc`/`사람`/`주민`) pick from top-K via stable seed (`mapId:name:x,y`) and skip charset slots already used on the map (`pickNpcGraphic` + `usedCharsetGraphicKeysOnMap`). Specific roles (상인/할머니/기사…) still take the top match unless avoided.
@@ -54,6 +55,152 @@ This page describes how an agent should operate on this project using the local 
   - Fallback `buildDefaultWorkPlan` only if planner API/parse fails on a long request.
 - Do not treat generated evidence, screenshots, or exported projects as source unless the task explicitly asks for evidence updates.
 - Update the matching wiki page when the code change alters future navigation or risk.
+
+**Opt-in NPC reward acceptance (2026-09-06; core plus session completion wiring):**
+`IntentDeclaration.npcRewards` is declared by the existing `intentDeclarationClient` JSON request,
+using `INTENT_SYSTEM_PROMPT` and `parseIntentDeclaration`. Only explicit create/modify requests
+for NPC currency/item/collected-monster grants opt in; ordinary dialogue, questions and removals omit it.
+No natural-language regex or final-command inference supplies these expectations.
+
+```ts
+npcRewards?: readonly {
+  target: ({ eventId: string } | { eventName: string }) & { mapId?: string };
+  grants: readonly ({ kind: "gold"; count?: number; id?: never; name?: never } | (({ id: string } | { name: string }) & {
+    kind: "item" | "monster"; count?: number;
+  }))[];
+  oneTime?: boolean;
+  choices?: readonly number[];
+  repeatChoices?: readonly number[];
+}[] | { readonly invalidReason: string };
+```
+
+- `parseNpcRewardRequirements(raw: unknown): NpcRewardRequirements` preserves malformed explicit
+  contracts as `invalidReason`, not a neutral fallback. Arrays/grants must be nonempty; IDs or exact
+  names are exclusive; explicit counts must be positive integers. No count means a positive delta.
+  Names/IDs need not exist until completion. NPC names resolve from `event.name`, falling back to
+  the first-page display name used by starter authoring; map scope is optional but resolution must
+  be unique. Item/species names also require a unique exact DB match.
+- First-class currency (2026-09-07): `{kind:"gold",count:20}` has no ID/name and bypasses
+  item/species lookup. Any currency ID/name field (including null) fails admission. Count is
+  still exact when supplied and positive when omitted. Currency is authored with native
+  `changeGold`; neither the parser nor completion coerces localized item names. A legitimate
+  item ID `gold` or name `골드` remains inventory-only. Mixed grants require every currency,
+  item and monster delta. Duplicate gold components in one requirement fail during admission,
+  before the declaration can be adopted. The actionable error enters the existing single bounded
+  shape-repair call with the complete original JSON; other grants/counts and `oneTime` are
+  preserved. Never silently sum ambiguous amounts. Completion retains its duplicate guard for
+  typed callers; already adopted contracts are not reset. Independent NPC gold grants remain valid.
+- The declaration client gives malformed `npcRewards` one JSON-shape repair within the original
+  20-second deadline. It retains the original non-reward intent fields and never accepts omission of
+  the reward contract as a repair. Failed repairs remain blocking and are not cached. The session
+  returns an error before planner/authoring calls for an invalid declaration; it cannot spend tools
+  trying to repair request metadata that authoring tools cannot change.
+  Shape-repair guidance requires an ID/name only for item/monster grants, never gold. Valid item
+  declarations are not reinterpreted or reset, even if the item is named `골드`.
+- `verifyNpcRewardsPlayable(project: Project, required: NpcRewardRequirements | undefined):
+  WorkItemOutcomeVerdict` in `workItemOutcome.ts` is the exported core gate. Undefined is a no-op;
+  invalid/missing/ambiguous contracts fail. `AssistantSession` captures a clone alongside adventure
+  requirements, preserves it across driver/continuation, retry and replan, and replaces it on a new
+  request or clears it for ask mode. Plan-only confirmation defers execution checks, not the contract.
+- Session item acceptance snapshots only declared NPC event state at the existing work-item evidence
+  boundary. Non-final DB/terrain/unrelated-NPC items do not inherit reward checks; items changing a
+  declared target run the core verifier. The last item must satisfy the whole request, even when the
+  plan omits the NPC. Explicit completion rechecks before the already-done shortcut; final skip cannot
+  close an unmet goal. Final model output is checked again after authoring, including changed NPCs.
+- The existing four-attempt repair budget and final incomplete notice cover direct requests as well
+  as plans. Captured JSON is appended to each compacted model request and the planner summary, so
+  disposable orchestration messages, retry and replan cannot drop or weaken it. No reward inference
+  from commands or changes to retry/spec/auto-completion accounting are involved.
+- Without a selected prerequisite witness, each NPC gets a fresh local scene starting on a
+  passable unoccupied adjacent tile. `oneTime:true` runs two
+  interactions in the SAME session, with runtime page re-selection and the declared zero-based
+  choices. First deltas must match; the repeat must change no gold balance or item/species counts,
+  including currency paid on the repeat of an item-only obligation. Text, claimed
+  switches, preexisting inventory and `changeParty` cannot satisfy a reward.
+- Scene/tool evidence: `snapshotRewards` checkpoints `session.gold`, inventory and owned species counts;
+  `expect.goldDelta` accepts an exact signed safe integer or `{atLeast:integer}` against that
+  same scene session (scene-start baseline when no snapshot was taken). `finalState.gold` exposes
+  that session's final balance on success and failure. `expect.gold` and `currencyDelta` are not
+  supported aliases; malformed/unknown assertions fail tool preflight before executing steps.
+  The provider schema exposes `goldDelta` without a type restriction, like walkthrough `value`,
+  because strict provider schemas prohibit the scalar/object union; runtime preflight owns validation.
+  `test/ohMyPiGoldRewardWire.bun.test.ts` captures this field at the actual installed SDK fetch
+  boundary on Antigravity Gemini and Claude routes. It remains untyped (not STRING); numeric
+  20/0 and `{atLeast:1}`/`{atLeast:0}` survive response parsing and execute in the real scene tool.
+  String values are still rejected by runtime preflight. This offline test does not establish
+  remote service acceptance of an untyped legacy Schema field.
+  `expect.inventoryDelta` / `ownedMonsterDelta` map IDs to exact integers or `{atLeast:1}`;
+  `interactionComplete:true` rejects a still-pending choice. `interact.eventId` asserts the physically
+  selected NPC instead of directly executing authored commands. Out-of-range choices fail.
+  `finalState.ownedMonsterCounts`, `monsterParty`, `monsterBox` prove party-full box delivery through
+  `monsterInstances`. `give_starter_monsters` already authors the guarded choice event; no new kit.
+- Tests: `test/npcRewardAcceptance.test.ts`, `test/npcRewardSession.test.ts`,
+  `test/npcGoldReward.test.ts`, `test/intentDeclarationClient.test.ts`, existing scene/quest gates.
+  Currency regressions use native 37 -> 57 -> 57 interactions, inventory/currency separation,
+  exact-count failures, provider normalization, unchanged verification-history identity and the
+  same session lifecycle suite for gold and item/monster contracts. Session tests run actual
+  `sendUserMessage`, real authoring tools, and the real scene verifier with a scripted model boundary.
+  Evidence: `.omo/evidence/assistant-tool-reliability/rewards` (session follow-up: `session-wiring/`). Existing unrelated capture failures in
+  `monsterCollection.test.ts:125,166` remain untouched; no battle or content/DB changes.
+- Currency evidence remains `.omo/evidence/npc-gold-0907/`. Archived Round8's item substitution
+  is still failed currency evidence; neither that change nor the prerequisite extension repairs
+  a live declaration, ledger or game.
+
+### Request-bound NPC prerequisite proof (CR-NPC-PREREQ-01, 2026-09-07)
+
+- `verify_npc_reward({requirementIndex, prelude})` is an AssistantSession tool, not a general
+  editor mutation or a historical scene receipt. The contract note lists zero-based indices
+  and exact selectors. The complete raw input is validated before execution. Unknown fields,
+  including generic `reason`, are rejected; this tool alone bypasses reason-schema decoration.
+  The global contextBuilder reason instruction and tool description explicitly name the same
+  exception; ordinary tool schemas still require reason. Tests assert wire fields, not prose.
+- Actions: `walk {mapId,to,adjacent?}`, one-tile `move {mapId,dir}`, `face {mapId,dir}`,
+  `interact {mapId,eventId}` and `choose {mapId,index}`. Every mapId asserts the current map,
+  never teleports. No state, start position, RNG, grants/counts, choices for protected phases,
+  expectations, snapshots, receipts or caller verdicts are admitted. Limits: 256 actions,
+  4096 movement steps and 100000 total interpreter instructions over the entire replay.
+- `npcRewardWitnesses` binds the cloned program to the captured requirement object's lifetime
+  and index, plus the original uniquely resolved map/event pair. A same-named or same-ID
+  replacement elsewhere cannot inherit it. New requests/ask mode clear candidates; continuation,
+  retry, replan and work-item/milestone evidence resets do not. A valid replacement is selected
+  before execution; its failure never falls back to an old pass or fresh-local verification.
+- `verifyNpcRewardsPlayable` replays every selected witness on a private current-project clone
+  at every applicable completion gate. One actual authored-start session runs prelude, claim
+  and repeat. Changed keys, chest pages, links, landings, collision, NPCs, DB or start state
+  therefore receive fresh execution, not a cached verdict. The result reports phase, compiled
+  failed-step index, counters, claim/repeat deltas and final reward counts, all host-generated.
+- Pending choices cannot be abandoned. Cancellation/invalid choices and unfinished interactions
+  are unverified. Every bound-NPC interaction before the protected claim snapshot must have zero
+  requested-component delta, including the host-owned approach (which retains protected transfer
+  and foreign-event restrictions). Snapshot entry is tracked independently of the reported phase.
+  Check each completed interaction, not just the end of a multi-touch walk; synchronous baselines
+  stay local across nested events, while held choices retain theirs until completion. Unrelated
+  prerequisite rewards remain legitimate: never compare the claim to authored starting balances.
+  Claim baselines are taken after the route and host approach; repeat immediately re-interacts with
+  no navigation and must change no gold, inventory or owned-monster counts, even undeclared ones.
+- `SceneRewardProof` is a host-only runner capability, outside ordinary scene-input schemas.
+  Restrictions execute at `runEventView` and interpreter `executeCommand`, not a page scan or
+  log parser. Protected transfers and foreign event/autorun/chaser entry are denied; callMapEvent
+  is unsupported throughout witness execution, including nested/common-event frames. Optional
+  interpreter hooks make instruction/loop/stack exhaustion unverified instead of normal done.
+  Ordinary scene/game execution has no such hooks and retains its behavior.
+  Proof start positions and transfer landings use the shared `isPassableLanding` authority,
+  not legacy directional-bit OR: a one-way tile without a compatible exit is unverified even
+  when an adjacent NPC can pay without walking. Ordinary movement/scene behavior is unchanged.
+- Native text, choices, supported state/reward/flow commands and cosmetic chest frame changes
+  work. Native authored waits up to 60000ms each are simulated, not wall-clock sleeps. Battle,
+  shop, number/key/name input, calendar hooks, movement-route/relocation, M2 fallback and other
+  unsupported operations fail closed. Common-event state is not seeded or repaired: the current
+  scene start does not populate session.commonEvents, so a missing common call is unverified.
+- Schedule prerequisite map/chest authoring first, separate transfer linking next, NPC authoring
+  and journey verification last via set_work_plan. Keep one-map authoring targets and all existing
+  completion, immutable-promise, unrelated failed-check, image, history and baseline obligations.
+  Do not remove a gate, synthesize a key or move reward timing to obtain completion.
+- This proves a reachable reward claim on the supplied legitimate route, not whole-game or
+  universal-path correctness. Regression seams: `npcPrerequisite.test.ts`,
+  `npcPrerequisiteSession.test.ts`; evidence: `.omo/evidence/npc-prerequisite-0907/`.
+  P1 host-approach regressions: `npcApproach.test.ts`; red/green source-only receipts:
+  `.omo/evidence/npc-approach-p1-0907/`. This is not live-game or final source approval.
 
 ## After changing files
 

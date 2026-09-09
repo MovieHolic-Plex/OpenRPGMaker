@@ -116,6 +116,7 @@ export interface ActionCombatSceneState {
 }
 
 export interface ActionHudModel {
+  readonly weaponName?: string;
   readonly hp: number;
   readonly maxHp: number;
   readonly stamina: number;

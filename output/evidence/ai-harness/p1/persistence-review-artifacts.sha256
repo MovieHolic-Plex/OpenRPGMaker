@@ -1,0 +1,6 @@
+c20d3a52652caca14ae338df7801c24f7827cf532c5c1235cdb589a6420e94f5  output/evidence/ai-harness/p1/persistence.md
+9e3cb607554410468d0f5b55f8bea2e01d1e2a03e40b9ae854fb23d34a8a40f3  test/storePersistenceProof.test.ts
+a9bf324e27a2571fad7ebad4002b1ead576cf595dff9b5fedae1dc5de5cf6bdc  output/evidence/ai-harness/p1/persistence-review-tests.log
+cf205dbb8cea84897b488abcc281bf96698d5e94b1096b16657b4caba9082a22  output/evidence/ai-harness/p1/persistence-review-tests.receipt
+9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe  output/evidence/ai-harness/p1/persistence-review-typecheck.log
+19eaf43821a7660ec323a87c8457bf74823beb296c39f5e01aa8a683aa50f061  output/evidence/ai-harness/p1/persistence-review-typecheck.receipt

@@ -41,7 +41,7 @@
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
   color: var(--db-studio-text-1);
-  font: 400 13px/20px "Malgun Gothic", system-ui, sans-serif;
+  font: 400 13px/20px var(--font-ui);
   height: 32px;
   min-width: 0;
   padding: 0 10px;
@@ -62,7 +62,7 @@
   align-items: center;
   color: var(--db-studio-text-1);
   display: flex;
-  font: 400 13px/20px "Malgun Gothic", system-ui, sans-serif;
+  font: 400 13px/20px var(--font-ui);
   gap: 8px;
   height: 28px;
   margin: 0;
@@ -72,7 +72,7 @@
 
 .database-modal-backdrop .db-elements-grade {
   color: var(--db-studio-text-2);
-  font: 600 12px/20px "Malgun Gothic", system-ui, sans-serif;
+  font: 600 12px/20px var(--font-ui);
   overflow: hidden;
   text-align: left;
   text-overflow: ellipsis;
@@ -87,7 +87,7 @@
 
 .database-modal-backdrop .db-elements-percent {
   color: var(--db-studio-text-3);
-  font: 400 12px/20px "Malgun Gothic", system-ui, sans-serif;
+  font: 400 12px/20px var(--font-ui);
 }
 
 @media (max-width: 900px) {

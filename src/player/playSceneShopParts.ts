@@ -1,5 +1,6 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
+import { resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import {
@@ -73,11 +74,11 @@ function caretIcon(direction: "left" | "right"): SVGSVGElement {
 
 /* ────────────────────────── 상단 바 ────────────────────────── */
 
-/** 상인 얼굴 + 가게 문구. 모던 상점의 정체성은 이 헤더에서 나온다. */
-export function shopBrandBlock(scene: PlaySceneContext, title: string, subtitle: string): HTMLElement {
+/** 가게 문구 + 거래 문장. 파티 얼굴을 상인 초상으로 사용하지 않는다. */
+export function shopBrandBlock(_scene: PlaySceneContext, title: string, subtitle: string): HTMLElement {
   const wrap = el("div", { class: "runtime-shop-brand" });
   wrap.append(
-    merchantAvatar(scene),
+    merchantAvatar(),
     el("div", {
       class: "runtime-shop-brand-copy",
       children: [
@@ -93,15 +94,9 @@ export function shopBrandBlock(scene: PlaySceneContext, title: string, subtitle:
   return wrap;
 }
 
-function merchantAvatar(scene: PlaySceneContext): HTMLElement {
+function merchantAvatar(): HTMLElement {
   const avatar = el("div", { class: "runtime-shop-merchant-avatar", attrs: { "aria-hidden": "true" } });
-  const project = store.getCurrent();
-  const actorId = scene.session.partyActorIds?.[0];
-  const record = project.database.actors.find((entry) => entry.id === actorId);
-  const resourceId = record ? record.faceResourceId ?? defaultActorFaceResourceId(record) : undefined;
-  const url = resourceId ? resolveAssetResourceUrl(resourceId, { project }) : undefined;
-  if (url) avatar.style.backgroundImage = `url("${url}")`;
-  else avatar.append(purseIcon());
+  avatar.append(purseIcon());
   return avatar;
 }
 
@@ -251,10 +246,6 @@ export function shopItemRow(options: {
   button.dataset.category = goods.category;
   // 합계 계산이 선택 행의 단가를 읽어간다.
   button.dataset.unitPrice = String(price);
-  // 수량 상한도 행에 싣는다. 스테퍼·입력칸·합계가 각자 99를 하드코딩하고 있어서
-  // 살 수 없는 수량까지 올라간 뒤 거절당하는 막다른 길이 생겼다(RM2003 은 애초에
-  // std::min(max, gold / price) 로 못 고르게 한다).
-  button.dataset.maxQty = String(affordableQuantityMax(goods, mode, scene.session.gold, merchantGold, owned));
   button.setAttribute("role", "listitem");
   button.append(
     shopItemIcon(goods),
@@ -357,6 +348,8 @@ export function applyAffordability(
   const price = listingPrice(goods, mode);
   const blocked = mode === "sell" ? merchantGold < price : gold < price;
   const reason = mode === "sell" ? "상인 소지금 부족" : "소지금 부족";
+  // 생성과 거래 후 갱신 모두 같은 상한을 싣는다. 스테퍼·입력칸·합계가 이 값을 읽는다.
+  row.dataset.maxQty = String(affordableQuantityMax(goods, mode, gold, merchantGold, owned));
   row.classList.toggle("is-unaffordable", blocked);
   if (blocked) row.dataset.unaffordable = "1";
   else delete row.dataset.unaffordable;
@@ -421,8 +414,7 @@ const STAT_LABELS: readonly (readonly [keyof NonNullable<ShopGoods["statBonuses"
 ];
 
 /**
- * 장비 능력치 격자. 예전에는 장비를 상점에 담을 수조차 없어서 이런 줄이 필요 없었다 —
- * 이제 무기점에서 "이걸 사면 뭐가 얼마나 오르나"를 사기 전에 본다.
+ * 원시 장비 보너스 표기. 교체 개선치가 아니며 런타임 비교는 별도 모델이 담당한다.
  */
 export function detailStatGrid(goods: ShopGoods | undefined): HTMLElement | null {
   const bonuses = goods?.statBonuses;
@@ -432,16 +424,16 @@ export function detailStatGrid(goods: ShopGoods | undefined): HTMLElement | null
   return el("div", {
     class: "runtime-shop-statgrid",
     dataset: { testid: "shop-detail-stats" },
-    children: entries.map(([key, label]) => {
+    children: [el("div", { class: "runtime-shop-raw-bonus-label", text: "장비 자체 보너스 (교체 변화 아님)" }), ...entries.map(([key, label]) => {
       const value = bonuses[key] ?? 0;
       return el("div", {
-        class: `runtime-shop-stat${value > 0 ? " is-up" : " is-down"}`,
+        class: "runtime-shop-stat runtime-shop-raw-bonus",
         children: [
           el("span", { class: "runtime-shop-stat-key", text: label }),
-          el("span", { class: "runtime-shop-stat-value", text: `${value > 0 ? "▲" : "▼"}${Math.abs(value)}` }),
+          el("span", { class: "runtime-shop-stat-value", text: `${value >= 0 ? "+" : ""}${value}` }),
         ],
       });
-    }),
+    })],
   });
 }
 
@@ -491,10 +483,8 @@ export function partyPreview(scene: PlaySceneContext): HTMLElement {
   // 캡션이 없으면 얼굴 한두 장이 넓은 빈 상자에 떠 있어 무슨 칸인지 읽히지 않는다.
   wrap.append(el("span", { class: "runtime-shop-party-caption", text: "파티" }));
   const project = store.getCurrent();
-  const actorIds = scene.session.partyActorIds.length
-    ? scene.session.partyActorIds
-    : ["actor_1", "actor_2", "actor_3", "actor_4"];
-  for (const [index, actorId] of actorIds.slice(0, 4).entries()) {
+  const actorIds = scene.session.partyActorIds.filter(id => project.database.actors.some(actor => actor.id === id));
+  for (const [index, actorId] of actorIds.entries()) {
     const record = project.database.actors.find((entry) => entry.id === actorId);
     const name = record?.name ?? actorId;
     const sprite = el("span", {
@@ -503,8 +493,7 @@ export function partyPreview(scene: PlaySceneContext): HTMLElement {
       attrs: { role: "img", "aria-label": name },
     });
     sprite.dataset.actorSlot = String(index);
-    const resourceId = scene.session.actorFaceResourceIds?.[actorId]
-      ?? record?.faceResourceId
+    const resourceId = (record ? resolveActorFaceResourceId(scene.session, record, project) : scene.session.actorFaceResourceIds?.[actorId])
       ?? (record ? defaultActorFaceResourceId(record) : undefined);
     const url = resourceId ? resolveAssetResourceUrl(resourceId, { project }) : undefined;
     if (url) {
@@ -599,7 +588,6 @@ function bubbleTotal(node: HTMLElement): void {
 /** 수량 × 단가 합계. 커서 이동·수량 변경마다 다시 계산한다(합계가 없으면 얼마 나갈지 모른다). */
 export function updateShopQuantityTotalIn(overlay: HTMLElement): void {
   const total = overlay.querySelector<HTMLElement>("[data-testid='shop-quantity-total']");
-  if (!total) return;
   const input = overlay.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
   // 커서가 다른 행으로 옮겨가면 상한도 함께 바뀐다. 예전 행에서 올려 둔 수량이 새 행의
   // 상한을 넘으면 여기서 끌어내린다 — 안 하면 합계가 못 살 금액을 보여준다.
@@ -612,7 +600,23 @@ export function updateShopQuantityTotalIn(overlay: HTMLElement): void {
   const row = overlay.querySelector<HTMLElement>(".runtime-shop-item-row.selected")
     ?? overlay.querySelector<HTMLElement>(".runtime-shop-item-row");
   const unit = Math.max(0, Number.parseInt(row?.dataset.unitPrice ?? "0", 10) || 0);
-  total.textContent = `합계 ${unit * qty}${total.dataset.goldUnit ?? ""}`;
+  if (total) total.textContent = `합계 ${unit * qty}${total.dataset.goldUnit ?? ""}`;
+  const balance = overlay.querySelector<HTMLElement>("[data-testid='shop-balance-after']");
+  if (balance) {
+    const gold = Number(balance.dataset.gold);
+    const next = gold + (balance.dataset.mode === "sell" ? 1 : -1) * unit * qty;
+    delete balance.dataset.balance;
+    delete balance.dataset.shortage;
+    balance.dataset.available = String(Boolean(row) && Number(row?.dataset.maxQty) >= qty);
+    if (!row) balance.textContent = "거래할 물건 없음";
+    else if (next < 0) {
+      balance.dataset.shortage = String(-next);
+      balance.textContent = `소지금 ${-next}${balance.dataset.goldUnit} 부족`;
+    } else {
+      balance.dataset.balance = String(next);
+      balance.textContent = `${balance.dataset.available === "true" ? "거래 후" : "거래 불가 · 예상"} 잔액 ${next}${balance.dataset.goldUnit}`;
+    }
+  }
 }
 
 /** 조작 힌트 줄 — 키보드로 도는 화면인데 어떤 키가 먹는지 화면에 없으면 알 수 없다. */

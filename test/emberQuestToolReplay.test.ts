@@ -56,7 +56,7 @@ function buildToolSequence(): ToolCall[] {
   // 3) 적 5종.
   const enemyNames = ["슬라임", "말벌", "박쥐", "돌 골렘", "붉은 용"];
   ENEMY_IDS.forEach((id, index) => {
-    calls.push({ name: "upsert_enemy", args: { enemy: { id, name: enemyNames[index], stats: { maxHp: 40 + index * 30, attack: 60 } } } });
+    calls.push({ name: "upsert_enemy", args: { enemy: { id, name: enemyNames[index], ...(id === "en_bee" ? { monsterResourceId: "generated-enemy-sylph-hornet" } : {}), stats: { maxHp: 40 + index * 30, attack: 60 } } } });
   });
 
   // 4) 트룹 5개.

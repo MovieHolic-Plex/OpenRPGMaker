@@ -1,0 +1,21 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/mapBgm.test.ts test/mapBgmVariety.test.ts test/m2RuntimeSupportCompleteness.test.ts test/battleDomKeyboard.test.ts test/battleDomIncremental.test.ts test/commandContracts/m2Command.contract.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-event-u14
+
+ ✓ test/commandContracts/m2Command.contract.test.ts (71 tests) 2937ms
+ ✓ test/m2RuntimeSupportCompleteness.test.ts (12 tests) 960ms
+   ✓ M2 persisted runtime classification completeness > lints every persisted editor-only ID by its exact command ID  304ms
+ ✓ test/mapBgm.test.ts (13 tests) 7ms
+ ✓ test/mapBgmVariety.test.ts (20 tests) 2756ms
+   ✓ generate_map BGM > 테마마다 custom BGM 을 심고 요약/data 에 담는다  760ms
+   ✓ create_map BGM > 시드 없이 같은 이름을 두 번 만들면 같은 BGM 이다  351ms
+ ✓ test/battleDomKeyboard.test.ts (32 tests) 691ms
+ ✓ test/battleDomIncremental.test.ts (4 tests) 293ms
+
+ Test Files  6 passed (6)
+      Tests  152 passed (152)
+   Start at  06:53:07
+   Duration  21.73s (transform 15.04s, setup 0ms, collect 32.56s, tests 7.64s, environment 568ms, prepare 523ms)

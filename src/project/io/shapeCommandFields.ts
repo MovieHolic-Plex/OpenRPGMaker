@@ -1,5 +1,6 @@
 import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isEmoteKind } from "@/project/emotes";
+import { SHOP_MESSAGE_TYPES } from "@/project/shopMessages";
 import { ProjectFormatError } from "./errors";
 import { commandKinds, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateLightSource } from "./shapeLightingFields";
@@ -28,6 +29,12 @@ function validateCommandShape(label: string, value: unknown): void {
       return;
     case "changeFace":
       requireString(`${label}.resourceId`, command.resourceId);
+      if (command.appearanceId !== undefined && !requireString(`${label}.appearanceId`, command.appearanceId).trim()) {
+        throw new ProjectFormatError(`${label}.appearanceId is blank`);
+      }
+      if (command.presentation !== undefined && command.presentation !== "face" && command.presentation !== "bust") {
+        throw new ProjectFormatError(`${label}.presentation must be face or bust`);
+      }
       requireFacePosition(`${label}.position`, command.position);
       requireBoolean(`${label}.flipHorizontally`, command.flipHorizontally);
       return;
@@ -341,7 +348,7 @@ function validateCommandShape(label: string, value: unknown): void {
       }
       if (command.messageType !== undefined) {
         const mt = requireString(`${label}.messageType`, command.messageType);
-        if (mt !== "welcome" && mt !== "business" && mt !== "direct") throw new ProjectFormatError(`${label}.messageType가 잘못되었습니다.`);
+        if (!SHOP_MESSAGE_TYPES.some(messageType => messageType === mt)) throw new ProjectFormatError(`${label}.messageType가 잘못되었습니다.`);
       }
       if (command.merchantGold !== undefined) requireNumber(`${label}.merchantGold`, command.merchantGold);
       if (command.stock !== undefined) validateShopStock(`${label}.stock`, command.stock);

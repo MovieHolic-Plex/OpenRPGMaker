@@ -1,0 +1,6 @@
+{
+  "dist": false,
+  "dist-player": false,
+  "dist-standalone": false,
+  ".vite-cache": true
+}

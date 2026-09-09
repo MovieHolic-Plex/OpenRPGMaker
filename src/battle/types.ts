@@ -1,12 +1,17 @@
 import type {
   ActorId,
+  AudioCommandChannel,
+  Command,
   ActorInitialEquipment,
   ActorParameterKey,
   BattleAnimationId,
   BattleAnimationPosition,
   BattleAnimationScope,
   BattleFlow,
+  ChoiceCancelBehavior,
   EnemyId,
+  FaceGraphic,
+  MessageWindowSettings,
   ItemId,
   MonsterSpeciesId,
   Project,
@@ -23,7 +28,32 @@ import type { RoguelikeRunState } from "@/project/roguelikeRun";
 
 export type { BattleFlow } from "@/project/types";
 
-export type BattlePhase = "charging" | "actorCommand" | "targetSelect" | "roundResolve" | "resolved";
+export type BattlePhase = "charging" | "actorCommand" | "targetSelect" | "roundResolve" | "eventChoice" | "eventPause" | "resolved";
+
+export interface BattleEventChoiceSnapshot {
+  readonly id: number;
+  readonly pageId: string;
+  readonly round: number;
+  readonly prompt?: string;
+  readonly options: readonly { readonly text: string }[];
+  readonly cancelBehavior?: ChoiceCancelBehavior;
+  readonly settings?: MessageWindowSettings;
+}
+
+export type BattleEventPauseSnapshot =
+  | { readonly id: number; readonly kind: "wait"; readonly ms: number }
+  | { readonly id: number; readonly kind: "inputWait"; readonly variableId?: string }
+  | {
+      readonly id: number; readonly kind: "text"; readonly body: string;
+      readonly speaker?: string; readonly face?: FaceGraphic;
+      readonly settings?: MessageWindowSettings; readonly autoAdvance?: boolean;
+      readonly emotion?: string;
+    };
+
+export type BattleEventPauseResponse =
+  | { readonly kind: "wait" }
+  | { readonly kind: "text" }
+  | { readonly kind: "inputWait"; readonly keyCode: number };
 export type { BattleResult } from "@/project/gameTime";
 
 export type EquipmentUseTarget =
@@ -105,11 +135,12 @@ export interface BattleRuntimeOptions {
   readonly rng?: Rng;
   // 배틀 이벤트의 playAudio/stopAudio 명령을 호스트 오디오 엔진으로 라우팅.
   // 런타임(src/battle)은 자체 완결성을 위해 직접 오디오를 재생하지 않고 위임한다.
-  readonly playAudio?: (resourceId: string, loop: boolean) => void;
-  readonly stopAudio?: () => void;
+  readonly playAudio?: (resourceId: string, loop: boolean, command?: Extract<Command, { kind: "playAudio" }>) => void;
+  readonly stopAudio?: (channel?: AudioCommandChannel) => void;
 }
 
 export interface BattleSessionState {
+  readonly messageWindowSettings?: MessageWindowSettings;
   readonly switches: Readonly<Record<string, boolean>>;
   readonly variables: Readonly<Record<string, number>>;
   readonly inventory: Readonly<Record<string, number>>;
@@ -136,6 +167,7 @@ export interface BattleSessionState {
   // 런타임 직업 오버라이드(promoteActor 커맨드 기준 상태). 없으면 party.classOverrides 폴백.
   readonly classOverrides?: Readonly<Record<string, string>>;
   readonly growthProgress?: import("@/project/growth/types").GrowthProgress;
+  readonly promotionLineage?: import("@/project/growth/types").PromotionLineage;
   readonly gameTime?: GameTime;
   readonly npcActivities?: Readonly<Record<string, string>>;
   readonly friendship?: Readonly<Record<string, number>>;
@@ -162,6 +194,7 @@ export interface BattlePartyProgress {
   // 런타임 직업 오버라이드(Change Actor Class/승급).
   readonly classOverrides?: Readonly<Record<string, string>>;
   readonly growthProgress?: import("@/project/growth/types").GrowthProgress;
+  readonly promotionLineage?: import("@/project/growth/types").PromotionLineage;
   // 세션 상태 이상(Change State). 전투 진입 시 초기 stateIds 로 반영.
   readonly stateIds?: Readonly<Record<string, readonly string[]>>;
   // 현재 파티 편성(changeParty/순서변경 반영). 없으면 project.session(에디터 시작 상태).
@@ -372,6 +405,8 @@ export interface BattleRewardsSnapshot {
 }
 
 export interface BattleEventStateSnapshot {
+  /** Present only when this battle authored a settings change. */
+  readonly messageWindowSettings?: MessageWindowSettings;
   readonly switches: Readonly<Record<string, boolean>>;
   readonly variables: Readonly<Record<string, number>>;
   readonly inventory: Readonly<Record<string, number>>;
@@ -385,6 +420,8 @@ export interface BattleEventStateSnapshot {
   readonly actorExperience?: Readonly<Record<string, number>>;
   readonly actorLevels?: Readonly<Record<string, number>>;
   readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
+  /** Only friendship keys written by this battle, not its entire input snapshot. */
+  readonly friendship?: Readonly<Record<string, number>>;
   // 이산 관계 상태(setRelationship) — applyBattleRewardsToSession 이 세션 relationships 로 되돌려 쓴다.
   readonly relationships?: Readonly<Record<string, RelationshipState>>;
   // 레거시 호환 플래그(setFlag) — applyBattleRewardsToSession 이 세션 flags 로 되돌려 쓴다.
@@ -394,12 +431,15 @@ export interface BattleEventStateSnapshot {
   // 전투 중 changeEquipment 가 갱신한 장비 스냅샷 — 세션 actorEquipment 로 되돌려 쓴다.
   readonly actorEquipment?: Readonly<Record<string, ActorInitialEquipment>>;
   // 전투 중 promoteActor 가 갱신한 직업 오버라이드 — 세션 classOverrides 로 되돌려 쓴다
-  // (write-back 은 맵과 같은 changeActorClass 경로로 세션 바이탈을 새 클래스 최대치에 클램프).
+  // 최종 직업이 같아도 경로·영구 스킬을 권위 상태로 복사하며 임의 전직을 재실행하지 않는다.
   readonly classOverrides?: Readonly<Record<string, string>>;
   readonly growthProgress?: import("@/project/growth/types").GrowthProgress;
+  readonly promotionLineage?: import("@/project/growth/types").PromotionLineage;
 }
 
 export interface BattleSnapshot {
+  readonly eventPause?: BattleEventPauseSnapshot;
+  readonly eventChoice?: BattleEventChoiceSnapshot;
   readonly phase: BattlePhase;
   readonly battleFlow: BattleFlow;
   readonly activeActorId?: ActorId;
@@ -437,6 +477,10 @@ export interface BattleSnapshot {
 }
 
 export interface BattleRuntime {
+  resumeEventPause(requestId: number, response: BattleEventPauseResponse): boolean;
+  resumeEventChoice(requestId: number, index: number): boolean;
+  /** Dispose suspended execution without creating a battle outcome. */
+  cancel(): void;
   tick(deltaMs: number): void;
   beginActorCommand(command: ActorCommandDraft): void;
   selectTarget(targetId: string): void;

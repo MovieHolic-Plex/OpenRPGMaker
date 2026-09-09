@@ -8,6 +8,7 @@ import {
   samePathList,
 } from "@/project/playerDeploymentPaths";
 import type { ParsedPlayerDeploymentManifest } from "@/project/playerDeploymentTypes";
+import { RELEASE_COLLECTOR_FILE } from "./releaseDependencies";
 
 export function verifyViteDeploymentClosure(
   manifest: ParsedPlayerDeploymentManifest,
@@ -52,6 +53,7 @@ export function verifyViteDeploymentClosure(
   const expectedPaths = [...new Set([
     manifest.deployment.entryHtml,
     manifest.deployment.viteManifest,
+    ...manifest.files.filter(file => file.path === RELEASE_COLLECTOR_FILE).map(file => file.path),
     ...outputPaths,
   ])].sort(compareContractPaths);
   assertUniquePaths(expectedPaths);

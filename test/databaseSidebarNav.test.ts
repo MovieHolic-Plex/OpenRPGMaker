@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { renderDatabasePanel, setDatabaseActiveTab } from "@/editor/panels/database";
+import { databaseTabLabel, renderDatabasePanel, setDatabaseActiveTab } from "@/editor/panels/database";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
@@ -8,9 +8,7 @@ type FakeBrowserGlobals = {
   readonly window: typeof globalThis.window | undefined;
 };
 
-// tabs 레지스트리(database.ts)에 정의된 38개 testid — 세계관 + 타일셋 폴더 자식 + 임시 개념 꾸러미.
-// 폴더 버튼 `db-tileset-folder` 는 .db-tab 이 아니라 이 목록에 없다.
-// '개요' 엔트리 이후에도 전부 정확히 한 번씩 사이드바에 존재해야 한다(G006 + e2e 스윕 계약).
+// Primary rail entries. Secondary Map routes are covered by databaseConceptFirstNav.
 // 순서는 `TAB_GROUPS` 파생이다(tabOrder 는 더 이상 손으로 쓰지 않는다).
 const EXPECTED_TABS = [
   // 상단 고정 (그룹 밖)
@@ -20,8 +18,11 @@ const EXPECTED_TABS = [
   "db-tab-world-codex",
   // 파티
   "db-tab-actors",
+  "db-tab-character-appearances",
   "db-tab-classes",
+  "db-tab-promotion-tree",
   "db-tab-skills",
+  "db-tab-skill-trees",
   "db-tab-items",
   // 몬스터 — 포획 종족도 이 도메인에 둔다
   "db-tab-enemies",
@@ -42,20 +43,15 @@ const EXPECTED_TABS = [
   "db-tab-farm-animals",
   "db-tab-farm-spatial",
   "db-tab-life-collections",
-  // 맵 — 타일셋 폴더 자식 + 마을·지형
-  "db-tab-world-gen",
-  "db-tab-tilesets",
-  "db-tab-tileset-autotile",
-  "db-tab-tileset-unlabeled",
-  "db-tab-structure-kits",
-  "db-tab-tileset-spaces",
+  // 맵 — two primary workspaces, no folder
   "db-tab-scratch-concepts",
-  "db-tab-villages",
-  "db-tab-terrain",
-  "db-tab-common-events",
-  // 맵 — 타일셋 폴더(개념 꾸러미는 임시 그룹 졸업)
+  "db-tab-tilesets",
   // 시스템
+  "db-tab-common-events",
   "db-tab-system",
+  "db-tab-opening",
+  "db-tab-game-over",
+  "db-tab-character-graphics",
   "db-tab-terms",
   "db-tab-switches",
   "db-tab-variables",
@@ -126,14 +122,13 @@ describe("database sidebar navigation", () => {
   });
 
   // Break caught: life-skill, weather, and animal records remain hidden behind System counts.
-  it("keeps all registered tab testids, including the unified inventory catalog", () => {
+  it("keeps every primary tab testid, including the unified inventory catalog", () => {
     const panelRoot = renderPanelHost();
     const buttons = panelRoot.querySelectorAll(".db-tab");
     expect(buttons.length).toBe(EXPECTED_TABS.length);
-    expect(EXPECTED_TABS.length).toBe(37);
     expect(buttons.map((button) => button.dataset.testid)).toEqual(EXPECTED_TABS);
     // 중복 없음 — 등장 순서 자체가 기대 순서와 일치하면 중복이 섞일 수 없다(배열 비교).
-    expect(new Set(EXPECTED_TABS).size).toBe(37);
+    expect(new Set(EXPECTED_TABS).size).toBe(EXPECTED_TABS.length);
     for (const button of buttons) {
       expect(button.tagName).toBe("BUTTON");
       const label = (button.textContent ?? "").trim();
@@ -150,7 +145,7 @@ describe("database sidebar navigation", () => {
 
   it("uses domain-specific labels for monster, farming, and resident authoring", () => {
     const panelRoot = renderPanelHost();
-    expect(findTab(panelRoot, "db-tab-monster-species").textContent).toBe("몬스터 종족");
+    expect(findTab(panelRoot, "db-tab-monster-species").textContent).toBe(databaseTabLabel("monsterSpecies"));
     expect(findTab(panelRoot, "db-tab-crops").textContent).toBe("농사·작물");
     expect(findTab(panelRoot, "db-tab-characters").textContent).toBe("주민 관계");
     expect(findTab(panelRoot, "db-tab-daily-weather").textContent).toBe("계절·날씨");
@@ -167,6 +162,9 @@ describe("database sidebar navigation", () => {
       };
     });
     const panelRoot = renderPanelHost();
+    const search = findByTestId(panelRoot, "db-tab-search")!;
+    search.value = "worldGen";
+    search.dispatchEvent(new Event("input"));
     expect(findTab(panelRoot, "db-tab-world-gen").dataset.count).toBe("1");
   });
 

@@ -35,9 +35,63 @@ npm run wt -- adopt <이름> --path <워크트리 절대경로>   # node_modules
 - 다른 워크트리의 tsconfig 를 본 저장소 tsc 로 `-p` 로 겨누는 우회는 쓰지 마라. 실측: 그렇게 하면 모듈 해석이
   실패해 유령 오류 2,879건이 나온다(정상은 0건). 도구는 **그 워크트리 안에서** 돌린다.
 - 포트는 워크트리마다 다르다(본 저장소가 9999 `--strictPort` 를 점유). 개발 서버는 `npm run dev:worktree`.
+- 병렬 워크트리는 `node_modules/.vite` 최적화 캐시도 공유한다. 서버 시작 시 `VITE_CACHE_DIR`에
+  워크트리 전용 경로나 고유 임시 경로를 지정하라 (`vite.config.ts`가 지원). 공유 캐시의 재최적화가
+  겹치면 동적 모듈 로딩이 실패해 빈 화면이 나올 수 있다. QA용 임시 캐시는 서버 종료 후 정리한다.
 
 콘텐츠(맵·이벤트·데모) 작업이면 `.env.local` 의 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` /
 `VITE_SUPABASE_PROJECT_ID` 가 있어야 하고, 저장+재로드까지 증명해야 끝이다 — 루트 `AGENTS.md` 의 하드 룰.
+
+## 1a. Mac novice launcher / private setup (Phase 1, 2026-09-06)
+
+This path is for a person's own downloaded checkout, **not** agent worktree adoption above.
+Do not copy a maintainer's `.env.local` or use a maintainer project. It requires manually
+installed **Node.js 24 LTS including npm**, a writable extracted folder, and the owner's
+already provisioned Supabase access plus an **existing application project id**.
+
+- Double-click `Start RPG Maker.command`, or in Terminal type `/bin/bash ` and drag that
+  file into the window, then press Return (works when ZIP extraction lost the executable bit).
+  Optional: `chmod +x "Start RPG Maker.command"`. Do not disable Gatekeeper or use sudo.
+- Terminal equivalents, from the checkout: `npm run setup:local` creates private settings;
+  `npm run mac:launch` sets up if missing and launches. The `.command` resolves its own folder,
+  including spaces/Unicode, regardless of the current working directory.
+  실행 명령은 `npm run mac:launch` 하나로 통일합니다. 설정 질문과 오류·복구 안내는 한국어로 표시됩니다.
+- The wizard masks the anon/publishable key and performs a bounded read-only GET against
+  `rpg_zzu.projects`. Use an HTTPS Supabase **origin**, or HTTP loopback for a local service.
+  Admin/service-role/database credentials, URL credentials, redirects and remote HTTP are rejected.
+  It does not create projects, run migrations, or write to Supabase.
+- Existing `.env*` files are never rewritten. New `.env.local` uses exclusive creation with mode
+  `0600`, a server-only `SUPABASE_ANON_KEY`, and proxy mode. Failure/cancellation writes nothing.
+  `.env.development*` and shell overrides take precedence in Vite; setup refuses to silently write
+  shadowed settings. Existing/incomplete `.env.local` needs private correction by its owner,
+  followed by a restart. Do not paste keys into command arguments, chat, screenshots or issues.
+- `npm ci` runs **only** when `node_modules` is absent. Existing or broken installs are preserved;
+  recovery is to move the broken folder aside yourself and run `npm ci`. No system tools are installed.
+- The launcher owns only `http://127.0.0.1:9999/?project=<encoded-existing-id>`, with a strict port,
+  TLS disabled and Vite's `configLoader: "runner"`. It opens the browser only after its own listen
+  succeeds. A collision does not open/reuse/kill the other server or choose another port.
+  Browser-open failure prints the same URL; `npm run mac:launch -- --no-open` supports headless QA.
+- Keep the Terminal open; Ctrl-C stops the owned server. Bookmark the same origin and project id.
+  Online saving depends on Supabase availability; export JSON for a separate backup.
+  Bun is optional for editing and Node provider login, but needed for AI completions along with a
+  configured provider. `npm start` is the separate production preview, not this novice launcher.
+- Linux verification does **not** establish Finder/macOS behavior. The narrow
+  `.github/workflows/mac-onboarding.yml` job is dormant while Actions are disabled.
+
+## 1b. 전체 BGM은 Release 팩으로 설치
+
+그림·효과음·기본 BGM 3곡은 Git에 있지만, 전체 281곡(약 1.304 GB)은
+비공개 [bgm-v1 Release](https://github.com/MovieHolic-Plex/rpg-zzu/releases/tag/bgm-v1)에서 따로 받는다.
+`npm ci` 뒤 `gh auth login` + `npm run bgm:install` + `npm run bgm:verify`.
+gh가 없으면 Release의 `rpg-zzu-bgm-v1.tar`를 받아
+`npm run bgm:install -- --archive "/받은/파일/경로"`를 실행한다. 약 5 GB 여유 공간 권장.
+기존 설치가 정상이면 재실행은 다운로드하지 않는다. 자동 실행/설정 마법사에는 다운로드를 붙이지 않았다.
+로컬 재생은 `VITE_BGM_CDN_BASE`를 비워야 한다. 워크트리에 복사된 env의 CDN 값이
+로컬 설치보다 우선할 수 있다. 음악 리소스 선택 창의 「전체 받기」도 같은 검증 설치기를 쓴다.
+Vite dev/preview는 설치 후 선택 창을 다시 열면 목록·재생이 갱신되며 재빌드가 필요 없다.
+정적 배포·내보내기는 설치 후 빌드해야 파일이 포함된다. 원격 설치는 서버 전용
+`RPG_ZZU_BGM_INSTALL_REMOTE=1` opt-in과 서버 재시작이 필요하다(기본은 루프백만 허용).
+SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwiki/bgm-catalog.md`.
 
 ## 2. 검증 — 무엇이 진짜 게이트인가
 
@@ -82,7 +136,7 @@ npm run wt -- adopt <이름> --path <워크트리 절대경로>   # node_modules
 | DB 레코드 스키마·필드 | `src/project/types/database.ts`, `src/project/databaseRecordModel.ts`, `src/project/io/shapeDatabaseFields.ts` |
 | AI 조수 패널 UI·도크·컴포저 | `src/editor/panels/aiChatPanel.ts`(3,400줄), `src/editor/panels/aiComposer.ts`, `src/editor/panels/aiPanelLayout.ts`, `src/editor/panels/aiProposalCard.ts` |
 | AI 스튜디오(장면 레일·모니터·브리핑·덱) | `src/editor/panels/aiStudioShell.ts`, `src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css` (설계 `docs/superpowers/specs/2026-09-03-ai-studio-console-design.md`) |
-| AI 턴·툴 호출·컨텍스트 | `src/ai/assistantSession.ts`, `src/ai/llmClient.ts`, `src/ai/contextBuilder.ts`, `src/ai/approvalPolicy.ts` |
+| AI 턴·툴 호출·컨텍스트 | `src/ai/assistantSession.ts`(5,433줄 — 클래스만 남았다), `src/ai/session/*`(순수 표면 14모듈), `src/ai/llmClient.ts`, `src/ai/contextBuilder.ts`, `src/ai/approvalPolicy.ts` |
 | AI 툴 추가·수정 | `src/editor/tools/toolRegistry.ts` + `src/editor/tools/*` |
 | 우클릭 영역 작업(AI 로 영역 채우기) | `src/editor/panels/regionTaskModal.ts`, `src/editor/regionTask/*` |
 | 저장·불러오기·자동저장·원격 지속성 | `src/project/store.ts`, `src/editor/saveActions.ts`, `src/project/supabaseProjectSync.ts` |

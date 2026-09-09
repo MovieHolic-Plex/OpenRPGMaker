@@ -1,0 +1,42 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/fakeDomSelectContracts.test.ts test/fakeDomInsertBefore.test.ts test/fakeDomImageGlobal.test.ts test/eventEditorCustomSelect.test.ts test/customSelectEscapeLayer.test.ts test/weightedBranchUx.test.ts test/agentBlueprintTurnEnd.test.ts test/aiStickyChecklist.test.ts test/switchVariableModalTrigger.test.ts test/recordPickerSharedControls.test.ts --maxWorkers=1 --reporter=default --reporter=json --outputFile=output/evidence/acceptance-live-fakedom-repair/focused.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-acceptance-live-qa
+
+ ✓ test/agentBlueprintTurnEnd.test.ts (14 tests) 49694ms
+   ✓ 중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) > 시공 중 중단하면 짓던 칸이 planned 로 되돌아간다 — 저장소가 안 바뀌었는데 완료를 찍지 않는다  2416ms
+   ✓ 중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) > 턴이 오류로 끝나도 남은 제안은 적용되므로 그 칸은 done 으로 확정된다  3564ms
+   ✓ 중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) > 정상 종료 + 적용에서만 저장소가 바뀝고 밑그림이 물러난다  4285ms
+   ✓ 중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) > 일부만 지은 계획도 적용된 턴이 끝나면 물러나고, 다음 턴이 되살리지 않는다  5163ms
+   ✓ 중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) > 전송이 던지지 않고 정상 반환한 중단도 정산된다 — 제안이 남아 있어도 적용에 닿지 않는다  2341ms
+   ✓ 중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) > 다 지은 뒤의 조회 턴은 상태줄에 밑그림 확정을 다시 찍지 않는다  5521ms
+   ✓ 중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) > 쓰기 제안 0건으로 끝난 턴은 진행을 하나도 남기지 않는다  1478ms
+   ✓ 중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) > 시공 중 중단하면 짓던 칸이 planned 로 되돌아간다 — 저장소가 안 바뀌었는데 완료를 찍지 않는다  2034ms
+   ✓ 중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) > 턴이 오류로 끝나도 남은 제안은 적용되므로 그 칸은 done 으로 확정된다  3790ms
+   ✓ 중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) > 정상 종료 + 적용에서만 저장소가 바뀝고 밑그림이 물러난다  4436ms
+   ✓ 중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) > 일부만 지은 계획도 적용된 턴이 끝나면 물러나고, 다음 턴이 되살리지 않는다  5450ms
+   ✓ 중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) > 전송이 던지지 않고 정상 반환한 중단도 정산된다 — 제안이 남아 있어도 적용에 닿지 않는다  2172ms
+   ✓ 중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) > 다 지은 뒤의 조회 턴은 상태줄에 밑그림 확정을 다시 찍지 않는다  5414ms
+   ✓ 중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) > 쓰기 제안 0건으로 끝난 턴은 진행을 하나도 남기지 않는다  1628ms
+ ✓ test/fakeDomSelectContracts.test.ts (11 tests) 41ms
+ ✓ test/weightedBranchUx.test.ts (19 tests) 2025ms
+ ✓ test/switchVariableModalTrigger.test.ts (5 tests) 692ms
+ ✓ test/recordPickerSharedControls.test.ts (2 tests) 316ms
+ ✓ test/fakeDomInsertBefore.test.ts (2 tests) 7ms
+ ✓ test/fakeDomImageGlobal.test.ts (4 tests) 8ms
+ ✓ test/aiStickyChecklist.test.ts (13 tests) 4052ms
+   ✓ renders acceptance outside chat and retains verified evidence after the turn  879ms
+   ✓ ignores late acceptance events after the real new-chat boundary  668ms
+   ✓ refreshes backend acceptance on a store mutation without manufacturing verification  844ms
+   ✓ retains the backend blocked snapshot when the actual abort button ends a held turn  548ms
+ ✓ test/customSelectEscapeLayer.test.ts (4 tests) 66ms
+ ✓ test/eventEditorCustomSelect.test.ts (5 tests) 54ms
+
+ Test Files  10 passed (10)
+      Tests  79 passed (79)
+   Start at  14:16:36
+   Duration  119.99s (transform 38.87s, setup 0ms, collect 57.75s, tests 56.95s, environment 1.02s, prepare 977ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-fakedom-repair/focused.json

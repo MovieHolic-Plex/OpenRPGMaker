@@ -37,23 +37,19 @@ describe("changeParty command body UX", () => {
     restoreDom?.();
   });
 
-  it("explains membership-only scope and offers follow-up commands", () => {
+  it("commits membership changes without inserting unrelated actor commands", () => {
     const insertCommand = vi.fn();
+    const replaceCommand = vi.fn();
     const body = renderWithFakeDom(() =>
-      changePartyBody(ctx({ insertCommand }), { kind: "changeParty", actorId, action: "add" })
+      changePartyBody(ctx({ insertCommand, replaceCommand }), { kind: "changeParty", actorId, action: "add" })
     );
-
-    expect(findByTestId(body, "change-party-intent")).not.toBeNull();
-    expect(body.textContent).toContain("합류/이탈만");
-    expect(findByTestId(body, "change-party-followups")).not.toBeNull();
-    expect(findByTestId(body, "change-party-db-note")).not.toBeNull();
-    expect(findByTestId(body, "change-party-followup-level")).not.toBeNull();
-
-    (findByTestId(body, "change-party-followup-level") as FakeElement | null)?.dispatchEvent(new Event("click"));
-    expect(insertCommand).toHaveBeenCalledWith(
-      [3],
-      expect.objectContaining({ kind: "changeLevel", actorId, op: "+=", amount: 1 })
-    );
+    const action = findByTestId(body, "change-party-action-select");
+    if (!action) throw new Error("missing party action");
+    action.value = "remove";
+    action.dispatchEvent(new Event("change"));
+    expect(replaceCommand).toHaveBeenLastCalledWith([2], { kind: "changeParty", actorId, action: "remove" });
+    expect(insertCommand).not.toHaveBeenCalled();
+    expect(findByTestId(body, "change-party-preview")?.dataset.afterIn).toBe("false");
   });
 
   it("still previews start-party membership", () => {

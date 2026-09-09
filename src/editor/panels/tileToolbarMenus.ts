@@ -1,6 +1,5 @@
-import { EDITOR_BRUSH_SIZES } from "@/editor/editorState";
+import { getEditorChrome, subscribeEditorUiMode } from "@/editor/editorUiMode";
 import type { EditorState } from "@/editor/editorState";
-import { copySelection, pasteClipboard } from "@/editor/mapClipboard";
 import { mapHistoryEntryCount, renderMapHistoryPanel } from "@/editor/panels/mapHistoryPanel";
 import { renderRuleAuditPanel, ruleAuditViolationCount } from "@/editor/panels/ruleAuditPanel";
 import { isFavoriteTile, toggleFavoriteTile } from "@/editor/panels/tileBrushTools";
@@ -8,13 +7,15 @@ import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import {
   selectEyedropperTool,
   selectTileTool,
-  setTileBrushSize,
 } from "@/editor/panels/tileToolbarActions";
 import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
 import type { SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import type { GameMap, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
+import { INSPECTION_COMMANDS, inspectionPins, toggleInspectionPin, type InspectionCommand } from '@/editor/panels/sidebarInspectionPins';
+import { resetSidebarSurfaceForTests, SIDEBAR_SURFACE_OPEN } from '@/editor/panels/sidebarSurface';
+import { hasOpenModalLayer } from '@/editor/ui/modalStack';
 
 type ToolbarMenuId = "inspector" | "overflow" | "ruleAudit" | "history" | null;
 type OpenToolbarMenuId = Exclude<ToolbarMenuId, null>;
@@ -36,6 +37,7 @@ let latestRerender: (() => void) | null = null;
 let detachDocumentListeners: (() => void) | null = null;
 
 export function resetTileToolbarMenusForTests(): void {
+  resetSidebarSurfaceForTests();
   openMenu = null;
   openAnchor = null;
   anchorKeepersInstalled = false;
@@ -46,17 +48,17 @@ export function resetTileToolbarMenusForTests(): void {
 
 function closeMenuFromOutside(restoreFocus: boolean): void {
   if (openMenu === null) return;
+  const previous = openAnchor;
   openMenu = null;
   openAnchor = null;
-  latestRerender?.();
-  if (!restoreFocus || typeof document === "undefined") return;
-  // 재렌더로 버튼 노드가 새로 생기므로 다시 조회해 포커스를 되돌린다.
-  document.querySelector<HTMLElement>('[data-testid="oprn-tool-overflow"]')?.focus();
+  previous?.menu.remove();
+  previous?.trigger.setAttribute('aria-expanded', 'false');
+  if (restoreFocus) previous?.trigger.focus();
 }
 
 function isInsideOverflowSurface(target: EventTarget | null): boolean {
   if (typeof document === "undefined" || typeof Node === "undefined" || !(target instanceof Node)) return false;
-  const surfaces = document.querySelectorAll('[data-testid="toolbar-overflow-menu"], [data-testid="toolbar-overflow-dropdown"]');
+  const surfaces = document.querySelectorAll(".oprn-toolbar-menu, .oprn-toolbar-dropdown");
   for (const surface of surfaces) {
     if (surface.contains(target)) return true;
   }
@@ -66,23 +68,30 @@ function isInsideOverflowSurface(target: EventTarget | null): boolean {
 function installDocumentListeners(): void {
   if (detachDocumentListeners || typeof document === "undefined" || typeof document.addEventListener !== "function") return;
   const onPointerDown = (event: Event): void => {
-    if (openMenu === null || isInsideOverflowSurface(event.target)) return;
+    if (openMenu === null || hasOpenModalLayer() || isInsideOverflowSurface(event.target)) return;
     closeMenuFromOutside(false);
   };
   const onKeyDown = (event: KeyboardEvent): void => {
     if (event.key !== "Escape" || openMenu === null) return;
     const target = event.target;
-    if (typeof HTMLElement !== "undefined" && target instanceof HTMLElement) {
-      const tag = target.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable) return;
-    }
+    if (target instanceof HTMLElement && target.matches('input, textarea, select') && !openAnchor?.menu.contains(target)) return;
+    if (event.defaultPrevented) return;
+    event.preventDefault();
+    event.stopPropagation();
     closeMenuFromOutside(true);
   };
   document.addEventListener("pointerdown", onPointerDown);
   document.addEventListener("keydown", onKeyDown);
+  const onSurfaceOpen = (event: Event) => {
+    if (event instanceof CustomEvent && event.detail !== 'inspection') closeMenuFromOutside(false);
+  };
+  document.addEventListener(SIDEBAR_SURFACE_OPEN, onSurfaceOpen);
+  const unsubscribeMode = subscribeEditorUiMode(() => closeMenuFromOutside(false));
   detachDocumentListeners = () => {
+    unsubscribeMode();
     document.removeEventListener("pointerdown", onPointerDown);
     document.removeEventListener("keydown", onKeyDown);
+    document.removeEventListener(SIDEBAR_SURFACE_OPEN, onSurfaceOpen);
   };
 }
 
@@ -92,7 +101,8 @@ export function makeInspectorDropdown(model: TileToolbarModel): HTMLElement {
   const { state, tileset } = model;
   const wrapper = makeToolbarMenuWrapper("tile-inspector-menu");
   const active = openMenu === "inspector";
-  wrapper.append(makeMenuToggle("inspector", "인스펙터", active, state.tool === "eyedropper", model.rerender));
+  const toggle = makeMenuToggle("inspector", "인스펙터", active, state.tool === "eyedropper", model.rerender);
+  wrapper.append(toggle);
   if (!active) return wrapper;
 
   const selectedTile = state.selectedTile;
@@ -113,7 +123,9 @@ export function makeInspectorDropdown(model: TileToolbarModel): HTMLElement {
     closeToolbarMenus();
     model.rerender();
   }));
+  menu.dataset.focusFallbackAnchor = toggle.dataset.testid;
   wrapper.append(menu);
+  scheduleMenuAnchor(menu, toggle);
   return wrapper;
 }
 
@@ -132,7 +144,9 @@ export function makeRuleAuditDropdown(model: TileToolbarModel): HTMLElement {
     dataset: { testid: "tile-rule-audit-dropdown" },
   });
   menu.append(renderRuleAuditPanel());
+  menu.dataset.focusFallbackAnchor = toggle.dataset.testid;
   wrapper.append(menu);
+  scheduleMenuAnchor(menu, toggle);
   return wrapper;
 }
 
@@ -151,7 +165,9 @@ export function makeHistoryDropdown(model: TileToolbarModel): HTMLElement {
     dataset: { testid: "tile-history-dropdown" },
   });
   menu.append(renderMapHistoryPanel());
+  menu.dataset.focusFallbackAnchor = toggle.dataset.testid;
   wrapper.append(menu);
+  scheduleMenuAnchor(menu, toggle);
   return wrapper;
 }
 
@@ -161,15 +177,17 @@ export function makeHistoryDropdown(model: TileToolbarModel): HTMLElement {
  * copy-button/paste-button/brush-size-N testid는 그대로 승계.
  */
 export function makeOverflowDropdown(model: TileToolbarModel): HTMLElement {
-  const { state, map, tileset } = model;
+  const { state, tileset } = model;
   latestRerender = model.rerender;
   installDocumentListeners();
   const wrapper = makeToolbarMenuWrapper("toolbar-overflow-menu");
-  const panelOpen = openMenu === "overflow" || openMenu === "inspector" || openMenu === "ruleAudit" || openMenu === "history";
+  const pins = getEditorChrome().advancedSidebarControls ? inspectionPins() : [];
+  const direct = openMenu !== null && openMenu !== "overflow" && pins.includes(openMenu);
+  const panelOpen = openMenu === "overflow" || (!direct && openMenu !== null);
   const ruleCount = ruleAuditViolationCount();
   const historyCount = mapHistoryEntryCount();
   const highlighted = state.brushSize > 1 || ruleCount > 0;
-  const label = "더 보기";
+  const label = "검사·기록";
   const accessibleLabel = ruleCount > 0 ? `${label} — 규칙 위반 ${ruleCount}건` : label;
   const toggle = makeMenuToggle("overflow", label, panelOpen, highlighted, model.rerender, accessibleLabel);
   if (ruleCount > 0) toggle.append(makeToolbarBadge(ruleCount, "rule-audit-badge", true));
@@ -182,84 +200,88 @@ export function makeOverflowDropdown(model: TileToolbarModel): HTMLElement {
     dataset: { testid: "toolbar-overflow-dropdown" },
   });
 
-  menu.append(makeOverflowSectionLabel("편집"));
-  menu.append(makeOptionItem("복사 (선택 영역)", false, false, () => {
-    void copySelection(map.id);
-    closeToolbarMenus();
-    model.rerender();
-  }, "copy-button"));
-  menu.append(makeOptionItem("붙여넣기", false, false, () => {
-    const target = state.selection ?? { x: 0, y: 0 };
-    void pasteClipboard(map.id, target.x, target.y);
-    closeToolbarMenus();
-    model.rerender();
-  }, "paste-button"));
+  if (!direct) {
+    menu.append(makeOverflowSectionLabel("검사"));
+    if (!pins.includes("inspector")) menu.append(makeOptionItem("인스펙터", openMenu === "inspector", false, () => {
+      openMenu = openMenu === "inspector" ? "overflow" : "inspector";
+      model.rerender();
+    }, "oprn-tool-inspector"));
+    if (!pins.includes("ruleAudit")) menu.append(makeOptionItem(
+      ruleCount > 0 ? `규칙 감사 (${ruleCount})` : "규칙 감사",
+      openMenu === "ruleAudit",
+      false,
+      () => {
+        openMenu = openMenu === "ruleAudit" ? "overflow" : "ruleAudit";
+        model.rerender();
+      },
+      "toolbar-toggle-ruleAudit",
+    ));
+    if (!pins.includes("history")) menu.append(makeOptionItem(
+      historyCount > 0 ? `작업 기록 (${historyCount})` : "작업 기록",
+      openMenu === "history",
+      false,
+      () => {
+        openMenu = openMenu === "history" ? "overflow" : "history";
+        model.rerender();
+      },
+      "toolbar-toggle-history",
+    ));
 
-  menu.append(makeOverflowSectionLabel("검사"));
-  menu.append(makeOptionItem("인스펙터", openMenu === "inspector", false, () => {
-    openMenu = openMenu === "inspector" ? "overflow" : "inspector";
-    model.rerender();
-  }, "oprn-tool-inspector"));
-  menu.append(makeOptionItem(
-    ruleCount > 0 ? `규칙 감사 (${ruleCount})` : "규칙 감사",
-    openMenu === "ruleAudit",
-    false,
-    () => {
-      openMenu = openMenu === "ruleAudit" ? "overflow" : "ruleAudit";
-      model.rerender();
-    },
-    "toolbar-toggle-ruleAudit",
-  ));
-  menu.append(makeOptionItem(
-    historyCount > 0 ? `작업 기록 (${historyCount})` : "작업 기록",
-    openMenu === "history",
-    false,
-    () => {
-      openMenu = openMenu === "history" ? "overflow" : "history";
-      model.rerender();
-    },
-    "toolbar-toggle-history",
-  ));
+    if (openMenu === "inspector") {
+      const selectedTile = state.selectedTile;
+      const tileLayer = selectedTile >= 0 ? (tileset.priority[selectedTile] ?? "lower") : "lower";
+      menu.append(makeOverflowSectionLabel("인스펙터"));
+      menu.append(makeInspectorSummary(selectedTile, tileset, tileLayer));
+      menu.append(makeOptionItem("즐겨찾기", isFavoriteTile(selectedTile), selectedTile < 0, () => {
+        toggleFavoriteTile(selectedTile);
+        model.rerender();
+      }));
+    } else if (openMenu === "ruleAudit") {
+      menu.append(makeOverflowSectionLabel("규칙 감사"));
+      menu.append(renderRuleAuditPanel());
+    } else if (openMenu === "history") {
+      menu.append(makeOverflowSectionLabel("작업 기록"));
+      menu.append(renderMapHistoryPanel());
+    }
 
-  if (openMenu === "inspector") {
-    const selectedTile = state.selectedTile;
-    const tileLayer = selectedTile >= 0 ? (tileset.priority[selectedTile] ?? "lower") : "lower";
-    menu.append(makeOverflowSectionLabel("인스펙터"));
-    menu.append(makeInspectorSummary(selectedTile, tileset, tileLayer));
-    menu.append(makeOptionItem("즐겨찾기", isFavoriteTile(selectedTile), selectedTile < 0, () => {
-      toggleFavoriteTile(selectedTile);
-      model.rerender();
-    }));
-    menu.append(makeOptionItem("채우기", state.tool === "fill", false, () => {
-      selectTileTool("fill");
-      closeToolbarMenus();
-      model.rerender();
-    }));
-    menu.append(makeOptionItem("스포이드", state.tool === "eyedropper", false, () => {
-      selectEyedropperTool();
-      closeToolbarMenus();
-      model.rerender();
-    }));
-  } else if (openMenu === "ruleAudit") {
-    menu.append(makeOverflowSectionLabel("규칙 감사"));
-    menu.append(renderRuleAuditPanel());
-  } else if (openMenu === "history") {
-    menu.append(makeOverflowSectionLabel("작업 기록"));
-    menu.append(renderMapHistoryPanel());
   }
 
-  menu.append(makeOverflowSectionLabel("브러시 크기"));
-  for (const size of EDITOR_BRUSH_SIZES) {
-    menu.append(makeOptionItem(`${size} x ${size}`, state.brushSize === size, false, () => {
-      setTileBrushSize(size);
-      closeToolbarMenus();
+  if (getEditorChrome().advancedSidebarControls) {
+    menu.append(makeOverflowSectionLabel("빠른 검사 고정"));
+    const labels = { inspector: "인스펙터", ruleAudit: "규칙 감사", history: "작업 기록" };
+    for (const id of INSPECTION_COMMANDS) menu.append(makeOptionItem(`${labels[id]} 고정`, pins.includes(id), false, () => {
+      toggleInspectionPin(id);
+      openMenu = "overflow";
       model.rerender();
-    }, `brush-size-${size}`));
+    }, `sidebar-pin-${id}`));
   }
 
+  menu.dataset.focusFallbackAnchor = "oprn-tool-overflow";
   wrapper.append(menu);
   scheduleMenuAnchor(menu, toggle);
   return wrapper;
+}
+
+export function makeInspectionControls(model: TileToolbarModel): HTMLElement {
+  const row = el('div', { class: 'sidebar-inspection-controls', dataset: { testid: 'sidebar-inspection-controls' } });
+  row.append(makeOverflowDropdown(model));
+  if (getEditorChrome().advancedSidebarControls) {
+    const makers = { inspector: makeInspectorDropdown, ruleAudit: makeRuleAuditDropdown, history: makeHistoryDropdown };
+    for (const id of inspectionPins()) row.append(makers[id](model));
+  }
+  return row;
+}
+
+/** The command palette opens the same inspection state, never a duplicate panel. */
+export function openSidebarInspection(id: InspectionCommand): void {
+  document.dispatchEvent(new CustomEvent(SIDEBAR_SURFACE_OPEN, { detail: 'inspection' }));
+  openMenu = id;
+  latestRerender?.();
+  const panel = openAnchor?.menu;
+  if (!panel) return;
+  panel.tabIndex = -1;
+  const control = panel.querySelector<HTMLElement>('button:not(:disabled), input:not(:disabled)');
+  (control ?? panel).focus();
 }
 
 /**
@@ -321,7 +343,7 @@ function installAnchorKeepers(): void {
  * 높이는 트리거 아래 남은 공간으로 제한하고 부족하면 위로 뒤집는다. 뷰포트가 짧아 그래도
  * 넘칠 때만 내부 스크롤을 쓴다 — 그때는 메뉴 전체가 보이므로 스크롤바도 사용자에게 보인다.
  */
-function anchorMenuToViewport(menu: HTMLElement, trigger: HTMLElement): void {
+export function anchorMenuToViewport(menu: HTMLElement, trigger: HTMLElement): void {
   if (typeof window === "undefined" || typeof menu.getBoundingClientRect !== "function") return;
   const rect = trigger.getBoundingClientRect();
   if (!rect || (rect.width === 0 && rect.height === 0)) return;
@@ -376,7 +398,17 @@ function makeInspectorSummary(selectedTile: number, tileset: TilesetDef, tileLay
 }
 
 function makeToolbarMenuWrapper(testId: string): HTMLElement {
-  return el("div", { class: "oprn-toolbar-menu", dataset: { testid: testId } });
+  return el("div", { class: "oprn-toolbar-menu", dataset: { testid: testId }, on: { keydown: event => {
+    if (!(event instanceof KeyboardEvent) || !(event.target instanceof HTMLButtonElement)) return;
+    const panel = event.target.closest('.oprn-toolbar-dropdown');
+    if (!panel || !['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+    const buttons = Array.from(panel.querySelectorAll<HTMLButtonElement>('button:not(:disabled)'));
+    const index = buttons.indexOf(event.target);
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 : (index + (event.key === 'ArrowDown' ? 1 : -1) + buttons.length) % buttons.length;
+    event.preventDefault();
+    event.stopPropagation();
+    buttons[next]?.focus();
+  } } });
 }
 
 function makeMenuToggle(
@@ -395,25 +427,27 @@ function makeMenuToggle(
       "aria-label": accessibleLabel,
       title: label,
     },
-    children: [makeMenuIcon(menu)],
+    children: [makeMenuIcon(menu), ...(menu === "overflow" || getEditorChrome().advancedSidebarControls
+      ? [el("span", { class: "sidebar-tool-label", text: label })] : [])],
     dataset: { testid: menuToggleTestId(menu) },
     on: {
       click: () => {
+        document.dispatchEvent(new CustomEvent(SIDEBAR_SURFACE_OPEN, { detail: 'inspection' }));
         // overflow 토글은 인스펙터/규칙/기록 패널이 열려 있어도 닫아 1줄 상태를 복구한다.
-        if (menu === "overflow" && (openMenu === "inspector" || openMenu === "ruleAudit" || openMenu === "history")) {
-          openMenu = null;
-        } else {
-          openMenu = expanded ? null : menu;
-        }
+        const pinnedPanel = openMenu !== null && openMenu !== 'overflow'
+          && getEditorChrome().advancedSidebarControls && inspectionPins().includes(openMenu);
+        const currentlyExpanded = menu === 'overflow' ? openMenu !== null && !pinnedPanel : openMenu === menu;
+        openMenu = currentlyExpanded ? null : menu;
         rerender();
+        if (openMenu !== null) document.querySelector<HTMLElement>('.oprn-toolbar-dropdown button, .oprn-toolbar-dropdown input')?.focus();
       },
     },
   });
 }
 
 function makeMenuIcon(menu: OpenToolbarMenuId): Node {
-  if (menu === "ruleAudit") return el("span", { class: "oprn-menu-glyph", attrs: { "aria-hidden": "true" }, text: "🔎" });
-  if (menu === "history") return el("span", { class: "oprn-menu-glyph", attrs: { "aria-hidden": "true" }, text: "🕘" });
+  if (menu === "ruleAudit") return makeSvgIcon("collision");
+  if (menu === "history") return makeSvgIcon("history");
   return makeSvgIcon(TOOLBAR_MENU_ICONS[menu]);
 }
 
@@ -464,4 +498,3 @@ function tilePreviewStyle(selectedTile: number, tileset: TilesetDef): string {
   if (selectedTile < 0 || selectedTile >= tileset.count) return "";
   return tilesetTileBackgroundStyle(tileset, selectedTile, 32);
 }
-

@@ -1,0 +1,51 @@
+{
+  "name": "surface-incoming",
+  "command": [
+    "node",
+    "scripts/check-surface-gates.mjs",
+    "--json"
+  ],
+  "sandboxCommand": [
+    "bwrap",
+    "--ro-bind",
+    "/",
+    "/",
+    "--dev",
+    "/dev",
+    "--bind",
+    "/home/main/z-project/rpg-zzu-ai-acceptance-live-review/output/evidence/acceptance-incoming-surface",
+    "/home/main/z-project/rpg-zzu-ai-acceptance-live-review/output/evidence/acceptance-incoming-surface",
+    "--unshare-net",
+    "--die-with-parent",
+    "--bind",
+    "/home/main/z-project/rpg-zzu-ai-acceptance-live-review/output/evidence/acceptance-incoming-surface/surface-incoming-private/vite-temp",
+    "/home/main/z-project/rpg-zzu/node_modules/.vite-temp",
+    "--bind",
+    "/home/main/z-project/rpg-zzu-ai-acceptance-live-review/output/evidence/acceptance-incoming-surface/surface-incoming-private/vite-cache",
+    "/home/main/z-project/rpg-zzu/node_modules/.vite",
+    "--chdir",
+    "/home/main/z-project/rpg-zzu-ai-acceptance-live-review",
+    "--",
+    "node",
+    "scripts/check-surface-gates.mjs",
+    "--json"
+  ],
+  "pid": 2603144,
+  "head": "8ab349dfc21cb0c0c22a554f74a25bdeb05ab741",
+  "startedAt": "2026-09-08T08:18:47Z",
+  "deadlineSeconds": 360.0,
+  "workers": 2,
+  "environment": {
+    "BASELINE_EVIDENCE": "/home/main/z-project/rpg-zzu-ai-acceptance-live-review/output/evidence/acceptance-incoming-surface",
+    "TMPDIR": "/home/main/z-project/rpg-zzu-ai-acceptance-live-review/output/evidence/acceptance-incoming-surface/surface-incoming-private/tmp",
+    "npm_config_cache": "/home/main/z-project/rpg-zzu-ai-acceptance-live-review/output/evidence/acceptance-incoming-surface/surface-incoming-private/npm-cache",
+    "NODE_OPTIONS": "--require=/home/main/z-project/rpg-zzu-ai-acceptance-live-review/output/evidence/acceptance-incoming-surface/observe.cjs",
+    "VITEST_MAX_FORKS": "2",
+    "VITEST_MIN_FORKS": "1",
+    "VITEST_MAX_THREADS": "2",
+    "VITEST_MIN_THREADS": "1"
+  },
+  "exitCode": 1,
+  "elapsedSeconds": 70.40438628196716,
+  "finishedAt": "2026-09-08T08:19:57Z"
+}

@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
 
-const LEVELS: readonly AutonomyLevel[] = ["confirm", "balanced", "autonomous", "max"];
+const LEVELS: readonly AutonomyLevel[] = ["readonly", "confirm", "balanced", "autonomous", "max"];
 
 describe("AUTONOMY_LEVELS", () => {
   it("covers every AutonomyLevel exactly once", () => {
@@ -20,12 +20,26 @@ describe("AUTONOMY_LEVELS", () => {
 });
 
 describe("resolveAutonomy", () => {
-  it("maps confirm to the most conservative knobs and plan-only", () => {
+  // Break: the readonly level is the only manual way to force the session's ask
+  // rail once the composer mode chips are gone. Dropping readOnly (or the level
+  // itself) silently gives every turn write tools.
+  it("maps readonly to the ask rail with no planning", () => {
+    expect(resolveAutonomy("readonly")).toEqual({
+      reasoningEffort: "low",
+      agentMode: "chat",
+      budgetCap: 4,
+      planOnly: false,
+      readOnly: true,
+    });
+  });
+
+  it("maps confirm to the most conservative writing knobs and plan-only", () => {
     expect(resolveAutonomy("confirm")).toEqual({
       reasoningEffort: "low",
       agentMode: "chat",
       budgetCap: 6,
       planOnly: true,
+      readOnly: false,
     });
   });
 
@@ -35,6 +49,7 @@ describe("resolveAutonomy", () => {
       agentMode: "auto",
       budgetCap: 16,
       planOnly: false,
+      readOnly: false,
     });
   });
 
@@ -44,6 +59,7 @@ describe("resolveAutonomy", () => {
       agentMode: "auto",
       budgetCap: 32,
       planOnly: false,
+      readOnly: false,
     });
   });
 
@@ -53,7 +69,15 @@ describe("resolveAutonomy", () => {
       agentMode: "auto",
       budgetCap: 48,
       planOnly: false,
+      readOnly: false,
     });
+  });
+
+  // Break: marking a writing level readOnly would strip its write tools; marking
+  // readonly writable would defeat the level. Only readonly may be read-only.
+  it("marks exactly one level read-only", () => {
+    const readOnly = LEVELS.filter((level) => resolveAutonomy(level).readOnly);
+    expect(readOnly).toEqual(["readonly"]);
   });
 
   it("keeps budgetCap strictly increasing with autonomy", () => {

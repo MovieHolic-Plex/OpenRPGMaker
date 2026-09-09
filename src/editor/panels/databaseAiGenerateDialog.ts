@@ -202,7 +202,7 @@ export function openDatabaseAiGenerateDialog(options: OpenAiGenerateDialogOption
           ...(otherProvider
             ? [el("small", {
               class: "db-ai-generate-provider-notice",
-              text: `그림은 ${IMAGE_GENERATION_PROVIDER_ID} 구독 경로로 만듭니다(지금 대화 제공자: ${config.providerId}).`,
+              text: `선택한 그림 제공자: ${config.imageProviderId ?? IMAGE_GENERATION_PROVIDER_ID} (대화 제공자: ${config.providerId}).`,
               dataset: { testid: "db-ai-generate-provider-notice" },
             })]
             : []),

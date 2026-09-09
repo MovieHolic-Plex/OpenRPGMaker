@@ -1,0 +1,15 @@
+{
+  "kind": "receipt-startup-index-lock-contention",
+  "validatorStarted": false,
+  "nativeResourcesCreated": false,
+  "exit": 1,
+  "failedCommand": [
+    "git",
+    "write-tree"
+  ],
+  "gitExit": 128,
+  "message": "fatal: Unable to create '/home/main/z-project/rpg-zzu/.git/worktrees/rpg-zzu-ai-harness-p2-20260906/index.lock': File exists.",
+  "cause": "native-required and native-proof receipt identity calls concurrently ran git write-tree against the same index",
+  "resolution": "Allowed native-proof to complete; verified index.lock absent; launched native-required serially. No lock deletion or source change.",
+  "followingReceipt": "native-required.receipt.json"
+}

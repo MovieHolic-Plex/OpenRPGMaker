@@ -30,14 +30,16 @@ describe("quick-authoring preview identity", () => {
     const text = (body?.textContent ?? "").trim();
     expect(text).not.toBe("...");
     expect(text.length).toBeGreaterThan(3);
-    expect(findByTestId(preview, "ecp-message-sample")).not.toBeNull();
+    expect(findByTestId(preview, "ecp-message-window")?.dataset.sample).toBe("true");
+    expect(findByTestId(preview, "ecp-message-sample-note")).not.toBeNull();
   });
 
   it("authored text still renders verbatim (no sample injection)", () => {
     const preview = renderWithFakeDom(() =>
       renderCommandPreview({ kind: "text", body: "마을에 온 걸 환영하네." })
     );
-    expect(findByTestId(preview, "ecp-message-sample")).toBeNull();
+    expect(findByTestId(preview, "ecp-message-window")?.dataset.sample).toBeUndefined();
+    expect(findByTestId(preview, "ecp-message-sample-note")).toBeNull();
     expect(preview.textContent).toContain("마을에 온 걸 환영하네.");
   });
 
@@ -74,7 +76,9 @@ describe("quick-authoring preview identity", () => {
   it("wait preview is a timeline with one duration label, not a duplicated card", () => {
     const preview = renderWithFakeDom(() => renderCommandPreview({ kind: "wait", ms: 500 }));
     expect(findByTestId(preview, "ecp-wait-timeline")).not.toBeNull();
-    expect(findByTestId(preview, "ecp-wait-gap")?.textContent).toContain("0.5초");
+    const span = findByTestId(preview, "ecp-wait-span");
+    expect(span?.textContent).toBe("0.5초");
+    expect(Number.parseFloat(span?.style.getPropertyValue("--wait-span") ?? "")).toBeCloseTo(100 / 6);
     const occurrences = (preview.textContent ?? "").split("0.5초").length - 1;
     expect(occurrences).toBe(1);
   });

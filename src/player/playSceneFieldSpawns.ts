@@ -1,4 +1,5 @@
 import { store } from "@/project/store";
+import { BattleAdmissionError } from "@/project/battleAdmission";
 import type { FieldSpawnDef } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
@@ -91,11 +92,13 @@ export async function runFieldSpawnEventBattle(scene: PlaySceneContext, eventId:
   const troopId = fieldSpawnTroopId(scene.fieldSpawnState, eventId);
   if (!troopId) return false;
   if (scene.running) return true;
+  const session = scene.session;
   scene.running = true;
   scene.setInputEnabled(false);
   try {
     const result = await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: true });
-    scene.session.battleResult = result;
+    if (result === null || scene.session !== session || scene.sys?.isActive() === false) return true;
+    session.battleResult = result;
     if (result === "victory") {
       recordFieldSpawnKill(scene, resolveFieldSpawnVictory(scene.fieldSpawnState, eventId));
       syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
@@ -104,11 +107,18 @@ export async function runFieldSpawnEventBattle(scene: PlaySceneContext, eventId:
     } else if (result === "defeat") {
       applyBattleDefeat(scene);
     }
+  } catch (error) {
+    if (!(error instanceof BattleAdmissionError)) throw error;
+    if (scene.session === session && scene.sys?.isActive() !== false) {
+      scene.showRuntimeOverlay("runtime-error", error.message);
+    }
   } finally {
-    scene.running = false;
-    scene.lastActionTargetKey = "";
-    scene.setInputEnabled(true);
-    scene.refreshRuntimeSurfaces();
+    if (scene.session === session && !scene.battleAbortController && scene.sys?.isActive() !== false) {
+      scene.running = false;
+      scene.lastActionTargetKey = "";
+      scene.setInputEnabled(true);
+      scene.refreshRuntimeSurfaces();
+    }
   }
   return true;
 }

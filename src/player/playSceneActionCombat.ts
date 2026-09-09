@@ -1,4 +1,4 @@
-import { growthEffects } from "@/project/growth/runtime";
+import { actorOwnedSkillIds } from "@/project/growth/runtime";
 import { store } from "@/project/store";
 import { projectFontStack } from "@/project/fontRegistry";
 import { DEFAULT_ATTACK_COOLDOWN_MS, DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC, isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
@@ -37,7 +37,7 @@ import { playAudioCommand } from "@/player/audio";
 import { resolveFieldSpawnVictory, syncFieldSpawnEventsIntoMap } from "@/player/fieldSpawns";
 import { recordFieldSpawnKill } from "@/player/playSceneFieldSpawns";
 import { syncActorVitals } from "@/project/sessionVitals";
-import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
+import { normalizeActorRecord } from "@/project/actorModel";
 import { nextSessionRandom } from "@/project/session";
 // 데미지 숫자·파티클·텔레그래프·스윙 아크는 **타일 중앙**(characterSpriteX)이 맞다 —
 // 캐릭터 그림이 아니라 칸을 가리키는 표식이다. 적 스프라이트를 다시 놓는
@@ -55,9 +55,9 @@ import { inBounds, isPassable } from "@/project/collision";
 import { moveRuntimeEventPosition } from "@/project/runtimeEventState"
 import { monsterTypesForRecord, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import { applyActorLevelUp } from "@/player/battleRewardsToSession";
-import { learnedSkillIds } from "@/battle/battleBattlers";
+import { actorDerivedStats } from "@/battle/battleBattlers";
 import { battleSkillMpCost } from "@/battle/battleSkillUse";
-import { effectiveActorClassId, hasActorClassOverride } from "@/project/sessionClass";
+import { effectiveActorClassId } from "@/project/sessionClass";
 import { effectiveActorEquipment } from "@/project/equipmentRules";
 import { transitionItemState } from "@/project/itemTransitions";
 import type { Dir, EnemyActionAttack, EnemyRecord, FootprintRect, Project } from "@/project/types";
@@ -73,6 +73,38 @@ import {
   type ActionEnemyState,
 } from "@/player/actionCombatTypes";
 import { mountActionHud } from "@/player/actionHud";
+import type { ActionCombatObservation, ActionCombatOutcome } from "@/testing/actionCombatProof";
+
+const combatObservers = new WeakMap<PlaySceneContext, Set<(entry: ActionCombatObservation) => void>>();
+
+/** Explicit QA subscribers only; normal player frames allocate no observations. */
+export function subscribeActionCombatObservations(
+  scene: PlaySceneContext, receive: (entry: ActionCombatObservation) => void,
+): () => void {
+  if (scene.game.registry.get("qaInstrumentation") !== true) return () => {};
+  let sequence = 0;
+  const listener = (entry: ActionCombatObservation): void => receive({ ...entry, sequence: ++sequence });
+  const listeners = combatObservers.get(scene) ?? new Set();
+  listeners.add(listener);
+  combatObservers.set(scene, listeners);
+  return () => {
+    listeners.delete(listener);
+    if (listeners.size === 0) combatObservers.delete(scene);
+  };
+}
+
+function observeCombat(
+  scene: PlaySceneContext, outcome: ActionCombatOutcome, before: number, after: number,
+  eventId?: string, attackId?: string,
+): void {
+  const listeners = combatObservers.get(scene);
+  if (!listeners) return;
+  const entry: ActionCombatObservation = {
+    outcome, mapId: scene.map.id, sequence: 0, before, after,
+    ...(eventId ? { eventId } : {}), ...(attackId ? { attackId } : {}),
+  };
+  for (const receive of listeners) receive(entry);
+}
 
 const ENEMY_FLASH_MS = 120;
 const PLAYER_FLASH_MS = 200;
@@ -188,7 +220,9 @@ function tickActionTimers(scene: PlaySceneContext, state: ActionCombatSceneState
   if (state.config.staminaEnabled) {
     // 가드를 잡고 있는 동안은 회복하지 않는다 — 그러지 않으면 드레인이 리젬에 상쇄되어 상시 가드가 공짜가 된다.
     if (!state.guarding) {
+      const before = state.stamina;
       state.stamina = Math.min(ACTION_STAMINA_MAX, state.stamina + (ACTION_STAMINA_REGEN_PER_SEC * deltaMs) / 1000);
+      if (state.stamina > before) observeCombat(scene, "stamina-recovered", before, state.stamina);
     }
   }
   if (state.playerFlashMs > 0) {
@@ -357,7 +391,8 @@ function damageActionTarget(
   fromTileY: number
 ): void {
   if (targetId === PLAYER_COMBATANT_ID) {
-    damagePlayer(scene, state, damage, fromTileX, fromTileY);
+    damagePlayer(scene, state, damage, fromTileX, fromTileY, attacker.eventId,
+      `${attacker.eventId}:${attacker.actionAttack?.kind}:${damage}:${fromTileX}:${fromTileY}`);
     return;
   }
   const victim = state.enemies.get(targetId);
@@ -461,8 +496,10 @@ function updatePlayerDodge(scene: PlaySceneContext, state: ActionCombatSceneStat
     deltaMs,
     requested,
   });
+  const before = state.stamina;
   state.stamina = outcome.stamina;
   state.dodgeIframesMs = outcome.iframesRemainingMs;
+  if (state.stamina < before) observeCombat(scene, "stamina-spent", before, state.stamina);
 }
 
 // 홀드 가드. 키를 누르고 있는 동안 피해가 줄고 스태미나가 탄다. 판정 자체는 전부 순수 모듈(guard.ts).
@@ -516,11 +553,18 @@ function applyContactDamage(scene: PlaySceneContext, state: ActionCombatSceneSta
   }
 }
 
-function damagePlayer(scene: PlaySceneContext, state: ActionCombatSceneState, damage: number, fromTileX: number, fromTileY: number): void {
+function damagePlayer(
+  scene: PlaySceneContext, state: ActionCombatSceneState, damage: number,
+  fromTileX: number, fromTileY: number, eventId?: string, attackId?: string,
+): void {
   if (damage <= 0) return;
   if (state.playerIframesMs > 0) return;
   // 회피 무적: 스태미나를 지불하고 열린 짧은 창 동안만 유효하다.
-  if (state.dodgeIframesMs > 0) return;
+  if (state.dodgeIframesMs > 0) {
+    const hp = scene.session.actorVitals[scene.session.partyActorIds[0] ?? ""]?.hp;
+    if (hp !== undefined && hp > 0) observeCombat(scene, "dodge-rejection", hp, hp, eventId, attackId);
+    return;
+  }
   // 가드: 무적이 아니라 감산이다. 피해는 반드시 1 이상 들어온다.
   const dealt = state.guarding ? guardedDamage(damage, state.guardMultiplier) : damage;
   if (dealt <= 0) return;
@@ -530,7 +574,9 @@ function damagePlayer(scene: PlaySceneContext, state: ActionCombatSceneState, da
   syncActorVitals(project, scene.session.actorVitals, leadId);
   const vitals = scene.session.actorVitals[leadId];
   if (!vitals || vitals.hp <= 0) return;
+  const before = vitals.hp;
   vitals.hp = Math.max(0, vitals.hp - dealt);
+  observeCombat(scene, "player-damage", before, vitals.hp, eventId, attackId);
   state.playerIframesMs = state.config.playerIframesMs;
   state.playerFlashMs = PLAYER_FLASH_MS;
   state.hitstopMs = Math.max(state.hitstopMs, HITSTOP_PLAYER_HURT_MS);
@@ -571,7 +617,11 @@ function performActionCombatSwing(scene: PlaySceneContext, state: ActionCombatSc
   const lead = leadActorSwingProfile(scene);
   if (!lead) return;
   state.swingCooldownMs = lead.cooldownMs;
-  if (state.config.staminaEnabled) state.stamina = Math.max(0, state.stamina - ACTION_SWING_STAMINA_COST);
+  if (state.config.staminaEnabled) {
+    const before = state.stamina;
+    state.stamina = Math.max(0, state.stamina - ACTION_SWING_STAMINA_COST);
+    observeCombat(scene, "stamina-spent", before, state.stamina);
+  }
   flashSwingArc(scene, scene.facing, lead.range);
   pulsePlayerSwing(scene);
   playActionSe(SE_SWING_RESOURCE_ID);
@@ -589,7 +639,9 @@ function performActionCombatSwing(scene: PlaySceneContext, state: ActionCombatSc
     });
     const multiplier = typeChartMultiplierForTypes(project, lead.elementId, [], monsterTypesForRecord(project, enemy.enemyId));
     const damage = Math.max(1, Math.round(base * multiplier));
+    const before = enemy.hp;
     hitActionEnemy(scene, state, enemy, damage, pos.x, pos.y);
+    if (enemy.hp < before) observeCombat(scene, "swing-hit", before, enemy.hp, enemy.eventId);
   }
 }
 
@@ -636,12 +688,7 @@ export function tryActionSkillCast(scene: PlaySceneContext): void {
 function leadLearnedSkillIds(scene: PlaySceneContext, project: Project, leadId: string): readonly string[] {
   const actor = project.database.actors.find((entry) => entry.id === leadId);
   if (!actor) return [];
-  const normalized = normalizeActorRecord(actor);
-  const level = scene.session.actorLevels?.[leadId] ?? normalized.initialLevel;
-  const classOverrides = scene.session.classOverrides;
-  const effectiveClass = effectiveActorClassId(project, { classOverrides }, leadId);
-  const usesOverride = hasActorClassOverride({ classOverrides: classOverrides ? { ...classOverrides } : undefined }, leadId);
-  return learnedSkillIds(project, normalized, level, scene.session.actorSkillIds?.[leadId], effectiveClass, usesOverride, scene.session.growthProgress);
+  return actorOwnedSkillIds(project, scene.session, leadId);
 }
 
 // 배운 스킬 → 액션 슬롯 재해석. 슬롯이 줄어들어 활성 인덱스가 범위를 벗어나면 0 번으로 스냅된다.
@@ -668,6 +715,7 @@ function actionSkillSlotNames(project: Project, slotIds: readonly string[]): str
 function hitActionEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, enemy: ActionEnemyState, damage: number, tileX: number, tileY: number): void {
   // 이미 사망 연출에 들어간 적은 다시 맞지 않는다(보상 이중 지급 방지).
   if (enemy.dying) return;
+  const hpBefore = enemy.hp;
   enemy.hp = Math.max(0, enemy.hp - damage);
   enemy.flashMs = ENEMY_FLASH_MS;
   state.hitstopMs = Math.max(state.hitstopMs, HITSTOP_HIT_ENEMY_MS);
@@ -683,6 +731,7 @@ function hitActionEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, 
   }
   // 사망: 보상은 여기서 정확히 한 번 떨어지고, 사라지는 연출만 뒤로 미룬다.
   enemy.dying = true;
+  observeCombat(scene, "enemy-defeat", hpBefore, enemy.hp, enemy.eventId);
   applyKillReputation(state, enemy.factionId);
   grantActionKillRewards(scene, enemy, tileX, tileY);
   playEnemyDeathBeat(scene, enemy);
@@ -762,6 +811,10 @@ function replaceFactionStanceOverrides(
 }
 
 function grantActionKillRewards(scene: PlaySceneContext, enemy: ActionEnemyState, tileX: number, tileY: number): void {
+  const rewardTotal = (): number => scene.session.gold
+    + Object.values(scene.session.actorExperience).reduce((sum, value) => sum + value, 0)
+    + Object.values(scene.session.inventory).reduce((sum, value) => sum + value, 0);
+  const before = combatObservers.has(scene) ? rewardTotal() : 0;
   let text = "";
   if (enemy.gold > 0) {
     scene.session.gold += enemy.gold;
@@ -787,6 +840,10 @@ function grantActionKillRewards(scene: PlaySceneContext, enemy: ActionEnemyState
     }
   }
   if (text) spawnDamageNumber(scene, characterSpriteX(tileX), characterSpriteY(tileY) - 34, text, "#9be37e");
+  if (combatObservers.has(scene)) {
+    const after = rewardTotal();
+    if (after > before) observeCombat(scene, "reward-granted", before, after, enemy.eventId);
+  }
 }
 
 function commitItemGrant(project: Project, scene: PlaySceneContext, itemId: string, amount: number): void {
@@ -825,11 +882,14 @@ function leadActorSwingProfile(scene: PlaySceneContext): LeadSwingProfile | null
   const weaponId = effectiveActorEquipment(project, actor, scene.session.actorEquipment?.[actor.id], effectiveActorClassId(project, scene.session, actor.id)).weapon;
   const weapon = project.database.equipment.find((entry) => entry.id === weaponId);
   const profile = weapon?.actionWeapon;
-  const weaponAttack = weapon?.statBonuses?.attack ?? 0;
-  const growth = growthEffects(project, scene.session, actor.id).bonuses;
+  const stats = actorDerivedStats(project, normalized, {
+    level, classOverrides: scene.session.classOverrides, promotionLineage: scene.session.promotionLineage,
+    growthProgress: scene.session.growthProgress, paramBonuses: scene.session.actorParamBonuses?.[actor.id],
+    equipment: effectiveActorEquipment(project, actor, scene.session.actorEquipment?.[actor.id], effectiveActorClassId(project, scene.session, actor.id)),
+  });
   return {
-    attack: parameterValueAtLevel(normalized.parameterCurves.attack, level) + weaponAttack + growth.attack,
-    defense: parameterValueAtLevel(normalized.parameterCurves.defense, level) + growth.defense,
+    attack: stats.attack,
+    defense: stats.defense,
     range: profile?.swingRange ?? config?.swingRange ?? 1,
     cooldownMs: profile?.swingCooldownMs ?? config?.swingCooldownMs ?? 350,
     damageBonus: (config?.swingDamageBonus ?? 0) + (profile?.swingDamageBonus ?? 0),
@@ -992,10 +1052,16 @@ function updateActionHudModel(scene: PlaySceneContext, state: ActionCombatSceneS
   syncActorVitals(project, scene.session.actorVitals, leadId);
   const vitals = scene.session.actorVitals[leadId];
   if (!vitals) return;
-  const signature = `${vitals.hp}/${vitals.maxHp}|${Math.round(state.stamina)}|${state.config.stamina}|${state.skillSlotIds.join(",")}|${state.activeSkillSlot}|${state.guarding}`;
+  const actor = project.database.actors.find(entry => entry.id === leadId);
+  if (!actor) return;
+  const weaponId = effectiveActorEquipment(project, actor, scene.session.actorEquipment?.[leadId],
+    effectiveActorClassId(project, scene.session, leadId)).weapon;
+  const weaponName = project.database.equipment.find(equipment => equipment.id === weaponId)?.name ?? "맨손";
+  const signature = `${weaponId}/${weaponName}|${vitals.hp}/${vitals.maxHp}|${Math.round(state.stamina)}|${state.config.stamina}|${state.skillSlotIds.join(",")}|${state.activeSkillSlot}|${state.guarding}`;
   if (signature === state.lastHudSignature) return;
   state.lastHudSignature = signature;
   state.hud.update({
+    weaponName,
     hp: vitals.hp,
     maxHp: vitals.maxHp,
     stamina: Math.round(state.stamina),
@@ -1377,6 +1443,9 @@ function spawnProjectileFrom(scene: PlaySceneContext, state: ActionCombatSceneSt
     maxRangeTiles: spec.maxRangeTiles,
     object,
   });
+  if (spec.faction === "enemy") {
+    observeCombat(scene, "enemy-projectile", state.projectiles.length - 1, state.projectiles.length, spec.ownerId);
+  }
 }
 
 function updateProjectiles(scene: PlaySceneContext, state: ActionCombatSceneState, deltaMs: number): void {

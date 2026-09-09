@@ -1,0 +1,38 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/pr687VerificationIntegration.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/pr687VerificationIntegration.test.ts (25 tests) 16178ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: unadopted  739ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: adopted  658ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: negative  805ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > facing-only correction clears its finding but not a distinct checkpoint assertion  531ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed set through normal correction dispatch  463ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed move through normal correction dispatch  479ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed walk through normal correction dispatch  470ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed start through normal correction dispatch  442ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed state through normal correction dispatch  425ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed choice through normal correction dispatch  442ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed checkpoint through normal correction dispatch  410ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed reward through normal correction dispatch  404ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed repeat through normal correction dispatch  420ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies malformed without waiving a required scope  648ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies execution without waiving a required scope  647ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies no-target without waiving a required scope  620ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies missing-target without waiving a required scope  697ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > canonical tool verdict binds before execution and late adoption cannot reuse an exploratory pass  1392ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > normal final repair is bounded by authoritative findings without an acceptance declaration  377ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > successful exploratory checks do not become repair obligations after a write  529ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with pending-specification proof and retains completion  990ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with unverified proof and retains completion  903ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with stale proof and retains completion  1465ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with passed proof and retains completion  998ms
+
+ Test Files  1 passed (1)
+      Tests  25 passed (25)
+   Start at  01:26:58
+   Duration  28.09s (transform 8.06s, setup 0ms, collect 11.46s, tests 16.18s, environment 0ms, prepare 75ms)
+

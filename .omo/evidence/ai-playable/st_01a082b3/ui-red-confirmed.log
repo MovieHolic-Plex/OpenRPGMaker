@@ -1,0 +1,45 @@
+[WebServer] [rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[WebServer] [rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[WebServer] [rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+
+Running 1 test using 1 worker
+
+  ✘  1 [chromium] › test/e2e/ai-map-history.spec.ts:31:3 › map-scoped AI conversation history › startup catalog cannot cancel Recover through the shipped clock (56.2s)
+
+
+  1) [chromium] › test/e2e/ai-map-history.spec.ts:31:3 › map-scoped AI conversation history › startup catalog cannot cancel Recover through the shipped clock 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: [{"context": {"mapHeight": 15, "mapId": "map_blank_start", "mapName": "빈 맵", "mapWidth": 20}, "kind": "user", "text": "STARTUP-RECOVER-REQUEST"}, {"kind": "assistant", "text": "STARTUP-RECOVER-ANSWER"}]
+    Received: undefined
+
+       at aiHistoryStartupRecoverHarness.ts:133
+
+      131 |     await testInfo.attach("startup-recover-receipt", { body: JSON.stringify({ stateAfterStartup,
+      132 |       state: await status.getAttribute("data-state"), retained, historyRequests, forbidden }, null, 2), contentType: "application/json" });
+    > 133 |     expect(retained.record?.entries).toEqual(entries);
+          |                                      ^
+      134 |     expect(retained.backend).toBe("indexeddb");
+      135 |     expect(stateAfterStartup).toBe("loading");
+      136 |     expect(await status.getAttribute("data-state")).toBe("ok");
+        at startupRecoverRegression (/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e/aiHistoryStartupRecoverHarness.ts:133:38)
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    .omo/evidence/ai-playable/st_01a082b3/ui-red-confirmed/ai-map-history-map-scoped--e8c24-r-through-the-shipped-clock-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: .omo/evidence/ai-playable/st_01a082b3/ui-red-confirmed/ai-map-history-map-scoped--e8c24-r-through-the-shipped-clock-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    .omo/evidence/ai-playable/st_01a082b3/ui-red-confirmed/ai-map-history-map-scoped--e8c24-r-through-the-shipped-clock-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace .omo/evidence/ai-playable/st_01a082b3/ui-red-confirmed/ai-map-history-map-scoped--e8c24-r-through-the-shipped-clock-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › test/e2e/ai-map-history.spec.ts:31:3 › map-scoped AI conversation history › startup catalog cannot cancel Recover through the shipped clock 
+
+EXIT=1

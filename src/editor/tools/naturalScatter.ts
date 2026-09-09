@@ -55,8 +55,13 @@ export function poissonScatter(bounds: ScatterBounds, count: number, minGap: num
   const candidates = enumerateCells(bounds);
   shuffle(candidates, rng);
 
-  const points: Point[] = [];
   const minGapSq = Math.max(0, minGap) ** 2;
+  if (minGapSq === 0) {
+    // Enumerated cells are unique; zero separation needs no pairwise checks.
+    const points = requested >= candidates.length ? candidates : candidates.slice(0, requested);
+    return { points, missing: Math.max(0, requested - points.length) };
+  }
+  const points: Point[] = [];
   for (const candidate of candidates) {
     if (points.length >= requested) break;
     if (points.every((point) => distanceSq(point, candidate) >= minGapSq)) points.push(candidate);

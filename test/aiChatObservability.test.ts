@@ -1,5 +1,5 @@
 // V3C 채팅 관측성 회귀: 글자 크기 3단(영속) / 병합 추론 원문 전체 / 도구 호출 상세 아코디언.
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_FONT_SIZE_KEY, applyAiFontSize, loadAiFontSize, renderAiChatPanel, renderToolActivityEntry, saveAiFontSize, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 
@@ -7,14 +7,29 @@ import { clearConversations, conversationScopeKey, saveConversation } from "@/ai
 import { clearAgentGhostPreview, getAgentGhostPreviewState, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { closeAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { editorState } from "@/editor/editorState";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+
+import * as activityLog from "@/ai/activityLog";
+import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
+import { AssistantSession } from "@/ai/assistantSession";
+import type { RequestRequirement } from "@/ai/requestCoverage";
+import { MAX_RALPH_ATTEMPTS_PER_ITEM } from "@/ai/workPlan";
+import * as toolImageRenderer from "@/ai/toolImageRenderer";
+import { emptyWikiResponse, isWikiExtraction } from "./wikiTransportFixture";
 
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
 
 beforeEach(async () => {
+  vi.spyOn(activityLog, "recordAiActivity").mockImplementation(async (entry) => {
+    return activityLog.buildAiActivityLogRecord(entry);
+  });
+  vi.stubGlobal("fetch", vi.fn(async () => new Response("{}")));
+  resetIntentDeclarationCache();
+  store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   clearAgentGhostPreview();
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
@@ -36,7 +51,10 @@ beforeEach(async () => {
 
 afterEach(async () => {
   // 진행 중 턴이 패널보다 오래 살아 죽은 DOM 에 쓰는 것을 막는다(위 uxRepairs 와 동일 이유).
+  closeAiSettingsModal();
+  findByTestId(document.body as unknown as FakeElement, "ai-gate-modal-close")?.click();
   teardownAiChatPanel();
+  await whenAiChatPanelSettled();
   await clearConversations();
   clearAgentGhostPreview();
   restoreDom?.();
@@ -46,12 +64,196 @@ afterEach(async () => {
   vi.unstubAllGlobals();
 });
 
-async function flushAsync(): Promise<void> {
-  for (let i = 0; i < 40; i += 1) await Promise.resolve();
+// Subscribe before clicking. The runner publishes this after terminal UI cleanup;
+// storage/restore settlement alone does not mean the chat turn has completed.
+function nextTerminalActivity(trace: unknown[] = []): Promise<activityLog.AiActivityLogInput> {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error(`Chat turn did not publish terminal activity: ${JSON.stringify(trace)}`)), 10_000);
+    vi.mocked(activityLog.recordAiActivity).mockImplementation(async (entry) => {
+      if (entry.channel === "chat" && entry.result.pending !== true) {
+        trace.push({ type: "terminal", result: entry.result });
+        clearTimeout(timeout);
+        resolve(entry);
+      }
+      return activityLog.buildAiActivityLogRecord(entry);
+    });
+  });
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+/** 독립 검수 요청인가 — 작성자 본문과 분리해 검수 verdict 로 답한다. */
+function reviewRequestText(messages: { role: string; content?: unknown }[]): string | null {
+  const content = messages[1]?.content;
+  const first = Array.isArray(content)
+    ? content.find((part): part is { type: "text"; text: string } =>
+        isRecord(part) && part.type === "text" && typeof part.text === "string")
+    : undefined;
+  const text = first?.text ?? "";
+  if (!text) return null;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch (error) {
+    if (error instanceof SyntaxError) return null;
+    throw error;
+  }
+  return isRecord(parsed) && parsed.kind === "independent-review" ? text : null;
+}
+
+/**
+ * 비스트리밍 작성자 라운드용 SSE→JSON 번역. create 의도 턴은 토큰 방출이 꺼져
+ * stream:false 로 오므로(5cab5e2c1), 같은 대본을 비스트리밍 chat-completion
+ * 본문으로 낸다 — 스트리밍 케이스의 SSE 본문은 손대지 않는다.
+ */
+function sseDeltaOf(line: string): { content?: string; reasoning?: string; toolCalls: { name: string; args: string; id: string }[] } | null {
+  const text = line.startsWith("data: ") ? line.slice("data: ".length) : "";
+  if (!text || text === "[DONE]") return null;
+  const payload: unknown = JSON.parse(text);
+  if (!isRecord(payload)) return null;
+  const choices = payload.choices;
+  if (!Array.isArray(choices)) return null;
+  const firstChoice = choices[0];
+  if (!isRecord(firstChoice)) return null;
+  const delta = firstChoice.delta;
+  if (!isRecord(delta)) return null;
+  const toolCalls: { name: string; args: string; id: string }[] = [];
+  const rawCalls = delta.tool_calls;
+  if (Array.isArray(rawCalls)) {
+    for (const rawCall of rawCalls) {
+      if (!isRecord(rawCall)) continue;
+      const fn = rawCall.function;
+      if (!isRecord(fn) || typeof fn.name !== "string" || typeof fn.arguments !== "string") continue;
+      toolCalls.push({ name: fn.name, args: fn.arguments, id: typeof rawCall.id === "string" ? rawCall.id : "" });
+    }
+  }
+  return {
+    ...(typeof delta.content === "string" ? { content: delta.content } : {}),
+    ...(typeof delta.reasoning === "string" ? { reasoning: delta.reasoning } : {}),
+    toolCalls,
+  };
+}
+
+function sseToJsonResponse(body: string): string {
+  const toolCalls: { id: string; type: "function"; function: { name: string; arguments: string } }[] = [];
+  const contents: string[] = [];
+  const reasonings: string[] = [];
+  for (const line of body.split("\n")) {
+    const delta = sseDeltaOf(line);
+    if (!delta) continue;
+    if (delta.content !== undefined) contents.push(delta.content);
+    if (delta.reasoning !== undefined) reasonings.push(delta.reasoning);
+    for (const call of delta.toolCalls) {
+      toolCalls.push({ id: call.id, type: "function", function: { name: call.name, arguments: call.args } });
+    }
+  }
+  const message: Record<string, unknown> = { role: "assistant", content: contents.length > 0 ? contents.join("") : null };
+  if (toolCalls.length > 0) message.tool_calls = toolCalls;
+  if (reasonings.length > 0) message.reasoning = reasonings.join("");
+  return JSON.stringify({ choices: [{ message, finish_reason: toolCalls.length > 0 ? "tool_calls" : "stop" }] });
+}
+
+/**
+ * 검수 승인 double. 불변 캡처(reviewBaseline→draft 동일성)는 프로덕션이
+ * 검증한다(parseIndependentReview 가 requiredProblems 를 findings 로 강제하고,
+ * stale-baseline/revision 검사가 drift 를 error 로 만든다) — double 은
+ * revision 을 그대로 에코하고 verdict 규격만 맞춘다. requiredProblems 가
+ * 비어 있지 않으면 프로덕션이 changes_requested 로 뒤집으므로 fake 승인이
+ * 될 수 없다(아래 고스트 케이스는 show_map_region 영수증으로 비운다).
+ */
+function reviewRevisionOf(text: string): number {
+  const input: unknown = JSON.parse(text);
+  assert.isTrue(isRecord(input) && typeof input.revision === "number", "review payload carries a numeric revision");
+  return input.revision;
+}
+
+function approvedReviewResponse(text: string): Response {
+  const revision = reviewRevisionOf(text);
+  return new Response(JSON.stringify({ choices: [{ message: {
+    role: "assistant",
+    content: JSON.stringify({ revision, verdict: "approved", summary: "Fixture review", findings: [] }),
+  }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } });
 }
 
 function renderPanel(): FakeElement {
-  return renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
+  return renderAiChatPanel() as unknown as FakeElement;
+}
+
+const sse = (lines: string[]): string => [...lines.map((line) => `data: ${line}`), "data: [DONE]", ""].join("\n\n");
+const toolCallLine = (id: string, name: string, args = "{}"): string =>
+  JSON.stringify({ choices: [{ delta: { tool_calls: [{ index: 0, id, type: "function", function: { name, arguments: args } }] } }] });
+const reasoningLine = (text: string): string => JSON.stringify({ choices: [{ delta: { reasoning: text } }] });
+
+function stubChat(tools: readonly string[], bodies: readonly string[], trace: unknown[] = [], requirements: readonly RequestRequirement[] = [], executeReply?: string) {
+  const requests = { intent: 0, coverage: 0, review: 0, chat: 0, execute: 0 };
+  const stageRequests = new Map<number, number>();
+  // OAuth is the shipped config contract. agentMode:chat alone no longer disables
+  // planning: the balanced autonomy dial enables it unless intent says single-step.
+  storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "chat" }));
+  vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
+    if (!String(url).endsWith("/v1/chat/completions")) return new Response("{}");
+    const payload: { stream: boolean; response_format?: { type: string }; messages: { role: string; content?: unknown }[] } = JSON.parse(String(init?.body));
+    const reviewText = reviewRequestText(payload.messages);
+    const kind = reviewText !== null ? "review" : payload.messages.some(message => message.role === "system" && typeof message.content === "string"
+      && message.content.startsWith("REQUEST_COVERAGE_AUDIT\n")) ? "coverage" : payload.response_format?.type === "json_object" ? "intent" : payload.stream ? "chat" : "execute";
+    if (isWikiExtraction(payload.messages)) return emptyWikiResponse();
+    trace.push({ type: "request", kind, stream: payload.stream, toolResults: payload.messages.filter(message => message.role === "tool").length });
+    if (kind === "coverage") {
+      requests.coverage += 1;
+      expect(payload.stream).toBe(false);
+      expect(requirements.length).toBeGreaterThan(0);
+      trace.push({ type: "response", kind, requirements });
+      return new Response(JSON.stringify({ choices: [{ message: {
+        role: "assistant", content: JSON.stringify({ requirements }),
+      }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } });
+    }
+    if (reviewText !== null) {
+      requests.review += 1;
+      expect(payload.stream).toBe(false);
+      expect(payload.messages.map(message => message.role)).toEqual(["system", "user"]);
+      expect(JSON.parse(reviewText)).toMatchObject({ requiredProblems: [], imageEvidence: expect.any(Array) });
+      expect(payload.messages[1]?.content).toEqual(expect.arrayContaining([
+        expect.objectContaining({ type: "image_url", image_url: { url: "data:image/png;base64,AA==" } }),
+      ]));
+      trace.push({ type: "response", kind });
+      return approvedReviewResponse(reviewText);
+    }
+    if (kind === "intent") {
+      requests.intent += 1;
+      expect(payload.stream).toBe(false);
+      trace.push({ type: "response", kind, requirements: false });
+      return new Response(JSON.stringify({ choices: [{ message: {
+        role: "assistant", content: JSON.stringify({ mode: tools.includes("create_map") ? "create" : "question", space: "none", needsPlan: false, tools }),
+      }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } });
+    }
+    // Route by actual tool results, not by a shared fetch queue. Intent/persistence
+    // traffic cannot steal a chat response; unexpected extra rounds fail loudly.
+    const completedTools = payload.messages.filter((message) => message.role === "tool").length;
+    requests[kind] += 1;
+    const stageRequest = (stageRequests.get(completedTools) ?? 0) + 1;
+    stageRequests.set(completedTools, stageRequest);
+    const finalStage = completedTools === bodies.length - 1;
+    expect(stageRequest).toBeLessThanOrEqual(finalStage && executeReply !== undefined ? 1 + MAX_RALPH_ATTEMPTS_PER_ITEM : 1);
+    let body = bodies[completedTools];
+    if (body === undefined) throw new Error(`Unexpected author round after ${completedTools} tools`);
+    // Non-streaming create rounds still need their actual tool-call bodies.
+    // Only final-stage acceptance/review continuations may reuse the final reply.
+    if (stageRequest > 1) {
+      expect(payload.stream).toBe(false);
+      expect(executeReply).toBeDefined();
+      body = sse([JSON.stringify({ choices: [{ delta: { content: executeReply }, finish_reason: "stop" }] })]);
+    }
+    trace.push({ type: "response", kind, toolResults: completedTools });
+    // question 턴의 스트리밍 SSE 본문은 그대로 둔다. create 턴은 토큰 방출이 꺼져
+    // stream:false 로 오므로 같은 대본을 비스트리밍 JSON 본문으로 번역한다.
+    if (payload.stream === true) {
+      return new Response(body, { headers: { "Content-Type": "text/event-stream" } });
+    }
+    return new Response(sseToJsonResponse(body), { headers: { "Content-Type": "application/json" } });
+  }));
+  return requests;
 }
 
 describe("글자 크기 3단 (V3C ①)", () => {
@@ -175,66 +377,46 @@ describe("도구 호출 상세 아코디언 (V3C ③)", () => {
 
 describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
   it("도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다", async () => {
-    // 환경 고정: .env/.env.local 의 VITE_LLM_API_URL 이 있으면 apiKey+cpen 모드가 되어
-    // 스트리밍(이 테스트의 SSE 픽스처 전제)이 꺼진다. aiChatPanelSettings 와 동일하게 스텁한다.
-    // agentMode:chat — 이 테스트는 단일 모델·플래너 없는 본문 루프의 SSE 본문 3개를 순서대로
-    // 소비한다. 기본 auto 면 플래너 라운드가 첫 본문을 가져가 스트림이 한 칸씩 밀린다.
-    vi.stubEnv("VITE_LLM_API_URL", "");
-    vi.stubEnv("VITE_LLM_API_KEY", "");
-    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "chat", apiKey: "sk-test" }));
-    const sse = (lines: string[]): string => [...lines.map((line) => `data: ${line}`), "data: [DONE]", ""].join("\n\n");
-    // 두 호출은 **서로 다른 조회 도구**다: 상류 #315 가 같은 이름·같은 인자의 반복 툴콜을 하나로
-    // 합치므로(조용한 병합 결함 수정), 같은 호출을 두 번 보내면 활동 그룹 카운트가 1로 접힌다.
-    // 이 테스트의 관심사는 "라운드 두 번 사이의 추론이 병합돼도 원문이 각각 남는가" 이므로
-    // 호출만 구분해 라운드 수를 유지한다.
-    const toolCallLine = (id: string, name: string, args = "{}"): string =>
-      JSON.stringify({ choices: [{ delta: { tool_calls: [{ index: 0, id, type: "function", function: { name, arguments: args } }] } }] });
-    const reasoningLine = (text: string): string => JSON.stringify({ choices: [{ delta: { reasoning: text } }] });
-    const bodies = [
+    const regionArgs = { mapId: store.getCurrent().startMapId, x: 0, y: 0, w: 2, h: 2 };
+    const requests = stubChat(["get_project_summary", "get_map_region"], [
       sse([toolCallLine("c1", "get_project_summary")]),
-      sse([reasoningLine("첫 번째 추론 원문입니다."), toolCallLine("c2", "get_project_summary")]),
-      sse([reasoningLine("두 번째 추론 원문입니다."), JSON.stringify({ choices: [{ delta: { content: "완료했습니다" } }] })]),
-    ];
-    // SSE 본문은 **LLM 호출(chat/completions)에만** 내준다. 다른 fetch(예: `.env.local` 에 Supabase 키가
-    // 있을 때 패널 부팅이 보내는 요청)가 본문 하나를 가져가면 추론이 2회 → 1회로 조용히 밀렸다
-    // (2026-09-03 실측: `.env.local` 있는 워크트리에서만 실패, 키를 지우면 통과).
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async (url: unknown) => {
-        if (!String(url).includes("chat/completions")) return new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } });
-        return new Response(bodies.shift() ?? sse([]), { status: 200, headers: { "Content-Type": "text/event-stream" } });
-      })
-    );
+      sse([reasoningLine("reasoning-first-sentinel"), toolCallLine("c2", "get_map_region", JSON.stringify(regionArgs))]),
+      sse([reasoningLine("reasoning-second-sentinel"), JSON.stringify({ choices: [{ delta: { content: "answer-sentinel" } }] })]),
+    ]);
 
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
+    const terminal = nextTerminalActivity();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "요약해줘";
     (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-    for (let i = 0; i < 10; i += 1) await flushAsync();
+    const result = await terminal;
+    expect(result.result).toMatchObject({ ok: true, stoppedReason: "final" });
+    expect(requests).toEqual({ intent: 1, coverage: 0, review: 0, chat: 3, execute: 0 });
+    expect(result.toolCalls).toMatchObject([
+      { name: "get_project_summary", ok: true },
+      { name: "get_map_region", ok: true },
+    ]);
 
     const reasoningBox = findByTestId(panel, "ai-reasoning") as unknown as FakeElement;
     expect(reasoningBox).toBeTruthy();
     const body = findByTestId(panel, "ai-reasoning-body") as unknown as FakeElement;
     const items = body.querySelectorAll(".ai-reasoning-item");
     expect(items.length).toBe(2);
-    expect(items[0]?.textContent).toBe("첫 번째 추론 원문입니다.");
-    expect(items[1]?.textContent).toBe("두 번째 추론 원문입니다.");
+    expect(items[0]?.textContent).toBe("reasoning-first-sentinel");
+    expect(items[1]?.textContent).toBe("reasoning-second-sentinel");
     // 병합 카운트가 토글 문구에 반영된다(💭 추론 2회).
-    expect(reasoningBox.textContent).toContain("추론 2회");
+    expect(reasoningBox.querySelector(".ai-reasoning-toggle")?.textContent).toMatch(/\b2\b/);
+    expect(body.hidden).toBe(true);
+    reasoningBox.querySelector(".ai-reasoning-toggle")?.click();
+    expect(body.hidden).toBe(false);
     // 조회성 툴(get_*)은 목록 줄 없이 카운트만 — 활동 그룹은 남는다.
     const activity = findByTestId(panel, "ai-tool-activity");
     expect(activity).toBeTruthy();
-    // 조회성 툴은 목록 줄 없이 **카운트만** 남는다("조회 N"; 쓰기 그룹은 "작업 N").
-    //
-    // 숫자를 못박지 않는 이유: 상류 병합(#283/#315) 뒤 활동 그룹의 누적 의미가 바뀌었다. 실측 —
-    // 같은 조회 도구를 두 라운드에 걸쳐 부르면 그룹은 하나이고 "조회 1" 이며, 2라운드에 다른
-    // 도구(find_tools)를 부르면 그룹이 그 호출 하나만 담아 "작업 1" 로 바뀐다. 즉 그룹이
-    // 마지막 라운드의 호출만 보여주는 것으로 보인다(1라운드 줄이 사라진다). 이 테스트의 주제는
-    // 추론 병합이므로 여기서는 안정된 계약만 본다: 그룹이 하나 있고, 카운트 요약이며, JSON
-    // 상세 줄이 없다. 누적 의미는 별도 조사 대상이다(PR 코멘트에 남긴다).
+    // Distinct reads preserve two real tool rounds without duplicate-call merging.
     const activityLog = findByTestId(panel, "ai-chat-log") as unknown as FakeElement;
     const toggle = findByTestId(panel, "ai-tool-activity-toggle");
-    expect(toggle?.textContent).toMatch(/(조회|작업)\s*\d+/);
+    expect(toggle?.textContent).toMatch(/\b2\b/);
     expect(activityLog.textContent ?? "").not.toContain("get_project_summary");
     expect(findByTestId(panel, "ai-tool-detail-1")).toBeNull();
   });
@@ -242,49 +424,43 @@ describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
 
 describe("실시간 고스트 프리뷰 연결", () => {
   it("채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다", async () => {
-    // 환경 고정(위와 동일) + agentMode:chat — model===liteModel 단일 모델(플래너 없음)의
-    // 본문 루프 동작을 고정하는 형상 테스트다. 기본 auto 는 이 판정을 우회해 플래너 라운드가
-    // 첫 SSE 본문을 소비한다.
-    vi.stubEnv("VITE_LLM_API_URL", "");
-    vi.stubEnv("VITE_LLM_API_KEY", "");
-    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "chat", model: "ghost-test-model", liteModel: "ghost-test-model", apiKey: "sk-test" }));
-    const sse = (lines: string[]): string => [...lines.map((line) => `data: ${line}`), "data: [DONE]", ""].join("\n\n");
+    const trace: unknown[] = [];
+    const send = AssistantSession.prototype.sendUserMessage;
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockImplementation(function (this: AssistantSession, text, onEvent, signal, options) {
+      return send.call(this, text, event => {
+        if (["acceptance", "run_outcome", "phase", "tool_started", "tool_call", "proposal_paused", "result_review"].includes(event.type)) trace.push(event);
+        if (event.type === "result_review") {
+          expect(event.review).toMatchObject({ status: "approved", findings: [] });
+          expect(store.getCurrent().maps.map_live_ghost).toBeUndefined();
+        }
+        onEvent?.(event);
+      }, signal, options);
+    });
+    // Store-driven post-apply refresh has its own panel subscriber, not send's.
+    const refresh = AssistantSession.prototype.refreshAcceptance;
+    vi.spyOn(AssistantSession.prototype, "refreshAcceptance").mockImplementation(function (this: AssistantSession, project, onEvent) {
+      return refresh.call(this, project, onEvent ? event => { trace.push(event); onEvent(event); } : undefined);
+    });
     const createMapArgs = { id: "map_live_ghost", name: "라이브 고스트", width: 6, height: 5 };
-    // 응답은 **요청 내용으로** 고른다(라운드 순서가 아니라). 상류가 오케스트레이션 라운드를
-    // 한 번 더 넣으면 순서 기반 픽스처는 조용히 한 칸 밀려 툴콜이 사라진다(실측: 병합 후
-    // "변경 제안 없음(0건)"). tool 역할 메시지가 요청에 들어온 뒤부터 최종 텍스트를 준다.
-    let rounds = 0;
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async (_url: unknown, init?: { body?: unknown }) => {
-        rounds += 1;
-        const payload = JSON.parse(typeof init?.body === "string" ? init.body : "{}") as {
-          messages?: { role?: string }[];
-        };
-        const toolRan = (payload.messages ?? []).some((message) => message?.role === "tool");
-        // rounds 상한은 무한 루프 방지용 안전핀이다(스텁이 계속 툴콜을 주면 세션이 계속 돈다).
-        const body = toolRan || rounds > 3
-          ? sse([JSON.stringify({ choices: [{ delta: { content: "초안을 만들었습니다." }, finish_reason: "stop" }] })])
-          : sse([
-              JSON.stringify({
-                choices: [{
-                  delta: {
-                    tool_calls: [{
-                      index: 0,
-                      id: "c_live",
-                      type: "function",
-                      function: { name: "create_map", arguments: JSON.stringify(createMapArgs) },
-                    }],
-                  },
-                  finish_reason: "tool_calls",
-                }],
-              }),
-            ]);
-        return new Response(body, { status: 200, headers: { "Content-Type": "text/event-stream" } });
-      })
-    );
+    const requestText = "라이브 고스트라는 6x5 새 맵 만들어줘";
+    const regionArgs = { mapId: "map_live_ghost", x: 0, y: 0, w: 6, h: 5 };
+    const requests = stubChat(["create_map"], [
+      sse([toolCallLine("c_live", "create_map", JSON.stringify(createMapArgs))]),
+      sse([toolCallLine("c_shot", "show_map_region", JSON.stringify(regionArgs))]),
+      sse([JSON.stringify({ choices: [{ delta: { content: "draft-complete-sentinel" }, finish_reason: "stop" }] })]),
+    ], trace, [{ text: requestText, criteria: [{ kind: "mapDimensions", target: { newMapName: createMapArgs.name }, width: 6, height: 5 }] }], "draft-complete-sentinel");
+    // 좁은 렌더러 double: 이 파일 안에서만 기존 export renderToolImages 를
+    // 결정적 이미지로 대체한다. 세션→이미지 영수증→독립 검수 배선은 전부
+    // 프로덕션 그대로 탄다(픽셀 품질이 아니라 고스트 수명·적용을 본다).
+    // create 로 만든 뒤 그 맵 전체를 show_map_region 으로 조회해야 검수의
+    // 시각 커버리지가 비고, 조회는 읽기라 제안·적용 집계에 들어가지 않는다.
+    const renderSpy = vi.spyOn(toolImageRenderer, "renderToolImages").mockImplementation(async (_project, toolName) => {
+      return [{ dataUrl: "data:image/png;base64,AA==", label: `Fixture image (${toolName})` }];
+    });
 
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
+    const terminal = nextTerminalActivity(trace);
     // 턴 **도중** 발행된 초안 고스트를 구독으로 잡는다. 턴이 정상 종료되면 적용 경로가
     // 고스트를 걷어내므로(aiProposalCard.ts:277 clearAgentGhostPreview → applyProposedProject)
     // 턴이 끝난 뒤의 상태로는 이 배선을 관측할 수 없다.
@@ -295,10 +471,52 @@ describe("실시간 고스트 프리뷰 연결", () => {
       }
     });
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
-    input.value = "새 맵 만들어줘";
+    input.value = requestText;
     (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-    for (let i = 0; i < 16; i += 1) await flushAsync();
-    unsubscribe();
+    let result: activityLog.AiActivityLogInput;
+    try {
+      result = await terminal;
+    } finally {
+      unsubscribe();
+    }
+    expect(result.result).toMatchObject({ ok: true, stoppedReason: "final", appliedCalls: 1 });
+    // Create -> full-map image read -> final are three non-streaming author rounds.
+    // Coverage and draft review are independent requests, not author executions.
+    // Review now checks the draft before apply; no acceptance repair is needed.
+    expect(requests).toEqual({ intent: 1, coverage: 1, review: 1, chat: 0, execute: 3 });
+    expect(trace.filter(entry => isRecord(entry) && entry.type === "request")).toMatchObject([
+      { kind: "intent", stream: false },
+      { kind: "coverage", stream: false },
+      { kind: "execute", stream: false, toolResults: 0 },
+      { kind: "execute", stream: false, toolResults: 1 },
+      { kind: "execute", stream: false, toolResults: 2 },
+      { kind: "review", stream: false },
+    ]);
+    expect(trace).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "request", kind: "coverage", stream: false }),
+      expect.objectContaining({ type: "response", kind: "coverage" }),
+      { type: "result_review", review: expect.objectContaining({ status: "approved", findings: [] }) },
+      { type: "acceptance", snapshot: expect.objectContaining({ status: "verified" }) },
+      { type: "run_outcome", runOutcome: expect.objectContaining({ goal: "satisfied", delivery: "applied" }) },
+      { type: "terminal", result: expect.objectContaining({ ok: true, appliedCalls: 1 }) },
+    ]));
+    // 승인 증거는 프로덕션이 남긴 검수 감사 항목 자체다(세션 withTurnLedger 와
+    // 패널 적용 게이트가 미승인 초안을 떨어뜨리므로 ok/final/appliedCalls:1 도
+    // 같은 사실을 independently 증명한다).
+    const reviewEntry = (result.audit ?? []).find((entry): entry is Extract<typeof entry, { kind: "status" }> =>
+      entry.kind === "status" && entry.text.startsWith("independent-review "));
+    assert.isDefined(reviewEntry, "production recorded an independent-review audit entry");
+    const review: unknown = JSON.parse(reviewEntry.text.slice("independent-review ".length));
+    expect(review).toMatchObject({ status: "approved", findings: [] });
+    expect(result.toolCalls).toEqual(expect.arrayContaining([
+      expect.objectContaining({ name: "create_map", ok: true }),
+      // 쓰기 뒤 새 맵 전체를 실제로 조회해야 검수 커버리지가 빈다.
+      expect.objectContaining({ name: "show_map_region", ok: true, args: expect.objectContaining(regionArgs) }),
+    ]));
+    // 실제 렌더 배선을 타고 새 맵 전체 조회 이미지가 나갔는지 — 영수증의 증거다.
+    // (턴 시작 뷰포트 조회도 같은 함수를 타므로 map_live_ghost 인자로 식별한다.)
+    expect(renderSpy).toHaveBeenCalledWith(expect.anything(), "show_map_region", expect.objectContaining(regionArgs));
+    expect(store.getCurrent().maps.map_live_ghost).toMatchObject(createMapArgs);
 
     expect(observed).toEqual(
       expect.arrayContaining([

@@ -37,27 +37,39 @@ export const RECT_SCHEMA: JsonSchema = {
 };
 
 /**
- * 이벤트 커맨드/조건 — `kind` 로 분기하는 넓은 유니온이다. 전 variant 를 나열하면 스키마가 수백 줄이
+ * 이벤트 커맨드 — 조건은 CONDITION_SCHEMA로 분리한다. `kind` 로 분기하는 넓은 유니온이다. 전 variant 를 나열하면 스키마가 수백 줄이
  * 되고 노출 토큰이 폭증하므로 `kind` 와 최빈 필드만 선언한다. 값 검증은 커맨드 컴파일러가 한다.
  */
-export const COMMAND_SCHEMA: JsonSchema = {
+const COMMAND_LEAF_SCHEMA: JsonSchema = {
   type: "object",
+  description:
+    'Command 예: {kind:"changeItem",itemId:"조회한 ID",op:"-=",amount:1}, ' +
+    '{kind:"setSwitch",switchId:"조회한 ID",value:true}, {kind:"triggerEnding",endingId:"정의한 ID"}. ' +
+    'triggerEnding의 endingId 생략 시 조건으로 선택한다. switch/item은 조건 kind이며 실행 명령이 아니다.',
   properties: {
     // kind 를 자유 문자열로 두면 모델이 존재하지 않는 kind 를 만들어 보낸다(2026-08-23 실측:
     // pages[0].choices[0].commands[0].kind 가 unknown 으로 거부). 단일 진실 소스 enum 을 노출한다.
-    kind: { type: "string", enum: [...COMMAND_KINDS, ...CONDITION_KINDS] },
+    kind: { type: "string", enum: [...COMMAND_KINDS] },
     text: { type: "string" },
-    value: { type: "string" },
+    // 단일 type/union 금지 provider 계약 때문에 다형 값만 type을 생략한다.
+    // 타입과 필수 값은 기존 kind별 커맨드 shape 검증기가 엄격히 검사한다.
+    value: {
+      description: 'setSwitch: boolean 또는 "toggle" 또는 {kind:"var",id}. setVariable: number 또는 {kind:"var",id}. setSelfSwitch/setFlag: boolean. changeFactionStance: number.',
+    },
+    op: { type: "string", enum: ["=", "+=", "-=", "*=", "/="], description: "changeItem/changeGold: =|+=|-=. setVariable: =|+=|-=|*=|/=. 아이템 지급은 changeItem + itemId + op:+= + amount." },
+    endingId: { type: "string", description: "triggerEnding 대상 ending ID. 생략하면 조건에 맞는 엔딩을 선택." },
     id: { type: "string" },
     mapId: { type: "string" },
     x: { type: "integer" },
     y: { type: "integer" },
     amount: { type: "integer" },
     itemId: { type: "string" },
+    speciesId: { type: "string", description: "giveMonster: 조회한 monsterSpecies ID" },
+    level: { type: "integer", description: "giveMonster: 지급할 몬스터의 레벨" },
     switchId: { type: "string" },
     variableId: { type: "string" },
     label: { type: "string" },
-    key: { type: "string", description: "selfSwitch 키 A|B|C|D" },
+    key: { type: "string", description: "setSelfSwitch 키 A|B|C|D" },
     delta: { type: "integer", description: "changeFriendship 변화량" },
     speaker: { type: "string" },
     body: { type: "string", description: "text 대사 본문" },
@@ -66,6 +78,30 @@ export const COMMAND_SCHEMA: JsonSchema = {
   required: ["kind"],
   // variant 전용 필드는 커맨드 shape 검증기가 본다.
   additionalProperties: true,
+};
+
+// A finite schema avoids cyclic JSON/$ref on provider transports. Nested branch
+// commands retain the same kind/field contract; runtime validates every depth.
+export const COMMAND_SCHEMA: JsonSchema = {
+  ...COMMAND_LEAF_SCHEMA,
+  properties: {
+    ...COMMAND_LEAF_SCHEMA.properties,
+    prompt: { type: "string" },
+    options: {
+      type: "array",
+      description: "choices 실행 선택지. 각 branch는 선택 시 실행할 Command[].",
+      items: {
+        type: "object",
+        properties: {
+          text: { type: "string" },
+          branch: { type: "array", items: COMMAND_LEAF_SCHEMA },
+        },
+        required: ["text", "branch"],
+      },
+    },
+    cancelBehavior: { type: "string", enum: ["disallow", "choice1", "choice2", "choice3", "choice4", "choice5", "branch"] },
+    cancelBranch: { type: "array", items: COMMAND_LEAF_SCHEMA },
+  },
 };
 
 /** `GraphicSpec` (eventCompile.ts): `{query}` | `{textureKey,characterIndex?}` | `{transparent:true}`. */
@@ -126,15 +162,15 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
 
 /**
  * `Condition` (project/types/events) — 리프 + all/any/not 복합까지 17 variant.
- * `kind` 와 식별 필드만 선언하고 variant 전용 값(`value` 는 boolean|number 로 타입이 갈린다)은
- * `additionalProperties` 로 넘긴다. 단일 `type` 만 허용되는 스키마에서 boolean|number 는 표현 불가다.
+ * `value` 는 boolean|number 로 갈리므로 단일 type을 강제하지 않는다.
+ * 필수 값과 타입은 validateConditionShape가 kind별로 검사한다.
  */
 export const CONDITION_SCHEMA: JsonSchema = {
   type: "object",
   description:
     "kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). " +
-    "kind=all|any → conditions[]. kind=not → condition. value 는 kind 에 따라 boolean/number 로 갈린다 " +
-    "(스키마가 단일 type 만 허용하므로 properties 에는 선언하지 않는다).",
+    'kind=item → itemId + present(boolean), 예: {kind:"item",itemId:"조회한 ID",present:true}. ' +
+    "kind=all|any → conditions[]. kind=not → condition. kind=selfSwitch → key + value(boolean).",
   properties: {
     kind: {
       type: "string",
@@ -147,6 +183,8 @@ export const CONDITION_SCHEMA: JsonSchema = {
     variableId: { type: "string" },
     itemId: { type: "string" },
     actorId: { type: "string" },
+    value: { description: "switch/selfSwitch: boolean 필수. variable/friendshipAtLeast: number 필수. run: query별 boolean 또는 number." },
+    present: { type: "boolean", description: "item/actor 조건: true=보유/합류, false=미보유/미합류. 필수." },
     op: { type: "string", enum: ["==", ">=", "<=", ">", "<", "!="] },
     amount: { type: "integer" },
     phase: { type: "string", enum: ["morning", "day", "evening", "night"] },
@@ -158,6 +196,75 @@ export const CONDITION_SCHEMA: JsonSchema = {
   },
   required: ["kind"],
   additionalProperties: true,
+};
+
+/** Native EventPage input for the partial-update tool, not a SimplePage compiler. */
+export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
+  type: "object",
+  description: "EventPage. pages 지정은 페이지 배열 전체 교체다. 생략한 필수 페이지 필드는 기본값으로 보완한다. " +
+    "대사/선택/효과는 commands에만 둔다: {kind:'choices',options:[{text:'선택',branch:[{kind:'triggerEnding',endingId:'정의한 ID'}]}]}. " +
+    "page.choices/lines/showText/messages/text/face 및 graphic.query/textureKey/characterIndex는 지원하지 않는다. SimplePage는 place_npc/make_villager를 사용하라.",
+  properties: {
+    id: { type: "string" },
+    name: { type: "string" },
+    conditions: { type: "array", items: CONDITION_SCHEMA, description: "모든 조건이 참인 마지막 페이지를 실행. 기본 페이지를 먼저, 조건 페이지를 뒤에 둔다." },
+    commands: { type: "array", items: COMMAND_SCHEMA },
+    trigger: {
+      type: "object",
+      properties: { kind: { type: "string", enum: ["action", "touch", "playerTouch", "eventTouch", "auto", "parallel"] } },
+      required: ["kind"],
+    },
+    graphic: {
+      type: "object",
+      properties: {
+        sprite: {
+          type: "object",
+          properties: { id: { type: "string" }, type: { type: "string", enum: ["bundled", "uploaded"] } },
+          required: ["id", "type"],
+        },
+        direction: { type: "string", enum: ["down", "left", "right", "up"] },
+        pattern: {
+          type: "integer",
+          description: "스프라이트 시트의 프레임 번호이며 characterIndex(캐릭터 슬롯)가 아니다. " +
+            "charset 슬롯 0~7의 아래방향 정지 프레임은 25,28,31,34,73,76,79,82. " +
+            "list_resources(kind:'charset') / list_npc_graphics 결과의 nativeGraphic을 graphic에 그대로 사용하라.",
+        },
+        transparent: { type: "boolean" },
+        scale: { type: "number" },
+      },
+    },
+    priority: { type: "string", enum: ["below", "same", "above"] },
+    overlapForbidden: { type: "boolean" },
+    animationType: { type: "string" },
+    footprint: {
+      type: "object",
+      properties: { width: { type: "integer" }, height: { type: "integer" } },
+      required: ["width", "height"],
+    },
+    passRows: { type: "integer" },
+    interaction: {
+      type: "object",
+      properties: {
+        kind: { type: "string", enum: ["pushable", "hiding"] },
+        directions: { type: "array", items: { type: "string", enum: ["down", "left", "right", "up"] } },
+      },
+      required: ["kind"],
+    },
+    movement: {
+      type: "object",
+      properties: {
+        type: { type: "string", enum: ["fixed", "random", "approach", "custom", "living", "chase"] },
+        speed: { type: "number" },
+        frequency: { type: "number" },
+        sightRange: { type: "number" },
+        giveUpRange: { type: "number" },
+        pathfind: { type: "boolean" },
+        moveIntervalMs: { type: "number" },
+      },
+      description: "EventPageMovement. custom는 route:MoveRoute, living은 living:NpcLivingMovement, chase는 pursuit:ChaseAcrossMaps를 추가할 수 있다.",
+      additionalProperties: true,
+    },
+  },
 };
 
 /** `SimplePage` (types.ts) — place_npc/make_villager 등이 받는 고수준 페이지. */

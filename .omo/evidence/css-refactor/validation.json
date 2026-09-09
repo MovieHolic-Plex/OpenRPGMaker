@@ -1,0 +1,87 @@
+{
+  "base": "e07cd4f8",
+  "codeCommit": "5127fe62",
+  "ast": {
+    "passed": true,
+    "files": 8,
+    "removedDeclarations": 118,
+    "removedEmptyRules": 16
+  },
+  "checks": {
+    "typecheckApp": {
+      "command": "npm run typecheck:app",
+      "exit": 0
+    },
+    "focused": {
+      "command": "npm test -- test/databaseStudioV2.test.ts test/databaseSidebarCss.test.ts test/databaseLightTheme.test.ts",
+      "exit": 0,
+      "files": 3,
+      "passed": 25
+    },
+    "build": {
+      "command": "npm run build:app",
+      "exit": 0
+    },
+    "css": {
+      "command": "npm run gates -- --only css",
+      "exit": 0
+    },
+    "full": {
+      "command": "npm run gates",
+      "status": "timed_out",
+      "timeoutMilliseconds": 1800000,
+      "vitestReportProduced": false
+    },
+    "surface": {
+      "command": "npm run gates -- --only surface",
+      "base": "e07cd4f8",
+      "codeCommit": "5127fe62",
+      "baseExit": 1,
+      "prExit": 1,
+      "baseFailed": 6,
+      "prFailed": 6,
+      "basePassed": 107,
+      "prPassed": 107,
+      "identicalFailures": true,
+      "baseFailures": [
+        "test/eventEditorCommitProbe.baseline.test.ts > no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+        "test/eventEditorCommitProbe.baseline.test.ts > 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+        "test/eventEditorFormSurface.baseline.test.ts > 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다",
+        "test/eventEditorInteractionSurface.baseline.test.ts > 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다",
+        "test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 기준선과 일치한다",
+        "test/eventEditorPortalSurface.baseline.test.ts > 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다"
+      ],
+      "prFailures": [
+        "test/eventEditorCommitProbe.baseline.test.ts > no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+        "test/eventEditorCommitProbe.baseline.test.ts > 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+        "test/eventEditorFormSurface.baseline.test.ts > 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다",
+        "test/eventEditorInteractionSurface.baseline.test.ts > 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다",
+        "test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 기준선과 일치한다",
+        "test/eventEditorPortalSurface.baseline.test.ts > 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다"
+      ],
+      "cssLiveClassesPassedBoth": true
+    }
+  },
+  "browser": {
+    "dbStates": 66,
+    "exactGeometryAndStyles": 66,
+    "editorShellStates": 2,
+    "exactEditorShellStates": 2
+  },
+  "cleanup": {
+    "browserClosed": true,
+    "contextsClosed": 2,
+    "portsUnbound": [
+      19841,
+      19842
+    ],
+    "ownedChromeProfileRemoved": true
+  },
+  "limits": [
+    "Full-suite regression verdict is unavailable after the timeout.",
+    "Configured Biome language server is not installed.",
+    "Seven of 68 final PNG pairs are nonidentical; raw pixel differences are reported separately.",
+    "No model visual certification is claimed."
+  ],
+  "selfReview": "HEAVY retained for adversarial cross-surface audit. Exact deletion AST, all final browser states, scoped gates and unchanged baseline surface failures were checked; no runtime, schema, token or import-order migration was introduced."
+}

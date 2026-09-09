@@ -4,6 +4,11 @@
 // - MCP(scripts/rpgzzu-assistant-mcp.mjs)가 send/status/audit/harness 를 호출하면
 //   브라우저에서 실제 채팅 패널이 돌고, 사용자는 UI를 그대로 본다.
 
+import type { RunOutcome } from "@/ai/runOutcome";
+import type { RequirementWithdrawalAction } from "@/ai/assistantAcceptance";
+import { RunOperation } from "@/ai/runOperation";
+import { createPendingWorkTracker } from "@/util/pendingWork";
+
 export const AI_ASSISTANT_BRIDGE_DEFAULT_PORT = 17831;
 export const AI_ASSISTANT_BRIDGE_DEFAULT_HOST = "127.0.0.1";
 
@@ -29,6 +34,7 @@ export type AiBridgeAuditEntry = {
 };
 
 export type AiBridgeTurnResult = {
+  readonly runOutcome?: RunOutcome | null;
   readonly ok: boolean;
   readonly error?: string;
   readonly status: AiBridgeStatus;
@@ -45,6 +51,8 @@ export type AiAssistantBridgeHandlers = {
   readonly abort: () => void;
   /** 채팅 패널이 접혀 있으면 펼친다(도크 열기). 선택 — 구 등록부 호환. */
   readonly openPanel?: () => void;
+  /** Local user action only; not a transport command or MCP/LLM tool. */
+  readonly withdrawRequirement?: (action: RequirementWithdrawalAction) => boolean;
 };
 
 type BridgeCommand =
@@ -55,6 +63,12 @@ type BridgeCommand =
   | { readonly id: string; readonly type: "abort" };
 
 let handlers: AiAssistantBridgeHandlers | null = null;
+let registration = new RunOperation();
+const commandResults = new Map<string, Promise<unknown>>();
+const pendingPolls = createPendingWorkTracker();
+
+/** Teardown observers await actual owned transport completion, never timer guesses. */
+export function whenAiAssistantBridgeSettled(): Promise<void> { return pendingPolls.settled(); }
 let pollTimer: number | null = null;
 let pollAbort: AbortController | null = null;
 let bridgeConnected = false;
@@ -73,14 +87,19 @@ export function isAiAssistantBridgeConnected(): boolean {
 }
 
 export function registerAiAssistantBridge(next: AiAssistantBridgeHandlers): void {
+  registration.retire();
+  stopBridgeClient();
+  registration = new RunOperation();
+  const owner = registration;
+  commandResults.clear();
   handlers = next;
   if (typeof window !== "undefined") {
     window.__oprnAiBridge = {
-      send: (text: string) => runSend(text),
+      send: (text: string) => runSend(text, owner),
       status: () => getStatusSnapshot(),
       audit: () => handlers?.getAudit() ?? [],
       harness: () => handlers?.getHarness() ?? null,
-      abort: () => handlers?.abort(),
+      abort: () => { if (registration === owner) next.abort(); },
       connected: () => bridgeConnected,
     };
   }
@@ -88,6 +107,8 @@ export function registerAiAssistantBridge(next: AiAssistantBridgeHandlers): void
 }
 
 export function unregisterAiAssistantBridge(): void {
+  registration.retire();
+  commandResults.clear();
   handlers = null;
   stopBridgeClient();
   if (typeof window !== "undefined") {
@@ -123,6 +144,11 @@ export function abortAiAssistantTurn(): void {
   handlers?.abort();
 }
 
+/** Invoke only from an explicit scoped user action. Never dispatch model output here. */
+export function withdrawAiRequirement(action: RequirementWithdrawalAction): boolean {
+  return handlers?.withdrawRequirement?.(action) ?? false;
+}
+
 function getStatusSnapshot(): AiBridgeStatus {
   if (!handlers) {
     return {
@@ -144,7 +170,11 @@ function getStatusSnapshot(): AiBridgeStatus {
   };
 }
 
-async function runSend(text: string): Promise<AiBridgeTurnResult> {
+async function runSend(text: string, owner = registration): Promise<AiBridgeTurnResult> {
+  const retiredStatus = getStatusSnapshot();
+  const retired = (): AiBridgeTurnResult => ({ ok: false, error: "AI bridge owner retired",
+    status: { ...retiredStatus, ready: false, turnBusy: false, panelMounted: false }, audit: [], harness: null });
+  if (owner !== registration || owner.signal.aborted) return retired();
   if (!handlers) {
     return {
       ok: false,
@@ -154,7 +184,8 @@ async function runSend(text: string): Promise<AiBridgeTurnResult> {
       harness: null,
     };
   }
-  return handlers.send(text);
+  try { return await owner.wait(handlers.send(text)); }
+  catch (cause) { if (owner.signal.aborted) return retired(); throw cause; }
 }
 
 function bridgeBaseUrl(): string {
@@ -186,8 +217,8 @@ function shouldEnableBridgeClient(): boolean {
 
 function startBridgeClientIfEnabled(): void {
   if (!shouldEnableBridgeClient()) return;
-  if (pollTimer !== null) return;
-  void pollLoop();
+  if (pollTimer !== null || (pollAbort && !pollAbort.signal.aborted)) return;
+  void pendingPolls.track(pollLoop());
 }
 
 function stopBridgeClient(): void {
@@ -217,9 +248,10 @@ async function pollLoop(): Promise<void> {
   const base = bridgeBaseUrl();
 
   const schedule = (ms: number): void => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || signal.aborted) return;
     pollTimer = window.setTimeout(() => {
-      void pollLoop();
+      pollTimer = null;
+      void pendingPolls.track(pollLoop());
     }, ms);
   };
 
@@ -230,6 +262,7 @@ async function pollLoop(): Promise<void> {
       body: JSON.stringify({ role: "editor", at: new Date().toISOString() }),
       signal,
     });
+    if (signal.aborted) return;
     bridgeConnected = true;
 
     const res = await fetch(`${base}/v1/browser/next?waitMs=25000`, {
@@ -237,6 +270,7 @@ async function pollLoop(): Promise<void> {
       headers: { Accept: "application/json" },
       signal,
     });
+    if (signal.aborted) return;
     if (!res.ok) {
       bridgeConnected = false;
       consecutivePollFailures += 1;
@@ -245,12 +279,19 @@ async function pollLoop(): Promise<void> {
     }
     consecutivePollFailures = 0;
     const payload = (await res.json()) as { command?: BridgeCommand | null };
+    if (signal.aborted) return;
     const command = payload.command;
     if (!command) {
       schedule(50);
       return;
     }
-    const result = await executeBridgeCommand(command);
+    let pending = commandResults.get(command.id);
+    if (!pending) {
+      pending = executeBridgeCommand(command);
+      commandResults.set(command.id, pending);
+    }
+    const result = await pending;
+    if (signal.aborted) return;
     await fetch(`${base}/v1/browser/result`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -259,6 +300,7 @@ async function pollLoop(): Promise<void> {
     });
     schedule(20);
   } catch {
+    if (signal.aborted) return;
     bridgeConnected = false;
     consecutivePollFailures += 1;
     schedule(pollRetryDelayMs(2000));
@@ -285,4 +327,3 @@ async function executeBridgeCommand(command: BridgeCommand): Promise<unknown> {
       return { ok: false, error: "unknown command" };
   }
 }
-

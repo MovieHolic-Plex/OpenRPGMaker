@@ -1,5 +1,8 @@
+import { RunOperation } from "@/ai/runOperation";
+import { captureProposalBase, type ProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { SessionEvent, TurnResult } from "@/ai/assistantSession";
+import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import type { RenderedToolImage } from "@/ai/toolImageRenderer";
 import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
@@ -13,8 +16,13 @@ import type { Project } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
 
 type MockSession = {
-  readonly sendUserMessage: ReturnType<typeof vi.fn<(text: string, onEvent: (event: SessionEvent) => void) => Promise<TurnResult>>>;
+  readonly getRunOperation: () => RunOperation;
+  readonly getProposalBase: () => ProposalBase;
+  readonly recordApplyRejected: () => void;
+  readonly sendUserMessage: ReturnType<typeof vi.fn<(text: string, onEvent: (event: SessionEvent) => void, signal?: AbortSignal) => Promise<TurnResult>>>;
   readonly getProposedProject: ReturnType<typeof vi.fn<() => Project>>;
+  readonly isDraftReviewApproved: ReturnType<typeof vi.fn<(candidate: Project) => boolean>>;
+  readonly getDraftBaseline: ReturnType<typeof vi.fn<() => AuthoredProjectBaseline>>;
   readonly rebaseProject: ReturnType<typeof vi.fn<(project: Project) => void>>;
 };
 
@@ -37,14 +45,37 @@ const mocks = vi.hoisted<{
 }));
 
 vi.mock("@/ai/assistantSession", () => ({
-  AssistantSession: vi.fn().mockImplementation(function MockAssistantSession() {
+  AssistantSession: vi.fn().mockImplementation(function MockAssistantSession(project: Project) {
+    // Captured immutable baseline plus review approval bound to the exact draft
+    // candidate, mirroring the production contract without its LLM reviewer:
+    // only the reviewed candidate applies, and only while the live store still
+    // matches the captured baseline.
+    let baseline = new AuthoredProjectBaseline(project);
+    let approvedIdentity: string | null = null;
+    const operation = new RunOperation();
+    const base = captureProposalBase(project);
     const session: MockSession = {
+      getRunOperation: () => operation,
+      getProposalBase: () => base,
+      recordApplyRejected: vi.fn(),
       sendUserMessage: vi.fn(async (_text: string, onEvent: (event: SessionEvent) => void) => {
         const nextTurn = mocks.turns.shift();
-        return nextTurn ? nextTurn(onEvent) : emptyTurn;
+        const result = nextTurn ? await nextTurn(onEvent) : emptyTurn;
+        if (result.proposedCalls.length > 0) {
+          approvedIdentity = JSON.stringify(mocks.proposedProject ?? store.getCurrent());
+        }
+        return result;
       }),
       getProposedProject: vi.fn(() => mocks.proposedProject ?? store.getCurrent()),
-      rebaseProject: vi.fn(),
+      isDraftReviewApproved: vi.fn((candidate: Project) =>
+        approvedIdentity !== null
+        && JSON.stringify(candidate) === approvedIdentity
+        && baseline.matches(store.getCurrent())),
+      getDraftBaseline: vi.fn(() => baseline),
+      rebaseProject: vi.fn((next: Project) => {
+        baseline = new AuthoredProjectBaseline(next);
+        approvedIdentity = null;
+      }),
     };
     mocks.instances.push(session);
     return session;
@@ -157,7 +188,7 @@ describe("cluster AI range-classify modal", () => {
       tileIds: [10, 11, 12, 13, 14, 15, 16, 17],
       tilesetId: DEFAULT_TILESET_ID,
     });
-    await flushAsync();
+    await finishTurn();
 
     const modal = requireTestId(document, "cluster-ai-modal");
     const input = requireTestId(modal, "cluster-ai-input");
@@ -166,7 +197,8 @@ describe("cluster AI range-classify modal", () => {
     expect(mocks.instances).toHaveLength(1);
     expect(mocks.instances[0]?.sendUserMessage).toHaveBeenCalledWith(
       expect.stringContaining("suggest_group_from_range"),
-      expect.any(Function)
+      expect.any(Function),
+      expect.any(AbortSignal)
     );
     const kickoff = mocks.instances[0]?.sendUserMessage.mock.calls[0]?.[0] ?? "";
     expect(kickoff).toContain("render_group_sample");
@@ -222,7 +254,7 @@ describe("cluster AI range-classify modal", () => {
       tileIds: [20, 21, 22, 23],
       tilesetId: DEFAULT_TILESET_ID,
     });
-    await flushAsync();
+    await finishTurn();
 
     const stage = requireTestId(document, "cluster-ai-stage");
     expect(stage.querySelectorAll("img")).toHaveLength(1);
@@ -231,12 +263,22 @@ describe("cluster AI range-classify modal", () => {
     expect(choices.map((choice) => choice.textContent)).toEqual(["이 분류로 저장", "이름 바꿔", "역할 바꿔", "다시"]);
 
     choices[0]?.click();
-    await flushAsync();
-    expect(mocks.instances[0]?.sendUserMessage).toHaveBeenLastCalledWith("이 분류로 저장", expect.any(Function));
+    await finishTurn();
+    expect(mocks.instances[0]?.sendUserMessage).toHaveBeenLastCalledWith("이 분류로 저장", expect.any(Function), expect.any(AbortSignal));
+    const rebased = new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error("Cluster session did not rebase")), 5000);
+      mocks.instances[0].rebaseProject.mockImplementationOnce(() => {
+        clearTimeout(timeout);
+        resolve();
+      });
+    });
     requireTestId(document, "cluster-ai-accept").click();
+    await rebased;
 
     expect(recordProjectSnapshot).toHaveBeenCalledWith("클러스터 수정: 범위 분류 — 4개 타일", store.getCurrent().startMapId);
-    expect(replaceSpy).toHaveBeenCalledWith(proposed);
+    expect(replaceSpy).toHaveBeenCalledExactlyOnceWith(proposed, {
+      change: expect.objectContaining({ origin: "ai" }), onApplied: expect.any(Function),
+    });
     expect(mocks.instances[0]?.rebaseProject).toHaveBeenCalledWith(store.getCurrent());
   });
 
@@ -247,7 +289,7 @@ describe("cluster AI range-classify modal", () => {
       tileIds: [1],
       tilesetId: DEFAULT_TILESET_ID,
     });
-    await flushAsync();
+    await finishTurn();
 
     const input = requireTestId(document, "cluster-ai-input");
     expect(input.getAttribute("rows")).toBe("3");
@@ -255,10 +297,10 @@ describe("cluster AI range-classify modal", () => {
   });
 });
 
-async function flushAsync(): Promise<void> {
-  await Promise.resolve();
-  await Promise.resolve();
-  await Promise.resolve();
+async function finishTurn(): Promise<void> {
+  const turn = mocks.instances[0]?.sendUserMessage.mock.results.at(-1);
+  if (!turn || turn.type !== "return") throw new Error("Missing cluster turn promise");
+  await turn.value;
 }
 
 function changeSummary(): ChangeSummary {

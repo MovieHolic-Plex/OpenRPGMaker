@@ -42,8 +42,10 @@ import {
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import { ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
 import { getTool } from "@/editor/tools";
+import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots } from "@/editor/tools/houseProtection";
 import { store } from "@/project/store";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
+import { reconcileReviewedWorldForApply } from "@/project/world";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { MapId, Project, TilesetDef } from "@/project/types";
 import { validateLayoutPlacement } from "@/project/lint/layoutPlacementValidate";
@@ -55,9 +57,11 @@ import { analyzeRegionSurroundings } from "./regionSurroundings";
 // regionPolish)를 깨지 않도록 여기서 재수출한다. 도구 규칙 가이드는 없다 — 규칙은 툴 설명에 있다.
 import { formatMaterialLabelHint } from "@/ai/turnGuide";
 import { createLlmIntentDeclarer } from "@/ai/intentDeclarationClient";
+import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 
 export { formatMaterialLabelHint };
 import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
+import { renderToolImages } from "@/ai/toolImageRenderer";
 import { projectApprovalFingerprint, reviewRegionDraft, type HarnessReviewReport } from "./harnessReview";
 import { dispatchRegionTaskStatus } from "./regionTaskStatus";
 
@@ -73,6 +77,7 @@ export interface RegionTaskSessionLike {
     opts?: SessionTurnOptions,
   ): Promise<TurnResult>;
   getProposedProject(): Project;
+  setReviewDraftTransform?(transform: (project: Project) => Project): void;
   getAuditEntries?(): readonly AuditEntry[];
   getHarnessSnapshot?(): HarnessSnapshot;
   exportAudit?(): string;
@@ -244,10 +249,20 @@ export function countAddedMaps(base: Project, proposed: Project): number {
 }
 
 export function applyRegionProjectWithHistory(project: Project, label: string, mapId: MapId): void {
+  // Review can polish the candidate after tool guards. Enforce the live house baseline
+  // outside advisory diagnostics, before any history or store mutation (full and partial apply).
+  assertHouseProtection(captureHouseProtection(store.getCurrent()), project, []);
   // Region tasks may add maps, events, tilesets, or system data. Commit the project and its
   // single undo entry as one failure-atomic operation so a throwing store listener cannot
   // strand authored state or leave an orphan history snapshot.
   const before = structuredClone(store.getCurrent());
+  const appliedProject = { ...project };
+  // R2: agent 경로와 같은 병합 — 검수된 authored world 등록은 살리고 live wiki 문서는
+  // 보존한다. 호출부의 projectApprovalFingerprint 게이트가 기준 드리프트를 먼저
+  // 거부했으므로 검수 파티션이 그대로 적용된다.
+  const merged = reconcileReviewedWorldForApply(project.world, before.world);
+  if (merged) appliedProject.world = merged;
+  else delete appliedProject.world;
   const historyMarker = getMapEditHistoryMarker();
   let replaceStarted = false;
   try {
@@ -255,7 +270,7 @@ export function applyRegionProjectWithHistory(project: Project, label: string, m
     replaceStarted = true;
     // 행위 로그에 AI 소행으로 남긴다. 라벨/origin 이 없으면 영역 작업 전량이
     // `(라벨 없음)` + `origin: "human"` 으로 떨어져 사람 손편집과 구분되지 않는다.
-    store.replace(project, { change: { label: `AI 영역 작업: ${label}`, origin: "ai" } });
+    store.replace(appliedProject, { change: { label: `AI 영역 작업: ${label}`, origin: "ai" } });
   } catch (cause) {
     let rollbackFailure: unknown;
     if (replaceStarted) {
@@ -295,6 +310,9 @@ const defaultDeps: RegionTaskDeps = {
   createSession: (project, mapId) => {
     return new AssistantSession(project, {
       config: resolveSurfaceAiConfig("region"),
+      reviewConfig: resolveSurfaceAiConfig("chat"),
+      renderImages: renderToolImages,
+      prepareProjectWiki: createProjectWikiCoordinator({ getConfig: () => resolveSurfaceAiConfig("region") }).prepare,
       declareIntent: createLlmIntentDeclarer(),
       contextOptions: {
         currentMapId: mapId,
@@ -624,6 +642,21 @@ export async function runRegionTask(
 
     const session = deps.createSession(working, opts.mapId);
     const mode: RegionTaskMode = opts.mode ?? "task";
+    let preparedForReview = false;
+    let preparedClippedCells = 0;
+    let preparedSeamCells = 0;
+    session.setReviewDraftTransform?.(draft => {
+      const protection = captureHouseProtection(base);
+      const completed = newlyBuiltHouseSnapshots(draft, protection);
+      const clipped = clipMapCellsToRegion(base, draft, opts.mapId, opts.region);
+      preparedClippedCells += clipped.clippedCells;
+      const polished = mode === "polish" ? polishRegionSeams(clipped.project, opts.mapId, opts.region)
+        : { project: clipped.project, seamCells: 0 };
+      preparedSeamCells = Math.max(preparedSeamCells, polished.seamCells);
+      assertHouseProtection(protection, polished.project, completed);
+      preparedForReview = true;
+      return polished.project;
+    });
     const message = mode === "polish"
       ? buildRegionPolishMessage({
           instruction,
@@ -730,22 +763,27 @@ export async function runRegionTask(
       };
     }
 
-    if (turn.stoppedReason === "error") {
+    if (turn.stoppedReason === "error" || (turn.proposedCalls.length > 0
+      && (turn.stoppedReason !== "final" || turn.review?.status !== "approved"))) {
       return attachLog({
         ...emptyBase,
         proposedCalls: turn.proposedCalls.length,
         assistantText: turn.assistantText,
-        error: turn.error ?? "AI 처리 오류",
+        error: turn.error ?? "독립 검수가 승인되지 않아 초안을 적용하지 않았습니다.",
       }, turn);
     }
 
     const proposed = session.getProposedProject();
     if (!isLiveRun()) return { ...emptyBase, error: "사용자가 중단했습니다." };
-    // 영역 경로에서는 soft 재료를 origin:user 로 자동 승격하지 않는다.
-    // (영구 합의 스탬프는 채팅 적용 경로가 찍는다 — markSoftVocabApprovalsOnProject)
+    // Seal completed new houses before clipping/review can damage them. Never refresh from
+    // a partial or polished candidate: ownership and the full north ridge must survive together.
+    const completedHouses = newlyBuiltHouseSnapshots(proposed, captureHouseProtection(base));
+    // 영역 경로의 soft 재료 합의도 검수 전 세션이 초안에 새긴다(reviewCurrentDraft).
+    // 승인 뒤 후보를 고치지 않는다(R2).
     // 실내/새 맵: clip은 현재 맵 영역 밖 타일만 되돌리고 다른 맵은 통과(clipToRegion 계약).
     // 다만 셀 0 + 맵 추가만 있으면 예전엔 통째로 폐기했다 → mapsAdded를 적용 조건에 포함한다.
-    const clippedResult = clipMapCellsToRegion(base, proposed, opts.mapId, opts.region);
+    const clippedResult = preparedForReview ? { project: proposed, clippedCells: preparedClippedCells }
+      : clipMapCellsToRegion(base, proposed, opts.mapId, opts.region);
     let clipped = clippedResult.project;
     const clippedCells = clippedResult.clippedCells;
     let changedCells = countInRegionChangedCells(base, clipped, opts.mapId, opts.region);
@@ -771,19 +809,23 @@ export async function runRegionTask(
     // 다듬기는 경계 바로 밖 1칸의 오토타일 **변형**까지 손댄다(사용자 승인 결정). 그래서 스코프
     // 검사에는 1칸 넓힌 사각형을 준다 — 안 그러면 방금 만든 이음새가 region-scope-violation
     // error 로 잡혀 적용 자체가 차단된다. 고립·도달·일정 검사는 원래 영역 기준을 그대로 쓴다.
+    if (turn.stoppedReason !== "final" || turn.review?.status !== "approved") {
+      return attachLog({ ...emptyBase, assistantText: turn.assistantText,
+        error: "독립 검수가 승인되지 않아 초안을 적용하지 않았습니다." }, turn);
+    }
     const scopeRegion = mode === "polish"
       ? expandRegion(opts.region, 1, map)
       : opts.region;
     const blendBefore = mode === "polish"
       ? analyzeRegionBlend({ project: base, mapId: opts.mapId, region: opts.region })
       : null;
-    let seamCells = 0;
+    let seamCells = preparedSeamCells;
     const reviewCandidate = (project: Project) => {
       let candidate = project;
       if (mode === "polish") {
         const seams = polishRegionSeams(candidate, opts.mapId, opts.region);
         candidate = seams.project;
-        seamCells = seams.seamCells;
+        seamCells = Math.max(seamCells, seams.seamCells);
       }
       const harness = reviewRegionDraft({
         base,
@@ -861,6 +903,10 @@ export async function runRegionTask(
       console.warn("[regionTask] 진단 실행에 실패했지만 초안은 유지합니다:", cause);
     }
     clipped = reviewed.project;
+    if (projectApprovalFingerprint(clipped) !== projectApprovalFingerprint(proposed)) {
+      return attachLog({ ...emptyBase, proposedCalls: turn.proposedCalls.length,
+        assistantText: turn.assistantText, error: "영역 자르기/다듬기로 검수한 초안이 바뀌어 적용하지 않았습니다. 영역 안에서 다시 요청해 주세요." }, turn);
+    }
     changedCells = countInRegionChangedCells(base, clipped, opts.mapId, opts.region);
     changedEvents = countInRegionChangedEvents(base, clipped, opts.mapId, opts.region);
     mapsAdded = countAddedMaps(base, clipped);
@@ -875,6 +921,13 @@ export async function runRegionTask(
     const completionSummary = formatRegionTaskChangeParts({ changedCells, changedEvents, mapsAdded }).join(" · ") || "영역 변경";
     // 단일 저장 경로. 저장 후 완료 스트립에 알려 사용자가 적용 결과를 바로 확인한다.
     const applyOwnedProject = (project: Project): void => {
+      // Full, partial (including re-polish), and immediate apply converge here after diagnostics.
+      // This invariant is not advisory and must fail before any history/store mutation.
+      if (signal?.aborted || turn.review?.status !== "approved"
+        || projectApprovalFingerprint(project) !== projectApprovalFingerprint(proposed)) {
+        throw new Error("독립 검수 이후 초안이 바뀌었거나 중단되어 적용하지 않았습니다.");
+      }
+      assertHouseProtection(captureHouseProtection(deps.getProject()), project, completedHouses);
       deps.applyProject(project, label, opts.mapId);
       publishAiApplyCompletion({
         mapId: opts.mapId,

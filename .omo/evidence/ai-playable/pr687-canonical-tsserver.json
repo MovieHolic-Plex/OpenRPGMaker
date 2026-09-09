@@ -1,0 +1,35 @@
+{
+  "files": [
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/assistantAcceptance.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/assistantAcceptanceLedger.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/assistantAcceptanceTools.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/assistantSession.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/toolVerificationEvidence.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/assistantAcceptanceProvider.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/pr687VerificationIntegration.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/toolSchemaProviderCompat.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/canonicalAcceptanceOwnership.test.ts"
+  ],
+  "missing": [],
+  "diagnostics": [],
+  "responses": [
+    {
+      "seq": 0,
+      "type": "response",
+      "command": "configure",
+      "request_seq": 1,
+      "success": true
+    },
+    {
+      "seq": 0,
+      "type": "response",
+      "command": "updateOpen",
+      "request_seq": 2,
+      "success": true,
+      "performanceData": {
+        "updateGraphDurationMs": 28688.534974
+      },
+      "body": true
+    }
+  ]
+}

@@ -7,28 +7,26 @@ import {
   CHARSET_SHEET_ROWS,
   EASYRPG_BACKDROP_ASSETS,
   EASYRPG_BATTLE_ASSETS,
-  EASYRPG_MONSTER_ASSETS,
   EASYRPG_SYSTEM2_ASSETS,
   EASYRPG_SYSTEM_ASSETS,
   EASYRPG_TITLE_ASSETS,
-  EASYRPG_MUSIC_ASSETS,
-  EASYRPG_SOUND_ASSETS,
   charsetFrameSource,
 } from "@/assets/easyrpgRtp";
 import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
-import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
-import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
-import { SE_CATALOG } from "@/assets/seCatalog";
+import { listAudioResources } from "@/assets/audioResourceCatalog";
+import { listMonsterResources } from "@/assets/monsterResourceCatalog";
+import { audioPlayback } from "./audioResourcePresentation";
+import { createAudioResourcePreview, releaseAudioPreviewOnRemoval } from "./audioResourcePreview";
+import { bgmInstallBanner } from "./bgmInstallBanner";
+import { monsterResourceSummary } from "./monsterResourcePresentation";
 import {
   SCARLOXY_BACKDROP_ASSETS,
-  SCARLOXY_MONSTER_ASSETS,
   SCARLOXY_MONSTER_ICON_ASSETS,
   SCARLOXY_UI_ICON_ASSETS,
 } from "@/assets/scarloxyPack";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { GENERATED_EFFECT_SHEET_ASSETS } from "@/assets/generatedEffectSheets";
-import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
@@ -43,6 +41,8 @@ import {
 export type DatabaseResourcePickerKind =
   | "icon"
   | "image"
+  | "movie"
+  | "picture"
   | "monster"
   | "faceset"
   | "charset"
@@ -98,6 +98,9 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     : catalog[0]?.id ?? options.currentId ?? "";
   let characterIndex = clampIndex(options.currentCharacterIndex ?? 0, CHARSET_CHARACTER_COUNT - 1);
   let hue = clampHue(options.currentHue ?? 0);
+  let confirmButton: HTMLButtonElement | null = null;
+  const isUnsupportedAudio = (id: string): boolean =>
+    (options.kind === "music" || options.kind === "sound") && audioPlayback(id, store.getCurrent()).midi;
 
   const search = el("input", {
     class: "db-resource-picker-search",
@@ -107,8 +110,17 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
   const list = el("div", { class: "db-resource-picker-list", dataset: { testid: `${prefix}-list` } });
   const preview = el("div", { class: "db-resource-picker-preview", dataset: { testid: `${prefix}-preview` } });
   const indexPanel = el("div", { class: "db-resource-picker-index-panel" });
+  const audioPreview = options.kind === "music" || options.kind === "sound" ? createAudioResourcePreview() : undefined;
+  if (audioPreview) {
+    preview.classList.add("db-resource-picker-audio-detail");
+    preview.append(audioPreview.element);
+  }
 
   const refreshList = (): void => {
+    const project = store.getCurrent();
+    const catalog = listDatabaseResourceOptions(options.kind, project);
+    if ((options.kind === "music" || options.kind === "sound")
+      && selectedId && !catalog.some(entry => entry.id === selectedId)) selectedId = "";
     const query = search.value.trim().toLowerCase();
     const filtered = catalog.filter((entry) => {
       if (!query) return true;
@@ -118,6 +130,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     list.replaceChildren(
       ...filtered.map((entry) =>
         resourceButton(entry, selectedId, options.kind, project, characterIndex, () => {
+          if (isUnsupportedAudio(entry.id)) return;
           selectedId = entry.id;
           refreshList();
           refreshPreview();
@@ -131,12 +144,19 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
   };
 
   const refreshPreview = (): void => {
+    const project = store.getCurrent();
+    if (confirmButton) confirmButton.disabled = !selectedId || isUnsupportedAudio(selectedId);
+    if (audioPreview && (options.kind === "music" || options.kind === "sound")) {
+      audioPreview.update(listAudioResources(options.kind, project).find(entry => entry.id === selectedId));
+      return;
+    }
     preview.replaceChildren(
       resourceVisual(selectedId, options.kind, project, "선택 리소스", "db-resource-picker-preview-visual", {
         characterIndex,
         hue: options.allowHue ? hue : undefined,
       })
     );
+    if (options.kind === "monster" && selectedId) preview.append(monsterResourceSummary(project, selectedId));
   };
 
   const refreshIndexPanel = (): void => {
@@ -170,7 +190,10 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     }
   };
 
-  search.addEventListener("input", () => refreshList());
+  search.addEventListener("input", () => {
+    refreshList();
+    refreshPreview();
+  });
   refreshList();
   refreshPreview();
   refreshIndexPanel();
@@ -181,7 +204,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
       label: "선택",
       testid: `${prefix}-ok`,
       action: () => {
-        if (!selectedId) return;
+        if (!selectedId || isUnsupportedAudio(selectedId)) return;
         options.onConfirm({
           resourceId: selectedId,
           characterIndex: options.kind === "charset" ? characterIndex : undefined,
@@ -205,11 +228,30 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     });
   }
 
-  openDialog(prefix, options.title, [
+  // 설치가 끝나면 배지만 갱신해서는 안 된다. audioResourceCatalog 가 미설치 곡을 목록에서
+  // 아예 빼므로, refreshList 로 카탈로그를 다시 읽어야 항목 수가 3 → 281 로 바뀐다.
+  const installBanner = bgmInstallBanner({ kind: options.kind, onInstalled: () => { refreshList(); } });
+
+  let unsubscribe: (() => void) | undefined;
+  const closeDialog = openDialog(prefix, options.title, [
     search,
+    ...(installBanner ? [installBanner] : []),
     el("div", { class: "db-resource-picker-grid", children: [list, preview] }),
     indexPanel,
-  ], actions);
+  ], actions, undefined, () => { unsubscribe?.(); audioPreview?.dispose(); });
+  confirmButton = preview.closest('[role="dialog"]')?.querySelector<HTMLButtonElement>(`[data-testid="${prefix}-ok"]`) ?? null;
+  if (confirmButton) confirmButton.disabled = !selectedId || isUnsupportedAudio(selectedId);
+  if (options.kind === "music" || options.kind === "sound" || options.kind === "monster") {
+    unsubscribe = store.subscribe((_project, change) => {
+      if (change.projectSwitch) {
+        closeDialog();
+        return;
+      }
+      if (change.scope !== "project" && change.scope !== "assets") return;
+      refreshList();
+      refreshPreview();
+    });
+  }
 }
 
 const AI_GENERATABLE_PICKER_KINDS: Readonly<Record<string, "title" | "backdrop" | "monster">> = {
@@ -251,7 +293,7 @@ export function resourcePickerControl(input: {
   const optionName = listDatabaseResourceOptions(input.kind, project).find((option) => option.id === input.resourceId)?.name;
   const rawName = optionName ?? (input.resourceId ? prettyId(input.resourceId) : "");
   const graphic = input.presentation === "graphic";
-  const displayName = graphic ? rawName || "선택한 그래픽이 없습니다" : input.resourceId ? "설정됨" : "(미설정)";
+  const displayName = graphic ? rawName || "선택한 그래픽이 없습니다" : input.kind === "music" || input.kind === "sound" ? rawName || "(미설정)" : input.resourceId ? "설정됨" : "(미설정)";
   // Keep a real text input with the historical testid so e2e/unit fill() paths stay compatible.
   const idInput = el("input", {
     class: "db-resource-picker-inline-id db-authoring-id",
@@ -259,16 +301,22 @@ export function resourcePickerControl(input: {
     value: input.resourceId ?? "",
     dataset: { testid: input.testid },
   }) as HTMLInputElement;
-  const commitText = (): void => {
+  const commitText = (): boolean => {
+    const resourceId = idInput.value.trim();
+    if ((input.kind === "music" || input.kind === "sound") && audioPlayback(resourceId, store.getCurrent()).midi) return false;
     input.onChange({
-      resourceId: idInput.value.trim(),
+      resourceId,
       characterIndex: input.currentCharacterIndex,
       graphicHue: input.currentHue,
     });
+    return true;
   };
   idInput.addEventListener("input", commitText);
   idInput.addEventListener("change", () => {
-    commitText();
+    if (!commitText()) {
+      idInput.value = input.resourceId ?? "";
+      return;
+    }
     input.rerender();
   });
   const pick = (): void => {
@@ -345,7 +393,10 @@ function resourceButton(
 ): HTMLElement {
   return el("button", {
     class: option.id === selectedId ? "active" : "",
-    attrs: { type: "button", title: `${option.name} (${option.id})` },
+    attrs: {
+      type: "button", title: `${option.name} (${option.id})`,
+      ...((kind === "music" || kind === "sound") && audioPlayback(option.id, project).midi ? { disabled: "" } : {}),
+    },
     dataset: { resourceId: option.id, testid: `${prefix}-option-${option.id}` },
     children: [
       resourceVisual(option.id, kind, project, option.name, "db-resource-picker-option-thumb", { characterIndex }),
@@ -370,6 +421,13 @@ export function listDatabaseResourceOptions(
   };
 
   switch (kind) {
+    case "movie":
+      for (const profile of project.resourceProfiles) {
+        if (profile.kind === "movie" && profile.assetId) {
+          add(profile.assetId, profile.name || profile.assetId);
+        }
+      }
+      break;
     case "faceset":
       // 낱장 얼굴 112장. 분할 전 시트 id 는 저장본 호환을 위해 등록만 남고 피커에서는 빠진다.
       for (const asset of FACESET_FACE_ASSETS) add(asset.id, asset.name);
@@ -378,34 +436,20 @@ export function listDatabaseResourceOptions(
       for (const asset of CHARSET_ASSETS) add(asset.id, asset.name);
       break;
     case "monster":
-      for (const asset of EASYRPG_MONSTER_ASSETS) add(asset.id, asset.name);
-      for (const asset of SCARLOXY_MONSTER_ASSETS) add(asset.id, asset.name);
-      break;
+      return listMonsterResources(project).map(resource => ({
+        id: resource.resourceId,
+        name: resource.name,
+        searchTerms: [...resource.tags, resource.description],
+      }));
     case "title":
       for (const asset of EASYRPG_TITLE_ASSETS) add(asset.id, asset.name);
       break;
     case "music":
-      // 카탈로그(281곡)를 맨 앞에 둔다 — 이게 이 에디터의 기본 BGM 세트다.
-      // brief 를 검색어에 넣어야 "비 오는 실내" 처럼 장면 문장으로 곡을 찾을 수 있다.
-      for (const track of BGM_CATALOG) {
-        add(track.id, bgmTrackLabel(track), [...track.tags, track.titleEn, track.trackCode, track.brief]);
-      }
-      for (const asset of CC0_MUSIC_ASSETS) add(asset.id, asset.name);
-      for (const asset of EASYRPG_MUSIC_ASSETS) add(asset.id, asset.name);
-      break;
     case "sound":
-      // 카탈로그(456개)를 맨 앞에 둔다 — 이게 이 에디터의 기본 효과음 세트다.
-      // EasyRPG RTP 96개는 뒤에 남긴다(CC-BY 이지만 기존 프로젝트가 참조하고 있다).
-      for (const entry of SE_CATALOG) {
-        add(entry.id, `${entry.title} — ${entry.category} (${entry.seconds.toFixed(2)}s)`, [
-          ...entry.tags,
-          entry.category,
-          entry.baseName,
-        ]);
-      }
-      for (const asset of CC0_SOUND_ASSETS) add(asset.id, asset.name);
-      for (const asset of EASYRPG_SOUND_ASSETS) add(asset.id, asset.name);
-      break;
+      return listAudioResources(kind, project).map(resource => ({
+        ...resource,
+        searchTerms: [...resource.tags, resource.description],
+      }));
     case "system":
       for (const asset of EASYRPG_SYSTEM_ASSETS) add(asset.id, asset.name);
       break;
@@ -427,6 +471,7 @@ export function listDatabaseResourceOptions(
       for (const asset of SCARLOXY_UI_ICON_ASSETS) add(asset.id, asset.name);
       break;
     case "battleCharset":
+    case "picture":
       break;
   }
 
@@ -448,6 +493,8 @@ export function listDatabaseResourceOptions(
 }
 
 function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceKind: ResourceKind | undefined, id: string): boolean {
+  if (kind === "movie") return resourceKind === "movie";
+  if (kind === "picture") return resourceKind === "picture" || id === "generated-face-actor1-bust" || id === "generated-face-actor1-full";
   if (kind === "faceset") {
     // 분할 전 4×4 시트는 얼굴 한 장이 아니다 — 등록만 남기고 피커 목록에서는 제외한다.
     if (LEGACY_FACESET_SHEET_IDS.includes(id)) return false;
@@ -502,6 +549,8 @@ function uploadedMatchesKind(
   id: string
 ): boolean {
   if (!uploadedKind) return matchesGeneratedKind(kind, undefined, id);
+  if (kind === "movie") return uploadedKind === "movie";
+  if (kind === "picture") return uploadedKind === "picture";
   if (kind === "icon" || kind === "image") {
     return uploadedKind === "picture" || uploadedKind === "monster" || uploadedKind === "system" || matchesGeneratedKind(kind, undefined, id);
   }
@@ -528,35 +577,27 @@ function resourceVisual(
   crop: { readonly characterIndex: number; readonly hue?: number }
 ): HTMLElement {
   if (!resourceId) return el("span", { class: `${className} db-resource-picker-empty`, text: "(없음)" });
-  const url = resolveAssetResourceUrl(resourceId, { project });
-  if (!url) return resourceFailureVisual(className, label);
-
-  if (kind === "music" || kind === "sound") {
-    const playable = !url.toLowerCase().endsWith(".mid");
-    const play = el("button", {
-      class: "btn",
-      text: playable ? "미리 듣기" : "MIDI 비재생",
-      attrs: playable ? { type: "button" } : { type: "button", disabled: "" },
-      dataset: { testid: "db-resource-picker-audio-play" },
-      on: playable ? {
-        click: () => {
-          getAudioEngine().installUnlockListeners();
-          getAudioEngine().unlock();
-          stopAudioCommand();
-          playAudioCommand({ resourceId, loop: kind === "music" }, project);
-        },
-      } : undefined,
-    });
-    return el("div", {
-      class: className + " db-resource-picker-audio",
-      children: [
-        el("div", { class: "db-resource-picker-audio-title", text: kind === "music" ? "BGM" : "SE" }),
-        el("div", { class: "db-resource-picker-audio-id", text: resourceId }),
-        el("div", { class: "db-resource-picker-audio-url", text: url }),
-        play,
-      ],
+  // Selection is not playback. The cinematic sequence preview owns the player.
+  // Handle movie identities before the image URL/failure path, including profiles
+  // whose source is currently unavailable.
+  if (kind === "movie") {
+    return el("span", {
+      class: className,
+      text: "동영상",
+      attrs: { "aria-label": `${label} 동영상`, title: resourceId },
     });
   }
+  const url = resolveAssetResourceUrl(resourceId, { project });
+
+  if (kind === "music" || kind === "sound") {
+    if (className.includes("option-thumb")) return el("span", { class: className, text: kind === "music" ? "BGM" : "SE", attrs: { "aria-hidden": "true" } });
+    const view = createAudioResourcePreview();
+    view.update(listAudioResources(kind, project).find(entry => entry.id === resourceId));
+    releaseAudioPreviewOnRemoval(view);
+    return view.element;
+  }
+
+  if (!url) return resourceFailureVisual(className, label);
 
   if (kind === "charset") {
     const source = charsetFrameSource({ characterIndex: crop.characterIndex, direction: "down", pattern: 1 });

@@ -7,7 +7,12 @@ export function previewAudio(cmd: Extract<Command, { kind: "playAudio" | "stopAu
   const root = el("div", { class: "ecp-audio", dataset: { testid: "ecp-audio-preview" } });
   if (cmd.kind === "stopAudio") {
     root.append(el("div", { class: "ecp-audio-icon stop", text: "■" }));
-    root.append(el("div", { class: "ecp-audio-name", text: "재생 중인 소리를 정지합니다" }));
+    root.append(
+      el("div", {
+        class: "ecp-audio-name",
+        text: cmd.channel === "bgm" ? "배경음(BGM)만 페이드아웃합니다" : "재생 중인 소리를 정지합니다",
+      }),
+    );
     return root;
   }
   root.append(el("div", { class: "ecp-audio-icon play", text: "▶" }));

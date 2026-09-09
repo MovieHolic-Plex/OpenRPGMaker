@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { createSampleAdventureProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
+import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
+import fixture from "@/project/defaults/fixtures/dew-village-demo.json";
+import { resolveEventPage } from "@/project/io";
 
-const DEMO_TITLE = "이슬 마을의 종";
-const DEMO_TITLE_SHORT = "이슬 마을";
+const DEMO_TITLE = fixture.meta.title;
+const DEMO_TITLE_SHORT = fixture.system.titleScreen.title;
 const SW_QUEST = "sw_0001";
 const SW_BELL = "sw_0002";
 const SW_DONE = "sw_0003";
@@ -14,13 +17,15 @@ describe("sample adventure demo (이슬 마을의 종)", () => {
 
     expect(project.meta.title).toBe(DEMO_TITLE);
     expect(project.system.titleScreen?.title).toBe(DEMO_TITLE_SHORT);
-    expect(Object.keys(project.maps)).toHaveLength(2);
+    expect(Object.keys(project.maps).sort()).toEqual(Object.keys(fixture.maps).sort());
+    expect(project.startMapId).toBe(fixture.startMapId);
     expect(JSON.stringify(project)).not.toContain("별등");
     expect(JSON.stringify(project)).not.toContain("map_lantern");
 
     const maps = Object.values(project.maps);
-    expect(maps.some((map) => map.name === "이슬 마을")).toBe(true);
-    expect(maps.some((map) => map.name === "갈대 언덕")).toBe(true);
+    expect(maps.map((map) => map.id)).toEqual(expect.arrayContaining([
+      "map_village_30_100x100", "map_mine_entrance", "map_bell_shrine",
+    ]));
 
     for (const switchId of [SW_QUEST, SW_BELL, SW_DONE]) {
       expect(project.switches.some((entry) => entry.id === switchId), `missing switch ${switchId}`).toBe(true);
@@ -57,10 +62,11 @@ describe("sample adventure demo (이슬 마을의 종)", () => {
 
   it("starts in a decorated village map with path and water, not a bare grass pad", () => {
     const project = createSampleAdventureProject();
-    const village = Object.values(project.maps).find((map) => map.name === "이슬 마을");
+    const village = project.maps[project.startMapId];
     if (!village) throw new Error("missing village map");
 
-    const pathTiles = village.lowerTiles.filter((tile) => tile === TILE.PATH).length;
+    // The current market fixture uses sand paths/plazas, not the old dirt palette tile.
+    const pathTiles = village.lowerTiles.filter((tile) => CHIPSET_TILE_GROUPS.sandGround.some((candidate) => candidate === tile)).length;
     const waterTiles = village.lowerTiles.filter((tile) => tile === TILE.WATER).length;
     expect(pathTiles).toBeGreaterThanOrEqual(20);
     expect(waterTiles).toBeGreaterThanOrEqual(10);
@@ -81,11 +87,19 @@ describe("sample adventure demo (이슬 마을의 종)", () => {
 
   it("includes quest NPCs and aftermath dialogue", () => {
     const project = createSampleAdventureProject();
-    const serialized = JSON.stringify(project);
-    expect(serialized).toContain("미르");
-    expect(serialized).toContain("노아");
-    expect(serialized).toContain("루");
-    expect(serialized).toContain("안개 슬라임");
-    expect(serialized).toContain("종 조각");
+    const elder = project.maps[project.startMapId].events.find((event) => event.id === "ev_mir_elder");
+    const boss = project.maps.map_bell_shrine.events.find((event) => event.id === "ev_boss");
+    if (!elder || !boss) throw new Error("Missing quest actors");
+    const session = { switches: { sw_0005: true, sw_0006: false }, variables: {}, inventory: {}, partyActorIds: [] };
+    const encounter = resolveEventPage(boss, session);
+    expect(encounter?.commands).toEqual(expect.arrayContaining([
+      expect.objectContaining({ kind: "battleProcessing" }),
+      expect.objectContaining({ kind: "setSwitch", switchId: "sw_0006", value: true }),
+      expect.objectContaining({ kind: "ending" }),
+    ]));
+    session.switches.sw_0006 = true;
+    expect(resolveEventPage(boss, session)?.commands.map((command) => command.kind)).toEqual(["text"]);
+    expect(resolveEventPage(elder, session)?.id).toBe("p6");
+    expect(resolveEventPage(elder, session)?.commands.map((command) => command.kind)).toEqual(["text"]);
   });
 });

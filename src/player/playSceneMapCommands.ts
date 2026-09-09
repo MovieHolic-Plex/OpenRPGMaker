@@ -1,6 +1,8 @@
 import { carryPursuitThroughDoor } from "./horrorRuntime";
+import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { isPassable, isPassableLanding } from "@/project/collision";
 import { setMapTileOverride } from "@/project/session";
+import { runtimeMap } from "@/project/runtimeMap";
 import { store } from "@/project/store";
 import type { MapId, TransferFade } from "@/project/types";
 import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
@@ -15,7 +17,11 @@ import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
 import type { PlaySceneContext, TransferRequest } from "@/player/playSceneTypes";
 import { removeFollowerFromSession, resetFollowerTrailNearPlayer, resolveCompanionRules } from "@/project/followers";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
+// 잎 모듈에서 가져온다 — playSceneMovement 를 통하면 전투·농사·조우까지 끌려온다(playerRouteState 주석).
+import { clearPlayerRouteThrough } from "@/player/playerRouteState";
 import { maybeAutosave } from "@/player/autosave";
+import { abortHop } from "@/player/characterHopRuntime";
+import { clearFurniturePush, furniturePushPosition } from "@/player/furniturePushAnimation";
 
 type FlashScreenStep = Extract<StepResult, { kind: "flashScreen" }>;
 type ShakeScreenStep = Extract<StepResult, { kind: "shakeScreen" }>;
@@ -32,6 +38,22 @@ export function applyChangeTileStep(
   if (step.mapId === scene.getMapId()) applyMapOverrides(scene);
 }
 
+/** Coordinates are already committed by the interpreter; discard only affected motion. */
+export function applyEventRelocationStep(
+  scene: PlaySceneContext,
+  step: Extract<StepResult, { kind: "relocateEvents" }>
+): void {
+  for (const eventId of step.eventIds) {
+    if (scene.autonomousNPCs.get(eventId)?.activeMove?.hop) {
+      abortHop(scene, eventId, scene.eventSprites.get(eventId));
+    }
+    if (furniturePushPosition(scene, eventId)) clearFurniturePush(scene);
+    scene.autonomousNPCs.delete(eventId);
+    scene.commandMoveRouteEventIds.delete(eventId);
+    scene.pageMoveRouteEventIds.delete(eventId);
+  }
+}
+
 type FadeColor = {
   readonly red: number;
   readonly green: number;
@@ -41,13 +63,14 @@ type FadeColor = {
 export const TRANSFER_FADE_DURATION_MS = 500;
 
 export async function transferTo(scene: PlaySceneContext, request: TransferRequest): Promise<void> {
+  const diagnosticOwner = diagnosticToken();
   const project = store.getCurrent();
   const targetMap = project.maps[request.mapId];
   if (!targetMap) {
+    if (diagnosticObserved("transfer")) publishDiagnostic({ category: "transfer", phase: "missing" });
     console.warn(`[player] transfer target map missing: ${request.mapId}`);
     return;
   }
-  const destination = nearestPassableTile(project, targetMap, request.x, request.y);
   // 전환 연출: 모자이크/블라인드는 DOM 오버레이, 그 외(기본)는 카메라 페이드.
   const transition = parseTransitionKind(request.transition);
   const overlayTransition = usesOverlayTransition(transition);
@@ -58,38 +81,37 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   } else if (fadeColor) {
     await fadeCamera(scene, "out", fadeColor);
   }
-  carryPursuitThroughDoor({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, scene.autonomousNPCs,
-    { mapId: request.mapId, ...destination });
-  scene.loadMap(request.mapId);
-  // 다중 타일 주인공은 목적지 한 칸이 비어 있어도 **몸이** 안 들어갈 수 있다 — 가까운 유효
-  // 칸으로 밀어낸다. 1x1 은 검사 없이 지정 좌표를 그대로 받으므로 기존 워프와 동작이 같다.
-  // loadMap 뒤에 계산하는 이유: 도착 맵의 런타임 이벤트 좌표(scene.eventPositions)를 봐야 한다.
+  // Resolve once against destination runtime terrain and destination-scoped event positions.
+  // Queue this final landing, not the requested tile or the source map's position overlay.
+  const destinationMap = runtimeMap(targetMap, scene.session);
+  const destination = nearestPassableTile(project, destinationMap, request.x, request.y);
   const body = resolvePlayerBody(project, scene.session);
   const landing = resolveFootprintLanding(
-    project,
-    targetMap,
-    scene.session,
-    scene.eventPositions,
-    destination.x,
-    destination.y,
-    body.footprint,
-    undefined, // maxRadius 는 기본값(8) 그대로
-    body.passRows
+    project, destinationMap, scene.session,
+    request.mapId === scene.map.id ? scene.eventPositions : {},
+    destination.x, destination.y, body.footprint, undefined, body.passRows
   );
+  carryPursuitThroughDoor({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, scene.autonomousNPCs,
+    { mapId: request.mapId, ...landing });
+  scene.loadMap(request.mapId);
   scene.tileX = landing.x;
   scene.tileY = landing.y;
   scene.session.x = landing.x;
   scene.session.y = landing.y;
+  if (diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("transfer")) publishDiagnostic({ category: "transfer", phase: "completed", x: landing.x, y: landing.y });
   if (resolveCompanionRules(project.system.companions).clearOnTransfer) {
     removeFollowerFromSession(scene.session, { all: true });
   }
-  resetFollowerTrailNearPlayer(scene.session, targetMap, project.system.companions);
+  resetFollowerTrailNearPlayer(scene.session, destinationMap, project.system.companions);
   if (request.direction && request.direction !== "retain") scene.facing = request.direction;
   scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
   scene.player.setPosition(footprintSpriteX(landing.x, body.footprint), characterSpriteY(landing.y));
   updateCharacterDepth(scene.player, "same");
   syncFollowerSprites(scene);
   scene.moving = false;
+  // 강제 이동 루트는 전이를 넘어 살아남는다(진행 중인 걸음만 끊는다). 그 루트의 통과 설정은
+  // 출발 맵 기준으로 켠 것이라 여기서 끈다 — clearPlayerRouteThrough 주석의 수명 계약.
+  clearPlayerRouteThrough(scene);
   scene.centerCamera();
   if (host) {
     await runTransitionPhase(host, transition, "in", TRANSFER_FADE_DURATION_MS);

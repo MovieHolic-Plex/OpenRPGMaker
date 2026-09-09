@@ -4,7 +4,7 @@ import { editorState } from "@/editor/editorState";
 import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
-import { openEventConditions, openEventMovement } from "@/editor/panels/eventEditor/eventEditorOpenState";
+import { activeEventRailGroup, openEventConditions, openEventMovement } from "@/editor/panels/eventEditor/eventEditorOpenState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent } from "@/project/types";
@@ -44,13 +44,15 @@ function baseEvent(overrides: Partial<GameEvent> = {}): GameEvent {
   };
 }
 
-function expandDetails(section: HTMLDetailsElement | null): void {
-  if (!section) throw new Error("expected details section");
-  const summary = section.querySelector("summary");
-  if (!summary) throw new Error("expected summary");
-  // happy-dom: toggling open + dispatching toggle keeps module open-state in sync.
-  section.open = true;
-  section.dispatchEvent(new Event("toggle"));
+function selectGroup(host: HTMLElement, slug: string): HTMLElement {
+  const group = host.querySelector<HTMLElement>(`[data-testid="evt-rail-group-${slug}"]`);
+  const button = group?.querySelector<HTMLButtonElement>("button");
+  if (!group || !button) throw new Error("missing settings group");
+  button.click();
+  expect(button.getAttribute("aria-expanded")).toBe("true");
+  expect(group.classList.contains("is-open")).toBe(true);
+  expect(host.querySelectorAll(".event-editor-settings-accordion-group.is-open")).toHaveLength(1);
+  return group;
 }
 
 describe("event editor UI density", () => {
@@ -61,6 +63,7 @@ describe("event editor UI density", () => {
     clearCommandInspector();
     openEventConditions.clear();
     openEventMovement.clear();
+    activeEventRailGroup.clear();
     const project = createBlankProject();
     const mapId = project.startMapId;
     project.maps[mapId]!.events = [baseEvent()];
@@ -78,18 +81,17 @@ describe("event editor UI density", () => {
     openEventMovement.clear();
   });
 
-  it("uses Korean name label and hides disabled page actions", () => {
+  it("keeps page actions in the pagebar without a duplicate name field", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
     const nameField = host.querySelector('[data-testid="event-classic-name"]');
-    expect(nameField?.textContent).toContain("이름");
-    expect(nameField?.textContent).not.toContain("Name");
+    expect(nameField).toBeNull();
+    expect(host.querySelector(".event-editor-pagebar")).not.toBeNull();
 
-    expect(host.querySelector('[data-testid="event-page-tab-add"]')).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-page-add"]')).toBeNull();
-    expect(host.querySelector('[data-testid="event-page-copy"]')).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-page-paste"]')).toBeNull();
-    expect(host.querySelector('[data-testid="event-page-delete"]')).toBeNull();
-    expect(host.querySelector('[data-testid="event-page-tab-add"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="evt-page-add"]')).not.toBeNull();
+    expect(host.querySelector('[data-testid="event-page-copy"]')).not.toBeNull();
+    expect(host.querySelector<HTMLButtonElement>('[data-testid="event-page-delete"]')?.disabled).toBe(true);
+    host.querySelector<HTMLButtonElement>('[data-testid="evt-page-add"]')?.click();
+    expect(store.getCurrent().maps[store.getCurrent().startMapId]?.events[0]?.pages).toHaveLength(2);
   });
 
   it("does not mount NPC schedule on the classic RM event shell", () => {
@@ -101,12 +103,12 @@ describe("event editor UI density", () => {
   it("defaults secondary settings and tools closed while keeping trigger and add command visible", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
     const conditions = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-conditions"]');
-    expect(conditions?.open).toBe(false);
-    expect(conditions?.textContent).toContain("항상");
+    expect(conditions?.tagName).toBe("DIV");
+    expect(host.querySelector('[data-testid="evt-rail-group-when"]')?.classList.contains("is-open")).toBe(false);
     expect(host.querySelector('[data-testid="event-condition-summary-empty"]')?.textContent).toBe("항상");
 
     const movement = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-movement-section"]');
-    expect(movement?.open).toBe(false);
+    expect(movement?.tagName).toBe("DIV");
     // Nested movement controls exist in DOM but are not always-visible chrome.
     expect(host.querySelector('[data-testid="event-classic-graphic"]')).toBeTruthy();
 
@@ -137,7 +139,7 @@ describe("event editor UI density", () => {
     expect(host.querySelector('[data-testid="event-command-legend-details"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-command-legend"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-ai-next-steps"]')).toBeNull();
-    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-page-tabs"]')?.open).toBe(true);
+    expect(host.querySelector('[data-testid="event-page-tabs"]')).not.toBeNull();
     // 검토 알림은 모달 헤더의 종이 소유한다 — 편집면 아래쪽에는 남지 않는다.
     expect(host.querySelector('[data-testid="event-draft-validation"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-editor-diff"]')).toBeNull();
@@ -198,7 +200,7 @@ describe("event editor UI density", () => {
     expect(inspector?.querySelector('[data-testid="event-inspector-body"]')).toBeTruthy();
   });
 
-  it("shows active condition badges with switch id/ON-OFF, expands conditions on demand", () => {
+  it("shows active switch conditions and opens their controls from the settings rail", () => {
     const project = store.getCurrent();
     project.maps[project.startMapId]!.events = [
       baseEvent({
@@ -213,36 +215,32 @@ describe("event editor UI density", () => {
 
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
     const conditions = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-conditions"]');
-    expect(conditions?.open).toBe(false);
-    expect(conditions?.textContent).not.toContain("1개 활성");
+    expect(conditions?.tagName).toBe("DIV");
+    expect(host.querySelector('[data-testid="event-condition-chip-switch1"]')?.getAttribute("aria-pressed")).toBe("true");
     expect(host.querySelector('[data-testid="event-condition-summary-badges"]')).toBeTruthy();
 
-    const badgeText = host.querySelector('[data-testid="event-condition-badge"]')?.textContent ?? "";
-    // Hostile UX: badge is not bare "스위치"; it carries id-ish token and ON/OFF.
-    expect(badgeText).not.toBe("스위치");
-    expect(badgeText).toMatch(/ON|OFF/);
-    expect(badgeText.length).toBeGreaterThan("스위치".length);
+    const badge = host.querySelector('[data-testid="event-condition-badge"]');
+    expect(badge?.classList.contains("event-condition-badge-switch")).toBe(true);
+    expect(host.querySelector<HTMLSelectElement>('[data-testid="event-page-switch-condition-value"]')?.value).toBe("on");
 
-    expandDetails(conditions);
-    expect(conditions?.open).toBe(true);
+    selectGroup(host, "when");
     // expand-then-assert: condition grid controls become available
     expect(host.querySelector('[data-testid="event-page-switch-condition-input"]')).toBeTruthy();
-    // 모든 핵심 조건 행이 항상 보인다 (체크 OFF 포함).
-    expect(host.querySelector('[data-testid="event-condition-row-변수"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-condition-chip-variable"]')?.getAttribute("aria-pressed")).toBe("false");
+    expect(host.querySelector('[data-testid="event-condition-row-변수"]')).toBeNull();
   });
 
   it("expands movement section for nested movement controls without burying trigger", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
     const movement = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-movement-section"]');
-    expect(movement?.open).toBe(false);
+    expect(movement?.tagName).toBe("DIV");
 
     // Trigger is already outside movement before expand.
     expect(host.querySelector('[data-testid="event-page-trigger-select"]')).toBeTruthy();
     expect(movement?.querySelector('[data-testid="event-page-trigger-select"]')).toBeNull();
     expect(movement?.querySelector('[data-testid="event-classic-trigger"]')).toBeNull();
 
-    expandDetails(movement);
-    expect(movement?.open).toBe(true);
+    selectGroup(host, "move");
     expect(host.querySelector('[data-testid="event-classic-movement-type"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="event-classic-animation-type"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="event-classic-movement-speed"]')).toBeTruthy();
@@ -301,19 +299,18 @@ describe("event editor UI density", () => {
     expect(host.querySelector(".event-inspector-card-hint")).toBeNull();
   });
 
-  it("keeps inactive condition rows visible but faded (RM-style, no collapsing)", () => {
-    renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
-    const conditions = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-conditions"]');
-    expandDetails(conditions);
-    const inactive = conditions?.querySelectorAll('[data-condition-active="false"]') ?? [];
-    expect(inactive.length).toBeGreaterThan(0);
-    for (const row of Array.from(inactive)) {
-      expect(row.classList.contains("disabled")).toBe(true);
-      const children = Array.from(row.children) as HTMLElement[];
-      expect(children.length).toBeGreaterThanOrEqual(3);
-      for (const child of children) {
-        expect(child.hidden || child.hasAttribute("hidden")).toBe(false);
-      }
-    }
+  it("offers inactive conditions as chips and creates an editable row when selected", () => {
+    const mapId = store.getCurrent().startMapId;
+    renderEventEditorDynamic(host, mapId, "ev_herbalist");
+    selectGroup(host, "when");
+    expect(host.querySelectorAll(".event-condition-row")).toHaveLength(0);
+    const chip = host.querySelector<HTMLButtonElement>('[data-testid="event-condition-chip-variable"]');
+    expect(chip?.getAttribute("aria-pressed")).toBe("false");
+    chip?.click();
+    expect(store.getCurrent().maps[mapId]?.events[0]?.pages?.[0]?.conditions).toContainEqual(expect.objectContaining({ kind: "variable" }));
+    host.replaceChildren();
+    renderEventEditorDynamic(host, mapId, "ev_herbalist");
+    expect(host.querySelector('[data-testid="event-condition-chip-variable"]')?.getAttribute("aria-pressed")).toBe("true");
+    expect(host.querySelector('[data-testid="event-condition-row-변수"]')).not.toBeNull();
   });
 });

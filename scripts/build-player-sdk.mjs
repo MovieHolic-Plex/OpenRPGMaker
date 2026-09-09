@@ -6,6 +6,7 @@
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { writeReleaseCollector } from "./lib/releaseCollectorBuild.mjs";
 import {
   PLAYER_RUNTIME_ASSET_PATHS,
   writePlayerDeploymentManifest,
@@ -25,6 +26,7 @@ try {
   console.warn("sdk-manifest: source revision unavailable; sourceDigest remains authoritative");
 }
 
+await writeReleaseCollector(repoRoot, artifactRoot);
 const manifest = await writePlayerDeploymentManifest({
   artifactRoot,
   repoRoot,

@@ -1,4 +1,7 @@
+import { sendAiTurn } from "./aiTurnHarness";
 // 지시줄 effort 셀렉트 — 패널 배선: 초기값·저장·세션 반영·설정모달 동기화.
+import { RunOperation } from "@/ai/runOperation";
+import { teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { resolveAutonomy } from "@/ai/autonomyLevels";
@@ -12,18 +15,29 @@ const assistantMock = vi.hoisted(() => {
   const created: unknown[] = [];
   let sent = 0;
   class MockAssistantSession {
+    private operation = new RunOperation();
+    getRunOperation(): RunOperation { return this.operation; }
+    retireRun(): void { this.operation.retire(); }
     constructor(_project: unknown, options: unknown) {
       created.push(options);
     }
     async sendUserMessage(): Promise<{ assistantText: string; proposedCalls: []; stoppedReason: "final" }> {
+      this.operation.retire();
+      this.operation = new RunOperation();
       sent += 1;
       return { assistantText: "완료.", proposedCalls: [], stoppedReason: "final" };
     }
+    getRunOutcome(): null { return null; }
+
     getAuditEntries(): [] {
       return [];
     }
     getActiveSpec(): null {
       return null;
+    }
+
+    getCompletionSpecs(): [] {
+      return [];
     }
     getWorkPlan(): null {
       return null;
@@ -88,27 +102,37 @@ beforeEach(() => {
   installFakeLocalStorage();
 });
 
-afterEach(() => {
+afterEach(async () => {
+  teardownAiChatPanel();
+  await whenAiChatPanelSettled();
   restoreDom?.();
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
   vi.restoreAllMocks();
 });
 
-describe("지시줄 effort 셀렉트 — 패널 배선", () => {
-  it("저장된 레벨·effort 를 초기값으로 그린다", () => {
+describe("지시줄 자율성 셀렉트 — 패널 배선", () => {
+  it("저장된 레벨을 초기값으로 그린다", () => {
     storage.set(
       AI_CONFIG_STORAGE_KEY,
       JSON.stringify({ ...defaultAiConfig(), autonomyLevel: "autonomous", reasoningEffort: "high" }),
     );
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as unknown as FakeElement;
     expect(findByTestId(panel, "ai-composer-autonomy")?.value).toBe("autonomous");
-    expect(findByTestId(panel, "ai-composer-reasoning")?.value).toBe("high");
   });
 
-  it("자율성을 고르면 레벨 프리셋(추론·작업모드)까지 저장하고 추론 셀렉트도 함께 바뀐다", () => {
-    // Break: 저장만 되고 표시가 옛값이라 거짓을 보여주거나, effort 가 프리셋으로 안 맞아
-    // 세션이 레벨과 다른 effort 로 돈다.
+  it("지시줄 컨트롤은 자율성 셀렉트 하나다", () => {
+    // Break: 모드 칩이나 추론 셀렉트가 남으면 같은 노브를 여러 컨트롤이 만진다.
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig() }));
+    const panel = renderWithFakeDom(() => renderAiChatPanel()) as unknown as FakeElement;
+    expect(findByTestId(panel, "ai-composer-autonomy")).not.toBeNull();
+    expect(findByTestId(panel, "ai-composer-reasoning")).toBeNull();
+    expect(findByTestId(panel, "ai-composer-mode")).toBeNull();
+  });
+
+  it("자율성을 고르면 레벨 프리셋(추론·작업모드)까지 저장한다", () => {
+    // Break: effort 가 프리셋으로 안 맞으면 세션이 레벨과 다른 effort 로 돈다. 지시줄에 수동
+    // override 가 없으므로 이 저장이 추론 강도의 유일한 원천이다.
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig() }));
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as unknown as FakeElement;
     const autonomy = findByTestId(panel, "ai-composer-autonomy");
@@ -120,23 +144,21 @@ describe("지시줄 effort 셀렉트 — 패널 배선", () => {
     expect(storedConfig().autonomyLevel).toBe("max");
     expect(storedConfig().reasoningEffort).toBe(resolved.reasoningEffort);
     expect(storedConfig().agentMode).toBe(resolved.agentMode);
-    expect(findByTestId(panel, "ai-composer-reasoning")?.value).toBe(resolved.reasoningEffort);
+    expect(autonomy.value).toBe("max");
   });
 
-  it("추론 강도를 고르면 그 값 그대로 저장하고 자율성 레벨은 그대로 둔다", () => {
-    // Break: 다이얼이 effort 를 덮어 수동 선택이 저장에만 남고 세션에 안 먹는다.
-    storage.set(
-      AI_CONFIG_STORAGE_KEY,
-      JSON.stringify({ ...defaultAiConfig(), autonomyLevel: "balanced", reasoningEffort: "low" }),
-    );
+  it("읽기 전용 레벨도 같은 경로로 저장된다", () => {
+    // Break: 새 레벨이 isAutonomyLevel 검증을 통과하지 못하면 저장이 balanced 로 되돌아가
+    // ask 레일을 부를 수단이 사라진다.
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig() }));
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as unknown as FakeElement;
-    const reasoning = findByTestId(panel, "ai-composer-reasoning");
-    if (!reasoning) throw new Error("ai-composer-reasoning missing");
-    reasoning.value = "high";
-    reasoning.dispatchEvent(new Event("change"));
+    const autonomy = findByTestId(panel, "ai-composer-autonomy");
+    if (!autonomy) throw new Error("ai-composer-autonomy missing");
+    autonomy.value = "readonly";
+    autonomy.dispatchEvent(new Event("change"));
 
-    expect(storedConfig().reasoningEffort).toBe("high");
-    expect(storedConfig().autonomyLevel).toBe("balanced");
+    expect(storedConfig().autonomyLevel).toBe("readonly");
+    expect(storedConfig().agentMode).toBe(resolveAutonomy("readonly").agentMode);
   });
 
   it("지시줄에서 바꾼 값은 다음 전송 때 세션 생성 설정에 실린다", async () => {
@@ -150,8 +172,8 @@ describe("지시줄 effort 셀렉트 — 패널 배선", () => {
 
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "짧은 질문";
-    findByTestId(panel, "ai-send")?.click();
-    await vi.waitFor(() => expect(assistantMock.sentCount()).toBe(1), { timeout: 2_000, interval: 5 });
+    await sendAiTurn(panel);
+    expect(assistantMock.sentCount()).toBe(1);
     // ensureSession 은 전송 시점 저장 설정으로 세션을 만든다 — 방금 고른 레벨이 실려야 한다.
     const created = assistantMock.created as { config?: { autonomyLevel?: unknown; reasoningEffort?: unknown } }[];
     expect(created.length).toBeGreaterThan(0);

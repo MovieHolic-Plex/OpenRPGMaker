@@ -1,17 +1,16 @@
+// @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createImageGenerationQueue } from "@/ai/imageGenerationQueue";
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
-
-let restoreDom: (() => void) | undefined;
+import { fieldByTestId as findByTestId, mountField as renderWithFakeDom, queueTransition, signal } from "./helpers/aiTestSignals";
 beforeEach(() => {
-  restoreDom = installFakeDom();
+  document.body.replaceChildren();
   store.replace(createBlankProject());
 });
 afterEach(() => {
-  restoreDom?.();
+  document.body.replaceChildren();
   vi.unstubAllGlobals();
 });
 
@@ -32,6 +31,7 @@ describe("aiImageGenerateField queue", () => {
     expect(snapshot.jobs.map((job) => job.label)).toEqual(["슬라임", "고블린"]);
     expect(prompt?.value).toBe("");
     expect(findByTestId(field, "q-queue-list")?.textContent).toContain("고블린");
+    queue.dispose();
   });
 
   it("빈 프롬프트는 큐에 넣지 않는다", () => {
@@ -48,20 +48,20 @@ describe("aiImageGenerateField queue", () => {
       runner: async () => "data:image/png;base64,AAA",
     });
     const inserted: string[] = [];
+    const completed = signal();
     const field = renderWithFakeDom(() =>
       aiImageGenerateField({
         kind: "monster",
         testidPrefix: "q",
         queue,
-        onInserted: (id) => inserted.push(id),
+        onInserted: (id) => { inserted.push(id); completed.resolve(); },
       })
     );
     const prompt = findByTestId(field, "q-prompt");
     if (prompt) prompt.value = "슬라임";
     findByTestId(field, "q-generate")?.click();
-    await vi.waitFor(() => {
-      expect(inserted).toHaveLength(1);
-    });
+    await completed.promise;
+    expect(inserted).toHaveLength(1);
     expect(inserted[0]).toContain("monster_img");
     expect(store.getCurrent().assets.uploaded[inserted[0]!]?.kind).toBe("monster");
     expect(findByTestId(field, "q-queue-list")?.textContent).toContain("완료");
@@ -81,16 +81,14 @@ describe("aiImageGenerateField queue", () => {
     );
     const prompt = findByTestId(field, "q-prompt");
     if (prompt) prompt.value = "슬라임";
+    const failed = queueTransition(queue, (snapshot) => snapshot.jobs[0]?.status === "error");
     findByTestId(field, "q-generate")?.click();
-    await vi.waitFor(() => {
-      expect(queue.getSnapshot().jobs[0]?.status).toBe("error");
-    });
+    await failed;
     expect(findByTestId(field, "q-queue-list")?.textContent).toContain("서버 불량");
     expect(findByTestId(field, "q-queue-retry")).not.toBeNull();
+    const completed = queueTransition(queue, (snapshot) => snapshot.jobs[0]?.status === "done");
     findByTestId(field, "q-queue-retry")?.click();
-    await vi.waitFor(() => {
-      expect(queue.getSnapshot().jobs[0]?.status).toBe("done");
-    });
+    await completed;
     expect(calls).toBe(2);
   });
 
@@ -109,9 +107,7 @@ describe("aiImageGenerateField queue", () => {
     findByTestId(field, "q-generate")?.click();
     if (prompt) prompt.value = "빠름";
     findByTestId(field, "q-generate")?.click();
-    await vi.waitFor(() => {
-      expect(queue.getSnapshot().jobs).toHaveLength(2);
-    });
+    expect(queue.getSnapshot().jobs).toHaveLength(2);
     const waiting = queue.getSnapshot().jobs.find((job) => job.label === "빠름")!;
     expect(queue.cancel(waiting.id)).toBe(true);
     const rendered = findByTestId(field, "q-queue-list");
@@ -136,9 +132,7 @@ describe("aiImageGenerateField queue", () => {
     findByTestId(first, "q-generate")?.click();
     if (prompt) prompt.value = "빠름";
     findByTestId(first, "q-generate")?.click();
-    await vi.waitFor(() => {
-      expect(shared.getSnapshot().jobs).toHaveLength(2);
-    });
+    expect(shared.getSnapshot().jobs).toHaveLength(2);
     // 폼이 통째로 다시 그려져도 같은 큐 인스턴스를 쓰면 목록이 살아 있다.
     const second = renderWithFakeDom(() =>
       aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue: shared, onInserted: vi.fn() })
@@ -153,10 +147,9 @@ describe("aiImageGenerateField queue", () => {
     const shared = createImageGenerationQueue({
       runner: async () => "data:image/png;base64,AAA",
     });
+    const completed = queueTransition(shared, (snapshot) => snapshot.jobs[0]?.status === "done");
     const id = shared.enqueue({ prompt: "슬라임", kind: "monster" });
-    await vi.waitFor(() => {
-      expect(shared.getSnapshot().jobs[0]?.status).toBe("done");
-    });
+    await completed;
     expect(id).toBeTruthy();
     // 이 큐의 done 을 본 구독이 없으므로, 새로 붙는 필드가 초기 스냅샷을
     // 스캔해 에셋으로 등록한다.
@@ -174,6 +167,7 @@ describe("aiImageGenerateField queue", () => {
   });
 
   it("queueKey 필드는 같은 문서에서 리마운트해도 대기 목록을 유지한다", () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("{}", { status: 401 })));
     const a = renderWithFakeDom(() =>
       aiImageGenerateField({ kind: "monster", testidPrefix: "share-key", queueKey: "enemy-graphic:e1", onInserted: vi.fn() })
     );
@@ -202,10 +196,10 @@ describe("aiImageGenerateField queue", () => {
       render();
     });
     const before = Object.keys(store.getCurrent().assets.uploaded).length;
+    const completed = queueTransition(shared, (snapshot) => snapshot.jobs[0]?.status === "done");
     shared.enqueue({ prompt: "슬라임", kind: "monster" });
-    await vi.waitFor(() => {
-      expect(inserted.length).toBe(1);
-    });
+    await completed;
+    expect(inserted).toHaveLength(1);
     const after = Object.keys(store.getCurrent().assets.uploaded).length;
     expect(after - before).toBe(1);
     off();
@@ -229,36 +223,35 @@ describe("aiImageGenerateField queue", () => {
     );
     const forA: string[] = [];
     const forB: string[] = [];
-    const renderFor = (recordId: string, sink: string[]): FakeElement =>
+    const completed = signal();
+    const renderFor = (recordId: string, sink: string[]): HTMLElement =>
       renderWithFakeDom(() =>
         aiImageGenerateField({
           kind: "monster",
           testidPrefix: "qa",
           queueKey: `monster-species-resource:${recordId}`,
-          onInserted: (resourceId) => sink.push(resourceId),
+          onInserted: (resourceId) => { sink.push(resourceId); completed.resolve(); },
         })
       );
     const rootA = renderFor("speciesA", forA);
     const promptA = findByTestId(rootA, "qa-prompt");
     if (promptA) promptA.value = "A종족 그림";
     findByTestId(rootA, "qa-generate")?.click();
-    // 레코드 전환으로 A 폼이 떨어진 상태를 흉내낸다. 프로덕션의 isConnected 가드와
-    // 같은 분기를 fakeDom 에서 직접 밟는다(FakeElement 에는 isConnected 가 없다).
-    (rootA as unknown as { isConnected: boolean }).isConnected = false;
+    rootA.remove();
+    expect(rootA.isConnected).toBe(false);
     // B 를 A 작업이 끝나기 전에 연다. 키가 분리돼 있으면 B 의 큐는 비어 있다.
     const rootB = renderFor("speciesB", forB);
     expect(findByTestId(rootB, "qa-queue-list")?.textContent).not.toContain("A종족 그림");
+    // Return to A while its request is pending; only A may receive the result.
+    renderFor("speciesA", forA);
     resolveFetch(
       new Response(JSON.stringify({ image: { dataUrl: png } }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       }),
     );
-    // A 로 돌아오면 초기 스캔이 끝난 작업을 A 에게만 반영한다.
-    await vi.waitFor(() => {
-      renderFor("speciesA", forA);
-      expect(forA.length).toBeGreaterThan(0);
-    });
+    await completed.promise;
+    expect(forA).toHaveLength(1);
     expect(forB).toHaveLength(0);
     expect(store.getCurrent().assets.uploaded[forA[0]!]?.kind).toBe("monster");
   });
@@ -277,10 +270,9 @@ describe("aiImageGenerateField queue", () => {
     );
     const prompt = findByTestId(field, "q-prompt");
     if (prompt) prompt.value = "깨짐";
+    const failed = queueTransition(queue, (snapshot) => snapshot.jobs[0]?.status === "error");
     findByTestId(field, "q-generate")?.click();
-    await vi.waitFor(() => {
-      expect(queue.getSnapshot().jobs[0]?.status).toBe("error");
-    });
+    await failed;
     expect(calls).toBe(1);
     expect(findByTestId(field, "q-queue-clear")).toBeNull();
   });

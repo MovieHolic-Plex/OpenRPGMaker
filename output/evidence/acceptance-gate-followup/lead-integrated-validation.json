@@ -1,0 +1,23 @@
+{
+  "sourceCommit": "ce551ee45d5c61b02bbb13bef7b8aa5a77bb061e",
+  "producer": "Lead direct monitored command, not implementer self-report",
+  "command": "npm run typecheck:app && npm test -- test/aiChatObservability.test.ts test/requestCoverage.test.ts test/fakeDomSelectContracts.test.ts test/eventEditorStagedState.test.ts test/independentReview.test.ts test/assistantIndependentReview.test.ts test/assistantReviewApprovalLifecycle.test.ts --maxWorkers=1 --minWorkers=1 --no-file-parallelism && npm run build",
+  "monitor": "mon_ERZ3NP9C1D0KW32C",
+  "chainExitCode": 0,
+  "completionExtract": [
+    "Test Files 7 passed (7)",
+    "Tests 109 passed (109)",
+    "INTEGRATION_CHECK_EXIT=0"
+  ],
+  "applicationTypecheck": "passed",
+  "fullProductionBuild": "passed",
+  "player": {
+    "sourceCommit": "ce551ee45d5c61b02bbb13bef7b8aa5a77bb061e",
+    "scriptBlob": "60c1611b297d4caeb1b666ed8f7c64386656153c",
+    "monitor": "mon_AQFVGD0GBYX6NSAG",
+    "exitCode": 0,
+    "checkpoints": 8,
+    "evidence": "integrated-player.json"
+  },
+  "fullSuiteBoundary": "The complete matched 1829-file run is source 0798a67b, not this later integrated source. Later fixture/integration changes were checked by scoped tests, current-main surface comparison, full build and real player."
+}

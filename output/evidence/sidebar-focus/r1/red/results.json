@@ -1,0 +1,35 @@
+[
+  {
+    "name": "context-menu-pointer",
+    "status": "FAIL",
+    "error": "AssertionError [ERR_ASSERTION]: Rename must be above the owning map surface"
+  },
+  {
+    "name": "context-menu-keyboard",
+    "status": "FAIL",
+    "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(await page.getByTestId(`map-context-menu-${id}`).evaluate(node => node.contains(document.activeElement)))\n"
+  },
+  {
+    "name": "mode-lifecycle-beginner",
+    "status": "FAIL",
+    "error": "AssertionError [ERR_ASSERTION]: mode notification must remove old surface\n\n1 !== 0\n"
+  },
+  {
+    "name": "mode-lifecycle-standard",
+    "status": "PASS",
+    "observed": {
+      "initial": "standard",
+      "toolsAndAssist": true
+    }
+  },
+  {
+    "name": "expert-header-reveal",
+    "status": "FAIL",
+    "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'false' !== 'true'\n"
+  },
+  {
+    "name": "inspection-host-activation",
+    "status": "FAIL",
+    "error": "AssertionError [ERR_ASSERTION]: inspection command must activate missing host\n\n0 !== 1\n"
+  }
+]

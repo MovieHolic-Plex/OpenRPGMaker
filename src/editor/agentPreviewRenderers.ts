@@ -312,6 +312,7 @@ export class AgentGhostPreviewRenderer {
       return;
     }
 
+    this.currentToolName = preferredGhostToolName(previews[0]?.toolName ?? "", state.runningToolName);
     const cellCount = previews.reduce((total, preview) => total + preview.cells.length, 0);
     const now = this.clock();
     const elapsed = this.startTime !== null ? now - this.startTime : 0;
@@ -581,7 +582,12 @@ export class AgentGhostPreviewRenderer {
   }
 
   private currentState(): AgentGhostPreviewState {
-    return getAgentGhostPreviewState();
+    const state = getAgentGhostPreviewState();
+    const mapId = this.mapId();
+    return {
+      ...state,
+      runningToolName: mapId && state.runningToolMapId === mapId ? state.runningToolName : "",
+    };
   }
 
   private currentPreviews(): readonly AgentGhostPreview[] {

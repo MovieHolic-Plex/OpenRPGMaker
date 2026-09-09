@@ -1,0 +1,162 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventCommandRemediation/U03.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U03/red.json
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u03
+
+ ✓ test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 accepts the authored fixture and transition through real serialization 543ms
+ × test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 restores A after A->B->A, then Confirm and reload retain A and transition 447ms
+   → stored target must be A, not stale B: expected { kind: 'transfer', …(5) } to deeply equal { kind: 'transfer', …(5) }
+   → stored authored transition: expected undefined to be 'fade' // Object.is equality
+   → reloaded target must be A: expected { kind: 'transfer', …(5) } to deeply equal { kind: 'transfer', …(5) }
+   → reloaded authored transition: expected undefined to be 'fade' // Object.is equality
+ × test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 patches a direction edit without losing untouched target, fade, or transition 397ms
+   → direction edit retains optional transition: expected undefined to be 'fade' // Object.is equality
+   → expected undefined to be 'fade' // Object.is equality
+ ✓ test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 commits distinct valid nondefault coordinates, direction, and fade 820ms
+ ✓ test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 keeps one outer Confirm authority and isolates live edits on Cancel 575ms
+ ✓ test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 characterizes no-op initial open and Confirm without changing authored values 551ms
+ ✓ test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 seeds an incomplete empty mapId from the editor map before Confirm 322ms
+ ✓ test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 characterizes missing-map fallback to the first available picker map 70ms
+ ✓ test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 characterizes an empty map collection: no rows and inert canvas selection 150ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 restores A after A->B->A, then Confirm and reload retain A and transition
+AssertionError: stored target must be A, not stale B: expected { kind: 'transfer', …(5) } to deeply equal { kind: 'transfer', …(5) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "direction": "left",[22m
+[2m    "fade": "black",[22m
+[2m    "kind": "transfer",[22m
+[32m-   "mapId": "mapA",[39m
+[31m+   "mapId": "mapB",[39m
+[2m    "x": 2,[22m
+[2m    "y": 3,[22m
+[2m  }[22m
+
+ ❯ test/eventCommandRemediation/U03.test.ts:108:73
+    106|     const stored = storedTransfer(store.getCurrent());
+    107|     const reloaded = storedTransfer(deserialize(serialize(store.getCur…
+    108|     expect.soft(target(stored), "stored target must be A, not stale B"…
+       |                                                                         ^
+    109|     expect.soft(stored.transition, "stored authored transition").toBe(…
+    110|     expect.soft(target(reloaded), "reloaded target must be A").toEqual…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 restores A after A->B->A, then Confirm and reload retain A and transition
+AssertionError: stored authored transition: expected undefined to be 'fade' // Object.is equality
+
+[32m- Expected:[39m
+"fade"
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/eventCommandRemediation/U03.test.ts:109:66
+    107|     const reloaded = storedTransfer(deserialize(serialize(store.getCur…
+    108|     expect.soft(target(stored), "stored target must be A, not stale B"…
+    109|     expect.soft(stored.transition, "stored authored transition").toBe(…
+       |                                                                  ^
+    110|     expect.soft(target(reloaded), "reloaded target must be A").toEqual…
+    111|     expect.soft(reloaded.transition, "reloaded authored transition").t…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 restores A after A->B->A, then Confirm and reload retain A and transition
+AssertionError: reloaded target must be A: expected { kind: 'transfer', …(5) } to deeply equal { kind: 'transfer', …(5) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "direction": "left",[22m
+[2m    "fade": "black",[22m
+[2m    "kind": "transfer",[22m
+[32m-   "mapId": "mapA",[39m
+[31m+   "mapId": "mapB",[39m
+[2m    "x": 2,[22m
+[2m    "y": 3,[22m
+[2m  }[22m
+
+ ❯ test/eventCommandRemediation/U03.test.ts:110:64
+    108|     expect.soft(target(stored), "stored target must be A, not stale B"…
+    109|     expect.soft(stored.transition, "stored authored transition").toBe(…
+    110|     expect.soft(target(reloaded), "reloaded target must be A").toEqual…
+       |                                                                ^
+    111|     expect.soft(reloaded.transition, "reloaded authored transition").t…
+    112|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 restores A after A->B->A, then Confirm and reload retain A and transition
+AssertionError: reloaded authored transition: expected undefined to be 'fade' // Object.is equality
+
+[32m- Expected:[39m
+"fade"
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/eventCommandRemediation/U03.test.ts:111:70
+    109|     expect.soft(stored.transition, "stored authored transition").toBe(…
+    110|     expect.soft(target(reloaded), "reloaded target must be A").toEqual…
+    111|     expect.soft(reloaded.transition, "reloaded authored transition").t…
+       |                                                                      ^
+    112|   });
+    113|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 patches a direction edit without losing untouched target, fade, or transition
+AssertionError: direction edit retains optional transition: expected undefined to be 'fade' // Object.is equality
+
+[32m- Expected:[39m
+"fade"
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/eventCommandRemediation/U03.test.ts:120:82
+    118|     const stored = storedTransfer(store.getCurrent());
+    119|     expect(target(stored)).toEqual({ ...target(fixture.initial), direc…
+    120|     expect.soft(stored.transition, "direction edit retains optional tr…
+       |                                                                                  ^
+    121|     expect.soft(storedTransfer(deserialize(serialize(store.getCurrent(…
+    122|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  test/eventCommandRemediation/U03.test.ts > U03/G1-F20 transfer liveApply regression > G1-F20 patches a direction edit without losing untouched target, fade, or transition
+AssertionError: expected undefined to be 'fade' // Object.is equality
+
+[32m- Expected:[39m
+"fade"
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/eventCommandRemediation/U03.test.ts:121:88
+    119|     expect(target(stored)).toEqual({ ...target(fixture.initial), direc…
+    120|     expect.soft(stored.transition, "direction edit retains optional tr…
+    121|     expect.soft(storedTransfer(deserialize(serialize(store.getCurrent(…
+       |                                                                                        ^
+    122|   });
+    123|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 7 passed (9)
+   Start at  19:32:52
+   Duration  27.98s (transform 15.97s, setup 0ms, collect 22.97s, tests 3.88s, environment 0ms, prepare 312ms)
+
+JSON report written to /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u03/.omo/evidence/event-command-remediation/U03/red.json
+
+DIRECT_EXIT_CODE=1

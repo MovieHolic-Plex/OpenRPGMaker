@@ -1,0 +1,13 @@
+import ts from 'typescript';
+import { projection, projectedFiles, ref } from './history-projection.mjs';
+const config = ts.readConfigFile('tsconfig.app.json', ts.sys.readFile);
+if (config.error) throw new Error(ts.flattenDiagnosticMessageText(config.error.messageText, '\n'));
+const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, process.cwd(), { noEmit: true });
+const host = ts.createCompilerHost(parsed.options);
+const readFile = host.readFile.bind(host);
+host.readFile = file => projection(file) ?? readFile(file);
+const program = ts.createProgram(parsed.fileNames, parsed.options, host);
+const diagnostics = [...parsed.errors, ...ts.getPreEmitDiagnostics(program)];
+console.log(JSON.stringify({ kind: 'conditional-app-typecheck-not-final-merge', historyProjection: ref, projectedFiles }));
+console.log(ts.formatDiagnosticsWithColorAndContext(diagnostics, { getCanonicalFileName: p => p, getCurrentDirectory: () => process.cwd(), getNewLine: () => '\n' }));
+process.exitCode = diagnostics.some(d => d.category === ts.DiagnosticCategory.Error) ? 1 : 0;

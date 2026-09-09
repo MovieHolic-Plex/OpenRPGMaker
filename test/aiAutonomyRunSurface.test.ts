@@ -1,5 +1,8 @@
+import { bounded } from "./aiEpochFixture";
 // 자율성 다이얼 런 표면 — 예산 total 과 칩 라벨이 저장된 레벨을 따른다.
 // 기계가 소비하는 값(total 숫자·칩 텍스트)만 단언한다.
+import { RunOperation } from "@/ai/runOperation";
+import { teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
@@ -15,8 +18,13 @@ const assistantMock = vi.hoisted(() => {
   let emitter: ((onEvent: (event: unknown) => void, opts?: unknown) => void) | null = null;
   let holdNext = false;
   let heldResolve: (() => void) | null = null;
+  let held = Promise.resolve();
+  let signalHeld: (() => void) | undefined;
 
   class MockAssistantSession {
+    private operation = new RunOperation();
+    getRunOperation(): RunOperation { return this.operation; }
+    retireRun(): void { this.operation.retire(); heldResolve?.(); }
     constructor(_project: unknown, _options: unknown) {}
     async sendUserMessage(
       _text: string,
@@ -24,21 +32,30 @@ const assistantMock = vi.hoisted(() => {
       _signal: unknown,
       _opts?: unknown
     ): Promise<{ assistantText: string; proposedCalls: []; stoppedReason: "final" }> {
+      this.operation.retire();
+      this.operation = new RunOperation();
       emitter?.(onEvent, _opts);
       if (holdNext) {
         holdNext = false;
         await new Promise<void>((resolve) => {
           heldResolve = resolve;
+          signalHeld?.();
         });
         heldResolve = null;
       }
       return { assistantText: "완료.", proposedCalls: [], stoppedReason: "final" };
     }
+    getRunOutcome(): null { return null; }
+
     getAuditEntries(): [] {
       return [];
     }
     getActiveSpec(): null {
       return null;
+    }
+
+    getCompletionSpecs(): [] {
+      return [];
     }
     getWorkPlan(): null {
       return null;
@@ -61,7 +78,9 @@ const assistantMock = vi.hoisted(() => {
     },
     holdNextTurn() {
       holdNext = true;
+      held = new Promise<void>(resolve => { signalHeld = resolve; });
     },
+    whenHeld: () => held,
     releaseHeldTurn() {
       heldResolve?.();
     },
@@ -133,7 +152,7 @@ function installFakeWindow(): () => void {
 }
 
 async function flushAsync(): Promise<void> {
-  for (let i = 0; i < 20; i += 1) await Promise.resolve();
+  await bounded(assistantMock.whenHeld());
 }
 
 function renderPanel(): FakeElement {
@@ -175,7 +194,9 @@ beforeEach(() => {
   vi.useFakeTimers();
 });
 
-afterEach(() => {
+afterEach(async () => {
+  teardownAiChatPanel();
+  await whenAiChatPanelSettled();
   closeWorkPlanBook();
   resetModalStackForTest();
   vi.useRealTimers();
@@ -187,7 +208,33 @@ afterEach(() => {
 });
 
 describe("자율성 다이얼 런 표면", () => {
-  it("confirm 저장 시 자율 런 예산이 0/6 으로 시작한다", async () => {
+  it("autonomous 저장 시 자율 런 예산이 0/32 으로 시작한다", async () => {
+    // 예전 픽스처는 confirm + agentMode:"auto" 였다. 다이얼이 프리셋의 agentMode 를 함께
+    // 저장하므로(confirm → "chat") UI 로는 만들 수 없는 조합이고, planOnly 레벨은 계획 턴에
+    // 자율 표면을 켜지 않는다(아래 별도 테스트). 분모가 레벨 cap 이라는 계약은 그대로 검증한다.
+    storage.set(
+      AI_CONFIG_STORAGE_KEY,
+      JSON.stringify({ ...defaultAiConfig(), agentMode: "auto", autonomyLevel: "autonomous" })
+    );
+    const panel = renderPanel();
+    assistantMock.setEmitter((onEvent) => {
+      onEvent({ type: "work_plan", plan: samplePlan() });
+    });
+    assistantMock.holdNextTurn();
+    const sending = bridgeSend("RPG 만들어줘");
+    await flushAsync();
+
+    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("0/32");
+
+    assistantMock.releaseHeldTurn();
+    await sending;
+    await flushAsync();
+  });
+
+  it("확인(planOnly) 레벨의 계획 턴은 자율 런 표면을 켜지 않는다", async () => {
+    // Break: 계획만 세우고 멈추는 턴에 「자율 실행 예산」을 띄우면 실행되지 않을 런의 진행률을
+    // 보여주는 거짓 표면이 된다. 예전 「계획」 칩은 이걸 눌렀고 다이얼 confirm 은 안 눌렀다 —
+    // 두 경로를 하나로 합치는 것이 이 작업의 목적이다.
     storage.set(
       AI_CONFIG_STORAGE_KEY,
       JSON.stringify({ ...defaultAiConfig(), agentMode: "auto", autonomyLevel: "confirm" })
@@ -200,7 +247,7 @@ describe("자율성 다이얼 런 표면", () => {
     const sending = bridgeSend("RPG 만들어줘");
     await flushAsync();
 
-    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("0/6");
+    expect(findByTestId(panel, "ai-autonomous-budget")).toBeNull();
 
     assistantMock.releaseHeldTurn();
     await sending;
@@ -232,7 +279,7 @@ describe("자율성 다이얼 런 표면", () => {
   it("계속 이벤트의 48분모 표시는 레벨 cap 으로 클램프된다", async () => {
     storage.set(
       AI_CONFIG_STORAGE_KEY,
-      JSON.stringify({ ...defaultAiConfig(), agentMode: "auto", autonomyLevel: "confirm" })
+      JSON.stringify({ ...defaultAiConfig(), agentMode: "auto", autonomyLevel: "autonomous" })
     );
     const panel = renderPanel();
     assistantMock.setEmitter((onEvent) => {
@@ -243,8 +290,8 @@ describe("자율성 다이얼 런 표면", () => {
     const sending = bridgeSend("RPG 만들어줘");
     await flushAsync();
 
-    // 세션 텍스트는 48분모지만 표시는 레벨 cap 6으로 내린다.
-    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("5/6");
+    // 세션 텍스트는 48분모지만 표시는 레벨 cap 32로 내린다.
+    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("5/32");
 
     assistantMock.releaseHeldTurn();
     await sending;
@@ -258,7 +305,7 @@ describe("자율성 다이얼 런 표면", () => {
       JSON.stringify({ ...defaultAiConfig(), model: "stub-model", autonomyLevel: "autonomous" })
     );
     const panel = renderPanel();
-    await flushAsync();
+    await whenAiChatPanelSettled();
 
     // autonomous 라벨은 「자율」이다(autonomyLevels AUTONOMY_LEVELS).
     expect(findByTestId(panel, "ai-composer-model")?.textContent).toContain("자율");

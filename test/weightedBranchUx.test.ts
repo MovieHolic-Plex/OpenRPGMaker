@@ -1,147 +1,206 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { newM2Command } from "@/editor/eventCommandFactory";
 import { renderCommandBody } from "@/editor/panels/eventEditor/commandBody";
-import { commandSummary, commandSummaryParts } from "@/editor/panels/eventEditor/commandSummary";
-import {
-  formatWeightedBranchSummary,
-  parseWeightedBranchTable,
-  rowsForWeightedBranchEditor,
-  serializeWeightedBranchTable,
-  weightedBranchPercents,
-} from "@/editor/panels/eventEditor/weightedBranchTable";
+import { openEventCommandEditDialog } from "@/editor/panels/eventEditor/commandEditDialog";
+import { parseWeightedBranchTable, serializeWeightedBranchTable, weightedBranchPercents } from "@/editor/panels/eventEditor/weightedBranchTable";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Command } from "@/project/types";
-import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
+import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
-describe("weightedBranchTable helpers", () => {
-  it("parses label=weight lines and drops invalid rows", () => {
-    const rows = parseWeightedBranchTable("성공=1\nbroken\nzero=0\n실패=3\n\nbad=NaN");
-    expect(rows).toEqual([
-      { label: "성공", weight: 1 },
-      { label: "실패", weight: 3 },
-    ]);
+describe("weighted branch storage", () => {
+  it("matches runtime numeric-field parsing when names are blank or contain extra separators", () => {
+    expect(parseWeightedBranchTable("=2\na=3=extra\nzero=0\nbad=NaN").map(row => row.weight)).toEqual([2, 3]);
   });
-
-  it("round-trips serialize/parse for positive weights", () => {
-    const table = serializeWeightedBranchTable([
-      { label: "rare", weight: 1 },
-      { label: "common", weight: 9 },
-      { label: "skip", weight: 0 },
-    ]);
-    expect(table).toBe("rare=1\ncommon=9");
-    expect(parseWeightedBranchTable(table)).toEqual([
-      { label: "rare", weight: 1 },
-      { label: "common", weight: 9 },
-    ]);
+  it("keeps one runtime outcome when a name contains separators or newlines", () => {
+    const table = serializeWeightedBranchTable([{ label: "a=b\nc", weight: 0.1234567890123456 }]);
+    expect(table.split("\n")).toHaveLength(1);
+    expect(table.split("=")).toHaveLength(2);
+    expect(parseWeightedBranchTable(table)[0]?.weight).toBe(0.1234567890123456);
   });
-
-  it("falls back when every weight is non-positive", () => {
-    expect(serializeWeightedBranchTable([{ label: "x", weight: 0 }])).toBe("결과1=1");
-  });
-
-  it("seeds editor rows when table is empty", () => {
-    expect(rowsForWeightedBranchEditor("")).toEqual([
-      { label: "성공", weight: 1 },
-      { label: "실패", weight: 1 },
-    ]);
-  });
-
-  it("computes integer percents that sum to 100", () => {
-    const percents = weightedBranchPercents([
-      { label: "a", weight: 1 },
-      { label: "b", weight: 1 },
-      { label: "c", weight: 1 },
-    ]);
-    expect(percents.reduce((sum, value) => sum + value, 0)).toBe(100);
-    expect(percents).toEqual([34, 33, 33]);
-  });
-
-  it("formats human summary with residual last percent", () => {
-    expect(formatWeightedBranchSummary("rare=1\ncommon=9", "loot_roll", "전리품")).toBe(
-      "rare 10% · common 90% → 변수 전리품",
-    );
-    expect(formatWeightedBranchSummary("a=1\nb=1\nc=1\nd=1", "")).toContain("외 1");
-    expect(formatWeightedBranchSummary("a=1\nb=1\nc=1\nd=1", "")).toContain("변수 (미선택)");
+  it("does not round tiny positive odds to zero", () => {
+    const percentages = weightedBranchPercents([{ label: "a", weight: 1 }, { label: "b", weight: 99999 }]);
+    expect(percentages[0]).toBeCloseTo(0.001, 8);
+    expect(percentages.reduce((sum, value) => sum + value, 0)).toBeCloseTo(100, 10);
   });
 });
 
 describe("weighted branch command UX", () => {
-  let restoreDom: (() => void) | undefined;
+  let restoreDom: () => void;
   let replaced: Command | undefined;
-
   beforeEach(() => {
     restoreDom = installFakeDom();
     store.replace(createBlankProject());
     replaced = undefined;
   });
+  afterEach(() => restoreDom());
 
-  afterEach(() => {
-    restoreDom?.();
-  });
-
-  it("renders row editor instead of raw table textarea", () => {
-    const cmd = {
-      ...newM2Command("m2-211-weighted-branch"),
-      fields: {
-        table: "success=1\nfailure=1",
-        resultVariableId: "",
+  function render(table = "success=1\nfailure=1", resultVariableId = "") {
+    const cmd = { ...newM2Command("m2-211-weighted-branch"), fields: { table, resultVariableId, custom: "preserved" } };
+    return renderWithFakeDom(() => renderCommandBody({
+      path: [0], lockKind: true, getCurrentCommand: () => replaced ?? cmd,
+      actions: {
+        addCommand: () => {}, insertCommand: () => {},
+        replaceCommand: (_path, command) => { replaced = command; },
+        deleteCommand: () => {}, moveCommand: () => {}, moveCommandTo: () => {},
       },
-    };
-    const body = renderWithFakeDom(() =>
-      renderCommandBody(
-        {
-          path: [0],
-          actions: {
-            addCommand: () => {},
-            insertCommand: () => {},
-            replaceCommand: (_path, command) => {
-              replaced = command;
-            },
-            deleteCommand: () => {},
-            moveCommand: () => {},
-            moveCommandTo: () => {},
-          },
-          lockKind: true,
-        },
-        cmd,
-      ),
-    );
-
-    expect(findByTestId(body, "m2-command-body-m2-211-weighted-branch")).toBeTruthy();
-    expect(findByTestId(body, "weighted-branch-rows")).toBeTruthy();
-    expect(findByTestId(body, "weighted-branch-help")?.textContent).toContain("가중치로 하나 고르기");
-    expect(findByTestId(body, "weighted-branch-guide")?.textContent).toContain("조건 분기");
-    expect(findByTestId(body, "m2-command-table-textarea")).toBeFalsy();
-    expect(body.textContent).toContain("50%");
+    }, cmd));
+  }
+  function control(body: FakeElement, id: string): FakeElement {
+    const node = findByTestId(body, id);
+    if (!node) throw new Error(`Missing control ${id}`);
+    return node;
+  }
+  function change(node: FakeElement, value: string, event = "input") {
+    node.value = value;
+    node.dispatchEvent(new Event(event));
+  }
+  function fields() {
+    if (replaced?.kind !== "m2Command") throw new Error("No command update");
+    return replaced.fields;
+  }
+  it("initializes percentages, row bars and zero-based mapping without writing on open", () => {
+    const body = render();
+    expect(control(body, "weighted-branch-chance-0").value).toBe("50");
+    expect(control(body, "weighted-branch-chance-1").value).toBe("50");
+    expect(control(body, "weighted-branch-meter-0").getAttribute("aria-valuenow")).toBe("50");
+    expect(control(body, "weighted-branch-index-0").textContent).toBe("0");
+    expect(control(body, "weighted-branch-index-1").textContent).toBe("1");
+    expect(replaced).toBeUndefined();
   });
-
-  it("summarizes outcomes without dumping field keys", () => {
-    const parts = commandSummaryParts({
-      kind: "m2Command",
-      commandId: "m2-211-weighted-branch",
-      fields: {
-        table: "성공=1\n실패=1",
-        resultVariableId: "loot_roll",
-      },
+  it("redistributes the remainder proportionally when one percentage changes", () => {
+    const body = render("a=2\nb=3\nc=5");
+    const input = control(body, "weighted-branch-chance-0");
+    input.focus();
+    change(input, "60");
+    const rows = parseWeightedBranchTable(String(fields().table));
+    expect(rows).toHaveLength(3);
+    expect(rows[0]?.weight).toBe(60);
+    expect(rows[1]?.weight).toBeCloseTo(15, 12);
+    expect(rows[2]?.weight).toBeCloseTo(25, 12);
+    expect(control(body, "weighted-branch-chance-1").value).toBe("15");
+    expect(control(body, "weighted-branch-meter-2").getAttribute("aria-valuenow")).toBe("25");
+    expect(control(body, "weighted-branch-chance-0")).toBe(input);
+    expect(document.activeElement).toBe(input);
+    expect(fields().custom).toBe("preserved");
+  });
+  it("preserves exact authored table when only the destination changes", () => {
+    const project = createBlankProject();
+    const variable = project.variables[0];
+    if (!variable) throw new Error("Missing fixture variable");
+    project.variables.push({ ...variable, id: "roll", name: "Roll" });
+    store.replace(project);
+    const table = " =2\r\na=3=legacy\r\nbad\r\nz=0";
+    const body = render(table);
+    const picker = control(body, "weighted-branch-result-variable").querySelector("select");
+    if (!picker) throw new Error("Missing picker select");
+    expect(picker.options.map(option => option.value)).toContain("roll");
+    change(picker, "roll", "change");
+    expect(fields().table).toBe(table);
+    expect(fields().resultVariableId).toBe("roll");
+    expect(control(body, "weighted-branch-destination").dataset.variableId).toBe("roll");
+  });
+  it("preserves exact weight precision and focused name node while composing", () => {
+    const body = render("a=0.1234567890123456\nb=3");
+    const name = control(body, "weighted-branch-label-0");
+    name.focus();
+    name.dispatchEvent(new Event("compositionstart"));
+    change(name, "성");
+    expect(replaced).toBeUndefined();
+    name.value = "성공";
+    name.dispatchEvent(new Event("compositionend"));
+    expect(parseWeightedBranchTable(String(fields().table))[0]).toEqual({ label: "성공", weight: 0.1234567890123456 });
+    expect(control(body, "weighted-branch-label-0")).toBe(name);
+    expect(document.activeElement).toBe(name);
+  });
+  it("leaves the committed table unchanged for incomplete and out-of-range percentages", () => {
+    const body = render();
+    const input = control(body, "weighted-branch-chance-0");
+    for (const value of ["", "-1", "101"]) {
+      change(input, value);
+      expect(replaced).toBeUndefined();
+      expect(input.getAttribute("aria-invalid")).toBe("true");
+    }
+  });
+  it("keeps zero-chance rows editable but excludes them from runtime mapping", () => {
+    const body = render("a=1\nb=1\nc=1");
+    change(control(body, "weighted-branch-chance-1"), "0");
+    expect(parseWeightedBranchTable(String(fields().table)).map(row => row.label)).toEqual(["a", "c"]);
+    expect(control(body, "weighted-branch-index-1").dataset.resultValue).toBe("");
+    expect(control(body, "weighted-branch-index-2").textContent).toBe("1");
+    expect(control(body, "weighted-branch-chance-1").value).toBe("0");
+  });
+  it("focuses the new name on add and the nearest remaining name on removal", () => {
+    const body = render();
+    control(body, "weighted-branch-add-row").click();
+    expect(document.activeElement).toBe(control(body, "weighted-branch-label-2"));
+    expect(parseWeightedBranchTable(String(fields().table))).toHaveLength(3);
+    control(body, "weighted-branch-remove-2").click();
+    expect(document.activeElement).toBe(control(body, "weighted-branch-label-1"));
+    expect(parseWeightedBranchTable(String(fields().table))).toHaveLength(2);
+  });
+  it("shows a nonzero display and proportional meter for sub-percent outcomes", () => {
+    const body = render("rare=1\ncommon=99999999");
+    expect(Number(control(body, "weighted-branch-chance-0").value)).toBeGreaterThan(0);
+    expect(Number(control(body, "weighted-branch-meter-0").getAttribute("aria-valuenow"))).toBeGreaterThan(0);
+  });
+  function openModal(table: string) {
+    openEventCommandEditDialog({
+      initial: { ...newM2Command("m2-211-weighted-branch"), fields: { table, resultVariableId: "roll" } },
+      onApply: command => { replaced = command; },
     });
-    const text = parts.map((part) => part.text).join("");
-    expect(text).toContain("가중 분기");
-    expect(text).toContain("성공 50%");
-    expect(text).toContain("실패 50%");
-    expect(text).toContain("변수");
-    expect(text).not.toContain("table:");
-    expect(text).not.toContain("resultVariableId");
-    expect(commandSummary({
-      kind: "m2Command",
-      commandId: "m2-211-weighted-branch",
-      fields: { table: "성공=1\n실패=1", resultVariableId: "" },
-    })).toContain("변수 (미선택)");
+    return renderWithFakeDom(() => document.body);
+  }
+  it.each(["", "-1", "101"])("blocks modal Confirm with invalid chance %j and focuses the field", invalid => {
+    const body = openModal("a=60\nb=40");
+    const input = control(body, "weighted-branch-chance-0");
+    change(input, invalid);
+    control(body, "event-command-edit-ok").click();
+    expect(replaced).toBeUndefined();
+    expect(findByTestId(body, "event-command-edit-dialog") !== null).toBe(true);
+    expect(document.activeElement === input).toBe(true);
+    control(body, "event-command-edit-cancel").click();
   });
-
-  it("new command defaults to Korean 50/50 table", () => {
-    const cmd = newM2Command("m2-211-weighted-branch");
-    expect(String(cmd.fields.table)).toContain("성공=1");
-    expect(String(cmd.fields.table)).toContain("실패=1");
+  it("retains named zero rows through actual Confirm and reopen with positive-only mapping", () => {
+    const body = openModal("a=1\npaused=1\nc=1");
+    change(control(body, "weighted-branch-chance-1"), "0");
+    control(body, "event-command-edit-ok").click();
+    const table = String(fields().table);
+    expect(findByTestId(body, "event-command-edit-dialog")).toBeNull();
+    openModal(table);
+    expect(control(body, "weighted-branch-label-1").value).toBe("paused");
+    expect(control(body, "weighted-branch-chance-1").value).toBe("0");
+    expect(control(body, "weighted-branch-index-1").dataset.resultValue).toBe("");
+    expect(control(body, "weighted-branch-index-2").dataset.resultValue).toBe("1");
+    expect(parseWeightedBranchTable(table).map(row => row.label)).toEqual(["a", "c"]);
+    control(body, "event-command-edit-cancel").click();
+  });
+  it("blocks an authored all-zero table without silently seeding positive chances", () => {
+    const body = openModal("a=0\nb=0");
+    expect(control(body, "weighted-branch-chance-0").value).toBe("0");
+    control(body, "event-command-edit-ok").click();
+    expect(replaced).toBeUndefined();
+    expect(findByTestId(body, "event-command-edit-dialog") !== null).toBe(true);
+    change(control(body, "weighted-branch-chance-0"), "100");
+    control(body, "event-command-edit-ok").click();
+    expect(fields().table).toBe("a=100\nb=0");
+  });
+  it("keeps the last positive row when removing it would enable zero-chance outcomes", () => {
+    const body = openModal("a=100\npaused=0");
+    control(body, "weighted-branch-remove-0").click();
+    expect(control(body, "weighted-branch-label-0").value).toBe("a");
+    expect(control(body, "weighted-branch-chance-1").value).toBe("0");
+    control(body, "event-command-edit-cancel").click();
+  });
+  it("does not show certainty for the counterpart of a tiny positive chance", () => {
+    const body = render("rare=1\ncommon=999999");
+    expect(control(body, "weighted-branch-chance-0").value).toBe("0.0001");
+    expect(control(body, "weighted-branch-chance-1").value).toBe("99.9999");
+  });
+  it("keeps a lone result at 100 percent and prevents removing it", () => {
+    const body = render("only=8");
+    expect(control(body, "weighted-branch-chance-0").value).toBe("100");
+    expect(control(body, "weighted-branch-chance-0").disabled).toBe(true);
+    expect(control(body, "weighted-branch-remove-0").disabled).toBe(true);
   });
 });

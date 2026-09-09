@@ -119,12 +119,58 @@ function weightedChars(text: string): number {
   return chars;
 }
 
-function contentChars(content: string | ContentPart[] | null): number {
+/**
+ * 공급자가 **과금하는** 이미지 토큰 — 데이터 URL 의 문자 수가 아니라 픽셀 크기로 센다.
+ *
+ * 위 `weightedChars` 가중은 **전송 크기**를 세기 위한 실측 결정이고(압축 임계 판정), 그 자리에서는
+ * 옳다. 그런데 같은 값을 **수용 게이트**(요청을 보낼지 말지)가 재사용하면 축이 어긋난다: 공급자는
+ * `image_url` 파트를 픽셀 타일로 과금하는데, 512×512 PNG 는 전송 기준 ~10만 토큰으로 보이고 과금
+ * 기준으로는 수백 토큰이다. 그 차이 때문에 게이트가 공급자라면 받아 줄 봉투를 거부했다.
+ *
+ * Anthropic 은 ~(w·h)/750, Gemini 는 768px 타일당 258 토큰으로 문서화한다. 큰 쪽을 쓰고 측정하지
+ * 않은 공급자 차이만큼 여유(headroom)를 곱한다. 헤더를 읽을 수 없으면(원격 URL·PNG 아님·절단)
+ * 크기를 모르는 것이므로 **기존 전송 기준으로 되돌아간다** — 모르는 쪽에서는 보수적으로 센다.
+ */
+const IMAGE_TOKEN_HEADROOM = 2;
+const PNG_HEADER_BASE64_CHARS = 32;
+
+function pngPixelSize(url: string): { width: number; height: number } | null {
+  const marker = "data:image/png;base64,";
+  if (!url.startsWith(marker)) return null;
+  let bytes: string;
+  try {
+    bytes = atob(url.slice(marker.length, marker.length + PNG_HEADER_BASE64_CHARS));
+  } catch {
+    return null;
+  }
+  // 8바이트 시그니처 + 길이 4 + "IHDR" 4 뒤에 너비·높이가 빅엔디언 4바이트씩 온다.
+  if (bytes.length < 24 || bytes.slice(0, 8) !== "\x89PNG\r\n\x1a\n" || bytes.slice(12, 16) !== "IHDR") return null;
+  const read = (offset: number): number => (bytes.charCodeAt(offset) << 24 | bytes.charCodeAt(offset + 1) << 16
+    | bytes.charCodeAt(offset + 2) << 8 | bytes.charCodeAt(offset + 3)) >>> 0;
+  const width = read(16), height = read(20);
+  return width > 0 && height > 0 ? { width, height } : null;
+}
+
+/** 과금 기준 이미지 토큰. 크기를 못 읽으면 null 을 돌려 호출자가 전송 기준으로 되돌아가게 한다. */
+function imageBilledTokens(url: string): number | null {
+  const size = pngPixelSize(url);
+  if (!size) return null;
+  const anthropic = Math.ceil(size.width * size.height / 750);
+  const gemini = Math.ceil(size.width / 768) * Math.ceil(size.height / 768) * 258;
+  return Math.max(anthropic, gemini) * IMAGE_TOKEN_HEADROOM;
+}
+
+function contentChars(content: string | ContentPart[] | null, imagesAsBilled = false): number {
   if (content === null) return 0;
   if (typeof content === "string") return weightedChars(content);
   let chars = 0;
   for (const part of content) {
     if (part.type === "text") chars += weightedChars(part.text);
+    else if (imagesAsBilled) {
+      const billed = imageBilledTokens(part.image_url.url);
+      // chars/4 로 나뉘어 나가므로 토큰을 문자 단위로 환산해 싣는다.
+      chars += billed === null ? Math.max(ESTIMATED_IMAGE_CHARS, weightedChars(part.image_url.url)) : billed * 4;
+    }
     // senpi 원본은 image 블록을 4800자 고정으로 센다 — 그쪽 image 블록은 공급자 네이티브 첨부라
     // 본문 크기와 무관하기 때문이다. 이 에디터의 image_url 은 **base64 데이터 URL 이 요청 본문에
     // 그대로 직렬화**되므로(실측: 뷰포트 6장 요청 본문 115957 bytes) 페이로드를 가중해 세야 한다.
@@ -143,8 +189,8 @@ function contentChars(content: string | ContentPart[] | null): number {
  * 보낸다. 그래서 여기서는 role 을 가리지 않고 같은 가중 규칙을 적용한다 — 보수적인 방향이다.
  * reasoning 은 원본의 thinking 블록과 같은 자리이므로 함께 센다.
  */
-export function estimateMessageTokens(message: ChatMessage): number {
-  let chars = contentChars(message.content);
+export function estimateMessageTokens(message: ChatMessage, imagesAsBilled = false): number {
+  let chars = contentChars(message.content, imagesAsBilled);
   if (message.reasoning) chars += weightedChars(message.reasoning);
   for (const call of message.tool_calls ?? []) {
     // 원본은 name.length + weightedChars(JSON.stringify(arguments)) 다. OpenAI 규약의 arguments 는
@@ -160,6 +206,20 @@ export function estimateMessageTokens(message: ChatMessage): number {
 export function estimateContextTokens(messages: readonly ChatMessage[], extraChars = 0): number {
   let tokens = 0;
   for (const message of messages) tokens += estimateMessageTokens(message);
+  return tokens + Math.ceil(Math.max(0, extraChars) / 4);
+}
+
+/**
+ * **수용 게이트**용 토큰 추정 — 요청을 보낼지 말지 판정하는 자리에서 쓴다.
+ *
+ * 텍스트는 `estimateContextTokens` 와 똑같이(전송 가중 포함) 세고, `image_url` 파트만 공급자가
+ * 과금하는 픽셀 기준으로 센다(`imageBilledTokens`). 압축 임계는 전송 크기를 봐야 하므로
+ * `estimateContextTokens` 를 계속 쓴다 — 두 함수는 목적이 다르고 서로를 대체하지 않는다.
+ * 이미지가 없는 요청에서는 두 값이 같다.
+ */
+export function estimateAdmissionTokens(messages: readonly ChatMessage[], extraChars = 0): number {
+  let tokens = 0;
+  for (const message of messages) tokens += estimateMessageTokens(message, true);
   return tokens + Math.ceil(Math.max(0, extraChars) / 4);
 }
 

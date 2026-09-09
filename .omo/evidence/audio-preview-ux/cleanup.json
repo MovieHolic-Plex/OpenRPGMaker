@@ -1,0 +1,17 @@
+{
+  "removed": [
+    "/tmp/audio-preview-qa-qOT1vy",
+    "/tmp/audio-preview-red-cache-p9O6Vs",
+    "/tmp/audio-preview-final-session-cache-fFi1A2",
+    "/tmp/audio-preview-green-cache-nSQDQf",
+    "/tmp/audio-preview-session-cache-cZEOks",
+    "/tmp/audio-preview-focused-cache-w2W8Lt",
+    "/tmp/audio-preview-unit-cache-ZvZi4r",
+    "/tmp/audio-preview-final-cache-BN31wM"
+  ],
+  "allRemoved": true,
+  "qaPort19851Unbound": true,
+  "reviewWorktreeRemoved": true,
+  "browserCleanup": true,
+  "kept": "Main feature worktree and intended evidence. Installed Playwright browser cache is reusable tooling, not a live QA resource."
+}

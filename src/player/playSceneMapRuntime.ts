@@ -1,8 +1,12 @@
+import { resetDetectionForMap } from "./npcDetectionEncounter";
+import { dialogueUi } from "./playSceneDom";
+import { evalCondition } from "@/project/session";
 import { clearFurniturePush, furniturePushPosition } from './furniturePushAnimation';
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
 import {
   isDefaultTilesetTexture,
   supportsChipsetQuarterComposition,
+  supportsChipsetTileAnimation,
   tilesetTextureKey,
 } from "@/editor/tilesetImage";
 import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
@@ -18,6 +22,7 @@ import {
   type ChipsetQuarterComposition,
 } from "@/project/defaults/terrainQuarterAutotile";
 import { mapWithCommittedEvents } from "@/project/eventDrafts";
+import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { isTreeTrunkTileId } from "@/project/tilesetHarness";
@@ -382,7 +387,7 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
   if (tile < 0) return;
   const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
   // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함.
-  if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
+  if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile, tileset)) {
     renderLakeAutotile(scene, tileset, textureKey, x, y, layer);
     return;
   }
@@ -403,7 +408,7 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
     const grass = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${TILE.GRASS}`);
     placeMapTileImage(scene, grass, tileset, TILE.GRASS, x, y, layer);
   }
-  const baseAnimationKey = isDefaultTilesetTexture(tileset) ? animationKeyForTile(tile) : null;
+  const baseAnimationKey = supportsChipsetTileAnimation(tileset, tile) ? animationKeyForTile(tile) : null;
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
   const image = animationKey
     ? scene.add.sprite(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${tile}`).play(animationKey)
@@ -419,7 +424,7 @@ function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends Re
   y: number,
   layer: "lower" | "upper",
 ): void {
-  for (const part of lakeAutotileQuarterSources(scene.map, x, y)) {
+  for (const part of lakeAutotileQuarterSources(scene.map, x, y, tileset)) {
     const animationKey = quarterAnimationKey(textureKey, part.tile, part.quarter);
     const frameName = quarterFrameName(part.tile, part.quarter);
     const image = animationKey
@@ -521,6 +526,7 @@ function renderedEventPosition(
 }
 
 export function resetMapRuntime(scene: PlaySceneContext): void {
+  resetDetectionForMap(scene);
   clearFurniturePush(scene);
   // 맵이 바뀌면 타일 서명도 버린다 — 같은 맵 객체를 다시 로드하는 경로에서도 반드시 다시 그린다.
   invalidateTileLayer(scene);
@@ -555,7 +561,10 @@ export function activeRuntimeEvents(
   triggerKind: "action" | "touch" | "playerTouch" | "eventTouch" | "auto" | "parallel"
 ): RuntimeEventView[] {
   return runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
-    .filter((event) => event.trigger.kind === triggerKind);
+    .filter((event) => event.trigger.kind === triggerKind
+      && (event.event.pages?.length
+        ? event.page !== undefined
+        : evalCondition(scene.session, event.event.condition, event.event)));
 }
 
 export function syncRuntimeState(scene: PlaySceneContext): void {
@@ -699,6 +708,9 @@ export function rebindEventFollowCamera(scene: PlaySceneContext): void {
 }
 
 export async function fireAutoTriggers(scene: PlaySceneContext): Promise<void> {
+  // Map refresh can run before player.ts installs dialogue. Do not consume the
+  // one-shot key before runEvent/runCommands can actually accept this event.
+  if (!dialogueUi(scene) || scene.sys?.isActive() === false) return;
   const events = activeRuntimeEvents(scene, "auto");
   for (const event of events) {
     const key = `${scene.getMapId()}:${event.event.id}:${event.pageId ?? "legacy"}`;
@@ -721,21 +733,7 @@ export async function fireAutoTriggers(scene: PlaySceneContext): Promise<void> {
 }
 
 export function applyMapOverrides(scene: PlaySceneContext): void {
-  const overrides = scene.session.mapOverrides[scene.getMapId()];
-  if (!overrides) return;
-  // 런타임에서 타일이 바뀌는 유일한 지점이다. 통행 성분 색인을 여기서 버린다 —
-  // 지문 검증이 이미 막아주지만(tilePassabilityComponents §terrainMayReach) 뜻을 남긴다.
+  if (!scene.session.mapOverrides[scene.getMapId()]) return;
   invalidateTilePassabilityComponents(scene.map);
-  for (const idxStr in overrides.lower) {
-    const index = Number(idxStr);
-    if (index >= 0 && index < scene.map.lowerTiles.length) {
-      scene.map.lowerTiles[index] = overrides.lower[index];
-    }
-  }
-  for (const idxStr in overrides.upper) {
-    const index = Number(idxStr);
-    if (index >= 0 && index < scene.map.upperTiles.length) {
-      scene.map.upperTiles[index] = overrides.upper[index];
-    }
-  }
+  applyRuntimeMapOverrides(scene.map, scene.session);
 }

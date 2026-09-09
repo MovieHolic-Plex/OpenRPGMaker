@@ -1,0 +1,8 @@
+PLAYER PASS: layers, 8 beats, native media playing/volume/pause evidence
+PLAYER PASS: result, 3 beats, native media playing/volume/pause evidence
+PLAYER PASS: gain-command, 9 beats, native media playing/volume/pause evidence
+PLAYER PASS: gain-map, 10 beats, native media playing/volume/pause evidence
+PLAYER PASS: battle-gain-25-same, 5 beats, native media playing/volume/pause evidence
+PLAYER PASS: battle-gain-0-same, 5 beats, native media playing/volume/pause evidence
+PLAYER PASS: battle-gain-25-different, 5 beats, native media playing/volume/pause evidence
+PLAYER PASS: battle-gain-0-different, 5 beats, native media playing/volume/pause evidence

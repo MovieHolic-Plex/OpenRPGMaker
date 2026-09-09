@@ -423,6 +423,8 @@ export function buildAiActivityLogRecord(input: AiActivityLogInput): AiActivityL
     ...(input.mapName ? { mapName: input.mapName } : {}),
     ...(input.region ? { region: input.region } : {}),
     result: {
+      ...(input.result.runOutcome ? { runOutcome: input.result.runOutcome } : {}),
+      ...(input.result.recap ? { recap: input.result.recap } : {}),
       ok: input.result.ok,
       ...(input.result.applied === undefined ? {} : { applied: input.result.applied }),
       ...(input.result.error ? { error: clipText(input.result.error, 1500) } : {}),

@@ -106,6 +106,34 @@ describe("build_wall / build_roof (공정 1·3단계)", () => {
   });
 });
 
+describe("incremental primitives versus recorded completed houses", () => {
+  it.each([
+    { name: "build_wall", args: { rect: { x: 4, y: 6, w: 5, h: 3 }, material: "돌벽" } },
+    { name: "build_roof", args: { material: "빨간 지붕" } },
+    { name: "place_door", args: { at: { x: 5, y: 8 }, material: "문/입구" } },
+    { name: "place_window", args: { at: { x: 6, y: 7 }, material: "창문" } },
+  ])("$name remains incremental without metadata and rejects the same recorded-house write", ({ name, args }) => {
+    const { ctx, tileset } = context();
+    approve(tileset(), WALL_GROUP_ID);
+    addApprovedRoof(tileset());
+    const wall = runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 4, y: 6, w: 5, h: 3 }, material: "흰 집 벽" });
+    expect(wall.ok, JSON.stringify(wall.issues)).toBe(true);
+    const unfinished = structuredClone(ctx.project);
+    const incremental = runTool(ctx, name, { mapId: MAP_ID, ...args });
+    expect(incremental.ok, JSON.stringify(incremental.issues)).toBe(true);
+    expect(incremental.diff?.tilesChanged).toBeGreaterThan(0);
+    ctx.project = unfinished;
+    const map = ctx.project.maps[MAP_ID];
+    map.layoutPlan = { version: 1, kind: "completed", regions: [
+      { id: "complete", role: "house", label: "Complete", x: 4, y: 5, w: 5, h: 4 },
+    ] };
+    const before = structuredClone(ctx.project);
+    const recorded = runTool(ctx, name, { mapId: MAP_ID, ...args });
+    expect(recorded.issues?.[0]?.code).toBe("protected-house-write");
+    expect(ctx.project).toEqual(before);
+  });
+});
+
 describe("missing 어휘 실패 시 유사 그룹 후보 제시", () => {
   it("build_wall을 존재하지 않는 material로 호출하면 비슷한 라벨 후보를 에러 메시지에 담는다", () => {
     const { ctx } = context();
@@ -361,7 +389,7 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
     expect(isPassable(ctx.project, after, 7, 7)).toBe(true);
   });
 
-  it("tile_erase: 기본 바닥이 통행을 막을 때만 transfer 목적지 셀을 제외한다", () => {
+  it("tile_erase: upper 지우기가 통행을 막을 때만 transfer 목적지 셀을 제외한다", () => {
     const { ctx } = context();
     ctx.project.startPos = { x: 0, y: 0 };
     const map = ctx.project.maps[MAP_ID];
@@ -372,19 +400,20 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
       trigger: { kind: "action" },
       commands: [{ kind: "transfer", mapId: MAP_ID, x: 7, y: 7 }],
     });
-    // 기본 바닥이 물(통행 불가)인 맵 — 지우면 목적지가 막히므로 그 칸은 보호되어야 한다.
+    // 물 위 통행 가능한 upper 발판 — 지우면 목적지가 막히므로 그 칸은 보호되어야 한다.
     map.lowerTiles.fill(TILE.WATER);
     for (let y = 6; y < 9; y += 1) {
-      for (let x = 6; x < 9; x += 1) map.lowerTiles[y * map.width + x] = TILE.PATH;
+      for (let x = 6; x < 9; x += 1) map.upperTiles[y * map.width + x] = TILE.PATH;
     }
 
-    const result = runTool(ctx, "tile_erase", { mapId: MAP_ID, rect: { x: 6, y: 6, w: 3, h: 3 }, layer: "lower" });
+    const result = runTool(ctx, "tile_erase", { mapId: MAP_ID, rect: { x: 6, y: 6, w: 3, h: 3 }, layer: "upper" });
     const after = ctx.project.maps[MAP_ID];
     expect(result.ok, result.summary).toBe(true);
     expect(result.diff?.warnings).toContain("(7,7)은 transfer 목적지라 제외했습니다");
-    expect(result.data).toMatchObject({ cleared: 8, requested: 9, skipped: 1, groundTile: TILE.WATER });
-    expect(after.lowerTiles[6 * after.width + 6]).toBe(TILE.WATER);
-    expect(after.lowerTiles[7 * after.width + 7]).toBe(TILE.PATH);
+    expect(result.data).toMatchObject({ cleared: 8, requested: 9, skipped: 1 });
+    expect(after.lowerTiles).toEqual(map.lowerTiles);
+    expect(after.upperTiles[6 * after.width + 6]).toBe(TILE.EMPTY);
+    expect(after.upperTiles[7 * after.width + 7]).toBe(TILE.PATH);
     expect(isPassable(ctx.project, after, 7, 7)).toBe(true);
   });
 

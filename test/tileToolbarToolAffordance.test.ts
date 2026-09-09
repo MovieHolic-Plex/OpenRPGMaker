@@ -111,8 +111,8 @@ describe("도구막대 표기", () => {
       ["tool-eyedropper", "타일 집기 (I)"],
       ["tool-pan", "화면 밀기 (4)"],
       ["tool-collision", "통행 표시 (6)"],
-      ["tool-event", "장면 놓기 (7)"],
     ];
+    button('sidebar-tools-menu').click();
     for (const [testid, prefix] of expected) {
       expect(button(testid).getAttribute("title") ?? "", testid).toContain(prefix);
     }

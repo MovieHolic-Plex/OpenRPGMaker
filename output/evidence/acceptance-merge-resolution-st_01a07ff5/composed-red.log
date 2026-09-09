@@ -1,0 +1,39 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiChatObservability.test.ts --maxWorkers=1 --minWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-acceptance-live-qa
+
+ ❯ test/aiChatObservability.test.ts (9 tests | 1 failed) 14063ms
+   ✓ 글자 크기 3단 (V3C ①) > 기본값은 '보통'이고 저장하면 localStorage(oprn:ai-font-size)에 영속된다 — 무효값은 보통으로 방어 281ms
+   ✓ 글자 크기 3단 (V3C ①) > 설정의 글자 크기 select(ai-font-size)를 바꾸면 즉시 패널에 반영·영속되고, 재부팅 시 다시 적용된다  321ms
+   ✓ 글자 크기 3단 (V3C ①) > applyAiFontSize는 data 속성과 CSS 변수(--ai-font-scale)를 함께 설정한다 208ms
+   ✓ 글자 크기 3단 (V3C ①) > 기록 줌 스테퍼는 없다 — Ctrl+휠이 글자 크기를 바꾸고 영속한다 199ms
+   ✓ 도구 호출 상세 아코디언 (V3C ③) > 성공 라인은 한 줄 요약만 보여 JSON 인자/결과 원문 노이즈를 숨긴다 132ms
+   ✓ 도구 호출 상세 아코디언 (V3C ③) > 실패 라인은 기존 testid를 유지하면서 아코디언 안에 오류 원문(summary/issues)을 그대로 담는다 177ms
+   ✓ 도구 호출 상세 아코디언 (V3C ③) > 복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다  865ms
+   ✓ 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다  1595ms
+   × 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다 10283ms
+     → Chat turn did not publish terminal activity: [{"type":"request","kind":"intent","stream":false,"toolResults":0},{"type":"response","kind":"intent","requirements":false},{"type":"request","kind":"coverage","stream":false,"toolResults":0},{"type":"response","kind":"coverage","requirements":[{"text":"라이브 고스트라는 6x5 새 맵 만들어줘","criteria":[{"kind":"mapDimensions","target":{"newMapName":"라이브 고스트"},"width":6,"height":5}]}]},{"type":"acceptance","snapshot":{"id":"acceptance-1","goal":"라이브 고스트라는 6x5 새 맵 만들어줘","status":"working","items":[{"required":true,"source":{"requestId":"request-1","text":"라이브 고스트라는 6x5 새 맵 만들어줘","scope":null},"id":"request-1:coverage:0:0","title":"라이브 고스트라는 6x5 새 맵 만들어줘","status":"working","evidence":[{"expected":"{\"kind\":\"mapDimensions\",\"target\":{\"newMapName\":\"라이브 고스트\"},\"width\":6,\"height\":5}","observed":"Target map missing or new-map binding unresolved","passed":false}],"reason":"Acceptance checks remain open"}]}},{"type":"request","kind":"execute","stream":false,"toolResults":0},{"type":"request","kind":"execute","stream":false,"toolResults":0},{"type":"request","kind":"execute","stream":false,"toolResults":0}]
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+Error: Chat turn did not publish terminal activity: [{"type":"request","kind":"intent","stream":false,"toolResults":0},{"type":"response","kind":"intent","requirements":false},{"type":"request","kind":"coverage","stream":false,"toolResults":0},{"type":"response","kind":"coverage","requirements":[{"text":"라이브 고스트라는 6x5 새 맵 만들어줘","criteria":[{"kind":"mapDimensions","target":{"newMapName":"라이브 고스트"},"width":6,"height":5}]}]},{"type":"acceptance","snapshot":{"id":"acceptance-1","goal":"라이브 고스트라는 6x5 새 맵 만들어줘","status":"working","items":[{"required":true,"source":{"requestId":"request-1","text":"라이브 고스트라는 6x5 새 맵 만들어줘","scope":null},"id":"request-1:coverage:0:0","title":"라이브 고스트라는 6x5 새 맵 만들어줘","status":"working","evidence":[{"expected":"{\"kind\":\"mapDimensions\",\"target\":{\"newMapName\":\"라이브 고스트\"},\"width\":6,\"height\":5}","observed":"Target map missing or new-map binding unresolved","passed":false}],"reason":"Acceptance checks remain open"}]}},{"type":"request","kind":"execute","stream":false,"toolResults":0},{"type":"request","kind":"execute","stream":false,"toolResults":0},{"type":"request","kind":"execute","stream":false,"toolResults":0}]
+ ❯ Timeout._onTimeout test/aiChatObservability.test.ts:71:45
+     69| function nextTerminalActivity(trace: unknown[] = []): Promise<activity…
+     70|   return new Promise((resolve, reject) => {
+     71|     const timeout = setTimeout(() => reject(new Error(`Chat turn did n…
+       |                                             ^
+     72|     vi.mocked(activityLog.recordAiActivity).mockImplementation(async (…
+     73|       if (entry.channel === "chat" && entry.result.pending !== true) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 passed (9)
+   Start at  16:41:34
+   Duration  72.54s (transform 38.98s, setup 0ms, collect 57.53s, tests 14.06s, environment 0ms, prepare 201ms)
+

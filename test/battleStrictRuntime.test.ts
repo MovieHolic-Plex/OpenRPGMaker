@@ -198,7 +198,7 @@ describe("battle strict runtime and class commands", () => {
     expect(runtime.snapshot().phase).toBe("actorCommand");
   });
 
-  it("exposes an authored wait as a strict timeline pause instead of dropping it", () => {
+  it("suspends a strict round at the authored wait until acknowledgement", () => {
     const project = strictProject();
     setStrictBattleStats(project);
     setActorParam(project, "actor_warrior", "agility", 99);
@@ -208,10 +208,15 @@ describe("battle strict runtime and class commands", () => {
     runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
 
     const snapshot = runtime.snapshot();
-    const waitEntries = snapshot.timeline.filter((entry) => entry.kind === "wait");
-    expect(waitEntries.map((entry) => entry.waitMs)).toEqual([500]);
-    // The pause belongs to the round slice the sequencer replays, in order.
-    expect(snapshot.roundLogs[0]?.timeline.some((entry) => entry.kind === "wait")).toBe(true);
+    const request = snapshot.eventPause;
+    expect(request).toMatchObject({ kind: "wait", ms: 500 });
+    if (!request) throw new Error("missing authored wait");
+    expect(snapshot.roundLogs).toHaveLength(0);
+    runtime.tick(10_000);
+    expect(runtime.snapshot()).toEqual(snapshot);
+    expect(runtime.resumeEventPause(request.id, { kind: "wait" })).toBe(true);
+    expect(runtime.snapshot().roundLogs).toHaveLength(1);
+    expect(runtime.snapshot().eventPause).toBeUndefined();
     expect(snapshot.eventLogs.filter((log) => log.kind === "unsupported")).toEqual([]);
   });
 

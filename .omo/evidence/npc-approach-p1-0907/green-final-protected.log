@@ -1,0 +1,140 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-npc-prerequisite-0907
+
+ ✓ test/npcApproach.test.ts (22 tests) 8709ms
+   ✓ bound NPC interactions before the protected claim snapshot > rejects early gold equally on host and explicit approaches  465ms
+   ✓ bound NPC interactions before the protected claim snapshot > rejects early item equally on host and explicit approaches  374ms
+   ✓ bound NPC interactions before the protected claim snapshot > rejects early monster equally on host and explicit approaches  370ms
+   ✓ bound NPC interactions before the protected claim snapshot > accepts zero early gold then exact +20 / 0 on both approaches  356ms
+   ✓ bound NPC interactions before the protected claim snapshot > accepts zero early item then exact +20 / 0 on both approaches  337ms
+   ✓ bound NPC interactions before the protected claim snapshot > accepts zero early monster then exact +20 / 0 on both approaches  346ms
+   ✓ bound NPC interactions before the protected claim snapshot > retains protected transfer denial on host approach without banning legitimate prelude transfers  369ms
+   ✓ bound NPC interactions before the protected claim snapshot > real AssistantSession rejects duplicate approach payment at tool and final closure, explicit=false  1260ms
+   ✓ bound NPC interactions before the protected claim snapshot > real AssistantSession rejects duplicate approach payment at tool and final closure, explicit=true  1197ms
+   ✓ bound NPC interactions before the protected claim snapshot > real AssistantSession accepts zero early then +20 / 0, explicit=false  899ms
+   ✓ bound NPC interactions before the protected claim snapshot > real AssistantSession accepts zero early then +20 / 0, explicit=true  864ms
+ ✓ test/npcRewardSession.test.ts (38 tests) 34342ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  361ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  1267ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  869ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  1123ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  471ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  567ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  1125ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  2047ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  1440ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  1401ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  1482ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  1010ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  643ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  1084ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  369ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > clears old obligations for new-request  595ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > clears old obligations for ask  643ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  1110ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  846ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  1078ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  471ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  542ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  1055ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  2221ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  1554ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  1433ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  1746ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  1103ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  724ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  1109ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  405ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > clears old obligations for new-request  572ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > clears old obligations for ask  575ms
+ ✓ test/npcPrerequisiteSession.test.ts (24 tests) 25207ms
+   ✓ request-bound verify_npc_reward session tool > R1 exposes the tool and completes through its real session boundary  905ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"extra":true}  984ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"passed":true}  924ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"receipt":{}}  930ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"reason":"Not an admitted field"}  961ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"state":{"gold":20}}  1076ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"requirementIndex":99}  999ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"set","mapId":"map_blank_start","gold":20}]}  1000ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"move","mapId":"map_blank_start","to":{"x":2,"y":2}}]}  982ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"interact","mapId":"map_blank_start"}]}  988ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"expect","goldDelta":20}]}  906ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"walk","mapId":"map_blank_start","to":{"x":2,"y":2,"extra":true}}]}  913ms
+   ✓ request-bound verify_npc_reward session tool > R12 valid failed replacement cannot fall back to an old pass or fresh-local proof  1017ms
+   ✓ request-bound verify_npc_reward session tool > R12 preserves witness across retry and replan without weakening the requirement  1116ms
+   ✓ request-bound verify_npc_reward session tool > R13 cannot erase an unrelated failed scene check  692ms
+   ✓ request-bound verify_npc_reward session tool > R11/12 replays current content after a pass, replan, explicit completion and final skip  2040ms
+   ✓ request-bound verify_npc_reward session tool > R12 preserves witness and immutable selections over a real user continuation  1141ms
+   ✓ request-bound verify_npc_reward session tool > R12 a new request lifetime does not inherit the earlier route  1502ms
+   ✓ request-bound verify_npc_reward session tool > R12 never falls back to an easier fresh-local pass after content changes  1334ms
+   ✓ request-bound verify_npc_reward session tool > R12 a valid replacement is run afresh and can repair a failed route  751ms
+   ✓ request-bound verify_npc_reward session tool > R12 keeps the stored program private from observer-owned arguments  613ms
+   ✓ request-bound verify_npc_reward session tool > R6 rejects session witness replacement after a same-named NPC moves to another map  1098ms
+   ✓ request-bound verify_npc_reward session tool > R12 preserves the witness through the milestone application rebase boundary  868ms
+   ✓ request-bound verify_npc_reward session tool > R13 a reward proof cannot clear image or original-baseline change obligations  1463ms
+ ✓ test/assistantAcceptanceRequestBaseline.test.ts (6 tests) 9045ms
+   ✓ per-request acceptance baselines > preserves a map created in A while B changes another map  1749ms
+   ✓ per-request acceptance baselines > does not credit A's change toward a newly accepted B change promise  1127ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=false)  1484ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=true)  1605ms
+   ✓ per-request acceptance baselines > retains B's pre-write baseline across budget-driven synthetic continuation  1528ms
+   ✓ per-request acceptance baselines > retains B's baseline when a manual continuation repairs and replans after application  1549ms
+ ✓ test/assistantAcceptanceSession.test.ts (21 tests) 9199ms
+   ✓ acceptance controls actual session termination > does not credit frontend insertion without a provider delivery acknowledgement  564ms
+   ✓ acceptance controls actual session termination > does not schedule run-end persistence proof for a completed plan with unmet acceptance  371ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  509ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  633ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  358ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  417ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  718ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  1253ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  342ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  456ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  349ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 0  417ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 1  401ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 2  440ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 3  377ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 4  371ms
+   ✓ returns distinct repair and review diagnostics through the actual session handler  402ms
+ ✓ test/npcPrerequisite.test.ts (53 tests) 5484ms
+   ✓ NPC prerequisite protected runtime replay > R1 runs chief request, physical transfers, real chest, gold +20 and repeat 0 without changing project  336ms
+   ✓ NPC prerequisite protected runtime replay > R9 enforces the 100000 shared instruction budget across separate interactions  645ms
+ ✓ test/assistantVerificationEvidence.test.ts (20 tests) 7853ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  583ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > check_reachability ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  448ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > verify_quest ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  451ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > play_walkthrough ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  435ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_scene_test ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  431ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > evaluate_game_quality ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  894ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 같은 검사 재실패는 앞선 성공을 제거하고, 이후 실제 재통과는 복구한다  426ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 쓰기 이후에는 이전 검증 성공으로 완료할 수 없고 다시 검사해야 한다  423ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 재검사 없는 쓰기는 최종 보고에서도 검증 통과로 남지 않는다  401ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실행되지 않은 잘못된 인자는 고친 호출로 복구할 수 있다  428ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > warning-only lint는 통과하며 거부된 쓰기는 성공 근거를 무효화하지 않는다  420ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > final assessment reruns earlier quality on the current artifact without replaying work (explicit=false)  751ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > final assessment reruns earlier quality on the current artifact without replaying work (explicit=true)  715ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 다음 항목은 자기 대상의 검증으로 완료하며 이전 항목의 stale 검사는 최종 보고에 보존한다  468ms
+ ✓ test/npcGoldReward.test.ts (61 tests) 4111ms
+ ✓ test/assistantImageTransport.test.ts (7 tests) 5290ms
+   ✓ session to companion image delivery > delivers multiple labeled map images through the real conversion before accepting review  780ms
+   ✓ session to companion image delivery > keeps dropped delivery blocked on later turns and retries  912ms
+   ✓ session to companion image delivery > keeps partial delivery blocked on later turns and retries  883ms
+   ✓ session to companion image delivery > keeps rejected delivery blocked on later turns and retries  724ms
+   ✓ session to companion image delivery > keeps malformed delivery blocked on later turns and retries  458ms
+   ✓ session to companion image delivery > keeps compacted delivery blocked on later turns and retries  825ms
+   ✓ session to companion image delivery > keeps aborted delivery blocked on later turns and retries  704ms
+ ✓ test/assistantImageEvidence.test.ts (8 tests) 2211ms
+   ✓ render-input currentness > retires 'lower tile' evidence for applicable maps without undo revival  359ms
+   ✓ render-input currentness > retires 'upper tile' evidence for applicable maps without undo revival  319ms
+   ✓ render-input currentness > retires 'sparse stack' evidence for applicable maps without undo revival  308ms
+   ✓ render-input currentness > retires 'tileset image' evidence for applicable maps without undo revival  312ms
+ ✓ test/npcRewardAcceptance.test.ts (43 tests) 2573ms
+ ✓ test/assistantAcceptancePromiseBaseline.test.ts (13 tests) 1692ms
+ ✓ test/sceneVerificationRepair.test.ts (6 tests) 1432ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: []  314ms
+
+ Test Files  13 passed (13)
+      Tests  322 passed (322)
+   Start at  09:00:29
+   Duration  78.96s (transform 7.36s, setup 0ms, collect 34.32s, tests 117.15s, environment 3ms, prepare 924ms)

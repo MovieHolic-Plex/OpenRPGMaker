@@ -319,6 +319,99 @@
   font: 650 12px/16px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
+/* ── 이동 대상 검색 픽커 (OPRN-OUT-012) ─────────────────────────────────────
+   목록은 대상 줄 안에 절대 위치로 펼친다. 그래서 그 줄이 컨테이닝 블록이어야 한다 —
+   position 이 없으면 목록이 모달 좌상단으로 날아간다(실측). */
+.move-route-editor .move-route-target-row {
+  position: relative;
+}
+
+.move-route-editor .move-route-target-name {
+  color: var(--text-2, var(--text-muted));
+  font: 500 11px/14px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-width: 0;
+}
+
+/* 끊어진 참조는 색으로도 말한다 — 이름 자리에 «(없음)» 문구만 있으면 지나친다. */
+.move-route-editor .move-route-target-name[data-state="unresolved"] {
+  color: var(--danger);
+  font-weight: 650;
+}
+
+.move-route-editor .move-route-target-picker-open {
+  white-space: nowrap;
+}
+
+.move-route-editor .move-route-target-picker {
+  background: var(--surface-panel, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-default));
+  border-radius: 4px;
+  box-shadow: 0 4px 16px var(--shadow-pop);
+  display: grid;
+  gap: 1px;
+  left: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 4px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 2px);
+  z-index: 100;
+}
+
+.move-route-editor .move-route-target-picker[hidden] {
+  display: none;
+}
+
+.move-route-editor .move-route-target-picker-empty {
+  color: var(--text-3, var(--text-muted));
+  font: 400 11px/16px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 8px 6px;
+  text-align: center;
+}
+
+.move-route-editor .move-route-target-option {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  color: var(--text, var(--text-1));
+  cursor: pointer;
+  display: grid;
+  gap: 2px 8px;
+  /* 이름 · ID · 좌표. ID 를 함께 보여야 검색 결과가 스스로를 설명한다. */
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto;
+  min-height: 32px;
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.move-route-editor .move-route-target-option:hover,
+.move-route-editor .move-route-target-option.highlighted {
+  background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 72%, var(--bg-raised));
+  color: var(--accent);
+}
+
+.move-route-editor .move-route-target-option-name {
+  font: 500 11px/14px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.move-route-editor .move-route-target-option-id {
+  font: 600 11px/14px var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.move-route-editor .move-route-target-option-meta {
+  color: var(--text-3, var(--text-muted));
+  font: 400 10px/12px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  white-space: nowrap;
+}
+
 .move-route-editor .move-route-option {
   align-items: center;
   display: inline-flex;

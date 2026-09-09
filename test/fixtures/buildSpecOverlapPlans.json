@@ -1,0 +1,269 @@
+[
+  {
+    "mapId": "map_blank_start",
+    "title": "마을 지형 - 잔디, 흙길, 우물",
+    "assets": [
+      {
+        "x": 0,
+        "y": 0,
+        "w": 20,
+        "h": 15,
+        "id": "grass_base",
+        "kind": "terrain"
+      },
+      {
+        "w": 18,
+        "h": 2,
+        "style": "흙길",
+        "id": "road_ew",
+        "kind": "terrain",
+        "x": 1,
+        "y": 8
+      },
+      {
+        "kind": "terrain",
+        "x": 9,
+        "y": 1,
+        "w": 2,
+        "h": 13,
+        "style": "흙길",
+        "id": "road_ns"
+      },
+      {
+        "kind": "terrain",
+        "x": 9,
+        "y": 2,
+        "w": 2,
+        "h": 2,
+        "shape": "rect",
+        "style": "물",
+        "id": "well_water"
+      }
+    ],
+    "buildOrder": [
+      "terrain"
+    ],
+    "reason": "마을 지형 밑그림 - 잔디 기반 위에 십자 흙길 도로, 북쪽에 우물(물 타일)"
+  },
+  {
+    "assets": [
+      {
+        "id": "grass_base",
+        "kind": "terrain",
+        "w": 20,
+        "x": 0,
+        "y": 0,
+        "h": 15
+      },
+      {
+        "w": 18,
+        "x": 1,
+        "y": 8,
+        "overExisting": "keep",
+        "h": 2,
+        "id": "road_ew",
+        "kind": "terrain",
+        "style": "흙길"
+      },
+      {
+        "w": 2,
+        "x": 9,
+        "y": 1,
+        "overExisting": "keep",
+        "h": 13,
+        "id": "road_ns",
+        "kind": "terrain",
+        "style": "흙길"
+      },
+      {
+        "kind": "terrain",
+        "h": 2,
+        "id": "well_water",
+        "y": 2,
+        "shape": "rect",
+        "w": 2,
+        "overExisting": "keep",
+        "style": "물",
+        "x": 9
+      }
+    ],
+    "buildOrder": [
+      "terrain"
+    ],
+    "mapId": "map_blank_start",
+    "reason": "마을 지형 밑그림 재제출 - 겹침에 overExisting:keep 선언으로 잔디→흙길→우물 순서 칠하기",
+    "title": "마을 지형 - 잔디, 흙길, 우물"
+  },
+  {
+    "buildOrder": [
+      "terrain"
+    ],
+    "mapId": "map_blank_start",
+    "reason": "마을 지형 밑그림 - 잔디를 도로/우물과 겹치지 않게 분할 배치",
+    "title": "마을 지형 - 잔디, 흙길, 우물",
+    "assets": [
+      {
+        "id": "grass_top",
+        "kind": "terrain",
+        "w": 9,
+        "x": 0,
+        "y": 0,
+        "h": 8
+      },
+      {
+        "kind": "terrain",
+        "w": 9,
+        "x": 11,
+        "y": 0,
+        "h": 8,
+        "id": "grass_top_r"
+      },
+      {
+        "x": 9,
+        "y": 0,
+        "h": 2,
+        "id": "grass_top_mid",
+        "kind": "terrain",
+        "w": 2
+      },
+      {
+        "id": "grass_mid_l",
+        "kind": "terrain",
+        "w": 9,
+        "x": 0,
+        "y": 2,
+        "layer": "lower",
+        "h": 6
+      },
+      {
+        "h": 5,
+        "id": "grass_bottom_l",
+        "kind": "terrain",
+        "w": 9,
+        "x": 0,
+        "y": 10
+      },
+      {
+        "y": 10,
+        "h": 5,
+        "id": "grass_bottom_r",
+        "kind": "terrain",
+        "w": 9,
+        "x": 11
+      },
+      {
+        "h": 5,
+        "id": "grass_bottom_mid",
+        "kind": "terrain",
+        "w": 2,
+        "x": 9,
+        "y": 10
+      },
+      {
+        "id": "road_ew",
+        "kind": "terrain",
+        "style": "흙길",
+        "w": 18,
+        "x": 1,
+        "y": 8,
+        "h": 2
+      },
+      {
+        "w": 2,
+        "x": 9,
+        "y": 1,
+        "h": 13,
+        "id": "road_ns",
+        "kind": "terrain",
+        "style": "흙길"
+      },
+      {
+        "style": "물",
+        "w": 2,
+        "x": 9,
+        "y": 2,
+        "h": 2,
+        "id": "well_water",
+        "kind": "terrain"
+      }
+    ]
+  },
+  {
+    "reason": "마을 지형 밑그림 - 완전 비겹침 분할: 잔디 전체 → 흙길 6개 세그먼트 → 우물 물 타일. overExisting:clear로 순차 덮기",
+    "title": "마을 지형 - 잔디, 흙길, 우물",
+    "assets": [
+      {
+        "w": 20,
+        "h": 15,
+        "id": "grass_full",
+        "kind": "terrain",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "h": 2,
+        "overExisting": "clear",
+        "id": "road_ew_left",
+        "kind": "terrain",
+        "style": "흙길",
+        "x": 1,
+        "y": 8,
+        "w": 8
+      },
+      {
+        "overExisting": "clear",
+        "id": "road_ew_right",
+        "kind": "terrain",
+        "style": "흙길",
+        "x": 11,
+        "y": 8,
+        "w": 8,
+        "h": 2
+      },
+      {
+        "h": 7,
+        "overExisting": "clear",
+        "id": "road_ns_top",
+        "kind": "terrain",
+        "style": "흙길",
+        "x": 9,
+        "y": 1,
+        "w": 2
+      },
+      {
+        "h": 2,
+        "overExisting": "clear",
+        "id": "road_cross",
+        "kind": "terrain",
+        "style": "흙길",
+        "x": 9,
+        "y": 8,
+        "w": 2
+      },
+      {
+        "style": "흙길",
+        "x": 9,
+        "y": 10,
+        "w": 2,
+        "h": 4,
+        "overExisting": "clear",
+        "id": "road_ns_bottom",
+        "kind": "terrain"
+      },
+      {
+        "h": 2,
+        "overExisting": "clear",
+        "id": "well_water",
+        "kind": "terrain",
+        "style": "물",
+        "x": 9,
+        "y": 2,
+        "w": 2
+      }
+    ],
+    "buildOrder": [
+      "terrain"
+    ],
+    "mapId": "map_blank_start"
+  }
+]

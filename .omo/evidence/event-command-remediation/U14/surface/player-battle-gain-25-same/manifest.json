@@ -1,0 +1,611 @@
+{
+  "scenarioId": "event-command-remediation-u14-battle-gain-25-same",
+  "projectPath": ".omo/evidence/event-command-remediation/U14/surface/tmp-player-EgZsYV/battle-gain-25-same.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "boot",
+      "shot": null,
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "Enter"
+            },
+            "observe": [
+              {
+                "source": "state",
+                "path": [
+                  "player"
+                ],
+                "equals": {
+                  "x": 2,
+                  "y": 3
+                }
+              }
+            ],
+            "timeoutMs": 30000
+          },
+          "status": "success",
+          "before": [
+            {
+              "missing": true
+            }
+          ],
+          "after": [
+            {
+              "value": {
+                "x": 2,
+                "y": 3
+              }
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 1,
+      "id": "field-gain",
+      "shot": null,
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "z"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"] .body",
+                "read": "text",
+                "equals": "U14_GAIN_LAYER"
+              },
+              {
+                "source": "state",
+                "selector": "#u14-audio-observation",
+                "path": [
+                  "latest",
+                  "u14-field",
+                  "playing"
+                ],
+                "equals": true
+              },
+              {
+                "source": "state",
+                "selector": "#u14-audio-observation",
+                "path": [
+                  "latest",
+                  "u14-field",
+                  "paused"
+                ],
+                "equals": false
+              },
+              {
+                "source": "state",
+                "selector": "#u14-audio-observation",
+                "path": [
+                  "latest",
+                  "u14-field",
+                  "volume"
+                ],
+                "equals": 0.175
+              }
+            ],
+            "timeoutMs": 30000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": false
+            },
+            {
+              "missing": true
+            },
+            {
+              "value": true
+            },
+            {
+              "value": false
+            },
+            {
+              "value": 0.05366666666666666
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            },
+            {
+              "value": "U14_GAIN_LAYER"
+            },
+            {
+              "value": true
+            },
+            {
+              "value": false
+            },
+            {
+              "value": 0.175
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 2,
+      "id": "battle-gain",
+      "shot": null,
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "z"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"actor-command-defend\"]",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"battle-scene\"]",
+                "read": "attribute",
+                "name": "data-battle-director-step",
+                "equals": "command"
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"battle-scene\"][data-battle-sequence-busy=\"false\"]",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "state",
+                "selector": "#u14-audio-observation",
+                "path": [
+                  "latest",
+                  "u14-field",
+                  "playing"
+                ],
+                "equals": true
+              },
+              {
+                "source": "state",
+                "selector": "#u14-audio-observation",
+                "path": [
+                  "latest",
+                  "u14-field",
+                  "paused"
+                ],
+                "equals": false
+              },
+              {
+                "source": "state",
+                "selector": "#u14-audio-observation",
+                "path": [
+                  "latest",
+                  "u14-field",
+                  "volume"
+                ],
+                "equals": 0.175
+              }
+            ],
+            "timeoutMs": 30000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": false
+            },
+            {
+              "missing": true
+            },
+            {
+              "value": false
+            },
+            {
+              "value": true
+            },
+            {
+              "value": false
+            },
+            {
+              "value": 0.175
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            },
+            {
+              "value": "command"
+            },
+            {
+              "value": true
+            },
+            {
+              "value": true
+            },
+            {
+              "value": false
+            },
+            {
+              "value": 0.175
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      },
+      "battlers": {
+        "skin": "rm2000",
+        "directorStep": "command",
+        "field": {
+          "top": 40,
+          "bottom": 580,
+          "left": 160,
+          "right": 1120,
+          "width": 960,
+          "height": 540
+        },
+        "enemyGroup": {
+          "top": 112,
+          "bottom": 580,
+          "left": 160,
+          "right": 1120,
+          "width": 960,
+          "height": 468
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 115,
+              "bottom": 475,
+              "left": 496,
+              "right": 796,
+              "width": 300,
+              "height": 360
+            },
+            "image": {
+              "top": 121,
+              "bottom": 475,
+              "left": 494,
+              "right": 798,
+              "width": 304,
+              "height": 354
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-actor_hero",
+            "node": {
+              "top": 412,
+              "bottom": 580,
+              "left": 295,
+              "right": 457,
+              "width": 162,
+              "height": 168
+            }
+          }
+        ]
+      }
+    },
+    {
+      "index": 3,
+      "id": "battle-result",
+      "shot": null,
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "Enter"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"battle-result-panel\"]",
+                "read": "present",
+                "equals": true
+              }
+            ],
+            "timeoutMs": 30000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": false
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      },
+      "battlers": {
+        "skin": "rm2000",
+        "directorStep": "result",
+        "field": {
+          "top": 40,
+          "bottom": 760,
+          "left": 160,
+          "right": 1120,
+          "width": 960,
+          "height": 720
+        },
+        "enemyGroup": {
+          "top": 112,
+          "bottom": 760,
+          "left": 160,
+          "right": 1120,
+          "width": 960,
+          "height": 648
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 254,
+              "bottom": 614,
+              "left": 496,
+              "right": 796,
+              "width": 300,
+              "height": 360
+            },
+            "image": {
+              "top": 258,
+              "bottom": 614,
+              "left": 495,
+              "right": 797,
+              "width": 302,
+              "height": 356
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-actor_hero",
+            "node": {
+              "top": 592,
+              "bottom": 760,
+              "left": 295,
+              "right": 457,
+              "width": 162,
+              "height": 168
+            }
+          }
+        ]
+      }
+    },
+    {
+      "index": 4,
+      "id": "restored-field-gain",
+      "shot": "05-restored-field-gain.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "Enter"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"] .body",
+                "read": "text",
+                "equals": "U14_GAIN_RETURNED"
+              },
+              {
+                "source": "state",
+                "selector": "#u14-audio-observation",
+                "path": [
+                  "latest",
+                  "u14-field",
+                  "playing"
+                ],
+                "equals": true
+              },
+              {
+                "source": "state",
+                "selector": "#u14-audio-observation",
+                "path": [
+                  "latest",
+                  "u14-field",
+                  "paused"
+                ],
+                "equals": false
+              },
+              {
+                "source": "state",
+                "selector": "#u14-audio-observation",
+                "path": [
+                  "latest",
+                  "u14-field",
+                  "volume"
+                ],
+                "equals": 0.175
+              },
+              {
+                "source": "state",
+                "selector": "#u14-audio-observation",
+                "path": [
+                  "requests",
+                  "u14-field"
+                ],
+                "equals": 2
+              }
+            ],
+            "timeoutMs": 30000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": false
+            },
+            {
+              "missing": true
+            },
+            {
+              "value": true
+            },
+            {
+              "value": false
+            },
+            {
+              "value": 0.024062499999999987
+            },
+            {
+              "value": 1
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            },
+            {
+              "value": "U14_GAIN_RETURNED"
+            },
+            {
+              "value": true
+            },
+            {
+              "value": false
+            },
+            {
+              "value": 0.175
+            },
+            {
+              "value": 2
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": "defeat"
+      }
+    }
+  ]
+}

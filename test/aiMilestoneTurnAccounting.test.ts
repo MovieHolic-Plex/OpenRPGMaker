@@ -12,12 +12,16 @@
 // 이 결함은 **여러 항목으로 쪼개지는 복합 요청에서만** 난다 — 단발 요청은 마일스톤 플러시를
 // 거치지 않아 정산이 맞는다. 그래서 회귀 테스트도 마일스톤 경로로 재현한다.
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { AssistantSession } from "@/ai/assistantSession";
+import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
+import type { ChatRequest } from "@/ai/llmClient";
+import type { ReviewInput } from "@/ai/independentReview";
 import { createBlankProject } from "@/project/defaults";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { fixedDeclarer } from "./intentFixture";
+import { HISTORICAL_PLACEMENT_CORRECTION } from "./fixtures/placementRequests";
+import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
 
 function installHermeticEnv(project: Project): void {
   vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
@@ -45,7 +49,7 @@ const ORCH_CONFIG = {
   liteModel: "executor-model",
   apiKey: "sk",
   maxToolCalls: 40,
-  maxTokens: 1024,
+  maxTokens: 16000,
 };
 
 function toolCallResult(name: string, args: unknown, id: string): ChatResult {
@@ -73,7 +77,7 @@ function exhausted(): never {
   })();
 }
 
-/** 검수 단계는 쓰기 시도 9회 이상에서만 열린다(단순 요청은 왕복 절약을 위해 건너뜀). */
+/** Keep the historical nine-item batch; every write batch now requires independent review. */
 const WRITE_COUNT = 9;
 const GOAL = "아이템 9종을 등록하고 타이틀까지 확정해줘";
 
@@ -100,71 +104,130 @@ function steps(): ChatResult[] {
     toolCallResult("set_work_plan", plan(), "c_plan"),
     ...writes,
     toolCallResult("set_title_screen", { title: "원장 검증" }, "c_title"),
-    // 쓰기 종료 → 검수 단계 진입 → 검수 응답.
+    // The reviewer response is routed separately from the writer script.
     finalResult("등록을 마쳤습니다."),
-    finalResult("완료: 아이템 9종과 타이틀을 등록했습니다."),
   ];
 }
 
 describe("마일스톤 턴 정산", () => {
+  it.each([
+    [HISTORICAL_PLACEMENT_CORRECTION, "done"],
+    ["기존 나무 10개는 보존하고 꽃 3개 추가해줘", "in_progress"],
+    ["나무 10개 배치해줘", "in_progress"],
+  ])("auto-completion distinguishes modification facts from missing placements: %s", async (requestText, expectedStatus) => {
+    const project = createBlankProject();
+    installHermeticEnv(project);
+    let round = 0;
+    const session = new AssistantSession(project, {
+      config: { ...ORCH_CONFIG, agentMode: "chat", maxToolCalls: 2 },
+      declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false }),
+      chat: async (): Promise<ChatResult> => {
+        if (round++ === 0) return toolCallResult("set_work_plan", {
+          goal: requestText,
+          layers: [{ title: "수정", items: [{ title: "수정", instruction: requestText, successTools: ["set_map_properties"] }] }],
+        }, "plan_quantity");
+        return toolCallResult("set_map_properties", { mapId: project.startMapId, name: "마을" }, "write_quantity");
+      },
+    });
+    const result = await session.sendUserMessage(requestText);
+    expect(result.proposedCalls.some((call) => call.name === "set_map_properties" && call.result.ok)).toBe(true);
+    expect(session.getProposedProject().maps[project.startMapId]?.name).toBe("마을");
+    expect(session.getHarnessSnapshot().workPlan?.layers[0]?.items[0]?.status).toBe(expectedStatus);
+  }, 30000);
+
   it("한 항목이 실행 한도로 나뉘어도 앞선 성공과 미적용 제안을 이어서 완료한다", async () => {
     const project = createBlankProject();
     installHermeticEnv(project);
-    let rounds = 0;
-    let planners = 0;
+    const baseline = structuredClone(store.getCurrent());
+    const reviews: ReviewInput[] = [];
+    const storesAtReview: Project[] = [];
+    const events: SessionEvent[] = [];
+    // Read, author, and inspect the item in one budget; title + final + review in the next.
+    const script = [
+      toolCallResult("get_project_summary", {}, "split_summary"),
+      toolCallResult("upsert_item", { item: { id: "item_split_budget", name: "연속 실행 약초", price: 20 } }, "split_item"),
+      toolCallResult("get_database_records", { collection: "items", ids: ["item_split_budget"], include: "full" }, "split_inspect"),
+      toolCallResult("set_title_screen", { title: "연속 실행 모험" }, "split_title"),
+      finalResult("완료했습니다."),
+    ];
+    let index = 0;
     const session = new AssistantSession(project, {
-      config: { ...ORCH_CONFIG, maxToolCalls: 1 },
+      config: { ...ORCH_CONFIG, maxToolCalls: 3 },
       declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true }),
       chat: async (_config, request): Promise<ChatResult> => {
-        if (!request.tools?.length) return finalResult(JSON.stringify(planners++ === 0 ? {
+        const review = independentReviewPayload(request);
+        const approval = approvedReviewResponse(request);
+        if (review && approval) {
+          reviews.push(review);
+          storesAtReview.push(structuredClone(store.getCurrent()));
+          return approval;
+        }
+        if (!request.tools?.length) return finalResult(JSON.stringify({
           action: "new_plan", goal: "아이템과 타이틀",
           layers: [{ title: "등록", items: [{
             title: "아이템과 타이틀", instruction: "upsert_item 후 set_title_screen",
             successTools: ["upsert_item", "set_title_screen"],
           }] }],
-        } : { action: "resume" }));
-        if (rounds++ === 0) return toolCallResult("upsert_item", { item: { id: "item_split_budget", name: "연속 실행 약초", price: 20 } }, "split_item");
-        if (rounds === 2) return toolCallResult("set_title_screen", { title: "연속 실행 모험" }, "split_title");
-        return finalResult("완료했습니다.");
+        }));
+        return script[index++] ?? exhausted();
       },
     });
-    const result = await session.sendUserMessage("아이템과 타이틀을 등록해줘", () => {}, undefined, { autonomous: true });
+    const result = await session.sendUserMessage("아이템과 타이틀을 등록해줘", event => events.push(event), undefined, { autonomous: true });
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    expect(reviews).toHaveLength(1);
+    expect(storesAtReview).toEqual([baseline]);
+    expect(reviews[0]?.originalRequest).toBe("아이템과 타이틀을 등록해줘");
+    expect(reviews[0]?.changes).toContainEqual(expect.objectContaining({
+      path: "/database/items/item_split_budget", before: null,
+      after: expect.objectContaining({ name: "연속 실행 약초", price: 20 }),
+    }));
+    expect(events.filter(event => event.type === "result_review" || event.type === "milestone_applied")
+      .map(event => event.type)).toEqual(["result_review", "milestone_applied"]);
+    expect(result.proposedCalls).toEqual([]);
     expect(session.getHarnessSnapshot().workPlan?.layers[0]?.items[0]?.status).toBe("done");
     expect(result.appliedCalls?.map((call) => call.name)).toEqual(["upsert_item", "set_title_screen"]);
     expect(store.getCurrent().database.items.find((item) => item.id === "item_split_budget")?.name).toBe("연속 실행 약초");
-    expect(session.getAuditEntries().some((entry) => entry.kind === "status" && entry.text.includes("agent_run:auto-continue"))).toBe(true);
+    expect(store.getCurrent().system.titleScreen?.title).toBe("연속 실행 모험");
+    expect(session.getAuditEntries().filter(entry => entry.kind === "user").map(entry => entry.text))
+      .toEqual(["아이템과 타이틀을 등록해줘", "계속"]);
   }, 30000);
 
   it.each([false, true])("마일스톤 쓰기는 자동 계속(%s) 후에도 정산에 남는다", async (continueOnce) => {
     const project = createBlankProject();
     installHermeticEnv(project);
+    const baseline = structuredClone(store.getCurrent());
+    const reviews: ReviewInput[] = [];
+    const storesAtReview: Project[] = [];
+    const events: SessionEvent[] = [];
     const script = steps();
-    if (continueOnce) script.push(finalResult("완료했습니다."));
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
-      if (index >= script.length) exhausted();
-      return script[index++]!;
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const review = independentReviewPayload(request);
+      const approval = approvedReviewResponse(request);
+      if (review && approval) {
+        reviews.push(review);
+        storesAtReview.push(structuredClone(store.getCurrent()));
+        return approval;
+      }
+      return script[index++] ?? exhausted();
     };
-    const session = new AssistantSession(project, { config: ORCH_CONFIG, chat });
-
-    if (continueOnce) {
-      vi.spyOn(session as unknown as { shouldAutoContinue: () => boolean }, "shouldAutoContinue")
-        .mockReturnValueOnce(true).mockReturnValue(false);
-    }
-    const intentInputs = vi.spyOn(session as unknown as {
-      declareTurnIntent: (instruction: string, ...args: unknown[]) => Promise<unknown>;
-    }, "declareTurnIntent");
-    const result = await session.sendUserMessage(GOAL, () => {}, undefined, {
+    const session = new AssistantSession(project, {
+      // Ten rounds leave the title unfinished, exercising the real continuation driver.
+      config: { ...ORCH_CONFIG, maxToolCalls: continueOnce ? 10 : 40 }, chat,
+      declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true }),
+    });
+    const result = await session.sendUserMessage(GOAL, event => events.push(event), undefined, {
       autonomous: true, instruction: GOAL, composerMode: "do",
     });
     // The original explicit instruction must not turn synthetic continuation into a new create request.
-    expect(intentInputs.mock.calls.map(([instruction]) => instruction)).toEqual(
+    expect(session.getAuditEntries().filter(entry => entry.kind === "user").map(entry => entry.text)).toEqual(
       continueOnce ? [GOAL, "계속"] : [GOAL],
     );
-
-    const statuses = session.getAuditEntries().filter((e) => e.kind === "status").map((e) => String(e.text ?? ""));
-    // 전제: 마일스톤이 실제로 적용되어 제안이 비워졌다(이 결함의 발생 조건).
-    expect(statuses.some((t) => t.includes("agent_run:milestone-applied"))).toBe(true);
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    expect(events.filter(event => event.type === "result_review" || event.type === "milestone_applied")
+      .map(event => event.type)).toEqual(["result_review", "milestone_applied"]);
     expect(result.proposedCalls).toHaveLength(0);
 
     // 1) 턴 결과가 "이 턴이 무엇을 지었는지" 를 계속 들고 있다.
@@ -174,23 +237,28 @@ describe("마일스톤 턴 정산", () => {
       "set_title_screen",
     ]);
 
-    const reviewInjections = statuses.filter((t) => t.includes("완성도 린트 결과"));
-    expect(reviewInjections.length).toBeGreaterThan(0);
-    for (const injection of reviewInjections) {
-      expect(injection).not.toContain("실제 변경이 없습니다");
-      expect(injection).not.toContain("변경 제안 없음");
+    expect(reviews).toHaveLength(1);
+    // Completed work stays detached until the reviewer receives all earlier writes.
+    expect(storesAtReview).toEqual([baseline]);
+    expect(reviews[0]?.originalRequest).toBe(GOAL);
+    expect(reviews[0]?.requiredProblems).toEqual([]);
+    for (let i = 0; i < WRITE_COUNT; i += 1) {
+      expect(reviews[0]?.changes).toContainEqual({
+        path: `/database/items/item_ledger_${i}`, before: null,
+        after: expect.objectContaining({ id: `item_ledger_${i}`, name: `원장 아이템 ${i}`, price: 10 + i }),
+      });
+      expect(reviews[0]?.toolResults).toContainEqual(expect.objectContaining({
+        name: "upsert_item", args: { item: { id: `item_ledger_${i}`, name: `원장 아이템 ${i}`, price: 10 + i } },
+        result: expect.objectContaining({ ok: true }),
+      }));
     }
-    // diff 요약에 실제 툴 이름이 들어간다 — 검수 모델이 근거를 본다.
-    // 감사 문자열은 600자에서 쟘리므로 마지막 항목이 아니라 첫 번톨 diff 줄로 판정한다.
-    expect(reviewInjections.some((t) => /1\. upsert_item/.test(t))).toBe(true);
+    expect(reviews[0]?.changes).toContainEqual(expect.objectContaining({
+      path: "/system", before: baseline.system,
+      after: expect.objectContaining({ titleScreen: expect.objectContaining({ title: "원장 검증" }) }),
+    }));
 
     const items = store.getCurrent().database.items;
     expect(items.filter((item) => item.id.startsWith("item_ledger_"))).toHaveLength(WRITE_COUNT);
-    // 라우팅 선언은 "계속"을 읽어도 검수는 사용자의 원래 목표를 읽어야 한다.
-    const review = (session as unknown as {
-      buildReviewPrompt: (pending: [], repaired: boolean) => { prompt: string };
-    }).buildReviewPrompt([], false);
-    expect(review.prompt).toContain(`## 사용자 요청\n${GOAL}`);
-    expect(review.prompt).not.toContain("## 사용자 요청\n계속\n");
+    expect(store.getCurrent().system.titleScreen?.title).toBe("원장 검증");
   }, 30000);
 });

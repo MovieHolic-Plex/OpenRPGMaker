@@ -1,0 +1,1813 @@
+
+FILE openwiki/editor-ai-panel.md
+
+`ok` only means the RPC completed, not that the authored goal was verified.
+Failed final verification replaces a model success claim rather than appending
+contradictory failure text below it.
+<<<<<<< HEAD
+The PR687 adjudication retains bounded final repair, driven by adopted pending,
+unverified or stale requirements and genuine unresolved findings, including findings
+without an acceptance declaration. The narrow pre-write lint exception below separates
+reported baseline defects from terminal blockers. Successful unadopted exploratory probes never
+create rerun obligations after a write or dummy removal. Malformed/execution failures
+remain attempts, with only the narrow unowned assertion-free no-target setup exception.
+Questions report retained verification negatives without executing repair or changing
+scheduling; normal execution and budget-terminal assessment cannot
+publish false completion. Budget exhaustion does not grant extra tool calls.
+Run-end proof waits for authoritative blockers to clear. An unfinished declared
+verification item (including pending scope or current passed proof) cannot be skipped:
+rejection preserves plan position, acceptance, requirements, findings and proof. Ordinary
+optional/non-verification skips remain usable. Regression: `pr687VerificationIntegration`.
+Before preparation or model writes, the host runs the same read-only lint producer against
+its pre-write project baseline once per goal. Rebase, repair and continuation never replace
+that provenance. An automatic default `run_lint({})` finding can be report-only only when its
+complete error records (including code, message, referenced IDs/locations and multiplicity)
+were present in that baseline, it has never been observed explicitly, and no active lint
+requirement owns the check. Unknown/incomplete provenance, new identities (even at equal
+counts), explicit negatives and adopted checks still block. Findings are retained; no pass is
+invented. `CompletionAssessment.verification` reports all problems while `blockingVerification`
+is the terminal subset. Report-only lint is appended to the completed response and remains in
+audits/snapshots without a repair loop. Regression: `advisoryLintProvenance`.
+=======
+For authoring requests, failed or stale explicit checks now trigger the existing
+bounded final-repair loop and continuation before finalization. Advisory-only
+findings do not create automatic authoring requirements. Run-end proof waits for
+explicit revalidation after the final write.
+With an isolated write draft, those checks enter the independent review's required
+problems and structured repair loop; even a model approval cannot override them.
+Without a write draft, the bounded acceptance/completion repair loop owns explicit
+check recovery. Neither path applies a milestone before independent approval.
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+Stale-check feedback includes the exact canonical tool/argument identity. A new
+check of guide cells does not silently replace an earlier frontage check; the
+executor can see which original coordinat
+
+FILE src/ai/assistantAcceptanceLedger.ts
+
+      const evidence = promise.criteria.map((criterion, criterionIndex) => {
+        const result = evaluateAcceptanceCriterion(criterion, {
+          project: applied, baseline: promise.baseline, bindings: this.bindings, verification,
+<<<<<<< HEAD
+          verificationCheckId: `${this.id}:${promise.id}:${criterionIndex}`, npcRewardProof: this.npcRewardProof,
+          reviewed: (map, region) => review?.passed === true
+            && coveredByImages(this.currentReceipts(review.receipts, applied), map, region),
+=======
+          reviewed: (map, region) => deliveredImagesOnly
+            ? coveredByImages(this.images.matching(applied), map, region)
+            : review?.passed === true && coveredByImages(this.currentReceipts(review.receipts, applied), map, region),
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+          actionProven: map => isVerifiedActionCombatProof(this.actionProofs.get(map.id), applied, map.id),
+        });
+        const approachCheckId = `${this.id}:${promise.id}:${criterionIndex}`;
+ 
+
+FILE src/ai/assistantSession.ts
+<<<<<<< HEAD
+import { ACCEPTANCE_EXAMPLES, acceptanceRecord, missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
+=======
+import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
+import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewEvidenceContexts, reviewMapReferenceRoots, requiresVisualReview, type ResultReview } from "./independentReview";
+import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+import { parseFunctionalRequirements, type FunctionalCriterion } from "./functionalAcceptance";
+import { deriveRunOutcome, type RunOutcome } from "./runOutcome";
+import { AssistantAcceptanceLedger } 
+
+// - 브라우저 비의존(순수). chat 함수는 주입 가능(테스트에서 모킹).
+
+import { workTargetContractIssues, workTargetIssues, workToolOutcome, type WorkToolOutcome } from "./workPlanTargets";
+import { ToolReadEvidence } from "./toolReadEvidence";
+<<<<<<< HEAD
+import { ToolVerificationEvidence, parseVerificationChecks, verificationInitialState, type VerificationRequirement, type ApproachPreview } from "./toolVerificationEvidence";
+import { runProjectLint } from "@/editor/tools/queryTools";
+import { isVerifyNpcRewardInput, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
+=======
+import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTools";
+import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
+import { ToolVerificationEvidence } from "./toolVerificationEvidence";
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
+import { validateArgs } from "@/editor/tools/jsonSchema";
+import { viewportVillageBounds } from "@/editor/tools/authorVillageSupp
+
+  | { type: "phase"; value: "plan" | "execute" | "review" }
+  | { type: "status"; text: string }
+  | { type: "work_plan"; plan: WorkPlan }
+  | { type: "acceptance"; snapshot: AcceptanceSnapshot | null }
+<<<<<<< HEAD
+  | { type: "completion_assessment"; assessment: CompletionAssessment }
+=======
+  | { type: "result_review"; review: ResultReview }
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+  // ── 마일스톤 자동 적용(todo 4) ─────────────────────────────────────
+  // 자율 런에서 작업 항목 완료가 안전 검사를 통과해 스토어에 자동 적용됐다.
+  | { type: "milestone_applied"; title: string; toolCount: number; commitId: string | n
+
+  }
+
+  // 제안 수락/거부 후, 대화(메시지·감사 로그)를 유지한 채 프로젝트 기준만 store 최신 상태로 갱신한다.
+  // 세션 폐기(dropSession)와 달리 대화 기억을 잃지 않는다 — "채팅 세션 단위 전체 기억"(#6)의 핵심.
+  rebaseProject(project: Project): void {
+<<<<<<< HEAD
+    if (JSON.stringify(this.ctx.project) !== JSON.stringify(project)) this.invalidateVerificationAfterWrite();
+=======
+    if (this.approvedReviewIdentity !== JSON.stringify(project)) {
+      // Coordinator receipts and manual wiki notes arrive outside the authored
+      // candidate: adopt wiki-only drift into the approval, void anything else.
+      if (this.approvedAuthoredIdentity !== null && this.approvedAuthoredIdentity === authoredIdentity(project)) {
+        this.approvedReviewIdentity = JSON.stringify(project);
+      } else {
+        this.approvedReviewIdentity = null;
+        this.approvedAuthoredIdentity = null;
+      }
+    }
+    this.draftBaseline = new AuthoredProjectBaseline(project);
+    this.draftBaselineCurrent = true;
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    this.pruneRemovedMapSpecs(this.ctx.project, project);
+    this.baselineProject = structuredClone(project);
+    this.ctx = { project: cloneDetachedDraft(project) };
+    // rebase = 적용 성공 후 세션이 sto
+
+    return true;
+  }
+
+  /** Applied-state refresh for store changes/undo, including after completion. */
+  refreshAcceptance(project: Project, onEvent?: (event: SessionEvent) => void): void {
+<<<<<<< HEAD
+    if (JSON.stringify(this.ctx.project) !== JSON.stringify(project)) this.invalidateVerificationAfterWrite();
+=======
+    // The exact reviewed candidate already carries checks against these values.
+    // Still retire live apply authority below; content evidence is not permission.
+    const reviewedContent = this.isDraftReviewApproved(project);
+    // Latch a changed authored base even while no approval exists yet. A later
+    // reviewer response (or an undo) cannot make that old draft current again.
+    if (!this.draftBaseline.matches(project)) {
+      this.draftBaselineCurrent = false;
+      this.approvedReviewIdentity = null;
+      this.approvedAuthoredIdentity = null;
+    }
+    this.observedLiveWorld = project.world ? structuredClone(project.world) : undefined;
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    if (project === store.getCurrent()) this.storeBacked = true;
+    this.imageEvidence.current(project);
+    if (!this.acceptance && !this.verificationEvidence.hasChecks()) return;
+    // A verdict 
+
+    const plan = this.workPlan;
+    this.adoptAcceptance(plan?.acceptance || plan?.requirements
+      ? [...(plan.acceptance ?? []), ...(plan.requirements ?? [])] : undefined, onEvent);
+  }
+
+<<<<<<< HEAD
+  private adoptAcceptance(promises: readonly AcceptancePromise[] | undefined, onEvent?: (event: SessionEvent) => void): void {
+    if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) {
+      this.adoptVerificationRequirements();
+      return;
+    }
+=======
+  private adoptAcceptance(promises: readonly AcceptancePromise[] | undefined, onEvent?: (event: SessionEvent) => void,
+    request?: { readonly baseline: Project; readonly source: AcceptanceSource }): void {
+    if (this.workPlan) this.verificationEvidence.requireTools(
+      this.workPlan.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])));
+    if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) return;
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    const goal = this.acceptance?.goal ?? this.workPlan?.goal ?? this.currentTurnInstruction;
+    if (!this.acceptance) {
+      this.acceptance = new AssistantAcceptanceLedger(`acceptance-${++this.ac
+
+    // 패널의 sendText 가 autonomous:true 를 주므로 같은 진입점을 공유하고, 브리지 코드는 불변이다.
+    // 사용자의 수동 진입(새 sendUserMessage 호출)은 예산 카운터를 0으로 되돌린다(re-arm).
+    // 마일스톤 자동 적용도 같은 명시 플래그로만 켠다. 직전 턴의 커밋 게이트 실패는
+    // 현재 자율 런만 중단하는 상태이므로 새 사용자 메시지에서 반드시 재가동한다.
+<<<<<<< HEAD
+    this.verificationEvidence.expireApproachPreview();
+=======
+    const reviewedDraftAtEntry = this.isDraftReviewApproved() ? this.approvedReviewIdentity : null;
+    this.activeTurnSignal = signal;
+    // A send owns a new attempt even when preparation fails before the writer loop.
+    // Keep detached work/evidence for authorized resume, never prior apply authority.
+    this.reviewTurn = null;
+    this.approvedReviewIdentity = null;
+    this.approvedAuthoredIdentity = null;
+    this.resultReview = null;
+    this.consumedApprovedRevision = null;
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    this.runResult = { current: null };
+    this.runSubscriber = onEvent;
+    this.runRecapAuditIndex = null;
+    // Explicit Ask owns publication even if preparation fails before intent is declared.
+
+        this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: entryInstruction,
+          scope: turnOptions.scope ? structuredClone(turnOptions.scope) : null };
+        onEvent({ type: "acceptance", snapshot: null });
+      }
+<<<<<<< HEAD
+      if (!this.verificationEvidence.hasLintBaseline()) {
+        // Pin actual host lint against the existing pre-write project baseline before
+        // preparation/model tools can mutate or rebase it. Only a new goal clears it.
+        try {
+          this.verificationEvidence.captureLintBaseline({ ok: true, ...runProjectLint(this.baselineProject, {}) });
+        } catch (cause) {
+          this.verificationEvidence.captureLintBaseline({ ok: false });
+          const text = `verification:baseline-unavailable ${cause instanceof Error ? cause.message : String(cause)}`;
+          this.pushAudit({ kind: "status", text });
+          onEvent({ type: "status", text });
+        }
+      }
+      const first = await this.executeUserTurn(text, onEvent, signal, turnOptions);
+=======
+      const first = await this.executeUserTurn(text, onEvent, signal, turnOptions, reviewedDraftAtEntry);
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+      const last = opts?.autonomous === true && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask"
+        ? await this.runAutonomousDriver(first, onEvent, signal, turnOptions) : first;
+      
+
+              && store.isPersistenceReceiptForProject(milestone.receipt, milestone.project)) {
+              this.wikiDelivery.receipt = milestone.receipt;
+            }
+            this.publishRunOutcome();
+          },
+        });
+<<<<<<< HEAD
+        if (world && "kind" in world) {
+          const text = `wiki:deferred ${world.reason} — 프로젝트 기록 갱신을 보류했습니다. 기존 기록으로 요청을 계속합니다.`;
+          this.pushAudit({ kind: "status", text });
+          onEvent({ type: "status", text });
+        } else {
+          if (world) {
+            this.baselineProject.world = structuredClone(world);
+            this.ctx.project.world = structuredClone(world);
+          } else {
+            delete this.baselineProject.world;
+            delete this.ctx.project.world;
+          }
+          this.rebuildSystemPrompt();
+        }
+=======
+        if (world) {
+          this.baselineProject.world = structuredClone(world);
+          this.ctx.project.world = structuredClone(world);
+          this.observedLiveWorld = structuredClone(world);
+        } else {
+          delete this.baselineProject.world;
+          delete this.ctx.project.world;
+          this.observedLiveWorld = undefined;
+        }
+        // Adopt only the independently owned pre-turn documents, never concurrent
+        // authored changes returned with the coordinator's live world snapshot.
+        if (!this.draftBaselineCurrent || !this.draftBaseline.matches(this.baselineProject)) {
+          throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
+        }
+        this.draftBaseline = new AuthoredProjectBaseline(this.baselineProject);
+        this.rebuildSystemPrompt();
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+      } catch (cause) {
+        const error = cause instanceof Error ? cause.message : String(cause);
+        const stoppedReason = signal?.aborted ? "aborted" : "error";
+        this.runExecution = 
+
+    if (newRequest || startsGoal) {
+      this.adventureRequirements = intent.adventure;
+      this.npcRewardRequirements = intent.npcRewards === undefined ? undefined : structuredClone(intent.npcRewards);
+<<<<<<< HEAD
+      this.npcRewardWitnesses.clear();
+      this.adventureRepairAttempts = 0;
+=======
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+      this.adventureIconRecords.clear();
+      this.readEvidence.begin(intent.readBeforeWrite);
+      this.completionQualityRequired = false;
+    }
+    if (userAction && !startsGoal && intent.source 
+
+      .map(([mapId, entry]) => [mapId, structuredClone(entry.spec)]));
+    this.carryoverWarningsAdded.clear();
+    this.specRejections = 0;
+    this.lastRejectedSpecFingerprint = null;
+<<<<<<< HEAD
+=======
+    const continuesGoal = !startsGoal && (question || resumesGoal || this.turnIsDriverContinue || intent.source === "continuation");
+    if (!continuesGoal) {
+      // Retain an unchanged previously reviewed draft as content, not apply authority.
+      // The entry already retired that authority; unreviewed unrelated drafts still drop.
+      if (this.turnProposals.size > 0 && reviewedDraftAtEntry !== JSON.stringify(this.ctx.project)) this.ctx = { project: cloneDetachedDraft(this.baselineProject) };
+      this.reviewBaseline = structuredClone(this.ctx.project);
+      this.reviewToolResults = [];
+      this.resultReview = null;
+      this.approvedReviewIdentity = null;
+      this.approvedAuthoredIdentity = null;
+      this.consumedApprovedRevision = null;
+      this.reviewAttempts = 0;
+      this.lastReviewFailure = null;
+    }
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    const retainsOriginal = !startsGoal && (resumesGoal || this.turnIsDriverContinue || intent.source === "continuation");
+    if (!retainsOriginal || !this.originalContext) {
+      const scope = thi
+
+    // A tool budget splits execution, not the work item. Keep unapplied calls and
+    // artifact evidence until that item completes (or a different goal starts).
+    if (!continuesGoal) this.turnProposals = new Map();
+<<<<<<< HEAD
+    // Both manual and synthetic continuations retain the same goal's applied ledger.
+    if (!continuesGoal) this.turnAppliedMilestoneCalls = [];
+=======
+    // Synthetic continuations belong to the same user goal and retain its applied ledger.
+    if (!options.driverContinue) {
+      this.turnAppliedMilestoneCalls = [];
+      this.turnAppearanceGeneration = undefined;
+    }
+
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    this.turnWriteDedupe = new Map();
+    this.turnToolStartedCount = 0;
+    this.turnEscalatedToolNames = [];
+    this.compactionAttemptedThisTurn = false;
+    if (!continuesGoal) this.resetWorkItem
+
+      this.ralphAttemptsByItemId.delete(currentItemId);
+      this.lastBlockReasonByItemId.delete(currentItemId);
+    }
+  }
+
+  /** Keep transport/execution ok intact; only actual passing checks satisfy successTools. */
+<<<<<<< HEAD
+  private recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult, countAsSuccess = true, checkId?: string): void {
+=======
+  private recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult, countAsSuccess = true): void {
+    this.reviewToolResults.push(structuredClone({ name, args, result }));
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    this.syncSuccessfulToolsToCurrentWorkItem();
+    if (name === EVALUATE_GAME_QUALITY_TOOL) this.completionQualityRequired = true;
+    if (result.ok) for (const [tool, field, collection] of [["upse
+
+  private finalizeProposals(proposedByKey: Map<string, ProposedCall>): ProposedCall[] {
+    return [...proposedByKey.values()];
+  }
+
+  private upsertProposal(proposedByKey: Map<string, ProposedCall>, proposal: ProposedCall): void {
+<<<<<<< HEAD
+    this.workItemProposals.set(proposalKey(proposal), proposal);
+=======
+    this.approvedReviewIdentity = null;
+    this.approvedAuthoredIdentity = null;
+    this.consumedApprovedRevision = null;
+    this.reviewRevision += 1;
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    const move = moveEventTarget(proposal);
+    if (move !== null) {
+      const baseKey = this.eventBaseProposalKeys.get(eventTargetKey(move));
+      const baseProposal = baseKey ? proposedByKey.get
+
+   * `proposedCalls` 만 봐야 한다 — 원장의 호출은 이미 저장소에 들어가 있다.
+   */
+  private turnWriteLedger(pending: readonly ProposedCall[]): ProposedCall[] {
+    return [...this.turnAppliedMilestoneCalls, ...pending];
+  }
+
+<<<<<<< HEAD
+  private buildReviewPrompt(pending: readonly ProposedCall[], repairAlreadyUsed: boolean): { prompt: string; missingWarnings: string[] } {
+    const calls = this.turnWriteLedger(pending);
+    const lintWarnings = proposalCompletenessWarnings({
+      requestText: this.currentTurnInstruction,
+      intent: this.turnIntent,
+      buildSpecs: this.getCompletionSpecs(calls),
+      calls,
+      project: this.ctx.project,
+    });
+    const diffWarnings = calls.flatMap((call) => call.result.diff?.warnings ?? []);
+    const allWarnings = [...new Set([...lintWarnings, ...this.inferredViewWarnings(calls), ...diffWarnings])];
+    const missingWarnings = allWarnings.filter((warning) => warning.startsWith(PROPOSAL_COMPLETENESS_WARNING_PREFIX));
+    const lintBlock = allWarnings.length > 0 ? allWarnings.map((warning) => `- ${warning}`).join("\n") : "- 통과";
+    const diffBlock = calls.length > 0
+      ? calls.map((call, index) => `${index + 1}. ${call.name}: ${call.summary} / ${diffSummaryLine(call.result.diff)}`).join("\n")
+      : "- 변경 제안 없음";
+    const repairLine = repairAlreadyUsed
+      ? "재실행 기회는 이미 사용했습니다. 남은 부족분이 있어도 사용자에게 현재 상태와 부족분을 짧게 보고하세요."
+      : `부족분이 있으면 최종 답변 대신 정확히 "${REVIEW_REEXECUTE_PREFIX} <실행 모델에게 줄 보완 지시>" 형식 한 줄로 답하세요.`;
+    return {
+      prompt: [
+        "검수 단계: 완성도 린트 결과와 diff 요약을 기준으로 이번 턴 이행 여부를 확인하세요.",
+        repairLine,
+        `이행 완료면 "${REVIEW_COMPLETE_PREFIX} <최종 사용자 응답>" 형식 또는 자연스러운 최종 응답만 작성하세요.`,
+        "",
+        "## 사용자 요청",
+        this.currentTurnRequestText,
+        "",
+        "## 완성도 린트 결과",
+        lintBlock,
+        "",
+        "## diff 요약",
+        diffBlock,
+      ].join("\n"),
+      missingWarnings,
+    };
+=======
+  private async reviewCurrentDraft(onEvent: (event: SessionEvent) => void, signal: AbortSignal | undefined,
+    remainingTokens: number): Promise<ResultReview> {
+    let revision = this.reviewRevision;
+    this.approvedReviewIdentity = null;
+    this.approvedAuthoredIdentity = null;
+    this.consumedApprovedRevision = null;
+    const owner = this.reviewTurn;
+    const outputAtStart = this.estimatedOutputTotal;
+    let candidate: { identity: string; acceptance: AcceptanceSnapshot | null } | null = null;
+    let review: ResultReview;
+    /** Deterministic problems found before the reviewer ran, so a failure that stops the
+     * review from happening at all still reports them instead of only its own cause. */
+    let knownProblems: readonly string[] = [];
+    try {
+      if (signal?.aborted) throw new Error("independent-review-cancelled");
+      if (!this.draftBaselineCurrent) throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
+      const baseline = this.draftBaseline;
+      const preReviewProblems: string[] = [];
+      // R2: adopt newer live wiki-owned documents into the draft candidate so the
+      // reviewer sees the true final object. Draft-side wiki writes are writer
+      // content without a coordinator receipt and fail visibly as required problems.
+      const wikiSync = syncDraftWikiWithLive(this.ctx.project.world, this.baselineProject.world, this.observedLiveWorld);
+      if (wikiSync.changed) {
+        this.ctx.project = { ...this.ctx.project, world: wikiSync.world };
+        revision = ++this.reviewRevision;
+        this.verificationEvidence.invalidateAfterWrite();
+        this.workItemVerificationEvidence.invalidateAfterWrite();
+        this.imageEvidence.current(this.ctx.project);
+      }
+      for (const id of wikiSync.conflicts) {
+        preReviewProblems.push(`world/${id}: draft edits a wiki-owned document without a coordinator receipt; regenerate from the current project`);
+      }
+      if (this.reviewDraftTransform) {
+        const prepared = this.reviewDraftTransform(this.getProposedProject());
+        if (JSON.stringify(prepared) !== JSON.stringify(this.ctx.project)) {
+          this.ctx.project = prepared;
+          revision = ++this.reviewRevision;
+          this.verificationEvidence.invalidateAfterWrite();
+          this.workItemVerificationEvidence.invalidateAfterWrite();
+          this.imageEvidence.current(prepared);
+        }
+      }
+      const identity = JSON.stringify(this.ctx.project);
+      this.emitPhase(onEvent, "review");
+      const draftAcceptance = this.acceptance?.evaluateForReview(this.ctx.project, this.verificationEvidence) ?? null;
+      const requiredProblems = [...preReviewProblems, ...this.completionProblems(), ...this.verificationEvidence.problems("explicit"),
+        ...(draftAcceptance?.items.flatMap(item => item.required === false || item.withdrawal || item.status === "verified" ? [] :
+          [item.reason ?? item.title, ...item.evidence.filter(entry => !entry.passed).map(entry => `${entry.expected}: ${entry.observed}`)]) ?? [])];
+      for (const name of new Set(this.workPlan?.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])) ?? [])) {
+        if (VERIFICATION_TOOL_NAMES.has(name) && !this.verificationEvidence.passed(name)) requiredProblems.push(`${name}: declared verification must pass on the current revision`);
+      }
+      const changes = reviewChanges(this.reviewBaseline, this.ctx.project);
+      const mapReferenceRoots = reviewMapReferenceRoots(this.reviewBaseline, this.ctx.project, changes);
+      for (const change of changes) if (change.path === "/assets") {
+        requiredProblems.push(`${change.path}: asset transport changed without reviewable original evidence`);
+      }
+      const targetMapId = this.originalContext!.context.target.mapId;
+      const changedMapIds = new Set([...Object.keys(this.reviewBaseline.maps), ...Object.keys(this.ctx.project.maps)].filter(id =>
+        acceptanceFingerprint(this.reviewBaseline.maps[id]) !== acceptanceFingerprint(this.ctx.project.maps[id])
+        || requiresVisualReview(this.reviewBaseline, this.ctx.project, id)));
+      const mapIds = new Set(changedMapIds);
+      if (typeof targetMapId === "string") mapIds.add(targetMapId);
+      const evidence = (project: Project, prefix: string, reviewed: Iterable<string>, target: string) =>
+        reviewEvidenceContexts(project, { snapshotId: `${prefix}-${revision}`, mapIds: reviewed,
+          targetMapId: target, mapReferenceRoots, intent: this.turnIntent ?? null });
+      const receipts = this.imageEvidence.current(this.ctx.project);
+      for (const mapId of mapIds) {
+        const before = this.reviewBaseline.maps[mapId], after = this.ctx.project.maps[mapId];
+        if (!after) continue;
+        const visualChanged = requiresVisualReview(this.reviewBaseline, this.ctx.project, mapId);
+        const unavailable = visualChanged ? mapVisualEvidenceUnavailable(after, before) : null;
+        if (unavailable) requiredProblems.push(unavailable);
+        if (visualChanged && !coveredByImages(receipts, after, { x: 0, y: 0, w: after.width, h: after.height })) {
+          requiredProblems.push(`show_map_region: current rendered coverage of changed map ${mapId} required`);
+        }
+      }
+      for (const receipt of this.reviewImages.keys()) if (!receipts.includes(receipt)) this.reviewImages.delete(receipt);
+      const config = { ...(this.reviewConfig ?? this.config), maxTokens: Math.min(16384, remainingTokens) };
+      if (signal?.aborted) throw new Error("independent-review-cancelled");
+      knownProblems = requiredProblems;
+      const images = receipts.flatMap(receipt => this.reviewImages.get(receipt) ?? []);
+      const build = (reviewed: Iterable<string>, target: string) => buildIndependentReviewRequest(config, { revision,
+        originalRequest: this.currentTurnRequestText, changes, requiredProblems, images,
+        before: evidence(this.reviewBaseline, "before", reviewed, target),
+        after: evidence(this.ctx.project, "after", reviewed, target),
+        toolResults: this.reviewToolResults, acceptance: draftAcceptance }, signal);
+      // The reviewer is one-shot, so an oversized envelope is refused rather than truncated.
+      // Retry once judging only the changed maps: the target map is where the user is
+      // standing, and an unchanged one is surrounding context rather than the subject of this
+      // review — a large one can overflow the envelope by itself. It has to leave the context
+      // target too, which always includes its own map. Required evidence (changed maps, their
+      // renders, deterministic problems) is never dropped to make room; that would buy
+      // approval with less proof than the gate demands.
+      const [firstChangedMapId] = changedMapIds;
+      let request;
+      try {
+        request = build(mapIds, targetMapId);
+      } catch (cause) {
+        if (!(cause instanceof Error) || !cause.message.startsWith("independent-review-window-exceeded")
+          || firstChangedMapId === undefined || changedMapIds.size >= mapIds.size) throw cause;
+        request = build(changedMapIds, firstChangedMapId);
+      }
+      const response = await this.chat(config, request);
+      if (signal?.aborted) throw new Error("independent-review-cancelled");
+      if (identity !== JSON.stringify(this.ctx.project)) throw new Error("independent-review-stale-revision");
+      if (!this.draftBaselineCurrent || baseline !== this.draftBaseline) throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
+      review = parseIndependentReview(response, revision, requiredProblems);
+      if (review.status === "approved") {
+        // Deferred to the post-callback admission below: publishing the verdict
+        // is not authority until owner/cancellation/budget checks pass. Both
+        // identities admit together there so the authored alternative cannot
+        // revive a retired approval.
+        candidate = { identity, acceptance: draftAcceptance };
+      }
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : String(cause);
+      // An unreviewable draft is never approved. But `independent-review-window-exceeded`
+      // is the harness refusing its own envelope, and reporting only that string buried the
+      // deterministic problems (failed lint, unmet acceptance) the user can actually act on.
+      const summary = message.startsWith("independent-review-window-exceeded")
+        ? ["이번 변경의 검수 증거가 한 번에 들어가지 않아 초안을 검수하지 못했습니다. 변경 범위를 나눠 다시 요청하세요.",
+          ...knownProblems.map(problem => `- ${problem}`)].join("\n")
+        : message;
+      review = { status: "error", revision, findings: [], summary };
+    }
+    if (owner !== this.reviewTurn) return { status: "error", revision, findings: [], summary: "independent-review-superseded" };
+    this.resultReview = review;
+    this.pushAudit({ kind: "status", text: `independent-review ${JSON.stringify(review)}` });
+    onEvent({ type: "result_review", review });
+    // The event may cancel, replace the draft, or start another attempt. Publishing
+    // the verdict is not authority to apply until those boundaries and budget pass.
+    if (candidate && owner === this.reviewTurn && !signal?.aborted
+      && this.estimatedOutputTotal - outputAtStart < remainingTokens
+      && candidate.identity === JSON.stringify(this.ctx.project)) {
+      this.approvedReviewIdentity = candidate.identity;
+      this.approvedAuthoredIdentity = authoredIdentity(this.ctx.project);
+      for (const item of candidate.acceptance?.items ?? []) this.acceptance?.review(item.id, review.summary, this.ctx.project, "pass");
+    }
+    return review;
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+  }
+
+  private async chatWithTransientRetry(
+    config: AiConfig,
+    req: ChatRequest,
+    onEvent: (event: SessionEvent) => void,
+    signal?: AbortSignal,
+    emitTokens = true
+  ): Promise<ChatR
+
+    const autonomyCap = this.autonomy()?.budgetCap;
+    const roundCap = autonomyCap === undefined ? this.config.maxToolCalls : Math.min(this.config.maxToolCalls, autonomyCap);
+    let spentOutputTokens = 0;
+<<<<<<< HEAD
+    // Turn-local: a failed/dropped request cannot revive these captures on a later turn.
+    let pendingImages: { parts: ImageUrlPart[]; receipts: AcceptanceImageReceipt[] } | null = null;
+=======
+    const outputAtStart = this.estimatedOutputTotal;
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+
+    for (let round = 0; round < roundCap; round += 1) {
+      if (signal?.aborted) {
+        this.runExecution = "cancelled";
+        this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습
+
+        this.pushAudit({ kind: "status", text: `턴 중단(error): ${error} · 출력 토큰 ~${spentOutputTokens}` });
+        return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error };
+      }
+<<<<<<< HEAD
+      if (pendingImages) {
+        const delivered = new Set(result.imageDelivery?.flatMap(({ messageIndex, partIndex }) => {
+          const content = requestMessages[messageIndex]?.content;
+          return Array.isArray(content) && content[partIndex]?.type === "image_url" ? [content[partIndex]] : [];
+        }));
+        if (!signal?.aborted && pendingImages.parts.every(part => delivered.has(part))) {
+          this.imageEvidence.current(this.ctx.project);
+          this.imageEvidence.deliver(pendingImages.receipts);
+        } else {
+          const text = "Image delivery was not acknowledged; render and send the map again before review_acceptance.";
+          this.pushAudit({ kind: "status", text: `acceptance:image-delivery-failed ${text}` });
+          onEvent({ type: "status", text });
+          this.pushOrchestrationMessage(text);
+        }
+        pendingImages = null;
+      }
+      spentOutputTokens += result.usage?.completion_tokens ?? estimateOutputTokens(result.message);
+=======
+      spentOutputTokens = this.estimatedOutputTotal - outputAtStart;
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+      // 문자↔토큰 보정 관측(usage 없으면 조용히 스킵). review 단계 요청에는 tools가 없다.
+      this.recordPromptUsage(result, toolsChars, requestMessages);
+
+      const assistantMsg = result.message;
+      // assistant 응답은
+
+        // Before the first project write, retain the existing bounded acceptance
+        // repair path. There is no result for an independent reviewer yet.
+        this.adoptAcceptance(undefined, onEvent);
+<<<<<<< HEAD
+        if (this.acceptance && this.milestoneAutoApply && this.turnProposals.size > 0 && !this.milestoneApplyFailed
+          && (!this.workPlan || isWorkPlanComplete(this.workPlan))) {
+          await this.maybeAutoApplyMilestone({ id: `${this.acceptance.id}:${this.turnToolStartedCount}`, title: this.acceptance.goal,
+            instruction: "Apply acceptance progress", status: "done" }, onEvent);
+        }
+        const assessment = await this.assessCompletion(onEvent);
+        const acceptanceOpen = this.turnComposerMode !== "ask" && (this.acceptanceOpen() || this.explicitVerificationOpen());
+        const contentOpen = assessment.adventure.length > 0 || assessment.checks.some(check =>
+          check.result.issues?.some(issue => issue.code === "ending-uninvoked"));
+        const repairAcceptance = acceptanceOpen && this.acceptanceRepairAttempts < MAX_RALPH_ATTEMPTS_PER_ITEM;
+        const repairContent = contentOpen && this.adventureRepairAttempts < 4;
+        if (!this.milestoneApplyFailed && spentOutputTokens < this.config.maxTokens && (repairAcceptance || repairContent)) {
+          if (repairAcceptance) this.acceptanceRepairAttempts += 1;
+          if (repairContent) this.adventureRepairAttempts += 1;
+          phase = "execute";
+          this.emitPhase(onEvent, "execute");
+          this.pushOrchestrationMessage(`Final artifact repair. Do not claim success, skip, shrink or recreate completed content. Repair missing criteria with repair_acceptance; satisfy original promises with real tools; explicitly review delivered images with review_acceptance. Drafts are not applied verification. Fix missing ending invocations in executable commands and rerun the relevant checks; static assessment is not playthrough proof.\n${JSON.stringify(assessment)}\n${ADVENTURE_AUTHORING_GUIDE}`);
+          continue;
+        }
+        if (acceptanceOpen || contentOpen) {
+          this.acceptance?.stop();
+          this.publishAcceptance(onEvent);
+          assistantText = this.completionIncompleteText({ ...assessment, acceptance: this.getAcceptanceSnapshot() });
+          onEvent({ type: "assistant_message", content: assistantText });
+          return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
+        }
+      }
+
+      if (phase === "review") {
+        const reviewText = messageText ?? "";
+        const repairInstruction = reviewRepairUsed ? null : reviewRepairInstruction(reviewText, reviewMissingWarnings);
+        if (repairInstruction !== null) {
+          reviewRepairUsed = true;
+          phase = "execute";
+          this.emitPhase(onEvent, "execute");
+          this.addExecutionHintIfNeeded();
+          this.pushOrchestrationMessage(`검수 보완 지시: ${repairInstruction}`);
+          continue;
+        }
+        // 레이어 검증(자문): 지적을 감사에 남기되 최종화를 막지 않는다.
+        await this.sweepFinishedLayers(onEvent);
+        await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.getActiveSpec()?.title || "");
+        assistantText = this.npcRewardFinalText(sanitizeAssistantText(stripReviewCompletePrefix(reviewText)));
+        onEvent({ type: "assistant_message", content: assistantText });
+        this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
+        return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
+      }
+
+      const toolCalls = assistantMsg.tool_calls ?? [];
+      if (toolCalls.length === 0) {
+        const finalText = sanitizeAssistantText(messageText ?? "");
+=======
+        const noWriteProblems = proposedByKey.size === 0
+          ? [...this.completionProblems(), ...(this.turnExpectsChange() ? this.verificationEvidence.problems("explicit") : [])] : [];
+        if (proposedByKey.size === 0 && this.turnComposerMode !== "ask" && this.turnIntent?.mode !== "question"
+          && (this.acceptanceOpen() || noWriteProblems.length > 0)) {
+          if (this.acceptanceRepairAttempts < MAX_RALPH_ATTEMPTS_PER_ITEM && spentOutputTokens < this.config.maxTokens) {
+            this.acceptanceRepairAttempts += 1;
+            phase = "execute";
+            this.emitPhase(onEvent, "execute");
+            this.pushOrchestrationMessage(`Repair the original acceptance and completion requirements with actual tools. Fix failed explicit checks and rerun stale checks after the last write. Do not skip, shrink or recreate completed content.\n${JSON.stringify({ acceptance: this.getAcceptanceSnapshot(), completionProblems: noWriteProblems })}`);
+            continue;
+          }
+          if (this.milestoneApplyFailed) this.runExecution = "failed";
+          else this.stopForAcceptance();
+          this.acceptance?.stop();
+          this.publishAcceptance(onEvent);
+          const error = this.acceptanceOpen() ? this.acceptanceIncompleteText()
+            : `요청한 구성이 아직 미완성입니다.\n${noWriteProblems.map(problem => `- ${problem}`).join("\n")}`;
+          return { assistantText: error, error, proposedCalls: [], stoppedReason: "error" };
+        }
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+        // Ralph loop: incomplete WorkPlan → re-inject current item; do not early-exit.
+        // 단, 현재 턴의 마일스톤 적용이 실패했으면 저장소와 draft가 어긋난 채 다음 항목을
+        // 저작하지 않는다. 새 사용자 메시지가 실패 상태를 해제한 뒤 이어갈 수 
+
+FILE src/ai/conversationStore.ts
+
+import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
+import { enqueueRemoteWrite, registerRemoteOutboxSender } from "@/project/remoteOutbox";
+import type { ProjectIdentity } from "@/project/store";
+<<<<<<< HEAD
+import { recordSupabaseConversation, SupabaseProjectSyncError, type SupabaseConversationInput } from "@/project/supabaseProjectSync";
+import type { Project } from "@/project/types";
+
+export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; }
+export interface ConversationSummary { /** Remote summaries have no transcript/turn count and cannot be deleted locally. */ readonly source?: "remote"; id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; /** 마지막 조수(없으면 사용자) 발화 80자 — 목록에서 고를 근거(데크 2026-09-03). */ readonly preview?: string; }
+=======
+import { listSupabaseConversations, recordSupabaseConversation, type SupabaseConversationInput } from "@/project/supabaseProjectSync";
+import type { Project } from "@/project/types";
+
+export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; mapIndex?: ConversationMapIndex; }
+export interface ConversationSummary { id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; /** 마지막 조수(없으면 사용자) 발화 80자 — 목록에서 고를 근거(데크 2026-09-03). */ readonly preview?: string; }
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+/**
+ * 저장 결과 — `saveConversation` 은 **던지지 않는다.**
+ * - `ok`: 이 세션에서 다시 읽을 수 있게 저장됐다(메모리 폴백 포함). false 면 IndexedDB 쓰기가 실패해 어디에도 없다.
+ * - `durable`: IndexedDB 에 남았다 — 새로 고침 뒤에도 있다. IndexedDB 가 없거나 열기에 실
+
+/** Recent summaries, deduplicated by stable ID. Local records always win, even over a newer remote timestamp. */
+export async function listConversations(options: ConversationReadOptions = {}): Promise<ConversationSummary[]> {
+  let local: ConversationSummary[] = [];
+  try {
+<<<<<<< HEAD
+    local = (await readAll()).map(toSummary);
+=======
+    return (await readAll()).slice(0, CONVERSATION_MAX_RECORDS).map(toSummary);
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+  } catch (error) {
+    console.warn("[ai-conversation] 대화 목록을 읽지 못했습니다:", error);
+    options.onError?.(error);
+  }
+  let remote: ConversationSummary[] = [];
+  try {
+    const config = await remoteC
+
+  return all.filter((conversation) => conversation.title.toLowerCase().includes(needle));
+}
+
+export async function loadConversation(id: string, options: ConversationReadOptions = {}): Promise<ConversationRecord | null> {
+  try {
+    await ensureLegacyMigrated();
+<<<<<<< HEAD
+    const local = await readAiRecord<ConversationRecord>(STORE, id);
+    if (local) return local;
+    let remote: ConversationRecord | null = null;
+    try {
+      const config = await remoteConversationConfig(options.scopeKey);
+      if (!config) return null;
+      const { loadSupabaseConversation } = await import("@/project/supabaseProjectSync");
+      const scopeKey = `remote:${config.projectId}`;
+      const row = await loadSupabaseConversation(id, config, { scopeKey });
+      const candidate = row ? decodeRemoteConversation(row, scopeKey) : null;
+      if (candidate && candidate.id !== id) throw new SupabaseProjectSyncError("요청한 대화 기록과 응답이 일치하지 않습니다.");
+      remote = candidate;
+    } catch (error) {
+      console.warn("[ai-conversation] 대화를 읽지 못했습니다:", error);
+      options.onError?.(error);
+    }
+    // Recheck after every remote outcome, including failed GETs and invalid responses.
+    // A save may have landed during the GET. Never overwrite or merge an unsynced local transcript.
+    // Reads do not cache/mirror remote records: normal panel persistence owns subsequent saves.
+    return (await readAiRecord<ConversationRecord>(STORE, id)) ?? remote;
+=======
+    const record = await readAiRecord<ConversationRecord>(STORE, id);
+    return isConversationRecord(record) ? record : null;
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+  } catch (error) {
+    console.warn("[ai-conversation] 대화를 읽지 못했습니다:", error);
+    options.onError?.(error);
+    return null;
+  }
+}
+
+export async function loadLatestConversation(): Promise<Conversat
+
+FILE src/ai/llmClient.ts
+
+import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
+import { PRODUCT_BRAND } from "@/brand";
+import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+<<<<<<< HEAD
+import { parseImageDelivery, type ImageDelivery } from "./imageDelivery";
+=======
+import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+
+// OpenAI 메시지 규약(우리가 쓰는 필드만).
+export interface ToolCall { id: string; type: "function"; function: { name: string; arguments: string } }
+
+export type ChatRole = "system" | "user" | "assistant" | "too
+
+FILE src/editor/panels/aiChatPanel.ts
+
+  const refreshRunOutcome = (): void => {
+    const outcome = controller.session?.getRunOutcome();
+    outcomeSlot.replaceChildren(...(outcome ? [renderRunOutcome(outcome)] : []));
+  };
+<<<<<<< HEAD
+  const stickyChecklist = createAiStickyChecklist({
+    onWithdraw: withdrawAiRequirement,
+    onReviewApproach: checkId => {
+      if (disposed || turnBusy || !controller.session) return null;
+      controller.session.refreshAcceptance(store.getCurrent());
+      return controller.session.previewApproachCorrection(checkId);
+    },
+    onConfirmApproach: preview => {
+      if (disposed || turnBusy || !controller.session) return false;
+      const session = controller.session;
+      session.refreshAcceptance(store.getCurrent());
+      const accepted = session.confirmApproachCorrection(preview);
+      stickyChecklist.update(session.getAcceptanceSnapshot());
+      refreshRunOutcome();
+      return accepted;
+=======
+  let refreshAcceptanceMenus: () => void = () => {};
+  const stickyChecklist = createAiStickyChecklist({
+    onWithdraw: withdrawAiRequirement,
+    onChange: () => refreshAcceptanceMenus(),
+    onHide: () => {
+      const opener = moreMenuToggle.isConnected && !moreMenuToggle.closest("[hidden]")
+        && moreMenuToggle.getClientRects().length > 0 ? moreMenuToggle : input;
+      if (opener.isConnected) opener.focus();
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    },
+  });
+  let disposed = false;
+  const initialProjectIdentity = store.getProjectIdentity();
+  const currentProjectContextKey = conversationScopeKey(initialProjectIdentity, store.getCurrent());
+
+
+  // 남아 있었다(저장 쪽은 계속 돌고 있었다). 모달이 그 조합을 되살린다.
+  const openConversationHistory = (): void => {
+    // 지금 대화를 먼저 보관한다 — 열기 직후 dropSession 이 세션을 버리므로 여기서 저장하지
+    // 않으면 방금까지의 턴이 어디에도 남지 않는다.
+    persistConversation();
+<<<<<<< HEAD
+    const historyIdentity = store.getProjectIdentity().id;
+    const historyScope = conversationScope;
+    const historyConversationId = conversationId;
+    openAiConversationHistoryModal({
+      scopeKey: historyScope,
+      currentConversationId: historyConversationId,
+      isCurrent: () => !disposed && store.getProjectIdentity().id === historyIdentity &&
+        conversationScopeKey(store.getProjectIdentity(), store.getCurrent()) === historyScope &&
+        conversationId === historyConversationId,
+=======
+    const capturedScope = conversationScope;
+    const capturedIdentityId = projectIdentityId;
+    const project = store.getCurrent();
+    const stateMapId = editorState.get().currentMapId;
+    const currentMapId = stateMapId && project.maps[stateMapId] ? stateMapId : project.startMapId;
+    openAiConversationHistoryModal({
+      scopeKey: capturedScope,
+      currentConversationId: conversationId,
+      currentMapId,
+      knownMaps: Object.values(project.maps).map((map) => ({ id: map.id, name: map.name })),
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+      onOpen: (record) => {
+        if (disposed) return;
+        if (projectIdentityId !== capturedIdentityId) return;
+        if (conversationScope !== capturedScope) return;
+        if ((record.pr
+
+FILE src/editor/panels/aiConversationHistoryModal.ts
+
+  /** 현재 프로젝트의 대화 스코프 키(conversationScopeKey). 열 때 캡처한 값. */
+  readonly scopeKey: string;
+  /** 지금 화면에 열려 있는 대화 id — 목록에서 「현재」로 표시하고 열기를 막는다. */
+  readonly currentConversationId: string;
+<<<<<<< HEAD
+  /** The owning panel/project must still be the one that opened this dialog. */
+  readonly isCurrent?: () => boolean;
+=======
+  /** 열 때 캡처한 현재 맵. 없으면 현재-맵 필터는 빈 목록이다. */
+  readonly currentMapId: string | null;
+  readonly knownMaps: readonly HistoryKnownMap[];
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+  readonly onOpen: (record: ConversationRecord) => void;
+}): HTMLElement {
+  closeAiConversationHistoryModal();
+
+  const capturedScope = options.scopeKey;
+  const hydrateAbort = new AbortController()
+
+  const search = el("input", {
+    class: "ai-history-search",
+    attrs: { type: "search", placeholder: "제목으로 찾기", "aria-label": "대화 제목 검색" },
+    dataset: { testid: "ai-history-search" },
+  });
+
+<<<<<<< HEAD
+  const feedback = el("div");
+  const showReadError = (): void => {
+    feedback.replaceChildren(el("p", {
+      class: "ai-history-note",
+      attrs: { role: "alert" },
+      dataset: { testid: "ai-history-error" },
+      text: "대화 기록을 모두 불러오지 못했습니다. 이 창을 다시 열어 시도해 주세요. 이 브라우저의 기록은 유지됩니다.",
+    }));
+  };
+  const isActive = (): boolean => openBackdrop === backdrop && (options.isCurrent?.() ?? true);
+  let selectionGeneration = 0;
+  // 갱신은 비동기다 — 검색 입력이 연타되면 늦게 도착한 옛 결과가 새 결과를 덮지 않게 세대를 센다.
+  let renderGeneration = 0;
+  const renderList = async (): Promise<void> => {
+    const generation = ++renderGeneration;
+    let failed = false;
+    const all = sortConversationsForScope(await listConversations({
+      scopeKey: options.scopeKey,
+      onError: () => { failed = true; },
+    }), options.scopeKey);
+    if (generation !== renderGeneration || !isActive()) return;
+    feedback.replaceChildren();
+    if (failed) showReadError();
+    const rows = filterConversationsByTitle(all, search.value);
+    if (rows.length === 0) {
+      if (failed) { list.replaceChildren(); return; }
+      list.replaceChildren(
+        el("p", {
+          class: "ai-history-empty",
+          text: all.length === 0 ? "저장된 대화가 없습니다." : "검색 결과가 없습니다.",
+          dataset: { testid: "ai-history-empty" },
+        }),
+      );
+      return;
+=======
+  const filterCurrent = el("button", {
+    class: "ai-history-filter",
+    text: "이 맵",
+    attrs: { type: "button", "aria-pressed": "true" },
+    dataset: { testid: "ai-history-filter-current" },
+    on: { click: () => setFilter("current") },
+  });
+  const filterAll = el("button", {
+    class: "ai-history-filter",
+    text: "전체",
+    attrs: { type: "button", "aria-pressed": "false" },
+    dataset: { testid: "ai-history-filter-all" },
+    on: { click: () => setFilter("all") },
+  });
+  const filterUnknown = el("button", {
+    class: "ai-history-filter",
+    text: "출처 없음",
+    attrs: { type: "button", "aria-pressed": "false" },
+    dataset: { testid: "ai-history-filter-unknown" },
+    on: { click: () => setFilter("unknown") },
+  });
+  const filterLegacy = el("button", {
+    class: "ai-history-filter",
+    text: "스코프 없음",
+    attrs: { type: "button", "aria-pressed": "false", title: "프로젝트에 묶이지 않은 옛 기록 — 읽기만" },
+    dataset: { testid: "ai-history-filter-legacy" },
+    on: { click: () => setFilter("legacy") },
+  });
+  const filters = el("div", {
+    class: "ai-history-filters",
+    attrs: { role: "group", "aria-label": "대화 기록 범위" },
+    children: [filterCurrent, filterAll, filterUnknown, filterLegacy],
+  });
+  const mapSelect = el("div", {
+    class: "ai-history-map-select",
+    attrs: { role: "group", "aria-label": "맵 선택" },
+    dataset: { testid: "ai-history-map-select" },
+  });
+  const recoverButton = el("button", {
+    class: "ai-history-recover",
+    text: "서버에서 이 프로젝트 기록 가져오기",
+    attrs: {
+      type: "button",
+      title: "이 브라우저에 없는 서버 쪽 대화를 가져옵니다. 모델을 부르지 않습니다.",
+    },
+    dataset: { testid: "ai-history-recover" },
+    on: { click: () => void modalPendingWork.track(runRecover()) },
+  });
+  const recoverStatus = el("p", {
+    class: "ai-history-recover-status",
+    dataset: { testid: "ai-history-recover-status", state: "idle" },
+  });
+  recoverStatus.hidden = true;
+
+  const isCurrentModal = (): boolean => openBackdrop === backdrop;
+
+  const historyNote = el("p", {
+    class: "ai-history-note",
+    text: "여는 순간 지금 대화는 기록에 저장됩니다. 목록만 보면 지금 대화는 그대로입니다.",
+  });
+
+  const refreshFilterChrome = (): void => {
+    filterCurrent.setAttribute("aria-pressed", String(filter === "current"));
+    filterAll.setAttribute("aria-pressed", String(filter === "all"));
+    filterUnknown.setAttribute("aria-pressed", String(filter === "unknown"));
+    filterLegacy.setAttribute("aria-pressed", String(filter === "legacy"));
+    recoverButton.hidden = filter === "legacy";
+    mapSelect.hidden = filter === "legacy";
+    historyNote.textContent = filter === "legacy"
+      ? "프로젝트에 묶이지 않은 기록입니다. 읽기만 되며 지금 대화로 이어가지 않습니다."
+      : "여는 순간 지금 대화는 기록에 저장됩니다. 목록만 보면 지금 대화는 그대로입니다.";
+    renderMapSelect();
+  };
+
+  const collectMapIds = (): string[] => {
+    const ids: string[] = [];
+    const seen = new Set<string>();
+    const add = (id: string): void => {
+      if (!id || seen.has(id)) return;
+      seen.add(id);
+      ids.push(id);
+    };
+    if (options.currentMapId) add(options.currentMapId);
+    for (const map of options.knownMaps) add(map.id);
+    for (const id of archiveMapIds) add(id);
+    for (const row of loaded) {
+      for (const id of row.mapIds) add(id);
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    }
+    return ids;
+  };
+
+  const renderMapSelect = (): void => {
+    const inProject = new Set(options.knownMaps.map((map) => map.id));
+    mapSelect.replaceChildren(
+      ...collectMapIds().map(
+
+          attrs: {
+            type: "button",
+            "aria-pressed": String(active),
+            title: inProject.has(id) ? label : "현재 프로젝트에 없는 맵 — 출처 없음이 아닙니다",
+          },
+<<<<<<< HEAD
+          dataset: { testid: "ai-history-open" },
+          children: [
+            el("span", { class: "ai-history-title", text: row.title }),
+            // 마지막 발화 미리보기 — 제목·날짜·턴 수만으로는 어느 대화인지 고를 근거가 없었다(데크 2026-09-03).
+            ...(row.preview ? [el("span", { class: "ai-history-preview", text: row.preview, dataset: { testid: "ai-history-preview" } })] : []),
+            el("span", {
+              class: "ai-history-meta",
+              text: [
+                `${formatSavedAt(row.savedAt)}`,
+                ...(row.source === "remote" ? ["온라인 기록"] : [`턴 ${row.turnCount}`]),
+                row.model,
+                ...(foreign ? ["다른 프로젝트"] : []),
+                ...(isCurrent ? ["현재"] : []),
+              ].join(" · "),
+            }),
+          ],
+          on: {
+            click: () => void modalPendingWork.track((async () => {
+              if (isCurrent || !isActive()) return;
+              const selection = ++selectionGeneration;
+              let failed = false;
+              const record = await loadConversation(row.id, {
+                scopeKey: options.scopeKey,
+                onError: () => { failed = true; },
+              });
+              if (selection !== selectionGeneration || !isActive()) return;
+              // Local foreign-project history remains explicitly selectable. Remote rows must
+              // retain their validated current scope, including if a local save raced the GET.
+              if (!record || record.id !== row.id || record.projectContextKey !== row.projectContextKey) {
+                // 목록에는 있는데 본문이 없다 — 조용히 새로 그리면 사라진 이유가 남지 않는다.
+                recordAiUiEvent({
+                  surface: "history-modal",
+                  action: AI_UI_ACTIONS.conversationRestore,
+                  testid: "ai-history-open",
+                  detail: { conversationId: row.id, kind: failed ? "failed" : record ? "scope-mismatch" : "missing" },
+                });
+                showReadError();
+                return;
+              }
+              // 복원한 칸 수가 곧 «어디까지 이어졌는가» 다. 클릭만으로는 알 수 없다.
+              recordAiUiEvent({
+                surface: "history-modal",
+                action: AI_UI_ACTIONS.conversationRestore,
+                testid: "ai-history-open",
+                detail: {
+                  conversationId: row.id,
+                  entries: record.entries.length,
+                  turnCount: record.entries.filter((entry) => entry.kind === "user").length,
+                  foreignProject: foreign,
+                },
+              });
+              close();
+              options.onOpen(record);
+            })()),
+          },
+        });
+        const deleteButton = el("button", {
+          class: "ai-history-delete",
+          children: [deckIcon("x", { size: 15 })],
+          attrs: { type: "button", title: "이 브라우저의 기록을 지웁니다 (온라인 기록은 유지)", "aria-label": `${row.title} 기록 삭제` },
+          dataset: { testid: "ai-history-delete" },
+          on: {
+            click: () => void modalPendingWork.track((async () => {
+              if (!isActive()) return;
+              ++selectionGeneration;
+              // 삭제는 되돌릴 수 없다 — 무엇을 지웠는지가 남아야 «없어졌다» 를 설명할 수 있다.
+              recordAiUiEvent({
+                surface: "history-modal",
+                action: AI_UI_ACTIONS.conversationDelete,
+                testid: "ai-history-delete",
+                label: row.title,
+                detail: { conversationId: row.id, turnCount: row.turnCount, wasCurrent: isCurrent },
+              });
+              await deleteConversation(row.id);
+              await renderList();
+            })()),
+          },
+        });
+        return el("div", {
+          class: "ai-history-row",
+          dataset: { testid: "ai-history-row", ...(isCurrent ? { current: "1" } : {}) },
+          children: [openButton, ...(row.source === "remote" ? [] : [deleteButton])],
+        });
+=======
+          dataset: { mapId: id },
+          on: {
+            click: () => {
+              if (id === options.currentMapId) setFilter("current");
+              else setFilter("map", id);
+            },
+          },
+        });
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+      }),
+    );
+  };
+
+  const setRecover = (status: RecoverStatus, message: string): void => {
+    recoverButton.disabled = status === "loading";
+    recoverButton.setAttribute("aria-busy", String(s
+
+              mapSelect,
+              search,
+              el("div", {
+                class: "ai-history-recover-row",
+                children: [recoverButton, recoverStatus],
+              }),
+<<<<<<< HEAD
+              feedback,
+=======
+              historyNote,
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+              list,
+            ],
+          }),
+        ],
+      }),
+    ],
+  });
+
+  const restoreFocus = installAiModalFocus(backdrop);
+  const close = registerModal(backdrop, () => {
+    hydrateAb
+
+FILE src/editor/panels/aiStickyChecklist.ts
+
+  pending: "대기", working: "작업 중", verifying: "검증 중", verified: "검증 완료", blocked: "진행 막힘",
+} as const;
+
+interface ChecklistActions {
+  readonly onWithdraw?: (action: RequirementWithdrawalAction) => boolean;
+<<<<<<< HEAD
+  readonly onReviewApproach?: (checkId: string) => ApproachPreview | null;
+  readonly onConfirmApproach?: (preview: ApproachPreview) => boolean;
+=======
+  readonly onHide?: () => void;
+  readonly onChange?: () => void;
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+}
+
+function createItem(onWithdraw: ((requirementId: string) => boolean) | undefined, actions: ChecklistActions) {
+  let item: AcceptanceItemSnapshot | null = null;
+  let busy = false;
+  const mark = 
+
+      const ids = new Set(next.items.map((item) => item.id));
+      for (const [id, row] of rows) if (!ids.has(id)) {
+        if (row.root.contains(document.activeElement)) toggle.focus();
+        row.root.remove(); rows.delete(id);
+      }
+<<<<<<< HEAD
+      next.items.forEach((item, index) => {
+        const row = rows.get(item.id) ?? createItem(withdraw, approachActions);
+        rows.set(item.id, row); row.setBusy(busy); row.update(item);
+        if (list.children[index] !== row.root) list.insertBefore(row.root, list.children[index] ?? null);
+      });
+=======
+      const priority = { working: 0, blocked: 0, verifying: 1, pending: 2, verified: 3 };
+      const active = required.filter(item => item.status !== "verified")
+        .sort((a, b) => priority[a.status] - priority[b.status]);
+      const groups = [
+        { items: active, host: list, group: null, label: "" },
+        { items: verified, host: verifiedGroup.items, group: verifiedGroup, label: "검증 완료" },
+        { items: optional, host: optionalGroup.items, group: optionalGroup, label: "선택" },
+        { items: withdrawn, host: withdrawnGroup.items, group: withdrawnGroup, label: "제외" },
+      ];
+      for (const { items, host, group, label } of groups) {
+        if (group) {
+          group.label.textContent = `${label} ${items.length}`;
+          // Keep focus in a row until it has moved to its new group below.
+          if (items.length) group.root.hidden = false;
+        }
+        items.forEach((item, index) => {
+          const row = rows.get(item.id) ?? createItem(withdraw);
+          rows.set(item.id, row); row.setBusy(busy); row.update(item);
+          const focused = row.root.contains(document.activeElement) ? document.activeElement : null;
+          if (focused && group) group.root.open = true;
+          if (host.children[index] !== row.root) host.insertBefore(row.root, host.children[index] ?? null);
+          if (focused instanceof HTMLElement && document.activeElement !== focused) focused.focus({ preventScroll: true });
+        });
+      }
+      for (const { items, group } of groups) if (group && !items.length) {
+        if (group.root.contains(document.activeElement)) toggle.focus();
+        group.root.hidden = true;
+      }
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+      if (!root.isConnected) document.body.append(root);
+      syncActivity(); syncExpanded(); measureTop();
+      if (position && !root.hidden) place(position.x, position.y);
+      actions.onChange?
+
+FILE src/editor/projectWikiCoordinator.ts
+<<<<<<< HEAD
+import { extractProjectWiki, ProjectWikiExtractionTimeoutError } from "@/ai/projectWikiClient";
+import { conversationScopeKey, listConversations, loadConversation } from "@/ai/conversationStore";
+=======
+import { extractProjectWiki } from "@/ai/projectWikiClient";
+import { conversationScopeKey, queryConversationArchive, loadConversationForScope } from "@/ai/conversationStore";
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
+import { stripContextFooter } from "@/ai/contextFooter";
+import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { store,
+
+FILE src/project/store.ts
+
+              && this.dirtySinceLastPersist,
+          ));
+          this.autoSaveRetryCount = 0;
+          this.stopHealthCheck();
+        }
+        return result;
+      } catch (error) {
+<<<<<<< HEAD
+        if (this.contentLineage === lineage) {
+          this.autoSaveRetryCount += 1;
+          this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error), retryCount: this.autoSaveRetryCount });
+          this.scheduleAutoSaveRetry(lineage);
+        }
+=======
+        this.autoSaveRetryCount += 1;
+        this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error), retryCount: this.autoSaveRetryCount });
+        if (this.remotePersistenceEnabled) this.scheduleAutoSaveRetry();
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+        throw error;
+      } finally {
+        if (this.persistInFlightLineage === lineage) this.persistInFlight = null;
+      }
+    })();
+    this.persistInFlight = run;
+    this.persistInFlightLine
+
+FILE src/project/supabaseProjectSync.ts
+
+  const response = await fetch(url, { headers: supabaseJsonHeaders(config, "read"), signal });
+  if (!response.ok) {
+    throw new SupabaseProjectSyncError(await response.text(), response.status);
+  }
+  const parsed: unknown = await response.json();
+<<<<<<< HEAD
+  if (strict && (!Array.isArray(parsed) || !parsed.every(isRecord))) {
+    throw new SupabaseProjectSyncError("Invalid conversation response");
+  }
+=======
+  if (strict && (!Array.isArray(parsed) || !parsed.every(isRecord))) throw new Error("Invalid conversation response");
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+  if (!Array.isArray(parsed)) return [];
+  return parsed.filter(isRecord);
+}
+
+// ── AI 대화 기록 미러 (로컬 정본, 여기는 기기 간 복원/검색용) ────────────────
+export type SupabaseConversationInput = {
+  readonly conversa
+
+        "20260713000000_ai_conversations_user_skills.sql",
+      );
+    }
+    throw error;
+  }
+}
+
+/** 대화 요약 목록 — query가 있으면 제목 부분일치(ilike) 검색. entries_json은 내리지 않는다. */
+export async function listSupabaseConversations(
+<<<<<<< HEAD
+  opts: { readonly query?: string; readonly limit?: number; readonly scopeKey?: string } = {},
+=======
+  opts: { readonly query?: string; readonly limit?: number; readonly offset?: number; readonly signal?: AbortSignal; readonly includeEntries?: boolean; readonly projectContextKey?: string } = {},
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+  config = supabaseProjectConfig(),
+): Promise<readonly Record<string, unknown>[]> {
+  if (!config) throw new Error("Conversation recovery is not configured");
+  opts.signal?.throwIfAborted();
+  cons
+
+  opts.signal?.throwIfAborted();
+  const n = Math.max(1, Math.min(100, Math.floor(opts.limit ?? 50)));
+  const params = new URLSearchParams({
+    project_id: `eq.${config.projectId}`,
+<<<<<<< HEAD
+    select: "conversation_id,project_id,title,model,project_context_key,saved_at",
+    order: "saved_at.desc",
+    limit: String(n),
+    ...(opts.scopeKey ? { project_context_key: `eq.${opts.scopeKey}` } : {}),
+  });
+  const query = opts.query?.trim();
+  if (query) params.set("title", `ilike.*${query.replaceAll("*", "").replaceAll(",", "")}*`);
+  // History distinguishes failed reads from a genuinely empty remote list.
+  return fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config, undefined, true);
+=======
+    select: `project_id,conversation_id,title,model,project_context_key,saved_at${opts.includeEntries ? ",entries_json" : ""}`,
+    order: "saved_at.desc,conversation_id.asc",
+    limit: String(n),
+    offset: String(Math.max(0, Math.floor(opts.offset ?? 0))),
+  });
+  const query = opts.query?.trim();
+  if (query) params.set("title", `ilike.*${query.replaceAll("*", "").replaceAll(",", "")}*`);
+  if (opts.projectContextKey !== undefined) params.set("project_context_key", `eq.${opts.projectContextKey}`);
+  return fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config, opts.signal, true);
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+}
+
+/** 대화 1건 전체(entries_json 포함) — 로컬에 없는 대화를 다른 기기에서 복원할 때. */
+export async function loadSupabaseConversation(
+  conversationId: string,
+  config = supabaseProjectConfig(),
+<<<<<<< HEAD
+  options: {
+
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+}
+
+/** 대화 1건 전체(entries_json 포함) — 로컬에 없는 대화를 다른 기기에서 복원할 때. */
+export async function loadSupabaseConversation(
+  conversationId: string,
+  config = supabaseProjectConfig(),
+<<<<<<< HEAD
+  options: { readonly scopeKey?: string } = {},
+=======
+  signal?: AbortSignal,
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+): Promise<Record<string, unknown> | null> {
+  if (!config) throw new Error("Conversation recovery is not configured");
+  signal?.throwIfAborted();
+  const params = new URLSearchParams({
+    project_
+
+  if (!config) throw new Error("Conversation recovery is not configured");
+  signal?.throwIfAborted();
+  const params = new URLSearchParams({
+    project_id: `eq.${config.projectId}`,
+    conversation_id: `eq.${conversationId}`,
+<<<<<<< HEAD
+    select: "conversation_id,project_id,title,model,project_context_key,entries_json,saved_at",
+=======
+    select: "project_id,conversation_id,title,model,project_context_key,entries_json,saved_at",
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    limit: "1",
+    ...(options.scopeKey ? { project_context_key: `eq.${options.scopeKey}` } : {}),
+  });
+<<<<<<< HEAD
+  const rows = await fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${pa
+
+    select: "project_id,conversation_id,title,model,project_context_key,entries_json,saved_at",
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    limit: "1",
+    ...(options.scopeKey ? { project_context_key: `eq.${options.scopeKey}` } : {}),
+  });
+<<<<<<< HEAD
+  const rows = await fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config, undefined, true);
+=======
+  const rows = await fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config, signal, true);
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+  return rows[0] ?? null;
+}
+
+/** 원격 최신 commit tip 을 세션 맵에 심는다 — 리로드 후 parent_commit 계보 유지. */
+export async function hydrateLastRemoteCommitTip(
+  config = supabaseProjectConfig(),
+): Promise<string |
+
+FILE test/aiAssistantSession.test.ts
+
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
+import { store } from "@/project/store";
+import type { Project } from "@/project/types";
+<<<<<<< HEAD
+import type { SessionEvent } from "@/ai/assistantSession";
+import { getTool } from "@/editor/tools";
+import * as applyStore from "@/editor/tools/applyChangesetToStore";
+=======
+import type { SessionEvent, ToolImageRenderer } from "@/ai/assistantSession";
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+
+const MILESTONE_TEST_ENV = {
+  VITE_SUPABASE_ANON_KEY: "test-anon-key",
+  VITE_SUPABASE_PROJECT_ID: "rpg-zzu-test-project",
+  VITE_SUPABASE_URL: "http://dbserver:8100",
+} as const;
+
+function stubSup
+
+      if (approval) return approval;
+      if (index >= steps.length) gateExhausted();
+      if (index === steps.length - 1) layerEventCount = events.length;
+      return steps[index++]!;
+    };
+<<<<<<< HEAD
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, yieldToUi: async () => {} });
+=======
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, renderImages: renderLifecycleImages });
+    const events: SessionEvent[] = [];
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+
+    const result = await session.sendUserMessage("마을·퀘스트·최종 검증을 진행해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+
+    // 모델 툴콜 + 게이트 툴콜이 순서대로 관측된다: 레이어 1(map) → 레이어 2(que
+
+    expect(lint.mock.calls.at(-1)?.[0]).toEqual(store.getCurrent());
+    const audits = gateStatusTexts(session);
+    expect(audits.filter((t) => t.includes("agent_run:verification-pass")).length).toBe(3);
+<<<<<<< HEAD
+    expect(audits.filter(t => t.startsWith("agent_run:completion-check-pass "))).toHaveLength(2);
+    expect(index).toBe(steps.length);
+    expect(result.stoppedReason).toBe("final");
+    expect(result.workPlan?.layers.flatMap(layer => layer.items.map(item => item.status))).toEqual(["done", "done", "done"]);
+    expect(events.filter(event => event.type === "milestone_applied").map(event => [event.title, event.toolCount]))
+      .toEqual([["제목 1", 1], ["퀘스트 등록", 2], ["완성", 1]]);
+    expect(apply.mock.calls.map(([, options]) => options.toolNames))
+      .toEqual([["set_title_screen"], ["upsert_event", "define_quest"], ["set_title_screen"]]);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["set_title_screen", "upsert_event", "define_quest", "set_title_screen"]);
+    expect(result.proposedCalls).toEqual([]);
+    expect(getMapEditHistoryEntries()).toHaveLength(3);
+=======
+    // Layer checks remain per-layer; application happens once after current-image review.
+    expect(result.review?.status).toBe("approved");
+    expect(events.filter(event => event.type === "milestone_applied")).toHaveLength(1);
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    expect(store.getCurrent().meta?.title).toBe("t2");
+  }, 60000);
+
+  it("(a-2) final 레이어에 play_walkthrough 가 없으면 verify_quest×전체 questId 폴백이 돈다", async () => {
+    const { AssistantSession, createB
+
+      if (approval) return approval;
+      if (index >= steps.length) gateExhausted();
+      if (index === steps.length - 1) layerEventCount = events.length;
+      return steps[index++]!;
+    };
+<<<<<<< HEAD
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, yieldToUi: async () => {} });
+=======
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, renderImages: renderLifecycleImages });
+    const events: SessionEvent[] = [];
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+
+    const result = await session.sendUserMessage("퀘스트를 등록하고 마무리해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+
+    const toolCalls = events.slice(0, layerEventCount).filt
+
+    expect(verifyQuestCalls.map(call => call.args)).toEqual([{ questId: "q1" }, { questId: "q1" }]);
+    // final 레이어 폴백: play_walkthrough 는 실행되지 않는다.
+    expect(toolCalls.filter((e) => e.name === "play_walkthrough")).toHaveLength(0);
+<<<<<<< HEAD
+    expect(toolCalls.map(call => call.name)).toEqual([
+      "set_work_plan", "upsert_event", "define_quest", "run_lint", "verify_quest",
+      "set_title_screen", "run_lint", "verify_quest",
+    ]);
+    const completionEvents = events.slice(layerEventCount);
+    const assessments = completionEvents.filter(event => event.type === "completion_assessment");
+    expect(assessments).toHaveLength(2);
+    for (const { assessment } of assessments) {
+      expect(assessment.checks.map(check => check.name)).toEqual(["run_lint", "verify_quest"]);
+      expect(assessment.checks.find(check => check.name === "verify_quest")?.result.data)
+        .toMatchObject({ ok: true, verificationStatus: "verified", verifiedNodeIds: ["n1"] });
+    }
+    const completionCalls = completionEvents.filter(event => event.type === "tool_call");
+    expect(completionCalls.map(({ name, result }) => ({ name, result })))
+      .toEqual(assessments.flatMap(({ assessment }) => assessment.checks));
+    expect(completionCalls.filter(call => call.name === "verify_quest").map(call => call.args))
+      .toEqual([{ questId: "q1" }, { questId: "q1" }]);
+    expect(result.completionAssessment).toEqual(assessments.at(-1)?.assessment);
+    expect(lint.mock.calls.map(([checkedProject]) => checkedProject.meta.title)).toEqual([project.meta.title, "t2", "t2", "t2"]);
+    expect(lint.mock.calls.at(-1)?.[0]).toEqual(store.getCurrent());
+    const audits = gateStatusTexts(session);
+    expect(audits.filter(t => t.startsWith("agent_run:verification-pass "))).toHaveLength(2);
+    expect(audits.filter(t => t.startsWith("agent_run:completion-check-pass "))).toHaveLength(2);
+    expect(index).toBe(steps.length);
+    expect(result.stoppedReason).toBe("final");
+    expect(result.workPlan?.layers.flatMap(layer => layer.items.map(item => item.status))).toEqual(["done", "done"]);
+    expect(events.filter(event => event.type === "milestone_applied").map(event => [event.title, event.toolCount]))
+      .toEqual([["퀘스트 등록", 2], ["제목 확정", 1]]);
+    expect(apply.mock.calls.map(([, options]) => options.toolNames)).toEqual([["upsert_event", "define_quest"], ["set_title_screen"]]);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["upsert_event", "define_quest", "set_title_screen"]);
+    expect(result.proposedCalls).toEqual([]);
+    expect(getMapEditHistoryEntries()).toHaveLength(2);
+    expect(store.getCurrent().meta.title).toBe("t2");
+=======
+    expect(gateStatusTexts(session).filter((t) => t.includes("agent_run:verification-pass")).length).toBe(2);
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.review?.status).toBe("approved");
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+  }, 60000);
+
+  it("(b) 검증 지적(린트 오류)은 자문으로만 남고 런을 멈추지 않는다 — 재킥·verification_failed 없음", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const project = createBlan
+
+FILE test/aiCompletionAccounting.test.ts
+
+import { createBlankProject } from "@/project/defaults";
+import { store } from "@/project/store";
+import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
+import { fixedDeclarer } from "./intentFixture";
+<<<<<<< HEAD
+import { FLOOR_PAINT_ARGS, WALL_PAINT_ARGS, PRESERVED_PAINT_SPEC, preservedPaintContext } from "./fixtures/preservedPaint";
+import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
+=======
+import { approvedReviewResponse } from "./independentReviewFixture";
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+
+const CONFIG = { ...defaultAiConfig(), agentMode: "chat", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 } satisfies AiConfig;
+const SPEC = { mapId: "m1", assets: [{ id: "terrain", kind: "terrain",
+
+  return toolCall("paint_tiles", { mapId: "m1", from: { x, y }, to: { x: x + 2, y: y + 2 }, mode: "rect", layer: "lower", tile: 281 }, id);
+}
+
+type ToolEvent = Extract<SessionEvent, { type: "tool_call" }>;
+
+describe("completion accounting through real assistant sessions", () => {
+<<<<<<< HEAD
+  it.each([false, true])("auto-completes verified maintenance without waiving a new quantity (quantity=%s)", async (quantity) => {
+    const ctx = preservedPaintContext();
+    const instruction = quantity ? "타일 160개 추가해줘" : "바닥을 칠하고 기존 벽은 유지해줘";
+    const plan = { goal: instruction, acceptance: [{ id: "floor", title: "floor", criteria: [
+      { kind: "targetChange", target: { mapId: "map_basement" }, region: { x: 1, y: 1, w: 10, h: 8 } },
+      { kind: "preserve", target: { mapId: "map_basement" }, region: { x: 0, y: 0, w: 12, h: 1 } },
+    ] }], layers: [{ title: "terrain", items: [{ title: "terrain", instruction, successTools: ["paint_tiles"], mapTargets: ["map_basement"] }] }] };
+    const entries = [
+      { name: "set_work_plan", args: plan }, { name: "set_build_spec", args: PRESERVED_PAINT_SPEC },
+      { name: "paint_tiles", args: FLOOR_PAINT_ARGS }, { name: "paint_tiles", args: WALL_PAINT_ARGS },
+    ];
+    const events: SessionEvent[] = [];
+    const session = new AssistantSession(ctx.project, {
+      config: { ...CONFIG, maxToolCalls: 1 }, declareIntent: fixedDeclarer({ mode: "modify" }),
+      chat: scriptedChat([{ message: { role: "assistant", content: null, tool_calls: entries.map((entry, index) => ({
+        id: `p7-${index}`, type: "function", function: { name: entry.name, arguments: JSON.stringify(entry.args) },
+      })) }, finishReason: "tool_calls" }]),
+    });
+    const result = await session.sendUserMessage(instruction, event => events.push(event));
+    expect(events.filter((event): event is ToolEvent => event.type === "tool_call").map(event => event.result.ok)).toEqual([true, true, true, true]);
+    expect(result.proposedCalls.map(call => call.result.diff?.tilesChanged)).toEqual([80, 0]);
+    expect(session.getCompletionSpecs(result.proposedCalls)).toEqual([PRESERVED_PAINT_SPEC]);
+    expect(session.getWorkPlan()?.layers[0].items[0].status).toBe(quantity ? "in_progress" : "done");
+    expect(result.stoppedReason).toBe("max-tool-calls");
+    // Checklist progress is not canonical acceptance or delivery: these drafts are unapplied.
+    expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
+    expect(result.runOutcome?.goal).toBe("incomplete");
+  });
+
+  it.each(["preserve", "targetChange"] as const)("applies maintenance once but retains canonical %s semantics", async (kind) => {
+    const { project } = preservedPaintContext();
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-test-project");
+    vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+    vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
+    store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+    store.replace(project);
+    resetMapEditHistory();
+    const plan = { goal: "바닥 칠하기와 벽 유지", acceptance: [{ id: "walls", title: "walls", criteria: [
+      { kind, target: { mapId: "map_basement" }, region: { x: 0, y: 0, w: 12, h: 1 } },
+    ] }], layers: [{ title: "terrain", items: [{ title: "terrain", instruction: "바닥을 칠하고 벽은 유지해줘", successTools: ["paint_tiles"], mapTargets: ["map_basement"] }] }] };
+    const events: SessionEvent[] = [];
+    const session = new AssistantSession(project, {
+      config: { ...CONFIG, agentMode: "auto", liteModel: "executor-model" },
+      declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true }),
+      chat: scriptedChat([
+        final(JSON.stringify({ action: "new_plan", ...plan })), toolCall("set_work_plan", plan, "plan"),
+        toolCall("set_build_spec", PRESERVED_PAINT_SPEC, "spec"), toolCall("paint_tiles", FLOOR_PAINT_ARGS, "floor"),
+        () => {
+          expect(session.getWorkPlan()?.layers[0].items[0].status).toBe("in_progress");
+          expect(events.filter(event => event.type === "milestone_applied")).toEqual([]);
+          return toolCall("paint_tiles", WALL_PAINT_ARGS, "walls");
+        },
+        ...Array.from({ length: kind === "preserve" ? 1 : 4 }, () => final()),
+      ]),
+    });
+    const result = await session.sendUserMessage(plan.goal, event => events.push(event), undefined, { autonomous: true });
+    expect(result.stoppedReason).toBe("final");
+    expect(session.getWorkPlan()?.layers[0].items[0].status).toBe("done");
+    expect(events.filter(event => event.type === "milestone_applied").map(event => event.toolCount)).toEqual([2]);
+    expect(result.proposedCalls).toEqual([]);
+    expect(result.appliedCalls?.map(call => call.result.diff?.tilesChanged)).toEqual([80, 0]);
+    expect(proposalCompletenessWarnings({ buildSpecs: session.getCompletionSpecs(result.appliedCalls ?? []),
+      calls: result.appliedCalls ?? [], project: session.getProposedProject() })).toEqual([]);
+    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: kind === "preserve" ? "verified" : "blocked", items: [
+      { id: "walls", evidence: [{ passed: kind === "preserve" }] },
+    ] });
+    expect(result.runOutcome?.goal).toBe(kind === "preserve" ? "satisfied" : "incomplete");
+    expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(session.getProposedProject().maps.map_basement.lowerTiles);
+  });
+
+  it("auto-completes a later spatial milestone using applied plus pending writes without reapplying the first", async () => {
+=======
+  it("accounts for both spatial milestones and applies each write once, only after independent review", async () => {
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    const project = projectWithMap();
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-test-project");
+    vi.stubEnv("VITE_SUPABASE_URL"
+
+FILE test/aiRunEndProof.test.ts
+
+import { clearTimeout as clearDeadline, setTimeout as setDeadline } from "node:timers";
+import type { Project } from "@/project/types";
+import type { ChatResult } from "@/ai/llmClient";
+import { fixedDeclarer } from "./intentFixture";
+<<<<<<< HEAD
+import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
+=======
+import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+import { AssistantSession, type RunEndProofState } from "@/ai/assistantSession";
+import { store } from "@/project/store";
+import { createBlankProject } from "@/project/defaults";
+import { resetMapEdi
+
+FILE test/aiWorkItemStall.test.ts
+
+    const evidence = audits.find((t) => t.startsWith("work-item:complete-by-write-evidence"));
+    expect(evidence).toBeUndefined();
+    const completion = session.getAuditEntries().find((entry) => entry.kind === "tool" && entry.name === "complete_work_item");
+<<<<<<< HEAD
+    expect(completion).toMatchObject({ ok: false, issueCodes: ["work-item-incomplete"] });
+    expect(completion?.kind === "tool" ? completion.summary : undefined).toContain("fill_region");
+=======
+    expect(completion).toMatchObject({ ok: false });
+    expect(completion?.kind === "tool" ? completion.summary : undefined).toContain("fill_region");
+    expect(session.getProposedProject().meta.title).toBe("연못 광장");
+    expect(store.getCurrent().meta.title).toBe(project.meta.title);
+    expect(session.isDraftReviewApproved()).toBe(false);
+    expect(result.appliedCalls ?? []).toEqual([]);
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+  }, 30000);
+});
+
+
+FILE test/assistantAcceptanceSession.test.ts
+
+    declareIntent: fixedDeclarer({ mode: "modify", targetMapId: project.startMapId }),
+    renderImages: async () => [{ label: "Rendered map", dataUrl: "data:image/png;base64,AA==" }],
+    chat: async (_config, request): Promise<ChatResult> => {
+<<<<<<< HEAD
+      const imageDelivery = acknowledgeImages ? request.messages.flatMap((message, messageIndex) => Array.isArray(message.content)
+        ? message.content.flatMap((part, partIndex) => part.type === "image_url" ? [{ messageIndex, partIndex }] : []) : []) : undefined;
+=======
+      const review = approvedReviewResponse(request);
+      if (review) return review;
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+      const batch = rounds[calls++];
+      return batch ? { imageDelivery, message: { role: "assistant", content: null, tool_calls: batch.map((call, i) => ({ id: `c${calls}_${i}`, type: "function", f
+
+FILE test/assistantDependencyRetry.test.ts
+
+  vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
+  store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+  store.replace(ctx.project);
+  resetMapEditHistory();
+<<<<<<< HEAD
+  const plan = { goal: "도구 실행 확인", layers: [{ title: "작업", items: [{ title: "실행 확인", instruction: "도구 실행 후 조회", successTools: options.successTools ?? ["get_map_region"], ...(options.mapTargets ? { mapTargets: options.mapTargets } : {}) }] }] };
+  const state = { batches: 0, planners: 0 };
+=======
+  const plan = { goal: "도구 실행 확인", layers: [{ title: "작업", items: [{ title: "실행 확인", instruction: "도구 실행 후 조회", successTools: options.successTools ?? ["get_map_region"] }] }] };
+  const state = { batches: 0, planners: 0, reviews: 0 };
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+  const requests: ChatRequest[] = [];
+  const chat: AssistantSessionOptions["chat"] = async (_config, request): Promise<ChatResult> => {
+    const review = approvedReviewResponse(request);
+    if (re
+
+    expect(session.getProposedProject().maps.m1).toEqual(project.maps.m1);
+    expect(session.getProposedProject().maps.m2).not.toEqual(project.maps.m2);
+    expect(result.recap).toMatchObject({ toolFailures: 1, deferredToolCalls: 5 });
+<<<<<<< HEAD
+    expect(parseRunRecapPayload(serializeRunRecap(result.recap!))).toMatchObject({ toolFailures: 1, deferredToolCalls: 5 });
+    expect(state.batches).toBe(1);
+    // Keep the one-round budget: a real continuation requests completion in a
+    // separate batch, after m1 was read and the failed-spec batch has ended.
+    const completionResult = await session.sendUserMessage("계속", collect);
+    expect(state.batches).toBe(2);
+    expect(events.at(-1)).toMatchObject({ name: "complete_work_item", result: {
+      ok: false,
+      issues: [{ code: "work-item-incomplete" }],
+      data: { targetIssues: [{ code: "missing-map-outcome", field: "mapTargets", mapId: "m1", tool: "fill_region" }] },
+    } });
+    expect(session.getWorkPlan()?.layers[0].items[0].status).toBe("in_progress");
+    expect(session.getProposedProject().maps.m1).toEqual(project.maps.m1);
+    expect(completionResult.recap?.toolFailures).toBe(1);
+    expect(completionResult.recap?.deferredToolCalls ?? 0).toBe(0);
+    expect(parseRunRecapPayload(serializeRunRecap(completionResult.recap!))?.toolFailures).toBe(1);
+    expect(result.recap!.toolFailures + completionResult.recap!.toolFailures).toBe(2);
+    expect(session.getAuditEntries().filter((entry) => entry.kind === "tool" && !entry.ok && !entry.deferred)).toHaveLength(2);
+    expect(session.getAuditEntries().filter((entry) => entry.kind === "tool" && entry.deferred)).toHaveLength(5);
+=======
+    if (!result.recap) throw new Error("Expected a run recap");
+    expect(parseRunRecapPayload(serializeRunRecap(result.recap))).toMatchObject({ toolFailures: 1, deferredToolCalls: 5 });
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    expect(session.getAuditEntries().filter((entry) => entry.kind === "tool" && entry.name === "fill_region" && entry.args.mapId === "m1")).toEqual(deferred.map(() => expect.objectContaining({ ok: fa
+
+FILE test/assistantVerificationContinuation.test.ts
+
+import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
+import { parseOrchestratorDecision, workPlanFromOrchestratorDecision, workPlanFromSetToolArgs } from "@/ai/workPlan";
+import { createBlankProject } from "@/project/defaults";
+<<<<<<< HEAD
+import { getTool, runTool } from "@/editor/tools";
+=======
+import type { ReviewInput } from "@/ai/independentReview";
+import { independentReviewPayload } from "./independentReviewFixture";
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+import { fixedDeclarer } from "./intentFixture";
+import { verificationEvent, verificationJourney } from "./fixtures/verificationOwnership";
+
+const reach = "check_reachability";
+const scene = "run_sce
+
+FILE test/assistantVisualEvidenceSession.test.ts
+
+    declareIntent: fixedDeclarer({ mode: "modify", targetMapId: start.id, adventure: { village: false, dungeon: false, party: false, battle: options.requireBattle ?? false } }),
+    renderImages: options.render ?? (async () => [image]),
+    chat: async (_config, request): Promise<ChatResult> => {
+<<<<<<< HEAD
+      const imageDelivery = request.messages.flatMap((message, messageIndex) => Array.isArray(message.content)
+        ? message.content.flatMap((part, partIndex) => part.type === "image_url" ? [{ messageIndex, partIndex }] : []) : []);
+=======
+      const review = approvedReviewResponse(request);
+      if (review) return review;
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+      deliveredImages = request.messages.flatMap(message => Array.isArray(message.content) ? message.content : []).filter(part => part.type === "image_url").length;
+      const batch = rounds[round++
+
+FILE test/npcRewardSession.test.ts
+
+import { createBlankProject } from "@/project/defaults";
+import type { Command, GameEvent } from "@/project/types";
+import { declaredIntent, fixedDeclarer } from "./intentFixture";
+<<<<<<< HEAD
+import { offlineChatResponse } from "./fixtures/offlineChatResponse";
+=======
+import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
+import type { ReviewInput } from "@/ai/independentReview";
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+
+const COMPLETE = "MODEL_COMPLETION_SENTINEL";
+const NPC = "ev_reward_session";
+describe.each(["items-monsters", "gold"] as const)("%s reward lifecycle", rewardKind => {
+const REQUIRED: NpcRewardRequ
+
+FILE test/runOutcomeApplyFixture.ts
+
+    id: map.tilesetId, name: "Outcome tileset", image: tileset.image, kind: "custom",
+    tileSize: map.tileSize, tilesPerRow: 1, count: 1,
+    passability: [{ up: true, down: true, left: true, right: true }], priority: ["lower"], terrain: [0],
+<<<<<<< HEAD
+  } };
+=======
+  } satisfies TilesetDef };
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+  store.replace(project);
+  store._setPersistedBaselineForTest(null);
+  resetMapEditHistory();
+  store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null
+
+FILE test/toolSchemaProviderCompat.test.ts
+
+      ...(["targetChange", "preserve", "imageReviewed"] as const).map(kind => ({ kind, target, ...(region ? { region } : {}) })),
+    ]),
+  ]),
+  { kind: "mapCount", targets: [{ mapId: "map_start" }, { newMapName: "New room" }], count: 2 },
+<<<<<<< HEAD
+  { kind: "gameTitle", title: "작은 열쇠" },
+=======
+  { kind: "npcReward", requirement: { target: { mapId: "map_start", eventName: "Mira" },
+    grants: [{ kind: "item", name: "Potion", count: 2 }, { kind: "monster", id: "species_leafling" }],
+    oneTime: true, choices: [0], repeatChoices: [1] } },
+  { kind: "functionalUnresolved", reason: "Specify the requested price" },
+  { kind: "functionalUnresolved", reason: "Specify the requested price", expectations: {
+    kind: "shopPurchase", seller: { eventName: "Mira" }, item: { name: "Potion" }, count: 2 } },
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+];
+
+function expectRepresentable(schema: SchemaNode | undefined, value: unknown): void {
+  expect(schema).toBeDefined();
+  if (!schema) throw new Error("Missing exposed schema field");
+  if (schema.e
+
+    expect(item?.type).toBe("object");
+    expect(item?.required).toEqual(["kind"]);
+    expect(item?.additionalProperties).toBe(false);
+    expect(item?.properties?.kind).toEqual({ type: "string", enum: [
+<<<<<<< HEAD
+      "mapCount", "mapDimensions", "eventCount", "targetChange", "preserve", "imageReviewed", "actionCombat",
+      "toolVerdict", "shopPurchase", "mapRoundTrip", "npcReward", "functionalUnresolved", "reachability", "gameTitle",
+    ] });
+    expect(Object.keys(item?.properties ?? {}).sort()).toEqual([
+      "args", "count", "destination", "expectations", "from", "height", "interactionTargets", "item", "kind", "outgoing", "reason", "region", "requirement",
+      "returning", "seller", "start", "target", "targets", "title", "to", "tool", "unitPrice", "width",
+=======
+      "toolVerdict", "mapDimensions", "mapCount", "eventCount", "targetChange", "preserve", "imageReviewed", "reachability", "actionCombat",
+      "shopPurchase", "mapRoundTrip", "npcReward", "functionalUnresolved",
+    ] });
+    expect(Object.keys(item?.properties ?? {}).sort()).toEqual([
+      "args", "count", "destination", "expectations", "from", "height", "item", "kind", "outgoing", "reason", "region", "requirement",
+      "returning", "seller", "start", "target", "targets", "to", "tool", "unitPrice", "width",
+>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
+    ]);
+    expect(item?.properties?.args).toMatchObject({ type: "object", additionalProperties: true });
+    expect(item?.properties?.target).toMatchObject({ type: "object", additionalProperties: fa

@@ -10,7 +10,7 @@
 //   7) 거래 메시지가 한국어다
 //   8) 상태 갱신이 제자리에서 일어난다 (커서·포커스·낭독 유지)
 import { describe, expect, it } from "vitest";
-import { handleShopTransaction } from "@/player/playSceneShop";
+import { handleShopTransaction, playShop } from "@/player/playSceneShop";
 import {
   createShopOverlay,
   refreshShopItemRow,
@@ -181,7 +181,8 @@ describe("상점 수량 입력", () => {
 
 describe("상점 사이드 패널", () => {
   it("파티 칸이 에디터 밝은 회색 빈 박스가 아니다", () => {
-    const overlay = render();
+    const actorIds = createBlankProject().database.actors.slice(0, 2).map(actor => actor.id);
+    const overlay = render({ scene: scene({ partyActorIds: actorIds }) });
     const sprites = overlay.querySelectorAll<HTMLElement>(".runtime-shop-party-sprite");
     expect(sprites.length).toBe(2);
     for (const sprite of sprites) {
@@ -266,6 +267,118 @@ describe("상점 빈 목록", () => {
     expect(close).not.toBeNull();
     close?.click();
     expect(closed).toBe(true);
+  });
+});
+
+describe("post-trade quantity synchronization", () => {
+  async function withShop(
+    options: { mode: "buy" | "sell"; gold: number; merchantGold: number; inventory: Record<string, number> },
+    check: (shop: { overlay: HTMLElement; session: ReturnType<typeof startSession>; key: (key: string) => void }) => void,
+  ): Promise<void> {
+    const project = createBlankProject();
+    const base = project.database.equipment[0];
+    project.database.items = [];
+    project.database.equipment = [
+      { ...base, id: "equip_main", price: 40 },
+      { ...base, id: "equip_other", price: 10 },
+    ];
+    store.replace(project);
+    const session = startSession(project);
+    session.gold = options.gold;
+    session.inventory = { ...options.inventory };
+    const host = document.createElement("div");
+    document.body.append(host);
+    const target = Object.assign(scene(), {
+      session,
+      game: { registry: { get: (key: string) => key === "dialogueHost" ? host : undefined } },
+    });
+    const completion = playShop(target, {
+      ...SELECT_STEP, itemIds: ["equip_main", "equip_other"], merchantGold: options.merchantGold,
+      shopType: "normal",
+    });
+    const overlay = host.querySelector<HTMLElement>("[data-testid='shop-scene']");
+    if (!overlay) throw new Error("Shop did not mount");
+    const key = (value: string) => overlay.dispatchEvent(new KeyboardEvent("keydown", { key: value, bubbles: true }));
+    try {
+      if (options.mode === "sell") key("ArrowDown");
+      key("Enter");
+      check({ overlay, session, key });
+    } finally {
+      key("Escape");
+      key("Escape");
+      await completion;
+      host.remove();
+    }
+  }
+
+  function quantity(overlay: HTMLElement) {
+    const input = overlay.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
+    const total = overlay.querySelector("[data-testid='shop-quantity-total']");
+    return { max: input?.max, value: input?.value, total: Number(total?.textContent?.replace(/[^0-9]/g, "")) };
+  }
+
+  it("clamps the selected buy quantity and refreshes every row after spending gold", async () => {
+    await withShop({ mode: "buy", gold: 100, merchantGold: 200, inventory: {} }, ({ overlay, session, key }) => {
+      const row = overlay.querySelector<HTMLElement>("[data-testid='shop-buy-equip_main']");
+      key("ArrowRight");
+      key("e");
+      expect(session.gold).toBe(20);
+      expect(session.inventory.equip_main).toBe(2);
+      expect(overlay.querySelector("[data-testid='shop-buy-equip_main']")).toBe(row);
+      expect.soft(row?.dataset.maxQty).toBe("0");
+      expect.soft(quantity(overlay)).toEqual({ max: "1", value: "1", total: 40 });
+      expect.soft(overlay.querySelector<HTMLElement>("[data-testid='shop-buy-equip_other']")?.dataset.maxQty).toBe("2");
+      key("ArrowDown");
+      expect(quantity(overlay)).toEqual({ max: "2", value: "1", total: 10 });
+    });
+  });
+
+  it("clamps sell quantity to the remaining merchant budget and updates other rows", async () => {
+    await withShop({ mode: "sell", gold: 100, merchantGold: 65, inventory: { equip_main: 5, equip_other: 10 } }, ({ overlay, session, key }) => {
+      key("ArrowRight");
+      key("e");
+      expect(session.gold).toBe(140);
+      expect(session.inventory.equip_main).toBe(3);
+      expect.soft(overlay.querySelector<HTMLElement>("[data-testid='shop-sell-equip_main']")?.dataset.maxQty).toBe("1");
+      expect.soft(quantity(overlay)).toEqual({ max: "1", value: "1", total: 20 });
+      expect(overlay.querySelector<HTMLElement>("[data-testid='shop-sell-equip_other']")?.dataset.maxQty).toBe("5");
+    });
+  });
+
+  it("clamps sell quantity to remaining inventory when the merchant can afford more", async () => {
+    await withShop({ mode: "sell", gold: 100, merchantGold: 200, inventory: { equip_main: 3 } }, ({ overlay, session, key }) => {
+      key("ArrowRight");
+      key("e");
+      expect(session.inventory.equip_main).toBe(1);
+      expect(quantity(overlay)).toEqual({ max: "1", value: "1", total: 20 });
+    });
+  });
+
+  it("reselects the surviving row using its new capacity after selling the last copies", async () => {
+    await withShop({ mode: "sell", gold: 100, merchantGold: 65, inventory: { equip_main: 2, equip_other: 8 } }, ({ overlay, session, key }) => {
+      const survivor = overlay.querySelector<HTMLElement>("[data-testid='shop-sell-equip_other']");
+      key("ArrowRight");
+      key("e");
+      expect(session.inventory.equip_main).toBeUndefined();
+      expect(overlay.querySelector("[data-testid='shop-sell-equip_main']")).toBeNull();
+      expect(overlay.querySelector(".runtime-shop-item-row.selected")).toBe(survivor);
+      expect.soft(survivor?.dataset.maxQty).toBe("5");
+      expect(quantity(overlay)).toEqual({ max: "5", value: "2", total: 10 });
+    });
+  });
+
+  it("keeps a zero-capacity row inspectable at quantity one and rejects another trade", async () => {
+    await withShop({ mode: "buy", gold: 100, merchantGold: 200, inventory: {} }, ({ overlay, session, key }) => {
+      key("ArrowRight");
+      key("e");
+      key("ArrowRight");
+      key("e");
+      expect(session.gold).toBe(20);
+      expect(session.inventory.equip_main).toBe(2);
+      expect(session.shopTradeCounts?.equip_main).toEqual({ bought: 2, sold: 0 });
+      expect.soft(overlay.querySelector<HTMLElement>(".runtime-shop-item-row.selected")?.dataset.maxQty).toBe("0");
+      expect(quantity(overlay)).toEqual({ max: "1", value: "1", total: 40 });
+    });
   });
 });
 

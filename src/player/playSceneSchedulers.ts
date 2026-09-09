@@ -1,3 +1,4 @@
+import { queueScheduledBattle, resumeScheduledBattle } from "./scheduledBattle";
 import { isRuntimeEventIdle } from "@/player/runtimeConditionWait";
 import { showSceneEmote } from "@/player/playSceneEmotes";
 import {
@@ -8,7 +9,7 @@ import {
 } from "@/project/session";
 import { store } from "@/project/store";
 import { setEventSpritePattern } from "@/player/eventSpriteResources";
-import { playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
 import type { Command, CommonEvent, MoveCommand } from "@/project/types";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
 import { commerceOverlayText } from "@/player/playSceneCommerce";
@@ -25,6 +26,7 @@ import { playMapAnimation } from "@/player/playSceneMapAnimations";
 import { playPathfindMove } from "@/player/playScenePathfinding";
 import { playMovieOverlay } from "@/player/playSceneMovies";
 import { applyWeatherStep } from "@/player/playSceneWeather";
+import { applyEventRelocationStep } from "@/player/playSceneMapCommands";
 import { applyAdvanceTimeStep, applySetTimeStep, observeScheduledTimeTransition } from "@/player/playSceneTime";
 
 type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs" | "eventPositions" | "session">;
@@ -75,6 +77,7 @@ export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): 
     const key = `${event.event.id}:${pageId}`;
     const process = scene.parallelProcesses.get(key) ?? createParallelProcess(scene, event, pageId);
     if (process.stopped || process.pendingTimeTransition) continue;
+    if (process.pendingBattle) { resumeScheduledBattle(scene, key, process, consumeParallelSteps); continue; }
     if (process.waitMs > 0) {
       process.waitMs = Math.max(0, process.waitMs - deltaMs);
       if (process.waitMs > 0) continue;
@@ -87,6 +90,7 @@ export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): 
     const key = `common:${commonEvent.id}`;
     const process = scene.parallelProcesses.get(key) ?? createCommonParallelProcess(scene, commonEvent);
     if (process.stopped || process.pendingTimeTransition) continue;
+    if (process.pendingBattle) { resumeScheduledBattle(scene, key, process, consumeParallelSteps); continue; }
     if (process.waitMs > 0) {
       process.waitMs = Math.max(0, process.waitMs - deltaMs);
       if (process.waitMs > 0) continue;
@@ -160,6 +164,10 @@ function consumeParallelSteps(
     guard += 1;
     if (result.kind === "wait") {
       process.waitMs = result.ms;
+      return;
+    }
+    if (result.kind === "battleProcessing") {
+      queueScheduledBattle(scene, key, process, result, consumeParallelSteps);
       return;
     }
     if (result.kind === "pathfindMove") {
@@ -256,8 +264,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       void scene.transferTo(step);
       return true;
     case "battleProcessing":
-      scene.showBattleScene(step.troopId);
-      return true;
+      return false; // Foreground handoff is awaited by the scheduler, never an overlay-only step.
     case "timer":
       applyTimerStep(scene, step);
       return true;
@@ -285,9 +292,10 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       if (step.loop) scene.showRuntimeOverlay("audio-indicator", resourceDisplayName(step.resourceId, step.resourceId || "오디오"));
       return true;
     case "stopAudio":
-      clearAudioState(scene.session);
-      stopAudioCommand();
-      scene.clearRuntimeOverlay("audio-indicator");
+      clearAudioState(scene.session, step.channel);
+      if (step.channel === undefined) stopAudioCommand();
+      else stopAudioChannel(step.channel);
+      if (step.channel === undefined || step.channel === "bgm" || step.channel === "bgs") scene.clearRuntimeOverlay("audio-indicator");
       return true;
     case "scrollMap":
       void scene.panScreen({ ...step, wait: false });
@@ -314,6 +322,9 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "playMovie":
       void playMovieOverlay(scene, { ...step, wait: false });
+      return true;
+    case "relocateEvents":
+      applyEventRelocationStep(scene, step);
       return true;
     case "spawnEvent":
       removeRuntimeEventSurfaces(scene, step.eventId);

@@ -6,6 +6,10 @@
 // (easyrpg_chipset_combined_town, 30열×16행) 전용 좌표다. 다른 타일셋에서는 전부 깨진다 —
 // build_village가 시공 전에 타일셋을 검사해 거부한다(builder.ts).
 
+import { protectedHouseCells } from "../houseProtection";
+import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
+import { TILE } from "@/project/defaults/constants";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { FootprintWing, HouseKitId } from "@/editor/houseKit";
 import { MIXABLE_HOUSE_KIT_IDS } from "@/editor/houseKit";
 import type { HouseInteriorProgram } from "@/editor/houseInteriors";
@@ -62,7 +66,7 @@ export interface VillageIntent {
 export const MIN_SIZE = 20;
 /** 기존 맵 bounds 하한 — 새 맵 전체(20)보다 작게, 뷰포트(16)까지 허용. 16 미만은 집 1채도 못 놓는다. */
 export const MIN_BOUNDS_SIZE = 16;
-export const MAX_SIZE = 256;
+export const MAX_SIZE = MAX_TOOL_MAP_DIMENSION;
 export const DEFAULT_SIZE = 50;
 export const DEFAULT_HOUSES = 8;
 export const MIN_HOUSES = 1;
@@ -109,6 +113,19 @@ export const ROAD_TILES = new Set<number>([
   ...DEFAULT_SAND_AUTOTILE_GROUP.memberTileIds,
   ...DEFAULT_COBBLE_AUTOTILE_GROUP.memberTileIds,
 ]);
+/** External network membership, not a tile-value test: accepted houses/stamps own both layers. */
+export function environmentalRoadAt(map: GameMap): (x: number, y: number) => boolean {
+  const owned = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
+  return (x, y) => {
+    if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+    const index = y * map.width + x;
+    if (owned.has(index)) return false;
+    const lower = map.lowerTiles[index] ?? TILE.EMPTY;
+    // Planks connect roads over water, but a roof deck is not an environmental bridge.
+    return ROAD_TILES.has(lower) || (map.upperTiles[index] === 199 && isWaterChipsetTile(lower));
+  };
+}
+
 export const DEFAULT_ROAD_STYLE: RoadStyle = "sand";
 // 랜덤 믹스 대상 킷만 — aframe-stone은 지오메트리 종속이라 템플릿이 강제할 때만 쓴다.
 export const HOUSE_KITS: readonly HouseKitId[] = MIXABLE_HOUSE_KIT_IDS;

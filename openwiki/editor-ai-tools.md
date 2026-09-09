@@ -1,5 +1,732 @@
 # Editor AI Tools & Vocabulary
 
+## Exact project values and sourced declarations (2026-09-08)
+
+The existing acceptance ledger supports `projectTitle` (exact `meta.title` and
+`system.titleScreen.title`), `itemValues` (one exact item ID, with requested
+name/price), and `projectPreserve` (the immutable request baseline outside an
+explicit finite list of title/item changes). `scope:"project"` includes wiki
+content; `scope:"authored"` reuses the existing coordinator-owned wiki exclusion
+and must not be described as whole-project or wiki preservation. Missing,
+duplicate or wrong targets and unauthorized changes fail.
+
+`wikiDeclaration` takes `documentId`, `combatMode` and `sourceQuote`. It requires
+one unsuperseded explicit declaration with that mode, a unique quote in the
+ledger-owned original request, and a canonical user source whose full text
+matches that request. This proves a stored preference, not working combat or
+visible monsters. Unresolved runtime requirements remain unresolved.
+
+All four criteria evaluate actual current data and retain the applied/draft
+distinction. Model success flags or supplied provenance are not evidence.
+Implementation: `src/ai/assistantAcceptance{,Evaluation,Ledger,Tools}.ts`.
+
+The separate `gameTitle` criterion proves exact displayed title-screen text,
+including the runtime settings fallback and exclusion of hidden graphic-only
+text. It does not check `meta.title` and is rechecked on canonical reload.
+`projectTitle` instead checks both stored title fields, even when their exact
+requested value is empty; it does not prove visibility. Keep both criteria when
+both contracts are requested. Their shared provider `title` field is a string;
+the runtime parser enforces the distinct kind-specific validity rules.
+
+## Measured zero-prop rejection diagnostics (2026-09-07)
+
+`placePropsDomain.ts` and the shared pattern engine in `placementTools.ts` retain
+the existing single/pattern admission rules, material resolution, sampling,
+packing, event opt-out and unconditional house/stamp ownership protections.
+Zero placement still throws `placement-zero`; neither rejection nor diagnosis
+changes tile arrays, shared tile rules, authored overrides or requested count.
+
+On zero placement, `PropPlacementError.diagnostics` measures candidate origins
+with the same admission predicates, collecting all vetoes instead of stopping at
+the first. The unchanged runner transports the machine record as one standalone
+`placement_diagnostics: <JSON>` line in the **full** `issues[].message`. Parse that
+sentinel and JSON, not cause/recovery prose or the clipped `summary`. This track
+does not add error `data` transport or an automatic retry consumer.
+
+- `unit: "candidate-origin"`: each geometrically fitting object origin counts
+  once, not once per footprint cell, rejected prop, or placement attempt.
+  `footprint.w/h` are tile-cell dimensions. `candidateOrigins = rejectedOrigins
+  + eligibleOrigins`; `rejectedBy` counts each origin once per reason, so its
+  overlapping values must **not** be summed as a rejected-origin total.
+- `scope: "area-candidate-origins"` is a census of the area on zero placement,
+  not a claim that the natural sampler tried every origin. Single-tile natural
+  sampling can miss eligible cells; `eligibleOrigins` is not packing capacity.
+  Pattern origins must fit the area and map. No fitting geometry yields zero
+  origins and empty reasons, not an invented occupancy cause. Single-tile
+  domain calls also count out-of-map origins as `outOfBounds` (the public v3
+  boundary still rejects out-of-map rectangles before placement).
+- Internal dense explicit origins use `scope: "explicit-candidate-origins"`;
+  repeated coordinates count once and outside-area/map footprints are rejected.
+  Tree visibility and first-step bag footprints retain their actual policies.
+- Reasons distinguish `upperOccupied`, `lowerImpassable`, `protectedSurface`
+  (road/sand/cobble), `blockedLowerSurface` (the existing water/wall mask),
+  `lowerIncompatible` (the lower footprint's placement rule, not necessarily
+  impassability), `protectedEvent` (start/event/transfer), `protectedOwnership`
+  (house/stamp), `outOfBounds`, and `trunkVisibility`.
+  An upper-occupied origin also checks the lower ground that clearing upper
+  would expose, across the entire footprint; `lowerImpassable` includes that
+  recovery blocker. Existing trunk-supported canopy overlap is preserved.
+- `upperErase.upperOnlyOrigins` counts origins whose only blocker is upper
+  occupancy. `upperErase.recommended` is true only when **every** census origin
+  is upper-only and at least one exists. Mixed causes, blocked lower, protected
+  surfaces, events/ownership, insufficient geometry and missed samples get no
+  erase recommendation. When applicable the hint explicitly uses
+  `tile_erase(layer:"upper")`, never its destructive default `both`. This is
+  advice, not permission to bypass approval, ownership or the commit gate.
+
+The captured regenerated-cellar area `(7,5) 3x3` contains six passable lower423
+and three passable lower360 cells, with empty upper. Its diagnostic is exactly
+`candidateOrigins:9, rejectedOrigins:9, eligibleOrigins:0,
+rejectedBy:{protectedSurface:9}` with upper erase disabled, even for count2/3.
+The older tall-grass forest test actually writes incompatible **lower**
+vegetation: its 30x30 area has 870 rejected 1x2 origins, not occupied upper.
+Its former prose expectation requiring upper erase was replaced by those exact
+machine counters and whole-project non-mutation assertions.
+
+Contracts: `test/propRejectionDiagnostics.test.ts` and
+`test/placePropsZeroPlacement.test.ts`. Real runner countercases preserve exact
+2/2 combined-town crates237 on ground222/240 and interior crates295 on floor72;
+they assert unchanged lower material and tileset rules, not reduced counts or
+material substitution. Diagnostics are offline engine/tool evidence, not a
+repair of Round10 content or proof of live-model recovery.
+
+Verification receipt for task `st_01a079e9`, exact base
+`ecae43ffca8714cb1a13b073c0825c65e8ae8c30`:
+
+- RED: the initial 22-case diagnostic suite had 19 missing-diagnostics failures
+  and three passing exact 2/2 crate controls. Additional countercases caught
+  blocked lower furniture backing and incorrectly labeled explicit-origin scope.
+- GREEN: `npm test -- test/propRejectionDiagnostics.test.ts
+  test/placePropsZeroPlacement.test.ts --maxWorkers=2` passed all 29 tests.
+  No timeout, sleep, polling or expected placement-count relaxation was added.
+- Protected run: 19 files, 201 passing / 14 failing tests. An untouched archived
+  base run of the 18 pre-existing files had 174 passing / the **same 14 failing
+  test identities**, giving zero new failures. Existing failures remain visible:
+  `scatterObject` six (legacy tree origin/count expectations),
+  `clusterRulePlacement` five (legacy tile-layer expectations), `forestDensity`
+  two (`0.3003472222222222 < 0.3`), and `houseProtectionForest` one (puddle
+  fixture `Cannot read properties of undefined (reading 'type')`).
+- `npm run typecheck:app` and `npm run build:app` exited 0. Build emitted circular
+  re-export, mixed static/dynamic import and large-chunk warnings. The shared LSP
+  client timed out on refreshed files; a dedicated local TypeScript `tsserver`
+  completed syntax, semantic and suggestion diagnostics for all four changed TS
+  files, with zero diagnostics and no missing completion events. No Markdown
+  LSP is configured; the wiki passed `git diff --check`.
+- An offline `vite-node --config vitest.config.ts` exercise called the real
+  `runTool` boundary: the nine-cell sand/road case rejected without mutation,
+  while ground222, ground240 and interior floor72 each placed exactly 2/2 crates
+  with original lower tiles and tileset rules intact. No live DB, model, UI,
+  gameplay session, push, PR or remote merge was part of verification.
+- Raw local receipts: `/tmp/st_01a079e9-receipts/`. `red.log` SHA256
+  `7f7540b4dc729563aed45506bc5d43e3fd47d3436dbde54a07ad81f033bb0886`;
+  `green-focused-final.log` SHA256
+  `a14b6b58cd6b6fff6a6e2a5770151833cb7b60bf4254b638a32a50245795c95a`.
+  Those temporary logs are not shipped source; the tests and this receipt are
+  the durable reproduction contract. Full-suite gates and player/standalone
+  builds were not run for this bounded editor-only repair.
+
+## Logical walkthrough versus real player traversal (2026-09-07)
+
+`play_walkthrough`의 `moveTo`는 좌표를 이동시키지만 `playerTouch`/`eventTouch`를 발동하지 않는다.
+이동문 명령을 검사하려면 해당 이벤트 ID로 `interact`한 뒤 `mapId`를 확인한다.
+따라서 이동문 좌표에 `moveTo`한 직후 다른 맵을 기대하는 시나리오의 실패만으로 전송 엔진 결함을 단정하지 않는다.
+논리 검사 통과와 실제 키보드 이동·터치 발동은 별도 증거다. 런타임 QA 하네스에서 실제 왕복을 확인한다.
+이 설명은 도구 사용 계약의 명확화이며 실행기·전송·통행 판정의 동작 변경이 아니다.
+
+## Tile-query selector and filter boundaries (2026-09-07)
+
+`tile_query`의 `similar`/`unclassified`는 `labels`/`vocab`/`unapproved`와 같은 선택 순서를 쓴다:
+명시 `tilesetId` → 명시 `mapId`의 타일셋 → 시작 맵의 타일셋 → `DEFAULT_TILESET_ID`.
+선택한 명시 ID가 없거나 비어 있으면 오류이며, 다른 맵/타일셋으로 조용히 대체하지 않는다.
+`labels`의 비어 있지 않은 검색어가 일치하지 않으면 `labels: []`를 반환한다. 생략/빈 문자열/공백은
+기존 제한 개수 탐색을 유지하며, 빈 검색에서만 설명 전용 타일의 전체 스캔 폴백을 허용한다.
+의미 매칭·통행·카탈로그 라벨은 변경하지 않는다. 회귀: `test/tileQueryBoundaries.test.ts`
+(시작/대상/명시 타일셋 분리, 잘못된 선택자, 검색 실패와 빈 검색 탐색).
+## Action enemy profile edits (2026-09-07)
+
+`make_action_enemy` patches an existing enemy's `actionProfile`: omitted fields,
+including `attack`, retain their authored values. A supplied `attack` replaces
+that attack and must contain its complete required fields. Existing stats,
+rewards and other enemy fields are not reset by a profile edit. New contact-only
+enemies remain supported.
+
+The tool validates the profile and its nested attack before preparing any
+mutation. Unknown keys (including a literal quoted `"attack"` key), unsupported
+attack kinds, missing attack fields, wrong value types and non-finite numbers
+return `invalid-args` rather than becoming a successful lossy normalization.
+The shared project-load normalizer retains its legacy behavior; this stricter
+contract belongs to the authoring boundary.
+
+Regression seam: `test/actionTools.test.ts`, through the real `runTool` path and
+the canonical serialize/deserialize round trip.
+
+## Explicit field-spawn mutations (2026-09-07)
+
+New AI authoring should specify top-level `spawnMode` on `make_action_enemy`.
+`"add"` requires a spawn and rejects an ID already present on the selected map.
+`"update"` requires a nonblank existing `spawn.id` on that exact map; an unknown
+ID fails with `spawn-not-found` without changing the enemy or adding a spawn.
+Both operations retain the existing required map, troop and area payload.
+Successful results include `mapId`, `spawnId` and `spawnOutcome`.
+
+Omitting `spawnMode` deliberately preserves legacy upsert/append behavior.
+That compatibility path is not duplicate-proof: use explicit modes for new
+creation and correction. Deliberate multiple spawns remain supported, including
+multiple spawns of the same enemy or troop.
+
+`remove_field_spawn({mapId, spawnId})` removes only that authored map entry.
+It never deletes enemy records, rewards, troops or other spawns. Missing targets
+fail, and references from `roguelikeRoom.encounterSlots` block removal with
+`spawn-in-use`; callers must update those references explicitly.
+
+Regression seam: `test/actionAuthoringPrerequisites.test.ts`, including direct
+handler rejection without mutation, real runner results and published schemas.
+
+## Monster resource discovery and AI appearance evidence (2026-09-07)
+
+`list_monster_resources({})` returns the entire current monster index, without a default
+20/50-entry cap. Optional `query`, exact `ids`, `include: "index" | "full"`, `offset`
+and `limit` allow filtered/paged reads. The response contains `resources`, `include`,
+`total`, `returned`, `nextOffset`, `complete` and `unknownIds`. `complete` means the
+response covers the entire filtered result (offset zero and no next page); it does
+not claim that unknown requested IDs exist. Index entries omit description; full
+entries preserve the entire effective description. `get_monster_resource({resourceId})`
+returns `{resource}` with the exact current full entry or fails, never a substitute.
+All entries come from `assets/monsterResourceCatalog`, including project metadata
+overrides. Metadata-only stored keys do not register resources; explicit non-monster
+uploads cannot masquerade as monsters through prefixes or profiles.
+
+The three appearance writers (`upsert_enemy`, `define_monster_species`,
+`make_action_enemy`) accept root-level, tool-only `appearanceTags`. For a new/changed
+visible AI selection, use a raw exact monster ID, read its full current metadata,
+then declare 1-32 desired visible identity tags (each 1-64 characters). Every declared
+tag must match an effective resource tag after NFKC/case/outer-whitespace
+normalization. Tags are whole values, not fuzzy queries, substrings or enemy names.
+At least one matched tag must also contain a letter-bearing identity word outside
+`GENERIC_APPEARANCE_WORDS` in `ai/monsterAppearanceEvidence.ts`. This bounded exclusion
+set covers common creature/class labels (monster/enemy/creature/beast/animal/humanoid/
+undead/boss/minion and Korean counterparts), basic English/Korean colors, broad
+size/appearance words and asset-origin words. Whitespace/hyphen/underscore-separated
+combinations of these words do not evade the rule; numbers alone do not count.
+Specific user-authored tags remain legal: there is no closed species-name catalog.
+An arbitrary boss display name with goblin art is valid; declared goblin identity
+with slime art is not. The envelope is never persisted in enemy/species records.
+Existing unchanged art/stat edits and intentional transparency remain valid.
+Non-AI explicit-art/rename and reliable legacy identity-query behavior are preserved.
+
+`ToolReadEvidence` enforces this independently of the generic read-before-write
+contract. The session registers current-request read call IDs, then consumes only
+full successful results actually present in the post-compaction model request.
+Registration alone grants no credit: native and monster reads are credited only
+after that writer request succeeds without cancellation, before its response executes.
+Index pages, missing/failed results, unreturned IDs, stale metadata, historical user
+requests and same-batch unobserved reads cannot authorize a new selection. Budget
+compaction cannot turn an executed-but-undelivered full read into permission.
+`monsterAppearanceSession` tests the actual model-facing serialized catalog, not
+only the read tool; `monsterAppearanceTransport` tests budget loss explicitly.
+
+An appearance-read refusal leaves a newly declared record unavailable even though
+the producer did not execute. `AssistantSession` tracks that absent ID for the
+current batch, so dependent troops and transitive encounter writes receive
+`record-dependency-failed` deferrals rather than consuming their own retry targets.
+Unrelated writes continue. A successful creation clears the unavailable ID;
+a failed/deferred update does not invalidate a record that already exists.
+`assistantDependencyRetry` covers both generic-read modes, delivered appearance
+reads, transitive recovery and existing-record references.
+
+Full entries also include `assetIdentity`, a compact SHA-256 digest shared by the
+read response and current authorization snapshot (`ai/monsterResourceSnapshot.ts`).
+It hashes the raw resource ID plus the upload's encoded image source and render
+metadata, never returning base64. Replacing `assets.uploaded[id].dataUrl` at the
+same ID invalidates old evidence for new/changed assignments even when effective
+name/tags/description are unchanged; a fresh full read restores eligibility.
+The index remains compact and unchanged. Existing unchanged-art/stat-only edits
+still bypass selection evidence deliberately: this is not a gate on upload editing.
+Bundled/profile image sources are assumed fixed within the running asset build;
+this token does not fetch/revalidate remote bytes behind an unchanged URL.
+`monsterAppearanceAssetIdentity` covers replacement/reread across all three writers,
+both full-read paths, and the actual assistant session.
+
+**Limits of this check:** tags are the assistant's declared visible identity, not
+machine vision and not proof of the user's intent. Generic/shared tags may match
+many resources. The finite generic-word policy rejects known generic-only declarations,
+not every synonym, compound or invented vague phrase; a nonexcluded tag is not a
+semantic proof. Incorrect or adversarially edited metadata may be internally
+consistent but visually wrong. The guard cannot prove that a model honestly chose
+tags from the user request rather than retrofitting them to an arbitrary resource.
+Names, tags and descriptions (including prompt-like text) are untrusted reference
+data, never instructions or a permission to change the user's request. Human/vision
+review of actual artwork is separate; reviewed status is owned by the catalog lane,
+not inferred by these tools. Provider image delivery is a separate transport gate.
+
+## House-site tree clearance before ownership (2026-09-07)
+
+`author_house` checks all requested lots before stamping or sealing any house.
+Canopy/trunk tiles in the completed-house footprint, including the north ridge
+and gaps between wings, return `house-tree-clearance-required` with coordinates.
+Clear the entire tree atom explicitly before construction or choose another site.
+The producer does not erase beyond its requested footprint or bypass completed
+house protection. Unrelated trees/errors outside the requested sites do not block
+construction. Real facade and `runTool` atomicity, batch, clear-then-build and
+ownership controls are in `test/authorHouseTreeClearance.test.ts`.
+
+## Flower-yard material in house lots (2026-09-07)
+
+The high-level `author_house` lots path translates `yard:"flowers"` to the
+canonical bundled material label `꽃/자연 소품`. The former bare `꽃` did not resolve
+in the shipped catalog and caused the entire construction to fail. This does not
+ignore yard shortfalls or bypass structure protection. The actual producer path
+is covered by `test/houseLotFlowerMaterial.test.ts`.
+
+Generated `place_npc({guide:"action-controls"})` guides omit automatic portraits;
+an explicit `face` still uses the normal authoring contract. This avoids shipping
+an inferred faceset ID absent from the project while preserving the canonical
+controls, existing guide identity and position.
+
+## Pre-write original grounding (2026-09-06)
+
+`originalContext.ts` exports a detached authored-state extractor reusable for before/after
+review. The session captures it before planning or tools, retains its snapshot ID across
+continuations, and recaptures on a new request (including a fresh Ask). Retaining P2
+canonical goal evidence across questions does not freeze the question's original-data
+snapshot. Target selection uses structured intent,
+actual selection and current map, never new natural-language keyword routing. A missing
+explicit target is reported, not replaced with the start map. Target map metadata, complete
+tile layers/stacks, complete events/pages/commands, authored system settings and relevant
+full database records are included. Actual record IDs are followed transitively, including
+common-event cycles; declared database/battle/system and quest/world tasks broaden the
+authored context. Runtime session, credentials/configuration and asset transport blobs are
+outside this projection. Existing resource tools remain the resource lookup surface.
+
+The authored `ProjectStartState` (`startStateOf(project)`, serialized as `project.session`)
+and authored `project.testPresets` are complete `/session` and `/testPresets` entries,
+not live `PlaySession` data. Both use the same whole-entry budget and exact paging route.
+Their keys/values seed the reference closure, including inventory IDs, party actors/classes,
+flag definitions and referenced maps/events/common-event cycles. Referenced maps reuse the
+target-map projection; maps and shared tilesets appear once. Summary/map-tree navigation
+does not expand unrelated maps. Runtime-exclusion tests mutate a separate `startSession` result.
+
+Independent review supplies explicit `mapReferenceRoots` from the current/changed maps
+and actual before/after edits. `reviewMapReferenceRoots` compares presets by authored ID:
+changed/added/deleted presets include their complete old/new references and effective start
+maps, not unchanged sibling maps. Changed start state/position includes the effective start
+maps. Other changed collections are compared recursively, cancelling unchanged array
+members with multiplicity before descending into changed records/commands. Coordinate-only
+edits retain their containing map target; edited world entities retain their own refs,
+not unchanged sibling entities. Explicit review roots can follow common-event call chains,
+but an included map is evidence, not a traversal root for its unchanged transfers or calls.
+Only the default writer mode traverses referenced map contents transitively. Complete `/session`
+and `/testPresets` values and record references remain in both projections. The writer's
+default start/preset closure and exact paging are unchanged. This prevents the R5+R6
+six-map rename overflow without a map cap, truncation or capacity-guard change. Contracts:
+`independentReviewMapDeltas`, `independentReviewReferenceScope`, `assistantIndependentReviewCapacity`,
+`independentReviewLinkedMaps` (chain/star rename, changed transfers/calls, world-record scope).
+
+`buildGroundedRequest` appends JSON `originalContext` after history compaction, so the
+first writer sees its original values even with `budgetChars: 1`. It accounts for complete
+native schemas, history, originals and the existing 16,384-token response reserve against
+the actual supported bundled model window. The small browser-safe capacity table is
+checked against installed pi-catalog; the 9 MB provider catalog/runtime is not bundled.
+History compaction also reserves the original paging manifest and reconciles its character
+clamp with token-weighted messages and tool-call arguments. An expanded native catalog must
+not strand otherwise pageable originals at a nearly full history boundary.
+Unknown native IDs use the companion's provider-default fallback; injected unknown models
+retain the conservative legacy estimate. Token counting remains an estimate, not a tokenizer.
+
+Whole entries that do not fit remain explicitly omitted with a `get_original_context`
+list/read route, stable entry paths, snapshot ID and UTF-16 offsets. Concatenate exact JSON
+pages before parsing. Only successfully delivered whole originals or fully covered page
+ranges count at the existing `ToolReadEvidence` seam; partial/omitted/failed reads do not.
+Malformed or rewritten historical tool JSON is refused as evidence without aborting the
+model response; original text, total length and pagination metadata must match exactly.
+Original receipts cannot replace a subsequent fresh read; existing fingerprint/reference
+checks and ask-mode refusal remain. Irreducible mandatory requests fail explicitly without
+pruning tools. A huge latest write result may still exceed a small window; paging originals
+does not claim arbitrary tool-result paging. Task recipes accompany the catalog for NPC,
+map/interior, database/battle, quest/world and life read-write-verify work. Tests:
+`originalContext`, `assistantOriginalContext`, `assistantReadContract`, `aiToolDiscoveryEscalation`.
+
+Native reads follow the same delivery boundary: `ToolReadEvidence.queue` captures the
+executed result without granting credit. After the actual writer request returns, before
+its tools execute, `observeDelivered` matches the pending call ID/name and complete exact
+data against the outgoing messages. Execution, summarizer/reviewer context, sampled grids,
+stripped data and same-response reads cannot grant first-delivery credit. Previously
+delivered credit survives history compaction, but existing current-record fingerprints still
+invalidate changed data. Pending receipts share the goal lifecycle (`begin` clears them;
+genuine continuations retain them), and project switching drops the session as before.
+Regressions: `assistantNativeReadDelivery`, `toolReadDelivery`; the 512,029-character native
+read plus six summaries is refused after real compaction/clamping, then complete original
+paging or a complete current native result enables the subsequent writer response.
+
+## Full native tool exposure (2026-09-06)
+
+`AssistantSession.runTurnLoop` sends every active editor tool's complete native description
+and input schema from the first working request. It no longer uses UI/intent domains,
+40-tool quotas, natural-language promotion slots, or a global 128-tool tail clamp to choose
+capabilities. `toolRegistry.toOpenAiTools` still honors an explicit domain filter for scoped
+callers, but retains **every** eligible definition in registry order. There is no pin list.
+Deprecated tools remain hidden; ask mode removes registry and session write schemas and
+still rejects attempted writes at execution. WorkPlan and acceptance tools retain their
+existing lifecycle gates. Schema validation, read-evidence gates, detached drafts,
+cancellation and usage accounting stay in the existing execution pipeline.
+
+The capability index is navigation alongside native schemas, not a promise to unlock
+missing tools later. `find_tools` is optional search, not an exposure prerequisite.
+The supported subscription adapters have no local function-count clipping: Antigravity
+uses Cloud Code Assist `functionDeclarations`; Codex uses a zstd Responses request with
+`input` entries of type `additional_tools`. Do not impose old CPEN/Chat Completions/Vertex
+limits on these transports. Lead evidence accepted 198 native definitions on Antigravity
+with HTTP 200; Codex live acceptance remains unverified without connected credentials.
+An upstream rejection is surfaced unchanged, never retried with a smaller capability set.
+No domain delegation is needed for the supported, observed full-native path.
+
+Regression seams: `aiToolDiscoveryEscalation`, `toolExposureQuota`, `toolDomainScoping`,
+`aiToolCapabilityIndex`, `aiComposerModeSession`, and `ohMyPiFullCatalog.bun.test.ts`.
+The transport fixture crosses counts 40/41, 127/128/129 and 198/207 using the installed
+adapters and verifies names, descriptions, nested schemas and explicit upstream errors.
+
+## Review approval lifetime (R3, 2026-09-06)
+
+`AssistantSession.runTurnLoop` owns each attempt's original abort signal and wraps
+the writer/review execution. Non-final stops, cancellation, failed milestone apply
+and thrown execution/subscriber errors retire that attempt's approval permanently.
+Replacing the UI's active signal cannot revive a completed approval whose original
+signal was aborted. `result_review` publishes the independent verdict, not immediate
+apply authority: admission follows the callback, current-candidate/owner checks and
+the existing output budget check. Review evidence and audit entries remain retained.
+
+`retryLastTurn` re-enters the existing writer/review loop when unapplied, unapproved
+draft calls remain, even without a provider error. It preserves the draft and original
+request; application requires a fresh current review. `canRetryLastTurn` retains its
+provider-error meaning. Already-applied persistence-proof retries still avoid writer,
+reviewer and edit replay. Regression: `assistantReviewApprovalLifecycle` drives real
+session, direct proposal host, autonomous apply, undo and local save/read proof paths;
+`assistantIndependentReview` retains held late-approval and budget/error cases.
+
+## Audio description tools and event candidates
+
+Audio identity is `{ kind: "music" | "sound", resourceId: rawId }`. Search-result prefixes
+`bgm:` and `se:` aren't valid override keys or detail/write tool IDs.
+`src/editor/tools/audioDescriptionTools.ts` defines:
+
+| Tool | Contract |
+| --- | --- |
+| `get_audio_resource` | Read an existing resource's full description and source from the current project. The resource is returned at `data.resource`, with its raw `id`. |
+| `set_audio_description` | Write through the existing draft/proposal/approval path. `action: "set"` requires a string; `""` clears. `action: "reset"` removes the override and rejects a supplied `description`. |
+| `upsert_resource` | `resource.description` is optional and allowed only for music/sound. Omission preserves the override; an explicit string uses the same writer. Description-only edits don't need a new asset or `dataUrl`. |
+
+New strings are trimmed at the write boundary and limited to 4,000 UTF-16 code units after
+trimming. Internal line breaks survive. Kind/ID existence and input validation happen before
+applying the edit. `src/editor/tools/resourceTools.ts` owns upload integration.
+`audioDescriptionsChanged` counts changed kind/raw-ID states, including clears and resets.
+The changeset, preview, commit summary and meaningful-change checks retain description-only
+proposals; they aren't tile-only auto-apply work. Approval and project undo/redo use the
+existing transaction path.
+
+### Search pages and full detail
+
+`list_resources` in `src/editor/tools/queryTools.ts` keeps search kinds `bgm`/`se`, existing
+prefixed result IDs and the default 20 results. `offset` defaults to 0 and must be a
+nonnegative safe integer; `limit` is an integer from 1 through 50. The response contains
+`data.matches`, `data.total` and `data.nextOffset`, which is `null` at the end.
+Non-audio search meaning stays unchanged.
+
+Audio matches also contain raw `resourceId`, `description`, `descriptionSource` and
+`descriptionTruncated`. Lists expose at most 240 UTF-16 code units per description;
+`get_audio_resource` returns the full value. Search ranking uses the full effective
+description in `src/assets/resourceSearch.ts`, including text beyond that excerpt.
+Overridden or cleared catalog descriptions aren't secretly appended as search terms.
+
+### Event prompt projection is not ID authority
+
+`src/ai/eventAudioPrompt.ts` builds at most 40 candidates per music/sound slot:
+
+1. Up to 20 positive-score request matches, ranked using names, tags and full descriptions.
+   Equal scores retain existing event catalog order.
+2. Up to 10 still-unselected project-override or uploaded candidates.
+3. All remaining places use still-unselected candidates in existing scene/category order.
+
+Zero matches consume no first-group quota; duplicate IDs don't consume later quotas.
+Each JSON entry includes raw ID, name, tags, a 240-unit description excerpt, source and
+truncation flag. `src/ai/eventCommandAssist.ts` forwards the submitted request into this
+projection. Validation still uses the full `eventResourceIdSet()` in
+`src/ai/eventResourceCatalog.ts`, so a valid ID outside the visible 40 remains valid.
+Keep description-heavy prompt imports in the prompt module, not the shared eligibility
+module used by other consumers.
+
+Descriptions are JSON-escaped reference data, not instructions or proof of listening.
+Source `ai-listening` means **AI 분석 초안**, not verified acoustic facts. The static editor-only
+overlay retains model/review/evidence provenance in `src/assets/audioAiDescriptions.json`;
+instrument, vocal and numerical claims are not independent measurements. Most drafts are
+Flash outputs; the Pro recoveries and human-corrected Vanguard remain drafts. Project
+overrides, including explicit empty strings, take precedence; reset inherits the draft again.
+Escaping doesn't replace write approval or tool validation. `src/ai/contextBuilder.ts`
+directs fresh detail reads when full/current evidence is needed, including after conversation
+compaction. Each request uses the current project rather than a description cache or an
+old tool-result excerpt. Automatic `recommendMapBgm` selection is unchanged.
+
+Focused coverage: `test/audioDescriptionTools.test.ts`,
+`test/audioDescriptionDiff.test.ts`, `test/audioDescriptionToolStore.test.ts`,
+`test/audioDescriptionToolExposure.test.ts`, `test/audioResourceToolPagination.test.ts`,
+`test/audioDescriptionPrompt.test.ts`, `test/audioDescriptionPromptTransport.test.ts`,
+`test/audioDescriptionSessionPrompt.test.ts`.
+
+## P3 captured proposal base (2026-09-07)
+
+`applyProposedProject(proposed, options)` requires both `options.base: ProposalBase`
+and `options.baseline: AuthoredProjectBaseline`. Both are captured before authoring:
+lineage/content ownership and the reviewed authored-world partition are independent
+requirements, not alternative ways to authorize an old draft.
+The proposal owner calls `captureProposalBase(project)` before authoring and carries
+that base through approval/application. Session callers use `getProposalBase()`;
+`rebaseProject()` replaces it, while context refresh and pending-draft inspection
+don't. Never capture a new live base at apply time to legitimize an old snapshot.
+
+`ProposalBase` holds frozen `version`, `identity`, `content` and `world` fields.
+`ProjectStore.getVersionToken()` is a read-only frozen `{ lineage, generation }`
+snapshot. It isn't an accepted-save receipt or remote lease. Application checks
+lineage and project identity, then the authored values that it will replace, even
+when generation hasn't changed. A generation change alone isn't rejection:
+no-op updates and own saves remain valid when content and lineage still match.
+Replacing the project invalidates old lineage even if the bytes are identical.
+
+Content comparison uses the existing `canonicalJsonString` after JSON projection,
+not remote schema normalization. Recursive object-key insertion order is ignored;
+array order and authored value changes aren't. The authored baseline uses the same
+JSON value comparison, including world registrations and relations but excluding
+coordinator-owned wiki documents. Ordinary proposals reconcile the reviewed authored
+world graph with the live wiki documents; they do not replace either partition with
+an entire old world. `resetProject:true` requires the complete captured world to match.
+The wiki document-delta coordinator keeps its independent apply/save ownership.
+
+The adapter checks at entry and again immediately before undo snapshot/replacement,
+after integrity validation and annotation preparation. The final client-local write
+section has no await or external callback between that guard, snapshot and replacement.
+Cluster approval captures operation, base and proposal before its confirmation awaits.
+Later commit/wiki awaits don't write the old whole-project snapshot again, and no
+global queue makes B wait for an uncooperative A commit response.
+
+| Adapter result | Meaning |
+| --- | --- |
+| `{ ok:false, reason:"stale-base" }` | Captured base no longer matches. No undo entry, replacement, commit or `onApplied` callback is created. Recalculation is new authorized work, not automatic replay. |
+| `{ ok:false, reason:"stale-baseline" }` | The reviewed authored partition changed, including world registrations or relations. No application occurs. |
+| `{ ok:false, reason:"retired-run" }` | The supplied operation was retired before application. |
+| `{ ok:false, reason:"commit-rejected" }` | Existing house protection or integrity validation refused the proposal. |
+| `{ ok:true, ... }` | Local application occurred. Later cancellation preserves that fact; commit-history persistence and P1 project-save/current proof remain separate. |
+
+`options.operation?: RunOperation` carries the captured asynchronous owner;
+`onApplied?` reports the actual local mutation before synchronous activity/store
+observers, not merely before fallible commit/save awaits. The adapter passes that
+callback into `ProjectStore.replace` or `replaceProject`; the store invokes it
+after installing the project and updating mutation counters. If a subscriber then
+retires A and starts B, A already owns the application in the existing session ledger.
+If the accounting outcome observer throws, `finally` still records activity, emits
+the store notification and schedules autosave; the original error propagates.
+Its provisional `commitId:null, persisted:false` isn't proof of saving. A retired
+post-commit continuation starts no wiki update or replacement-session rebase.
+See [publication accounting](editor-observability.md#p3-owner-bound-publication-2026-09-07).
+
+This is conservative single-client stale-snapshot rejection, not field-level merging,
+a durable checkpoint, remote schema/version protocol, or distributed/two-tab writer
+exclusivity. Separate region approval and advisory diagnostics retain their policies.
+Non-house cells don't acquire house locks, but general stale-base rejection now also
+protects their intervening human edits. Current-base malicious house changes still
+fail the independent house guard.
+
+Sources: [adapter and base](../src/editor/tools/applyChangesetToStore.ts),
+[store token](../src/project/store.ts), [key comparator](../src/project/supabaseProjectSync.ts),
+[proposal host](../src/editor/panels/aiProposalCard.ts),
+[cluster approval](../src/editor/panels/clusterAiModal.ts).
+Controls: `test/aiMutationApplyAccounting.test.ts`, `test/aiStaleProposal.test.ts`,
+`test/applyProposedProjectHouseProtection.test.ts`,
+`test/applyChangesetToStore.test.ts`, `test/projectWikiApplication.test.ts` and
+`test/clusterAiModalHouseProtection.test.ts`. [P3 evidence](../output/evidence/ai-harness/p3/README.md)
+separates unit contracts, native races and remaining approval work.
+
+## Project wiki application ownership (2026-09-07)
+
+`AssistantSessionOptions.prepareProjectWiki` is an awaited editor-owned checkpoint
+before intent selection and authoring. Failure stops that turn before tools run.
+The callback refreshes only the detached session's world documents.
+Ordinary `applyProposedProject` calls retain the live `project.world`, because a
+map/title proposal does not own codex edits made after its preview. Explicit
+`resetProject` keeps its replacement semantics, subject to the captured world/base
+check above. Tests:
+`projectWikiSession.test.ts` and `projectWikiApplication.test.ts`. P2 projects checkpoint
+failure/cancellation as `failed`/`cancelled`, never successful response completion.
+Explicit Ask/Plan retains the coordinator's read-only path; intent is still selected
+after the wiki checkpoint, and blocked-work reactivation remains after that decision.
+## Character appearance image candidates v1 (2026-09-06)
+
+`get_database_records` exposes `characterAppearances` for real set IDs.
+`generate_character_appearance {appearanceId,slot?}` generates only a missing
+`face` (default) or `bust`; it never generates or modifies walking charsets.
+Generic synchronous runners return an honest `ui-required` preparation result.
+The in-app assistant awaits the registered Database-opening callback, checks
+the session's actual ProjectIdentity and current record, then starts the shared
+`characterAppearanceGeneration` controller. Ask mode excludes and rejects this
+capability even though its generic preparation is read-only.
+`AssistantSession` imports the generation controller only inside this tool's
+execution branch. Ordinary sessions and load-recovery imports must not initialize
+the image UI or its history/store subscriptions.
+
+Candidates remain outside the project until explicit DB Apply. Occupied slots
+can only be replaced through the human slot action; fresh asset IDs preserve
+old images. Apply rechecks the target snapshot and project identity, updates the
+current cloned store draft atomically, and creates one undo checkpoint.
+Cancelled, late, failed and stale requests do not write project assets.
+Leaving the set/tab/modal disposes UI subscriptions and cancels its candidate.
+
+The image request carries at most two bounded raster references: a read-only
+crop of the selected manual charset cell and an existing face when present.
+Appearance generation uses full-sentence paragraphs rather than keyword lists.
+The prompt separates the character brief from composition/background rules:
+explicit written traits take priority, then detailed face identity, then walking
+sprite clothing/palette. Reference backgrounds and occupation-related scenery
+must not be copied. It requests a square dialogue asset, complete headwear and
+shoulders with safety margins, restrained cel shading, and an opaque uniform
+sRGB #D9D9D9 background without scenery, texture, gradients or cast shadows.
+These are model instructions, not an alpha-channel or exact-pixel guarantee;
+judge generated images separately and do not pin prompt prose with unit tests.
+`imageReferences.ts` validates the external payload;
+`ohMyPiImageRuntime.ts` sends real SDK image parts and marks this image-generation
+model as vision-capable so the SDK does not replace them with omission text.
+Image provider/model selections are independent AI settings. Antigravity uses
+the selected catalog model and rejects unknown explicit IDs without a fallback;
+response metadata identifies the resolved model. Its default is
+gemini-3.1-flash-image. Pro Image is unavailable on the tested subscription routes.
+The worker also dispatches openai-codex / codex-image-default to
+codexImageRuntime.ts, using the existing server-side Codex OAuth credentials.
+That native route is text-only: nonempty references fail explicitly with 409,
+not silently omitted. The internal selection ID is never sent upstream; the
+request pins model gpt-image-2, quality/background/size auto, and n: 1, following
+the [official Codex source](https://github.com/openai/codex/blob/3d2ee51ca2d5db578f328aa75e20aa22c0197c9a/codex-rs/ext/image-generation/src/tool.rs#L420-L429)
+(its omitted n defaults to one). GeneratedImage.model returns gpt-image-2 as the
+requested upstream alias, not a dated snapshot, which the provider does not
+report. Historical model-omitted images keep their original metadata. Original raster bytes remain
+unchanged, with a 180-second request/body deadline and no provider fallback.
+Client cancellation discards output; it does not claim upstream work has stopped.
+
+`TurnResult.appearanceGeneration` is a per-turn handoff receipt, not an applied
+write. `aiTurnRunner` uses it to report the DB request without false zero-change
+retry warnings; global proposal auto-apply is unchanged. Contracts:
+`characterAppearanceGeneration`, `characterAppearanceReferences`,
+`characterAppearanceAssistant`, `characterAppearanceLifecycle`,
+`aiTurnAppliedAccounting`, and the existing provider SDK suite.
+
+## Completed-house transaction protection - Phase 1 (2026-09-05)
+
+`src/editor/tools/houseProtection.ts` is the shared completed-house ownership rule.
+Every write through `runToolDefinition` captures the **current accepted project**,
+not the assistant session's initial baseline, then checks the detached draft after
+**global tree-pair repair and before commit**, including dry-run. There is no
+selection, BuildSpec, map-target, or tool-name exemption. A rejected transaction
+returns `protected-house-write` or `house-overlap` and commits none of its maps,
+events, interiors, or map-tree additions. Human direct editing is unchanged.
+
+Final application also checks the current live store before history or replacement.
+`applyProposedProject` covers chat proposals, autonomous milestones, and cluster
+AI acceptance. `applyRegionProjectWithHistory` covers full and partial region
+approval after seam polishing. A safe detached tool result is not permission to
+overwrite a later human house edit or to commit protected-cell changes introduced
+by region postprocessing. Rejection leaves both the live project and undo history
+untouched; see `applyProposedProjectHouseProtection`, `regionTaskHouseProtection`,
+and `clusterAiModalHouseProtection` tests. Region tasks also retain newly completed
+house snapshots from the full session proposal before clipping. Full, partial,
+and immediate application check those snapshots after review polishing, so a
+selection that excludes the north ridge cannot commit a damaged new house.
+The selection is not expanded; unsafe candidates reject atomically.
+`regionTaskCompletedHouse` covers clipping, approval-time re-polishing, and intact
+house controls.
+
+Completion is metadata-defined: `layoutPlan.regions` with `role:"house"` protect
+the full bbox (including empty gaps between wings) plus its full-width north
+ridge row `y-1`, clipped to the map. Human `structurePlacements` protect their
+recorded rectangles, without an extra ridge. Both base layers and both persisted
+sparse stack entries are compared exactly, including empty cells and absent
+stacks. Stack rendering is deprecated, but that is not permission to erase saved
+stack data. Non-house layout regions and raw wall/roof tiles do not acquire this
+lock; existing fill role protections and incremental wall/door/window/roof
+construction without completion metadata remain unchanged.
+
+Roof-deck attachment protection requires recorded deck evidence (`shape:
+"rooftop-deck"`, `shape:rooftop-deck` tag, or `roof-deck` tag), a recorded door,
+and an existing upper ladder tile at the shared authored attachment coordinate.
+Only that one ground attachment outside the bbox is added, not the whole yard;
+an arbitrary nearby tile 322 is not evidence of a house attachment. The shared
+ladder calculation is also used by `village/houses.ts` when authoring decks.
+
+`houseKitDomain` preflights standalone/lots house footprints and records each
+completed house after house-owned finishing, before subsequent yard work and
+runner postprocessing. A draft-local seal retains those exact registration-time
+values; it is never refreshed to accept later corruption. Legacy `build_house`
+also preflights and registers. Durable ownership uses existing layout fields
+and survives serialize/deserialize; no schema or lock UI was added. The next
+transaction snapshots any accepted human edits, not original kit artwork.
+
+Map deletion, changing the protected map's tileset ID/tile size, cropping, and
+removing/shrinking/moving away/reclassifying recorded protection are rejected.
+Descriptive labels, notes, and tags may change when protection is preserved.
+New overlapping house geometry is rejected even when tile IDs are identical;
+pre-existing overlaps are tolerated only while their overlap does not expand.
+Village registration retains every earlier layout region and allocates unique
+IDs. Phase 2 now seals village houses internally before environmental work;
+see the construction contract below. The Phase 1 final guard remains unchanged.
+
+Cluster approval (`clusterAiModal.ts`, including palette range classification) uses
+`applyProposedProject` against the live store, not direct snapshot/replacement.
+That common boundary owns house validation, undo, AI-attributed replacement,
+focus and commit logging. A stale proposal that would overwrite human house
+edits or remove a newly completed house leaves store/history and session draft
+unchanged; the modal reports failure and keeps the proposal available. Safe
+metadata-only proposals apply once and then rebase. Existing destructive/rule
+confirmation hooks are unchanged. Regression: `test/clusterAiModalHouseProtection.test.ts`.
+
+Focused contracts: `test/houseProtection.test.ts`, `test/toolHouseProtection.test.ts`,
+`test/houseKitDomainSeam.test.ts`, `test/villageBuilderSeam.test.ts`,
+`test/assistantMapPreservationGuard.test.ts`, `test/constructionToolsV3.test.ts`.
+The session matrix covers accepted, same-turn, same-session, and newly created
+maps against selection, `confirmDestroy`, and both `overExisting` values.
+
+## Completed-house construction protection - Phase 2 (2026-09-06)
+
+`village/builder.ts` finishes doors, ridge/roof/deck, banners, shop signs, and
+linked interiors before publishing house regions. It captures exact layer/stack
+snapshots once, locally to that builder invocation. Roads, yard fences, terrain,
+environmental decor, landscape, placement cleanup, NPC placement, and snow ground
+are checked against those same values after each stage. Road sub-stages also
+check before retry rollback. No post-environment door/ridge restoration remains;
+a damaged stage fails the whole tool with `protected-house-write`.
+
+Village seals do not accumulate in the standalone producer's project WeakMap.
+A discarded pipeline attempt discards its local snapshots; the accepted attempt
+still passes the unchanged transaction guard after global tree repair. The
+accepted start cell is excluded from new candidates so facade start restoration
+cannot reopen a sealed house. Existing metadata houses and human stamp bounds
+exclude new candidates and direct road/plaza/decor/landscape/snow writes, including
+autotile neighbors. Roof-deck metadata also records custom deck templates through
+the existing `roof-deck` tag. Only the existing bbox/ridge/recorded ladder geometry
+is owned, not the whole yard. Exact counts, connected-road checks and explicit
+capacity failure keep their existing contracts.
+
+`fill_region` skips metadata-owned cells before passage previews, lower/upper
+painting, `clearUpper`, and neighbor autotile writes. The fill-only structure-role
+fallback checks both layers without creating ownership metadata. `filled` counts
+permitted paint candidates; `mutatedCells` counts distinct final changed cells
+(including unprotected reshaped neighbors); `skipped.structure` counts protected
+requested candidates once. All-protected fills truthfully report zero change.
+
+`forestComposition.ts` preflights floor tone/litter, bushes, gap closure, edge
+feathering, undergrowth, full puddle candidates, and autotile neighbors. Tree
+placement rejects the whole footprint. The supported ungrouped tree-base path
+also excludes the repair canopy one row north before placing its trunk. Useful
+work outside houses still succeeds. No force option, schema, lock UI, raw-wall
+completion inference, human-brush restriction, or final-guard exemption was added.
+
+Primary regressions: `houseProtectionFill`, `houseProtectionForest`,
+`houseProtectionLifecycle`, and `villageHouseProtection`. Runnable integrated
+50x50/100x100 evidence: `.omo/evidence/house-protection/p2/exercise.mts`.
+
 ## 퀘스트 입력과 완주 증거 계약 (2026-09-05)
 
 `create_quest`는 `QuestDef`의 단계 정의와 이벤트/플래그를 만들며 graph를 만들지 않는다. `questToolSchemas.ts`가 giver/target의 `{mapId,eventId}` 또는 `{create:{mapId,x,y,name}}`, collect의 `itemId/count/sources`, kill의 `troopId/at`, reach의 `mapId/x/y`를 모델 스키마에 모두 노출한다. 공통 runner의 검사는 얕으므로 `parseQuestDef`가 실제 kind별 중첩 구조를 컴파일 전에 검증한다. 오류에는 `def.steps[0].at.mapId` 같은 경로와 올바른 형태를 싣는다. provider용 키 합집합 때문에 공통 좌표 정규화가 reach/talk에도 `at`를 합성할 수 있어, 단계 파서는 해당 kind의 필드만 검증한다.
@@ -66,9 +793,13 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 
 - **Canvas AI workbench (2026-08-25):** the expert canvas toolbar now exposes four real quick actions through `src/editor/panels/canvasAiWorkbench.ts`: `만들기` arms the existing deterministic build palette and selection tool, `다듬기` sends the current tile selection through the bounded `openRegionTaskModal` preview/apply flow with a constrained polish prompt, `검사` opens `canvasInspectionPanel.ts` over deterministic `projectLint` results with camera focus and bounded AI-repair handoff, and `AI 요청` opens the same region-task composer for the current selection or whole map. The toolbar wiring lives in `editorZoomToolbar.ts`; browser proof is `test/e2e/canvas-ai-workbench.spec.ts`.
 
+- **Antigravity integer enums (2026-09-07):** keep local `type:"integer", enum:[1,2,3]` and sparse `[4,8]` numeric. Google CCA's legacy `parameters` protobuf encodes enum members as strings, not tool arguments. `scripts/lib/ohMyPiToolEnums.ts` retains source paths/membership and runs through `ohMyPiPiAiRuntime.ts`'s SDK **post-normalization `onPayload`** hook: Claude's numeric members are encoded; Gemini's stripped members are restored exactly. Only a fresh legacy payload copy changes. Unsupported numeric enums, lost fields, changed types or incompatible membership fail HTTP400 before fetch; Codex and `parametersJsonSchema` are not encoded. Never fix this by deleting constraints or stringifying local schemas/arguments. Regression: `ohMyPiNumericEnum.bun.test.ts` (full captured 48 tools and live corpus), `ohMyPiToolEnums.bun.test.ts` (real normalization/fail-closed seams), `ohMyPiNumericEnumLocal.test.ts` (shipped normalization and actual house/interior parsers). Earlier browser-aborted planner calls remain a separate unresolved observation, not a reason to change deadlines.
+
 - **Tool JSON schemas must be strict-provider compatible (2026-08-14 실측):** array-typed tool params MUST carry `items`, and union-typed items must not use bare `oneOf` without a `type` — Gemini-backed gateways reject the whole request with 400 `upstream_request_rejected ... properties[yard].items: missing field`, killing every chat turn while OpenAI-style backends accept the same payload. Two such bugs shipped (`build_house_lots` yard items as `oneOf`, `author_house` yard array with no `items`); both fixed in `src/editor/tools/houseLotTools.ts` / `src/editor/tools/authorHouseToolDef.ts`. When adding tool params, run a catalog audit: every `{type:"array"}` node must have `items`, and validate the full exposed tool list through the real gateway (cpen caps `tools` at 128; session exposure cap 40 stays within it).
 
 - **객체 타입 파라미터는 `properties` 를 반드시 선언한다 (2026-08-23 실측):** `{ type: "object" }` 만 적고 실제 필드를 `description` 문자열에만 써 두면 400 은 안 나지만 strict function-calling 경로에서 모델이 그 객체의 필드를 **표현할 방법이 없어 `{}` 만 보낸다.** 실측 턴: `set_work_plan` 이 `layers:[{}]` 8회, `set_build_spec` 이 `assets:[{}]` 10회 연속 → 계획 폐기 → 스펙 게이트가 `fill_region`/`place_npc` 까지 차단 → 31콜 중 21콜 실패. 배열 길이만 1,2,3,6,5 로 바뀌고 내용은 늘 비어 있었다는 게 모델이 아니라 스키마가 벽이라는 증거다. 카탈로그 전역 109개 노드를 고쳤고(재사용 조각은 `src/editor/tools/schemaShapes.ts`: `COORD_SCHEMA`/`RECT_SCHEMA`/`COMMAND_SCHEMA`/`SIMPLE_PAGE_SCHEMA`/`CUTSCENE_BEAT_SCHEMA`/`CONDITION_SCHEMA`/`LIGHT_SOURCE_SCHEMA`/`VILLAGE_*_PLAN_SCHEMA`), 감사는 `test/toolSchemaProviderCompat.test.ts` 가 고정한다. 유니온 shape 은 `oneOf` 금지 → **키 합집합을 전부 선택 필드로**. 진짜 동적 키 맵(`elementRates`, `priceBySeason`, `inventory` 등)만 `additionalProperties: true` 로 명시 면제. 커맨드 `kind` 는 자유 문자열로 두지 말고 `COMMAND_KINDS`/`CONDITION_KINDS` enum 을 노출한다(자유 문자열이면 모델이 없는 kind 를 만들어 보낸다).
+- **NPC command contract / repair (2026-09-06):** `COMMAND_SCHEMA.kind` exposes only `COMMAND_KINDS`; `CONDITION_SCHEMA.kind` exposes only `CONDITION_KINDS`. `item` and `selfSwitch` are page conditions, not executable commands. Item grants use `{kind:"changeItem",itemId,op:"+=",amount}`; switch writes use `setSelfSwitch` or `setSwitch`. Command `op` is declared explicitly. Command/condition `value` fields are declared without a single-type restriction so boolean, numeric, and supported variable operands are not falsely advertised as strings. This uses no `oneOf`, `anyOf`, or array-valued provider `type`; `jsonSchema.matchesType` treats an omitted type as unconstrained, while the existing command/condition shape validators remain responsible for variant validity. Existing internal type-array consumers remain supported. Rejected `item`/`changeItems`/`gainItem` commands return an `invalid-args` issue containing a standalone `repair: <JSON>` line with `{path,example}`. The example uses canonical `changeItem`, preserves a supplied string item ID and finite numeric amount (otherwise lookup placeholder / amount 1), and is guidance only: none of these names becomes an alias. Read the full issue message, not the 200-character summary. Replace only the command at `path` and use an ID obtained from `get_database_records`; do not remove the grant to make the call succeed. `test/npcCommandContract.test.ts` parses the repair JSON, checks schema/compiler/shape acceptance, and retries through the real `place_npc` runner. Evidence: `.omo/evidence/assistant-tool-reliability/schema`. Live Gemini acceptance is not established by the local provider-compatibility audit.
+  - Audit NPC repairs (entries 170/174/196): the real runner keeps missing `pages` invalid. Only an otherwise recognized `place_npc` call with a sole nonempty `dialogue.text` receives `{path:"pages",example:[{lines:[originalText]}]}`; the hint distinguishes dialogue NPCs from object gimmicks. The optional `ToolDefinition.invalidArgsRepair` callback supplies input-specific schema-error guidance without running or mutating the project. Missing-kind `{commandId,fields:{lines}}` for Show Text (`m2-001-show-text`, or the audited invalid `m2-101-show-text`) remains rejected and suggests native `{kind:"text",body:lines.join("\n")}`. This is not an M2 ID alias, and no other ID or extra/conflicting field is guessed away. Sole `{selfSwitch:"A"}` condition shorthand receives canonical `{kind:"selfSwitch",key:"A",value:true}`; explicit boolean false/true is retained (the same omitted-value default as `make_villager.dialogue.when`). Singleton corrections target the actual `pages[i].conditions` field with an array; array corrections target only `pages[i].conditions[j]`, preserving siblings. Extra or malformed conditions get no lossy repair, including `kind:"none"` with additional fields (only bare `{kind:"none"}` still normalizes away). Apply the parsed `example` at `path`, retain other pages and dialogue, and retry through the runner. No story text is invented and canonical pages/condition arrays are unchanged. Focused contract: `test/npcAuditRepair.test.ts`; RED/GREEN and correction evidence: `.omo/evidence/assistant-audit-pr/npc/`.
 - **`kind` 로 허용 키가 갈리는 툴은 스키마가 아니라 파서에서 정규화한다.** `oneOf` 를 못 쓰므로 모델은 두 모드 키를 섞어 보낸다 — 실측: `author_house` 에 `kind:"lots"` + 최상위 `kitId/wings` 를 한 턴에 33회 연속 전송. 에러 문구에 허용 키 전체를 실어도(`rejectUnknownKeys` 개선) 같은 턴에서 교정되지 않았다. `parseAuthorHouseRequest` 의 `normalizeRequestShape` 가 shape 로 모드를 추론하고 단일 모드 키를 `houses[0]` 로 접는다 — 같은 파일의 wings 클램프·`windows:true` 보정과 동일 방침. 실측 결과 33회 실패 → 성공 1회.
 - **동료 저작 전용 툴 (`src/editor/tools/companionTools.ts`).** `add_companion` 은 `target.eventId` 면 그 이벤트의 **마지막 페이지**(RM 계열은 조건을 만족하는 마지막 페이지가 실행된다 — 첫 페이지에 넣으면 조건 가드용 빈 페이지에 박힌다)에 `addFollower` 를 붙이고, `target.mapId/x/y` 면 이벤트를 만든다(`trigger:"talk"` = 말 걸어 합류 + `setSelfSwitch A` 로 사라짐, `"autorun"` = `{kind:"auto"}` + 스위치 가드로 1회). `who` 는 `{actorId}` / `{query}` / `{textureKey, characterIndex}` 이고 그래픽은 항상 `charsetFollowerGraphic` 을 거친다. `configure_companion_rules` 는 `system.companions`(대형·간격·인원 상한·초과 정책·맵 이동 시 해제)를 쓰며 `domains: ["system"]` 로 선언해 event 도메인 자리를 잡아먹지 않는다. 동료는 DB 레코드가 아니라 세션 상태이므로 `DB_TOOLS`/database 도메인에는 넣지 않는다. 노출 경로 확보를 위해 `assistantToolMode` event 의도 키워드에 `동료/동행/펫/따라오/따라다니/companion/follower/pet` 을 추가했다 — 키워드가 없으면 40툴 트림에서 잘려 모델이 "그 기능이 없다"고 오보한다.
 - **노출되지 않은 툴은 모델에게 "없는 기능"이다 (2026-08-23 실측).** "상성표/엔딩 조건" 요청에서 `set_type_chart`·`define_ending`·`get_database_records`·`script_cutscene` 가 도메인 스코핑·40툴 상한에 밀려 노출되지 않았고, 모델은 사용자에게 **"그 기능이 없습니다"** 라고 보고하며 작업 3건을 skip 했다. 툴콜 실패보다 나쁘다 — 사용자가 제품 한계로 오해한다. 수정: 참조 id 조회(`get_database_records`)를 `CORE_TOOL_NAMES` 로 승격(모든 쓰기의 전제), 의도 키워드에 `상성/상성표/속성`(battle+database) · `엔딩/ending/결말`(event+quest) · `컷신/cutscene/연출/선택지`(event) 추가, `PINNED_TOOLS_BY_DOMAIN` 에 `set_type_chart`/`define_ending`/`list_endings`/`script_cutscene(_preset)` 핀. **핀은 `tool.domains` 기준이다** — 엔딩 툴은 `withDomain(ENDING_TOOLS,"event")` 이므로 quest 에 핀해도 효과가 없다. 회귀 고정: `test/aiEndingToolExposure.test.ts`. 매 턴 노출 목록은 `tools:exposed <n> — <names>` 감사 라인으로 확인한다.
@@ -81,17 +812,39 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - **부분 수용이 전체 거부보다 낫다 (2026-08-23 실측).** `elementRates:{fire:"C",water:"A",grass:"D"}` 에서 `grass` 만 DB 속성이 아니었는데 커밋 전체가 거부되고, 모델의 재시도는 `elementRates` 를 아예 빼버려 "불에 강하고 물에 약한" 의도가 조용히 사라졌다(전 속성 기본 C). `dropUnknownElementRates`(dbTools)가 무효 키만 버리고 유효 등급은 살린 뒤 사용 가능한 속성 id 와 함께 경고한다 — `fill_region` 이 보호 셀만 건너뛰는 방침과 같다. 회귀: `test/elementRatesPartialAccept.test.ts`. **`enemy.elementRates`(= `database.elements` id)와 `set_type_chart.types`(= `monsterSpecies.types`)는 다른 네임스페이스다** — 모델이 자주 혼동하므로 툴 description 에 명시했다.
 - **실내 방 세션이 시작 맵을 교체하면 시작 좌표가 벽이 된다 (2026-08-23 실측).** `createEmptyRoomMap` 이 전면 VOID 였기 때문에 `start_interior_room_session` 직후 커밋이 `시작 위치가 통행 불가 타일입니다: (10, 8)` 로 거부됐고, 원인이 자기 인자가 아닌 줄 모르는 모델이 좌표만 바꿔 4회 재시도했다. 이제 계획된 바닥 footprint(rooms/wings)를 기본 바닥 타일로 선칠하고(바닥 레이어가 뒤에서 정식 재칠 — 최종 결과 불변), `reconcilePlayerStart`(roomHarness/engine)가 시작 좌표를 방 안 통행 가능 칸으로 옮기며 경고한다. 시작이 곧 실내인 게임(침실에서 깨어나기)을 막지 않기 위해 거부가 아니라 보정을 택했다.
 - **`upsert_enemy` 는 이 호출이 새로 가리키는 참조를 먼저 검사하고, 커밋 거부 요약은 첫 사유를 싣는다 (2026-09-03).** DB AI 바 턴 실측: 모델이 조회 없이 `actions[].skillId: "skill_0001"` · `rewards.dropItemId: "item_0001"` 자리표시 id 를 넣자 일반 무결성 게이트(`commitChangeset` → reference-validation)가 쓰기 전체를 `'upsert_enemy' 커밋 거부(무결성 오류)` **한 줄로** 반려했다 — 함께 보낸 스탯·보상까지 버려지고 사유는 `issues` 에만 있어 모델·사용자 모두 이유를 못 봤다. 수정 둘: (1) `rejectUnknownEnemyReferences`(`dbTools.ts`)가 `skillIds`/`actions[].skillId`/`rewards.dropItemId`/`actions[].switch*AfterAction.switchId` 중 **이 호출의 args 가 넘긴 것만** 검사해 `enemy-reference-not-found` 로 위반 목록(먼저) + 허용 예시 5개 + `get_database_records` 안내(뒤)를 돌려준다(`upsert_troop` enemyIds · `define_monster_species` skillId 와 같은 패턴). 기존 레코드의 선재 깨진 참조는 보지 않는다 — 커밋 게이트가 기준선으로 용인하는 오류라 스탯 한 줄 고치기를 막으면 안 된다. (2) `toolRunner.commitRejectionSummary` 가 `'<tool>' 커밋 거부(무결성 오류) — <첫 위반 메시지> (+N건)` 을 만든다(접두어 유지 — 기존 `toContain("커밋 거부")` 계약). `activityLog.deriveAiActivityDiagnostics` 는 요약에 이미 든 이슈를 다시 붙이지 않는다. 회귀 고정: `test/dbToolsIntegrity.test.ts`(세 참조 거부·선재 오류 무시·정상 참조 통과·일반 게이트 요약).
-- **NPC·몬스터는 이미지 없이 생산되지 않는다 (2026-08-30).** 모델은 `upsert_enemy` / `define_monster_species` 에서 `monsterResourceId` 를 상습적으로 생략했고, 통과된 레코드는 전투에서 `skinEnemySpriteUrl()` 공용 스프라이트로 대체되어 **모든 적이 같은 모습**이 됐다(`src/player/battleFieldDom.ts:547`). 원인은 둘이다: (1) 생략이 그대로 통과했고, (2) 리소스 id 는 전부 영어 어간이어서 `searchResources("monster","슬라임")` 가 0건 — 한국어로 넣으면 `invalid-args` 로 튕기니 모델은 필드를 아예 부치지 않는 것을 학습한다. 수정: `src/assets/monsterResourceSemantics.ts` 가 한국어 ↔ 어간 색인(종류·속성·재질·역할)을 들고 `monsterCandidates()` 태그에 주입되어 "해골 궁수" → `generated-enemy-skeleton-archer` 로 해석되고, `assignMonsterResourceId`(`src/editor/tools/monsterGraphicAssignment.ts`)가 생략 시 이름으로 리소스를 붙이며(이름이 안 먹힐 때는 레코드 id 해시로 대표 몬스터 10종에서 안정적으로 고르므로 적마다 다른 스프라이트가 간다) 무엇을 붙였는지 경고한다. 명시한 값·기존 값은 덮지 않는다(부분 변경 병합 이후에 검사하므로). 이 보장은 `make_action_enemy` 생성 경로에도 적용되어 이후 `make_hunting_ground` 필드 스폰이 같은 몬스터 외형을 쓰며, `place_battle_blocker` / `make_chase_scene` 는 그래픽 생략 시 `query:"monster"` charset 과 경고를 낸다. `add_companion` 의 actor 경로는 액터 `characterResourceId` 를 `charsetFollowerGraphic` 으로 해석하고, 값이 없으면 NPC 페이지와 같은 `resolveGraphicQuery("villager")` 주민 charset으로 폴백하므로 인간 동료가 몬스터 열차 charset으로 보이지 않는다. 같은 이유로 `upsert_event` 는 **대화가 있는 `action` 페이지가 그래픽 없이** 잡힐 때 먼저 그래픽이 있는 sibling page의 charset을 재사용하고, sibling이 없을 때만 주민 charset을 붙인다 — 셀프스위치 전환으로 NPC 정체성이 바뀌지 않는다. 말을 걸어야 하는데 안 보이는 이벤트는 플레이어가 찾을 수 없으므로 의도된 저작이 아니다. `priority:"below"`인 바닥 조사 마커는 보완하지 않으며, 투명 이벤트의 명시 경로는 `graphic:{transparent:true}` 이고 `auto`/`parallel` 컷신 이벤트도 그대로 둔다. 회귀 고정: `test/aiGraphicAutofill.test.ts`.
+- **NPC·몬스터는 이미지 없이 생산되지 않는다 (2026-08-30).** 모델은 `upsert_enemy` / `define_monster_species` 에서 `monsterResourceId` 를 상습적으로 생략했고, 통과된 레코드는 전투에서 `skinEnemySpriteUrl()` 공용 스프라이트로 대체되어 **모든 적이 같은 모습**이 됐다(`src/player/battleFieldDom.ts:547`). 원인은 둘이다: (1) 생략이 그대로 통과했고, (2) 리소스 id 는 전부 영어 어간이어서 `searchResources("monster","슬라임")` 가 0건 — 한국어로 넣으면 `invalid-args` 로 튕기니 모델은 필드를 아예 부치지 않는 것을 학습한다. 수정: `src/assets/monsterResourceSemantics.ts` 가 한국어 ↔ 어간 색인(종류·속성·재질·역할)을 들고 `monsterCandidates()` 태그에 주입되어 "해골 궁수" → `generated-enemy-skeleton-archer` 로 해석되고, `assignMonsterResourceId`(`src/editor/tools/monsterGraphicAssignment.ts`)가 생략 시 **정규화한 정확한 정체성 또는 모든 검색 낱말이 라벨/태그에 정확히 일치하는 경우에만** 이름으로 붙이고 경고한다. **2026-09-06: 해시 폴백을 제거했다.** `enemy_leaf_fox` / `풀잎여우`가 검색 0건 뒤 해골로 저장되던 결함이다. 부분 문자열·일부 낱말·`*`/`all`/`전체`·일반 카테고리만으로는 자동 지정하지 않는다. 넓은 `searchResources`는 조회용으로 유지한다. 세 쓰기 경로는 공용 `ensureMonsterGraphic`을 거쳐, 확실한 외형이 없으면 `monster-graphic-required`로 원자적으로 거부하고 `list_resources(kind:"monster", query:"*")` 조회 후 명시 ID를 넣도록 안내한다. 명시한 미등록 값/불확실한 검색어는 `invalid-args`이며, 확실한 검색어는 계속 해석한다. 등록된 명시 ID·기존 ID는 덮지 않고, `transparent:true`는 이미지 생략을 허용한다. 종족 `graphic` 부분 변경은 기존 ID와 투명 상태를 보존한다. `make_action_enemy`는 선택 `monsterResourceId`/`transparent` 인자를 받아 오류에서 복구할 수 있고 기존 적 수정에도 같은 검사를 적용한다. 회귀: `test/monsterGraphicReliability.test.ts`의 실제 `runTool` 생성·수정·거부 후 무변경 계약. 이 보장은 `make_action_enemy` 생성 경로에도 적용되어 이후 `make_hunting_ground` 필드 스폰이 같은 몬스터 외형을 쓰며, `place_battle_blocker` / `make_chase_scene` 는 그래픽 생략 시 `query:"monster"` charset 과 경고를 낸다. `add_companion` 의 actor 경로는 액터 `characterResourceId` 를 `charsetFollowerGraphic` 으로 해석하고, 값이 없으면 NPC 페이지와 같은 `resolveGraphicQuery("villager")` 주민 charset으로 폴백하므로 인간 동료가 몬스터 열차 charset으로 보이지 않는다. 같은 이유로 `upsert_event` 는 **대화가 있는 `action` 페이지가 그래픽 없이** 잡힐 때 먼저 그래픽이 있는 sibling page의 charset을 재사용하고, sibling이 없을 때만 주민 charset을 붙인다 — 셀프스위치 전환으로 NPC 정체성이 바뀌지 않는다. 말을 걸어야 하는데 안 보이는 이벤트는 플레이어가 찾을 수 없으므로 의도된 저작이 아니다. `priority:"below"`인 바닥 조사 마커는 보완하지 않으며, 투명 이벤트의 명시 경로는 `graphic:{transparent:true}` 이고 `auto`/`parallel` 컷신 이벤트도 그대로 둔다. 회귀 고정: `test/aiGraphicAutofill.test.ts`.
 - **적대적 인자 스윕은 상시 게이트다.** `test/toolHostileArgs.test.ts` 가 전 쓰기 툴(100+)에 `empty`/`nulls`/`wrongTypes`/`deepHoles` 4종 인자를 먹이고, **거부는 허용하되 크래시·`후처리 실패`·`Cannot read properties` 는 금지**한다. 계약은 성공이 아니라 읽을 수 있는 실패다 — 모델이 고칠 수 없는 메시지는 그 자체로 버그다.
 
 - **Soft-confirm (목록 확인) replaces hard unapproved-vocabulary blocks for construction.** `resolveVocabForBuild` in `src/project/tileVocabulary.ts` returns `approved | soft | missing`. Existing groups/tiles soft-allow and paint the map with `data.vocabSoftConfirm`; only missing ids hard-fail. Soft construction proposals set `requiresApproval` and show **cropped** map before/after thumbs (change bbox) plus 상세 재료·배치를 확인할 수 있는 UI; accept (`그대로 적용`) runs `applyVocabSoftConfirmApprovals` so `origin:user` is marked only on explicit accept (autoApprove still blocked). Card-level material warnings skip the second `confirmRuleApproval` modal. `place_props` identical args are deduped once per turn (`writeDedupeKey`). Login modal z-index stays below the proposal modal; proposal open forces guest identity if needed. Region AI (`runRegionTask`) shows no chat proposal card, but its default apply gate is `"approval"` (`runRegionTask.ts:831`) — the change lands only through the `pendingRegionApply` review modal (approve/discard); it auto-applies only via the legacy `gate:"immediate"` path (:850). Region runs also cap the session at `REGION_TASK_MAX_TOOL_CALLS = 24` tool calls (`runRegionTask.ts:50,:222`), and still mark soft vocab on apply and seed harness groups.
 - AI activity/conversation persistence is not best-effort when Supabase is configured. Missing dedicated tables must surface `SupabaseMigrationRequiredError`; apply and verify schema with `npm run db:migrate` / `npm run db:verify-ai`. Historical `ai_analysis_runs` fallback rows remain readable, but new activity logs only write `ai_activity_logs`, and remote log diagnostics are always scoped to the configured project id.
-- Tile v3 includes `fill_region` in `src/editor/tools/v3/constructionTools.ts` for water/floor/ground surface fills with autotile or animated-terrain groups (soft-confirm when not yet origin:user). Use `fill_region` for lakes, rivers, floors, and terrain areas; keep `place_props` for scattered objects such as trees, rocks, and flowers. `fill_region` and `tile_erase` skip only protected start/transfer-destination cells that would become impassable and return a warning for the skipped coordinates instead of rejecting the whole edit.
+- Tile v3 includes `fill_region` in `src/editor/tools/v3/constructionTools.ts` for water/floor/ground surface fills with autotile or animated-terrain groups (soft-confirm when not yet origin:user). Use `fill_region` for lakes, rivers, floors, and terrain areas; keep `place_props` for scattered objects such as trees, rocks, and flowers. `build_wall` requires a supported expandable pattern with defined parts; fixed fence props without that pattern use `place_props`, not `build_wall` or `fill_region`. `fill_region` and `tile_erase` skip only protected start/transfer-destination cells that would become impassable and return a warning for the skipped coordinates instead of rejecting the whole edit.
+- **Erase restoration ground (2026-09-07):** `tile_erase(kind:"all")` ranks only observed compatible lower ground, outside the rectangle first and inside second (row-major ties). Tileset role/group semantics, authored tile-role and layer overrides, metadata passage, and runtime passability must agree; floor/terrain/ground/path can qualify, not walls, roofs, props, water, upper homes, or blocked tiles. An explicit authored ground role can supersede inherited group vocabulary, but cannot bypass runtime layer/passage or completed-house protection. No candidate means `erase-ground-unresolved` before either layer changes, not a grass fallback or a fabricated atlas tile. Inspect the selected tileset and explicitly paint a valid ground surface before retrying. `layer:"upper"` needs no ground and reports `groundTile:null`; start/transfer support and transaction ownership guards still apply. `kind:"market"` retains its separate selective demolition contract. Regressions: `test/tileEraseGround.test.ts` (fresh 12x10 border, captured wall distribution, real crate placement on town222/240 and interior72, authored rules, atomic failure, ownership), plus `test/constructionToolsV3.test.ts` (upper-support passage protection and market behavior).
 - Live MCP bridge for external agents: `src/editor/aiAssistantBridge.ts` registers from `aiChatPanel` and long-polls `http://127.0.0.1:17831` (see `npm run mcp:assistant` / `scripts/rpgzzu-assistant-mcp.mjs`). Same chat session as the UI; tools are `assistant_send` / `status` / `audit` / `harness` / `abort`. Dev auto-connects; `?aiBridge=0` disables. `agy mcp add rpgzzu-assistant node scripts/rpgzzu-assistant-mcp.mjs` registers the bridge in AGY. AGY 1.1.x uses newline-delimited stdio JSON-RPC while older repo clients use `Content-Length`; `scripts/lib/mcpStdioFraming.mjs` detects the first inbound frame and replies in the same format. Keep both paths covered by `test/mcpStdioFraming.node.test.mjs`; a mere `agy mcp list` is not a health check—verify `assistant_ping` and `assistant_status` against an open editor.
 - **상점 저작은 모든 활성 페이지에서 런타임이 열려야 한다 (2026-08-24 실측):** 런타임 `resolveEventPage`는 조건이 맞는 마지막 페이지를 선택한다. `make_villager`가 첫 페이지에만 `shop`을 넣고 뒤의 무조건 대사 페이지를 남기면 DB에는 상점 명령이 있어도 플레이에서는 상점이 열리지 않는다. `make_villager`와 `set_shop_stock`은 이제 이벤트의 모든 페이지에 동일 재고의 `shop` 명령을 추가/갱신한다. `runSceneTest(... expect.shopStock)`로 활성 페이지를 검증한다.
 - **상점 의도와 명시 툴은 노출 상한 밖에서도 보존한다 (2026-08-24 실측):** `상점`/`상인`/`재고` 및 `shop`/`merchant`/`stock`은 event 도메인을 연다. `set_shop_stock`은 event 대표 pinned tool이다. 사용자가 `get_event`처럼 정확한 레지스트리 이름을 프롬프트에 썼다면 `mentionedToolSchemas`가 40-tool 도메인 trimming 뒤 다시 합쳐 준다. 그렇지 않으면 타일 UI + 복합 보존 문구가 핀을 채워, 모델이 실제로 존재하는 조회 툴을 “없다”고 오보하고 work item을 skip할 수 있다.
 - **길 존재 판정은 autotile 패밀리 전체를 본다 (2026-08-24):** `aiAgentBrief.mapHasPath`와 원격 검증기는 단일 `TILE.PATH` id만 비교하지 않고 `isRoadTile`을 쓴다. 실제 dirt-road edge/corner id(예: 390/391/392/420/450)만 있는 맵을 “길 없음”으로 안내하면 안 된다.
 - The AI chat panel owns user-visible turn controls and wires sibling modules: `src/editor/panels/aiChatPanel.ts` (turn pipeline, selection task, chrome/layout assembly), `aiChatPanelHelpers.ts` (pure helpers/audit export), `aiSettingsModal.ts` + `aiAuthSettings.ts` (config/auth surface), `aiProposalCard.ts` (proposal card + accept/reject/fusion), `aiConversationLog.ts` (bubbles/reasoning/tool activity/tile visuals), plus thinner shells `aiProposalSummary.ts` / `aiChatRenderers.ts` / `aiProposalFusion.ts`. (`aiCommandBar.ts` 는 커버이서 재구축으로, `aiProposalModal.ts` 는 승인 게이트 폐지로 삭제된 파일이다 — 찾지 마라.) Public test imports stay on `aiChatPanel` via re-export. Readiness is auth-mode-aware: ChatGPT mode requires a model and a reachable companion/login, while API-key mode preflights endpoint + key. The panel opens settings with focus, restores the latest same-project conversation asynchronously from IndexedDB `oprn-ai-records` (`src/ai/aiRecordDb.ts`; the old `oprn:ai-conversations` localStorage key is migrated on first access — see `editor-ai-panel.md` 「대화 기록의 로컬 정본은 IndexedDB 다」), shows elapsed time plus a visible tool counter during running turns, and wires the visible abort button to `AssistantSession`/`llmClient` AbortSignal. Keep browser UI in the panel layer; `src/ai/assistantSession.ts` should remain browser-independent and only accept the optional signal.
+- **세션의 순수 표면은 `src/ai/session/` 이 소유한다 (2026-09-09 분할):** `src/ai/assistantSession.ts` 는 6,391줄이었고
+  그중 클래스 밖 top-level 선언이 930줄이었다. 그 100개 선언을 책임별 14개 모듈로 옮겼다 —
+  `session/types.ts`(공개 타입) · `sessionTools.ts`(세션 전용 툴 스키마·쓰기 툴 판정) · `assistantText.ts`(어시스턴트
+  텍스트 위생) · `orchestration.ts`(주입 메시지 판별) · `proposalApproval.ts`(승인 필요 판정·경고) ·
+  `buildSpecGate.ts`(밑그림 게이트 판정) · `toolResultWarnings.ts` · `eventTargets.ts`(이동 후 최종 좌표 접기) ·
+  `toolPayload.ts`(툴콜 파싱·결과 축약) · `recordReference.ts` · `budgets.ts`(수치 상한) · `transientRetry.ts` ·
+  `workItemLookup.ts` · `unknownValue.ts`. `estimateOutputTokens` 는 `sessionUsage.ts`, `npcRewardTargetSnapshot` 은
+  `npcRewardWitness.ts` 로 갔다. **`assistantSession.ts` 는 기존 32개 export 를 전부 re-export 한다** — 61개 소비자의
+  import 경로(`@/ai/assistantSession`)는 그대로다. 새 심볼을 추가할 때 이 파일에 top-level 선언을 다시 쌓지 말고
+  해당 `session/*` 모듈에 넣고 필요하면 re-export 만 늘려라.
+- **남은 5,072줄은 `class AssistantSession` 이고, 이건 파일 분할로 안 풀린다 (실측):** 필드 144개·메서드 173개이며
+  `executeTurnLoop`(732줄)이 필드 46개를 읽고 메서드 57개를 부르고, `executeUserTurn`(358줄)은 필드 144개 중
+  **73개**를 만진다. 상위 결합 필드는 `workPlan`(43개 메서드) · `ctx`(37) · `runOperation`(32) 로 클래스 전역이다.
+  즉 이 클래스는 세션 쓰기 파이프라인(`recordToolResult`·`upsertProposal`·`pushAudit`·`pushOrchestrationMessage`)을
+  공유하는 **코디네이터**라서, 도메인 클러스터(NPC 캐스트 저작 161줄 등)를 떼려 해도 협력자 15개를 실어야 한다.
+  협력 객체로 뽑을 수 있는 것은 상태가 클러스터 안에 갇힌 것뿐이다. 후보와 그 비용:
+  볼륨 계약(필드 3개·메서드 5개·약 40줄 — 단 `exportRuntime`/`restoreCheckpoint` 왕복을 건드린다),
+  레이어 자문 검증(필드 4개·약 81줄), 압축(필드 6개·약 109줄 — `messages`·`config` 공유가 걸림돌).
+  선례는 이미 있다: `ToolVerificationEvidence`·`AssistantAcceptanceLedger` 의 `exportRecovery`/`restoreRecovery` 쌍.
+  **`executeTurnLoop`·`executeUserTurn` 재작성은 그 분기를 잠글 세밀한 테스트가 생긴 뒤에 해라** — 지금 하면
+  리팩터가 아니라 회귀 도박이다.
 - **AI visual polish (?쒖븞 6):** start cards use fixed 16px icons + uniform 48px row height and 2/3-column grids; start screen stays top-aligned (no vertical center abyss). Header has a thin accent gradient bar. Status badge uses `data-status-tone` (`idle`/`running`/`review`/`error`/`ok`) via `statusToneOf` ??same token colors as the collapsed FAB rail dots. Full history groups prior turns into collapsible `.ai-turn-group` with day dividers (`.ai-day-divider`); mini-stream still hides `.is-prior-turn`. Styles live mainly in `tabs-b-assistant-panel.css`; tests: `test/aiVisualPolish.test.ts`.
 - **AI shared surface + dock modes:** Basic/expert editor chrome must not fork the AI panel. Start screen is the minimal empty-hint surface (`ai-start-screen` + `ai-start-empty-hint`, optional ?댁뼱媛湲? in both modes; there is no `ai-expert-board`. Chat layout is **side** (default full-height right column, accent border, header ?쒖궗?대뱶??chip) vs **float** (map-over command capsule, ?쒗뵆濡쒗똿??chip + ?쒗뵆濡쒗똿 諛?쨌 留????낅젰??label). Visible dock mode buttons: `ai-dock-mode-btn` / `ai-dock-mode-btn-header`; menu copy: ?쒗뵆濡쒗똿 바로 ?꾪솚??/ ?쒖궗?대뱶 ?⑤꼸濡?고정?? Tests: `test/aiSharedSurface.test.ts`.
 - **툴콜 응답 파싱은 프로토콜 계약의 일부다 (2026-08-30):** 툴 실패로 보이던 신고 중 상당수는 공급자 응답 파싱 결함이었다 — `index` 없는 스트리밍 delta 가 병렬 툴콜을 한 호출로 이어붙이고, id 없는 응답이 중복/빈 `tool_call_id` 를 만들고, 잘린 인자 JSON 이 `필수 인자 누락` 으로 위장됐다. 세부·회귀는 `openwiki/editor-ai-panel.md` 의 «툴콜 프로토콜은 경계에서 보정한다» 항목과 `test/aiToolCallProtocol.test.ts` / `test/aiToolCallSessionProtocol.test.ts` 를 보라. 툴 스키마 계약(array items·oneOf 금지)과 달리 이 계층은 **모델이 아니라 전송/파싱**의 문제이므로, 툴 실패를 조사할 때 스키마보다 먼저 여기를 확인한다.
@@ -103,6 +856,7 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - Tool exposure caps (default 40) drop only weak/recent domains wholesale; strong tile+event intent stays and is trimmed with pinned write tools (`place_props`, `place_npc`, `author_house`, `start_interior_room_session`, `run_interior_room_pipeline`, `advance_interior_room_build`, `evaluate_interior_room`, ??.
 - Region AI (`src/editor/regionTask/runRegionTask.ts`) may still seed build-palette harness groups; soft-confirm means existing tree/prop group ids work without prior origin:user. Prompt lists available group ids. `place_npc`/`make_villager` default graphic to villager when omitted. Each run builds a `RegionTaskLogExport` (audit + toolCalls + uiEvents + harness) on `result.log`, publishes `window.__rpgzzuRegionTaskLog` / `__rpgzzuLastRegionTaskLog()`, and the region modal header has a small **로그** button (`region-task-copy-log`) next to ?뚯쁺???묒뾽??that copies the JSON to the clipboard after a run.
 - AI tool argument normalization is centralized in `src/editor/tools/jsonSchema.ts` before schema validation. It accepts common coordinate shape drift by flattening `{rect|region|area|bounds|at|pos|point:{x,y,w,h}}` into flat `x/y/w/h` tools, wrapping flat `x/y[/w/h]` into the single coordinate object required by v3 tools, and mapping `width/height` aliases to `w/h` (and back) based only on the declared schema.
+- **Reachability coordinate boundary (2026-09-07):** `check_reachability` in `queryTools.ts` applies the existing `validateArgs(COORD_SCHEMA, point)` to `from` and every `targets[i]` before BFS. The shared runner validates only outer object/array types; missing, fractional, nonfinite, or structurally invalid coordinate fields must return `ok:false` / `invalid-args` with no reachability data, not `ok:true, reachable:false`. Existing schema normalization (including numeric strings and coordinate wrappers), extra point metadata, and empty target arrays remain supported. Valid queries still return real reachable/unreachable verdicts with adjacent-or-on semantics. `test/reachabilityArguments.test.ts` covers recorded wire114, nested object/array countercases, real `runTool` -> `ToolVerificationEvidence` retry history, and genuine negative evidence surviving another passing query. This is a local query-boundary fix, not recursive validation for other tools (including `run_lint` specs), verification ownership/canonicalization repair, or retroactive reclassification of an old session ledger.
 - W5 team workflow UI shows current editor identity in the topbar, can reopen the mock login modal, and reads recent `project_commits` through `listProjectCommitsFromSupabase`. The mock login only updates the local editor owner label and last-login-method localStorage marker; real Auth/RLS session handling belongs to the Phase 8 switchover.
 - For quick navigation, grep within `src/editor` first, then follow the feature-specific file groups above: map, event, database, resource, tile palette, save/import/export.
 
@@ -117,11 +871,92 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - `build_village`는 집을 찍기 전에 스케치 프리패스를 먼저 돌린다 (2026-09-04): `build_village`가 `buildHouses` 전에 `sketchHouseSites`를 뽑고, 스케치 후보를 분수 슬롯·격자보다 먼저 시도한다. 사이트 간격은 8폭+마진(10). 격자는 폴백이다. `villageArteryRoutes`는 다리당 내부 경유점 하나를 더 넣되 `host[1]` T-join과 4변 출구는 그대로 둔다. Tests: `test/villageSketch.test.ts`.
 - `build_village` 대형 맵 대로 골격은 이제 곡선이다 (2026-09-05): `villageBoulevardPath`가 시드 고정 경유점으로 동서·남북 곡선을 그리고, 예약과 시공은 `boulevardCells` 한 칸 함수를 같이 쓴다. Tests: `test/villageBoulevard.test.ts`.
 
+## P2 requirement and exact-verdict inputs (2026-09-06)
+
+Planner output and native `set_work_plan` accept optional `requirements` using
+`{ id, title, required?, criteria }` and item `requirementIds`. They feed the same
+`AssistantAcceptanceLedger` as existing explicit `acceptance`; item scheduling
+isn't satisfaction authority. Required defaults true. Malformed criteria or
+required flags remain required repair obligations, even if the model claims
+optionality or supplies evidence. `repair_acceptance` can't replace valid original
+criteria. See [requirement lifecycle and user actions](editor-ai-panel.md#canonical-requirements-and-genuine-user-actions).
+
+The additional structural criterion is:
+
+```ts
+{ kind: "toolVerdict", tool: "check_reachability", args: {
+  mapId, from: { x: 0, y: 0 }, targets: [{ x: 1, y: 0 }]
+} }
+```
+
+`tool` must belong to the existing verification family. `args` is the full native
+invocation object, not a tool-name-only claim. For this native tool the field is
+`targets`; the separate structural `reachability` criterion uses `to`.
+[Acceptance parsing](../src/ai/assistantAcceptance.ts) reuses custom fail-closed
+parsing, and [ToolVerificationEvidence.passedScope](../src/ai/toolVerificationEvidence.ts)
+reads only previously adopted canonical scopes with exact native arguments and
+`parseToolVerdict`. The acceptance ledger binds those scopes before execution;
+a later declaration cannot borrow an earlier exploratory pass.
+
+Canonical input now passes the registered tool schema AND native scenario/coordinate
+validation before becoming immutable. Malformed arguments are actionable repair
+obligations, even when declared optional; valid optional criteria remain optional.
+For `toolVerdict/run_scene_test`, explicit `interact` steps also declare
+`interactionTargets:[{stepIndex,mapId,eventId}]`. Arguments with unnamed interactions
+are not an admissible canonical scope; repair their malformed specification first.
+Valid fixed arguments with missing/partial ownership remain `pending-specification`.
+`repair_acceptance` can complete only the missing ownership: it cannot change fixed
+arguments, known targets, sibling criteria, source/owner or original baseline.
+The host captures the same protected initial state as ordinary scene declarations,
+including while scope is pending. Repair retains that state and requires fresh
+post-resolution execution. A previous passing probe cannot fill ownership, and a
+same-argument run through another map's same-ID NPC cannot satisfy the original.
+Scenes without interactions have an empty ownership scope. No runtime state is
+accepted from model-authored criteria. Regression: `canonicalAcceptanceOwnership`.
+
+Only a current host-observed explicit pass satisfies that exact scope. Wrong targets, negative
+verdicts, stale checks, model `passed` claims and advisory-only success don't.
+A clean advisory check can retain an already-current explicit canonical pass,
+but cannot renew it after a write. Writes stale passing required evidence; successful
+unadopted probes do not become persistent obligations. Undo does not revive retired
+proof. A passing verdict cannot verify an unapplied draft.
+
+Scene finding correction preserves exact start, movement, debug state, ordered
+assertions, choices, reward checkpoints and map-qualified host-observed ownership.
+Only facing may change compatibly; never strip move/walk/position-only set or map
+guards to equate scripts. `correct_verification` resolves a session-owned ID and
+executes its original registered tool. A compatible passing rerun clears only its
+own finding. Canonical `toolVerdict` still requires its exact invocation. Both `toolVerdict` and incoming `actionCombat`
+are exposed in the flattened provider-safe criterion schema; runtime parsing still
+requires each kind's exact fields and exclusive target.
+
+Name-level scheduler queries and advisory reporting retain their existing roles.
+Canonical acceptance also receives authoritative verification problems: adopted
+requirements and genuine unresolved negatives remain blocking, except host-confirmed
+unchanged pre-write default-lint findings seen only automatically outside adopted lint scope.
+Those findings remain reported; see the provenance contract in `editor-ai-panel.md`.
+Malformed/execution
+failures are attempts, not artifact findings. Findings need not invent a goal item
+to block false completion. Optional/host-withdrawn criteria retain their evidence
+without becoming required scopes; item-declared verification remains independent.
+Intent action obligations and current map-bound
+runtime receipts remain independent of planner replacement and optional promises.
+The ledger's existing evaluation receives the goal evidence store; absence of that
+store fails tool-verdict criteria closed. No new verification ledger or dependency
+was added. Withdrawal is a local user action, never a `withdraw_requirement` tool,
+model note, `skip_work_item` effect or `resetsContext` permission.
+
 ## Project-wide quality evaluation
 
-`evaluate_game_quality` is read-only. It combines project, world, and tileset-palette lint with structural coverage across legacy event commands, event pages, common events, troop battle pages, and every nested command branch. It also reports quest/battle/ending/content counts, story-flag reads and writes, and optional caller-supplied walkthrough results. Only objective `projectLint` errors block its verdict; world/palette findings and walkthrough failures remain explicit evidence. It never emits a numeric score and cannot measure fun, originality, emotional impact, pacing quality, or preferred difficulty.
+`evaluate_game_quality` is read-only. It combines project lint and tileset-palette findings with structural coverage across legacy event commands, event pages, common events, troop battle pages, and every nested command branch. It also reports quest/battle/ending/content counts, story-flag reads and writes, and optional caller-supplied walkthrough results. Objective project errors, unauthored secondary maps, and uninvoked ending definitions block its verdict; palette findings and caller-supplied walkthrough results remain explicit evidence. It never emits a numeric score and cannot measure fun, originality, emotional impact, pacing quality, or preferred difficulty.
 
-**필수 검증 완료 근거 (2026-09-05):** `ToolResult.ok`는 검사가 실행됐다는 뜻이다. `AssistantSession`은 `parseToolVerdict`를 재사용해 `run_lint`의 `data.counts.errors`/오류 issues, `check_reachability`의 `data.reachable:false`, 퀘스트·워크스루·장면 검사의 `data.ok:false`, 품질 평가의 `data.verdict.blocked`를 판정한 뒤에만 `successTools`에 기록한다. 오류 상세가 잘려도 lint 오류 개수는 유효하다. 경고만 있는 lint는 통과한다. 실패 재실행은 이전 성공을 제거하고, 프로젝트 쓰기 성공은 기존 검증 근거를 모두 stale로 만든다. 실행되지 않은 잘못된 인자/전송 실패는 같은 도구의 고친 호출로 복구할 수 있지만 실제 음성 판정은 해당 대상을 재검사해야 한다. 같은 항목의 이어가기에서는 근거를 유지하되, 도구명+인자별로 관리하므로 다른 맵/시나리오의 성공으로 실패를 덮을 수 없다. 다음 항목의 완료에는 그 항목의 검사만 필요하며, 이전 항목의 실패/stale 기록은 목표 전체 최종 보고에 보존한다. `src/ai/toolVerificationEvidence.ts`가 이 수명을 소유한다. 최종 응답은 남은 실패와 변경 후 재검증 필요를 표시한다. 레이어 자동 검증은 종전처럼 **1회 자문**이며 선재 오류로 런을 중단하거나 필수 도구 성공을 대신 적립하지 않는다. 자동 자문 통과만 있었던 검사는 후속 쓰기로 재검증 의무가 생기지 않는다(첫 레이어 quality 통과 → 다음 레이어 쓰기 → 마지막 레이어 lint만 재실행하는 정상 경로). 자문에서 발견한 실제 실패는 보고하되 동일 대상의 재통과로 해소하며, 모델이 명시 호출한 검사의 stale 경고는 자동 통과 이력이 있어도 보존한다. Tests: `test/agentVerification.test.ts`, `test/assistantVerificationEvidence.test.ts`.
+**Ending invocation (2026-09-06):** `define_ending` stores a definition, not an automatic switch listener. An event must execute `triggerEnding`: a named `endingId` selects that definition directly, while an omitted id selects the highest-priority definition whose conditions match. Completion assessment reports `ending-uninvoked` errors and `coverage.endings.uninvokedIds` for definitions without a named or condition-selected invocation. It traverses nested branches/common events/troop pages but ignores obsolete root commands when event pages exist. Presence is only a structural lower bound: it does not establish branch reachability, satisfiable conditions, epilogue presentation or actual completion. Games without ending definitions (including native `ending` commands and open-ended games) acquire no new requirement.
+
+This check lives in `qualityEvaluation.ts`, not `projectLint` or the write gate: defining an ending before wiring it remains valid. Never make `setSwitch` run endings automatically. The existing `define_ending` guidance calls for an explicit terminal command and, for item-consuming exits, a higher-priority completed-switch page that prevents same-run relock/repeated consumption. Regression: `test/aiEndingCompletionRegression.test.ts` exercises real tools, serialization, page selection, interpreter execution and the machine verdict consumer; historical broken content still does not end. Parent-owned real AI generation and exported-player walking remain required for game-completion proof.
+
+**Verification evidence (2026-09-07):** `ToolResult.ok` means execution, not a passing artifact verdict. Existing `parseToolVerdict` semantics remain. `ToolVerificationEvidence` separates adopted requirements, unresolved findings and attempts; neither an explicit exploratory pass nor a malformed invocation invents an obligation. Accepted criteria and validated `WorkItem.verificationChecks` own requirements; absent scope remains pending specification. Session check IDs survive scheduling changes and appear in `data.verification` on plan/verification results. See [editor-ai-panel.md](editor-ai-panel.md), "Session-owned acceptance contract", for the small declaration and `correct_verification({checkId,args})` surfaces. Ordinary compatible reruns still resolve their own scope; unrelated maps/events and weaker assertions cannot. Writes retire passing adopted proof, while a successful unowned dummy probe can be removed without a recreation obligation. Genuine negative findings remain blocking until a compatible real pass. The sole report-only exception is an unchanged host-confirmed pre-write default-lint defect observed only automatically, with no active adopted lint requirement. Counts alone are never identity, and unknown provenance is blocking. Findings and failed verdicts remain intact; only terminal filtering distinguishes report-only baseline lint. Layer advisory scheduling remains unchanged.
+
+`run_scene_test` returns host `interactions:[{stepIndex,mapId,eventId}]` (including movement-triggered transfers), structured `setupFailure`, and optional `failedSelection:{stepIndex,mapId,eventId}` for an explicitly intended event that could not be selected. Failed selection is separate from executed interactions, including wrong front/underfoot events, farm targets at either position, no target, game-over and missing-current-map returns. Finding deduplication and discharge include that intended map/event; a preceding transfer-door receipt cannot let a foreign-map pass clear it. Successful same-map target/facing repairs remain compatible. Only an unowned assertion-free interaction with no selected target receives the invalid-probe exception; explicitly missing targets and failed assertions do not. Facing corrections preserve all other steps and require matching map-owned trace. Movement/walk/set-position is never stripped from identity. No scene receipt is browser player, visual, persistence or action-combat proof. Tests: `assistantVerificationEvidence`, `assistantVerificationContinuation`, `sceneVerificationRepair`, `sceneTestRunner`, `verificationSelectionOwnership`, and the caller matrix in `aiAssistantSession`.
 
 `play_walkthrough` exposes a single provider-safe scenario item object rather than JSON Schema unions. All runner fields are optional at the provider boundary because the valid required set depends on `do`/`expect`; the runner is the strict trust boundary and rejects unknown fields, mixed variants, bad types, and empty scenarios before executing any command. Provider-compat tests recursively reject both `oneOf` and `anyOf` anywhere in an exposed tool schema.
 
@@ -160,6 +995,49 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
   만들지 않는다) — 그래서 이미지 바이트는 전송 계층에서 직접 줍는다. (2) 그때 재생하는
   `Response` 에 `url` 을 다시 심어야 한다. 없으면 pi-ai 가 `Missing request URL` 로 끊는다.
 
+
+## Action controls guide (2026-09-07)
+
+2D tile action combat is supported; 3D open worlds remain outside the engine.
+`actionArenaAuthoring.ts` selects its recipe only for a structured creation
+declaration with nonempty `actionCombat.targets` and no clarification. The
+selector never parses user keywords. `buildActionArenaAuthoringGuide` is consumed
+by the action welcome preset and the lead's context integration. It reads
+existing maps/events/resources/party/enemies/troops before minimal terrain/start,
+names the map and game, orders enemy before troop before spawn, and makes one
+controls guide. Each target must pass `run_action_combat_test({mapId})` before
+decorations; the async acceptance/runtime lane owns that tool's receipt.
+`run_scene_test`, spawn counts and turn-based `simulate_battle` cannot substitute
+for action proof. Unrequested quests, shops, bosses, rewards and multi-page
+quotas are not part of this recipe. Existing arena modifications remain focused
+repairs with retained acceptance targets, not a new-arena starter.
+Free-text welcome handoff also preserves the requested scope rather than adding
+the generic preset's NPC/item quotas before structured intent classification.
+
+`make_action_enemy` prepares the enemy and validates its graphic, target map,
+troop membership and spawn area before committing either record. `spawn.id`
+upserts within the target map; omission appends a fresh ID. `set_action_combat`
+validates its map before enabling the system and exposes the existing
+`dodgeStaminaCost`, `dodgeIframesMs`, `guardDamageReductionPercent` and
+`guardStaminaDrainPerSec` normalizers. Read resources first, create the enemy,
+then `upsert_troop({troop:{id,name,enemyIds:[enemyId]}})`, then attach its spawn.
+`test/actionAuthoringPrerequisites.test.ts` covers both direct-draft atomic
+failure and the real runner's successful dependency order.
+
+`place_npc` accepts `guide: "action-controls"` instead of authored `pages` for one
+controls page only. `src/player/keyBindings.ts` exports `ACTION_CONTROL_BINDINGS`
+(`id`, normalized `keys`, `label`) and `ACTION_CONTROLS_GUIDE`; the generated text
+comes from those runtime predicates, not model-authored key descriptions.
+The default identity is `ev_action_controls_<mapId>`. An explicit ID takes
+precedence. Retries update that event's page without moving it, even when the
+requested name or coordinates change. Nearby ordinary NPCs are not guide
+identities, and distinct explicit ordinary NPC IDs still remain distinct.
+Ordinary NPCs still require authored pages. The guide is the narrow exception to
+the narrative multi-page recommendation, not a fallback for missing dialogue.
+
+Regression: `test/actionControlsGuide.test.ts` exercises real tool dispatch,
+repeat identity, explicit-ID priority, ordinary NPC separation, and shipped
+command-body equality with the canonical guide.
 
 ## NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
 
@@ -218,6 +1096,34 @@ author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범�
 실제 JRPG 재실행에서 잘못 중첩된 transfer를 도구가 무시하고 빈 commands로 저장해 던전 귀환이 사라졌기 때문이다.
 `test/toolsMapManagement.test.ts`는 두 잘못된 위치를 모두 거부하고 기존 귀환 이벤트가 그대로 남는지 검증한다.
 
+2026-09-06 R5: `schemaShapes.ts`의 실행 명령 enum은 `COMMAND_KINDS`만 노출한다.
+아이템 차감은 `{kind:"changeItem",itemId,op:"-=",amount:1}`, 스위치 대입은
+`{kind:"setSwitch",switchId,value:true}`, 아이템 조건은 `{kind:"item",itemId,present:true}`,
+엔딩 호출은 `{kind:"triggerEnding",endingId}`(ID 생략 시 조건 선택)다. `op`/`endingId`/`present`를
+선언하며 `find_tools`도 같은 등록 스키마를 반환한다. 다형 `value`는 거짓 `type:"string"` 대신
+타입 제약 없이 필드를 노출하고 kind별 boolean/number/"toggle"/변수 피연산자를 설명한다.
+이는 provider의 union type 및 oneOf/anyOf 금지를 유지하기 위한 경계 표현이며, 실제 타입·필수 값은
+기존 컴파일러/shape 검증기가 검사한다. `test/aiCommandSchemaContract.test.ts`는 컴파일·직렬화 보존,
+잘못된 명령/누락 조건 값의 원자적 거부, 참조 조회 선행을 검증한다. 실모델 복구·플레이 증명은 별도다.
+
+2026-09-06 R10: `upsert_event.event.pages`는 `NATIVE_EVENT_PAGE_SCHEMA`이며 SimplePage 컴파일 경로가 아니다.
+대사·선택·효과는 `page.commands`에 넣고, 선택 명령은
+`{kind:"choices",options:[{text:"선택",branch:[{kind:"changeItem",itemId,op:"-=",amount:1},{kind:"triggerEnding",endingId}]}]}`다.
+`page.choices/lines/showText/messages/text/face` 및 `graphic.query/textureKey/characterIndex`를 제출하면
+병합 전에 `invalid-args`와 네이티브 수정 JSON 예시로 원자적 거부한다. 그래픽은 `graphic.sprite:{type,id}`를 사용한다.
+기존 이벤트에서 생략한 최상위 필드는 정규화도 하지 않는다. `pages`를 제출하면 배열 전체 교체이며,
+제출된 페이지의 필수 필드 보완과 R5 명령 검증은 유지한다. `place_npc`/`make_villager`의 SimplePage 컴파일은 그대로다.
+회귀: `test/aiNativePageContract.test.ts`는 실제 round2 출구 입력 거부, 예시 재호출, 직렬화 후 선택·열쇠 1개 차감·
+기록된 epilogue·`returnToTitle`, 취소 무효과, 생략 페이지 보존과 고수준 컴파일을 검증한다. 실브라우저 완주/원격 재로드는 별도 게이트다.
+
+2026-09-07 R14: `list_resources(kind:"charset")`와 `list_npc_graphics`는 기존 필드·사용자 라벨/태그를
+유지하면서 `nativeGraphic:{sprite:{type:"bundled",id},direction:"down",pattern}`을 추가한다.
+이 객체를 `upsert_event.event.pages[n].graphic`에 그대로 넣는다. `pattern`은 characterIndex가 아니라
+시트 프레임이며, 기존 `charsetFrameIndex`로 계산한 슬롯 0~7의 아래방향 정지 프레임은
+25,28,31,34,73,76,79,82다. 작은 pattern 값도 슬롯으로 재해석하지 않는다. 고수준 SimplePage 컴파일과
+카탈로그 라벨은 바꾸지 않는다. `test/nativeGraphicDiscovery.test.ts`는 두 조회 → 네이티브 업서트 →
+직렬화/재로드 → 실제 `renderTiles`의 sprite 생성 인자를 독립 프레임 표와 대조한다(8슬롯·두 행·네 방향).
+
 ## 보물상자는 노출된 수면을 거부한다 (2026-09-05)
 
 `place_chest`는 요청 좌표와 자동 착지 결과를 모두 검사한다. 물 판정은 현재 타일셋의
@@ -226,6 +1132,20 @@ author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범�
 `test/treasureChestPlacement.test.ts`가 물·다리·다른 타일셋·자동 착지를 검증한다.
 
 ## 모험 저작 완료와 재시도 (2026-09-05)
+
+Final-artifact assessment (2026-09-06, R12): `agentVerification` adds
+`evaluate_game_quality` for authored endings and repeats earlier quality checks at
+completion. `AssistantSession` assesses the current draft independently of the
+once-per-layer sweep, including tool/token-budget termination. Its
+`completion_assessment` event and `TurnResult.completionAssessment` retain the
+acceptance snapshot (including R7 field diagnostics), adventure structure/icon/
+image gaps, current check results, and unresolved verification findings together.
+The same combined state reaches the model before bounded repair selection and is
+composed into one terminal report, never replacing one failure category with another.
+Repairing one category does not reset promises/baselines or replay applied milestones.
+Missing `triggerEnding` invocation requests content repair; general advisory lint
+does not become a fatal gate. Static checks and persistence receipts remain distinct
+from actual playthrough proof.
 
 의도 선언의 선택적 `adventure`(village/dungeon/party/battle)는 전체 모험 저작 요청에만 붙인다. 단순 NPC 추가·질문·DB 시드 요청에 키워드로 덧붙이지 않는다. 세션은 선언을 자동 계속과 계획 교체 뒤에도 보존하고, 최종 경로 양쪽에서 `adventureCompletionProblems`를 실행한다. 구조 타일 없는 시작 마을, 도달 가능한 탐험 맵 전이·전투 연결 부재, 시작 파티/합류 부재를 보완 지시로 돌려주며 4회 뒤에도 미완성이면 완료 응답을 대체한다. 최종 쓰기 뒤 모든 맵 전체 show_map_region 조회와 저작 아이템 아이콘도 요구한다. 이것은 정적 최소 조건이며 페이지 조건·미술 완성도·재미를 증명하지 않는다. 출하 런타임과 직접 시각 검사는 별도로 한다.
 
@@ -240,3 +1160,41 @@ NPC 고수준 commands의 `text.lines`는 실제 줄바꿈을 포함한 `text.bo
 선언된 adventure 계약의 도구는 `adventureToolNames`에서 실제 호출 스키마로 승격되어 첫 실행부터 노출된다. 안내문에서 언급만 하고 도메인 쿼터에 숨기는 것을 금지한다. 조건 kind 누락 오류는 실행 가능한 selfSwitch/switch 예시를 반환한다.
 
 시각 재검증에서 장비 아이콘 누락이 발견돼 모험 완료 검사의 저작 레코드 추적을 items와 equipment로 확장했다. 두 컬렉션의 동일 ID도 따로 추적한다. 그림 없는 장비를 생성하고 완료라고 답하는 통합 회귀를 유지한다.
+
+## 실제 이미지 입력 보존 (2026-09-07)
+
+`scripts/lib/ohMyPiPiAiRuntime.ts`의 `openaiToContext`는 사용자 메시지의 텍스트와
+`image_url` 순서를 보존한다. PNG/JPEG/WebP base64 data URL을 pi-ai의 이미지 블록으로
+변환하며 바이트를 텍스트 요약으로 대체하지 않는다. 잘못된 base64, 지원하지 않는 MIME,
+원격 이미지 URL과 잘못된 detail 값은 HTTP 400 입력 오류로 거부한다.
+
+이전 구현은 `textOf`로 이미지 부분을 버렸다. HTTP 200과 그럴듯한 외형 설명만으로는
+이미지를 실제로 전달했다는 증거가 아니다. `test/ohMyPiVision.bun.test.ts`가 바이트·순서,
+실제 pi-ai 직렬화와 worker의 잘못된 입력 거부를 검증한다. 실제 제공자 검증에서는
+서로 다른 단색 이미지가 구분되는지 먼저 확인한 뒤 원본 그림을 전달한다.
+몬스터 카탈로그의 원본 해시와 관측 근거는 `src/assets/monsterCatalogReview.json` 및
+`output/evidence/monster-catalog/README.md`를 참조한다.
+
+## Physical tile passage exposure (2026-09-08)
+
+`set_tile_passability({tilesetId?, tile, passable})` is an active native write tool
+again. `V1_TILE_SUPERSEDED` no longer redirects this technical primitive to the
+hidden `propose_tile_vocabulary`, whose semantic items cannot express passage.
+The full `toOpenAiTools` catalog, capability index and ordinary `find_tools`
+(exact name or `특정 타일 통행`) now reach the same registered setter.
+
+This edits one tileset chip's four direction flags together, affecting every map
+using that chip, not a selected map cell. It does not author vocabulary, names,
+roles, groups, layers or generic metadata. Semantic teaching and superseded
+painting tools remain hidden. The native setter and its existing persistent
+passage metadata/provenance are unchanged: `markUserTileRuntimeMetadata` records
+the passage override so reload/harness seeding cannot silently undo it. Those
+native user-origin metadata flags are not a new approval or acceptance receipt.
+Normal argument validation, detached dispatch, ask-mode refusal, transaction
+ownership and acceptance/application checks are unchanged.
+
+`test/tilePassabilityExposure.test.ts` covers real catalog/discovery schemas,
+normal session dispatch in both directions on a three-chip fixture, unrelated
+project/meta equality, native refusals and JSON/harness persistence. The offline
+session fixture stops after dispatch; it neither applies to a live project nor
+claims final acceptance. Real AI repair and final build/gates remain parent-owned.

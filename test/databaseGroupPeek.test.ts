@@ -18,11 +18,11 @@ import { TAB_GROUPS } from "@/editor/panels/database";
 const CSS = readFileSync(resolve(__dirname, "../src/styles/database/sidebar.css"), "utf8");
 
 describe("접힌 그룹 헤더 부제", () => {
-  it("구조물이 「맵」 그룹에 있다 — 이 보고의 실제 원인 지점", () => {
+  it("맵은 두 주 진입점을 부제로 보여 준다", () => {
     const world = TAB_GROUPS.find((group) => group.slug === "world");
     expect(world, "맵 그룹이 사라졌다").toBeTruthy();
     expect(world?.label).toBe("맵");
-    expect(world!.tabs).toContain("structureKits");
+    expect(world!.tabs).toEqual(["scratchConcepts", "tilesets"]);
   });
 
   it("세계관 그룹이 레일 맨 앞에 있다", () => {

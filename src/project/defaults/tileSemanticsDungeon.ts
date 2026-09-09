@@ -8,6 +8,7 @@
 // (실내 465~467 전례 — 용도 단정은 사용자 확정 전까지 보류).
 
 import type { CombinedTownTileSemanticEntry } from "./tileSemanticsCombinedTown";
+import { applyChipsetLabelCorrections } from "./chipsetLabelCorrections";
 
 export type DungeonTileSemanticEntry = CombinedTownTileSemanticEntry;
 
@@ -25,7 +26,7 @@ function one(index: number, label: string, role: string, passage: "passable" | "
   return { index, label, role, passage, tags: [label, ...tags] };
 }
 
-export const DUNGEON_TILE_SEMANTICS: readonly DungeonTileSemanticEntry[] = [
+export const DUNGEON_TILE_SEMANTICS: readonly DungeonTileSemanticEntry[] = applyChipsetLabelCorrections("tex_easyrpg_chipset_dungeon", [
   // ── 물/애니메이션 존 (열 0-5, 3프레임 가로 세트) ─────────────────────────────
   ...entries([0, 1, 2, 30, 31, 32], "동굴 물웅덩이(흙 기슭)", "water", "solid", ["water", "pond", "물", "동굴", "애니메이션"]),
   ...entries([60, 61, 62, 90, 91, 92], "물웅덩이 북쪽 기슭", "water", "solid", ["water", "shore", "물가", "애니메이션"]),
@@ -183,4 +184,4 @@ export const DUNGEON_TILE_SEMANTICS: readonly DungeonTileSemanticEntry[] = [
   one(118, "빈 칸(투명)", "decoration", "passable", ["빈", "투명"]),
   one(233, "빈 칸(투명)", "decoration", "passable", ["빈", "투명"]),
   one(258, "빈 칸(투명)", "decoration", "passable", ["빈", "투명"]),
-];
+]);

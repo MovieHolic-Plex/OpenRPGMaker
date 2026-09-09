@@ -1,0 +1,12 @@
+# Diagnostic excerpt; assertion dumps omitted.
+> node scripts/run-vitest.mjs run --configLoader bundle test/exportAssetResolution.test.ts
+ ❯ test/exportAssetResolution.test.ts (4 tests | 2 failed) 6997ms
+     → expected '/assets/easyrpg/title/Title1.png' to be 'http://localhost:3000/games/harbor/as…' // Object.is equality
+     → expected '/assets/easyrpg-chipset-combined-town…' to match /^http:\/\/localhost:3000\/games\/har…/\
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  test/exportAssetResolution.test.ts > exported player asset resolution > uses the exported game directory for title, audio, generated sprites and warmup
+AssertionError: expected '/assets/easyrpg/title/Title1.png' to be 'http://localhost:3000/games/harbor/as…' // Object.is equality
+ FAIL  test/exportAssetResolution.test.ts > exported player asset resolution > resolves minimap tilesets and movie fallbacks through the game directory
+AssertionError: expected '/assets/easyrpg-chipset-combined-town…' to match /^http:\/\/localhost:3000\/games\/har…/\
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)

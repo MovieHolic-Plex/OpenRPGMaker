@@ -1,0 +1,83 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRequiredQuestionDispatch.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiRequiredQuestionDispatch.test.ts (4 tests | 2 failed) 2662ms
+   ✓ question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=false  724ms
+   × question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=true 656ms
+     → expected { id: 'wp_mtq20n75', …(8) } to deeply equal { id: 'wp_mtq20n75', …(8) }
+   ✓ question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=false  596ms
+   × question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=true 684ms
+     → expected { id: 'wp_mtq20o5n', …(8) } to deeply equal { id: 'wp_mtq20o5n', …(8) }
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRequiredQuestionDispatch.test.ts > question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=true
+AssertionError: expected { id: 'wp_mtq20n75', …(8) } to deeply equal { id: 'wp_mtq20n75', …(8) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -12,11 +12,11 @@[39m
+[2m            "doneWhen": undefined,[22m
+[2m            "id": "edit",[22m
+[2m            "instruction": "Edit the map",[22m
+[2m            "note": "'set_map_properties' 실행 실패: 맵을 찾을 수 없습니다: missing — list_maps 로 실제 맵 id 를 확인하세요(새 맵을 만들어 우회하지 말 것).",[22m
+[2m            "requiresAnyWrite": undefined,[22m
+[32m-           "status": "blocked",[39m
+[31m+           "status": "in_progress",[39m
+[2m            "successTools": undefined,[22m
+[2m            "title": "Blocked",[22m
+[2m          },[22m
+[2m          {[22m
+[2m            "doneWhen": undefined,[22m
+
+ ❯ test/aiRequiredQuestionDispatch.test.ts:55:39
+     53|         expect(event.result.issues?.map(issue => issue.code)).toContai…
+     54|       }
+     55|       expect(f.session.getWorkPlan()).toEqual(work);
+       |                                       ^
+     56|       expect(f.session.getAcceptanceSnapshot()).toEqual(acceptance);
+     57|       expect([...f.session["ralphAttemptsByItemId"]]).toEqual(counters…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/aiRequiredQuestionDispatch.test.ts > question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=true
+AssertionError: expected { id: 'wp_mtq20o5n', …(8) } to deeply equal { id: 'wp_mtq20o5n', …(8) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -12,11 +12,11 @@[39m
+[2m            "doneWhen": undefined,[22m
+[2m            "id": "edit",[22m
+[2m            "instruction": "Edit the map",[22m
+[2m            "note": "'set_map_properties' 실행 실패: 맵을 찾을 수 없습니다: missing — list_maps 로 실제 맵 id 를 확인하세요(새 맵을 만들어 우회하지 말 것).",[22m
+[2m            "requiresAnyWrite": undefined,[22m
+[32m-           "status": "blocked",[39m
+[31m+           "status": "in_progress",[39m
+[2m            "successTools": undefined,[22m
+[2m            "title": "Blocked",[22m
+[2m          },[22m
+[2m          {[22m
+[2m            "doneWhen": undefined,[22m
+
+ ❯ test/aiRequiredQuestionDispatch.test.ts:55:39
+     53|         expect(event.result.issues?.map(issue => issue.code)).toContai…
+     54|       }
+     55|       expect(f.session.getWorkPlan()).toEqual(work);
+       |                                       ^
+     56|       expect(f.session.getAcceptanceSnapshot()).toEqual(acceptance);
+     57|       expect([...f.session["ralphAttemptsByItemId"]]).toEqual(counters…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  01:56:34
+   Duration  14.82s (transform 8.22s, setup 0ms, collect 11.75s, tests 2.66s, environment 0ms, prepare 82ms)
+

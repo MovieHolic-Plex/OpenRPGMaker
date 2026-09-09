@@ -1,0 +1,41 @@
+{
+  "tasks": [
+    {
+      "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/emberQuestToolReplay.test.ts",
+      "task": "모든 툴 호출이 성공한다(커밋 게이트 통과)",
+      "ancestors": [
+        "test/emberQuestToolReplay.test.ts",
+        "emberQuestToolReplay"
+      ],
+      "type": "test",
+      "errors": [
+        {
+          "name": "AssertionError",
+          "message": "expected [ Array(3) ] to deeply equal []",
+          "stack": "AssertionError: expected [ Array(3) ] to deeply equal []\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/emberQuestToolReplay.test.ts:170:76\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)",
+          "actual": "Array [\n  Object {\n    \"issues\": Array [\n      Object {\n        \"code\": \"monster-graphic-required\",\n        \"mapId\": undefined,\n        \"message\": \"enemy.monsterResourceId: \"말벌\"에 확실히 맞는 외형이 없습니다. list_resources(kind:\"monster\", query:\"*\")로 확인한 리소스 ID를 enemy.monsterResourceId에 지정하세요. 사용 가능한 monster 리소스 예시: generated-enemy-slime-01, generated-enemy-bat-01, generated-enemy-golem-01\",\n        \"severity\": \"error\",\n        \"x\": undefined,\n        \"y\": undefined,\n      },\n    ],\n    \"name\": \"upsert_enemy\",\n  },\n  Object {\n    \"issues\": Array [\n      Object {\n        \"code\": \"enemy-not-found\",\n        \"mapId\": undefined,\n        \"message\": \"존재하지 않는 enemyId: en_bee — 허용 예시: en_slime, en_bat, en_golem, en_dragon\",\n        \"severity\": \"error\",\n        \"x\": undefined,\n        \"y\": undefined,\n      },\n    ],\n    \"name\": \"upsert_troop\",\n  },\n  Object {\n    \"issues\": Array [\n      Object {\n        \"code\": \"troop-not-found\",\n        \"mapId\": \"m_forest\",\n        \"message\": \"존재하지 않는 troopId: tr_bees — 허용 예시: tr_slimes, tr_bats, tr_golem, tr_dragon\",\n        \"severity\": \"error\",\n        \"x\": 14,\n        \"y\": 6,\n      },\n    ],\n    \"name\": \"place_battle_blocker\",\n  },\n]",
+          "expected": "Array []"
+        }
+      ]
+    },
+    {
+      "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/emberQuestToolReplay.test.ts",
+      "task": "스펙 카운트가 일치한다(맵5/NPC12/몬스터5/아이템8/전투블로커5)",
+      "ancestors": [
+        "test/emberQuestToolReplay.test.ts",
+        "emberQuestToolReplay"
+      ],
+      "type": "test",
+      "errors": [
+        {
+          "name": "AssertionError",
+          "message": "expected 4 to be 5 // Object.is equality",
+          "stack": "AssertionError: expected 4 to be 5 // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/emberQuestToolReplay.test.ts:176:53\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)",
+          "actual": "4",
+          "expected": "5"
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

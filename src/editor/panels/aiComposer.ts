@@ -26,9 +26,12 @@
 
 import { AUTONOMY_LEVELS, type AutonomyLevel } from "@/ai/autonomyLevels";
 import { COMPOSER_MODES, COMPOSER_MODE_LABEL, type ComposerMode } from "@/ai/composerMode";
+// 컴포저는 모드를 더 이상 그리지 않는다(자율성 다이얼이 유도한다). 재수출만 남긴다 —
+// 세션 계약과 기존 소비자가 이 경로로 어휘를 읽고 있다.
 import type { AiConfig } from "@/ai/llmClient";
 import { el } from "@/util/dom";
 import { deckIcon } from "./aiDeckIcons";
+import { anchoredPopupPosition } from "./popupPosition";
 
 /** 서로 배타적인 컴포저 팝오버. 하나가 열리면 나머지는 닫힌다. */
 export type ComposerPopover = "suggest" | "menu" | "preference" | "context";
@@ -64,14 +67,9 @@ export interface ComposerElements {
   readonly preferenceToggle: HTMLButtonElement | null;
   /** 성향 팝오버 껍데기 — 패널이 레일 아래로 옮겨 붙인다(토글이 레일에 있다). */
   readonly preferencePopover: HTMLElement;
-  /** 모드 세그먼트. `modeChips` 를 주지 않았으면 null. */
-  readonly modeSegment: HTMLElement | null;
-  readonly setMode: (mode: ComposerMode) => void;
-  /** 자율성 셀렉트. `effortChips` 를 주지 않았으면 null. */
+  /** 자율성 셀렉트 — 지시줄의 유일한 컨트롤. `effortChips` 를 주지 않았으면 null. */
   readonly autonomySelect: HTMLSelectElement | null;
-  /** 추론 강도 셀렉트. `effortChips` 를 주지 않았으면 null. */
-  readonly reasoningSelect: HTMLSelectElement | null;
-  readonly syncEffort: (autonomy: AutonomyLevel, reasoning: ComposerReasoningEffort) => void;
+  readonly syncEffort: (autonomy: AutonomyLevel) => void;
   readonly setModelLabel: (label: string | null) => void;
   readonly openPopover: (kind: ComposerPopover | null) => void;
   readonly openKind: () => ComposerPopover | null;
@@ -114,17 +112,16 @@ export interface ComposerOptions {
    * click 이 다시 열어 메뉴가 닫히지 않는다.
    */
   readonly isInside?: (target: Node) => boolean;
-  /** 모드 세그먼트(지시/질문/계획). 주지 않으면 만들지 않는다. */
-  readonly modeChips?: { readonly initial: ComposerMode; readonly onChange: (mode: ComposerMode) => void };
   /**
-   * 자율성·추론 강도 셀렉트(지시줄 바로 선택). 주지 않으면 만들지 않는다.
+   * 자율성 셀렉트(지시줄 바로 선택). 주지 않으면 만들지 않는다.
    * 값의 저장·세션 반영은 호출자(패널)가 맡는다 — 컴포저는 선택지만 그린다.
+   *
+   * 예전의 `modeChips`(지시/질문/계획)는 없다: 「질문」은 레벨 readOnly, 「계획」은 planOnly 로
+   * 흡수됐다. 추론 강도도 레벨 프리셋이 정하므로 지시줄에 수동 override 를 두지 않는다.
    */
   readonly effortChips?: {
     readonly initialAutonomy: AutonomyLevel;
-    readonly initialReasoning: ComposerReasoningEffort;
     readonly onAutonomyChange: (level: AutonomyLevel) => void;
-    readonly onReasoningChange: (effort: ComposerReasoningEffort) => void;
   };
   /** 모델 칩 초기 라벨. null/미지정이면 숨긴 채 만든다(표준 이상 모드에서 패널이 채운다). */
   readonly modelLabel?: string | null;
@@ -182,6 +179,14 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       onClick: onOpenConversations,
     })
     : null;
+  if (conversationsButton) {
+    const glyph = conversationsButton.querySelector("svg");
+    if (glyph) glyph.setAttribute("data-testid", "ai-map-history-open");
+    conversationsButton.append(el("span", {
+      attrs: { hidden: "" },
+      text: "맵별 이전 대화",
+    }));
+  }
 
   const commandMenu = el("div", {
     class: "ai-composer-popover ai-command-menu",
@@ -220,56 +225,11 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   });
   suggestPopover.hidden = true;
 
-  // ── 모드 세그먼트 ──
-  let mode: ComposerMode = options.modeChips?.initial ?? "do";
-  const modeOptions = new Map<ComposerMode, HTMLButtonElement>();
-  const modeSegment = options.modeChips
-    ? el("div", {
-      class: "ai-composer-mode",
-      attrs: { role: "radiogroup", "aria-label": "조수 모드" },
-      dataset: { testid: "ai-composer-mode", mode },
-    })
-    : null;
-  const paintMode = (): void => {
-    if (!modeSegment) return;
-    modeSegment.dataset.mode = mode;
-    for (const [key, node] of modeOptions) {
-      const on = key === mode;
-      node.setAttribute("aria-checked", String(on));
-      node.classList.toggle("is-on", on);
-    }
-  };
-  const setMode = (next: ComposerMode): void => {
-    mode = next;
-    paintMode();
-  };
-  if (modeSegment) {
-    const onChange = options.modeChips?.onChange;
-    for (const key of COMPOSER_MODES) {
-      const node = el("button", {
-        class: "ai-composer-mode-option",
-        text: COMPOSER_MODE_LABEL[key],
-        attrs: { type: "button", role: "radio", "aria-checked": "false" },
-        dataset: { testid: `ai-composer-mode-${key}`, mode: key },
-        on: {
-          click: () => {
-            if (mode === key) return;
-            setMode(key);
-            onChange?.(key);
-          },
-        },
-      }) as HTMLButtonElement;
-      modeOptions.set(key, node);
-      modeSegment.append(node);
-    }
-    paintMode();
-  }
-
-  // ── 자율성·추론 강도 셀렉트 ──
-  // 설정 모달을 열지 않고 지시줄에서 바로 고른다. 값의 저장·세션 반영은 호출자가
-  // 맡고, 여기서는 같은 값 어휘(AUTONOMY_LEVELS·COMPOSER_REASONING_OPTIONS)만 공유한다.
+  // ── 자율성 셀렉트 ──
+  // 지시줄의 **유일한** 컨트롤이다. 예전에 나란히 있던 모드 3칩(지시/질문/계획)과 추론 강도
+  // 셀렉트는 이 다이얼로 흡수됐다 — 세 컨트롤이 같은 노브를 만지고 있었다(autonomyLevels 주석).
+  // 값의 저장·세션 반영은 호출자가 맡고, 여기서는 값 어휘(AUTONOMY_LEVELS)만 공유한다.
   let autonomyLevel: AutonomyLevel = options.effortChips?.initialAutonomy ?? "balanced";
-  let reasoningEffort: ComposerReasoningEffort = options.effortChips?.initialReasoning ?? "low";
   const autonomySelect = options.effortChips
     ? el("select", {
       class: "ai-composer-effort-select",
@@ -280,23 +240,11 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       ),
     }) as HTMLSelectElement
     : null;
-  const reasoningSelect = options.effortChips
-    ? el("select", {
-      class: "ai-composer-effort-select",
-      attrs: { title: "추론 강도 — 답이나 도구 사용 전에 추론하는 강도", "aria-label": "추론 강도" },
-      dataset: { testid: "ai-composer-reasoning" },
-      children: COMPOSER_REASONING_OPTIONS.map((option) =>
-        el("option", { attrs: { value: option.id }, text: option.label }),
-      ),
-    }) as HTMLSelectElement
-    : null;
   const paintEffort = (): void => {
     if (autonomySelect) autonomySelect.value = autonomyLevel;
-    if (reasoningSelect) reasoningSelect.value = reasoningEffort;
   };
-  const syncEffort = (autonomy: AutonomyLevel, reasoning: ComposerReasoningEffort): void => {
+  const syncEffort = (autonomy: AutonomyLevel): void => {
     autonomyLevel = autonomy;
-    reasoningEffort = reasoning;
     paintEffort();
   };
   if (autonomySelect) {
@@ -308,18 +256,6 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
         return;
       }
       autonomyLevel = next;
-      onChange?.(next);
-    });
-  }
-  if (reasoningSelect) {
-    const onChange = options.effortChips?.onReasoningChange;
-    reasoningSelect.addEventListener("change", () => {
-      const next = reasoningSelect.value as ComposerReasoningEffort;
-      if (!COMPOSER_REASONING_OPTIONS.some((option) => option.id === next)) {
-        paintEffort();
-        return;
-      }
-      reasoningEffort = next;
       onChange?.(next);
     });
   }
@@ -342,9 +278,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       el("div", {
         class: "ai-composer-actions-lead",
         children: [
-          ...(modeSegment ? [modeSegment] : []),
           ...(autonomySelect ? [autonomySelect] : []),
-          ...(reasoningSelect ? [reasoningSelect] : []),
           options.undoAppliedButton,
           options.contextChips,
           options.queueIndicator,
@@ -398,6 +332,29 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     return null;
   };
 
+  const positionPopover = (): void => {
+    if (openState === null || openState === "suggest" || typeof window === "undefined") return;
+    const popover = popoverOf(openState);
+    const toggle = toggleOf(openState);
+    const parent = popover?.parentElement;
+    if (!popover || !toggle || !parent) return;
+    popover.style.maxWidth = `${Math.max(0, window.innerWidth - 16)}px`;
+    popover.style.maxHeight = `${Math.min(420, window.innerHeight - 16)}px`;
+    const rect = popover.getBoundingClientRect();
+    const position = anchoredPopupPosition(toggle.getBoundingClientRect(), rect, {
+      width: window.innerWidth, height: window.innerHeight,
+    }, 6);
+    // The deck's glass establishes a containing block, so keep the popover absolute
+    // and translate viewport coordinates into its rail instead of using fixed.
+    const origin = parent.getBoundingClientRect();
+    popover.style.left = `${position.left - origin.left}px`;
+    popover.style.top = `${position.top - origin.top}px`;
+    popover.style.right = "auto";
+    popover.style.bottom = "auto";
+    popover.style.overflowY = "auto";
+  };
+  const popoverResize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(positionPopover);
+
   const openPopover = (kind: ComposerPopover | null): void => {
     if (openState === kind) return;
     // 없는 종류를 열라는 요청은 조용히 닫기로 바꾼다.
@@ -414,6 +371,16 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     commandBar.classList.toggle("has-popover", resolved !== null);
     // 목록 갱신은 **열기 직후** 한 번만 — 매 턴 갱신하면 닫힌 팝오버를 위해 localStorage 를 계속 읽는다.
     if (resolved === "preference") options.onPreferenceOpen?.();
+    popoverResize?.disconnect();
+    positionPopover();
+    if (resolved !== null && resolved !== "suggest") {
+      const popover = popoverOf(resolved);
+      if (popover) {
+        popoverResize?.observe(popover);
+        const deck = popover.parentElement?.parentElement;
+        if (deck) popoverResize?.observe(deck);
+      }
+    }
     options.onPopoverChange?.(resolved);
   };
 
@@ -434,7 +401,9 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
     document.addEventListener("pointerdown", onDocumentPointerDown);
     document.addEventListener("keydown", onDocumentKeyDown);
+    document.addEventListener("scroll", positionPopover, true);
   }
+  if (typeof window !== "undefined") window.addEventListener("resize", positionPopover);
 
   const measuredTop = (): number => {
     const barTop = commandBar.getBoundingClientRect().top;
@@ -455,21 +424,21 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     menuToggle,
     preferenceToggle,
     preferencePopover,
-    modeSegment,
-    setMode,
     autonomySelect,
-    reasoningSelect,
     syncEffort,
     setModelLabel,
     openPopover,
     openKind: () => openState,
     measuredTop,
     dispose: () => {
+      popoverResize?.disconnect();
+      if (typeof window !== "undefined") window.removeEventListener("resize", positionPopover);
       options.input.removeEventListener("focus", onInputFocus);
       options.input.removeEventListener("blur", onInputBlur);
       if (typeof document === "undefined" || typeof document.removeEventListener !== "function") return;
       document.removeEventListener("pointerdown", onDocumentPointerDown);
       document.removeEventListener("keydown", onDocumentKeyDown);
+      document.removeEventListener("scroll", positionPopover, true);
     },
   };
 }

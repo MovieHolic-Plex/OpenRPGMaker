@@ -1,0 +1,185 @@
+{
+  "status": "PASS",
+  "legacy": false,
+  "traces": [
+    {
+      "disabledPicker": [
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": false,
+          "focused": "event-record-picker-search",
+          "actions": [
+            {
+              "x": 675.066650390625,
+              "y": 613.63330078125,
+              "right": 724.9999847412109,
+              "bottom": 645.63330078125,
+              "width": 49.93333435058594,
+              "height": 32
+            }
+          ]
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "overflow": false,
+          "focused": "event-record-picker-search",
+          "actions": [
+            {
+              "x": 803.066650390625,
+              "y": 637,
+              "right": 852.9999847412109,
+              "bottom": 669,
+              "width": 49.93333435058594,
+              "height": 32
+            }
+          ]
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "overflow": false,
+          "focused": "event-record-picker-search",
+          "actions": [
+            {
+              "x": 883.066650390625,
+              "y": 693,
+              "right": 932.9999847412109,
+              "bottom": 725,
+              "width": 49.93333435058594,
+              "height": 32
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "selectedRange": true,
+      "pickerCancel": true,
+      "disabledIds": [
+        "legacy_reward",
+        "v2"
+      ],
+      "createdId": "var_0003"
+    },
+    {
+      "composer": [
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": false,
+          "focused": "event-command-text-body",
+          "actions": [
+            {
+              "x": 805,
+              "y": 677.5166625976562,
+              "right": 881,
+              "bottom": 709.5166625976562,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 889,
+              "y": 677.5166625976562,
+              "right": 965,
+              "bottom": 709.5166625976562,
+              "width": 76,
+              "height": 32
+            }
+          ]
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "overflow": false,
+          "focused": "event-command-text-body",
+          "actions": [
+            {
+              "x": 933,
+              "y": 693.5166625976562,
+              "right": 1009,
+              "bottom": 725.5166625976562,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 1017,
+              "y": 693.5166625976562,
+              "right": 1093,
+              "bottom": 725.5166625976562,
+              "width": 76,
+              "height": 32
+            }
+          ]
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "overflow": false,
+          "focused": "event-command-text-body",
+          "actions": [
+            {
+              "x": 1013,
+              "y": 743.5166625976562,
+              "right": 1089,
+              "bottom": 775.5166625976562,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 1097,
+              "y": 743.5166625976562,
+              "right": 1173,
+              "bottom": 775.5166625976562,
+              "width": 76,
+              "height": 32
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "text",
+            "body": "Hello world",
+            "speaker": "Narrator",
+            "emotion": "happy"
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "text",
+            "speaker": "Narrator",
+            "body": "Hello\\n[2]\\v[2] world",
+            "emotion": "happy"
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    }
+  ],
+  "expected": {
+    "kind": "text",
+    "body": "Hello\\n[2]\\v[2] world",
+    "speaker": "Narrator",
+    "emotion": "happy"
+  },
+  "entireProjectEqual": true,
+  "downloadedPackageImported": true,
+  "remoteWrites": [],
+  "errors": [],
+  "observationReleased": true
+}

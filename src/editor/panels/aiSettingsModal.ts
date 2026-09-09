@@ -21,16 +21,24 @@ import {
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
 import { defaultModelForAuthMode, isModelValidForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
 import { parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, IMAGE_MODEL_CATALOG } from "@/ai/imageModelCatalog";
 import {
+  AI_BACKGROUND_OPACITY_LIMITS,
+  applyAiBackgroundOpacity,
+  clampAiBackgroundOpacity,
+  loadAiBackgroundOpacity,
+  saveAiBackgroundOpacity,
   applyAiFontSize,
   loadAiFontSize,
   saveAiFontSize,
   type AiFontSize,
 } from "@/editor/panels/aiPanelLayout";
-import { registerModal } from "@/editor/ui/modalStack";
+import { isTopModal, registerModal } from "@/editor/ui/modalStack";
+import { installAiModalFocus } from "./aiModalFocus";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { renderAiAuthSettings } from "./aiAuthSettings";
+import { deckIcon } from "./aiDeckIcons";
 import { installEventEditorCustomSelects } from "./eventEditor/customSelect";
 
 export type AiSettingsFocus = "first" | "apiKey";
@@ -53,6 +61,17 @@ export type OpenAiSettingsModalOptions = {
 };
 
 let activeAiSettingsClose: (() => void) | null = null;
+let panelSettings: (() => OpenAiSettingsModalOptions) | null = null;
+
+/** The single mounted chat panel supplies the same settings context to every entry. */
+export function registerAiSettingsPanel(getOptions: () => OpenAiSettingsModalOptions): () => void {
+  panelSettings = getOptions;
+  return () => {
+    if (panelSettings !== getOptions) return;
+    closeAiSettingsModal();
+    panelSettings = null;
+  };
+}
 
 export function closeAiSettingsModal(): void {
   if (activeAiSettingsClose) {
@@ -64,18 +83,32 @@ export function closeAiSettingsModal(): void {
 
 export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): HTMLElement {
   closeAiSettingsModal();
+  const panelOptions = panelSettings?.();
+  const extraSections = options.extraSections ?? panelOptions?.extraSections;
   const form = renderAiSettingsForm({
-    onSaved: options.onSaved,
+    onSaved: (config) => {
+      panelOptions?.onSaved?.(config);
+      options.onSaved?.(config);
+    },
+    onBackgroundOpacityChange: (value) => {
+      // Topbar settings has no injected panel; update mounted roots as well.
+      const roots = new Set(document.querySelectorAll<HTMLElement>(".ai-chat-panel"));
+      if (panelOptions?.fontRoot) roots.add(panelOptions.fontRoot);
+      if (options.fontRoot) roots.add(options.fontRoot);
+      for (const root of roots) applyAiBackgroundOpacity(root, value);
+    },
     onFontSizeChange: (size) => {
+      panelOptions?.onFontSizeChange?.(size);
       options.onFontSizeChange?.(size);
+      if (panelOptions?.fontRoot) applyAiFontSize(panelOptions.fontRoot, size);
       if (options.fontRoot) applyAiFontSize(options.fontRoot, size);
     },
-    ...(options.extraSections ? { extraSections: options.extraSections } : {}),
+    ...(extraSections ? { extraSections } : {}),
   });
 
   const closeButton = el("button", {
     class: "database-modal-close",
-    text: "×",
+    children: [deckIcon("x")],
     attrs: { type: "button", "aria-label": "설정 닫기" },
     dataset: { testid: "ai-settings-close" },
   });
@@ -106,6 +139,7 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
   // 네이티브 select 는 이 모달에서 OS 크롬 그대로 떠서 주변 카드·입력과 어긋났다. 이벤트
   // 편집기와 같은 커스텀 리스트박스로 올린다 — 네이티브 요소는 값·change 원천으로 남는다.
   const customSelects = installEventEditorCustomSelects(backdrop);
+  const restoreFocus = installAiModalFocus(backdrop);
 
   const close = registerModal(backdrop, () => {
     // 인증 패널은 기기 로그인 폴링 타이머를 들고 있다 — 정리하지 않으면 모달이 닫힌 뒤에도
@@ -114,11 +148,12 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
     form.dispose();
     backdrop.remove();
     if (activeAiSettingsClose === close) activeAiSettingsClose = null;
+    restoreFocus();
   });
   activeAiSettingsClose = close;
   closeButton.addEventListener("click", close);
   backdrop.addEventListener("mousedown", (event) => {
-    if (event.target === backdrop) close();
+    if (event.target === backdrop && isTopModal(backdrop)) close();
   });
   document.body.append(backdrop);
 
@@ -130,6 +165,7 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
 
 export function renderAiSettingsForm(options: {
   readonly onSaved?: (config: AiConfig) => void;
+  readonly onBackgroundOpacityChange?: (value: number) => void;
   readonly onFontSizeChange?: (size: AiFontSize) => void;
   readonly extraSections?: readonly AiSettingsExtraSection[];
 }): { element: HTMLElement; focusFirstInput: () => void; focusApiKey: () => void; dispose: () => void } {
@@ -138,6 +174,49 @@ export function renderAiSettingsForm(options: {
   const config = loadAiConfig();
   let authMode = config.authMode;
   let providerId = parseOhMyPiProvider(config.providerId);
+  const imageProvider = el("select", {
+    class: "ai-config-select",
+    attrs: { "aria-label": "이미지 생성 제공자" },
+    dataset: { testid: "ai-config-image-provider" },
+    children: [...new Map(IMAGE_MODEL_CATALOG.map((entry) => [entry.providerId, entry.providerLabel]))]
+      .map(([id, label]) => el("option", { attrs: { value: id }, text: label })),
+  }) as HTMLSelectElement;
+  const initialImageProvider = config.imageProviderId ?? DEFAULT_IMAGE_PROVIDER_ID;
+  if (!IMAGE_MODEL_CATALOG.some((entry) => entry.providerId === initialImageProvider)) {
+    imageProvider.append(el("option", { attrs: { value: initialImageProvider, disabled: "" }, text: initialImageProvider + " · 지원 미확인" }));
+  }
+  imageProvider.value = initialImageProvider;
+  const imageModel = el("select", {
+    class: "ai-config-select",
+    attrs: { "aria-label": "이미지 생성 모델", "aria-describedby": "ai-config-image-status" },
+    dataset: { testid: "ai-config-image-model" },
+  }) as HTMLSelectElement;
+  const imageStatus = el("p", {
+    class: "ai-config-help",
+    attrs: { id: "ai-config-image-status", role: "status", "aria-live": "polite" },
+    dataset: { testid: "ai-config-image-status" },
+  });
+  const refreshImageStatus = (): void => {
+    const entry = IMAGE_MODEL_CATALOG.find((entry) => entry.providerId === imageProvider.value && entry.model === imageModel.value);
+    imageStatus.dataset.availability = entry?.supported ? "supported" : "unsupported";
+    imageStatus.textContent = entry?.supported
+      ? entry.providerLabel + " 로그인이 필요합니다. 인증 정보는 동반 서비스에만 보관하며 실제 생성 시 확인합니다."
+        + (entry.providerId === DEFAULT_IMAGE_PROVIDER_ID ? "" : " GPT Image 2(gpt-image-2)를 명시적으로 요청합니다. 날짜가 붙은 세부 스냅샷 버전은 제공자가 알려 주지 않습니다. 현재 텍스트 설명만 지원합니다. 참조 그림이 있는 생성은 Gemini를 선택해 주세요.")
+      : "이 이미지 경로는 현재 미지원 또는 검증 전입니다. 저장된 선택은 유지하며 다른 모델로 자동 전환하지 않습니다.";
+  };
+  const refreshImageModels = (selected: string): void => {
+    const entries = IMAGE_MODEL_CATALOG.filter((entry) => entry.providerId === imageProvider.value);
+    imageModel.replaceChildren(...entries.map((entry) => el("option", {
+      attrs: { value: entry.model, ...(!entry.supported ? { disabled: "" } : {}) }, text: entry.label,
+    })));
+    if (!entries.some((entry) => entry.model === selected)) {
+      imageModel.append(el("option", { attrs: { value: selected, disabled: "" }, text: selected + " · 지원 미확인" }));
+    }
+    imageModel.value = selected;
+    imageModel.dispatchEvent(new Event("input", { bubbles: true }));
+    refreshImageStatus();
+  };
+  refreshImageModels(config.imageModel ?? DEFAULT_IMAGE_MODEL);
   const model = modelField("감독 모델(계획·검수)", config.model, "ai-config-model", "ai-config-model-preset", authMode, DEFAULT_MODEL, providerId);
   const liteModel = modelField(
     "실행 모델(툴 작업)",
@@ -242,6 +321,41 @@ export function renderAiSettingsForm(options: {
   const fontSizeRow = settingsRow("글자 크기", fontSizeDescription, fontSizeSelect);
   fontSizeRow.setAttribute("title", fontSizeDescription);
 
+  const backgroundOpacity = el("input", {
+    class: "ai-background-opacity-range",
+    attrs: {
+      id: "ai-background-opacity", type: "range",
+      min: String(AI_BACKGROUND_OPACITY_LIMITS.min), max: String(AI_BACKGROUND_OPACITY_LIMITS.max), step: "1",
+      "aria-describedby": "ai-background-opacity-help",
+    },
+    value: String(loadAiBackgroundOpacity()),
+    dataset: { testid: "ai-background-opacity" },
+  }) as HTMLInputElement;
+  const backgroundOpacityValue = el("output", {
+    attrs: { for: "ai-background-opacity" },
+    text: `${backgroundOpacity.value}%`,
+    dataset: { testid: "ai-background-opacity-value" },
+  });
+  const backgroundOpacityRow = el("div", {
+    class: "ai-config-row",
+    children: [
+      el("span", { class: "ai-config-row-copy", children: [
+        el("label", { class: "ai-config-label", attrs: { for: "ai-background-opacity" }, text: "배경 농도" }),
+        el("span", { class: "ai-config-help", attrs: { id: "ai-background-opacity-help" }, text: "78–100%. 높을수록 배경이 불투명해집니다. 글자는 흐려지지 않습니다." }),
+      ] }),
+      el("span", { class: "ai-config-control ai-background-opacity-control", children: [backgroundOpacity, backgroundOpacityValue] }),
+    ],
+  });
+  const persistBackgroundOpacity = (): void => {
+    const value = clampAiBackgroundOpacity(Number(backgroundOpacity.value));
+    backgroundOpacity.value = String(value);
+    backgroundOpacityValue.textContent = `${value}%`;
+    saveAiBackgroundOpacity(value);
+    options.onBackgroundOpacityChange?.(value);
+  };
+  backgroundOpacity.addEventListener("input", persistBackgroundOpacity);
+  backgroundOpacity.addEventListener("change", persistBackgroundOpacity);
+
   const savedHint = el("span", {
     class: "ai-config-saved-hint",
     text: "변경 사항은 자동으로 저장됩니다.",
@@ -263,6 +377,8 @@ export function renderAiSettingsForm(options: {
   const collect = (): AiConfig => ({
     authMode,
     providerId,
+    imageProviderId: imageProvider.value,
+    imageModel: imageModel.value,
     // 에디터는 동반 서비스 전송만 쓴다 — baseUrl 은 endpoint() 가 무시하고, 키는 동반 서비스가
     // 들고 있다. 여기서 빈 값으로 고정해 브라우저 저장소에 비밀·죽은 주소가 남지 않게 한다.
     baseUrl: DEFAULT_BASE_URL,
@@ -296,6 +412,20 @@ export function renderAiSettingsForm(options: {
     }
   };
   persistAuthMode = () => persist(false);
+  imageProvider.addEventListener("change", () => {
+    const entries = IMAGE_MODEL_CATALOG.filter((entry) => entry.providerId === imageProvider.value);
+    const chosen = entries.find((entry) => entry.supported) ?? entries[0];
+    if (!chosen) {
+      refreshImageStatus();
+      return;
+    }
+    refreshImageModels(chosen.model);
+    persist(false);
+  });
+  imageModel.addEventListener("change", () => {
+    refreshImageStatus();
+    persist(false);
+  });
   const scheduleAutoSave = (): void => {
     if (typeof window === "undefined") {
       persist(false);
@@ -431,6 +561,16 @@ export function renderAiSettingsForm(options: {
         )],
       }),
       settingsSection(
+        "image",
+        "이미지 생성",
+        "대화의 감독·실행 모델과 별도로 그림을 만들 모델을 선택합니다.",
+        [
+          settingsRow("이미지 생성 제공자", "대화 제공자를 바꿔도 이 선택은 유지됩니다.", imageProvider),
+          settingsRow("이미지 생성 모델", "이미지를 출력하는 모델만 표시합니다. 지원 미확인 모델은 선택할 수 없습니다.", imageModel),
+          imageStatus,
+        ],
+      ),
+      settingsSection(
         "behavior",
         "동작",
         "응답 예산과 작업 진행 방식을 조정합니다.",
@@ -440,7 +580,7 @@ export function renderAiSettingsForm(options: {
         "display",
         "표시",
         "AI 패널의 읽기 환경을 조정합니다.",
-        [fontSizeRow],
+        [fontSizeRow, backgroundOpacityRow],
       ),
       ...(options.extraSections ?? []).map((section) =>
         settingsSection(section.id, section.title, section.description, [section.content])),

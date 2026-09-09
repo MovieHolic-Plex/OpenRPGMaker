@@ -1,0 +1,212 @@
+{
+  "redExit": 1,
+  "redFailed": 7,
+  "redPassed": 13,
+  "channelRedExit": 1,
+  "channelRedFailed": 1,
+  "channelRedPassed": 19,
+  "greenExit": 0,
+  "greenTests": 241,
+  "greenFiles": 17,
+  "buildExit": 0,
+  "playerExit": 0,
+  "finalLogs": [
+    "gain-channel-green.log",
+    "gain-channel-build.log",
+    "gain-channel-player.log"
+  ],
+  "productionSha256": {
+    "src/player/audio/audioEngine.ts": "a4437c1aae9dafda1681d5d822061077faad8da774575defc883d2bff22c0efd",
+    "src/player/battleAudio.ts": "006082f8406ea24166be69d46eec53b2dd411c14727d2b00385751eb0db5d82e"
+  },
+  "scenarios": [
+    {
+      "id": "layers",
+      "beats": 8,
+      "latestAudio": {
+        "u14-field": {
+          "playing": true,
+          "paused": true,
+          "volume": 0,
+          "loop": true
+        },
+        "u14-ambient": {
+          "playing": true,
+          "paused": false,
+          "volume": 0.175,
+          "loop": true
+        },
+        "u14-se": {
+          "playing": true,
+          "paused": false,
+          "volume": 0.4,
+          "loop": false
+        },
+        "u14-defeat": {
+          "playing": true,
+          "paused": false,
+          "volume": 0.27999999999999997,
+          "loop": false
+        },
+        "u14-other": {
+          "playing": true,
+          "paused": true,
+          "volume": 0,
+          "loop": true
+        },
+        "u14-battle": {
+          "playing": true,
+          "paused": false,
+          "volume": 0.7,
+          "loop": true
+        }
+      },
+      "savedBgm": null
+    },
+    {
+      "id": "result",
+      "beats": 3,
+      "latestAudio": {
+        "u14-field": {
+          "playing": true,
+          "paused": true,
+          "volume": 0,
+          "loop": true
+        },
+        "u14-battle": {
+          "playing": true,
+          "paused": true,
+          "volume": 0,
+          "loop": true
+        },
+        "u14-defeat": {
+          "playing": true,
+          "paused": false,
+          "volume": 0.8,
+          "loop": false
+        }
+      },
+      "savedBgm": null
+    },
+    {
+      "id": "gain-command",
+      "beats": 9,
+      "latestAudio": {
+        "u14-field": {
+          "playing": true,
+          "paused": false,
+          "volume": 0.7,
+          "loop": true
+        }
+      },
+      "savedBgm": {
+        "resourceId": "u14-field",
+        "loop": true
+      }
+    },
+    {
+      "id": "gain-map",
+      "beats": 10,
+      "latestAudio": {
+        "u14-field": {
+          "playing": true,
+          "paused": false,
+          "volume": 0.7,
+          "loop": true
+        }
+      },
+      "savedBgm": {
+        "resourceId": "u14-field",
+        "loop": true
+      }
+    },
+    {
+      "id": "battle-gain-25-same",
+      "beats": 5,
+      "latestAudio": {
+        "u14-field": {
+          "playing": true,
+          "paused": false,
+          "volume": 0.175,
+          "loop": true
+        },
+        "u14-defeat": {
+          "playing": true,
+          "paused": false,
+          "volume": 0.8,
+          "loop": false
+        }
+      },
+      "savedBgm": null
+    },
+    {
+      "id": "battle-gain-0-same",
+      "beats": 5,
+      "latestAudio": {
+        "u14-field": {
+          "playing": true,
+          "paused": false,
+          "volume": 0,
+          "loop": true
+        },
+        "u14-defeat": {
+          "playing": true,
+          "paused": false,
+          "volume": 0.8,
+          "loop": false
+        }
+      },
+      "savedBgm": null
+    },
+    {
+      "id": "battle-gain-25-different",
+      "beats": 5,
+      "latestAudio": {
+        "u14-field": {
+          "playing": true,
+          "paused": false,
+          "volume": 0.175,
+          "loop": true
+        },
+        "u14-battle": {
+          "playing": true,
+          "paused": true,
+          "volume": 0,
+          "loop": true
+        },
+        "u14-defeat": {
+          "playing": true,
+          "paused": false,
+          "volume": 0.8,
+          "loop": false
+        }
+      },
+      "savedBgm": null
+    },
+    {
+      "id": "battle-gain-0-different",
+      "beats": 5,
+      "latestAudio": {
+        "u14-field": {
+          "playing": true,
+          "paused": false,
+          "volume": 0,
+          "loop": true
+        },
+        "u14-battle": {
+          "playing": true,
+          "paused": true,
+          "volume": 0,
+          "loop": true
+        },
+        "u14-defeat": {
+          "playing": true,
+          "paused": false,
+          "volume": 0.8,
+          "loop": false
+        }
+      },
+      "savedBgm": null
+    }
+  ]
+}

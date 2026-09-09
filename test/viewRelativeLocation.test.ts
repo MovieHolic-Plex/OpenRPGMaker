@@ -4,9 +4,10 @@ import {
   implicitSpecFromViewLocation,
   parseSpatialPhrase,
   resolveSpatialRect,
+  resolveTurnViewLocation,
   viewportVisibleFrame,
 } from "@/ai/viewRelativeLocation";
-import { computeMapViewport, formatViewportContextBlock } from "@/ai/mapViewportContext";
+import { computeMapViewport } from "@/ai/mapViewportContext";
 import { inferRequirementsFromQuery } from "@/editor/tools/villageRequirements";
 import { buildTerrainConstraintMasks } from "@/editor/tools/villageTerrainPass";
 
@@ -74,14 +75,12 @@ describe("viewport visible frame vs clipped context", () => {
 });
 
 describe("prompt wiring", () => {
-  it("tells the model 위/아래/왼쪽/오른쪽 are the visible screen, not the whole map", () => {
-    const text = formatViewportContextBlock(
-      { mapId: "map_market", centerX: 7, centerY: 4, x: 2, y: 1, w: 10, h: 8 },
-      "장터",
-    );
-    expect(text).toContain("위");
-    expect(text).toContain("오른쪽");
-    expect(text).toContain("지금 보고 있는 화면");
+  it("resolves an explicit screen placement but leaves map placement to the map spec", () => {
+    // Given the same directional instruction with two different frames of reference.
+    const viewport = { mapId: "map_market", centerX: 7, centerY: 4, x: 2, y: 1, w: 10, h: 8 };
+    // When resolving each instruction, then only the explicit viewport creates a screen box.
+    expect(resolveTurnViewLocation("화면 오른쪽 위에 연못을 만들어", viewport)?.rect).toEqual({ x: 7, y: 1, w: 5, h: 4 });
+    expect(resolveTurnViewLocation("맵 오른쪽 위에 연못을 만들어", viewport)).toBeNull();
   });
 
   it("prints the computed box so the model cannot guess coordinates", () => {
@@ -100,7 +99,7 @@ describe("implicitSpecFromViewLocation", () => {
   it("turns a forest phrase into a prop asset on the computed box", () => {
     const spec = implicitSpecFromViewLocation({
       mapId: "map_12",
-      requestText: "오른쪽 위에 숲을깔라",
+      requestText: "화면 오른쪽 위에 숲을깔라",
       rect: { x: 20, y: 4, w: 10, h: 6 },
     });
     expect(spec).toEqual({

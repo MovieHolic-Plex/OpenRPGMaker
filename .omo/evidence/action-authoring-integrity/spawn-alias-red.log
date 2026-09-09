@@ -1,0 +1,6 @@
+Diagnostic command: npx vitest run test/actionAuthoringPrerequisites.test.ts -t "updates exact spawns" --reporter=verbose
+Exit: 1; one selected test failed.
+Expected area: {x:6,y:5,w:2,h:2}
+Received area additionally retained width:"2" and height:"2".
+chase:false was already preserved after the earlier correction.
+The test assertion was retained; the spawn writer now stores only canonical Rect fields.

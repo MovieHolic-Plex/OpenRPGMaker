@@ -1,0 +1,208 @@
+{
+  "projectId": "rpg-zzu-event-command-ember-20260908",
+  "mode": "--save",
+  "processId": 188199,
+  "startedAt": "2026-09-08T18:08:04.001Z",
+  "sourceCommit": "95513f0b009b4f22b106e931072129c07e3f317f",
+  "requests": [
+    {
+      "method": "GET",
+      "table": "projects",
+      "query": "select=project_id&limit=0",
+      "startedAt": "2026-09-08T18:08:04.011Z",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "method": "GET",
+      "table": "projects",
+      "query": "project_id=eq.rpg-zzu-event-command-ember-20260908&select=project_id%2Ccurrent_json%2Ccurrent_sha256%2Cmap_count%2Ctileset_count%2Cupdated_at",
+      "startedAt": "2026-09-08T18:08:04.167Z",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "method": "GET",
+      "table": "projects",
+      "query": "select=current_json%2Ccurrent_sha256&project_id=eq.rpg-zzu-event-command-ember-20260908",
+      "startedAt": "2026-09-08T18:08:11.387Z",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "method": "POST",
+      "table": "projects",
+      "query": "on_conflict=project_id",
+      "startedAt": "2026-09-08T18:08:11.576Z",
+      "status": 201,
+      "ok": true
+    },
+    {
+      "method": "DELETE",
+      "table": "maps",
+      "query": "project_id=eq.rpg-zzu-event-command-ember-20260908",
+      "startedAt": "2026-09-08T18:08:11.906Z",
+      "status": 204,
+      "ok": true
+    },
+    {
+      "method": "POST",
+      "table": "maps",
+      "query": "on_conflict=project_id%2Cmap_id",
+      "startedAt": "2026-09-08T18:08:11.921Z",
+      "status": 201,
+      "ok": true
+    },
+    {
+      "method": "DELETE",
+      "table": "tilesets",
+      "query": "project_id=eq.rpg-zzu-event-command-ember-20260908",
+      "startedAt": "2026-09-08T18:08:11.964Z",
+      "status": 204,
+      "ok": true
+    },
+    {
+      "method": "POST",
+      "table": "tilesets",
+      "query": "on_conflict=project_id%2Ctileset_id",
+      "startedAt": "2026-09-08T18:08:12.027Z",
+      "status": 201,
+      "ok": true
+    }
+  ],
+  "connectivity": {
+    "status": 200,
+    "ok": true
+  },
+  "target": {
+    "status": 200,
+    "rowCount": 0,
+    "observedAt": "2026-09-08T18:08:04.239Z",
+    "unused": true,
+    "state": "absent"
+  },
+  "lastValidation": {
+    "referenceIssues": 0,
+    "lint": {
+      "errors": 0,
+      "warnings": 3,
+      "info": 0,
+      "total": 3,
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:setSelfSwitch",
+          "mapId": "map_mist_forest",
+          "x": 5,
+          "y": 6,
+          "message": "맵 이벤트 ev_forest_herb_1/ev_forest_herb_1_pick에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:setSelfSwitch",
+          "mapId": "map_mist_forest",
+          "x": 12,
+          "y": 21,
+          "message": "맵 이벤트 ev_forest_herb_2/ev_forest_herb_2_pick에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:setSelfSwitch",
+          "mapId": "map_mist_forest",
+          "x": 25,
+          "y": 12,
+          "message": "맵 이벤트 ev_forest_herb_3/ev_forest_herb_3_pick에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+        }
+      ]
+    }
+  },
+  "authored": {
+    "title": "잿불의 유산",
+    "version": 4,
+    "counts": {
+      "maps": 5,
+      "tilesets": 13,
+      "events": 29,
+      "enemies": 5,
+      "troops": 5,
+      "actors": 1,
+      "items": 8
+    },
+    "startMapId": "map_ember_village",
+    "startPos": {
+      "x": 16,
+      "y": 14
+    },
+    "encounter": {
+      "mapId": "map_mist_forest",
+      "eventId": "ev_forest_slime",
+      "pageId": "ev_forest_slime_fight",
+      "troopId": "troop_slime_pair",
+      "enemyIds": [
+        "enemy_slime",
+        "enemy_meadow_slime"
+      ],
+      "memberEnemyIds": [
+        "enemy_slime",
+        "enemy_meadow_slime"
+      ],
+      "resolvedBattlers": [
+        {
+          "recordId": "enemy_slime",
+          "hp": 55,
+          "hidden": false
+        },
+        {
+          "recordId": "enemy_meadow_slime",
+          "hp": 60,
+          "hidden": false
+        }
+      ]
+    },
+    "validation": {
+      "referenceIssues": 0,
+      "lint": {
+        "errors": 0,
+        "warnings": 3,
+        "info": 0,
+        "total": 3,
+        "issues": [
+          {
+            "severity": "warning",
+            "code": "runtime-support:setSelfSwitch",
+            "mapId": "map_mist_forest",
+            "x": 5,
+            "y": 6,
+            "message": "맵 이벤트 ev_forest_herb_1/ev_forest_herb_1_pick에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+          },
+          {
+            "severity": "warning",
+            "code": "runtime-support:setSelfSwitch",
+            "mapId": "map_mist_forest",
+            "x": 12,
+            "y": 21,
+            "message": "맵 이벤트 ev_forest_herb_2/ev_forest_herb_2_pick에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+          },
+          {
+            "severity": "warning",
+            "code": "runtime-support:setSelfSwitch",
+            "mapId": "map_mist_forest",
+            "x": 25,
+            "y": 12,
+            "message": "맵 이벤트 ev_forest_herb_3/ev_forest_herb_3_pick에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+          }
+        ]
+      }
+    }
+  },
+  "save": {
+    "kind": "saved",
+    "sha256": "b47722b03fa4e0ae2dd6132161ac64617cd6504481a3bd6cf2d15172d16500ef",
+    "completedAt": "2026-09-08T18:08:12.304Z"
+  },
+  "savedWireCanonicalSha256": "eea8c28d1e2af25f26867170e0c6ff83c8be0a694203b2e3c1cfd05c440a189f",
+  "persistencePath": "saveProjectToSupabase -> projects upsert -> maps/tilesets mirrors",
+  "passed": true,
+  "finishedAt": "2026-09-08T18:08:12.432Z",
+  "exitCode": 0
+}

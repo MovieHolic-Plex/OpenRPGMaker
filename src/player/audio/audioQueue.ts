@@ -11,9 +11,11 @@ export interface AudioRequest {
   readonly resourceId: string;
   readonly url: string;
   readonly loop: boolean;
+  readonly volume?: number;
   // 이 요청의 페이드인 길이(ms). 없으면 엔진 기본값. 언락 대기 중에도 보존돼야
   // 방출 시점의 페이드가 요청 시점의 의도와 같다.
   readonly fadeInMs?: number;
+  readonly gain?: number;
   // 요청별 재생 속도와 팬도 언락 대기 중 보존해 다른 요청의 값으로 덮이지 않게 한다.
   readonly playbackRate?: number;
   readonly pan?: number;
@@ -28,7 +30,7 @@ export interface AudioQueueState {
 }
 
 // unlock 시 루프 채널을 방출하는 안정 순서.
-const LOOP_FLUSH_ORDER: readonly AudioChannel[] = ["bgm", "bgs"];
+const LOOP_FLUSH_ORDER: readonly AudioChannel[] = ["bgm", "bgs", "ambient"];
 
 export function createAudioQueueState(): AudioQueueState {
   return { unlocked: false, loopPending: {}, oneShotPending: [] };

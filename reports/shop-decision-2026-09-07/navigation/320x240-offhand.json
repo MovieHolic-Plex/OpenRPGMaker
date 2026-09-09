@@ -1,0 +1,139 @@
+{
+  "id": "320x240-offhand",
+  "screenshot": "320x240-offhand.png",
+  "expected": {
+    "slot": "shield",
+    "stats": {
+      "attack": [
+        30,
+        35,
+        5
+      ],
+      "defense": [
+        18,
+        18,
+        0
+      ],
+      "mind": [
+        8,
+        8,
+        0
+      ],
+      "agility": [
+        8,
+        8,
+        0
+      ]
+    }
+  },
+  "observed": {
+    "gold": 200,
+    "inventory": {
+      "candidate": 1,
+      "old": 1,
+      "potion": 1
+    },
+    "owned": 0,
+    "playerGold": 200,
+    "merchantGold": 200,
+    "selected": "shop-buy-candidate",
+    "cap": 5,
+    "unitPrice": 40,
+    "displayedPrice": 40,
+    "displayedOwned": 1,
+    "quantity": "1",
+    "quantityMax": "5",
+    "total": 40,
+    "rows": 6,
+    "actorEquipment": {
+      "a1": {
+        "weapon": "old"
+      },
+      "a2": {
+        "weapon": "old"
+      },
+      "a3": {
+        "weapon": "curse"
+      },
+      "a4": {
+        "weapon": "old"
+      },
+      "a5": {
+        "weapon": "old"
+      },
+      "a6": {
+        "weapon": "old"
+      }
+    },
+    "tradeCounts": {},
+    "focus": "shop-slot-shield",
+    "balance": "160",
+    "shortage": null,
+    "x": 14,
+    "y": 18,
+    "warnings": [],
+    "detail": {
+      "kind": "ready",
+      "actor": "a6",
+      "slot": "shield",
+      "same": "false",
+      "reason": null,
+      "actors": [
+        "shop-actor-a1",
+        "shop-actor-a2",
+        "shop-actor-a3",
+        "shop-actor-a4",
+        "shop-actor-a5",
+        "shop-actor-a6"
+      ],
+      "stats": {
+        "attack": [
+          30,
+          35,
+          5
+        ],
+        "defense": [
+          18,
+          18,
+          0
+        ],
+        "mind": [
+          8,
+          8,
+          0
+        ],
+        "agility": [
+          8,
+          8,
+          0
+        ]
+      },
+      "effects": {
+        "gained": [
+          {
+            "effectKey": "attackAll",
+            "text": "전체 공격"
+          }
+        ],
+        "lost": [],
+        "changed": [
+          {
+            "effectKey": "accuracy",
+            "current": "90",
+            "next": "72",
+            "text": "명중률 · 90 → 72 (-18)"
+          },
+          {
+            "effectKey": "criticalRate",
+            "current": "10",
+            "next": "15",
+            "text": "치명타율 · 10 → 15 (+5)"
+          }
+        ]
+      },
+      "displaced": [],
+      "focus": "shop-slot-shield",
+      "scrollTop": 254
+    }
+  }
+}

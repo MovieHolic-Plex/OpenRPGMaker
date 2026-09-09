@@ -14,6 +14,7 @@ import { extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { PRODUCT_BRAND, PRODUCT_SLUG, PRODUCT_TAGLINE } from "@/brand";
+import ts from "typescript";
 
 const REPO_ROOT = fileURLToPath(new URL("..", import.meta.url));
 const SRC_ROOT = join(REPO_ROOT, "src");
@@ -184,13 +185,27 @@ function isExempt(relativePath: string): boolean {
   return EXEMPT_PREFIXES.some((prefix) => normalized === prefix || normalized.startsWith(prefix));
 }
 
+function shippingSource(source: string, extension: string): string {
+  if (extension === ".ts" || extension === ".tsx") {
+    const file = ts.createSourceFile(`source${extension}`, source, ts.ScriptTarget.Latest, true);
+    return ts.createPrinter({ removeComments: true }).printFile(file);
+  }
+  return source;
+}
+
 describe("탈-쯔구르: 출하 문자열", () => {
+  it("comment filtering retains machine identifiers and comment-like string contents", () => {
+    const source = shippingSource('// __rpgzzu\n/* __rpgzzu */\nconst __rpgzzu = "/* __rpgzzu */";', ".ts");
+    expect(source.match(/__rpgzzu/gu)).toHaveLength(2);
+    expect(source).toContain('"/* __rpgzzu */"');
+  });
   it("src 안에 RPG Maker 계보 표현이 남아 있지 않다", () => {
     const offenders: string[] = [];
     for (const file of walk(SRC_ROOT)) {
       const rel = relative(REPO_ROOT, file);
       if (isExempt(rel)) continue;
-      const lines = readFileSync(file, "utf8").split(/\r?\n/);
+      // Source comments document compatibility/history but are not shipped UI or identifiers.
+      const lines = shippingSource(readFileSync(file, "utf8"), extname(file)).split(/\r?\n/);
       lines.forEach((line, index) => {
         if (ASSET_PATH_LINE.test(line)) return;
         for (const { label, re } of FORBIDDEN_PATTERNS) {

@@ -1,0 +1,77 @@
+.event-subdialog-window:has(:is(.walk-encounter-shell, .walk-encounter-list, .walk-encounter-picker)) {
+  --walk-control: 32px;
+  --walk-type: 13px;
+  --walk-title: 14px;
+  --walk-leading: 1.5;
+  --walk-weight-width: 64px;
+  --walk-share-width: 72px;
+  --walk-picker-height: 320px;
+  width: min(760px, calc(100vw - var(--space-5) * 2));
+  max-height: calc(100vh - var(--space-5) * 2);
+}
+.event-subdialog-window:has(.walk-encounter-picker) { width: min(560px, calc(100vw - var(--space-5) * 2)); }
+.event-subdialog-body.walk-encounter-shell {
+  display: flex; flex-direction: column; min-height: 0; overflow: hidden; padding: 0;
+}
+.walk-encounter-content, .walk-encounter-list, .walk-encounter-picker {
+  overflow-y: auto; min-height: 0; padding: var(--space-4);
+  color: var(--text-1); font: var(--walk-type)/var(--walk-leading) var(--font-ui);
+}
+.walk-encounter-content > * + *, .walk-encounter-list > * + *, .walk-encounter-picker > * + * { margin-top: var(--space-3); }
+.walk-encounter-field { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.walk-encounter-field > span { color: var(--text-2); font-size: var(--font-size-sm); }
+.walk-encounter-field :is(input, select) {
+  width: 100%; min-width: 0; min-height: var(--walk-control);
+  background: var(--bg-raised); color: var(--text-1);
+  border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-s);
+  padding: var(--space-1) var(--space-2); font: inherit;
+}
+.walk-encounter-help { color: var(--text-2); font-size: var(--font-size-sm); line-height: var(--walk-leading); margin: 0; }
+.walk-encounter-heading, .walk-encounter-picker-heading { display: flex; align-items: center; gap: var(--space-2); }
+.walk-encounter-heading h4 { margin: 0; font-size: var(--walk-title); }
+.walk-encounter-heading > .btn, .walk-encounter-picker-heading > span { margin-left: auto; }
+.walk-encounter-picker-heading > span { color: var(--accent); font-size: var(--font-size-sm); }
+.walk-encounter-catalog { display: flex; flex-direction: column; gap: var(--space-2); max-height: var(--walk-picker-height); overflow-y: auto; }
+.walk-encounter-group-option {
+  display: flex; flex-direction: column; gap: var(--space-2); flex-shrink: 0;
+  text-align: left; padding: var(--space-3); font: inherit; color: var(--text-1);
+  border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-s);
+  background: var(--bg-raised); cursor: pointer;
+}
+.walk-encounter-group-option > .walk-encounter-picker-heading { width: 100%; }
+.walk-encounter-group-option:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-muted); }
+.walk-encounter-group-option:disabled { opacity: 1; cursor: default; background: var(--bg-inset); }
+.walk-encounter-composition { display: flex; flex-wrap: wrap; gap: var(--space-2); color: var(--text-2); font-size: var(--font-size-sm); }
+.walk-encounter-member { display: inline-flex; align-items: center; gap: var(--space-1); }
+.walk-encounter-member .db-list-thumb { flex: 0 0 auto; }
+.walk-encounter-identity { min-width: 0; overflow-wrap: anywhere; }
+.walk-encounter-identity > strong { display: block; margin-bottom: var(--space-2); font-size: var(--walk-title); }
+.walk-encounter-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.walk-encounter-row-main { display: grid; grid-template-columns: minmax(0, 1fr) var(--walk-weight-width) var(--walk-share-width) auto; align-items: center; gap: var(--space-3); }
+.walk-encounter-share { display: flex; align-items: center; min-height: var(--walk-control); color: var(--accent); font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums; }
+.walk-encounter-weight input { font-variant-numeric: tabular-nums; }
+.walk-encounter-options-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); padding-block: var(--space-2); }
+.walk-encounter-conditions { margin-top: var(--space-2); border-top: var(--stroke-1) solid var(--border-subtle); }
+.walk-encounter-conditions summary { cursor: pointer; min-height: var(--walk-control); padding-block: var(--space-2); color: var(--text-2); font-size: var(--font-size-sm); }
+.walk-encounter-rule, .walk-encounter-list-row { border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-s); padding: var(--space-3); min-width: 0; background: var(--bg-raised); }
+.walk-encounter-rule + .walk-encounter-rule { margin-top: var(--space-2); }
+.walk-encounter-list-row { display: flex; flex-direction: column; gap: var(--space-2); overflow-wrap: anywhere; }
+.walk-encounter-empty { padding: var(--space-5); background: var(--bg-inset); border-radius: var(--radius-s); color: var(--text-2); }
+.walk-encounter-missing { color: var(--danger); font-size: var(--font-size-sm); }
+.walk-encounter-frequency { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-3); border-top: var(--stroke-1) solid var(--border-default); padding-top: var(--space-3); }
+.walk-encounter-frequency > .walk-encounter-field { min-width: calc(var(--walk-weight-width) * 2); }
+.walk-encounter-frequency > p { padding-bottom: var(--space-2); }
+.walk-encounter-footer {
+  display: flex; flex: 0 0 auto; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2);
+  padding: var(--space-3) var(--space-4); border-top: var(--stroke-1) solid var(--border-default); background: var(--bg-raised);
+}
+.walk-encounter-error { flex: 0 0 auto; color: var(--danger); padding: var(--space-2) var(--space-4); margin: 0; font-size: var(--walk-type); }
+.walk-encounter-error:empty { display: none; }
+:is(.walk-encounter-shell, .walk-encounter-list, .walk-encounter-picker) .btn, .canvas-toolbar .walk-encounter-list-button { min-height: var(--space-6); white-space: normal; }
+:is(.walk-encounter-shell, .walk-encounter-list, .walk-encounter-picker) :is(button, input, select, summary):focus-visible { outline: var(--focus-outline); outline-offset: var(--stroke-2); }
+.selection-action-chips:has([data-testid="selection-chip-walk-encounter"]) { flex-wrap: wrap; border-radius: var(--radius-s); }
+@media (max-width: 600px) {
+  .walk-encounter-options-grid { grid-template-columns: minmax(0, 1fr); }
+  .walk-encounter-row-main { grid-template-columns: minmax(0, 1fr) var(--walk-weight-width) var(--walk-share-width); }
+  .walk-encounter-row-main > .walk-encounter-actions { grid-column: 1 / -1; }
+}

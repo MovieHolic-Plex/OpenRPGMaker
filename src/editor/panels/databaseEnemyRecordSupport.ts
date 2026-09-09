@@ -76,14 +76,18 @@ export function panel(title: string, children: HTMLElement[], gridClass?: string
  * 갈아치우면 스타일이 통째로 사라진다(UA 기본 버튼이 된다). 전역 `.btn.small { flex: 1 }`
  * 인플레이션은 CSS 쪽에서 `.db-enemy-dialog footer` 로 한정해 되돌린다.
  */
-export function openDialog(testid: string, title: string, content: HTMLElement[], actions: readonly { readonly label: string; readonly testid: string; readonly action?: () => void }[], opener: HTMLElement | null = document.activeElement instanceof HTMLElement ? document.activeElement : null): void {
+export function openDialog(testid: string, title: string, content: HTMLElement[], actions: readonly { readonly label: string; readonly testid: string; readonly action?: () => void }[], opener: HTMLElement | null = document.activeElement instanceof HTMLElement ? document.activeElement : null, onClose?: () => void): () => void {
   const overlay = el("div", { class: "db-enemy-dialog-backdrop", dataset: { testid } });
   const restoreFocus = dialogReturnFocus(opener);
+  let closed = false;
   const close = (): void => {
-    if (!document.body.contains(overlay)) return;
-    const ownsFocus = overlay.contains(document.activeElement) || document.activeElement === document.body;
+    if (closed) return;
+    closed = true;
+    const ownsFocus = document.body.contains(overlay)
+      && (overlay.contains(document.activeElement) || document.activeElement === document.body);
     unregisterModal(overlay);
     overlay.remove();
+    onClose?.();
     if (ownsFocus) restoreFocus();
   };
   overlay.addEventListener("click", (event) => {
@@ -106,6 +110,7 @@ export function openDialog(testid: string, title: string, content: HTMLElement[]
             dataset: { testid: entry.testid },
             on: {
               click: () => {
+                if (closed) return;
                 entry.action?.();
                 close();
               },
@@ -129,6 +134,7 @@ export function openDialog(testid: string, title: string, content: HTMLElement[]
   document.body.append(overlay);
   // 첫 조작 가능한 요소로 포커스를 옮긴다. 없으면 대화상자 자신(tabindex=-1)이 받는다.
   (dialogTabStops(dialog)[0] ?? dialog).focus();
+  return close;
 }
 
 function dialogTabStops(dialog: HTMLElement): HTMLElement[] {

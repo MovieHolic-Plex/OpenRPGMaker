@@ -1,0 +1,41 @@
+{
+  "stateAfterStartup": "loading",
+  "state": "ok",
+  "retained": {
+    "record": {
+      "id": "startup-remote",
+      "title": "STARTUP-RECOVER-REQUEST",
+      "model": "offline-fixture",
+      "projectContextKey": "local:새 프로젝트::map_blank_start",
+      "entries": [
+        {
+          "kind": "user",
+          "text": "STARTUP-RECOVER-REQUEST",
+          "context": {
+            "mapId": "map_blank_start",
+            "mapName": "빈 맵",
+            "mapWidth": 20,
+            "mapHeight": 15
+          }
+        },
+        {
+          "kind": "assistant",
+          "text": "STARTUP-RECOVER-ANSWER"
+        }
+      ],
+      "savedAt": 2000,
+      "mapIndex": {
+        "viewedMapIds": [
+          "map_blank_start"
+        ],
+        "targetMapIds": [],
+        "mapAttribution": "complete"
+      }
+    },
+    "backend": "indexeddb"
+  },
+  "historyRequests": [
+    "GET"
+  ],
+  "forbidden": []
+}

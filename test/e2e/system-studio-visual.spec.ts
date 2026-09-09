@@ -1,73 +1,78 @@
 import { mkdir } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
-import { DATABASE_TAB_SPECS, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
 
-const SYSTEM_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "system")!;
-const EVIDENCE_PATH = "output/evidence/system-studio/system-studio-1586x992.png";
-
-test.use({ viewport: { width: 1586, height: 992 } });
-
-test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
-});
-
-test("cream system-studio keeps at least 95% structural parity", async ({ page }) => {
-  await page.goto("/?freshProject=1");
-  await openDatabase(page);
-  await switchDatabaseTab(page, SYSTEM_TAB);
-  await expect(page.getByTestId("db-system-studio")).toBeVisible();
-  await expect(page.getByTestId("db-system-nav-overview")).toHaveClass(/active/);
-
-  const parity = await page.evaluate(() => {
-    const rect = (selector: string): DOMRect => {
-      const node = document.querySelector(selector);
-      if (!(node instanceof HTMLElement)) throw new Error(`missing ${selector}`);
-      return node.getBoundingClientRect();
-    };
-    const count = (selector: string): number => document.querySelectorAll(selector).length;
-    const modal = rect(".database-modal-window");
-    const rail = rect(".db-tabs");
-    const subnav = rect("nav.db-system-section-nav");
-    const studio = rect(".db-system-studio");
-    const primary = Array.from(document.querySelectorAll<HTMLElement>(".db-system-studio-card-grid .db-system-studio-card"))
-      .map((node) => node.getBoundingClientRect());
-    const state = rect(".db-system-studio-state");
-    const rules = Array.from(document.querySelectorAll<HTMLElement>(".db-system-studio-rule-grid .db-system-studio-card"))
-      .map((node) => node.getBoundingClientRect());
-    const preview = rect(".db-system-studio-preview");
-    const footer = rect(".database-modal-footer");
-    const sectionHost = document.querySelector(".db-system-sections");
-    if (!(sectionHost instanceof HTMLElement)) throw new Error("missing system section host");
-
-    const checks = {
-      modalNearlyFullWidth: modal.width >= innerWidth * 0.97,
-      modalNearlyFullHeight: modal.height >= innerHeight * 0.95,
-      iconRailBand: rail.width >= 52 && rail.width <= 60,
-      secondaryNavBand: subnav.width >= 180 && subnav.width <= 188,
-      studioStartsAfterNavigation: studio.left >= subnav.right,
-      nineSystemDestinations: count("nav.db-system-section-nav > button") === 9,
-      overviewIsDefault: document.querySelector('[data-system-section="overview"]:not([hidden])') !== null,
-      partyEditorStartsHidden: document.querySelector('[data-system-section="party"][hidden]') !== null,
-      fourPrimaryCards: primary.length === 4,
-      primaryCardsShareRow: primary.length === 4 && Math.max(...primary.map((item) => item.top)) - Math.min(...primary.map((item) => item.top)) <= 2,
-      primaryCardDensity: primary.length === 4 && primary.every((item) => item.height >= 96),
-      stateBelowPrimary: primary.length === 4 && state.top > Math.max(...primary.map((item) => item.bottom)),
-      semanticStateRows: count(".db-system-studio-table-row") === 3,
-      statePanelDensity: state.height >= 270,
-      threeRuleCards: rules.length === 3,
-      ruleCardsShareRow: rules.length === 3 && Math.max(...rules.map((item) => item.top)) - Math.min(...rules.map((item) => item.top)) <= 2,
-      twelveRuleDetails: count(".db-system-studio-card-detail") === 12,
-      previewOnRight: primary.length === 4 && preview.left > Math.max(...primary.map((item) => item.right)),
-      fourPreviewFacts: count(".db-system-studio-impact-row") === 4,
-      noHorizontalOverflow: sectionHost.scrollWidth <= sectionHost.clientWidth + 2 && footer.bottom <= innerHeight + 1,
-    };
-    const passed = Object.values(checks).filter(Boolean).length;
-    return { checks, passed, total: Object.keys(checks).length, score: passed / Object.keys(checks).length };
+const sections = ["overview", "party", "display", "font", "resources", "startup", "optin", "time", "typechart", "title"] as const;
+for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }]) {
+  test(`System settings workspace at ${viewport.width}x${viewport.height}`, async ({ page }) => {
+    test.setTimeout(180_000);
+    await page.setViewportSize(viewport);
+    await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
+    await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
+    await page.getByTestId("edit-canvas").waitFor({ state: "visible", timeout: 120_000 });
+    for (const [button, overlay] of [["login-guest", "login-modal"], ["standard-welcome-start", "standard-welcome-card"], ["coach-mark-skip", ""]]) {
+      if (await page.getByTestId(button!).isVisible()) {
+        await page.getByTestId(button!).click();
+        if (overlay) await page.getByTestId(overlay).waitFor({ state: "hidden" });
+      }
+    }
+    await page.getByTestId("toolbar-database").click();
+    await page.getByTestId("db-tab-group-system").click();
+    await page.getByTestId("db-tab-system").click();
+    const nav = page.getByTestId("db-system-section-nav");
+    await expect(nav.locator(".db-system-section-button")).toHaveCount(10);
+    const destinationTargets = await page.getByTestId("db-system-studio").locator("[data-system-target]").evaluateAll((buttons) => [...new Set(buttons.map((button) => (button as HTMLElement).dataset.systemTarget))].sort());
+    expect(destinationTargets).toEqual(sections.filter((slug) => slug !== "overview").sort());
+    await expect(page.locator(".db-system-studio-rule-grid .db-system-studio-card")).toHaveCount(3);
+    await expect(page.locator(".db-system-studio-card-detail")).toHaveCount(12);
+    await expect(page.locator(".db-system-studio-impact-row")).toHaveCount(4);
+    await expect(page.locator(".db-system-studio-table-row")).toHaveCount(3);
+    await expect(page.locator('[data-system-section="overview"]')).toBeVisible();
+    await expect(page.locator('[data-system-section="party"]')).toBeHidden();
+    const heights: number[] = [];
+    await mkdir("output/evidence/system-studio", { recursive: true });
+    for (const slug of sections) {
+      await page.getByTestId(`db-system-nav-${slug}`).click();
+      await expect(page.locator(`[data-system-section="${slug}"]`)).toBeVisible();
+      await expect(page.locator(".db-system-section")).toHaveCount(10);
+      const facts = await page.evaluate(() => {
+        const nav = document.querySelector<HTMLElement>(".db-system-section-nav")!;
+        const body = document.querySelector<HTMLElement>(".db-system-sections")!;
+        const selected = document.querySelector<HTMLElement>(".db-system-section:not([hidden])")!;
+        const navRect = nav.getBoundingClientRect();
+        const bodyRect = body.getBoundingClientRect();
+        const footer = document.querySelector<HTMLElement>(".database-modal-footer")!.getBoundingClientRect();
+        return {
+          navHeight: navRect.height,
+          navScrollHeight: nav.scrollHeight,
+          navClientHeight: nav.clientHeight,
+          bodyWidth: body.clientWidth,
+          bodyScrollWidth: body.scrollWidth,
+          sectionWidth: selected.getBoundingClientRect().width,
+          separate: navRect.bottom <= bodyRect.top + 1,
+          footerVisible: footer.bottom <= innerHeight + 1,
+          overflow: document.documentElement.scrollWidth > innerWidth,
+        };
+      });
+      heights.push(facts.navHeight);
+      expect(facts.navHeight).toBeGreaterThanOrEqual(50);
+      expect(facts.navScrollHeight).toBeLessThanOrEqual(facts.navClientHeight + 1);
+      expect(facts.bodyScrollWidth).toBeLessThanOrEqual(facts.bodyWidth + 1);
+      expect(facts.sectionWidth).toBeGreaterThan(400);
+      expect(facts.separate).toBe(true);
+      expect(facts.footerVisible).toBe(true);
+      expect(facts.overflow).toBe(false);
+      await page.screenshot({ path: `output/evidence/system-studio/${viewport.width}x${viewport.height}-${slug}.png`, animations: "disabled" });
+    }
+    expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(1);
+    await page.getByTestId("db-system-nav-overview").click();
+    await page.getByTestId("db-system-studio-command-search").fill("__no_such_setting__");
+    await expect(page.getByTestId("db-system-studio-no-results")).toBeVisible();
+    await page.getByTestId("db-system-studio-search-reset").click();
+    await expect(page.getByTestId("db-system-studio-command-search")).toBeFocused();
+    await page.getByTestId("db-system-nav-party").focus();
+    await page.keyboard.press("Enter");
+    await expect(page.locator('[data-system-section="party"]')).toBeVisible();
+    await page.keyboard.press("Tab");
+    await expect(page.getByTestId("db-system-nav-display")).toBeFocused();
   });
-
-  expect(parity, JSON.stringify(parity.checks, null, 2)).toMatchObject({ total: 20 });
-  expect(parity.score, JSON.stringify(parity.checks, null, 2)).toBeGreaterThanOrEqual(0.95);
-
-  await mkdir("output/evidence/system-studio", { recursive: true });
-  await page.screenshot({ path: EVIDENCE_PATH });
-});
+}

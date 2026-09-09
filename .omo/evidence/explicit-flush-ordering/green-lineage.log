@@ -1,0 +1,21 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistenceLineage.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-interior-load-consistency-0907
+
+ ✓ test/storePersistenceLineage.test.ts (8 tests) 71440ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reload during PATCH  20278ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after load during PATCH  10000ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reconnect during PATCH  10612ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reload even for identical content  7390ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on load even for identical content  6742ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reconnect even for identical content  7016ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on adopt even for identical content  5188ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on fallback even for identical content  4213ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  09:24:16
+   Duration  72.04s (transform 7.60s, setup 0ms, collect 57ms, tests 71.44s, environment 0ms, prepare 89ms)

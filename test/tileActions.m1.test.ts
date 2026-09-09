@@ -135,11 +135,14 @@ describe("paintTile — layer routing", () => {
 
     const map = currentMap();
     expect(upperAt(map, 1, 1)).toBe(260);
-    expect(upperAt(map, 1, 2)).toBe(290);
+    expect(at(map, 1, 2)).toBe(290);
+    expect(upperAt(map, 1, 2)).toBe(TILE.EMPTY);
     expect(upperAt(map, 4, 1)).toBe(262);
     expect(upperAt(map, 5, 1)).toBe(263);
-    expect(upperAt(map, 4, 2)).toBe(292);
-    expect(upperAt(map, 5, 2)).toBe(293);
+    expect(at(map, 4, 2)).toBe(292);
+    expect(at(map, 5, 2)).toBe(293);
+    expect(upperAt(map, 4, 2)).toBe(TILE.EMPTY);
+    expect(upperAt(map, 5, 2)).toBe(TILE.EMPTY);
   });
 
   it("hard 클러스터 동반 타일이 경계나 보호셀에 걸리면 수동 펜 배치를 거부하고 토스트를 띄운다", () => {

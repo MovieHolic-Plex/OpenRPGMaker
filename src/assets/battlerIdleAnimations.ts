@@ -27,6 +27,7 @@
 // 장수). 임의로 고르면 슬라임이 경련하고 골렘이 슬로모션이 된다. 절차 티어는 전투 애니메이션
 // 프레임 간격(`BATTLE_ANIMATION_FRAME_MS` = 120ms)을 그대로 쓴다.
 import { BATTLE_ANIMATION_FRAME_MS } from "@/player/battleAnimationPlayback";
+import { withInlineAsset } from "@/assets/inlineAssetStore";
 
 export type BattlerIdleAnimationTier = "image-strip" | "sheet-cell";
 
@@ -172,5 +173,5 @@ export function battlerIdleAnimationDurationMs(entry: BattlerIdleAnimation): num
 }
 
 export function battlerIdleAnimationUrl(entry: BattlerIdleAnimation): string {
-  return `/${entry.path}`;
+  return withInlineAsset(`/${entry.path}`);
 }

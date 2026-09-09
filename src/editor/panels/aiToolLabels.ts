@@ -94,7 +94,10 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   run_lint: inspect("맵 검사", "shield"),
   lint_quest: inspect("퀘스트 검사", "shield"),
   lint_world: inspect("세계 검사", "shield"),
-  evaluate_game_quality: inspect("완성도 평가", "shield"),
+  // "완성도 평가" 아님 — 이 툴은 재미·독창성·페이싱을 채점하지 않고 참조·빈 맵·미호출 엔딩만 본다.
+  // 게이트도 아니어서(자문 계약, agentVerification.ts) 방패 대신 돋보기를 쓴다.
+  evaluate_game_quality: inspect("무결성 점검"),
+  run_action_combat_test: inspect("액션 전투 검증", "shield"),
   get_story_state: inspect("이야기 상태 읽기", "book"),
   get_database_records: inspect("DB 읽기"),
   list_edit_history: inspect("편집 이력", "scroll"),
@@ -110,6 +113,8 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   set_project_settings: system("프로젝트 설정"),
   set_title_screen: system("타이틀 화면"),
   configure_game_systems: system("게임 시스템"),
+  set_action_combat: system("액션 전투 설정"),
+  make_action_enemy: people("액션 적 배치", "user"),
   revert_last_edit: system("마지막 편집 되돌리기", "undo"),
   reset_project: system("프로젝트 초기화"),
   export_game: system("게임 내보내기", "export"),

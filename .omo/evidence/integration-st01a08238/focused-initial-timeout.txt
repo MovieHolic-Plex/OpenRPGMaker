@@ -1,0 +1,1 @@
+The 41-file focused invocation hit the tool deadline at 600 seconds with no JSON report or completed exit receipt. It is incomplete, not a pass. No surviving owned Vitest process existed on subsequent PID recheck.

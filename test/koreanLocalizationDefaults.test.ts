@@ -6,6 +6,7 @@ import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SCARLOXY_BATTLE_ANIMATION_ASSETS } from "@/assets/scarloxyPack";
 import { createBattleRuntime } from "@/battle/runtime";
 import { createBlankProject } from "@/project/defaults";
+import { GENERATED_EFFECT_SHEETS, generatedEffectDatabaseAnimationId, generatedEffectResourceId } from "@/assets/generatedEffectSheets";
 
 const MOJIBAKE_PATTERN = /[占�]|[?][\u3131-\uD7A3]|[\u00C0-\u00FF]{2,}/u;
 
@@ -76,7 +77,10 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     const project = createBlankProject();
     const easyRpgIds = new Set<string>(EASYRPG_RTP_ASSETS.map((asset) => asset.id));
     const generatedIds = new Set<string>(GENERATED_ASSET_PLAN.assets.map((asset) => asset.resourceId));
-    const resourceIds = new Set<string>([...easyRpgIds, ...generatedIds, ...builtinGeneratedResourceIds()]);
+    const resourceIds = new Set<string>([
+      ...easyRpgIds, ...generatedIds, ...builtinGeneratedResourceIds(),
+      ...GENERATED_EFFECT_SHEETS.map((effect) => generatedEffectResourceId(effect.slug)),
+    ]);
 
     // When: battle seed records are inspected and a starter troop runtime is created.
     const enemyIds = new Set(project.database.enemies.map((enemy) => enemy.id));
@@ -87,8 +91,8 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     expect(enemyIds.size).toBe(project.database.enemies.length);
     expect(troopIds.size).toBe(project.database.troops.length);
     expect(animationIds.size).toBe(project.database.battleAnimations.length);
-    expect(project.database.enemies).toHaveLength(29);
-    expect(project.database.troops).toHaveLength(6);
+    expect(project.database.enemies).toHaveLength(106);
+    expect(project.database.troops).toHaveLength(7);
     expect(animationIds).toEqual(
       new Set([
         "anim_hit",
@@ -103,6 +107,7 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
         "anim_scarloxy_ice",
         "anim_scarloxy_scratch",
         "anim_scarloxy_splash",
+        ...GENERATED_EFFECT_SHEETS.map((effect) => generatedEffectDatabaseAnimationId(effect.slug)),
       ])
     );
 
@@ -113,7 +118,7 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     }
     const scarloxyAnimationIds = new Set(SCARLOXY_BATTLE_ANIMATION_ASSETS.map((asset) => asset.id));
     for (const animation of project.database.battleAnimations) {
-      expect(easyRpgIds.has(animation.resourceId ?? "") || scarloxyAnimationIds.has(animation.resourceId ?? "")).toBe(true);
+      expect(resourceIds.has(animation.resourceId ?? "") || scarloxyAnimationIds.has(animation.resourceId ?? "")).toBe(true);
     }
 
     const runtime = createBattleRuntime({
@@ -123,7 +128,7 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
       canLose: true,
     });
     expect(runtime.snapshot().enemies.map((enemy) => enemy.recordId)).toEqual([
-      "enemy_meadow_slime",
+      "enemy_cave_bat",
       "enemy_stone_golem",
       "enemy_cave_bat",
     ]);

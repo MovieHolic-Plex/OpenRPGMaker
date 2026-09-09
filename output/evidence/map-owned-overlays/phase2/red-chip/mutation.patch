@@ -1,0 +1,12 @@
+diff --git a/src/editor/agentPreviewRenderers.ts b/src/editor/agentPreviewRenderers.ts
+index 560b3634..eb23bb1a 100644
+--- a/src/editor/agentPreviewRenderers.ts
++++ b/src/editor/agentPreviewRenderers.ts
+@@ -586,6 +586,6 @@ export class AgentGhostPreviewRenderer {
+     const mapId = this.mapId();
+     return {
+       ...state,
+-      runningToolName: mapId && state.runningToolMapId === mapId ? state.runningToolName : "",
++      runningToolName: mapId ? state.runningToolName : "",
+     };
+   }

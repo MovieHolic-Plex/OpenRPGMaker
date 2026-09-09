@@ -927,6 +927,7 @@ describe("M2 generic map runtime executor", () => {
   it("records modern event commands into explicit runtime buckets without unsafe script execution", () => {
     const session = mkM2Session();
     session.gold = 25;
+    session.audio = { bgm: { resourceId: "field_music", loop: true } };
     const commands: Command[] = [
       modernM2Command("Camera Control", { mode: "panTo", target: "player", x: 10, y: 12, zoom: 1.25, durationMs: 450 }),
       modernM2Command("Screen Effect", { effect: "blur", value: "soft", durationMs: 300 }),
@@ -965,7 +966,9 @@ describe("M2 generic map runtime executor", () => {
     expect(session.m2Runtime?.dialogue).toEqual([{ speaker: "미나", portraitId: "face_mina", emotion: "happy", body: "숲으로 가자.", autoAdvance: false }]);
     expect(session.m2Runtime?.audio).toMatchObject({ ambient: { resourceId: "forest_wind", volume: 65, fadeMs: 500 } });
     expect(texts).toContain("숲으로 가자.");
-    expect(session.audio?.ambient).toEqual({ resourceId: "forest_wind", loop: true });
+    // main keeps ambient as its own channel (bgm/bgs untouched) and stores 0..100 volume.
+    expect(session.audio?.ambient).toEqual({ resourceId: "forest_wind", loop: true, volume: 65, fadeInMs: 500 });
+    expect(session.audio?.bgm).toEqual({ resourceId: "field_music", loop: true });
     expect([0, 1]).toContain(session.variables.loot_roll);
     expect(session.m2Runtime?.cutscene).toMatchObject({ lockPlayer: true });
     expect(session.m2Runtime?.checkpoints).toEqual([{ slotId: "auto", label: "숲 입구", restoreOnGameOver: true }]);

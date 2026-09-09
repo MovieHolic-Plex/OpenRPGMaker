@@ -12,6 +12,8 @@ const REQUIRED_RUNTIME_SELECTORS = [
   ".play-stage",
   ".rm-title-menu",
   ".play-loading-overlay",
+  ".cinematic-sequence",
+  ".cinematic-terminal",
   ".dialogue-overlay",
   // 대화창 연출. 에디터 테스트플레이는 에디터 CSS 가 함께 로드돼 정상으로 보이므로
   // 익스포트 플레이어에 규칙이 실렸는지는 이 빌드 검사만 판정할 수 있다.
@@ -99,6 +101,7 @@ describe("exported player runtime CSS", () => {
       ".dialogue-overlay",
       ".touch-pad",
       ".battle-transition-overlay",
+      ".action-hud-bar",
     ]) {
       expect(hasCssSelector(emittedCss, selector), `missing existing selector ${selector}`).toBe(true);
     }
@@ -163,7 +166,9 @@ describe("exported player runtime CSS", () => {
     const fixtureCss = await buildDisposableClosureWithout('@import "./actionHud.css";\n');
 
     // Then: the omission is visible in bytes while adjacent transition CSS remains.
-    expect(hasCssSelector(fixtureCss, ".action-hud")).toBe(false);
+    // playSurface still references .action-hud to hide it during cutscenes; that reference
+    // does not supply HUD layout. The owning module's standalone rule must disappear.
+    expect(cssDeclarationBlock(fixtureCss, ".action-hud")).toBeUndefined();
     expect(hasCssSelector(fixtureCss, ".battle-transition-overlay")).toBe(true);
   }, PLAYER_BUILD_TIMEOUT_MS);
 
@@ -194,7 +199,7 @@ function hasCssSelector(css: string, selector: string): boolean {
 /** 독립 CSS 규칙의 선언 본문을 중괄호 균형으로 떠낸다. */
 function cssDeclarationBlock(css: string, selector: string): string | undefined {
   const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
-  const header = new RegExp(`${escapedSelector}\\s*\\{`, "gu");
+  const header = new RegExp(`(?:^|[}])\\s*${escapedSelector}\\s*\\{`, "gu");
   const match = header.exec(css);
   if (!match) return undefined;
 

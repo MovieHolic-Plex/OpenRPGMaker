@@ -1,0 +1,481 @@
+{
+  "scenario": "1280x800 and 1024x768: beginner → standard → expert → beginner; physical tile 7 selection, paint, visible-button exact-map undo, retained state and advanced menus",
+  "results": [
+    {
+      "event": "scene-ready",
+      "width": 1280
+    },
+    {
+      "event": "PASS",
+      "width": 1280,
+      "height": 800,
+      "mode": "beginner",
+      "step": 0,
+      "point": {
+        "x": 576,
+        "y": 335,
+        "index": 63
+      },
+      "geometry": {
+        "left": {
+          "x": 0,
+          "y": 49,
+          "width": 288,
+          "height": 751
+        },
+        "canvas": {
+          "x": 288,
+          "y": 123,
+          "width": 992,
+          "height": 677
+        },
+        "bodyWidth": 1280,
+        "visibleUtilityTargets": [
+          {
+            "id": "oprn-tool-undo",
+            "width": 88,
+            "height": 36,
+            "centerHit": true
+          }
+        ]
+      }
+    },
+    {
+      "event": "mode-retained",
+      "width": 1280,
+      "mode": "standard",
+      "step": 1
+    },
+    {
+      "event": "PASS",
+      "width": 1280,
+      "height": 800,
+      "mode": "standard",
+      "step": 1,
+      "point": {
+        "x": 616,
+        "y": 335,
+        "index": 64
+      },
+      "geometry": {
+        "left": {
+          "x": 0,
+          "y": 49,
+          "width": 300,
+          "height": 751
+        },
+        "canvas": {
+          "x": 306,
+          "y": 123,
+          "width": 974,
+          "height": 677
+        },
+        "bodyWidth": 1290,
+        "visibleUtilityTargets": [
+          {
+            "id": "selected-tile-reveal",
+            "width": 39.984375,
+            "height": 24,
+            "centerHit": true
+          },
+          {
+            "id": "palette-tileset-name",
+            "width": 101.59375,
+            "height": 24,
+            "centerHit": true
+          },
+          {
+            "id": "oprn-tool-undo",
+            "width": 28,
+            "height": 28,
+            "centerHit": true
+          },
+          {
+            "id": "auto-connect-mode-toggle",
+            "width": 40,
+            "height": 24,
+            "centerHit": true
+          }
+        ]
+      }
+    },
+    {
+      "event": "mode-retained",
+      "width": 1280,
+      "mode": "expert",
+      "step": 2
+    },
+    {
+      "event": "advanced-open-close",
+      "width": 1280,
+      "mode": "expert"
+    },
+    {
+      "event": "advanced-open-close",
+      "width": 1280,
+      "mode": "expert"
+    },
+    {
+      "event": "advanced-open-close",
+      "width": 1280,
+      "mode": "expert"
+    },
+    {
+      "event": "PASS",
+      "width": 1280,
+      "height": 800,
+      "mode": "expert",
+      "step": 2,
+      "point": {
+        "x": 658,
+        "y": 335,
+        "index": 65
+      },
+      "geometry": {
+        "left": {
+          "x": 0,
+          "y": 49,
+          "width": 320,
+          "height": 751
+        },
+        "canvas": {
+          "x": 326,
+          "y": 123,
+          "width": 954,
+          "height": 677
+        },
+        "bodyWidth": 1288,
+        "visibleUtilityTargets": [
+          {
+            "id": "selected-tile-reveal",
+            "width": 39.984375,
+            "height": 24,
+            "centerHit": true
+          },
+          {
+            "id": "palette-tileset-name",
+            "width": 109.59375,
+            "height": 24,
+            "centerHit": true
+          },
+          {
+            "id": "oprn-tool-undo",
+            "width": 28,
+            "height": 28,
+            "centerHit": true
+          },
+          {
+            "id": "oprn-tool-inspector",
+            "width": 76,
+            "height": 32,
+            "centerHit": true
+          },
+          {
+            "id": "toolbar-toggle-ruleAudit",
+            "width": 79.125,
+            "height": 32,
+            "centerHit": true
+          },
+          {
+            "id": "toolbar-toggle-history",
+            "width": 79.125,
+            "height": 32,
+            "centerHit": true
+          },
+          {
+            "id": "auto-connect-mode-toggle",
+            "width": 40,
+            "height": 24,
+            "centerHit": true
+          }
+        ]
+      }
+    },
+    {
+      "event": "mode-retained",
+      "width": 1280,
+      "mode": "beginner",
+      "step": 3
+    },
+    {
+      "event": "PASS",
+      "width": 1280,
+      "height": 800,
+      "mode": "beginner",
+      "step": 3,
+      "point": {
+        "x": 672,
+        "y": 335,
+        "index": 66
+      },
+      "geometry": {
+        "left": {
+          "x": 0,
+          "y": 49,
+          "width": 288,
+          "height": 751
+        },
+        "canvas": {
+          "x": 288,
+          "y": 123,
+          "width": 992,
+          "height": 677
+        },
+        "bodyWidth": 1280,
+        "visibleUtilityTargets": [
+          {
+            "id": "oprn-tool-undo",
+            "width": 88,
+            "height": 36,
+            "centerHit": true
+          }
+        ]
+      }
+    },
+    {
+      "event": "cleanup-context",
+      "width": 1280,
+      "closed": true
+    },
+    {
+      "event": "scene-ready",
+      "width": 1024
+    },
+    {
+      "event": "PASS",
+      "width": 1024,
+      "height": 768,
+      "mode": "beginner",
+      "step": 0,
+      "point": {
+        "x": 448,
+        "y": 319,
+        "index": 63
+      },
+      "geometry": {
+        "left": {
+          "x": 0,
+          "y": 49,
+          "width": 288,
+          "height": 719
+        },
+        "canvas": {
+          "x": 288,
+          "y": 123,
+          "width": 736,
+          "height": 645
+        },
+        "bodyWidth": 1024,
+        "visibleUtilityTargets": [
+          {
+            "id": "oprn-tool-undo",
+            "width": 88,
+            "height": 36,
+            "centerHit": true
+          }
+        ]
+      }
+    },
+    {
+      "event": "mode-retained",
+      "width": 1024,
+      "mode": "standard",
+      "step": 1
+    },
+    {
+      "event": "PASS",
+      "width": 1024,
+      "height": 768,
+      "mode": "standard",
+      "step": 1,
+      "point": {
+        "x": 488,
+        "y": 319,
+        "index": 64
+      },
+      "geometry": {
+        "left": {
+          "x": 0,
+          "y": 49,
+          "width": 300,
+          "height": 719
+        },
+        "canvas": {
+          "x": 306,
+          "y": 123,
+          "width": 718,
+          "height": 645
+        },
+        "bodyWidth": 1085,
+        "visibleUtilityTargets": [
+          {
+            "id": "selected-tile-reveal",
+            "width": 39.984375,
+            "height": 24,
+            "centerHit": true
+          },
+          {
+            "id": "palette-tileset-name",
+            "width": 101.59375,
+            "height": 24,
+            "centerHit": true
+          },
+          {
+            "id": "oprn-tool-undo",
+            "width": 28,
+            "height": 28,
+            "centerHit": true
+          },
+          {
+            "id": "auto-connect-mode-toggle",
+            "width": 40,
+            "height": 24,
+            "centerHit": true
+          }
+        ]
+      }
+    },
+    {
+      "event": "mode-retained",
+      "width": 1024,
+      "mode": "expert",
+      "step": 2
+    },
+    {
+      "event": "advanced-open-close",
+      "width": 1024,
+      "mode": "expert"
+    },
+    {
+      "event": "advanced-open-close",
+      "width": 1024,
+      "mode": "expert"
+    },
+    {
+      "event": "advanced-open-close",
+      "width": 1024,
+      "mode": "expert"
+    },
+    {
+      "event": "PASS",
+      "width": 1024,
+      "height": 768,
+      "mode": "expert",
+      "step": 2,
+      "point": {
+        "x": 530,
+        "y": 319,
+        "index": 65
+      },
+      "geometry": {
+        "left": {
+          "x": 0,
+          "y": 49,
+          "width": 320,
+          "height": 719
+        },
+        "canvas": {
+          "x": 326,
+          "y": 123,
+          "width": 698,
+          "height": 645
+        },
+        "bodyWidth": 1097,
+        "visibleUtilityTargets": [
+          {
+            "id": "selected-tile-reveal",
+            "width": 39.984375,
+            "height": 24,
+            "centerHit": true
+          },
+          {
+            "id": "palette-tileset-name",
+            "width": 109.59375,
+            "height": 24,
+            "centerHit": true
+          },
+          {
+            "id": "oprn-tool-undo",
+            "width": 28,
+            "height": 28,
+            "centerHit": true
+          },
+          {
+            "id": "oprn-tool-inspector",
+            "width": 76,
+            "height": 32,
+            "centerHit": true
+          },
+          {
+            "id": "toolbar-toggle-ruleAudit",
+            "width": 79.125,
+            "height": 32,
+            "centerHit": true
+          },
+          {
+            "id": "toolbar-toggle-history",
+            "width": 79.125,
+            "height": 32,
+            "centerHit": true
+          },
+          {
+            "id": "auto-connect-mode-toggle",
+            "width": 40,
+            "height": 24,
+            "centerHit": true
+          }
+        ]
+      }
+    },
+    {
+      "event": "mode-retained",
+      "width": 1024,
+      "mode": "beginner",
+      "step": 3
+    },
+    {
+      "event": "PASS",
+      "width": 1024,
+      "height": 768,
+      "mode": "beginner",
+      "step": 3,
+      "point": {
+        "x": 544,
+        "y": 319,
+        "index": 66
+      },
+      "geometry": {
+        "left": {
+          "x": 0,
+          "y": 49,
+          "width": 288,
+          "height": 719
+        },
+        "canvas": {
+          "x": 288,
+          "y": 123,
+          "width": 736,
+          "height": 645
+        },
+        "bodyWidth": 1024,
+        "visibleUtilityTargets": [
+          {
+            "id": "oprn-tool-undo",
+            "width": 88,
+            "height": 36,
+            "centerHit": true
+          }
+        ]
+      }
+    },
+    {
+      "event": "cleanup-context",
+      "width": 1024,
+      "closed": true
+    },
+    {
+      "event": "cleanup-browser",
+      "closed": true
+    }
+  ]
+}

@@ -11,6 +11,7 @@ import {
   resolveCommandListAtPath,
 } from "@/editor/eventCommandPaths";
 import { commandKindLabel } from "@/editor/panels/eventEditor/options";
+import { recordCommandToolbarChange } from "@/editor/panels/eventEditor/commandToolbarHistory";
 import { store, type ProjectChangeDescriptor } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId, Trigger } from "@/project/types";
 import { genId } from "@/util/id";
@@ -60,6 +61,7 @@ export function normalizeEventPage(page: Pick<EventPage, "id"> & Partial<EventPa
       type: movement?.type ?? "fixed",
       speed: typeof movement?.speed === "number" ? movement.speed : 3,
       frequency: typeof movement?.frequency === "number" ? movement.frequency : 3,
+      ...(movement?.sight ? { sight: movement.sight } : {}),
       ...(movement?.pursuit ? { pursuit: movement.pursuit } : {}),
       ...(movement?.route ? { route: movement.route } : {}),
       ...(movement?.living ? { living: movement.living } : {}),
@@ -314,13 +316,14 @@ export function addEventPageCommand(
 ): void {
   // 새 커맨드가 앉을 자리 = 현재 루트 리스트 길이. 라벨은 mutator 전에 굳으므로 먼저 센다.
   const slot = findPage(mapId, eventId, pageId)?.commands.length ?? 0;
-  store.update((project) => {
+  recordCommandToolbarChange(`${mapId}:${eventId}:${pageId}`,
+    () => findPage(mapId, eventId, pageId)?.commands ?? [], () => store.update((project) => {
     const page = project.maps[mapId]?.events
       .find((event) => event.id === eventId)
       ?.pages?.find((item) => item.id === pageId);
     if (!page) return;
     page.commands.push(structuredClone(command));
-  }, pageChange(mapId, eventId, `커맨드 추가: ${commandKindLabel(command.kind)} (#${slot})`));
+  }, pageChange(mapId, eventId, `커맨드 추가: ${commandKindLabel(command.kind)} (#${slot})`)));
 }
 
 export function addEventPageCommandAt(

@@ -2,6 +2,8 @@ import { renderActorM2CommandBody } from "./commandBodyM2Actor";
 import { renderPage3M2CommandBody } from "./commandBodyM2Page3";
 import { renderWeightedBranchCommandBody } from "./commandBodyWeightedBranch";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { listAudioResources } from "@/assets/audioResourceCatalog";
+import { audioDescriptionView, audioPlayback, audioPlaybackBadge } from "@/editor/panels/audioResourcePresentation";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
 import { SCREEN_COLOR_OPTIONS } from "@/project/eventCommands/m2ModernCatalog";
 import { screenColorToRgb } from "@/player/interpreter/commandCatalog";
@@ -485,10 +487,24 @@ function selectControl(
 
 function resourcePickerControl(request: ResourcePickerRequest): HTMLElement {
   const project = store.getCurrent();
-  const items = resourcePickerItems(project.resourceProfiles, Object.values(project.assets.uploaded), request.semantic.resourceKinds);
+  const audio = isAudioResourceSemantic(request.semantic);
+  const items: readonly ResourcePickerItem[] = audio
+    ? (["music", "sound"] as const)
+      .filter(kind => request.semantic.resourceKinds.has(kind))
+      .flatMap(kind => listAudioResources(kind, project))
+    : resourcePickerItems(project.resourceProfiles, Object.values(project.assets.uploaded), request.semantic.resourceKinds);
   const selectedItem = items.find((item) => item.id === request.value);
   const selectedName = selectedItem?.name ?? (request.value ? `목록에 없는 리소스: ${request.value}` : "선택 없음");
   const testIds = resourcePickerTestIds(request.key);
+  const name = el("div", {
+    class: "m2-resource-selected-name",
+    text: selectedName,
+    dataset: { testid: testIds.selectedName },
+  });
+  let preview = resourcePreview({
+    item: selectedItem, project, selectedName,
+    semantic: request.semantic, testId: testIds.preview, value: request.value,
+  });
   const select = el("select", {
     attrs: { "aria-label": request.semantic.label },
     dataset: { testid: testIds.picker },
@@ -501,18 +517,39 @@ function resourcePickerControl(request: ResourcePickerRequest): HTMLElement {
     select.append(el("option", { text: `${item.name} (${item.id})`, attrs: { value: item.id } }));
   }
   select.value = request.value;
-  select.addEventListener("change", () => updateField(request.context, request.cmd, request.key, select.value));
+  let selectedId = request.value;
+  if (audio) {
+    for (const option of select.querySelectorAll<HTMLOptionElement>("option")) option.disabled = audioPlayback(option.value, project).midi;
+  }
+  select.addEventListener("change", () => {
+    if (audio && audioPlayback(select.value, store.getCurrent()).midi) {
+      select.value = selectedId;
+      return;
+    }
+    selectedId = select.value;
+    updateField(request.context, request.cmd, request.key, select.value);
+    if (!audio) return;
+    const current = store.getCurrent();
+    const item = (["music", "sound"] as const)
+      .filter(kind => request.semantic.resourceKinds.has(kind))
+      .flatMap(kind => listAudioResources(kind, current))
+      .find(entry => entry.id === select.value);
+    const selectedName = item?.name ?? (select.value || "선택 없음");
+    name.textContent = selectedName;
+    const next = resourcePreview({
+      item, project: current, selectedName,
+      semantic: request.semantic, testId: testIds.preview, value: select.value,
+    });
+    preview.replaceWith(next);
+    preview = next;
+  });
 
   return el("div", {
     class: "m2-resource-picker",
     children: [
       select,
-      el("div", {
-        class: "m2-resource-selected-name",
-        text: selectedName,
-        dataset: { testid: testIds.selectedName },
-      }),
-      resourcePreview({ item: selectedItem, project, selectedName, semantic: request.semantic, testId: testIds.preview, value: request.value }),
+      name,
+      preview,
     ],
   });
 }
@@ -574,8 +611,11 @@ function recordPickerControl(request: RecordPickerRequest): HTMLElement {
 
 function optionsControl(request: OptionsControlRequest): HTMLSelectElement {
   const select = el("select", { attrs: { "aria-label": request.semantic.label }, dataset: { testid: `m2-command-${request.key}-option-select` } }) as HTMLSelectElement;
+  const legacyCue = request.key === "cue" && request.cmd.fields.cue === undefined
+    && (request.cmd.commandId === "m2-027-change-system-bgm" || request.cmd.commandId === "m2-028-change-system-se");
+  if (legacyCue) select.append(el("option", { text: "기존 메타데이터 (소리를 선택하면 적용)", attrs: { value: "", disabled: "" } }));
   for (const option of request.semantic.options) select.append(el("option", { text: option.label, attrs: { value: option.value } }));
-  select.value = request.value;
+  select.value = legacyCue ? "" : request.value;
   select.addEventListener("change", () => updateField(request.context, request.cmd, request.key, select.value));
   return select;
 }
@@ -618,11 +658,22 @@ function isAudioResourceSemantic(semantic: ResourceFieldSemantic): boolean {
 function resourcePreview(options: ResourcePreviewOptions): HTMLElement {
   // 오디오 필드는 그림 미리보기 우물을 만들지 않는다 — 빈 640x500 상자에 "그림을 고르세요" 는 거짓말.
   if (isAudioResourceSemantic(options.semantic)) {
+    const resourceId = options.item?.id ?? options.value;
+    const resource = (["music", "sound"] as const)
+      .filter(kind => options.semantic.resourceKinds.has(kind))
+      .flatMap(kind => listAudioResources(kind, options.project))
+      .find(entry => entry.id === resourceId);
     return el("div", {
       class: "m2-resource-audio-note",
       attrs: { "aria-label": "오디오 리소스 선택" },
-      dataset: { testid: options.testId, resourceId: options.item?.id ?? options.value },
-      text: options.value ? `선택한 음악: ${options.selectedName}` : "선택한 음악이 여기에 표시됩니다",
+      dataset: { testid: options.testId, resourceId },
+      children: [
+        el("div", {
+          text: options.value ? `선택한 음악: ${options.selectedName}` : "선택한 음악이 여기에 표시됩니다",
+        }),
+        audioDescriptionView(resource),
+        audioPlaybackBadge(resourceId, options.project),
+      ],
     });
   }
   const resourceId = options.item?.id ?? options.value;
@@ -712,6 +763,7 @@ function valueSemantic(title: string, project: ReturnType<typeof store.getCurren
 
 function resourceSemantic(title: string): ResourceFieldSemantic {
   if (title.includes("Battleback")) return { kind: "resource", label: "전투 배경 선택", resourceKinds: new Set(["backdrop"]) };
+  if (title === "Sound Layer") return { kind: "resource", label: "소리 선택", resourceKinds: new Set(["music", "sound"]) };
   if (title.includes("Picture")) return { kind: "resource", label: "그림 선택", resourceKinds: new Set(["picture"]) };
   if (title.includes("BGM")) return { kind: "resource", label: "배경음 선택", resourceKinds: new Set(["music"]) };
   if (title.includes("SE")) return { kind: "resource", label: "효과음 선택", resourceKinds: new Set(["sound"]) };

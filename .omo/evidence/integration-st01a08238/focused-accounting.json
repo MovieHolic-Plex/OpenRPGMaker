@@ -1,0 +1,153 @@
+{
+  "kind": "focused coverage with explicit file overlays, not a single all-green run",
+  "files": 67,
+  "counts": {
+    "passed": 1181,
+    "failed": 4
+  },
+  "coreFiles": [
+    "test/approachCorrection.test.ts",
+    "test/pr687VerificationIntegration.test.ts",
+    "test/canonicalAcceptanceOwnership.test.ts",
+    "test/sceneVerificationRepair.test.ts",
+    "test/verificationSelectionOwnership.test.ts",
+    "test/assistantVerificationEvidence.test.ts",
+    "test/aiStickyChecklist.test.ts",
+    "test/proposalCompleteness.test.ts",
+    "test/aiCompletionAccounting.test.ts",
+    "test/aiTurnAppliedAccounting.test.ts",
+    "test/transparentTileLayerRouting.test.ts"
+  ],
+  "coreCounts": {
+    "passed": 316
+  },
+  "failures": [
+    {
+      "file": "test/aiWorkItemStall.test.ts",
+      "name": "진행이 멈춘 항목은 사람에게 넘긴다 (a)(b) 같은 항목에서 연속 3번 헛되이 나가면 blocked 로 표시하고 턴을 끝낸다 — 드라이버도 멈춘다",
+      "report": "focused-final.json",
+      "baseline": "baseline-d2be-stall.json",
+      "assertionErrorBody": [
+        "AssertionError: expected 'in_progress' to be 'blocked' // Object.is equality"
+      ]
+    },
+    {
+      "file": "test/aiWorkItemStall.test.ts",
+      "name": "진행이 멈춘 항목은 사람에게 넘긴다 (a-2) 같은 쓰기 툴이 같은 이유로 반복 실패하면 Ralph 신호 없이도 막힌다",
+      "report": "focused-final.json",
+      "baseline": "baseline-d2be-stall.json",
+      "assertionErrorBody": [
+        "AssertionError: expected undefined to be truthy"
+      ]
+    },
+    {
+      "file": "test/aiWorkItemStall.test.ts",
+      "name": "진행이 멈춘 항목은 사람에게 넘긴다 (c) 사용자의 다음 메시지가 막힌 항목을 되살린다",
+      "report": "focused-final.json",
+      "baseline": "baseline-d2be-stall.json",
+      "assertionErrorBody": [
+        "AssertionError: expected 'in_progress' to be 'blocked' // Object.is equality"
+      ]
+    },
+    {
+      "file": "test/eventValidationNavigationContract.test.ts",
+      "name": "validation navigation at the rendered modal seam removes its document listener and layer immediately when the parent closes",
+      "report": "focused-final.json",
+      "baseline": "baseline-72f-navigation.json",
+      "assertionErrorBody": [
+        "AssertionError: expected 2 to be +0 // Object.is equality"
+      ]
+    }
+  ],
+  "newFailedAssertions": 0,
+  "unchangedFailingCaseBodies": true,
+  "changedFileDiagnostics": {
+    "files": 40,
+    "sourceErrors": 0,
+    "inheritedTestErrors": 20,
+    "newDiagnosticSignatures": 0
+  },
+  "reports": [
+    {
+      "name": "focused-final.json",
+      "sha256": "f41317f2659c3239711eef491510c844870a21b3bb1dd889446040f85eb1b525"
+    },
+    {
+      "name": "final-fixture-overlay.json",
+      "sha256": "ff102f9e091471db4b3ef57ed64057f157ce8f5875d39536392f49bfd22529c4"
+    },
+    {
+      "name": "soft-confirm-green.json",
+      "sha256": "e371134ce953f43790e840d0f0b3d473d7ed99d000ba8f31ce4bf6456e1da551"
+    }
+  ],
+  "sourceOverlay": {
+    "test/advisoryLintProvenance.test.ts": "final-fixture-overlay.json",
+    "test/aiAssistantSession.test.ts": "focused-final.json",
+    "test/aiChatSessionScope.test.ts": "focused-final.json",
+    "test/aiCompletionAccounting.test.ts": "focused-final.json",
+    "test/aiConversationHistoryModal.test.ts": "focused-final.json",
+    "test/aiConversationRemoteHistory.test.ts": "focused-final.json",
+    "test/aiLlmClient.test.ts": "focused-final.json",
+    "test/aiOutcomeContinuationDelivery.test.ts": "focused-final.json",
+    "test/aiRunEndProof.test.ts": "focused-final.json",
+    "test/aiSettingsHistoryFocus.test.ts": "focused-final.json",
+    "test/aiStickyChecklist.test.ts": "focused-final.json",
+    "test/aiTurnAppliedAccounting.test.ts": "focused-final.json",
+    "test/aiWorkItemStall.test.ts": "focused-final.json",
+    "test/approachCorrection.test.ts": "focused-final.json",
+    "test/assistantAcceptanceProvider.test.ts": "focused-final.json",
+    "test/assistantAcceptanceRequestBaseline.test.ts": "final-fixture-overlay.json",
+    "test/assistantAcceptanceSession.test.ts": "focused-final.json",
+    "test/assistantAuthoredBaseline.test.ts": "focused-final.json",
+    "test/assistantBackgroundReview.test.ts": "focused-final.json",
+    "test/assistantDependencyRetry.test.ts": "focused-final.json",
+    "test/assistantFunctionalReviewIntegration.test.ts": "focused-final.json",
+    "test/assistantIndependentReview.test.ts": "focused-final.json",
+    "test/assistantIndependentReviewCapacity.test.ts": "focused-final.json",
+    "test/assistantReviewApprovalLifecycle.test.ts": "focused-final.json",
+    "test/assistantReviewEvidenceOverflow.test.ts": "focused-final.json",
+    "test/assistantTilesetVisualReview.test.ts": "focused-final.json",
+    "test/assistantVerificationContinuation.test.ts": "focused-final.json",
+    "test/assistantVerificationEvidence.test.ts": "focused-final.json",
+    "test/assistantVisualEvidenceSession.test.ts": "focused-final.json",
+    "test/audioPreviewSession.test.ts": "focused-final.json",
+    "test/audioPreviewSurfaces.test.ts": "focused-final.json",
+    "test/authoredSoftConfirmReviewEquality.test.ts": "soft-confirm-green.json",
+    "test/authoredWorldReviewApplication.test.ts": "final-fixture-overlay.json",
+    "test/canonicalAcceptanceOwnership.test.ts": "focused-final.json",
+    "test/consumedApprovalReporting.test.ts": "focused-final.json",
+    "test/conversationStore.test.ts": "focused-final.json",
+    "test/devMediaPromotion.test.ts": "focused-final.json",
+    "test/eventValidationNavigationContract.test.ts": "focused-final.json",
+    "test/eventValidationRecoveryFields.test.ts": "focused-final.json",
+    "test/functionalPersistenceProof.test.ts": "focused-final.json",
+    "test/gameTitlePersistenceProof.test.ts": "focused-final.json",
+    "test/historyRecoveryAdmission.test.ts": "focused-final.json",
+    "test/independentReview.test.ts": "focused-final.json",
+    "test/independentReviewEvidenceScale.test.ts": "focused-final.json",
+    "test/independentReviewLinkedMaps.test.ts": "focused-final.json",
+    "test/independentReviewMapDeltas.test.ts": "focused-final.json",
+    "test/independentReviewReferenceScope.test.ts": "focused-final.json",
+    "test/mapConversationRemote.test.ts": "focused-final.json",
+    "test/mapConversationStore.test.ts": "focused-final.json",
+    "test/mediaImportDurability.test.ts": "focused-final.json",
+    "test/newProjectDialog.test.ts": "focused-final.json",
+    "test/nonHistoryIntegrationSeams.test.ts": "focused-final.json",
+    "test/npcRewardSession.test.ts": "focused-final.json",
+    "test/pr687VerificationIntegration.test.ts": "focused-final.json",
+    "test/projectWikiDelivery.test.ts": "focused-final.json",
+    "test/projectWikiHistorySources.test.ts": "focused-final.json",
+    "test/projectWikiTimeout.test.ts": "focused-final.json",
+    "test/proposalCompleteness.test.ts": "focused-final.json",
+    "test/runOutcomeApplyFixture.test.ts": "focused-final.json",
+    "test/sceneVerificationRepair.test.ts": "focused-final.json",
+    "test/storeDeferredLineage.test.ts": "focused-final.json",
+    "test/storePersistenceLineage.test.ts": "focused-final.json",
+    "test/storePersistenceProof.test.ts": "focused-final.json",
+    "test/toolSchemaProviderCompat.test.ts": "focused-final.json",
+    "test/transactionalRemoteSourceLineage.test.ts": "focused-final.json",
+    "test/transparentTileLayerRouting.test.ts": "focused-final.json",
+    "test/verificationSelectionOwnership.test.ts": "focused-final.json"
+  }
+}

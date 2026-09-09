@@ -1,3 +1,69 @@
+## Opening and game-over cinematics (2026-09-06)
+
+- Persisted opt-in fields are `system.opening?: CinematicSequence` and
+  `system.gameOver?: GameOverSettings`; see `runtime-project-schema.md` for strict
+  normalization/validation. No event-movie or ending behavior is repurposed.
+- `src/player/cinematicSequence.ts` exports
+  `playCinematicSequence({ host, project, sequence, signal })` returning
+  `{ done: Promise<"completed" | "skipped" | "aborted">, teardown() }`.
+  It is DOM-only and receives the project explicitly, so editor preview can use
+  the same player without a Phaser scene, global store or runtime session.
+  Disabled/empty/missing sequences leave the host untouched. `teardown` and abort
+  are idempotent; detached hosts also abort via a MutationObserver.
+- Confirm is Z/Enter/Space (not the legacy field E alias); Escape skips only an
+  authored skippable sequence. Window capture consumes the whole key event before
+  title/menu/Phaser handlers and ignores repeated confirm/skip/retry and IME actions.
+  ArrowUp/Down scroll narration by 24 logical pixels; PageUp/Down scroll 90% of its
+  visible height, and Home/End reach either end. Scrolling accepts OS repeat and
+  assigns scrollTop synchronously (browser-clamped), never advancing or falling
+  through to gameplay. A scrolling hint appears only for measured overflow;
+  a scene-owned ResizeObserver updates it on layout changes and disconnects on
+  cleanup, without polling or extra timers. Pointer interaction cannot advance.
+  Text is native textContent. Image motion is transform/opacity
+  only and has both JS and CSS reduced-motion paths; GIF/WebP use native images.
+- Image/text duration 0 waits for confirm. Positive duration advances exactly
+  once, including after media errors. Video `ended` advances naturally; positive
+  duration is its maximum. Video and narration pause, lose their sources and
+  call load() on advance, skip, error, abort or teardown. Old media events and
+  late play() rejections cannot affect a later scene. Blocked autoplay exposes
+  R retry and confirm continuation. Initial video loading and each R retry show
+  continuation and arm a fresh 10-second load deadline, cancelled by successful
+  playback or cleanup. Native `waiting`/unbuffered `stalled` events expose immediate
+  confirm continuation without releasing media; `playing` clears that status and
+  disables video continuation again. Buffered `stalled` alone does not unlock
+  healthy playback. There is no post-start playback-duration cap: only an authored
+  positive duration limits healthy video. Initial/retry waiting retains its load
+  deadline; repeated waiting events never extend it. Missing/broken video remains
+  continuable even when unskippable. Stall RED/GREEN and fault-injected exported
+  player evidence: `output/evidence/cinematics-stall.md`.
+- `player.ts` runs opening before preflight/map boot for title New Game, normal
+  autoStartRun and fresh restart. Loaded sessions, startOverride/test-here and
+  selected-event tests bypass it. stopGame cancels opening, and its controller
+  identity gates the async handoff; teardown also cancels pending title confirm.
+  Existing load/save/checkpoint paths remain separate from fresh-run opening.
+- `playSceneOverlays.ts` keeps `game-over-screen` mounted around both sequence and
+  terminal menu. Existing movement/time/minimap/shell consumers therefore stay
+  blocked without changing their selectors. It releases held input on entry;
+  per-host replacement plus scene shutdown/destroy detach playback, terminal
+  cursor listeners and DOM. Authored labels/background apply; an event message
+  takes precedence over the configured default, including explicit empty text.
+  Retry remains conditional on hasCheckpoint. Without a sequence/background the
+  legacy immediate panel and underlying-map presentation remain intact.
+- `runtime/playSurface.css` owns cinematic presentation in the shared `playerRuntime.css` closure
+  (exported player and editor). Uploaded video MIME resolution uses the existing
+  generatedAssetResourceResolver; no movie-command fallback behavior changed.
+- Proof: `cinematicSequence`, `playerCinematics`, `cinematicSettings` and the
+  existing title/checkpoint/defeat/run-controls tests. Run
+  `npm run qa:runtime -- --scenario cinematic-sequences` for actual `player.html`
+  behavior, not the editor shell. Its fixture generator uses a blank map and one
+  checkpoint/kill command pair, never a demo or remote DB project. The 5KB WebM
+  is a synthetic 32x24 color frame; narration is generated silent PCM WAV.
+  Scenario transitions subscribe to DOM/media events before actions and use
+  bounded deadlines, not sleeps/polling. It proves rejected autoplay/retry,
+  native ended, media errors, reduced motion, no input fallthrough, repeat,
+  checkpoint retry, repeated game over and host cleanup. Read SUMMARY.md first.
+  Evidence and the separately reproduced baseline CSS omission failure are in
+  `output/evidence/cinematics-p1/runtime.md`.
 ## Recovery ledger and scheduled failure ownership (2026-09-09)
 
 The player record menu exposes the recovery tab while `session.lifeRecovery.claims` remain, even when the authored life packages are disabled. Rows display exact claim items and unresolved details without simulating a collection transaction. Explicit activation uses `collectLifeRecoveryClaim`; unknown items and inventory-cap refusals retain the complete claim and inventory. Last action outcomes are presentation state, not persisted recovery rights.
@@ -126,11 +192,13 @@ Session state, save slots, farming, friendship, calendar, lighting, weather, fie
 - Focused integration coverage: `test/p1DayTransitionIntegration.test.ts`, `test/p1WeatherCalendar.test.ts`, `test/p1WeatherDayTransition.test.ts`, plus the P0 transition rollback/control-flow suites.
 - `lifeCalendarHudLines` derives compact runtime HUD lines from the same session/project authority: year/season/day/time, current weather, the authored number of future forecast days, and the nearest reachable character/event birthday. Birthdays beyond a custom `daysPerSeason` are omitted. `playSceneMapRuntime.syncRuntimeState` publishes these lines and `RuntimeDomOverlay` renders them as a bounded multiline glass panel.
 
-## Exact crop regrowth and zero yields (2026-09-06)
+## Event audio state (U14)
 
-A crop harvest with `harvestCount: 0` succeeds with zero items and retains the normal energy and automatic-XP transaction rules. `FarmPlotState.regrowDaysRemaining?: number` is absent until a successful regrowing harvest. Only living, in-season, watered growth ticks decrement it; zero means ready regardless of initial growthDays/stage. Initial growth and old plots retain their previous behavior without inferred harvest history. Refused harvests never initialize or reset the countdown. Clearing and non-regrowing harvests remove it with the crop.
-
-The existing growth stages project `max(0, totalInitialGrowthDays - regrowDaysRemaining)`, so a growth2/regrow10 crop matures only on its tenth qualifying tick. `cropStageForPlot` supplies the same countdown-derived stage to `renderFarmOverlays`; the final graphic remains reserved for maturity. Save writer/read/apply preserve remaining seven exactly, with no inferred regrowth on legacy plots. The existing extra-growth command and calendar cursor semantics are unchanged. Regression: `test/cropRegrowthContract.test.ts` plus the farming, save, XP and day-transition suites.
+- `playAudioCommand` forwards optional channel, normalized per-track `volume` and `fadeInMs` through the engine's unlock queue. Gain remains independent of user group-volume changes and survives loop-channel save parsing/resume. Omitted gain means 1, including same-track ordinary play and map entry; the engine resets an earlier layer gain without restarting the element, matching the omitted gain saved in session state. Explicit gains retain their prior meaning.
+- `BattleAudioSession.fieldBgm` retains the complete immutable `AudioTrackState`, including loop and volume. Battle exit restores that same track to both the engine and session, including volume 0 and same-track battles. Engine restore explicitly targets BGM, so a saved loop flag cannot redirect the request to SE.
+- Blocking and parallel scene consumers preserve the channel; native battle callbacks also carry playback options and the optional stop channel. A BGM-only stop leaves BGS/ME/SE session state and playback untouched.
+- System-audio overrides belong to `session.m2Runtime.system`, with only `system_audio:field`, `:battle`, `:defeat` and `:escape` persisted in the optional save `systemAudio` record. No project record is mutated, and old saves may omit it. The battle DOM/juice path receives its owning audio session explicitly; there is no module-global result override or enter/exit cleanup dependency.
+- Field overrides replace only the project fallback, never an explicit map/ancestor custom track or silence. Battle entry and result cues resolve their corresponding session override at consumption time. This repair does not expand unsupported M2 troop-command execution or unrelated battle result lifecycles.
 
 ## Session state & life-sim
 - **NPC 시간표 스로틀은 초과분을 이월한다 (2026-08-30, PR #286).** `npcSchedules.ts:59-61` 은 누산기를 0 으로 리셋하지 않고 `min(elapsed - TICK, TICK - 1)` 로 이월한다. 0 리셋은 실효 주기를 `ceil(TICK/frameMs) × frameMs` 로 늘려 프레임이 길어질 때 최대 2배가 된다(frameMs 99 → **198ms**) — 그 상황이 바로 이 스로틀이 겨냥한 큰 맵·다수 NPC 다. 이월은 한 주기 미만으로 잘라 오래 멈춘 뒤 몰아 돌지 않게 한다.
@@ -146,7 +214,7 @@ The existing growth stages project `max(0, totalInitialGrowthDays - regrowDaysRe
 - `src/project/dailyWeather.ts` is the P1 daily-weather authority. `resolveDailyWeatherForDate` hashes only the normalized session seed plus `calendarDayKey`, then samples the current season's bounded weighted rules with a local PRNG; it never reads or advances `session.rng.streams`. `dailyWeatherForecast` derives the next `forecastDays` days (tomorrow first), respects authored `daysPerSeason` across season/year boundaries, and stores nothing. Missing/disabled packages return no forecast, while an enabled empty/all-invalid/all-zero table resolves to `{kind:"none", intensity:0}`. `applyDailyWeatherForDate` writes only that one resolved date to `PlaySession.dailyWeather` and clears stale state when the package is disabled.
 - `src/player/farmingWeather.ts` owns the narrow weather-to-farming handoff. `waterFarmPlotsForDailyWeather` waters eligible non-dead tilled plots only when the resolved weather is positive-intensity rain/storm and its `dayKey` exactly matches the destination date. Day-transition integration must call `applyDailyWeatherForDate` and this helper after calendar advance but before `syncFarmPlotsToDate`; stale saved weather is a no-op. The helper is intentionally separate from `dayTransition.ts` until the integration owner updates the transition receipt/stage contract.
 - **P1 farm-animal runtime authority (2026-08-25):** `src/project/farmAnimals.ts` is the deterministic session-only authority for compatible building assignment/moves, feed, pet, daily production, and ready-product collection. Every operation validates species/building/item references plus the complete live herd before mutation. Assignment excludes the moving animal from destination capacity; feed consumes the species feed item before stamping its canonical day receipt; pet clamps friendship to 1000; both reject a repeated/future day and late care after that day's production cursor. Daily advance preflights the whole pending herd, requires both same-day feed and pet receipts to advance cadence, pauses progress on missed care, stamps `lastAdvancedDayKey` exactly once, and rejects any product-count overflow without advancing another animal. Collection preflights the destination stack and commits inventory plus `readyProductCount=0` together. Empty authored arrays are a successful no-op package. `dayTransition.ts` runs this as the final `animals` stage for the source-day care key, after makers; failure discards the complete draft and reports `{reason:"animals", stage:"animals"}`. PlayScene care UI is a separate surface.
-- Farm interactions simulate the full target area on a session draft, then charge `ceil(successfulTiles * energyMultiplier)`. When `system.skillSystem?.enabled === true`, they award 10 XP per successful crop harvest, rock mine, or tree chop to the matching authored life skill. Disabled/omitted skill progression skips only automatic XP, without blocking valid farm, fishing, or seasonal-forage rewards. Explicit XP APIs retain their disabled failures. Enabled invalid progress or reward references still roll back the entire transaction, including inventory, energy, owners and RNG. Fishing minSkill qualification is unchanged. `system.itemUpgrades[].capability` supplies the equipped upgraded tool's centered `areaWidth` / `areaHeight` and energy multiplier; legacy/no-capability tools remain 1x1 / 1.0. `system.craftRecipes[].requiresUnlock:true` gates both `canCraft` and `craftRecipe` on `session.unlockedRecipeIds`.
+- Farm interactions simulate the full target area on a session draft, then charge `ceil(successfulTiles * energyMultiplier)` and award 10 XP per successful crop harvest, rock mine, or tree chop to the matching authored life skill. Insufficient energy or invalid life-skill progress commits no tile, placeable, inventory, energy, or XP mutation. `system.itemUpgrades[].capability` supplies the equipped upgraded tool's centered `areaWidth` / `areaHeight` and energy multiplier; legacy/no-capability tools remain 1x1 / 1.0. `system.craftRecipes[].requiresUnlock:true` gates both `canCraft` and `craftRecipe` on `session.unlockedRecipeIds`.
 - The optional status-menu record command `생활 장부` is visible when at least one life-sim package is authored. Legacy P0/P1 projects keep the keyboard/pointer-accessible `출하`, `꾸러미`, `생활 기술`, `가공 설비`, and `동물 돌봄` tabs; authored P2 projects append `수집 도감` and `박물관`. The collection tab summarizes discovered/shipped/caught/donated state with the generated `foraging-card.png`; museum actions invoke `donateMuseumItem`, so inventory consumption, collection state, and all newly qualified exact-once rewards commit atomically. Long names wrap; empty/deleted-definition rows remain readable and non-mutating.
 - P2 runtime authorities are `fishing.ts`, `seasonalForage.ts`, `collections.ts`, and `museum.ts`. Fishing preview never consumes RNG; a successful catch commits the dedicated fishing cursor, energy, inventory, caught/discovered counters, and XP together. Daily forage placement is statelessly derived from seed + day key, stored as generated placeables, cleaned at season/expiry boundaries, and advanced inside the canonical day transition. Shipment settlement is the only authority that increments shipped counts; donation receipts prevent reward replay.
 
@@ -247,9 +315,3 @@ Esc 메뉴의 대상 유지·회복량 미리보기와 메뉴 입력 회귀 수�
 
 
 #593 후속 커밋은 선택 행에 공통 규칙과 같은 `border-radius: 3px`, `margin: 0`, `min-height: 0` 및 `bottom: auto`를 명시한다. 따라서 CSS 실사용 기준선은 상점 PR의 원래 기준선을 유지하며 메뉴의 속성 누락 검사는 통과한다.
-
-## Maker clock deadlines (2026-09-06)
-
-`syncMakersToGameTime` in `src/project/makers.ts` uses the existing authored active-day absolute-minute clock. `advanceTimeAcrossDayBoundaries` and `setTimeWithMakers` reconcile on a draft at the prior clock, change time, synchronize deadlines, and commit together. Zero-minute advances do not replace owners. Ready jobs never regress on backward set-time. Definition edits preserve frozen contracts; cancellation still uses the original time basis and never infers legacy spent inputs.
-
-`updateGameTime` processes a frame's completed game minutes atomically, retains menu/battle/cutscene pause, and preserves the last completed fixed-step clock for forced-sleep hooks. A failed forced sleep or later authored-day stage restores the operation's session. The headless runner shares minute/set-time authorities, retains its existing day-end hook policy, and preserves residual minutes when starting exactly at day end. Regression: `test/makerClockIntegration.test.ts`.

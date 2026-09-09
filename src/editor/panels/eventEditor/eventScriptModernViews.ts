@@ -17,7 +17,9 @@ import { auxCompositeKey } from "./auxOpenController";
 import { commandCategoryVisual } from "./commandCategoryIcons";
 import { renderCommandPreview } from "./commandPreview";
 import { commandSummary } from "./commandSummary";
-import { simulatePageCommands, type SimulatedStep, type ActiveFace } from "./previewSimulation";
+import { commandKindLabel } from "./options";
+import { renderEditorIcon, type EditorIconName } from "./editorIcons";
+import { simulatePageCommands, type SimulatedStep } from "./previewSimulation";
 
 export type EventScriptModernViewsOptions = {
   readonly mapId: MapId;
@@ -64,14 +66,86 @@ export function renderEventPagePreview(options: EventScriptModernViewsOptions): 
   const caption = el("div", { class: "event-script-live-caption", dataset: { testid: "event-script-live-caption" } });
   const position = el("span", { class: "event-script-live-position" });
 
+  stage.setAttribute("role", "region");
+  stage.setAttribute("aria-label", "미리보기 내용 · 긴 내용은 스크롤하여 확인");
+  stage.setAttribute("tabindex", "0");
+  const contextBody = el("div", { class: "event-script-live-context-body", attrs: {
+    tabindex: "0", role: "region", "aria-label": "전체 명령 및 분기 맥락",
+  } });
+  const context = el("details", { class: "event-script-live-context", children: [
+    el("summary", { attrs: { "aria-label": "전체 명령 및 분기 맥락 보기" }, children: [
+      el("span", { text: "전체 맥락 보기 · 긴 미리보기는 위 무대에서 스크롤", class: "event-script-live-context-label" }), caption,
+    ] }),
+    contextBody,
+  ] });
+  const status = el("span", { class: "event-script-live-status", attrs: {
+    role: "status", "aria-live": "polite", "aria-atomic": "true",
+  } });
+  // Observe removal only while playing. View/page replacement and modal close all
+  // remove this panel; a detached panel must neither advance nor announce.
+  let removalObserver: MutationObserver | null = null;
+
+  const stopPlayback = () => {
+    if (playTimer !== null) clearInterval(playTimer);
+    playTimer = null;
+    removalObserver?.disconnect();
+    removalObserver = null;
+  };
+
+  const control = (action: string, label: string, icon: EditorIconName, click: () => void) => el("button", {
+    class: "btn event-script-transport-button",
+    attrs: { type: "button" }, dataset: { testid: `event-script-live-${action}` },
+    children: [renderEditorIcon(icon), el("span", { text: label })], on: { click },
+  }) as HTMLButtonElement;
+  const moveTo = (next: number) => { stopPlayback(); index = next; renderStep(); };
+  const previous = control("prev", "이전", "arrowLeft", () => moveTo(Math.max(0, index - 1)));
+  const next = control("next", "다음", "arrowRight", () => moveTo(Math.min(steps.length - 1, index + 1)));
+  const restart = control("restart", "처음으로", "refresh", () => moveTo(0));
+  const playButton = control("play", "자동 재생", "play", () => {
+    if (playTimer !== null) {
+      stopPlayback();
+      renderControls();
+      return;
+    }
+    const replay = index === steps.length - 1;
+    if (replay) index = 0;
+    playTimer = setInterval(() => {
+      if (!panel.isConnected) { stopPlayback(); return; }
+      index += 1;
+      if (index === steps.length - 1) stopPlayback();
+      renderStep();
+    }, 1200);
+    removalObserver = new MutationObserver(() => {
+      if (!panel.isConnected) stopPlayback();
+    });
+    removalObserver.observe(document.body, { childList: true, subtree: true });
+    if (replay) renderStep();
+    else renderControls();
+  });
+  const renderControls = () => {
+    const focused = document.activeElement;
+    previous.disabled = index === 0;
+    next.disabled = index === steps.length - 1;
+    restart.disabled = index === 0 && playTimer === null;
+    playButton.disabled = steps.length < 2;
+    playButton.setAttribute("aria-pressed", String(playTimer !== null));
+    playButton.replaceChildren(renderEditorIcon(playTimer !== null ? "pause" : "play"), el("span", {
+      text: playTimer !== null ? "일시정지" : index === steps.length - 1 && steps.length > 1 ? "처음부터 재생" : "자동 재생",
+    }));
+    // Native disabling can blur the active button. Only that transition needs a
+    // fallback; ordinary navigation and background refresh never move focus.
+    if ([previous, next, restart, playButton].some(button => button === focused && button.disabled)) {
+      [next, previous, playButton].find(button => !button.disabled)?.focus();
+    }
+  };
+
   const renderStep = () => {
     stepByPage.set(key, index);
     const step = steps[index];
     if (!step) return;
     clearChildren(stage);
-    const activeFace = trackFace(steps, index, key);
     stage.append(renderCommandPreview(step.command, {
-      face: activeFace,
+      face: step.simState.face,
       simState: step.simState,
       hostEventId,
       forkTaken: step.forkTaken,
@@ -80,111 +154,25 @@ export function renderEventPagePreview(options: EventScriptModernViewsOptions): 
     const branch = step.branchLabel ? `[${step.branchLabel}] ` : "";
     const skipMark = step.skipped ? " (건너뜀)" : "";
     caption.textContent = `${branch}${commandSummary(step.command)}${skipMark}`;
+    contextBody.textContent = caption.textContent;
     position.textContent = `${index + 1}/${steps.length}`;
+    const branchExcerpt = step.branchLabel ? ` [${step.branchLabel.slice(0, 60)}${step.branchLabel.length > 60 ? "…" : ""}]` : "";
+    status.textContent = `${index + 1}/${steps.length} · ${commandKindLabel(step.command.kind)}${branchExcerpt}${skipMark}`;
+    status.dataset.current = String(index + 1);
+    status.dataset.total = String(steps.length);
+    stage.scrollTop = 0;
+    contextBody.scrollTop = 0;
+    renderControls();
   };
-
-  const stopPlayback = () => {
-    if (playTimer !== null) clearInterval(playTimer);
-    playTimer = null;
-    playButton.textContent = "자동 재생";
-    playButton.setAttribute("aria-pressed", "false");
-  };
-
-  const playButton = el("button", {
-    class: "btn small",
-    text: "자동 재생",
-    attrs: { type: "button", "aria-pressed": "false" },
-    dataset: { testid: "event-script-live-play" },
-    on: {
-      click: () => {
-        if (playTimer !== null) {
-          stopPlayback();
-          return;
-        }
-        playButton.textContent = "정지";
-        playButton.setAttribute("aria-pressed", "true");
-        playTimer = setInterval(() => {
-          if (!panel.isConnected || index >= steps.length - 1) {
-            stopPlayback();
-            return;
-          }
-          index += 1;
-          renderStep();
-        }, 1200);
-      },
-    },
-  }) as HTMLButtonElement;
 
   const controls = el("div", {
     class: "event-script-live-controls",
-    children: [
-      el("button", {
-        class: "btn small",
-        text: "이전",
-        attrs: { type: "button" },
-        dataset: { testid: "event-script-live-prev" },
-        on: {
-          click: () => {
-            stopPlayback();
-            index = Math.max(0, index - 1);
-            renderStep();
-          },
-        },
-      }),
-      el("button", {
-        class: "btn small",
-        text: "다음",
-        attrs: { type: "button" },
-        dataset: { testid: "event-script-live-next" },
-        on: {
-          click: () => {
-            stopPlayback();
-            index = Math.min(steps.length - 1, index + 1);
-            renderStep();
-          },
-        },
-      }),
-      playButton,
-      position,
-    ],
+    children: [previous, next, restart, playButton, position],
   });
 
-  panel.append(controls, stage, caption);
+  panel.append(controls, stage, context, status);
   renderStep();
   return panel;
-}
-
-const faceCacheByPage = new Map<string, Map<number, ActiveFace | undefined>>();
-
-function trackFace(steps: readonly SimulatedStep[], uptoIndex: number, cacheKey?: string): ActiveFace | undefined {
-  if (cacheKey) {
-    const cache = faceCacheByPage.get(cacheKey);
-    if (cache) {
-      const cached = cache.get(uptoIndex);
-      if (cached !== undefined || cache.has(uptoIndex)) return cached;
-    }
-  }
-  for (let i = uptoIndex; i >= 0; i--) {
-    const step = steps[i];
-    if (!step) continue;
-    if (step.command.kind === "changeFace" && step.command.resourceId) {
-      const face = { resourceId: step.command.resourceId };
-      if (cacheKey) {
-        if (!faceCacheByPage.has(cacheKey)) faceCacheByPage.set(cacheKey, new Map());
-        faceCacheByPage.get(cacheKey)!.set(uptoIndex, face);
-      }
-      return face;
-    }
-  }
-  if (cacheKey) {
-    if (!faceCacheByPage.has(cacheKey)) faceCacheByPage.set(cacheKey, new Map());
-    faceCacheByPage.get(cacheKey)!.set(uptoIndex, undefined);
-  }
-  return undefined;
-}
-
-export function invalidateFaceCache(cacheKey: string): void {
-  faceCacheByPage.delete(cacheKey);
 }
 
 export function flattenScript(commands: readonly Command[]): readonly SimulatedStep[] {

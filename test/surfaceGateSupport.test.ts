@@ -170,6 +170,145 @@ describe("표면 게이트 공용 계약", () => {
     expect(JSON.parse(readFileSync(floor, "utf8"))).toEqual(before);
   });
 
+  // ── 개별 하한선 하락 차단 (실측된 구멍) ─────────────────────────────────────────────
+  // 갱신 모드는 항목별 비교보다 먼저 쓰기 분기를 타서 가드가 "총합 0"과 "총합 10% 미만"
+  // 둘뿐이었다. 지표 하나가 1 → 0 으로 내려가는 것은 두 가드를 모두 통과한다.
+  // 실제로 커밋 프로브 축에서 commitCount 가 4종에서 1 → 0, playMovie 에서 3 → 2 로 조용히
+  // 낮아졌고, 그 4종이 바로 그때 결함을 잡고 있던 항목이었다.
+  it("갱신 모드가 개별 하한선을 1 → 0 으로 낮추지 못한다 — 총합 가드를 통과하는 소규모 열화", () => {
+    const { baseline, floor } = tempPaths();
+    // 총합 101 → 100: 0도 아니고 10% 미만도 아니다. 예전 가드는 여기서 파일을 썼다.
+    const before = { alpha: { commitCount: 1, probeCount: 100 } };
+    writeFileSync(floor, `${JSON.stringify(before)}\n`);
+
+    const message = withEnv(
+      { CI: undefined, SURFACE_FLOOR_UPDATE: "1", TEST_AXIS_UPDATE: undefined },
+      () =>
+        failureMessage(() =>
+          assertSurfaceGate({
+            axis: "테스트축",
+            baselinePath: baseline,
+            floorPath: floor,
+            updateEnv: "TEST_AXIS_UPDATE",
+            actual: { alpha: { commitCount: 0, probeCount: 100 } },
+            diff: () => [],
+            metrics: (surface: { commitCount: number; probeCount: number }) => ({ ...surface }),
+          })
+        )
+    );
+    expect(message, "무엇이 내려가는지 지목하지 않는다").toContain("하한선 하락: alpha.commitCount 1 → 0");
+    expect(message).toContain("개별 하한선 1건이 내려간다");
+    // 핵심: 하한선 파일이 그대로다. 갈렸다면 그 뒤로는 commitCount 0 이 영구 합법이 된다.
+    expect(JSON.parse(readFileSync(floor, "utf8"))).toEqual(before);
+  });
+
+  it("내려가는 지표를 항목·지표 단위로 **전부** 열거한다 — 하나만 말하고 끝내지 않는다", () => {
+    const { baseline, floor } = tempPaths();
+    writeFileSync(
+      floor,
+      `${JSON.stringify({
+        alpha: { commitCount: 1, probeCount: 1 },
+        beta: { commitCount: 3 },
+        gamma: { commitCount: 5 },
+      })}\n`
+    );
+    const message = withEnv(
+      { CI: undefined, SURFACE_FLOOR_UPDATE: "1", TEST_AXIS_UPDATE: undefined },
+      () =>
+        failureMessage(() =>
+          assertSurfaceGate({
+            axis: "테스트축",
+            baselinePath: baseline,
+            floorPath: floor,
+            updateEnv: "TEST_AXIS_UPDATE",
+            // alpha.commitCount 하락 + beta 하락 + gamma 는 상승(보고에 없어야 한다).
+            actual: {
+              alpha: { commitCount: 0, probeCount: 1 },
+              beta: { commitCount: 2 },
+              gamma: { commitCount: 9 },
+            },
+            diff: () => [],
+            metrics: (surface: Record<string, number>) => ({ ...surface }),
+          })
+        )
+    );
+    expect(message).toContain("하한선 하락: alpha.commitCount 1 → 0");
+    expect(message).toContain("하한선 하락: beta.commitCount 3 → 2");
+    expect(message, "오르는 지표를 하락으로 오보한다").not.toContain("gamma");
+    expect(message).toContain("개별 하한선 2건이 내려간다");
+  });
+
+  it("항목이 통째로 사라지는 갱신도 거부한다 — 그 항목의 하한선 전부가 지워진다", () => {
+    const { baseline, floor } = tempPaths();
+    const before = { alpha: { count: 4 }, beta: { count: 4 } };
+    writeFileSync(floor, `${JSON.stringify(before)}\n`);
+    const message = withEnv(
+      { CI: undefined, SURFACE_FLOOR_UPDATE: "1", TEST_AXIS_UPDATE: undefined },
+      () =>
+        failureMessage(() =>
+          assertSurfaceGate({
+            axis: "테스트축",
+            baselinePath: baseline,
+            floorPath: floor,
+            updateEnv: "TEST_AXIS_UPDATE",
+            actual: { alpha: { count: 4 } },
+            diff: diffCount,
+            metrics,
+          })
+        )
+    );
+    expect(message).toContain("beta — 항목이 축에서 사라져 하한선이 통째로 지워진다 (count=4)");
+    expect(JSON.parse(readFileSync(floor, "utf8"))).toEqual(before);
+  });
+
+  it("전부 오르거나 같으면 갱신을 그대로 통과시킨다 — 하락 가드가 상승을 막지 않는다", () => {
+    // 과잉 차단 검증. 이게 없으면 "하락 차단"이 하한선 인상 자체를 막는지 알 수 없다.
+    const { baseline, floor } = tempPaths();
+    writeFileSync(floor, `${JSON.stringify({ alpha: { count: 4 }, beta: { count: 4 } })}\n`);
+    const message = withEnv(
+      { CI: undefined, SURFACE_FLOOR_UPDATE: "1", TEST_AXIS_UPDATE: undefined },
+      () =>
+        failureMessage(() =>
+          assertSurfaceGate({
+            axis: "테스트축",
+            baselinePath: baseline,
+            floorPath: floor,
+            updateEnv: "TEST_AXIS_UPDATE",
+            // 하나는 오르고 하나는 그대로 + 새 항목까지. 전부 허용이다.
+            actual: { alpha: { count: 9 }, beta: { count: 4 }, gamma: { count: 1 } },
+            diff: diffCount,
+            metrics,
+          })
+        )
+    );
+    // 갱신 자체는 설계상 "리뷰 요청"이라 빨갛지만, 하한선 파일은 실제로 갈려 있어야 한다.
+    expect(message).toContain("하한선 파일을 갱신했다");
+    expect(JSON.parse(readFileSync(floor, "utf8"))).toEqual({
+      alpha: { count: 9 },
+      beta: { count: 4 },
+      gamma: { count: 1 },
+    });
+  });
+
+  it("하한선 파일이 없으면 하락 판정 대상이 없다 — 첫 생성은 개별 0 을 허용한다", () => {
+    // 부트스트랩 경로를 하락 가드가 삼키면 새 축을 만들 수 없다(비교할 이전 값이 없다).
+    const { baseline, floor } = tempPaths();
+    withEnv({ CI: undefined, SURFACE_FLOOR_UPDATE: "1", TEST_AXIS_UPDATE: undefined }, () =>
+      failureMessage(() =>
+        assertSurfaceGate({
+          axis: "테스트축",
+          baselinePath: baseline,
+          floorPath: floor,
+          updateEnv: "TEST_AXIS_UPDATE",
+          actual: { alpha: { count: 0 }, beta: { count: 7 } },
+          diff: diffCount,
+          metrics,
+        })
+      )
+    );
+    expect(JSON.parse(readFileSync(floor, "utf8"))).toEqual({ alpha: { count: 0 }, beta: { count: 7 } });
+  });
+
   it("하한선 위반 메시지가 기준선 diff 도 함께 싣는다 — 개수만 말하고 끝내지 않는다", () => {
     // 실측된 결함: 하한선 단정이 먼저 던져서 사람이 «classCount 30 < 31» 만 보고 무엇이
     // 줄었는지는 못 봤다(소스 변이 감사에서 "빨갛지만 무언"으로 잡혔다).

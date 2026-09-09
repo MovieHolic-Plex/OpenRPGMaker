@@ -1,0 +1,115 @@
+{
+  "status": "PASS",
+  "results": [
+    {
+      "id": "restored-A",
+      "status": "PASS",
+      "source": "/tmp/event-command-u03-Y3cP2Q/fixtures/restored-A.json",
+      "sha256": "fa7ca4cc70dec280977ff12fecb6977e9fb5b7ad49401d7fc15acdf194d5c153",
+      "authored": {
+        "kind": "transfer",
+        "mapId": "mapA",
+        "x": 2,
+        "y": 3,
+        "direction": "left",
+        "fade": "black",
+        "transition": "fade"
+      },
+      "surface": {
+        "url": "http://127.0.0.1:38283/player.html",
+        "editor": false,
+        "canvas": true,
+        "pending": false,
+        "sprite": {
+          "textureKey": "tex_easyrpg_charset_actor1",
+          "frame": 37,
+          "resourceId": "easyrpg-charset-actor1",
+          "kind": "charset",
+          "moving": false,
+          "x": 40,
+          "y": 64
+        },
+        "direction": "left"
+      },
+      "negative": {
+        "status": "timeout",
+        "before": [
+          {
+            "value": "mapA"
+          }
+        ],
+        "after": [
+          {
+            "value": "mapA"
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        },
+        "error": "eventCommand observation timed out"
+      },
+      "remoteWrites": [],
+      "positiveBeats": 2
+    },
+    {
+      "id": "direction-up",
+      "status": "PASS",
+      "source": "/tmp/event-command-u03-Y3cP2Q/fixtures/direction-up.json",
+      "sha256": "00950558a4b6065c827a4fb79c369b4c98c2a02a6487d9eef325c23b0409b9b4",
+      "authored": {
+        "kind": "transfer",
+        "mapId": "mapA",
+        "x": 2,
+        "y": 3,
+        "direction": "up",
+        "fade": "black",
+        "transition": "fade"
+      },
+      "surface": {
+        "url": "http://127.0.0.1:38283/player.html",
+        "editor": false,
+        "canvas": true,
+        "pending": false,
+        "sprite": {
+          "textureKey": "tex_easyrpg_charset_actor1",
+          "frame": 1,
+          "resourceId": "easyrpg-charset-actor1",
+          "kind": "charset",
+          "moving": false,
+          "x": 40,
+          "y": 64
+        },
+        "direction": "up"
+      },
+      "negative": {
+        "status": "timeout",
+        "before": [
+          {
+            "value": "mapA"
+          }
+        ],
+        "after": [
+          {
+            "value": "mapA"
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        },
+        "error": "eventCommand observation timed out"
+      },
+      "remoteWrites": [],
+      "positiveBeats": 2
+    }
+  ]
+}

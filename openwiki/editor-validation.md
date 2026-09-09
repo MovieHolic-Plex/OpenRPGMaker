@@ -1,5 +1,136 @@
 # Editor Validation Expectations
 
+## Event validation location and UNSENT handoff (issue 693, 2026-09-08)
+
+- The existing aggregate validator enriches issues with cause, expected value, correction
+  hint and form locators. Index-based command paths are recalculated on every validation;
+  repeated fork conditions additionally carry `conditionPath`. Native/M2 record pickers,
+  coordinate axes and command movement steps use the existing form anchors.
+- Bell navigation first reveals/selects the command, then focuses its inspector field.
+  The shared custom-select enhancer transfers an already-focused native select to its
+  trigger when reparenting it; no delayed focus job or polling is used.
+- Copy offers Markdown/JSON from one `eventValidationDiagnosticReport` projection. It
+  includes current-event errors only: rule-owned text, page ordinals, numeric paths and
+  generated field anchors, never authored names/values, raw messages, logs or project data.
+  This is separate from opt-in session diagnostics/export and needs no session recording.
+- Ask local assistant minimizes (retains) the event editor and appends an editable UNSENT
+  report through `prefillAiAssistantInput(..., {preserveDraft:true})`. Existing composer
+  bytes survive. No send hook is called; an unavailable target restores the editor.
+- `changeLifeSkillExp` renders its existing schema fields rather than an empty inspector.
+  Native `spawnFieldEnemy` now adds only the validation-recovery fields to the existing
+  command-form chain: troop, optional kill switch/graphic ID and area X/Y/W/H. Staged
+  edits and optional clears preserve all other spawn/graphic data; rendering writes nothing.
+- Page custom-route locators carry `openTestId`, `scopeTestId` and `selectTestId`. Navigation
+  opens the existing route dialog, selects the exact current step and focuses its parameter.
+  Explicit selection of switch/graphic/sound/NPC-transfer steps populates the existing
+  parameter panel and edits only that local step. Initial/appended selection keeps the
+  insertion-template behavior; route OK/Cancel remains the only commit/discard boundary.
+  Export includes the generated step selection anchor, never its authored values.
+- Focused contracts: `eventValidationDiagnostics`, `eventValidationFieldAnchors`,
+  `eventValidationSelectFocus`, `eventValidationNavigationContract`, `eventValidationRecoveryFields`, `aiBootIntent`.
+  Replay: `QA_BASE_URL=http://127.0.0.1:<isolated-port> node scripts/qa/issue693-validation.mjs`.
+  It asserts disabled remote persistence, uses real editor/store/composer surfaces, and
+  captures 1024/1280/1440 geometry and identical sanitized clipboard formats. Its local
+  GET relay forwards actual Vite bytes to avoid workstation Chromium network-change errors.
+  The replay includes `issue693-validation-recovery.mjs`: real spawn/route corrections,
+  Cancel, preserved unrelated data and successful Save, with 45 exact field-focus viewport
+  checks across all three sizes. It uses installed Chrome (`QA_BROWSER_CHANNEL`, default
+  `chrome`); set `QA_OUTPUT` under `/dev/shm` on disk-constrained workstations.
+
+## AI blocked-event relocation recovery (2026-09-06)
+
+- `projectLint` now distinguishes known characters from interaction objects. A character's
+  passage footprint must be passable (`event-character-impassable`, warning); a fixed
+  wall-mounted door/sign remains valid when it has a reachable external approach.
+  Blocking same-priority objects cannot use their own floor tile as proof of accessibility.
+  Movable entities also need a legal footprint-aware step (`event-immobile`, warning).
+  Ordinary post-write lint checks interaction positions against the start component
+  when available, so enclosing an NPC/object without painting its own tile and
+  disconnecting a floor pocket both produce advisory diagnostics.
+  Character evidence includes `placementRole: "npc"`, social identity, schedule,
+  movement/pushability, or bundled RTP people/actor/animal/monster sheets. `place_npc`
+  stamps the optional persisted role, so fixed NPCs retain their semantics after a
+  graphic replacement with an uploaded charset and save/reload. It does not assign
+  a social `characterId`. Unknown legacy fixed custom sprites remain unclassified;
+  neither custom sprites nor RTP object sheets alone are character evidence.
+- Blocked-character, sealed-event, steppable-event and footprint diagnostics include
+  `eventId` and `relocation: { eventId, searchRadius: 3, candidates }`. Each candidate
+  is `{ name: "move_event", args: { mapId, eventId, x, y, from? } }`. Candidates preserve the
+  full passage footprint, avoid other event bodies and the resolved player-start
+  **body** (including 3x3), and require a usable interaction position. Character
+  candidates additionally need a real `canMoveFootprint` step, with directional
+  passage and `passRows`; a 2x2 pocket with a one-cell player corridor is not enough.
+  On the start map (or an explicit lint reachability check), interaction positions
+  must belong to the entry's tile-reachable component. Explicit
+  `run_lint({reachability})` failures at event anchors receive the same recovery data.
+- Candidates carry the analyzed entry as `from: { x, y }` whenever one is known,
+  including explicit `reachability[].from`. `move_event` declares this optional
+  coordinate object and validates its integer coordinates, map bounds and current
+  terrain passability before forwarding it to destination validation. Invalid or
+  now-blocked explicit origins fail rather than silently reverting to the project
+  start. Omitting `from` retains the existing start-map/default-local behavior.
+  Candidates analyzed without a usable default entry omit `from`; identical known
+  origins still share their candidate list and BFS within one lint invocation.
+  `scripts/prove-ai-relocation-recovery.mts --explicit-origin` exercises the public
+  paint/lint/move/scene chain across a full-height divider, preserving the exact
+  candidate coordinates and activating the authored switch from the explicit side.
+- Destination reservations and traversal blockers are separate. Reservations still
+  cover every event's full body, including nonblocking events, to prevent stale
+  recommendations from stacking authored entities. Interaction approaches and NPC
+  movement instead use first-page passage rectangles only for `priority: "same"`
+  with `overlapForbidden !== false` (the runtime default is true). A below-priority
+  event, overlap-allowed event, or passRows overhang on a wall sign's sole approach
+  must not make that sign inaccessible. NPC traversal also tests its own passage,
+  not its reserved body; player-start destination protection still uses the full body.
+- Interaction checks are trigger-aware. Nonblocking `touch`/`playerTouch` events
+  require a reachable cell overlapping their trigger body, not merely reachable
+  external adjacency. With no known origin, a legal incoming tile step is required.
+  Blocking collision triggers need a legal incoming bump; action signs can still be
+  inspected without traversing the wall itself. The same check owns lint, candidate
+  advice and `move_event` execution, including directional passage dead ends.
+- These are bounded static suggestions, not proof of a runtime playthrough. Tile BFS
+  retains the existing event-ignoring semantics; conditional pages, scheduled destinations
+  and connectivity through other maps are not simulated. Maps without an entry only
+  receive local candidates. No safe candidate means an empty array, not fabricated
+  coordinates or permission to carve a completed building.
+- `commitChangeset` already runs lint after **every** write, so terrain edits that strand
+  existing NPCs now return recovery evidence through the normal tool result. `run_lint`
+  also returns relocation issues at the result level. `AssistantSession` preserves this
+  payload for the model and escalates `move_event` into the next tool set. The shared
+  context guidance requires considering relocation alongside terrain/path repair.
+- Diagnostics never move entities themselves or add a new completion/apply gate. The
+  assistant chooses whether to invoke a real `move_event`; that tool now classifies
+  existing characters correctly rather than always treating them as wall objects.
+  `resolveEventPlacement` receives the existing event for moves and revalidates the
+  complete destination body, passage, movement and approach against the current
+  draft before accepting even an already-passable anchor. Stale recommendations in
+  one assistant batch resolve to a currently valid nearby position or fail with
+  `move-event-impassable` and coordinates/read-tool guidance; they never overlap.
+  Proposal/approval, undo and completed-house write protection remain on the existing
+  execution path. Moving retains IDs, pages, commands and unrelated events/tiles.
+- `EventPlacementAnalysis` is lazy and invocation-local: one dual body/blocker index per map,
+  one real tile BFS per origin, and one candidate list per event/origin shared across
+  diagnostics. `projectLint` and each `move_event` create fresh contexts; no cache
+  survives edits. BFS uses a queue cursor instead of repeated `shift()`.
+- Regression: `test/aiBlockedEventRelocation.test.ts` exercises the real assistant
+  tool-response seam after a terrain edit, both choosing and declining relocation,
+  same-batch stale advice, non-anchor occupancy/terrain/bounds, uploaded save/reload,
+  lazy flood/body-scan bounds and mutation refresh, plus protected-house preservation.
+  No sleeps or prompt-prose assertions. Public API proof:
+  `npx vite-node scripts/prove-ai-relocation-recovery.mts` runs
+  `paint_tiles` → `run_lint` → `move_event` → `run_scene_test` and observes an authored
+  interaction switch. The proof asserts both the outer tool result and nested
+  `scene.data.ok`, plus the expected switch in `finalState.switchesOn`.
+  `--without-switch-command` removes the actual authored effect and must exit 1:
+  the scene reports `sw_0001` OFF. Before the correction that same negative probe
+  incorrectly exited 0. New regressions also walk/activate wall signs over each
+  nonblocking approach variant, retain a solid-blocker control, and exercise the
+  complete public recovery path for unreachable/reachable directional touch tiles.
+  `--benchmark` measures identical warmed lint fixtures:
+  reviewed/corrected 100x100 with 20 blocked NPCs **378/255 ms**; 256x256 with 60
+  **6995/414 ms** on this Linux workstation. These are indicative single-run timings,
+  not timing assertions or an explanation of the earlier full-gate timeout.
+
 ## AI 타일 후검증 (2026-09-05)
 
 - `verifyPostTilePlacement`(`src/project/lint/postTileVerify.ts`)는 AI가 타일을 깐 뒤를 본다. `build_roof`는 지붕이 **그 집 벽 연결 성분**을 덮었는지(`post-roof-incomplete`), `place_props`/`scatter_object`는 나무 요청인데 하층식생만 깔렸거나 나무 타일이 0이면(`post-tree-only-undergrowth` / `post-tree-missing`) warning 한다. 커밋 게이트는 막지 않는다. 고아 밑동·수관 보정은 기존 `repairTreePairs`가 맡는다.
@@ -11,6 +142,9 @@
 - `validateEventDraft` 자체의 판정 규칙은 아래 「Event editor aggregate gate」 절이 정본이다. 종은 그 결과의 표시 계층일 뿐이며 severity contract(error 는 Apply/OK/Test 차단, warning 은 진행 가능)를 바꾸지 않는다.
 
 ## event-unreachable lint rule (2026-08-27)
+
+Historical rule below; the 2026-09-06 recovery section supersedes its own-tile shortcut
+with interaction-position and movable-body checks.
 
 - `projectLint`는 모든 맵 이벤트에 대해 자신의 칸과 4방향 이웃이 전부 통행 불가인 경우 warning 코드 `event-unreachable` 을 보고한다(mapId·event id·좌표 포함, 수정 지시: "통행 가능한 칸으로 옮기세요"). RM2K3 의미상 action 트리거 이벤트(문·간판)는 통행 불가 타일 위에 있어도 되므로, 통행 가능한 이웃이 하나라도 있으면 진단하지 않는다. `playerTouch-impassable` 과 대상이 겹칠 수 있지만 의미가 다르고 둘 다 발화해도 무방하다. 회귀: `test/projectLint.test.ts` 의 `event-unreachable` describe.
 

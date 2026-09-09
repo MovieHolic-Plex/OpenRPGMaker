@@ -12,7 +12,11 @@ const VARIABLE_OPS = new Set(["==", ">=", "<=", ">", "<", "!="]);
 const defineEnding: ToolDefinition = {
   name: "define_ending",
   description:
-    "프로젝트 엔딩을 선언한다. conditions는 switch/variable 조건 배열이며, triggerEnding은 조건을 만족한 엔딩 중 priority가 가장 높은 엔딩을 선택한다. epilogue는 script_cutscene beat 배열이다.",
+    '엔딩 정의만 저장한다. define_ending이나 setSwitch만으로는 실행되지 않는다. ' +
+    '도달 가능한 이벤트 commands에 {"kind":"triggerEnding","endingId":"조회한 엔딩 id"}를 넣으면 해당 엔딩을 직접 실행한다. ' +
+    'endingId 없는 {"kind":"triggerEnding"}은 switch/variable conditions를 만족한 엔딩 중 priority가 가장 높은 항목을 선택한다. ' +
+    'epilogue는 script_cutscene beat 배열이다. 아이템을 소비하는 출구는 완료 스위치로 선택되는 상위 페이지를 두어 재조사 시 재잠김·중복 소비를 막는다. ' +
+    '정의 후 연결 전은 유효한 중간 편집이지만, 완료 전에는 실제 에필로그·종료와 재조사를 플레이로 검증해야 한다.',
   mode: "write",
   parameters: {
     type: "object",
@@ -52,7 +56,7 @@ const defineEnding: ToolDefinition = {
     else draft.endings.push(ending);
     const warnings = [...flagWarnings, ...collectEndingWarnings(draft.endings)];
     return {
-      summary: `엔딩 '${name}' 정의 ${index >= 0 ? "수정" : "추가"} — 조건 ${conditions.length}개, priority ${priority}`,
+      summary: `엔딩 '${name}' 정의 ${index >= 0 ? "수정" : "추가"} — 조건 ${conditions.length}개, priority ${priority}. 이벤트 commands의 triggerEnding 호출이 있어야 실행됩니다.`,
       data: { ending, warnings },
       ...(warnings.length > 0 ? { warnings } : {}),
     };

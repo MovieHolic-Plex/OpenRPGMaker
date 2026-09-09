@@ -1,0 +1,180 @@
+{
+  "config": {
+    "argv": [
+      "/usr/local/bin/node",
+      "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/node_modules/.bin/playwright",
+      "test",
+      "test/e2e/ai-map-history.spec.ts",
+      "--grep",
+      "startup catalog",
+      "--output=.omo/evidence/ai-playable/st_01a082b3/ui-red-ordering",
+      "--reporter=list,json"
+    ],
+    "configFile": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/playwright.config.ts",
+    "rootDir": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/.omo/evidence/ai-playable/st_01a082b3/ui-red-ordering",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e",
+        "testIgnore": [
+          "**/_*.spec.ts"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev -- --host 127.0.0.1 --port 9283 --strictPort",
+      "env": {
+        "DEV_SERVER_NO_TLS": "1",
+        "E2E_FREEZE_DEV_SERVER": "1"
+      },
+      "url": "http://127.0.0.1:9283",
+      "reuseExistingServer": true,
+      "timeout": 30000
+    }
+  },
+  "suites": [
+    {
+      "title": "ai-map-history.spec.ts",
+      "file": "ai-map-history.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "map-scoped AI conversation history",
+          "file": "ai-map-history.spec.ts",
+          "line": 28,
+          "column": 6,
+          "specs": [
+            {
+              "title": "startup catalog cannot cancel Recover through the shipped clock",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 59904,
+                      "error": {
+                        "message": "Error: History fixture signal did not settle",
+                        "stack": "Error: History fixture signal did not settle\n    at Timeout.<anonymous> (/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e/aiHistoryStartupRecoverHarness.ts:23:39)",
+                        "location": {
+                          "file": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e/aiHistoryStartupRecoverHarness.ts",
+                          "column": 39,
+                          "line": 23
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39maiHistoryStartupRecoverHarness.ts:23\n\n  21 |   try {\n  22 |     return await Promise.race([signal, new Promise<never>((_, reject) => {\n> 23 |       timer = setTimeout(() => reject(new Error(\"History fixture signal did not settle\")), 5_000);\n     |                                       ^\n  24 |     })]);\n  25 |   } finally { clearTimeout(timer); }\n  26 | }"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e/aiHistoryStartupRecoverHarness.ts",
+                            "column": 39,
+                            "line": 23
+                          },
+                          "message": "Error: History fixture signal did not settle\n\n   at aiHistoryStartupRecoverHarness.ts:23\n\n  21 |   try {\n  22 |     return await Promise.race([signal, new Promise<never>((_, reject) => {\n> 23 |       timer = setTimeout(() => reject(new Error(\"History fixture signal did not settle\")), 5_000);\n     |                                       ^\n  24 |     })]);\n  25 |   } finally { clearTimeout(timer); }\n  26 | }\n    at Timeout.<anonymous> (/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e/aiHistoryStartupRecoverHarness.ts:23:39)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-08T20:36:48.218Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/.omo/evidence/ai-playable/st_01a082b3/ui-red-ordering/ai-map-history-map-scoped--e8c24-r-through-the-shipped-clock-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/.omo/evidence/ai-playable/st_01a082b3/ui-red-ordering/ai-map-history-map-scoped--e8c24-r-through-the-shipped-clock-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/.omo/evidence/ai-playable/st_01a082b3/ui-red-ordering/ai-map-history-map-scoped--e8c24-r-through-the-shipped-clock-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e/aiHistoryStartupRecoverHarness.ts",
+                        "column": 39,
+                        "line": 23
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7fad2a72ec69d62f062d-c7a128aadfae894a315e",
+              "file": "ai-map-history.spec.ts",
+              "line": 31,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-08T20:36:38.438Z",
+    "duration": 76589.133,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

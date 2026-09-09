@@ -1,0 +1,125 @@
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+vite v6.4.3 building for production...
+transforming...
+
+/assets/fonts/neodgm.woff2 referenced in /assets/fonts/neodgm.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri9.woff2 referenced in /assets/fonts/Galmuri9.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11.woff2 referenced in /assets/fonts/Galmuri11.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11-Bold.woff2 referenced in /assets/fonts/Galmuri11-Bold.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/ui/windowskin-warm.png referenced in /assets/ui/windowskin-warm.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/generated/battle-reference-forest.png referenced in /generated/battle-reference-forest.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-sword.png referenced in /assets/generated/starter/battle-icon-sword.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-fire.png referenced in /assets/generated/starter/battle-icon-fire.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shield.png referenced in /assets/generated/starter/battle-icon-shield.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-cross.png referenced in /assets/generated/starter/battle-icon-cross.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-bag.png referenced in /assets/generated/starter/battle-icon-bag.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-boot.png referenced in /assets/generated/starter/battle-icon-boot.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-exp.png referenced in /assets/generated/starter/battle-icon-exp.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-gold.png referenced in /assets/generated/starter/battle-icon-gold.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shard.png referenced in /assets/generated/starter/battle-icon-shard.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-world.png referenced in /assets/generated/starter/battle-icon-world.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-next.png referenced in /assets/generated/starter/battle-icon-next.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 542 modules transformed.
+rendering chunks...
+[plugin vite:reporter]
+(!) /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/src/player/playSceneInterpreter.ts is dynamically imported by /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/src/player/PlayScene.ts but also statically imported by /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/src/player/PlayScene.ts, /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/src/player/playSceneMapRuntime.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+.vite-cache/export-delivery-16477/export-players-N86MML/export-player/player.html                             0.38 kB │ gzip:   0.26 kB
+.vite-cache/export-delivery-16477/export-players-N86MML/export-player/player-manifest.json                    1.02 kB │ gzip:   0.33 kB
+.vite-cache/export-delivery-16477/export-players-N86MML/export-player/assets/phaser.min-CwlHMuXa.js       1,196.12 kB
+.vite-cache/export-delivery-16477/export-players-N86MML/export-player/assets/player-Cnb73_rz.css            291.50 kB │ gzip:  46.40 kB
+.vite-cache/export-delivery-16477/export-players-N86MML/export-player/assets/playSceneBattle-CA6TEw8o.js      4.93 kB │ gzip:   1.90 kB
+.vite-cache/export-delivery-16477/export-players-N86MML/export-player/assets/PlayScene-C0FNaSyW.js          406.62 kB │ gzip: 124.68 kB
+.vite-cache/export-delivery-16477/export-players-N86MML/export-player/player.js                           1,642.22 kB │ gzip: 409.81 kB
+✓ built in 26.53s
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+vite v6.4.3 building for production...
+transforming...
+
+/assets/fonts/neodgm.woff2 referenced in /assets/fonts/neodgm.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri9.woff2 referenced in /assets/fonts/Galmuri9.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11.woff2 referenced in /assets/fonts/Galmuri11.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11-Bold.woff2 referenced in /assets/fonts/Galmuri11-Bold.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/ui/windowskin-warm.png referenced in /assets/ui/windowskin-warm.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/generated/battle-reference-forest.png referenced in /generated/battle-reference-forest.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-sword.png referenced in /assets/generated/starter/battle-icon-sword.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-fire.png referenced in /assets/generated/starter/battle-icon-fire.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shield.png referenced in /assets/generated/starter/battle-icon-shield.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-cross.png referenced in /assets/generated/starter/battle-icon-cross.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-bag.png referenced in /assets/generated/starter/battle-icon-bag.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-boot.png referenced in /assets/generated/starter/battle-icon-boot.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-exp.png referenced in /assets/generated/starter/battle-icon-exp.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-gold.png referenced in /assets/generated/starter/battle-icon-gold.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shard.png referenced in /assets/generated/starter/battle-icon-shard.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-world.png referenced in /assets/generated/starter/battle-icon-world.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-next.png referenced in /assets/generated/starter/battle-icon-next.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 544 modules transformed.
+rendering chunks...
+computing gzip size...
+.vite-cache/export-delivery-16477/export-players-N86MML/standalone-player/standalone.css    291.50 kB │ gzip:  46.40 kB
+.vite-cache/export-delivery-16477/export-players-N86MML/standalone-player/standalone.js   3,535.96 kB │ gzip: 874.08 kB
+✓ built in 49.83s
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+{"url":"/standalone-player/standalone.css","status":200,"type":"text/css; charset=utf-8","bytes":291497,"sha256":"9fd352d14b8ff6c0e798fd53e0d07f6aef8b0e8ef1ed4373a618aa80cc3d960b","prefix":"@layer tokens,base,runtime,overrides;:root{--bg-base: #F7F8F8;--bg-sur"}
+{"url":"/export-player/sdk-manifest.json","status":200,"type":"application/json; charset=utf-8","bytes":493458,"sha256":"b9dd7f4119c00762e1f6c0ee9845b3854ec12a26d361fd30f4f4cee9f04b4fe0","prefix":"{\n  \"sentinel\": \"rpg-zzu/player-sdk-manifest\",\n  \"contractVersion\": 2,"}
+{"url":"/standalone-player/standalone.js","status":200,"type":"text/javascript; charset=utf-8","bytes":3535956,"sha256":"12dc825aaf4702d7f16abd3c9bd7472489e13a49456fd54c4f18c1a3d2ef0343","prefix":"(function(){\"use strict\";var Xr=typeof document<\"u\"?document.currentSc"}
+▶ normal dev delivers current, verifiable player bundles on a cold export
+  ✔ /export-player/sdk-manifest.json (4.854687ms)
+  ✔ /standalone-player/standalone.js (4.253157ms)
+  ✔ /standalone-player/standalone.css (0.229207ms)
+Verified 7 manifest-bound files; absent bundle returns 404.
+{"standaloneBytes":69048131,"assets":715,"missingAssets":[]}
+{"standaloneBytes":69048131,"assets":715,"missingAssets":[],"zipBytes":49633312,"zipEntries":722}
+Real HTTP standalone and ZIP export succeeded; owned server closes in teardown.
+✔ normal dev delivers current, verifiable player bundles on a cold export (115666.077293ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 116535.780991

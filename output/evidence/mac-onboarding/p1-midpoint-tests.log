@@ -1,0 +1,34 @@
+✔ new entrypoints require Node 24, not older or newer majors (15.327629ms)
+✔ npm is required; ci runs only when node_modules is absent, never repairs broken installs (26.882701ms)
+✔ failed install stops with recovery instead of starting server or deleting partial install (4.724006ms)
+✔ Vite is strict loopback HTTP with runner; browser opens only after own listen succeeds (3.49017ms)
+✔ port conflicts close own server and never open or reuse another origin (1.681069ms)
+✔ browser failure reports stable URL and no-open bypasses browser; SIGINT closes exactly once (1.521143ms)
+✔ Finder bash wrapper quotes paths and preserves arguments from another cwd (129.083983ms)
+✔ signals during pending Vite startup close owned resources without opening browser (2.992416ms)
+✔ real Vite strict-port collision preserves the other HTTP server (1223.777322ms)
+✔ command cancellation forwards SIGTERM and reaps the owned child (168.478481ms)
+✔ CLI pins the validated normalized configuration snapshot for Vite after the probe (647.892045ms)
+✔ fresh setup probes before writing exclusive private config, round-trips through Vite (66.714284ms)
+✔ existing env files and exclusive-create races cannot be overwritten (97.795155ms)
+✔ cancellation, invalid input, probe failure leave no partial configuration or secret error (14.887327ms)
+✔ validation rejects admin credentials and unsafe origins without reflecting supplied values (9.416921ms)
+✔ probe makes only bounded GET with schema, encoded exact project filter and private headers (132.580573ms)
+✔ probe rejects redirects without forwarding credentials and classifies remote failures (272.007664ms)
+✔ probe cancellation observes a real request before abort, not a sleep (69.988537ms)
+✔ masked terminal input never echoes key and restores raw mode on completion and cancellation (19.202011ms)
+✔ configuration uses Vite development precedence and process overrides without changing files (44.380293ms)
+✔ setup rejects symlink targets and cannot write after cancellation during the probe (11.102118ms)
+✔ noninteractive key entry fails closed without reading a piped key (0.72625ms)
+✔ probe bounds response size and validates returned identity (27.814587ms)
+✔ private mode remains exactly 0600 under a restrictive inherited umask (19.18709ms)
+✔ origin-only validation does not accept URL-normalized paths or empty credential syntax (1.149632ms)
+✔ generated private settings override conflicting base env through Vite without mutating the base file (17.137201ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2488.655982

@@ -3,17 +3,17 @@ import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEdit
 import { openNewEventCommandDialog } from "@/editor/panels/eventEditor/commandEditDialog";
 import { renderCommandList } from "@/editor/panels/eventEditor/commandList";
 import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
-import type { CommandRuntimeSupport, M2RuntimeContext } from "@/project/eventCommands/runtimeSupport";
+import type { M2RuntimeContext } from "@/project/eventCommands/runtimeSupport";
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import type { CommandListActions } from "./eventEditor/types";
+import { clearCommandInspector, selectedCommandRoots } from "./eventEditor/commandInspector";
 
 export type DatabaseCommandArrayAdapter = {
   readonly commands: Command[];
   readonly replaceCommands: (commands: Command[]) => void;
   readonly rerender?: () => void;
-  readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport;
-  /** 명령 피커 배지용 편집 컨텍스트: 공통 이벤트 "common", 트룹 배틀 이벤트 "troop". */
+  /** 목록·피커 설명의 실행 맥락: 공통 이벤트 "common", 트룹 배틀 이벤트 "troop". */
   readonly pickerContext?: M2RuntimeContext;
 };
 
@@ -23,16 +23,30 @@ export function createDatabaseCommandListActions(adapter: DatabaseCommandArrayAd
   // (공용 이벤트/전투 이벤트)는 draft 가 아닌 실제 store 를 바로 바꾸므로 undo 대상이다.
   const edit = (mutate: (commands: Command[]) => void, options: { rerender?: boolean; coalesceKey?: string } = {}): void => {
     const { rerender = true, coalesceKey } = options;
-    if (coalesceKey !== undefined) recordCoalescedSnapshot(`db-command:${coalesceKey}`);
-    else recordProjectSnapshot();
     const next = structuredClone(adapter.commands);
     mutate(next);
+    if (JSON.stringify(next) === JSON.stringify(adapter.commands)) return;
+    if (coalesceKey !== undefined) recordCoalescedSnapshot(`db-command:${coalesceKey}`);
+    else recordProjectSnapshot();
+    if (rerender) clearCommandInspector();
     adapter.replaceCommands(next);
     if (rerender) adapter.rerender?.();
   };
   const commandList = (commands: Command[], containerPath: readonly number[]): Command[] | null =>
     resolveCommandListAtPath(commands, containerPath, { missingBranches: "create" });
   return {
+    deleteCommands: paths => edit(commands => {
+      for (const path of selectedCommandRoots(paths).reverse()) {
+        const list = commandList(commands, path.slice(0, -1));
+        const index = path.at(-1);
+        if (list && index !== undefined) list.splice(index, 1);
+      }
+    }),
+    insertCommands: (path, inserted) => edit(commands => {
+      const list = commandList(commands, path.slice(0, -1));
+      const index = path.at(-1);
+      if (list && index !== undefined) list.splice(index, 0, ...structuredClone([...inserted]));
+    }),
     addCommand: (containerPath, command) => edit((commands) => {
       commandList(commands, containerPath)?.push(structuredClone(command));
     }),
@@ -91,7 +105,6 @@ export function createDatabaseCommandListActions(adapter: DatabaseCommandArrayAd
 export function renderDatabaseCommandListEditor(host: HTMLElement, adapter: DatabaseCommandArrayAdapter): void {
   const actions = createDatabaseCommandListActions(adapter);
   renderCommandList(host, adapter.commands, [], actions, {
-    runtimeSupport: adapter.runtimeSupport,
     pickerContext: adapter.pickerContext,
   });
   if (host.firstElementChild?.classList.contains("empty-hint")) host.firstElementChild.remove();

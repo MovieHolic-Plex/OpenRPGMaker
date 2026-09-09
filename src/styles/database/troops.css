@@ -1,3 +1,2 @@
 /* Split wrapper: preserves troops.css cascade order. */
-@import "./troops.part-1.css";
 @import "./troops.part-2.css";

@@ -7,7 +7,7 @@
 // `recordProjectSnapshot` 은 **프로젝트 전체** 스냅샷을 undo 스택에 쌓는다(옵션 없이 부르면
 // kind:"project"). 맵 삭제·reset_project 도 되돌리기 한 번으로 원복된다.
 import type { ChangeSummary } from "@/project/types";
-import type { ProposedCall } from "./assistantSession";
+import type { ProposedCall } from "./session/types";
 
 /** 타일 지식(메타데이터) 전용 툴 — 변경 카드 없이 즉시 반영되는 계열(aiChatPanelHelpers 공유). */
 export const METADATA_ONLY_TOOLS: ReadonlySet<string> = new Set([

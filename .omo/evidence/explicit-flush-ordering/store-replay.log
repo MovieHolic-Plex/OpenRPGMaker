@@ -1,0 +1,22 @@
+[project-commits] 저장 baseline 이 없어 실제 diff 를 못 낸다 — 시스템 변경으로 기록한다 {
+  summary: "변경 저장: 시스템",
+}
+{
+  "acceptedTitles": [
+    "PROJECT_A",
+    "PROJECT_B"
+  ],
+  "localTitle": "PROJECT_B",
+  "remoteTitle": "PROJECT_B",
+  "localMapName": "PROJECT_B_MAP",
+  "remoteMapName": "PROJECT_B_MAP",
+  "descriptions": {
+    "music": {
+      "replacement": "PROJECT_B_ONLY"
+    }
+  },
+  "rejectedCas": 0,
+  "dirty": false,
+  "receiptACurrent": false,
+  "receiptBCurrent": true
+}

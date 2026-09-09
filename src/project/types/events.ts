@@ -20,6 +20,12 @@ import type { RelationshipCondition, RelationshipState } from "../relationshipSt
 import type { EmoteKind } from "@/project/emotes";
 
 
+/**
+ * 오디오 명령이 겨누는 채널. `project/session` 의 `AudioChannel` 과 같은 집합이며
+ * 그쪽이 이 타입을 재수출한다(선언은 여기 하나뿐).
+ */
+export type AudioCommandChannel = "bgm" | "bgs" | "me" | "se";
+
 export type Trigger =
   | { kind: "action" }
   | { kind: "touch" }
@@ -195,6 +201,7 @@ export type MessageWindowSettings = {
 export type FaceGraphic = {
   /** 낱장 얼굴 리소스 id. 얼굴 한 칸 = 파일 한 장이라 칸 번호가 없다. */
   readonly resourceId: string;
+  readonly presentation?: "face" | "bust";
   readonly position: "left" | "right";
   readonly flipHorizontally: boolean;
 };
@@ -238,7 +245,7 @@ export type Command =
       /** true 면 키 입력 없이 다음 단계로 진행. */
       autoAdvance?: boolean;
     }
-  | ({ kind: "changeFace" } & FaceGraphic)
+  | ({ kind: "changeFace"; appearanceId?: string } & FaceGraphic)
   | {
       kind: "choices";
       prompt?: string;
@@ -351,8 +358,25 @@ export type Command =
       waitForPicture?: boolean;
     }
   | { kind: "erasePicture"; pictureId: string }
-  | { kind: "playAudio"; resourceId: string; loop: boolean }
-  | { kind: "stopAudio" }
+  | {
+      kind: "playAudio";
+      resourceId: string;
+      loop: boolean;
+      /** 재생 채널. 생략하면 loop 로 유도한다(true=bgm, false=se) — 기존 저작물 계약. */
+      channel?: AudioCommandChannel;
+      /** 이 요청의 페이드인 길이(ms). 생략하면 엔진 기본값. */
+      fadeInMs?: number;
+      /** Track gain (0..1), multiplied by the user's group volume. */
+      volume?: number;
+    }
+  | {
+      kind: "stopAudio";
+      /**
+       * 정지 대상 채널. 생략하면 **모든 채널**을 정지한다(기존 「소리 정지」 계약).
+       * `"bgm"` 은 RM2K3 「BGM 페이드아웃」 — 효과음·환경음은 계속 흐른다.
+       */
+      channel?: AudioCommandChannel;
+    }
   | { kind: "cutsceneControl"; mode: "begin" | "end"; skippable?: boolean }
   | ({ kind: "displayTextSettings" } & MessageWindowSettings)
   | {
@@ -439,6 +463,7 @@ export type EventAnimationType =
   | "fourFrame";
 
 export interface EventPageGraphic {
+  appearanceId?: string;
   sprite?: AssetRef;
   direction?: Dir;
   pattern?: number;
@@ -484,7 +509,22 @@ export interface NpcScheduleEntry {
   readonly activity?: string;
 }
 
+export interface NpcSight {
+  range: number;
+  lineOfSight: boolean;
+  /** Forward is a same-row/column ray, not a cone. */
+  facing: "any" | "forward";
+}
+export interface DetectionEncounter {
+  sight: NpcSight;
+  emote: EmoteKind | null;
+  emoteMs: number;
+  approachSpeed: number;
+}
+
 export interface ChaseAcrossMaps {
+  /** Omitted preserves finite last-seen search; persistent still respects hiding and safe zones. */
+  tracking?: "lastSeen" | "persistent";
   scope: "map" | "connected";
   doorDelayMs: number;
   searchMs: number;
@@ -504,6 +544,7 @@ export interface EventPageMovement {
   route?: MoveRoute;
   living?: NpcLivingMovement;
   pursuit?: ChaseAcrossMaps;
+  sight?: NpcSight;
   sightRange?: number;
   giveUpRange?: number;
   pathfind?: boolean;
@@ -537,14 +578,24 @@ export interface EventPage {
    */
   passRows?: number;
   interaction?: EventObjectInteraction;
+  detectionEncounter?: DetectionEncounter;
   movement: EventPageMovement;
   commands: Command[];
+}
+
+/** Serializable field-level writes owned by an event editor transaction. null means absent. */
+export interface EventDraftAuthoredWrite {
+  readonly kind: "characterName" | "switch";
+  readonly id: string;
+  readonly before: string | null;
+  readonly after: string | null;
 }
 
 export interface EventDraftMeta {
   kind: "new" | "edit";
   /** edit: 열기 전 원본(취소 시 복원). new: 생성 직후 스냅샷(사용자 편집 여부 판정 기준). */
   original?: PersistedGameEvent;
+  authoredWrites?: EventDraftAuthoredWrite[];
 }
 
 export interface GameEvent {
@@ -553,6 +604,8 @@ export interface GameEvent {
   name?: string;
   /** Opt-in relationship identity for friendship/gifts (shared across multi-map copies). Empty/omit = no social self-key. */
   characterId?: string;
+  /** Authored placement semantics, independent of graphics and opt-in social identity. */
+  placementRole?: "npc";
   x: number;
   y: number;
   sprite?: AssetRef;

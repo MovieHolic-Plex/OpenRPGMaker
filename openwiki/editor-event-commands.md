@@ -4,8 +4,47 @@
 
 Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/make_villager, AI event tools, and 2026-07-15 hostile-review command fixes.
 
+## Move-route target repair (PR716, 2026-09-09)
+
+- `project/eventTargetCatalog.ts` is shared by the manual picker and assistant validation.
+  Resolution order is canonical sentinels, exact current-map ID, exact foreign-map ID,
+  aliases, then local display names. A foreign ID such as `self` or `player` must be
+  rejected as `foreignMap`, not rewritten to the executing event or player. Exact
+  current-map IDs still win; opening a legacy command never rewrites its stored target.
+- `moveRouteTargetPicker.ts` keeps input focus on option `mousedown` so native
+  change/blur cannot remove the option before `click`. Click alone commits selection;
+  cancelled/outside presses do not. Blur and direct-ID change close synchronously.
+- The open list registers with `modalStack`, whose capture-phase Escape handling runs
+  before input keydown. Escape closes only the list and retains input focus; closing
+  by selection, Tab, blur or outside pointer unregisters it so the next Escape belongs
+  to the parent command dialog. Do not restore a delayed blur-close timer.
+- Regression seams: `moveRouteEventTarget.test.ts`, `moveRouteEventTargetPicker.test.ts`.
+  Local-only Chromium acceptance: `PR716_QA_URL=http://127.0.0.1:<owned-port> node scripts/qa/pr716-repair.mjs`.
+  Use a fresh owned dev server with a unique `VITE_CACHE_DIR`. The driver blocks remote
+  requests and all writes, uses `freshProject=1`, and checks disabled persistence.
+  It exercises the production command dialog and toolbar, not production game content.
+## 장소 이동의 목적지 원복과 설정 보존 (2026-09-06)
+
+- `transferPlayerDialog.ts`는 창을 열 때의 값이 아니라 마지막으로 반영한 명령과 현재 선택을 비교한다. A → B → A로 고르면 초안도 다시 A가 된다.
+- 실시간 반영과 독립 창의 확인 모두 기존 명령에 수정 필드만 덧씌운다. `transition`과 다른 미수정 필드는 유지한다. 전환값은 `fade`·`mosaic`·`blinds`이며 별도의 이동 시간 필드는 없다.
+- 이벤트 명령 창의 확인이 초안을 확정하고 맵 이벤트 적용이 실제 프로젝트에 반영한다. 취소는 실시간 선택 변경을 버린다. `U03.test.ts`와 `transferCommandBody.test.ts`, 실제 편집기 재열기·파일 가져오기 및 출하 플레이어 이동 근거는 `.omo/evidence/event-command-remediation/U03/`에 있다.
+
+## 확률로 결과 뽑기 / 가중 분기 (2026-09-06)
+
+- Integration onto `647b000e`: the staged-state regression uses the shipped percent control (75/25 replaces equivalent raw weights 3/1) and still requires the preceding name edit and unrelated staged field to survive. The CSS live-class manifest refresh is restricted to `weighted-branch-*`: 12 retired guide/legend/raw-weight classes are replaced by 10 worksheet classes, with 18 current weighted classes protected. All unrelated manifest entries and gate logic remain unchanged; this accepts the requested worksheet snapshot, not later CSS inventory phases.
+
+- Intentional surface snapshot update: only `m2-211-weighted-branch` is recaptured in the M2 baseline and floor. Test IDs 25→20, labels 6→5 and text entries 2→1 reflect removal of the requested prose guide, duplicate legend/summary and raw-weight presentation, not executable functionality. Control count stays protected at 9 and variable select options at 21; the new percent inputs, row meters and numeric output mapping are captured (classes 29→31). The 19 `weightedBranchUx` behavior tests protect editing, validation, persistence and result-index contracts independently of these surface counts. Unrelated M2 entries are not regenerated or accepted.
+
+- `commandBodyWeightedBranch.ts` is the dedicated worksheet routed by `commandBodyM2.ts`. Command ID `m2-211-weighted-branch`, `table`, and `resultVariableId` are unchanged. The catalog retains `가중 분기`; the form title is `확률로 결과 뽑기`.
+- Outcome rows come first: name, labelled editable percent, a monochrome proportional meter, and an arrow to the numeric `저장값`. The destination variable picker follows the rows; its empty trigger explicitly asks for a variable. No paragraph guide, rainbow legend, duplicated summary or action-branch creation. Runtime only writes the zero-based index of the selected positive-weight row, not its name and not an executable branch.
+- Editing a percentage reserves that chance for the edited row and distributes the remainder proportionally across the others. If other rows are all zero, divide the remainder equally. A lone row is fixed at 100%; add gives the new row an equal share while retaining old relative odds; deletion redisplays normalized chances. Named zero rows remain in the persisted table and reopen in place, but have no stored result value. Runtime/summary parsing still filters strictly positive rows, preserving zero-based result indexing. Removing the last positive row is disabled rather than silently enabling zero rows. Authored all-zero tables remain zero and block Confirm with an inline error; a lone zero row can be repaired by setting 100%.
+- The original table string is retained on open and variable-only edits, including whitespace, malformed/zero rows, blank names and extra separators. `weightedBranchTable.ts` mirrors runtime numeric parsing (`line.split("=")[1]`) so visible positive-row order agrees with runtime. Name/table edits serialize finite nonnegative weights without truncating numeric precision; names replace `=` with `＝` and CR/LF with spaces to prevent accidental row or numeric-field injection. This is editor-side encoding, not a runtime parser change.
+- Percentages are unrounded internally; controls/summary use two decimal places or three significant digits for values below 0.01%, so tiny positive odds are not presented as zero. Near-100% counterparts retain enough decimals to represent the small remainder instead of false certainty; only differences within `Number.EPSILON * 100` may display 100%. Invalid/incomplete/out-of-range percent input displays a local error and leaves the last committed table unchanged. `commandEditDialog.ts` calls the scoped `validateWeightedBranchForm` before Confirm: invalid visible inputs retain the dialog and receive focus. There is no native form-submit validation in this button-based dialog; other command bodies are unaffected. Input nodes stay mounted; IME names commit at composition end. Add focuses the new name; removal focuses the nearest remaining name. All mutations use the existing `replaceFields` staged draft path; unrelated fields remain intact.
+- Styles remain in `src/styles/editor/event-editor.part-2.css`, using cream-form tokens and shared `editorIcons`. Regression suites: `npm test -- test/weightedBranchUx.test.ts test/commandEditModalPreview.test.ts` (parser/storage, initial meters, percent redistribution, positive-only mapping, actual modal Confirm/reopen with zero rows, blocked invalid/all-zero Confirm, variable-only preservation, precision, IME and structural focus). Browser validation and broad gates are lead-owned; fake DOM is not a visual approval.
+
 ## 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
 
+- 2026-09-06 저장 계약: `shapeCommandFields.ts`는 피커와 런타임의 정본인 `SHOP_MESSAGE_TYPES`를 그대로 검증한다. `festival`·`closingSale`·`vip`도 다른 세 유형처럼 프로젝트 재로드를 통과하며, 목록 밖 값은 계속 거부한다. `eventCommandRemediationShopMessages.test.ts`가 여섯 유형의 전체 프로젝트 serialize/deserialize와 인접 상점 설정 보존을 검증한다.
 - 소유자: `commandBodyShop.ts`(탭·거래 규칙·대사·분기), `shopEditorGoods.ts`(진열 목록·상품 추가·가격/계절), `shopEditorModel.ts`(아이템/장비 자료집과 순서 보존), `commandBodyShopEconomy.ts`(경제 설정). `commandBodyCommerce.ts`는 여관 본문과 상점 재수출만 남긴다. 스타일은 `event-editor.shop.css`.
 - 상점 창은 기존 full 모달을 유지한다. 첫 화면은 **진열 상품 목록 + 선택한 상품의 상세**다. 전체 자료집은 `shop-add-goods` → `shop-catalog-dialog`에서 검색/종류 필터/복수 선택 → `shop-catalog-add`로 한 번에 추가한다. 선택 중에는 명령을 바꾸지 않으며 취소/Escape는 선택을 폐기한다. `shop-item-check-{id}`는 이 추가창에만 존재한다. 진열 행은 선택 버튼이며 삭제는 상세의 `shop-remove-goods`다. 예전 `shop-stock-pool`과 모든 설정을 함께 담던 `shop-options-rail`은 없다.
 - 탭은 상품/거래 규칙/상인 대사/거래 후 행동이다. 활성 탭만 마운트하며 방향키/Home/End로 탭을 이동한다. view 상태는 `CommandListActions`에 대한 WeakMap으로 보관해 분기 명령 추가에 따른 호스트 재렌더에서도 탭·선택 상품을 보존한다. 일반 상품/필드 편집은 `shouldRerenderCommandForm`에서 shop을 재렌더하지 않는다. 상품 본문이 목록/상세만 갱신하고 최신 `getCurrentCommand`를 바탕으로 변경한다.
@@ -94,6 +133,8 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
 
 
 ## Command picker, validation, and preview trust (2026-07-30)
+- **Context-specific support repair (2026-09-06):** `commandRuntimeSupportDescriptor` in `project/eventCommands/runtimeSupport.ts` is the single picker/list explanation source. Both list renderers and insert/append pickers use `pickerContext`; the old grade-only callback is removed because it discarded the context needed for an honest reason. Picker aliases describe the native kind they insert, not a persisted M2 payload. Existing grades and eligibility remain separate contracts; no new picker entries or styles are introduced.
+- Player audit plus location/audio repair evidence promotes only M2 022, 040–045, 078, 093, 205, 206, 210 in map/common. Troop text is a battle message, face/settings are metadata, inputWait does not await input, and wait does not suspend subsequent event commands. Skipped troop commands explicitly say they are not executed there. System BGM/SE (027/028) remain metadata-only; explanations point to native playAudio with the correct loop flag, or Sound Layer for gain/fade. Unknown coverage is labeled unverified, not a claimed missing effect. `eventCommandSupportRepairs.test.ts` exercises descriptors, real renderer wiring, common/troop nested-list context, and the battle execution boundaries; `commandContracts/m2Command.contract.test.ts` covers the promoted interpreter effects in both direct and common-event execution.
 - `commandPicker.ts` keeps four text-labelled tabs with a strict roving-tab contract: only the selected tab has `tabindex="0"`; Arrow keys/Home/End select and focus the destination. Favorites retain authored preference order, recents remain newest-first, and preference rerenders restore focus to the same command/favorite control. Preferences are best-effort localStorage data owned by `commandPickerPreferences.ts` and never project content.
 - Audio aliases are intent-bearing: choosing `BGM 재생` creates `playAudio { loop:true }`, while `SE 재생` creates `playAudio { loop:false }`. The runtime `audio-indicator` banner is **loop-only** (`playSceneInterpreter`/`playSceneSchedulers`): the only clear path is `stopAudio`, so a one-shot SE used to paint its resource id across the game screen and leave it there (browser QA, 2026-08-30). Coverage: `test/runtimeAudioIndicator.test.ts`. The move-route `playSe` path still shows it (`test/runtimeMoveRouteCommands.test.ts` pins that). The shared edit-dialog title stays channel-neutral (`소리 재생`) because the channel can be changed inside the form. `commandBodyAdvanced.ts` must use the exported `listDatabaseResourceOptions()` catalog shared with the database picker, including search terms and catalog order; do not reintroduce a local BGM/SE asset list. Focused coverage: `test/eventCommandPickerAudio.test.ts` and `test/playAudioCommandBody.test.ts`.
 - Command rows and page tabs receive aggregate issue badges from `eventDraftValidator.ts`. Issue buttons navigate to the affected page and nested command path (or a known field testid). Apply, OK, and selected-event Test all share the same fatal-error gate; warnings are visible but non-blocking.

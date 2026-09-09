@@ -51,6 +51,10 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
   const project = store.getCurrent();
   const tree = project.growth?.skillTrees.find(t => collection === "classes" ? t.classIds.includes(id) : collection === "skills" && t.nodes.some(n => n.effect.kind === "skill" && n.effect.skillId === id));
   if (tree) return `스킬 트리 '${tree.name}'에서 사용 중입니다. 먼저 연결을 해제하세요.`;
+  if (collection === 'skills') {
+    const owner = project.database.classes.find(c => c.promotions?.some(p => p.requires.requiredSkillIds?.includes(id)));
+    if (owner) return `직업 '${owner.name}'의 승급 조건에서 사용 중입니다. 먼저 연결을 해제하세요.`;
+  }
   switch (collection) {
     case "skills": {
       const actors = project.database.actors.filter((record) => record.learnedSkills.some((skill) => skill.skillId === id));
@@ -281,6 +285,7 @@ function commandReferencesCommonEvent(command: Command, id: string): boolean {
 
 export function resourceReferenceMessage(resourceId: string): string | null {
   const project = store.getCurrent();
+  if (project.resourceProfiles.some((profile) => profile.characterSlots?.some((slot) => slot.status === "mapped" && slot.faceResourceId === resourceId))) return "캐릭터·얼굴 수동 연결이 이 리소스를 사용 중입니다.";
   if (project.database.actors.some((record) => record.faceResourceId === resourceId || record.characterResourceId === resourceId || record.battleCharacterResourceId === resourceId)) return "주인공이 이 리소스를 사용 중입니다.";
   if (project.database.items.some((record) => record.imageResourceId === resourceId || record.iconResourceId === resourceId)) return "아이템이 이 리소스를 사용 중입니다.";
   if (project.database.equipment.some((record) => record.imageResourceId === resourceId || record.iconResourceId === resourceId)) return "장비가 이 리소스를 사용 중입니다.";

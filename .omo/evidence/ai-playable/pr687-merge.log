@@ -1,0 +1,56 @@
+Auto-merging openwiki/INDEX.md
+CONFLICT (content): Merge conflict in openwiki/INDEX.md
+Auto-merging openwiki/editor-ai-panel.md
+Auto-merging openwiki/editor-ai-tools.md
+CONFLICT (content): Merge conflict in openwiki/editor-ai-tools.md
+Auto-merging openwiki/editor-observability.md
+Auto-merging openwiki/editor-pre-edit-routing.md
+Auto-merging openwiki/runtime-project-schema.md
+CONFLICT (content): Merge conflict in openwiki/runtime-project-schema.md
+Auto-merging scripts/lib/ohMyPiPiAiRuntime.ts
+CONFLICT (content): Merge conflict in scripts/lib/ohMyPiPiAiRuntime.ts
+Auto-merging src/ai/assistantAcceptance.ts
+CONFLICT (content): Merge conflict in src/ai/assistantAcceptance.ts
+Auto-merging src/ai/assistantAcceptanceEvaluation.ts
+CONFLICT (content): Merge conflict in src/ai/assistantAcceptanceEvaluation.ts
+Auto-merging src/ai/assistantAcceptanceLedger.ts
+CONFLICT (content): Merge conflict in src/ai/assistantAcceptanceLedger.ts
+Auto-merging src/ai/assistantAcceptanceTools.ts
+CONFLICT (content): Merge conflict in src/ai/assistantAcceptanceTools.ts
+Auto-merging src/ai/assistantSession.ts
+CONFLICT (content): Merge conflict in src/ai/assistantSession.ts
+Auto-merging src/ai/contextBuilder.ts
+Auto-merging src/ai/intentDeclaration.ts
+CONFLICT (content): Merge conflict in src/ai/intentDeclaration.ts
+Auto-merging src/ai/intentDeclarationClient.ts
+Auto-merging src/ai/proposalCompleteness.ts
+Auto-merging src/ai/toolVerificationEvidence.ts
+CONFLICT (content): Merge conflict in src/ai/toolVerificationEvidence.ts
+Auto-merging src/ai/workItemOutcome.ts
+CONFLICT (content): Merge conflict in src/ai/workItemOutcome.ts
+Auto-merging src/ai/workPlan.ts
+CONFLICT (content): Merge conflict in src/ai/workPlan.ts
+Auto-merging src/assets/resourceSearch.ts
+CONFLICT (content): Merge conflict in src/assets/resourceSearch.ts
+Auto-merging src/editor/tools/eventTools.ts
+Auto-merging src/editor/tools/playTools.ts
+CONFLICT (content): Merge conflict in src/editor/tools/playTools.ts
+Auto-merging src/editor/tools/queryTools.ts
+Auto-merging src/project/store.ts
+Auto-merging src/testing/sceneTestRunner.ts
+CONFLICT (content): Merge conflict in src/testing/sceneTestRunner.ts
+Auto-merging test/actionAcceptanceRequirements.test.ts
+CONFLICT (content): Merge conflict in test/actionAcceptanceRequirements.test.ts
+Auto-merging test/aiCompletionAccounting.test.ts
+Auto-merging test/aiToolDiscoveryEscalation.test.ts
+CONFLICT (content): Merge conflict in test/aiToolDiscoveryEscalation.test.ts
+Auto-merging test/assistantDependencyRetry.test.ts
+Auto-merging test/assistantProposalAssembly.test.ts
+CONFLICT (content): Merge conflict in test/assistantProposalAssembly.test.ts
+Auto-merging test/assistantSessionIntent.test.ts
+Auto-merging test/assistantVerificationContinuation.test.ts
+CONFLICT (add/add): Merge conflict in test/assistantVerificationContinuation.test.ts
+Auto-merging test/assistantVerificationEvidence.test.ts
+Auto-merging test/npcRewardSession.test.ts
+Auto-merging test/sceneVerificationRepair.test.ts
+Automatic merge failed; fix conflicts and then commit the result.

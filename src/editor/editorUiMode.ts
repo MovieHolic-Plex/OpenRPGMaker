@@ -21,8 +21,9 @@ export type EditorChromeVisibility = {
   readonly toolStrip: boolean;
   readonly canvasChromeDense: boolean;
   readonly helpMenu: boolean;
-  // 48px 아이콘 레일 좌패널(basicLeftRail) — 아니면 일반 팔레트/맵트리 컬럼.
+  // 초보 상시 팔레트(basicLeftRail) — 아니면 일반 팔레트/맵트리 컬럼.
   readonly paletteRail: boolean;
+  readonly advancedSidebarControls: boolean;
   // 좌패널 폭 상한(px). null이면 상한 없음(사용자 저장값 그대로).
   readonly leftPanelMaxWidthPx: number | null;
   // 레이어 라벨 용어 — plain: 바닥/장식, technical: 하위/상위.
@@ -52,6 +53,7 @@ const BEGINNER_CHROME: EditorChromeVisibility = {
   // 도움말(단축키 표)은 초보용 모드에서 더 필요하다 — 기본 모드에서도 노출.
   helpMenu: true,
   paletteRail: true,
+  advancedSidebarControls: false,
   leftPanelMaxWidthPx: null,
   layerTermStyle: "plain",
   prominentTestPlay: true,
@@ -64,11 +66,12 @@ const BEGINNER_CHROME: EditorChromeVisibility = {
 };
 
 const STANDARD_CHROME: EditorChromeVisibility = {
-  mapTree: true,
+  mapTree: false,
   toolStrip: false,
   canvasChromeDense: true,
   helpMenu: true,
   paletteRail: false,
+  advancedSidebarControls: false,
   leftPanelMaxWidthPx: 300,
   layerTermStyle: "technical",
   prominentTestPlay: false,
@@ -86,6 +89,7 @@ const EXPERT_CHROME: EditorChromeVisibility = {
   canvasChromeDense: true,
   helpMenu: true,
   paletteRail: false,
+  advancedSidebarControls: true,
   leftPanelMaxWidthPx: 320,
   layerTermStyle: "technical",
   prominentTestPlay: false,

@@ -1,5 +1,5 @@
 /* 이벤트 명령 편집 모달 — 2열(폼 / 이미지 리치 프리뷰) 레이아웃 + 종류별 프리뷰.
-   event-editor.css 에서 modern.css 다음(마지막)으로 import 되어 캐스케이드 우선권을 갖는다. */
+   이 슬라이스가 캐스케이드 마지막이 아니다. 깨진 선언은 여기서 고친다. */
 
 /* 명령 편집 다이얼로그를 2열이 들어갈 만큼 넓힌다. */
 .event-subdialog-window.wide:has(.event-command-edit-dialog) {
@@ -161,16 +161,6 @@
 .ecp-stage.pos-center { place-items: center; }
 .ecp-stage.pos-bottom { place-items: end center; }
 
-/* 미리보기(`event-page-preview`)는 명령 칼럼 전체 폭을 쓴다. 거기서 `width: 100%` +
-   `aspect-ratio: 4/3` 는 무대를 스크롤 뷰포트보다 높게 만든다 — 실측 2560x1440 에서
-   무대 1737x1303, 뷰포트 1030. 메시지 창은 `place-items: end center` 로 아래에 붙으므로
-   fold 밖으로 나가 «빈 흰 박스» 만 보였다(문장 표시 명령 = 가장 흔한 명령).
-   높이를 기준으로 폭을 제한해 4:3 을 지키면서 한 화면에 들어오게 한다. */
-.event-page-preview .ecp-stage {
-  margin-inline: auto;
-  max-width: calc(58vh * 4 / 3);
-}
-
 .ecp-message-window {
   width: 100%;
   max-width: 96%;
@@ -278,10 +268,14 @@
   padding: 2px 10px 3px;
   border: 1px solid var(--runtime-dialogue-glass-border);
   border-radius: var(--runtime-dialogue-radius-small);
+  /* --runtime-dialogue-glass-surface-strong 은 색이 아니라 linear-gradient 이미지다.
+     색상정지 자리에 넣으면 치환 후 선언 전체가 버려져 이름표가 투명해진다(크림 무대 위
+     유리 글자). 이미지 슬롯에 통째로 두고, 불투명 밑판은 다음 레이어로 깐다.
+     overflow/font 로 가리지 말 것. --shadow-pop 은 이미 그림자 리스트라 길이를 앞에 붙이면 무효. */
   background:
-    linear-gradient(180deg, var(--runtime-dialogue-glass-surface-strong), var(--runtime-dialogue-glass-surface-strong)),
+    var(--runtime-dialogue-glass-surface-strong),
     var(--bg-surface);
-  box-shadow: 0 3px 8px var(--shadow-pop);
+  box-shadow: var(--shadow-pop);
   color: var(--runtime-window-text);
   font: 700 12px/1.2 "Malgun Gothic", Tahoma, sans-serif;
   letter-spacing: 0.01em;

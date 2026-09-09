@@ -1,1053 +1,603 @@
-/* 이 시트에는 :hover 도 cursor: pointer 도 없다.
-   런타임은 키보드/게임패드 전용 계약(scripts/lib/playerInputCss.mjs 가 강제)이라
-   마우스만 닿는 상태 표현은 없는 기능을 약속하는 거짓 신호가 된다.
-   강조는 커서 상태 클래스(.is-cursor)와 :focus-visible 로만 준다. */
-/* ══════════════════════════════════════════════════════════════════════════
-   상점 — 모던 게임 상점 스킨
-
-   설계 전제
-   ─────────
-   1) 오버레이 자신은 **창이 아니다**. 장면을 어둡게 덮는 스크림 + 배치 상자다.
-      예전에는 이 오버레이가 윈도스킨 fill 로 플레이 영역 전체를 칠하고 그 안에 다시
-      패널을 깔아 '상자 속 상자'가 됐다. 표면은 개별 카드(.runtime-shop-panel)만 가진다.
-   2) 기본 표면은 유리 카드(반투명 + 배경 블러)다. 게임 화면이 뒤에 살짝 보여야
-      "가게에 들어와 있다"가 읽힌다. 완전 불투명 상자는 장면을 지워 버린다.
-   3) backdrop-filter 를 못 쓰는 환경에서도 같은 유리 토큰을 쓴다(블러만 빠진다).
-      예전 폴백은 자료집 System 윈도스킨 border-image 였는데, slice 의 fill 이 중앙까지
-      칠해 유리판을 덮었다 — 그래서 칠을 멈추고 두 경로를 하나로 합쳤다.
-   4) UI 글자는 픽셀 폰트를 쓰지 않는다. 가격·수량은 tabular-nums 로 자리를 고정해
-      숫자가 바뀔 때 줄이 흔들리지 않게 한다.
-   ══════════════════════════════════════════════════════════════════════════ */
-
+/* In-game trade counter. Local tokens are documented in DESIGN.md.
+   Mounted in .play-viewport, outside the 320x240 stage transform.
+   Keyboard/gamepad selection only; no pointer-only presentation. */
 .runtime-shop-overlay {
-  /* 지역 이름은 49곳이 소비하므로 그대로 두고, **값만** 런타임 공용 유리 토큰을
-     가리키게 한다(_rm2000.css 가 쓴 것과 같은 방법). 예전에는 이 상점만 금색 강조와
-     14px 라운드를 쓰는 별도 디자인 시스템이었다 — 대화창·전투 HUD 옆에 두면 다른
-     게임처럼 보였다. 이제 한 곳(system.css)만 고치면 상점까지 함께 바뀐다. */
   --shop-ink: var(--runtime-glass-text);
   --shop-ink-dim: var(--runtime-glass-muted);
-  /* 세 번째 잉크 단계는 공용 토큰에 없다. 같은 색조를 더 낮은 알파로 쓴다. */
-  --shop-ink-faint: rgba(154, 164, 196, 0.62);
   --shop-surface: var(--runtime-glass-surface);
   --shop-surface-flat: var(--runtime-glass-panel);
+  --shop-inset: var(--runtime-glass-inset);
+  --shop-card: var(--runtime-glass-card);
   --shop-line: var(--runtime-glass-hairline);
   --shop-line-strong: var(--runtime-glass-hairline-strong);
   --shop-accent: var(--runtime-glass-accent);
-  /* 강조색 위에 얹는 잉크. 여섯 곳이 같은 값을 하드코딩하고 있었다. */
-  --shop-on-accent: rgba(9, 11, 24, 0.96);
   --shop-accent-soft: var(--runtime-glass-accent-soft);
-  --shop-gain: var(--success);
-  --shop-loss: var(--danger);
+  --shop-gain: color-mix(in srgb, var(--success) 55%, var(--shop-ink));
+  --shop-loss: color-mix(in srgb, var(--danger) 55%, var(--shop-ink));
+  --shop-material: var(--warning);
   --shop-radius: var(--runtime-glass-radius);
+  --shop-radius-small: var(--runtime-glass-radius-small);
   --shop-ui-font: var(--runtime-ui-font);
-
+  --shop-space-1: 4px;
+  --shop-space-2: 8px;
+  --shop-space-3: 12px;
+  --shop-space-4: 16px;
+  --shop-space-6: 24px;
+  --shop-space-8: 32px;
+  --shop-line-width: 1px;
+  --shop-focus-width: 2px;
+  --shop-text-small: 12px;
+  --shop-text-body: 14px;
+  --shop-text-section: 16px;
+  --shop-text-title: 24px;
+  --shop-text-entry: 32px;
+  --shop-art-row: 48px;
+  --shop-art-display: 112px;
+  --shop-art-party: 32px;
+  --shop-control: 32px;
+  --shop-display-column: 38%;
+  --shop-counter-width: 1200px;
+  --shop-entry-width: 560px;
+  --shop-enter-ms: 180ms;
+  --shop-bump-ms: 420ms;
+  --shop-float-ms: 900ms;
   position: absolute;
-  /* 상점은 .play-viewport(스케일 변환 밖) 레이어에 마운트된다(playSceneShop.ts). */
+  box-sizing: border-box;
   inset: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 10px;
-  padding: 16px;
-  background: radial-gradient(120% 90% at 50% 0%, rgba(12, 16, 26, 0.5), rgba(5, 7, 12, 0.78));
+  padding: var(--shop-space-6);
   border: 0;
-  border-radius: var(--runtime-glass-radius-small);
-  box-shadow: none;
+  border-radius: 0;
+  background: radial-gradient(ellipse at top, var(--shop-surface-flat), var(--runtime-glass-scrim));
   color: var(--shop-ink);
-  font-family: var(--shop-ui-font);
-  font-size: 13px;
-  line-height: 1.45;
+  font: var(--shop-text-body)/1.45 var(--shop-ui-font);
   overflow: hidden;
-  animation: runtime-shop-in 180ms cubic-bezier(0.2, 0.8, 0.3, 1);
+  animation: runtime-shop-in var(--shop-enter-ms) ease-out;
 }
-
-@supports (backdrop-filter: blur(2px)) {
-  .runtime-shop-overlay {
-    backdrop-filter: blur(7px) saturate(1.08);
-  }
-}
-
-@keyframes runtime-shop-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* 셸: 오버레이 안에서 세로 플렉스. 아이템 뷰는 높이를 채우고, 메뉴 뷰는 내용 크기. */
+.runtime-shop-overlay *,
+.runtime-shop-overlay *::before,
+.runtime-shop-overlay *::after { box-sizing: border-box; }
 .runtime-shop-shell {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   min-height: 0;
+  width: min(var(--shop-counter-width), 100%);
+  margin-inline: auto;
 }
-
 .runtime-shop-items-shell {
   flex: 1 1 auto;
-}
-
-.runtime-shop-menu-shell {
-  flex: 0 0 auto;
-  align-items: center;
-}
-
-/* ── 카드 표면 ─────────────────────────────────────────────────────────────
-   두 경로 모두 **같은 유리 토큰**을 쓴다. 예전에는 기본 규칙이 윈도스킨 border-image
-   폴백이고 @supports 승자만 상점 자체 값이었다 — 그래서 유리 토큰을 기본 규칙에만
-   심으면 backdrop-filter 를 지원하는 브라우저(증거 샷의 Chromium 포함)에서는
-   한 픽셀도 바뀌지 않는다. 승자 규칙이 더하는 것은 블러와 들림 그림자뿐이다. */
-.runtime-shop-panel {
-  background: var(--runtime-glass-panel);
-  border: 1px solid var(--shop-line);
+  background: var(--shop-surface);
+  border: var(--shop-line-width) solid var(--shop-line-strong);
   border-radius: var(--shop-radius);
-  min-height: 0;
+  box-shadow: var(--runtime-glass-shadow);
+  overflow: hidden;
 }
-
-@supports (backdrop-filter: blur(2px)) {
-  .runtime-shop-panel {
-    background: var(--shop-surface);
-    border: 1px solid var(--shop-line);
-    border-image: none;
-    border-radius: var(--shop-radius);
-    box-shadow: var(--runtime-glass-shadow);
-  }
+/* Override only the legacy 720px shop cap in playSurface.css, not stage geometry. */
+.player-layout .play-viewport > .runtime-shop-overlay > .runtime-shop-items-shell.runtime-shop-shell {
+  width: min(var(--shop-counter-width), 100%);
 }
-
-.runtime-shop-panel:empty {
-  display: none;
-}
-
-/* ── 상단 바 ─────────────────────────────────────────────────────────────── */
+.runtime-shop-menu-shell { align-items: center; }
+.runtime-shop-panel { min-height: 0; }
+.runtime-shop-panel:empty { display: none; }
 .runtime-shop-topbar {
   display: flex;
-  align-items: stretch;
-  gap: 10px;
+  align-items: center;
+  gap: var(--shop-space-4);
+  padding: var(--shop-space-4) var(--shop-space-6);
+  border-bottom: var(--shop-line-width) solid var(--shop-line-strong);
   flex: 0 0 auto;
 }
-
-.runtime-shop-topbar > .runtime-shop-brand {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
 .runtime-shop-brand {
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 9px 13px;
-  background: var(--shop-surface-flat);
-  border: 1px solid var(--shop-line);
-  border-radius: var(--shop-radius);
+  gap: var(--shop-space-3);
   min-width: 0;
 }
-
-.runtime-shop-menu .runtime-shop-brand {
-  background: none;
-  border: 0;
-  padding: 0 0 4px;
-}
-
+.runtime-shop-topbar > .runtime-shop-brand { flex: 1 1 auto; }
 .runtime-shop-merchant-avatar {
+  width: var(--shop-art-row);
+  height: var(--shop-art-row);
   flex: 0 0 auto;
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
-  background-color: rgba(255, 255, 255, 0.06);
-  background-position: center top;
-  background-size: cover;
-  background-repeat: no-repeat;
-  border: 1px solid var(--shop-line-strong);
   display: grid;
   place-items: center;
+  border: var(--shop-line-width) solid var(--shop-line-strong);
+  border-radius: var(--shop-radius-small);
+  background: var(--shop-inset);
   color: var(--shop-accent);
-  image-rendering: pixelated;
 }
-
-.runtime-shop-merchant-avatar svg {
-  width: 20px;
-  height: 20px;
-}
-
-.runtime-shop-brand-copy {
-  min-width: 0;
-}
-
-.runtime-shop-brand-title {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.2px;
-}
-
-.runtime-shop-brand-sub {
-  color: var(--shop-ink-dim);
-  font-size: 12px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* ── 구매/판매 탭 ─────────────────────────────────────────────────────────
-   입구 메뉴로 되돌아가지 않고 그 자리에서 모드를 바꾼다. */
+.runtime-shop-merchant-avatar svg { width: var(--shop-space-6); height: var(--shop-space-6); }
+.runtime-shop-brand-copy { min-width: 0; }
+.runtime-shop-brand-title { font-size: var(--shop-text-title); font-weight: 700; }
+.runtime-shop-brand-sub { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
 .runtime-shop-tabs {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--shop-line);
-  border-radius: 12px;
+  gap: var(--shop-space-1);
+  padding: var(--shop-space-1);
+  background: var(--shop-inset);
+  border-radius: var(--shop-radius);
   flex: 0 0 auto;
 }
-
-.runtime-shop-tab {
+.runtime-shop-tab,
+.runtime-shop-chip,
+.runtime-shop-confirm,
+.runtime-shop-cancel,
+.runtime-shop-menu-choice,
+.runtime-shop-detail-open,
+.runtime-shop-actor,
+.runtime-shop-slot-choice,
+.runtime-shop-step {
   appearance: none;
-  min-width: 66px;
-  padding: 7px 14px;
-  border: 0;
-  border-radius: 9px;
-  background: none;
+  border: var(--shop-line-width) solid var(--shop-line);
+  border-radius: var(--shop-radius-small);
+  background: var(--shop-card);
   color: var(--shop-ink-dim);
-  font: 700 12.5px/1 var(--shop-ui-font);
+  font: 600 var(--shop-text-small)/1.3 var(--shop-ui-font);
   cursor: default;
-  transition: background 140ms ease, color 140ms ease;
 }
-
-.runtime-shop-tab.is-active {
-  background: var(--shop-accent);
-  color: var(--shop-on-accent);
-  box-shadow: 0 4px 14px -6px rgba(239, 177, 74, 0.9);
+.runtime-shop-tab { padding: var(--shop-space-2) var(--shop-space-4); }
+.runtime-shop-tab.is-active,
+.runtime-shop-chip.is-active {
+  background: var(--shop-accent-soft);
+  color: var(--shop-ink);
+  border-color: var(--shop-accent);
 }
-
-/* ── 소지금 ──────────────────────────────────────────────────────────────── */
-.runtime-shop-gold-panel {
-  flex: 0 0 auto;
-  padding: 8px 14px;
-  display: flex;
-  align-items: center;
-}
-
-.runtime-shop-gold {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 132px;
-}
-
-.runtime-shop-gold-line {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  position: relative;
-}
-
-.runtime-shop-gold-line svg {
-  width: 15px;
-  height: 15px;
-  color: var(--shop-accent);
-  flex: 0 0 auto;
-}
-
-.runtime-shop-gold-label {
-  color: var(--shop-ink-faint);
-  font-size: 11px;
-  letter-spacing: 0.2px;
-}
-
-.runtime-shop-gold-value {
-  margin-left: auto;
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.runtime-shop-gold-line.is-primary .runtime-shop-gold-value {
-  color: var(--shop-accent);
-  font-size: 17px;
-}
-
-.runtime-shop-merchant-gold .runtime-shop-gold-value {
-  color: var(--shop-ink-dim);
-  font-size: 12.5px;
-}
-
-/* 거래 직후 값이 한 번 반짝인다 — 숫자가 조용히 바뀌면 무엇이 일어났는지 놓친다. */
-.runtime-shop-gold-value.is-bumped {
-  animation: runtime-shop-bump 420ms ease;
-}
-
-@keyframes runtime-shop-bump {
-  0% {
-    transform: scale(1);
-  }
-  38% {
-    transform: scale(1.16);
-    text-shadow: 0 0 14px rgba(239, 177, 74, 0.75);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* 값 위로 +4G / -24G 가 떠올랐다 사라진다. */
-.runtime-shop-gold-delta {
-  position: absolute;
-  right: 0;
-  top: -2px;
-  font-variant-numeric: tabular-nums;
-  font-weight: 800;
-  font-size: 13px;
-  pointer-events: none;
-  animation: runtime-shop-float 900ms cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
-}
-
-.runtime-shop-gold-delta.is-gain {
-  color: var(--shop-gain);
-}
-
-.runtime-shop-gold-delta.is-loss {
-  color: var(--shop-loss);
-}
-
-@keyframes runtime-shop-float {
-  0% {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  22% {
-    opacity: 1;
-    transform: translateY(-6px);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-22px);
-  }
-}
-
-/* ── 본문: 목록 + 상세 ──────────────────────────────────────────────────── */
-.runtime-shop-main {
-  display: flex;
-  gap: 10px;
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
+.runtime-shop-gold-panel { flex: 0 0 auto; padding-left: var(--shop-space-4); border-left: var(--shop-line-width) solid var(--shop-line); }
+.runtime-shop-gold { display: flex; flex-direction: column; gap: var(--shop-space-1); }
+.runtime-shop-gold-line { display: flex; align-items: center; gap: var(--shop-space-2); position: relative; }
+.runtime-shop-gold-line svg { width: var(--shop-space-4); height: var(--shop-space-4); color: var(--shop-accent); }
+.runtime-shop-gold-label { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-gold-value { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 700; }
+.runtime-shop-gold-line.is-primary .runtime-shop-gold-value { font-size: var(--shop-text-title); color: var(--shop-ink); }
+.runtime-shop-merchant-gold .runtime-shop-gold-value { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-main { display: flex; flex: 1 1 auto; min-height: 0; }
 .runtime-shop-list-panel {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding: 8px;
-  gap: 8px;
+  padding: var(--shop-space-4);
+  gap: var(--shop-space-3);
 }
-
-/* ── 카테고리 칩 ─────────────────────────────────────────────────────────── */
 .runtime-shop-catbar {
   display: flex;
-  gap: 6px;
+  gap: var(--shop-space-1);
   flex-wrap: wrap;
+  padding-bottom: var(--shop-space-3);
+  border-bottom: var(--shop-line-width) solid var(--shop-line);
   flex: 0 0 auto;
-  padding: 2px 2px 6px;
-  border-bottom: 1px solid var(--shop-line);
 }
-
-.runtime-shop-chip {
-  appearance: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 11px;
-  border: 1px solid var(--shop-line);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--shop-ink-dim);
-  font: 600 11.5px/1 var(--shop-ui-font);
-  cursor: default;
-  transition: border-color 140ms ease, color 140ms ease, background 140ms ease;
-}
-
-.runtime-shop-chip.is-active {
-  color: var(--shop-on-accent);
-  background: var(--shop-accent);
-  border-color: transparent;
-}
-
-.runtime-shop-chip-count {
-  font-variant-numeric: tabular-nums;
-  opacity: 0.72;
-}
-
-/* ── 목록 ────────────────────────────────────────────────────────────────
-   내용이 넘치면 창 전체가 아니라 '아이템 목록만' 스크롤한다. */
+.runtime-shop-chip { display: inline-flex; align-items: center; gap: var(--shop-space-2); padding: var(--shop-space-2); }
+.runtime-shop-chip-count { font-variant-numeric: tabular-nums; color: var(--shop-ink-dim); }
 .runtime-shop-item-list {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: var(--shop-space-1);
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  /* Re-snap the keyboard selection when resizing changes the list viewport. */
+  scroll-snap-type: y mandatory;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
-  padding-right: 2px;
+  scrollbar-color: var(--shop-line-strong) var(--shop-inset);
+  padding: var(--shop-space-1);
 }
-
-.runtime-shop-item-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.runtime-shop-item-list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.16);
-  border-radius: 999px;
-}
-
 .runtime-shop-item-row {
   appearance: none;
   display: grid;
-  grid-template-columns: 32px minmax(0, 1fr) auto auto;
+  grid-template-columns: var(--shop-art-row) minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  column-gap: var(--shop-space-3);
   align-items: center;
-  gap: 11px;
   width: 100%;
-  padding: 8px 12px 8px 10px;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  background: none;
+  flex: 0 0 auto;
+  padding: var(--shop-space-2) var(--shop-space-3);
+  border: var(--shop-line-width) solid transparent;
+  border-radius: var(--shop-radius-small);
+  background: var(--shop-card);
   color: var(--shop-ink);
-  font-family: var(--shop-ui-font);
-  font-size: 13px;
+  font: var(--shop-text-body)/1.4 var(--shop-ui-font);
   text-align: left;
   cursor: default;
   position: relative;
-  transition: background 130ms ease, border-color 130ms ease, transform 130ms ease;
 }
-
+.runtime-shop-overlay .runtime-shop-item-row.rm-nav-item { padding-left: var(--shop-space-3); }
 .runtime-shop-item-row::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 50%;
-  width: 3px;
-  height: 0;
-  border-radius: 0 3px 3px 0;
-  background: var(--shop-accent);
-  transform: translateY(-50%);
-  transition: height 140ms ease;
+  top: var(--shop-space-2);
+  bottom: var(--shop-space-2);
+  width: var(--shop-space-1);
+  background: transparent;
 }
-
-/* 커서가 얹힌 행 — 왼쪽 강조 바 + 살짝 밀려나며 들린다. */
-.runtime-shop-item-row.selected {
+.runtime-shop-overlay .runtime-shop-item-row.selected {
+  scroll-snap-align: start;
   background: var(--shop-accent-soft);
-  border-color: rgba(239, 177, 74, 0.32);
-  transform: translateX(2px);
+  border-color: var(--shop-accent);
+  box-shadow: inset 0 0 0 var(--shop-line-width) var(--shop-line-strong);
+  color: var(--shop-ink);
 }
-
-.runtime-shop-item-row.selected::before {
-  height: 62%;
+.runtime-shop-overlay .runtime-shop-item-row.selected::before {
+  content: "";
+  background: var(--shop-accent);
+  left: 0;
+  top: var(--shop-space-2);
+  height: auto;
+  transform: none;
+  filter: none;
+  animation: none;
 }
-
 .runtime-shop-item-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
+  width: var(--shop-art-row);
+  height: var(--shop-art-row);
+  grid-row: 1 / 3;
+  background-color: var(--shop-inset);
   background-position: center;
-  background-size: contain;
+  background-size: 85%;
   background-repeat: no-repeat;
-  border: 1px solid var(--shop-line);
+  border: var(--shop-line-width) solid var(--shop-line);
+  border-radius: var(--shop-radius-small);
   display: grid;
   place-items: center;
   image-rendering: pixelated;
   flex: 0 0 auto;
 }
-
-.runtime-shop-item-icon-fallback {
-  color: var(--shop-ink-dim);
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.runtime-shop-item-main {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-
-.runtime-shop-item-name {
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* 종류 배지 — "이게 약인지 무기인지"가 목록에서 바로 읽힌다. */
-.runtime-shop-item-type {
-  color: var(--shop-ink-faint);
-  font-size: 10.5px;
-  letter-spacing: 0.2px;
-}
-
-.runtime-shop-item-owned {
-  color: var(--shop-ink-dim);
-  font-variant-numeric: tabular-nums;
-  font-size: 12px;
-  min-width: 30px;
-  text-align: right;
-}
-
-.runtime-shop-item-price {
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  font-size: 13.5px;
-  min-width: 58px;
-  text-align: right;
-  color: var(--shop-accent);
-}
-
-/* ── 살 수 없는 행 ───────────────────────────────────────────────────────
-   disabled 로 막지 않는다: 커서가 못 얹히면 비싼 물건의 설명조차 볼 수 없다. */
-.runtime-shop-item-row.is-unaffordable {
-  opacity: 0.5;
-}
-
-.runtime-shop-item-row.is-unaffordable .runtime-shop-item-price {
-  color: var(--shop-loss);
-  text-decoration: line-through;
-  text-decoration-thickness: 1px;
-}
-
-.runtime-shop-item-row.is-unaffordable .runtime-shop-item-icon {
-  filter: grayscale(1);
-}
-
-.runtime-shop-item-lock {
-  position: absolute;
-  right: 6px;
-  top: 4px;
-  color: var(--shop-loss);
-  opacity: 0.85;
-  pointer-events: none;
-}
-
-.runtime-shop-item-lock svg {
-  width: 11px;
-  height: 11px;
-}
-
-.runtime-shop-item-row:focus-visible,
-.runtime-shop-menu-choice:focus-visible,
-.runtime-shop-cancel:focus-visible,
-.runtime-shop-confirm:focus-visible,
-.runtime-shop-tab:focus-visible,
-.runtime-shop-chip:focus-visible,
-.runtime-commerce-quantity-input:focus-visible {
-  outline: 2px solid var(--shop-accent);
-  outline-offset: 1px;
-}
-
-.runtime-shop-empty {
-  padding: 26px 12px;
-  color: var(--shop-ink-faint);
-  text-align: center;
-  font-size: 12.5px;
-}
-
-/* ── 오른쪽: 상세 카드 + 파티 ───────────────────────────────────────────── */
+.runtime-shop-item-icon-fallback { color: var(--shop-ink-dim); font-size: var(--shop-text-title); font-weight: 700; }
+.runtime-shop-item-main { grid-row: 1 / 3; display: flex; flex-direction: column; gap: var(--shop-space-1); min-width: 0; }
+.runtime-shop-item-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.runtime-shop-item-type { font-size: var(--shop-text-small); color: var(--shop-ink-dim); }
+.runtime-shop-item-owned { grid-column: 3; grid-row: 2; text-align: right; color: var(--shop-ink-dim); font-size: var(--shop-text-small); font-variant-numeric: tabular-nums; }
+.runtime-shop-item-price { grid-column: 3; grid-row: 1; text-align: right; color: var(--shop-ink); font-size: var(--shop-text-section); font-weight: 700; font-variant-numeric: tabular-nums; }
+.runtime-shop-item-row.is-unaffordable .runtime-shop-item-price { color: var(--shop-loss); }
+.runtime-shop-item-lock { position: absolute; right: var(--shop-space-1); bottom: var(--shop-space-1); color: var(--shop-loss); pointer-events: none; }
+.runtime-shop-item-lock svg { width: var(--shop-space-2); height: var(--shop-space-2); }
+.runtime-shop-empty { padding: var(--shop-space-6); color: var(--shop-ink-dim); text-align: center; }
 .runtime-shop-side {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  flex: 0 0 264px;
+  flex: 0 0 var(--shop-display-column);
+  min-width: 0;
   min-height: 0;
+  border-left: var(--shop-line-width) solid var(--shop-line-strong);
+  background: var(--shop-inset);
 }
-
-.runtime-shop-detail-panel {
-  flex: 1 1 auto;
-  min-height: 0;
-  padding: 14px;
-  overflow-y: auto;
-}
-
-.runtime-shop-detail {
-  display: flex;
-  flex-direction: column;
-  gap: 11px;
-}
-
-/* 커서가 얹힌 물건의 큰 아이콘 — 12px 목록 아이콘만으로는 무엇인지 안 읽힌다. */
+.runtime-shop-detail-panel { flex: 1 1 auto; min-height: 0; padding: var(--shop-space-6); overflow-y: auto; scrollbar-width: thin; }
+.runtime-shop-detail { display: flex; flex-direction: column; gap: var(--shop-space-4); }
 .runtime-shop-detail-hero {
+  --shop-category-light: var(--shop-accent);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--shop-space-4);
 }
-
+.runtime-shop-detail-hero[data-category="consumable"] { --shop-category-light: var(--shop-gain); }
+.runtime-shop-detail-hero[data-category="material"] { --shop-category-light: var(--shop-material); }
+.runtime-shop-detail-hero[data-category="special"] { --shop-category-light: var(--shop-ink-dim); }
 .runtime-shop-detail-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 13px;
-  background-size: 78%;
-  background-color: rgba(255, 255, 255, 0.06);
-  box-shadow: inset 0 0 26px rgba(239, 177, 74, 0.14);
+  position: relative;
+  isolation: isolate;
+  width: var(--shop-art-display);
+  height: var(--shop-art-display);
+  background-size: auto 70%;
+  border-color: var(--shop-line-strong);
+  border-radius: var(--shop-radius-small);
+  background-color: var(--shop-inset);
+  box-shadow: inset 0 0 var(--shop-space-8) var(--shop-card), var(--runtime-glass-shadow);
 }
-
-.runtime-shop-detail-icon.runtime-shop-item-icon-fallback {
-  font-size: 24px;
+.runtime-shop-detail-icon::before,
+.runtime-shop-detail-icon::after { content: ""; position: absolute; pointer-events: none; z-index: -1; }
+.runtime-shop-detail-icon::before {
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 70%, color-mix(in srgb, var(--shop-category-light) 24%, transparent), transparent 70%);
 }
-
-.runtime-shop-detail-name {
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.runtime-shop-detail-type {
-  color: var(--shop-accent);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-.runtime-shop-help-line {
-  color: var(--shop-ink-dim);
-  font-size: 12.5px;
-  line-height: 1.6;
-  padding: 10px 0;
-  border-top: 1px solid var(--shop-line);
-  border-bottom: 1px solid var(--shop-line);
-  min-height: 2.6em;
-}
-
-/* 장비 능력치 격자 — 사기 전에 "뭐가 얼마나 오르나"를 본다. */
-.runtime-shop-statgrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5px;
-}
-
-.runtime-shop-stat {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  padding: 5px 9px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  font-size: 11.5px;
-}
-
-.runtime-shop-stat-key {
-  color: var(--shop-ink-faint);
-}
-
-.runtime-shop-stat-value {
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-}
-
-.runtime-shop-stat.is-up .runtime-shop-stat-value {
-  color: var(--shop-gain);
-}
-
-.runtime-shop-stat.is-down .runtime-shop-stat-value {
-  color: var(--shop-loss);
-}
-
-.runtime-shop-owned {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.runtime-shop-stat-line {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--shop-ink-dim);
-}
-
-.runtime-shop-stat-line > span:last-child {
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  color: var(--shop-ink);
-  font-size: 13px;
-}
-
-.runtime-shop-party-panel {
-  flex: 0 0 auto;
-  padding: 10px;
-}
-
-.runtime-shop-party {
-  display: flex;
-  gap: 7px;
-}
-
+.runtime-shop-detail-icon::after { inset: var(--shop-space-2); border: var(--shop-line-width) solid var(--shop-line); }
+.runtime-shop-detail-name { font-size: var(--shop-text-title); font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+.runtime-shop-detail-type { margin-top: var(--shop-space-1); color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-detail-hero > :last-child { min-width: 0; }
+.runtime-shop-detail > .runtime-shop-help-line { order: 2; }
+.runtime-shop-detail > .runtime-shop-owned-panel { order: 3; }
+.runtime-shop-help-line { color: var(--shop-ink-dim); font-size: var(--shop-text-body); line-height: 1.6; padding-block: var(--shop-space-3); border-block: var(--shop-line-width) solid var(--shop-line); overflow-wrap: anywhere; }
+.runtime-shop-statgrid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--shop-space-2) var(--shop-space-4); }
+.runtime-shop-stat,
+.runtime-shop-stat-line { display: flex; align-items: baseline; justify-content: space-between; gap: var(--shop-space-2); font-size: var(--shop-text-small); }
+.runtime-shop-stat-key,
+.runtime-shop-stat-line { color: var(--shop-ink-dim); }
+.runtime-shop-stat-value,
+.runtime-shop-stat-line > span:last-child { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--shop-ink); }
+.runtime-shop-stat.is-up .runtime-shop-stat-value { color: var(--shop-gain); }
+.runtime-shop-stat.is-down .runtime-shop-stat-value { color: var(--shop-loss); }
+.runtime-shop-owned { display: flex; flex-direction: column; gap: var(--shop-space-2); }
+.runtime-shop-party-panel { padding: var(--shop-space-3) var(--shop-space-6); border-top: var(--shop-line-width) solid var(--shop-line); }
+.runtime-shop-party { display: flex; align-items: center; gap: var(--shop-space-2); }
+.runtime-shop-party { flex-wrap: wrap; }
+.runtime-shop-party-caption { font-size: var(--shop-text-small); color: var(--shop-ink-dim); margin-right: auto; }
 .runtime-shop-party-sprite {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.05);
+  width: var(--shop-art-party);
+  height: var(--shop-art-party);
+  border: var(--shop-line-width) solid var(--shop-line);
+  border-radius: var(--shop-radius-small);
+  background-color: var(--shop-card);
   background-position: center top;
   background-size: cover;
   background-repeat: no-repeat;
-  border: 1px solid var(--shop-line);
   display: grid;
   place-items: center;
   image-rendering: pixelated;
   flex: 0 0 auto;
 }
-
-.runtime-shop-party-sprite-fallback {
-  color: var(--shop-ink-dim);
-  font-weight: 700;
-  font-size: 15px;
-}
-
-/* ── 하단: 상태 · 수량 · 결정 ───────────────────────────────────────────── */
-.runtime-shop-prompt-panel {
-  flex: 0 0 auto;
-  padding: 10px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.runtime-shop-prompt {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.runtime-shop-status {
-  flex: 1 1 200px;
-  min-width: 0;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.runtime-shop-prompt-actions {
-  display: flex;
-  gap: 8px;
-  flex: 0 0 auto;
-}
-
+.runtime-shop-party-sprite-fallback { color: var(--shop-ink-dim); }
+.runtime-shop-prompt-panel { flex: 0 0 auto; padding: var(--shop-space-3) var(--shop-space-6); border-top: var(--shop-line-width) solid var(--shop-line-strong); background: var(--shop-surface-flat); }
+.runtime-shop-prompt { display: flex; align-items: center; gap: var(--shop-space-3); flex-wrap: wrap; }
+.runtime-shop-status { flex: 1 1 0; min-width: 0; font-size: var(--shop-text-body); overflow-wrap: anywhere; }
+.runtime-shop-prompt-actions { display: flex; gap: var(--shop-space-2); flex: 0 1 auto; flex-wrap: wrap; min-width: 0; }
 .runtime-shop-confirm,
-.runtime-shop-cancel {
-  appearance: none;
-  min-width: 74px;
-  padding: 8px 16px;
-  border-radius: 10px;
-  border: 1px solid var(--shop-line-strong);
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--shop-ink);
-  font: 700 12.5px/1 var(--shop-ui-font);
-  cursor: default;
-  transition: background 140ms ease, transform 140ms ease, box-shadow 140ms ease;
-}
-
-.runtime-shop-confirm {
-  background: var(--shop-accent);
-  border-color: transparent;
-  color: var(--shop-on-accent);
-}
-
-/* ── 수량 스테퍼 ─────────────────────────────────────────────────────────
-   예전에는 18행 목록의 마지막 자식이라 화면 밖에 있었다(1280x800 실측: 입력칸 y=760). */
-.runtime-shop-quantity-wrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  border: 1px solid var(--shop-line);
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.26);
-  flex: 0 0 auto;
-}
-
-.runtime-shop-quantity-label {
-  color: var(--shop-ink-faint);
-  font-size: 11px;
-}
-
-.runtime-shop-step {
-  appearance: none;
-  width: 24px;
-  height: 24px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  border: 0;
-  border-radius: 7px;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--shop-ink-dim);
-  cursor: default;
-  transition: background 130ms ease, color 130ms ease;
-}
-
-.runtime-shop-step svg {
-  width: 13px;
-  height: 13px;
-}
-
+.runtime-shop-detail-open,
+.runtime-shop-actor,
+.runtime-shop-slot-choice,
+.runtime-shop-cancel { padding: var(--shop-space-2) var(--shop-space-4); min-height: var(--shop-control); }
+.runtime-shop-confirm { color: var(--shop-ink); background: var(--shop-accent-soft); border-color: var(--shop-accent); }
+.runtime-shop-quantity-wrap { display: flex; align-items: center; gap: var(--shop-space-1); flex: 0 0 auto; }
+.runtime-shop-quantity-label { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-step { width: var(--shop-control); height: var(--shop-control); padding: 0; display: grid; place-items: center; }
+.runtime-shop-step svg { width: var(--shop-space-3); height: var(--shop-space-3); }
 .runtime-shop-overlay .runtime-commerce-quantity-input {
-  width: 46px;
-  padding: 5px 4px;
-  border: 1px solid var(--shop-line);
-  border-radius: 7px;
-  background: rgba(0, 0, 0, 0.4);
+  width: var(--shop-art-row);
+  height: var(--shop-control);
+  padding: var(--shop-space-1);
+  border: var(--shop-line-width) solid var(--shop-line-strong);
+  border-radius: var(--shop-radius-small);
+  background: var(--shop-inset);
   color: var(--shop-ink);
-  font: 700 13px/1 var(--shop-ui-font);
+  font: 700 var(--shop-text-body)/1 var(--shop-ui-font);
   font-variant-numeric: tabular-nums;
   text-align: center;
   appearance: textfield;
   -moz-appearance: textfield;
 }
-
 .runtime-shop-overlay .runtime-commerce-quantity-input::-webkit-inner-spin-button,
-.runtime-shop-overlay .runtime-commerce-quantity-input::-webkit-outer-spin-button {
-  appearance: none;
-  margin: 0;
+.runtime-shop-overlay .runtime-commerce-quantity-input::-webkit-outer-spin-button { appearance: none; margin: 0; }
+.runtime-shop-quantity-total { font-size: var(--shop-text-section); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--shop-ink); margin-left: var(--shop-space-2); white-space: nowrap; }
+.runtime-shop-overlay .runtime-commerce-quantity-hint { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-keyhints { display: flex; gap: var(--shop-space-4); flex-wrap: wrap; align-items: center; padding-top: var(--shop-space-2); }
+.runtime-shop-keyhint { display: inline-flex; align-items: center; gap: var(--shop-space-1); }
+.runtime-shop-key { padding: 0 var(--shop-space-1); border: var(--shop-line-width) solid var(--shop-line-strong); border-radius: var(--shop-radius-small); background: var(--shop-card); color: var(--shop-ink-dim); font: 600 var(--shop-text-small)/1.4 var(--shop-ui-font); }
+.runtime-shop-keyhint-label { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-greeting-panel { width: min(var(--shop-entry-width), 100%); padding: var(--shop-space-8); border: var(--shop-line-width) solid var(--shop-line-strong); border-radius: var(--shop-radius); background: var(--shop-surface); box-shadow: var(--runtime-glass-shadow); }
+.runtime-shop-menu { display: flex; flex-direction: column; gap: var(--shop-space-6); }
+.runtime-shop-menu .runtime-shop-brand-title { font-size: var(--shop-text-entry); }
+.runtime-shop-message { font-size: var(--shop-text-body); line-height: 1.6; }
+.runtime-shop-menu-choices { display: flex; gap: var(--shop-space-2); }
+.runtime-shop-menu-choice { display: flex; flex: 1 1 0; flex-direction: column; gap: var(--shop-space-1); align-items: center; text-align: center; padding: var(--shop-space-4) var(--shop-space-2); color: var(--shop-ink); }
+.runtime-shop-overlay .runtime-shop-menu-choice.rm-nav-item { padding-left: var(--shop-space-2); }
+.runtime-shop-overlay .runtime-shop-menu-choice.selected { background: var(--shop-accent-soft); border-color: var(--shop-accent); box-shadow: inset 0 0 0 var(--shop-line-width) var(--shop-accent); color: var(--shop-ink); }
+.runtime-shop-overlay .runtime-shop-menu-choice.selected::before { content: none; }
+.runtime-shop-menu-choice:disabled { opacity: 0.5; }
+.runtime-shop-menu-choice-label { font-size: var(--shop-text-section); font-weight: 700; }
+.runtime-shop-menu-choice-hint { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-entry-purse { padding-block: var(--shop-space-3); border-block: var(--shop-line-width) solid var(--shop-line); }
+.runtime-shop-haggle-shell { background: var(--shop-surface); border: var(--shop-line-width) solid var(--shop-line-strong); }
+.runtime-shop-overlay :is(button, input, .runtime-shop-detail-scroll):focus-visible { outline: var(--shop-focus-width) solid var(--shop-ink); outline-offset: var(--shop-line-width); }
+/* One complete preview ledger; the existing inline flex containment remains
+   structural only. No trade action lives in this shell. */
+.runtime-shop-comparison {
+  padding: var(--shop-space-4);
+  gap: var(--shop-space-3);
+  background: var(--shop-surface);
+  border: var(--shop-line-width) solid var(--shop-line-strong);
+  border-radius: var(--shop-radius);
+  box-shadow: var(--runtime-glass-shadow);
+  min-width: 0;
 }
-
-.runtime-shop-quantity-total {
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  font-size: 12.5px;
-  color: var(--shop-accent);
-  padding-left: 2px;
-  white-space: nowrap;
+.runtime-shop-detail-scroll {
+  padding: var(--shop-space-2);
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--shop-line-strong) var(--shop-inset);
+  scroll-padding-block: var(--shop-space-2);
+  overflow-wrap: anywhere;
 }
-
-.runtime-commerce-quantity-hint {
-  color: var(--shop-ink-faint);
-  font-size: 10.5px;
-  white-space: nowrap;
+.runtime-shop-detail-scroll > *,
+.runtime-shop-comparison-summary > * { margin: 0; }
+.runtime-shop-detail-scroll > * + * { margin-top: var(--shop-space-3); }
+.runtime-shop-detail-scroll > h2 { font-size: var(--shop-text-title); line-height: 1.25; }
+.runtime-shop-detail-scroll > p { color: var(--shop-ink-dim); }
+.runtime-shop-detail-scroll > p + p {
+  border-left: var(--shop-focus-width) solid var(--shop-accent);
+  padding-left: var(--shop-space-2);
+  color: var(--shop-ink);
 }
-
-/* ── 조작 힌트 ───────────────────────────────────────────────────────────
-   키보드로 도는 화면인데 어떤 키가 먹는지 화면에 없으면 알 수 없다. */
-.runtime-shop-keyhints {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  align-items: center;
-  padding-top: 7px;
-  border-top: 1px solid var(--shop-line);
+.runtime-shop-actor-choices,
+.runtime-shop-slot-choices { display: flex; flex-wrap: wrap; gap: var(--shop-space-2); }
+.runtime-shop-actor,
+.runtime-shop-slot-choice { max-width: 100%; min-width: 0; overflow-wrap: anywhere; text-align: left; }
+.runtime-shop-actor[aria-pressed="true"],
+.runtime-shop-slot-choice[aria-pressed="true"] { background: var(--shop-accent-soft); border-color: var(--shop-accent); color: var(--shop-ink); }
+.runtime-shop-comparison-summary { display: flex; flex-direction: column; gap: var(--shop-space-2); overflow-wrap: anywhere; }
+.runtime-shop-comparison-heading { font-size: var(--shop-text-section); line-height: 1.4; }
+.runtime-shop-replacement { color: var(--shop-ink-dim); }
+.runtime-shop-preview-reason { color: var(--shop-loss); }
+.runtime-shop-same-equipment { color: var(--shop-ink-dim); }
+.runtime-shop-comparison-stats { grid-template-columns: minmax(0, 1fr); gap: 0; }
+.runtime-shop-comparison-stats > .runtime-shop-stat {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+  padding-block: var(--shop-space-2);
+  border-bottom: var(--shop-line-width) solid var(--shop-line);
+  font-size: var(--shop-text-body);
 }
-
-.runtime-shop-menu .runtime-shop-keyhints {
-  border-top: 0;
-  justify-content: center;
-  padding-top: 2px;
-}
-
-.runtime-shop-keyhint {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.runtime-shop-key {
-  display: inline-grid;
-  place-items: center;
-  min-width: 22px;
-  padding: 2px 5px;
-  border: 1px solid var(--shop-line-strong);
-  border-bottom-width: 2px;
-  border-radius: 5px;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--shop-ink-dim);
-  font: 600 10.5px/1.3 var(--shop-ui-font);
-}
-
-.runtime-shop-keyhint-label {
-  color: var(--shop-ink-faint);
-  font-size: 10.5px;
-}
-
-/* ── 입구 화면 ───────────────────────────────────────────────────────────── */
-.runtime-shop-greeting-panel {
-  width: min(480px, 100%);
-  margin: 0 auto;
-  padding: 20px 22px 16px;
-}
-
-.runtime-shop-menu {
+.runtime-shop-comparison-stats .runtime-shop-stat-value,
+.runtime-shop-stat-delta { text-align: right; font-variant-numeric: tabular-nums; }
+.runtime-shop-stat-delta { font-weight: 700; }
+.runtime-shop-stat.is-up .runtime-shop-stat-delta { color: var(--shop-gain); }
+.runtime-shop-stat.is-down .runtime-shop-stat-delta { color: var(--shop-loss); }
+.runtime-shop-stat.is-same .runtime-shop-stat-delta { color: var(--shop-ink-dim); }
+.runtime-shop-displaced,
+.runtime-shop-effects {
+  padding-top: var(--shop-space-3);
+  border-top: var(--shop-line-width) solid var(--shop-line);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--shop-space-2);
 }
+.runtime-shop-comparison-summary :is(.runtime-shop-displaced, .runtime-shop-effects) > * { margin: 0; }
+.runtime-shop-comparison-summary :is(.runtime-shop-displaced, .runtime-shop-effects) > h3 { font-size: var(--shop-text-body); }
+.runtime-shop-effects-gained > h3 { color: var(--shop-gain); }
+.runtime-shop-effects-lost > h3 { color: var(--shop-loss); }
+.runtime-shop-detail-close { align-self: flex-end; }
+.runtime-shop-comparison > .runtime-shop-keyhints { padding-top: 0; flex: 0 0 auto; }
+.runtime-shop-comparison .runtime-shop-keyhint { min-width: 0; flex-wrap: wrap; }
+.runtime-shop-comparison .runtime-shop-key { overflow-wrap: anywhere; }
+.runtime-shop-balance-after { font-size: var(--shop-text-small); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.runtime-shop-balance-after[data-shortage] { color: var(--shop-loss); }
+.runtime-shop-overlay :is(.runtime-shop-confirm, .runtime-shop-detail-open):disabled { color: var(--shop-ink-dim); background: var(--shop-card); border-color: var(--shop-line); }
+/* Flex display must not override the semantic hidden stock/detail state. */
+.runtime-shop-overlay [hidden] { display: none; }
+.runtime-shop-gold-value.is-bumped { animation: runtime-shop-bump var(--shop-bump-ms) ease; }
+.runtime-shop-gold-delta { position: absolute; right: 0; top: 0; font-size: var(--shop-text-body); font-weight: 700; pointer-events: none; animation: runtime-shop-float var(--shop-float-ms) ease-out forwards; }
+.runtime-shop-gold-delta.is-gain { color: var(--shop-gain); }
+.runtime-shop-gold-delta.is-loss { color: var(--shop-loss); }
+@keyframes runtime-shop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes runtime-shop-bump { 0%, 100% { transform: scale(1); } 38% { transform: scale(1.12); } }
+@keyframes runtime-shop-float { 0% { opacity: 0; transform: translateY(var(--shop-space-1)); } 22% { opacity: 1; } 100% { opacity: 0; transform: translateY(calc(-1 * var(--shop-space-6))); } }
 
-.runtime-shop-message {
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.runtime-shop-menu-notice .runtime-shop-message {
-  text-align: center;
-  color: var(--shop-ink-dim);
-  padding: 8px 0 4px;
-}
-
-.runtime-shop-menu-choices {
-  display: flex;
-  gap: 8px;
-}
-
-.runtime-shop-menu-choice {
-  appearance: none;
-  flex: 1 1 0;
-  padding: 12px 14px;
-  border: 1px solid var(--shop-line-strong);
-  border-radius: 11px;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--shop-ink);
-  font: 700 13.5px/1 var(--shop-ui-font);
-  cursor: default;
-  transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
-}
-
-/* 커서가 얹힌 선택 — 목록 행과 같은 강조 언어를 쓴다. */
-.runtime-shop-menu-choice.selected {
-  background: var(--shop-accent);
-  border-color: transparent;
-  color: var(--shop-on-accent);
-  box-shadow: 0 8px 22px -10px rgba(239, 177, 74, 0.95);
-}
-
-.runtime-shop-menu-choice:disabled {
-  opacity: 0.42;
-  cursor: not-allowed;
-}
-
-.runtime-shop-menu-choice-cancel {
-  flex: 0 0 auto;
-  min-width: 82px;
-  color: var(--shop-ink-dim);
-}
-
-.runtime-shop-menu-choice-cancel.selected {
-  color: var(--shop-on-accent);
-}
-
-/* ── 좁은 화면 ───────────────────────────────────────────────────────────
-   상세 카드를 접어 목록에 폭을 준다. 파티 줄은 그때 숨긴다(정보 우선순위가 가장 낮다). */
-@media (max-width: 860px) {
-  .runtime-shop-side {
-    flex-basis: 196px;
+/* Compact viewport keeps one-dimensional stock navigation and a real display. */
+@media (max-width: 860px), (max-height: 600px) {
+  /* The overlay padding supplies the compact gutter; do not subtract the
+     legacy stage margin a second time before laying out the shop. */
+  .player-layout .play-viewport > .runtime-overlay.runtime-shop-overlay {
+    width: min(100%, calc(var(--play-logical-width) * var(--play-scale)));
+    height: min(100%, calc(var(--play-logical-height) * var(--play-scale)));
   }
-
-  .runtime-shop-party-panel {
-    display: none;
+  .runtime-shop-overlay {
+    --shop-art-row: 32px;
+    --shop-art-display: 96px;
+    --shop-text-title: 16px;
+    --shop-text-entry: 24px;
+    --shop-text-body: 12px;
+    --shop-text-section: 14px;
+    padding: var(--shop-space-2);
   }
+  .runtime-shop-topbar { padding: var(--shop-space-2) var(--shop-space-3); gap: var(--shop-space-2); }
+  .runtime-shop-list-panel { padding: var(--shop-space-2); gap: var(--shop-space-1); }
+  .runtime-shop-item-row { column-gap: var(--shop-space-2); }
+  .runtime-shop-detail-panel { padding: var(--shop-space-3); }
+  .runtime-shop-detail-hero { flex-direction: column; align-items: stretch; }
+  .runtime-shop-detail-icon { width: 100%; }
+  .runtime-shop-comparison { padding: var(--shop-space-2); gap: var(--shop-space-2); }
+  .runtime-shop-detail,
+  .runtime-shop-detail-hero { gap: var(--shop-space-2); }
+  .runtime-shop-catbar { padding-bottom: var(--shop-space-2); }
+  .runtime-shop-chip { padding: var(--shop-space-1); }
+  .runtime-shop-party-panel { display: none; }
+  .runtime-shop-prompt-panel { padding: var(--shop-space-2) var(--shop-space-3); }
+  .runtime-shop-status { flex-basis: 100%; }
+  .runtime-shop-prompt-actions { margin-left: auto; }
+  .runtime-shop-keyhints { gap: var(--shop-space-2); }
+  /* Comparison must fit before optional duplicated item presentation. */
+  .runtime-shop-detail:has(.runtime-shop-comparison-stats) > :is(
+    [data-testid="shop-hero-slot"], .runtime-shop-help-line, .runtime-shop-owned-panel
+  ) { display: none; }
 }
-
-@media (max-width: 680px) {
-  .runtime-shop-main {
+@media (max-width: 460px), (max-height: 360px) {
+  .runtime-shop-overlay {
+    --shop-text-small: 10px;
+    --shop-text-title: 14px;
+    --shop-art-row: 24px;
+    --shop-control: 24px;
+    padding: var(--shop-space-1);
+  }
+  .runtime-shop-topbar { gap: var(--shop-space-1); padding: var(--shop-space-1) var(--shop-space-2); }
+  .runtime-shop-topbar .runtime-shop-merchant-avatar { display: none; }
+  .runtime-shop-topbar .runtime-shop-brand-sub { font-size: var(--shop-text-small); }
+  .runtime-shop-tab { padding: var(--shop-space-1); }
+  .runtime-shop-gold-panel { padding-left: var(--shop-space-1); }
+  .runtime-shop-gold-line { gap: var(--shop-space-1); }
+  .runtime-shop-list-panel { padding: var(--shop-space-1); gap: 0; }
+  .runtime-shop-catbar { padding-bottom: 0; }
+  .runtime-shop-main { flex-direction: column; }
+  .runtime-shop-side { flex: 0 0 auto; border-left: 0; border-top: var(--shop-line-width) solid var(--shop-line); }
+  .runtime-shop-detail-panel { padding: var(--shop-space-1) var(--shop-space-2); overflow: hidden; }
+  .runtime-shop-detail { display: grid; grid-template-columns: 1fr 1fr; gap: var(--shop-space-2); align-items: center; }
+  .runtime-shop-detail-hero { flex-direction: row; align-items: center; gap: var(--shop-space-2); }
+  .runtime-shop-detail-icon { width: var(--shop-art-row); height: var(--shop-art-row); background-size: 85%; box-shadow: none; }
+  .runtime-shop-detail-icon::after { display: none; }
+  .runtime-shop-detail-name { font-size: var(--shop-text-body); }
+  .runtime-shop-help-line { border: 0; padding: 0; margin: 0; font-size: var(--shop-text-small); line-height: 1.3; max-height: 2.6em; overflow: hidden; }
+  .runtime-shop-owned-panel,
+  .runtime-shop-detail [data-testid="shop-stat-slot"] { display: none; }
+  .runtime-shop-item-row { padding-block: 0; line-height: 1.2; }
+  .runtime-shop-item-type { display: none; }
+  .runtime-shop-prompt-panel { padding: var(--shop-space-1) var(--shop-space-2); }
+  .runtime-shop-prompt { gap: var(--shop-space-1); }
+  .runtime-shop-status { font-size: var(--shop-text-small); }
+  .runtime-shop-confirm,
+  .runtime-shop-detail-open,
+  .runtime-shop-cancel { padding: var(--shop-space-1) var(--shop-space-2); }
+  .runtime-shop-quantity-label { display: none; }
+  .runtime-shop-quantity-total { font-size: var(--shop-text-body); margin-left: var(--shop-space-1); }
+  .runtime-shop-keyhints { padding-top: var(--shop-space-1); gap: var(--shop-space-1); }
+  .runtime-shop-keyhint { gap: 0; }
+  .runtime-shop-greeting-panel { padding: var(--shop-space-3); }
+  .runtime-shop-menu { gap: var(--shop-space-3); }
+  .runtime-shop-menu-choice { padding-block: var(--shop-space-2); }
+  .runtime-shop-topbar .runtime-shop-brand { overflow: hidden; }
+  .runtime-shop-topbar .runtime-shop-brand-title,
+  .runtime-shop-topbar .runtime-shop-brand-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .runtime-shop-prompt-actions { margin-left: 0; }
+  .runtime-shop-prompt-panel .runtime-shop-keyhint:not(:first-child) { display: none; }
+  .runtime-shop-comparison { --shop-text-small: 12px; }
+  .runtime-shop-comparison .runtime-shop-key { font-size: var(--shop-text-small); }
+  .runtime-shop-comparison > .runtime-shop-keyhints { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  .runtime-shop-comparison .runtime-shop-keyhint:nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+  .runtime-shop-comparison .runtime-shop-keyhint-label { display: none; }
+  .runtime-shop-detail:has(.runtime-shop-comparison-stats),
+  .runtime-shop-detail:has(.runtime-shop-comparison-stats) > [data-testid="shop-stat-slot"] { display: block; }
+  .runtime-shop-detail .runtime-shop-comparison-summary { gap: 0; }
+  .runtime-shop-detail :is(.runtime-shop-comparison-heading, .runtime-shop-preview-reason) {
+    font-size: var(--shop-text-small);
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .runtime-shop-detail :is(.runtime-shop-replacement, .runtime-shop-same-equipment) { display: none; }
+  .runtime-shop-detail .runtime-shop-comparison-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--shop-space-1);
+  }
+  .runtime-shop-detail .runtime-shop-comparison-stats > .runtime-shop-stat {
+    display: flex;
     flex-direction: column;
+    gap: 0;
+    padding: 0;
+    border: 0;
+    font-size: var(--shop-text-small);
+    line-height: 1.2;
   }
-
-  .runtime-shop-side {
-    flex: 0 0 auto;
+  .runtime-shop-detail .runtime-shop-comparison-stats > .runtime-shop-stat > span { text-align: center; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-prompt-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--shop-space-1);
+    align-items: center;
   }
-
-  .runtime-shop-detail-panel {
-    max-height: 168px;
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-prompt { display: contents; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-status { grid-column: 1 / -1; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-quantity-wrap { grid-column: 1; grid-row: 2; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-balance-after { grid-column: 2; grid-row: 2; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-prompt-actions { grid-column: 1; grid-row: 3; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-keyhints {
+    grid-column: 2;
+    grid-row: 3;
+    padding-top: 0;
+    justify-self: end;
   }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-keyhint-label { display: none; }
 }
-
-/* ── 공용 커서 비주얼 되잡기 ──────────────────────────────────────────────
-   keyboardNav.css 의 `.rm-nav-item.selected` 는 RM2003 청색 그라디언트 바(+ inset 하이라이트)
-   와 ▶ 삼각형을 칠한다. 그 파일은 playerRuntime.css 에서 shop.css 보다 뒤에 import 되므로
-   같은 특정도(0,2,0)에서는 늘 이긴다 — 그래서 가게의 금색 강조가 전부 파란 바에 덮여 있었다.
-
-   커서 언어를 없애는 게 아니라 가게 안에서만 가게 팔레트로 바꾼다. `.runtime-shop-overlay`
-   한 겹을 더해 (0,3,0) 으로 이긴다(!important 없이). 가게 밖의 맵/전투 메뉴는 그대로 청색이다. */
-.runtime-shop-overlay .rm-nav-item.selected {
-  background: var(--shop-accent-soft);
-  box-shadow: none;
-  color: var(--shop-ink);
-}
-
-/* 행에는 이미 좌측 금색 바가 있다 — ▶ 까지 겹치면 표식이 둘이라 지저분하다. */
-.runtime-shop-overlay .rm-nav-item.selected::before {
-  content: "";
-  animation: none;
-  filter: none;
-}
-
-.runtime-shop-overlay .runtime-shop-item-row.rm-nav-item.selected::before {
-  left: 0;
-  height: 62%;
-}
-
-/* 입구 카드는 목록 행이 아니라 결정 버튼이다 — 채운 금색으로 "여기서 Enter" 를 분명히 한다. */
-.runtime-shop-overlay .runtime-shop-menu-choice.rm-nav-item.selected {
-  background: var(--shop-accent);
-  border-color: transparent;
-  color: var(--shop-on-accent);
-  box-shadow: 0 8px 22px -10px rgba(239, 177, 74, 0.95);
-}
-
-.runtime-shop-overlay .runtime-shop-menu-choice.rm-nav-item.selected .runtime-shop-menu-choice-hint {
-  color: rgba(32, 23, 4, 0.72);
-}
-
-/* 커서 거터(22px)는 목록 행에만 의미가 있다. 카드·탭에서는 라벨이 왼쪽으로 치우친다. */
-.runtime-shop-overlay .runtime-shop-menu-choice.rm-nav-item.rm-nav-item {
-  padding-left: 14px;
-}
-
-/* ── 입구 카드 내부 ──────────────────────────────────────────────────────── */
-.runtime-shop-menu-choice {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: center;
-  text-align: center;
-}
-
-.runtime-shop-menu-choice-label {
-  font: 700 14px/1.2 var(--shop-ui-font);
-}
-
-.runtime-shop-menu-choice-hint {
-  font: 500 10.5px/1.3 var(--shop-ui-font);
-  color: var(--shop-ink-faint);
-}
-
-.runtime-shop-party-caption {
-  font: 600 10px/1 var(--shop-ui-font);
-  letter-spacing: 0.08em;
-  color: var(--shop-ink-faint);
-  align-self: center;
-  margin-right: 2px;
-}
-
-.runtime-shop-entry-purse {
-  display: flex;
-  justify-content: center;
-  padding: 8px 12px;
-  border: 1px solid var(--shop-line);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.04);
-}
-
-/* 모션 민감 사용자: 떠오르는 토스트와 반짝임을 끈다. */
 @media (prefers-reduced-motion: reduce) {
   .runtime-shop-overlay,
   .runtime-shop-gold-value.is-bumped,
-  .runtime-shop-gold-delta {
-    animation: none;
-  }
-
-  .runtime-shop-item-row,
-  .runtime-shop-confirm,
-  .runtime-shop-menu-choice {
-    transition: none;
-  }
+  .runtime-shop-gold-delta { animation: none; }
 }

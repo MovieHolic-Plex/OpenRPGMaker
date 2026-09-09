@@ -1,5 +1,5 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import type { StatusMenuDetail, StatusMenuDetailEntry } from "@/player/playerStatusMenuDetails";
+import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailFact } from "@/player/playerStatusMenuDetails";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -217,7 +217,7 @@ function renderDetailEntry(options: {
 
 /** 선택된 항목의 그림(아이콘/얼굴)을 크게, 이름·수치·설명 전문을 그린다. 그릴 것이 없으면(동작 확인문 등) null. */
 function renderDetailShowcase(project: Project, entry: StatusMenuDetailEntry): HTMLElement | null {
-  if (!entry.icon && !entry.face && !entry.description && !entry.unavailableReason && !entry.statDelta) return null;
+  if (!entry.icon && !entry.face && !entry.description && !entry.unavailableReason && !entry.statDelta && !entry.facts?.length) return null;
   const art = entry.icon
     ? renderDetailEntryIcon(project, { ...entry.icon, testId: "status-menu-showcase-art" })
     : entry.face
@@ -256,12 +256,143 @@ function renderDetailShowcase(project: Project, entry: StatusMenuDetailEntry): H
       })),
     }));
   }
+  if (entry.facts?.length) {
+    children.push(el("section", {
+      class: "status-menu-stat-delta status-menu-item-facts",
+      dataset: { testid: "status-menu-item-facts" },
+      children: entry.facts.flatMap((fact) => renderItemFactRows(project, fact)),
+    }));
+  }
   return el("aside", {
-    class: `status-menu-detail-showcase${entry.statDelta ? " has-stat-delta" : ""}`,
+    class: `status-menu-detail-showcase${entry.statDelta || entry.facts?.length ? " has-stat-delta" : ""}${entry.facts?.length ? " has-item-facts" : ""}`,
     attrs: { "aria-live": "polite" },
     dataset: { testid: "status-menu-detail-showcase" },
     children,
   });
+}
+
+const ITEM_FACT_LABEL: Record<string, string> = {
+  type: "종류",
+  effects: "효과",
+  eligibility: "사용",
+  target: "대상",
+  consumption: "소모",
+};
+
+const ITEM_TYPE_LABEL: Record<string, string> = {
+  medicine: "약",
+  normalGoods: "일반",
+  book: "책",
+  seed: "씨앗",
+  special: "특수",
+  switch: "장치",
+  weapon: "무기",
+  shield: "방패",
+  body: "몸",
+  head: "머리",
+  accessory: "장신구",
+};
+
+const ITEM_ELIGIBILITY_LABEL: Record<string, string> = {
+  usable: "가능",
+  battle: "전투 중만",
+  unusable: "불가",
+  restricted: "일부만",
+};
+
+const ITEM_TARGET_LABEL = { none: "대상 없음", ally: "아군 1명", allAllies: "아군 전체", enemy: "적 1명", partyMonster: "파티 몬스터 1마리" };
+const ITEM_SEED_LABEL: Record<string, string> = { attack: "공격", defense: "방어", mind: "정신", agility: "민첩" };
+
+function renderItemFactRow(id: string, display: string, machineValue: string): HTMLElement {
+  return el("div", {
+    class: "status-menu-stat-delta-row",
+    dataset: { testid: `status-menu-item-fact-${id}`, factId: id, factValue: machineValue },
+    children: [
+      el("span", { class: "status-menu-stat-delta-label", text: ITEM_FACT_LABEL[id] ?? id }),
+      el("span", { class: "status-menu-stat-delta-value", text: display }),
+    ],
+  });
+}
+
+function renderItemFactRows(project: Project, fact: StatusMenuDetailFact): HTMLElement[] {
+  if (fact.id !== "eligibility") {
+    return [renderItemFactRow(fact.id, itemFactDisplay(project, fact), fact.value)];
+  }
+  const rows = [renderItemFactRow("eligibility", ITEM_ELIGIBILITY_LABEL[fact.value] ?? fact.value, fact.value)];
+  if (fact.targeting) {
+    const display = [ITEM_TARGET_LABEL[fact.targeting.scope], fact.targeting.deadOnly ? "전투불능만" : ""]
+      .filter(Boolean).join(" · ");
+    rows.push(renderItemFactRow("target", display, fact.targeting.scope));
+  }
+  if (fact.consumption) {
+    const display = fact.consumption.consumable
+      ? `현재 ${fact.consumption.remainingCopyUses}/${fact.consumption.usesPerCopy}회 · 총 ${fact.consumption.remainingUses}회`
+      : "재사용";
+    rows.push(renderItemFactRow(
+      "consumption",
+      display,
+      fact.consumption.consumable ? `${fact.consumption.remainingCopyUses}/${fact.consumption.usesPerCopy}` : "reusable",
+    ));
+  }
+  return rows;
+}
+
+function itemFactDisplay(project: Project, fact: StatusMenuDetailFact): string {
+  if (fact.id === "type") return ITEM_TYPE_LABEL[fact.value] ?? fact.value;
+  return formatItemEffectTokens(project, fact.value.split(",").filter(Boolean));
+}
+
+function formatItemEffectTokens(project: Project, tokens: readonly string[]): string {
+  const parts: string[] = [];
+  const healNames: string[] = [];
+  const flushHeals = () => {
+    if (healNames.length === 0) return;
+    parts.push(`치료 ${healNames.join(" · ")}`);
+    healNames.length = 0;
+  };
+  for (const token of tokens) {
+    if (token === "none") {
+      flushHeals();
+      parts.push(itemEffectTokenLabel(project, token));
+      continue;
+    }
+    const [kind, raw] = token.split(":");
+    if (kind === "heal") {
+      const value = decodeURIComponent(raw ?? "");
+      healNames.push(project.database.states.find((state) => state.id === value)?.name ?? value);
+      continue;
+    }
+    flushHeals();
+    parts.push(itemEffectTokenLabel(project, token));
+  }
+  flushHeals();
+  return parts.join(" · ");
+}
+
+function itemEffectTokenLabel(project: Project, token: string): string {
+  if (token === "none") return "없음";
+  const [kind, raw, amount, extra] = token.split(":");
+  const value = decodeURIComponent(raw ?? "");
+  switch (kind) {
+    case "hp": return `HP +${value}`;
+    case "hp%": return `HP ${value}%`;
+    case "mp": return `MP +${value}`;
+    case "mp%": return `MP ${value}%`;
+    case "heal": return `치료 ${project.database.states.find((state) => state.id === value)?.name ?? value}`;
+    case "state": return `상태 ${project.database.states.find((state) => state.id === value)?.name ?? value} ${amount}%`;
+    case "learn": return `습득 ${project.database.skills.find((skill) => skill.id === value)?.name ?? value}`;
+    case "skill": return `스킬 ${project.database.skills.find((skill) => skill.id === value)?.name ?? value}`;
+    case "switch": return `장치 ${project.switches.find((entry) => entry.id === value)?.name || value}`;
+    case "care": return `${value === "toy" ? "장난감" : "먹이"} · 친밀도 ${signedItemAmount(Number(amount))} · EXP ${signedItemAmount(Number(extra))}`;
+    case "capture": return `포획 ×${value}`;
+    case "capture-class": return `포획 ${value}`;
+    case "seed": return `${ITEM_SEED_LABEL[value] ?? value} ${signedItemAmount(Number(amount))}`;
+    default: return token;
+  }
+}
+
+function signedItemAmount(value: number): string {
+  return `${value >= 0 ? "+" : ""}${value}`;
 }
 
 function detailEntryId(entry: StatusMenuDetailEntry, actionIndex?: number): string {
@@ -314,6 +445,29 @@ function renderDetailEntryIcon(project: Project, icon: NonNullable<StatusMenuDet
       class: "status-menu-entry-icon missing",
       attrs: { role: "img", "aria-label": `${icon.alt} missing` },
       dataset: { testid: icon.testId },
+    });
+  }
+  if (icon.sheet) {
+    const { frameWidth, frameHeight, columns } = icon.sheet;
+    const longestSide = Math.max(frameWidth, frameHeight);
+    return el("span", {
+      class: "status-menu-entry-icon",
+      attrs: { role: "img", "aria-label": icon.alt, style: "display:grid;place-items:center" },
+      dataset: { testid: icon.testId },
+      children: [el("span", {
+        attrs: {
+          "aria-hidden": "true",
+          style: [
+            `width:${frameWidth / longestSide * 100}%`,
+            `height:${frameHeight / longestSide * 100}%`,
+            `background-image:url("${url}")`,
+            `background-size:${columns * 100}% auto`,
+            "background-position:0 0",
+            "background-repeat:no-repeat",
+            "image-rendering:pixelated",
+          ].join(";"),
+        },
+      })],
     });
   }
   return el("span", {

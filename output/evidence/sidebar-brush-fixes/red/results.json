@@ -1,0 +1,56 @@
+{
+  "baseUrl": "http://127.0.0.1:19841",
+  "scope": "all",
+  "results": [
+    {
+      "name": "C1-size-2",
+      "status": "FAIL",
+      "error": "2x2 brush footprint\n\n9 !== 4\n",
+      "screenshot": "C1-size-2.png"
+    },
+    {
+      "name": "C1-size-4",
+      "status": "FAIL",
+      "error": "4x4 brush footprint\n\n25 !== 16\n",
+      "screenshot": "C1-size-4.png"
+    },
+    {
+      "name": "C2-sparse-stroke",
+      "status": "FAIL",
+      "error": "sparse stroke must fill all intervening cells\n\n2 !== 13\n",
+      "screenshot": "C2-sparse-stroke.png"
+    },
+    {
+      "name": "C3-noop-redo",
+      "status": "FAIL",
+      "error": "no-op must preserve redo\n\nfalse !== true\n",
+      "screenshot": "C3-noop-redo.png"
+    },
+    {
+      "name": "C6-picking-parity",
+      "status": "FAIL",
+      "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   43,\n+   'lower'\n-   85,\n-   'upper'\n  ]\n",
+      "screenshot": "C6-picking-parity.png"
+    },
+    {
+      "name": "C4-modes-and-viewports",
+      "status": "FAIL",
+      "error": "beginner requires visible size controls\n\nfalse !== true\n",
+      "screenshot": "C4-modes-and-viewports.png"
+    },
+    {
+      "name": "C5-representative-selection",
+      "status": "FAIL",
+      "error": "picked representative must survive filter\n\n0 !== 1\n",
+      "screenshot": "C5-representative-selection.png"
+    },
+    {
+      "name": "C7-beginner-search",
+      "status": "FAIL",
+      "error": "unmatched search needs feedback\n\nfalse !== true\n",
+      "screenshot": "C7-beginner-search.png"
+    }
+  ],
+  "errors": [],
+  "cleanup": true
+}

@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": true,
+    "types": ["node"]
+  },
+  "include": ["qa-export-playability.mts", "qa-map-resource-clears.mts", "../src/**/*.d.ts"]
+}

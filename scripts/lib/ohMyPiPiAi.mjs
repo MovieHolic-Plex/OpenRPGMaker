@@ -115,6 +115,25 @@ export async function createOhMyPiAdapters() {
       const apiKey = await resolveRequestApiKey(provider);
       return workerJson("/complete", { provider, body, apiKey });
     },
+    /** Pi 에이전트 실행. 워커의 NDJSON 본문(web ReadableStream)을 그대로 넘긴다. */
+    async runAgent(provider, body, options = {}) {
+      const apiKey = await resolveRequestApiKey(provider);
+      const port = await startWorker();
+      // 브라우저가 끊으면(중단 버튼) 그 신호를 워커까지 넘긴다 — 안 그러면 에이전트는 끝까지 돈다.
+      const response = await fetch(`http://127.0.0.1:${port}/agent/run`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apiKey, request: { ...body, provider } }),
+        ...(options.signal ? { signal: options.signal } : {}),
+      });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        const error = new Error(payload?.error || `oh-my-pi worker ${response.status}`);
+        error.status = response.status;
+        throw error;
+      }
+      return { stream: true, ndjson: response.body };
+    },
     async generateImage(provider, body) {
       const apiKey = await resolveRequestApiKey(provider);
       return workerJson("/image", { provider, body, apiKey });

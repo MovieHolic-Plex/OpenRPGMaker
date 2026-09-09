@@ -38,7 +38,7 @@ function countConiferPairs(map: GameMap): number {
   let count = 0;
   for (let y = 0; y < map.height - 1; y += 1) {
     for (let x = 0; x < map.width; x += 1) {
-      if (map.upperTiles[at(map, x, y)] === 260 && map.upperTiles[at(map, x, y + 1)] === 290) count += 1;
+      if (map.upperTiles[at(map, x, y)] === 260 && map.lowerTiles[at(map, x, y + 1)] === 290) count += 1;
     }
   }
   return count;
@@ -58,9 +58,10 @@ describe("hard cluster rule placement", () => {
 
     expectOk(result);
     const painted = currentMap(ctx, map.id);
-    expect(result.summary).toContain("동반");
+    expect(result.data).toMatchObject({ autoClusterTiles: 1, skippedClusterCells: 0 });
     expect(painted.upperTiles[at(painted, 5, 4)]).toBe(260);
-    expect(painted.upperTiles[at(painted, 5, 5)]).toBe(290);
+    expect(painted.lowerTiles[at(painted, 5, 5)]).toBe(290);
+    expect(painted.upperTiles[at(painted, 5, 5)]).toBe(TILE.EMPTY);
   });
 
   it("paint_tiles가 y=0에서 침엽수 하단(290) 배치를 거부해 반쪽 타일을 남기지 않는다", () => {
@@ -115,7 +116,8 @@ describe("hard cluster rule placement", () => {
     expectOk(result);
     const painted = currentMap(ctx, map.id);
     expect(painted.upperTiles[at(painted, 5, 4)]).toBe(260);
-    expect(painted.upperTiles[at(painted, 5, 5)]).toBe(290);
+    expect(painted.lowerTiles[at(painted, 5, 5)]).toBe(290);
+    expect(painted.upperTiles[at(painted, 5, 5)]).toBe(TILE.EMPTY);
   });
 
   it("paint_tiles가 활엽수 하단 좌측(292)에서 2x2 전체를 원자 배치한다", () => {
@@ -133,8 +135,10 @@ describe("hard cluster rule placement", () => {
     const painted = currentMap(ctx, map.id);
     expect(painted.upperTiles[at(painted, 4, 3)]).toBe(262);
     expect(painted.upperTiles[at(painted, 5, 3)]).toBe(263);
-    expect(painted.upperTiles[at(painted, 4, 4)]).toBe(292);
-    expect(painted.upperTiles[at(painted, 5, 4)]).toBe(293);
+    expect(painted.lowerTiles[at(painted, 4, 4)]).toBe(292);
+    expect(painted.lowerTiles[at(painted, 5, 4)]).toBe(293);
+    expect(painted.upperTiles[at(painted, 4, 4)]).toBe(TILE.EMPTY);
+    expect(painted.upperTiles[at(painted, 5, 4)]).toBe(TILE.EMPTY);
   });
 
   it("scatter_object가 침엽수를 1x2 원자 풋프린트로 배치하고 summary에 동반 타일을 표시한다", () => {
@@ -174,8 +178,10 @@ describe("hard cluster rule placement", () => {
     expect(result.summary).toContain("4타일");
     expect(scattered.upperTiles[at(scattered, 3, 3)]).toBe(262);
     expect(scattered.upperTiles[at(scattered, 4, 3)]).toBe(263);
-    expect(scattered.upperTiles[at(scattered, 3, 4)]).toBe(292);
-    expect(scattered.upperTiles[at(scattered, 4, 4)]).toBe(293);
+    expect(scattered.lowerTiles[at(scattered, 3, 4)]).toBe(292);
+    expect(scattered.lowerTiles[at(scattered, 4, 4)]).toBe(293);
+    expect(scattered.upperTiles[at(scattered, 3, 4)]).toBe(TILE.EMPTY);
+    expect(scattered.upperTiles[at(scattered, 4, 4)]).toBe(TILE.EMPTY);
   });
 
   it("scatter_object가 9x9 물 아틀라스를 81칸 원자 풋프린트로 배치한다", () => {

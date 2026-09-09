@@ -17,8 +17,10 @@
 //   node scripts/check-surface-gates.mjs           # 게이트 (기준선 갱신 금지)
 //   node scripts/check-surface-gates.mjs --json
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, readFileSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { requiredAxisFailures } from "./lib/surface-axis-results.mjs";
+import { relative, resolve } from "node:path";
 
 const ROOT = process.cwd();
 const asJson = process.argv.includes("--json");
@@ -28,6 +30,7 @@ const asJson = process.argv.includes("--json");
  * 축이 조용히 사라지면(파일 삭제/개명) 게이트가 초록인 채로 보증을 잃는다.
  */
 const AXES = [
+  { path: "test/databaseAllTabsRenderWalk.test.ts", required: true, label: "DB primary surfaces" },
   // 축이 아니라 **축들이 공유하는 계약 자체**의 테스트. 여기가 죽으면 축 전부가 동시에
   // 초록 거짓말을 하고, 그 죽음은 축 테스트로는 안 보인다(안전장치는 정상 실행에서 안 돈다).
   { path: "test/surfaceGateSupport.test.ts", required: true, label: "게이트 계약" },
@@ -86,13 +89,23 @@ const skipped = AXES.filter((a) => !a.required && !existsSync(resolve(ROOT, a.pa
 
 // 3) 스냅샷 축 실행. 캐시 디렉터리를 분리해 병렬 워크트리와 경합하지 않는다.
 let snapshot = { code: 0, out: "" };
+let axisExecution = [];
 if (!failures.length) {
+  const resultDir = mkdtempSync(resolve(tmpdir(), "db-surface-"));
+  const resultFile = resolve(resultDir, "vitest.json");
   snapshot = run(
     "node",
-    ["scripts/run-vitest.mjs", "run", "--configLoader", "bundle", ...present.map((a) => a.path)],
+    ["scripts/run-vitest.mjs", "run", "--configLoader", "bundle", ...present.map((a) => a.path), "--reporter=default", "--reporter=json", `--outputFile.json=${resultFile}`],
     { VITE_CACHE_DIR: process.env.VITE_CACHE_DIR ?? ".vite-cache/surface-gates" }
   );
   if (snapshot.code !== 0) failures.push(`표면 스냅샷 축 실패 (vitest exit=${snapshot.code})`);
+  const results = existsSync(resultFile) ? JSON.parse(readFileSync(resultFile, "utf8")) : {};
+  failures.push(...requiredAxisFailures(AXES.filter(axis => axis.required), results, ROOT));
+  axisExecution = (results.testResults ?? []).map(file => ({
+    path: relative(ROOT, file.name), status: file.status,
+    assertions: (file.assertionResults ?? []).map(assertion => ({ name: assertion.fullName, status: assertion.status })),
+  }));
+  rmSync(resultDir, { recursive: true });
 }
 
 // 4) CSS 실사용 클래스 축. 표면 기준선의 classes 를 정본으로 읽으므로 위 축 뒤에 온다.
@@ -104,6 +117,7 @@ const report = {
   exitCode: failures.length ? 1 : 0,
   axes: present.map((a) => a.path),
   skippedAxes: skipped.map((a) => a.path),
+  axisExecution,
   snapshotExitCode: snapshot.code,
   cssLiveExitCode: cssLive.code,
   failures,

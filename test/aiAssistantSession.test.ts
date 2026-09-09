@@ -1,9 +1,14 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { fixedDeclarer } from "./intentFixture";
+import { approvedReviewResponse, independentReviewPayload, imageDeliveryForRequest } from "./independentReviewFixture";
+import type { ReviewInput } from "@/ai/independentReview";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
-import type { SessionEvent } from "@/ai/assistantSession";
+import type { SessionEvent, ToolImageRenderer } from "@/ai/assistantSession";
+import { getTool } from "@/editor/tools";
+import * as applyStore from "@/editor/tools/applyChangesetToStore";
 
 const MILESTONE_TEST_ENV = {
   VITE_SUPABASE_ANON_KEY: "test-anon-key",
@@ -19,7 +24,7 @@ function stubSupabaseEnv(): void {
 
 /**
  * 마일스톤 자동 적용이 실제 Supabase를 건드리지 않도록 헤르메틱 환경을 설치한다.
- * todo 4 이후 자율 런 테스트는 항목 완료 시 자동 적용 경로를 타므로 필수다.
+ * 자율 런 테스트는 독립 검수 후 배치 자동 적용 경로를 타므로 필수다.
  */
 function installMilestoneHermeticEnv(project: Project): void {
   stubSupabaseEnv();
@@ -118,15 +123,16 @@ describe("자율 실행 드라이버", () => {
       finalResult("모든 항목을 완료했습니다."),
     ];
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
       if (index >= steps.length) exhausted();
       return steps[index++]!;
     };
-    // todo 4: 자율 런은 항목 완료 시 마일스톤을 자동 적용하므로 실제 Supabase를 건드리지 않게
-    // env/fetch를 스텁하고 세션·store를 같은 프로젝트로 초기화한다.
+    // 검수된 자율 배치만 적용되며 실제 Supabase 대신 세션·store를 같은 fixture로 초기화한다.
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const session = new AssistantSession(project, { config: ORCH_AUTO, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: ORCH_AUTO, chat });
 
     const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
 
@@ -134,9 +140,13 @@ describe("자율 실행 드라이버", () => {
     expect(items.map((i) => i.status)).toEqual(["done", "done", "done"]);
     const statuses = statusTexts(session);
     expect(statuses.some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
-    expect(result.assistantText).toContain("모든 항목을 완료했습니다");
-    // 턴1(플래너1+4라운드) + 턴2(4라운드) + 턴3(쓰기+최종) = 11콜. 플래너는 사용자 턴에서 한 번만 돈다.
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    expect(result.assistantText).toBe(result.review?.summary);
+    expect(result.appliedCalls?.map(call => call.args.title)).toEqual(["t1", "t2", "t3"]);
+    // Planner + writer: 11 calls across three turns, plus one separate reviewer call.
     expect(index).toBe(11);
+    expect(statuses.filter(text => text.startsWith("independent-review "))).toHaveLength(1);
     expect(statuses.filter((t) => t.startsWith("planner:start")).length).toBe(1);
     expect(statuses.filter((t) => t.includes("planner:skip driver-continue")).length).toBe(2);
     // 진행이 있는 항목은 막지 않는다 — 쓰기가 성공할 때마다 항목별 시도 수가 0으로 돌아간다.
@@ -161,7 +171,7 @@ describe("자율 실행 드라이버", () => {
       if (bodyTurns % 4 === 1) return titleWrite(`c_b${bodyTurns}`, `진행 ${bodyTurns}`);
       return finalResult(`아직 진행 중입니다(턴 ${bodyTurns}). 계속 진행이 필요합니다.`);
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_AUTO, chat });
 
     await session.sendUserMessage(`${ORCH_GOAL}끝나지 않는 목표를 처리해줘`, () => {}, undefined, { autonomous: true });
 
@@ -173,6 +183,47 @@ describe("자율 실행 드라이버", () => {
     expect(statuses.some((t) => t.startsWith("ralph:stalled"))).toBe(false);
   }, 300000);
 
+  // 라운드 상한은 턴마다 걸린다 — 드라이버가 스스로 다음 턴을 여는 동안 그 안내를 턴마다
+  // 내보내면 채팅에 "요청이 커서 … 이어서 요청해 주세요." 가 계속 쌓인다(사용자는 이어서
+  // 요청한 적이 없고 하니스가 알아서 계속하는 중이다). 안내는 런이 실제로 멈출 때 한 번만.
+  it("(b-3) 예산 안내는 드라이버 턴마다 반복되지 않고 런 종료 시 한 번만 나온다", async () => {
+    const { AssistantSession, createBlankProject, TOKEN_BUDGET_STATUS_TEXT } = await load();
+    const NEVER_PLAN = { goal: "끝나지 않는 목표", layers: [{ title: "L", items: [{ title: "무한", instruction: "완료 불가" }] }] };
+    const steps: ChatResult[] = [
+      finalResult(JSON.stringify({ action: "new_plan", ...NEVER_PLAN })),
+      toolCallResult("set_work_plan", NEVER_PLAN, "c_plan"),
+    ];
+    let bodyTurns = 0;
+    const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
+      if (!req.tools || req.tools.length === 0) return finalResult(RESUME_JSON);
+      if (steps.length > 0) return steps.shift()!;
+      bodyTurns += 1;
+      if (bodyTurns % 4 === 1) return titleWrite(`c_b${bodyTurns}`, `진행 ${bodyTurns}`);
+      return finalResult(`아직 진행 중입니다(턴 ${bodyTurns}). 계속 진행이 필요합니다.`);
+    };
+    // 48단계까지 돌리지 않고 자동 계속 2회 뒤 대기 사용자 메시지로 드라이버를 세운다.
+    let peeks = 0;
+    const session = new AssistantSession(createBlankProject(), {
+      config: ORCH_AUTO,
+      peekPendingUserMessage: () => (peeks++ < 2 ? null : "중간 지시"),
+      chat,
+    });
+    const emitted: string[] = [];
+
+    await session.sendUserMessage(
+      `${ORCH_GOAL}끝나지 않는 목표를 처리해줘`,
+      (event) => { if (event.type === "status") emitted.push(event.text); },
+      undefined,
+      { autonomous: true }
+    );
+
+    // 라운드 상한으로 끝난 턴이 여러 번 있었다(초기 턴 + 자동 계속 2회).
+    expect(emitted.filter((t) => t.includes("자율 실행 계속")).length).toBe(2);
+    expect(statusTexts(session).filter((t) => t.startsWith("턴 종료(max-tool-calls)")).length).toBeGreaterThan(1);
+    // 그래도 사용자에게 보이는 안내는 런 종료 시 한 번뿐이다.
+    expect(emitted.filter((t) => t === TOKEN_BUDGET_STATUS_TEXT)).toHaveLength(1);
+  }, 120000);
+
   it("(c) 턴이 사용자 질문으로 끝나면 드라이버는 자동 송신하지 않고 일시정지한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const steps: ChatResult[] = [
@@ -182,18 +233,25 @@ describe("자율 실행 드라이버", () => {
       finalResult("어떤 분위기로 바꿀까요?\n[선택지] 밝은 | 어두운"),
     ];
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const review = independentReviewPayload(request);
+      if (review) return finalResult(JSON.stringify({ revision: review.revision, verdict: "approved",
+        summary: "1차 제목은 검수했습니다. 어떤 분위기로 바꿀까요?\n[선택지] 밝은 | 어두운", findings: [] }));
       if (index >= steps.length) exhausted();
       return steps[index++]!;
     };
-    // t1 완료 시 마일스톤 자동 적용이 일어나므로 헤르메틱 env 설치.
+    // 질문으로 멈추기 전 검수된 t1만 적용할 수 있도록 헤르메틱 env 설치.
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const session = new AssistantSession(project, { config: ORCH_AUTO, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: ORCH_AUTO, chat });
 
     const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
 
-    expect(result.assistantText).toContain("어떤 분위기");
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    expect(result.assistantText).toContain("[선택지]");
+    expect(result.appliedCalls?.map(call => call.args.title)).toEqual(["t1"]);
+    expect(session.getWorkPlan()!.layers.flatMap(layer => layer.items).filter(item => item.status === "done")).toHaveLength(1);
     expect(index).toBe(4); // 스크립트 소진 = 자동 송신 0건.
     expect(statusTexts(session).some((t) => t.includes("agent_run:auto-continue"))).toBe(false);
   }, 30000);
@@ -212,13 +270,15 @@ describe("자율 실행 드라이버", () => {
       titleWrite("c_t2", "t2"),
     ];
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
       if (index >= steps.length) exhausted();
       return steps[index++]!;
     };
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const session = new AssistantSession(project, { config: ORCH_AUTO, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: ORCH_AUTO, chat });
     let autoContinued = false;
 
     const promise = session.sendUserMessage(
@@ -250,17 +310,19 @@ describe("자율 실행 드라이버", () => {
     ];
     let steps = firstSteps;
     let index = 0;
-    const chatRef: { current: (config: never, req: never) => Promise<ChatResult> } = { current: async () => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
       if (index >= steps.length) exhausted();
       return steps[index++]!;
-    } };
+    };
     // 훅 주입(생성자 옵션) — peek 만 하고 dequeue 하지 않는다.
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const session = new AssistantSession(project, {
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield,
       config: ORCH_AUTO,
       peekPendingUserMessage: () => pending,
-      chat: (config, req) => chatRef.current(config as never, req as never),
+      chat,
     });
 
     // 턴1 종료 시점에 큐에 사용자 메시지가 있다 — 드라이버는 peek 로 보고 송신을 쉰다.
@@ -287,7 +349,9 @@ describe("자율 실행 드라이버", () => {
     index = 0;
     const result = await session.sendUserMessage("계속", () => {}, undefined, { autonomous: true });
 
-    expect(result.assistantText).toContain("모든 항목을 완료했습니다");
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    expect(store.getCurrent().meta.title).toBe("t3");
     const items = session.getWorkPlan()!.layers.flatMap((l) => l.items);
     expect(items.map((i) => i.status)).toEqual(["done", "done", "done"]);
   }, 30000);
@@ -310,13 +374,15 @@ describe("자율 실행 드라이버", () => {
       finalResult("모든 항목을 완료했습니다."),
     ];
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
       if (index >= steps.length) exhausted();
       return steps[index++]!;
     };
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const session = new AssistantSession(project, {
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield,
       config: ORCH_AUTO,
       peekPendingUserMessage: () => (gi < garbage.length ? (garbage[gi++] as string) : null),
       chat,
@@ -340,11 +406,13 @@ describe("자율 실행 드라이버", () => {
       finalResult("진행합니다."),
     ];
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
       if (index >= steps.length) exhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_AUTO, chat });
 
     // 플래그 미지정(기존 호출처)도 종전대로 턴 1개 — 자율 드라이버는 명시 진입만 켠다.
     await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {});
@@ -364,12 +432,14 @@ describe("자율 실행 드라이버", () => {
       finalResult("이어서 진행합니다."),
     ];
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
       if (index >= steps.length) exhausted();
       return steps[index++]!;
     };
     // agentMode "chat" — 패널은 autonomous:false 를 주므로(설정 기준) 같은 계약을 세션에서 직접 고정한다.
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: { ...ORCH_AUTO, agentMode: "chat" as const },
       chat,
     });
@@ -398,7 +468,7 @@ describe("자율 실행 드라이버", () => {
       if (bodyTurns % 4 === 1) return titleWrite(`c_r${bodyTurns}`, `재가동 ${bodyTurns}`);
       return finalResult(`이어서 진행합니다(${bodyTurns}).`);
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_AUTO, chat });
 
     await session.sendUserMessage(`${ORCH_GOAL}끝나지 않는 목표를 처리해줘`, () => {}, undefined, { autonomous: true });
     let statuses = statusTexts(session);
@@ -413,10 +483,10 @@ describe("자율 실행 드라이버", () => {
 });
 
 // ── 마일스톤 자동 적용(todo 4: 완료 항목 → 제안 스냅샷 경로로 자동 적용) ─────────────
-// 계약: 자율 런(agentMode auto + opts.autonomous)에서 work-item 완료(complete_work_item
-// 또는 successTools 자동 완료) 시점에 안전 적용 경로(commitChangeset → undo 스냅샷 →
-// store.replace → await 커밋 로그)를 기계적으로 호출한다. 도구의 파괴·어휘·규칙 표식과
-// agentMode 설정은 적용 게이트가 아니다. 적용/커밋 검증 실패만 proposal_paused를 낸다.
+// 계약: 완료된 항목의 쓰기를 보존하고 독립 검수 승인 뒤 한 배치로 적용한다.
+// commitChangeset → undo 스냅샷 → store.replace → await 커밋 로그는 실제 경로다.
+// 도구의 파괴 표식과 agentMode는 승인 게이트가 아니며 검수 승인 자체는 필수다.
+// 적용/커밋 검증 실패만 proposal_paused를 낸다.
 describe("마일스톤 자동 적용 (todo 4)", () => {
   function milestoneToolCall(name: string, args: unknown, id: string): ChatResult {
     return {
@@ -477,7 +547,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     milestoneFinal("모든 항목을 완료했습니다."),
   ];
 
-  it("(a) 자율 런에서 안전한 마일스톤이 사용자 조작 없이 적용된다 — 마일스톤마다 undo 스냅샷 1개 + 커밋 row 1개", async () => {
+  it("(a) 자율 런의 마일스톤은 독립 검수 후 한 배치로 적용된다 — undo 스냅샷 1개 + 커밋 row 1개", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const commitCalls: string[] = [];
     stubSupabaseEnv();
@@ -488,33 +558,53 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     }) satisfies typeof fetch);
     const project = createBlankProject();
     initMilestoneStore(project);
+    const baseline = structuredClone(store.getCurrent());
+    const reviews: ReviewInput[] = [];
     const steps = threeMilestoneSteps();
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const review = independentReviewPayload(request);
+      const approval = approvedReviewResponse(request);
+      if (review && approval) {
+        reviews.push(review);
+        expect(store.getCurrent()).toEqual(baseline);
+        expect(review.requiredProblems).toEqual([]);
+        return approval;
+      }
       if (index >= steps.length) milestoneExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
     const events: SessionEvent[] = [];
 
-    await session.sendUserMessage("타이틀을 3단계로 개선해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", (event) => {
+      events.push(event);
+      if (event.type === "tool_call") expect(store.getCurrent()).toEqual(baseline);
+    }, undefined, { autonomous: true });
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.appliedCalls?.map(call => call.args.title)).toEqual(["t1", "t2", "t3"]);
+    expect(reviews).toHaveLength(1);
+    expect(reviews[0]?.originalRequest).toBe("타이틀을 3단계로 개선해줘");
+    for (const title of ["t1", "t2", "t3"]) expect(reviews[0]?.toolResults).toContainEqual(expect.objectContaining({
+      name: "set_title_screen", args: { title }, result: expect.objectContaining({ ok: true }),
+    }));
 
     // 사용자 조작 없이 스토어에 적용 완료.
     expect(store.getCurrent().meta?.title).toBe("t3");
-    // 마일스톤 3개 = 커밋 row 3개(await 확정 — vi.waitFor 불필요).
-    expect(commitCalls.filter((url) => url.includes("/rest/v1/project_commits"))).toHaveLength(3);
-    expect(commitCalls.filter((url) => url.includes("/rest/v1/project_changes"))).toHaveLength(3);
-    // undo 스냅샷 1개/마일스톤.
-    expect(getMapEditHistoryEntries()).toHaveLength(3);
-    // 마일스톤 적용 이벤트 3회 + 감사 기록.
-    expect(events.filter((event) => event.type === "milestone_applied")).toHaveLength(3);
+    // All completed items are one reviewed transaction, not three unreviewed writes.
+    expect(commitCalls.filter((url) => url.includes("/rest/v1/project_commits"))).toHaveLength(1);
+    expect(commitCalls.filter((url) => url.includes("/rest/v1/project_changes"))).toHaveLength(1);
+    expect(getMapEditHistoryEntries()).toHaveLength(1);
+    expect(events.filter(event => event.type === "result_review" || event.type === "milestone_applied")
+      .map(event => event.type)).toEqual(["result_review", "milestone_applied"]);
+    expect(events.find(event => event.type === "milestone_applied")).toMatchObject({ toolCount: 3 });
     const audits = milestoneStatusTexts(session);
-    expect(audits.filter((t) => t.includes("agent_run:milestone-applied"))).toHaveLength(3);
+    expect(audits.filter((t) => t.includes("agent_run:milestone-applied"))).toHaveLength(1);
     expect(audits.some((t) => t.includes("agent_run:milestone-paused"))).toBe(false);
     expect(events.some((event) => event.type === "proposal_paused")).toBe(false);
   }, 120000);
 
-  it("(b) 파괴적 마일스톤(remove_event)도 승인 대기 없이 자동 적용한다", async () => {
+  it("(b) 파괴적 마일스톤(remove_event)도 독립 검수 후 사용자 승인 대기 없이 자동 적용한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     initMilestoneStore(project);
@@ -548,11 +638,14 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
       milestoneFinal("이벤트를 정리했습니다."),
     ];
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
       if (index >= steps.length) milestoneExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    // Three writer tool rounds, final, and the separate review need five rounds.
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 5 }, chat });
     const events: SessionEvent[] = [];
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}이벤트 영역을 정리해줘`, (event) => { events.push(event); }, undefined, { autonomous: true });
@@ -563,7 +656,9 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     expect(events.some((event) => event.type === "proposal_paused")).toBe(false);
     expect(events.some((event) => event.type === "milestone_applied")).toBe(true);
     expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:milestone-applied"))).toBe(true);
-    expect(result.proposedCalls.map((call) => call.name)).not.toContain("remove_event");
+    expect(result.review?.status).toBe("approved");
+    expect(result.proposedCalls).toEqual([]);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["upsert_event", "remove_event"]);
   }, 30000);
 
   it("(b-2) clear_region의 파괴 표식은 더 이상 별도 policy 게이트를 만들지 않는다", () => {
@@ -586,11 +681,13 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     const before = JSON.stringify(store.getCurrent());
     const steps = threeMilestoneSteps();
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
       if (index >= steps.length) milestoneExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
     const events: SessionEvent[] = [];
 
     // 플래그 미지정(기존 호출처) — 턴 1개로 끝나고(자동 계속 없음) 자동 적용도 없다.
@@ -603,19 +700,21 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:milestone"))).toBe(false);
   }, 30000);
 
-  it("(c-2) agentMode chat + autonomous 플래그도 마일스톤을 즉시 적용한다", async () => {
+  it("(c-2) agentMode chat + autonomous 플래그도 검수된 마일스톤 배치를 자동 적용한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     initMilestoneStore(project);
     const before = JSON.stringify(store.getCurrent());
     const steps = threeMilestoneSteps();
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
       if (index >= steps.length) milestoneExhausted();
       return steps[index++]!;
     };
     // agentMode는 대화/자율 실행 선택이지 승인 설정이 아니다.
-    const session = new AssistantSession(project, {
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield,
       config: { ...ORCH_CONFIG, maxToolCalls: 4, agentMode: "chat" as const },
       chat,
     });
@@ -625,51 +724,57 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
 
     expect(JSON.stringify(store.getCurrent())).not.toBe(before);
     expect(store.getCurrent().meta.title).toBe("t3");
-    expect(events.filter((event) => event.type === "milestone_applied")).toHaveLength(3);
+    expect(events.filter((event) => event.type === "milestone_applied")).toHaveLength(1);
     expect(events.some((event) => event.type === "proposal_paused")).toBe(false);
     expect(result.proposedCalls).toHaveLength(0);
+    expect(result.appliedCalls?.map(call => call.args.title)).toEqual(["t1", "t2", "t3"]);
     expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
   }, 30000);
   it("(c-3) 커밋 게이트 적용 실패는 현재 런만 멈추고 다음 사용자 턴의 자동 적용을 다시 허용한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const TWO_ITEM_PLAN = {
-      goal: "타이틀 두 단계 적용",
-      layers: [{
-        title: "타이틀",
-        items: [
-          { title: "깨진 적용", instruction: "set_title_screen {title:'first'}", successTools: ["set_title_screen"] },
-          { title: "다음 적용", instruction: "set_title_screen {title:'second'}", successTools: ["set_title_screen"] },
-        ],
-      }],
+    const FIRST_PLAN = {
+      goal: "첫 타이틀 적용",
+      layers: [{ title: "타이틀", items: [
+        { title: "깨진 적용", instruction: "set_title_screen {title:'first'}", successTools: ["set_title_screen"] },
+      ] }],
+    };
+    const SECOND_PLAN = {
+      goal: "다음 적용",
+      layers: [{ title: "타이틀", items: [
+        { title: "다음 적용", instruction: "set_title_screen {title:'second'}", successTools: ["set_title_screen"] },
+      ] }],
     };
     const steps: ChatResult[] = [
-      milestoneFinal(JSON.stringify({ action: "new_plan", ...TWO_ITEM_PLAN })),
-      milestoneToolCall("set_work_plan", TWO_ITEM_PLAN, "c_plan"),
+      milestoneFinal(JSON.stringify({ action: "new_plan", ...FIRST_PLAN })),
+      milestoneToolCall("set_work_plan", FIRST_PLAN, "c_plan"),
       titleWrite("c_first", "first"),
       milestoneFinal("첫 항목을 마쳤습니다."),
-      milestoneFinal(JSON.stringify({ action: "resume", reason: "같은 목표 계속" })),
+      milestoneFinal(JSON.stringify({ action: "new_plan", ...SECOND_PLAN })),
+      milestoneToolCall("set_work_plan", SECOND_PLAN, "c_plan2"),
       titleWrite("c_second", "second"),
       milestoneFinal("두 번째 항목을 마쳤습니다."),
     ];
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
       if (index >= steps.length) milestoneExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
     const firstEvents: SessionEvent[] = [];
-    let corruptFirstDraft = true;
-
-    await session.sendUserMessage("타이틀을 두 단계로 바꿔줘", (event) => {
+    // Prepare the invalid draft before review, not after approval (which would
+    // correctly invalidate its identity before reaching the commit gate).
+    session.setReviewDraftTransform(draft => {
+      draft.startMapId = "missing-map";
+      return draft;
+    });
+    await session.sendUserMessage("타이틀을 첫 제목으로 바꿔줘", (event) => {
       firstEvents.push(event);
-      if (corruptFirstDraft && event.type === "tool_call" && event.name === "set_title_screen" && event.result.ok) {
-        corruptFirstDraft = false;
-        // 적용 직전 draft에 새 무결성 오류를 넣어 commitChangeset 거부 경계를 결정적으로 구동한다.
-        (session as unknown as { ctx: { project: Project } }).ctx.project.startMapId = "missing-map";
-      }
     }, undefined, { autonomous: true });
+    expect(firstEvents.some(event => event.type === "result_review" && event.review.status === "approved")).toBe(true);
 
     expect(store.getCurrent().meta.title).not.toBe("first");
     expect(firstEvents.some((event) => event.type === "proposal_paused")).toBe(true);
@@ -680,8 +785,12 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     expect(firstAudits.some((text) => text.includes("agent_run:stopped-apply-failed"))).toBe(true);
     expect(firstAudits.some((text) => text.includes("승인 대기") || text.includes("paused-approval"))).toBe(false);
 
+    session.setReviewDraftTransform(draft => {
+      draft.startMapId = project.startMapId;
+      return draft;
+    });
     const secondEvents: SessionEvent[] = [];
-    await session.sendUserMessage("다음 항목을 계속해줘", (event) => { secondEvents.push(event); }, undefined, { autonomous: true });
+    await session.sendUserMessage("타이틀을 second로 새로 바꿔줘", (event) => { secondEvents.push(event); }, undefined, { autonomous: true });
 
     expect(store.getCurrent().meta.title).toBe("second");
     expect(secondEvents.some((event) => event.type === "milestone_applied" && event.title === "다음 적용")).toBe(true);
@@ -695,7 +804,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
 // 기존 툴 실행기(runTool — 세션 ctx)로 실행하고 verdict 를 **감사에만** 남긴다(자문).
 // 재킥·3회 중단은 2026-08-30 실측으로 제거됐다 — 검증은 런을 멈추지 않는다.
 // 플랜 완료 + remote persistence 활성이면 store.flush() →
-// store.reloadFromRemote() → agent_run_saved 감사(projectId + sha256 + 최신 커밋 row).
+// store.verifyPersistedRevision(receipt) → agent_run_saved 감사. 재로드는 하지 않는다.
 describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
   function gateToolCall(name: string, args: unknown, id: string): ChatResult {
     return {
@@ -790,20 +899,30 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
         { name: "play_walkthrough", args: { scenario }, id: "c_wt" },
         { name: "set_title_screen", args: { title: "t2" }, id: "c_t2" },
       ]),
+      inspectMap(project.startMapId, project.maps[project.startMapId]!.width, project.maps[project.startMapId]!.height),
       gateFinal("모든 레이어를 완료했습니다."),
     ];
-    let index = 0;
-    const chat = async (): Promise<ChatResult> => {
-      if (index >= steps.length) gateExhausted();
-      return steps[index++]!;
-    };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat });
+    const lintTool = getTool("run_lint");
+    if (!lintTool) throw new Error("run_lint is not registered");
+    // Call-through spies: real checks and the real milestone/undo path remain exercised.
+    const lint = vi.spyOn(lintTool, "run");
+    const apply = vi.spyOn(applyStore, "applyProposedProject");
     const events: SessionEvent[] = [];
+    let layerEventCount = 0;
+    let index = 0;
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
+      if (index >= steps.length) gateExhausted();
+      if (index === steps.length - 1) layerEventCount = events.length;
+      return { ...steps[index++]!, imageDelivery: imageDeliveryForRequest(request) };
+    };
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, renderImages: renderLifecycleImages });
 
-    await session.sendUserMessage("마을·퀘스트·최종 검증을 진행해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+    const result = await session.sendUserMessage("마을·퀘스트·최종 검증을 진행해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
 
     // 모델 툴콜 + 게이트 툴콜이 순서대로 관측된다: 레이어 1(map) → 레이어 2(quest) → 레이어 3(final).
-    const toolCalls = events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
+    const toolCalls = events.slice(0, layerEventCount).filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
     expect(toolCalls.map((e) => e.name)).toEqual([
       "set_work_plan",
       "set_title_screen",
@@ -820,14 +939,46 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
       // L3 final: run_lint → play_walkthrough (레이어 자신의 시나리오)
       "run_lint",
       "play_walkthrough",
+      "show_map_region",
     ]);
     const verifyQuestCall = toolCalls.find((e) => e.name === "verify_quest")!;
     expect(verifyQuestCall.args).toEqual({ questId: "q1" });
-    const gateWalkthrough = toolCalls[toolCalls.length - 1]!;
+    const gateWalkthrough = toolCalls.filter(call => call.name === "play_walkthrough").at(-1)!;
     expect(gateWalkthrough.args).toEqual({ scenario });
+    // Completion has its own two boundaries: model final response, then returned recap.
+    // Neither boundary is another layer sweep or permission to replay authored writes.
+    const completionEvents = events.slice(layerEventCount);
+    const assessments = completionEvents.filter(event => event.type === "completion_assessment");
+    expect(assessments).toHaveLength(2);
+    for (const { assessment } of assessments) {
+      expect(assessment.checks.map(check => check.name)).toEqual(["run_lint", "evaluate_game_quality", "play_walkthrough"]);
+    }
+    const completionCalls = completionEvents.filter(event => event.type === "tool_call");
+    expect(completionCalls.map(({ name, result }) => ({ name, result })))
+      .toEqual(assessments.flatMap(({ assessment }) => assessment.checks));
+    expect(completionCalls.filter(call => call.name === "play_walkthrough").map(call => call.args))
+      .toEqual([{ scenario }, { scenario }]);
+    expect(result.completionAssessment).toEqual(assessments.at(-1)?.assessment);
+    expect(lint.mock.calls.map(([checkedProject]) => checkedProject.meta.title)).toEqual(["t1", "t1", "t2", "t2", "t2"]);
+    expect(lint.mock.calls.at(-1)?.[0]).toEqual(store.getCurrent());
     const audits = gateStatusTexts(session);
     expect(audits.filter((t) => t.includes("agent_run:verification-pass")).length).toBe(3);
-    // 마일스톤은 각 항목 완료마다 적용됐고 검증 게이트는 레이어 단위로 돌았다.
+    expect(audits.filter(t => t.startsWith("agent_run:completion-check-pass "))).toHaveLength(2);
+    expect(index).toBe(steps.length);
+    expect(result.stoppedReason).toBe("final");
+    expect(result.workPlan?.layers.flatMap(layer => layer.items.map(item => item.status))).toEqual(["done", "done", "done"]);
+    expect(events.filter(event => event.type === "milestone_applied").map(event => [event.title, event.toolCount]))
+      .toEqual([[GATE_PLAN.goal, 4]]);
+    expect(apply.mock.calls.map(([, options]) => options.toolNames))
+      .toEqual([["set_title_screen", "upsert_event", "define_quest", "set_title_screen"]]);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["set_title_screen", "upsert_event", "define_quest", "set_title_screen"]);
+    expect(result.proposedCalls).toEqual([]);
+    expect(getMapEditHistoryEntries()).toHaveLength(1);
+    // Layer checks remain per-layer; the final title replaces the earlier draft title.
+    // Application happens once after current-image review, never at item completion.
+    expect(result.review?.status).toBe("approved");
+    expect(events.filter(event => event.type === "result_review" || event.type === "milestone_applied").map(event => event.type))
+      .toEqual(["result_review", "milestone_applied"]);
     expect(store.getCurrent().meta?.title).toBe("t2");
   }, 60000);
 
@@ -850,26 +1001,72 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
         { name: "define_quest", args: questArgs(), id: "c_quest" },
       ]),
       gateToolCall("set_title_screen", { title: "t2" }, "c_t2"),
+      inspectMap(project.startMapId, project.maps[project.startMapId]!.width, project.maps[project.startMapId]!.height),
       gateFinal("완료했습니다."),
     ];
-    let index = 0;
-    const chat = async (): Promise<ChatResult> => {
-      if (index >= steps.length) gateExhausted();
-      return steps[index++]!;
-    };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat });
+    const lintTool = getTool("run_lint");
+    if (!lintTool) throw new Error("run_lint is not registered");
+    // Call-through spies: real checks and the real milestone/undo path remain exercised.
+    const lint = vi.spyOn(lintTool, "run");
+    const apply = vi.spyOn(applyStore, "applyProposedProject");
     const events: SessionEvent[] = [];
+    let layerEventCount = 0;
+    let index = 0;
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
+      if (index >= steps.length) gateExhausted();
+      if (index === steps.length - 1) layerEventCount = events.length;
+      return { ...steps[index++]!, imageDelivery: imageDeliveryForRequest(request) };
+    };
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, renderImages: renderLifecycleImages });
 
-    await session.sendUserMessage("퀘스트를 등록하고 마무리해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+    const result = await session.sendUserMessage("퀘스트를 등록하고 마무리해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
 
-    const toolCalls = events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
+    const toolCalls = events.slice(0, layerEventCount).filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
     const verifyQuestCalls = toolCalls.filter((e) => e.name === "verify_quest");
-    // 퀘스트 레이어 1회 + final 레이어 폴백 1회 — 둘 다 런 히스토리의 q1.
+    // Layer scope: quest once + final fallback once, both using the authored q1.
     expect(verifyQuestCalls).toHaveLength(2);
-    expect(verifyQuestCalls.every((e) => JSON.stringify(e.args) === JSON.stringify({ questId: "q1" }))).toBe(true);
+    expect(verifyQuestCalls.map(call => call.args)).toEqual([{ questId: "q1" }, { questId: "q1" }]);
     // final 레이어 폴백: play_walkthrough 는 실행되지 않는다.
     expect(toolCalls.filter((e) => e.name === "play_walkthrough")).toHaveLength(0);
-    expect(gateStatusTexts(session).filter((t) => t.includes("agent_run:verification-pass")).length).toBe(2);
+    expect(toolCalls.map(call => call.name)).toEqual([
+      "set_work_plan", "upsert_event", "define_quest", "run_lint", "verify_quest",
+      "set_title_screen", "run_lint", "verify_quest", "show_map_region",
+    ]);
+    const completionEvents = events.slice(layerEventCount);
+    const assessments = completionEvents.filter(event => event.type === "completion_assessment");
+    expect(assessments).toHaveLength(2);
+    for (const { assessment } of assessments) {
+      expect(assessment.checks.map(check => check.name)).toEqual(["run_lint", "verify_quest"]);
+      expect(assessment.checks.find(check => check.name === "verify_quest")?.result.data)
+        .toMatchObject({ ok: true, verificationStatus: "verified", verifiedNodeIds: ["n1"] });
+    }
+    const completionCalls = completionEvents.filter(event => event.type === "tool_call");
+    expect(completionCalls.map(({ name, result }) => ({ name, result })))
+      .toEqual(assessments.flatMap(({ assessment }) => assessment.checks));
+    expect(completionCalls.filter(call => call.name === "verify_quest").map(call => call.args))
+      .toEqual([{ questId: "q1" }, { questId: "q1" }]);
+    expect(result.completionAssessment).toEqual(assessments.at(-1)?.assessment);
+    expect(lint.mock.calls.map(([checkedProject]) => checkedProject.meta.title)).toEqual([project.meta.title, "t2", "t2", "t2"]);
+    expect(lint.mock.calls.at(-1)?.[0]).toEqual(store.getCurrent());
+    const audits = gateStatusTexts(session);
+    expect(audits.filter(t => t.startsWith("agent_run:verification-pass "))).toHaveLength(2);
+    expect(audits.filter(t => t.startsWith("agent_run:completion-check-pass "))).toHaveLength(2);
+    expect(index).toBe(steps.length);
+    expect(result.stoppedReason).toBe("final");
+    expect(result.workPlan?.layers.flatMap(layer => layer.items.map(item => item.status))).toEqual(["done", "done"]);
+    expect(events.filter(event => event.type === "milestone_applied").map(event => [event.title, event.toolCount]))
+      .toEqual([[FALLBACK_PLAN.goal, 3]]);
+    expect(apply.mock.calls.map(([, options]) => options.toolNames)).toEqual([["upsert_event", "define_quest", "set_title_screen"]]);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["upsert_event", "define_quest", "set_title_screen"]);
+    expect(result.proposedCalls).toEqual([]);
+    expect(getMapEditHistoryEntries()).toHaveLength(1);
+    expect(store.getCurrent().meta.title).toBe("t2");
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    expect(events.filter(event => event.type === "result_review" || event.type === "milestone_applied").map(event => event.type))
+      .toEqual(["result_review", "milestone_applied"]);
   }, 60000);
 
   it("(b) 검증 지적(린트 오류)은 자문으로만 남고 런을 멈추지 않는다 — 재킥·verification_failed 없음", async () => {
@@ -907,11 +1104,13 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
       gateFinal("완료 보고합니다."),
     ];
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
       if (index >= steps.length) gateExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat });
     const events: SessionEvent[] = [];
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 바꿔줘`, (event) => { events.push(event); }, undefined, { autonomous: true });
@@ -944,49 +1143,63 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     gateFinal("이어서 진행합니다."),
     gateFinal("이어서 진행합니다."),
     gateToolCall("set_title_screen", { title: "t2" }, "c_t2"),
-    gateFinal("이어서 진행합니다."),
+    // Writer t2 + t3 + final + independent review fit the second four-round budget.
     gateToolCall("set_title_screen", { title: "t3" }, "c_t3"),
     gateFinal("모든 항목을 완료했습니다."),
   ];
 
-  it("(c) 플랜 완료 + remote enabled → store.flush()+reloadFromRemote() 호출 + agent_run_saved 감사(projectId+sha256)", async () => {
+  it("(c) completed remote plan verifies its accepted receipt without reloading", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const flushSpy = vi.spyOn(store, "flush").mockResolvedValue({ kind: "saved", sha256: "sha-abc123" });
-    const reloadSpy = vi.spyOn(store, "reloadFromRemote").mockResolvedValue({
-      kind: "reloaded",
-      projectId: MILESTONE_TEST_ENV.VITE_SUPABASE_PROJECT_ID,
-      title: "t3",
-    });
+    const receipt = { revisionId: "accepted-revision", projectId: MILESTONE_TEST_ENV.VITE_SUPABASE_PROJECT_ID,
+      mutationGeneration: 3, contentIdentity: "normalized-content", sha256: "sha-abc123" };
+    const flushSpy = vi.spyOn(store, "flush").mockResolvedValue({ kind: "saved", receipt });
+    const reloadSpy = vi.spyOn(store, "reloadFromRemote");
+    const verifySpy = vi.spyOn(store, "verifyPersistedRevision").mockResolvedValue({ kind: "verified", receipt, isCurrent: true });
+    vi.spyOn(store, "isPersistenceReceiptCurrent").mockReturnValue(true);
     vi.spyOn(store, "isRemotePersistenceEnabled").mockReturnValue(true);
     const steps = runEndMilestoneSteps();
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
       if (index >= steps.length) gateExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
 
-    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+    const controller = new AbortController();
+    const pending = session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, controller.signal, { autonomous: true });
+    const ownedSignal = session.getRunOperation().signal;
+    const result = await pending;
 
+    expect(ownedSignal).not.toBe(controller.signal);
+    expect(ownedSignal.aborted).toBe(false);
     expect(result.stoppedReason).toBe("final");
-    // run-end 게이트: flush → reloadFromRemote 순서로 정확히 1회씩.
     expect(flushSpy).toHaveBeenCalledTimes(1);
-    expect(reloadSpy).toHaveBeenCalledTimes(1);
+    expect(reloadSpy).not.toHaveBeenCalled();
+    const [verifiedReceipt, options] = verifySpy.mock.calls[0] ?? [];
+    const validate = options?.validate;
+    if (!validate) throw new Error("Missing canonical validation callback");
+    expect(verifySpy).toHaveBeenCalledExactlyOnceWith(receipt, { signal: ownedSignal, validate });
+    expect(verifiedReceipt).toBe(receipt);
+    expect(validate(structuredClone(store.getCurrent()))).toBeUndefined();
+    expect(session.getRunEndProof()).toMatchObject({ status: "succeeded", verified: true, receipt });
+    expect(session.getRunEndProof()?.receipt).toBe(receipt);
     const audits = gateStatusTexts(session);
-    const saved = audits.find((t) => t.includes("agent_run_saved"));
-    expect(saved).toBeTruthy();
-    expect(saved!).toContain(`projectId=${MILESTONE_TEST_ENV.VITE_SUPABASE_PROJECT_ID}`);
-    expect(saved!).toContain("sha256=sha-abc123");
-    // commitId 증거 경로: list_project_commits 는 브라우저 전용 툴 — node 에선 우아하게 기록된다.
-    expect(audits.some((t) => t.includes("agent_run:commit-evidence-unavailable"))).toBe(true);
+    expect(audits.filter((t) => t.split(" ")[0] === "agent_run_saved")).toHaveLength(1);
     // 드라이버 계속 턴은 플래너 왕복을 태우지 않는다 — 플래너는 사용자 턴에서 한 번만 돈다.
     expect(audits.filter((t) => t.startsWith("planner:start")).length).toBe(1);
     expect(audits.some((t) => t.includes("planner:skip driver-continue"))).toBe(true);
     expect(audits.some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
     // 정상 진행 중인 항목은 막히지 않는다(쓰기가 성공하면 항목별 시도 수가 0으로 돌아간다).
     expect(audits.some((t) => t.includes("ralph:stalled"))).toBe(false);
+    // The caller still cancels the owned boundary; proof never receives a detached dummy signal.
+    controller.abort();
+    expect(ownedSignal.aborted).toBe(true);
+    expect(verifySpy).toHaveBeenCalledTimes(1);
+    expect(reloadSpy).not.toHaveBeenCalled();
   }, 120000);
 
   it("(c-2) remote 비활성 → agent_run_local_only 감사, flush 호출 없음, 오류 없음", async () => {
@@ -996,11 +1209,13 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     const flushSpy = vi.spyOn(store, "flush");
     const steps = runEndMilestoneSteps();
     let index = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      const approval = approvedReviewResponse(request);
+      if (approval) return approval;
       if (index >= steps.length) gateExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
 
     const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
 
@@ -1039,6 +1254,7 @@ async function load() {
     sanitizeAssistantText: assistantSession.sanitizeAssistantText,
     truncatedTurnText: assistantSession.truncatedTurnText,
     AGENT_RUN_MAX_TOTAL_STEPS: assistantSession.AGENT_RUN_MAX_TOTAL_STEPS,
+    TOKEN_BUDGET_STATUS_TEXT: assistantSession.TOKEN_BUDGET_STATUS_TEXT,
     createBlankProject: defaults.createBlankProject,
     llm,
   };
@@ -1047,14 +1263,23 @@ async function load() {
 type ChatResult = import("@/ai/llmClient").ChatResult;
 type ChatRequest = import("@/ai/llmClient").ChatRequest;
 
-// 스크립트된 응답을 순서대로 돌려주는 가짜 chat.
+// Writer scripts and the independent zero-tool transport are separate conversations.
 function scriptedChat(steps: readonly ChatResult[]) {
   let i = 0;
-  return async (): Promise<ChatResult> => {
+  return async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+    const approval = approvedReviewResponse(request);
+    if (approval) return approval;
     if (i >= steps.length) throw new Error("scripted chat exhausted");
-    return steps[i++];
+    return { ...steps[i++]!, imageDelivery: imageDeliveryForRequest(request) };
   };
 }
+
+// Lifecycle double only: real show_map_region capture, delivery and revision gates
+// still run. This one-pixel PNG makes no assertion about rendered map quality.
+const lifecycleImage = { label: "Lifecycle map capture", dataUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=" };
+const renderLifecycleImages: ToolImageRenderer = async () => [lifecycleImage];
+const inspectMap = (mapId: string, w: number, h: number): ChatResult =>
+  assistantToolCall("show_map_region", { mapId, x: 0, y: 0, w, h });
 
 function assistantToolCall(name: string, args: unknown, id = `c_${name}`, content: string | null = null): ChatResult {
   return {
@@ -1068,6 +1293,9 @@ function assistantFinal(text: string): ChatResult {
 }
 
 const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model", liteModel: "stub-model", apiKey: "sk", maxToolCalls: 8, maxTokens: 512, agentMode: "chat" as const };
+// Multi-map reviews carry complete before/after originals. Use a catalogued
+// million-token reviewer rather than the unknown stub model's 128K fallback.
+const LARGE_REVIEW_CONFIG = { ...CONFIG, model: "gemini-2.5-flash" };
 const AUTO_SINGLE_CONFIG = { ...CONFIG, agentMode: "auto" as const };
 const ORCH_CONFIG = { ...CONFIG, model: "supervisor-model", liteModel: "executor-model", maxToolCalls: 12, agentMode: "auto" as const };
 /** 짧은 한 줄은 plannerSkip 이 본문으로 직행하므로, 플래너 계약을 재는 테스트는 다단계 표지를 붙인다. */
@@ -1078,21 +1306,6 @@ const PLANNER_DIRECT = assistantFinal('{"action":"direct","reason":"한 턴으�
 // 가리지 않는 `<tool_call>` / `<invoke name=` 두 형태로만 이뤄진다.
 const RAW_TOOL_MARKUP_FIXTURE = `적용됨이어서 길을 깐 뒤 NPC 5명을 배치하겠습니다...<tool_call><invoke name="proposetilevocabulary">...`;
 
-/** 검수 단계 진입 조건(writeToolAttempts > 8)을 맞추기 위한 채움용 쓰기 9회(단일 응답).
- *  paint_tiles 는 tilesChanged>0 의 의미있는 diff 를 내고(미이행 휴리스틱 오염 방지),
- *  동일 인자 반복이므로 제안 키가 같아 1건으로 중복제거된다. */
-function nineWriteCalls(args: Record<string, unknown> = { mapId: "map_blank_start", mode: "rect", layer: "lower", tile: 240, from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }): ChatResult {
-  const calls = Array.from({ length: 9 }, (_, i) => ({
-    id: `c_filler_${i}`,
-    type: "function" as const,
-    function: { name: "paint_tiles", arguments: JSON.stringify(args) },
-  }));
-  return {
-    message: { role: "assistant" as const, content: null, tool_calls: calls },
-    finishReason: "tool_calls",
-  } as ChatResult;
-}
-
 describe("AssistantSession 툴콜 루프", () => {
   it("메인 세션은 config.model을 그대로 chat 함수에 전달한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
@@ -1101,7 +1314,7 @@ describe("AssistantSession 툴콜 루프", () => {
       seenModels.push(config.model);
       return assistantFinal("완료");
     };
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: { ...CONFIG, model: "main-session-model", liteModel: "lite-session-model" },
       chat,
       declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }),
@@ -1121,7 +1334,7 @@ describe("AssistantSession 툴콜 루프", () => {
       chatCalls += 1;
       return assistantFinal("이 응답은 나오면 안 됨");
     };
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: CONFIG,
       chat,
       declareIntent: fixedDeclarer({ space: "unclear", clarify: "집을 실내 맵으로 만들까요, 야외 외장으로 만들까요?", clarifyOptions: ["실내 맵으로", "야외 집(외장)으로"] }),
@@ -1142,7 +1355,7 @@ describe("AssistantSession 툴콜 루프", () => {
       chatCalls += 1;
       return assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}');
     };
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: AUTO_SINGLE_CONFIG,
       chat,
       declareIntent: fixedDeclarer({ space: "unclear", clarify: "실내인가요 야외인가요?", needsPlan: true }),
@@ -1161,7 +1374,7 @@ describe("AssistantSession 툴콜 루프", () => {
       chatCalls += 1;
       return assistantFinal("실내 준비");
     };
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: CONFIG, chat });
     const result = await session.sendUserMessage("연금술사의 집 이라는 실내 를 하나 만드렁줘", () => {});
     expect(chatCalls).toBe(1);
     expect(result.assistantText).toBe("실내 준비");
@@ -1172,18 +1385,21 @@ describe("AssistantSession 툴콜 루프", () => {
     const chat = scriptedChat([
       assistantToolCall("get_project_summary", {}),
       assistantToolCall("create_map", { id: "m1", name: "새 맵", width: 6, height: 6 }, "c_create_map"),
+      inspectMap("m1", 6, 6),
       assistantFinal("맵을 만들었습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: CONFIG, reviewConfig: LARGE_REVIEW_CONFIG,
+      chat, renderImages: renderLifecycleImages });
 
     const events: string[] = [];
     const result = await session.sendUserMessage("맵 하나 만들어줘", (e) => {
       if (e.type === "tool_call") events.push(`${e.name}:${e.result.ok}`);
     });
 
-    expect(result.stoppedReason).toBe("final");
-    expect(result.assistantText).toBe("맵을 만들었습니다.");
-    expect(events).toEqual(["get_project_summary:true", "create_map:true"]);
+    expect(result.stoppedReason, JSON.stringify({ error: result.error, review: result.review, events })).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    expect(result.assistantText).toBe(result.review?.summary);
+    expect(events).toEqual(["get_project_summary:true", "create_map:true", "show_map_region:true"]);
     // 읽기 툴은 제안에서 제외, 쓰기 툴만 포함.
     expect(result.proposedCalls.map((c) => c.name)).toEqual(["create_map"]);
     expect(result.proposedCalls[0].result.diff?.mapsAdded).toBe(1);
@@ -1197,19 +1413,29 @@ describe("AssistantSession 툴콜 루프", () => {
       assistantToolCall("set_start_position", { mapId: "m1", x: 99, y: 99 }, "c_sp1"),
       // 통행 가능한 내부 좌표로 수정 → 성공.
       assistantToolCall("set_start_position", { mapId: "m1", x: 2, y: 2 }, "c_sp2"),
+      assistantToolCall("repair_acceptance", { itemId: "acceptance-contract", criteria: [
+        { kind: "mapDimensions", target: { mapId: "m1" }, width: 5, height: 5 },
+        { kind: "reachability", target: { mapId: "m1" }, from: { x: 2, y: 2 }, to: [{ x: 3, y: 2 }] },
+        { kind: "imageReviewed", target: { mapId: "m1" } },
+      ] }),
+      assistantToolCall("check_reachability", { mapId: "m1", from: { x: 2, y: 2 }, targets: [{ x: 3, y: 2 }] }),
+      inspectMap("m1", 5, 5),
       assistantFinal("시작 위치를 고쳤습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: CONFIG, reviewConfig: LARGE_REVIEW_CONFIG,
+      chat, renderImages: renderLifecycleImages });
 
     const toolEvents: { name: string; ok: boolean }[] = [];
     const result = await session.sendUserMessage("시작 위치 잡아줘", (e) => {
       if (e.type === "tool_call") toolEvents.push({ name: e.name, ok: e.result.ok });
     });
 
-    expect(result.stoppedReason).toBe("final");
+    expect(result.stoppedReason, JSON.stringify({ error: result.error, review: result.review, toolEvents })).toBe("final");
     // 실패한 시도와 성공한 시도가 모두 관측되어야 한다.
     const startAttempts = toolEvents.filter((e) => e.name === "set_start_position");
     expect(startAttempts.map((e) => e.ok)).toEqual([false, true]);
+    expect(session.getProposedProject()).toMatchObject({ startMapId: "m1", startPos: { x: 2, y: 2 } });
+    expect(result.review?.status).toBe("approved");
 
     // 실패 결과가 tool 메시지로 모델에 되돌려졌는지(자가수정 신호) 확인.
     const toolMessages = session.getMessages().filter((m) => m.role === "tool");
@@ -1231,7 +1457,7 @@ describe("AssistantSession 툴콜 루프", () => {
       assistantToolCall("create_map", { id: "m1", name: "새 맵", width: 6, height: 6 }, "c_create_map"),
       assistantFinal("맵을 만들었습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: CONFIG, chat });
 
     const observed: string[] = [];
     await session.sendUserMessage("맵 하나 만들어줘", (event: SessionEvent) => {
@@ -1255,7 +1481,7 @@ describe("AssistantSession 툴콜 루프", () => {
       n += 1;
       return assistantToolCall("get_project_summary", {}, `c${n}`);
     };
-    const session = new AssistantSession(createBlankProject(), { config: { ...CONFIG, maxToolCalls: 3 }, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: { ...CONFIG, maxToolCalls: 3 }, chat });
     const result = await session.sendUserMessage("계속 조회해", () => {});
     expect(result.stoppedReason).toBe("max-tool-calls");
     expect(n).toBe(3);
@@ -1271,7 +1497,7 @@ describe("AssistantSession 툴콜 루프", () => {
       n += 1;
       return assistantToolCall("get_project_summary", {}, `c${n}`);
     };
-    const session = new AssistantSession(createBlankProject(), { config: { ...CONFIG, maxToolCalls: 2 }, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: { ...CONFIG, maxToolCalls: 2 }, chat });
     const result = await session.sendUserMessage("계속 조회해", () => {});
     expect(result.stoppedReason).toBe("max-tool-calls");
     expect(result.assistantText.trim()).not.toBe("");
@@ -1299,7 +1525,7 @@ describe("AssistantSession 툴콜 루프", () => {
   it("감사 로그를 JSON으로 내보낸다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const chat = scriptedChat([assistantFinal("안녕하세요.")]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: CONFIG, chat });
     await session.sendUserMessage("안녕", () => {});
     const audit = JSON.parse(session.exportAudit());
     expect(audit.model).toBe(CONFIG.model);
@@ -1309,15 +1535,12 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(audit.entries.some((e: { kind: string }) => e.kind === "assistant")).toBe(true);
   }, 30000);
 
-  it("쓰기 툴이 시작되면 이후 호출은 실행 모델로 전환하고 검수는 감독 모델로 돌아온다", async () => {
+  it("쓰기 툴이 시작되면 이후 호출은 실행 모델로 전환하고 독립 검수는 감독 모델로 돌아온다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const steps = [
       PLANNER_DIRECT,
       assistantToolCall("set_title_screen", { title: "새 제목" }, "c_title"),
-      // 검수 단계 진입 조건(writeToolAttempts > 8)을 맞추는 채움 쓰기 — paint_tiles 채움이 제안에 함께 남는다.
-      nineWriteCalls(),
-      assistantFinal("실행 완료"),
-      assistantFinal("완료: 타이틀을 바꿨습니다."),
+      assistantFinal("WRITER_SUCCESS_SENTINEL"),
     ];
     let index = 0;
     const seenModels: string[] = [];
@@ -1325,10 +1548,12 @@ describe("AssistantSession 툴콜 루프", () => {
     const chat = async (config: { readonly model: string }, req: ChatRequest): Promise<ChatResult> => {
       seenModels.push(config.model);
       requests.push({ ...req, messages: [...req.messages] });
+      const approval = approvedReviewResponse(req);
+      if (approval) return approval;
       if (index >= steps.length) throw new Error("scripted chat exhausted");
       return steps[index++];
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat });
     const phases: string[] = [];
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, (event) => {
@@ -1336,18 +1561,31 @@ describe("AssistantSession 툴콜 루프", () => {
     });
 
     expect(result.stoppedReason).toBe("final");
-    expect(result.assistantText).toBe("타이틀을 바꿨습니다.");
-    // 채움 paint_tiles 는 실패 툴이라 제안에 남지 않는다 — 주 쓰기 1건만.
+    expect(result.review?.status).toBe("approved");
+    expect(result.assistantText).toBe(result.review?.summary);
     expect(result.proposedCalls.map((call) => call.name)).toEqual(["set_title_screen"]);
-    // 플래너 라운드가 앞에 하나 더 붙는다(감독 모델). 채움 쓰기 응답이 execute 라운드 하나 더를 만든다:
-    // planner(감독) → plan(감독) → execute(실행) → 채움(실행) → review(감독).
-    expect(seenModels).toEqual(["supervisor-model", "supervisor-model", "executor-model", "executor-model", "supervisor-model"]);
+    expect(seenModels).toEqual(["supervisor-model", "supervisor-model", "executor-model", "supervisor-model"]);
     expect(phases).toEqual(["plan", "execute", "review"]);
-    expect(requests[2]?.messages.some((message) => message.role === "user" && typeof message.content === "string" && message.content.startsWith("[오케스트레이션] 실행 단계:"))).toBe(true);
-    expect(requests[4]?.tool_choice).toBeUndefined();
-    expect(requests[4]?.tools).toBeUndefined();
-    expect(requests[4]?.messages.some((message) => message.role === "user" && typeof message.content === "string" && message.content.startsWith("[오케스트레이션] 검수 단계:"))).toBe(true);
-    expect(session.getMessages().some((message) => message.role === "system" && message.content === "실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지")).toBe(false);
+    const reviewRequest = requests[3]!;
+    expect(reviewRequest.tool_choice).toBe("none");
+    expect(reviewRequest.tools).toEqual([]);
+    expect(reviewRequest.messages.map(message => message.role)).toEqual(["system", "user"]);
+    expect(independentReviewPayload(reviewRequest)).toMatchObject({
+      originalRequest: `${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, requiredProblems: [],
+      toolResults: [expect.objectContaining({ name: "set_title_screen", result: expect.objectContaining({ ok: true }) })],
+    });
+    expect(JSON.stringify(reviewRequest.messages)).not.toContain("WRITER_SUCCESS_SENTINEL");
+    // Original project values and full native schemas reach the writer before its first write.
+    const original = requests[1]?.messages.find(message => typeof message.content === "string"
+      && message.content.startsWith('{"originalContext":'));
+    expect(original).toBeDefined();
+    expect(JSON.parse(String(original!.content))).toMatchObject({ originalContext: {
+      entries: expect.arrayContaining([expect.objectContaining({ entryId: "/project",
+        value: expect.objectContaining({ meta: expect.objectContaining({ title: createBlankProject().meta.title }) }) })]),
+    } });
+    expect(requests[1]?.tools?.map(tool => tool.function.name)).toEqual(expect.arrayContaining([
+      "set_title_screen", "upsert_item", "define_quest", "fill_region", "get_original_context",
+    ]));
     expect(session.getMessages().some((message) => typeof message.content === "string" && message.content.startsWith("[오케스트레이션] "))).toBe(false);
   }, 30000);
 
@@ -1366,59 +1604,68 @@ describe("AssistantSession 툴콜 루프", () => {
     const steps = [
       PLANNER_DIRECT,
       assistantToolCall("set_build_spec", spec, "c_spec"),
-      assistantToolCall("paint_tiles", { mapId, mode: "rect", layer: "lower", tile: 240, from: { x: 1, y: 1 }, to: { x: 2, y: 2 } }, "c_road"),
-      // 검수 단계 진입 조건(writeToolAttempts > 8) — 같은 제안 키로 덮어쓰여 제안 1건 유지.
-      nineWriteCalls(),
+      assistantToolCall("paint_tiles", { mapId, mode: "rect", layer: "lower", tile: 421, from: { x: 1, y: 1 }, to: { x: 2, y: 2 } }, "c_road"),
+      assistantToolCall("repair_acceptance", { itemId: "acceptance-contract", criteria: [
+        { kind: "targetChange", target: { mapId }, region: { x: 1, y: 1, w: 2, h: 2 } },
+        { kind: "targetChange", target: { mapId }, region: { x: 4, y: 1, w: 2, h: 2 } },
+        { kind: "imageReviewed", target: { mapId } },
+      ] }),
+      inspectMap(mapId, project.maps[mapId]!.width, project.maps[mapId]!.height),
       assistantFinal("1차 실행 완료"),
-      assistantFinal("재실행: 꽃 영역도 칠하세요."),
-      assistantToolCall("paint_tiles", { mapId, mode: "rect", layer: "upper", tile: 88, from: { x: 4, y: 1 }, to: { x: 5, y: 2 } }, "c_flowers"),
+      assistantToolCall("get_map_region", { mapId, x: 4, y: 1, w: 2, h: 2 }, "c_read_flowers"),
+      assistantToolCall("paint_tiles", { mapId, mode: "rect", layer: "upper", tile: 288, from: { x: 4, y: 1 }, to: { x: 5, y: 2 } }, "c_flowers"),
+      inspectMap(mapId, project.maps[mapId]!.width, project.maps[mapId]!.height),
       assistantFinal("보완 실행 완료"),
-      assistantFinal("완료: 길과 꽃을 모두 제안했습니다."),
     ];
     let index = 0;
     const seenModels: string[] = [];
-    const chat = async (config: { readonly model: string }): Promise<ChatResult> => {
+    const reviews: ReviewInput[] = [];
+    const chat = async (config: { readonly model: string }, request: ChatRequest): Promise<ChatResult> => {
       seenModels.push(config.model);
+      const review = independentReviewPayload(request);
+      if (review) {
+        expect(config.model).toBe("supervisor-model");
+        reviews.push(review);
+        if (reviews.length === 1) return { ...assistantFinal(JSON.stringify({ revision: review.revision,
+          verdict: "changes_requested", summary: "Flower area is missing", findings: [{ id: "flowers", target: `/maps/${mapId}`,
+            problem: "Flower area is still empty", requestedChange: "Paint flowers at (4,1)-(5,2)", validation: "Inspect the changed region on the new revision" }] })),
+          imageDelivery: imageDeliveryForRequest(request) };
+        return approvedReviewResponse(request)!;
+      }
+      if (reviews.length > 0) expect(config.model).toBe("executor-model");
       if (index >= steps.length) throw new Error("scripted chat exhausted");
-      return steps[index++];
+      return { ...steps[index++]!, imageDelivery: imageDeliveryForRequest(request) };
     };
-    const session = new AssistantSession(project, { config: ORCH_CONFIG, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 16, maxTokens: 8192 }, chat,
+      renderImages: renderLifecycleImages });
     const phases: string[] = [];
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}길과 꽃을 칠해줘`, (event) => {
       if (event.type === "phase") phases.push(event.value);
     });
 
-    expect(result.stoppedReason).toBe("final");
-    expect(result.assistantText).toBe("길과 꽃을 모두 제안했습니다.");
-    // 길 + 꽃 + 검수 진입용 paint_tiles 채움(동일 인자 반복이라 1건) 3건.
-    expect(result.proposedCalls.map((call) => call.name)).toEqual(["paint_tiles", "paint_tiles", "paint_tiles"]);
-    expect(seenModels).toEqual([
-      "supervisor-model",
-      "supervisor-model",
-      "supervisor-model",
-      "executor-model",
-      // 검수 진입 조건 충족용 paint_tiles 채움 라운드(실행 모델).
-      "executor-model",
-      "supervisor-model",
-      "executor-model",
-      "executor-model",
-      "supervisor-model",
-    ]);
+    expect(result.stoppedReason, JSON.stringify({ error: result.error,
+      reviews: reviews.map(({ revision, requiredProblems }) => ({ revision, requiredProblems })) })).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    expect(result.assistantText).toContain(result.review!.summary);
+    // Independent draft approval does not erase the canonical unapplied status.
+    expect(result.completionAssessment?.acceptance?.status).toBe("verifying");
+    expect(result.runOutcome).toMatchObject({ goal: "incomplete", delivery: "draft" });
+    expect(result.proposedCalls.map((call) => call.name)).toEqual(["paint_tiles", "paint_tiles"]);
+    expect(result.proposedCalls.every(call => (call.result.diff?.tilesChanged ?? 0) > 0)).toBe(true);
+    expect(reviews).toHaveLength(2);
+    expect(reviews[1]!.revision).toBeGreaterThan(reviews[0]!.revision);
+    expect(reviews[1]!.requiredProblems).toEqual([]);
+    expect(seenModels[0]).toBe("supervisor-model");
     expect(phases).toEqual(["plan", "execute", "review", "execute", "review"]);
   }, 30000);
 
-  it("검수 응답이 raw 툴콜 마크업이면 원문 노출 없이 1회 재투입한다", async () => {
+  it("검수 응답이 raw 툴콜 마크업이면 원문 노출과 미검수 적용 없이 거부한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const steps = [
       PLANNER_DIRECT,
       assistantToolCall("set_title_screen", { title: "새 제목" }, "c_title"),
-      // 검수 단계 진입 조건(writeToolAttempts > 8).
-      nineWriteCalls(),
       assistantFinal("실행 완료"),
-      assistantFinal(RAW_TOOL_MARKUP_FIXTURE),
-      assistantFinal("보완 실행 완료"),
-      assistantFinal("완료: 타이틀 변경을 제안했습니다."),
     ];
     let index = 0;
     const requests: ChatRequest[] = [];
@@ -1427,27 +1674,35 @@ describe("AssistantSession 툴콜 루프", () => {
       if (index >= steps.length) throw new Error("scripted chat exhausted");
       return steps[index++];
     };
-    const session = new AssistantSession(createBlankProject(), { config: { ...ORCH_CONFIG, maxToolCalls: 24 }, chat });
+    const project = createBlankProject();
+    installMilestoneHermeticEnv(project);
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 24 }, chat: (config, request) => {
+      if (independentReviewPayload(request)) {
+        requests.push(request);
+        return Promise.resolve(assistantFinal(RAW_TOOL_MARKUP_FIXTURE));
+      }
+      return chat(config, request);
+    } });
     const phases: string[] = [];
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, (event) => {
       if (event.type === "phase") phases.push(event.value);
-    });
+    }, undefined, { autonomous: true });
 
-    expect(result.stoppedReason).toBe("final");
-    expect(result.assistantText).toBe("타이틀 변경을 제안했습니다.");
-    expect(phases).toEqual(["plan", "execute", "review", "execute", "review"]);
-    expect(requests[5]?.messages.some((message) =>
-      message.role === "user" &&
-      typeof message.content === "string" &&
-      message.content.includes("[오케스트레이션] 검수 보완 지시: 검수 응답이 툴콜 원시 마크업으로 깨졌습니다")
-    )).toBe(true);
+    expect(result.stoppedReason).toBe("error");
+    expect(result.review).toMatchObject({ status: "error", summary: "independent-review-malformed-json" });
+    expect(phases).toEqual(["plan", "execute", "review"]);
+    expect(requests.filter(request => independentReviewPayload(request))).toHaveLength(1);
+    expect(session.isDraftReviewApproved()).toBe(false);
+    expect(store.getCurrent().meta.title).toBe(project.meta.title);
+    expect(getMapEditHistoryEntries()).toHaveLength(0);
+    expect(result.assistantText).not.toContain("<tool_call>");
     const serializedMessages = JSON.stringify(session.getMessages());
     expect(serializedMessages).not.toContain("<tool_call>");
     expect(serializedMessages).not.toContain("<invoke name=");
   }, 30000);
 
-  it("집 3채 NPC 5명 요청에서 집 1채만 제안되면 검수가 완료라고 답해도 missingWarnings로 재투입한다", async () => {
+  it("집 3채 NPC 5명 요청에서 집 1채만 만든 실행자의 완료 주장은 독립 검수의 구조화된 부족분으로 재투입한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const spec = {
       mapId: "m1",
@@ -1468,12 +1723,8 @@ describe("AssistantSession 툴콜 루프", () => {
       assistantToolCall("create_map", { id: "m1", name: "작은 마을", width: 40, height: 40 }, "c_map"),
       assistantToolCall("set_build_spec", spec, "c_spec"),
       assistantToolCall("author_house", { kind: "single", mapId: "m1", kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 6, h: 6 }], interior: "exterior-only", door: true, yard: [] }, "c_house1"),
-      // 검수 단계 진입 조건(writeToolAttempts > 8).
-      nineWriteCalls(),
-      assistantFinal("집 1채를 제안했습니다."),
       assistantFinal("완료: 충분합니다."),
       assistantFinal("보완 실행 완료"),
-      assistantFinal("완료: 현재 제안과 부족분을 보고합니다."),
     ];
     let index = 0;
     const requests: ChatRequest[] = [];
@@ -1482,22 +1733,45 @@ describe("AssistantSession 툴콜 루프", () => {
       if (index >= steps.length) throw new Error("scripted chat exhausted");
       return steps[index++];
     };
-    const session = new AssistantSession(createBlankProject(), { config: { ...ORCH_CONFIG, maxToolCalls: 32, maxTokens: 8192 }, chat });
+    const reviews: ReviewInput[] = [];
+    const findings = spec.assets.slice(1).map(asset => ({ id: asset.id, target: `/maps/m1/assets/${asset.id}`,
+      problem: `Missing ${asset.kind}: ${asset.id}`, requestedChange: `Build ${asset.id} at ${asset.x},${asset.y}`,
+      validation: `Inspect ${asset.id} in the current draft and capture its map region` }));
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 32, maxTokens: 8192 },
+      reviewConfig: LARGE_REVIEW_CONFIG,
+      chat: (config, request) => {
+        const review = independentReviewPayload(request);
+        if (!review) return chat(config, request);
+        reviews.push(review);
+        expect(review.originalRequest).toBe(`${ORCH_GOAL}40x40 맵에 작은 집 3채 NPC 5명 배치해줘`);
+        expect(review.toolResults).toEqual(expect.arrayContaining([expect.objectContaining({ name: "author_house",
+          result: expect.objectContaining({ ok: true }) })]));
+        return Promise.resolve(assistantFinal(JSON.stringify({ revision: review.revision,
+          verdict: "changes_requested", summary: "Two houses and five NPCs remain missing", findings })));
+      } });
     const phases: string[] = [];
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}40x40 맵에 작은 집 3채 NPC 5명 배치해줘`, (event) => {
       if (event.type === "phase") phases.push(event.value);
     });
 
-    expect(result.stoppedReason).toBe("final");
+    expect(result.stoppedReason).toBe("error");
+    expect(result.review?.status, result.error).toBe("changes_requested");
+    expect(result.review?.findings).toEqual(expect.arrayContaining(findings));
+    const houses = result.proposedCalls.filter(call => call.name === "author_house");
+    expect(houses).toHaveLength(1);
+    expect(houses[0]!.result.diff?.tilesChanged).toBeGreaterThan(0);
+    expect(result.proposedCalls.filter(call => call.name === "place_npc")).toEqual([]);
+    expect(session.isDraftReviewApproved()).toBe(false);
+    expect(result.appliedCalls ?? []).toEqual([]);
+    expect(reviews).toHaveLength(2);
     expect(phases).toEqual(["plan", "execute", "review", "execute", "review"]);
-    expect(requests[7]?.messages.some((message) =>
-      message.role === "user" &&
-      typeof message.content === "string" &&
-      message.content.includes("[오케스트레이션] 검수 보완 지시: 검수에서 아래 미이행이 발견되었습니다")
-    )).toBe(true);
-    expect(JSON.stringify(requests[8]?.messages)).toContain("house2");
-    expect(JSON.stringify(requests[8]?.messages)).toContain("npc1");
+    const repair = requests.at(-1)?.messages.find(message => typeof message.content === "string"
+      && message.content.includes('"requestedChange":'));
+    expect(repair).toBeDefined();
+    const repairText = String(repair!.content);
+    expect(JSON.parse(repairText.slice(repairText.indexOf("\n{") + 1))).toMatchObject({ findings: expect.arrayContaining(findings) });
+    expect(result.review?.findings.some(finding => finding.problem.includes("show_map_region"))).toBe(true);
   }, 30000);
 
   it("최종 텍스트의 raw 툴콜 마크업은 잘라내고 안내로 대체한다", async () => {
@@ -1505,7 +1779,7 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(hasRawToolCallMarkup(RAW_TOOL_MARKUP_FIXTURE)).toBe(true);
     expect(sanitizeAssistantText(RAW_TOOL_MARKUP_FIXTURE)).toBe("적용됨이어서 길을 깐 뒤 NPC 5명을 배치하겠습니다...…(형식 오류로 일부 생략)");
 
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat: scriptedChat([assistantFinal(RAW_TOOL_MARKUP_FIXTURE)]) });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: CONFIG, chat: scriptedChat([assistantFinal(RAW_TOOL_MARKUP_FIXTURE)]) });
     const result = await session.sendUserMessage("이어 진행해", () => {});
 
     expect(result.assistantText).toContain("형식 오류로 일부 생략");
@@ -1519,10 +1793,7 @@ describe("AssistantSession 툴콜 루프", () => {
       PLANNER_DIRECT,
       assistantFinal("먼저 확인하겠습니다."),
       assistantToolCall("set_title_screen", { title: "재킥 제목" }, "c_title"),
-      // 검수 단계 진입 조건(writeToolAttempts > 8).
-      nineWriteCalls(),
       assistantFinal("실행 완료"),
-      assistantFinal("완료: 타이틀을 바꿨습니다."),
     ];
     let index = 0;
     const requests: ChatRequest[] = [];
@@ -1531,7 +1802,10 @@ describe("AssistantSession 툴콜 루프", () => {
       if (index >= steps.length) throw new Error("scripted chat exhausted");
       return steps[index++];
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat: (config, request) => {
+      const approval = approvedReviewResponse(request);
+      return approval ? Promise.resolve(approval) : chat(config, request);
+    } });
     const phases: string[] = [];
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 재킥 제목으로 바꿔줘`, (event) => {
@@ -1540,12 +1814,11 @@ describe("AssistantSession 툴콜 루프", () => {
 
     expect(result.stoppedReason).toBe("final");
     expect(result.proposedCalls.map((call) => call.name)).toEqual(["set_title_screen"]);
-    expect(result.assistantText).toBe("타이틀을 바꿨습니다.");
+    expect(result.review?.status).toBe("approved");
+    expect(result.assistantText).toBe(result.review?.summary);
     expect(phases).toEqual(["plan", "execute", "review"]);
-    expect(requests[2]?.messages.some((message) =>
-      message.role === "user" &&
-      message.content === "[오케스트레이션] 사용자는 변경을 기대합니다. 질문이 아니면 지금 계획을 세우고 실행하세요"
-    )).toBe(true);
+    expect(session.getAuditEntries().filter(entry => entry.kind === "status" && entry.text === "zero-change-rekick")).toHaveLength(1);
+    expect(requests).toHaveLength(4);
   }, 30000);
 
   it("오케스트레이션 0건 종료라도 질문이면 재킥하지 않는다", async () => {
@@ -1557,7 +1830,7 @@ describe("AssistantSession 툴콜 루프", () => {
       if (calls === 1) return assistantFinal('{"action":"direct","reason":"단순 요청"}');
       return assistantFinal("어떤 제목으로 바꿀까요?\n[선택지] 숲 | 바다");
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat });
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 바꿔줘`, () => {});
 
@@ -1580,7 +1853,7 @@ describe("AssistantSession 툴콜 루프", () => {
       if (index >= steps.length) throw new Error("scripted chat exhausted");
       return steps[index++];
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat });
 
     const result = await session.sendUserMessage("던전 입구 타일만 칠해줘", () => {});
 
@@ -1598,7 +1871,7 @@ describe("AssistantSession 툴콜 루프", () => {
       calls += 1;
       return assistantFinal("먼저 확인하겠습니다.");
     };
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: CONFIG, chat });
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 바꿔줘`, () => {});
 
@@ -1615,7 +1888,7 @@ describe("AssistantSession 툴콜 루프", () => {
       seenModels.push(config.model);
       return assistantFinal("안녕하세요.");
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat, declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }) });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat, declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }) });
     const phases: string[] = [];
 
     const result = await session.sendUserMessage("안녕", (event) => {
@@ -1643,7 +1916,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
     const chat = scriptedChat([
       assistantFinal("완료했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: llm.defaultAiConfig(), chat, declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }) });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: llm.defaultAiConfig(), chat, declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }) });
 
     await session.sendUserMessage("타이틀 화면 안내만 해줘", () => {});
 
@@ -1659,7 +1932,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
       assistantFinal("완료했습니다."),
       assistantFinal("완료했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: { ...llm.defaultAiConfig(), maxToolCalls: 4 },
       chat,
       declareIntent: fixedDeclarer({ space: "outdoor", needsPlan: true }),
@@ -1680,7 +1953,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
       assistantFinal("집을 시공합니다."),
     ]);
     const project = createBlankProject();
-    const session = new AssistantSession(project, { config: llm.defaultAiConfig(), chat, declareIntent: fixedDeclarer({ space: "outdoor", useSelection: true, needsPlan: true }) });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: llm.defaultAiConfig(), chat, declareIntent: fixedDeclarer({ space: "outdoor", useSelection: true, needsPlan: true }) });
 
     await session.sendUserMessage(
       "선택 영역 안에 야외 집 한 채를 지어 주세요.\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start) · 사용자 선택 영역: (2,2) 8×6",
@@ -1697,7 +1970,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
     const { AssistantSession, createBlankProject } = await load();
     const chat = scriptedChat([assistantFinal("완료했습니다.")]);
     // CONFIG 는 model === liteModel 단일 모델.
-    const session = new AssistantSession(createBlankProject(), { config: { ...CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const }, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: { ...CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const }, chat });
 
     await session.sendUserMessage("타이틀 화면 안내만 해줘", () => {});
 
@@ -1707,7 +1980,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
   it("agentMode chat + 이원화 모델도 단일 단계 선언은 플래너를 건너뛴다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const chat = scriptedChat([assistantFinal("완료했습니다.")]);
-    const session = new AssistantSession(createBlankProject(), { config: { ...ORCH_CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const }, chat, declareIntent: fixedDeclarer({ mode: "question", needsPlan: false }) });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const }, chat, declareIntent: fixedDeclarer({ mode: "question", needsPlan: false }) });
 
     await session.sendUserMessage("타이틀 화면 안내만 해줘", () => {});
 
@@ -1722,7 +1995,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
       assistantFinal("완료했습니다."),
       assistantFinal("완료했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: { ...ORCH_CONFIG, maxToolCalls: 4 },
       chat,
       declareIntent: fixedDeclarer({ space: "outdoor", needsPlan: true }),
@@ -1745,7 +2018,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
         if (names.length === 0) return assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}');
         return assistantFinal("완료했습니다.");
       };
-      const session = new AssistantSession(createBlankProject(), {
+      const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
         config: config as never,
         chat,
         declareIntent: fixedDeclarer({ mode: "question", needsPlan: false }),
@@ -1768,7 +2041,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
       for (const tool of req.tools ?? []) names.push(tool.function.name);
       return assistantFinal("완료했습니다.");
     };
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: { ...CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const },
       chat,
       declareIntent: fixedDeclarer({ tools: ["create_quest"] }),
@@ -1787,12 +2060,9 @@ describe("하네스 관측", () => {
     const steps = [
       PLANNER_DIRECT,
       assistantToolCall("set_title_screen", { title: "새 제목" }, "c_title"),
-      // 검수 단계 진입 조건(writeToolAttempts > 8) — 주입 2건(실행 힌트+검수 프롬프트)을 내기 위함.
-      nineWriteCalls(),
       assistantFinal("실행 완료"),
-      assistantFinal("완료: 타이틀을 바꿨습니다."),
     ];
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat: scriptedChat(steps) });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat: scriptedChat(steps) });
 
     await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, () => {});
 
@@ -1800,8 +2070,13 @@ describe("하네스 관측", () => {
     const injections = entries.filter(
       (entry) => entry.kind === "status" && entry.text.startsWith("오케스트레이션 주입: ")
     );
-    // 실행 힌트 + 검수 프롬프트 — 주입이 UI에 전혀 안 보이던 공백을 감사 로그가 메운다.
-    expect(injections.length).toBeGreaterThanOrEqual(2);
+    // The execution hint is still audited; review is now a structured verdict,
+    // not a self-review prose injection into the writer transcript.
+    expect(injections).toHaveLength(1);
+    const reviewAudit = entries.find(entry => entry.kind === "status" && entry.text.startsWith("independent-review "));
+    expect(reviewAudit?.kind).toBe("status");
+    expect(JSON.parse(reviewAudit && reviewAudit.kind === "status" ? reviewAudit.text.slice("independent-review ".length) : "null"))
+      .toMatchObject({ status: "approved", findings: [] });
     const turnEnd = entries.find((entry) => entry.kind === "status" && entry.text.startsWith("턴 종료(final)"));
     expect(turnEnd?.kind).toBe("status");
     expect(turnEnd && turnEnd.kind === "status" ? turnEnd.text : "").toMatch(/출력 토큰 ~\d+/);
@@ -1814,7 +2089,7 @@ describe("하네스 관측", () => {
       assistantFinal("실행 완료"),
       assistantFinal("완료: 타이틀을 바꿨습니다."),
     ];
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat: scriptedChat(steps) });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat: scriptedChat(steps) });
     await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, () => {});
 
     const snapshot = session.getHarnessSnapshot();
@@ -1860,7 +2135,7 @@ describe("밑그림만 그리고 끝내는 턴", () => {
       assistantFinal("잡화점 상인 NPC 1명을 배치할 예정입니다. 실제 배치는 사용자 승인 후 진행됩니다."),
       assistantFinal("다시 확인했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: { ...CONFIG, authMode: "apiKey" as const }, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: { ...CONFIG, authMode: "apiKey" as const }, chat });
 
     await session.sendUserMessage("이 자리에 잡화점 상인 NPC 하나 배치해줘", () => {});
 
@@ -1893,7 +2168,7 @@ describe("밑그림만 그리고 끝내는 턴", () => {
       assistantFinal("잡화점 상인을 배치할 예정입니다. 사용자 승인 후 진행됩니다."),
       assistantFinal("밑그림은 이미 확정했습니다. 승인해 주세요."),
     ]);
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: { ...CONFIG, authMode: "apiKey" as const },
       chat,
     });
@@ -1913,4 +2188,105 @@ describe("밑그림만 그리고 끝내는 턴", () => {
     expect(diff).toBeTruthy();
     expect(diff?.eventsAdded ?? 0).toBe(1);
   }, 30000);
+});
+
+describe("verification declaration and correction caller boundary", () => {
+  it.each([false, true])("adopts a frozen map-qualified scene and executes correction (changed initial state=%s)", async changedSeed => {
+    const { AssistantSession } = await load();
+    const { verificationJourney } = await import("./fixtures/verificationOwnership");
+    const f = verificationJourney();
+    const map = f.village;
+    const declaration = { tool: "run_scene_test", args: f.wire180, interactionTargets: [
+      { stepIndex: 2, mapId: f.cellar.id, eventId: f.chest.id }, { stepIndex: 6, mapId: map.id, eventId: f.chief.id },
+      { stepIndex: 9, mapId: map.id, eventId: f.chief.id },
+    ] };
+    let round = 0;
+    let session: InstanceType<typeof AssistantSession>;
+    const events: SessionEvent[] = [];
+    session = new AssistantSession(f.project, { config: { ...CONFIG, maxToolCalls: 12, maxTokens: 8192 }, declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false }),
+      chat: async (_config, request) => {
+        const review = approvedReviewResponse(request);
+        if (review) return review;
+        round++;
+        if (round === 1) return assistantToolCall("set_work_plan", { goal: "Frozen journey", acceptance: [{ id: "size", title: "Map", criteria: [
+          { kind: "mapDimensions", target: { mapId: map.id }, width: map.width, height: map.height },
+        ] }], layers: [{ title: "QA", items: [{ title: "Journey", instruction: "Check", successTools: ["run_scene_test"], verificationChecks: [declaration] }] }] });
+        if (round === 2) return assistantToolCall("run_scene_test", f.wire180);
+        const id = session.getVerificationSnapshot().requirements[0]!.checkId;
+        if (round === 3) return assistantToolCall("correct_verification", { checkId: id, args: f.wire181, verdict: "pass" });
+        if (round === 4) return assistantToolCall("correct_verification", { checkId: id, args: f.wire181 });
+        if (round === 5 && changedSeed) return assistantToolCall("set_session_start", { gold: 100 });
+        if (round === 6 && changedSeed) return assistantToolCall("correct_verification", { checkId: id, args: f.wire181 });
+        return assistantFinal("Checks recorded.");
+      } });
+    const result = await session.sendUserMessage("Inspect the frozen scene.", event => events.push(event));
+    expect(result.stoppedReason, result.error).toBe(changedSeed ? "error" : "final");
+    if (changedSeed) {
+      expect(result.review?.status).toBe("changes_requested");
+      expect(session.isDraftReviewApproved()).toBe(false);
+    }
+    expect(session.getVerificationSnapshot().requirements).toHaveLength(1);
+    expect(events.filter(e => e.type === "tool_call" && e.name === "correct_verification").map(e => e.type === "tool_call" && e.result.ok)).toEqual(changedSeed ? [false, true, true] : [false, true]);
+    const snapshot = session.getVerificationSnapshot();
+    expect(snapshot.requirements).toHaveLength(1);
+    expect(snapshot.requirements[0]?.args).toEqual(f.wire180);
+    expect(snapshot.requirements[0]?.interactionTargets).toEqual(declaration.interactionTargets);
+    expect(snapshot.requirements[0]?.status).toBe(changedSeed ? "unverified" : "passed");
+    expect(snapshot.findings).toEqual([]);
+    expect(session.getAcceptanceSnapshot()?.status).toBe(changedSeed ? "blocked" : "verified");
+  });
+  it.each(["wire114", "wire281", "dummy-removal", "cross-map", "weaker-assertion", "write-after-pass", "foreign-owner"])("retains the correct terminal contract for %s", async variant => {
+    const { AssistantSession } = await load();
+    const { verificationJourney, crossMapVerification, verificationEvent } = await import("./fixtures/verificationOwnership");
+    const f = verificationJourney();
+    const cross = crossMapVerification();
+    const project = variant === "cross-map" ? cross.project : f.project;
+    const map = project.maps[project.startMapId]!;
+    const route = { mapId: map.id, from: { x: 10, y: 12 }, targets: [{ x: 5, y: 8 }] };
+    const calls: Array<{ name: string; args: Record<string, unknown> }> = [];
+    const checks: unknown[] = [];
+    const required = ["get_project_summary"];
+    const sceneCall = (args: Record<string, unknown>) => ({ name: "run_scene_test", args });
+    if (variant === "wire114") calls.push({ name: "check_reachability", args: { mapId: map.id, from: { x: 10, y: 8 }, targets: [{ newMapName: "지하실", mapId: map.id }] } }, { name: "check_reachability", args: route });
+    if (variant === "wire281") calls.push(sceneCall({ mapId: f.cellar.id, start: { x: 6, y: 3 }, steps: [{ kind: "face", dir: "down" }, { kind: "interact" }] }),
+      sceneCall({ mapId: f.cellar.id, start: { x: 6, y: 3 }, steps: [{ kind: "face", dir: "up" }, { kind: "interact" }] }));
+    if (variant === "dummy-removal") {
+      f.cellar.events.push(verificationEvent("ev_dummy_fix", 6, 4, []));
+      calls.push(sceneCall({ mapId: f.cellar.id, start: { x: 6, y: 3 }, steps: [{ kind: "interact", eventId: "ev_dummy_fix" }] }),
+        { name: "remove_event", args: { mapId: f.cellar.id, eventId: "ev_dummy_fix" } });
+    }
+    if (variant === "cross-map") calls.push(sceneCall({ ...cross.a }), sceneCall({ ...cross.b }));
+    if (variant === "weaker-assertion") calls.push(sceneCall({ ...f.wire180 }), sceneCall({ ...f.corrected171 }));
+    if (variant === "write-after-pass" || variant === "foreign-owner") {
+      required.push("check_reachability");
+      checks.push({ tool: "check_reachability", args: route });
+      calls.push({ name: "check_reachability", args: route }, { name: "set_title_screen", args: { title: "Changed after proof" } });
+    }
+    if (variant === "foreign-owner") calls.push({ name: "run_scene_test", args: { ...f.wire180, ownerId: "forged-owner" } });
+    const plan = { goal: "Scoped checks", acceptance: [{ id: "size", title: "Map", criteria: [{ kind: "mapDimensions", target: { mapId: map.id }, width: map.width, height: map.height }] }],
+      layers: [{ title: "Check", items: [{ id: "qa", title: "Inspect", instruction: "Inspect", successTools: required, verificationChecks: checks }] }] };
+    const rounds = [{ name: "set_work_plan", args: plan }, ...calls, { name: "get_project_summary", args: {} }];
+    let cursor = 0;
+    const events: SessionEvent[] = [];
+    const session = new AssistantSession(project, { config: { ...CONFIG, maxToolCalls: 12 }, declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false }),
+      chat: async () => {
+        const call = rounds[cursor++];
+        return call ? assistantToolCall(call.name, call.args, `ownership-${cursor}`) : assistantFinal("Checks recorded.");
+      } });
+    await session.sendUserMessage("Inspect the scoped checks.", event => events.push(event));
+    const blocked = ["cross-map", "weaker-assertion", "write-after-pass", "foreign-owner"].includes(variant);
+    expect(session.getAcceptanceSnapshot()?.status).toBe(blocked ? "blocked" : "verified");
+    if (variant === "wire114") {
+      expect(session.getVerificationSnapshot().attempts[0]?.status).toBe("unsuccessful");
+      expect(session.getVerificationSnapshot().findings).toEqual([]);
+    }
+    if (variant === "wire281") expect(session.getVerificationSnapshot().attempts.map(a => a.status)).toEqual(["setup-failure", "passed"]);
+    if (variant === "dummy-removal") {
+      expect(session.getProposedProject().maps[f.cellar.id]?.events.some(e => e.id === "ev_dummy_fix")).toBe(false);
+      expect(events.find(e => e.type === "tool_call" && e.name === "remove_event")).toMatchObject({ result: { ok: true } });
+      expect(session.getVerificationSnapshot().requirements).toEqual([]);
+    }
+    if (variant === "cross-map" || variant === "weaker-assertion") expect(session.getVerificationSnapshot().findings).toHaveLength(1);
+    if (variant === "foreign-owner") expect(session.getVerificationSnapshot().attempts.at(-1)?.status).toBe("unsuccessful");
+  });
 });

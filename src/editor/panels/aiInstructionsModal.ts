@@ -16,6 +16,7 @@ import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { deckIcon } from "./aiDeckIcons";
 
 let openBackdrop: HTMLElement | null = null;
 
@@ -93,7 +94,7 @@ export function openAiInstructionsModal(options: {
 
   const closeButton = el("button", {
     class: "database-modal-close",
-    text: "×",
+    children: [deckIcon("x")],
     attrs: { type: "button", "aria-label": "감독 지침 닫기" },
     dataset: { testid: "ai-instructions-close" },
   });

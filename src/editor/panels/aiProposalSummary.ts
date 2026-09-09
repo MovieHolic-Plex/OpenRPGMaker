@@ -141,6 +141,8 @@ export function fallbackDiffParts(calls: readonly ProposedCall[]): string[] {
   return [
     nounCount("타일", diff.tilesChanged),
     nounCount("맵 설정", diff.mapPropertiesChanged ?? 0),
+    nounCount("오디오 설명", diff.audioDescriptionsChanged ?? 0),
+    nounCount("몬스터 소재", diff.monsterMetadataChanged ?? 0),
     nounCount("맵", diff.mapsAdded),
     nounCount("맵 삭제", diff.mapsRemoved),
     nounCount("NPC", npcCount),
@@ -184,6 +186,8 @@ export function proposalHumanSummaryLine(calls: readonly ProposedCall[]): string
     semanticParts.length > 0 && remainingTileChanges > 0 && houses === 0 && trees === 0 && !river && !yard
       ? `타일 ${remainingTileChanges}`
       : null,
+    semanticParts.length > 0 ? nounCount("오디오 설명", diff.audioDescriptionsChanged ?? 0) : null,
+    semanticParts.length > 0 ? nounCount("몬스터 소재", diff.monsterMetadataChanged ?? 0) : null,
   ].filter((part): part is string => part !== null);
   return parts.length > 0 ? parts.join(" · ") : `변경 ${calls.length}`;
 }
@@ -216,7 +220,7 @@ export function proposalSummaryLines(calls: readonly ProposedCall[], extraWarnin
 
 export function proposalTechnicalDetailLines(calls: readonly ProposedCall[]): string[] {
   return calls.map((call) => {
-    const flag = call.destructive ? "⚠️ 파괴적 " : "";
+    const flag = call.destructive ? "파괴적 " : "";
     return `${flag}${call.name} — ${call.summary}`;
   });
 }

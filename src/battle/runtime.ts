@@ -1,3 +1,5 @@
+import { effectiveActorClassId } from '@/project/sessionClass';
+import { battleTroopError } from '@/project/battleAdmission';
 import { activeItemEffects, itemAllowsBattle } from "@/project/itemUsage";
 // SIZE_OK: Battle runtime keeps turn state, troop-event callbacks, and snapshot
 // assembly together so battle-event regressions can verify one state machine.
@@ -16,7 +18,7 @@ import {
   usesGen1Damage,
   usesMagicalDefense,
 } from "@/battle/battleDamage";
-import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
+import { createBattleEventRuntime, type BattleEventRuntimeResult, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
 import { computeActorLevelUp } from "@/battle/battleLevelUp";
 import { battlerTypes, gen1CanonicalTypeForId, gen1ElementIdForCanonical, gen1TypeModifiersForTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
@@ -45,6 +47,9 @@ import type {
   BattleCapturedMonsterSnapshot,
   BattleCaptureResultSnapshot,
   BattleFlow,
+  BattleEventChoiceSnapshot,
+  BattleEventPauseSnapshot,
+  BattleEventPauseResponse,
   BattlePhase,
   BattleRoundActionLogSnapshot,
   BattleRoundLogSnapshot,
@@ -105,6 +110,28 @@ export type {
   EquipmentUseTarget,
 } from "@/battle/types";
 
+/** Synchronous simulations cannot invent player input. */
+export class BattleEventInputRequiredError extends Error {
+  readonly code = "BATTLE_EVENT_INPUT_REQUIRED";
+  constructor(readonly choice: BattleEventChoiceSnapshot | Extract<BattleEventPauseSnapshot, { kind: "inputWait" }>) {
+    super(`BATTLE_EVENT_INPUT_REQUIRED: ${"pageId" in choice ? choice.pageId : choice.kind}/${choice.id}`);
+    this.name = "BattleEventInputRequiredError";
+  }
+}
+
+/** Headless policy skips presentation only, including consecutive nested requests. */
+export function headlessBattleSnapshot(runtime: BattleRuntime): BattleSnapshot {
+  let snapshot = runtime.snapshot();
+  while (snapshot.eventPause && snapshot.eventPause.kind !== "inputWait") {
+    const request = snapshot.eventPause;
+    if (!runtime.resumeEventPause(request.id, { kind: request.kind })) throw new Error("Invalid headless battle continuation");
+    snapshot = runtime.snapshot();
+  }
+  if (snapshot.eventChoice) throw new BattleEventInputRequiredError(snapshot.eventChoice);
+  if (snapshot.eventPause?.kind === "inputWait") throw new BattleEventInputRequiredError(snapshot.eventPause);
+  return snapshot;
+}
+
 const FALLBACK_SKILL_POWER = 12;
 // SC1 (C1): strict flow round cap. Prevents unbounded recursion when neither
 // side can end the battle (e.g. all actors asleep with no auto-recovery and a
@@ -135,6 +162,8 @@ type StrictQueuedAction =
   | ({ readonly side: "enemy"; readonly index: number; readonly enemy: MutableBattler; readonly action?: EnemyActionChoice } & Gen1TurnOrderEntry);
 
 export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntime {
+  const admissionError = battleTroopError(options.project, options.troopId);
+  if (admissionError) throw admissionError;
   const troop = options.project.database.troops.find((record) => record.id === options.troopId);
   if (!troop) throw new Error(`Missing troop: ${options.troopId}`);
   const troopRecord = troop;
@@ -173,14 +202,17 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     } catch { return 1; }
   })();
 
+  // Runtime-only growth fields are optional on the authored ProjectSession fallback.
+  const rawSessionState = options.sessionState ?? startStateOf(options.project);
+  const sessionState = rawSessionState as BattleSessionState;
   const actorEquipment = new Map(
     options.project.database.actors.map((actor) => [
       actor.id,
       effectiveActorEquipment(
         options.project,
         actor,
-        options.party?.equipment?.[actor.id],
-        options.party?.classOverrides?.[actor.id] ?? actor.classId
+        sessionState.actorEquipment?.[actor.id] ?? options.party?.equipment?.[actor.id],
+        effectiveActorClassId(options.project, {classOverrides:sessionState.classOverrides ?? options.party?.classOverrides}, actor.id)
       ),
     ])
   );
@@ -194,14 +226,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     : actorBattlers(options.project, {
         names: options.party?.names,
         faceResourceIds: options.party?.faceResourceIds,
-        levels: options.party?.levels,
+        levels: sessionState.actorLevels ?? options.party?.levels,
         vitals: options.party?.vitals,
         paramBonuses: options.party?.paramBonuses,
         equipment: Object.fromEntries(actorEquipment),
-        skillIds: options.party?.skillIds,
+        skillIds: sessionState.actorSkillIds ?? options.party?.skillIds,
         skillPp: options.party?.skillPp,
-        classOverrides: options.party?.classOverrides,
-        growthProgress: options.party?.growthProgress,
+        classOverrides: sessionState.classOverrides ?? options.party?.classOverrides,
+        growthProgress: sessionState.growthProgress ?? options.party?.growthProgress,
+        promotionLineage: sessionState.promotionLineage ?? options.party?.promotionLineage,
         stateIds: options.party?.stateIds,
         partyActorIds: options.party?.partyActorIds,
       });
@@ -263,12 +296,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     });
   }
   let result: BattleResult | undefined;
+  let cancelled = false;
+  let eventChoice: BattleEventChoiceSnapshot | undefined;
+  let eventPause: BattleEventPauseSnapshot | undefined;
+  let afterBattleEvents: (() => void) | undefined;
+  let strictResolution: { readonly round: number; readonly actions: StrictQueuedAction[]; index: number; grantedExtraActions: number } | undefined;
+  let drainingStrictActions = false;
   let escaped = false;
   let turn = 0;
   let currentActorCommandKind: ActorCommand["kind"] | undefined;
   let lastCaptureResult: BattleCaptureResultSnapshot | undefined;
-  // 배틀 이벤트 wait 가 적립한 일시정지 시간(ms). tick 이 소진하기 전까지 게이지/턴 진행을 멈춘다.
-  let pendingWaitMs = 0;
   let targetSelection: BattleTargetSelectionSnapshot | undefined;
   let strictActorCommands: StrictQueuedActorCommand[] = [];
   let strictPendingActorIds: ActorId[] = [];
@@ -287,12 +324,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     levelUps: BattleLevelUpResult[];
     monsterLevelUps: MonsterLevelUpPreview[];
   } = { exp: 0, gold: 0, items: [], levelUps: [], monsterLevelUps: [] };
-  // 플레이 중에는 현재 세션 상태를 기준으로 한다(에디터 시작 상태가 아니라).
-  // sessionState 는 BattleSessionState(런타임) 또는 ProjectSession(에디터 시작 상태).
-  // ProjectSession 에는 actorSkillIds 등 런타임 전용 필드가 없으므로 BattleSessionState 로 좁혀 읽는다.
-  const rawSessionState = options.sessionState ?? startStateOf(options.project);
-  const sessionState = rawSessionState as BattleSessionState;
+  // Mutable battle authority is detached from the live session seed.
   const battleEventState: BattleEventRuntimeState = {
+    messageWindowSettings: sessionState.messageWindowSettings ? { ...sessionState.messageWindowSettings } : undefined,
     switches: { ...sessionState.switches },
     variables: { ...sessionState.variables },
     // 세션 셀프 스위치 스냅샷 사본(깊은 복사). setSelfSwitch 가 여기 기록하고
@@ -311,7 +345,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       Object.entries(sessionState.actorSkillIds ?? options.party?.skillIds ?? {}).map(([id, skills]) => [id, [...skills]])
     ),
     actorExperience: { ...(sessionState.actorExperience ?? options.party?.experience ?? {}) },
-    actorLevels: { ...(sessionState.actorLevels ?? options.party?.levels ?? {}) },
+    actorLevels: {
+      // Default-state battles still have authored levels on their actor battlers.
+      // Seed the shared preview/write-back authority, never monster instance levels.
+      ...Object.fromEntries(usePartyMonsters ? [] : actors.map(actor => [actor.recordId, actor.level!])),
+      ...(sessionState.actorLevels ?? options.party?.levels ?? {}),
+    },
     actorBattleCommands: Object.fromEntries(
       Object.entries(
         sessionState.actorBattleCommands
@@ -329,6 +368,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       Object.entries(sessionState.actorEquipment ?? options.party?.equipment ?? {}).map(([actorId, equipment]) => [actorId, { ...equipment }])
     ),
     classOverrides: { ...(sessionState.classOverrides ?? options.party?.classOverrides ?? {}) },
+    promotionLineage: structuredClone(sessionState.promotionLineage ?? options.party?.promotionLineage),
+    growthProgress: structuredClone(sessionState.growthProgress ?? options.party?.growthProgress),
     gameTime: "gameTime" in sessionState ? sessionState.gameTime : undefined,
     npcActivities: "npcActivities" in sessionState ? { ...(sessionState.npcActivities ?? {}) } : undefined,
     friendship: "friendship" in sessionState ? { ...(sessionState.friendship ?? {}) } : undefined,
@@ -359,39 +400,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     showBattleAnimation: (target, animationId) => {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, animationId, target);
     },
-    abortBattle: () => {
-      // RM2K3 Abort Battle: 승패 없이 전투 즉시 종료. 런타임은 escape 결과로 매핑한다.
-      escaped = true;
-      result = "escape";
-      phase = "resolved";
-    },
-    endBattleAsDefeat: () => {
-      // 배틀 이벤트 gameOver/killPlayer: 전투를 패배로 즉시 종결(abortBattle 의 defeat 대칭).
-      // defeat 이후 처리는 canLose 의미론을 따른다 — canLose=false 면 호스트가 게임 오버 경로,
-      // canLose=true 면 패배 복귀(+세션 write-back). 자연 패배(resolveOutcome)와 동일 정리 수행.
-      result = "defeat";
-      phase = "resolved";
-      clearEndOfBattleStates();
-    },
-    wait: (ms) => {
-      // 배틀 이벤트 wait: 전투 흐름을 ms 동안 일시정지. 동기식 실행이라 명령 자체는 계속되지만,
-      // gauge: tick 이 pendingWaitMs 를 읽어 소진한다(게이지 흐름은 종전 그대로).
-      // strict: 라운드를 동기로 해결하고 tick 이 돌지 않으므로, 일시정지를 타임라인 사실로 남긴다.
-      //   시퀀서가 이 엔트리를 만나면 다음 비트를 waitMs 만큼 늦춘다 — JS 스레드를 막지 않고,
-      //   이미 해결된 행동 순서도 바꾸지 않는다.
-      const waitMs = Math.max(0, Math.trunc(ms));
-      if (battleFlow === "strict") {
-        if (waitMs > 0) recordTimeline({ kind: "wait", waitMs });
-        return;
-      }
-      pendingWaitMs = Math.max(pendingWaitMs, waitMs);
-    },
     // changeEquipment/promoteActor 후 파생 스탯 재계산 — battleBattlers 생성 산식과 공유.
     // HP/MP/게이지/상태이상은 refreshActorBattlerDerivedStats 가 보존(새 최대치 클램프만).
     refreshActorDerivedStats: (battler, refreshOptions) => {
       refreshActorBattlerDerivedStats(options.project, battler, {
         classOverrides: battleEventState.classOverrides,
-        growthProgress: options.party?.growthProgress,
+        growthProgress: battleEventState.growthProgress,
+        promotionLineage: battleEventState.promotionLineage,
         paramBonuses: options.party?.paramBonuses?.[battler.recordId],
         equipment: battleEventState.actorEquipment?.[battler.recordId],
         skills: refreshOptions?.refreshSkills
@@ -399,13 +414,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           : undefined,
       });
     },
-    playAudio: (resourceId, loop) => {
-      // 오디오 재생 자체는 호스트가 담당. 런타임은 옵션 콜백으로 위임만 한다.
-      options.playAudio?.(resourceId, loop);
-    },
-    stopAudio: () => {
-      options.stopAudio?.();
-    },
+    playAudio: options.playAudio,
+    stopAudio: options.stopAudio,
   });
   markActiveParticipants();
 
@@ -652,11 +662,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function tick(deltaMs: number): void {
     if (battleFlow === "strict") return;
     if (phase !== "charging" || result) return;
-    // Visual wait: 배틀 이벤트 연출 대기. 게이지/턴 로직은 그대로 흐르게 하여
-    // "연출 때문에 ATB가 멈춘다"는 혼란을 방지. snapshot에 visualWaitMs 노출.
-    let visualWaitMs = pendingWaitMs;
-    pendingWaitMs = 0;
-    void visualWaitMs;
     if (beginForcedSwitchIfNeeded()) return;
     const enemiesInBattle = visibleEnemies();
     const battlerAgilityMultiplier = (battler: MutableBattler): number => agilityMultiplierForStates(options.project, battler);
@@ -691,6 +696,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function performActorCommand(command: ActorCommand): void {
+    if (cancelled || eventChoice || eventPause || result) return;
     const forcedActor = forcedSwitchActor();
     if (forcedActor) {
       if (command.kind !== "switch") return;
@@ -724,7 +730,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       phase = "resolved";
       return;
     }
-    applyTroopEvents();
+    applyTroopEvents(() => finishGaugeActorCommand(actor));
+  }
+
+  function finishGaugeActorCommand(actor: MutableBattler): void {
     resolveOutcome();
     if (result) {
       actor.gauge = 0;
@@ -1025,12 +1034,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     consumeSkillMp(actor, skill.id);
     currentActorCommandKind = "skill";
     for (const skillTarget of targets) applySkill(actor, skillTarget, skill.id);
-    applyTroopEvents();
-    resolveOutcome();
-    actor.gauge = 0;
-    activeActorId = undefined;
-    currentActorCommandKind = undefined;
-    phase = result ? "resolved" : "charging";
+    applyTroopEvents(() => {
+      resolveOutcome();
+      actor.gauge = 0;
+      activeActorId = undefined;
+      currentActorCommandKind = undefined;
+      phase = result ? "resolved" : "charging";
+    });
     return { kind: "used", skillId: skill.id };
   }
   function attemptEscape(): void {
@@ -1192,65 +1202,59 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function resolveStrictRound(): void {
-    if (result) return;
+    if (result || cancelled) return;
     phase = "roundResolve";
     targetSelection = undefined;
     activeActorId = undefined;
     currentActorCommandKind = undefined;
-    const round = turn + 1;
-    // 라운드 큐는 실행 중에도 자란다: m2-108 actionTimes 가 부여한 추가 행동이
-    // 같은 라운드의 정렬 규칙에 맞춰 이 배열에 삽입된다(insertStrictExtraAction).
-    const actions = strictRoundActions();
-    let grantedExtraActions = 0;
-    for (let index = 0; index < actions.length; index += 1) {
-      const action = actions[index];
-      const order = index + 1;
-      if (result) break;
-      if (action.side === "actor") {
-        if (action.actor.hp <= 0) continue;
-        activeActorId = action.actor.recordId;
-        const beforeResult = lastActionResult;
-        applyActorCommandEffect(action.actor, action.command);
-        logStrictAction(round, order, action, beforeResult);
-        if (escaped) {
-          result = "escape";
-          phase = "resolved";
-          break;
-        }
-        applyTroopEvents(round);
-        resolveOutcome();
-        if (result) continue;
-        // m2-108 Action Times+: 같은 라운드 안에서 추가 행동을 준다. 교체는 제외한다 —
-        // 교체한 액터는 이미 필드를 떠났고 되돌리는 행동이 되어 버린다.
-        if (
-          action.command.kind !== "switch"
-          && action.actor.hp > 0
-          && grantedExtraActions < STRICT_MAX_EXTRA_ACTIONS_PER_ROUND
-          && battleEvents.consumeExtraActorAction(action.actor.recordId)
-        ) {
-          grantedExtraActions += 1;
-          insertStrictExtraAction(actions, index + 1, action);
-        }
-        continue;
-      }
-      if (action.enemy.hp <= 0 || !visibleEnemies().some((enemy) => enemy.id === action.enemy.id)) continue;
-      activeActorId = undefined;
-      currentActorCommandKind = undefined;
-      const beforeResult = lastActionResult;
-      executeEnemyAction(action.enemy, action.action);
-      logStrictAction(round, order, action, beforeResult);
-      applyTroopEvents(round);
-      resolveOutcome();
-    }
+    strictResolution = { round: turn + 1, actions: strictRoundActions(), index: 0, grantedExtraActions: 0 };
+    drainStrictActions();
+  }
 
-    completeStrictRound(round);
-    if (result) {
-      phase = "resolved";
-      return;
+  function drainStrictActions(): void {
+    if (drainingStrictActions) return;
+    drainingStrictActions = true;
+    try {
+      while (strictResolution && !eventChoice && !eventPause && !cancelled) {
+        const queue = strictResolution;
+        if (result || queue.index >= queue.actions.length) {
+          strictResolution = undefined;
+          completeStrictRound(queue.round);
+          if (result) { phase = "resolved"; return; }
+          // Enemy-only rounds can create the next queue synchronously. The
+          // draining guard keeps that path iterative rather than recursive.
+          startStrictRound();
+          continue;
+        }
+        phase = "roundResolve";
+        const action = queue.actions[queue.index++];
+        const beforeResult = lastActionResult;
+        if (action.side === "actor") {
+          if (action.actor.hp <= 0) continue;
+          activeActorId = action.actor.recordId;
+          applyActorCommandEffect(action.actor, action.command);
+        } else {
+          if (action.enemy.hp <= 0 || !visibleEnemies().some(enemy => enemy.id === action.enemy.id)) continue;
+          activeActorId = undefined;
+          currentActorCommandKind = undefined;
+          executeEnemyAction(action.enemy, action.action);
+        }
+        logStrictAction(queue.round, queue.index, action, beforeResult);
+        if (escaped) { result = "escape"; continue; }
+        applyTroopEvents(() => {
+          resolveOutcome();
+          if (!result && action.side === "actor" && action.command.kind !== "switch"
+            && action.actor.hp > 0 && queue.grantedExtraActions < STRICT_MAX_EXTRA_ACTIONS_PER_ROUND
+            && battleEvents.consumeExtraActorAction(action.actor.recordId)) {
+            queue.grantedExtraActions += 1;
+            insertStrictExtraAction(queue.actions, queue.index, action);
+          }
+          drainStrictActions();
+        }, queue.round);
+      }
+    } finally {
+      drainingStrictActions = false;
     }
-    // SC1 (C1): iterate to the next round instead of recursing into
-    // startStrictRound(). The round cap in startStrictRound bounds the loop.
-    startStrictRound();
   }
 
   function insertStrictExtraAction(actions: StrictQueuedAction[], from: number, action: StrictQueuedAction): void {
@@ -1420,6 +1424,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const poseContext = { lastActionResult, showActionPose };
     return {
       phase,
+      eventChoice,
+      eventPause,
       battleFlow,
       activeActorId,
       activeSlots,
@@ -1468,10 +1474,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       enemy.gauge = 0;
       for (const actor of actors) actor.defending = false;
       turn += 1;
-      applyTroopEvents();
-      resolveOutcome();
-      if (!result && beginForcedSwitchIfNeeded()) return;
-      phase = result ? "resolved" : "charging";
+      applyTroopEvents(finishGaugeEnemyTurn);
       return;
     }
     }
@@ -1481,7 +1484,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // RM2K3: 방어는 다음 적 턴까지만 유효(1턴 가드).
     for (const actor of actors) actor.defending = false;
     turn += 1;
-    applyTroopEvents();
+    applyTroopEvents(finishGaugeEnemyTurn);
+  }
+
+  function finishGaugeEnemyTurn(): void {
     resolveOutcome();
     if (!result && beginForcedSwitchIfNeeded()) return;
     phase = result ? "resolved" : "charging";
@@ -2184,11 +2190,64 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return usesGen1Damage(options.project) ? (user.level ?? 1) : undefined;
   }
 
-  function applyTroopEvents(eventTurn: number = turn): void {
-    const eventResult = battleEvents.applyTroopEvents({ turn: eventTurn, activeActorId, currentActorCommandKind });
-    if (!eventResult.forceEscape) return;
-    escaped = true;
-    result = "escape";
+  function applyTroopEvents(continuation: () => void, eventTurn: number = turn): void {
+    afterBattleEvents = continuation;
+    consumeBattleEventStep(battleEvents.applyTroopEvents({ turn: eventTurn, activeActorId, currentActorCommandKind }));
+  }
+
+  function consumeBattleEventStep(step: BattleEventRuntimeResult): void {
+    eventChoice = undefined;
+    eventPause = undefined;
+    if (step.kind === "pause") {
+      eventPause = step.request;
+      phase = "eventPause";
+      return;
+    }
+    if (step.kind === "choice") {
+      eventChoice = step.request;
+      phase = "eventChoice";
+      return;
+    }
+    eventChoice = undefined;
+    if (step.kind === "terminated" && !result) {
+      result = step.result;
+      escaped = result === "escape";
+      phase = "resolved";
+      if (result === "defeat") clearEndOfBattleStates();
+    }
+    const continuation = afterBattleEvents;
+    afterBattleEvents = undefined;
+    continuation?.();
+  }
+
+  function resumeEventChoice(requestId: number, index: number): boolean {
+    if (cancelled || result || !eventChoice) return false;
+    const step = battleEvents.resumeChoice(requestId, index);
+    if (!step) return false;
+    consumeBattleEventStep(step);
+    return true;
+  }
+
+  function resumeEventPause(requestId: number, response: BattleEventPauseResponse): boolean {
+    if (cancelled || result || !eventPause) return false;
+    const step = battleEvents.resumePause(requestId, response);
+    if (!step) return false;
+    consumeBattleEventStep(step);
+    return true;
+  }
+
+  function cancel(): void {
+    if (cancelled) return;
+    cancelled = true;
+    battleEvents.cancel();
+    eventChoice = undefined;
+    eventPause = undefined;
+    afterBattleEvents = undefined;
+    strictResolution = undefined;
+    strictActorCommands = [];
+    strictPendingActorIds = [];
+    activeActorId = undefined;
+    targetSelection = undefined;
     phase = "resolved";
   }
 
@@ -2330,10 +2389,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
     }
     const enemiesInBattle = visibleEnemies();
-    // 가시 적이 한 명도 없으면(전원 hidden 미출현) 승리로 처리하지 않는다.
-    // RM2K3: 숨겨진 적은 필드에 없는 것 — 이벤트로 reveal 되기 전까지 전투는 계속된다.
-    // 빈 배열에 every() 가 true 를 반환해 즉시 승리 처리되는 함정을 막는 가드다.
-    if (enemiesInBattle.length > 0 && enemiesInBattle.every((enemy) => enemy.hp <= 0)) {
+    // Captures hide defeated participants; they still establish that combat occurred.
+    // With no visible enemies AND no captures, all members may be unrevealed: do not auto-win.
+    if ((enemiesInBattle.length > 0 || capturedMonsters.length > 0) && enemiesInBattle.every((enemy) => enemy.hp <= 0)) {
       result = "victory";
       phase = "resolved";
       clearEndOfBattleStates();
@@ -2378,21 +2436,19 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return previewMonsterExperience(options.project, instances, earnedExp, participantIds);
   }
 
-  // 세션 파티 정보가 주어졌으면 승리 획득 exp 기준 레벨업 미리보기를 계산(결과 화면 표시용).
+  // Preview the same final battle authority that reward write-back applies.
   // 실제 세션 적립/성장은 battleRewardsToSession 이 담당하며 동일 로직으로 일치한다.
   function computeLevelUpPreview(earnedExp: number, enemyLevel: number | undefined): BattleLevelUpResult[] {
-    const party = options.party;
-    if (!party) return [];
     const results: BattleLevelUpResult[] = [];
     const seen = new Set<string>();
-    const actorIds = rewardActorIds(options.project, party.partyActorIds ?? actors.map((actor) => actor.recordId), [...participatingActorIds]);
+    const actorIds = rewardActorIds(options.project, battleEventState.partyActorIds ?? actors.map((actor) => actor.recordId), [...participatingActorIds]);
     for (const actorId of actorIds) {
       if (seen.has(actorId)) continue;
       seen.add(actorId);
-      const level = party.levels[actorId] ?? 1;
+      const level = battleEventState.actorLevels?.[actorId] ?? 1;
       const adjustedExp = expForRewardActor(earnedExp, level, enemyLevel, options.project.system.rewardPolicy);
-      const totalExp = (party.experience[actorId] ?? 0) + adjustedExp;
-      const result = computeActorLevelUp(options.project, actorId, level, totalExp, { classOverrides: party.classOverrides });
+      const totalExp = (battleEventState.actorExperience?.[actorId] ?? 0) + adjustedExp;
+      const result = computeActorLevelUp(options.project, actorId, level, totalExp, { classOverrides: battleEventState.classOverrides });
       if (result) results.push(result);
     }
     return results;
@@ -2405,6 +2461,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   if (battleFlow === "strict") startStrictRound();
 
   return {
+    resumeEventChoice,
+    resumeEventPause,
+    cancel,
     tick,
     beginActorCommand,
     selectTarget,

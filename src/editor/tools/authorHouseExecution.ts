@@ -14,6 +14,7 @@ import { summarizeChanges } from "./changeset";
 import {
   describeAuthorHouseChanges,
   validateAuthorHousePostconditions,
+  validateAuthorHouseTreeClearance,
 } from "./authorHousePostconditions";
 import type {
   AuthorHouseExecution,
@@ -34,6 +35,7 @@ export function executeAuthorHouse(draft: Project, rawArgs: Record<string, unkno
     throw new ToolError(`맵을 찾을 수 없습니다: ${request.mapId}`, { code: "missing-map", mapId: request.mapId });
   }
   validatePlans(request);
+  validateAuthorHouseTreeClearance(targetMap, request);
 
   const execution = buildRequestedHouses(draft, request);
   restoreStartIfHouseCovered(before, draft);
@@ -259,6 +261,7 @@ function requestedCount(request: AuthorHouseRequest): number {
 function constructionDiff(diff: ChangeSummary): ConstructionDiffTotals {
   return {
     tilesChanged: diff.tilesChanged,
+    mapPropertiesChanged: diff.mapPropertiesChanged,
     eventsAdded: diff.eventsAdded,
     eventsModified: diff.eventsModified,
     eventsRemoved: diff.eventsRemoved,
@@ -273,6 +276,8 @@ function constructionDiff(diff: ChangeSummary): ConstructionDiffTotals {
     palettePresetsAdded: diff.palettePresetsAdded,
     palettePresetsModified: diff.palettePresetsModified,
     endingsChanged: diff.endingsChanged,
+    audioDescriptionsChanged: diff.audioDescriptionsChanged ?? 0,
+    monsterMetadataChanged: diff.monsterMetadataChanged ?? 0,
     sessionChanged: diff.sessionChanged,
     systemChanged: diff.systemChanged,
   };

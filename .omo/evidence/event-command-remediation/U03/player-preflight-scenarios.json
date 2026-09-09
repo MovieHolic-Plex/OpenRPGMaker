@@ -1,0 +1,142 @@
+{
+  "port": 40115,
+  "browser": "chromium",
+  "surface": "player.html",
+  "cases": [
+    {
+      "id": "restored-A",
+      "fixture": "/tmp/event-command-u03-Y3cP2Q/fixtures/restored-A.json",
+      "direction": "left"
+    },
+    {
+      "id": "direction-up",
+      "fixture": "/tmp/event-command-u03-Y3cP2Q/fixtures/direction-up.json",
+      "direction": "up"
+    }
+  ],
+  "scenario": {
+    "id": "event-command-remediation-u03",
+    "beats": [
+      {
+        "id": "G1-F20-boot",
+        "note": "Enter starts mapA at (1,2), below the authored host at (1,1).",
+        "ops": [
+          {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "Enter"
+            },
+            "timeoutMs": 60000,
+            "observe": [
+              {
+                "source": "state",
+                "path": [
+                  "mapId"
+                ],
+                "equals": "mapA"
+              },
+              {
+                "source": "state",
+                "path": [
+                  "player"
+                ],
+                "equals": {
+                  "x": 1,
+                  "y": 2
+                }
+              },
+              {
+                "source": "state",
+                "path": [
+                  "running"
+                ],
+                "equals": false
+              },
+              {
+                "source": "state",
+                "path": [
+                  "inputEnabled"
+                ],
+                "equals": true
+              }
+            ]
+          }
+        ],
+        "expect": {
+          "mapId": "mapA",
+          "x": 1,
+          "y": 2,
+          "playerSpriteTextureLoaded": true
+        }
+      },
+      {
+        "id": "G1-F20-transfer-A",
+        "note": "Face host, then real Z must land on A/(2,3), never stale B; interpreter and fade finish.",
+        "ops": [
+          {
+            "kind": "face",
+            "dir": "up"
+          },
+          {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "z"
+            },
+            "timeoutMs": 30000,
+            "mutation": "[data-testid=\"runtime-state-json\"]",
+            "observe": [
+              {
+                "source": "state",
+                "path": [
+                  "mapId"
+                ],
+                "equals": "mapA"
+              },
+              {
+                "source": "state",
+                "path": [
+                  "player"
+                ],
+                "equals": {
+                  "x": 2,
+                  "y": 3
+                }
+              },
+              {
+                "source": "state",
+                "path": [
+                  "running"
+                ],
+                "equals": false
+              },
+              {
+                "source": "state",
+                "path": [
+                  "inputEnabled"
+                ],
+                "equals": true
+              }
+            ]
+          }
+        ],
+        "expect": {
+          "mapId": "mapA",
+          "x": 2,
+          "y": 3,
+          "playerSpriteTextureLoaded": true,
+          "testidAbsent": [
+            "title-screen",
+            "dialogue-box"
+          ]
+        },
+        "shot": true
+      }
+    ]
+  },
+  "negative": {
+    "action": "After real transfer, real Z with impossible mapB expectation",
+    "pass": "bounded timeout observes mapA, observation released"
+  }
+}

@@ -1,0 +1,2354 @@
+[
+  {
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "errors": [],
+    "networkFailures": [],
+    "screenshots": [
+      {
+        "id": "00-entrance",
+        "shot": "00-entrance.png",
+        "url": "http://127.0.0.1:38193/player.html",
+        "gold": 300,
+        "inventory": {
+          "item_potion": 1,
+          "item_antidote": 2
+        },
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_guardian": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_mage": {
+            "weapon": "equip_mage_staff",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_scout": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_cleric": {
+            "weapon": "equip_mage_staff",
+            "shield": "equip_oak_shield",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_ranger": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        },
+        "x": 14,
+        "y": 18,
+        "merchantGold": null,
+        "geometry": {
+          ".runtime-shop-shell": {
+            "x": 152,
+            "y": 178.921875,
+            "width": 720,
+            "height": 410.15625,
+            "right": 872,
+            "bottom": 589.078125
+          },
+          "[data-testid=\"shop-player-gold\"]": {
+            "x": 265,
+            "y": 359.09375,
+            "width": 494,
+            "height": 34.796875,
+            "right": 759,
+            "bottom": 393.890625
+          }
+        },
+        "warnings": [],
+        "layoutFailures": [],
+        "artworkUrls": [],
+        "artwork": [],
+        "failures": []
+      },
+      {
+        "id": "01-stock",
+        "shot": "01-stock.png",
+        "url": "http://127.0.0.1:38193/player.html",
+        "gold": 300,
+        "inventory": {
+          "item_potion": 1,
+          "item_antidote": 2
+        },
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_guardian": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_mage": {
+            "weapon": "equip_mage_staff",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_scout": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_cleric": {
+            "weapon": "equip_mage_staff",
+            "shield": "equip_oak_shield",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_ranger": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        },
+        "x": 14,
+        "y": 18,
+        "merchantGold": 200,
+        "mode": "buy",
+        "selected": "shop-buy-item_potion",
+        "quantity": "1",
+        "quantityMax": "6",
+        "total": "합계 50G",
+        "status": "무엇을 구매하시겠습니까?",
+        "equippedText": "보유1",
+        "geometry": {
+          ".runtime-shop-shell": {
+            "x": 68,
+            "y": 60,
+            "width": 888,
+            "height": 648,
+            "right": 956,
+            "bottom": 708
+          },
+          ".runtime-shop-topbar": {
+            "x": 69,
+            "y": 61,
+            "width": 886,
+            "height": 89.1875,
+            "right": 955,
+            "bottom": 150.1875
+          },
+          ".runtime-shop-item-list": {
+            "x": 85,
+            "y": 224.78125,
+            "width": 517.328125,
+            "height": 380.828125,
+            "right": 602.328125,
+            "bottom": 605.609375
+          },
+          ".runtime-shop-item-row.selected": {
+            "x": 89,
+            "y": 228.78125,
+            "width": 509.328125,
+            "height": 66,
+            "right": 598.328125,
+            "bottom": 294.78125
+          },
+          ".runtime-shop-side": {
+            "x": 618.328125,
+            "y": 150.1875,
+            "width": 336.671875,
+            "height": 471.421875,
+            "right": 955,
+            "bottom": 621.609375
+          },
+          ".runtime-shop-prompt-panel": {
+            "x": 69,
+            "y": 621.609375,
+            "width": 886,
+            "height": 85.390625,
+            "right": 955,
+            "bottom": 707
+          },
+          "[data-testid=\"shop-quantity-input\"]": {
+            "x": 638.9375,
+            "y": 635.40625,
+            "width": 48,
+            "height": 32,
+            "right": 686.9375,
+            "bottom": 667.40625
+          },
+          "[data-testid=\"shop-quantity-total\"]": {
+            "x": 734.9375,
+            "y": 639.8125,
+            "width": 64.0625,
+            "height": 23.1875,
+            "right": 799,
+            "bottom": 663
+          },
+          "[data-testid=\"shop-confirm\"]": {
+            "x": 811,
+            "y": 634.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 867,
+            "bottom": 668.203125
+          },
+          "[data-testid=\"shop-item-cancel\"]": {
+            "x": 875,
+            "y": 634.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 931,
+            "bottom": 668.203125
+          },
+          "[data-testid=\"shop-player-gold\"]": {
+            "x": 807.4375,
+            "y": 77,
+            "width": 123.5625,
+            "height": 34.796875,
+            "right": 931,
+            "bottom": 111.796875
+          }
+        },
+        "warnings": [],
+        "layoutFailures": [],
+        "artworkUrls": [
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png"
+        ],
+        "artwork": [
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          }
+        ],
+        "failures": []
+      },
+      {
+        "id": "02-quantity",
+        "shot": "02-quantity.png",
+        "url": "http://127.0.0.1:38193/player.html",
+        "gold": 300,
+        "inventory": {
+          "item_potion": 1,
+          "item_antidote": 2
+        },
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_guardian": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_mage": {
+            "weapon": "equip_mage_staff",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_scout": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_cleric": {
+            "weapon": "equip_mage_staff",
+            "shield": "equip_oak_shield",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_ranger": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        },
+        "x": 14,
+        "y": 18,
+        "merchantGold": 200,
+        "mode": "buy",
+        "selected": "shop-buy-item_potion",
+        "quantity": "3",
+        "quantityMax": "6",
+        "total": "합계 150G",
+        "status": "무엇을 구매하시겠습니까?",
+        "equippedText": "보유1",
+        "geometry": {
+          ".runtime-shop-shell": {
+            "x": 68,
+            "y": 60,
+            "width": 888,
+            "height": 648,
+            "right": 956,
+            "bottom": 708
+          },
+          ".runtime-shop-topbar": {
+            "x": 69,
+            "y": 61,
+            "width": 886,
+            "height": 89.1875,
+            "right": 955,
+            "bottom": 150.1875
+          },
+          ".runtime-shop-item-list": {
+            "x": 85,
+            "y": 224.78125,
+            "width": 517.328125,
+            "height": 380.828125,
+            "right": 602.328125,
+            "bottom": 605.609375
+          },
+          ".runtime-shop-item-row.selected": {
+            "x": 89,
+            "y": 228.78125,
+            "width": 509.328125,
+            "height": 66,
+            "right": 598.328125,
+            "bottom": 294.78125
+          },
+          ".runtime-shop-side": {
+            "x": 618.328125,
+            "y": 150.1875,
+            "width": 336.671875,
+            "height": 471.421875,
+            "right": 955,
+            "bottom": 621.609375
+          },
+          ".runtime-shop-prompt-panel": {
+            "x": 69,
+            "y": 621.609375,
+            "width": 886,
+            "height": 85.390625,
+            "right": 955,
+            "bottom": 707
+          },
+          "[data-testid=\"shop-quantity-input\"]": {
+            "x": 629.796875,
+            "y": 635.40625,
+            "width": 48,
+            "height": 32,
+            "right": 677.796875,
+            "bottom": 667.40625
+          },
+          "[data-testid=\"shop-quantity-total\"]": {
+            "x": 725.796875,
+            "y": 639.8125,
+            "width": 73.203125,
+            "height": 23.1875,
+            "right": 799,
+            "bottom": 663
+          },
+          "[data-testid=\"shop-confirm\"]": {
+            "x": 811,
+            "y": 634.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 867,
+            "bottom": 668.203125
+          },
+          "[data-testid=\"shop-item-cancel\"]": {
+            "x": 875,
+            "y": 634.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 931,
+            "bottom": 668.203125
+          },
+          "[data-testid=\"shop-player-gold\"]": {
+            "x": 807.4375,
+            "y": 77,
+            "width": 123.5625,
+            "height": 34.796875,
+            "right": 931,
+            "bottom": 111.796875
+          }
+        },
+        "warnings": [],
+        "layoutFailures": [],
+        "artworkUrls": [
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png"
+        ],
+        "artwork": [
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          }
+        ],
+        "failures": []
+      },
+      {
+        "id": "03-purchased",
+        "shot": "03-purchased.png",
+        "url": "http://127.0.0.1:38193/player.html",
+        "gold": 150,
+        "inventory": {
+          "item_potion": 4,
+          "item_antidote": 2
+        },
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_guardian": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_mage": {
+            "weapon": "equip_mage_staff",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_scout": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_cleric": {
+            "weapon": "equip_mage_staff",
+            "shield": "equip_oak_shield",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_ranger": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        },
+        "tradeCounts": {
+          "item_potion": {
+            "sold": 0,
+            "bought": 3
+          }
+        },
+        "x": 14,
+        "y": 18,
+        "merchantGold": 350,
+        "mode": "buy",
+        "selected": "shop-buy-item_potion",
+        "quantity": "3",
+        "quantityMax": "6",
+        "total": "합계 150G",
+        "status": "회복약 구매 — -150G",
+        "equippedText": "보유4",
+        "geometry": {
+          ".runtime-shop-shell": {
+            "x": 68,
+            "y": 60,
+            "width": 888,
+            "height": 648,
+            "right": 956,
+            "bottom": 708
+          },
+          ".runtime-shop-topbar": {
+            "x": 69,
+            "y": 61,
+            "width": 886,
+            "height": 89.1875,
+            "right": 955,
+            "bottom": 150.1875
+          },
+          ".runtime-shop-item-list": {
+            "x": 85,
+            "y": 224.78125,
+            "width": 517.328125,
+            "height": 380.828125,
+            "right": 602.328125,
+            "bottom": 605.609375
+          },
+          ".runtime-shop-item-row.selected": {
+            "x": 89,
+            "y": 228.78125,
+            "width": 509.328125,
+            "height": 66,
+            "right": 598.328125,
+            "bottom": 294.78125
+          },
+          ".runtime-shop-side": {
+            "x": 618.328125,
+            "y": 150.1875,
+            "width": 336.671875,
+            "height": 471.421875,
+            "right": 955,
+            "bottom": 621.609375
+          },
+          ".runtime-shop-prompt-panel": {
+            "x": 69,
+            "y": 621.609375,
+            "width": 886,
+            "height": 85.390625,
+            "right": 955,
+            "bottom": 707
+          },
+          "[data-testid=\"shop-quantity-input\"]": {
+            "x": 629.796875,
+            "y": 635.40625,
+            "width": 48,
+            "height": 32,
+            "right": 677.796875,
+            "bottom": 667.40625
+          },
+          "[data-testid=\"shop-quantity-total\"]": {
+            "x": 725.796875,
+            "y": 639.8125,
+            "width": 73.203125,
+            "height": 23.1875,
+            "right": 799,
+            "bottom": 663
+          },
+          "[data-testid=\"shop-confirm\"]": {
+            "x": 811,
+            "y": 634.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 867,
+            "bottom": 668.203125
+          },
+          "[data-testid=\"shop-item-cancel\"]": {
+            "x": 875,
+            "y": 634.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 931,
+            "bottom": 668.203125
+          },
+          "[data-testid=\"shop-player-gold\"]": {
+            "x": 807.4375,
+            "y": 77,
+            "width": 123.5625,
+            "height": 34.796875,
+            "right": 931,
+            "bottom": 111.796875
+          }
+        },
+        "warnings": [
+          "stale quantity max: DOM 6, current funds/inventory 3"
+        ],
+        "layoutFailures": [],
+        "artworkUrls": [
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png"
+        ],
+        "artwork": [
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          }
+        ],
+        "failures": []
+      },
+      {
+        "id": "04-equipment",
+        "shot": "04-equipment.png",
+        "url": "http://127.0.0.1:38193/player.html",
+        "gold": 150,
+        "inventory": {
+          "item_potion": 4,
+          "item_antidote": 2
+        },
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_guardian": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_mage": {
+            "weapon": "equip_mage_staff",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_scout": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_cleric": {
+            "weapon": "equip_mage_staff",
+            "shield": "equip_oak_shield",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_ranger": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        },
+        "tradeCounts": {
+          "item_potion": {
+            "sold": 0,
+            "bought": 3
+          }
+        },
+        "x": 14,
+        "y": 18,
+        "merchantGold": 350,
+        "mode": "buy",
+        "selected": "shop-buy-equip_sword",
+        "quantity": "2",
+        "quantityMax": "99",
+        "total": "합계 0G",
+        "status": "회복약 구매 — -150G",
+        "equippedText": "보유0장비2",
+        "statsText": "공격▲8",
+        "geometry": {
+          ".runtime-shop-shell": {
+            "x": 68,
+            "y": 60,
+            "width": 888,
+            "height": 648,
+            "right": 956,
+            "bottom": 708
+          },
+          ".runtime-shop-topbar": {
+            "x": 69,
+            "y": 61,
+            "width": 886,
+            "height": 89.1875,
+            "right": 955,
+            "bottom": 150.1875
+          },
+          ".runtime-shop-item-list": {
+            "x": 85,
+            "y": 224.78125,
+            "width": 517.328125,
+            "height": 380.828125,
+            "right": 602.328125,
+            "bottom": 605.609375
+          },
+          ".runtime-shop-item-row.selected": {
+            "x": 89,
+            "y": 368.78125,
+            "width": 509.328125,
+            "height": 66,
+            "right": 598.328125,
+            "bottom": 434.78125
+          },
+          ".runtime-shop-side": {
+            "x": 618.328125,
+            "y": 150.1875,
+            "width": 336.671875,
+            "height": 471.421875,
+            "right": 955,
+            "bottom": 621.609375
+          },
+          ".runtime-shop-prompt-panel": {
+            "x": 69,
+            "y": 621.609375,
+            "width": 886,
+            "height": 85.390625,
+            "right": 955,
+            "bottom": 707
+          },
+          "[data-testid=\"shop-quantity-input\"]": {
+            "x": 648.09375,
+            "y": 635.40625,
+            "width": 48,
+            "height": 32,
+            "right": 696.09375,
+            "bottom": 667.40625
+          },
+          "[data-testid=\"shop-quantity-total\"]": {
+            "x": 744.09375,
+            "y": 639.8125,
+            "width": 54.90625,
+            "height": 23.1875,
+            "right": 799,
+            "bottom": 663
+          },
+          "[data-testid=\"shop-confirm\"]": {
+            "x": 811,
+            "y": 634.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 867,
+            "bottom": 668.203125
+          },
+          "[data-testid=\"shop-item-cancel\"]": {
+            "x": 875,
+            "y": 634.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 931,
+            "bottom": 668.203125
+          },
+          "[data-testid=\"shop-player-gold\"]": {
+            "x": 807.4375,
+            "y": 77,
+            "width": 123.5625,
+            "height": 34.796875,
+            "right": 931,
+            "bottom": 111.796875
+          }
+        },
+        "warnings": [],
+        "layoutFailures": [],
+        "artworkUrls": [
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png"
+        ],
+        "artwork": [
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          }
+        ],
+        "failures": [
+          "quantity: expected \"1\", got \"2\""
+        ]
+      }
+    ],
+    "failures": [
+      "AssertionError [ERR_ASSERTION]: quantity: expected \"1\", got \"2\"\n\n1 !== 0\n"
+    ]
+  },
+  {
+    "viewport": {
+      "width": 640,
+      "height": 480
+    },
+    "errors": [
+      "The AudioContext encountered an error from the audio device or the WebAudio renderer.",
+      "The AudioContext encountered an error from the audio device or the WebAudio renderer."
+    ],
+    "networkFailures": [
+      {
+        "url": "http://127.0.0.1:38193/assets/cc0/audio/bgm/field-of-dreams.mp3",
+        "error": "net::ERR_ABORTED"
+      }
+    ],
+    "screenshots": [
+      {
+        "id": "00-entrance",
+        "shot": "00-entrance.png",
+        "url": "http://127.0.0.1:38193/player.html",
+        "gold": 300,
+        "inventory": {
+          "item_potion": 1,
+          "item_antidote": 2
+        },
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_guardian": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_mage": {
+            "weapon": "equip_mage_staff",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_scout": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_cleric": {
+            "weapon": "equip_mage_staff",
+            "shield": "equip_oak_shield",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_ranger": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        },
+        "x": 14,
+        "y": 18,
+        "merchantGold": null,
+        "geometry": {
+          ".runtime-shop-shell": {
+            "x": 20,
+            "y": 49.421875,
+            "width": 600,
+            "height": 381.140625,
+            "right": 620,
+            "bottom": 430.5625
+          },
+          "[data-testid=\"shop-player-gold\"]": {
+            "x": 73,
+            "y": 214.796875,
+            "width": 494,
+            "height": 23.1875,
+            "right": 567,
+            "bottom": 237.984375
+          }
+        },
+        "warnings": [],
+        "layoutFailures": [],
+        "artworkUrls": [],
+        "artwork": [],
+        "failures": []
+      },
+      {
+        "id": "01-stock",
+        "shot": "01-stock.png",
+        "url": "http://127.0.0.1:38193/player.html",
+        "gold": 300,
+        "inventory": {
+          "item_potion": 1,
+          "item_antidote": 2
+        },
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_guardian": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_mage": {
+            "weapon": "equip_mage_staff",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_scout": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_cleric": {
+            "weapon": "equip_mage_staff",
+            "shield": "equip_oak_shield",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_ranger": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        },
+        "x": 14,
+        "y": 18,
+        "merchantGold": 200,
+        "mode": "buy",
+        "selected": "shop-buy-item_potion",
+        "quantity": "1",
+        "quantityMax": "6",
+        "total": "합계 50G",
+        "status": "무엇을 구매하시겠습니까?",
+        "equippedText": "보유1",
+        "geometry": {
+          ".runtime-shop-shell": {
+            "x": 20,
+            "y": 20,
+            "width": 600,
+            "height": 440,
+            "right": 620,
+            "bottom": 460
+          },
+          ".runtime-shop-topbar": {
+            "x": 21,
+            "y": 21,
+            "width": 598,
+            "height": 61.578125,
+            "right": 619,
+            "bottom": 82.578125
+          },
+          ".runtime-shop-item-list": {
+            "x": 29,
+            "y": 129.171875,
+            "width": 354.765625,
+            "height": 215.046875,
+            "right": 383.765625,
+            "bottom": 344.21875
+          },
+          ".runtime-shop-item-row.selected": {
+            "x": 33,
+            "y": 133.171875,
+            "width": 346.765625,
+            "height": 55.59375,
+            "right": 379.765625,
+            "bottom": 188.765625
+          },
+          ".runtime-shop-side": {
+            "x": 391.765625,
+            "y": 82.578125,
+            "width": 227.234375,
+            "height": 269.640625,
+            "right": 619,
+            "bottom": 352.21875
+          },
+          ".runtime-shop-prompt-panel": {
+            "x": 21,
+            "y": 352.21875,
+            "width": 598,
+            "height": 106.78125,
+            "right": 619,
+            "bottom": 459
+          },
+          "[data-testid=\"shop-quantity-input\"]": {
+            "x": 95,
+            "y": 391.40625,
+            "width": 32,
+            "height": 32,
+            "right": 127,
+            "bottom": 423.40625
+          },
+          "[data-testid=\"shop-quantity-total\"]": {
+            "x": 175,
+            "y": 397.25,
+            "width": 55.796875,
+            "height": 20.296875,
+            "right": 230.796875,
+            "bottom": 417.546875
+          },
+          "[data-testid=\"shop-confirm\"]": {
+            "x": 487,
+            "y": 390.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 543,
+            "bottom": 424.203125
+          },
+          "[data-testid=\"shop-item-cancel\"]": {
+            "x": 551,
+            "y": 390.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 607,
+            "bottom": 424.203125
+          },
+          "[data-testid=\"shop-player-gold\"]": {
+            "x": 502.953125,
+            "y": 29,
+            "width": 104.046875,
+            "height": 23.1875,
+            "right": 607,
+            "bottom": 52.1875
+          }
+        },
+        "warnings": [],
+        "layoutFailures": [],
+        "artworkUrls": [
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png"
+        ],
+        "artwork": [
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          }
+        ],
+        "failures": []
+      },
+      {
+        "id": "02-quantity",
+        "shot": "02-quantity.png",
+        "url": "http://127.0.0.1:38193/player.html",
+        "gold": 300,
+        "inventory": {
+          "item_potion": 1,
+          "item_antidote": 2
+        },
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_guardian": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_mage": {
+            "weapon": "equip_mage_staff",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_scout": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_cleric": {
+            "weapon": "equip_mage_staff",
+            "shield": "equip_oak_shield",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_ranger": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        },
+        "x": 14,
+        "y": 18,
+        "merchantGold": 200,
+        "mode": "buy",
+        "selected": "shop-buy-item_potion",
+        "quantity": "3",
+        "quantityMax": "6",
+        "total": "합계 150G",
+        "status": "무엇을 구매하시겠습니까?",
+        "equippedText": "보유1",
+        "geometry": {
+          ".runtime-shop-shell": {
+            "x": 20,
+            "y": 20,
+            "width": 600,
+            "height": 440,
+            "right": 620,
+            "bottom": 460
+          },
+          ".runtime-shop-topbar": {
+            "x": 21,
+            "y": 21,
+            "width": 598,
+            "height": 61.578125,
+            "right": 619,
+            "bottom": 82.578125
+          },
+          ".runtime-shop-item-list": {
+            "x": 29,
+            "y": 129.171875,
+            "width": 354.765625,
+            "height": 215.046875,
+            "right": 383.765625,
+            "bottom": 344.21875
+          },
+          ".runtime-shop-item-row.selected": {
+            "x": 33,
+            "y": 133.171875,
+            "width": 346.765625,
+            "height": 55.59375,
+            "right": 379.765625,
+            "bottom": 188.765625
+          },
+          ".runtime-shop-side": {
+            "x": 391.765625,
+            "y": 82.578125,
+            "width": 227.234375,
+            "height": 269.640625,
+            "right": 619,
+            "bottom": 352.21875
+          },
+          ".runtime-shop-prompt-panel": {
+            "x": 21,
+            "y": 352.21875,
+            "width": 598,
+            "height": 106.78125,
+            "right": 619,
+            "bottom": 459
+          },
+          "[data-testid=\"shop-quantity-input\"]": {
+            "x": 95,
+            "y": 391.40625,
+            "width": 32,
+            "height": 32,
+            "right": 127,
+            "bottom": 423.40625
+          },
+          "[data-testid=\"shop-quantity-total\"]": {
+            "x": 175,
+            "y": 397.25,
+            "width": 63.8125,
+            "height": 20.296875,
+            "right": 238.8125,
+            "bottom": 417.546875
+          },
+          "[data-testid=\"shop-confirm\"]": {
+            "x": 487,
+            "y": 390.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 543,
+            "bottom": 424.203125
+          },
+          "[data-testid=\"shop-item-cancel\"]": {
+            "x": 551,
+            "y": 390.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 607,
+            "bottom": 424.203125
+          },
+          "[data-testid=\"shop-player-gold\"]": {
+            "x": 502.953125,
+            "y": 29,
+            "width": 104.046875,
+            "height": 23.1875,
+            "right": 607,
+            "bottom": 52.1875
+          }
+        },
+        "warnings": [],
+        "layoutFailures": [],
+        "artworkUrls": [
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png"
+        ],
+        "artwork": [
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          }
+        ],
+        "failures": []
+      },
+      {
+        "id": "03-purchased",
+        "shot": "03-purchased.png",
+        "url": "http://127.0.0.1:38193/player.html",
+        "gold": 150,
+        "inventory": {
+          "item_potion": 4,
+          "item_antidote": 2
+        },
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_guardian": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_mage": {
+            "weapon": "equip_mage_staff",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_scout": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_cleric": {
+            "weapon": "equip_mage_staff",
+            "shield": "equip_oak_shield",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_ranger": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        },
+        "tradeCounts": {
+          "item_potion": {
+            "sold": 0,
+            "bought": 3
+          }
+        },
+        "x": 14,
+        "y": 18,
+        "merchantGold": 350,
+        "mode": "buy",
+        "selected": "shop-buy-item_potion",
+        "quantity": "3",
+        "quantityMax": "6",
+        "total": "합계 150G",
+        "status": "회복약 구매 — -150G",
+        "equippedText": "보유4",
+        "geometry": {
+          ".runtime-shop-shell": {
+            "x": 20,
+            "y": 20,
+            "width": 600,
+            "height": 440,
+            "right": 620,
+            "bottom": 460
+          },
+          ".runtime-shop-topbar": {
+            "x": 21,
+            "y": 21,
+            "width": 598,
+            "height": 61.578125,
+            "right": 619,
+            "bottom": 82.578125
+          },
+          ".runtime-shop-item-list": {
+            "x": 29,
+            "y": 129.171875,
+            "width": 354.765625,
+            "height": 215.046875,
+            "right": 383.765625,
+            "bottom": 344.21875
+          },
+          ".runtime-shop-item-row.selected": {
+            "x": 33,
+            "y": 133.171875,
+            "width": 346.765625,
+            "height": 55.59375,
+            "right": 379.765625,
+            "bottom": 188.765625
+          },
+          ".runtime-shop-side": {
+            "x": 391.765625,
+            "y": 82.578125,
+            "width": 227.234375,
+            "height": 269.640625,
+            "right": 619,
+            "bottom": 352.21875
+          },
+          ".runtime-shop-prompt-panel": {
+            "x": 21,
+            "y": 352.21875,
+            "width": 598,
+            "height": 106.78125,
+            "right": 619,
+            "bottom": 459
+          },
+          "[data-testid=\"shop-quantity-input\"]": {
+            "x": 95,
+            "y": 391.40625,
+            "width": 32,
+            "height": 32,
+            "right": 127,
+            "bottom": 423.40625
+          },
+          "[data-testid=\"shop-quantity-total\"]": {
+            "x": 175,
+            "y": 397.25,
+            "width": 63.8125,
+            "height": 20.296875,
+            "right": 238.8125,
+            "bottom": 417.546875
+          },
+          "[data-testid=\"shop-confirm\"]": {
+            "x": 487,
+            "y": 390.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 543,
+            "bottom": 424.203125
+          },
+          "[data-testid=\"shop-item-cancel\"]": {
+            "x": 551,
+            "y": 390.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 607,
+            "bottom": 424.203125
+          },
+          "[data-testid=\"shop-player-gold\"]": {
+            "x": 502.953125,
+            "y": 29,
+            "width": 104.046875,
+            "height": 23.1875,
+            "right": 607,
+            "bottom": 52.1875
+          }
+        },
+        "warnings": [
+          "stale quantity max: DOM 6, current funds/inventory 3"
+        ],
+        "layoutFailures": [],
+        "artworkUrls": [
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png"
+        ],
+        "artwork": [
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          }
+        ],
+        "failures": []
+      },
+      {
+        "id": "04-equipment",
+        "shot": "04-equipment.png",
+        "url": "http://127.0.0.1:38193/player.html",
+        "gold": 150,
+        "inventory": {
+          "item_potion": 4,
+          "item_antidote": 2
+        },
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_guardian": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_mage": {
+            "weapon": "equip_mage_staff",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_scout": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_cleric": {
+            "weapon": "equip_mage_staff",
+            "shield": "equip_oak_shield",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_ranger": {
+            "weapon": "equip_scout_dagger",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        },
+        "tradeCounts": {
+          "item_potion": {
+            "sold": 0,
+            "bought": 3
+          }
+        },
+        "x": 14,
+        "y": 18,
+        "merchantGold": 350,
+        "mode": "buy",
+        "selected": "shop-buy-equip_sword",
+        "quantity": "2",
+        "quantityMax": "99",
+        "total": "합계 0G",
+        "status": "회복약 구매 — -150G",
+        "equippedText": "보유0장비2",
+        "statsText": "공격▲8",
+        "geometry": {
+          ".runtime-shop-shell": {
+            "x": 20,
+            "y": 20,
+            "width": 600,
+            "height": 440,
+            "right": 620,
+            "bottom": 460
+          },
+          ".runtime-shop-topbar": {
+            "x": 21,
+            "y": 21,
+            "width": 598,
+            "height": 61.578125,
+            "right": 619,
+            "bottom": 82.578125
+          },
+          ".runtime-shop-item-list": {
+            "x": 29,
+            "y": 129.171875,
+            "width": 354.765625,
+            "height": 215.046875,
+            "right": 383.765625,
+            "bottom": 344.21875
+          },
+          ".runtime-shop-item-row.selected": {
+            "x": 33,
+            "y": 252.359375,
+            "width": 346.765625,
+            "height": 55.59375,
+            "right": 379.765625,
+            "bottom": 307.953125
+          },
+          ".runtime-shop-side": {
+            "x": 391.765625,
+            "y": 82.578125,
+            "width": 227.234375,
+            "height": 269.640625,
+            "right": 619,
+            "bottom": 352.21875
+          },
+          ".runtime-shop-prompt-panel": {
+            "x": 21,
+            "y": 352.21875,
+            "width": 598,
+            "height": 106.78125,
+            "right": 619,
+            "bottom": 459
+          },
+          "[data-testid=\"shop-quantity-input\"]": {
+            "x": 95,
+            "y": 391.40625,
+            "width": 32,
+            "height": 32,
+            "right": 127,
+            "bottom": 423.40625
+          },
+          "[data-testid=\"shop-quantity-total\"]": {
+            "x": 175,
+            "y": 397.25,
+            "width": 47.796875,
+            "height": 20.296875,
+            "right": 222.796875,
+            "bottom": 417.546875
+          },
+          "[data-testid=\"shop-confirm\"]": {
+            "x": 487,
+            "y": 390.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 543,
+            "bottom": 424.203125
+          },
+          "[data-testid=\"shop-item-cancel\"]": {
+            "x": 551,
+            "y": 390.609375,
+            "width": 56,
+            "height": 33.59375,
+            "right": 607,
+            "bottom": 424.203125
+          },
+          "[data-testid=\"shop-player-gold\"]": {
+            "x": 502.953125,
+            "y": 29,
+            "width": 104.046875,
+            "height": 23.1875,
+            "right": 607,
+            "bottom": 52.1875
+          }
+        },
+        "warnings": [],
+        "layoutFailures": [],
+        "artworkUrls": [
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png"
+        ],
+        "artwork": [
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/potion-red.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/ether-blue.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/cc0/jetrel/icons/bronze-sword.png",
+            "loaded": true,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/Actor2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People1/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          },
+          {
+            "url": "http://127.0.0.1:38193/assets/easyrpg/faceset/People2/00.png",
+            "loaded": true,
+            "width": 48,
+            "height": 48
+          }
+        ],
+        "failures": [
+          "quantity: expected \"1\", got \"2\""
+        ]
+      }
+    ],
+    "failures": [
+      "AssertionError [ERR_ASSERTION]: quantity: expected \"1\", got \"2\"\n\n1 !== 0\n"
+    ]
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 240
+    },
+    "errors": [
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "Failed to load resource: net::ERR_NETWORK_CHANGED"
+    ],
+    "networkFailures": [
+      {
+        "url": "http://127.0.0.1:38193/src/project/defaults/defaultDatabaseStarterRecords.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/defaults/defaultDatabaseItemRecords.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/defaults/defaultDatabaseUtilityRecords.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/defaults/constants.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/bundled.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/imageWarmQueue.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/emotes.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/farmingSprites.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/defaults/defaultAssets.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/defaults/pokemonChipsetPreset.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/defaults/interiorTransparentPropLayerRepair.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/defaults/starterHouseTransfer.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/defaults/defaultMaps.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/defaults/defaultProject.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/defaults/modernNocturneGame.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/editor/content/skyStairGame.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/util/id.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/types/base.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/growth/types.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/growth/graph.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/charsetCatalog.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/easyrpgRtp.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/actorModel.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/upgrades.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/spatialPlacements.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/spatialOccupancy.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/commandKindRegistry.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/structurePlacements.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/io/commandReferenceValidation.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/io/resourceReferenceValidation.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/app/phaserRuntime.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/villageDesign.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/databaseRecordModel.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/storyFlags.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/world/canonNormalize.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/world/guards.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/worldGraph/index.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/tilesetPalette.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/defaults/houseTemplateCatalog.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/io/shapeCommandFields.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/characterIdStamp.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/io/shapeCharacterFields.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/io/shapeFields.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/mapOverlayTiles.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/tilesetPassage.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/equipmentRules.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/cc0IconAssets.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/cc0AudioAssets.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/bgmCatalogResolver.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/seCatalogResolver.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/generatedEffectSheets.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/scarloxyPack.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/player/characterShadow.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/system2Sheet.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/transparentColorKeyBackground.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/animationTiming.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/transparentColorKey.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/player/battleAnimationPlayback.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/player/battleAnimationEffectStyle.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/player/battleAnimationAnchor.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/itemUsage.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/itemEligibility.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/animationSnapshot.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battleBattlers.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battleDamage.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battleEvents.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battleRewards.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battleLevelUp.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/typeChart.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/rewardPolicy.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battleStates.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battleTurnGauge.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battleBackdrop.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battlePose.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/databaseEnemyTroopRecordModel.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battleSkillUse.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battleAuto.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battlePredict.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battleStrictOrder.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/gen1/capture.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/gen1/status.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/terms.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battleCommands.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/battleCommandCss.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/util/josa.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/player/battleAudio.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/battlerIdleAnimations.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battlerPlacements.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/assets/battlerHiresSheets.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/project/actorFaceDefaults.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/battle/battleRuntimeAdvance.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      },
+      {
+        "url": "http://127.0.0.1:38193/src/player/battleActionBeats.ts",
+        "error": "net::ERR_NETWORK_CHANGED"
+      }
+    ],
+    "screenshots": [],
+    "failures": [
+      "TimeoutError: page.waitForSelector: Timeout 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\\'title-screen\\']') to be visible\u001b[22m\n"
+    ]
+  }
+]

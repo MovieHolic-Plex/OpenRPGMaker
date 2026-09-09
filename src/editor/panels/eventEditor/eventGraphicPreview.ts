@@ -1,14 +1,15 @@
-import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { findCharsetAsset as findBundledCharsetAsset, projectCharsetAssets, type CharsetPickerAsset } from "@/assets/charsetCatalog";
 import { applyCharsetFrameCrop, charsetFrameCropPosition } from "@/assets/charsetFrameCrop";
 import {
   charsetFrameIndex,
   decodeCharsetFrameIndex,
   type CharsetFrameSelection,
-  type EasyRpgCharsetAsset,
 } from "@/assets/easyrpgRtp";
 import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { normalizeCharacterScale } from "@/project/footprint";
 import type { AutonomousMovement, CharacterFootprint, EventPageGraphic } from "@/project/types";
+import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
+import { store } from "@/project/store";
 
 const PREVIEW_SCALE = 2;
 /** Compact icons for event list / world cards (~16.5×22). */
@@ -49,6 +50,7 @@ function renderEventGraphicElement(
   movementType: AutonomousMovement,
   testId: string
 ): HTMLElement {
+  graphic = resolveEventAppearanceGraphic(store.getCurrent(), graphic);
   const preview = document.createElement("div");
   preview.className = className;
   preview.dataset.testid = testId;
@@ -218,7 +220,7 @@ function round(value: number): number {
 
 type CharsetPreviewStyle = {
   readonly target: HTMLElement;
-  readonly asset: EasyRpgCharsetAsset;
+  readonly asset: CharsetPickerAsset;
   readonly selection: CharsetFrameSelection;
   readonly frameIndex: number;
   readonly scale: number;
@@ -276,6 +278,7 @@ function movementTitle(movementType: AutonomousMovement): string {
   return "";
 }
 
-function findCharsetAsset(textureKey: string): EasyRpgCharsetAsset | undefined {
-  return CHARSET_ASSETS.find((asset) => asset.textureKey === textureKey);
+function findCharsetAsset(textureKey: string): CharsetPickerAsset | undefined {
+  return projectCharsetAssets(store.getCurrent()).find((asset) => asset.textureKey === textureKey)
+    ?? findBundledCharsetAsset(textureKey);
 }

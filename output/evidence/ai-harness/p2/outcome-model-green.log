@@ -1,0 +1,14 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunOutcome.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-outcome-20260906
+
+ ✓ test/aiRunOutcome.test.ts (437 tests) 324ms
+
+ Test Files  1 passed (1)
+      Tests  437 passed (437)
+   Start at  01:24:12
+   Duration  2.59s (transform 460ms, setup 0ms, collect 486ms, tests 324ms, environment 0ms, prepare 603ms)
+

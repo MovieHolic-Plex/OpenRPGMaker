@@ -11,7 +11,6 @@ import {
   emptyState,
   listPane,
   listRow,
-  listSearch,
   listToolbar,
   detailPane as makeDetailPane,
   sectionCard,
@@ -37,9 +36,15 @@ const DELETE_CONFIRM_WINDOW_MS = 3000;
 
 let selectedSpeciesId: string | undefined;
 let speciesSearch = "";
+let revealSpeciesSelection = false;
+// The modal keeps this host across deferred refreshes, but replaces its list.
+// Weak ownership prevents a closed modal's scroll from leaking into a new one.
+const speciesListScrollTops = new WeakMap<HTMLElement, number>();
 
-export function setSelectedMonsterSpeciesId(id?: string): void {
+export function setSelectedMonsterSpeciesId(id?: string, options?: { reveal: boolean }): void {
   selectedSpeciesId = id;
+  revealSpeciesSelection = options?.reveal === true;
+  if (revealSpeciesSelection) speciesSearch = "";
 }
 
 export function getSelectedMonsterSpeciesId(): string | undefined {
@@ -70,16 +75,27 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
   const project = store.getCurrent();
   const species = project.database.monsterSpecies ?? [];
   if (!selectedSpeciesId || !species.some((record) => record.id === selectedSpeciesId)) {
-    selectedSpeciesId = species[0]?.id;
+    setSelectedMonsterSpeciesId(species[0]?.id, { reveal: species.length > 0 });
   }
   const selected = species.find((record) => record.id === selectedSpeciesId);
-  const query = speciesSearch.trim();
-
-  const rows: HTMLElement[] = [];
-  for (const [index, record] of species.entries()) {
-    if (query && !matchesNameOrId(record.name, record.id, query)) continue;
-    rows.push(speciesListRow(project, record, index, rerender));
-  }
+  const search = el("input", {
+    attrs: { type: "search", placeholder: "이름 또는 ID 검색", "aria-label": "이름 또는 ID 검색" },
+    value: speciesSearch,
+    dataset: { testid: "db-monster-species-search" },
+  });
+  const selectionNotice = el("div", {
+    class: "db-filter-chips",
+    dataset: { testid: "db-monster-species-selection-notice" },
+    attrs: { role: "status" },
+  });
+  const revealSelected = (): void => {
+    speciesSearch = "";
+    search.value = "";
+    renderRows();
+    rowsHost.querySelector<HTMLElement>('[aria-pressed="true"]')?.scrollIntoView?.({ block: "nearest" });
+    speciesListScrollTops.set(host, rowsHost.scrollTop);
+    search.focus();
+  };
 
   const toolbar = listToolbar([
     {
@@ -99,25 +115,47 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
   toolbar.append(deleteSpeciesButton(rerender));
 
   const list = listPane({
-    title: "몬스터 종족",
-    // 필터가 걸리면 `보이는/전체` 로 적는다 — 필터 전 개수만 보여주면 행 0 개인데 "9개"가 된다.
-    count: query && rows.length !== species.length ? `${rows.length}/${species.length}개` : species.length,
-    search: listSearch({
-      placeholder: "이름 또는 ID 검색",
-      value: speciesSearch,
-      testid: "db-monster-species-search",
-      onInput: (value) => {
-        speciesSearch = value;
-        rerender();
-      },
-    }),
-    rows,
-    empty: query.length > 0
-      ? emptyState({ icon: "⌕", title: "검색 결과가 없습니다", body: `"${query}" 와 일치하는 종족이 없습니다.`, compact: true })
-      : emptyState({ icon: "◇", title: "아직 종족이 없습니다", compact: true }),
+    title: "포획·성장 종족",
+    count: species.length,
+    search: el("div", { class: "db-search db-ws-search", children: [search] }),
+    chips: selectionNotice,
+    rows: [],
     toolbar,
     testid: "db-monster-species-list-pane",
   });
+
+  const rowsHost = list.querySelector<HTMLElement>(".db-ws-list")!;
+  const count = list.querySelector<HTMLElement>(".db-ws-count")!;
+  // Filtering only updates the list, count and notice. The mounted inspector owns
+  // unsaved controls, skill-row identities, preview level and its scroll position.
+  const renderRows = (): void => {
+    const liveProject = store.getCurrent();
+    const records = liveProject.database.monsterSpecies ?? [];
+    const query = speciesSearch.trim();
+    const visible = records.filter((record) => !query || matchesNameOrId(record.name, record.id, query));
+    rowsHost.replaceChildren(...visible.map((record) => speciesListRow(liveProject, record, records.indexOf(record), rerender)));
+    rowsHost.classList.toggle("db-ws-list-empty", visible.length === 0);
+    count.textContent = visible.length === records.length ? `${records.length}개` : `${visible.length}/${records.length}개`;
+    if (!visible.length) rowsHost.append(query
+      ? emptyState({
+        icon: "⌕", title: "검색 결과가 없습니다", body: `"${query}" 와 일치하는 종족이 없습니다.`, compact: true,
+        action: { label: "검색 지우기", onClick: revealSelected, testid: "db-monster-species-empty-clear" },
+      })
+      : emptyState({ icon: "◇", title: "아직 종족이 없습니다", compact: true }));
+    const current = records.find((record) => record.id === selectedSpeciesId);
+    const outside = current && !visible.includes(current);
+    selectionNotice.hidden = !outside;
+    selectionNotice.dataset.recordId = current?.id ?? "";
+    selectionNotice.replaceChildren(...(outside ? [
+      el("p", { class: "db-field-hint", text: `선택 중: ${current.name || current.id} · 검색 결과 밖` }),
+      el("button", {
+        class: "db-ws-btn db-ws-btn-ghost", text: "검색 지우고 보기", attrs: { type: "button" },
+        dataset: { testid: "db-monster-species-reveal-selection" }, on: { click: revealSelected },
+      }),
+    ] : []));
+  };
+  search.addEventListener("input", () => { speciesSearch = search.value; renderRows(); });
+  renderRows();
 
   const detail = selected
     ? makeDetailPane({
@@ -129,7 +167,7 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
       body: emptyState({
         icon: "◇",
         title: "종족이 없습니다",
-        body: "종족은 몬스터의 성장·포획 정보를 담습니다. 먼저 종족을 만들고 [몬스터] 탭에서 전투 스탯을 연결하세요.",
+        body: "포획·성장·종족값을 설정합니다. 전투 몬스터 탭에서 연결하며, 전투의 고정 능력치는 별도로 편집합니다.",
         action: {
           label: "첫 종족 만들기",
           kind: "primary",
@@ -154,6 +192,17 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
       testid: "db-monster-species-workspace",
     })
   );
+  rowsHost.scrollTop = speciesListScrollTops.get(host) ?? 0;
+  if (revealSpeciesSelection) {
+    revealSpeciesSelection = false;
+    rowsHost.querySelector<HTMLElement>('[aria-pressed="true"]')?.scrollIntoView?.({ block: "nearest" });
+  }
+  // Capture native reveal/clamping now, before its asynchronous scroll event.
+  speciesListScrollTops.set(host, rowsHost.scrollTop);
+  rowsHost.addEventListener("scroll", () => {
+    // A queued event from a replaced/cached list must not overwrite live scroll.
+    if (host.contains(rowsHost)) speciesListScrollTops.set(host, rowsHost.scrollTop);
+  });
 }
 
 function speciesListRow(
@@ -194,7 +243,7 @@ function speciesHero(
     `진화 ${evolutions}개`,
   ];
   return detailHero({
-    eyebrow: "몬스터 종족",
+    eyebrow: "포획·성장 종족",
     title: record.name || "(이름 없음)",
     // 레코드 id 를 상세 창에 실제 텍스트로 노출한다 — 예전에는 목록 행의 title 속성에만
     // 있어서 "지금 편집 중인 게 어느 레코드인지" 를 화면에서 확인할 수 없었다.
@@ -212,9 +261,7 @@ function addSpecies(rerender: () => void): void {
     project.database.monsterSpecies ??= [];
     project.database.monsterSpecies.push(normalizeMonsterSpeciesRecord({ id, name: "새 species" }));
   }, { scope: "database", collection: "monsterSpecies", label: "몬스터 종족 편집" });
-  selectedSpeciesId = id;
-  // 새 레코드가 검색 필터에 걸려 안 보이는 상황을 만들지 않는다.
-  speciesSearch = "";
+  setSelectedMonsterSpeciesId(id, { reveal: true });
   rerender();
 }
 
@@ -227,8 +274,7 @@ function duplicateSpecies(rerender: () => void): void {
     project.database.monsterSpecies ??= [];
     duplicateInto(project.database.monsterSpecies, id, copyId);
   }, { scope: "database", collection: "monsterSpecies", label: "몬스터 종족 편집" });
-  selectedSpeciesId = copyId;
-  speciesSearch = "";
+  setSelectedMonsterSpeciesId(copyId, { reveal: true });
   rerender();
 }
 
@@ -263,19 +309,19 @@ function monsterPipelineHeader(project: ReturnType<typeof store.getCurrent>): HT
     children: [
       renderLifePanel({
         testid: "db-monster-pipeline",
-        title: "몬스터 종족",
+        title: "프로젝트 전체 준비 상태",
         headingTestid: "db-monster-species-intro",
         cards: [
           {
             testid: "db-monster-pipeline-links",
             icon: "link",
-            label: "몬스터",
+            label: "명시적 종족 연결",
             value: `${linkedEnemies.length}/${project.database.enemies.length}`,
-            detail: linkedEnemies.length > 0 ? "전투 몬스터가 종족을 참조합니다." : "몬스터 탭에서 포획 종족을 연결하세요.",
+            detail: "전체 전투 몬스터 기준 · 같은 ID 호환 연결 제외",
             state: linkedEnemies.length > 0 ? "ready" : "needs-setup",
             data: { linked: String(linkedEnemies.length), total: String(project.database.enemies.length) },
             action: {
-              label: "몬스터 열기",
+              label: "전투 몬스터 탭 열기",
               testid: "db-monster-pipeline-links-action",
               onClick: (event) => openTab(event, "db-tab-enemies"),
             },
@@ -285,11 +331,11 @@ function monsterPipelineHeader(project: ReturnType<typeof store.getCurrent>): HT
             icon: "map",
             label: "출현",
             value: `${spawnCount}개 · ${spawnMaps.length}맵`,
-            detail: spawnCount > 0 ? "맵의 출현 영역에서 전투 그룹이 등장합니다." : "맵에 fieldSpawns를 연결하세요.",
+            detail: spawnCount > 0 ? "프로젝트 모든 맵의 출현 영역입니다." : "맵에서 필드 출현 영역을 설정하세요.",
             state: spawnCount > 0 ? "ready" : "needs-setup",
             data: { spawns: String(spawnCount), maps: String(spawnMaps.length) },
             action: {
-              label: spawnCount > 0 ? "출현 맵 선택" : "맵 확인",
+              label: spawnCount > 0 ? "첫 출현 맵 선택" : "출현 맵 확인",
               testid: "db-monster-pipeline-spawns-action",
               onClick: selectSpawnMap,
             },
@@ -299,11 +345,11 @@ function monsterPipelineHeader(project: ReturnType<typeof store.getCurrent>): HT
             icon: "drop",
             label: "드롭",
             value: `${dropEnemies.length}종`,
-            detail: dropEnemies.length > 0 ? "유효한 아이템 드롭이 연결되어 있습니다." : "몬스터 보상에 드롭 아이템을 지정하세요.",
+            detail: dropEnemies.length > 0 ? "전체 전투 몬스터 중 아이템 드롭이 있는 수입니다." : "전투 몬스터의 보상에서 드롭을 지정하세요.",
             state: dropEnemies.length > 0 ? "ready" : "needs-setup",
             data: { count: String(dropEnemies.length) },
             action: {
-              label: "보상 열기",
+              label: "전투 몬스터 탭 열기",
               testid: "db-monster-pipeline-drops-action",
               onClick: (event) => openTab(event, "db-tab-enemies"),
             },
@@ -316,7 +362,7 @@ function monsterPipelineHeader(project: ReturnType<typeof store.getCurrent>): HT
             detail: project.system.monsterCollection === true ? "전투 중 포획 기능이 열립니다." : "종족은 전투 연결 정보로만 사용됩니다.",
             state: project.system.monsterCollection === true ? "ready" : "info",
             action: {
-              label: "시스템 열기",
+              label: "시스템 포획 설정 열기",
               testid: "db-monster-pipeline-mode-action",
               onClick: (event) => openTab(event, "db-tab-system", {
                 systemSection: "startup",
@@ -407,7 +453,7 @@ function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): H
       }),
       sectionCard({
         title: "그래픽",
-        hint: "전투 화면과 도감에 쓰이는 종족 이미지입니다.",
+        hint: "종족의 외형입니다. 연결된 전투 몬스터의 외형은 자동으로 바뀌지 않습니다.",
         children: graphicChildren(record, rerender),
         testid: "db-monster-species-graphic-card",
       }),
@@ -424,7 +470,7 @@ function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): H
       }),
       sectionCard({
         title: "종족값과 실제 능력치",
-        hint: "성장 공식에 쓰는 종족값입니다. 아래에서 레벨별 실제 능력치를 확인하세요.",
+        hint: "포획 후 성장 공식에 쓰는 기본값입니다. 전투 몬스터의 고정 능력치와 별개이며, 아래에서 레벨별 수치를 확인합니다.",
         children: [...statFields(record, preview.refresh), preview.element],
         testid: "db-monster-species-stats-card",
       }),
@@ -432,7 +478,7 @@ function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): H
       evolutionsCard(record, rerender),
       experienceCurveCard(record, rerender),
       linkedEnemiesCard(record),
-      evolutionReferrersCard(record),
+      evolutionReferrersCard(record, rerender),
     ],
   });
 }
@@ -506,7 +552,7 @@ function linkedEnemiesCard(record: MonsterSpeciesRecord): HTMLElement {
   const enemies = store.getCurrent().database.enemies.filter((entry) => entry.speciesId === record.id);
   const rows =
     enemies.length === 0
-      ? [el("p", { class: "db-monster-species-linked-empty", text: "이 종족을 포획 종족으로 쓰는 몬스터가 없습니다." })]
+      ? [el("p", { class: "db-monster-species-linked-empty", text: "이 종족 ID를 지정한 전투 몬스터가 없습니다." })]
       : enemies.map((enemy) =>
           el("div", {
             class: "db-monster-species-linked-row",
@@ -514,15 +560,15 @@ function linkedEnemiesCard(record: MonsterSpeciesRecord): HTMLElement {
               el("span", { class: "db-monster-species-linked-name", text: enemy.name || "(이름 없음)" }),
               el("button", {
                 class: "db-ws-btn db-ws-btn-ghost",
-                text: "몬스터 열기",
+                text: "전투 몬스터 열기",
                 attrs: { type: "button" },
                 dataset: { testid: `db-monster-species-open-enemy-${enemy.id}` },
                 on: {
                   click: (event) => {
                     const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
-                    setSelectedRecordId("enemies", enemy.id);
+                    setSelectedRecordId("enemies", enemy.id, { reveal: true });
                     if (!panelRoot) {
-                      toast(`몬스터 탭에서 ${enemy.id}를 선택하세요`, "ok");
+                      toast(`전투 몬스터 탭에서 ${enemy.id}를 선택하세요`, "ok");
                       return;
                     }
                     switchDatabaseActiveTab("enemies", panelRoot);
@@ -534,8 +580,8 @@ function linkedEnemiesCard(record: MonsterSpeciesRecord): HTMLElement {
         );
 
   return sectionCard({
-    title: "이 종족을 쓰는 몬스터",
-    hint: enemies.length > 0 ? `${enemies.length}종이 참조합니다 — 참조가 남아 있으면 삭제할 수 없습니다.` : undefined,
+    title: "선택 종족의 명시적 연결",
+    hint: `전투 몬스터 ${enemies.length}개 · 같은 ID 호환 연결 제외. 참조가 남으면 삭제할 수 없습니다.`,
     children: [
       el("div", {
         class: "db-monster-species-linked-enemies",
@@ -868,7 +914,7 @@ function experienceCurveCard(record: MonsterSpeciesRecord, rerender: () => void)
 }
 
 // 이 종족을 진화 대상으로 가리키는 다른 종족 — 삭제 가드(monsterSpeciesReferenceMessage)와 같은 소스.
-function evolutionReferrersCard(record: MonsterSpeciesRecord): HTMLElement {
+function evolutionReferrersCard(record: MonsterSpeciesRecord, rerender: () => void): HTMLElement {
   const referrers = (store.getCurrent().database.monsterSpecies ?? []).filter(
     (entry) => entry.id !== record.id && (entry.evolutions ?? []).some((evo) => evo.toSpeciesId === record.id)
   );
@@ -887,8 +933,8 @@ function evolutionReferrersCard(record: MonsterSpeciesRecord): HTMLElement {
                 dataset: { testid: `db-monster-species-open-referrer-${entry.id}` },
                 on: {
                   click: () => {
-                    setSelectedMonsterSpeciesId(entry.id);
-                    toast(`${entry.name || entry.id} 선택`, "ok");
+                    setSelectedMonsterSpeciesId(entry.id, { reveal: true });
+                    rerender();
                   },
                 },
               }),

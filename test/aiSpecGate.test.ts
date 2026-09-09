@@ -500,19 +500,26 @@ describe("세션 스펙 게이트", () => {
 
   it("확정된 스펙은 턴 간 유지된다 — 다음 턴 '계속해'에서 재제출 없이 빌드", async () => {
     const chat = scriptedChat([
-      toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "집A", kind: "house", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
       finalMsg("밑그림을 잡았습니다. 진행할까요?"),
       toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 2, y: 2 }, to: { x: 4, y: 4 }, mode: "rect", layer: "lower", tile: 240 }, "c3"),
       finalMsg("집A 기초를 깔았습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
-    await session.sendUserMessage("야외 집 외장 계획 잡아줘", () => {});
+    // The map is authored already; only the non-mutating spec crosses turns.
+    // A newly created, unreviewed map must not survive an unrelated request.
+    const project = projectWithMap();
+    const session = new AssistantSession(project, { config: CONFIG, chat });
+    const first = await session.sendUserMessage("야외 집 외장 계획 잡아줘", () => {});
+    expect(first.stoppedReason).toBe("final");
+    expect(first.proposedCalls).toEqual([]);
+    expect(session.getProposedProject()).toEqual(project);
+    const spec = session.getActiveSpec();
     const turn2: boolean[] = [];
     await session.sendUserMessage("계속해", (e) => {
       if (e.type === "tool_call") turn2.push(e.result.ok);
     });
     expect(turn2).toEqual([true]);
+    expect(session.getActiveSpec()).toEqual(spec);
   });
 
   it("사용자 선택 영역([컨텍스트])은 암묵 스펙으로 인정된다", async () => {

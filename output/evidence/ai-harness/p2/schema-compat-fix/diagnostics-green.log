@@ -1,0 +1,4 @@
+src/ai/assistantAcceptanceTools.ts: 0 diagnostics
+test/toolSchemaProviderCompat.test.ts: 0 diagnostics
+output/evidence/ai-harness/p2/schema-compat-fix/public-roundtrip.mts: 0 diagnostics
+

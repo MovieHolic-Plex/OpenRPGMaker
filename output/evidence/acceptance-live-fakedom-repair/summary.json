@@ -1,0 +1,1323 @@
+{
+  "baselineHead": "e05a99b915102de113ac4634f4a06a5bb3267788",
+  "candidateHead": "5bdc4630d47aa790864621b06d88eac6a3d14e43",
+  "authorityHashes": {
+    "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/output/evidence/acceptance-live-baseline/full-vitest.json": "870ec5be9a3d545e71efeab07c66aed32d596115b179c199b12f76727fd87871",
+    "/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-candidate/full-vitest.json": "aaee633ae864822b35df1044530cc5539c37227699ec1e5d617de15f6c9cf10d",
+    "/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-candidate/comparison.json": "a0dd8c1420c401737dea3bd9931e7620cb4afd3b9cb492879f3c1900d2ebaa07"
+  },
+  "perFile": [
+    {
+      "file": "test/aiAssistantUxP0P2.test.ts",
+      "baseline": {
+        "passed": 3
+      },
+      "candidate": {
+        "failed": 2,
+        "passed": 1
+      },
+      "final": {
+        "passed": 3
+      },
+      "candidateFailuresNowPassing": 2
+    },
+    {
+      "file": "test/aiAutonomyDialSettings.test.ts",
+      "baseline": {
+        "passed": 4
+      },
+      "candidate": {
+        "failed": 4
+      },
+      "final": {
+        "passed": 4
+      },
+      "candidateFailuresNowPassing": 4
+    },
+    {
+      "file": "test/aiBackgroundOpacity.test.ts",
+      "baseline": {
+        "passed": 25
+      },
+      "candidate": {
+        "passed": 22,
+        "failed": 3
+      },
+      "final": {
+        "passed": 25
+      },
+      "candidateFailuresNowPassing": 3
+    },
+    {
+      "file": "test/aiChatObservability.test.ts",
+      "baseline": {
+        "passed": 9
+      },
+      "candidate": {
+        "passed": 7,
+        "failed": 2
+      },
+      "final": {
+        "passed": 9
+      },
+      "candidateFailuresNowPassing": 2
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "baseline": {
+        "passed": 25
+      },
+      "candidate": {
+        "passed": 8,
+        "failed": 17
+      },
+      "final": {
+        "passed": 25
+      },
+      "candidateFailuresNowPassing": 17
+    },
+    {
+      "file": "test/aiChatPanelTransportError.test.ts",
+      "baseline": {
+        "passed": 2
+      },
+      "candidate": {
+        "failed": 2
+      },
+      "final": {
+        "passed": 2
+      },
+      "candidateFailuresNowPassing": 2
+    },
+    {
+      "file": "test/aiChatPanelUxRepairs.test.ts",
+      "baseline": {
+        "passed": 19,
+        "failed": 2
+      },
+      "candidate": {
+        "passed": 18,
+        "failed": 3
+      },
+      "final": {
+        "passed": 19,
+        "failed": 2
+      },
+      "candidateFailuresNowPassing": 1
+    },
+    {
+      "file": "test/aiDockMetaReach.test.ts",
+      "baseline": {
+        "passed": 4
+      },
+      "candidate": {
+        "passed": 3,
+        "failed": 1
+      },
+      "final": {
+        "passed": 4
+      },
+      "candidateFailuresNowPassing": 1
+    },
+    {
+      "file": "test/aiSettingsModalLayout.test.ts",
+      "baseline": {
+        "passed": 6
+      },
+      "candidate": {
+        "failed": 6
+      },
+      "final": {
+        "passed": 6
+      },
+      "candidateFailuresNowPassing": 6
+    },
+    {
+      "file": "test/commandEditModalPreview.test.ts",
+      "baseline": {
+        "passed": 30
+      },
+      "candidate": {
+        "passed": 27,
+        "failed": 3
+      },
+      "final": {
+        "passed": 30
+      },
+      "candidateFailuresNowPassing": 3
+    },
+    {
+      "file": "test/eventDraftTransactions.test.ts",
+      "baseline": {
+        "passed": 16
+      },
+      "candidate": {
+        "passed": 13,
+        "failed": 3
+      },
+      "final": {
+        "passed": 16
+      },
+      "candidateFailuresNowPassing": 3
+    },
+    {
+      "file": "test/eventEditorCloseDocumentLifecycle.test.ts",
+      "baseline": {
+        "passed": 2
+      },
+      "candidate": {
+        "failed": 2
+      },
+      "final": {
+        "passed": 2
+      },
+      "candidateFailuresNowPassing": 2
+    },
+    {
+      "file": "test/eventEditorInspectorSelection.test.ts",
+      "baseline": {
+        "passed": 5
+      },
+      "candidate": {
+        "passed": 4,
+        "failed": 1
+      },
+      "final": {
+        "passed": 5
+      },
+      "candidateFailuresNowPassing": 1
+    },
+    {
+      "file": "test/eventEditorModal.test.ts",
+      "baseline": {
+        "passed": 29
+      },
+      "candidate": {
+        "failed": 11,
+        "passed": 18
+      },
+      "final": {
+        "passed": 29
+      },
+      "candidateFailuresNowPassing": 11
+    },
+    {
+      "file": "test/eventEditorModalClose.test.ts",
+      "baseline": {
+        "passed": 12
+      },
+      "candidate": {
+        "failed": 7,
+        "passed": 5
+      },
+      "final": {
+        "passed": 12
+      },
+      "candidateFailuresNowPassing": 7
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "baseline": {
+        "passed": 41,
+        "failed": 4
+      },
+      "candidate": {
+        "failed": 44,
+        "passed": 1
+      },
+      "final": {
+        "passed": 41,
+        "failed": 4
+      },
+      "candidateFailuresNowPassing": 40
+    },
+    {
+      "file": "test/eventValidationFakeNavigation.test.ts",
+      "baseline": {
+        "passed": 1
+      },
+      "candidate": {
+        "failed": 1
+      },
+      "final": {
+        "passed": 1
+      },
+      "candidateFailuresNowPassing": 1
+    },
+    {
+      "file": "test/moveRouteDialogRich.test.ts",
+      "baseline": {
+        "passed": 5
+      },
+      "candidate": {
+        "failed": 5
+      },
+      "final": {
+        "passed": 5
+      },
+      "candidateFailuresNowPassing": 5
+    },
+    {
+      "file": "test/shopCommandBodyUx.test.ts",
+      "baseline": {
+        "passed": 7
+      },
+      "candidate": {
+        "passed": 5,
+        "failed": 2
+      },
+      "final": {
+        "passed": 7
+      },
+      "candidateFailuresNowPassing": 2
+    },
+    {
+      "file": "test/uxcEditorShell.test.ts",
+      "baseline": {
+        "passed": 10,
+        "failed": 1
+      },
+      "candidate": {
+        "passed": 10,
+        "failed": 1
+      },
+      "final": {
+        "passed": 10,
+        "failed": 1
+      },
+      "candidateFailuresNowPassing": 0
+    },
+    {
+      "file": "test/weightedBranchUx.test.ts",
+      "baseline": {
+        "passed": 19
+      },
+      "candidate": {
+        "passed": 13,
+        "failed": 6
+      },
+      "final": {
+        "passed": 19
+      },
+      "candidateFailuresNowPassing": 6
+    }
+  ],
+  "restoredCases": [
+    {
+      "file": "test/aiAssistantUxP0P2.test.ts",
+      "name": "AI assistant UX P0–P2 keeps routine AI settings out of the assistant panel chrome",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiAssistantUxP0P2.test.ts",
+      "name": "AI assistant UX P0–P2 opens a dedicated settings modal with config fields",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiAutonomyDialSettings.test.ts",
+      "name": "자율성 다이얼 동작 섹션 맨 위에 4단계 옵션(한국어 라벨)을 렌더한다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiAutonomyDialSettings.test.ts",
+      "name": "자율성 다이얼 다이얼을 돌리면 추론·작업모드 select 가 resolveAutonomy 값으로 동기화된다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiAutonomyDialSettings.test.ts",
+      "name": "자율성 다이얼 collect() 출력·저장 blob 에 autonomyLevel 을 싣는다(기본 balanced)",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiAutonomyDialSettings.test.ts",
+      "name": "자율성 다이얼 기존 추론·작업모드 select 를 그대로 둔다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiBackgroundOpacity.test.ts",
+      "name": "settings background control input applies through topbar entry, persists and reopens",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiBackgroundOpacity.test.ts",
+      "name": "settings background control change applies through topbar entry, persists and reopens",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiBackgroundOpacity.test.ts",
+      "name": "settings background control also updates an explicitly supplied detached panel",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatObservability.test.ts",
+      "name": "글자 크기 3단 (V3C ①) 설정의 글자 크기 select(ai-font-size)를 바꾸면 즉시 패널에 반영·영속되고, 재부팅 시 다시 적용된다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatObservability.test.ts",
+      "name": "실시간 고스트 프리뷰 연결 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "설정 자동 저장 AI 패널 밖의 전용 설정 모달을 열고 고급 설정을 바로 펼친다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "설정 자동 저장 API 키 종류로 바꿔도 전송 축은 동반 서비스로 남는다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "설정 자동 저장 설정 제공자 목록은 종류와 무관하게 두 구독 제공자만 담는다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "설정 자동 저장 Codex 를 고르면 저장·재로드를 살아남는다 (제공자 선택이 실제로 반영된다)",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "설정 자동 저장 키 입력칸이 아예 없고 저장된 blob 의 apiKey 는 빈 문자열이다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "설정 자동 저장 감독 모델을 비우고 저장하면 기본값(OAuth 카탈로그)으로 저장된다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "설정 자동 저장 모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "설정 자동 저장 실행 모델 필드는 비우면 기본 liteModel로 저장된다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "설정 자동 저장 모델 설정 라벨은 감독/실행 역할을 구분한다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "설정 자동 저장 ChatGPT 모델 선택기는 GJC의 최신 Codex 모델을 바로 선택해 저장한다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "설정 자동 저장 모델 선택기는 선택된 제공자의 모델만 노출하고 제공자를 바꾸면 목록도 바뀐다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "설정 자동 저장 두 제공자 카탈로그 밖 모델은 제시되지도, 살아남지도 않는다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "설정 자동 저장 실행 모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "설정 자동 저장 설정 저장 버튼도 동일하게 저장한다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "agentMode 설정 설정 모달에서 agentMode를 chat으로 바꾸면 blob에 저장되고 재렌더 시 값이 유지된다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "agentMode 설정 설정 저장 버튼으로도 agentMode가 저장된다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelSettings.test.ts",
+      "name": "대기 화면 3분기는 설정 모달의 절이다 (데크 D6) ☰ → 설정 을 누르면 모달에 ai-command-temperature-* 가 있고 메뉴에는 없다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelTransportError.test.ts",
+      "name": "transport failure paints recovery CTA and keeps Send mounted refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelTransportError.test.ts",
+      "name": "transport failure paints recovery CTA and keeps Send mounted 401 also mounts settings opener",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiChatPanelUxRepairs.test.ts",
+      "name": "키 온보딩과 설정 접근성 ☰ 의 설정 항목은 전용 모달을 열고 첫 입력에 포커스한다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiDockMetaReach.test.ts",
+      "name": "설정 진입점 ☰ 의 설정 항목은 aria-label 을 갖고 전용 설정 모달을 연다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiSettingsModalLayout.test.ts",
+      "name": "AI 설정 모달 섹션 레이아웃 연결·모델·동작·표시 카드를 제목과 설명으로 구분한다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiSettingsModalLayout.test.ts",
+      "name": "AI 설정 모달 섹션 레이아웃 모든 설정 행의 설명을 화면 텍스트로 제공한다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiSettingsModalLayout.test.ts",
+      "name": "AI 설정 모달 섹션 레이아웃 상단 연결 요약과 기존 상태 경로를 다시 확인하는 액션을 제공한다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiSettingsModalLayout.test.ts",
+      "name": "AI 설정 모달 섹션 레이아웃 자동 저장과 지금 저장을 하나의 저장 모델과 시각으로 설명한다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiSettingsModalLayout.test.ts",
+      "name": "AI 설정 모달 섹션 레이아웃 디바운스 중 닫아도 입력값을 저장한다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/aiSettingsModalLayout.test.ts",
+      "name": "AI 설정 모달 섹션 레이아웃 기존 testid 전량을 유지하고 modalStack 한 계층으로 등록한다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/commandEditModalPreview.test.ts",
+      "name": "command edit modal — image-rich preview preserves fork branches through the edit dialog OK path",
+      "occurrence": 1
+    },
+    {
+      "file": "test/commandEditModalPreview.test.ts",
+      "name": "command edit modal — image-rich preview updates the mounted shop list after a staged catalog add",
+      "occurrence": 1
+    },
+    {
+      "file": "test/commandEditModalPreview.test.ts",
+      "name": "command edit modal — image-rich preview shows shop transaction branch controls when branch checkbox is enabled",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventDraftTransactions.test.ts",
+      "name": "linked authored draft transactions commits template pages and a recovered switch together, with undo/redo",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventDraftTransactions.test.ts",
+      "name": "linked authored draft transactions field template stages switch definitions without session writes (existing=false)",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventDraftTransactions.test.ts",
+      "name": "linked authored draft transactions field template stages switch definitions without session writes (existing=true)",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorCloseDocumentLifecycle.test.ts",
+      "name": "event editor asynchronous close document ownership finishes pending close after the global document is removed",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorCloseDocumentLifecycle.test.ts",
+      "name": "event editor asynchronous close document ownership finishes pending close after the global document is replaced",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorInspectorSelection.test.ts",
+      "name": "이벤트 편집기 — 명령 선택과 인스펙터 두 번 클릭하면 편집 모달이 열린다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModal.test.ts",
+      "name": "event editor modal close draft cleanup dispatches the close cleanup event before removing the modal",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModal.test.ts",
+      "name": "event editor modal close draft cleanup asks before discarding dirty drafts on cancel, then discards on confirm",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModal.test.ts",
+      "name": "event editor modal close draft cleanup asks before discarding dirty drafts on escape, then discards on confirm",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModal.test.ts",
+      "name": "event editor modal close draft cleanup asks before discarding dirty drafts on backdrop, then discards on confirm",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModal.test.ts",
+      "name": "event editor modal close draft cleanup closes silently on cancel when nothing changed",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModal.test.ts",
+      "name": "event editor modal close draft cleanup persists OK changes and closes without an edit draft",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModal.test.ts",
+      "name": "event editor modal close draft cleanup keeps Escape routing after leaving full view",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModal.test.ts",
+      "name": "RPG Maker style event editor entry points removes the new-event modal when cancel discards its draft",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModal.test.ts",
+      "name": "RPG Maker style event editor entry points persists custom move-route skippable and keeps Help inside the dialog",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModal.test.ts",
+      "name": "RPG Maker style event editor entry points 헤더 이름 상자는 활성 페이지를 따라가고, 그 페이지 이름만 고친다",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModal.test.ts",
+      "name": "RPG Maker style event editor entry points preserves settings scroll when page props re-render after an edit",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModalClose.test.ts",
+      "name": "event editor modal close draft cleanup dispatches the close cleanup event before removing the modal",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModalClose.test.ts",
+      "name": "event editor modal close draft cleanup asks before discarding dirty drafts on cancel, then discards on confirm",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModalClose.test.ts",
+      "name": "event editor modal close draft cleanup asks before discarding dirty drafts on escape, then discards on confirm",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModalClose.test.ts",
+      "name": "event editor modal close draft cleanup asks before discarding dirty drafts on backdrop, then discards on confirm",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModalClose.test.ts",
+      "name": "event editor modal close draft cleanup closes silently on cancel when nothing changed",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModalClose.test.ts",
+      "name": "event editor modal close draft cleanup persists OK changes and closes without an edit draft",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorModalClose.test.ts",
+      "name": "event editor modal close draft cleanup keeps Escape routing after leaving full view",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-text' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-choice' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-switch' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-variable' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-branch' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-timer' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-advance-time' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-advance-crop-growth' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-transfer' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-move-route' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-picture' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-audio' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-battle' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-gold' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-item' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-craft' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-upgrade' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-equip-tool' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-open-chest' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-friendship' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-party' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-give-monster' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-evolve-monster' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-follower' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-set-lighting' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-set-weather' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-checkpoint-save' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-run-control' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-kill-player' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-trigger-ending' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-ending' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-game-over' to the active page",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop blocks Apply on fatal validation, keeps the draft open, and navigates to its command",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop blocks OK on fatal validation, keeps the draft open, and navigates to its command",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop blocks Test on fatal validation, keeps the draft open, and navigates to its command",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop discards a working edit on Cancel without changing the canonical event",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop shows the real event test action, honest local/remote status, and opens the picker with Ctrl/Cmd+K",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop renders all beginner empty-state actions and inserts a factory-created dialogue command",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop uses strict roving tabs, preserves command focus, and keeps recents newest-first",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop traps focus inside subdialogs and labels the close control in Korean",
+      "occurrence": 1
+    },
+    {
+      "file": "test/eventValidationFakeNavigation.test.ts",
+      "name": "uses the shared navigation contract in the lightweight rendered host",
+      "occurrence": 1
+    },
+    {
+      "file": "test/moveRouteDialogRich.test.ts",
+      "name": "move route dialog rich UI renders an icon span per command button while keeping the Korean label text intact",
+      "occurrence": 1
+    },
+    {
+      "file": "test/moveRouteDialogRich.test.ts",
+      "name": "move route dialog rich UI updates the route preview live as moves are added and cleared",
+      "occurrence": 1
+    },
+    {
+      "file": "test/moveRouteDialogRich.test.ts",
+      "name": "move route dialog rich UI feeds switch picker and charset select values into created route commands",
+      "occurrence": 1
+    },
+    {
+      "file": "test/moveRouteDialogRich.test.ts",
+      "name": "move route dialog rich UI feeds hop parameters into jump and drop-in commands, omitting untouched defaults",
+      "occurrence": 1
+    },
+    {
+      "file": "test/moveRouteDialogRich.test.ts",
+      "name": "move route dialog rich UI prefills the hop fields from the route being edited",
+      "occurrence": 1
+    },
+    {
+      "file": "test/shopCommandBodyUx.test.ts",
+      "name": "shop goods authoring keeps catalog selections pending until one batch add and lets cancel discard them",
+      "occurrence": 1
+    },
+    {
+      "file": "test/shopCommandBodyUx.test.ts",
+      "name": "shop goods authoring quick selection adds missing preset goods without replacing stock or shop rules",
+      "occurrence": 1
+    },
+    {
+      "file": "test/weightedBranchUx.test.ts",
+      "name": "weighted branch command UX blocks modal Confirm with invalid chance \"\" and focuses the field",
+      "occurrence": 1
+    },
+    {
+      "file": "test/weightedBranchUx.test.ts",
+      "name": "weighted branch command UX blocks modal Confirm with invalid chance \"-1\" and focuses the field",
+      "occurrence": 1
+    },
+    {
+      "file": "test/weightedBranchUx.test.ts",
+      "name": "weighted branch command UX blocks modal Confirm with invalid chance \"101\" and focuses the field",
+      "occurrence": 1
+    },
+    {
+      "file": "test/weightedBranchUx.test.ts",
+      "name": "weighted branch command UX retains named zero rows through actual Confirm and reopen with positive-only mapping",
+      "occurrence": 1
+    },
+    {
+      "file": "test/weightedBranchUx.test.ts",
+      "name": "weighted branch command UX blocks an authored all-zero table without silently seeding positive chances",
+      "occurrence": 1
+    },
+    {
+      "file": "test/weightedBranchUx.test.ts",
+      "name": "weighted branch command UX keeps the last positive row when removing it would enable zero-chance outcomes",
+      "occurrence": 1
+    }
+  ],
+  "remainingFailures": [
+    {
+      "file": "test/aiChatPanelUxRepairs.test.ts",
+      "name": "진행 상태와 중단 AssistantSession은 AbortSignal을 LLM 호출에 전달하고 중단 결과로 종료한다",
+      "occurrence": 1,
+      "baselineStatus": "failed",
+      "baselineFailureMessages": [
+        "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/aiChatPanelUxRepairs.test.ts:210:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)\n    at runBaseTests (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/base.DfmxU-tU.js:32:2)"
+      ],
+      "finalFailureMessages": [
+        "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/test/aiChatPanelUxRepairs.test.ts:210:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+      ]
+    },
+    {
+      "file": "test/aiChatPanelUxRepairs.test.ts",
+      "name": "대화 복원과 내보내기 다른 프로젝트 컨텍스트의 직전 대화는 자동 복원하지 않고 빈 키트도 안 붙인다",
+      "occurrence": 1,
+      "baselineStatus": "failed",
+      "baselineFailureMessages": [
+        "AssertionError: expected null to be truthy\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/aiChatPanelUxRepairs.test.ts:309:54\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+      ],
+      "finalFailureMessages": [
+        "AssertionError: expected null to be truthy\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/test/aiChatPanelUxRepairs.test.ts:309:54\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+      ]
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop routes quick command 'command-add-show-animation' to the active page",
+      "occurrence": 1,
+      "baselineStatus": "failed",
+      "baselineFailureMessages": [
+        "ReferenceError: window is not defined\n    at play (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/eventEditor/showAnimationPlayback.ts:138:5)\n    at playShowAnimation (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/eventEditor/showAnimationPlayback.ts:141:3)\n    at playShowAnimationOnce (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/eventEditor/showAnimationPlayback.ts:155:10)\n    at play (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/eventEditor/showAnimationPlayback.ts:179:15)\n    at bindShowAnimationPlayback (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/eventEditor/showAnimationPlayback.ts:195:3)\n    at renderStage (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/eventEditor/commandBodyPage3Native.ts:914:9)\n    at renderPreview (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/eventEditor/commandBodyPage3Native.ts:948:55)\n    at showAnimationBody (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/eventEditor/commandBodyPage3Native.ts:964:3)\n    at renderAdvancedCommandBody (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/eventEditor/commandBodyAdvanced.ts:152:14)\n    at renderCommandBody (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/eventEditor/commandBody.ts:38:5)"
+      ],
+      "finalFailureMessages": [
+        "ReferenceError: window is not defined\n    at play (/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/eventEditor/showAnimationPlayback.ts:138:5)\n    at playShowAnimation (/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/eventEditor/showAnimationPlayback.ts:141:3)\n    at playShowAnimationOnce (/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/eventEditor/showAnimationPlayback.ts:155:10)\n    at play (/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/eventEditor/showAnimationPlayback.ts:179:15)\n    at bindShowAnimationPlayback (/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/eventEditor/showAnimationPlayback.ts:195:3)\n    at renderStage (/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/eventEditor/commandBodyPage3Native.ts:914:9)\n    at renderPreview (/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/eventEditor/commandBodyPage3Native.ts:948:55)\n    at showAnimationBody (/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/eventEditor/commandBodyPage3Native.ts:964:3)\n    at renderAdvancedCommandBody (/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/eventEditor/commandBodyAdvanced.ts:152:14)\n    at renderCommandBody (/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/eventEditor/commandBody.ts:38:5)"
+      ]
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop navigates fatal event-position and schedule issues to editable controls",
+      "occurrence": 1,
+      "baselineStatus": "failed",
+      "baselineFailureMessages": [
+        "AssertionError: expected <span tabindex=\"-1\"></span> to be null // Object.is equality\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/eventEditorTrustLoop.test.ts:156:36\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runFiles (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1787:3)"
+      ],
+      "finalFailureMessages": [
+        "AssertionError: expected <span tabindex=\"-1\"></span> to be null // Object.is equality\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/test/eventEditorTrustLoop.test.ts:156:36\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop restores focus to the parent editor when a subdialog opener rerenders away",
+      "occurrence": 1,
+      "baselineStatus": "failed",
+      "baselineFailureMessages": [
+        "ReferenceError: KeyboardEvent is not defined\n    at handlePageTabKeydown (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/eventEditor/pageProps.ts:340:26)\n    at keydown (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/eventEditor/pageProps.ts:282:29)\n    at FakeElement.dispatchEvent (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/fakeDom.ts:242:9)\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/eventEditorTrustLoop.test.ts:235:29\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)"
+      ],
+      "finalFailureMessages": [
+        "ReferenceError: KeyboardEvent is not defined\n    at handlePageTabKeydown (/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/eventEditor/pageProps.ts:340:26)\n    at keydown (/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/eventEditor/pageProps.ts:282:29)\n    at FakeElement.dispatchEvent (/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/test/fakeDom.ts:319:9)\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/test/eventEditorTrustLoop.test.ts:235:29\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)"
+      ]
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop restores focus, caret, open details, and scroll across reactive rerenders",
+      "occurrence": 1,
+      "baselineStatus": "failed",
+      "baselineFailureMessages": [
+        "Error: expected event editor interaction surfaces\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/eventEditorTrustLoop.test.ts:358:55\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at runNextTicks (node:internal/process/task_queues:64:5)\n    at processTimers (node:internal/timers:538:9)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ],
+      "finalFailureMessages": [
+        "Error: expected event editor interaction surfaces\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/test/eventEditorTrustLoop.test.ts:358:55\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at runNextTicks (node:internal/process/task_queues:64:5)\n    at processTimers (node:internal/timers:538:9)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "test/uxcEditorShell.test.ts",
+      "name": "UXC D30 새 이벤트 모달 상태 새 이벤트 모달 제목과 취소 안내에 자동 저장/복구 상태를 표시한다",
+      "occurrence": 1,
+      "baselineStatus": "failed",
+      "baselineFailureMessages": [
+        "AssertionError: expected '빈 맵2, 2새 이벤트 · 취소 시 삭제 · 자동 저장 · 저장 준…' to contain '새 이벤트 (저장 전)'\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/uxcEditorShell.test.ts:267:76\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runFiles (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1787:3)"
+      ],
+      "finalFailureMessages": [
+        "AssertionError: expected '빈 맵2, 2새 이벤트 · 취소 시 삭제 · 자동 저장 · 저장 준…' to contain '새 이벤트 (저장 전)'\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/test/uxcEditorShell.test.ts:267:76\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    }
+  ],
+  "remainingIntroducedFailuresInAffectedScope": [],
+  "directCustomSelectReasonRecords": 95,
+  "directCustomSelectReasonsStillPresent": 0,
+  "runs": [
+    {
+      "name": "affected-final",
+      "directExitCode": 1,
+      "command": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "--configLoader",
+        "bundle",
+        "test/eventEditorTrustLoop.test.ts",
+        "test/aiChatPanelSettings.test.ts",
+        "test/eventEditorModal.test.ts",
+        "test/eventEditorModalClose.test.ts",
+        "test/aiSettingsModalLayout.test.ts",
+        "test/weightedBranchUx.test.ts",
+        "test/moveRouteDialogRich.test.ts",
+        "test/aiAutonomyDialSettings.test.ts",
+        "test/aiBackgroundOpacity.test.ts",
+        "test/commandEditModalPreview.test.ts",
+        "test/eventDraftTransactions.test.ts",
+        "test/aiAssistantUxP0P2.test.ts",
+        "test/aiChatObservability.test.ts",
+        "test/aiChatPanelTransportError.test.ts",
+        "test/eventEditorCloseDocumentLifecycle.test.ts",
+        "test/shopCommandBodyUx.test.ts",
+        "test/aiChatPanelUxRepairs.test.ts",
+        "test/aiDockMetaReach.test.ts",
+        "test/eventEditorInspectorSelection.test.ts",
+        "test/eventValidationFakeNavigation.test.ts",
+        "test/uxcEditorShell.test.ts",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=output/evidence/acceptance-live-fakedom-repair/affected-final.json"
+      ],
+      "networkNamespace": true,
+      "counts": {
+        "numPassedTests": 274,
+        "numFailedTests": 7,
+        "numPendingTests": 0
+      }
+    },
+    {
+      "name": "affected",
+      "directExitCode": 1,
+      "command": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "--configLoader",
+        "bundle",
+        "test/eventEditorTrustLoop.test.ts",
+        "test/aiChatPanelSettings.test.ts",
+        "test/eventEditorModal.test.ts",
+        "test/eventEditorModalClose.test.ts",
+        "test/aiSettingsModalLayout.test.ts",
+        "test/weightedBranchUx.test.ts",
+        "test/moveRouteDialogRich.test.ts",
+        "test/aiAutonomyDialSettings.test.ts",
+        "test/aiBackgroundOpacity.test.ts",
+        "test/commandEditModalPreview.test.ts",
+        "test/eventDraftTransactions.test.ts",
+        "test/aiAssistantUxP0P2.test.ts",
+        "test/aiChatObservability.test.ts",
+        "test/aiChatPanelTransportError.test.ts",
+        "test/eventEditorCloseDocumentLifecycle.test.ts",
+        "test/shopCommandBodyUx.test.ts",
+        "test/aiChatPanelUxRepairs.test.ts",
+        "test/aiDockMetaReach.test.ts",
+        "test/eventEditorInspectorSelection.test.ts",
+        "test/eventValidationFakeNavigation.test.ts",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=output/evidence/acceptance-live-fakedom-repair/affected.json"
+      ],
+      "networkNamespace": true,
+      "counts": {
+        "numPassedTests": 262,
+        "numFailedTests": 8,
+        "numPendingTests": 0
+      }
+    },
+    {
+      "name": "build-app",
+      "directExitCode": 0,
+      "command": null,
+      "networkNamespace": false
+    },
+    {
+      "name": "contracts-first-fix",
+      "directExitCode": 1,
+      "command": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "--configLoader",
+        "bundle",
+        "test/fakeDomSelectContracts.test.ts",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=output/evidence/acceptance-live-fakedom-repair/contracts-first-fix.json"
+      ],
+      "networkNamespace": true,
+      "counts": {
+        "numPassedTests": 11,
+        "numFailedTests": 5,
+        "numPendingTests": 0
+      }
+    },
+    {
+      "name": "contracts-red-actual",
+      "directExitCode": 1,
+      "command": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "--configLoader",
+        "bundle",
+        "test/fakeDomSelectContracts.test.ts",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=output/evidence/acceptance-live-fakedom-repair/contracts-red-actual.json"
+      ],
+      "networkNamespace": true,
+      "counts": {
+        "numPassedTests": 2,
+        "numFailedTests": 14,
+        "numPendingTests": 0
+      }
+    },
+    {
+      "name": "contracts-red",
+      "directExitCode": 1,
+      "command": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "--configLoader",
+        "bundle",
+        "test/fakeDomSelectContracts.test.ts",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=output/evidence/acceptance-live-fakedom-repair/contracts-red.json"
+      ],
+      "networkNamespace": true,
+      "counts": {
+        "numPassedTests": 0,
+        "numFailedTests": 0,
+        "numPendingTests": 0
+      }
+    },
+    {
+      "name": "coverage-observability-green",
+      "directExitCode": 0,
+      "command": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "--configLoader",
+        "bundle",
+        "test/aiChatObservability.test.ts",
+        "test/requestCoverage.test.ts",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=output/evidence/acceptance-live-fakedom-repair/coverage-observability-green.json"
+      ],
+      "networkNamespace": true,
+      "counts": {
+        "numPassedTests": 23,
+        "numFailedTests": 0,
+        "numPendingTests": 0
+      }
+    },
+    {
+      "name": "focused",
+      "directExitCode": 0,
+      "command": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "--configLoader",
+        "bundle",
+        "test/fakeDomSelectContracts.test.ts",
+        "test/fakeDomInsertBefore.test.ts",
+        "test/fakeDomImageGlobal.test.ts",
+        "test/eventEditorCustomSelect.test.ts",
+        "test/customSelectEscapeLayer.test.ts",
+        "test/weightedBranchUx.test.ts",
+        "test/agentBlueprintTurnEnd.test.ts",
+        "test/aiStickyChecklist.test.ts",
+        "test/switchVariableModalTrigger.test.ts",
+        "test/recordPickerSharedControls.test.ts",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=output/evidence/acceptance-live-fakedom-repair/focused.json"
+      ],
+      "networkNamespace": true,
+      "counts": {
+        "numPassedTests": 79,
+        "numFailedTests": 0,
+        "numPendingTests": 0
+      }
+    },
+    {
+      "name": "ghost-trace-red",
+      "directExitCode": 1,
+      "command": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "--configLoader",
+        "bundle",
+        "test/aiChatObservability.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern=draft",
+        "diff",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=output/evidence/acceptance-live-fakedom-repair/ghost-trace-red.json"
+      ],
+      "networkNamespace": true,
+      "counts": {
+        "numPassedTests": 0,
+        "numFailedTests": 1,
+        "numPendingTests": 8
+      }
+    },
+    {
+      "name": "ghost-valid-audit-red",
+      "directExitCode": 1,
+      "command": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "--configLoader",
+        "bundle",
+        "test/aiChatObservability.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern=draft",
+        "diff",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=output/evidence/acceptance-live-fakedom-repair/ghost-valid-audit-red.json"
+      ],
+      "networkNamespace": true,
+      "counts": {
+        "numPassedTests": 0,
+        "numFailedTests": 1,
+        "numPendingTests": 8
+      }
+    },
+    {
+      "name": "native-surface",
+      "directExitCode": 0,
+      "command": null,
+      "networkNamespace": false
+    },
+    {
+      "name": "observability-uxc",
+      "directExitCode": 1,
+      "command": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "--configLoader",
+        "bundle",
+        "test/aiChatObservability.test.ts",
+        "test/uxcEditorShell.test.ts",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=output/evidence/acceptance-live-fakedom-repair/observability-uxc.json"
+      ],
+      "networkNamespace": true,
+      "counts": {
+        "numPassedTests": 18,
+        "numFailedTests": 2,
+        "numPendingTests": 0
+      }
+    },
+    {
+      "name": "representative-red",
+      "directExitCode": 1,
+      "command": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "--configLoader",
+        "bundle",
+        "test/eventEditorTrustLoop.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern=routes",
+        "quick",
+        "command",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=output/evidence/acceptance-live-fakedom-repair/representative-red.json"
+      ],
+      "networkNamespace": false,
+      "counts": {
+        "numPassedTests": 0,
+        "numFailedTests": 33,
+        "numPendingTests": 12
+      }
+    },
+    {
+      "name": "summary",
+      "directExitCode": 0,
+      "command": null,
+      "networkNamespace": false
+    },
+    {
+      "name": "typecheck-app",
+      "directExitCode": 0,
+      "command": null,
+      "networkNamespace": false
+    }
+  ],
+  "sourceHashes": {
+    "test/fakeDom.ts": "e53a153a36e20c12e84b4e8da8079c32a2d55bfc4b2a2c6e425481e20b39030a",
+    "test/fakeDomSelectContracts.test.ts": "c61b8d848f52ee593813b637e332e34502011bc463baf8eefe34bca8841085a0",
+    "test/weightedBranchUx.test.ts": "1df4e00dc809cd2832e2569e00aa790758d59e27befb0a4861f406d24391a201",
+    "test/aiChatObservability.test.ts": "bdcb80e0779bf36395a615dbf99bdc7635c55f909aba41f2d1e017acee4abe31"
+  },
+  "scope": "Focused repair only; no full-suite run. Baseline failures are retained verbatim. Final matched whole-suite validation is lead-owned."
+}

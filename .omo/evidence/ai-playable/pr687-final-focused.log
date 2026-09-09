@@ -1,0 +1,869 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/pr687VerificationIntegration.test.ts test/pr687ImageDetail.test.ts test/assistantVerificationContinuation.test.ts test/sceneVerificationRepair.test.ts test/verificationPlanAtomicity.test.ts test/verificationNativeScopes.test.ts test/verificationRouteDeclaration.test.ts test/verificationSelectionOwnership.test.ts test/verificationFindingOwnership.test.ts test/npcPrerequisiteSession.test.ts test/npcPrerequisite.test.ts test/npcRewardSession.test.ts test/npcRewardAcceptance.test.ts test/functionalAcceptance.test.ts test/functionalAcceptanceSession.test.ts test/functionalPersistenceProof.test.ts test/functionalClarification.test.ts test/workPlanIdentity.test.ts test/aiRequiredOutcomes.test.ts test/actionAcceptanceRequirements.test.ts test/assistantProposalAssembly.test.ts test/aiToolDiscoveryEscalation.test.ts test/aiAskRetainedDraft.test.ts test/aiNewGoalDraftRetirement.test.ts test/aiNewGoalEarlyOwnership.test.ts test/aiRequiredQuestionDispatch.test.ts test/aiRunOutcomeIntegration.test.ts test/aiOutcomeApplyPolicy.test.ts test/assistantSpatialObligations.test.ts test/toolSchemaProviderCompat.test.ts test/toolCatalog.test.ts test/monsterMetadataPersistence.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/monsterMetadataPersistence.test.ts (5 tests) 29776ms
+   ✓ monster metadata concurrent persistence > merges per-field local deltas when a real conditional save loses its first SHA race  7535ms
+   ✓ monster metadata concurrent persistence > reconciles remote fields without recording an edit when consecutive map saves complete  7820ms
+   ✓ monster metadata concurrent persistence > preserves fresh fields and live maps when a save response arrives late  6717ms
+   ✓ monster metadata concurrent persistence > does not adopt old metadata when a different project replaces the submitted lineage  4380ms
+   ✓ monster metadata concurrent persistence > retains baseline and fresh input when a deferred write fails  3322ms
+ ✓ test/pr687ImageDetail.test.ts (4 tests) 19ms
+ ✓ test/pr687VerificationIntegration.test.ts (26 tests) 27007ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: unadopted  1068ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: adopted  1257ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: negative  1536ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > facing-only correction clears its finding but not a distinct checkpoint assertion  746ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed set through normal correction dispatch  626ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed move through normal correction dispatch  606ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed walk through normal correction dispatch  594ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed start through normal correction dispatch  679ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed state through normal correction dispatch  610ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed choice through normal correction dispatch  634ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed checkpoint through normal correction dispatch  594ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed reward through normal correction dispatch  880ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed repeat through normal correction dispatch  663ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies malformed without waiving a required scope  886ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies execution without waiving a required scope  1064ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies no-target without waiving a required scope  742ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies missing-target without waiving a required scope  881ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > optional criterion authority does not turn ordinary optional scheduling into required verification  604ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > canonical tool verdict binds before execution and late adoption cannot reuse an exploratory pass  1706ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > normal final repair is bounded by authoritative findings without an acceptance declaration  555ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > budget-terminal assessment retains the finding without exceeding execution budget  369ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > successful exploratory checks do not become repair obligations after a write  1164ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with pending-specification proof and retains completion  2143ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with unverified proof and retains completion  1431ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with stale proof and retains completion  2710ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with passed proof and retains completion  2256ms
+ ❯ test/npcPrerequisiteSession.test.ts (24 tests | 1 failed) 133988ms
+   ✓ request-bound verify_npc_reward session tool > R1 exposes the tool and completes through its real session boundary  3969ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"extra":true}  3880ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"passed":true}  4413ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"receipt":{}}  4204ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"reason":"Not an admitted field"}  3979ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"state":{"gold":20}}  5750ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"requirementIndex":99}  4717ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"set","mapId":"map_blank_start","gold":20}]}  6890ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"move","mapId":"map_blank_start","to":{"x":2,"y":2}}]}  3674ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"interact","mapId":"map_blank_start"}]}  4189ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"expect","goldDelta":20}]}  3545ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"walk","mapId":"map_blank_start","to":{"x":2,"y":2,"extra":true}}]}  3754ms
+   ✓ request-bound verify_npc_reward session tool > R12 valid failed replacement cannot fall back to an old pass or fresh-local proof  5117ms
+   ✓ request-bound verify_npc_reward session tool > R12 preserves witness across retry and replan without weakening the requirement  5137ms
+   ✓ request-bound verify_npc_reward session tool > R13 cannot erase an unrelated failed scene check  6294ms
+   × request-bound verify_npc_reward session tool > R11/12 replays current content after a pass, replan, explicit completion and final skip 17103ms
+     → Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ request-bound verify_npc_reward session tool > R12 preserves witness and immutable selections over a real user continuation  5239ms
+   ✓ request-bound verify_npc_reward session tool > R12 a new request lifetime does not inherit the earlier route  6885ms
+   ✓ request-bound verify_npc_reward session tool > R12 never falls back to an easier fresh-local pass after content changes  9428ms
+   ✓ request-bound verify_npc_reward session tool > R12 a valid replacement is run afresh and can repair a failed route  3153ms
+   ✓ request-bound verify_npc_reward session tool > R12 keeps the stored program private from observer-owned arguments  2610ms
+   ✓ request-bound verify_npc_reward session tool > R6 rejects session witness replacement after a same-named NPC moves to another map  9558ms
+   ✓ request-bound verify_npc_reward session tool > R12 preserves the witness through the milestone application rebase boundary  3825ms
+   ✓ request-bound verify_npc_reward session tool > R13 a reward proof cannot clear image or original-baseline change obligations  6671ms
+ ❯ test/verificationPlanAtomicity.test.ts (108 tests | 1 failed) 185131ms
+   ✓ atomic verification adoption via tool > 'check_reachability' rejects changed specified args while 'passed'  1620ms
+   ✓ atomic verification adoption via tool > 'check_reachability' rejects changed specified args while 'unverified'  1063ms
+   ✓ atomic verification adoption via tool > 'check_reachability' rejects changed specified args while 'stale'  2321ms
+   ✓ atomic verification adoption via tool > 'run_lint' rejects changed specified args while 'passed'  2242ms
+   ✓ atomic verification adoption via tool > 'run_lint' rejects changed specified args while 'unverified'  1794ms
+   ✓ atomic verification adoption via tool > 'run_lint' rejects changed specified args while 'stale'  3416ms
+   ✓ atomic verification adoption via tool > 'run_scene_test' rejects changed specified args while 'passed'  1544ms
+   ✓ atomic verification adoption via tool > 'run_scene_test' rejects changed specified args while 'unverified'  959ms
+   ✓ atomic verification adoption via tool > 'run_scene_test' rejects changed specified args while 'stale'  1822ms
+   ✓ atomic verification adoption via tool > 'play_walkthrough' rejects changed specified args while 'passed'  1420ms
+   ✓ atomic verification adoption via tool > 'play_walkthrough' rejects changed specified args while 'unverified'  1088ms
+   ✓ atomic verification adoption via tool > 'play_walkthrough' rejects changed specified args while 'stale'  2489ms
+   ✓ atomic verification adoption via tool > 'simulate_battle' rejects changed specified args while 'passed'  1004ms
+   ✓ atomic verification adoption via tool > 'simulate_battle' rejects changed specified args while 'unverified'  1101ms
+   ✓ atomic verification adoption via tool > 'simulate_battle' rejects changed specified args while 'stale'  1515ms
+   ✓ atomic verification adoption via tool > 'verify_quest' rejects changed specified args while 'passed'  1045ms
+   ✓ atomic verification adoption via tool > 'verify_quest' rejects changed specified args while 'unverified'  1191ms
+   ✓ atomic verification adoption via tool > 'verify_quest' rejects changed specified args while 'stale'  2666ms
+   ✓ atomic verification adoption via tool > 'evaluate_game_quality' rejects changed specified args while 'passed'  2263ms
+   ✓ atomic verification adoption via tool > 'evaluate_game_quality' rejects changed specified args while 'unverified'  876ms
+   ✓ atomic verification adoption via tool > 'evaluate_game_quality' rejects changed specified args while 'stale'  4623ms
+   ✓ atomic verification adoption via tool > rejects criterion-reference replacement while passed  1206ms
+   ✓ atomic verification adoption via tool > rejects criterion-reference replacement while unverified  1147ms
+   ✓ atomic verification adoption via tool > rejects criterion-reference replacement while stale  4273ms
+   ✓ atomic verification adoption via tool > check_reachability exact reuse preserves ownership and proof  2363ms
+   ✓ atomic verification adoption via tool > run_lint exact reuse preserves ownership and proof  2344ms
+   ✓ atomic verification adoption via tool > run_scene_test exact reuse preserves ownership and proof  864ms
+   ✓ atomic verification adoption via tool > run_action_combat_test exact reuse preserves ownership and proof  883ms
+   ✓ atomic verification adoption via tool > check_reachability distinct scope needs fresh proof and invalid mixed candidates add nothing  1372ms
+   ✓ atomic verification adoption via tool > run_lint distinct scope needs fresh proof and invalid mixed candidates add nothing  2079ms
+   ✓ atomic verification adoption via tool > rejects contradictory pending resolutions across same-item before either applies  762ms
+   ✓ atomic verification adoption via tool > rejects contradictory pending resolutions across later-layer before either applies  764ms
+   ✓ atomic verification adoption via tool > rejects contradictory pending resolutions across criterion before either applies  1026ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via omitted  1207ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via changed  1160ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via wrong-tool  1094ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via malformed-args  1393ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via malformed-sibling  1102ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via unknown-id  1211ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via not-required  1261ms
+   ✓ atomic verification adoption via tool > a resolved new sibling cannot conceal an unresolved declaration  993ms
+   ✓ atomic verification adoption via tool > compatible repeated pending resolution preserves ID, owner and targets but needs fresh execution  1163ms
+   ✓ atomic verification adoption via tool > specified retained targets cannot be omitted at any proof status  8984ms
+   ✓ atomic verification adoption via tool > specified retained targets cannot be changed at any proof status  10965ms
+   ✓ atomic verification adoption via tool > exact reference reuses an accepted criterion without losing independent declarations  1920ms
+   ✓ atomic verification adoption via tool > exact exact-args reuses an accepted criterion without losing independent declarations  1286ms
+   ✓ atomic verification adoption via tool > rejection preserves an existing negative finding and its exact proof history  1204ms
+   ✓ atomic verification adoption via tool > exact stale scene reuse retains its original initial-state ownership  1600ms
+   ✓ atomic verification adoption via tool > pending criterion-reference resolution retains owner and needs new exact execution  1526ms
+   ✓ atomic verification adoption via tool > raw declaration preflight survives invalid-id normalization  1066ms
+   ✓ atomic verification adoption via tool > raw declaration preflight survives discarded-item normalization  1359ms
+   ✓ atomic verification adoption via tool > raw declaration preflight survives alias-array normalization  819ms
+   × atomic verification adoption via tool > a malformed new scope cannot silently reuse an unrelated accepted criterion 1217ms
+     → expected [] to have a length of 1 but got +0
+   ✓ atomic verification adoption via tool > scene interaction ownership is immutable even with identical executable args  994ms
+   ✓ atomic verification adoption via planner > 'check_reachability' rejects changed specified args while 'passed'  807ms
+   ✓ atomic verification adoption via planner > 'check_reachability' rejects changed specified args while 'unverified'  886ms
+   ✓ atomic verification adoption via planner > 'check_reachability' rejects changed specified args while 'stale'  2012ms
+   ✓ atomic verification adoption via planner > 'run_lint' rejects changed specified args while 'passed'  1014ms
+   ✓ atomic verification adoption via planner > 'run_lint' rejects changed specified args while 'unverified'  1169ms
+   ✓ atomic verification adoption via planner > 'run_lint' rejects changed specified args while 'stale'  1675ms
+   ✓ atomic verification adoption via planner > 'run_scene_test' rejects changed specified args while 'passed'  763ms
+   ✓ atomic verification adoption via planner > 'run_scene_test' rejects changed specified args while 'unverified'  2301ms
+   ✓ atomic verification adoption via planner > 'run_scene_test' rejects changed specified args while 'stale'  2441ms
+   ✓ atomic verification adoption via planner > 'play_walkthrough' rejects changed specified args while 'passed'  1225ms
+   ✓ atomic verification adoption via planner > 'play_walkthrough' rejects changed specified args while 'unverified'  610ms
+   ✓ atomic verification adoption via planner > 'play_walkthrough' rejects changed specified args while 'stale'  2560ms
+   ✓ atomic verification adoption via planner > 'simulate_battle' rejects changed specified args while 'passed'  682ms
+   ✓ atomic verification adoption via planner > 'simulate_battle' rejects changed specified args while 'unverified'  730ms
+   ✓ atomic verification adoption via planner > 'simulate_battle' rejects changed specified args while 'stale'  1497ms
+   ✓ atomic verification adoption via planner > 'verify_quest' rejects changed specified args while 'passed'  1089ms
+   ✓ atomic verification adoption via planner > 'verify_quest' rejects changed specified args while 'unverified'  1089ms
+   ✓ atomic verification adoption via planner > 'verify_quest' rejects changed specified args while 'stale'  2217ms
+   ✓ atomic verification adoption via planner > 'evaluate_game_quality' rejects changed specified args while 'passed'  2547ms
+   ✓ atomic verification adoption via planner > 'evaluate_game_quality' rejects changed specified args while 'unverified'  699ms
+   ✓ atomic verification adoption via planner > 'evaluate_game_quality' rejects changed specified args while 'stale'  2258ms
+   ✓ atomic verification adoption via planner > rejects criterion-reference replacement while passed  695ms
+   ✓ atomic verification adoption via planner > rejects criterion-reference replacement while unverified  979ms
+   ✓ atomic verification adoption via planner > rejects criterion-reference replacement while stale  1328ms
+   ✓ atomic verification adoption via planner > check_reachability exact reuse preserves ownership and proof  803ms
+   ✓ atomic verification adoption via planner > run_lint exact reuse preserves ownership and proof  1271ms
+   ✓ atomic verification adoption via planner > run_scene_test exact reuse preserves ownership and proof  1301ms
+   ✓ atomic verification adoption via planner > run_action_combat_test exact reuse preserves ownership and proof  865ms
+   ✓ atomic verification adoption via planner > check_reachability distinct scope needs fresh proof and invalid mixed candidates add nothing  2564ms
+   ✓ atomic verification adoption via planner > run_lint distinct scope needs fresh proof and invalid mixed candidates add nothing  2007ms
+   ✓ atomic verification adoption via planner > rejects contradictory pending resolutions across same-item before either applies  824ms
+   ✓ atomic verification adoption via planner > rejects contradictory pending resolutions across later-layer before either applies  885ms
+   ✓ atomic verification adoption via planner > rejects contradictory pending resolutions across criterion before either applies  1305ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via omitted  928ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via changed  1694ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via wrong-tool  1442ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via malformed-args  755ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via malformed-sibling  1631ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via unknown-id  4000ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via not-required  775ms
+   ✓ atomic verification adoption via planner > a resolved new sibling cannot conceal an unresolved declaration  785ms
+   ✓ atomic verification adoption via planner > compatible repeated pending resolution preserves ID, owner and targets but needs fresh execution  1102ms
+   ✓ atomic verification adoption via planner > specified retained targets cannot be omitted at any proof status  6804ms
+   ✓ atomic verification adoption via planner > specified retained targets cannot be changed at any proof status  6262ms
+   ✓ atomic verification adoption via planner > exact reference reuses an accepted criterion without losing independent declarations  1045ms
+   ✓ atomic verification adoption via planner > exact exact-args reuses an accepted criterion without losing independent declarations  1096ms
+   ✓ atomic verification adoption via planner > rejection preserves an existing negative finding and its exact proof history  935ms
+   ✓ atomic verification adoption via planner > exact stale scene reuse retains its original initial-state ownership  2931ms
+   ✓ atomic verification adoption via planner > pending criterion-reference resolution retains owner and needs new exact execution  3602ms
+   ✓ atomic verification adoption via planner > raw declaration preflight survives invalid-id normalization  690ms
+   ✓ atomic verification adoption via planner > raw declaration preflight survives discarded-item normalization  787ms
+   ✓ atomic verification adoption via planner > raw declaration preflight survives alias-array normalization  677ms
+   ✓ atomic verification adoption via planner > a malformed new scope cannot silently reuse an unrelated accepted criterion  795ms
+   ✓ atomic verification adoption via planner > scene interaction ownership is immutable even with identical executable args  621ms
+ ❯ test/aiNewGoalDraftRetirement.test.ts (13 tests | 4 failed) 37081ms
+   ✓ new goal with wiki entry failure must not apply the cancelled prior goal draft  1278ms
+   ✓ new goal with intent entry failure must not apply the cancelled prior goal draft  1469ms
+   × retires payload before wiki entry and cannot carry it through resume or a disjoint write 2881ms
+     → expected [] to deeply equal [ 'upsert_item' ]
+   × retires payload before intent entry and cannot carry it through resume or a disjoint write 3335ms
+     → expected [] to deeply equal [ 'upsert_item' ]
+   × retires payload before success entry and cannot carry it through resume or a disjoint write 3360ms
+     → expected [] to deeply equal [ 'upsert_item' ]
+   ✓ cancels the new owner at wiki without retaining prior authority or payload  2934ms
+   ✓ cancels the new owner at intent without retaining prior authority or payload  4459ms
+   ✓ uses the authoritative baseline, detached=false, not the retired draft or an unrelated store  3127ms
+   ✓ uses the authoritative baseline, detached=true, not the retired draft or an unrelated store  1735ms
+   ✓ keeps explicit Ask precedence over new-goal and genuinely resumes the retained draft exactly once  2511ms
+   ✓ archives applied-plus-pending history before rebase, preserves applied content and only applies new disjoint work  5821ms
+   × still applies current successful proposals on a new-goal authoring error exactly once 2457ms
+     → expected { execution: 'failed', …(2) } to deeply equal { execution: 'failed', …(2) }
+   ✓ retires the old draft but preserves an actual current-owner wiki apply before checkpoint failure  1713ms
+ ❯ test/aiAskRetainedDraft.test.ts (8 tests | 3 failed) 21942ms
+   × does not apply a cancelled successful draft during explicit Ask, then resumes once 5710ms
+     → expected [ { name: 'set_title_screen', …(6) } ] to deeply equal []
+   × does not apply a cancelled successful draft during inferred Ask, then resumes once 3013ms
+     → expected [ { name: 'set_title_screen', …(6) } ] to deeply equal []
+   × does not apply a cancelled successful draft during inferred-plan Ask, then resumes once 2110ms
+     → expected [ { name: 'set_title_screen', …(6) } ] to deeply equal []
+   ✓ keeps ordinary Do auto-apply and pending/applied coexistence without replay  5065ms
+   ✓ guards ordinary Ask apply even when an executor returns retained proposal calls  1166ms
+   ✓ does not milestone-apply retained acceptance work in autonomous explicit Ask  2030ms
+   ✓ does not milestone-apply retained acceptance work in autonomous inferred Ask  2101ms
+   ✓ keeps retained calls unauthorized when explicit Ask fails before intent  744ms
+ ❯ test/aiNewGoalEarlyOwnership.test.ts (16 tests | 2 failed) 20425ms
+   ✓ host new-goal early ownership > wiki boundary > archives real satisfaction before failure  1489ms
+   ✓ host new-goal early ownership > wiki boundary > archives real satisfaction before cancel-in-boundary  1127ms
+   ✓ host new-goal early ownership > wiki boundary > archives real satisfaction before already-aborted  932ms
+   ✓ host new-goal early ownership > intent boundary > archives real satisfaction before failure  1250ms
+   ✓ host new-goal early ownership > intent boundary > archives real satisfaction before cancel-in-boundary  1065ms
+   ✓ host new-goal early ownership > intent boundary > archives real satisfaction before already-aborted  792ms
+   ✓ host new-goal early ownership > archives once across repeated failed entries and keeps history immutable through later assessment and withdrawal  2744ms
+   ✓ host new-goal early ownership > captures the failed new owner's pre-await baseline rather than the old request or a later resume  2058ms
+   ✓ host new-goal early ownership > retains the current assessment for ask without new host authority  845ms
+   ✓ host new-goal early ownership > retains the current assessment for inferred-question without new host authority  823ms
+   ✓ host new-goal early ownership > retains the current assessment for model-reset without new host authority  971ms
+   ✓ host new-goal early ownership > retains the current assessment for model-continuation without new host authority  814ms
+   ✓ host new-goal early ownership > retains the current assessment for ask-new-goal without new host authority  651ms
+   ✓ host new-goal early ownership > does not let a model question classification undo explicit host new-goal ownership  1124ms
+   × host new-goal early ownership > retains genuine satisfaction and owned delivery as appropriate on same-goal failure 2297ms
+     → expected { execution: 'response-final', …(2) } to deeply equal { execution: 'response-final', …(2) }
+   × host new-goal early ownership > retains genuine satisfaction and owned delivery as appropriate on resume failure 1440ms
+     → expected { execution: 'response-final', …(2) } to deeply equal { execution: 'response-final', …(2) }
+ ✓ test/aiRequiredOutcomes.test.ts (39 tests) 23779ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  916ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  638ms
+   ✓ canonical requirements > fails closed for malformed declarations null  698ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  842ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  755ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  927ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}  791ms
+   ✓ canonical requirements > keeps a bare legacy scheduler plan unassessed  427ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  637ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=false  690ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=true  698ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  753ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=false  761ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=true  994ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  686ms
+   ✓ canonical requirements > keeps sibling obligations when the user withdraws just one  664ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  767ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  769ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  876ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  1002ms
+   ✓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict  349ms
+   ✓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone  1105ms
+   ✓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase  1207ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  575ms
+   ✓ question-safe continuation > preserves blocked work and counters for ask  454ms
+   ✓ question-safe continuation > preserves blocked work and counters for question  545ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  1016ms
+   ✓ question-safe continuation > does not reactivate from fabricated continuation source  528ms
+   ✓ question-safe continuation > reactivates blocked work only with explicit user resume  771ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  780ms
+ ✓ test/npcRewardSession.test.ts (38 tests) 165304ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  636ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  5759ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  7005ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  5410ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  1026ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[]}  533ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":{"invalidReason":"npcRewards: invalid grant"}}  574ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  1433ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  7084ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  8701ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  6160ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  6956ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  9345ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  9213ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  1431ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  6977ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  2109ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: new-request  2998ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: ask  3273ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  1518ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  8067ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  7906ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  4646ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  686ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[]}  897ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":{"invalidReason":"npcRewards: invalid grant"}}  1078ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  1378ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  7184ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  9198ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  7183ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  7295ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  6197ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  6284ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  1199ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  4844ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  780ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: new-request  1327ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: ask  1009ms
+ ✓ test/functionalPersistenceProof.test.ts (4 tests) 10945ms
+   ✓ functional acceptance on accepted canonical reload > reruns real functional criteria on reloaded content before publishing verified persistence  3000ms
+   ✓ functional acceptance on accepted canonical reload > does not certify a newer applied broken purchase using an earlier acceptance pass  2160ms
+   ✓ functional acceptance on accepted canonical reload > cannot publish functional proof while a newer proposal remains unapplied  3405ms
+   ✓ functional acceptance on accepted canonical reload > rejects a canonical read overtaken by a new applied edit  2378ms
+ ✓ test/verificationNativeScopes.test.ts (15 tests) 18187ms
+   ✓ native verification scopes through the real session and terminal acceptance > run_lint adopts native arguments with retained mapTargets and completes only after a real pass  1430ms
+   ✓ native verification scopes through the real session and terminal acceptance > evaluate_game_quality adopts native arguments with retained mapTargets and completes only after a real pass  1796ms
+   ✓ native verification scopes through the real session and terminal acceptance > verify_quest adopts native arguments with retained mapTargets and completes only after a real pass  1234ms
+   ✓ native verification scopes through the real session and terminal acceptance > simulate_battle adopts native arguments with retained mapTargets and completes only after a real pass  1121ms
+   ✓ native verification scopes through the real session and terminal acceptance > play_walkthrough adopts native arguments with retained mapTargets and completes only after a real pass  1217ms
+   ✓ native verification scopes through the real session and terminal acceptance > run_lint resolves a pending checkId without changing owner or targets or borrowing a prior pass  1116ms
+   ✓ native verification scopes through the real session and terminal acceptance > evaluate_game_quality resolves a pending checkId without changing owner or targets or borrowing a prior pass  3351ms
+   ✓ native verification scopes through the real session and terminal acceptance > verify_quest resolves a pending checkId without changing owner or targets or borrowing a prior pass  1028ms
+   ✓ native verification scopes through the real session and terminal acceptance > simulate_battle resolves a pending checkId without changing owner or targets or borrowing a prior pass  789ms
+   ✓ native verification scopes through the real session and terminal acceptance > play_walkthrough resolves a pending checkId without changing owner or targets or borrowing a prior pass  968ms
+   ✓ native verification scopes through the real session and terminal acceptance > check_reachability rejects a foreign map declaration and resolves the pending ID only on its retained map  801ms
+   ✓ native verification scopes through the real session and terminal acceptance > run_scene_test rejects a foreign map declaration and resolves the pending ID only on its retained map  763ms
+   ✓ native verification scopes through the real session and terminal acceptance > run_action_combat_test rejects a foreign map declaration and resolves the pending ID only on its retained map  609ms
+   ✓ native verification scopes through the real session and terminal acceptance > a project-scoped pending owner cannot shed retained mapTargets during resolution  827ms
+   ✓ native verification scopes through the real session and terminal acceptance > native scope compatibility does not replace an already adopted project check's exact arguments  1123ms
+ ✓ test/verificationSelectionOwnership.test.ts (24 tests) 13157ms
+   ✓ normal session selection ownership via ordinary > foreign-pass stays blocked until each failed map is repaired  1856ms
+   ✓ normal session selection ownership via ordinary > two-negatives stays blocked until each failed map is repaired  2746ms
+   ✓ normal session selection ownership via ordinary > no-target-control stays blocked until each failed map is repaired  1876ms
+   ✓ normal session selection ownership via correct_verification > foreign-pass stays blocked until each failed map is repaired  1656ms
+   ✓ normal session selection ownership via correct_verification > two-negatives stays blocked until each failed map is repaired  2154ms
+   ✓ normal session selection ownership via correct_verification > no-target-control stays blocked until each failed map is repaired  1641ms
+ ✓ test/assistantSpatialObligations.test.ts (24 tests) 10730ms
+   ✓ placement instructions, not game facts, own inferred viewport obligations > preserves the captured exact sign through the real session authoring path: 안내 표지판 하나의 문구는 정확히 「우물은 북쪽, 지하실은 동쪽」으로 해 줘.  771ms
+   ✓ placement instructions, not game facts, own inferred viewport obligations > preserves the captured exact sign through the real session authoring path: 이 새 리뷰 프로젝트만 사용해서 3분 정도 플레이할 작은 모험 게임 「작은 열쇠」를 만들어 줘. 맵은 정확히 2개: 20×15 마을과 12×10 지하실. 현재 빈 맵은 마을로 활용해도 돼. 마을에서 시작해 촌장에게 부탁을 받고, 지하실에서 황동 열쇠를 얻고, 마을의 잠긴 북쪽 출구를 열면 엔딩이 나와야 해. 열쇠 없이는 출구를 통과할 수 없고, 열쇠는 한 번만 획득하며 출구에서 1개 소비해. 촌장 보상은 20골드이고 반복 대화로 중복 지급되면 안 돼. 안내 표지판 하나의 문구는 정확히 「우물은 북쪽, 지하실은 동쪽」으로 해 줘. 전투나 추가 맵은 필요 없어. 걷기 가능한 연결과 NPC/열쇠/출구 이벤트를 실제로 구현하고 두 맵의 그림을 확인해 줘. 구현한 것과 확인하지 못한 것을 구분해서 말해 줘.  657ms
+   ✓ spatial milestone completion evidence > does not count prior NPCs toward the next item's quantity (true, false)  2145ms
+   ✓ spatial milestone completion evidence > does not count prior NPCs toward the next item's quantity (true, true)  1912ms
+   ✓ spatial milestone completion evidence > does not count prior NPCs toward the next item's quantity (false, false)  1289ms
+   ✓ spatial milestone completion evidence > does not count prior NPCs toward the next item's quantity (false, true)  1370ms
+   ✓ spatial milestone completion evidence > keeps the captured viewport and applied evidence across a manual continuation  334ms
+   ✓ spatial milestone completion evidence > uses real milestone application evidence after pending calls are cleared  950ms
+ ❯ test/aiOutcomeApplyPolicy.test.ts (6 tests | 5 failed) 7143ms
+   × settles the same verified requirement with milestone=false 1766ms
+     → expected { execution: 'blocked', …(2) } to deeply equal { execution: 'response-final', …(2) }
+   × settles the same verified requirement with milestone=true 1114ms
+     → {"id":"acceptance-1","goal":"Resize","status":"blocked","items":[{"required":true,"source":{"requestId":"request-1","text":"Resize map","scope":null},"id":"size","title":"Size","status":"verified","evidence":[{"expected":"{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":21,\"height\":15}","observed":"21x15","passed":true}],"mapId":"map_blank_start"},{"id":"required-verification","title":"Required verification","status":"blocked","reason":"run_lint: 시작 위치가 통행 불가 타일입니다: (10, 8) [finding-2]","evidence":[{"expected":"Every required check passes against current content","observed":"run_lint: 시작 위치가 통행 불가 타일입니다: (10, 8) [finding-2]","passed":false}]}]}: expected 'blocked' to be 'verified' // Object.is equality
+   ✓ uses the existing quick-reply stop decision without reclassifying response prose 197ms
+   × preserves genuine blocked execution when an applied draft later verifies 1553ms
+     → expected { execution: 'blocked', …(2) } to deeply equal { execution: 'blocked', …(2) }
+   × preserves genuine failed execution when an applied draft later verifies 1227ms
+     → expected { execution: 'failed', …(2) } to deeply equal { execution: 'failed', …(2) }
+   × preserves genuine cancelled execution when an applied draft later verifies 1283ms
+     → expected { execution: 'cancelled', …(2) } to deeply equal { execution: 'cancelled', …(2) }
+ ✓ test/functionalAcceptanceSession.test.ts (6 tests) 10762ms
+   ✓ request declaration to immutable functional session acceptance > adopts all requested checks through the actual lite declaration parser without manually injected plan criteria  1506ms
+   ✓ request declaration to immutable functional session acceptance > keeps mandatory behavior when the actual planner returns unrelated work without criteria  3387ms
+   ✓ request declaration to immutable functional session acceptance > does not impose unrequested functional requirements  335ms
+   ✓ request declaration to immutable functional session acceptance > keeps malformed functional declarations blocked instead of dropping them  2521ms
+   ✓ request declaration to immutable functional session acceptance > retains expectations across plan replacement, skip and attempted repair  1104ms
+   ✓ request declaration to immutable functional session acceptance > revalidates latest canonical content and cannot retain stale success  1906ms
+ ✓ test/verificationRouteDeclaration.test.ts (9 tests) 8010ms
+   ✓ normal session exact route declaration adoption > retains a later same-map declaration after replacing a passed criterion plan  1457ms
+   ✓ normal session exact route declaration adoption > reuses exact criterion ownership without duplicate requirements for reference  755ms
+   ✓ normal session exact route declaration adoption > reuses exact criterion ownership without duplicate requirements for exact-args  1017ms
+   ✓ normal session exact route declaration adoption > reuses exact criterion ownership without duplicate requirements for mixed  818ms
+   ✓ normal session exact route declaration adoption > does not let an exact criterion reference conceal another explicit declaration  574ms
+   ✓ normal session exact route declaration adoption > requires fresh proof after late adoption and retains that scope across skip and reused scheduling IDs  1107ms
+   ✓ normal session exact route declaration adoption > does not treat a conflicting retained checkId as a successfully adopted replacement scope  866ms
+   ✓ normal session exact route declaration adoption > retains a late-specified check's distinct ownership even when its args match a passed criterion  854ms
+   ✓ normal session exact route declaration adoption > leaves an unresolved criterion reference pending instead of substituting a same-tool criterion  560ms
+ ✓ test/assistantProposalAssembly.test.ts (7 tests) 7977ms
+   ✓ assistant proposal assembly scope warnings > adds a diff warning when a previous-turn build spec is used in the next proposal  1234ms
+   ✓ assistant proposal assembly scope warnings > does not add a carryover warning when the build spec is created in the same turn  866ms
+   ✓ assistant proposal assembly scope warnings > adds the carryover warning only once for multiple spatial calls  1417ms
+   ✓ assistant proposal assembly move_event squash > squashes a new NPC followed by repeated move_event calls into one final placement proposal  1398ms
+   ✓ assistant proposal assembly move_event squash > squashes repeated move_event calls for an existing event to the final move  1091ms
+   ✓ assistant proposal assembly move_event squash > does not squash move_event calls for different event targets  1201ms
+   ✓ assistant WorkPlan evidence isolation > clears successful-tool evidence when the main planner adopts a new goal with a same-id item  763ms
+ ✓ test/assistantVerificationContinuation.test.ts (15 tests) 7697ms
+   ✓ normal session ownership through skip, replan and continuation > reused scheduling IDs cannot waive pending scopes; late specification needs a fresh execution  2991ms
+   ✓ normal session ownership through skip, replan and continuation > normal session correction executes the registered original tool; unknown IDs and execution errors cannot clear a finding  1006ms
+   ✓ authoring revalidates explicit checks before finalizing > continues after a final claim when a real write made the prior lint stale  1608ms
+ ✓ test/npcPrerequisite.test.ts (53 tests) 7543ms
+   ✓ NPC prerequisite protected runtime replay > R1 runs chief request, physical transfers, real chest, gold +20 and repeat 0 without changing project  566ms
+   ✓ NPC prerequisite protected runtime replay > R9 enforces the 100000 shared instruction budget across separate interactions  858ms
+   ✓ NPC prerequisite protected runtime replay > R9 enforces 4096 walking steps across at most 256 actions  407ms
+ ✓ test/functionalClarification.test.ts (6 tests) 5212ms
+   ✓ trusted user clarification refines original unresolved acceptance > resolves a reason-only placeholder through the next actual user declaration, retaining source and identity  931ms
+   ✓ trusted user clarification refines original unresolved acceptance > also accepts a genuine user clarification sent through the host resume action  649ms
+   ✓ trusted user clarification refines original unresolved acceptance > retains known expectations during partial clarification, then completes when the missing price is supplied  798ms
+   ✓ trusted user clarification refines original unresolved acceptance > rejects conflicting known quantities unless the trusted declaration identifies an explicit user correction  969ms
+   ✓ trusted user clarification refines original unresolved acceptance > worker repair and replacement plans cannot resolve a placeholder or weaken its resolved contract  1144ms
+   ✓ trusted user clarification refines original unresolved acceptance > a still ambiguous or unlinked declaration cannot retire the original obligation  720ms
+ ✓ test/aiRequiredQuestionDispatch.test.ts (4 tests) 4400ms
+   ✓ question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=false  1231ms
+   ✓ question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=true  943ms
+   ✓ question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=false  1110ms
+   ✓ question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=true  1114ms
+ ✓ test/workPlanIdentity.test.ts (13 tests) 4298ms
+   ✓ in-loop WorkPlan identity > does not replace an existing verification requirement with a summary query  384ms
+   ✓ in-loop WorkPlan identity > rejects erasing resize-original even if a replacement keeps the item count  328ms
+   ✓ in-loop WorkPlan identity > rejects erasing forest-original even if a replacement keeps the item count  352ms
+   ✓ in-loop WorkPlan identity > rejects erasing optional-original even if a replacement keeps the item count  325ms
+   ✓ in-loop WorkPlan identity > rejects 'duplicate IDs' without changing the original plan  390ms
+   ✓ in-loop WorkPlan identity > retains identity, progress and the current item when instructions are repaired and items regrouped  343ms
+   ✓ in-loop WorkPlan identity > preserves original artifact evidence so repair cannot bypass the outcome gate  400ms
+   ✓ in-loop WorkPlan identity > repairs a failed requirement through the real session loop without repeating the successful tool  886ms
+ ✓ test/functionalAcceptance.test.ts (19 tests) 3626ms
+   ✓ immutable engine-evaluated functional acceptance > verifies purchase, real outgoing/return traversal and one-time reward without model evidence  490ms
+   ✓ immutable engine-evaluated functional acceptance > cannot replace or repair accepted expectations and recomputes after an applied edit  320ms
+   ✓ immutable engine-evaluated functional acceptance > does not verify an unapplied draft or reuse applied proof after a database-only write  570ms
+ ✓ test/verificationFindingOwnership.test.ts (6 tests) 3708ms
+   ✓ map-qualified unresolved finding ownership > retains both negatives with identical args and seed; repeated owner deduplicates (adopted=false)  311ms
+   ✓ map-qualified unresolved finding ownership > normal session writes and checkId corrections retain B at the terminal boundary  2735ms
+ ✓ test/npcRewardAcceptance.test.ts (43 tests) 3580ms
+ ✓ test/sceneVerificationRepair.test.ts (17 tests) 3076ms
+   ✓ corrected scene navigation retains the same verification obligation > wire180->181 and corrected171 discharge distinct real-runner findings at terminal acceptance  336ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: []  351ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: [ { kind: 'set', x: 10, y: 8 } ]  330ms
+   ✓ corrected scene navigation retains the same verification obligation > retains independently passing exact invocations of the same normalized scene  344ms
+ ❯ test/toolSchemaProviderCompat.test.ts (73 tests | 2 failed) 227ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 전 툴 파라미터가 union type/비객체 properties/비배열 items 를 쓰지 않는다 11ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 객체 타입 파라미터는 properties 를 선언한다 (모델이 {} 만 보내는 벽 방지) 5ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 노출 스키마 어디에도 provider 금지 oneOf/anyOf 가 없다 8ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 실측 회귀: set_work_plan.layers 와 set_build_spec.assets 가 항목 필드를 노출한다 2ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 실측 회귀: 검증기가 재제출을 요구하는 필드(SPEC_REMEDY_FIELDS)가 set_build_spec.assets 에 선언돼 있다 0ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > overExisting 은 clear|keep 로 열거돼 모델이 값까지 정확히 낼 수 있다 4ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'toolVerdict' {"kind":"toolVerdict","tool":"run_lint","args":{}} on every exposed surface 11ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'toolVerdict' {"kind":"toolVerdict","tool":"play_walkthrough","args":{"mapId":"map_start","scenario":[{"do":"setVariable","id":"progress","value":0},{"expect":"variable","id":"progress","value":0}],"runtimeKeys":{"authored-id":[null,false,0,"0",{"nested":{}}]}}} on every exposed surface 10ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'actionCombat' {"kind":"actionCombat","target":{"mapId":"map_start"}} on every exposed surface 7ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'mapDimensions' {"kind":"mapDimensions","target":{"mapId":"map_start"},"width":20,"height":15} on every exposed surface 9ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'mapCount' {"kind":"mapCount","targets":[{"mapId":"map_start"}],"count":1} on every exposed surface 5ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'reachability' {"kind":"reachability","target":{"mapId":"map_start"},"from":{"x":0,"y":0},"to":[{"x":1,"y":0}]} on every exposed surface 6ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"mapId":"map_start"},"count":0} on every exposed surface 4ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"mapId":"map_start"}} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"mapId":"map_start"}} on every exposed surface 2ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"mapId":"map_start"}} on every exposed surface 4ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"mapId":"map_start"},"count":0,"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 4ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 5ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 4ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'actionCombat' {"kind":"actionCombat","target":{"newMapName":"New room"}} on every exposed surface 27ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'mapDimensions' {"kind":"mapDimensions","target":{"newMapName":"New room"},"width":20,"height":15} on every exposed surface 2ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'mapCount' {"kind":"mapCount","targets":[{"newMapName":"New room"}],"count":1} on every exposed surface 2ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'reachability' {"kind":"reachability","target":{"newMapName":"New room"},"from":{"x":0,"y":0},"to":[{"x":1,"y":0}]} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"newMapName":"New room"},"count":0} on every exposed surface 2ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"newMapName":"New room"}} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"newMapName":"New room"}} on every exposed surface 2ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"newMapName":"New room"}} on every exposed surface 7ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"newMapName":"New room"},"count":0,"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 4ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'mapCount' {"kind":"mapCount","targets":[{"mapId":"map_start"},{"newMapName":"New room"}],"count":2} on every exposed surface 3ms
+   × acceptance and requirement schema/runtime contract > keeps the shared discriminator, closed structural keys and genuine dynamic args 17ms
+     → expected { type: 'string', …(1) } to deeply equal { type: 'string', enum: [ …(9) ] }
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'toolVerdict' {"kind":"toolVerdict","tool":"run_lint","args":{}} 1ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'toolVerdict' {"kind":"toolVerdict","tool":"play_walkthrough","args":{"mapId":"map_start","scenario":[{"do":"setVariable","id":"progress","value":0},{"expect":"variable","id":"progress","value":0}],"runtimeKeys":{"authored-id":[null,false,0,"0",{"nested":{}}]}}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'actionCombat' {"kind":"actionCombat","target":{"mapId":"map_start"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapDimensions' {"kind":"mapDimensions","target":{"mapId":"map_start"},"width":20,"height":15} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapCount' {"kind":"mapCount","targets":[{"mapId":"map_start"}],"count":1} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'reachability' {"kind":"reachability","target":{"mapId":"map_start"},"from":{"x":0,"y":0},"to":[{"x":1,"y":0}]} 7ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'eventCount' {"kind":"eventCount","target":{"mapId":"map_start"},"count":0} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'targetChange' {"kind":"targetChange","target":{"mapId":"map_start"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'preserve' {"kind":"preserve","target":{"mapId":"map_start"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'imageReviewed' {"kind":"imageReviewed","target":{"mapId":"map_start"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'eventCount' {"kind":"eventCount","target":{"mapId":"map_start"},"count":0,"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'targetChange' {"kind":"targetChange","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'preserve' {"kind":"preserve","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} 5ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'imageReviewed' {"kind":"imageReviewed","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'actionCombat' {"kind":"actionCombat","target":{"newMapName":"New room"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapDimensions' {"kind":"mapDimensions","target":{"newMapName":"New room"},"width":20,"height":15} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapCount' {"kind":"mapCount","targets":[{"newMapName":"New room"}],"count":1} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'reachability' {"kind":"reachability","target":{"newMapName":"New room"},"from":{"x":0,"y":0},"to":[{"x":1,"y":0}]} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'eventCount' {"kind":"eventCount","target":{"newMapName":"New room"},"count":0} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'targetChange' {"kind":"targetChange","target":{"newMapName":"New room"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'preserve' {"kind":"preserve","target":{"newMapName":"New room"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'imageReviewed' {"kind":"imageReviewed","target":{"newMapName":"New room"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'eventCount' {"kind":"eventCount","target":{"newMapName":"New room"},"count":0,"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'targetChange' {"kind":"targetChange","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'preserve' {"kind":"preserve","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'imageReviewed' {"kind":"imageReviewed","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapCount' {"kind":"mapCount","targets":[{"mapId":"map_start"},{"newMapName":"New room"}],"count":2} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {"mapId":"map_start","newMapName":"New room"} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {"mapId":""} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {"newMapName":" "} 5ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {"mapId":"map_start","passed":true} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args undefined 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args null 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args %j 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args "{}" 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args 0 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args false 0ms
+   × acceptance and requirement schema/runtime contract > preserves required defaults and never accepts an unregistered verification tool 7ms
+     → expected [ { id: 'promise', …(4) } ] to deeply equal [ { id: 'promise', …(3) } ]
+ ✓ test/aiToolDiscoveryEscalation.test.ts (7 tests) 2982ms
+   ✓ AI tool discovery escalation > exposes every active native schema on the first google-antigravity request without evicting core reads  413ms
+   ✓ AI tool discovery escalation > exposes every active native schema on the first openai-codex request without evicting core reads  328ms
+   ✓ AI tool discovery escalation > retains build, plan and acceptance schemas alongside the full catalog under a minimal prompt budget  823ms
+   ✓ AI tool discovery escalation > reports provider rejection instead of retrying with a pruned catalog  648ms
+   ✓ AI tool discovery escalation > keeps discovered schemas available without changing the complete working catalog  308ms
+ ✓ test/aiRunOutcomeIntegration.test.ts (7 tests) 1678ms
+   ✓ run outcome session boundaries > publishes one unassessed projection when a query returns  361ms
+   ✓ run outcome session boundaries > captures blocked execution when required work is skipped  742ms
+ ✓ test/actionAcceptanceRequirements.test.ts (10 tests) 1691ms
+ ✓ test/toolCatalog.test.ts (4 tests) 29ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 18 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiAskRetainedDraft.test.ts > does not apply a cancelled successful draft during explicit Ask, then resumes once
+ FAIL  test/aiAskRetainedDraft.test.ts > does not apply a cancelled successful draft during inferred Ask, then resumes once
+ FAIL  test/aiAskRetainedDraft.test.ts > does not apply a cancelled successful draft during inferred-plan Ask, then resumes once
+AssertionError: expected [ { name: 'set_title_screen', …(6) } ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   {[39m
+[31m+     "args": {[39m
+[31m+       "title": "CANCELLED_DRAFT",[39m
+[31m+     },[39m
+[31m+     "destructive": false,[39m
+[31m+     "name": "set_title_screen",[39m
+[31m+     "reason": "이유 없음 — 모델이 reason 을 생략함",[39m
+[31m+     "requiresApproval": false,[39m
+[31m+     "result": {[39m
+[31m+       "data": undefined,[39m
+[31m+       "diff": {[39m
+[31m+         "audioDescriptionsChanged": 0,[39m
+[31m+         "dbRecordsChanged": 0,[39m
+[31m+         "endingsChanged": 0,[39m
+[31m+         "eventsAdded": 0,[39m
+[31m+         "eventsModified": 0,[39m
+[31m+         "eventsRemoved": 0,[39m
+[31m+         "mapPropertiesChanged": 0,[39m
+[31m+         "mapsAdded": 0,[39m
+[31m+         "mapsRemoved": 0,[39m
+[31m+         "monsterMetadataChanged": 0,[39m
+[31m+         "palettePresetsAdded": 0,[39m
+[31m+         "palettePresetsModified": 0,[39m
+[31m+         "sessionChanged": false,[39m
+[31m+         "switchesAdded": 0,[39m
+[31m+         "systemChanged": true,[39m
+[31m+         "tilesChanged": 0,[39m
+[31m+         "tilesetsChanged": 0,[39m
+[31m+         "variablesAdded": 0,[39m
+[31m+         "warnings": [],[39m
+[31m+         "worldEntitiesAdded": 0,[39m
+[31m+         "worldEntitiesModified": 0,[39m
+[31m+       },[39m
+[31m+       "issues": undefined,[39m
+[31m+       "ok": true,[39m
+[31m+       "summary": "타이틀 화면 설정: \"CANCELLED_DRAFT\"",[39m
+[31m+     },[39m
+[31m+     "summary": "타이틀 화면 설정: \"CANCELLED_DRAFT\"",[39m
+[31m+   },[39m
+[31m+ ][39m
+
+ ❯ test/aiAskRetainedDraft.test.ts:124:33
+    122|   expect(actualApply).toHaveBeenCalledTimes(1);
+    123|   expect(store.getCurrent().system.titleScreen?.title).toBe("CANCELLED…
+    124|   expect(resumed.proposedCalls).toEqual([]);
+       |                                 ^
+    125|   expect(resumed.appliedCalls?.map(call => call.args.title)).toEqual([…
+    126|   await f.send("Continue", { goalAction: "resume" });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/18]⎯
+
+ FAIL  test/aiNewGoalDraftRetirement.test.ts > retires payload before wiki entry and cannot carry it through resume or a disjoint write
+ FAIL  test/aiNewGoalDraftRetirement.test.ts > retires payload before intent entry and cannot carry it through resume or a disjoint write
+ FAIL  test/aiNewGoalDraftRetirement.test.ts > retires payload before success entry and cannot carry it through resume or a disjoint write
+AssertionError: expected [] to deeply equal [ 'upsert_item' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   "upsert_item",[39m
+[32m- ][39m
+[31m+ [][39m
+
+ ❯ test/aiNewGoalDraftRetirement.test.ts:148:63
+    146|   const written = await f.send('Continue with the item', { goalAction:…
+    147|   expect(f.applyProposal).toHaveBeenCalledTimes(1);
+    148|   expect(written.result.appliedCalls?.map(call => call.name)).toEqual(…
+       |                                                               ^
+    149|   expect(store.getCurrent().system.titleScreen).toEqual(before.system.…
+    150|   expect(store.getCurrent().database.items.find(item => item.id === 'i…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/18]⎯
+
+ FAIL  test/aiNewGoalDraftRetirement.test.ts > still applies current successful proposals on a new-goal authoring error exactly once
+AssertionError: expected { execution: 'failed', …(2) } to deeply equal { execution: 'failed', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "delivery": "applied",[39m
+[31m+   "delivery": "draft",[39m
+[2m    "execution": "failed",[22m
+[2m    "goal": "unassessed",[22m
+[2m  }[22m
+
+ ❯ test/aiNewGoalDraftRetirement.test.ts:250:36
+    248|   const result = await f.send('Create an item', { goalAction: 'new-goa…
+    249|   expect(result.result.stoppedReason).toBe('error');
+    250|   expect(result.result.runOutcome).toEqual({ execution: 'failed', goal…
+       |                                    ^
+    251|   expect(f.applyProposal).toHaveBeenCalledTimes(1);
+    252|   expect(store.getCurrent().database.items.find(item => item.id === 'i…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/18]⎯
+
+ FAIL  test/aiNewGoalEarlyOwnership.test.ts > host new-goal early ownership > retains genuine satisfaction and owned delivery as appropriate on same-goal failure
+ FAIL  test/aiNewGoalEarlyOwnership.test.ts > host new-goal early ownership > retains genuine satisfaction and owned delivery as appropriate on resume failure
+AssertionError: expected { execution: 'response-final', …(2) } to deeply equal { execution: 'response-final', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "delivery": "persisted-verified",[39m
+[31m+   "delivery": "draft",[39m
+[2m    "execution": "response-final",[22m
+[2m    "goal": "satisfied",[22m
+[2m  }[22m
+
+ ❯ test/aiNewGoalEarlyOwnership.test.ts:227:30
+    225|     f.session.recordAppliedProject(applied); f.session.rebaseProject(s…
+    226|     await f.session.proveAppliedRevision();
+    227|     expect(first.runOutcome).toEqual({ execution: "response-final", go…
+       |                              ^
+    228|     const original = structuredClone(first);
+    229|     const snapshot = f.session.getAcceptanceSnapshot();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/18]⎯
+
+ FAIL  test/aiOutcomeApplyPolicy.test.ts > settles the same verified requirement with milestone=false
+AssertionError: expected { execution: 'blocked', …(2) } to deeply equal { execution: 'response-final', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "delivery": "persisted-verified",[39m
+[32m-   "execution": "response-final",[39m
+[32m-   "goal": "satisfied",[39m
+[31m+   "delivery": "draft",[39m
+[31m+   "execution": "blocked",[39m
+[31m+   "goal": "incomplete",[39m
+[2m  }[22m
+
+ ❯ test/aiOutcomeApplyPolicy.test.ts:58:29
+     56|   const expected = { execution: "response-final", goal: "satisfied", d…
+     57|   expect(f.session.getAcceptanceSnapshot()?.status, JSON.stringify(f.s…
+     58|   expect(result.runOutcome).toEqual(expected);
+       |                             ^
+     59|   expect(result.recap?.runOutcome).toEqual(expected);
+     60|   expect(f.session.getHarnessSnapshot().runOutcome).toEqual(expected);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/18]⎯
+
+ FAIL  test/aiOutcomeApplyPolicy.test.ts > settles the same verified requirement with milestone=true
+AssertionError: {"id":"acceptance-1","goal":"Resize","status":"blocked","items":[{"required":true,"source":{"requestId":"request-1","text":"Resize map","scope":null},"id":"size","title":"Size","status":"verified","evidence":[{"expected":"{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":21,\"height\":15}","observed":"21x15","passed":true}],"mapId":"map_blank_start"},{"id":"required-verification","title":"Required verification","status":"blocked","reason":"run_lint: 시작 위치가 통행 불가 타일입니다: (10, 8) [finding-2]","evidence":[{"expected":"Every required check passes against current content","observed":"run_lint: 시작 위치가 통행 불가 타일입니다: (10, 8) [finding-2]","passed":false}]}]}: expected 'blocked' to be 'verified' // Object.is equality
+
+Expected: [32m"[7mverifi[27med"[39m
+Received: [31m"[7mblock[27med"[39m
+
+ ❯ test/aiOutcomeApplyPolicy.test.ts:57:104
+     55|   // Then both paths use the same post-apply completion policy and P1 …
+     56|   const expected = { execution: "response-final", goal: "satisfied", d…
+     57|   expect(f.session.getAcceptanceSnapshot()?.status, JSON.stringify(f.s…
+       |                                                                                                        ^
+     58|   expect(result.runOutcome).toEqual(expected);
+     59|   expect(result.recap?.runOutcome).toEqual(expected);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/18]⎯
+
+ FAIL  test/aiOutcomeApplyPolicy.test.ts > preserves genuine blocked execution when an applied draft later verifies
+AssertionError: expected { execution: 'blocked', …(2) } to deeply equal { execution: 'blocked', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "delivery": "persisted-verified",[39m
+[31m+   "delivery": "draft",[39m
+[2m    "execution": "blocked",[22m
+[32m-   "goal": "satisfied",[39m
+[31m+   "goal": "incomplete",[39m
+[2m  }[22m
+
+ ❯ test/aiOutcomeApplyPolicy.test.ts:100:29
+     98|   await f.session.proveAppliedRevision();
+     99|   // Then satisfaction and persistence do not erase the independent ex…
+    100|   expect(result.runOutcome).toEqual({ execution: ending, goal: "satisf…
+       |                             ^
+    101| });
+    102| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/18]⎯
+
+ FAIL  test/aiOutcomeApplyPolicy.test.ts > preserves genuine failed execution when an applied draft later verifies
+AssertionError: expected { execution: 'failed', …(2) } to deeply equal { execution: 'failed', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "delivery": "persisted-verified",[39m
+[31m+   "delivery": "draft",[39m
+[2m    "execution": "failed",[22m
+[32m-   "goal": "satisfied",[39m
+[31m+   "goal": "incomplete",[39m
+[2m  }[22m
+
+ ❯ test/aiOutcomeApplyPolicy.test.ts:100:29
+     98|   await f.session.proveAppliedRevision();
+     99|   // Then satisfaction and persistence do not erase the independent ex…
+    100|   expect(result.runOutcome).toEqual({ execution: ending, goal: "satisf…
+       |                             ^
+    101| });
+    102| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/18]⎯
+
+ FAIL  test/aiOutcomeApplyPolicy.test.ts > preserves genuine cancelled execution when an applied draft later verifies
+AssertionError: expected { execution: 'cancelled', …(2) } to deeply equal { execution: 'cancelled', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "delivery": "persisted-verified",[39m
+[31m+   "delivery": "draft",[39m
+[2m    "execution": "cancelled",[22m
+[32m-   "goal": "satisfied",[39m
+[31m+   "goal": "incomplete",[39m
+[2m  }[22m
+
+ ❯ test/aiOutcomeApplyPolicy.test.ts:100:29
+     98|   await f.session.proveAppliedRevision();
+     99|   // Then satisfaction and persistence do not erase the independent ex…
+    100|   expect(result.runOutcome).toEqual({ execution: ending, goal: "satisf…
+       |                             ^
+    101| });
+    102| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/18]⎯
+
+ FAIL  test/npcPrerequisiteSession.test.ts > request-bound verify_npc_reward session tool > R11/12 replays current content after a pass, replan, explicit completion and final skip
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ test/npcPrerequisiteSession.test.ts:89:3
+     87|   });
+     88| 
+     89|   it("R11/12 replays current content after a pass, replan, explicit co…
+       |   ^
+     90|     const f = prerequisiteFixture();
+     91|     const brokenChest = structuredClone(f.chest);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/18]⎯
+
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > keeps the shared discriminator, closed structural keys and genuine dynamic args
+AssertionError: expected { type: 'string', …(1) } to deeply equal { type: 'string', enum: [ …(9) ] }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "enum": [[22m
+[32m-     "toolVerdict",[39m
+[31m+     "mapCount",[39m
+[2m      "mapDimensions",[22m
+[32m-     "mapCount",[39m
+[2m      "eventCount",[22m
+[2m      "targetChange",[22m
+[2m      "preserve",[22m
+[2m      "imageReviewed",[22m
+[32m-     "reachability",[39m
+[2m      "actionCombat",[22m
+[31m+     "toolVerdict",[39m
+[31m+     "shopPurchase",[39m
+[31m+     "mapRoundTrip",[39m
+[31m+     "npcReward",[39m
+[31m+     "functionalUnresolved",[39m
+[31m+     "reachability",[39m
+[2m    ],[22m
+[2m    "type": "string",[22m
+[2m  }[22m
+
+ ❯ test/toolSchemaProviderCompat.test.ts:199:36
+    197|     expect(item?.required).toEqual(["kind"]);
+    198|     expect(item?.additionalProperties).toBe(false);
+    199|     expect(item?.properties?.kind).toEqual({ type: "string", enum: [
+       |                                    ^
+    200|       "toolVerdict", "mapDimensions", "mapCount", "eventCount", "targe…
+    201|     ] });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/18]⎯
+
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > preserves required defaults and never accepts an unregistered verification tool
+AssertionError: expected [ { id: 'promise', …(4) } ] to deeply equal [ { id: 'promise', …(3) } ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    {[22m
+[2m      "criteria": null,[22m
+[2m      "id": "promise",[22m
+[31m+     "issues": [[39m
+[31m+       {[39m
+[31m+         "code": "missing-field",[39m
+[31m+         "example": {[39m
+[31m+           "count": 2,[39m
+[31m+           "kind": "mapCount",[39m
+[31m+           "targets": [[39m
+[31m+             {[39m
+[31m+               "mapId": "map_id",[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+               "newMapName": "New map",[39m
+[31m+             },[39m
+[31m+           ],[39m
+[31m+         },[39m
+[31m+         "expected": "nonempty array of complete criteria; the entire array must be valid",[39m
+[31m+         "field": "criteria",[39m
+[31m+       },[39m
+[31m+     ],[39m
+[2m      "required": true,[22m
+[2m      "title": "Promise",[22m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/toolSchemaProviderCompat.test.ts:243:42
+    241|     for (const required of [undefined, true, false, "false"]) {
+    242|       const promise = { id: "promise", title: "Promise", criteria, ...…
+    243|       expect(parseAcceptance([promise])).toEqual([{ id: "promise", tit…
+       |                                          ^
+    244|         required: required !== false, criteria: required === "false" ?…
+    245|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/18]⎯
+
+ FAIL  test/verificationPlanAtomicity.test.ts > atomic verification adoption via tool > a malformed new scope cannot silently reuse an unrelated accepted criterion
+AssertionError: expected [] to have a length of 1 but got +0
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+ ❯ test/verificationPlanAtomicity.test.ts:336:101
+    334|     if (turn.result?.ok === false) rejected(turn);
+    335|     else {
+    336|       expect(f.session.getVerificationSnapshot().requirements.filter(c…
+       |                                                                                                     ^
+    337|       expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked"…
+    338|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/18]⎯
+
+
+ Test Files  7 failed | 25 passed (32)
+      Tests  18 failed | 635 passed (653)
+   Start at  01:39:34
+   Duration  458.81s (transform 22.10s, setup 0ms, collect 114.14s, tests 781.11s, environment 12ms, prepare 4.79s)
+
+
+Exit: 1

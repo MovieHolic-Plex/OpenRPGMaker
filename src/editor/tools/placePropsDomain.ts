@@ -1,4 +1,4 @@
-import { isPassable } from "@/project/collision";
+import { isPassable, tileAt, tilePassability } from "@/project/collision";
 import { roleCapabilities } from "@/project/tileRoles";
 import { TILE } from "@/project/defaults/constants";
 import {
@@ -8,11 +8,12 @@ import {
   type VocabLayerHome,
   type VocabSoftConfirm,
 } from "@/project/tileVocabulary";
-import type { Project } from "@/project/types";
-import { inMapBounds, passableCellCount, setLower, setUpper } from "./mapHelpers";
+import type { GameMap, Project, TilesetDef } from "@/project/types";
+import { isTreeTrunkTileId } from "@/project/tilesetHarness";
+import { inMapBounds, passableCellCount, setLower, setUpper, type Point } from "./mapHelpers";
 import { poissonScatter } from "./naturalScatter";
 import { naturalnessArg, naturalnessLabel, rngForTool } from "./naturalToolArgs";
-import { isPathSurfaceTile, protectedEventCells, runScatterObject, type ScatterPacking } from "./placementTools";
+import { isPathSurfaceTile, measurePropRejections, PropPlacementError, propProtectionReasons, runScatterObject, type PropRejectionReason, type ScatterPacking } from "./placementTools";
 import { ToolError, type ToolExecResult } from "./types";
 import { layerForVocabTile, type Rect } from "./v3/rmTypeExpander";
 
@@ -112,8 +113,8 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
     ? denseCells(input.area)
     : poissonScatter(
       { x: input.area.x, y: input.area.y, width: input.area.w, height: input.area.h },
-      input.count,
-      minGap,
+      input.area.w * input.area.h,
+      0,
       rngForTool(args, signature),
     ).points;
   const declared = tileset.tileMeta?.[tileId]?.defaultLayer;
@@ -122,33 +123,35 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
   const passableBefore = passableCellCount(draft, map, input.area);
   // 시작칸·이벤트칸을 덮으면 무결성 게이트가 커밋 전체를 거부한다 — 그룹 경로는 이미 피하는데
   // 단일 타일 경로만 안 피했다(실측: dense 덤불이 시작칸을 막아 숲 시공이 통째로 반려됐다).
-  const protectedCells = protectedEventCells(draft, map);
+  const protectionReasons = propProtectionReasons(draft, map);
   const inBounds = targets.some((cell) => inMapBounds(map, cell.x, cell.y));
   if (!inBounds) {
-    throw new ToolError(
+    const diagnostics = measurePropRejections(denseCells(input.area), { w: 1, h: 1 }, (cell, reasons) => {
+      singlePropFits(draft, map, tileset, cell, tileId, protectionReasons, reasons);
+    });
+    throw new PropPlacementError(
       `「${input.material}」를 ${input.count}개 요청했지만 영역 (${input.area.x},${input.area.y}) ${input.area.w}×${input.area.h} 이(가) 맵(${map.width}×${map.height}) 밖에 있습니다 — 맵 안의 영역을 쓰세요.`,
-      { code: "placement-zero", mapId: map.id },
+      map.id, diagnostics,
     );
   }
   let placed = 0;
+  const placedCells: { readonly x: number; readonly y: number }[] = [];
   for (const cell of targets) {
     if (placed >= input.count) break;
-    if (!inMapBounds(map, cell.x, cell.y)) continue;
-    const index = cell.y * map.width + cell.x;
-    if (map.upperTiles[index] !== TILE.EMPTY) continue;
-    if (!isPassable(draft, map, cell.x, cell.y)) continue;
-    if (isPathSurfaceTile(map.lowerTiles[index])) continue;
-    if (protectedCells.has(`${cell.x},${cell.y}`)) continue;
+    if (!singlePropFits(draft, map, tileset, cell, tileId, protectionReasons)) continue;
+    if (minGap > 0 && placedCells.some((other) => (cell.x - other.x) ** 2 + (cell.y - other.y) ** 2 < minGap ** 2)) continue;
     if (home === "upper") setUpper(map, cell.x, cell.y, tileId);
     else setLower(map, cell.x, cell.y, tileId);
+    if (minGap > 0) placedCells.push(cell);
     placed += 1;
   }
   if (placed === 0) {
-    throw new ToolError(
-      `${access.matchedLabel || `타일 ${tileId}`}를 ${input.count}개 요청했지만 영역 (${input.area.x},${input.area.y}) ${input.area.w}×${input.area.h} 에 한 개도 놓지 못했습니다`
-        + " — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다."
-        + " tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
-      { code: "placement-zero", mapId: map.id },
+    const diagnostics = measurePropRejections(denseCells(input.area), { w: 1, h: 1 }, (cell, reasons) => {
+      singlePropFits(draft, map, tileset, cell, tileId, protectionReasons, reasons);
+    });
+    throw new PropPlacementError(
+      `${access.matchedLabel || `타일 ${tileId}`}를 ${input.count}개 요청했지만 영역 (${input.area.x},${input.area.y}) ${input.area.w}×${input.area.h} 에 한 개도 놓지 못했습니다`,
+      map.id, diagnostics,
     );
   }
   const passableAfter = passableCellCount(draft, map, input.area);
@@ -167,6 +170,45 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
       passableAfter,
     },
   }, soft);
+}
+
+/** Admission stays identical; only the failure census collects overlapping
+ * causes instead of stopping at the first veto. Collision uses authored rules. */
+function singlePropFits(
+  project: Project, map: GameMap, tileset: TilesetDef, cell: Point, tileId: number,
+  protectionReasons: ReadonlyMap<string, readonly PropRejectionReason[]>, reasons?: Set<PropRejectionReason>,
+): boolean {
+  if (!inMapBounds(map, cell.x, cell.y)) {
+    reasons?.add("outOfBounds");
+    return false;
+  }
+  const index = cell.y * map.width + cell.x;
+  const upperOccupied = map.upperTiles[index] !== TILE.EMPTY;
+  if (upperOccupied) {
+    if (!reasons) return false;
+    reasons.add("upperOccupied");
+  }
+  const passable = isPassable(project, map, cell.x, cell.y);
+  if (!passable && !reasons) return false;
+  if (reasons && (upperOccupied || !passable)) {
+    // Clearing upper must not be suggested when it would expose blocked lower,
+    // even if an authored upper bridge currently makes the cell passable.
+    const lowerPass = tilePassability(tileset, tileAt(map, cell.x, cell.y).lower, TILE.EMPTY);
+    if (!(lowerPass.up || lowerPass.down || lowerPass.left || lowerPass.right)) reasons.add("lowerImpassable");
+    else if (!passable) reasons.add("upperOccupied");
+  }
+  if (isPathSurfaceTile(map.lowerTiles[index])) {
+    if (!reasons) return false;
+    reasons.add("protectedSurface");
+  }
+  const protectedHere = protectionReasons.get(`${cell.x},${cell.y}`);
+  // Ungrouped tree bases still acquire a canopy one row north during repair.
+  const protectedCanopy = isTreeTrunkTileId(tileId) ? protectionReasons.get(`${cell.x},${cell.y - 1}`) : undefined;
+  if (protectedHere || protectedCanopy) {
+    if (!reasons) return false;
+    for (const reason of [...(protectedHere ?? []), ...(protectedCanopy ?? [])]) reasons.add(reason);
+  }
+  return !reasons || reasons.size === 0;
 }
 
 /** 영역의 모든 칸을 행 우선으로 — 밀집 배치 대상. */

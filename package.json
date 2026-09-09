@@ -5,6 +5,12 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "mac:launch": "node scripts/mac-launch.mjs",
+    "setup:local": "node scripts/setup-local.mjs",
+    "bgm:pack": "vite-node --script scripts/build-bgm-release.mts",
+    "bgm:install": "node scripts/install-bgm.mjs",
+    "bgm:verify": "node scripts/install-bgm.mjs --verify",
+    "test:mac-onboarding": "node --test test/macLauncher.test.mjs test/setupLocal.test.mjs",
     "dev": "vite --configLoader runner --host 0.0.0.0 --port 9999 --strictPort",
     "dev:worktree": "vite --configLoader runner --host 127.0.0.1 --strictPort",
     "wt": "node scripts/agent-worktree.mjs",
@@ -13,6 +19,7 @@
     "gates:css": "node scripts/check-css-budget.mjs && node scripts/check-css-graph.mjs && node scripts/check-css-live-classes.mjs",
     "gates:css:save": "node scripts/check-css-budget.mjs --save-baseline",
     "gates:css:live": "node scripts/check-css-live-classes.mjs",
+    "audit:db-css-ownership": "node scripts/audit-db-css-ownership.mjs",
     "gates:surface": "node scripts/check-surface-gates.mjs",
     "gates:surface:audit": "node scripts/audit-gate-mutations.mjs",
     "gates:dead-css": "node scripts/check-dead-css-classes.mjs",
@@ -31,7 +38,8 @@
     "db:migrate": "bun scripts/apply-supabase-migrations.mjs",
     "db:prune-ai-logs": "node scripts/prune-ai-logs.mjs",
     "start": "node scripts/start-preview.mjs",
-    "build": "tsc --noEmit -p tsconfig.app.json && vite build --configLoader runner && npm run build:player && npm run build:standalone:bundle",
+    "build": "tsc --noEmit -p tsconfig.app.json && vite build --configLoader runner && npm run build:player && npm run build:standalone:bundle && npm run archive:runtime",
+    "archive:runtime": "vite-node scripts/archive-runtime.mts",
     "build:app": "vite build --configLoader runner",
     "build:fast": "vite build --configLoader runner",
     "build:player": "vite build --config vite.player.config.ts --configLoader runner && node scripts/build-player-sdk.mjs",
@@ -39,11 +47,14 @@
     "preview": "vite preview --configLoader runner",
     "typecheck": "tsc --noEmit",
     "typecheck:app": "tsc --noEmit -p tsconfig.app.json",
+    "typecheck:export-qa": "tsc -p scripts/tsconfig.json",
     "ontology:query": "node scripts/ontology-query.mjs",
     "ontology:classify": "node scripts/ontology-query.mjs classify",
     "ontology:evaluate": "node scripts/ontology-query.mjs evaluate",
     "ontology:docs": "node scripts/ontology-query.mjs docs --write docs/ontology/development-ontology.md",
     "ontology:check": "node scripts/ontology-check.mjs",
+    "terminology:check": "node scripts/terminology-check.mjs",
+    "terminology:docs": "node scripts/terminology-docs.mjs --write docs/terminology/product-terminology.md",
     "fixture:sync": "vite-node --script scripts/sync-fixture-default-database.mts",
     "generate:window-skin": "node scripts/generate-window-skin.mjs",
     "assets:slice-faces": "node scripts/slice-faceset-sheets.mjs",
@@ -61,6 +72,7 @@
     "test:oh-my-pi": "node scripts/run-node-tests.mjs ohMyPi && bun test test/ohMyPiComplete.bun.test.ts",
     "test:e2e": "playwright test",
     "qa:runtime": "node scripts/runtime-qa.mjs",
+    "qa:export": "vite-node --script scripts/qa-export-playability.mts --",
     "qa:runtime:gate": "playwright test --config playwright.runtime.config.ts",
     "construction:harness": "node scripts/run-construction-harness.mjs",
     "browser-verify:genre": "tsx scripts/browser-verify-genre-presets.mts",
@@ -76,8 +88,11 @@
     "build:standalone:bundle": "vite build --config vite.standalone.config.ts --configLoader runner"
   },
   "dependencies": {
+    "@oh-my-pi/pi-agent-core": "^17.4.0",
     "jimp": "^0.16.13",
-    "phaser": "^3.90.0"
+    "phaser": "^3.90.0",
+    "tar": "7.5.22",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@oh-my-pi/pi-ai": "^17.4.0",
@@ -89,6 +104,7 @@
     "ts-ebml": "^3.0.2",
     "typescript": "^5.7.0",
     "vite": "^6.0.0",
+    "vite-node": "3.2.4",
     "vitest": "3.2.4",
     "webm-duration-fix": "^1.0.4"
   }

@@ -18,10 +18,14 @@ describe("Scarloxy 포켓몬풍 데모 프로젝트", () => {
     expect(project.maps.map_pkmn_route?.troopIds).toContain("troop_pkmn_grass_a");
   });
 
-  it("팩 몬스터 16종이 종으로 등록되고 배틀러 이미지가 해석된다", () => {
+  it("팩 몬스터 19종이 종으로 등록되고 배틀러 이미지가 해석된다", () => {
     const project = createScarloxyPokemonDemoProject();
     const species = (project.database.monsterSpecies ?? []).filter((record) => record.id.startsWith("species_scarloxy_"));
-    expect(species).toHaveLength(16);
+    expect(species).toHaveLength(19);
+    expect(new Set(species.map((record) => record.id)).size).toBe(19);
+    expect(species.map((record) => record.id)).toEqual(expect.arrayContaining([
+      scarloxySpeciesId("mossling"), scarloxySpeciesId("emberkit"), scarloxySpeciesId("puddlup"),
+    ]));
     for (const record of species) {
       expect(record.graphic.monsterResourceId).toMatch(/^scarloxy-monster-/);
       expect(resolveAssetResourceUrl(record.graphic.monsterResourceId)).toMatch(/^\/assets\/scarloxy\//);

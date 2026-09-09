@@ -3,11 +3,9 @@
 
 import { isPassable } from "@/project/collision";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
-import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
+import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
-import { shapeRoadAround } from "@/project/defaults/roadAutotile";
-import { shapeSandAround } from "@/project/defaults/sandAutotile";
-import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
+import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
 import { cloneGameMap } from "@/project/mapClone";
@@ -30,6 +28,8 @@ import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/to
 import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
 import { genId } from "@/util/id";
+import { resolveWikiCombatMode } from "@/ai/projectWikiContext";
+import { isActionCombatMap } from "@/project/actionCombat";
 import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
 import { applyMapShift } from "@/editor/mapShiftActions";
 import { visitProjectCommands } from "./commandTraversal";
@@ -62,6 +62,7 @@ import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime"
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
 import { resolveEventPlacement } from "./eventTools";
 import { expandCellsAgainstWalls } from "./wallFlush";
+import { assertHousePlacement, protectedHouseCells, registerCompletedHouse } from "./houseProtection";
 
 // 맵 테두리를 벽으로 두른다.
 function borderWalls(map: GameMap): void {
@@ -85,11 +86,8 @@ function adoptStartIfNeeded(project: Project, map: GameMap): void {
 }
 
 function assertToolMapSize(width: number, height: number): void {
-  if (width > MAX_TOOL_MAP_DIMENSION || height > MAX_TOOL_MAP_DIMENSION) {
-    throw new ToolError(
-      `맵 크기는 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}까지 가능합니다. 더 넓은 월드는 여러 맵으로 나누고 transfer 이벤트로 연결하세요.`,
-      { code: "map-too-large" }
-    );
+  if (exceedsMapDimensionLimit(width, height)) {
+    throw new ToolError(mapSizeLimitMessage(), { code: "map-too-large" });
   }
 }
 
@@ -153,14 +151,14 @@ export function assignCreatedMapBgm(
 
 const createMap: ToolDefinition = {
   name: "create_map",
-  description: "새 맵을 생성한다(기본은 테두리 없는 잔디 평지, 최대 256×256). 돌벽 테두리가 필요할 때만 border:\"wall\"을 지정한다. 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. 이름에서 테마를 읽어 BGM을 고른다(bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 place_concept 또는 start_interior_room_session 이 새 mapId 까지 함께 시공한다.",
+  description: `새 맵을 생성한다(기본은 테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 돌벽 테두리가 필요할 때만 border:"wall"을 지정한다. 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. 이름에서 테마를 읽어 BGM을 고른다(bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 place_concept 또는 start_interior_room_session 이 새 mapId 까지 함께 시공한다.`,
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       name: { type: "string", description: "맵 이름" },
-      width: { type: "integer", description: "가로 타일 수(3 이상, 최대 256)" },
-      height: { type: "integer", description: "세로 타일 수(3 이상, 최대 256)" },
+      width: { type: "integer", description: `가로 타일 수(3 이상, 최대 ${MAX_TOOL_MAP_DIMENSION})` },
+      height: { type: "integer", description: `세로 타일 수(3 이상, 최대 ${MAX_TOOL_MAP_DIMENSION})` },
       id: { type: "string", description: "맵 id(생략 시 자동 생성)" },
       border: { type: "string", enum: ["none", "wall"], description: "테두리 처리(기본 none, wall이면 외곽 TILE.WALL)" },
       seed: { type: "integer", description: "BGM 선택 시드(생략 시 이름 해시)" },
@@ -264,7 +262,9 @@ const manageMapTree: ToolDefinition = {
       operation: { type: "string", enum: ["create_folder", "rename_folder", "dissolve_folder", "move"] },
       folderId: { type: "string" },
       mapId: { type: "string", description: "move 대상 맵 또는 폴더 id" },
-      parentId: { type: "string", description: "상위 폴더 id. 루트는 빈 문자열" },
+      // 빈 문자열은 프로젝트 루트가 아니라 트리 최상위 맵의 자식이다 — 편집기 대화창과 같은
+      // 낱말을 쓴다(OPRN-OUT-027). 조수가 「루트」를 형제 최상위로 읽으면 안 된다.
+      parentId: { type: "string", description: "상위 맵/분류 id. 빈 문자열이면 트리 최상위 맵의 하위" },
       index: { type: "integer", minimum: 0 },
       name: { type: "string" },
     },
@@ -280,7 +280,7 @@ const manageMapTree: ToolDefinition = {
       if (draft.maps[folderId] || findTreeNode(draft.mapTree, folderId)) throw new ToolError(`이미 사용 중인 맵/폴더 id입니다: ${folderId}`, { code: "map-tree-id-exists" });
       const parentId = typeof args.parentId === "string" ? args.parentId : "";
       if (!insertTreeNode(draft.mapTree, { mapId: folderId, kind: "folder", name, children: [] }, parentId, args.index as number | undefined)) {
-        throw new ToolError(`상위 폴더를 찾을 수 없습니다: ${parentId || "(루트)"}`, { code: "map-tree-parent-not-found" });
+        throw new ToolError(`상위 맵/분류를 찾을 수 없습니다: ${parentId || "(최상위)"}`, { code: "map-tree-parent-not-found" });
       }
       return { summary: `맵 분류 '${name}' 생성`, data: { folderId } };
     }
@@ -301,16 +301,16 @@ const manageMapTree: ToolDefinition = {
     if (operation === "move") {
       const mapId = typeof args.mapId === "string" ? args.mapId : "";
       const parentId = typeof args.parentId === "string" ? args.parentId : "";
-      if (!canReparentMap(draft.mapTree, mapId, parentId)) throw new ToolError(`맵/폴더 ${mapId}을 ${parentId || "루트"} 아래로 이동할 수 없습니다.`, { code: "invalid-map-tree-move" });
+      if (!canReparentMap(draft.mapTree, mapId, parentId)) throw new ToolError(`맵/폴더 ${mapId}을 ${parentId || "최상위 맵"} 아래로 이동할 수 없습니다.`, { code: "invalid-map-tree-move" });
       const oldParentId = findParentMapId(draft.mapTree, mapId);
       const oldIndex = siblingIndex(draft.mapTree, mapId);
       const node = extractTreeNode(draft.mapTree, mapId);
       if (!node) throw new ToolError(`이동할 맵/폴더를 찾을 수 없습니다: ${mapId}`, { code: "map-tree-node-not-found" });
       if (!insertTreeNode(draft.mapTree, node, parentId, args.index as number | undefined)) {
         insertTreeNode(draft.mapTree, node, oldParentId ?? "", oldIndex);
-        throw new ToolError(`상위 폴더를 찾을 수 없습니다: ${parentId || "(루트)"}`, { code: "map-tree-parent-not-found" });
+        throw new ToolError(`상위 맵/분류를 찾을 수 없습니다: ${parentId || "(최상위)"}`, { code: "map-tree-parent-not-found" });
       }
-      return { summary: `맵/분류 ${mapId} 이동 → ${parentId || "루트"}`, data: { mapId, parentId } };
+      return { summary: `맵/분류 ${mapId} 이동 → ${parentId || "최상위 맵 하위"}`, data: { mapId, parentId } };
     }
     throw new ToolError(`지원하지 않는 map tree 작업입니다: ${String(operation)}`, { code: "invalid-args" });
   },
@@ -393,7 +393,8 @@ const paintTiles: ToolDefinition = {
     return {
       summary: `${map.name}에 타일 ${tile} 페인트(${mode}, ${layer}, ${paintResult.touched.length}칸)${routedNote ? " — 상위 전용 칩 자동 라우팅" : ""}${autoNote ? ` — ${autoNote}` : ""}${skippedNote ? ` — ${skippedNote}` : ""}`,
       warnings: warnings.length > 0 ? warnings : undefined,
-      data: { autoClusterTiles: paintResult.autoTiles, skippedClusterCells: paintResult.skipped, tilesTouched: paintResult.touched.length },
+      // Snapshot the executed layer: later tile-rule edits must not reinterpret this receipt.
+      data: Object.freeze({ effectiveLayer: layer, autoClusterTiles: paintResult.autoTiles, skippedClusterCells: paintResult.skipped, tilesTouched: paintResult.touched.length }),
     };
   },
 };
@@ -503,8 +504,10 @@ const paintRoad: ToolDefinition = {
         { code: "road-blocked", mapId: map.id }
       );
     }
-    if (!picker && style === "dirt") shapeRoadAround(map, painted);
-    else if (!picker && style === "sand") shapeSandAround(map, painted);
+    if (!picker) {
+      const group = style === "dirt" ? DEFAULT_ROAD_AUTOTILE_GROUP : DEFAULT_SAND_AUTOTILE_GROUP;
+      shapeAutotileGroupAround(map, group, painted, (x, y) => mask(x, y) !== "structure");
+    }
     const source = picker ? `${picker.presetId}/${picker.role}` : style;
     const warnings = roadRepairWarnings(repair);
     return {
@@ -587,7 +590,10 @@ const stampStructure: ToolDefinition = {
     );
     const before = snapshotTiles(map);
     const structureMask = roadObstacleMaskFor(draft, map);
-    stampTownCityPlot(map, template, origin.x, origin.y, (x, y) => structureMask(x, y) !== "open");
+    const fenceProtection = new Set(protectedHouseCells(map).map((cell) => coordKey(cell.x, cell.y)));
+    stampTownCityPlot(map, template, origin.x, origin.y,
+      (x, y) => structureMask(x, y) !== "open",
+      (x, y) => fenceProtection.has(coordKey(x, y)));
     const paletteTiles = picker && tileset
       ? applyPaletteToChangedCells(map, tileset, before, { x: origin.x, y: origin.y, width: 18, height: 16 }, picker)
       : 0;
@@ -839,11 +845,17 @@ const buildHouse: ToolDefinition = {
       (candidate) => houseFits(map, candidate, baseHouse.width, baseHouse.height)
     );
     const house = { ...baseHouse, origin };
+    const bbox = { ...origin, w: house.width, h: house.height };
+    assertHousePlacement(map, bbox);
     const before = snapshotTiles(map);
     const door = stampBuildHouse(map, house);
     const paletteTiles = picker && tileset
       ? applyPaletteToChangedCells(map, tileset, before, { x: house.origin.x, y: house.origin.y, width: house.width, height: house.height }, picker)
       : 0;
+    registerCompletedHouse(draft, map, {
+      ...bbox, label: `${house.material} 집`, kitId: kitIdForSmallHouseMaterial(house.material),
+      doorAt: door, front: { x: door.x, y: door.y + 1 },
+    });
     return {
       summary: `${map.name}에 ${house.width}×${house.height} ${house.material} 집 건설(${house.origin.x},${house.origin.y}) — 문 (${door.x},${door.y}) — 자연도 ${naturalnessLabel(naturalness)}${picker ? ` — 프리셋 ${picker.presetId}/${picker.role} ${paletteTiles}칸` : ""}`,
       data: { door, origin: house.origin, width: house.width, height: house.height, material: house.material, paletteTiles },
@@ -1069,8 +1081,15 @@ const encounterEntrySchema: JsonSchema = {
 
 const fieldGraphicSchema: JsonSchema = {
   type: "object",
-  description: "EventPageGraphic 형태. 예: {sprite:{type:'uploaded',id:'...'},direction:'down',pattern:0}",
-  additionalProperties: true,
+  description: "생략하면 적 레코드의 몬스터 그림을 사용한다. 지정 시 실제 sprite가 필요하다. query/characterIndex는 지원하지 않는다.",
+  properties: {
+    sprite: { type: "object", properties: { type: { type: "string", enum: ["bundled", "uploaded"] }, id: { type: "string" } }, required: ["type", "id"] },
+    direction: { type: "string", enum: ["up", "down", "left", "right"] },
+    pattern: { type: "integer" },
+    transparent: { type: "boolean" },
+    scale: { type: "number" },
+  },
+  additionalProperties: false,
 };
 
 const characterFootprintSchema: JsonSchema = {
@@ -1195,7 +1214,19 @@ function parseFieldSpawn(draft: Project, map: GameMap, value: unknown, label: st
     spawn.respawnSec = respawnSec;
   }
   if (input.chase !== undefined) spawn.chase = booleanField(input, "chase", label);
-  if (input.graphic !== undefined) spawn.graphic = structuredClone(input.graphic) as FieldSpawnDef["graphic"];
+  if (input.graphic !== undefined) {
+    const graphic = requireRecordValue(input.graphic, `${label}.graphic`);
+    if (graphic.sprite === undefined && graphic.transparent !== true) {
+      throw new ToolError("graphic에는 sprite:{type:'uploaded',id:'실제 리소스 ID'}가 필요합니다. graphic을 생략하면 적의 몬스터 그림을 사용합니다.", { code: "invalid-graphic", mapId: map.id });
+    }
+    if (graphic.sprite !== undefined) {
+      const sprite = requireRecordValue(graphic.sprite, `${label}.graphic.sprite`);
+      if ((sprite.type !== "uploaded" && sprite.type !== "bundled") || typeof sprite.id !== "string" || !sprite.id.trim()) {
+        throw new ToolError("graphic.sprite의 type과 id를 확인하세요.", { code: "invalid-graphic", mapId: map.id });
+      }
+    }
+    spawn.graphic = structuredClone(graphic) as FieldSpawnDef["graphic"];
+  }
   // 진영·발자국·킬 필드를 드롭하면 make_action_enemy 와 스폰 계약이 갈라지고,
   // 저작한 덮어쓰기가 툴 한 번에 조용히 사라진다. 생략 시 키를 안 쓰는 기존 동작은 유지.
   if (input.factionId !== undefined) {
@@ -1534,7 +1565,7 @@ const setEncounterTable: ToolDefinition = {
 
 const makeHuntingGround: ToolDefinition = {
   name: "make_hunting_ground",
-  description: "사냥터 구획을 만든다. fieldSpawns 항목을 추가하고, encounterEntries가 있으면 encounterTable로 설정한다(없으면 area region의 단일 인카운터를 설정). 「사냥터」「몬스터 나오는 숲」의 정본. 지키는 몬스터 한 마리는 place_battle_blocker.",
+  description: "사냥터 구획에 보이는 몬스터를 배치한다. 프로젝트 위키의 전투 방식과 맵별 예외를 따르며, 접촉·액션 전투에서는 랜덤 인카운터를 끈다. 액션 결정이면 시스템과 대상 맵도 활성화한다. 위키 결정이 없으면 encounterEntries/encounterRate 설정을 사용한다. 지키는 몬스터 한 마리는 place_battle_blocker.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1560,6 +1591,9 @@ const makeHuntingGround: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const troopId = args.troopId as string;
     assertKnownTroop(draft, troopId);
+    const combat = resolveWikiCombatMode(draft, map.id)
+      ?? (isActionCombatMap(draft, map) ? { mode: "action" as const, sourceId: "map.actionCombat" }
+        : draft.system.genre === "adventure-jrpg" ? { mode: "contact" as const, sourceId: "system.genre" } : undefined);
     const area = parseRect(args.area, "area", map);
     const spawn = parseFieldSpawn(draft, map, {
       id: nextFieldSpawnId(map, troopId),
@@ -1576,6 +1610,16 @@ const makeHuntingGround: ToolDefinition = {
       ...(args.onKillSwitchId !== undefined ? { onKillSwitchId: args.onKillSwitchId } : {}),
     }, "fieldSpawn");
     map.fieldSpawns = [...(map.fieldSpawns ?? []), spawn];
+    if (combat && combat.mode !== "random") {
+      map.actionCombat = combat.mode === "action";
+      if (combat.mode === "action") draft.system.actionCombat = { ...draft.system.actionCombat, enabled: true };
+      map.encounterRate = 0;
+      delete map.encounterTable;
+      return {
+        summary: `${map.name} — 보이는 몬스터 배치 (${combat.mode === "action" ? "맵 위 직접 전투" : "접촉 시 전투 화면"})`,
+        data: { mapId: map.id, fieldSpawn: spawn, encounterRate: 0, combatMode: combat.mode, sourceId: combat.sourceId },
+      };
+    }
     const entries = args.encounterEntries !== undefined
       ? parseEncounterEntries(draft, map, args.encounterEntries)
       : [{ troopId, weight: 1, conditions: { region: area } }];
@@ -1648,14 +1692,14 @@ const createFarmPlot: ToolDefinition = {
 // 맵 크기 변경(좌상단 기준 유지, 확장부는 잔디/빈 칸). 이벤트가 잘려 나가는 축소는 거부한다.
 const resizeMapTool: ToolDefinition = {
   name: "resize_map",
-  description: "맵 크기를 바꾼다(좌상단 기준, 확장부는 잔디, 최대 256×256). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라.",
+  description: `맵 크기를 바꾼다(좌상단 기준, 확장부는 잔디, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라.`,
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      width: { type: "integer", description: "3 이상, 최대 256" },
-      height: { type: "integer", description: "3 이상, 최대 256" },
+      width: { type: "integer", description: `3 이상, 최대 ${MAX_TOOL_MAP_DIMENSION}` },
+      height: { type: "integer", description: `3 이상, 최대 ${MAX_TOOL_MAP_DIMENSION}` },
     },
     required: ["mapId", "width", "height"],
   },

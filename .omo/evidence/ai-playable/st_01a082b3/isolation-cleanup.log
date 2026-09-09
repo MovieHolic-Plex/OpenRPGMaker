@@ -1,0 +1,17 @@
+Original/copy equality:
+review-identical
+policy-identical
+
+Baseline HEAD:
+51c9d816de2002abcf40bf9f29f6c5ba9853d752
+
+Port 9283:
+State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess
+
+Cache absent: yes
+
+Verified source hashes:
+3a34ffbf66d82bb0fa0627d4c13f7227f0e01b2a51f8cf0b047c660a733df5b7  src/editor/panels/aiConversationHistoryModal.ts
+7761357ec3d89a23865fe48b4ed9130c07b43897206cfbb9800085a88db5b3e8  test/aiConversationHistoryStartup.test.ts
+d4a641a337f0a62fd7cc825fc03e80a2974b62bca39f87af86589b9f2189f50c  test/e2e/ai-map-history.spec.ts
+7fe2f279c0606cab0efb58fcf78d17f665b0be5ce48f3acc92ff54e580327a66  test/e2e/aiHistoryStartupRecoverHarness.ts

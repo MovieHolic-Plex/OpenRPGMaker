@@ -35,16 +35,20 @@ import { applyDailyWeatherForDate } from "@/project/dailyWeather";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 
-export type AudioChannel = "bgm" | "bgs" | "me" | "se";
+export type AudioChannel = "bgm" | "bgs" | "ambient" | "me" | "se";
 
 export type AudioTrackState = {
   readonly resourceId: string;
   readonly loop: boolean;
+  /** Authored track volume, 0..100; independent of the user mixer. */
+  readonly volume?: number;
+  readonly fadeInMs?: number;
 };
 
 export type AudioCommandState = {
   bgm?: AudioTrackState;
   bgs?: AudioTrackState;
+  ambient?: AudioTrackState;
   me?: AudioTrackState;
   se?: AudioTrackState;
 };
@@ -272,6 +276,7 @@ export interface PlaySession {
   actorVitals: Record<string, ActorVitals>;
   eventLocations: Record<string, RuntimeEventLocation>;
   horror?: import("./horrorState").HorrorState;
+  detectionEncounterCompletions?: import("./npcBehavior").DetectionEncounterCompletions;
   // Erase Event 런타임 소거 목록. 맵을 다시 로드/진입하면 RM2003 관례대로 초기화된다.
   erasedEventIds: string[];
   // Persistent Modern Remove Event state. Erase Event remains map-entry scoped.
@@ -298,6 +303,7 @@ export interface PlaySession {
   actorCharacterResourceIds?: Record<string, string>;
   // 런타임 직업 오버라이드(Change Actor Class/승급). actorId → classId.
   growthProgress?: import("./growth/types").GrowthProgress;
+  promotionLineage?: import("./growth/types").PromotionLineage;
   classOverrides: Record<string, string>;
   // 런타임 능력치 영구 보정(Change Parameters). actorId → parameterKey → delta.
   actorParamBonuses?: Record<string, Partial<Record<ActorParameterKey, number>>>;
@@ -345,6 +351,7 @@ export interface PlaySession {
   battleResult?: BattleResult;
   commonEvents?: { id: string; commands: Command[] }[];
   audio: AudioCommandState;
+  systemAudioOverrides?: import("./systemAudioOverrides").SystemAudioOverrides;
   pictures: Record<string, PictureState>;
   messageWindowSettings?: MessageWindowSettings;
   m2Runtime?: M2RuntimeState;
@@ -757,18 +764,25 @@ export function getMapTile(
 }
 
 export function setAudioState(
-  session: PlaySession,
-  state: { readonly channel?: AudioChannel; readonly resourceId: string; readonly loop: boolean }
+  session: { audio: AudioCommandState },
+  state: AudioTrackState & { readonly channel?: AudioChannel }
 ): void {
   const channel = state.channel ?? (state.loop ? "bgm" : "se");
   session.audio[channel] = {
     resourceId: state.resourceId,
     loop: state.loop,
+    ...(state.volume === undefined ? {} : { volume: state.volume }),
+    ...(state.fadeInMs === undefined ? {} : { fadeInMs: state.fadeInMs }),
   };
 }
 
-export function clearAudioState(session: PlaySession): void {
-  session.audio = {};
+/** Omitted channel preserves the legacy stop-all behavior. */
+export function clearAudioState(session: PlaySession, channel?: AudioChannel): void {
+  if (channel === undefined) {
+    session.audio = {};
+    return;
+  }
+  session.audio[channel] = undefined;
 }
 
 export function showPictureState<T extends PictureState>(

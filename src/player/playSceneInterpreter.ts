@@ -11,7 +11,7 @@ import {
 } from "@/project/session";
 import { store } from "@/project/store";
 import { setEventSpritePattern } from "@/player/eventSpriteResources";
-import { playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
 import { resolveEventPage } from "@/project/io";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
 import type { Interpreter } from "@/player/interpreter";
@@ -28,6 +28,7 @@ import { resourceDisplayName } from "@/player/resourceDisplay";
 import { assertNever } from "@/player/playSceneTypes";
 import type { Command } from "@/project/types";
 import { characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
+import { waitForEventKey } from "@/player/eventInput";
 import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { applyCameraControl } from "@/player/playSceneCamera";
 import { applyLightingStep } from "@/player/playSceneLighting";
@@ -36,6 +37,7 @@ import { playPathfindMove } from "@/player/playScenePathfinding";
 import { conditionWaitScenes, isRuntimeEventIdle } from "@/player/runtimeConditionWait";
 import { playMovieOverlay } from "@/player/playSceneMovies";
 import { applyWeatherStep } from "@/player/playSceneWeather";
+import { applyEventRelocationStep } from "@/player/playSceneMapCommands";
 import { runtimeEventViewsForMap, type RuntimeEventView } from "@/project/runtimeEventState"
 import {
   CUTSCENE_END_LABEL,
@@ -45,14 +47,20 @@ import {
 import { isFieldSpawnEventId } from "@/player/fieldSpawns";
 import { isActionCombatSceneActive } from "@/player/playSceneActionCombat";
 import { despawnFieldEnemyForScene, runFieldSpawnEventBattle, spawnFieldEnemyForScene } from "@/player/playSceneFieldSpawns";
-import { applyBattleDefeat } from "@/player/playSceneDefeat";
+import { playCommandBattle } from "./commandBattle";
+import { claimForeground, foregroundOwner } from "./foregroundControl";
 import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
 import { formatFriendshipFeedback, isGiftableEvent, isGiftSystemEnabled, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
 import { playGiftSelection } from "@/player/playSceneGift";
+import { completeDetectionEncounter } from "@/project/npcBehavior";
+import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { getCharacterProfile, resolveCharacterSpeaker } from "@/project/characterProfiles";
 
 export type RunCommandsOptions = {
   readonly allowNested?: boolean;
+  readonly isCurrent?: () => boolean;
+  readonly onComplete?: () => void;
+  readonly continueAfterTransfer?: boolean;
 };
 
 export async function runEvent(scene: PlaySceneContext, eventId: string): Promise<void> {
@@ -71,16 +79,31 @@ export async function runEvent(scene: PlaySceneContext, eventId: string): Promis
     return;
   }
   const commands = page?.commands ?? event.commands;
-  if (shouldOfferGiftMenu(event, page, store.getCurrent())) {
-    const action = await showGiftMenu(scene, event, page?.name);
-    if (action === "talk") await runTalkPath(scene, event, commands, eventId);
-    if (action === "gift") await runGiftSelection(scene, event);
-    return;
+  const session = scene.session;
+  const completionPageId = page?.detectionEncounter ? page.id : undefined;
+  const options: RunCommandsOptions = completionPageId === undefined ? {} : {
+    continueAfterTransfer: true,
+    onComplete: () => completeDetectionEncounter(session, eventId, completionPageId),
+  };
+  const activeSession = scene.session;
+  try {
+    if (shouldOfferGiftMenu(event, page, store.getCurrent())) {
+      const action = await showGiftMenu(scene, event, page?.name);
+      if (action === "talk") await runTalkPath(scene, event, commands, eventId, options);
+      if (action === "gift") await runGiftSelection(scene, event);
+      return;
+    }
+    await runTalkPath(scene, event, commands, eventId, options);
+  } catch (error) {
+    // Social feedback is outside runCommands, but has the same cancellation boundary.
+    if (error instanceof DOMException && error.name === "AbortError"
+      && (scene.session !== activeSession || scene.sys?.isActive() === false)) return;
+    throw error;
   }
-  await runTalkPath(scene, event, commands, eventId);
 }
 
 async function runGiftSelection(scene: PlaySceneContext, event: CommandSourceEvent): Promise<void> {
+  const activeSession = scene.session;
   const previousRunning = scene.running;
   const previousInputEnabled = scene.inputEnabled;
   scene.running = true;
@@ -88,12 +111,14 @@ async function runGiftSelection(scene: PlaySceneContext, event: CommandSourceEve
   try {
     await playGiftSelection(scene, event);
   } finally {
-    scene.running = previousRunning;
-    scene.lastActionTargetKey = "";
-    scene.setInputEnabled(previousInputEnabled);
-    // 대화 세션이 끝나는 자리 — 퇴장 연출을 재생하고 빠진다(transfer 만 하드 컷).
-    dialogueUi(scene)?.close();
-    scene.refreshRuntimeSurfaces();
+    if (scene.session === activeSession && !scene.battleAbortController && scene.sys?.isActive() !== false) {
+      scene.running = previousRunning;
+      scene.lastActionTargetKey = "";
+      scene.setInputEnabled(previousInputEnabled);
+      // 대화 세션이 끝나는 자리 — 퇴장 연출을 재생하고 빠진다(transfer 만 하드 컷).
+      dialogueUi(scene)?.close();
+      scene.refreshRuntimeSurfaces();
+    }
   }
 }
 
@@ -101,9 +126,13 @@ async function runTalkPath(
   scene: PlaySceneContext,
   event: CommandSourceEvent,
   commands: readonly Command[],
-  eventId: string
+  eventId: string,
+  options: RunCommandsOptions = {}
 ): Promise<void> {
-  await runCommands(scene, commands, eventId);
+  const activeSession = scene.session;
+  await runCommands(scene, commands, eventId, options);
+  // An abandoned command run is not a completed social interaction.
+  if (scene.session !== activeSession || scene.sys?.isActive() === false) return;
   // Action-scoped, once per interaction (not gift path; multi-text cannot re-fire).
   if (!isTalkFriendshipEnabled(event)) return;
   const page = resolveEventPage(event, scene.session);
@@ -129,11 +158,13 @@ async function runTalkPath(
       mapHeight: scene.map.height,
     });
   } finally {
-    scene.running = previousRunning;
-    scene.lastActionTargetKey = "";
-    scene.setInputEnabled(previousInputEnabled);
-    dialogue.close();
-    scene.refreshRuntimeSurfaces();
+    if (scene.session === activeSession && !scene.battleAbortController && scene.sys?.isActive() !== false) {
+      scene.running = previousRunning;
+      scene.lastActionTargetKey = "";
+      scene.setInputEnabled(previousInputEnabled);
+      dialogue.close();
+      scene.refreshRuntimeSurfaces();
+    }
   }
 }
 
@@ -182,44 +213,56 @@ export async function runCommands(
 ): Promise<void> {
   if (scene.running && options.allowNested !== true) return;
   const dialogue = dialogueUi(scene);
-  if (!dialogue) {
-    console.warn("[player] dialogue UI missing");
-    return;
-  }
-  const previousRunning = scene.running;
-  const previousInputEnabled = scene.inputEnabled;
-  scene.running = true;
-  scene.setInputEnabled(false);
+  if (!dialogue) { console.warn("[player] dialogue UI missing"); return; }
+  const previousRunning = scene.running, previousInputEnabled = scene.inputEnabled;
+  const lease = options.allowNested === true ? undefined : claimForeground(scene);
+  if (options.allowNested !== true && !lease) return;
+  const owner = foregroundOwner(scene), activeSession = scene.session;
+  const current = () => scene.session === activeSession && foregroundOwner(scene) === owner
+    && owner?.current() !== false && options.isCurrent?.() !== false;
+  scene.running = true; scene.setInputEnabled(false);
   const project = store.getCurrent();
-  scene.session.commonEvents = project.commonEvents;
-  const interpreter = createInterpreter([...commands], scene.session, project, {
-    currentEventId,
-    getEventPositions: () => scene.eventPositions,
+  activeSession.commonEvents = project.commonEvents;
+  const base = createInterpreter([...commands], activeSession, project, {
+    currentEventId, continueAfterTransfer: options.continueAfterTransfer, getEventPositions: () => scene.eventPositions,
     isEventIdle: target => isRuntimeEventIdle(scene, target),
     onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
   });
-  const activeSession = scene.session;
+  // An awaited UI result must never resume commands after its owner/page/session was cancelled.
+  const interpreter: Interpreter = { ...base, resume: value => current() ? base.resume(value) : { kind: "done" } };
   const skipController = createCutsceneSkipController(scene, interpreter);
+  const diagnosticOwner = diagnosticToken();
+  const observe = (phase: "started" | "completed" | "cancelled" | "failed") => {
+    if (diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("event")) publishDiagnostic({ category: "event", phase, count: commands.length });
+  };
+  observe("started");
   try {
-    let result = interpreter.start();
+    let result = interpreter.start(), normalCompletion = true, handledFailure = false;
     scene.refreshRuntimeSurfaces();
-    while (result.kind !== "done" && scene.session === activeSession) {
-      if (isCutsceneSkippable(scene.session)) {
-        scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
-      }
-      result = await consumeBlockingStep(scene, interpreter, result, currentEventId, skipController);
+    while (result.kind !== "done" && current()) {
+      if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
+      const step = result;
+      result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
+      if (step.kind === "battleProcessing" && !step.canLose && activeSession.battleResult === "defeat") normalCompletion = false;
     }
+    if (result.kind === "done" && base.isDone() && normalCompletion && current()) {
+      observe("completed"); options.onComplete?.();
+    } else observe(handledFailure ? "failed" : "cancelled");
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError"
+      && (!current() || scene.sys?.isActive() === false)) { observe("cancelled"); return; }
+    observe("failed");
+    throw error;
   } finally {
-    skipController.dispose();
-    releaseCutsceneControlForOwner(activeSession, currentEventId);
-    if (scene.session === activeSession) {
-      scene.clearRuntimeOverlay("cutscene-skip-hint");
-      scene.running = options.allowNested === true ? previousRunning : false;
-      scene.lastActionTargetKey = "";
-      scene.setInputEnabled(options.allowNested === true ? previousInputEnabled : true);
-      dialogue.close();
-      scene.refreshRuntimeSurfaces();
-    }
+    skipController.dispose(); releaseCutsceneControlForOwner(activeSession, currentEventId);
+    const owns = scene.session === activeSession && foregroundOwner(scene) === owner && !owner?.signal.aborted
+      && !scene.battleAbortController && scene.sys?.isActive() !== false;
+    if (owns) {
+      scene.clearRuntimeOverlay("cutscene-skip-hint"); scene.lastActionTargetKey = "";
+      if (lease) lease.release();
+      else { scene.running = previousRunning; scene.setInputEnabled(previousInputEnabled); }
+      dialogue.close(); scene.refreshRuntimeSurfaces();
+    } else lease?.release(false);
   }
 }
 
@@ -281,7 +324,9 @@ async function consumeBlockingStep(
   interpreter: Interpreter,
   step: Exclude<StepResult, { kind: "done" }>,
   currentEventId: string | undefined,
-  skipController: CutsceneSkipController
+  skipController: CutsceneSkipController,
+  isCurrent: () => boolean,
+  onHandledFailure: () => void
 ): Promise<StepResult> {
   const dialogue = dialogueUi(scene);
   if (!dialogue) return { kind: "done" };
@@ -333,11 +378,19 @@ async function consumeBlockingStep(
       }
       return resumeAfterSurface(scene, interpreter);
     case "inputWait": {
-      const keyCode = await waitForKey();
-      if (step.variableId) {
-        return resumeWithValue(scene, interpreter, keyCode);
+      const session = scene.session;
+      const abort = new AbortController();
+      const cancel = (): void => abort.abort();
+      scene.events?.once("shutdown", cancel);
+      scene.events?.once("destroy", cancel);
+      try {
+        const keyCode = await waitForEventKey(abort.signal);
+        if (scene.session !== session || scene.sys?.isActive() === false) return { kind: "done" };
+        return step.variableId ? resumeWithValue(scene, interpreter, keyCode) : resumeAfterSurface(scene, interpreter);
+      } finally {
+        scene.events?.off("shutdown", cancel);
+        scene.events?.off("destroy", cancel);
       }
-      return resumeAfterSurface(scene, interpreter);
     }
     case "inputNumber":
       return resumeWithValue(scene, interpreter, await dialogue.showNumberInput({
@@ -374,10 +427,15 @@ async function consumeBlockingStep(
     case "sleepUntilMorning":
       if (!await scene.sleepUntilMorning()) return { kind: "done" };
       return resumeAfterSurface(scene, interpreter);
-    case "transfer":
+    case "transfer": {
       dialogue.hide();
-      await scene.transferTo(step);
+      const owner = foregroundOwner(scene);
+      const finishTransfer = owner?.beginAuthoredTransfer(step.mapId);
+      if (owner && !finishTransfer) return { kind: "done" };
+      try { await scene.transferTo(step); }
+      finally { finishTransfer?.(); }
       return resumeAfterSurface(scene, interpreter);
+    }
     case "changeTile":
       scene.applyChangeTileStep(step);
       return resumeAfterSurface(scene, interpreter);
@@ -443,16 +501,16 @@ async function consumeBlockingStep(
       stopCommandMovement(scene);
       return resumeAfterSurface(scene, interpreter);
     case "battleProcessing": {
-      const troopId = resolveBattleTroopId(scene, step);
-      scene.session.battleResult = await scene.playBattle({ ...step, troopId });
-      // canLose=false 패배는 게임 오버다(sceneTestRunner/walkthroughRunner 와 같은 계약).
-      // 이벤트를 여기서 끝낸다 — 전멸한 파티로 뒷 커맨드가 이어지면 안 되고, 게임 오버
-      // 오버레이의 '다시 시도'(restoreCheckpoint)가 살아 있는 인터프리터와 충돌한다.
-      if (scene.session.battleResult === "defeat" && step.canLose !== true) {
-        applyBattleDefeat(scene);
-        return { kind: "done" };
+      try {
+        const result = await playCommandBattle(scene, step, isCurrent);
+        if (result === null || (result === "defeat" && !step.canLose)) return { kind: "done" };
+        return resumeWithValue(scene, interpreter, result);
+      } catch (error) {
+        onHandledFailure();
+        console.error("[player] event battle failed", error);
+        scene.showRuntimeOverlay("runtime-error", error instanceof Error ? error.message : "전투를 시작할 수 없습니다. 전투 설정을 확인하세요.");
+        return { kind: "done" }; // Do not resume the interpreter or invent a battle result.
       }
-      return resumeWithValue(scene, interpreter, scene.session.battleResult);
     }
     case "showPicture":
       showPictureState(scene.session, step);
@@ -478,9 +536,10 @@ async function consumeBlockingStep(
       scene.syncRuntimeState();
       return resumeInterpreter(interpreter);
     case "stopAudio":
-      clearAudioState(scene.session);
-      stopAudioCommand();
-      scene.clearRuntimeOverlay("audio-indicator");
+      clearAudioState(scene.session, step.channel);
+      if (step.channel === undefined) stopAudioCommand();
+      else stopAudioChannel(step.channel);
+      if (step.channel === undefined || step.channel === "bgm" || step.channel === "bgs") scene.clearRuntimeOverlay("audio-indicator");
       scene.syncRuntimeState();
       return resumeInterpreter(interpreter);
     case "flashScreen":
@@ -530,6 +589,9 @@ async function consumeBlockingStep(
       }
       return resumeAfterSurface(scene, interpreter);
     }
+    case "relocateEvents":
+      applyEventRelocationStep(scene, step);
+      return resumeAfterSurface(scene, interpreter);
     case "spawnEvent":
       refreshSpawnedEvent(scene, step.eventId);
       return resumeAfterSurface(scene, interpreter);
@@ -713,56 +775,3 @@ function resumeInterpreter(interpreter: Interpreter): StepResult {
   return interpreter.resume(undefined);
 }
 
-// 아무 키나 누를 때까지 대기하고, 눌린 키의 RM2K3 호환 코드를 반환한다.
-// variableId 가 없는 inputWait 에서는 반환값을 무시한다.
-function waitForKey(): Promise<number> {
-  return new Promise<number>((resolve) => {
-    const handler = (event: KeyboardEvent): void => {
-      document.removeEventListener("keydown", handler);
-      resolve(keyInputCodeFor(event));
-    };
-    document.addEventListener("keydown", handler);
-  });
-}
-
-// RM2K3 Key Input Processing 호환 코드. 방향/결정/취소/숫자 등을 정수 코드로 매핑.
-// 변수에 저장된 코드를 이벤트 조건에서 검사하는 용도.
-function keyInputCodeFor(event: KeyboardEvent): number {
-  switch (event.key) {
-    case "ArrowDown": case "s": case "S": return 1;
-    case "ArrowLeft": case "a": case "A": return 2;
-    case "ArrowRight": case "d": case "D": return 3;
-    case "ArrowUp": case "w": case "W": return 4;
-    case "Enter": case " ": case "z": case "Z": return 5;  // 결정
-    case "Escape": case "x": case "X": return 6;            // 취소
-    case "Shift": return 7;
-    default:
-      // 숫자키 0-9
-      if (/^[0-9]$/.test(event.key)) return 10 + parseInt(event.key, 10);
-      return 0;
-  }
-}
-
-function resolveBattleTroopId(
-  scene: PlaySceneContext,
-  step: Extract<StepResult, { kind: "battleProcessing" }>
-): string {
-  if (step.troopSource === "variable" && step.troopVariableId) {
-    const raw = scene.session.variables[step.troopVariableId] as unknown as string | number | undefined;
-    if (typeof raw === "string" && raw.trim()) return raw.trim();
-    if (typeof raw === "number" && Number.isFinite(raw)) {
-      const asIndex = Math.trunc(raw);
-      const troops = store.getCurrent().database.troops;
-      const byIndex = troops[asIndex - 1] ?? troops[asIndex];
-      if (byIndex) return byIndex.id;
-      const byNumericId = troops.find((troop) => troop.id.endsWith(String(asIndex)) || troop.id === String(asIndex));
-      if (byNumericId) return byNumericId.id;
-    }
-    // 변수 값이 troop id 문자열이 아닐 수 있어 세션 변수 맵 외에 flags 를 보지 않는다.
-    const project = store.getCurrent();
-    // 일부 프로젝트는 변수에 troop id 문자열을 직접 넣지 않고 숫자 인덱스만 둔다.
-    // 위에서 못 찾으면 고정 troopId 로 폴백.
-    void project;
-  }
-  return step.troopId;
-}

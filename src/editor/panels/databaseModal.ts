@@ -1,9 +1,11 @@
 import { dismissCoachMarks } from "@/editor/coachMarks";
+import { disposeAppearanceSlots } from "@/editor/panels/databaseAppearanceSlots";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
 import {
   databaseTabGroupLabel,
   databaseTabLabel,
+  databaseTabPath,
   getDatabaseActiveTab,
   refreshDatabasePanel,
   renderDatabasePanel,
@@ -19,6 +21,7 @@ import { applyDatabaseChanges } from "@/editor/panels/databaseModalPersistence";
 import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
 import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
 import { stopSkillAnimationStagesIn } from "@/editor/panels/databaseSkillAnimationStage";
+import { disposeDatabaseCinematicsIn } from "@/editor/panels/databaseCinematicView";
 import { inventoryCatalogSession, selectedRecordIdForSession, setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { invalidateFarmSpatialConfirmationContext } from "@/editor/panels/databaseFarmSpatialView";
 import { isStructureKitEditorOpen } from "@/editor/panels/structureKitEditorDialog";
@@ -65,7 +68,7 @@ function windowIcon(name: WindowIconName): SVGSVGElement {
 /** 헤더 브레드크럼 "그룹 › 탭" 을 현재 활성 탭으로 다시 쓴다. 개요처럼 그룹 밖 탭은 탭 이름만 남긴다. */
 function writeCrumb(crumb: HTMLElement, tab: DatabaseTab): void {
   const group = databaseTabGroupLabel(tab);
-  const label = databaseTabLabel(tab);
+  const path = databaseTabPath(tab);
   crumb.replaceChildren(
     ...(group
       ? [
@@ -73,13 +76,17 @@ function writeCrumb(crumb: HTMLElement, tab: DatabaseTab): void {
         el("span", { class: "database-modal-crumb-sep", text: "›", attrs: { "aria-hidden": "true" } }),
       ]
       : []),
-    el("span", { class: "database-modal-crumb-tab", text: label }),
+    ...path.flatMap((entry, index) => [
+      ...(index > 0 ? [el("span", { class: "database-modal-crumb-sep", text: "›", attrs: { "aria-hidden": "true" } })] : []),
+      el("span", { class: "database-modal-crumb-tab", text: databaseTabLabel(entry), dataset: { tab: entry } }),
+    ]),
   );
   crumb.dataset.tab = tab;
 }
 
 type ActiveDatabaseModalHandle = {
   readonly navigate: (tab: DatabaseTab) => void;
+  readonly onClose: Set<() => void>;
   readonly close: () => void;
   readonly requestClose: (attempt: EditorModalCloseAttempt) => void;
 };
@@ -102,19 +109,24 @@ export function requestDatabaseModalClose(reason: EditorModalCloseAttempt | "bat
   activeModal.requestClose(reason);
 }
 
-export function openDatabaseModal(initialTab?: DatabaseTab): void {
+export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly onClose: () => void }): void {
   // 맵 도구 레일을 가리키는 온보드 코치마크가 body 최상위에 매달려 모달 위를 덮어
   // 목록 제목과 탭 검색을 가리는 사고가 있었다 — 모달이 열리면 화면을 모달에게 넘긴다.
   // 본 것으로 기록하지는 않는다(welcome intent 와 같은 정책).
   dismissCoachMarks();
   // Reuse the open session for cross-tab links; rebuilding it would discard staged cards.
   if (activeModal && document.querySelector("[data-testid='database-modal']")) {
+    if (options) activeModal.onClose.add(options.onClose);
     if (initialTab) activeModal.navigate(initialTab);
     return;
   }
   activeModal?.close();
   // close() 가 backdrop 을 지우지만, 혹시 핸들 없이 남은 고아 DOM 도 방어적으로 제거.
-  document.querySelector("[data-testid='database-modal']")?.remove();
+  const orphan = document.querySelector<HTMLElement>("[data-testid='database-modal']");
+  if (orphan) {
+    disposeDatabaseCinematicsIn(orphan);
+    orphan.remove();
+  }
   // Cross-record links establish selection before opening. Reset unrelated view state,
   // not the catalog target; apply the legacy equipment route after that reset.
   const requestedTab = initialTab ?? getDatabaseActiveTab();
@@ -127,6 +139,9 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     setSelectedRecordId(catalogCollection, catalogRecordId);
   }
   if (initialTab) setDatabaseActiveTab(initialTab);
+  const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  // Topbar rerenders can replace the opener while the modal remains mounted.
+  const openerTestId = opener?.dataset.testid;
   const dirtySession = createDatabaseModalDirtySession();
   // 사이드 도킹(M8): 모달⇄우측 도크 토글 상태. localStorage 에 저장돼 다음 오픈 시 복원된다.
   let dockMode = false;
@@ -292,8 +307,11 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     }
     scheduleModalRefresh();
   });
+  const onClose = new Set(options ? [options.onClose] : []);
   const close = (): void => {
+    if (modalClosed) return;
     modalClosed = true;
+    disposeAppearanceSlots();
     if (graceFlushTimer !== null) clearTimeout(graceFlushTimer);
     // End pending housing confirmation ownership with the modal session itself.
     invalidateFarmSpatialConfirmationContext();
@@ -302,11 +320,18 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     unsubscribeActiveTab();
     aiBar.dispose();
     stopSkillAnimationStagesIn(backdrop);
+    disposeDatabaseCinematicsIn(backdrop);
     backdrop.remove();
     document.removeEventListener("keydown", controller.handleKeyDown);
     document.removeEventListener("keydown", handleHistoryKeyDown);
     stopModalDrag();
     activeModal = null;
+    const returnTarget = opener?.isConnected ? opener : openerTestId
+      ? Array.from(document.querySelectorAll<HTMLElement>("[data-testid]")).find(node => node.dataset.testid === openerTestId)
+      : undefined;
+    if (returnTarget?.isConnected) returnTarget.focus();
+    for (const callback of onClose) callback();
+    onClose.clear();
   };
   const hideDirtyPrompt = (): void => dirtyPrompt.replaceChildren();
   const saveAndMarkClean = async (): Promise<boolean> => {
@@ -354,7 +379,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     close,
   });
 
-  activeModal = { close, requestClose: controller.requestClose, navigate: (tab) => switchDatabaseActiveTab(tab, body) };
+  activeModal = { close, onClose, requestClose: controller.requestClose, navigate: (tab) => switchDatabaseActiveTab(tab, body) };
   controller.bindCloseButton(closeButton);
   // 도크 모드에서는 최대화·드래그를 비활성, 바깥 클릭 닫기도 끈다(맵 조작이 곧 바깥 클릭).
   maximizeButton.addEventListener("click", () => {

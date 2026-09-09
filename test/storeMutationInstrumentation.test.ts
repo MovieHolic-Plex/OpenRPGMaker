@@ -68,6 +68,7 @@ describe("구조: 상태 변경 지점이 초크포인트 밖으로 새지 않�
       "loadNewRemoteProjectTransactionally", // 프로젝트 전환. catch 절의 롤백 대입도 여기다
       "reconnectRemotePersistence", // 원격 재연결 시 서버본 수신
       "reloadFromRemote", // 원격 재로드
+      "persistCurrent", // 원격 설명만 동기화; concurrent persistence 테스트가 맵 동일성과 편집 세대 보존을 검증
     ];
     const actual = methodsAssigning(/this\.current = /);
     const unexpected = actual.filter((name) => !allowed.includes(name));

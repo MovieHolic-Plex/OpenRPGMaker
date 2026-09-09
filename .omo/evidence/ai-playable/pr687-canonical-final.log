@@ -1,0 +1,23 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/canonicalAcceptanceOwnership.test.ts test/toolSchemaProviderCompat.test.ts test/assistantAcceptanceProvider.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/assistantAcceptanceProvider.test.ts (1 test) 290ms
+ ✓ test/toolSchemaProviderCompat.test.ts (74 tests) 346ms
+ ✓ test/canonicalAcceptanceOwnership.test.ts (7 tests) 19347ms
+   ✓ canonical scene authority uses the ordinary pre-execution contract > cannot acquire missing ownership from the first successful scene; repair needs a fresh execution  3410ms
+   ✓ canonical scene authority uses the ordinary pre-execution contract > fills only missing interaction ownership while preserving already declared targets  3357ms
+   ✓ canonical scene authority uses the ordinary pre-execution contract > pass -> transfer write -> identical foreign execution cannot discharge the original scope  2402ms
+   ✓ canonical scene authority uses the ordinary pre-execution contract > pass -> initial-state write -> identical foreign execution cannot discharge the original scope  2604ms
+   ✓ malformed canonical input remains repairable without rewriting authority > malformed scene required=true blocks; repair retains owner/baseline and needs post-repair proof  3046ms
+   ✓ malformed canonical input remains repairable without rewriting authority > malformed scene required=false blocks; repair retains owner/baseline and needs post-repair proof  3724ms
+   ✓ malformed canonical input remains repairable without rewriting authority > valid optional canonical criteria remain optional  802ms
+
+ Test Files  3 passed (3)
+      Tests  82 passed (82)
+   Start at  03:08:44
+   Duration  41.49s (transform 15.49s, setup 0ms, collect 45.66s, tests 19.98s, environment 1ms, prepare 565ms)
+

@@ -181,11 +181,6 @@
   min-width: 0;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-terrain-quick-row .db-field > span {
-  color: var(--db-studio-text-3);
-  font: 400 10.5px/1.2 "Malgun Gothic", system-ui, sans-serif;
-}
-
 .database-modal-backdrop .database-modal-window .database-modal-body .db-terrain-quick-row .db-field input {
   min-width: 0;
   width: 100%;
@@ -201,7 +196,6 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cmd-card-actions .db-ws-btn {
-  min-height: 24px;
   padding: 0 7px;
 }
 
@@ -215,7 +209,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cmd-kind-guide-row {
   color: var(--db-studio-text-2);
   display: grid;
-  font: 400 11.5px/1.5 "Malgun Gothic", system-ui, sans-serif;
+  font: 400 11.5px/1.5 var(--font-ui);
   gap: 8px;
   grid-template-columns: 88px minmax(0, 1fr);
 }
@@ -231,4 +225,126 @@
   gap: 10px;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   min-width: 0;
+}
+
+/* Placement is a two-track authoring surface, not a pretend runtime window. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+  min-width: 0;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement > .db-ws-span {
+  grid-column: auto;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement .db-cmd-card-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement :is(.db-battle-command-card, .db-command-menu-row) {
+  min-width: 0;
+  padding: var(--space-2);
+  border: var(--stroke-1) solid var(--db-studio-border-default);
+  border-radius: var(--radius-s);
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-1);
+  cursor: grab;
+  overflow-wrap: anywhere;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement :is(header, .db-command-menu-row) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement strong {
+  min-width: 0;
+  flex: 1;
+  font-size: inherit;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement .db-cmd-card-actions {
+  flex-basis: 100%;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement .db-ws-toolbar {
+  border: 0;
+  padding: 0;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement .db-command-menu-row .db-ws-toolbar {
+  flex-basis: 100%;
+  justify-content: end;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-slot {
+  min-height: var(--space-6);
+  padding: var(--space-1) var(--space-2);
+  border-top: var(--stroke-2) solid var(--db-studio-border-subtle);
+  color: var(--db-studio-text-2);
+  font-size: var(--font-size-sm);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-slot.is-target {
+  border-color: var(--db-studio-accent);
+  background: var(--db-studio-accent-soft);
+  color: var(--db-studio-accent);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement .is-dragging {
+  cursor: grabbing;
+  border-color: var(--db-studio-accent);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-command-fixed, .db-command-drag-label) {
+  color: var(--db-studio-text-2);
+  font-size: var(--font-size-sm);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement :is(input, select) {
+  min-width: 0;
+  max-width: 100%;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-runtime-list {
+  padding-left: var(--space-5);
+  margin: var(--space-2) 0;
+  overflow-wrap: anywhere;
+}
+
+.db-command-placement > [data-testid="db-command-css-editor"] {
+  grid-column: 1 / -1;
+}
+.db-command-placement textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--db-studio-text-1);
+  background: var(--db-studio-inset);
+  border: var(--stroke-1) solid var(--db-studio-border-default);
+  border-radius: var(--radius-s);
+  resize: vertical;
+}
+/* Keep code typography above studio-v2's shared textarea font shorthand. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement textarea {
+  font-family: var(--font-mono);
+}
+.db-command-css-preview .battle-command-menu {
+  display: grid;
+  gap: var(--space-2);
+}
+.db-command-css-preview .battle-command {
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  color: var(--db-studio-text-1);
+  background: var(--db-studio-surface);
+  border: var(--stroke-1) solid var(--db-studio-border-default);
+  border-radius: var(--radius-s);
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+.db-command-css-preview .battle-command:focus-visible {
+  outline: var(--stroke-2) solid var(--db-studio-accent);
+  outline-offset: var(--stroke-2);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement :focus-visible {
+  outline: var(--stroke-2) solid var(--db-studio-accent);
+  outline-offset: var(--stroke-2);
 }

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
-import { openDatabaseModal } from "@/editor/panels/databaseModal";
+import { openDatabaseModal, requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { documentListenerCount, installFakeDom } from "./fakeDom";
@@ -55,6 +55,41 @@ function createFakeLocalStorage(): Storage {
 }
 
 describe("database modal reopen path closes the previous instance (P10)", () => {
+  it("restores the attached opener after close without stealing focus on cross-tab reuse", () => {
+    const opener = document.createElement("button");
+    document.body.append(opener);
+    opener.focus();
+    openDatabaseModal("actors");
+    openDatabaseModal("troops");
+    expect(document.activeElement).not.toBe(opener);
+    requestDatabaseModalClose("battleTest");
+    expect(document.activeElement).toBe(opener);
+  });
+
+  it("restores the logical opener after a topbar replacement", () => {
+    const opener = document.createElement("button");
+    opener.dataset.testid = "toolbar-database";
+    document.body.append(opener);
+    opener.focus();
+    openDatabaseModal("actors");
+    opener.remove();
+    const replacement = document.createElement("button");
+    replacement.dataset.testid = "toolbar-database";
+    document.body.append(replacement);
+    requestDatabaseModalClose("battleTest");
+    expect(document.activeElement).toBe(replacement);
+  });
+
+  it("does not focus a disconnected opener without a replacement", () => {
+    const opener = document.createElement("button");
+    document.body.append(opener);
+    opener.focus();
+    openDatabaseModal("actors");
+    opener.remove();
+    requestDatabaseModalClose("battleTest");
+    expect(document.activeElement).not.toBe(opener);
+  });
+
   it("keeps exactly 2 document keydown listeners after repeated reopen", () => {
     openDatabaseModal("actors");
     expect(documentListenerCount("keydown")).toBe(2);

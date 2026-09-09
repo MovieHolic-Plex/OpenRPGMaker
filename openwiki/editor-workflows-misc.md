@@ -6,6 +6,275 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 
 ## Other Editor Workflows
 
+### New-project name and player title (2026-09-07)
+
+`store.loadNewRemoteProject` and `store.loadNewRemoteProjectTransactionally`
+apply an explicit project name to both `meta.title` and an absent/default
+`system.titleScreen.title`. A deliberately different player title is preserved;
+existing projects are not renamed on load. The transactional path names its
+cloned candidate before saving, so remote verification covers the player title
+without mutating the caller's seed. Regression tests:
+`loadNewRemoteProject.test.ts`, `transactionalNewRemoteProject.test.ts`.
+
+### 걸을 때 적 만나기 — rectangle authoring (2026-09-06)
+
+- Select with the sidebar's **선택** tool and left-drag, then click the visible
+  **걸을 때 적 만나기** selection chip. Right-drag/context entry is also available,
+  but right-click knowledge is not required. The always-visible canvas button
+  with the same label opens the region list and offers **맵에서 범위 선택하기**.
+- The worksheet contains selected **groups**, not individual monsters. **+ 그룹 추가**
+  opens a searchable existing-group picker (name, ID or composition). Rows show
+  group name, member thumbnails/counts, direct weight and live normalized relative
+  share. Authored `members` take precedence over legacy `enemyIds`; hidden members
+  are included and labelled. Already-selected groups cannot be added again; legacy
+  duplicate condition variants remain separate rows. No troop generation or AI call.
+- Each row has its own **출현 조건** disclosure exposing named switch, variable
+  threshold, party's highest level range, time phase and season. These remain the
+  existing `encounterTable[].conditions.region` rectangles, not a new schema.
+  Time/season conditions require game-time configuration. Overlapping rectangles
+  and unconditional table rows mix by eligible relative weight.
+- Frequency is **map-wide**, 10/30/60 respectively, not a per-area probability or
+  an exact step count. Existing positive rates are retained by default; zero is
+  lifted to normal when saved. Terrain can modify the effective rate. Real-time
+  action-combat maps reject this flow, because that runtime does not start random
+  turn-based encounters. Tiles must be walkable; this feature does not paint grass.
+- First conversion from legacy `troopIds` requires an explicit decision:
+  **맵 전체 출현도 유지** copies the existing list to unconditional table entries
+  (including duplicate weighting); **기존 전체 출현 대신 선택한 범위만** clears the
+  old list. Undo restores it. Existing tables and other rectangles are preserved.
+  On imported tables with dormant `troopIds`, deleting the last table region
+  explicitly warns/asks about restoring the old map-wide encounters.
+- Indigo outlines are editor-only and excluded from map-only capture. Open the
+  canvas region list for **편집 · 삭제**. To replace bounds, make a fresh selection,
+  reopen the list, and choose **현재 선택으로 범위 바꾸기**, then confirm in the form.
+  Identical rectangles are one group; a move onto an existing identical rectangle
+  is rejected rather than silently merging groups. Delete requires a second click
+  and removes only those rules, never tiles or shared/generated troops.
+- On another selection, **마지막 설정 가져오기** copies group IDs/weights/conditions
+  from the last successful save in this project session; destination-map frequency
+  is retained. This memory is not persisted and resets on project switching.
+- Owner: `src/editor/walkEncounterAuthoring.ts` validates before one map-only snapshot and one
+  labelled map-scoped `store.update`. It never mutates `database.troops`, including
+  old automatically generated troops. Undo does not revert unrelated group edits.
+  `src/editor/panels/walkEncounterModal.ts` / `src/editor/panels/walkEncounterOptions.ts`
+  own local drafts and native subdialog-stack/focus/Escape. Cancel is mutation-free.
+  Weight input updates only output nodes, preserving focus/caret. Relative shares
+  describe the current worksheet, not actual conditional/overlapping eligibility.
+  Missing groups stay visible and block save; replace/remove is explicit.
+  Group edit opens the existing Troops database, then reveals the chosen record
+  (first-open session reset requires this order). A narrow `openDatabaseModal`
+  onClose callback restores the same in-memory draft; initial and apply-time stale
+  validation blocks project/map/settings changes. The encounter modal is closed
+  while DB owns Escape. Empty databases offer direct group editor entry.
+  `src/editor/hotkeys.ts` prevents
+  editor shortcuts/project undo from leaking into these draft dialogs.
+  Project identity, map, map dimensions, encounter table/rate/legacy list, references
+  and locks are rechecked on apply. Unrelated tile/name/database edits are retained;
+  changed encounter settings require closing/reopening, not a stale overwrite.
+- Coverage: `test/walkEncounterAuthoring.test.ts` and `test/walkEncounterModal.test.ts` cover
+  real store/history/load/runtime eligibility and DOM actions. Browser scenario:
+  `DEV_SERVER_PORT=<supervisor-port> E2E_RETRIES=0 npx playwright test
+  test/e2e/walk-encounter-authoring.spec.ts` (1024/1280/1440, blank local project,
+  no remote content writes). It subscribes before selection/mutation triggers and
+  captures worksheet/picker/per-row condition forms. On Linux Firefox hosts that abort the large dev
+  CSS module, `WALK_QA_ROUTE_CSS=1` transports that unmodified response through
+  Playwright's request client. Controls are hit-tested and clicked with real
+  pointer coordinates; no forced clicks or fixed sleeps. Supervisor owns
+  execution and visual acceptance.
+
+### Game export delivery (2026-09-06)
+
+#### Versioned publication (opt-in)
+
+- `프로젝트 → 게임 및 배포` stages preparation, version label, explicit engine
+  upgrade, fork and accepted save lineages. Apply uses the normal annotated store
+  mutation; Cancel/Escape does not persist the draft and restores opener focus.
+  Upgrade offers only the installed engine, starts a new save lineage, and offers
+  an explicit checkbox to accept its immediate predecessor. No marketplace or
+  anonymous listing mutation is introduced. Test Play labels itself a current
+  editor-engine preview, not a selected-engine preview.
+- `.runtime-archive/<sha256>/` is operator-controlled, append-only storage outside
+  destructive `dist`. It retains web, standalone, both SDK manifests and public
+  assets. Back it up and deploy it with the editor/community operator data; never
+  populate it from uploads. `runtime.json` binds Project4, Save4/5/6 and collector
+  contract 1. Unsupported metadata or missing targets fail without substitution.
+  Collector behavior changes must bump that contract; old targets must not be
+  reinterpreted with a different collector.
+- Current runtime factories/retention append `capabilities` to the canonical
+  runtime body, currently `["community-save-isolation-v1"]`. The target digest
+  therefore binds both executable inventory and capability claims. The optional
+  versioned-token list is extensible independently of `collectorVersion` (still
+  1); no dependency collector change is implied. Parsing an old manifest leaves
+  the field absent and verifies its original canonical digest. Standalone's
+  embedded verifier hashes the complete runtime body, including capabilities
+  when present, and accepts honest old manifests for offline export. Only new
+  community uploads require the isolation capability from operator provenance.
+- `npm run build` retains both freshly built variants. For runtime-only work:
+  `npm run build:player && npm run build:standalone:bundle && npm run archive:runtime`.
+  Retention runs the existing SDK/deployment/source/secret checks, compares the
+  standalone SDK against the same sources, copies one file at a time and rehashes
+  the staged inventory before atomic installation. A duplicate digest verifies
+  the existing bytes rather than replacing them. `default.json` alone is mutable.
+  Dev reuses the retained default only after verifying both SDKs, all archived
+  bytes, current repository source inputs and the complete mutable public directory
+  (including files outside the SDK source inventory). A matching default requires
+  no build, copy or pointer write. Missing/stale/corrupt defaults trigger a build;
+  a failed build returns an error, not the stale default. Each request flight is
+  revalidated because operator archive writes are deliberately unwatched.
+  The response contains the target actually verified, without rereading the mutable
+  pointer after verification. Selected-target GETs never build or substitute it.
+- `devPlayerBundlesPlugin.config` excludes the entire `.runtime-archive` directory,
+  staging directories and retained descendants before Vite creates its watcher.
+  Ignoring only the plugin's revision counter is insufficient: archived HTML writes
+  otherwise trigger Vite full reloads and discard the live publishing modal/draft.
+  Existing ignore rules and an explicit `watch: null` are preserved. Regression:
+  `test/devRuntimeArchive.test.ts` runs a real Vite server and actual SDK/archive
+  fixtures, checks watcher exclusion plus ordinary HTML reload delivery, verifies
+  builder-free reuse, and rejects changed sources/public bytes/digests/pointers.
+- Identity-bearing ZIP exports contain exact prepared project bytes, SDK,
+  executable closure and assets plus `release.json`. Its canonical body digest
+  excludes the manifest itself. The entire selected runtime's required inventory
+  is retained: current conditional pruning cannot prove an older engine's closure.
+  Legacy non-publication exports keep their existing pruning tests and behavior.
+- Collector-version-2 publication exports use the selected archive's frozen
+  `dependency-collector.js`, not `prepared.assets`, to resolve authored dependency
+  closure. The self-contained bundle reuses export/resource validation logic and
+  freezes catalogs at build time. Both web and standalone SDKs inventory identical
+  collector bytes; runtime retention rejects divergence. Development builds and
+  production SDK writers emit the companion before inventory/closure verification.
+  The current-source SDK inventory includes the collector build recipe. Browser
+  and Node deployment validators include only this named companion in addition
+  to the exact Vite closure; arbitrary stale executable files remain rejected.
+- Standalone HTML keeps inert base64 script/project/style payloads, both SDKs,
+  raw CSS, decoded asset hashes, runtime provenance and a release ID. Its bootstrap
+  verifies the complete inventory, runtime digest, project identity and original
+  versus transformed executable/style bytes before launching. Self-contained
+  provenance is not operator trust: community accepts only ZIPs verified against
+  its independently retained runtime manifest, never arbitrary uploaded HTML/JS.
+- Version-2 standalone provenance also carries the frozen collector, bound to
+  both runtime variants. After verifying its hash, the offline bootstrap checks
+  authored public/embedded dependencies before appending runtime script/style.
+  Coherently removing PNG/music and recomputing the standalone manifest cannot
+  bypass this closure. Version-1 standalone manifests keep their old digest and
+  bootstrap compatibility; they do not gain eligibility for new community uploads.
+- Run visible export/offline/save-load QA with
+  `npm run qa:export -- --editor-url http://127.0.0.1:<worktree-port> --publication --out verify-shots/release-versioning`.
+  This uses an isolated local project and blocks remote writes. It exercises real
+  menu preparation and downloads, verifies the ZIP, plays root/nested URLs and
+  `file://`, checks failure surfaces, then checks current-engine Test Play.
+  It retains `game.zip`, `game.html`, `release.json` and browser evidence for the
+  parent's immutable-community-route QA. Run without `--publication` for legacy.
+- `node scripts/qa-publication-controls.mjs <older-release-report> <output-dir>`
+  owns an isolated Vite server and Firefox profile. It imports a private copy
+  with a retained older runtime, then checks staged upgrade, two viewport sizes,
+  cancellation/focus, fork cancellation, and explicit predecessor acceptance.
+  The older report and installed default must name different retained runtimes.
+- `node scripts/qa-community-release.mjs <private-local-community-origin> <game.zip> <output-dir>`
+  uploads the actual editor QA ZIP through the community form, checks its
+  immutable redirect and byte-identical download, then plays through the quest,
+  sideview battle, save and reload under the community CSP. Use only a private
+  local community database. The gameplay fixture explicitly selects `rm2003`;
+  an unspecified style can correctly select frontview with no ally sprites.
+  QA preserves complete request URLs when matching previously decoded audio
+  cancellations; release-qualified URLs can exceed 200 characters.
+- `npx vite-node scripts/qa-release-artifact.mts` runs the real ZIP/HTML exporters
+  against the retained installed runtime with a narrow blank engine fixture and
+  refuses every non-selected-archive fetch. It writes files and a digest report
+  under `verify-shots/release-artifact`; it is artifact verification, not browser
+  gameplay evidence and never writes to a database.
+  `node scripts/qa-release-offline.mjs` then opens that HTML over `file://`, blocks
+  HTTP requests, boots and moves through real keyboard input, using prearmed
+  DOM/frame signals rather than sleeps. It writes `.qa.json` and a screenshot
+  beside the HTML. The full editor-menu/export harness remains the acceptance
+  path for authored gameplay and save/load.
+
+- Project menu web ZIP and standalone HTML exports use real production player builds even during ordinary Vite development. `scripts/lib/devPlayerBundles.ts`, registered by `vite.config.ts`, builds both player variants on the first export request; no manual `build:player` step is needed.
+- Builds run in production child processes, not inside the editor's development module environment. Concurrent requests share one build; relevant source/public changes invalidate it. Each server owns a temporary output directory under its cache and removes it on close.
+- `/export-player/` and `/standalone-player/` requests are handled before SPA fallback. Build failure or an absent file returns an error rather than editor HTML or stale output. The existing menu catches rejected exports before `downloadBlob`; required media failures are no longer an informational warning after a broken HTML download.
+- Browser acceptance must begin with these menu buttons and play the downloaded files outside the editor server. See `npm run qa:export` in `openwiki/testing.md`; normal Test Play is a separate adjacent-surface regression.
+
+### Audio descriptions and live resource ownership
+
+The Resource Manager's music/sound categories use the complete shared catalog from
+`src/assets/audioResourceCatalog.ts`. Select a row to see its name/tags, editable
+effective description/source and editor-only preview. Raw ID follows description.
+Search matches names, IDs, tags and descriptions;
+the empty-description filter tests the effective value, including deliberate clears.
+`audio-description-search`, `audio-description-input` and `audio-description-save`
+are the feature's browser test controls.
+
+Save trims new input and writes one project override, including `""`. Restore default
+removes the override and restores the shared AI draft if available, otherwise prior metadata.
+Source labels distinguish project text, **AI 분석 초안** (`ai-listening`), BGM creative briefs,
+metadata-derived descriptions and missing descriptions. AI drafts are not independently
+verified acoustic facts; instrument, vocal and numeric claims may be wrong. The synchronous
+editor-only overlay and recovery provenance are documented in `openwiki/bgm-catalog.md`.
+Explicit empty project overrides beat drafts; no defaults are copied into saves. Neither selection nor preview
+authors metadata. Implementation lives in `src/editor/panels/audioDescriptionEditor.ts`,
+`audioDescriptionDetail.ts`, `audioDescriptionDirtyDialog.ts` and
+`audioResourcePresentation.ts` under the same panels directory.
+
+Dirty row/category/close transitions offer Save, Discard and Cancel. Cancel retains the
+input node, caret and selected resource; a refresh doesn't erase a dirty draft.
+Project replacement ends the old draft's ownership, and an in-flight import can't write
+into another project. The textarea keeps native text undo; project history applies outside
+text controls. Escape and focus restoration remain owned by the modal stack.
+
+Successful audio import selects the upload for description editing without changing file
+validation. `src/editor/panels/resourceManagerAudioDelete.ts` checks real references before
+deleting. A successful deletion removes the upload, matching `ResourceProfile` rows and its
+override in one history operation. A blocked deletion leaves all three intact; bundled audio
+isn't a file-deletion target. `src/editor/tools/resourceTools.ts` also removes matching
+profiles through the tool deletion path.
+
+| Consumer | Shared metadata path |
+| --- | --- |
+| Map BGM, system/title/battle music and sound slots | `src/editor/panels/databaseResourcePickerDialog.ts` |
+| Toolbar audio test dialog | `src/editor/panels/audioTestDialog.ts` |
+| Normal event `playAudio` form | `src/editor/panels/eventEditor/commandBodyAdvanced.ts` |
+| M2 audio form and command preview | `src/editor/panels/eventEditor/commandBodyM2.ts`, `previewAudio.ts` |
+| AI search and detail | `src/assets/resourceSearch.ts`, `src/editor/tools/queryTools.ts`, `src/editor/tools/audioDescriptionTools.ts` |
+| Event prompt candidates | `src/ai/eventAudioPrompt.ts`, separate from full-ID eligibility |
+
+An open music/sound picker or audio-test dialog subscribes to project/assets changes, refreshes descriptions and
+search results, and invalidates a removed selected ID so it can't be confirmed. Closing the
+dialog releases its subscription; switching projects closes it. Reopened consumers use the
+latest project. Don't introduce per-surface fallback descriptions or global description storage.
+Reopening the audio-test dialog closes the previous instance through its modal teardown,
+including its store subscription and audio settings; removing its DOM alone leaks ownership.
+
+The three audio surfaces share `src/editor/panels/audioPreviewPlayer.ts` and the editor-only
+`src/editor/panels/audioPreviewSession.ts`, never the gameplay `getAudioEngine` singleton. Selection
+does not autoplay. Music loops, sound ends and immediately replays; play/pause,
+stop/rewind, current/duration and seek are consistent. Unknown duration disables
+seek; sub-second durations show hundredths. Media events, not fulfilled play
+promises, establish playing state. Metadata preload is loading without play intent.
+Rejected/stale requests and buffering/errors remain visible and accessible.
+
+`src/editor/panels/audioResourcePreview.ts` owns selected/inline reading views; inline removal is
+observed with MutationObserver, and project replacement disposes it. No media or
+nested play button exists per picker thumbnail. Search retains the selected player.
+Dialog/category/project/source teardown releases media listeners, WebAudio nodes
+and context. The closed Advanced disclosure owns preview volume/tempo/pan/fade and
+reset, not authored values. Native volume follows elapsed media progression for
+fade across loops, excluding seek jumps and pauses. Pan requests a CORS-enabled
+media/WebAudio route; ordinary cross-origin native playback needs no CORS header.
+A CORS error is visible; resetting pan recovers the native route.
+
+Prefixes: `audio-test-*`, `db-resource-picker-audio-*`, and
+`audio-description-preview-*` for transport/settings. Authored
+`audio-description-reset` remains exclusively Restore default. Manager audio-only
+geometry widens the reading/editing rail; its body scrolls above fixed transport.
+The event command preview is an honest static summary, never a fake waveform.
+Focused contracts: `test/audioPreviewSession.test.ts`, `test/audioPreviewSurfaces.test.ts`.
+
+Coverage includes `test/audioDescriptionEditor.test.ts`,
+`test/audioDescriptionLifecycle.test.ts`, `test/audioDescriptionPickerSurfaces.test.ts`,
+`test/audioDescriptionCommandSurfaces.test.ts`,
+`test/audioDescriptionResourceLifecycle.test.ts`, `test/e2e/audio-descriptions.spec.ts`
+and `test/e2e/audio-description-search.spec.ts`. See `openwiki/testing.md` for scoped
+browser setup and separate exported-player evidence.
+
 
 ### Genre-neutral authoring launcher and journey (2026-08-24)
 
@@ -23,7 +292,7 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 
 - **Map/event search (toolbar-search):** `src/editor/panels/mapEventSearchModal.ts` + pure model `src/editor/panels/mapEventSearchModel.ts`. Styles: `src/styles/editor/map-event-search.css` (imported from `src/styles/index.css`). Centered modal with keyword (variable/switch/event name), range (selected map / common / all), and result tabs. Missing CSS previously left the dialog as raw unstyled fieldsets.
 
-- **Audio test dialog (toolbar-sound-test, 음악/효과음):** `src/editor/panels/audioTestDialog.ts`. Styles: `src/styles/editor/audio-test-dialog.css` (imported from `src/styles/index.css`). Two-pane RM2k3-style window: left 음악/효과음 tabs + resource list (CC0 playable, EasyRPG MIDI marked non-playable), right fade/volume/tempo/balance sliders + 재생/정지 + status. Missing CSS previously left the dialog as raw unstyled HTML. Tests: `test/e2e/oprn-audio-test-dialog.spec.ts` (requires expert-mode init script — classic toolbar is expert-only).
+- **Audio test dialog (toolbar-sound-test, 음악/효과음):** `src/editor/panels/audioTestDialog.ts`. Styles: `src/styles/editor/audio-test-dialog.css` (imported from `src/styles/index.css`). Studio list/document window with independent scrolls and fixed shared transport. Right document leads with name/tags/description; preview settings are a native Advanced disclosure. MIDI remains marked unplayable. Tests: `test/e2e/oprn-audio-test-dialog.spec.ts` (expert-mode toolbar, native editor media values and unchanged runtime mixer).
 
 - **Help modal (toolbar-help, 도움말):** `src/editor/panels/helpModal.ts` (`openHelpModal`). Styles: `src/styles/editor/help-modal.css` (imported from `src/styles/index.css`). In-app wiki-style editor guide: sticky TOC nav (개요/화면 구성/지도/이벤트/데이터베이스/소재·세계관·오디오/테스트 플레이/저장·공유/단축키) with scroll-spy highlighting, sectioned prose + bullets + note callouts, per-section editor screenshots (served from `public/assets/help/*.png`, regenerated via `npx playwright test capture-help-guide-images.spec.ts`), and kbd-cap shortcut cards at the end. Replaces the old `SHORTCUT_HELP` toast. Opened from the classic toolbar 도움말 button, 도움말 menu → 단축키 · 도움말, and the Ctrl+K palette command `help-shortcuts` (`commandRegistry.ts`). Esc / backdrop / 닫기 button close it. Guide content lives as `GUIDE_SECTIONS` data in the module — edit that array to change the docs. Tests: `test/e2e/oprn-help-modal.spec.ts`.
 - **Event editor help (event-editor-help, 이벤트 에디터 도움말):** `src/editor/panels/eventEditor/eventEditorHelp.ts` (`openEventEditorHelp`). Same wiki UI (sticky TOC + scroll-spy + per-section screenshots) reusing the `.help-modal-*` classes; small glyph-spacing in `src/styles/editor/event-editor-help.css` (imported from `src/styles/index.css`). Detailed sections scoped to the event editor only: 개요/이벤트와 페이지/실행 조건/명령/명령 카테고리/그래픽과 외형/이동 경로/분기와 선택지/전투·상점·여관/AI 보조/단축키. Command-category rows mirror `commandCategoryIcons.ts` glyphs. Opened from the event editor footer **도움말** button (`event-editor-help` testid) — previously a dead button with no handler. Layers above the event editor modal (z-index 290 > 120) and registers with `modalStack` so Esc closes the help first, not the event editor. Screenshots served from `public/assets/help/event-editor/*.png` (reuses `public/assets/help/event.png` for the overview); regenerated via `npx playwright test capture-event-editor-help-images.spec.ts`.
@@ -141,3 +410,46 @@ keydown 을 document **캡처** 단계에서 잡아 `stopPropagation` 하므로(
 - 타일 버튼은 pointerdown 외에 보조기기의 `click(detail=0)` 활성화도 받는다. 물리 클릭(detail>0)을 다시 처리하지 않아 중복 선택을 피한다.
 - **작은 데스크톱에서 타일과 맵을 함께 비교할 수 있어야 한다.** 표준·전문가 1024×768에서 기존 280px 타일 예약은 맵 목록을 48px(한 행)로 줄였다. `paletteSheetReserveCap`은 도크 높이 800px 미만에서 200px를 예약한다. CSS의 짧은 창 시트 최소 높이도 200px로 맞춘다. 큰 창의 280px 예약, 사용자 수동 분할과 접기 동작은 유지한다.
 - 검증: `test/e2e/left-sidebar-adversarial.spec.ts`는 실제 보기 메뉴로 3모드를 전환하고 1440×900 / 1280×800 / 1024×768에서 버튼 중심 hit-test, 맵 마지막 행 도달, 최소 3행 가시성, 키보드·검색 커서·핀·모드 복귀를 확인한다. 단위 계약은 `basicTilePalette.test.ts`, `sidebarFocus.test.ts`와 기존 레일·그리드 테스트다. 순수 에디터 변경이므로 원격 프로젝트 데이터는 변경하지 않는다.
+
+
+## Authoring viewport navigation (issue 693, 2026-09-08)
+
+- The assistant remains FLOAT. `EditScene.cameraVisibleArea` owns its actual
+  occlusion; no side-dock model or assistant diagnostics UI is introduced.
+  The published world rectangle now uses the inverse rendered camera transform
+  (`getWorldPoint`), because Phaser rounds `worldView` for culling. Camera scroll
+  stays fractional for pointer-anchored zoom; nearest-neighbor artwork is retained.
+- `EditScene.syncNavigationGeometry` preserves the unobstructed focal point on
+  assistant collapse/open/resize, keyboard zoom and canvas resize. Its previous
+  geometry is a layout snapshot, not an independent camera offset store. Resize
+  and assistant DOM observers invalidate the existing measurement cache; edit
+  gestures defer recentering until release. Map changes reset that snapshot.
+- `editorCameraBounds` in `cameraFocusViewport` grants asymmetric half-viewport
+  padding plus 32 CSS pixels so either map edge can reach the unobstructed center.
+  `panels/editor.applyEditorUiModeLayout` no longer replaces map bounds with a
+  temporary viewport box or re-applies stale offsets across animation frames.
+  `cameraStability.viewportCenterWorld` matches Phaser 3.90's `scroll + size/2`.
+- `CameraScrollbars` projects these bounds into two named native scroll regions
+  mounted beside the canvas, inside its existing host. Thumb fraction includes
+  inspection padding; corner subtraction scales track content and position alike.
+  Native notifications may follow an engine frame: do not overwrite pending input.
+  No idle-frame DOM writes, shell scroll offsets or parallel viewport state.
+  The projection cache includes both canvas dimensions: assistant breakpoints can
+  keep the unobstructed span and world origin unchanged during a canvas-only
+  resize. Tracks must still move to the new canvas edges and recompute their
+  content/position ratios. Width-only and height-only regressions retain the same
+  view/worldView objects and verify subsequent native input is converted once.
+- Canvas-only cancelable Ctrl+wheel consumes browser zoom and steps existing
+  1/2/3/4/6/8 levels around the pointer, including trackpad Ctrl-style pinch on
+  Linux/Windows/macOS. Command-only and ordinary wheel retain their previous
+  behavior. An in-flight edit consumes Ctrl+wheel without changing coordinates.
+- Neutral primary pan is Select on an outside-map target with no selection,
+  stamp, paste preview or active edit. Inside-map Select and paint/event tools
+  retain their editing priority. Explicit Pan, Space and middle drag are unchanged.
+- Focused regressions: `cameraStability`, `cameraFocusViewport`, `cameraScrollbars`,
+  `editSceneCameraFocus`, `editSceneRender`. Real browser driver:
+  `scripts/qa/issue693-navigation.mjs` (`BASE_URL`, `EVIDENCE_DIR`, optional
+  `QA_WIDTH`). It uses real Phaser/native input and local-only large/small projects,
+  subscribes to exact input/scroll/resize/render events, and covers all three
+  desktop sizes, assistant states, both scroll endpoints and edit alignment.
+  Full build/gates and independent screenshot review remain lead-owned.

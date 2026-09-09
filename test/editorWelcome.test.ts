@@ -151,11 +151,11 @@ describe("presentEditorWelcome", () => {
     for (const packId of GENRE_PACK_IDS) {
       expect(host.querySelectorAll(`[data-pack-id='${packId}']`)).toHaveLength(1);
     }
-    expect(host.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(7);
+    expect(host.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(8);
     const featured = host.querySelector(".editor-welcome-briefing-cards");
     expect(featured?.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(3);
     const more = host.querySelector("#editor-welcome-more-grid");
-    expect(more?.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(4);
+    expect(more?.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(5);
     for (const presetId of ["partner-raise", "school-horror"]) {
       const variant = host.querySelector<HTMLElement>(`[data-preset-id='${presetId}']`);
       expect(variant).toBeTruthy();
@@ -189,7 +189,7 @@ describe("presentEditorWelcome", () => {
       expect(host.textContent).toContain(caption);
     }
     // The system-preset action is one gear per poster, not a repeated full-width button.
-    expect(host.querySelectorAll("[data-testid^='editor-welcome-starter-card-']")).toHaveLength(7);
+    expect(host.querySelectorAll("[data-testid^='editor-welcome-starter-card-']")).toHaveLength(8);
     expect(featured?.querySelectorAll("[data-testid^='editor-welcome-starter-card-']")).toHaveLength(3);
     expect(host.querySelector("[data-testid='editor-welcome-starter-card-0']")?.textContent).not.toContain("빈 프로젝트");
     expect(document.querySelector("[data-testid='app-modal-confirm']")).toBeNull();
@@ -269,12 +269,28 @@ describe("presentEditorWelcome", () => {
     });
   });
 
-  it("card click auto-sends that world's prompt on the current map", async () => {
+  it("creates the preset project before releasing its auto-send prompt", async () => {
     const host = document.createElement("div");
     document.body.append(host);
-    const pending = presentEditorWelcome(host);
+    let finishProject!: () => void;
+    const projectReady = new Promise<void>((resolve) => { finishProject = resolve; });
+    const applySystemPreset = vi.fn(() => projectReady);
+    const delivered = vi.fn();
+    const pending = presentEditorWelcome(host, { applySystemPreset });
+    void pending.then(delivered);
     host.querySelector<HTMLButtonElement>("[data-testid='editor-welcome-template-card-0']")?.click();
     expect(document.querySelector("[data-testid='app-modal-confirm']")).toBeNull();
+    expect(applySystemPreset).toHaveBeenCalledWith(expect.objectContaining({ packId: "monster-collect" }));
+    expect(delivered).not.toHaveBeenCalled();
+    expect(isEditorWelcomeDismissed()).toBe(false);
+    // Enter must not bypass disabled buttons during project preparation.
+    const input = host.querySelector<HTMLInputElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptInput}']`)!;
+    input.value = "other request";
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    host.querySelector<HTMLButtonElement>("[data-testid='editor-welcome-template-card-1']")?.click();
+    expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.host}']`)).toBeTruthy();
+    expect(applySystemPreset).toHaveBeenCalledOnce();
+    finishProject();
     const result = await pending;
     expect(result.action).toBe("start");
     expect(result.systemPresetPlan).toBeUndefined();
@@ -282,7 +298,8 @@ describe("presentEditorWelcome", () => {
     expect(result.source).toBe("chip");
     expect(result.intent).toBe("몬스터 수집");
     expect(result.presetId).toBe("monster-collect");
-    expect(result.prompt).toContain("포획·도감·야생 조우");
+    expect(result.prompt).toBeTruthy();
+    expect(delivered).toHaveBeenCalledOnce();
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.host}']`)).toBeNull();
   });
 
@@ -319,7 +336,7 @@ describe("presentEditorWelcome", () => {
     expect(applySystemPreset).toHaveBeenCalledOnce();
   });
 
-  it("BREAK: keeps project welcome state visible and reports remote preparation failure", async () => {
+  it.each(["starter", "template"])("prevents AI submission when %s project preparation fails", async (card) => {
     const host = document.createElement("div");
     document.body.append(host);
     const applySystemPreset = vi.fn(async () => {
@@ -330,16 +347,29 @@ describe("presentEditorWelcome", () => {
       options: { applySystemPreset: (plan: unknown) => Promise<void> },
     ) => ReturnType<typeof presentEditorWelcome>)(host, { applySystemPreset });
 
-    host.querySelector<HTMLButtonElement>("[data-testid='editor-welcome-starter-card-0']")?.click();
+    const error = host.querySelector<HTMLElement>("[data-testid='editor-welcome-system-preset-error']")!;
+    const errorShown = new Promise<void>((resolve, reject) => {
+      const observer = new MutationObserver(() => {
+        if (!error.hidden) {
+          observer.disconnect();
+          clearTimeout(timeout);
+          resolve();
+        }
+      });
+      const timeout = setTimeout(() => { observer.disconnect(); reject(new Error("Missing preparation error")); }, 2000);
+      observer.observe(error, { attributes: true, attributeFilter: ["hidden"] });
+    });
+    host.querySelector<HTMLButtonElement>(`[data-testid='editor-welcome-${card}-card-0']`)?.click();
     document.querySelector<HTMLButtonElement>("[data-testid='app-modal-confirm']")?.click();
-    await vi.waitFor(() => expect(applySystemPreset).toHaveBeenCalledOnce());
+    await errorShown;
+    expect(applySystemPreset).toHaveBeenCalledOnce();
 
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.host}']`)).toBeTruthy();
     expect(host.querySelector("[data-testid='editor-welcome-system-preset-error']")?.getAttribute("role")).toBe("alert");
     expect(isEditorWelcomeDismissed()).toBe(false);
 
     host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.skip}']`)?.click();
-    await expect(pending).resolves.toMatchObject({ action: "skip" });
+    await expect(pending).resolves.toMatchObject({ action: "skip", prompt: null, autoSend: false });
   });
 
   it("keeps the welcome open when manual starter confirmation is cancelled", async () => {

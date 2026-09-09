@@ -5,7 +5,7 @@ import {
   type AiBridgeTurnResult,
 } from "@/editor/aiAssistantBridge";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
-import { setDatabaseActiveTab } from "@/editor/panels/database";
+import { databaseTabLabel, setDatabaseActiveTab } from "@/editor/panels/database";
 import { openDatabaseModal, requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { setViewModeForCollection } from "@/editor/panels/databaseRecordViewSession";
 import { createBlankProject } from "@/project/defaults";
@@ -181,7 +181,7 @@ describe("database modal AI bar (M7-①)", () => {
     expect(message.startsWith("이 몬스터 스탯을 중반 밸런스로")).toBe(true);
     // 컨텍스트 풋터: 탭 라벨 + 선택 레코드(세션 무선택이면 첫 레코드) — buildSpec 호환 한 줄.
     expect(message).toContain("[컨텍스트] 에디터 전체 요청");
-    expect(message).toContain("현재 화면: 데이터베이스 DB 탭 몬스터");
+    expect(message).toContain(`현재 화면: 데이터베이스 DB 탭 ${databaseTabLabel("enemies")}`);
     const firstEnemy = store.getCurrent().database.enemies[0];
     if (firstEnemy) {
       expect(message).toContain(`선택 레코드: ${firstEnemy.name || "(이름 없음)"}(${firstEnemy.id})`);

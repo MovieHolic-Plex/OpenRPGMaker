@@ -297,9 +297,10 @@ describe("소품(울타리)이 하위 지면을 지우지 않는다", () => {
     for (const [n, fence] of FENCE_TILES.entries()) {
       const x = 2 + n;
       paintTile(mapId, "lower", x, 8, TILE.DARK_GRASS);
+      const groundBefore = [...currentMap().lowerTiles];
       paintTile(mapId, "lower", x, 8, fence);
       const map = currentMap();
-      expect(lowerAt(map, x, 8)).toBe(TILE.DARK_GRASS);
+      expect(map.lowerTiles).toEqual(groundBefore);
       expect(upperAt(map, x, 8)).toBe(fence);
     }
   });

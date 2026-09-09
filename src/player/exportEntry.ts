@@ -1,6 +1,6 @@
 import "@/player/player.css";
-// 세이브 슬롯 키(oprn:save-slot:*)를 읽기 전에 구 접두사를 옮긴다. src/storageBoot.ts 참고.
-import "@/storageBoot";
+// Standalone legacy migration only; community boot never scans global save storage.
+import "@/player/exportStorageBoot";
 import { installVitePreloadRecovery } from "@/app/moduleLoadRecovery";
 
 installVitePreloadRecovery();
@@ -15,10 +15,13 @@ import { setSaveSlotStorageNamespace } from "@/player/saveSlots";
 import { setExportedProject } from "@/player/exportProjectStoreShim";
 import {
   resolveExportSaveNamespace,
+  resolveCommunitySaveScope,
   type ExportProjectSource,
 } from "@/player/exportSaveNamespace";
 import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/hostBridge";
 import { stopAllAudio } from "@/player/audio";
+import { registerExportAssetBase } from "@/assets/inlineAssetStore";
+import type { ActionCombatRuntimeResult } from "@/testing/actionCombatProof";
 
 const app = document.getElementById("app");
 if (!app) {
@@ -30,6 +33,7 @@ interface OpenRpgBootConfig {
   readonly saveNamespace?: string;
   /** Private export-QA capability; omitted by all production host shells. */
   readonly qaInstrumentation?: boolean;
+  readonly actionCombatProbe?: { readonly runId: string; readonly mapId: string };
   // 호스트 주입값은 신뢰하지 않는다 — hostBridge.parseHostBridge 가 방어적으로 파싱한다.
   readonly returnUrl?: unknown;
   readonly hostFeatures?: unknown;
@@ -44,6 +48,10 @@ void bootExportedPlayer(app);
 
 async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   const boot = readBootConfig();
+  // The private editor probe loads the shipped player bundle, but public game
+  // resources belong to the editor host, one directory above that bundle.
+  const probeAssets = boot.qaInstrumentation === true && boot.actionCombatProbe !== undefined;
+  registerExportAssetBase(new URL(probeAssets ? "../" : ".", document.baseURI));
   // 단일 HTML 로 내보낸 게임: 프로젝트도 에셋도 이 문서 안에 있다. fetch 가 막히는 file:// 에서
   // 돌아야 하므로 네트워크를 타는 아래 경로보다 **먼저** 본다.
   const standalone = readStandalonePayload();
@@ -103,10 +111,23 @@ function startPlayer(
     document.title = project.meta.title || `${PRODUCT_BRAND} Player`;
     // 호스트(커뮤니티 사이트)가 주입한 returnUrl/hostFeatures — 잘못된 값은 조용히 무시된다.
     const host = parseHostBridge(boot);
+    const probe = boot.qaInstrumentation === true ? boot.actionCombatProbe : undefined;
     renderPlayer(root, {
+      saveIsolationScope: resolveCommunitySaveScope(window.location.pathname),
       qaInstrumentation: boot.qaInstrumentation === true,
       hostBridge: host,
       onExit: () => exitToHost(root, host),
+      ...(probe ? {
+        startOverride: { mapId: probe.mapId, ...project.startPos },
+        onPlayBootSuccess: () => {
+          const qaWindow = window as Window & { __oprnRunActionCombatProof?: () => Promise<ActionCombatRuntimeResult> };
+          const run = qaWindow.__oprnRunActionCombatProof;
+          if (!run) return;
+          void run().then((result) => {
+            window.parent.postMessage({ type: "oprn:combat-proof", runId: probe.runId, mapId: probe.mapId, ...result }, new URL(document.baseURI).origin);
+          });
+        },
+      } : {}),
     });
   } catch (error) {
     renderBootError(root, error instanceof Error ? error.message : String(error));

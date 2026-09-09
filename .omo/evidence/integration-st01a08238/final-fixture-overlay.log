@@ -1,0 +1,55 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/advisoryLintProvenance.test.ts test/assistantAcceptanceRequestBaseline.test.ts test/authoredSoftConfirmReviewEquality.test.ts test/authoredWorldReviewApplication.test.ts --maxWorkers=2 --minWorkers=1 --reporter=default --reporter=json --outputFile=.omo/evidence/integration-st01a08238/final-fixture-overlay.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238
+
+ ✓ test/advisoryLintProvenance.test.ts (8 tests) 17641ms
+   ✓ pre-write provenance of automatic lint findings > reports unchanged baseline defects without terminal repair of the real title-only change  5343ms
+   ✓ pre-write provenance of automatic lint findings > keeps adopted lint defects terminally blocking  3048ms
+   ✓ pre-write provenance of automatic lint findings > keeps introduced lint defects terminally blocking  2588ms
+   ✓ pre-write provenance of automatic lint findings > keeps different-identity lint defects terminally blocking  2429ms
+   ✓ pre-write provenance of automatic lint findings > keeps explicit lint defects terminally blocking  1885ms
+   ✓ pre-write provenance of automatic lint findings > keeps unknown lint defects terminally blocking  1760ms
+   ✓ pre-write provenance of automatic lint findings > retains new same-count identities and permanently promotes an explicitly observed baseline defect  424ms
+ ✓ test/authoredWorldReviewApplication.test.ts (3 tests) 9603ms
+   ✓ npc cast review apply undo preserves existing manual/locked wiki plus the new graph  3929ms
+   ✓ a newer manual wiki document during the held review is preserved, never lost  5327ms
+   ✓ region apply preserves the reviewed npc graph while keeping live wiki documents  345ms
+ ✓ test/assistantAcceptanceRequestBaseline.test.ts (6 tests) 32563ms
+   ✓ per-request acceptance baselines > preserves a map created in A while B changes another map  7098ms
+   ✓ per-request acceptance baselines > does not credit A's change toward a newly accepted B change promise  4483ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (completed=false)  4774ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (completed=true)  4707ms
+   ✓ per-request acceptance baselines > retains B's pre-write baseline across budget-driven synthetic continuation  6568ms
+   ✓ per-request acceptance baselines > retains B's baseline when a manual continuation repairs and replans an unapplied draft  4930ms
+ ❯ test/authoredSoftConfirmReviewEquality.test.ts (1 test | 1 failed) 2267ms
+   × direct soft-confirm route reviews the normalized values and applies them equally 2266ms
+     → 독립 검수 미승인: Fixture review (동일 실패 반복): expected 'changes_requested' to be 'approved' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/authoredSoftConfirmReviewEquality.test.ts > direct soft-confirm route reviews the normalized values and applies them equally
+AssertionError: 독립 검수 미승인: Fixture review (동일 실패 반복): expected 'changes_requested' to be 'approved' // Object.is equality
+
+Expected: [32m"[7mapprov[27med"[39m
+Received: [31m"[7mchanges_request[27med"[39m
+
+ ❯ test/authoredSoftConfirmReviewEquality.test.ts:100:47
+     98|   });
+     99|   const result = await session.sendUserMessage("Scatter soft props");
+    100|   expect(result.review?.status, result.error).toBe("approved");
+       |                                               ^
+    101|   expect(result.appliedCalls ?? []).toEqual([]);
+    102|   // The reviewer already saw origin:user: normalization preceded revi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 17 passed (18)
+   Start at  04:44:59
+   Duration  66.28s (transform 21.61s, setup 0ms, collect 51.57s, tests 62.08s, environment 259ms, prepare 346ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238/.omo/evidence/integration-st01a08238/final-fixture-overlay.json

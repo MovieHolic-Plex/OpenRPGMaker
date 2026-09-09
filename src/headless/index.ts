@@ -1,4 +1,6 @@
 import { validateArgs } from "@/editor/tools/jsonSchema";
+import { countAudioDescriptionChanges } from "@/project/audioDescriptionChanges";
+import { countMonsterMetadataChanges } from "@/project/monsterMetadata";
 import { allTools, getTool } from "@/editor/tools/toolRegistry";
 import { ToolError, type ChangeSummary, type JsonSchema, type ToolMode, type ToolResult } from "@/editor/tools/types";
 import { deserialize } from "@/project/io";
@@ -118,6 +120,8 @@ function emptySummary(): ChangeSummary {
   return {
     tilesChanged: 0,
     mapPropertiesChanged: 0,
+    audioDescriptionsChanged: 0,
+    monsterMetadataChanged: 0,
     eventsAdded: 0,
     eventsModified: 0,
     eventsRemoved: 0,
@@ -164,6 +168,8 @@ function summarizeHeadlessChanges(before: Project, after: Project): ChangeSummar
   summary.endingsChanged = countHeadlessRecordChanges(before.endings ?? [], after.endings ?? []);
   summary.sessionChanged = JSON.stringify(before.session) !== JSON.stringify(after.session);
   summary.systemChanged = JSON.stringify(before.system) !== JSON.stringify(after.system);
+  summary.audioDescriptionsChanged = countAudioDescriptionChanges(before.audioDescriptions, after.audioDescriptions);
+  summary.monsterMetadataChanged = countMonsterMetadataChanges(before.monsterMetadata, after.monsterMetadata);
   return summary;
 }
 

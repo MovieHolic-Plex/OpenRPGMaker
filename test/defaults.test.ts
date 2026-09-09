@@ -302,8 +302,9 @@ describe("createBlankProject", () => {
     expect(tileset.terrain[TILE.PATH]).toBe(TERRAIN_TAG.NORMAL);
     expect(tileset.passability[TILE.WATER]).toEqual(solid);
     expect(tileset.passability[TILE.PATH]).toEqual(passable);
-    // 투명 배경 칩(나무/창문/울타리 등)은 상위 레이어 전용 — 하위에 깔리면 검게 보인다.
-    expect(tileset.priority[TILE.TREE]).toBe("upper");
+    // Tree bases occupy lower; the renderer composites ground beneath their transparency.
+    // Canopies and other transparent props remain upper-layer tiles.
+    expect(tileset.priority[TILE.TREE]).toBe("lower");
     expect(tileset.passability[TILE.TREE]).toEqual(solid);
     expect(tileset.priority[TILE.FLOWERS]).toBe("upper");
     expect(tileset.passability[TILE.FLOWERS]).toEqual(passable);

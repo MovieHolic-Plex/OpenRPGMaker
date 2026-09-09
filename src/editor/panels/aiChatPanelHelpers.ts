@@ -8,17 +8,13 @@ import {
   type ProposedCall,
   type SessionEvent,
 } from "@/ai/assistantSession";
-import type { BuildSpec } from "@/ai/buildSpec";
-import {
-  proposalHasChangedMap,
-  requestLikelyExpectsChange,
-} from "@/ai/proposalCompleteness";
 import { isAssistantEndpointReady, type AssistantConnectionReadiness } from "@/ai/assistantEndpoint";
 import { loadAiConfig } from "@/ai/llmClient";
 import type { AiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { clearAgentBlueprint } from "@/editor/agentBlueprint";
-import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
+import { clearAgentGhostPreview, replaceAgentGhostPreviewFromProjectDiff, setAgentGhostDraftMapProvider } from "@/editor/agentGhostPreview";
+import type { PendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { getTool } from "@/editor/tools";
 import { showConfirm } from "@/editor/ui/modal";
 export { showConfirm };
@@ -177,19 +173,6 @@ export function attachCompletenessWarnings(calls: readonly ProposedCall[], warni
   }
 }
 
-export function completenessSpecForProposal(
-  confirmedThisTurn: BuildSpec | null,
-  activeAtTurnStart: BuildSpec | null,
-  calls: readonly ProposedCall[],
-  requestText: string
-): BuildSpec | null {
-  if (confirmedThisTurn) return calls.length > 0 || requestLikelyExpectsChange(requestText) ? confirmedThisTurn : null;
-  if (!activeAtTurnStart) return null;
-  if (proposalHasChangedMap(calls, activeAtTurnStart.mapId)) return activeAtTurnStart;
-  if (calls.length === 0 && requestLikelyExpectsChange(requestText)) return activeAtTurnStart;
-  return null;
-}
-
 // UI 상태 배지 전이 기록(결함 ⑬) — 적용 실패 같은 멈춤을 export 로그로 진단한다.
 export interface StatusTransition {
   readonly at: string;
@@ -225,10 +208,15 @@ export function exportCombinedAudit(controller: ChatController): string | null {
 }
 
 // 세션을 버리기 전에 감사 항목을 회수한다.
-export function dropSession(controller: ChatController): void {
+export function dropSession(controller: ChatController, pendingRegion: PendingRegionApply | null = null): void {
   if (controller.session) controller.auditHistory.push(...controller.session.getAuditEntries());
   controller.session = null;
   clearAgentGhostPreview();
+  // The caller owns the project boundary. Only a surviving independent region gets the surface back.
+  setAgentGhostDraftMapProvider(pendingRegion ? (mapId) => pendingRegion.clippedProject.maps[mapId] : null);
+  if (pendingRegion) {
+    replaceAgentGhostPreviewFromProjectDiff(pendingRegion.baseProject, pendingRegion.clippedProject);
+  }
   // 세션이 사라지면 그 세션의 밑그림(BuildSpec)도 사라진다 — 청사진의 수명은 스펙에 매여 있고
   // 새 대화·대화 복원·프로젝트 전환이 모두 이 함수를 지나간다.
   clearAgentBlueprint();
@@ -260,7 +248,7 @@ export function renderEmptyProposalNotice(lines: readonly string[], onDismiss: (
       el("div", {
         class: "ai-proposal-lines",
         children: [
-          el("div", { class: "ai-proposal-title", text: "⚠ 변경 없음 — 이유를 확인하세요" }),
+          el("div", { class: "ai-proposal-title", text: "변경 없음 — 이유를 확인하세요" }),
           ...(lines.length > 0
             ? [el("div", {
                 class: "ai-proposal-lines",

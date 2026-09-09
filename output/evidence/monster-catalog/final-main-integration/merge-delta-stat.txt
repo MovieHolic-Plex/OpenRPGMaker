@@ -1,0 +1,72 @@
+ .env.example                                       |   11 +-
+ .gitignore                                         |    9 +-
+ .omo/css-live-classes-baseline.json                |   14 +-
+ DESIGN.md                                          |   41 +
+ README.md                                          |   85 +-
+ assets/bgm-release-v1.json                         | 1703 ++++++++++++++++++++
+ docs/2026-09-07-bgm-release-pack.md                |  116 ++
+ docs/tool-catalog.md                               |    2 +-
+ openwiki/INDEX.md                                  |  127 +-
+ openwiki/bgm-catalog.md                            |   96 +-
+ openwiki/editor-event-authoring.md                 |    9 +-
+ openwiki/editor-pre-edit-routing.md                |   14 +
+ openwiki/editor-validation.md                      |   82 +-
+ openwiki/quickstart.md                             |   12 +
+ openwiki/runtime-project-schema.md                 |    8 +
+ output/evidence/sidebar-focus/r1/README.md         |   99 ++
+ .../r1/final-direct/context-menu-1024x768.png      |  Bin 0 -> 214462 bytes
+ .../r1/final-direct/context-menu-1280x800.png      |  Bin 0 -> 316397 bytes
+ .../r1/final-direct/context-menu-1440x900.png      |  Bin 0 -> 405442 bytes
+ .../r1/final-direct/context-menu-keyboard.png      |  Bin 0 -> 293255 bytes
+ .../r1/final-direct/context-menu-pointer.png       |  Bin 0 -> 299119 bytes
+ .../r1/final-direct/mode-lifecycle-beginner.png    |  Bin 0 -> 428917 bytes
+ .../evidence/sidebar-focus/r1/final-focused.exit   |    1 +
+ output/evidence/sidebar-focus/r1/final-focused.log |  158 ++
+ .../sidebar-focus/r1/handoff-browser-results.json  |   97 ++
+ .../evidence/sidebar-focus/r1/latest-focused.exit  |    1 +
+ .../evidence/sidebar-focus/r1/latest-focused.log   |   49 +
+ .../sidebar-focus/r1/latest-full-focused.exit      |    1 +
+ .../sidebar-focus/r1/latest-full-focused.log       |  159 ++
+ .../sidebar-focus/r1/latest-typecheck.exit         |    1 +
+ .../evidence/sidebar-focus/r1/latest-typecheck.log |    3 +
+ output/evidence/sidebar-focus/r1/red/results.json  |   35 +
+ output/evidence/sidebar-focus/r1/rename-red.log    |   44 +
+ output/evidence/sidebar-focus/r1/unit-red.log      |  148 ++
+ package-lock.json                                  |   71 +-
+ package.json                                       |    7 +-
+ scripts/build-bgm-release.mts                      |   71 +
+ scripts/install-bgm.mjs                            |   58 +
+ scripts/lib/bgm-release.mjs                        |  268 +++
+ scripts/prove-ai-relocation-recovery.mts           |   71 +
+ scripts/qa/bgm-release-cli.probe.mjs               |   76 +
+ scripts/qa/bgm-release.probe.mjs                   |  167 ++
+ scripts/qa/sidebar-focus-r1.mjs                    |  265 +++
+ src/editor/commandRegistry.ts                      |    7 +-
+ src/editor/panels/editor.ts                        |    3 +
+ src/editor/panels/eventEditor/commandPreview.ts    |    6 +-
+ src/editor/panels/eventEditor/content.ts           |    2 +
+ src/editor/panels/eventEditor/editorIcons.ts       |    4 +
+ .../panels/eventEditor/eventScriptModernViews.ts   |  148 +-
+ src/editor/panels/mapContextMenu.ts                |   23 +-
+ src/editor/panels/mapList.ts                       |   20 +-
+ src/editor/panels/sidebarMapHeader.ts              |    6 +-
+ src/editor/panels/sidebarSurface.ts                |   39 +-
+ src/editor/panels/tileToolbarMenus.ts              |    6 +-
+ src/editor/tools/eventTools.ts                     |   36 +-
+ src/project/eventPlacementRecovery.ts              |  186 ++-
+ src/project/io/shapeEventFields.ts                 |    1 +
+ src/project/lint/projectLint.ts                    |   71 +-
+ src/project/lint/reachability.ts                   |    4 +-
+ src/project/types/events.ts                        |    2 +
+ src/styles/editor/event-editor.balanced.css        |  103 ++
+ .../01-event-editor-modern-import.css              |   10 -
+ .../02-changeface-play-mock-larger.css             |   17 +
+ src/styles/shell/shell-density.part-2.css          |    2 +-
+ test/aiBlockedEventRelocation.test.ts              |  406 ++++-
+ test/bgmCatalog.test.ts                            |   49 +-
+ test/bgmReleasePack.test.mjs                       |  208 +++
+ test/eventEditorPagePreviewView.test.ts            |   35 +-
+ test/eventPagePreviewTransport.test.ts             |  129 ++
+ test/sidebarFocusModes.test.ts                     |   21 +-
+ test/sidebarFocusR1.test.ts                        |  136 ++
+ 71 files changed, 5547 insertions(+), 312 deletions(-)

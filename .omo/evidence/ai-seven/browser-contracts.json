@@ -1,0 +1,49 @@
+{
+  "origin": "http://127.0.0.1:43791",
+  "entry": "/?blankProject=1",
+  "httpIsolation": "Supabase and model requests intercepted; no real remote writes",
+  "transport": {
+    "action": "ai-new-chat; fill ai-input with 연결 확인; click ai-send; structured intent succeeds, main completion connection refused",
+    "running": false,
+    "settingsEnabled": true,
+    "retryVisible": true,
+    "status": "오류",
+    "screenshot": ".omo/evidence/ai-seven/transport-error.png",
+    "pass": true
+  },
+  "reasoning": {
+    "action": "ai-new-chat; fill ai-input with 요약해줘; click ai-send; JSON intent followed by SSE reasoning and distinct tool calls",
+    "items": ["첫 추론 기록", "둘째 추론 기록"],
+    "screenshot": ".omo/evidence/ai-seven/reasoning.png",
+    "pass": true
+  },
+  "ghost": {
+    "action": "Subscribe real ghost preview before UI send, execute create_map, hold next model response",
+    "toolOk": true,
+    "mapsAdded": 1,
+    "event": {
+      "mapId": "map_ai_seven_ghost",
+      "toolName": "live_project_diff",
+      "bounds": {"x": 0, "y": 0, "width": 6, "height": 5}
+    },
+    "screenshot": ".omo/evidence/ai-seven/ghost-preview.png",
+    "gateReleasedAndSubscriptionRemoved": true,
+    "pass": true
+  },
+  "selection": {
+    "input": {"x": 1, "y": 1, "width": 3, "height": 3},
+    "visible": {"display": "flex", "scoped": true, "width": 185.375, "height": 32},
+    "afterClear": {"display": "flex", "scoped": false, "selectionChip": false},
+    "screenshot": ".omo/evidence/ai-seven/selection-visible.png",
+    "pass": true
+  },
+  "hint": {
+    "action": "Focus ai-input then focus menu-project",
+    "focused": {"hintNodes": 0, "actionsHeight": 36, "focused": true},
+    "blurred": {"hintNodes": 0, "actionsHeight": 36, "focused": false},
+    "inputTooltipRetained": true,
+    "screenshot": ".omo/evidence/ai-seven/hint-layout.png",
+    "pass": true
+  },
+  "pageErrors": []
+}

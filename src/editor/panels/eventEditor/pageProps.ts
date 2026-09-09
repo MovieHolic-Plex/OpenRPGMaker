@@ -1,3 +1,4 @@
+import { renderDetectionEncounter } from "./pageNpcBehavior";
 import { renderObjectInteraction } from "./pageHorror";
 import { hasRecursivePageCondition, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { el } from "@/util/dom";
@@ -20,7 +21,8 @@ import { editorState } from "@/editor/editorState";
 import { showConfirm } from "@/editor/ui/modal";
 import { toast } from "@/util/toast";
 import { updateEvent } from "@/editor/eventActions";
-import { recordCoalescedSnapshot } from "@/editor/mapEditHistory";
+import { setEventDraftCharacterName } from "@/editor/eventDraftActions";
+import { eventDraftCharacterName } from "@/project/eventDraftAuthored";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { selectedOptionValue, selectWithOptions } from "./dom";
@@ -58,6 +60,8 @@ import {
 } from "./eventEditorOpenState";
 
 import { relationshipStateName } from "@/project/relationshipState";
+import { appearanceBindingControl } from "../appearanceBindingControl";
+import { getCharacterAppearance } from "@/project/characterAppearances";
 export function renderEventNameControl(
   mapId: MapId,
   eventId: string,
@@ -598,7 +602,7 @@ const CHARACTER_ID_HELP =
 export function renderEventCharacterIdField(mapId: MapId, event: GameEvent): HTMLElement {
   const characterId = event.characterId?.trim();
   const profileName = characterId
-    ? store.getCurrent().characters?.[characterId]?.displayName?.trim()
+    ? eventDraftCharacterName(store.getCurrent(), event, characterId).trim()
     : "";
   const connected = Boolean(characterId);
   const openPicker = () => openCharacterIdPicker({
@@ -671,7 +675,7 @@ export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent)
     updateEvent(mapId, event.id, { talkFriendship: talkCheckbox.checked ? true : undefined });
   });
 
-  const profileName = store.getCurrent().characters?.[characterId]?.displayName ?? "";
+  const profileName = eventDraftCharacterName(store.getCurrent(), event, characterId);
   const characterIdInput = el("input", {
     attrs: {
       type: "text",
@@ -709,22 +713,7 @@ export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent)
     dataset: { testid: "event-character-display-name-input" },
   }) as HTMLInputElement;
   displayNameInput.addEventListener("change", () => {
-    const name = displayNameInput.value.trim();
-    recordCoalescedSnapshot(`event-character-display-name:${characterId}`);
-    store.update((project) => {
-      const next = { ...(project.characters ?? {}) };
-      const existing = { ...(next[characterId] ?? {}) };
-      if (name) {
-        existing.displayName = name;
-        next[characterId] = existing;
-      } else {
-        delete existing.displayName;
-        if (Object.keys(existing).length === 0) delete next[characterId];
-        else next[characterId] = existing;
-      }
-      if (Object.keys(next).length === 0) delete project.characters;
-      else project.characters = next;
-    }, { scope: "project" });
+    setEventDraftCharacterName(mapId, event.id, characterId, displayNameInput.value);
   });
 
   return el("details", {
@@ -955,6 +944,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
         class: "event-page-movement-stack",
         children: [
           rm2k3Fieldset("물체 동작", renderObjectInteraction(mapId, eventId, page), "event-classic-object-interaction"),
+          rm2k3Fieldset("플레이어 발견", renderDetectionEncounter(mapId, eventId, page), "event-classic-detection"),
           rm2k3Fieldset("이동 유형", renderPageMovement(mapId, eventId, page), "event-classic-movement-type"),
           rm2k3Fieldset("애니메이션 유형", renderPageAnimationType(mapId, eventId, page), "event-classic-animation-type"),
           rm2k3Fieldset("이동 속도", movementSpeedSelect(mapId, eventId, page), "event-classic-movement-speed"),
@@ -1458,11 +1448,14 @@ function movementSpeedLabel(speed: number): string {
 
 function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
   const control = el("div", { class: "event-graphic-control", dataset: { testid: "event-page-graphic-control" } });
+  const linked = getCharacterAppearance(store.getCurrent(), page.graphic.appearanceId);
   const spriteInput = el("input", {
     attrs: { type: "text", placeholder: "모습" },
     value: page.graphic.sprite?.id ?? "",
     dataset: { testid: "event-page-sprite-input" },
   });
+  spriteInput.disabled = Boolean(linked?.charset);
+  if (linked?.charset) spriteInput.title = "공유 외형에서 걷기 그림을 사용 중입니다. 연결 해제 후 직접 지정하세요.";
   spriteInput.addEventListener("change", () => {
     const id = spriteInput.value.trim();
     updateEventPage(mapId, eventId, page.id, {
@@ -1475,6 +1468,15 @@ function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLEle
     updateEventPage(mapId, eventId, page.id, { graphic: { ...page.graphic, transparent: transparent.checked } });
   });
   control.append(
+    appearanceBindingControl(page.graphic.appearanceId, "event-page-appearance-select", (appearanceId) => {
+      control.querySelector<HTMLButtonElement>('[data-custom-select-for="event-page-appearance-select"]')?.focus({ preventScroll: true });
+      const graphic = { ...page.graphic, appearanceId };
+      page = { ...page, graphic };
+      updateEventPage(mapId, eventId, page.id, { graphic });
+      control.replaceWith(graphicControl(mapId, eventId, page));
+    }),
+    ...(linked ? [el("p", { class: "empty-hint", dataset: { testid: "event-page-appearance-linked" },
+      text: `${linked.name} 연결됨 · 직접 지정 그림은 보관됩니다. 대사에 별도 얼굴 명령이 없으면 이 외형의 초상을 사용합니다.` })] : []),
     renderEventGraphicPreview(page.graphic, page.movement.type),
     el("div", {
       class: "event-graphic-control-actions",
@@ -1482,6 +1484,7 @@ function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLEle
         el("button", {
           class: "btn",
           text: "이미지 선택",
+          attrs: { type: "button", ...(linked?.charset ? { disabled: "true", title: "공유 외형의 걷기 그림을 사용 중입니다." } : {}) },
           dataset: { testid: "event-page-graphic-set" },
           on: { click: () => openNpcGraphicDialog(mapId, eventId, page) },
         }),
@@ -1494,6 +1497,11 @@ function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLEle
 }
 
 function graphicWithoutSprite(page: EventPage): EventPage["graphic"] {
+  if (page.graphic.appearanceId) {
+    const graphic = { ...page.graphic };
+    delete graphic.sprite;
+    return graphic;
+  }
   return page.graphic.transparent === undefined ? {} : { transparent: page.graphic.transparent };
 }
 

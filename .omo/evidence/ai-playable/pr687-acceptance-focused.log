@@ -1,0 +1,140 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantAcceptance.test.ts test/assistantAcceptanceCost.test.ts test/assistantAcceptanceDiagnostics.test.ts test/assistantAcceptanceNewMapCharacterization.test.ts test/assistantAcceptancePromiseBaseline.test.ts test/assistantAcceptanceProvider.test.ts test/assistantAcceptanceRequestBaseline.test.ts test/assistantAcceptanceSession.test.ts test/assistantFinalAudit.test.ts test/assistantReviewScope.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/assistantAcceptanceRequestBaseline.test.ts (6 tests) 13815ms
+   ✓ per-request acceptance baselines > preserves a map created in A while B changes another map  2363ms
+   ✓ per-request acceptance baselines > does not credit A's change toward a newly accepted B change promise  1637ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=false)  2448ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=true)  2463ms
+   ✓ per-request acceptance baselines > retains B's pre-write baseline across budget-driven synthetic continuation  2396ms
+   ✓ per-request acceptance baselines > retains B's baseline when a manual continuation repairs and replans after application  2507ms
+ ✓ test/assistantAcceptanceSession.test.ts (21 tests) 13945ms
+   ✓ acceptance controls actual session termination > does not credit frontend insertion without a provider delivery acknowledgement  757ms
+   ✓ acceptance controls actual session termination > does not schedule run-end persistence proof for a completed plan with unmet acceptance  545ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  762ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  845ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  573ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  669ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  1008ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  2151ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  473ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  773ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  500ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 0  617ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 1  681ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 2  731ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 3  670ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 4  700ms
+   ✓ returns distinct repair and review diagnostics through the actual session handler  633ms
+ ❯ test/assistantAcceptanceCost.test.ts (6 tests | 3 failed) 3370ms
+   × bounded canonical project comparisons > compares shared project content once for same-reference 137ms
+     → expected [ 'working', 'working', 'working' ] to deeply equal [ 'verified', 'verified', 'verified' ]
+   × bounded canonical project comparisons > compares shared project content once for same-content 358ms
+     → expected [ 'working', 'working', 'working' ] to deeply equal [ 'verified', 'verified', 'verified' ]
+   ✓ bounded canonical project comparisons > compares shared project content once for changed-content  307ms
+   ✓ bounded canonical project comparisons > does not compare or clone an unrelated editor update without authority or verifier evidence 277ms
+   × bounded canonical project comparisons > preserves late-adoption freshness when content changed=false 1201ms
+     → expected 'blocked' to be 'verified' // Object.is equality
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=true  1088ms
+ ✓ test/assistantAcceptanceNewMapCharacterization.test.ts (14 tests) 5844ms
+   ✓ round5 new-map acceptance characterization > verifies the captured promise after repair admission and real applied creation  1925ms
+   ✓ round5 new-map acceptance characterization > verifies the captured promise after plan admission and real applied creation  1771ms
+   ✓ round5 new-map acceptance characterization > returns unsupported-target diagnostics from the real session adoption and repair handlers  539ms
+ ❯ test/assistantFinalAudit.test.ts (3 tests | 1 failed) 1388ms
+   ✓ authoritative final response audit > persists the harness verdict instead of leaving the model success as the latest response  621ms
+   ✓ authoritative final response audit > does not duplicate an unchanged ordinary final response 184ms
+   × authoritative final response audit > does not lead with model success when explicit verification still fails 582ms
+     → expected 'MODEL_SUCCESS_SENTINEL' not to contain 'MODEL_SUCCESS_SENTINEL'
+ ✓ test/assistantAcceptancePromiseBaseline.test.ts (13 tests) 1574ms
+ ✓ test/assistantAcceptance.test.ts (23 tests) 1594ms
+ ✓ test/assistantAcceptanceDiagnostics.test.ts (13 tests) 1174ms
+ ✓ test/assistantReviewScope.test.ts (4 tests) 692ms
+ ❯ test/assistantAcceptanceProvider.test.ts (1 test | 1 failed) 145ms
+   × acceptance at the installed Antigravity schema boundary > retains every scoped canonical shape and selector through Google then CCA normalization 144ms
+     → expected [ { kind: 'mapCount', …(2) }, …(12) ] to have a length of 8 but got 13
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/assistantAcceptanceCost.test.ts > bounded canonical project comparisons > compares shared project content once for same-reference
+ FAIL  test/assistantAcceptanceCost.test.ts > bounded canonical project comparisons > compares shared project content once for same-content
+AssertionError: expected [ 'working', 'working', 'working' ] to deeply equal [ 'verified', 'verified', 'verified' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "verified",[39m
+[32m-   "verified",[39m
+[32m-   "verified",[39m
+[31m+   "working",[39m
+[31m+   "working",[39m
+[31m+   "working",[39m
+[2m  ][22m
+
+ ❯ test/assistantAcceptanceCost.test.ts:32:53
+     30|     expect(fingerprints.mock.calls.filter(([value]) => value === appli…
+     31|     const expected = scenario === "changed-content" ? "verifying" : "v…
+     32|     expect(snapshot.items.map(item => item.status)).toEqual([expected,…
+       |                                                     ^
+     33|   });
+     34| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  test/assistantAcceptanceCost.test.ts > bounded canonical project comparisons > preserves late-adoption freshness when content changed=false
+AssertionError: expected 'blocked' to be 'verified' // Object.is equality
+
+Expected: [32m"[7mverifi[27med"[39m
+Received: [31m"[7mblock[27med"[39m
+
+ ❯ test/assistantAcceptanceCost.test.ts:61:55
+     59|     await f.run([[plan([{ id: "route", title: "Route", criteria: [{ ki…
+     60|     // Then equal content preserves proof while changed content retire…
+     61|     expect(f.session.getAcceptanceSnapshot()?.status).toBe(changed ? "…
+       |                                                       ^
+     62|   });
+     63| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  test/assistantAcceptanceProvider.test.ts > acceptance at the installed Antigravity schema boundary > retains every scoped canonical shape and selector through Google then CCA normalization
+AssertionError: expected [ { kind: 'mapCount', …(2) }, …(12) ] to have a length of 8 but got 13
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 8[39m
+[31m+ 13[39m
+
+ ❯ test/assistantAcceptanceProvider.test.ts:47:62
+     45|       const shapes = record(JSON.parse(item.description.slice(item.des…
+     46|       expect(shapes).toEqual(ACCEPTANCE_EXAMPLES);
+     47|       expect(parseAcceptanceCriteria(Object.values(shapes))).toHaveLen…
+       |                                                              ^
+     48|       expect(shapes.actionCombat).toEqual({ kind: "actionCombat", targ…
+     49|       expect(shapes.mapCount).toMatchObject({ count: 2, targets: [{ ma…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  test/assistantFinalAudit.test.ts > authoritative final response audit > does not lead with model success when explicit verification still fails
+AssertionError: expected 'MODEL_SUCCESS_SENTINEL' not to contain 'MODEL_SUCCESS_SENTINEL'
+ ❯ test/assistantFinalAudit.test.ts:65:38
+     63|     });
+     64|     const result = await session.sendUserMessage("Check the authored m…
+     65|     expect(result.assistantText).not.toContain("MODEL_SUCCESS_SENTINEL…
+       |                                      ^
+     66|     expect(session.getAuditEntries().filter(entry => entry.kind === "a…
+     67|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+
+ Test Files  3 failed | 7 passed (10)
+      Tests  5 failed | 99 passed (104)
+   Start at  01:56:49
+   Duration  39.58s (transform 8.26s, setup 0ms, collect 30.68s, tests 43.54s, environment 2ms, prepare 748ms)
+

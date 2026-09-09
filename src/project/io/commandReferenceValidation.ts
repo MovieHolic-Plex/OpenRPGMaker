@@ -11,6 +11,7 @@ import { assert } from "./guards";
 import { validateOptionalResource } from "./resourceReferenceValidation";
 
 export type ReferenceContext = {
+  appearanceIds?: ReadonlySet<string>;
   actorIds: ReadonlySet<string>;
   classIds: ReadonlySet<string>;
   enemyIds: ReadonlySet<string>;
@@ -35,6 +36,7 @@ export type ReferenceContext = {
 
 export function validateEventPages(pages: readonly EventPage[], context: ReferenceContext): void {
   for (const page of pages) {
+    if (page.graphic.appearanceId !== undefined) assert(context.appearanceIds?.has(page.graphic.appearanceId) === true, `page ${page.id}: appearanceId does not exist: ${page.graphic.appearanceId}`);
     validateOptionalResource(`page ${page.id}: graphic.sprite`, page.graphic.sprite?.id, context.resourceIds);
     for (const condition of page.conditions) validatePageCondition(condition, context);
     validateLivingMovementReferences(page, context);
@@ -179,6 +181,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       if (command.graphic?.sprite?.id) validateOptionalCommandResource("addFollower: graphic.sprite", command.graphic.sprite.id, context.resourceIds);
       return;
     case "changeFace":
+      if (command.appearanceId !== undefined) assert(context.appearanceIds?.has(command.appearanceId) === true, `changeFace: appearanceId does not exist: ${command.appearanceId}`);
       validateOptionalCommandResource("changeFace: resourceId", command.resourceId, context.resourceIds);
       return;
     case "choices":
@@ -439,7 +442,7 @@ function union(left: ReadonlySet<string>, right: ReadonlySet<string>): ReadonlyS
   return merged;
 }
 
-function validateOptionalCommandResource(
+export function validateOptionalCommandResource(
   label: string,
   id: string,
   knownResourceIds: ReadonlySet<string>

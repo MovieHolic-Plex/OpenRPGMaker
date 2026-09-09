@@ -12,7 +12,8 @@ import { resolveMaterialByLabel } from "@/project/tileVocabulary";
 import type { AutotileGroup, GameMap, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 import { forestCoverageTarget, type ForestDensity } from "./forestDensity";
-import { inMapBounds, reachableCells } from "./mapHelpers";
+import { protectedHouseCells } from "./houseProtection";
+import { inMapBounds, passableCellCount, reachableCells } from "./mapHelpers";
 import { placePropsOnDraft } from "./placePropsDomain";
 import { isPathSurfaceTile, protectedEventCells } from "./placementTools";
 import { tilePassability } from "@/project/collision";
@@ -131,6 +132,8 @@ export function plantForestComposition(draft: Project, input: {
       warnings: [`맵 없음: ${input.mapId}`], liftedTrunks: 0, closedGaps: 0, feathered: 0,
     };
   }
+  // Capture accepted metadata geometry before any stage; passability never grants ownership.
+  const houses = new Set(protectedHouseCells(map).map(({ x, y }) => `${x},${y}`));
   const cells = Math.max(0, Math.floor(input.area.w)) * Math.max(0, Math.floor(input.area.h));
   const targetCells = Math.ceil(cells * forestCoverageTarget(input.density));
   const mix = shareWithPrimary(MIX[input.density], input.primary);
@@ -177,10 +180,10 @@ export function plantForestComposition(draft: Project, input: {
   const lifted = 0;
   // impassable 만 남은 틈을 닫는다 — dense 는 "지나갈 수 있는 두꺼운 숲", impassable 은 "못 지나감".
   const closedGaps = input.density === "impassable"
-    ? closeGapsWithBushes(draft, map, input.area, input.seed)
+    ? closeGapsWithBushes(draft, map, input.area, input.seed, houses)
     : 0;
-  const feathered = input.density === "dense" ? featherForestEdge(draft, map, input.area, input.seed) : 0;
-  const undergrowthCells = paintForestFloor(draft, map, input.area, input.seed);
+  const feathered = input.density === "dense" ? featherForestEdge(draft, map, input.area, input.seed, houses) : 0;
+  const undergrowthCells = paintForestFloor(draft, map, input.area, input.seed, houses);
   return { placed, requested, materials, undergrowthCells, warnings, liftedTrunks: lifted, closedGaps, feathered };
 }
 
@@ -188,7 +191,7 @@ export function plantForestComposition(draft: Project, input: {
  * dense 전용 — 영역 가장자리의 막는 덤불을 해시 스트라이드로 걷어 직선 경계를 깨뜨린다.
  * 좁은 도형은 가장자리 비율이 높아 스트라이드를 늘린다.
  */
-function featherForestEdge(draft: Project, map: GameMap, area: Rect, seed: number): number {
+function featherForestEdge(draft: Project, map: GameMap, area: Rect, seed: number, houses: ReadonlySet<string>): number {
   const tileset = draft.tilesets[map.tilesetId];
   const bushIds = new Set<number>();
   if (tileset) {
@@ -205,15 +208,19 @@ function featherForestEdge(draft: Project, map: GameMap, area: Rect, seed: numbe
   const edgeCells = 2 * area.w + 2 * area.h - 4;
   const edgeRatio = edgeCells / Math.max(1, area.w * area.h);
   const stride = edgeRatio > 0.4 ? 4 : 2;
+  // Feathering is decorative: it must not reopen 30% of a dense forest.
+  // Reserve whole-cell openings below the strict ratio before removing bushes.
+  const maxPassable = Math.ceil(area.w * area.h * 0.3) - 1;
+  const openingBudget = Math.max(0, maxPassable - passableCellCount(draft, map, area));
   let feathered = 0;
   for (let y = area.y; y < area.y + area.h; y += 1) {
     for (let x = area.x; x < area.x + area.w; x += 1) {
       const onEdge = x === area.x || y === area.y || x === area.x + area.w - 1 || y === area.y + area.h - 1;
-      if (!onEdge || !inMapBounds(map, x, y)) continue;
+      if (!onEdge || !inMapBounds(map, x, y) || houses.has(`${x},${y}`)) continue;
       const index = y * map.width + x;
       if (!bushIds.has(map.upperTiles[index] ?? TILE.EMPTY)) continue;
       const hash = Math.imul(x * 0x1f1f1f1f ^ y * 0x85ebca6b ^ seed, 0xc2b2ae35) >>> 0;
-      if (hash % stride !== 0) continue;
+      if (hash % stride !== 0 || feathered >= openingBudget) continue;
       map.upperTiles[index] = TILE.EMPTY;
       feathered += 1;
     }
@@ -239,7 +246,7 @@ function featherForestEdge(draft: Project, map: GameMap, area: Rect, seed: numbe
  * 도배하면 "벽"으로 읽힌다). 시작칸·이벤트칸·길·물은 건드리지 않는다 — 무결성 게이트가 커밋을
  * 거부하고, 지나갈 길을 남기는 것은 편집자의 선택이어야 한다.
  */
-function closeGapsWithBushes(draft: Project, map: GameMap, area: Rect, seed: number): number {
+function closeGapsWithBushes(draft: Project, map: GameMap, area: Rect, seed: number, houses: ReadonlySet<string>): number {
   const tileset = draft.tilesets[map.tilesetId];
   if (!tileset) return 0;
   const variants: number[] = [];
@@ -256,7 +263,7 @@ function closeGapsWithBushes(draft: Project, map: GameMap, area: Rect, seed: num
   const protectedCells = protectedEventCells(draft, map);
   const closable = (x: number, y: number): boolean => {
     if (!inMapBounds(map, x, y)) return false;
-    if (protectedCells.has(`${x},${y}`)) return false;
+    if (protectedCells.has(`${x},${y}`) || houses.has(`${x},${y}`)) return false;
     const lower = map.lowerTiles[y * map.width + x] ?? TILE.EMPTY;
     return !isLakeAutotileTile(lower) && !isPathSurfaceTile(lower);
   };
@@ -367,7 +374,7 @@ const FLOOR_DARK_GRASS: readonly number[] = [245, 275, 335];
  * 3. **짙은 수풀 오토타일**(앵커 9) — 키큰 풀 톤과 다른 바닥. 드물게 작은 덩어리로만 깐다.
  * 4. **작은 물웅덩이** — 맨바닥에만 찍어 기존 것을 지우지 않으므로 안 나올 수도 있다.
  */
-function paintForestFloor(draft: Project, map: GameMap, area: Rect, seed: number): number {
+function paintForestFloor(draft: Project, map: GameMap, area: Rect, seed: number, houses: ReadonlySet<string>): number {
   const tileset = draft.tilesets[map.tilesetId];
   if (!tileset) return 0;
   const access = resolveMaterialByLabel(tileset, UNDERGROWTH_LABEL, { preferGroup: true, preferRoles: ["terrain"] });
@@ -398,7 +405,7 @@ function paintForestFloor(draft: Project, map: GameMap, area: Rect, seed: number
   let painted = 0;
   for (let y = area.y; y < area.y + area.h; y += 1) {
     for (let x = area.x; x < area.x + area.w; x += 1) {
-      if (!inMapBounds(map, x, y)) continue;
+      if (!inMapBounds(map, x, y) || houses.has(`${x},${y}`)) continue;
       const index = y * map.width + x;
       const lower = map.lowerTiles[index] ?? TILE.EMPTY;
       const upper = map.upperTiles[index] ?? TILE.EMPTY;
@@ -420,8 +427,8 @@ function paintForestFloor(draft: Project, map: GameMap, area: Rect, seed: number
       painted += 1;
     }
   }
-  painted += scatterUndergrowthAutotile(draft, map, area, seed);
-  painted += scatterForestPuddles(draft, map, area, seed);
+  painted += scatterUndergrowthAutotile(draft, map, area, seed, houses);
+  painted += scatterForestPuddles(draft, map, area, seed, houses);
   return painted;
 }
 
@@ -469,7 +476,7 @@ function shuffledPatchOrigins(area: Rect, patchW: number, patchH: number, inset:
  * 합성 숲은 빈 상위 칸이 거의 없으므로 웅덩이가 안 나올 수도 있다 — 그래도
  * “약간”이라 자리를 비우려고 기존 것을 지우지는 않는다.
  */
-function scatterForestPuddles(draft: Project, map: GameMap, area: Rect, seed: number): number {
+function scatterForestPuddles(draft: Project, map: GameMap, area: Rect, seed: number, houses: ReadonlySet<string>): number {
   const cells = Math.max(0, area.w) * Math.max(0, area.h);
   const wanted = cells >= 1600 ? 2 : cells >= 400 ? 1 : 0;
   if (wanted === 0) return 0;
@@ -487,7 +494,7 @@ function scatterForestPuddles(draft: Project, map: GameMap, area: Rect, seed: nu
         for (let dx = 0; dx < 2; dx += 1) {
           const x = origin.x + dx;
           const y = origin.y + dy;
-          if (!inMapBounds(map, x, y) || protectedCells.has(`${x},${y}`)) {
+          if (!inMapBounds(map, x, y) || protectedCells.has(`${x},${y}`) || houses.has(`${x},${y}`)) {
             blocked = true;
             break;
           }
@@ -534,7 +541,7 @@ function scatterForestPuddles(draft: Project, map: GameMap, area: Rect, seed: nu
  * 앵커 9 짙은 수풀 오토타일 — 키큰 풀 톤(243 블록)과 결이 다르다.
  * 드물게(약 160칸에 1덩어리, 최대 5) 3×3~5×4 패치. 수관 아래는 칠하고 밑동·물·길은 건너뛴다.
  */
-function scatterUndergrowthAutotile(draft: Project, map: GameMap, area: Rect, seed: number): number {
+function scatterUndergrowthAutotile(draft: Project, map: GameMap, area: Rect, seed: number, houses: ReadonlySet<string>): number {
   const group = undergrowthAutotileGroup(draft, map);
   const body = undergrowthBodyTile(group);
   const members = new Set<number>(group.memberTileIds);
@@ -555,7 +562,7 @@ function scatterUndergrowthAutotile(draft: Project, map: GameMap, area: Rect, se
           for (let dx = 0; dx < size.w; dx += 1) {
             const x = origin.x + dx;
             const y = origin.y + dy;
-            if (!inMapBounds(map, x, y)) continue;
+            if (!inMapBounds(map, x, y) || houses.has(`${x},${y}`)) continue;
             const index = y * map.width + x;
             if (used.has(index)) continue;
             const lower = map.lowerTiles[index] ?? TILE.EMPTY;
@@ -579,7 +586,7 @@ function scatterUndergrowthAutotile(draft: Project, map: GameMap, area: Rect, se
       }
     }
   }
-  if (painted.length > 0) shapeAutotileGroupAround(map, group, painted);
+  if (painted.length > 0) shapeAutotileGroupAround(map, group, painted, (x, y) => !houses.has(`${x},${y}`));
   return painted.length;
 }
 

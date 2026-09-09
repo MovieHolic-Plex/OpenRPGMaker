@@ -1,0 +1,77 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/npcPrerequisiteSession.test.ts test/npcRewardSession.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/npcPrerequisiteSession.test.ts (24 tests) 53736ms
+   ✓ request-bound verify_npc_reward session tool > R1 exposes the tool and completes through its real session boundary  1495ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"extra":true}  1758ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"passed":true}  1913ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"receipt":{}}  1780ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"reason":"Not an admitted field"}  1826ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"state":{"gold":20}}  1823ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"requirementIndex":99}  1863ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"set","mapId":"map_blank_start","gold":20}]}  1742ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"move","mapId":"map_blank_start","to":{"x":2,"y":2}}]}  1758ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"interact","mapId":"map_blank_start"}]}  1795ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"expect","goldDelta":20}]}  1872ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"walk","mapId":"map_blank_start","to":{"x":2,"y":2,"extra":true}}]}  1854ms
+   ✓ request-bound verify_npc_reward session tool > R12 valid failed replacement cannot fall back to an old pass or fresh-local proof  1939ms
+   ✓ request-bound verify_npc_reward session tool > R12 preserves witness across retry and replan without weakening the requirement  2094ms
+   ✓ request-bound verify_npc_reward session tool > R13 cannot erase an unrelated failed scene check  1792ms
+   ✓ request-bound verify_npc_reward session tool > R11/12 replays current content after a pass, replan, explicit completion and final skip  6093ms
+   ✓ request-bound verify_npc_reward session tool > R12 preserves witness and immutable selections over a real user continuation  2351ms
+   ✓ request-bound verify_npc_reward session tool > R12 a new request lifetime does not inherit the earlier route  3151ms
+   ✓ request-bound verify_npc_reward session tool > R12 never falls back to an easier fresh-local pass after content changes  3404ms
+   ✓ request-bound verify_npc_reward session tool > R12 a valid replacement is run afresh and can repair a failed route  1316ms
+   ✓ request-bound verify_npc_reward session tool > R12 keeps the stored program private from observer-owned arguments  1140ms
+   ✓ request-bound verify_npc_reward session tool > R6 rejects session witness replacement after a same-named NPC moves to another map  4221ms
+   ✓ request-bound verify_npc_reward session tool > R12 preserves the witness through the milestone application rebase boundary  1890ms
+   ✓ request-bound verify_npc_reward session tool > R13 a reward proof cannot clear image or original-baseline change obligations  2864ms
+ ✓ test/npcRewardSession.test.ts (38 tests) 82096ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  502ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  3010ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  3587ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  2599ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  573ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[]}  464ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":{"invalidReason":"npcRewards: invalid grant"}}  450ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  877ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  3946ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  4689ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  3619ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  3815ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  3381ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  3812ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  1099ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  2697ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  573ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: new-request  1131ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: ask  1000ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  413ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  2636ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  3404ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  2538ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  502ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[]}  390ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":{"invalidReason":"npcRewards: invalid grant"}}  361ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  809ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  3519ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  4347ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  3186ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  4041ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  3526ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  3907ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  1135ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  2780ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  774ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: new-request  1160ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: ask  843ms
+
+ Test Files  2 passed (2)
+      Tests  62 passed (62)
+   Start at  01:59:14
+   Duration  149.14s (transform 7.41s, setup 0ms, collect 12.44s, tests 135.83s, environment 0ms, prepare 152ms)
+

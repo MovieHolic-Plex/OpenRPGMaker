@@ -1,0 +1,33 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventAudioHandoffs.test.ts test/eventAudioCommandContracts.test.ts test/battleEventWaitAudio.test.ts test/battleAudio.test.ts test/audioEnginePlaybackControls.test.ts test/audioEngine.test.ts test/cc0AudioPlayback.test.ts test/runtimeAudioIndicator.test.ts test/eventCommandPickerAudio.test.ts test/playAudioCommandBody.test.ts test/screenSaveRestore.test.ts test/mapBgm.test.ts test/mapBgmVariety.test.ts test/m2RuntimeSupportCompleteness.test.ts test/battleDomKeyboard.test.ts test/battleDomIncremental.test.ts test/commandContracts/m2Command.contract.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-event-u14
+
+ ✓ test/playAudioCommandBody.test.ts (1 test) 806ms
+   ✓ playAudio command body > lists playable BGM/SE and previews selected audio  804ms
+ ✓ test/eventAudioHandoffs.test.ts (20 tests) 1744ms
+ ✓ test/battleDomKeyboard.test.ts (32 tests) 585ms
+ ✓ test/cc0AudioPlayback.test.ts (3 tests) 455ms
+ ✓ test/eventCommandPickerAudio.test.ts (3 tests) 123ms
+ ✓ test/audioEnginePlaybackControls.test.ts (11 tests) 19ms
+ ✓ test/battleDomIncremental.test.ts (4 tests) 308ms
+ ✓ test/commandContracts/m2Command.contract.test.ts (71 tests) 2274ms
+ ✓ test/m2RuntimeSupportCompleteness.test.ts (12 tests) 903ms
+   ✓ M2 persisted runtime classification completeness > lints every persisted editor-only ID by its exact command ID  337ms
+ ✓ test/mapBgmVariety.test.ts (20 tests) 2512ms
+   ✓ generate_map BGM > 테마마다 custom BGM 을 심고 요약/data 에 담는다  675ms
+   ✓ create_map BGM > 시드 없이 같은 이름을 두 번 만들면 같은 BGM 이다  348ms
+ ✓ test/eventAudioCommandContracts.test.ts (13 tests) 525ms
+ ✓ test/screenSaveRestore.test.ts (5 tests) 382ms
+ ✓ test/battleAudio.test.ts (6 tests) 105ms
+ ✓ test/runtimeAudioIndicator.test.ts (2 tests) 276ms
+ ✓ test/audioEngine.test.ts (21 tests) 12ms
+ ✓ test/battleEventWaitAudio.test.ts (4 tests) 66ms
+ ✓ test/mapBgm.test.ts (13 tests) 7ms
+
+ Test Files  17 passed (17)
+      Tests  241 passed (241)
+   Start at  07:14:03
+   Duration  31.78s (transform 17.65s, setup 0ms, collect 44.44s, tests 11.10s, environment 2.12s, prepare 1.30s)

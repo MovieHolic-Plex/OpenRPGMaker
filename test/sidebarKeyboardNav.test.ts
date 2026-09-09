@@ -97,8 +97,8 @@ describe("Sidebar Keyboard Navigation & Focus Survival Integration", () => {
       expect(document.activeElement).toBe(newFillBtn);
     });
 
-    it("도구·레이어·패널 그룹이 각각 탭 스탑 하나만 갖는다 (레일 전진 3)", () => {
-      const groupIds = ["basic-tool-list", "basic-layer-list", "basic-panel-toggles"] as const;
+    it("keeps one tab stop per tool/layer/panel/brush group and navigates brush sizes", () => {
+      const groupIds = ["basic-tool-list", "basic-layer-list", "basic-panel-toggles", "tile-brush-controls"] as const;
       for (const id of groupIds) {
         const group = findByTestId(container as unknown as FakeElement, id);
         expect(group, id).not.toBeNull();
@@ -108,7 +108,24 @@ describe("Sidebar Keyboard Navigation & Focus Survival Integration", () => {
       const railStops = (container as unknown as FakeElement)
         .querySelectorAll("button")
         .filter((b) => b.getAttribute("tabindex") === "0");
-      expect(railStops.length).toBe(3);
+      expect(railStops.length).toBe(5);
+      const grid = findByTestId(container as unknown as FakeElement, "basic-tile-grid");
+      expect(grid?.querySelectorAll("button").filter(b => b.getAttribute("tabindex") === "0")).toHaveLength(1);
+
+      const first = findByTestId(container as unknown as FakeElement, "brush-size-1");
+      const second = findByTestId(container as unknown as FakeElement, "brush-size-2");
+      if (!first || !second) throw new Error("Missing brush size controls");
+      first.focus();
+      const right = new Event("keydown", { bubbles: true, cancelable: true });
+      Object.defineProperty(right, "key", { value: "ArrowRight" });
+      first.dispatchEvent(right);
+      expect(right.defaultPrevented).toBe(true);
+      expect(document.activeElement).toBe(second);
+      expect(first.getAttribute("tabindex")).toBe("-1");
+      expect(second.getAttribute("tabindex")).toBe("0");
+      second.click();
+      expect(editorState.get().brushSize).toBe(2);
+      expect(document.activeElement).toBe(findByTestId(container as unknown as FakeElement, "brush-size-2"));
     });
 
     it("도구 그룹은 role=toolbar, 레이어·패널 그룹은 라벨 있는 group 이다", () => {

@@ -1,3 +1,4 @@
+import { isNpcSight, isDetectionEncounter } from '@/project/npcBehavior';
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import {
   CHARACTER_FOOTPRINT_AXIS_MAX,
@@ -164,6 +165,7 @@ function validateRect(label: string, value: unknown): void {
 
 function validateEventGraphic(label: string, value: unknown): void {
   const graphic = requireRecord(label, value);
+  if (graphic.appearanceId !== undefined) assert(requireString(`${label}.appearanceId`, graphic.appearanceId).trim().length > 0, `${label}.appearanceId is blank`);
   if (graphic.sprite !== undefined) {
     const sprite = requireRecord(`${label}.sprite`, graphic.sprite);
     requireString(`${label}.sprite.type`, sprite.type);
@@ -264,6 +266,7 @@ function validateTileStacks(label: string, value: unknown, cellCount: number): v
 function validateEventShape(label: string, value: unknown): void {
   const event = requireRecord(label, value);
   requireString(`${label}.id`, event.id);
+  if (event.placementRole !== undefined) assert(event.placementRole === "npc", `${label}.placementRole가 잘못되었습니다.`);
   requireNumber(`${label}.x`, event.x);
   requireNumber(`${label}.y`, event.y);
   validateTrigger(`${label}.trigger`, event.trigger);
@@ -336,6 +339,7 @@ function validatePageShape(label: string, value: unknown): void {
     validatePageConditionShape(`${label}.conditions[${index}]`, condition);
   }
   const graphic = requireRecord(`${label}.graphic`, page.graphic);
+  if (graphic.appearanceId !== undefined) assert(requireString(`${label}.graphic.appearanceId`, graphic.appearanceId).trim().length > 0, `${label}.graphic.appearanceId is blank`);
   // 페이지 그림은 예전부터 `requireRecord` 만 거쳤다. 전체를 validateEventGraphic 으로
   // 올리면 sprite.type 이 없는 기존 프로젝트를 새로 거부하게 되므로, 2차가 도입한 배율만
   // 검증한다 — 새 필드에만 새 계약을 건다.
@@ -358,6 +362,13 @@ function validatePageShape(label: string, value: unknown): void {
   requireNumber(`${label}.movement.frequency`, movement.frequency);
   if (movement.route !== undefined) validateMoveRoute(`${label}.movement.route`, movement.route);
   if (movement.living !== undefined) validateLivingMovement(`${label}.movement.living`, movement.living);
+  if (movement.sight !== undefined) assert(isNpcSight(movement.sight), `${label}: 잘못된 시야 설정`);
+  if (page.detectionEncounter !== undefined) {
+    assert(isDetectionEncounter(page.detectionEncounter), `${label}: 잘못된 발견 이벤트 설정`);
+    const trigger = requireRecord(`${label}.trigger`, page.trigger);
+    assert(trigger.kind !== "auto" && trigger.kind !== "parallel" && page.interaction === undefined,
+      `${label}: 발견 이벤트는 자동·병렬 실행이나 물체 상호작용과 함께 사용할 수 없습니다.`);
+  }
   if (movement.sightRange !== undefined) requireNumber(`${label}.movement.sightRange`, movement.sightRange);
   if (movement.giveUpRange !== undefined) requireNumber(`${label}.movement.giveUpRange`, movement.giveUpRange);
   if (movement.pathfind !== undefined) requireBoolean(`${label}.movement.pathfind`, movement.pathfind);
@@ -365,6 +376,7 @@ function validatePageShape(label: string, value: unknown): void {
     const pursuit = requireRecord(`${label}.movement.pursuit`, movement.pursuit);
     assert(pursuit.scope === "map" || pursuit.scope === "connected", `${label}: 추격 범위 오류`);
     assert(pursuit.onLost === "wait" || pursuit.onLost === "return", `${label}: 추격 복귀 오류`);
+    assert(pursuit.tracking === undefined || pursuit.tracking === "lastSeen" || pursuit.tracking === "persistent", `${label}: 추격 추적 정책 오류`);
     for (const key of ["doorDelayMs", "searchMs"]) {
       const ms = requireNumber(`${label}.movement.pursuit.${key}`, pursuit[key]);
       assert(Number.isFinite(ms) && ms >= 0 && ms <= 60000, `${label}: 추격 시간은 0~60000ms`);

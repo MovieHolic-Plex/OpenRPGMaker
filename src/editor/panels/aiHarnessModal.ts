@@ -7,6 +7,7 @@ import type { AuditEntry, HarnessSnapshot } from "@/ai/assistantSession";
 import { EMPTY_SESSION_USAGE, type SessionUsageTotals } from "@/ai/sessionUsage";
 import type { AiUiEvent } from "@/ai/uiEventTypes";
 import { el } from "@/util/dom";
+import { deckIcon } from "./aiDeckIcons";
 
 // aiChatPanel의 StatusTransition과 같은 모양 — 순환 의존을 피하려고 구조만 받는다.
 interface StatusPoint {
@@ -289,7 +290,7 @@ export function openHarnessModal(input: HarnessModalInput): HTMLElement {
   });
   const closeButton = el("button", {
     class: "database-modal-close",
-    text: "x",
+    children: [deckIcon("x")],
     attrs: { type: "button", "aria-label": "닫기" },
     dataset: { testid: "ai-harness-close" },
   });
@@ -305,7 +306,7 @@ export function openHarnessModal(input: HarnessModalInput): HTMLElement {
         children: [
           el("header", {
             class: "database-modal-header harness-header",
-            children: [el("h2", { text: "🔬 AI 내부 로그" }), downloadButton, closeButton],
+            children: [el("h2", { text: "AI 내부 로그" }), downloadButton, closeButton],
           }),
           el("p", {
             class: "harness-hint",

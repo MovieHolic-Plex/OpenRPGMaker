@@ -18,6 +18,59 @@
 | `scripts/list-edit-activity.mjs` | `npm run edit:log` (라이브 세션 — 디스크 미러 조회) |
 | `scripts/list-project-commits.mjs` | `npm run commit:log` (저장된 것 — DB 커밋 + 실린 행위 조회) |
 
+## Opt-in local diagnostics (issue 693 OUT-009 / OUT-010)
+
+- The assistant export menu opens `localDiagnosticsDialog`, not raw audit JSON.
+  Empty conversation is not disabled: explicit consent and category choices precede
+  collection. Prior conversation/log history is never backfilled.
+- `LocalDiagnosticSession` retains at most 500 projected receipts for 30 minutes
+  from consent, in memory only. Stop detaches sources; clear, expiry, project switch
+  and reload discard the session. Its persistent indicator survives the closed report
+  and Test Play. Starting another session requires fresh category choices.
+- Categories: conversation role/character count (no text), authoring/save generation,
+  completed movement, terrain/event collision, interpreter lifecycle, transfer,
+  asset readiness/missing count and boolean boot outcome, warning/error occurrence. Every retained string is
+  an enum, except the locally generated session UUID. IDs, names, prompts, reasoning,
+  log text, credentials, paths and URLs are excluded instead of best-effort redacted.
+  No QA/debug mutation capability is enabled.
+- `diagnosticObserver` performs no payload work while off. The editor adapter
+  subscribes to existing edit activity/logger sources only during consent; it adds
+  no disk/AI-activity sink, console interception, or changes to existing telemetry.
+- Store integration is additive in `persistCurrent`: successful local override
+  publishes `storage: local`; an accepted remote receipt publishes `storage: remote`
+  and captured submitted mutation generation, after the lineage guard and only if
+  its diagnostic-session token still matches. No target, hash, content, generation
+  or persistence policy changes. Late event/transfer/assistant completions also
+  cannot join a newly consented session.
+- Native battle recovery ends the interpreter without a fabricated result or
+  continuation. Its handled failure still emits the token-gated event `failed`
+  receipt, not `cancelled`; stopped/replaced or initially disabled diagnostic
+  sessions receive no late receipt. `eventBattleFailure` covers this integration.
+- Boot callbacks capture `diagnosticToken()` when `bootPlayGame` starts; loader
+  failure callbacks capture it when `PlayScene.preload` starts. The local boot
+  projection requires that same nonempty token and asset-category consent at
+  publication. An initially disabled operation cannot join a later session.
+  Asset receipts retain `ok: false` even when fallback textures let play reach
+  `ready` afterward; ready is not proof that all assets loaded successfully.
+  Raw boot logs and host sinks are unchanged and do not require this token.
+  `scripts/qa/issue693-boot-diagnostics.mjs` replays four real Test Play cases;
+  it defers Phaser's asset XHR, not the earlier editor Image warmup.
+- `savedGeneration` means the latest observed accepted save in this session, not
+  proof that every running scene executes that revision. Null means unknown.
+  Runtime receipts prove only the recorded operation; written/observed/unverified
+  remain distinct and the report never declares overall goal success.
+- Section choices create a frozen Markdown/JSON preview. Native clipboard/file
+  output each requires the shared explicit confirmation; cancellation or project
+  replacement before confirmation creates no artifact or transcript. No network send.
+- Focused tests: `localDiagnosticSession`, `localDiagnosticsWorkflow`,
+  `localDiagnosticSources`, and local-diagnostics cases in movement, interpreter,
+  house transfer, persistence proof and AI-panel suites. Browser replay:
+  `scripts/qa/issue693-diagnostics.mjs` (Firefox, real editor/Test Play, isolated
+  local dev showcase, non-origin traffic blocked). Port 38425;
+  `VITE_CACHE_DIR=/dev/shm/rpg-zzu-issue693-diagnostics/vite`. Captures and confirmed
+  file default to `/dev/shm/rpg-zzu-issue693-diagnostics/evidence`.
+  Full gates/build and independent visual approval remain lead-owned.
+
 ## 계측 초크포인트는 `store.markLocalMutation` 하나다
 
 `ProjectStore` 에서 상태를 바꾸는 메서드는 5개고, 전부 `markLocalMutation` 을 지난다.
@@ -46,7 +99,12 @@ grep -rnoE "store\.(update|updateMap|replace|replaceProject|clearAll|restoreEven
 - `recordChangeActivity` 는 `try/catch` 로 감싸고 실패는 `log.warn` 으로만 남긴다. 기록 실패로 편집이 죽으면 관측 계층이 결함이 된다.
 - `emit()` 은 리스너별 `try/catch` + `log.error` 다. 실측(2026-08-29): 격리가 없어서 구독자 하나가 던지면 뒤에 등록된 구독자 전부가 그 프레임에서 건너뛰어졌다(캔버스 재렌더·자동저장 예약·패널 갱신이 동시에 멈추는데 원인 로그가 없었다).
 
-`normalizeCurrentProject` 는 예외다. 어느 정규화기가 적용됐는지 이름 배열로 기록하지만 **`mutationGeneration` 은 올리지 않는다** — 그 값은 저장 경합 판정용(local-first)이라 정규화가 사용자 편집으로 보이면 안 된다.
+`normalizeCurrentProject` records candidate normalizers by name. Since 2026-09-07,
+only an actual before/after structural mutation sets dirty and advances
+`mutationGeneration`; it remains `origin: "system"`, not a human edit. This prevents
+a save in flight from clearing a newer migration and avoids autosaving forever when
+a helper reports a transient change but the final structure is unchanged. See
+`runtime-project-schema.md` for deferred migration persistence and lineage ownership.
 
 ## 새 편집 기능을 추가할 때 — 라벨을 넣어라
 
@@ -98,6 +156,138 @@ AI 로 만든 편집 전량이 `{ scope: "project" }` + 라벨 없음 + `origin:
 `test/aiApplyActivityLabels.test.ts` 가 이 계약을 고정하고, 마지막 케이스가
 "AI 경로를 전부 돌려도 `unlabeledEditActivityCount() === 0` 이고 `origin: "human"` 엔트리가 없다" 를 잠근다.
 
+## P3 owner-bound publication (2026-09-07)
+
+Run/operation identity is in-memory authority, not another outcome/evidence ledger.
+The session prepares its terminal result, recap and outcome before subscriber
+reentry. Successful tool audit/protocol/proposal accounting also exists before its
+callbacks can cancel A or start B. An old stack can't acquire B's operation after
+the callback returns. Cancellation retires old authority before terminal callbacks;
+normal authoring settlement still permits valid current-owner apply and P1 proof.
+
+`recordAppliedMutation` records the adapter's actual local `onApplied` milestone
+after the live replacement and mutation counters, before synchronous activity/store
+observers can retire its owner. Calling it only after `store.replace` returned was
+too late: the independent R1 subscriber retired A and started B while A still
+reported its applied title as a pending draft. The repaired boundary credits A's
+existing ledger first; its prepared cancellation result retains delivery `applied`,
+while B remains independent. Neither replay nor B-owned accounting repairs history.
+
+The captured `commitProject` identifies the replacement object, not a later live
+edit. `recordAppliedProject` supplies normal completion metadata. These share the
+existing application ledger; they aren't two applications. Early
+`commitId:null, persisted:false` is provisional, not an accepted-save receipt.
+If the accounting outcome observer throws, `finally` still completes activity,
+store notification and autosave scheduling without swallowing the original error.
+Retiring A leaves already-applied content and accepted store history intact, but
+blocks A's late result/proof/UI publication through B.
+
+Panel bridge sends capture their result at the owner's settlement before queue
+drain. They don't wait for global idle and then read whichever session is latest.
+Retired registration send/abort closures can't act through a replacement host;
+HTTP command IDs deduplicate execution within the registration. Late hello/command
+completion can't reconnect or schedule the retired transport. The existing pending
+work tracker backs `whenAiAssistantBridgeSettled()` for actual transport teardown,
+not run success. Conversation-save and maintenance notifications also check their
+captured owners. Native bridge evidence here is the registered window surface,
+not external MCP HTTP or remote telemetry delivery.
+
+Terminal activity and actual detached application completion are different events.
+P3 intentionally lets A's terminal UI settle while its original proposal-host
+promise is still pending, so that B can run. For a late-completion race, subscribe
+before A starts and await that exact host promise plus terminal activity after
+release. HTTP continuation, a render frame, idle state, or a terminal activity
+already published before release can't prove the detached continuation finished.
+The [native completion observer](../scripts/qa/ai-harness-p3-completion.mjs) returns
+the original promise unchanged; its QA-only served transform is enabled only for
+`late-cancel`. The first terminal-only apparent GREEN remains an unaccepted gap.
+
+In the repaired human-edit race, the finite human edit/save/read owner controls
+transport release, including retries. Failure or cleanup rejects the hold instead
+of returning a final AI response. Observers subscribe before Send; only this race
+defers its unchanged completion timers until immediately before successful release.
+Human actions, evaluations, remote reads and cleanup keep rejecting bounds. This
+removes the competing hold timer, not the product request bound or latency limits.
+
+The integrated packet records tile 7, width 336 and existing `item_potion` price 137
+saved and independently read at action 74, owner completion while still held at 75,
+release at 76 and final HTTP response at 77. At 75, A has no result or terminal
+activity, no successful apply receipts and no rejection notifications. After stale
+rejection, all three values remain local and remote; successful receipts remain
+empty and two Panel/runner rejection notifications appear. Those are notifications,
+not two adapter invocations. Typed consumers agree on `failed / unassessed / draft`,
+not a prose-derived verdict. Earlier deadline failures and isolated successes stay
+historical; a faster successful run alone doesn't prove the lifetime correction.
+
+Sources: [session](../src/ai/assistantSession.ts), [runner](../src/editor/panels/aiTurnRunner.ts),
+[Panel](../src/editor/panels/aiChatPanel.ts), [bridge](../src/editor/aiAssistantBridge.ts),
+[apply boundary](../src/editor/tools/applyChangesetToStore.ts).
+See [source-bound evidence and limits](../output/evidence/ai-harness/p3/README.md).
+No durable checkpoints, remote schema or distributed/two-tab writer guarantee is implied.
+
+## P2 outcome publication (2026-09-06)
+
+Use typed outcome fields to distinguish execution, goal assessment and current
+delivery. Don't infer them from assistant prose, status labels, scheduler
+`done/skipped` or legacy `stoppedReason`. The latter keeps its existing values.
+[Contract and UI hooks](editor-ai-panel.md#p2-run-outcomes-and-user-scope-actions-2026-09-06)
+describe the axes; [P2 evidence](../output/evidence/ai-harness/p2/README.md) records
+which actual entry points were exercised.
+
+| Surface | Current contract |
+| --- | --- |
+| Session | `TurnResult.runOutcome`, `getRunOutcome()`, `getHarnessSnapshot().runOutcome` |
+| Event | `{ type: "run_outcome", runOutcome }` at real settlement |
+| Bridge | `AiBridgeTurnResult.runOutcome` on completed Panel sends; harness reads the live session |
+| Activity | `AiActivityLogRecord.result.runOutcome` and `result.recap.runOutcome`, retained by `buildAiActivityLogRecord` |
+| Recap | `RunRecap.runOutcome`, including compact `run-recap` JSON |
+| UI | One visible `ai-run-outcome` node with execution/goal/delivery data attributes |
+
+Ordinary application settles the original returned result and recap after the
+actual apply response and P1 proof, before final runner activity/bridge/UI
+publication. Applied milestones and later pending calls remain distinct; draft
+display precedence doesn't discard or replay milestones. The existing compact
+recap audit slot is updated, not appended as a duplicate. Late proof callbacks
+can't settle a newer result owner. Read-only getters recheck freshness but don't
+rewrite stored activity, audit or acceptance evidence. Post-turn withdrawal
+refreshes the live session/UI; it doesn't rewrite already-published activity rows.
+
+R1 separates inspectable session context from current question delivery. After a
+successful write is cancelled, `getProposedProject()` can still expose its detached
+draft while explicit or inferred Ask publishes no proposed calls and no draft
+delivery (`hasPendingDraft: false`). Don't infer apply authority from that snapshot
+or a pending baseline-sync refusal. The [R1 native scenario](testing.md#p2-r1-retained-draft-ask-2026-09-07)
+checks result, recap, getter, harness, fresh serialized activity and visible DOM
+outcome agreement. Its successful-apply receipts aren't apply-invocation counts;
+the real-adapter unit regression asserts those counts, including zero calls.
+
+R3 wiki delivery comes from coordinator apply/save callbacks, not a later global
+store diff or tool count. The writer captures the applied project inside the
+mutation, before synchronous subscribers can replace it. The store's private
+receipt association records the actual `projectAtSubmit`;
+`isPersistenceReceiptForProject(receipt, project)` checks that submitted owner,
+not content equality or the latest live revision. A copied, missing or unrelated
+receipt can't establish owned persistence, nor can a catch-up save of a human edit.
+Accepted persistence remains historical fact after a later edit/cancel, while
+`isPersistenceReceiptCurrent` and P1 proof separately determine current verification.
+Late old-run callbacks can't republish either result. Post-tool wiki progress has
+its own later revision, so don't attach the earlier tool commit ID to its proof.
+
+Outcome fields are optional in compatibility types. Legacy stored records without
+them remain without them; `parseRunRecapPayload` accepts only the typed axis
+literals and doesn't recover authority from prose. Bridge readiness/configuration
+or other pre-send errors may omit the field too. A retained historical proof isn't
+current delivery authority, and commit-log POST failure isn't project-save failure.
+The real browser matrix injects a labelled commit-log HTTP fault while still
+saving/proving the project; this isn't evidence of a remote outage. Browser checks
+use the registered production window bridge and local activity serialization,
+not external MCP HTTP or remote telemetry delivery.
+
+Sources: [session settlement](../src/ai/assistantSession.ts),
+[runner](../src/editor/panels/aiTurnRunner.ts),
+[activity builder](../src/ai/activityLog.ts), [recap parser](../src/ai/runRecap.ts),
+[bridge](../src/editor/aiAssistantBridge.ts).
+
 ## 되돌리기 스택과 감사 로그는 다르다
 
 `mapEditHistory`(되돌리기)와 `editActivityLog`(감사)는 요구가 정반대다. 한 자료구조로 겸업하면 둘 다 나빠진다.
@@ -118,6 +308,25 @@ AI 로 만든 편집 전량이 `{ scope: "project" }` + 라벨 없음 + `origin:
 3. 감사 목적이라면 스냅샷이 필요 없다 — `store.update` 의 `label`/`fields` 로 충분하고, 그게 이 페이지의 요점이다.
 
 이벤트 편집기가 이미 이 형태다: 되돌리기 스냅샷은 **적용 시점 1건**(`saveEventDraft` → `recordProjectSnapshot(label, mapId, { kind: "map" })`), 감사 로그는 생성·편집 시작·적용·취소가 각각 1건씩. 취소도 기록한다 — "내가 고친 게 왜 없지?" 를 추적할 때 필요한 정보다.
+
+## Toolbar history confirmation lifetime (PR716, 2026-09-09)
+
+- `tileHistoryMenu.ts` binds multi-step confirmation to both the rendered stack's
+  `getMapEditHistoryRevision()` and the current project object. The revision advances
+  synchronously on history changes, before coalesced UI notifications, and never
+  resets with the entry marker. New snapshots, traversal, truncation, reset/repopulate,
+  and same-ID project replacement invalidate the pending decision. A stale Confirm
+  leaves the current project and both stacks untouched and asks for a fresh selection.
+- Disclosure clicks read live `openDirection`; a render-time expanded flag is stale
+  after outside-pointer/Escape dismissal and would require two clicks to reopen.
+- The history group uses the surrounding toolbar gap without an extra right margin.
+  The redundant 2px margin produced a measured 233/234px client/scroll width; the
+  repaired Standard toolbar measures 233/233px at 1024, 1280 and 1440px viewports.
+- Regression seams: `tileToolbarHistoryMenus.test.ts`, `mapEditRedoEntries.test.ts`,
+  `mapEditHistoryProjectSwitch.test.ts`. `scripts/qa/pr716-repair.mjs` checks the real
+  toolbar Confirm after a concurrent local edit, asserting unchanged project/stacks.
+  Test confirmation spies call through to the real modal and await its continuation
+  with a bounded deadline; no sleeps or guessed microtask counts.
 
 ## 디버깅 레시피
 
@@ -152,6 +361,14 @@ cat output/edit-activity/index.json  # CLI 표가 읽는 최근 200건 요약
 **AI 경로는 별도 채널이다.** `output/ai-activity/` + `npm run ai:log`(`src/ai/activityLog.ts`).
 편집은 분당 수십 건이라 한 채널에 섞으면 AI 턴이 묻힌다. AI 턴을 조사할 때는 `ai:log`,
 사람 편집을 조사할 때는 `edit:log` 를 본다.
+
+**사용자 창구는 ☰ 「사용 로그 내려받기」다 (2026-09-09).** 위 두 줄은 워크트리에 손이 닿는
+에이전트·개발자용이다. 브라우저만 있는 사용자에게는 경로가 없었으므로, AI 패널 두 ☰ 표면
+(`ai-more-usage-log` / `ai-command-menu-usage-log`)에서 링버퍼 전체를 그 자리에서
+`ai-usage-log-<시각>.txt` 로 내려받는다. 서식은 `src/ai/activityLogText.ts` — **JSON 이 아니라
+사람이 통독하는 글**이고(한 턴이 한 문단), 예산에 걸려 잘린 몫은 `잘린 기록:` 으로 밝히고,
+기록이 0건이면 빈 파일 대신 안내 토스트를 띄운다. 기계 판독용 `serializeAiActivityLogs()` 는
+그대로 남는다. 상세: `openwiki/editor-ai-panel.md` 「사용 로그는 그 자리에서 .txt 로 나온다」.
 
 ### 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
 

@@ -1,3 +1,5 @@
+import { updateDetectionEncounters } from "./npcDetectionEncounter";
+import { BattleAdmissionError } from "@/project/battleAdmission";
 import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniturePushFrames } from './furniturePushAnimation';
 import { advancePursuitDoors, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
 import { refreshRuntimeEntities } from "./playSceneMapRuntime";
@@ -21,7 +23,7 @@ import { setNpcIdleFrame } from "@/player/playSceneAutonomousSprites";
 import type { AutonomousNpcSprite } from "@/player/playSceneAutonomousTypes";
 import type { Dir, InputState } from "@/player/input";
 import { facingForStep, resolveDiagonalStep } from "@/player/input";
-import { assertNever, type PlaySceneContext } from "@/player/playSceneTypes";
+import { assertNever, type PlayerRouteState, type PlaySceneContext } from "@/player/playSceneTypes";
 import { findBlockingEventOverlappingRect,
 findRuntimeEventAtInMap,
 setRuntimeEventPositionDirection, } from "@/project/runtimeEventState"
@@ -42,6 +44,7 @@ import type { FarmInteractionResult } from "@/player/farming";
 import { farmIntentForHand, interactWithFarmPlot, farmIgnoreMessage } from "@/player/farming";
 import { showFarmFeedbackMessage } from "@/player/playSceneZoneFeedback";
 import { interactWithLifeField } from "@/player/lifeFieldInteraction";
+import { diagnosticObserved, publishDiagnostic } from "@/util/diagnosticObserver";
 import { tryChestInteraction } from "@/player/playSceneChest";
 import { tryActionCombatSwing, tryActionSkillCast } from "@/player/playSceneActionCombat";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
@@ -91,6 +94,7 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     scene.syncRuntimeState();
     return;
   }
+  updateDetectionEncounters(scene, deltaMs);
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (!scene.running && advancePursuitDoors(world, deltaMs)) refreshRuntimeEntities(scene);
   scene.player.setVisible?.(!isPlayerHiding(world));
@@ -201,6 +205,7 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     scene.tileY = scene.movingTo.y;
     scene.session.x = scene.tileX;
     scene.session.y = scene.tileY;
+    if (diagnosticObserved("movement")) publishDiagnostic({ category: "movement", phase: "completed", x: scene.tileX, y: scene.tileY });
     recordFollowerPlayerStep(scene.session, { x: scene.movingFrom.x, y: scene.movingFrom.y, direction: scene.facing });
     const project = store.getCurrent();
     applyWalkCareTicks(project, scene.session, 1);
@@ -295,6 +300,7 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   }
   const step = resolveDiagonalStep(moveX, moveY, canStep);
   if (!step) {
+    if (diagnosticObserved("collision")) publishDiagnostic({ category: "collision", phase: "terrain", x: scene.tileX + moveX, y: scene.tileY + moveY });
     // 벽을 향해도 그 방향으로 몸은 돌린다(제자리 방향 전환).
     if (input.dir) scene.facing = input.dir;
     return;
@@ -308,6 +314,7 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
     // Pushing is cardinal. A diagonal collision must never move the body
     // diagonally while the object slides along only one axis.
     if (step.dx !== 0 && step.dy !== 0 || !tryStartFurniturePush(scene, blockingEvent)) {
+      if (diagnosticObserved("collision")) publishDiagnostic({ category: "collision", phase: "event", x: nx, y: ny });
       firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
     }
     return;
@@ -362,7 +369,7 @@ function advancePlayerRoute(scene: PlaySceneContext): void {
     }
     const command = route.moves[route.index];
     route.index += 1;
-    if (command && applyPlayerRouteCommand(scene, command)) return; // 이동 시작 → 이번 프레임 종료
+    if (command && applyPlayerRouteCommand(scene, route, command)) return; // 이동 시작 → 이번 프레임 종료
     if (command?.kind === "move" && route.stopOnBlocked) {
       scene.playerRoute = null;
       return;
@@ -371,12 +378,12 @@ function advancePlayerRoute(scene: PlaySceneContext): void {
 }
 
 // 이동을 시작하면 true(이번 프레임 종료), 아니면 false(다음 명령 계속).
-function applyPlayerRouteCommand(scene: PlaySceneContext, command: MoveCommand): boolean {
+function applyPlayerRouteCommand(scene: PlaySceneContext, route: PlayerRouteState, command: MoveCommand): boolean {
   switch (command.kind) {
     case "move":
-      return startPlayerRouteStep(scene, command.dir);
+      return startPlayerRouteStep(scene, route, command.dir);
     case "stepForward":
-      return startPlayerRouteStep(scene, scene.facing);
+      return startPlayerRouteStep(scene, route, scene.facing);
     case "jump":
       return startPlayerJump(scene, command);
     case "dropIn":
@@ -395,6 +402,12 @@ function applyPlayerRouteCommand(scene: PlaySceneContext, command: MoveCommand):
       return false;
     case "changeSpeed":
       scene.moveDurationMs = clampPlayerMoveDuration(scene.moveDurationMs, command.delta);
+      return false;
+    // 통과 ON/OFF. 상태를 **루트에** 담는다 — 씬에 담으면 루트가 끊긴 자리에 남아 일반 조작이
+    // 벽을 뚫는다(수명 계약은 clearPlayerRouteThrough 주석). 이동 경로 편집기가 주인공 대상에도
+    // 이 명령을 authoring 하게 열어 두고 있으므로 대상 종류로 효력을 없애면 안 된다.
+    case "setThrough":
+      route.through = command.enabled;
       return false;
     // 주인공에게 의미 없거나 MVP 범위 밖(그래픽/투명도/NPC상대 이동 등) → 조용히 건너뛴다.
     default:
@@ -431,11 +444,21 @@ function scaleDelta(delta: { x: number; y: number }, factor: number): { x: numbe
   return { x: delta.x * factor, y: delta.y * factor };
 }
 
-function startPlayerRouteStep(scene: PlaySceneContext, dir: Dir): boolean {
+function startPlayerRouteStep(scene: PlaySceneContext, route: PlayerRouteState, dir: Dir): boolean {
   scene.facing = dir;
   const delta = directionDelta(dir);
   const nx = scene.tileX + delta.x;
   const ny = scene.tileY + delta.y;
+  // 통과 ON: 지형·배치물·솔리드 이벤트 판정을 전부 건너뛰고 맵 경계만 본다 —
+  // NPC 의 canNpcMove(`mover.through` 분기)와 **같은 폭**이고, 앵커 한 칸으로 경계를 보는 것도
+  // 그쪽과 같다. 경계를 남기는 이유: 맵 밖 좌표는 타일·이벤트 조회가 전부 빈 값이 되어
+  // 걸음 완료 부수효과(지형 피해·인카운터·터치)가 의미를 잃는다.
+  if (route.through) {
+    if (!inBounds(scene.map, nx, ny)) return false;
+    scene.dashing = false;
+    beginPlayerStep(scene, nx, ny);
+    return true;
+  }
   const body = resolvePlayerBody(store.getCurrent(), scene.session);
   // 강제 이동 루트도 몸 크기를 존중한다 — 3x3 주인공이 커맨드로는 벽을 뚫으면 안 된다.
   if (!playerCanStep(scene, body, delta.x, delta.y)) return false; // 막히면 건너뜀
@@ -770,6 +793,7 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
 
 // runFieldSpawnEventBattle(playSceneFieldSpawns.ts) 과 같은 재진입 가드 계약이다.
 async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string): Promise<void> {
+  const session = scene.session;
   const previousInputEnabled = scene.inputEnabled;
   scene.running = true;
   scene.setInputEnabled(false);
@@ -777,11 +801,19 @@ async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string
     // 결과를 버리면 안 된다: battleResult 는 페이지 조건·분기의 SSOT 이고, 랜덤 인카운터는
     // canLose=false 라 패배가 곧 게임 오버다(sceneTestRunner 의 인카운터 경로와 같은 계약).
     const result = await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false });
-    scene.session.battleResult = result;
+    if (result === null || scene.session !== session || scene.sys?.isActive() === false) return;
+    session.battleResult = result;
     if (result === "defeat") applyBattleDefeat(scene);
+  } catch (error) {
+    if (!(error instanceof BattleAdmissionError)) throw error;
+    if (scene.session === session && scene.sys?.isActive() !== false) {
+      scene.showRuntimeOverlay("runtime-error", error.message);
+    }
   } finally {
-    scene.running = false;
-    scene.setInputEnabled(previousInputEnabled);
+    if (scene.session === session && !scene.battleAbortController && scene.sys?.isActive() !== false) {
+      scene.running = false;
+      scene.setInputEnabled(previousInputEnabled);
+    }
   }
 }
 

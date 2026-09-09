@@ -12,7 +12,7 @@
 // 4) 세트 혼합 금지 — 벽·지붕은 키트로 페어 고정.
 
 import { TILE } from "@/project/defaults/constants";
-import { createHouseDoorEvent, createHouseDoorStepEvent } from "@/editor/houseInteriors";
+import { createHouseDoorEvent, createHouseDoorStepEvent, stampHouseDoorBackground } from "@/editor/houseInteriors";
 import type { GameEvent, GameMap, MapId } from "@/project/types";
 
 export type HouseKitId = "blue-stone" | "bright-plaster" | "amber-wood" | "slate-wood" | "timber-hall" | "aframe-stone";
@@ -515,6 +515,7 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
   const doorAt = best ? { x: best.x0 + Math.floor((best.x1 - best.x0) / 2), y: best.y } : undefined;
   placeWindowsOnWallRuns(map, kit, wallWindowRunsFromRoles(wallRole, map.width), plan.windows, doorAt);
   if (doorAt && plan.doorEvent) {
+    stampHouseDoorBackground(map, doorAt);
     upsertEvent(map, createHouseDoorEvent({
       eventId: plan.doorEvent.eventId,
       x: doorAt.x,

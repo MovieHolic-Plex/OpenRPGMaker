@@ -1,4 +1,4 @@
-﻿import { destroyGame, getGame, startEditGame } from "@/app/mode";
+import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { scheduleEditorAssetWarmup } from "@/assets/editorAssetWarmup";
 import {
   DEFAULT_ASSISTANT_TEMPERATURE,
@@ -8,7 +8,7 @@ import {
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { editorState } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
-import { dismissCoachMarks, maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } from "@/editor/coachMarks";
+import { dismissCoachMarks } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
 import { installToolCursor } from "@/editor/toolCursor";
 import {
@@ -34,6 +34,7 @@ import { installEditorToolHook } from "@/editor/editorToolHook";
 import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { closeSidebarSurface, teardownSidebarSurfaces } from '@/editor/panels/sidebarSurface';
 import { refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
@@ -92,9 +93,8 @@ const MAP_TREE_COLLAPSED_FALLBACK_HEIGHT = 44;
  */
 const PALETTE_SHEET_RESERVE_HEIGHT = 280;
 const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
-// 초보 아이콘 레일의 출하 폭. CSS `--basic-rail-width` 가 원천이고 이 상수는 폭을 읽지 못할
-// 때(fake DOM, 첫 페인트 전)의 폴백이다. 48px 로 되돌리면 14px 한국어 라벨 2줄이 잘린다.
-const BASIC_RAIL_FALLBACK_WIDTH = 72;
+// CSS `--basic-rail-width` owns the beginner panel width; this is its pre-layout fallback.
+const BASIC_RAIL_FALLBACK_WIDTH = 288;
 
 type LoadedEditorLayout = {
   readonly leftWidth: number;
@@ -250,8 +250,6 @@ export function renderEditor(main: HTMLElement): void {
   // 각 게이트가 허용하므로 느린 companion 조회가 사용자를 잠그지는 않는다.
   void refreshAiConnectionStatus();
   scheduleEditorAssetWarmup();
-  maybeStartBasicCoachMarks();
-  maybeStartStandardWelcomeCard();
 }
 
 /** 좌측 도크에 마운트할 패널. 규칙은 `workspace/leftDockPanels.ts` 가 소유한다(패널 메뉴와 공유). */
@@ -259,6 +257,7 @@ function leftDockPanels(): readonly PanelId[] {
   return resolveLeftDockPanels({
     left: getWorkspaceLayout().docks.left,
     paletteRail: getEditorChrome().paletteRail,
+    mapTree: getEditorChrome().mapTree,
   });
 }
 
@@ -272,6 +271,7 @@ function leftDockPanels(): readonly PanelId[] {
  * 걸려 있어서다(그 게이트를 도크 구성으로 합치는 일은 다음 라운드).
  */
 function mountLeftDock(container: HTMLElement): void {
+  closeSidebarSurface();
   leftDock = mountDock({
     container,
     zone: "left",
@@ -337,18 +337,6 @@ function renderLeftDockPanels(): void {
 }
 
 export function applyEditorUiModeLayout(): void {
-  const game = getGame();
-  const scene = game?.scene?.getScene("EditScene") as
-    | { cameras?: { main?: { scrollX: number; scrollY: number; width: number; height: number; setScroll: (x: number, y: number) => unknown; setBounds: (x: number, y: number, w: number, h: number) => unknown } } }
-    | undefined;
-  const cam = scene?.cameras?.main;
-  const savedCenter = cam
-    ? { x: cam.scrollX + cam.width / 2, y: cam.scrollY + cam.height / 2 }
-    : null;
-  if (cam && savedCenter) {
-    cam.setBounds(savedCenter.x - 10000, savedCenter.y - 10000, 20000, 20000);
-  }
-
   const chrome = getEditorChrome();
   applyEditorUiModeClasses(getEditorUiMode());
 
@@ -370,34 +358,10 @@ export function applyEditorUiModeLayout(): void {
   applyLayout();
   scheduleFitCanvas();
 
-  if (cam && savedCenter) {
-    const reapply = () => {
-      const w = cam.width;
-      const h = cam.height;
-      cam.setBounds(savedCenter.x - w, savedCenter.y - h, w * 2, h * 2);
-      cam.setScroll(savedCenter.x - w / 2, savedCenter.y - h / 2);
-    };
-    let stableFrames = 0;
-    let lastW = cam.width;
-    let lastH = cam.height;
-    const poll = () => {
-      reapply();
-      if (cam.width === lastW && cam.height === lastH) {
-        stableFrames++;
-      } else {
-        stableFrames = 0;
-        lastW = cam.width;
-        lastH = cam.height;
-      }
-      if (stableFrames < 5) {
-        requestAnimationFrame(poll);
-      }
-    };
-    requestAnimationFrame(poll);
-  }
 }
 
 export function teardownEditor(): void {
+  teardownSidebarSurfaces();
   teardownAiChatPanel();
   registerAiBootIntentTarget(null);
   clearPendingAiBootIntent();
@@ -572,7 +536,7 @@ function applyLayout(): void {
   if (chrome.paletteRail) {
     leftRoot.style.display = "";
     // Standard/expert leave an inline width. min-width in the rail stylesheet
-    // cannot override it: clear it before measuring the 72px CSS-owned rail.
+    // cannot override it: clear it before measuring the CSS-owned beginner panel.
     leftRoot.style.width = "";
     leftResizer.style.display = "none";
     // `--editor-left-safe` 는 실폭에서 파생한다. 리사이저 여유는 비-레일 분기와 같은 계산이고
@@ -661,8 +625,14 @@ function fitMapTreeHeight(): void {
   const panelHeight = measuredHeight(leftRoot, 0);
   const ratioCap = panelHeight > 0 ? Math.floor(panelHeight * MAP_TREE_AUTO_MAX_RATIO) : MAP_TREE_AUTO_MAX_HEIGHT;
   const sheetCap = paletteSheetReserveCap(panelHeight);
-  const max = Math.max(MAP_TREE_AUTO_MIN_HEIGHT, Math.min(MAP_TREE_AUTO_MAX_HEIGHT, ratioCap, sheetCap));
-  const next = clamp(desired + MAP_TREE_AUTO_SLACK, MAP_TREE_AUTO_MIN_HEIGHT, max);
+  // Keep the existing three-row list viewport usable when expert tools consume
+  // more palette chrome; the sheet's preferred reserve must not starve maps.
+  const list = leftMapRoot.querySelector<HTMLElement>(".map-tree-list");
+  const minimum = Math.max(MAP_TREE_AUTO_MIN_HEIGHT, list
+    ? Math.ceil(measuredHeight(leftMapRoot, 0) - measuredHeight(list, 0) + Math.min(108, listContentHeight(list)))
+    : 0);
+  const max = Math.max(minimum, Math.min(MAP_TREE_AUTO_MAX_HEIGHT, ratioCap, sheetCap));
+  const next = clamp(desired + MAP_TREE_AUTO_SLACK, minimum, max);
   if (next === mapTreeAutoHeight) return;
   mapTreeAutoHeight = next;
   applyLayout();

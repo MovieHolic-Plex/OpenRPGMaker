@@ -19,11 +19,15 @@
   border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
   box-sizing: border-box;
   display: inline-grid;
-  height: 32px;
   image-rendering: pixelated;
   overflow: hidden;
   place-items: center;
   position: relative;
+}
+
+/* Non-DB consumers retain 32px; DB row and actor dimensions have scoped owners. */
+.db-list-thumb:not(.database-modal-window .db-list-thumb) {
+  height: 32px;
   width: 32px;
 }
 
@@ -530,23 +534,4 @@
 
 .db-monster-species-evo-row > button {
   margin-left: auto;
-}
-
-
-.db-resource-picker-audio {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 8px;
-}
-.db-resource-picker-audio-title {
-  font-size: 12px;
-  font-weight: 700;
-  opacity: 0.85;
-}
-.db-resource-picker-audio-id,
-.db-resource-picker-audio-url {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  word-break: break-all;
 }

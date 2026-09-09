@@ -13,7 +13,8 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { makeTileToolbar } from "@/editor/panels/tileToolbar";
+import { renderTilePalette } from "@/editor/panels/tilePalette";
+import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -35,17 +36,8 @@ function declarationBlock(selectorSuffix: string): string | null {
 let host: HTMLElement;
 
 function render(): HTMLElement {
-  host.replaceChildren();
-  const project = store.getCurrent();
-  const map = project.maps[project.startMapId]!;
-  const toolbar = makeTileToolbar({
-    map,
-    rerender: () => { render(); },
-    state: editorState.get(),
-    tileset: project.tilesets[map.tilesetId]!,
-  });
-  host.append(toolbar);
-  return toolbar;
+  renderTilePalette(host);
+  return toolbarRow();
 }
 
 function toolbarRow(): HTMLElement {
@@ -57,10 +49,12 @@ function toolbarRow(): HTMLElement {
 describe("도구막대 오버플로 도달성", () => {
   beforeEach(() => {
     resetTileToolbarMenusForTests();
+    resetEditorUiModeForTests("standard");
     const project = createBlankProject();
     store.replace(project);
     editorState.set({ currentMapId: project.startMapId, layer: "lower", paintShape: "pen", selection: null, tool: "paint" });
     host = document.createElement("div");
+    host.dataset.testid = "left-palette-root";
     document.body.append(host);
     render();
   });
@@ -76,11 +70,11 @@ describe("도구막대 오버플로 도달성", () => {
     const scroll = row.querySelector<HTMLElement>(".oprn-tile-toolbar-scroll");
     expect(scroll).toBeTruthy();
     expect(scroll!.parentElement).toBe(row);
-    for (const testid of ["tool-select", "tool-paint", "tool-erase", "oprn-tool-rect", "oprn-tool-round", "tool-fill", "tool-grid", "oprn-tool-undo"]) {
+    for (const testid of ["tool-select", "tool-paint", "tool-erase", "tool-fill", "oprn-tool-undo"]) {
       expect(scroll!.querySelector(`[data-testid="${testid}"]`), testid).toBeTruthy();
     }
-    const wrapper = row.querySelector<HTMLElement>('[data-testid="toolbar-overflow-menu"]');
-    const trigger = row.querySelector<HTMLElement>('[data-testid="oprn-tool-overflow"]');
+    const trigger = row.querySelector<HTMLElement>('[data-testid="sidebar-tools-menu"]');
+    const wrapper = trigger?.parentElement;
     expect(wrapper).toBeTruthy();
     expect(trigger).toBeTruthy();
     expect(wrapper!.parentElement).toBe(row);
@@ -88,14 +82,30 @@ describe("도구막대 오버플로 도달성", () => {
   });
 
   it("열린 드롭다운은 잘리는 스크롤 컨테이너의 자손이 아니다", () => {
-    toolbarRow().querySelector<HTMLElement>('[data-testid="oprn-tool-overflow"]')!.click();
+    const expectDirectSizes = () => {
+        const controls = host.querySelectorAll<HTMLSelectElement>('[data-testid="brush-size-select"]');
+        expect(controls).toHaveLength(1);
+        const control = controls[0];
+        if (!control) throw new Error('Missing brush selector');
+        expect(Array.from(control.options, option => option.value)).toEqual(['1', '2', '3', '4']);
+        expect(control.closest('[data-testid="toolbar-overflow-dropdown"]')).toBeNull();
+        expect(control.closest('[hidden], .hidden')).toBeNull();
+        expect(control.disabled).toBe(false);
+    };
+    expectDirectSizes();
+    host.querySelector<HTMLElement>('[data-testid="oprn-tool-overflow"]')!.click();
     const row = toolbarRow();
-    const dropdown = row.querySelector<HTMLElement>('[data-testid="toolbar-overflow-dropdown"]');
+    const dropdown = host.querySelector<HTMLElement>('[data-testid="toolbar-overflow-dropdown"]');
     expect(dropdown).toBeTruthy();
     const scroll = row.querySelector<HTMLElement>(".oprn-tile-toolbar-scroll")!;
     expect(scroll.contains(dropdown!)).toBe(false);
-    for (const testid of ["copy-button", "paste-button", "oprn-tool-inspector", "toolbar-toggle-ruleAudit", "toolbar-toggle-history", "brush-size-1", "brush-size-4"]) {
+    for (const testid of ["oprn-tool-inspector", "toolbar-toggle-ruleAudit", "toolbar-toggle-history"]) {
       expect(dropdown!.querySelector(`[data-testid="${testid}"]`), testid).toBeTruthy();
+    }
+    expectDirectSizes();
+    host.querySelector<HTMLElement>('[data-testid="sidebar-tools-menu"]')!.click();
+    for (const testid of ['copy-button', 'paste-button', 'paint-shape-select']) {
+      expect(host.querySelector(`[data-testid="sidebar-tools-surface"] [data-testid="${testid}"]`)).not.toBeNull();
     }
   });
 

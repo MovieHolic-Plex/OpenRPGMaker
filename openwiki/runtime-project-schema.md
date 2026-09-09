@@ -1,5 +1,325 @@
 # Runtime Project Schema & Persistence
 
+## Truthful migrated-load state (2026-09-07)
+
+`store.normalizeCurrentProject` compares raw project structure before and after
+normalization (`structuralJson`: object-key order only; arrays and every field stay
+significant). Helper `changed` flags remain diagnostic hints, not evidence that a
+revision needs saving: transient pack rewrites can return to the same structure.
+This comparison does not deserialize, change canonical hashing, or exclude content.
+
+Real normalization changes set dirty and advance mutation generation before they can
+be persisted. Initial load schedules migration autosave only after `loaded=true`;
+reload/reconnect capture the remote baseline before normalization and defer saving
+through the ordinary autosave/flush path. None clears a migrated revision as clean.
+Failure keeps it dirty; edits during migration persistence trigger the existing
+local-first catch-up save. Coalescing is scoped to content lineage, so a replacement
+migration can save independently of an older held save. Historical responses cannot
+clear a replacement flight, dirty state, receipt or autosave status.
+
+The faceset-repair await captures both its project object and content lineage.
+If a switch or immutable edit detaches that target, completion cannot mark the
+current project dirty or schedule its save. Likewise, synchronous `saving` status
+subscribers may replace the project: the old flush rechecks lineage before starting
+persistence and returns `disabled` without issuing a write or replacing the new
+lineage's flight. This result disables that stale request, not remote persistence.
+Same-lineage callback edits and repairs whose target remains current retain their
+normal save behavior. Deterministic coverage: `storeLifecycleReentrancy.test.ts`.
+
+Interior group composition and strict cabinet-kit migration are described in
+[the room harness page](editor-interior-room-harness.md). Placed map layers without
+per-cell provenance are preserved, including deliberate lower-layer props. No schema
+bump is needed. Existing accepted-save receipts/proof and `serializeForComparison`
+remain unchanged; graphical/both title graphics and nondefault authored content are
+still identity-significant. Tests: `interiorLoadConsistency.test.ts`,
+`storePersistenceLineage.test.ts`, and the existing persistence-proof tests.
+## Explicit publication identity and Save6 (2026-09-06)
+
+Project4 optionally carries `meta.publication`: `gameId`, `versionLabel`, a full
+SHA-256 `runtimeTarget`, `saveCompatibilityId`, and directional
+`acceptedSaveCompatibilityIds`. `publication.ts` validates without repairing or
+generating identity. Only explicit prepare/fork/upgrade operations create IDs.
+Rename, ordinary persistence and `.oprn` package round-trips preserve them.
+Upgrade preserves game identity and starts a new save lineage; fork changes both.
+
+Identity-bearing snapshots use Save6. Standalone/editor keys remain
+`oprn:game:<gameId>:lineage:<saveCompatibilityId>:save-slot:v6:<slot|auto>`;
+title, filename and legacy host namespace changes do not change that identity.
+Community keys instead begin `oprn:community:<encoded-listing-slug>:game:...`.
+`exportEntry` derives `saveIsolationScope` from the actual `/play/<slug>/...` URL,
+even for opened/embedded projects; neither project metadata nor a boot
+`saveNamespace` override can choose it. `renderPlayer` installs publication and
+scope together via `setSavePublication(publication, isolationScope?)`.
+Save6 `identity.isolationScope` records the host scope separately from game and
+lineage. Manual/autosave readers, writers, blockers and apply reject foreign
+scope snapshots. Community boot also skips the global legacy-prefix migration
+(`exportStorageBoot.ts`); it must not enumerate, migrate or delete other saves.
+Legacy projects still write Save5 and retain the existing Save4/5 read/fallback
+rules. Legacy readers do not accept Save6. Save6 without identity is invalid.
+`applySaveSnapshot` rejects wrong-game/unaccepted-lineage snapshots before state
+restoration. `importSaveCopy` accepts one explicitly named storage key, requires
+explicit legacy adoption for Save4/5, validates a separate session, and writes
+only an empty destination slot. It never scans storage or changes source bytes.
+Tests: `publication.test.ts`, `publicationSaves.test.ts`, `lifeSaveVersion.test.ts`.
+
+The runtime load panel offers copy-and-load controls only for explicitly accepted
+predecessor lineage keys **inside the current listing scope**, including their
+autosave, into the first empty manual slot. `importSaveCopy` checks the source key
+against local current/accepted lineage keys before reading it; uploader-accepted
+lineage metadata is compatibility, never cross-listing access authority.
+Legacy adoption remains an explicit standalone
+`importSaveCopy({sourceKey, adoptLegacy: true, ...})` operation on a known legacy
+key, not title/slug discovery or a bypass for community keys.
+
+Cross-listing transfer is a separate player-selected file flow: in the source
+load panel export a manual/autosave JSON file, then in the destination select
+that file using the copy-and-load control. `importSelectedSaveFileCopy` receives
+only those selected bytes (never a discovered storage key), requires compatible
+Save6 game/lineage metadata, validates a separate session, rebinds scope, and
+writes an empty manual slot. It cannot overwrite a destination or change the
+source. Cancel/failure changes no live session. Native file controls and the
+existing keyboard cursor menu own selection; no accounts or listing ownership
+platform is involved. The UI caps selected files at 8 MiB.
+
+Tests: `communitySaveBoot.test.ts`, `publicationSaves.test.ts`,
+`publicationSaveImportPanel.test.ts`, and the real Chrome/PostgreSQL seam
+`node --test test/communitySaveIsolation.test.mjs`. Runtime archive/export
+operations and browser QA commands are in `editor-workflows-misc.md` under
+Versioned publication.
+
+## P1 accepted-save receipts and read-only proof (2026-09-06)
+
+`ProjectFlushResult` keeps its existing variants; `saved` optionally includes a
+`ProjectPersistenceReceipt`. A clean flush after load may return `saved` without
+a receipt, which isn't proof. After an accepted save, a clean current flush
+returns the same receipt without another write.
+
+The frozen, in-memory receipt contains `revisionId`, `projectId`,
+`mutationGeneration`, `contentIdentity` and optional `sha256`. Identity is SHA-256
+of the existing `serializeForComparison(projectWithoutEventDrafts(...))`
+normalization, derived from `result.project ?? submittedProject`, not live
+`getCurrent()` after an await. Accepted merged content can differ from the live
+editor. The optional wire/server hash alone doesn't establish content equality.
+If accepted content can't normalize, saving logs the error and returns no receipt.
+
+`store.verifyPersistedRevision(receipt, { signal?, validate? })` accepts the exact
+store-issued object. A private WeakMap holds its captured Supabase configuration
+and load/adoption lineage; copied or reconstructed tokens fail. `loadProjectForPersistenceProof` reuses the
+normalized/hybrid loader with observed `project_id` and cancellation, without
+commit-tip hydration. It performs a remote read, not `reloadFromRemote()`: no
+live-project replacement, dirty reset, draft change, URL change, or store event.
+Manual reload retains its separate contract. The optional trusted synchronous
+`validate(project)` callback runs on the canonical read only after target and
+normalized content identity match. Returning a diagnostic produces `failed`;
+throwing or cancellation cannot produce success. Assistant functional acceptance
+uses this hook to re-run immutable gameplay expectations, not to accept worker
+scripts or pass flags. The callback does not persist or replace project data.
+
+Results are `verified` with `isCurrent`, `mismatch` with `reason: target | content`,
+`disabled`, `cancelled`, or `failed` with a message. Missing rows and read errors
+fail. Each verifier call makes a fresh attempt, so a failed receipt can retry.
+`isPersistenceReceiptCurrent(receipt)` checks loaded/enabled state, the latest
+receipt reference, mutation generation, load/adoption lineage and captured target
+configuration. Adoption, successful remote reload and reconnect advance lineage
+and clear the current receipt. Saves capture lineage before submission; a late
+receipt from an earlier lineage remains available for historical verification,
+but can't become current again or overwrite a replacement lineage's receipt.
+This separate counter leaves local-edit generation and local-first catch-up saves
+unchanged. A matching historical read may return `verified` with `isCurrent:false`;
+consumers mustn't promote newer live state from that result and must recheck
+currentness when consuming it after an await. Neither save responses nor proof
+reads replace newer local edits.
+
+Sources: [store types and methods](../src/project/store.ts) and
+[proof loader](../src/project/supabaseProjectSync.ts). The
+[session contract](editor-ai-panel.md) describes completion/retry and optional
+apply-commit correlation. [P1 evidence](../output/evidence/ai-harness/p1/README.md)
+records real editor and isolated Supabase proof. This adds no schema migration,
+durable receipt recovery, cross-device guarantee, or P2-P5 implementation.
+
+## Opening and game-over cinematic settings (2026-09-06)
+
+`SystemRecords.opening?: CinematicSequence` and `gameOver?: GameOverSettings` are additive, opt-in project-v4 authoring records. No schema bump, server migration, or default/demo content is needed. `src/project/cinematicSettings.ts` owns the mutable authored types and pure normalization; all four types are re-exported through `@/project/types`:
+
+- `CinematicMotion = "none" | "fade" | "pan" | "zoom"`.
+- `CinematicScene` is a discriminated union with common `id`, `narration`, optional `narrationAudioResourceId`, and `durationMs`. A `text` scene has no media or motion field; an `image` scene requires `resourceId` and `motion`; a `video` scene requires `resourceId` and has no motion field.
+- `CinematicSequence = { enabled: boolean; skippable: boolean; scenes: CinematicScene[] }`.
+- `GameOverSettings` has optional `sequence`, `title`, `message`, `retryLabel`, `titleLabel`, and `backgroundResourceId` fields.
+
+`CINEMATIC_SCENE_LIMIT = 100` and `CINEMATIC_DURATION_MAX_MS = 120000` are exported from the focused module. `normalizeCinematicSequence(sequence: CinematicSequence): CinematicSequence` and `normalizeGameOverSettings(settings: GameOverSettings): GameOverSettings` accept typed records; the `normalizeSystemRecords` whitelist calls them only for present settings. Missing settings stay missing, empty authored records/sequences and disabled content survive, and normalization preserves ordering and exact text (including blank strings and whitespace). IDs are trimmed; optional empty IDs are omitted on typed direct normalization. Normalization does not mutate input and is idempotent; it is not a replacement for wire validation.
+
+`io/shapeDatabaseFields.validateSystem` checks these records before typed cloning/normalization. It rejects non-objects, unknown or variant-inappropriate fields, missing required fields, incorrect field types, blank IDs, duplicate scene IDs (after trimming, scoped to each sequence), more than 100 scenes, and non-finite/non-integer durations outside `0..120000`. Image motion must be one of the four values above. `io/resourceReferenceValidation.validateSystemResources` validates image/video/narration/background IDs through the existing known-resource authority even when a sequence is disabled. This is existence validation, not media decoding or MIME compatibility validation.
+
+The duration contract for playback consumers is: zero means keyboard advance for image/text; videos advance on completion, with a positive duration acting as an authored maximum. Text is stored literally; renderers must use safe native text rendering. This model increment does not implement playback, new-game routing, game-over menus, or editor authoring UI.
+
+`webExportAssets` already traverses nested project strings outside uploaded payloads, so no cinematic asset collector is added. Disabled sequences retain uploaded media in `prepareWebExport`, including narration referenced nowhere else. Uploaded video filenames now use `.mp4`, `.webm`, or `.ogv` for the media types accepted by the existing movie importer (rather than the former `.png` fallback); image/GIF/WebP and audio handling is unchanged. `test/cinematicSettings.test.ts` covers legacy absence, disabled/empty retention, deterministic serialize/deserialize, strict rejection, resource validation, and actual export-entry bytes for image/video/audio/background, with unused uploads pruned.
+
+## 적 전투 이미지 크기 (2026-09-06)
+
+`EnemyRecord.battleScalePercent?: number`는 선택적인 전투 표시 백분율이다. `normalizeEnemyRecord`는 유한 숫자를 반올림해 정수 10~300에 제한하고, 누락·비숫자·비유한 값은 100으로 처리한다. 100은 키를 생략해 기존 프로젝트를 희소하게 유지한다. 기존 editor mutation allowlist와 `upsert_enemy` 정수 스키마에 포함되며 `serialize`/`deserialize`가 비기본값을 보존한다. 기존 로드 정규화를 재사용하는 additive 필드라 스키마 버전 변경이나 SQL migration은 없다. `test/enemyBattleScale.test.ts`가 실제 편집→저장→로드→재저장과 손상된 입력/기본값 복귀를 검증한다. 원격 DB 쓰기 없이 엔진·편집기 코드만 변경한 계약이다.
+
+## Project monster metadata overrides (foundation, 2026-09-07)
+
+`Project.monsterMetadata?: Record<string, Partial<MonsterMetadata>>` stores editor-only
+`name`, `tags`, and `description` overrides by raw resource ID. The readonly metadata
+value type is exported through `@/project/types`; mutations belong to
+`@/project/monsterMetadata`. `setMonsterMetadataOverride(overrides, resourceId, patch)`
+returns a new map, trims new input, deduplicates tags, and preserves omitted fields.
+Names must be nonblank and <=120 UTF-16 units; descriptions <=4000; tags <=32 entries
+of <=64 units. Empty tags/descriptions explicitly clear defaults. Loading validates
+stored values without trimming, deduplicating, registering orphan IDs, or backfilling.
+`resetMonsterMetadataOverride(overrides, resourceId)` removes the whole resource override
+and returns `undefined` when the map becomes empty. Callers delete the optional project
+field on that result. Raw IDs such as `terrainTemplates` and `__proto__` retain identity.
+
+`applyMonsterMetadataDelta(base, local, latest)` merges per resource AND per field.
+Only locally changed fields replace latest values; local changes win same-field races.
+A local reset removes fields present in base, preserving concurrently added remote fields.
+Map-patch saves apply this delta; accepted-save reconciliation applies it again using
+submitted/current/saved snapshots. The existing content-lineage guard rejects stale
+responses after project replacement. Reconciliation preserves live maps and does not
+create authored mutation generations or extra history entries. Project snapshots already
+support undo/redo; UI Apply/reset must record one snapshot and use labeled `store.update`.
+
+`@/assets/monsterResourceCatalog` owns `listMonsterResources(project)` and
+`getMonsterResource(project, rawId)` (missing IDs return `undefined`). Entries expose
+`resourceId`, effective metadata, `origin` (`bundled`/`uploaded`/`profile`),
+`reviewStatus` (`reviewed`/`unreviewed`), and per-field `sources`
+(`project`/`catalog`/`fallback`). Promoted monster artwork includes troop previews;
+builtin enemies, EasyRPG, Scarloxy, explicit profiles and uploads are stably deduplicated.
+Explicit upload kind overrides prefixes, profiles, and bundled identity. Custom uploads
+never inherit catalog review status. Metadata-only IDs do not become resources.
+`MONSTER_CATALOG` is an intentionally empty typed scaffold in this independent foundation
+increment; the lead must supply original-artwork-reviewed values before final review.
+Fallback descriptions are empty and always unreviewed; inferred search tags are not vision evidence.
+
+Monster search (`monsterProject` option) and monster picker enumeration delegate to that
+same authority. Non-monster image/picture picking and URL resolution remain unchanged.
+`monsterMetadataChanged` counts changed resources for diff/history/commit accounting;
+legacy summaries may omit it. Editor JSON, backup and package round trips retain overrides;
+playable exports strip them and exclude their text from uploaded-asset usage accounting.
+No schema version bump, SQL table, migration, or live-project rewrite is needed.
+
+## Project audio description overrides
+
+`Project.audioDescriptions` is an optional v4 field, defined in
+`src/project/types/base.ts` and `src/project/types/project.ts`:
+
+```ts
+audioDescriptions?: {
+  music?: Record<string, string>;
+  sound?: Record<string, string>;
+};
+```
+
+Keys are raw resource IDs, not `bgm:`/`se:` search IDs, filenames or URLs. A missing key
+inherits the catalog default; an own key with `""` explicitly clears it; another string
+is project-authored text. Reset removes only the override, pruning empty containers.
+An explicit value equal to today's default stays an override.
+
+`src/project/audioDescriptions.ts` is the catalog/DOM/store/player-independent authority.
+New writes trim surrounding whitespace and enforce 4,000 UTF-16 code units after trimming,
+preserving internal line breaks. `src/project/io/shape.ts` validates stored strings without
+rewriting them, rejects malformed partitions/values and overlong strings, and accepts field
+absence. Unknown IDs survive loading as metadata but don't become selectable resources.
+`src/project/io/serialize.ts` preserves raw dictionary keys even when they resemble a
+legacy field name.
+
+Defaults remain in immutable catalogs; overrides aren't duplicated in upload `meta`,
+profiles or browser-global localStorage. Existing projects need no default backfill,
+schema-version bump, new SQL table or live-project rewrite.
+
+### Concurrent persistence
+
+`applyAudioDescriptionDelta(base, local, latest)` starts from the latest stored descriptions
+and applies only kind/raw-ID states that changed locally relative to base. Different-key
+edits survive together; a changed local key wins a same-key conflict. Absence is reset,
+not clear. Unchanged local keys retain remote edits and remote resets.
+
+`src/project/supabaseProjectSync.ts` uses this delta for map-patch saves. A project-scoped
+description mutation doesn't force a full save: `src/project/store.ts` chooses the save API
+from the persisted baseline. After success, the store reconciles descriptions with
+`base=submitted`, `local=current`, `latest=saved`. This preserves typing during the request,
+adopts remote-only changes and avoids resending stale metadata on the next map save.
+It replaces only the necessary root/description state, keeps live maps and mutation-generation
+handling, and emits synchronization without counting a new authored edit.
+
+Reconciliation uses the same content-lineage counter as accepted-save receipts.
+Full project replacement/reset advances lineage, invalidates current proof and clears
+the old persisted baseline, so its next save is authoritative
+rather than a merge with the previous project. A late completion from an earlier epoch
+cannot reinstall that baseline or copy remote descriptions into the replacement.
+Accepted historical saves still issue verifiable, non-current receipts and commit records.
+The ownership check runs after receipt hashing and again after synchronization callbacks;
+neither boundary may reset a replacement's dirty state.
+Ordinary edits and undo within one project keep the per-key reconciliation contract.
+
+### Editor preservation and playable export
+
+Editor JSON, backups and `src/project/package.ts` packages preserve absent, empty, authored
+and orphan states. `src/project/webExport.ts` removes the entire field from the playable
+export clone before loading/validation, without changing the source project.
+`src/project/webExportAssets.ts` excludes the description subtree from usage traversal:
+neither a description key nor text equal to an upload ID keeps an unused upload alive.
+Real playback references still retain their assets and IDs.
+
+`test/audioDescriptions.test.ts`, `test/audioDescriptionPersistence.test.ts`,
+`test/audioDescriptionConcurrentPersistence.test.ts` and
+`test/audioDescriptionExport.test.ts` exercise these boundaries. Transport-mocked tests
+using real save/load/merge functions aren't evidence of a live Supabase write.
+
+## Character/face authoring metadata (2026-09-06)
+
+`ResourceProfile` optionally carries standalone-face `graphicAttributes`/`graphicNote`, or charset `characterSlots: [{characterIndex,graphicAttributes,status,faceResourceId,quality,note}]`. Seven independent string axes are kind/age/gender/skin/hair/clothing/role. Sprite names remain in `Project.charsetLabels`; face names use the existing profile name. No parallel asset registry, project version bump, or SQL migration is introduced.
+
+`characterGraphics.validateCharacterGraphicsProject` runs in `validateProjectV4`, rejecting malformed attributes, duplicate canonical sprite slots and unknown mapped face IDs. Non-mapped states require an explicit null face ID; pending/no-face are distinct. Existing projects keep these optional fields absent; display-only literal-label suggestions do not write metadata on load. Texture-key/resource-ID profile aliases resolve to the annotated profile rather than hiding edits. Whole-project serialize/deserialize, packages and Supabase current_json retain the fields; the existing missing-only bundled-profile supplementation preserves annotated profiles.
+
+Metadata JSON import validates all v1/v2 rows before a single mutation, retains pending labels and exact supplied face IDs, and never invokes automatic face matching or rewrites authored event commands. V2 exports both independent attribute sets. Focused contracts: `test/characterGraphics.test.ts`, `test/characterGraphicsLoad.test.ts`, `test/databaseCharacterGraphics.test.ts`.
+## Character appearance sets v1 (2026-09-06)
+
+`database.characterAppearances?` is an additive v4 catalog of
+`{id,name,description,charset?:{resourceId,characterIndex},face?:{resourceId},bust?:{resourceId}}`.
+It is independent of social `project.characters` / `characterId`. All graphic
+slots are optional; legacy projects keep the catalog absent. Actors and active
+event-page graphics reference a set with optional `appearanceId`, retaining their
+direct graphic fields for unlink/fallback. Both `actorModel` normalization and
+`databaseActions`' actor patch whitelist must preserve that link.
+
+`characterAppearanceValidation.ts` validates shape, unique IDs, slot bounds,
+resource kinds and dangling links. Face resources are standalone facesets, busts
+are pictures, charsets use the supported 288x256 sheet with eight 24x32-frame
+characters. Known mismatched uploaded metadata is rejected; actual decoded
+dimensions are checked before runtime frame registration. Built-in bust/full
+aliases and promoted portrait metadata match the resource picker. No migration,
+SQL table, or save-slot field is added.
+
+`characterAppearances.ts` owns shared projections and usage scanning. Session
+actor overrides still win; linked slots override legacy actor/page resources,
+and missing slots keep their legacy fallback. The player now uses the selected
+charset index rather than always cell zero. Uploaded charsets are loaded and
+registered by the existing asset loader and recognized by NPC animation.
+
+An event starts with its active page's set face as default. Explicit `changeFace`,
+including clear, takes precedence. The existing command supports optional
+`appearanceId` and `presentation:"face"|"bust"`; a missing bust uses that set's
+face, then no portrait. Explicit presentation takes precedence over old filename
+inference. Names are never used to infer speaker identity.
+
+Contracts: `characterAppearanceSets`, `characterAppearanceRuntime`, and
+`characterAppearanceScenario` tests; the dedicated
+`scripts/qa/runtime/character-appearance-sets.scenario.mjs` exercises player.html.
+`node scripts/qa/appearance-runtime-proof.mjs` uses that same harness with an
+isolated Firefox context where Chromium has host-level ERR_NETWORK_CHANGED
+asset failures. The scenario removes its temporary fixture on cleanup/exit.
+
+## New-project save/reload verification (2026-09-05)
+
+Persistence regression harness correction (2026-09-08): `test/io.test.ts` compares the complete first-roundtrip wire against the seed with only its redundant text-only `titleGraphic` removed, then requires byte-stable subsequent roundtrips. It does not normalize both expected and actual through the same loader. Storage-key guards parse executable string/template values, not explanatory comments. The no-local-project-DB guard permits `typeof indexedDB` capability inspection for AI-log durability but still rejects IndexedDB access, SQLite and the retired project fallback implementations.
+
+`storePersistence` and `unsavedChangesGuard` wire the real `createDevShowcaseProjectForLocation` through `setDevProjectFactory`, as `bootApp` does; importing `store` alone does not activate URL showcases. Tests block live fetches and distinguish canonical REST writes from edit-activity telemetry. Fire-and-forget commit audit mirroring is isolated from the next case's transport. Cold module transformation belongs in setup, not the save behavior deadline. `persistenceTestSignals.ts` provides real bounded deadlines around pre-registered autosave and request signals; only the actual debounce/backoff contract advances fake time. Race tests hold each response until the next local edit and verify the still-dirty intermediate state before catch-up completes. The mode overlap test subscribes to editor teardown and uses a synchronous player mock, avoiding Vitest's async-mock call-stack bypass on concurrent imports. The editor autosave test uses a DOM implementation with real storage and tears down the rendered editor. Evidence and the non-fabricated historical-item mapping are in `output/evidence/event-command-completion/legacy-persistence/ledger.json`.
+
+`store.loadNewRemoteProjectTransactionally` compares draft-free projects with `serializeForComparison`, not raw wire bytes. The comparison runs both sides through the project loader's normalization and recursively sorts object keys; arrays and authored non-default values remain significant. New blank/preset seeds contain the default `system.titleScreen.titleGraphic = { mode: "text", x: 32, y: 62 }`, which normalization omits, and the farm preset gains `system.timeSystem.forceSleep = false` on load. PostgreSQL JSONB also changes object-key order. These representation differences must not reject a successful save/reload. Wire serialization and SHA-256 persistence remain unchanged; actual mismatches still reject before adopting the new project or changing drafts, config, or URL. `test/transactionalNewRemoteProject.test.ts` exercises all five presets plus blank creation through real save/load functions with a JSONB-like transport, and rejects changed titles, map tiles, and array order.
+
 ## Task15 nonvisual economy command contract (2026-09-08)
 
 `craftRecipe` and `applyItemUpgrade` accept optional `resultVariableId: string` in Project4 commands.
@@ -53,6 +373,10 @@ Runtime projection and atomic equip transitions enumerate the catalog; custom sl
 
 Contract: `test/customEquipmentSlots.test.ts` covers create/rename/use, initial equipment serialization and reload, menu/event equip, stats/effects, save storage roundtrip, removal protection, invalid slots, and legacy fallback.
 
+## 전투 명령 CSS (2026-09-05)
+
+선택 필드 `system.battleCommandCss?: string`은 프로젝트 공통 메뉴 스타일이다. 기존 프로젝트는 필드 없이 기존 스킨을 유지한다. `validateSystem`은 문자열 타입을 검사하고 `normalizeSystemRecords`는 비어 있지 않은 원문을 보존한다. 버전 증가나 데이터 마이그레이션은 필요 없다. 저장/로드·패키지·출하 플레이어가 같은 프로젝트 필드를 사용한다. 지원 문법 밖의 가져온 문자열은 보존하되 렌더하지 않아 편집기에서 고칠 수 있다. `test/battleCommandCss.test.ts`가 직렬화 왕복·구형 프로젝트·잘못된 타입·CSS 격리를 검증한다.
+
 ## 기본 카탈로그 삭제 보존 (2026-09-05)
 
 로드의 `ensureDefaultDatabaseIconResources`는 기존 기본 행의 아이콘 연결만 보정한다. 누락 아이템·장비를 새로 주입하거나 그 종속 스킬·상태를 추가하지 않는다. 신규 생성은 기존 기본 카탈로그를 그대로 사용한다. `test/itemEquipmentAuthoringTrust.test.ts`는 삭제한 기본 행이 serialize→deserialize→부팅 정규화 후에도 없는 것을 확인한다. 종류 필드가 없던 v3 스킬 아이템은 `normalizeItemRecord`가 skillId를 보고 special로 복원한다. 명시된 종류는 추론으로 덮어쓰지 않으며 실제 v3 전투 fixture와 직렬화 왕복으로 검증한다. ItemRecord 종류 전환은 저장 필드를 삭제하지 않고 `itemUsage.activeItemEffects`로 실행만 제한하므로 스키마 버전 변경이 없다.
@@ -82,7 +406,48 @@ Authored project schema, defaults, validation, migration, references, and persis
 
 `worldCanon.laws[kind].present`의 기존 optional boolean 형태를 유지하되 `false`를 압축에서 제거하지 않는다. 키 부재는 미정, false는 없음, true는 있음이다. 기존 빈 프로젝트에 법칙을 만들어 넣지 않으며 버전 마이그레이션은 필요 없다. 과거 저장 시 제거된 false 값은 복구할 근거가 없어 미정으로 남는다. 설명만 있는 법칙은 설명을 보존하며 존재 여부는 미정으로 표시한다. normalize → serialize → deserialize 왕복과 AI의 「신: 없음」 전달을 `test/worldAuthoringRegression.test.ts`에서 검증한다. 이 데이터는 저작/AI 설정이며 게임의 죽음·통화·마법 런타임 규칙을 자동으로 바꾸지 않는다.
 
+## Showcase media save-copy durability (issue #693, 2026-09-08)
+
+`mediaImportPersistence.ts` stages showcase audio/video in a detached candidate.
+The shared confirmation explicitly authorizes a NEW Supabase project before any
+remote write. `loadNewRemoteProjectTransactionally(..., { source: "dev-showcase" })`
+does not flush a quota-constrained source: it preserves live edits and previous
+local recovery, saves the candidate to a generated target, then uses the existing
+proof reader to check target identity and normalized content before adoption.
+Cancellation, concurrent source edits/switches, failed writes, mismatched reloads
+and local config/selection quota errors leave the source active. A successfully
+written but unadopted remote copy may remain; there is no automatic remote delete.
+
+Adoption removes the three showcase boot selectors from the URL so reload opens
+the new remote project, not the seed. The original local override stays available
+at its original URL. Supabase `current_json.assets.uploaded` remains the media
+root; `supabaseResourceCache` remains a cache, not canonical blob storage. No
+project schema migration, local DB fallback or new backend is introduced.
+
+Ordinary remote media import awaits store flush before success. A failed remote
+flush retains the pending edit and asks the author to restore connection and save;
+it does not erase data that other live edits may already reference. Showcase
+imports instead publish nothing until the explicit save-copy is verified.
+`ProjectStorageQuotaError` classifies native Web Storage quota errors with export/
+cleanup guidance; local failures do not start the remote network retry loop.
+
+Transaction ownership is the captured `contentLineage`, authored
+`mutationGeneration` and project identity, not root-object reference equality.
+A normal source flush may reconcile accepted audio/monster metadata into a new
+root without an authored mutation. That synchronization must not reject the
+transition. Real edits (even if subsequently saved), same-ID reload/replacement,
+and cancellation still invalidate it at flush, target-save and target-reload
+boundaries. `transactionalRemoteSourceLineage.test.ts` exercises the actual
+flush/reconciliation and save/load pipeline with only the transport replaced.
+
+Focused contracts: `devMediaPromotion.test.ts`, `mediaImportDurability.test.ts`.
+Real browser script: `scripts/qa/issue693-media.mjs`; default runs actual showcase
+quota/cancel/network-denial paths with all remote writes blocked. Only a lead with
+authorization may run `--permit-new-remote-project` to prove an 8 MiB file's exact
+bytes after real remote reload and Test Play. The default is not remote proof.
+
 ## Project schema & persistence
+- **System audio cue authoring (2026-09-08):** M2 027/028 fields add optional concrete `cue` and `operation:"set"|"reset"` (omission means set), preserving `resourceId` precedence over legacy `value` even when empty. New catalog defaults are `{cue:"battle",operation:"set",resourceId:"",volume:100}` for BGM and `cue:"confirm"` for SE. `src/project/systemAudioOverrides.ts` owns the finite cue keys; `volume` is per-track 0..100, not a mixer mutation. Generic forms show a disabled legacy placeholder instead of pretending a cue-less saved command has the new default. Existing project versions need no audio migration: generic M2 fields round-trip unchanged; only the optional runtime/save-slot `systemAudioOverrides` field is added. Its parser rejects unknown families/cues, non-string resources and non-finite/out-of-range volumes. See `runtime-sessions.md` for playback and silence/reset semantics.
 - **Map-patch correction of invalid remote references (2026-09-08, task66):** a remote `current_json` can contain linked animals with an empty housing species policy even after the editor restores a valid local policy. Ordinary `deserialize`/Supabase load still rejects that row. Patch comparison extracts current-v4 maps/mapTree through shape checks and reference-independent normalization (`readProjectV4MapMergeSnapshot`); it never exposes invalid remote roots as a loadable Project. Reference repair is reserved for ordinary load and the validated complete candidate, not patch projection: repairing against remote roots first can delete concurrent common-event calls, transfers, schedules/living destinations, or rewrite emote targets that local roots/maps restore. This applies even if ordinary remote load would succeed after pruning. The same unpruned projection drives conflict detection, so a command-only remote edit cannot disappear from comparison. Local roots merge with the latest remote maps under the unchanged map/tree conflict rules. The completed candidate must pass reference validation before compatible load normalization, then the existing SHA-conditional write; a failed SHA re-reads and re-merges. Invalid local references, malformed remote shapes/versions, or incompatible merged references produce no write. No full-save fallback, animal-link repair policy, store-flight redesign, or schema migration is introduced. `test/supabaseMapPatchRecovery.test.ts` uses real parsing/validation and deferred transport barriers for correction, unrelated-map/event payload preservation, restored reference targets, load refusal, same-map command conflicts, SHA races, and zero-write rejection.
 - **Supabase schema deployment is manifest-driven (2026-08-24):** `scripts/lib/supabase-database-ops.mjs` registers every deployable file under `supabase/migrations/`; `test/supabaseDatabaseOps.node.test.mjs` fails when a non-draft SQL file is omitted. Run `npm run db:check` for an anon-key/PostgREST schema probe. An administrator sets `SUPABASE_DB_URL` in untracked `.env.local` and runs `npm run db:migrate`; the Bun runner records SHA-256 checksums in the admin-only `rpg_zzu.schema_migrations` ledger, baselines already-complete legacy migrations, rejects partially applied or checksum-changed SQL, reloads the PostgREST schema cache, and finishes with project-scoped `ai_activity_logs`/`ai_conversations` insert→reload→cleanup verification. `DRAFT_*.sql` is never deployable. Do not report DB work complete until `npm run db:verify-ai` passes and the project id is recorded.
 - **Missing AI tables are configuration errors, not successful fallbacks:** new activity writes never fall back into `ai_analysis_runs`; that table is read only for historical fallback rows. Missing `ai_activity_logs`, `ai_conversations`, or `user_skills` writes throw `SupabaseMigrationRequiredError` naming the required migration. The local conversation record (IndexedDB `oprn-ai-records` since 2026-09-03; the old `oprn:ai-conversations` localStorage key is migrated on first access) remains available, but the failed remote mirror is logged instead of silently swallowed. `scripts/list-ai-activity.mjs --remote` loads `.env` plus `.env.local` and scopes both primary and historical queries to `VITE_SUPABASE_PROJECT_ID`.
@@ -127,6 +492,10 @@ Authored project schema, defaults, validation, migration, references, and persis
 - `Project.world` is optional authored worldview data. Its canonical shape is `ProjectWorld` in `src/project/world/` (`entities` plus `relations`), normalized through `normalizeWorld` when present and treated as an empty world when absent for legacy projects. Editor UI should commit changes through the project store and keep runtime session state out of worldview records.
 - `Project.worldGraph` is optional authored declarative map topology data. Its canonical shape lives in `src/project/worldGraph/`: nodes are `{mapId, role: "town"|"field"|"dungeon"|"interior", label?}` and edges connect `from.mapId/exit` to `to.mapId/entry` with kind `"transfer"` or `"adjacent"` (`"transfer"` default). The graph is normalized on load, permits planned nodes before maps exist as warnings, and `projectLint` includes `lintWorldGraph` for transfer destination/event-overlap errors plus adjacent boundary passability warnings. Actual player travel still uses normal event `transfer` commands; `link_maps`/`build_world` generate those events with stable IDs.
 - Web export treats authored project JSON as the source of truth but strips editor-only event drafts and prunes `assets.uploaded` to statically referenced resource ids before writing `project.json`. `prepareWebExport()` must deserialize the serialized JSON once for shape validation before any package/download path reports success.
+- **Export resource completeness (2026-09-06):** `src/battle/partySpriteResources.ts` owns party back-view/fallback selection for both battle rendering and export. `webExportAssets` includes derived resources for reserve actors and both fallback slot parities, then adds idle strips from the runtime catalog. Derived uploaded overrides must survive `prepareWebExport` pruning; a party texture key or successful combat result is not proof that its image decoded.
+- **Export URL ownership:** `exportEntry` registers the game directory in `inlineAssetStore` before boot. `withInlineAsset` prefers embedded data, then rebases local `assets/` paths for exported players only. Editor paths, external URLs and SVG fragments remain unchanged. Image warmup, minimap tileset URLs and movie fallbacks use the same boundary. Catalog BGM may be fetched from the editor's configured CDN, but is packaged at the player's canonical local fallback path so exported playback needs no CDN setting.
+- **Invalid ingredients do not produce success artifacts:** standalone rejects missing/empty/HTML bundle or media bytes; ZIP additional media rejects empty/HTML bytes while its existing manifest/hash checks remain authoritative for the player bundle. `url(#battle-flash-tint)` is a document fragment, not a file to fetch. The standalone CLI delegates to the same exporter.
+- Idle and high-resolution sheet URLs also pass through `withInlineAsset`; including a file without rewriting its runtime URL is insufficient. HUD icons, runtime fonts and the fallback window skin use Vite-resolved CSS imports so web bundles use embedded or relative hashed assets; standalone `assetsInlineLimit` embeds imported CSS assets directly. `test/exportBattleAssetUrls.test.ts` exercises the actual producers and CSS build output.
 - Loading v3 projects migrates legacy `villageInfoDocuments` into `Project.world` only when world is absent or empty. Each document becomes a `place` world entity linked to its map, while the original `villageInfoDocuments` field is preserved for one-version rollback and repeated deserialize/serialize cycles must not duplicate entities.
 - `createBlankProject()` is a true blank authoring seed: one 20x15 default-chipset grass map named `빈 맵`, no events, a valid start position, and a one-actor starting party using the standard default database/system records needed to enter play mode. The sample adventure is intentionally separate as `createSampleAdventureProject()` (loads the editor-authored 《이슬 장터 — 30분》 fixture under `src/project/defaults/fixtures/dew-village-demo.json`, 16 maps) and should be requested explicitly when tests or UI flows need example content.
 - **The shipped fixture's default-database tables are a derived artifact, not a hand-frozen snapshot.** `items`, `equipment`, `skills`, `states`, and `battleAnimations` are generated from the code defaults by `npm run fixture:sync` (`scripts/sync-fixture-default-database.mts`, merge rule in `scripts/lib/fixtureDefaultDatabase.mts`); `test/fixtureDefaultDatabaseDrift.test.ts` fails with that recovery command when they drift. The merge replaces default-id rows with the code value and preserves rows whose id is not a code default, so authored records survive. Maps, events, and every other table stay hand-authored — content scripts grow those.
@@ -269,4 +638,19 @@ v4에 선택 필드 villagePresets[].design, defaultVillagePresetId, maps[].vill
 
 GameEvent.name은 선택적 표시 이름이다. place_npc가 저작한 이름을 상태 페이지의 name과 별도로 보존해 재시도 중 중복 생성되지 않게 한다. 기존 이름 없는 이벤트는 페이지 이름을 조회 폴백으로 유지한다. 저장→로드 뒤 동일 NPC 갱신 계약은 test/adventureCompletion.test.ts로 검증한다.
 
+`GameEvent.placementRole?: "npc"` is optional authored placement metadata (2026-09-06).
+`place_npc` stamps it independently of sprite names and opt-in social `characterId`.
+The existing JSON persistence path preserves it, and `validateEventShape` rejects
+unknown role values. No version bump or blanket migration of custom sprites is used:
+legacy unknown fixed objects must not become NPCs. Uploaded graphic replacements,
+serialized reload, blocked-position lint and `move_event` recovery are covered by
+`test/aiBlockedEventRelocation.test.ts`; authored pages and commands remain unchanged.
+
 `set_project_settings({startActorIds})`는 system 메타데이터와 저작 시작 상태 `project.session.partyActorIds`를 함께 갱신한다. 실제 새 게임은 `startStateOf(project)`를 사용한다. 시스템 필드만 변경하고 런타임 파티 인원까지 바뀌었다고 판정하지 않는다.
+## 연결 실내 도면의 영속성 (2026-09-05)
+
+집·마을에서 자동 생성한 실내도 기존 `GameMap.roomHarnessPlan`에 개념 오버레이가 포함된 플랜을 저장한다. 새 스키마 필드나 버전 증분은 없다. `createHouseInteriorMap`은 현재 프로젝트의 꾸러미·구조물 그림을 읽고, 재로드 후에는 이 플랜으로 방 세션을 복원할 수 있다. `test/interiorConceptRoutes.test.ts`가 실제 `serialize` → `deserialize` 후 장소·물건 오버레이 보존을 검증한다. 옛 플랜은 실내 재시공 때 꾸러미에 연결된다.
+
+## 개념 장소 형상 (2026-09-05)
+
+`ConceptPlaceRecord.shape?: "rect"|"l"|"alcove"`는 장소의 선택적 바닥 형태다. 생략은 이전 직사각형과 동일하다. cloneConceptBundle·plan 파서·validateTileset·방 하네스 플랜·serialize/deserialize가 보존/검증한다. 모양을 바꾸어도 장소 id나 이벤트 소유 공간이 여러 개로 분할되지 않는다. 구체 도면은 `project/interiorRoomFootprint.ts`의 사각형 합집합으로 해석한다.

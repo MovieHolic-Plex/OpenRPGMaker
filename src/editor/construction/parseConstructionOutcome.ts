@@ -171,6 +171,7 @@ function parseDiff(value: unknown): ConstructionDiffTotals {
     "tilesChanged", "eventsAdded", "eventsModified", "eventsRemoved", "mapsAdded", "mapsRemoved",
     "dbRecordsChanged", "tilesetsChanged", "switchesAdded", "variablesAdded", "worldEntitiesAdded",
     "worldEntitiesModified", "palettePresetsAdded", "palettePresetsModified", "endingsChanged", "mapPropertiesChanged",
+    "audioDescriptionsChanged", "monsterMetadataChanged",
   ] as const;
   rejectUnknownKeys(diff, [...integerKeys, "sessionChanged", "systemChanged"], "constructionOutcome.diff");
   return {
@@ -191,6 +192,12 @@ function parseDiff(value: unknown): ConstructionDiffTotals {
     endingsChanged: nonNegativeInteger(diff, "endingsChanged", "constructionOutcome.diff"),
     mapPropertiesChanged: Object.prototype.hasOwnProperty.call(diff, "mapPropertiesChanged")
       ? nonNegativeInteger(diff, "mapPropertiesChanged", "constructionOutcome.diff")
+      : 0,
+    audioDescriptionsChanged: Object.hasOwn(diff, "audioDescriptionsChanged")
+      ? nonNegativeInteger(diff, "audioDescriptionsChanged", "constructionOutcome.diff")
+      : 0,
+    monsterMetadataChanged: Object.hasOwn(diff, "monsterMetadataChanged")
+      ? nonNegativeInteger(diff, "monsterMetadataChanged", "constructionOutcome.diff")
       : 0,
     sessionChanged: requiredBoolean(diff, "sessionChanged", "constructionOutcome.diff"),
     systemChanged: requiredBoolean(diff, "systemChanged", "constructionOutcome.diff"),

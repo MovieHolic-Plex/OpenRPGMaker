@@ -60,10 +60,13 @@ export function characterDepth(priority: EventPriority, worldY: number): number 
 /**
  * 상위 맵 타일 depth.
  * - ★(통행 가능 upper): 항상 캐릭터 위 — 숲 수관.
+ * - ○(통행 가능한 바닥/다리): 하층 지형 위, 모든 캐릭터 아래.
  * - ×(솔리드 upper): same-priority 캐릭터와 타일 하단 y 로 정렬 — 책상/가구.
  */
 export function mapUpperTileDepth(tileset: TilesetDef, tile: number, tileY: number): number {
-  if (passageMarkForTile(tileset, tile) === "star") return MAP_UPPER_LAYER_DEPTH;
+  const mark = passageMarkForTile(tileset, tile);
+  if (mark === "star") return MAP_UPPER_LAYER_DEPTH;
+  if (mark === "o") return MAP_LOWER_LAYER_DEPTH + tileY * 2 + 1;
   return characterDepth("same", characterSpriteY(tileY));
 }
 

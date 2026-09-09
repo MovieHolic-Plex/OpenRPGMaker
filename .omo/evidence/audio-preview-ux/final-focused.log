@@ -1,0 +1,95 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/audioPreviewSession.test.ts test/audioPreviewSurfaces.test.ts test/cc0AudioPlayback.test.ts test/audioDescriptionPickerSurfaces.test.ts test/audioDescriptionEditor.test.ts test/audioDescriptionLifecycle.test.ts test/audioDescriptionResourceLifecycle.test.ts test/audioDescriptionCommandSurfaces.test.ts test/databaseResourcePickerDialog.test.ts test/audioAiDescriptions.test.ts test/audioResourceCatalog.test.ts test/audioResourceSearchContract.test.ts test/audioEnginePlaybackControls.test.ts test/audioEngine.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-audio-preview-ux
+
+ ✓ test/audioDescriptionPickerSurfaces.test.ts (17 tests) 8317ms
+   ✓ audio picker descriptions > does not confirm a removed selected audio resource  637ms
+   ✓ audio picker descriptions > refreshes an open picker when its project description changes  531ms
+   ✓ audio picker descriptions > stops refreshing detached content when the picker closes  447ms
+   ✓ audio picker descriptions > closes the old audio picker when the project is replaced  373ms
+   ✓ audio picker descriptions > retrieves a description-only result in the music picker  398ms
+   ✓ audio picker descriptions > retrieves a description-only result in the sound picker  531ms
+   ✓ audio picker descriptions > refreshes catalog inheritance when reopening after cleared  510ms
+   ✓ audio picker descriptions > refreshes catalog inheritance when reopening after reset  972ms
+   ✓ audio picker descriptions > uses the new project when reopening the picker after a project switch  755ms
+   ✓ audio test dialog catalog > refreshes selected metadata and description-only search while open  392ms
+   ✓ audio test dialog catalog > closes an open audio test dialog on project replacement  375ms
+   ✓ audio test dialog catalog > unsubscribes when closed or replaced by a new audio test dialog  368ms
+   ✓ audio test dialog catalog > clears the selected audio-test resource when it is removed  555ms
+   ✓ audio test dialog catalog > includes the large music catalog and uploaded descriptions  335ms
+   ✓ audio test dialog catalog > includes the large sound catalog and uploaded descriptions  490ms
+   ✓ audio test dialog catalog > shows full selected upload metadata when the filtered upload is selected  371ms
+ ✓ test/audioDescriptionEditor.test.ts (15 tests) 8261ms
+   ✓ audio description manager > owns history shortcuts while the resource modal is open  312ms
+   ✓ audio description manager > enumerates the complete music catalog without mutations  837ms
+   ✓ audio description manager > enumerates the complete sound catalog without mutations  642ms
+   ✓ audio description manager > commits normalized input once when Save is activated  579ms
+   ✓ audio description manager > retains a saved description when the manager is reopened  625ms
+   ✓ audio description manager > stores an explicit clear when an empty draft is saved  392ms
+   ✓ audio description manager > removes only the selected override when Restore default is activated  591ms
+   ✓ audio description manager > restores the prior override when project Undo runs  676ms
+   ✓ audio description manager > restores the authored override when project Redo runs  1168ms
+   ✓ audio description manager > retains draft DOM, caret and focus during an unrelated store rerender  439ms
+   ✓ audio description manager > finds a resource by description without changing the project  712ms
+   ✓ audio description manager > filters effective empty descriptions without changing the current draft  444ms
+   ✓ audio description manager > rejects an over-limit programmatic draft without recording history  362ms
+ ✓ test/audioPreviewSurfaces.test.ts (12 tests) 4522ms
+   ✓ common transport in dialog > plays on the first click during metadata loading, then pauses and seeks from media state  652ms
+   ✓ common transport in dialog > does not touch gameplay audio when settings, playback and stop are used  375ms
+   ✓ common transport in picker > plays on the first click during metadata loading, then pauses and seeks from media state  421ms
+   ✓ common transport in picker > does not touch gameplay audio when settings, playback and stop are used  316ms
+   ✓ keeps only one selected picker media and preserves it through search  319ms
+   ✓ stops a picker selection even when the next resource resolves to the same URL  580ms
+   ✓ stops an active picker when another editor preview starts  599ms
+   ✓ exposes an idle seekable transport without autoplay when a dialog resource is selected  403ms
+ ✓ test/audioDescriptionLifecycle.test.ts (15 tests) 8530ms
+   ✓ preserves the draft when a dirty row transition is canceled  919ms
+   ✓ preserves the draft when a dirty kind transition is canceled  580ms
+   ✓ preserves the draft when a dirty close transition is canceled  540ms
+   ✓ preserves the draft when a dirty escape transition is canceled  482ms
+   ✓ preserves the draft when a dirty backdrop transition is canceled  436ms
+   ✓ honors save before changing the selected row  562ms
+   ✓ selects a newly imported audio row after the real file read completes  552ms
+   ✓ retains the project when a renamed non-audio file fails data validation  492ms
+   ✓ retains the project when FileReader reports failure  463ms
+   ✓ deletes the uploaded audio and its override in one undoable mutation  975ms
+   ✓ retains an in-use upload and override referenced by map  818ms
+   ✓ retains an in-use upload and override referenced by system  685ms
+   ✓ ends draft and pending-dialog ownership when another project replaces the current project  475ms
+ ✓ test/audioAiDescriptions.test.ts (31 tests) 1040ms
+   ✓ shared AI audio draft integration > ships only valid, unique, known drafts with retained model and review provenance  459ms
+   ✓ shared AI audio draft integration > does not persist shared defaults when listing then saving a project  334ms
+ ✓ test/audioDescriptionCommandSurfaces.test.ts (7 tests) 3502ms
+   ✓ selected command audio descriptions > finds the effective description when searching the inline play-audio editor  592ms
+   ✓ selected command audio descriptions > reads fresh metadata when editing a selection after the project changed  504ms
+   ✓ selected command audio descriptions > updates the actual M2 preview when selecting music  512ms
+   ✓ selected command audio descriptions > updates the actual M2 preview when selecting sound  983ms
+   ✓ selected command audio descriptions > includes catalog-only resources when rendering an M2 audio selector  438ms
+ ✓ test/cc0AudioPlayback.test.ts (3 tests) 811ms
+   ✓ CC0 / bundled audio playback path > audio test dialog auditions the first CC0 field loop without using gameplay audio  414ms
+ ✓ test/audioPreviewSession.test.ts (20 tests) 126ms
+ ✓ test/audioEnginePlaybackControls.test.ts (11 tests) 20ms
+ ✓ test/audioResourceSearchContract.test.ts (14 tests) 2102ms
+   ✓ effective audio description search > suppresses the old brief when the override is "AUDIO_SEARCH_ONLY_6F12C9"  332ms
+ ✓ test/audioDescriptionResourceLifecycle.test.ts (16 tests) 4758ms
+   ✓ uploaded resource description lifecycle > removes an imported audio profile when its asset is deleted  425ms
+   ✓ uploaded resource description lifecycle > retains a referenced imported audio asset and its profile  597ms
+   ✓ uploaded resource description lifecycle > writes a description when upserting new music  313ms
+   ✓ uploaded resource description lifecycle > writes a description when upserting new sound  317ms
+   ✓ uploaded resource description lifecycle > retains an explicit clear when upsert supplies an empty description  323ms
+   ✓ uploaded resource description lifecycle > rejects invalid nested descriptions before changing an upload when given {}  394ms
+   ✓ uploaded resource description lifecycle > removes only the deleted upload's kind and ID override when deletion succeeds  359ms
+   ✓ uploaded resource description lifecycle > preserves the description when a referenced upload cannot be deleted  437ms
+ ✓ test/audioResourceCatalog.test.ts (17 tests) 573ms
+ ✓ test/audioEngine.test.ts (21 tests) 39ms
+ ✓ test/databaseResourcePickerDialog.test.ts (7 tests) 1325ms
+   ✓ faceset picker dialog > renders per-face options and no face-index control  327ms
+   ✓ faceset picker dialog > title/backdrop/monster 피커 행에 AI 만들기 칸이 붙는다  385ms
+
+ Test Files  14 passed (14)
+      Tests  206 passed (206)
+   Start at  19:15:11
+   Duration  70.02s (transform 26.39s, setup 0ms, collect 78.06s, tests 43.93s, environment 6.20s, prepare 2.76s)

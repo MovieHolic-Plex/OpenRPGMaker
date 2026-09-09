@@ -1,0 +1,12 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p1-village
+
+ ✓ test/villageProducerProtection.test.ts (2 tests) 43358ms
+   ✓ village producer completion through toolRunner > retains sealed layers and stacks after global repair (snow=false)  7086ms
+   ✓ village producer completion through toolRunner > retains sealed layers and stacks after global repair (snow=true)  36262ms
+ ✓ test/villageTreePlacement.test.ts (10 tests) 819ms
+
+ Test Files  2 passed (2)
+      Tests  12 passed (12)
+   Start at  04:53:32
+   Duration  83.47s (transform 27.39s, setup 0ms, collect 36.52s, tests 44.18s, environment 3ms, prepare 1.36s)

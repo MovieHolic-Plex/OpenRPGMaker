@@ -1,0 +1,3 @@
+Exit: 0; 32 tests, 32 passed, 0 failed
+Command: npm test -- test/actionEnemyAuthoring.test.ts test/actionAuthoringPrerequisites.test.ts test/actionTools.test.ts
+The same two preservation and eight malformed-input regressions now pass.

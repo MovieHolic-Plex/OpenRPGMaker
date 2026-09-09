@@ -3,6 +3,7 @@
 // 한 사용자 목표(자율 런이면 드라이버 전체)가 끝났을 때 남기는 계량.
 // 감사 로그·활동 로그에는 과정 전부, 채팅에는 토큰(+경과)만. 개선은 로그를 보고 한다.
 
+import type { RunOutcome } from "./runOutcome";
 import {
   formatTokenCount,
   type SessionUsageTotals,
@@ -10,7 +11,7 @@ import {
 
 /** assistantSession.AuditEntry 의 계량에 필요한 부분집합 — 세션 모듈을 끌어오지 않는다. */
 export type RecapAuditEntry =
-  | { readonly kind: "tool"; readonly name: string; readonly ok: boolean; readonly at?: string }
+  | { readonly kind: "tool"; readonly name: string; readonly ok: boolean; readonly deferred?: boolean; readonly at?: string }
   | { readonly kind: "status"; readonly text: string; readonly at?: string }
   | { readonly kind: string; readonly at?: string };
 
@@ -21,10 +22,12 @@ export interface RunProcessStep {
 }
 
 export interface RunRecap {
+  readonly runOutcome?: RunOutcome;
   readonly elapsedMs: number;
   readonly usage: SessionUsageTotals;
   readonly toolCalls: number;
   readonly toolFailures: number;
+  readonly deferredToolCalls?: number;
   readonly ralphContinues: number;
   readonly volumeContinues: number;
   readonly proposedWrites: number;
@@ -81,7 +84,7 @@ export function extractRunProcess(audit: readonly RecapAuditEntry[]): RunProcess
   for (const entry of audit) {
     if (entry.kind === "tool") {
       const tool = entry as Extract<RecapAuditEntry, { kind: "tool" }>;
-      const mark = tool.ok ? "ok" : "fail";
+      const mark = tool.deferred ? "deferred" : tool.ok ? "ok" : "fail";
       const prev = steps[steps.length - 1];
       const compact = `${tool.name} ${mark}`;
       if (prev?.kind === "tool" && prev.text.startsWith(`${compact}`)) {
@@ -108,14 +111,18 @@ export function buildRunRecap(input: {
   readonly audit: readonly RecapAuditEntry[];
   readonly stoppedReason: string;
   readonly proposedWrites: number;
+  readonly runOutcome?: RunOutcome;
 }): RunRecap {
   const process = extractRunProcess(input.audit);
   const tools = input.audit.filter((entry): entry is Extract<RecapAuditEntry, { kind: "tool" }> => entry.kind === "tool");
+  const deferredToolCalls = tools.filter((entry) => entry.deferred).length;
   return {
+    ...(input.runOutcome ? { runOutcome: input.runOutcome } : {}),
     elapsedMs: Math.max(0, Math.trunc(input.elapsedMs)),
     usage: input.usage,
     toolCalls: tools.length,
-    toolFailures: tools.filter((entry) => !entry.ok).length,
+    toolFailures: tools.filter((entry) => !entry.ok && !entry.deferred).length,
+    ...(deferredToolCalls > 0 ? { deferredToolCalls } : {}),
     ralphContinues: process.filter((step) => step.kind === "ralph" && /ralph:continue/u.test(step.text)).length,
     volumeContinues: process.filter((step) => step.kind === "volume" && /volume-contract:continue/u.test(step.text)).length,
     proposedWrites: input.proposedWrites,
@@ -137,6 +144,7 @@ export function formatRunRecapPlayerLine(recap: RunRecap): string {
 /** 감사/활동 로그용 — 파싱 가능한 한 줄 JSON. */
 export function serializeRunRecap(recap: RunRecap): string {
   return JSON.stringify({
+    ...(recap.runOutcome ? { runOutcome: recap.runOutcome } : {}),
     elapsedMs: recap.elapsedMs,
     prompt: recap.usage.promptTokens,
     completion: recap.usage.completionTokens,
@@ -150,6 +158,7 @@ export function serializeRunRecap(recap: RunRecap): string {
     })),
     tools: recap.toolCalls,
     toolFail: recap.toolFailures,
+    ...(recap.deferredToolCalls ? { toolDeferred: recap.deferredToolCalls } : {}),
     ralph: recap.ralphContinues,
     volume: recap.volumeContinues,
     writes: recap.proposedWrites,
@@ -165,6 +174,7 @@ export function parseRunRecapPayload(raw: string): RunRecap | null {
   try {
     const parsed = JSON.parse(jsonText) as Record<string, unknown>;
     if (!isRecord(parsed)) return null;
+    const runOutcome = parseStoredRunOutcome(parsed.runOutcome);
     const elapsedMs = asInt(parsed.elapsedMs);
     const processRaw = Array.isArray(parsed.process) ? parsed.process : [];
     const processKinds = new Set<RunProcessStep["kind"]>([
@@ -180,6 +190,7 @@ export function parseRunRecapPayload(raw: string): RunRecap | null {
       }));
     const byModelRaw = Array.isArray(parsed.byModel) ? parsed.byModel : [];
     return {
+      ...(runOutcome ? { runOutcome } : {}),
       elapsedMs,
       usage: {
         calls: asInt(parsed.calls),
@@ -199,6 +210,7 @@ export function parseRunRecapPayload(raw: string): RunRecap | null {
       },
       toolCalls: asInt(parsed.tools),
       toolFailures: asInt(parsed.toolFail),
+      ...(asInt(parsed.toolDeferred) > 0 ? { deferredToolCalls: asInt(parsed.toolDeferred) } : {}),
       ralphContinues: asInt(parsed.ralph),
       volumeContinues: asInt(parsed.volume),
       proposedWrites: asInt(parsed.writes),
@@ -212,6 +224,26 @@ export function parseRunRecapPayload(raw: string): RunRecap | null {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function parseStoredRunOutcome(value: unknown): RunOutcome | null {
+  if (!isRecord(value)) return null;
+  const { execution, goal, delivery } = value;
+  if (execution !== "response-final" && execution !== "awaiting-user" && execution !== "blocked"
+    && execution !== "cancelled" && execution !== "budget-exhausted" && execution !== "failed") return null;
+  if (goal !== "unassessed" && goal !== "incomplete" && goal !== "satisfied") return null;
+  if (delivery !== "no-change" && delivery !== "draft" && delivery !== "applied"
+    && delivery !== "persisted" && delivery !== "persisted-verified") return null;
+  // 전달 사실은 기록된 것만 복원한다. 없거나 형태가 다르면 "모름"으로 두고 첨부를 주장하지 않는다.
+  const stored = isRecord(value.visualDelivery) ? value.visualDelivery : null;
+  const attempted = stored && typeof stored.attempted === "number" && Number.isSafeInteger(stored.attempted) && stored.attempted >= 0
+    ? stored.attempted : null;
+  const attached = stored && typeof stored.attached === "number" && Number.isSafeInteger(stored.attached) && stored.attached >= 0
+    ? stored.attached : null;
+  const visualDelivery = attempted !== null && attached !== null && attached <= attempted
+    ? Object.freeze({ attempted, attached }) : null;
+  return Object.freeze({ execution, goal, delivery, imageAttached: (visualDelivery?.attached ?? 0) > 0,
+    ...(visualDelivery ? { visualDelivery } : {}) });
 }
 
 function asInt(value: unknown): number {

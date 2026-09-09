@@ -5,6 +5,7 @@
 
 @import "./assistant-proposal.css";
 @import "./assistant-command-bar.css";
+@import "./assistant-sticky-checklist.css";
 @import "./assistant-rising-overlay.css";
 
 /* 분할 목차: 아래 @import 순서가 캐스케이드를 결정하므로 재배열 금지.
@@ -28,3 +29,5 @@
    change-first·modern-shell)를 걷고 여기 둘로 합쳤다. 앞 레이어의 같은 선택자는 특이도로 이긴다. */
 @import "./tabs-b-assistant-panel/18-assistant-deck.css";
 @import "./tabs-b-assistant-panel/19-assistant-cards.css";
+@import "./tabs-b-assistant-panel/20-team-board.css";
+@import "./tabs-b-assistant-panel/21-team-panel.css";

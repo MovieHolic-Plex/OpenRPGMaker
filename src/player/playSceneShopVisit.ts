@@ -55,7 +55,7 @@ export function shopIsClosed(
   return undefined;
 }
 
-export function beginShopVisit(scene: PlaySceneContext, step: ShopVisitStep, identity?: ShopIdentity): number {
+export function beginShopVisit(scene: Pick<PlaySceneContext, "session">, step: ShopVisitStep, identity?: ShopIdentity): number {
   const budget = resolveShopMerchantBudget(step.merchantGold, step.investmentLevel);
   if (!step.restockPolicy || step.restockPolicy === "onDemand") return budget;
   const ledgers = scene.session as ShopVisitLedgers;
@@ -74,7 +74,7 @@ export function beginShopVisit(scene: PlaySceneContext, step: ShopVisitStep, ide
 }
 
 export function endShopVisit(
-  scene: PlaySceneContext,
+  scene: Pick<PlaySceneContext, "session">,
   step: ShopVisitStep,
   merchantGold: number,
   identity?: ShopIdentity,

@@ -1,0 +1,5 @@
+functions.lsp_diagnostics severity=all on final source, before app build:
+src/testing/sceneTestRunner.ts: No diagnostics found
+test/npcApproach.test.ts: No diagnostics found
+.omo/evidence/npc-approach-p1-0907/frozen-counterexample.ts: No diagnostics found
+.omo/evidence/npc-approach-p1-0907/repaired-counterexample.ts: No diagnostics found

@@ -15,6 +15,7 @@ export const DEFAULT_SEED = 1;
 
 /** 시나리오가 쓸 수 있는 op 종류. 목록 밖은 정규화 단계에서 거부한다. */
 export const OP_KINDS = [
+  "audioAction",
   "seed",
   "setVitals",
   "dir",
@@ -27,6 +28,7 @@ export const OP_KINDS = [
   "attack",
   "skill",
   "key",
+  "cinematic",
   "pauseFrames",
   "stepFrames",
   "resumeFrames",
@@ -146,6 +148,17 @@ export function renderSummary(report) {
     const reason = !beat.shot ? "—" : failed ? "게이트 실패 — 즉시 확인" : "시각 확인 대기";
     lines.push(
       `| ${beat.id} | ${beat.note ?? "—"} | ${failed ? "실패" : "통과"} | ${beat.shot ?? "—"} | ${reason} |`,
+    );
+  }
+
+  const audioBeats = report.beats.filter((beat) => (beat.audio?.length ?? 0) > 0);
+  if (audioBeats.length > 0) {
+    lines.push(
+      "", "## Audio evidence", "", "```json",
+      JSON.stringify(audioBeats.map(({ id, actions, state, audio }) => ({
+        id, actions, state, audio,
+      })), null, 2),
+      "```",
     );
   }
 
@@ -343,6 +356,17 @@ export function evaluateExpect(expected, observed) {
   scalar("y", (s) => s.y);
   scalar("gold", (s) => s.gold);
   scalar("battleResult", (s) => s.battleResult);
+
+  for (const key of ["inventoryCounts", "ownedMonsterCounts"]) {
+    for (const [id, wanted] of Object.entries(expected[key] ?? {})) {
+      const actual = state?.[key]?.[id];
+      if (actual === undefined) {
+        failures.push(`${key}[${id}]: runtime state/counts unavailable`);
+      } else if (actual !== wanted) {
+        failures.push(`${key}[${id}]: expected ${wanted}, actual ${actual}`);
+      }
+    }
+  }
 
   // 부등 기대치 — "값이 **아니어야** 한다". 동등만으로는 대조군을 표현할 수 없다:
   // "골렘이 있으면 안 움직인다"(x 동등)는 입력이 아예 죽어도 통과하므로, 골렘 없는 대조군에서

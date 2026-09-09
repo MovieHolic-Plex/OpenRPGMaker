@@ -1,7 +1,7 @@
-import type { GameEvent, GameMap, MapMinimapSetting } from "@/project/types";
+import type { GameEvent, GameMap, MapMinimapSetting, TilesetDef } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import { store } from "@/project/store";
-import { tilesetImageUrl } from "@/editor/tilesetImage";
+import { drawMapTileLayers, loadTilesetImage } from "@/editor/mapTileDraw";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
 
 export type MinimapCorner = NonNullable<MapMinimapSetting["corner"]>;
@@ -60,66 +60,21 @@ function cornerClass(corner: MinimapCorner): string {
   }
 }
 
-async function loadImage(url: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = url;
-  });
-}
-
 async function renderMinimapTexture(
   canvas: HTMLCanvasElement,
   map: GameMap,
-  tileset: { id: string; tilesPerRow: number; tileSize: number; image: { type: string; id: string } },
+  tileset: TilesetDef,
   showEvents: boolean,
 ): Promise<void> {
-  const url = resolveTilesetUrl(tileset);
-  if (!url) return;
-  const image = await loadImage(url);
+  const image = await loadTilesetImage(tileset);
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   canvas.width = map.width * map.tileSize;
   canvas.height = map.height * map.tileSize;
   ctx.imageSmoothingEnabled = false;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawLayer(ctx, image, map, tileset, map.lowerTiles);
-  drawLayer(ctx, image, map, tileset, map.upperTiles);
+  drawMapTileLayers(ctx, image, map, tileset, 1);
   if (showEvents) drawEventMarkers(ctx, map);
-}
-
-function resolveTilesetUrl(tileset: { id: string; image: { type: string; id: string } }): string | null {
-  try {
-    const project = store.getCurrent();
-    const def = project.tilesets[tileset.id];
-    if (def) return tilesetImageUrl(def);
-  } catch {
-  }
-  if (tileset.image.type === "bundled") {
-    return `/${tileset.image.id}`;
-  }
-  return store.getCurrent().assets.uploaded[tileset.image.id]?.dataUrl ?? null;
-}
-
-function drawLayer(
-  ctx: CanvasRenderingContext2D,
-  img: HTMLImageElement,
-  map: GameMap,
-  tileset: { tilesPerRow: number; tileSize: number },
-  tiles: readonly number[],
-): void {
-  const tpr = tileset.tilesPerRow;
-  const ts = tileset.tileSize;
-  for (let i = 0; i < tiles.length; i += 1) {
-    const tile = tiles[i] ?? -1;
-    if (tile < 0) continue;
-    const x = i % map.width;
-    const y = Math.floor(i / map.width);
-    const sx = (tile % tpr) * ts;
-    const sy = Math.floor(tile / tpr) * ts;
-    ctx.drawImage(img, sx, sy, ts, ts, x * ts, y * ts, ts, ts);
-  }
 }
 
 /**
@@ -203,7 +158,7 @@ export async function createMinimap(
   host.append(root);
 
   const showEvents = setting.showEvents ?? true;
-  await renderMinimapTexture(canvas, map, tileset as unknown as Parameters<typeof renderMinimapTexture>[2], showEvents);
+  await renderMinimapTexture(canvas, map, tileset, showEvents);
 
   const displayW = Math.max(1, Math.round(canvas.width * scale));
   const displayH = Math.max(1, Math.round(canvas.height * scale));

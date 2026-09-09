@@ -1,4 +1,4 @@
-﻿import type { CommandKind } from "@/project/commandKindRegistry";
+import type { CommandKind } from "@/project/commandKindRegistry";
 
 export const COMMAND_CONTEXTS = ["map", "common", "troop"] as const;
 
@@ -99,13 +99,11 @@ const scopedPartial = { map: "partial", common: "partial", troop: "partial" } as
 
 export const COMMAND_GUARANTEES = {
   text: guarantee("dialogue", { ...playerPause, quick: true, support: troopFull }),
-  // changeFace: battleEvents.ts 가 메시지 스트립 프레젠테이션 상태를 이벤트 로그로 실행(Step 3 2026-08-20).
   changeFace: guarantee("dialogue", { support: troopFull }),
   choices: guarantee("dialogue", { ...playerPause, quick: true, support: troopFull }),
   fork: guarantee("controlFlow", { quick: true, support: troopFull }),
-  // wait: battleEvents.ts 가 pendingWaitMs 적립으로 실제 실행(2026-08-20 executor 실측 대조).
   wait: guarantee("controlFlow", { ...playerPause, support: troopFull }),
-  inputWait: guarantee("dialogue", playerPause),
+  inputWait: guarantee("dialogue", { ...playerPause, support: troopFull }),
   inputNumber: guarantee("dialogue", playerPause),
   // label/gotoLabel/loop/breakLoop: battleEvents.ts pc 기반 프레임 머신이 페이지 로컬로
   // 실제 실행(Step 3 2026-08-20). 라벨 탐색은 맵 gotoLabel(stack.ts)과 동형(활성 프레임 스택).
@@ -223,7 +221,6 @@ export const COMMAND_GUARANTEES = {
   // "전투에서도 그대로 돈다"고 거짓 표시한다. showAnimation 과 달리 전투 실행기가 아직 없다.
   playMovie: guarantee("media", { ...playerPause, quick: true }),
   cutsceneControl: guarantee("controlFlow", { direct: false, support: scopedPartial }),
-  // displayTextSettings: battleEvents.ts 가 메시지 표시 설정을 이벤트 로그로 실행(Step 3).
   displayTextSettings: guarantee("dialogue", { support: troopFull }),
   shop: guarantee("commerce", playerPause),
   inn: guarantee("commerce", playerPause),

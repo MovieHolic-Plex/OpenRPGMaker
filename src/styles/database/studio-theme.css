@@ -38,7 +38,7 @@
   --db-studio-shadow-pop: 0 4px 16px rgba(15, 23, 42, 0.10);
   --db-studio-success: #0F7A4A;
   --db-studio-success-muted: rgba(15, 122, 74, 0.10);
-  --db-studio-danger: #DC2626;
+  --db-studio-danger: #B91C1C;
   /* 액센트/위험 배경 위에 얹는 글자색. 흰 배경 표면(--db-studio-surface)과 값은 같지만
      의미가 달라 따로 둔다 — 표면색을 글자에 쓰면 다크 테마에서 같이 뒤집혀 글자가 사라진다. */
   --db-studio-on-accent: #FFFFFF;
@@ -135,7 +135,7 @@
    caption's family or weight. Larger body/title text remains untouched. */
 .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-body :is(
   small,
-  .btn,
+  .btn:where(:not(.db-toolbar .btn):not(.db-ws-btn)),
   .db-list-sub,
   .db-filter-chip-count,
   .db-ws-hero-eyebrow,
@@ -186,12 +186,11 @@
 /* Class-less caption spans are another measured 10–10.5px source. Limit the
    floor to text-only spans; named UI primitives above retain their hierarchy. */
 .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-body.database-modal-body :is(
-  span:not([class]),
-  span[class=""],
-  .db-item-ws span[class=""],
-  .oprn-record-equipment span[class=""]
+  span:not([class]):not(.db-field > span),
+  span[class=""]:not(.db-field > span),
+  .db-item-ws span[class=""]:not(.db-field > span),
+  .oprn-record-equipment span[class=""]:not(.db-field > span)
 ) {
-  font-size: max(11.5px, 1em);
   line-height: 1.4;
 }
 
@@ -280,7 +279,6 @@
 .database-modal-backdrop .database-modal-window .database-modal-body {
   flex: 1 1 auto !important;
   min-height: 0 !important;
-  overflow: auto !important;
 }
 .database-modal-backdrop .database-modal-window .database-modal-footer {
   background: var(--db-studio-surface) !important;
@@ -330,8 +328,7 @@
 }
 
 /* danger ghost stays subtle */
-.database-modal-backdrop .database-modal-window .database-footer-button.danger,
-.database-modal-backdrop .database-modal-window .btn.danger {
+.database-modal-backdrop .database-modal-window .database-footer-button.danger {
   background: transparent !important;
   border-color: var(--db-studio-border-default) !important;
   color: var(--db-studio-danger) !important;
@@ -358,19 +355,6 @@
   box-shadow: none !important;
 }
 
-.database-modal-backdrop .database-modal-window :is(
-  fieldset,
-  .oprn-db-fieldset,
-  .db-panel,
-  .db-class-panel,
-  .db-advanced-panel
-) {
-  background: var(--db-studio-canvas);
-  border: 0;
-  border-radius: 10px;
-  box-shadow: none;
-}
-
 /* spec strip under identity header */
 .database-modal-backdrop .database-modal-window .db-item-spec-strip {
   display: grid;
@@ -384,9 +368,7 @@
   margin: 0 !important;
 }
 .database-modal-backdrop .database-modal-window .db-list-number {
-  color: var(--db-studio-text-3) !important;
   flex: 0 0 auto;
-  font: 500 11px/1.4 ui-monospace, Consolas, monospace !important;
   margin-left: auto;
 }
 .database-modal-backdrop .database-modal-window .db-list-row {
@@ -400,43 +382,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.database-modal-backdrop .database-modal-window fieldset {
-  background: var(--db-studio-canvas) !important;
-  border: 0 !important;
-  border-radius: 10px !important;
-  box-shadow: none !important;
-}
-/* 섹션 제목은 `--db-studio-text-3`(#94A3B8) 이었다 — 흰 패널 위 **2.56:1** 로 AA(4.5:1)에
-   한참 못 미쳤고, 이 규칙이 `!important` 라서 다른 레이어가 아무리 고쳐도 이겼다(실측:
-   legend 12종 전부 미달). 섹션 제목은 보조 텍스트가 아니라 폼의 구조를 알려주는 정보다.
-   `--db-studio-text-2`(#475569, 약 7:1)로 올린다. */
-.database-modal-backdrop .database-modal-window fieldset > legend {
-  color: var(--db-studio-text-1) !important;
-  font: 600 13px/1.35 var(--font-ui) !important;
-  padding: 0;
-  /* 한글에 `uppercase` 는 무효라 Latin 전제 토큰의 흔적이다 — 섞여 있는 영문·숫자만
-     들쭉날쭉 대문자가 되므로 떼어낸다. */
-  text-transform: none !important;
-}
-
-/* list thumb 24px */
-.database-modal-backdrop .database-modal-window .db-list-thumb,
-.database-modal-backdrop .database-modal-window .db-list-row .db-list-thumb {
-  height: 24px !important;
-  width: 24px !important;
-  border-radius: 4px;
-}
-
-/* 주인공 스튜디오 표의 얼굴은 36px 예외 — 13-actor-studio.css 의 비-important 규칙은
-   위 24px !important 를 이기지 못해 36x24 로 찌그러지므로 예외는 여기서 둔다
-   (공유 리셋에 예외를 두는 것이 index.css 정책, PR #540 후속).
-   flex 도 함께 둔다: record-list-modern 의 flex:0 0 24px(0,5,1, 비-important)이
-   short rule 의 flex:0 0 36px(0,2,0)을 이겨 basis 24px 가 남기 때문이다. */
-.database-modal-backdrop .database-modal-window .db-actor-studio-workspace .db-actor-identity-cell .db-list-thumb {
-  flex: 0 0 36px !important;
-  height: 36px !important;
-  width: 36px !important;
-}
+/* Cards/legends: studio-v2. Row thumbnails: record-list-modern.
+   Actor identity portrait: desktop-record-shell/13-actor-studio. */
 
 /* empty state card */
 .database-modal-backdrop .database-modal-window .db-empty-state,
@@ -481,7 +428,7 @@
 .database-modal-backdrop .database-modal-window .db-utility-row .db-id {
   color: var(--db-studio-text-3);
   flex: 0 0 auto;
-  font: 500 11px/1.4 ui-monospace, Consolas, monospace;
+  font: 500 11px/1.4 var(--font-mono);
 }
 
 /* Skills: kill the old 2x4 54px RM grid so composer + used-by no longer overlap */
@@ -554,7 +501,7 @@
 .database-modal-backdrop .database-modal-window .db-range-disclosure summary {
   color: var(--db-studio-text-2);
   cursor: pointer;
-  font: 600 12px/1.4 "Malgun Gothic", system-ui, sans-serif;
+  font: 600 12px/1.4 var(--font-ui);
 }
 .database-modal-backdrop .database-modal-window .db-state-rate-row {
   align-items: center;
@@ -570,21 +517,9 @@
 /* Quiet leftover IDs — keep testid text for Playwright */
 .database-modal-backdrop .database-modal-window [data-testid="db-character-id"] {
   color: var(--db-studio-text-3) !important;
-  font: 500 11px/1.3 ui-monospace, Consolas, monospace !important;
+  font: 500 11px/1.3 var(--font-mono) !important;
 }
 
-/* Flatten leftover RM fieldsets on enemy/state */
-.database-modal-backdrop .database-modal-window .oprn-detail-enemies fieldset,
-.database-modal-backdrop .database-modal-window .oprn-detail-states fieldset {
-  /* v2: 몬스터·상태도 다른 탭과 같은 묶음 카드다. 값만 카드 문법으로 맞췄다. */
-  background: var(--db-studio-canvas) !important;
-  border: 0 !important;
-  border-top: 0 !important;
-  border-radius: 10px !important;
-  box-shadow: none !important;
-  margin: 0 !important;
-  padding: 12px 14px 14px !important;
-}
 .database-modal-backdrop .database-modal-window .db-enemy-panel-graphic {
   min-width: 0;
   overflow: hidden;
@@ -593,12 +528,6 @@
   position: relative;
   z-index: 0;
 }
-.database-modal-backdrop .database-modal-window .oprn-detail-enemies fieldset > legend,
-.database-modal-backdrop .database-modal-window .oprn-detail-states fieldset > legend {
-  float: none !important;
-  padding: 0 !important;
-}
-
 /* Item graphics: two pickers as one compact row */
 .database-modal-backdrop .database-modal-window .db-items-oprn-workbench .db-resource-picker-control {
   align-items: center;

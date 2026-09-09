@@ -1,0 +1,446 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/villageBuilder.test.ts test/villageProducerProtection.test.ts test/villageBuilderSeam.test.ts test/villageWingGeometry.test.ts test/villageBoulevard.test.ts test/villageCrossRoad.test.ts test/villageLandscape.test.ts test/villageTerrainBounds.test.ts test/villageTreePlacement.test.ts test/villagePipelineMapPrune.test.ts test/villagePresetExplicitPriority.test.ts test/villageArchetypes.test.ts test/villageSketch.test.ts test/villageFirstPlanHardGate.test.ts test/authorVillageFacade.test.ts test/authorVillageScopeGate.test.ts test/authorVillageViewportBounds.test.ts test/houseKit.test.ts test/houseKitDomainSeam.test.ts test/houseDoorOpen.test.ts test/houseVariety.test.ts test/houseLotTools.test.ts test/authorHouseFacade.test.ts test/roadObstacleAvoidance.test.ts test/houseProtection.test.ts test/toolHouseProtection.test.ts test/regionTaskHouseProtection.test.ts test/regionTaskCompletedHouse.test.ts test/applyProposedProjectHouseProtection.test.ts test/clusterAiModalHouseProtection.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p2
+
+ ✓ test/houseKitDomainSeam.test.ts (10 tests) 7391ms
+   ✓ HouseKit domain seam baseline characterization > locks the exterior-only blue-stone L-house semantic hash  1334ms
+   ✓ HouseKit domain seam baseline characterization > locks the linked-interior semantic hash  1262ms
+   ✓ HouseKit durable completed-house registration > registers single footprints and preserves them through reload  1238ms
+   ✓ HouseKit durable completed-house registration > registers lots footprints and preserves them through reload  827ms
+   ✓ HouseKit domain seam > author_house single produces the domain exterior-only semantic project  623ms
+   ✓ HouseKit domain seam > author_house single produces the domain linked-interior semantic project  615ms
+   ✓ HouseKit domain seam > keeps house lot and registered prop composition on shared domain calls  717ms
+   ✓ HouseKit domain seam > leaves the caller hash unchanged when a wing is out of bounds  437ms
+ ❯ test/authorHouseFacade.test.ts (12 tests | 4 failed) 7842ms
+   ✓ author_house canonical facade > is registered and executable via both runTool and the typed runner  2727ms
+   × author_house canonical facade > builds one exterior-only house with exact target and change evidence 604ms
+     → expected { executionOk: true, …(12) } to deeply equal { …(13) }
+   × author_house canonical facade > keeps a domain clearance warning in the shared construction outcome 571ms
+     → expected { executionOk: true, …(12) } to deeply equal { …(13) }
+   ✓ author_house canonical facade > builds one linked interior with a valid bidirectional transfer pair  600ms
+   ✓ author_house canonical facade > builds each requested lot directly through the lot domain and reports every house  595ms
+   ✓ author_house canonical facade > blocks 'missing target' atomically with a selected route 262ms
+   × author_house canonical facade > blocks 'invalid wing' atomically with a selected route 479ms
+     → expected true to be false // Object.is equality
+   ✓ author_house canonical facade > blocks 'legacy linked-interior booleans' atomically with a selected route 175ms
+   ✓ author_house canonical facade > rejects overlapping lot definitions atomically  361ms
+   ✓ author_house canonical facade > rejects an overlapping replay and preserves the first applied project exactly  851ms
+   ✓ author_house canonical facade > rolls back a real material-not-found yard failure before the outer commit  363ms
+   × author_house canonical facade > rolls back a zero-placement yard shortfall 247ms
+     → expected 'placement-zero' to be 'yard-placement-shortfall' // Object.is equality
+ ❯ test/houseLotTools.test.ts (7 tests | 2 failed) 2414ms
+   ✓ houseLotDecor pure helpers > maps yard tags to material labels 8ms
+   ✓ houseLotDecor pure helpers > places yard south of door 6ms
+   ✓ author_house lots — yard decor stays near each house (not one plaza dump) > is registered as the canonical facade 1ms
+   ✓ author_house lots — yard decor stays near each house (not one plaza dump) > builds houses and scatters yard decor near each house (not one plaza dump)  1602ms
+   × yard decor materials are buildable > resolves every yard tag to a concrete material 90ms
+     → 가방·미등록으로 시공 불가한 yard 태그: flowers("꽃"): expected [ 'flowers("꽃")' ] to deeply equal []
+   × yard decor materials are buildable > builds a lot whose yard uses the sign tag 526ms
+     → 'author_house' 실행 실패: 나무 상자를 1개 요청했지만 영역 (4,10) 10×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요. [{"severity":"error","code":"placement-zero","mapId":"map_yard_sign","message":"나무 상자를 1개 요청했지만 영역 (4,10) 10×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요."}]: expected false to be true // Object.is equality
+   ✓ house lot yard outcomes > preserves a typed material failure with requested and placed counts 176ms
+ ✓ test/villageBuilder.test.ts (33 tests) 90484ms
+   ✓ build_village > 빈 프로젝트에서 seed만으로 50x50 마을을 완성한다  3641ms
+   ✓ build_village > pathStyle:dirt 로 흙길을 쓸 수 있다  755ms
+   ✓ build_village > theme/housePlans 의도를 받아 집 수와 키트에 반영한다  2764ms
+   ✓ build_village > 강촌마을 쿼리는 강+숲 필수 스펙을 뽑고 맵에 수역·나무를 깐다  1049ms
+   ✓ build_village > run_village_session 이 멀티턴 체크리스트로 강촌을 시공하고 2×2 나무를 심는다  1003ms
+   ✓ build_village > run_village_pipeline 이 plan→build→spec→look 을 돌린다  831ms
+   ✓ build_village > plan_village → build_village(planId) → critique_village 3층 흐름  2896ms
+   ✓ build_village > fences:false면 울타리를 깔지 않는다  3342ms
+   ✓ build_village > 기본 시드에서도 문 8개가 전부 온전하다 (진입로 관통 회귀)  2787ms
+   ✓ build_village > 같은 seed는 타일과 이벤트 좌표가 같고 다른 seed는 하위 타일이 달라진다  6115ms
+   ✓ build_village > NPC 그래픽을 주민형 후보에서 다양하게 순환 배정하고 같은 seed에서 고정한다  4774ms
+   ✓ build_village > 스케치가 이긴 집 배치는 격자 열에 서지 않는다  12020ms
+   ✓ build_village > 집 8채에 Object1 문 이벤트와 자식 내부 맵을 생성한다  3034ms
+   ✓ build_village > 대로·진입로가 집 footprint 내부를 침범하지 않는다  10065ms
+   ✓ build_village > interior:false면 내부 맵과 문 이벤트를 만들지 않는다  3490ms
+   ✓ build_village > 내부 맵 삭제 시 외부 문 transfer dangling 참조가 정리된다  3317ms
+   ✓ build_village > 하네싱 창문을 상위 레이어에 배치한다  3027ms
+   ✓ build_village > 기존 20x20 맵에는 한 채를 시공하고 최소 크기 미만인 19x19 맵은 거부한다  1118ms
+   ✓ build_village > bounds 지정 시 기존 맵의 해당 영역 안에 광장·집·NPC를 배치한다  1551ms
+   ✓ build_village > 레지스트리에 등록되고(deprecated) runTool 경로로 실행된다  2736ms
+   ✓ build_village housePlans contract > forces housePlans[0].templateId=l and owner/program onto interiors  696ms
+   ✓ build_village housePlans contract > 파이프라인 재시도 정리가 기존 무관 맵을 보존한다 (스냅샷 와이프)  4113ms
+   ✓ build_village housePlans contract > 강+호수 테마에서 집이 물 마스크 셀 위에 배치되지 않는다  3395ms
+   ✓ build_village housePlans contract > 길·울타리·나무가 지붕 용마루 행(bbox.y-1)을 침범하지 않는다  6164ms
+   ✓ build_village housePlans contract > pathStyle:stone 은 포석(129 블록) 오토타일로 성형된 돌길을 깔고 불변식을 지킨다  3777ms
+   ✓ build_village housePlans contract > 길 시공 훅: bounds 밖으로 길이 새지 않는다 (침범 롤백 재시도)  1236ms
+   ✓ exterior footprint area (wing-union) > housePlans t-hall workshop interior scale is cottage3 from union 60 not mansion bbox 80  304ms
+ ✓ test/authorVillageFacade.test.ts (36 tests) 133653ms
+   ✓ author_village adversarial boundary > runs the product facade through exactly one ToolDefinition execution  3822ms
+   ✓ author_village adversarial boundary > returns a structured blocked ConstructionOutcome from the product facade  403ms
+   ✓ author_village adversarial boundary > returns a structured failed outcome when the inner builder reports data.ok false  452ms
+   ✓ author_village adversarial boundary > rolls back an unauthorized other-map add  740ms
+   ✓ author_village adversarial boundary > rolls back an unauthorized other-map remove  1080ms
+   ✓ author_village adversarial boundary > rolls back an unauthorized other-map mutate  995ms
+   ✓ author_village adversarial boundary > rolls back an event created outside requested bounds  673ms
+   ✓ author_village adversarial boundary > rolls back an undeclared non-map project mutation  576ms
+   ✓ author_village facade > applies an exact seeded village to only the requested existing exterior  4727ms
+   ✓ author_village facade > supports an exact two-house starter settlement  3064ms
+   ✓ author_village facade > normalizes mixed existing-target fields captured from a live LLM turn  1245ms
+   ✓ author_village facade > substitutes one plaza well for the unavailable landmark in 분수가 있는 평화로운 마을  3752ms
+   ✓ author_village facade > substitutes one plaza well for the unavailable landmark in town with a Fountain centerpiece  3010ms
+   ✓ author_village facade > keeps fountain fallback well placement inside requested bounds  1829ms
+   ✓ author_village facade > does not emit the fountain fallback warning for an ordinary theme  2701ms
+   ✓ author_village facade > creates the exact requested new map identity without suffix or reuse  2673ms
+   ✓ author_village facade > rejects houseCount 0 without clamping or writing  445ms
+   ✓ author_village facade > rejects houseCount 33 without clamping or writing  672ms
+   ✓ author_village facade > rejects a house-plan count mismatch before writing  845ms
+   ✓ author_village facade > rolls back maps, interiors, events, tree, and start when exact count is short  1273ms
+   ✓ author_village facade > fails a colliding new map without suffixing or reusing it  470ms
+   ✓ author_village facade > accepts a fully satisfied two-house best-effort request  957ms
+   ✓ author_village facade > reports an explicit best-effort result at the 85 percent threshold  888ms
+   ✓ author_village facade > rolls back best-effort below the 85 percent threshold  883ms
+   ✓ author_village facade > converts 'structural QA' into an atomic outer failure  568ms
+   ✓ author_village facade > converts 'target change' into an atomic outer failure  512ms
+   ✓ author_village facade > converts 'inner failure' into an atomic outer failure  502ms
+   ✓ author_village facade > converts 'no write' into an atomic outer failure  997ms
+   ✓ author_village facade > rejects an existing-target write outside requested bounds  568ms
+   ✓ author_village bounds 생략 경고 > 기존 맵을 bounds 없이 시공하면 덮은 칸수·비율·bbox 를 경고로 알린다  4437ms
+   ✓ author_village bounds 생략 경고 > bounds 를 지정하면 그 경고가 붙지 않는다  3174ms
+   ✓ author_village bounds 생략 경고 > 신규 맵 타깃에는 그 경고가 붙지 않는다  2339ms
+   ✓ author_village settlement scale and winter > builds a deterministic 100x100 snow city with the requested population  80473ms
+   ✓ author_village settlement scale and winter > rolls back an exact request when the requested population cannot fit  1867ms
+ ✓ test/villageProducerProtection.test.ts (2 tests) 44101ms
+   ✓ village producer completion through toolRunner > retains sealed layers and stacks after global repair (snow=false)  5815ms
+   ✓ village producer completion through toolRunner > retains sealed layers and stacks after global repair (snow=true)  38282ms
+ ✓ test/roadObstacleAvoidance.test.ts (19 tests) 24465ms
+   ✓ 도로 우회 — 건물 관통 방지 > 두 집 사이를 가로지르는 paint_road 가 집 칸을 한 칸도 덮지 않는다  2136ms
+   ✓ 도로 우회 — 건물 관통 방지 > 집을 피한 도로가 하나로 이어진다(우회로가 연결성을 지킨다)  1331ms
+   ✓ 도로 우회 — 건물 관통 방지 > 집을 관통하던 칸 수를 결과 data 와 경고로 보고한다  2939ms
+   ✓ 도로 우회 — 건물 관통 방지 > 장애물이 없으면 경로 셀을 그대로 쓴다(기존 결과 유지)  488ms
+   ✓ 도로 우회 — 건물 관통 방지 > 빈 칸(EMPTY)은 장애물이 아니다 — 갓 만든 맵에서 길이 안 깔리는 퇴행 방지  437ms
+   ✓ 도로 우회 — 건물 관통 방지 > 폭 셀은 경로가 아니라 표본이므로 우회로를 만들지 않는다  1706ms
+   ✓ 도로 우회 — 건물 관통 방지 > 자연도 높은 paint_road 가 요청 경로 주변만 칠한다(엉뚱한 들판 길 금지)  1541ms
+   ✓ 도로 우회 — 건물 관통 방지 > 건물에 완전히 막히면 끊긴 길을 커밋하지 않고 좌표와 함께 거절한다  549ms
+   ✓ 도로 우회 — 건물 관통 방지 > 끝점이 벽이면 벽 앞까지 깔고 endpointBlocked 로 알린다  1765ms
+   ✓ 도로 우회 — 건물 관통 방지 > 나무는 길이 치운다 — 숲을 가로지르는 길이 뱀처럼 휘지 않는다  1881ms
+   ✓ 도로 우회 — 건물 관통 방지 > 물은 마른 우회로가 있으면 살리고, 없으면 건너며 좌표로 알린다  1055ms
+   ✓ 도로 우회 — 건물 관통 방지 > lay_path 도 집 칸을 덮지 않는다(두 레이어 바이트 동일)  1677ms
+   ✓ 도로 우회 — 건물 관통 방지 > stamp_structure road 템플릿의 길이 기존 집 지표면을 덮지 않는다  1726ms
+   ✓ roads respect completed-house geometry > blocks passable bbox gaps, empty ridge, deck attachment, and recorded placements only  510ms
+   ✓ roads respect completed-house geometry > 'paint_road' 421 preserves protected autotile neighbors and their stacks  743ms
+   ✓ roads respect completed-house geometry > 'paint_road' 424 preserves protected autotile neighbors and their stacks  650ms
+   ✓ roads respect completed-house geometry > 'lay_path' 421 preserves protected autotile neighbors and their stacks  597ms
+   ✓ roads respect completed-house geometry > paint_road rejects a metadata-only barrier instead of committing disconnected pieces  1381ms
+   ✓ roads respect completed-house geometry > lay_path rejects a metadata-only barrier instead of committing disconnected pieces  1320ms
+ ✓ test/regionTaskCompletedHouse.test.ts (13 tests) 31993ms
+   ✓ completed new region house (task) > atomically rejects full application after clipping the north ridge  2326ms
+   ✓ completed new region house (task) > atomically rejects partial application after clipping the north ridge  2077ms
+   ✓ completed new region house (task) > atomically rejects immediate application after clipping the north ridge  2040ms
+   ✓ completed new region house (task) > applies a whole house including the ridge via approval with one undo  2176ms
+   ✓ completed new region house (task) > applies a whole house including the ridge via immediate with one undo  3705ms
+   ✓ completed new region house (polish) > atomically rejects full application after clipping the north ridge  2785ms
+   ✓ completed new region house (polish) > atomically rejects partial application after clipping the north ridge  4031ms
+   ✓ completed new region house (polish) > atomically rejects immediate application after clipping the north ridge  1293ms
+   ✓ completed new region house (polish) > applies a whole house including the ridge via approval with one undo  3237ms
+   ✓ completed new region house (polish) > applies a whole house including the ridge via immediate with one undo  2531ms
+   ✓ rejects full review polishing a completed new house without any clipping  1710ms
+   ✓ rejects partial review polishing a completed new house without any clipping  2546ms
+   ✓ rejects immediate review polishing a completed new house without any clipping  1525ms
+ ✓ test/houseKit.test.ts (27 tests) 7224ms
+   ✓ house kit — 창문 자동 배치 > 키트별 창문 타일을 사용한다  456ms
+   ✓ author_house single > 정본 경로(runTool)로 집을 짓는다  940ms
+   ✓ author_house single > windows {enabled:false} 로 창문 자동 배치를 끈다  840ms
+   ✓ author_house single > exterior-only는 내부 맵과 문 이벤트를 만들지 않는다  720ms
+   ✓ author_house single > 문 앞 침엽수는 지면으로 정리하고 내부 복귀 transfer를 통행 가능하게 유지한다  2114ms
+   ✓ author_house single > 문 앞이 맵 밖이면 남쪽 여유 안내와 함께 실패한다  369ms
+ ✓ test/applyProposedProjectHouseProtection.test.ts (21 tests) 34054ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human lowerTiles edits  2131ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human upperTiles edits  897ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human lowerTileStacks edits  768ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human upperTileStacks edits  1021ms
+   ✓ agent live house baseline > retains a house completed after preview, including resetProject=false  1146ms
+   ✓ agent live house baseline > retains a house completed after preview, including resetProject=true  1733ms
+   ✓ agent live house baseline > applies an unchanged-store preview with one undo entry and one commit  1048ms
+   ✓ agent live house baseline > uses current human tile and stack edits as the next accepted baseline  1144ms
+   ✓ agent live house baseline > does not turn raw walls or non-house regions into a stale-project lock  1380ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human lowerTiles edits  2035ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human upperTiles edits  1701ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human lowerTileStacks edits  1037ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human upperTileStacks edits  1857ms
+   ✓ agent-milestone live house baseline > retains a house completed after preview, including resetProject=false  1216ms
+   ✓ agent-milestone live house baseline > retains a house completed after preview, including resetProject=true  824ms
+   ✓ agent-milestone live house baseline > applies an unchanged-store preview with one undo entry and one commit  2019ms
+   ✓ agent-milestone live house baseline > uses current human tile and stack edits as the next accepted baseline  2425ms
+   ✓ agent-milestone live house baseline > does not turn raw walls or non-house regions into a stale-project lock  2422ms
+   ✓ real autonomous milestone application > checks the live store at completion: human-edit  3023ms
+   ✓ real autonomous milestone application > checks the live store at completion: new-house  1622ms
+   ✓ real autonomous milestone application > checks the live store at completion: unchanged  2600ms
+ ✓ test/regionTaskHouseProtection.test.ts (9 tests) 25548ms
+   ✓ real region polish full approval > rejects protected seam changes when the store has not changed  7060ms
+   ✓ real region polish full approval > applies an unrelated outside edit when accepted house values remain unchanged  5453ms
+   ✓ real region polish partial approval > rejects protected seam changes when the store has not changed  3840ms
+   ✓ real region polish partial approval > applies an unrelated outside edit when accepted house values remain unchanged  3301ms
+   ✓ final region application uses the current store > rejects stale lowerTiles candidates before history or replacement  1492ms
+   ✓ final region application uses the current store > rejects stale upperTiles candidates before history or replacement  1141ms
+   ✓ final region application uses the current store > rejects stale lowerTileStacks candidates before history or replacement  862ms
+   ✓ final region application uses the current store > rejects stale upperTileStacks candidates before history or replacement  980ms
+   ✓ final region application uses the current store > rejects stale new-house candidates before history or replacement  1416ms
+ ✓ test/houseVariety.test.ts (14 tests) 12080ms
+   ✓ houseVariety — 타일에서 집을 되읽는다 > templateId로 시공한 집의 모양을 카탈로그 id로 복원한다  1439ms
+   ✓ houseVariety — 타일에서 집을 되읽는다 > 같은 모양·같은 킷을 반복하면 monotonous로 판정한다  734ms
+   ✓ houseVariety — 타일에서 집을 되읽는다 > 모양·지붕색을 갈라 놓으면 diverse로 판정한다  1293ms
+   ✓ houseVariety — 타일에서 집을 되읽는다 > 카탈로그에 없는 모양은 custom 치수로 표기한다  1911ms
+   ✓ author_house — 형태 어휘 > templateId가 wings를 카탈로그 날개로 전개한다(비사각 ㄱ자)  1137ms
+   ✓ author_house — 형태 어휘 > stories를 주면 외장 벽 밴드와 실내 층수가 함께 올라간다  1979ms
+   ✓ author_house — 형태 어휘 > chimney·lowWall이 실제로 시공에 반영된다  615ms
+   ✓ author_house — 형태 어휘 > 모르는 templateId는 쓸 수 있는 카탈로그 목록과 함께 거부한다  506ms
+   ✓ author_house — 형태 어휘 > 결과에 다양성 리포트를 싣고 단조로우면 경고한다  1140ms
+   ✓ look_at_houses — 비전 관찰 툴 > 깔린 집을 세고 타일 그리드와 리포트를 함께 준다  800ms
+ ✓ test/authorVillageViewportBounds.test.ts (7 tests) 15181ms
+   ✓ author_village + 뷰포트 bounds > 실행 경계가 기록한 bounds 는 카메라가 움직여도 같은 영역을 다시 시공한다  5763ms
+   ✓ author_village + 뷰포트 bounds > target 의 fullMap:true는 뷰포트 20×20 보정에 축소되지 않는다  1747ms
+   ✓ author_village + 뷰포트 bounds > root 의 fullMap:true는 뷰포트 20×20 보정에 축소되지 않는다  2411ms
+   ✓ author_village + 뷰포트 bounds > 도구에 bounds 가 없으면 기존 전체 재포장 동작이 그대로다  5233ms
+ ✓ test/authorVillageScopeGate.test.ts (11 tests) 11481ms
+   ✓ author_village lived-map scope gate > rejects full-map rebuild on a lived map without bounds or fullMap  929ms
+   ✓ author_village lived-map scope gate > accepts the same rebuild with target.fullMap:true  2205ms
+   ✓ author_village lived-map scope gate > accepts the same rebuild with top-level fullMap:true  2130ms
+   ✓ author_village lived-map scope gate > 부분 bounds와 fullMap이 충돌하면 범위를 조용히 줄이거나 넓히지 않는다  460ms
+   ✓ author_village lived-map scope gate > still builds a full empty map without any confirm  3697ms
+   ✓ author_village lived-map scope gate > rejects an unlinked extra map even when the builder declares it  581ms
+   ✓ author_village postconditions and parser > passes NPC count within the 90% lower bound  804ms
+   ✓ author_village postconditions and parser > fails NPC count below the 90% lower bound as failed, not blocked  660ms
+ ✓ test/houseProtection.test.ts (23 tests) 13958ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (3,2)  896ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (6,2)  449ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (3,3)  848ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (6,6)  647ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (4,4)  581ms
+   ✓ completed house geometry and exact cell ownership > protects lowerTileStacks contents, order and absence  1468ms
+   ✓ completed house geometry and exact cell ownership > protects upperTileStacks contents, order and absence  1283ms
+   ✓ completed house geometry and exact cell ownership > clips ridge and bbox at map edges (0,0)  367ms
+   ✓ completed house geometry and exact cell ownership > clips ridge and bbox at map edges (18,13)  376ms
+   ✓ completed house geometry and exact cell ownership > protects a human placement rectangle without adding a north ridge  876ms
+   ✓ completed house geometry and exact cell ownership > protects the existing roof-deck ladder attachment, not the entire yard  818ms
+   ✓ completed house geometry and exact cell ownership > rejects structural metadata change: move  515ms
+   ✓ completed house geometry and exact cell ownership > rejects structural metadata change: reclassify  398ms
+   ✓ completed house geometry and exact cell ownership > rejects structural metadata change: remove-door  420ms
+   ✓ completed house geometry and exact cell ownership > does not claim a raw adjacent ladder without roof-deck metadata  662ms
+   ✓ completed house geometry and exact cell ownership > allows descriptive metadata and unrelated stack changes  758ms
+   ✓ completed house geometry and exact cell ownership > rejects protected map delete  360ms
+   ✓ completed house geometry and exact cell ownership > rejects protected map crop  355ms
+   ✓ completed house geometry and exact cell ownership > rejects protected map tileset  464ms
+   ✓ completed house geometry and exact cell ownership > takes the current accepted human-edited tiles as truth, not original kit tiles  658ms
+ ✓ test/villageBuilderSeam.test.ts (9 tests) 12024ms
+   ✓ buildVillageDomain > preserves seeded existing-map output when called through the compatibility adapter  2350ms
+   ✓ buildVillageDomain > normalizes 2 houses to 2  2010ms
+   ✓ buildVillageDomain > normalizes 33 houses to 32  1943ms
+   ✓ buildVillageDomain > keeps a constrained house shortfall as a compatibility warning  820ms
+   ✓ buildVillageDomain > keeps a zero-house constrained build as an atomic compatibility failure  978ms
+   ✓ buildVillageDomain > rejects malformed legacy house input before mutating the ToolRunner project  597ms
+   ✓ village completed-house registration > preserves earlier house regions, allocates unique IDs, and protects after reload  1295ms
+   ✓ inspectVillageBuild > classifies the requested exterior, created interiors, actual houses, and structural QA  1428ms
+   ✓ inspectVillageBuild > rejects a stale result whose exterior map is absent from authoritative project state  581ms
+ ✓ test/villageFirstPlanHardGate.test.ts (2 tests) 6252ms
+   ✓ 첫 plan 필수요소 hard 게이트 > 장터 테마는 장터 소품을 실측으로 보장한다  4557ms
+   ✓ 첫 plan 필수요소 hard 게이트 > 농촌 테마 look 평가는 farm 충족 여부를 requirementsMet에 싣는다  1691ms
+ ✓ test/toolHouseProtection.test.ts (12 tests) 10008ms
+   ✓ completed house transaction invariant > rolls back maps, events and tree additions atomically (dryRun=false)  407ms
+   ✓ completed house transaction invariant > rolls back maps, events and tree additions atomically (dryRun=true)  599ms
+   ✓ completed house transaction invariant > catches global tree-repair spillover even when the tool edits another map  771ms
+   ✓ completed house transaction invariant > seals a newly built standalone house before global tree repair  2064ms
+   ✓ completed house transaction invariant > retains registration-time snapshots through later work in the same transaction  409ms
+   ✓ completed house transaction invariant > does not allow removing metadata and then destroying the house  426ms
+   ✓ completed house transaction invariant > preflights author_house against a completed house without tile changes  1705ms
+   ✓ completed house transaction invariant > preflights build_house against a completed house without tile changes  1191ms
+   ✓ completed house transaction invariant > registers and reloads a standalone roof-deck attachment without claiming its yard  1082ms
+   ✓ completed house transaction invariant > allows unrelated edits and safe dry-run without changing the original project  845ms
+ ✓ test/villagePresetExplicitPriority.test.ts (3 tests) 1908ms
+   ✓ 프리셋 화이트리스트와 명시 형태가 함께 와도 중단하지 않는다 > 화이트리스트 밖 형태를 못박아도 성공한다 — 명시 인자가 이긴다  825ms
+   ✓ 프리셋 화이트리스트와 명시 형태가 함께 와도 중단하지 않는다 > 프리셋만 주면 그대로 좁혀진 채 성공한다  821ms
+ ✓ test/houseDoorOpen.test.ts (5 tests) 7599ms
+   ✓ 열린 문 기본값 — 실외 집 문은 걸어 들어가면 열린다 > 문 스프라이트는 통행을 막지 않는다  1273ms
+   ✓ 열린 문 기본값 — 실외 집 문은 걸어 들어가면 열린다 > 문 앞 발판을 밟으면 실내로 전이된다  893ms
+   ✓ 열린 문 기본값 — 실외 집 문은 걸어 들어가면 열린다 > 문 앞까지 걸어오면 발판이 전이를 발동한다  1826ms
+   ✓ 열린 문 기본값 — 실외 집 문은 걸어 들어가면 열린다 > 발판이 문 원본의 열림 소리·프레임·전이와 이후 편집한 명령을 실행한다  1807ms
+   ✓ 열린 문 기본값 — 실외 집 문은 걸어 들어가면 열린다 > 실내에서 기존 발판에 귀환해도 접촉 이벤트를 즉시 재실행하지 않는다  1791ms
+ ✓ test/villageTerrainBounds.test.ts (6 tests) 3143ms
+   ✓ village terrain bounds > counts required landmarks only inside the requested area  2077ms
+   ✓ village terrain bounds > rejects requested bounds that extend beyond the map before any write  1032ms
+ ✓ test/villageTreePlacement.test.ts (10 tests) 2013ms
+   ✓ tree footprint eligibility (natural) > rejects the whole object: canopy over wall  500ms
+ ✓ test/villageBoulevard.test.ts (8 tests) 3533ms
+   ✓ build_village curved boulevard > keeps houses off the curved path band on an 80x80 village  3188ms
+ ✓ test/villageLandscape.test.ts (11 tests) 553ms
+ ✓ test/villagePipelineMapPrune.test.ts (2 tests) 668ms
+   ✓ village pipeline map prune > 이번 실행이 만든 맵만 지우고 사용자의 기존 맵은 보존한다  472ms
+ ✓ test/villageCrossRoad.test.ts (7 tests) 34ms
+ ✓ test/villageWingGeometry.test.ts (13 tests) 19ms
+ ✓ test/villageSketch.test.ts (5 tests) 133ms
+ ✓ test/villageArchetypes.test.ts (41 tests) 42ms
+ ✓ test/clusterAiModalHouseProtection.test.ts (6 tests) 21340ms
+   ✓ cluster modal live-house acceptance > rejects a successful metadata proposal after upper changes without applying or rebasing  4437ms
+   ✓ cluster modal live-house acceptance > rejects a successful metadata proposal after stack changes without applying or rebasing  3584ms
+   ✓ cluster modal live-house acceptance > rejects a successful metadata proposal after upper-and-stack changes without applying or rebasing  2573ms
+   ✓ cluster modal live-house acceptance > rejects a successful metadata proposal after new-house changes without applying or rebasing  2217ms
+   ✓ cluster modal live-house acceptance > applies safe metadata exactly once with existing human edits=false  3360ms
+   ✓ cluster modal live-house acceptance > applies safe metadata exactly once with existing human edits=true  5163ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/authorHouseFacade.test.ts > author_house canonical facade > builds one exterior-only house with exact target and change evidence
+AssertionError: expected { executionOk: true, …(12) } to deeply equal { …(13) }
+
+- Expected
++ Received
+
+@@ -10,10 +10,11 @@
+      "dbRecordsChanged": 0,
+      "endingsChanged": 0,
+      "eventsAdded": 0,
+      "eventsModified": 0,
+      "eventsRemoved": 0,
++     "mapPropertiesChanged": 0,
+      "mapsAdded": 0,
+      "mapsRemoved": 0,
+      "palettePresetsAdded": 0,
+      "palettePresetsModified": 0,
+      "sessionChanged": false,
+
+ ❯ test/authorHouseFacade.test.ts:55:57
+     53|       outcome: "applied",
+     54|     });
+     55|     expect(parseConstructionOutcome(data.construction)).toEqual(data.c…
+       |                                                         ^
+     56|     expect(data.houses).toHaveLength(1);
+     57|     expect(data.houses[0]?.interior).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  test/authorHouseFacade.test.ts > author_house canonical facade > keeps a domain clearance warning in the shared construction outcome
+AssertionError: expected { executionOk: true, …(12) } to deeply equal { …(13) }
+
+- Expected
++ Received
+
+@@ -10,10 +10,11 @@
+      "dbRecordsChanged": 0,
+      "endingsChanged": 0,
+      "eventsAdded": 0,
+      "eventsModified": 0,
+      "eventsRemoved": 0,
++     "mapPropertiesChanged": 0,
+      "mapsAdded": 0,
+      "mapsRemoved": 0,
+      "palettePresetsAdded": 0,
+      "palettePresetsModified": 0,
+      "sessionChanged": false,
+
+ ❯ test/authorHouseFacade.test.ts:83:57
+     81|     expect(result.diff?.warnings).toContain(warning);
+     82|     expect(data.construction.warnings).toContain(warning);
+     83|     expect(parseConstructionOutcome(data.construction)).toEqual(data.c…
+       |                                                         ^
+     84|   });
+     85|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  test/authorHouseFacade.test.ts > author_house canonical facade > blocks 'invalid wing' atomically with a selected route
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ test/support/authorHouseFacadeFailureCases.ts:36:23
+     34|
+     35|     const data = requireHouseData(result.data);
+     36|     expect(result.ok).toBe(false);
+       |                       ^
+     37|     expect(result.issues?.[0]?.code).toBe(issueCode);
+     38|     expect(data.construction).toMatchObject({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  test/authorHouseFacade.test.ts > author_house canonical facade > rolls back a zero-placement yard shortfall
+AssertionError: expected 'placement-zero' to be 'yard-placement-shortfall' // Object.is equality
+
+Expected: "yard-placement-shortfall"
+Received: "placement-zero"
+
+ ❯ test/support/authorHouseFacadeFailureCases.ts:147:38
+    145|
+    146|     expect(result.ok).toBe(false);
+    147|     expect(result.issues?.[0]?.code).toBe("yard-placement-shortfall");
+       |                                      ^
+    148|     expect(result.data.construction.counts).toEqual({ requested: 1, ac…
+    149|     expect(projectHash(ctx.project)).toBe(before);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  test/houseLotTools.test.ts > yard decor materials are buildable > resolves every yard tag to a concrete material
+AssertionError: 가방·미등록으로 시공 불가한 yard 태그: flowers("꽃"): expected [ 'flowers("꽃")' ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "flowers(\"꽃\")",
++ ]
+
+ ❯ test/houseLotTools.test.ts:107:69
+    105|       .filter((entry) => entry.result.status === "missing")
+    106|       .map((entry) => `${entry.kind}("${entry.material}")`);
+    107|     expect(broken, `가방·미등록으로 시공 불가한 yard 태그: ${broken.join(", ")}`).to…
+       |                                                                     ^
+    108|   });
+    109|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  test/houseLotTools.test.ts > yard decor materials are buildable > builds a lot whose yard uses the sign tag
+AssertionError: 'author_house' 실행 실패: 나무 상자를 1개 요청했지만 영역 (4,10) 10×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요. [{"severity":"error","code":"placement-zero","mapId":"map_yard_sign","message":"나무 상자를 1개 요청했지만 영역 (4,10) 10×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요."}]: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/houseLotTools.test.ts:135:83
+    133|     });
+    134|
+    135|     expect(result.ok, `${result.summary} ${JSON.stringify(result.issue…
+       |                                                                                   ^
+    136|     const data = result.data as { houses: readonly { kitId: string }[]…
+    137|     expect(data.houses.length).toBeGreaterThan(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 2 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError ../rpg-zzu/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout ../rpg-zzu/node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError ../rpg-zzu/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout ../rpg-zzu/node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  2 failed | 28 passed (30)
+      Tests  6 failed | 378 passed (384)
+     Errors  2 errors
+   Start at  09:45:00
+   Duration  403.27s (transform 44.25s, setup 0ms, collect 189.04s, tests 531.14s, environment 1.06s, prepare 9.20s)

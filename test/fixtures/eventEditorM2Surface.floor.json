@@ -66,7 +66,7 @@
  "m2-027-change-system-bgm": {
   "testidCount": 6,
   "controlCount": 2,
-  "selectOptionCount": 4,
+  "selectOptionCount": 6,
   "classCount": 8,
   "labelCount": 2,
   "textCount": 2
@@ -74,7 +74,7 @@
  "m2-028-change-system-se": {
   "testidCount": 6,
   "controlCount": 2,
-  "selectOptionCount": 4,
+  "selectOptionCount": 6,
   "classCount": 8,
   "labelCount": 2,
   "textCount": 2
@@ -280,20 +280,20 @@
   "textCount": 3
  },
  "m2-063-memorize-current-bgm": {
-  "testidCount": 6,
-  "controlCount": 2,
-  "selectOptionCount": 4,
-  "classCount": 8,
-  "labelCount": 2,
-  "textCount": 2
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 4,
+  "labelCount": 0,
+  "textCount": 1
  },
  "m2-064-play-memorized-bgm": {
-  "testidCount": 6,
-  "controlCount": 2,
-  "selectOptionCount": 4,
-  "classCount": 8,
-  "labelCount": 2,
-  "textCount": 2
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 4,
+  "labelCount": 0,
+  "textCount": 1
  },
  "m2-066-play-movie": {
   "testidCount": 6,
@@ -634,18 +634,18 @@
  "m2-210-sound-layer": {
   "testidCount": 8,
   "controlCount": 4,
-  "selectOptionCount": 36,
+  "selectOptionCount": 12,
   "classCount": 8,
   "labelCount": 4,
   "textCount": 2
  },
  "m2-211-weighted-branch": {
-  "testidCount": 25,
+  "testidCount": 20,
   "controlCount": 9,
   "selectOptionCount": 21,
-  "classCount": 29,
-  "labelCount": 6,
-  "textCount": 2
+  "classCount": 31,
+  "labelCount": 5,
+  "textCount": 1
  },
  "m2-212-cutscene-control": {
   "testidCount": 4,

@@ -1,10 +1,11 @@
 import type { Command } from "@/project/types";
+import type { ActiveFace } from "./previewSimulation";
 
 export type CommandEditContext = {
   readonly path: number[];
   readonly actions: CommandListActions;
   /** 이 명령 앞에서 활성화된 얼굴. 문장 표시의 인라인 게임 미리보기에 사용한다. */
-  readonly previewFace?: { readonly resourceId: string };
+  readonly previewFace?: ActiveFace;
   /**
    * 현재 편집 다이얼로그의 최신 staged 명령을 반환한다.
    * 폼 이벤트 핸들러는 렌더 시점 cmd를 펼치지 말고 이 값을 기준으로 patch해야 한다.
@@ -16,6 +17,11 @@ export type CommandEditContext = {
 };
 
 export type CommandListActions = {
+  readonly undo?: () => void;
+  readonly redo?: () => void;
+  /** Batch edits are a single host transaction, never one snapshot per row. */
+  readonly deleteCommands?: (paths: readonly (readonly number[])[]) => void;
+  readonly insertCommands?: (path: readonly number[], commands: readonly Command[]) => void;
   readonly addCommand: (containerPath: readonly number[], command: Command) => void;
   readonly insertCommand: (path: readonly number[], command: Command) => void;
   readonly replaceCommand: (path: readonly number[], command: Command) => void;

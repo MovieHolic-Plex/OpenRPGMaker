@@ -5,8 +5,6 @@ import {
   type HouseKitId,
 } from "@/editor/houseKit";
 import {
-  createHouseDoorEvent,
-  createHouseDoorStepEvent,
   createHouseInteriorMap,
   registerInteriorMaps,
   type HouseInteriorProgram,
@@ -22,11 +20,13 @@ import {
   houseInteriorStories,
   seedFromString,
   uniqueProjectId,
-  upsertEvent,
+  upsertHouseDoorEvents,
   type HouseShapeOptions,
 } from "./houseKitDraftSupport";
 import { ToolError } from "./types";
 import { placeHouseLotFences } from "./village/fences";
+import { houseBBox } from "./houseLotDecor";
+import { assertHousePlacement, registerCompletedHouse } from "./houseProtection";
 
 const DOOR_TOP_TILE = 116;
 const DOOR_BOTTOM_TILE = 146;
@@ -111,6 +111,8 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
     );
   }
 
+  const bbox = houseBBox(input.wings);
+  assertHousePlacement(map, bbox);
   const shape = houseExteriorPlan(input);
   const result = stampFootprintHouseKit(map, { kitId: input.kitId, wings: input.wings, ...shape.stampOptions });
   if (!result.ok) throw new ToolError(result.reason ?? "집 시공 실패", { code: "house-kit-failed", mapId: input.mapId });
@@ -121,8 +123,8 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
   let interiorData: HouseKitInteriorData | undefined;
   if (input.door && result.doorAt) {
     const { x, y } = result.doorAt;
-    // 문 외형은 Object1 문 이벤트 스프라이트가 담당한다 — 이벤트를 만드는 시공에서는
-    // 문 타일(116/146)을 깔지 않는다. 깔면 타일 문 + 이벤트 문이 겹쳐 두 겹으로 보인다.
+    // 이벤트 문은 upsertHouseDoorEvents가 359 배경 두 칸과 Object1 스프라이트를 배치한다.
+    // 이벤트 없는 타일 문만 기존 116/146 외형을 사용한다.
     const doorEventPlanned = input.interior && input.doorEvent;
     if (!doorEventPlanned) {
       map.lowerTiles[(y - 1) * map.width + x] = DOOR_TOP_TILE;
@@ -141,6 +143,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
       const stories = houseInteriorStories(input.stories, input.wings);
       const interiorSeed = seedFromString(base);
       const interior = createHouseInteriorMap({
+        project: draft,
         id: interiorMapId,
         name: `${ownerName}의 집 내부`,
         returnMapId: map.id,
@@ -158,7 +161,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
         appendTreeChildOnce(draft.mapTree, floor.mapId, parentFloorId);
         parentFloorId = floor.mapId;
       }
-      upsertEvent(map.events, createHouseDoorEvent({
+      upsertHouseDoorEvents(map, {
         eventId: doorEventId,
         x,
         y,
@@ -168,21 +171,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
         entryX: interior.entry.x,
         entryY: interior.entry.y,
         seed: interiorSeed,
-      }));
-      // 열린 문 기본값: 문 앞 통행 칸에 밟으면 열리는 발판 — 문 칸은 벽이라 밟히지 않는다.
-      // 문 앞이 맵 밖이면 발판을 생략한다(문 스프라이트만 남는다).
-      if (y + 1 < map.height) {
-        upsertEvent(map.events, createHouseDoorStepEvent({
-          eventId: `${doorEventId}_step`,
-          doorEventId,
-          x,
-          y: y + 1,
-          interiorMapId,
-          name: `${ownerName}의 집 문`,
-          entryX: interior.entry.x,
-          entryY: interior.entry.y,
-        }));
-      }
+      });
       interiorData = {
         interiorMapId,
         floorMapIds: interior.floors.map((floor) => floor.mapId),
@@ -216,12 +205,8 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
       decorNotes.push("깃발 208/209");
     }
     if (input.fence) {
-      const minX = Math.min(...input.wings.map((wing) => wing.x));
-      const minY = Math.min(...input.wings.map((wing) => wing.y));
-      const maxX = Math.max(...input.wings.map((wing) => wing.x + wing.w));
-      const maxY = Math.max(...input.wings.map((wing) => wing.y + wing.h));
       placeHouseLotFences(map, [{
-        bbox: { x: minX, y: minY, w: maxX - minX, h: maxY - minY },
+        bbox,
         doorAt: { x: doorX, y: doorY },
         front: { x: doorX, y: doorY + 1 },
         kitId: input.kitId,
@@ -232,6 +217,11 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
     }
   }
 
+  registerCompletedHouse(draft, map, {
+    ...bbox, label: input.ownerName?.trim() || kit.name, kitId: input.kitId,
+    ...(result.doorAt ? { doorAt: result.doorAt, front: { x: result.doorAt.x, y: result.doorAt.y + 1 } } : {}),
+    ...(deckApplied ? { tags: ["roof-deck"] } : {}),
+  });
   if (deckApplied) decorNotes.push("옥상 데크+사다리");
   const windowNote = input.windows === false ? "창문 없음" : "창문 자동";
   const baseData: HouseKitBuildBaseData = {

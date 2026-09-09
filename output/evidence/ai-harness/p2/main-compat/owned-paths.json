@@ -1,0 +1,106 @@
+{
+  "paths": [
+    "openwiki/editor-ai-panel.md",
+    "openwiki/editor-ai-tools.md",
+    "scripts/qa/ai-harness-contracts.mjs",
+    "src/ai/assistantAcceptance.ts",
+    "src/ai/assistantAcceptanceEvaluation.ts",
+    "src/ai/assistantAcceptanceLedger.ts",
+    "src/ai/assistantAcceptanceTools.ts",
+    "src/ai/assistantSession.ts",
+    "src/ai/toolVerificationEvidence.ts",
+    "test/actionAcceptanceRequirements.test.ts",
+    "test/aiCompletionAccounting.test.ts",
+    "test/aiOutcomeApplyPolicy.test.ts",
+    "test/assistantDependencyRetry.test.ts",
+    "test/assistantMultiMapSpec.test.ts",
+    "test/assistantSessionIntent.test.ts",
+    "test/projectWikiSession.test.ts",
+    "test/sceneVerificationRepair.test.ts",
+    "test/toolSchemaProviderCompat.test.ts"
+  ],
+  "unrelatedInitialIndexEntriesUnchanged": true,
+  "head": "86b39ac178ba111d863b84eabf5d7835125b5ccd",
+  "mergeHead": "147218a2dcfd5d5996e666395e53626706904a60",
+  "verifiedIndexTree": "93601a27eac5f0c1451358201fdcaea6574c7441",
+  "subtrees": {
+    "src": "188f1b659a3a328577d861de36c4708495d02bb3",
+    "test": "d43f609d8fc81058e6c034ce28d7b90fbc5e5101",
+    "scripts": "dc89e10cfc5a83fb53fbafc4861410f2924bf9ef",
+    "openwiki": "e1e6cc0ed2d5108ee18dc6dfa7f8412b89b46c8f"
+  },
+  "files": {
+    "openwiki/editor-ai-panel.md": {
+      "sha256": "40ae8c5077fc2c61c2ca0e4c3bf380f4a14015ec4ed09c09b03dfd28fe4e1ccb",
+      "blob": "59f0b56fd0a7a4b73229ecda4dc473f13207d9ee"
+    },
+    "openwiki/editor-ai-tools.md": {
+      "sha256": "a8ce0ffcb916ee0d3a474b7a7b4d49dfcf2cff98fe1cac32671dfb4c2c2fbea8",
+      "blob": "0e4ca2d95663829c9d37b30d1e521b6719159626"
+    },
+    "scripts/qa/ai-harness-contracts.mjs": {
+      "sha256": "c0e1992649c5cdf2b0e48efa58bc816fad5b24fbda4f62fcbe46d9c445ac37da",
+      "blob": "b0621a149c5075422c9d17498397bde388c770fb"
+    },
+    "src/ai/assistantAcceptance.ts": {
+      "sha256": "7a944a342651d7b5974141e414cfa56ab83c1e2390a931dea5bd5aa69d91e414",
+      "blob": "d57116cdea0da202de79dfb0595d5681e8ff37ed"
+    },
+    "src/ai/assistantAcceptanceEvaluation.ts": {
+      "sha256": "b8bed317f3f53fbc06ea9a357182190fc3b2f762be33dad5d71540705e517939",
+      "blob": "08359cb15712914a3e119dcc5cf1c28d38feb1d9"
+    },
+    "src/ai/assistantAcceptanceLedger.ts": {
+      "sha256": "ec16adfda050f7bb0613791bada71027eecb28f61f2e13868a2cf0ac2cea5f50",
+      "blob": "fec71697dafe0c148e0f0fd9fbf14a2e9f2a8a3e"
+    },
+    "src/ai/assistantAcceptanceTools.ts": {
+      "sha256": "0f1c0b108de0a2f6456d697ffaa44cf898755596b847f6d64be99b231170df9d",
+      "blob": "60b9d26b2836e1f327f49ad99b11be07d3674b03"
+    },
+    "src/ai/assistantSession.ts": {
+      "sha256": "cae5473480e03519554a1cecd4d57044d9b8d710f0c29b5cd6a939876a9da1b6",
+      "blob": "c1b5d607ebf799df208ebaf0e25525c2fa01b9a5"
+    },
+    "src/ai/toolVerificationEvidence.ts": {
+      "sha256": "3c36de8eee9aeb67293fde44b5946d25ee18bc03445290d9da8e7d67badd55ae",
+      "blob": "eb329eed6b4b6e3f728629400c21e65eb91d91d8"
+    },
+    "test/actionAcceptanceRequirements.test.ts": {
+      "sha256": "1e073262fa7614d12e0464d912651e7018e654620bbad9fbc034e37a8c813590",
+      "blob": "2da6eb65f83ec5feebec8cd7277c32ad28571f3c"
+    },
+    "test/aiCompletionAccounting.test.ts": {
+      "sha256": "f53ebfe76b983f49e90255965600fb993155bb6996c9ce4c6487d4ba0048e455",
+      "blob": "91c006711b41558ce390b06457f1295a86b7a3a7"
+    },
+    "test/aiOutcomeApplyPolicy.test.ts": {
+      "sha256": "2d95a83f8013b4c3aeacf23ec70eaec62060dbfa630e223f0259ded59711e39e",
+      "blob": "de0def6aaf8219fd3d725c9f8a05a300fca4778d"
+    },
+    "test/assistantDependencyRetry.test.ts": {
+      "sha256": "73861cc26e8090067e2dcb88c1894c56db27046d3b13ef94876bae4a554f634c",
+      "blob": "5e141425eb15658066cedd1eb4805ae7eb2a9d47"
+    },
+    "test/assistantMultiMapSpec.test.ts": {
+      "sha256": "2419bade7de7572bb697536808831af25b5c35ce6ef576ca530ada17084ad925",
+      "blob": "1a661628aff62985405739a7247ea784bae9ef28"
+    },
+    "test/assistantSessionIntent.test.ts": {
+      "sha256": "1269a18c47a351eabb6d93b4a3a8e8999608ffd72a47e81352dd9eedce3e8347",
+      "blob": "1719bf4dec28ce343bd3f6283670ece5bc27e660"
+    },
+    "test/projectWikiSession.test.ts": {
+      "sha256": "8763b4bf14f920ea665c8096bccbcdb13e2e29ebab7fa9f8f9b20959ffa634cf",
+      "blob": "ba751bca7bab03164dfa50cb2d800345a7af1948"
+    },
+    "test/sceneVerificationRepair.test.ts": {
+      "sha256": "5049e8b4f96fa693153d10fcce6c7f0f879f7db47a2288eefd7407b324328cd9",
+      "blob": "ca68a50b00c78af48bcfe1f88c9ae45f74f1c3c1"
+    },
+    "test/toolSchemaProviderCompat.test.ts": {
+      "sha256": "35ce4546da49ed81f82819b4b4db0c6c85b8130021cc05ee632c6cd34e639036",
+      "blob": "5c7b6156e31d7b3ad1c12ebfe78f9fb6261c4369"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiAutonomousRunSurface.test.ts --maxWorkers 1 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ✓ test/aiAutonomousRunSurface.test.ts (12 tests) 6343ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > does not promote quick-reply presets but retains their transcript text  2282ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > (a) emitWorkPlan 이벤트로 체크리스트가 렌더된다 — 항목별 진행 + 현재 레이어 표시  303ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > tool_started 이벤트는 진행 중 항목의 활동 줄만 갈아 끼운다(체크리스트 재렌더 없음)  503ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > (b) 자동 계속/예산 소진 status 이벤트로 예산 표시(used/total)가 갱신된다 — 표시는 저장 레벨 cap  504ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > (c) milestone_applied / proposal_paused 이벤트마다 적용/실패 피드 라인이 렌더된다  374ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > 턴이 끝나면 할 일 표면은 걷히고 다음 턴의 새 계획은 보인다  562ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > 완료 계획은 표면에서 걷히고 계획 없는 턴도 목록을 만들지 않는다  533ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > agentMode chat 에서도 할 일 목록은 뜨되 예산 없이 뜨고, 세션에 autonomous 플래그가 전달되지 않는다  361ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  05:30:19
+   Duration  109.50s (transform 67.15s, setup 0ms, collect 100.78s, tests 6.34s, environment 0ms, prepare 336ms)
+

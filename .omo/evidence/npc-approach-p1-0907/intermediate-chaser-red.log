@@ -1,0 +1,54 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-npc-prerequisite-0907
+
+ ❯ test/npcApproach.test.ts (22 tests | 1 failed | 21 skipped) 293ms
+   ↓ bound NPC interactions before the protected claim snapshot > rejects early gold equally on host and explicit approaches
+   ↓ bound NPC interactions before the protected claim snapshot > rejects early item equally on host and explicit approaches
+   ↓ bound NPC interactions before the protected claim snapshot > rejects early monster equally on host and explicit approaches
+   ↓ bound NPC interactions before the protected claim snapshot > accepts zero early gold then exact +20 / 0 on both approaches
+   ↓ bound NPC interactions before the protected claim snapshot > accepts zero early item then exact +20 / 0 on both approaches
+   ↓ bound NPC interactions before the protected claim snapshot > accepts zero early monster then exact +20 / 0 on both approaches
+   ↓ bound NPC interactions before the protected claim snapshot > rejects negative early gold delta, not just extra payment
+   ↓ bound NPC interactions before the protected claim snapshot > rejects negative early item delta, not just extra payment
+   ↓ bound NPC interactions before the protected claim snapshot > checks every touch within one walk, explicit=false
+   ↓ bound NPC interactions before the protected claim snapshot > checks every touch within one walk, explicit=true
+   × bound NPC interactions before the protected claim snapshot > a nested foreign chaser cannot retire the early NPC interaction's baseline 291ms
+     → {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":17,"movementSteps":16,"claim":{"gold":20,"inventory":{"item_brass_key":0},"monsters":{}},"repeat":{"gold":0,"inventory":{"item_brass_key":0},"monsters":{}},"final":{"gold":77,"inventory":{"item_brass_key":1},"monsters":{}}}]}: expected true to be false // Object.is equality
+   ↓ bound NPC interactions before the protected claim snapshot > allows an unrelated prerequisite chest's legitimate gold reward
+   ↓ bound NPC interactions before the protected claim snapshot > allows an unrelated prerequisite chest's legitimate item reward
+   ↓ bound NPC interactions before the protected claim snapshot > allows an unrelated prerequisite chest's legitimate monster reward
+   ↓ bound NPC interactions before the protected claim snapshot > does not ban unrequested components on the early bound-NPC interaction
+   ↓ bound NPC interactions before the protected claim snapshot > retains protected foreign-event denial on host approach
+   ↓ bound NPC interactions before the protected claim snapshot > retains protected transfer denial on host approach without banning legitimate prelude transfers
+   ↓ bound NPC interactions before the protected claim snapshot > keeps ordinary scene semantics: 37 +20 touch +20 claim +0 repeat =77
+   ↓ bound NPC interactions before the protected claim snapshot > real AssistantSession rejects duplicate approach payment at tool and final closure, explicit=false
+   ↓ bound NPC interactions before the protected claim snapshot > real AssistantSession rejects duplicate approach payment at tool and final closure, explicit=true
+   ↓ bound NPC interactions before the protected claim snapshot > real AssistantSession accepts zero early then +20 / 0, explicit=false
+   ↓ bound NPC interactions before the protected claim snapshot > real AssistantSession accepts zero early then +20 / 0, explicit=true
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/npcApproach.test.ts > bound NPC interactions before the protected claim snapshot > a nested foreign chaser cannot retire the early NPC interaction's baseline
+AssertionError: {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":17,"movementSteps":16,"claim":{"gold":20,"inventory":{"item_brass_key":0},"monsters":{}},"repeat":{"gold":0,"inventory":{"item_brass_key":0},"monsters":{}},"final":{"gold":77,"inventory":{"item_brass_key":1},"monsters":{}}}]}: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/npcApproach.test.ts:94:47
+     92|     f.chief.pages![0].commands.unshift({ kind: "wait", ms: 2000 }, ...…
+     93|     const result = run(f);
+     94|     expect(result.ok, JSON.stringify(result)).toBe(false);
+       |                                               ^
+     95|     expect(result.evidence?.[0], JSON.stringify(result)).toMatchObject…
+     96|     expect(result.evidence?.[0]?.claim).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 21 skipped (22)
+   Start at  08:58:46
+   Duration  11.57s (transform 7.79s, setup 0ms, collect 10.92s, tests 293ms, environment 0ms, prepare 68ms)

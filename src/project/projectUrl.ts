@@ -38,6 +38,8 @@ export function readProjectFromUrl(search = browserSearch()): ProjectUrlState {
 export function syncProjectToUrl(input: {
   readonly projectId: string | null | undefined;
   readonly projectName?: string | null | undefined;
+  /** A verified showcase save-copy must reload its remote target, not the seed. */
+  readonly clearDevProject?: boolean;
 }): void {
   if (typeof window === "undefined" || !window.history?.replaceState) return;
   try {
@@ -45,6 +47,9 @@ export function syncProjectToUrl(input: {
     const id = clean(input.projectId ?? null);
     const name = clean(input.projectName ?? null);
     if (id) {
+      if (input.clearDevProject) {
+        for (const key of ["devProject", "freshProject", "blankProject"]) url.searchParams.delete(key);
+      }
       url.searchParams.set(PROJECT_URL_PARAM, id);
       url.searchParams.delete(LEGACY_PROJECT_ID_PARAM);
       if (name) url.searchParams.set(PROJECT_NAME_URL_PARAM, name);

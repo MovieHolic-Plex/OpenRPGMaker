@@ -4,7 +4,132 @@
 
 Read this before editing editor-facing behavior. Identifies which workflow owns a request and lists agent cautions.
 
+## Exterior door backing
+
+AI house and village authoring places lower-layer tile 359 at `(x, y-1)` and
+`(x, y)` before creating the exterior door event at `(x, y)`. The shared
+`stampHouseDoorBackground` clears upper tiles and tile stacks in those two cells;
+neighboring walls and the approach/return cell `(x, y+1)` remain separate.
+Village door restoration must retain the captured 359/359 pair. Interior exits
+and explicitly event-free decorative tile doors keep their existing behavior.
+Regression coverage: `test/exteriorDoorBackground.test.ts`.
+
+## Tile brush reliability (2026-09-06)
+
+- `TilePaintEngine.brushStrokePoints` is shared with hover rendering and produces
+  exactly N by N cells. Even sizes retain the negative-side anchor: 2 uses
+  offsets -1..0 and 4 uses -2..1. Erase and upper-layer empty brushes show the
+  same clipped footprint without a tile preview.
+- Freehand paint and erase interpolate between pointer samples. Fill, collision,
+  event and stamp gestures remain discrete; one undo restores a whole stroke.
+- Multi-cell source stamps set `preservePattern` to bypass terrain shaping and
+  tree-pair repair, and disable hard cluster expansion. `autoConnect: false`
+  alone is insufficient: ordinary autotile brushes still shape in Manual.
+  Single-cell stamps keep ordinary terrain/tree brush behavior.
+- `mapEditHistory.recordMapEditIfChanged` retains the immutable before-map and
+  records history only after an actual synchronous change. Brush strokes use it
+  until their first mutation, then bypass comparison. No-op paint/fill/erase,
+  rejected stamps and no-op rectangle/ellipse edits preserve redo.
+- Toolbar picking and short right-click share the visible-tile policy on lower,
+  and current-layer policy on upper, including EMPTY. Explicit `pickTileAt`
+  remains layer-specific. Sampling and structure-kit selection reset shape to
+  pen; B/1 clears an active stamp like the normal Paint button.
+- Regression seams: `test/editScenePaintHistory.test.ts`,
+  `test/tileBrushState.test.ts`, `test/structureKitBrushConditions.test.ts`.
+  Real browser proof is `scripts/qa/sidebar-brush.mjs`; its fixture is local-only
+  and requires disabled remote persistence.
+
+**2026-09-07 project wiki:** read [project-wiki.md](project-wiki.md) before changing
+world-document AI integration. The former blanket exclusion is superseded by
+awaited editor-owned wiki checkpoints, sourced relevant retrieval and combat
+authoring. Generic world CRUD and blanket lint/digests remain excluded.
+
 ## Pre-edit routing
+
+### Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+
+- Standard `mapTree=false` means a focused, always-mounted tile/event task host,
+  not an empty maps-only layout. `resolveLeftDockPanels` pins that host without
+  overwriting stored Expert docks. Standard does not offer ineffective dock
+  toggles. Expert retains its tree auto/manual height, splitter and collapse.
+- `sidebarMapHeader` renders current map and map settings above common layers.
+  Standard opens `renderMapList(..., {variant: "switcher"})`: the existing
+  two-column map explorer, with search always available and no dock-collapse
+  coupling. Expert reveals its existing tree; if its map dock was disabled it
+  uses the same explorer. No duplicate map IDs/selection implementation.
+- Paint/erase/fill/select and undo stay primary. Expert adds direct eyedropper.
+  `tileToolOptions` supplies labelled Tools, clipboard, pan/collision and the
+  Standard shape select; Expert has the same shape select beside brush options.
+  Shape choices call the existing `selectTileTool`, preserving reset behavior.
+- Beginner keeps its existing brush buttons and rail behavior. Standard/Expert
+  use a unique `brush-size-select` only for freehand paint/erase (no active stamp
+  or shape paint). Size is retained when hidden. Event owns its surface with no
+  duplicate event tool or tile search/brush controls. Layers remain in the same
+  position before and after a layer/mode change.
+- `tile-category-select` beside search replaces category chips; it uses the same
+  filter state/calculation. Reset clears both filters and focuses search. Native
+  atlas geometry, tile selection, stamp gestures and sheet scroll are unchanged.
+- `tileToolbarMenus` owns one labelled inspection/history menu and issue badge.
+  Expert pin checkboxes store command IDs per mode under
+  `oprn:sidebar-inspection-pins:<mode>`; pinned commands leave the menu action
+  list and become direct labelled buttons. Ctrl+K `sidebar-inspection-*` commands
+  open that same state. Storage failure retains session pins and logs a warning.
+- `sidebarSurface` owns bounded nonmodal map/tools/brush-assist/structure-kit
+  overlays: outside dismissal, Escape including search, opener focus, viewport
+  anchoring and mutually exclusive surface opening. Mode changes dismiss them.
+  Assist/kit expansion never consumes sheet height. Connection state remains
+  visible; selected-tile reveal/properties and tileset-to-map-settings route stay
+  compact below the sheet. No automatic onboarding or project persistence edits.
+- CSS remains in `left-sidebar.modern.css`; measurements use the actual
+  `.chipset-sheet` viewport, not its ancestors. Acceptance: Standard >=60% of
+  sidebar height at 1440x900; 1024x768/1280x800/1440x900 have no clipped chrome or
+  toolbar horizontal scroll and >=520px canvas. Parent owns whole gates/build
+  and independent visual/ultrabrain acceptance. Evidence and reproducible driver:
+  `output/evidence/sidebar-focus`, `scripts/qa/sidebar-focus.mjs`.
+- Regression seams: `sidebarFocusModes.test.ts` (real DOM/state, shape/size,
+  search, pin storage, command access, focus), retained `sidebarModeWorkflow`,
+  `sidebarBrushUi`, map/dock, toolbar and keyboard suites. Presentation assertions
+  follow moved controls without removing actual state/reset/undo coverage.
+- R1 ownership repairs: the actual `mapContextMenu` registers with `modalStack`
+  and uses `--z-popover-high`, so body-mounted child actions retain the explorer
+  and Escape returns to the originating row. Its old deferred row-focus job is
+  removed: it stole focus from keyboard menu navigation. Surface mode cleanup
+  calls real teardown, even if editor rendering subscribed first; dock remount
+  closes ownership and editor teardown detaches surface listeners.
+- `revealMapInDock` owns collapse markup, ancestor expansion/filter reset and
+  current-row focus. Inspection command dispatch first activates a missing Tiles
+  host through workspace state, then `openSidebarInspection` opens/focuses the same pinned/unpinned
+  surface. Tests: `sidebarFocusR1.test.ts` plus real-browser
+  `scripts/qa/sidebar-focus-r1.mjs` (Beginner/Standard-first Ctrl+K, actual context
+  menus, persisted collapse, and all three inspections from maps-only reload).
+- Rename settles Enter/Escape before removing its focused input: the resulting
+  blur cannot commit a cancelled draft or repeat a completed edit.
+
+### Automatic usage guides disabled (2026-09-06)
+
+- Editor rendering and post-welcome boot paths no longer automatically invoke
+  beginner coach marks or the standard-mode usage card. Do not restore these
+  calls when changing mode/boot orchestration.
+- First-visit mode selection, project selection/creation and ordinary Help stay
+  available. No storage flag is prefilled to pretend that the user saw a guide.
+- `test/e2e/no-auto-guides.spec.ts` checks fresh beginner/standard sessions,
+  usable paint/erase controls, mode switching and untouched guide-seen keys.
+
+### Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+
+- `basicLeftRail.ts` now owns a **288px persistent beginner palette**: labeled tools, direct layers, visible `oprn-tool-undo`, selected tile and search, then the shared scrolling grid. `basic-rail-toggle-tiles` focuses the grid; it is not a visibility toggle. Tile activation preserves the sheet and uses the existing authored-layer/paint/pen/stamp-reset rules. Event mode replaces the tile body with its explanation/creation CTA; returning to a tile layer restores it.
+- Only Maps remains a nonmodal flyout (`basic-rail-toggle-maps`). Pin, outside dismissal, Escape and opener-focus restoration remain. Its width is clamped against the new panel width. `paletteRail` still pins the tiles dock host; no persistence migration or workspace key changes are required.
+- CSS `--basic-rail-width` owns the 288px geometry; `editor.ts` has the matching pre-layout fallback and still derives `--editor-left-safe` from measured width. The supported 1024px viewport trades 216px of the former narrow rail's canvas for persistent materials; browser acceptance must retain at least the existing 520px canvas minimum, not claim increased canvas area.
+- Standard retains daily tools plus labeled More. Expert's `advancedSidebarControls` flag adds direct labeled inspector/rule-audit/history dropdowns via existing `tileToolbarMenus.ts` renderers. Expert More retains copy/paste but never duplicates those three actions or their IDs. Direct dropdowns use the existing viewport anchoring and return Escape focus to their own trigger. Mode changes dismiss open menus.
+- `makeTileBrushControls` owns always-visible, unique `brush-size-1..4` controls and active tool/shape/stamp/layer status in every mode. Sizes no longer live in More. The size group adds one roving tab stop; beginner Paint uses the shared stamp-reset action.
+- The shared palette preserves source column geometry. Default autotile selection projects the picked variant to its displayed representative for filtering, pressed state and roving focus without changing the paint tile. Custom atlas dragging resolves a source-coordinate stamp once on pointer release through `installCustomPaletteGesture`; pointer cancel, scroll, blur, outside release and detached sheets cannot commit.
+- Beginner search reports true match count, explains its retained out-of-filter selection, and restores search focus after reset. `basic-tile-search-feedback`, `basic-tile-search-reset` and `custom-palette-grid` are the browser QA hooks.
+- Beginner undo calls `undoMapEdit` and refreshes on `MAP_EDIT_HISTORY_EVENT`; there is no separate history stack. Tool/layer/panel/brush groups and the tile grid each retain one roving tab stop. Brush and history contracts are described above.
+- New/modified chrome uses existing tokens and SVG icons. Touched selected-tile/tileset-name, auto-connect and map-menu targets have a 24px minimum; new labeled utility controls use 32px. Standard/expert sheet and map-height allocation remain owned by the existing layout.
+- The wrapping toolbar uses `flex: 1 1 0` for its daily-tool group so More stays beside it rather than consuming another row. `fitMapTreeHeight` derives a minimum from measured map chrome plus up to 108px of list content; the preferred tile-sheet reserve cannot starve a multi-map list when expert controls add height. The adversarial E2E preserves this minimum and subscribes to resize/layout events before changing the viewport.
+- Regression seam: `test/sidebarModeWorkflow.test.ts` exercises actual DOM renderers, editor state, custom atlas cells, map flyout focus, history-backed undo and expert menu uniqueness. History tests subscribe before mutation with a bounded event deadline, not sleeps/polling. Existing atlas/selection/grid-roving and dock-width suites remain regression gates. Evidence is under `output/evidence/mode-ux`; full build/gates/browser acceptance are lead-owned.
+- Separate known issue: the baseline audit's 1024px topbar save-error overflow is not addressed by this sidebar increment.
+
 
 - **조수 답변의 이름 → 내부 이동 링킬 (2026-08-30):** 답변 문장 속 맵·NPC 이름을 눌렀을 때 생기는 모든 일은 네 파일이 나눠 갖는다: 색인·탐색 `src/editor/aiAnswerLinks.ts`(순수), DOM 치환 `src/editor/panels/aiAnswerLinkRender.ts`, 이동 `src/editor/editorReferenceNavigation.ts`, 조수가 직접 화면을 여는 툴 `src/editor/tools/viewFocusTools.ts`(`focus_editor_view`). 상세·함정은 `openwiki/editor-ai-panel.md` 첨 항목 — 링킬을 마크다운 링킬 문법이나 `renderMarkdown` 자식으로 재구현하려면 반드시 그 항목을 먼저 읽었음을 전제로 한다(정책이 내부 ID 노출을 금지하고, 문법 기반은 지나간 대화에 링킬을 걸지 못한다).
 
@@ -33,7 +158,7 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
 - Map canvas, tile placement, brush behavior, selection, copy/paste, undo, and map dimensions: start in `src/editor/EditScene.ts`, `src/editor/tileActions.ts`, and nearby `src/editor/tile*`, `src/editor/map*`, or `src/editor/structure*` modules.
 - **Paint hover flash:** while `isPainting` or a shape drag is active, map hover preview is suppressed (`shouldShowPaintHoverPreview` in `editSceneHoverPreview.ts` + `EditScene.suppressPaintHoverPreview`). Prevents raw palette tiles (e.g. dirt body) from flashing over autotile-shaped map cells after a stroke. Hover restores on pointerup.
 - **Lower must not mutate upper (data + draw):** pure lower-terrain paint/fill never writes `upperTiles` and skips tree-pair repair. Incremental map redraw also co-renders upper cells for every dirty lower cell (`uniqueRenderableTileCells`) and sorts `tileLayer` by depth so re-added lower tiles cannot cover props for a frame. Tests: `test/layerRouting.m1.test.ts`, `test/editSceneRender.test.ts`.
-- **빈 하위 칸 체커는 신호다 — 지우지 말고, AI 가 그걸 기본 바닥으로 남기지 못하게 막는다 (2026-08-27):** `editSceneRender.ts` 의 `createEmptyTile` 이 `lowerTiles[i] < 0` 인 칸에 짙은 체커(0x15171c/0x1a1d23)를 깐다. 이 체커는 "여기 바닥이 없다"를 눈에 보이게 하는 **의도된 신호이며 사용자가 유지를 요구했다** — 크림 캔버스로 바꾸면 문제가 안 보여서 더 나쁘다. 실제 결함은 조수가 그 상태를 만들어 놓는 것이었다: `tile_erase` 만 하위를 `TILE.EMPTY` 로 남겨 `clear_region`(기본 잔디)·`planMarketErase`·`resize_map`·`applyMapShift` 와 어긋났다. 이제 `tile_erase` 는 `baseGroundTile(map, rect)`(rect 밖 최빈 하위 타일 → 안쪽 최빈값 → 잔디)로 지면을 복원하고 `data.groundTile` 로 보고한다. 기본 바닥이 통행 불가일 때만 transfer 목적지 보호가 계속 발동한다. 진짜 구멍(하늘 맵·허공)은 `clear_region` 의 `fill="empty"` 로만 만든다. 계약 테스트: `test/constructionToolsV3.test.ts` (tile_erase 3케이스), `test/editSceneRender.test.ts`. 별개 사안: **플레이** 캔버스는 `createPlayGame.ts` 의 `#000` 이라 빈 lower·lower 에 놓인 투명 칩은 여전히 순수 검정으로 보인다(잔디 받침 합성은 기본 칩셋 나무 밑동에만 걸린다).
+- **빈 하위 칸 체커는 신호다 — 지우지 말고, AI 가 그걸 기본 바닥으로 남기지 못하게 막는다 (2026-08-27):** `editSceneRender.ts` 의 `createEmptyTile` 이 `lowerTiles[i] < 0` 인 칸에 짙은 체커(0x15171c/0x1a1d23)를 깐다. 이 체커는 "여기 바닥이 없다"를 눈에 보이게 하는 **의도된 신호이며 사용자가 유지를 요구했다** — 크림 캔버스로 바꾸면 문제가 안 보여서 더 나쁘다. 실제 결함은 조수가 그 상태를 만들어 놓는 것이었다: `tile_erase` 만 하위를 `TILE.EMPTY` 로 남겨 `clear_region`(기본 잔디)·`planMarketErase`·`resize_map`·`applyMapShift` 와 어긋났다. 2026-09-07: `tile_erase(kind:"all")` 는 `baseGroundTile(map, rect, tileset)`으로 현재 타일셋의 역할·레이어·통행 규칙에 맞는 관측 지면만 복원한다(rect 밖 우선 → 안쪽, 동률은 행 순서). 벽·지붕·소품·수역·통행 불가 타일은 후보가 아니며, 후보가 없으면 `erase-ground-unresolved`로 양 레이어 변경 전에 실패한다(잔디 폴백 없음). 사용자 확정 역할·레이어·통행 규칙은 보존한다. `data.groundTile`은 복원 타일이며 upper-only는 바닥 선택 없이 null을 보고한다. upper 발판 제거의 시작/transfer 목적지 보호와 완료된 집 소유권 보호는 그대로다. 상세 계약: `openwiki/editor-ai-tools.md`, 회귀: `test/tileEraseGround.test.ts`. 진짜 구멍(하늘 맵·허공)은 `clear_region` 의 `fill="empty"` 로만 만든다. 계약 테스트: `test/constructionToolsV3.test.ts` (tile_erase 3케이스), `test/editSceneRender.test.ts`. 별개 사안: **플레이** 캔버스는 `createPlayGame.ts` 의 `#000` 이라 빈 lower·lower 에 놓인 투명 칩은 여전히 순수 검정으로 보인다(잔디 받침 합성은 기본 칩셋 나무 밑동에만 걸린다).
 - **덧그림 공백 스포이트 (2026-08-31):** 덧그림 레이어에서 우클릭/집기가 빈 칸이면 `TILE.EMPTY`(-1)를 집는다. 이후 칠하기는 그 레이어 지우개(`eraseVisibleTilesBulk`)로 동작하고, 바닥은 건드리지 않는다. 바닥 레이어의 보이는 타일 집기(상위 있으면 상위, 없으면 하위)는 그대로다. 소유: `tilePicking.layerTilePickAt` → `TilePaintEngine.pickVisibleTileAt` / `pickTileAt`. `tileLayerHome(EMPTY)` 는 `"both"` 라서 `effectiveLayer` 가 요청 레이어를 유지한다 — `priority[-1] → lower` 폴백이면 공백 붓이 바닥을 비운다. **지우개 지면 복원:** 하위 슬롯을 스프라이트가 차지한 채(`isSpriteOccupyingLower`: 나무 밑동 + 상위 홈 소품) `EMPTY` 로 비우면 체커/플레이 `#000` 이 드러난다. 지형(잔디·물) 지우기는 구멍을 남기고, 스프라이트 지우기는 주변 지면(`groundTileNear`, 없으면 잔디)으로 되돌린다. 덧그림을 지웠을 때 그 칸 하위가 비어 있고 주변에 지면이 있으면 구멍도 메운다. 계약: `test/tilePicking.test.ts`, `test/upperLayerBlankPick.test.ts`, `test/layerRouting.m1.test.ts`, `test/tileActions.m1.test.ts`.
 - **Right-button map UX (2026-07-21 개선):** short **right-click** = eyedropper (`TilePaintEngine.pickTileAtPointer`); 우클릭 시작 시점에는 더 이상 1×1 미리보기 선택을 만들지 않음 — 기존 선택 유지; **right-drag** across 2+ tiles creates a selection and shows a hint toast (`W×H 영역 선택 — 복사·붙여넣기·✨ AI 작업 가능`) — AI 모달이 더 이상 자동으로 열리지 않음 (선택 칩에서 접근). 드래그 중 실시간 선택 박스는 `updateRightRegionGesture` → `selectTileRegion`. 우클릭 단일 클릭 후 1×1 잔여 박스 제거(`finishRightRegionGesture`). 기존 다중 선택 안을 우클릭 탭 → AI 팝오버(`openRegionAiPopover`)는 유지. Left-drag with the select tool selects normally. Legacy menu "?????곸뿭??AI ?묒뾽?? remains available via prior selection + context paths where wired. **Popover viewport:** `positionRegionTaskPopover(panel, anchor, avoid?)` clamps left/top and sets `maxHeight` to the viewport; after logs/before-after grow it re-clamps via `schedulePopoverReposition` (CSS: `.region-task-popover` overflow-y auto). **`avoid` 은 대상 영역의 클라이언트 사각형이다** — `EditScene.regionClientRect` 가 `tileRectToScreenRect` + 캔버스 `getBoundingClientRect` 로 계산해 넘기고, 순수 함수 `placePopoverBesideRect` 가 오른쪽→앜쪽→아래→위 순으로 겹치지 않는 자리를 고른다(어느 방향도 안 되면 null → 기존 anchor 클램프). 이유(실재): 우클릭 드래그를 놓은 자리는 곷 대상 영역 안이라 anchor 만 쓰면 팝오버가 **자기가 바꾸는 곳과 캔버스 고스트 미리보기·인라인 ✓적용 툴바를 덮는다**. **Region tool calling (boxes):** "박스/?섎Т?곸옄" ??`place_props` + `harness-combined-town-wood-box` (not `small-props` bag, not `place_chest`). "蹂대Ъ?곸옄/?곸옄瑜??? only ??`place_chest`. Guide lines live in `buildRegionTaskMessage` + tool descriptions.
 - **영역 작업 검토 화면은 결정 우선 배치다 (2026-08-28):** `regionTaskModal` 의 `compareHost` 순서는 **미리보기(`region-task-compare`) → 변경 목록 → 방별 제어 → 게이트(`region-task-gates`: 차단·NPC 일정 결정) → 결정 버튼 줄(`region-task-compare-actions`) → 진단 접이식(`region-task-diagnostics`)** 다. 진단 안에 기존 `region-task-checkpoint-timeline` / `region-task-review-metrics` / `region-task-review-issues` 가 그대로 들어가며(testid 계약 유지), summary 는 한 줄 통합 판정(`region-task-verdict`)이고 **차단·오류가 있으면 자동으로 펼친다**. 이유(실재): 진단 셋이 미리보기보다 **위**에 있어서 380px 팝오버에서 「적용」이 스크롤 아래로 밀려 있었다 — 우클릭 드래그의 목적이 적용인데 그것이 화면에서 가장 멀었다. 결정 버튼 줄은 `position: sticky; bottom: calc(var(--space-4) * -1)` 로 스크롤포트 바닥에 full-bleed 고정된다 — sticky 자습 자적는 원래 있었지만 **그 줄이 마지막 자식이면 sticky 는 아무 일도 하지 않는다** — 진단을 뒤로 보낸 뒤부터 실질 동작한다.
@@ -41,6 +166,7 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
 - **영역 작업 단축키는 단계별이다 (2026-08-28):** `compose` 에서 Enter/R = 실행, `running` 에서는 무시, `review` 에서 **Enter = 적용**, **R = 다시 만들기**. 검토 진입 시 `region-task-apply` 가 포커스를 받아 버튼 자심 생태로도 Enter 가 확정이 된다(모달 안 버튼/summary 가 포커스일 때 document 핸들러는 무조건 물러난다). 장진/버리기/다시 만들기는 버튼과 단축키가 `doApply`/`doRetry`/`doDiscard` 한 짝을 공유하고 `pending.settled` 를 직접 가드한다. 이유(실재): 이전에는 단계와 무관하게 Enter·R 이 `execute()` 여서, 결과를 보고 Enter 를 누를면 확정이 아니라 **방금 만든 제안을 버리고 AI 를 한 번 더 호출**했다 — 결정 화면에 확정 키가 아예 없었다. 계약: `test/regionTaskApplyFlow.test.ts`.
 - **영역 작업 헤더는 2행이다:** `region-task-title-row`(제목 + 닫기) + `region-task-meta-row`(단계 세그먼트 + 좌표 칩 + 통계 칩). 카테고리 칩 줄(`region-task-categories`)은 `flex-wrap: nowrap` + 가로 스크롤 한 줄이다 — 줄바꿈으로 2~3행을 잡아대던 자리를 지운다.
 - **영역 작업 박스 고도화 A/E/F + 타일셋 필터링 (2026-07-20):** `regionTaskModal` 의 결과 검토/상호작용 고도화. **A 부분 적용** — pending 시 chunk tree(레이어+4-연결성 구역 덩어리). `groupRegionChanges`/`withChunkLabels`(`regionTask/regionChangeGroups.ts`)가 base↔clipped diff 청크 묶음. `[선택 N칸 적용]` → `composePartialProject`(`regionTask/partialApplyCompose.ts`)가 선택 청크만 병합 → `applyPartialProject(merged)`. **E 컨텍스트 인식 동적 추천** — `suggestRegionCommandsByContext`(`regionTask/regionContextSuggestions.ts`)가 영역 주변 1타일 두르레이트 분석. 물≥3→부두/다리, 길≥2→가로수/상가, 숲≥3→사냥터/캠프파이어, 건물≥2→울타리/정원. **타일셋 기반 필터링** — 코퍼스/동적 명령에 `tilesets: TilesetCategory[]` 태그("outdoor"|"dungeon"|"interior"). `categorizeTileset(tilesetId)` 판정, `commandFitsTileset` 로 부적합 명령 제거(던전에서 꽃밭/오두막/호수 제외). 알 수 없는 타일셋은 outdoor 폴백. **F 시각/접근성** — (1) 헤더 통계 칩. (2) 키보드 단축키(textarea 비포커스시): Enter/R. (3) 슬래시 자동완성(코퍼스+동적+최근 5개 localStorage). 테스트: `regionChangeGroups`, `partialApplyCompose`, `regionContextSuggestions`(던전/실내 필터링 케이스 포함), `regionTileStats`, `recentInstructions`, `regionTaskModalEnhancements`. 스펙: `docs/superpowers/specs/2026-07-20-region-task-enhancements-design.md`. **모던 UI 계약 (2026-08-26)** — `src/editor/panels/regionTaskModal.ts` 중심의 영역 작업 모달 계약. 모든 아이콘과 라벨은 이모지 없이 `src/editor/panels/tileToolbarIcons.ts` 의 `makeSvgIcon` 과 타입 지정된 `SvgIconName` 만 사용한다. `src/styles/editor/region-task.css` 는 hex 리터럴을 일체 포함하지 않으며 스크림, 그림자, 표면 색상을 `src/styles/tokens.css` 의 디자인 토큰(`var(--token)`)으로 가져온다. 프리뷰는 단일 캔버스 영역과 A/B 토글 구조(`data-testid="region-task-preview"`, 토글 버튼 `region-task-preview-ab-before`/`region-task-preview-ab-after`, 기본 뷰 `"after"`)로 동작하고 팝오버 `max-width` 는 380px 이다. 검토 하위 블록들은 단일 테두리 카드(`.region-task-review-card`)로 통합되며 하단 액션 행(`.region-task-compare-actions`)은 sticky 로 고정된다. 청크 트리 기반 부분 적용(`groupRegionChanges` in `src/editor/regionTask/regionChangeGroups.ts`, `composePartialProject` in `src/editor/regionTask/partialApplyCompose.ts`), 영역 주변 1타일 컨텍스트 동적 추천(`suggestRegionCommandsByContext` in `src/editor/regionTask/regionContextSuggestions.ts`), 타일셋 기반 필터링(`TilesetCategory`) 계약을 포함한다. 계약 테스트: `test/regionTaskIcons.test.ts`, `test/regionTaskCssTokens.test.ts`, `test/e2e/region-task-monochrome.spec.ts`.
+- **영역 작업 부분 적용 승인 지문 정합 (2026-09-07):** `composePartialProject` 는 base 복제본 위에 선택 청크의 authored 타일 셀만 덮어쓰지만, 승인 지문(`projectApprovalFingerprint`)은 프로젝트 전체를 비교한다. 세션 작업본은 시작 전 결정론적 하네스 파생 데이터(`ensureRegionPlacementHarness` → `ensureBuildPaletteTileGroups`, 멱등)를 품고 있어 합성 후보가 그대로는 지문이 어긋나 정당한 부분 적용이 거부됐다. 합성 후보의 대상 맵 타일셋에 같은 준비를 적용해 파생 데이터만 정합시킨다 — authored 셀 선택 범위·다른 authored 필드는 그대로이므로, 타일셋을 손댄 후보나 선택 밖 미검수 후보는 여전히 거부된다. 회귀 테스트: `test/regionTaskHouseProtection.test.ts` 의 부분 합성 승인 정합 2건(타일셋 변조 거부·미검수 분기 후보 거부).
 - Tile palette, chipset rendering, stamps, picking, and autotile/semantic previews: start in `src/editor/panels/tilePalette.ts`, `src/editor/chipsetTileRender.ts`, `src/editor/tilePaletteStamp.ts`, and `src/assets`. The left palette uses three work tabs (**移좏븯湲?* / **찾기** / **?띿꽦**): paint holds tools + RM2003-style 6-column grid (`makeRm2kPalette` / `RM2K_PALETTE_COLUMNS=6`), find holds search/category quick picker, props holds mapping inspector/terrain. Tab preference is `rpg-zzu:palette-work-tab`. **Expert paint palette:** always **exactly 6 columns** (`.chipset-grid.rm2k-palette-grid` with `repeat(6, minmax(0,1fr)) !important`); no Manual/Auto paint-title toggle, no **?ш쾶** popout on the paint title row. Palette sheet grows with remaining height; short viewports cap map-tree height so the sheet keeps space. Styles: `figma-editor.css`, `editor-ui-modes.css`, `rm2k3.part-1.css`.
 - **Custom atlas palette geometry (2026-08-10):** `makeCustomPalette` is not an RM2003 six-column list. It renders every source cell in the atlas's exact `tilesPerRow` grid on both lower and upper editor layers, with horizontal scrolling when the authored sheet is wider than the rail. This preserves multi-cell facade/prop relationships; selecting a classified tile still switches to its authored layer through `selectPaletteTile`. Do not filter cells by active layer or cap/reflow custom columns—the resulting row shifts destroy the source artist's visual grammar.
 - **고급 ????듯빀 (2026-07-17):**  is mapped to native  (). Optional  /  live on ; legacy m2 rows rewrite on project normalize (). Portrait continues via . Form: 문장 ?쒖떆 ??고급 ?듭뀡. 

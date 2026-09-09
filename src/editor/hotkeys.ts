@@ -15,6 +15,8 @@ import { EDITOR_ZOOM_LEVELS, editorState, type EditorState, type Layer, type Too
 import { pendingHistoryLabels, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { toast } from "@/util/toast";
 
+const WALK_ENCOUNTER_DIALOG_SELECTOR = '[data-testid="walk-encounter-modal"], [data-testid="walk-encounter-list"]';
+
 /**
  * 플레이 서피스가 키보드를 소유하고 있는가 — 시연 실행 / 이벤트 테스트 / 전투 테스트 창,
  * 또는 플레이 셸이 마운트된 모든 경우.
@@ -53,18 +55,22 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
     const tag = target.tagName;
     if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
     if (target.isContentEditable) return true;
+    // 대화 스크롤러와 자식은 탐색 키만 소유한다. 저장·도구·히스토리는 계속 라우팅한다.
+    if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(event.key)
+      && target.closest('[data-editor-navigation-owner="true"]')) return true;
     // 모달/팝업/메뉴가 열려 있으면 충돌 방지를 위해 단축키를 끈다.
     if (target.closest("[data-testid^='menu-popup-']")) return true;
     if (target.closest(".oprn-modal") || target.closest(".modal-backdrop")) return true;
   }
   // 데이터베이스/리소스/이벤트 명령 모달이 열려 있으면 document 기준으로 가드.
   if (typeof document !== "undefined") {
+    if (document.querySelector(WALK_ENCOUNTER_DIALOG_SELECTOR)) return true;
     if (document.querySelector("[data-testid='database-modal']")) return true;
     if (document.querySelector("[data-testid='resource-modal']")) return true;
     if (document.querySelector("[data-testid='world-panel-modal']")) return true;
     if (document.querySelector("[data-testid='event-command-catalog-modal']")) return true;
     // 이벤트 에디터 모달은 자체 undo/redo 핸들러를 두므로 EditScene 단축키가 새지 않게 가드.
-    if (document.querySelector("[data-testid='event-editor-modal']")) return true;
+    if (document.querySelector("[data-testid='event-editor-modal']:not([hidden])")) return true;
   }
   // 플레이 서피스가 떠 있으면 키보드는 게임의 것이다.
   if (isPlaySurfaceOwningKeyboard()) return true;
@@ -131,8 +137,10 @@ export function historyHotkeyOwnedByPanel(): boolean {
   // 이 함수가 소유권을 넘기면 handleKeyDown 이 자연스럽게 shouldIgnoreEditorShortcut 로
   // 내려가 전적으로 침묵한다 — EditScene 에 별도 가드를 넣지 않는 이유다.
   if (isPlaySurfaceOwningKeyboard()) return true;
+  if (document.querySelector(WALK_ENCOUNTER_DIALOG_SELECTOR)) return true;
   if (document.querySelector("[data-testid='database-modal']")) return true;
-  return Boolean(document.querySelector("[data-testid='event-editor-modal']"));
+  if (document.querySelector("[data-testid='resource-modal']")) return true;
+  return Boolean(document.querySelector("[data-testid='event-editor-modal']:not([hidden])"));
 }
 
 /**
@@ -313,7 +321,7 @@ function stepZoom(direction: 1 | -1): void {
 
 function toolPatch(tool: Exclude<Tool, "event">, layer?: Layer): Partial<EditorState> {
   if (tool === "paint") {
-    return layer ? { tool, layer, paintShape: "pen" } : { tool, paintShape: "pen" };
+    return { tool, ...(layer ? { layer } : {}), paintShape: "pen", activePaletteStamp: null };
   }
   return layer ? { tool, layer } : { tool };
 }

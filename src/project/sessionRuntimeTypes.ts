@@ -5,17 +5,15 @@
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, Dir, EventPageGraphic, MapId, Command, LightingState, MessageWindowSettings, MonsterInstanceId, SkillId } from "@/project/types";
 import type { RelationshipState } from "./relationshipState";
 import type { FactionStanceOverrides } from "@/project/factionRuntime";
-import type { FarmPlots, MonsterInstance } from "@/project/session";
+import type { AudioTrackState, FarmPlots, MonsterInstance } from "@/project/session";
 import type { GameTime } from "@/project/gameTime";
 import type { ActorVitals } from "@/project/sessionVitals";
 import type { RngState } from "@/util/rng";
 import type { RoguelikeRunState } from "@/project/roguelikeRun";
 import type { BattleResult } from "@/project/gameTime";
 
-export type RuntimeAudioState = {
-  readonly resourceId: string;
-  readonly loop: boolean;
-};
+export type RuntimeAudioState = AudioTrackState;
+export type { SystemAudioOverrides } from "./systemAudioOverrides";
 
 export type RuntimePictureState = {
   readonly pictureId: string;
@@ -267,6 +265,7 @@ export interface PlaySessionLike {
   monsterParty?: MonsterInstanceId[];
   monsterBox?: MonsterInstanceId[];
   audio?: Record<string, RuntimeAudioState>;
+  systemAudioOverrides?: import("./systemAudioOverrides").SystemAudioOverrides;
   pictures?: Record<string, RuntimePictureState>;
   actorSkillIds?: Record<ActorId, SkillId[]>;
   actorBattleCommands?: Record<ActorId, string[]>;

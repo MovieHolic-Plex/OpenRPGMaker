@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { IntentFacts } from "@/ai/intentDeclaration";
 import {
   buildIntentFacts,
-  createLlmIntentDeclarer,
+  createLlmIntentDeclarer as productionDeclarer,
   declareIntentCached,
   resetIntentDeclarationCache,
   type IntentDeclarer,
@@ -36,9 +36,156 @@ function reply(content: string): ChatResult {
   return { message: { role: "assistant", content }, finishReason: "stop" } as ChatResult;
 }
 
+// These tests isolate routing/repair calls. The audit still returns through the
+// production parser; invalid coverage remains blocked rather than bypassed.
+const createLlmIntentDeclarer = (options: Parameters<typeof productionDeclarer>[0] = {}): IntentDeclarer => (facts, signal) => productionDeclarer({
+  ...options, audit: async () => reply(JSON.stringify({ requirements: [{ text: facts.userText,
+    criteria: [{ kind: "functionalUnresolved", reason: "This routing test does not assess authored construction" }] }] })),
+})(facts, signal);
+
 afterEach(() => resetIntentDeclarationCache());
 
 describe("createLlmIntentDeclarer", () => {
+  it.each(["corrected", "duplicate", "omitted"] as const)("routes duplicate gold through one bounded repair: %s", async repair => {
+    const rewards = [{ target: { eventName: "Chief" }, oneTime: true, grants: [
+      { kind: "item", id: "item_potion", count: 2 }, { kind: "gold", count: 20 },
+      { kind: "monster", id: "species_leafling", count: 1 },
+    ] }];
+    const invalid = { mode: "modify", npcRewards: [{ ...rewards[0], grants: [...rewards[0].grants, { kind: "gold", count: 20 }] }] };
+    const requests: ChatRequest[] = [];
+    const declarer = createLlmIntentDeclarer({ getConfig: () => CONFIG, chat: async (_config, request) => {
+      requests.push(request);
+      return reply(JSON.stringify(requests.length === 1 || repair === "duplicate" ? invalid
+        : repair === "omitted" ? { mode: "modify" } : { mode: "create", npcRewards: rewards }));
+    } });
+    const facts = { ...FACTS, userText: "Make Chief give 20 gold, two potions and one Leafling once." };
+    const outcome = await declarer(facts);
+    expect(requests).toHaveLength(2);
+    const echoed = requests[1].messages[2].content;
+    if (typeof echoed !== "string") throw new Error("Expected original raw declaration in repair request");
+    expect(JSON.parse(echoed)).toEqual(invalid);
+    expect(outcome.intent.mode).toBe("modify");
+    if (repair === "corrected") {
+      expect(outcome.intent.npcRewards).toEqual(rewards);
+      expect(outcome.error).toBeUndefined();
+    } else {
+      expect(outcome.intent.npcRewards).toHaveProperty("invalidReason");
+      expect(outcome.error).toBeDefined();
+    }
+  });
+
+  it.each([false, true])("preserves exact reference-free gold through admission/cache, shape repair=%s", async repair => {
+    const rewards = [{ target: { eventName: "Chief" }, grants: [{ kind: "gold", count: 20 }], oneTime: true }];
+    const requests: ChatRequest[] = [];
+    const declarer = createLlmIntentDeclarer({
+      getConfig: () => CONFIG,
+      chat: async (_config, request) => {
+        requests.push(request);
+        return reply(JSON.stringify({ mode: requests.length === 1 ? "modify" : "create", npcRewards:
+          repair && requests.length === 1 ? [{ ...rewards[0], grants: [{ kind: "gold", count: 20, id: null }] }] : rewards }));
+      },
+    });
+    const first = await declareIntentCached(declarer, FACTS);
+    expect(first.intent.npcRewards).toEqual(rewards);
+    expect(first.intent.mode).toBe("modify");
+    expect(first.error).toBeUndefined();
+    expect((await declareIntentCached(declarer, FACTS)).intent.npcRewards).toEqual(rewards);
+    expect(requests).toHaveLength(repair ? 2 : 1);
+  });
+
+  it("does not shape-repair or coerce the captured localized item declaration", async () => {
+    const rewards = [{ target: { eventName: "촌장" }, grants: [{ kind: "item", name: "골드", count: 20 }], oneTime: true }];
+    let calls = 0;
+    const declarer = createLlmIntentDeclarer({ getConfig: () => CONFIG, chat: async () => {
+      calls++;
+      return reply(JSON.stringify({ mode: "modify", npcRewards: rewards }));
+    } });
+    expect((await declarer(FACTS)).intent.npcRewards).toEqual(rewards);
+    expect(calls).toBe(1);
+  });
+
+  it("repairs an invalid reward declaration before returning an executable intent", async () => {
+    const rewards = [{ target: { eventId: "npc_reward" }, grants: [{ kind: "item", id: "item_potion", count: 5 }], oneTime: true }];
+    const responses = [
+      { mode: "modify", npcRewards: [{ ...rewards[0], target: { eventId: "npc_reward", eventName: "Reward" } }] },
+      { mode: "modify", npcRewards: rewards },
+    ];
+    const requests: ChatRequest[] = [];
+    const declarer = createLlmIntentDeclarer({
+      getConfig: () => CONFIG,
+      chat: async (_config, request) => {
+        requests.push(request);
+        return reply(JSON.stringify(responses[requests.length - 1]));
+      },
+    });
+    const outcome = await declarer(FACTS);
+    expect(outcome.intent.npcRewards).toEqual(rewards);
+    expect(requests).toHaveLength(2);
+    expect(requests[1]?.messages.map((message) => message.role)).toEqual(["system", "user", "assistant", "user"]);
+    expect(outcome.error).toBeUndefined();
+  });
+
+  it.each(["invalid", "omitted", "network"] as const)("keeps an invalid reward contract blocking when repair is %s", async (repair) => {
+    let calls = 0;
+    const invalid = { mode: "modify", npcRewards: [{ target: {}, grants: [] }] };
+    const declarer = createLlmIntentDeclarer({
+      getConfig: () => CONFIG,
+      chat: async () => {
+        calls++;
+        if (calls === 2 && repair === "network") throw new Error("repair unavailable");
+        return reply(JSON.stringify(calls === 2 && repair === "omitted" ? { mode: "modify" } : invalid));
+      },
+    });
+    const outcome = await declarer(FACTS);
+    expect(calls).toBe(2);
+    expect(outcome.intent.npcRewards).toHaveProperty("invalidReason");
+    expect(outcome.error).toBeDefined();
+  });
+
+  it("does not cache an invalid reward declaration after its repair attempt", async () => {
+    let calls = 0;
+    const valid = [{ target: { eventId: "npc_reward" }, grants: [{ kind: "item", id: "item_potion", count: 5 }] }];
+    const declarer = createLlmIntentDeclarer({
+      getConfig: () => CONFIG,
+      chat: async () => reply(JSON.stringify({
+        mode: "modify",
+        npcRewards: ++calls <= 2 ? [{ target: {}, grants: [] }] : valid,
+      })),
+    });
+    expect((await declareIntentCached(declarer, FACTS)).intent.npcRewards).toHaveProperty("invalidReason");
+    expect((await declareIntentCached(declarer, FACTS)).intent.npcRewards).toEqual(valid);
+    expect(calls).toBe(3);
+  });
+
+  it("carries request reward contracts through the actual JSON consumer and cache without final commands", async () => {
+    const npcRewards = [{
+      target: { eventName: "Mira", mapId: "map_start" },
+      grants: [{ kind: "monster", name: "Leafling", count: 1 }, { kind: "item", name: "Potion", count: 2 }],
+      oneTime: true, choices: [0],
+    }];
+    let calls = 0;
+    const declarer = createLlmIntentDeclarer({
+      getConfig: () => CONFIG,
+      chat: async () => {
+        calls++;
+        return reply(JSON.stringify({ mode: "modify", npcRewards }));
+      },
+    });
+    const facts = { ...FACTS, userText: "Make Mira offer Leafling and two potions once, using the first choice." };
+    const first = await declareIntentCached(declarer, facts);
+    const continued = await declareIntentCached(declarer, facts);
+    expect(first.intent.npcRewards).toEqual(npcRewards);
+    expect(continued.intent.npcRewards).toEqual(npcRewards);
+    expect(calls).toBe(1);
+    const invalid = createLlmIntentDeclarer({
+      getConfig: () => CONFIG,
+      chat: async () => reply(JSON.stringify({ mode: "modify", npcRewards: [{ target: { eventName: "Mira" }, grants: [] }] })),
+    });
+    const outcome = await invalid(facts);
+    expect(outcome.intent.source).toBe("llm");
+    expect(outcome.intent.npcRewards).toHaveProperty("invalidReason");
+  });
+
   it("lite 모델·json_object·낮은 온도로 한 번 부르고 선언을 돌려준다", async () => {
     const requests: { config: AiConfig; req: ChatRequest }[] = [];
     const declarer = createLlmIntentDeclarer({
@@ -94,6 +241,54 @@ describe("createLlmIntentDeclarer", () => {
 });
 
 describe("declareIntentCached", () => {
+  it.each(["malformed", "empty", "missing-requirements", "unlinked", "invalid-criteria", "invalid-clarification", "network"] as const)("immediately retries %s coverage and caches the recovered audit", async failure => {
+    let declarations = 0, audits = 0;
+    const requirements = [{ text: FACTS.userText,
+      criteria: [{ kind: "mapCount", targets: [{ mapId: "map_start" }], count: 1 }] }];
+    const declarer = productionDeclarer({ getConfig: () => CONFIG,
+      chat: async () => { declarations++; return reply(JSON.stringify({ mode: "modify", needsPlan: false })); },
+      audit: async () => {
+        if (++audits === 1) {
+          if (failure === "network") throw new Error("coverage unavailable");
+          if (failure === "missing-requirements") return reply("{}");
+          if (failure === "unlinked") return reply(JSON.stringify({ requirements: [{ ...requirements[0], text: "not in the request" }] }));
+          if (failure === "invalid-criteria") return reply(JSON.stringify({ requirements: [{ text: FACTS.userText, criteria: [] }] }));
+          if (failure === "invalid-clarification") return reply(JSON.stringify({ requirements: [], clarifies: [{ requirementId: "unknown", text: FACTS.userText }] }));
+          return reply(failure === "malformed" ? "{" : JSON.stringify({ requirements: [] }));
+        }
+        return reply(JSON.stringify({ requirements }));
+      },
+    });
+    const first = await declareIntentCached(declarer, FACTS);
+    expect(first.intent.requestRequirements).toHaveLength(failure === "unlinked" ? 2 : 1);
+    expect(first.intent.requestRequirements?.map(requirement => requirement.criteria.map(criterion => criterion.kind)))
+      .toEqual(failure === "unlinked" ? [["functionalUnresolved"], ["functionalUnresolved"]] : [["functionalUnresolved"]]);
+    const recovered = await declareIntentCached(declarer, FACTS);
+    expect(recovered.intent.requestRequirements).toEqual(requirements);
+    expect(first.error).toBeDefined();
+    expect(recovered.error).toBeUndefined();
+    expect((await declareIntentCached(declarer, FACTS)).intent.requestRequirements).toEqual(requirements);
+    expect(declarations).toBe(2);
+    expect(audits).toBe(2);
+  });
+
+  it("caches valid model-declared unsupported obligations without treating them as extraction failures", async () => {
+    let declarations = 0, audits = 0;
+    const requirements = [{ text: FACTS.userText,
+      criteria: [{ kind: "functionalUnresolved", reason: "No evaluator for requested construction" }] }];
+    const declarer = productionDeclarer({ getConfig: () => CONFIG,
+      chat: async () => { declarations++; return reply(JSON.stringify({ mode: "create", needsPlan: false })); },
+      audit: async () => { audits++; return reply(JSON.stringify({ requirements })); },
+    });
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const outcome = await declareIntentCached(declarer, FACTS);
+      expect(outcome.intent.requestRequirements).toEqual(requirements);
+      expect(outcome.error).toBeUndefined();
+    }
+    expect(declarations).toBe(1);
+    expect(audits).toBe(1);
+  });
+
   it("같은 문장·같은 사실은 한 번만 부른다(러너와 세션이 연달아 읽는다)", async () => {
     let calls = 0;
     const declarer: IntentDeclarer = async (facts) => {

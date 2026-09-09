@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "unit": "U03",
+  "finding": "G1-F20",
+  "task_id": "st_01a07642",
+  "status": "verified-green",
+  "red_base": "c66f5a8ac2f61005833783807c40477d045b2b35",
+  "execution_base": "b52cefd54cc39205b5b138b3e6ac2d3a0166e5b9",
+  "execution_base_tree": "41aa444ebfd968c557a5f73750c4d38041cd2dc1",
+  "branch": "agent/event-remediation-u03",
+  "worktree": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u03",
+  "recorded_at": "2026-09-06T11:06:23.671143+00:00",
+  "commit_subject": "fix(editor): preserve transfer picker reversions and authored fields",
+  "commit_receipt": "commit-receipt.json is generated after atomic commit and is not part of its own hash",
+  "source_sha256": {
+    "src/editor/panels/eventEditor/transferPlayerDialog.ts": "6507e035f7bd93db68068d5a2509395bd7df455738da56b052cfa79cb6682f0d",
+    "test/eventCommandRemediation/U03.test.ts": "6b2a95bcdf718b9f75b078dcc4da4296dfe4c343683bd1c3ecf86a15d6df8360",
+    "test/eventCommandRemediation/U03.fixture.ts": "d5a9767643b8b77037de790d21b361385f6599a8b076e4cc52927d54caf5d013",
+    "test/e2e/event-command-remediation-U03.spec.ts": "f7a9b0b7d1cfd4a93c75ab1b90498ed327e4cf54e7f49b220a929801379589d2",
+    "scripts/qa/runtime/event-command-remediation-u03.scenario.mjs": "9f665ec7edaaf181391ae371e365af1bf3fea1cc264d644861cd8c2735c6929c"
+  },
+  "owner_read_only": "src/editor/panels/eventEditor/commandBodyAdvanced.ts was re-read; no change required",
+  "fix": [
+    "Compare against lastApplied, updated before invoking onApply, rather than opening request.command.",
+    "Patch lastApplied in live and standalone apply paths; preserve transition and other untouched command fields.",
+    "Keep outer command Confirm authority and existing event Apply/Cancel behavior; retain no-op/incomplete/missing-map characterizations."
+  ],
+  "retained_fields": {
+    "initial_and_restored": {
+      "kind": "transfer",
+      "mapId": "mapA",
+      "x": 2,
+      "y": 3,
+      "direction": "left",
+      "fade": "black",
+      "transition": "fade"
+    },
+    "direction_edit": {
+      "kind": "transfer",
+      "mapId": "mapA",
+      "x": 2,
+      "y": 3,
+      "direction": "up",
+      "fade": "black",
+      "transition": "fade"
+    },
+    "standalone_test_transitions": [
+      "fade",
+      "mosaic",
+      "blinds"
+    ],
+    "duration": "No duration field exists; none fabricated."
+  },
+  "fixture": {
+    "api": "buildFixture(): Project for H0 lazy CLI; same authored A target as RED",
+    "player_start": {
+      "mapId": "mapA",
+      "x": 1,
+      "y": 2
+    },
+    "host": {
+      "id": "u03-transfer",
+      "x": 1,
+      "y": 1
+    },
+    "temporary_hashes": "fixture-hashes.json",
+    "editor_exports_consumed_by_player": [
+      "restored-A.json",
+      "direction-up.json"
+    ]
+  },
+  "verification": [
+    {
+      "phase": "RED",
+      "command": "npm test -- test/eventCommandRemediation/U03.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U03/red.json",
+      "exit": 1,
+      "tests": {
+        "passed": 7,
+        "failed": 2,
+        "pending": 0
+      },
+      "assertions": "stored/reloaded mapId expected mapA received mapB; transition expected fade received undefined; direction-only retained target/fade but lost transition; six assertions total",
+      "logs": [
+        "red.log",
+        "red.json"
+      ],
+      "runs": 1
+    },
+    {
+      "phase": "GREEN",
+      "command": "npm test -- test/eventCommandRemediation/U03.test.ts test/transferCommandBody.test.ts --maxWorkers=2",
+      "exit": 0,
+      "tests": {
+        "passed": 13,
+        "failed": 0
+      },
+      "preserved": "Original nine tests retained without weakened assertions; three standalone transition cases added. Related transfer body test retained.",
+      "log": "green.log",
+      "earlier_pass": "green-before-type-fix.log; final rerun followed type-only spy correction, not timing retries"
+    },
+    {
+      "phase": "fixture",
+      "command": "VITE_CACHE_DIR=/tmp/event-command-u03-Y3cP2Q/fixture-loader E2E_FREEZE_DEV_SERVER=1 node node_modules/vite-node/vite-node.mjs --script scripts/prepare-event-command-remediation.mts U03 /tmp/event-command-u03-Y3cP2Q/fixtures",
+      "exit": 0,
+      "log": "fixture.log"
+    },
+    {
+      "phase": "editor",
+      "command": "node .omo/evidence/event-command-remediation/U03/editor-runner.mjs",
+      "exit": 0,
+      "browser": "Firefox, fresh context, 1280x800",
+      "result": "one Playwright test passed, six declared action/PASS scenarios; real controls, selected-row Space, Confirm then Apply, reopen, direction-only edit, Cancel then Apply, two filechooser imports",
+      "plan": "editor-scenarios.json",
+      "logs": [
+        "editor.log",
+        "editor-observation.json",
+        "editor-launch.json"
+      ],
+      "runs": 1,
+      "export_contract": "project-export-json.project wire JSON -> serializer -> actual menu/filechooser import; no package-download claim"
+    },
+    {
+      "phase": "player",
+      "command": "node .omo/evidence/event-command-remediation/U03/player-runner.mjs",
+      "exit": 0,
+      "browser": "Chromium, two fresh contexts, dedicated player.html, no editor shell",
+      "result": "four positive beats: Enter boot and real Z transfers for restored-A and direction-up; landing mapA/(2,3), rendered sprite facing left/up. Two intentional wrong-mapB discriminators time out while observing mapA.",
+      "plan": "player-scenarios.json",
+      "logs": [
+        "player.log",
+        "player-observation.json",
+        "player-restored-A/manifest.json",
+        "player-direction-up/manifest.json"
+      ],
+      "no_remote_writes": true
+    },
+    {
+      "phase": "diagnostics",
+      "command": "node .omo/evidence/event-command-remediation/U03/typecheck.mjs",
+      "exit": 0,
+      "result": "zero syntactic/semantic diagnostics for all five changed TS/config files; repository compiler options, no emit",
+      "log": "diagnostics.log"
+    },
+    {
+      "phase": "LSP",
+      "result": "No diagnostics reported for all changed product/test/scenario files and proof runners/config; compiler supplement caught and resolved one test type issue."
+    },
+    {
+      "phase": "syntax/whitespace",
+      "command": "node --check on scenario and three evidence runners; git diff --check",
+      "exit": 0
+    },
+    {
+      "phase": "cleanup",
+      "command": "Owned resource/hash/port verification and deletion; see cleanup.log",
+      "exit": 0,
+      "log": "cleanup.log"
+    },
+    {
+      "phase": "staged evidence whitespace",
+      "initial_exit": 2,
+      "cause": "Ten lines of raw Vitest RED output had trailing whitespace.",
+      "resolution": "Preserve original as local red.raw.log and commit whitespace-normalized red.log; no test/prose assertion change."
+    }
+  ],
+  "failed_attempts": [
+    {
+      "phase": "player preflight",
+      "exit": 1,
+      "cause": "Scenario beat IDs G1-F20-boot/G1-F20-transfer-A violated lowercase kebab-case validator. No game input ran. Vite shutdown during its initial dependency scan also emitted closed-server diagnostics.",
+      "resolution": "Lowercase beat IDs; exact findingID retained in note. Added normalizeScenario preflight before server creation. Corrected run passed.",
+      "raw_log": {
+        "path": ".omo/evidence/event-command-remediation/U03/player-preflight-failure.log",
+        "sha256": "ca71223a308390c7c1e40750e715474deb0a2061cc2475fd050d1f0635cffede",
+        "committed": false
+      },
+      "receipts": [
+        "player-preflight-scenarios.json",
+        "player-preflight-cleanup.json"
+      ]
+    },
+    {
+      "phase": "scoped compiler",
+      "exit": 1,
+      "cause": "TS2344 on the RED test spy generic annotation: drawTransferMapPreview does not satisfy never. LSP had returned zero diagnostics.",
+      "resolution": "Use Vitest MockInstance<typeof transferPreview.drawTransferMapPreview>; no behavioral/assertion change. Final compiler and related tests pass.",
+      "log": "diagnostics-before-type-fix.log"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": ".omo/evidence/event-command-remediation/U03/editor-direction-up.png",
+      "sha256": "02bd7cb853a237e1246e19d6c096ace3308ef0d220d3b6cd41ac67965a5ca6a1",
+      "width": 1280,
+      "height": 800,
+      "committed": false
+    },
+    {
+      "path": ".omo/evidence/event-command-remediation/U03/editor-restored-A.png",
+      "sha256": "9ce82c6f868eb83da6e4abcf8ccd51fca3aabb48a857733d52ca03e11697b276",
+      "width": 1280,
+      "height": 800,
+      "committed": false
+    },
+    {
+      "path": ".omo/evidence/event-command-remediation/U03/player-direction-up/02-g1-f20-transfer-a.png",
+      "sha256": "7f058c58fa095153d344672a11b903b4295634ff0f3f784e9703ee3c5a7fe75d",
+      "width": 1024,
+      "height": 768,
+      "committed": false
+    },
+    {
+      "path": ".omo/evidence/event-command-remediation/U03/player-restored-A/02-g1-f20-transfer-a.png",
+      "sha256": "d31529bdd1ccc1df271a58c679eec2b459d5e202594d55c14ef5125b3bce19e9",
+      "width": 1024,
+      "height": 768,
+      "committed": false
+    }
+  ],
+  "visual_limit": "Image-read tools reported current model does not support images. Files captured/hash-verified; no human-equivalent pixel review claimed. Real control actionability and rendered sprite direction/state were checked.",
+  "cleanup": {
+    "receipts": [
+      "editor-cleanup.json",
+      "player-preflight-cleanup.json",
+      "player-cleanup.json",
+      "cleanup.log"
+    ],
+    "ports_closed": [
+      39283,
+      40115,
+      38283
+    ],
+    "owned_root_removed": "/tmp/event-command-u03-Y3cP2Q",
+    "fixtures_and_caches_removed": true,
+    "contexts_closed": true,
+    "save_namespaces": "Disposed with two fresh browser contexts",
+    "local_editor_mirrors_removed": [
+      "output/ai-activity",
+      "output/edit-activity"
+    ],
+    "preexisting_vite_metadata": "preserved unchanged",
+    "local_screenshots": "retained ignored, not staged"
+  },
+  "boundaries": [
+    "No H0/shared helper changes.",
+    "No shared wiki/Design/snapshot edits; wiki-amendment.md is lead-applied text.",
+    "No DB writes, package installs, full build/gates, push, PR, merge, rebase, or extra agents.",
+    "Full build/gates explicitly lead-owned."
+  ],
+  "wiki_amendment": "wiki-amendment.md",
+  "historical_red_receipt": "prep-manifest.md",
+  "raw_red_log": {
+    "path": ".omo/evidence/event-command-remediation/U03/red.raw.log",
+    "sha256": "da1dddf7c7519e8bf22b8bf12f215a2786adaed0fe53114405c83c776db0b891",
+    "committed": false,
+    "note": "Original capture preserved byte-for-byte locally. Committed red.log only removes trailing spaces/tabs flagged by staged diff --check; assertion output/exit code unchanged. Historical prep-manifest red.log SHA refers to this raw capture. red.json remains original."
+  }
+}

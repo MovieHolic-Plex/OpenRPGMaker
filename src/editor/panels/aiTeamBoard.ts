@@ -1,0 +1,124 @@
+// 팀 보드 — `/pi` 실행을 대화 로그 안에 카드로 그린다. 팀장·시공·검수 에이전트가 행 하나씩,
+// 행마다 상태·턴·툴콜·마지막 한 줄. 상태는 teamBoardState 리듀서가 만들고 이 파일은 그리기만 한다.
+// 스타일: tabs-b-assistant-panel/20-team-board.css (tokens.css 변수만, !important 0).
+
+import { el } from "@/util/dom";
+import { teamBoardTotals, type TeamBoardAgent, type TeamBoardState } from "@/ai/piAgent/teamBoardState";
+
+export interface TeamBoardHandle {
+  readonly root: HTMLElement;
+  update(state: TeamBoardState): void;
+}
+
+const PHASE_TONE: Record<TeamBoardState["phase"], string> = {
+  "준비": "idle", "실행 중": "running", "적용 중": "running", "적용됨": "done", "중단": "muted", "실패": "error",
+};
+const AGENT_TONE: Record<TeamBoardAgent["state"], string> = {
+  "대기": "idle", "실행 중": "running", "완료": "done", "실패": "error", "중단": "muted",
+};
+
+function agentTitle(agent: TeamBoardAgent): string {
+  if (agent.role === "orchestrator") return "전체";
+  return agent.mapName ? `${agent.mapName}` : agent.mapId ?? "";
+}
+
+function renderAgent(agent: TeamBoardAgent, startedAt: number): HTMLElement {
+  const counters = [
+    agent.turns > 0 ? `${agent.turns}턴` : null,
+    agent.toolCalls > 0 ? `툴 ${agent.toolCalls}${agent.toolErrors ? ` (실패 ${agent.toolErrors})` : ""}` : null,
+    agent.stats ? `${Math.max(1, Math.round(agent.stats.ms / 1000))}초` : null,
+  ].filter((part): part is string => part !== null);
+  const row = el("li", {
+    class: `ai-team-agent is-${AGENT_TONE[agent.state]} role-${agent.role}`,
+    dataset: { testid: "ai-team-agent", agentId: agent.agentId, state: agent.state },
+    attrs: { "aria-label": `${agent.roleLabel} ${agentTitle(agent)} ${agent.state}` },
+  });
+  const head = el("div", { class: "ai-team-agent-head" });
+  head.append(
+    el("span", { class: "ai-team-role", text: agent.roleLabel }),
+    el("span", { class: "ai-team-map", text: agentTitle(agent), attrs: { title: agent.mapId ?? "" } }),
+    el("span", { class: "ai-team-agent-state", text: agent.state, dataset: { testid: "ai-team-agent-state" } }),
+  );
+  if (agent.state === "실행 중") head.append(el("span", { class: "ai-deck-spin ai-team-spin", attrs: { "aria-hidden": "true" } }));
+  if (counters.length > 0) head.append(el("span", { class: "ai-team-counters", text: counters.join(" · ") }));
+  row.append(head);
+  if (agent.task && agent.role !== "orchestrator") {
+    // 팀장이 쓴 작업 지시는 길다 — 두 줄로 접고, 누르면 펼친다.
+    const task = el("p", { class: "ai-team-task is-clamped", text: agent.task, attrs: { role: "button", tabindex: "0", "aria-expanded": "false", title: "누르면 전체 지시를 펼칩니다" } });
+    const toggle = () => { const open = task.classList.toggle("is-clamped"); task.setAttribute("aria-expanded", String(!open)); };
+    task.addEventListener("click", toggle);
+    task.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); toggle(); } });
+    row.append(task);
+  }
+  if (agent.review) {
+    const review = el("div", { class: `ai-team-review ${agent.review.ok ? "is-ok" : "is-findings"}` });
+    review.append(el("span", { class: "ai-team-review-verdict", text: agent.review.ok ? "검수 통과" : `지적 ${agent.review.findings.length}건` }));
+    if (agent.review.findings.length > 0) {
+      const list = el("ul", { class: "ai-team-findings" });
+      for (const finding of agent.review.findings.slice(0, 4)) list.append(el("li", { text: finding }));
+      review.append(list);
+    }
+    row.append(review);
+  } else if (agent.lastLine) {
+    row.append(el("p", { class: `ai-team-last is-${agent.lastKind}`, text: agent.lastLine, attrs: { "aria-live": agent.state === "실행 중" ? "polite" : "off" } }));
+  }
+  if (agent.spills.length > 0 || agent.conflicts.length > 0) {
+    row.append(el("p", {
+      class: "ai-team-warn",
+      text: [
+        agent.spills.length > 0 ? `범위 밖 변경 버림: ${agent.spills.join(", ")}` : null,
+        agent.conflicts.length > 0 ? `같은 맵 충돌: ${agent.conflicts.join(", ")}` : null,
+      ].filter(Boolean).join(" · "),
+    }));
+  }
+  void startedAt;
+  return row;
+}
+
+export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
+  const startedAt = Date.now();
+  const root = el("section", {
+    class: "ai-team-board",
+    dataset: { testid: "ai-team-board" },
+    attrs: { role: "group", "aria-label": initial.mode === "team" ? "Pi 팀 실행" : "Pi 에이전트 실행" },
+  });
+  const badge = el("span", { class: "ai-change-badge ai-team-badge", text: initial.mode === "team" ? "Pi 팀" : "Pi 에이전트" });
+  const title = el("span", { class: "ai-team-title", text: initial.task, attrs: { title: initial.task } });
+  const phase = el("span", { class: "ai-team-phase", text: initial.phase, dataset: { testid: "ai-team-phase" }, attrs: { "aria-live": "polite" } });
+  const totals = el("span", { class: "ai-team-totals" });
+  const head = el("header", { class: "ai-team-head" });
+  head.append(badge, title, phase, totals);
+  const list = el("ol", { class: "ai-team-agents", attrs: { "aria-label": "에이전트" } });
+  const foot = el("footer", { class: "ai-team-foot", attrs: { hidden: "" } });
+  root.append(head, list, foot);
+
+  const update = (state: TeamBoardState): void => {
+    root.dataset.phase = state.phase;
+    root.className = `ai-team-board is-${PHASE_TONE[state.phase]}`;
+    phase.textContent = state.phase;
+    const sum = teamBoardTotals(state);
+    const elapsed = Math.round((Date.now() - startedAt) / 1000);
+    totals.textContent = sum.agents > 0
+      ? `에이전트 ${sum.agents}${sum.running ? ` (${sum.running} 실행 중)` : ""} · 툴 ${sum.toolCalls}${sum.toolErrors ? ` (실패 ${sum.toolErrors})` : ""} · ${elapsed}초`
+      : `${elapsed}초`;
+    list.replaceChildren(...state.agents.map((agent) => renderAgent(agent, startedAt)));
+    const footParts: HTMLElement[] = [];
+    if (state.report) footParts.push(el("p", { class: "ai-team-report", text: state.report, dataset: { testid: "ai-team-report" } }));
+    if (state.error) footParts.push(el("p", { class: "ai-team-error", text: state.error }));
+    if (state.applied) footParts.push(el("p", { class: "ai-team-applied", text: state.applied, dataset: { testid: "ai-team-applied" } }));
+    if (footParts.length > 0) { foot.replaceChildren(...footParts); foot.removeAttribute("hidden"); }
+    else foot.setAttribute("hidden", "");
+  };
+  // 실행 중엔 1초마다 경과 시간만 다시 쓴다. 끝나면 멈춘다.
+  let lastState = initial;
+  let ticker: ReturnType<typeof setInterval> | null = null;
+  const syncTicker = (): void => {
+    const running = lastState.phase === "실행 중" || lastState.phase === "적용 중" || lastState.phase === "준비";
+    if (running && ticker === null) ticker = setInterval(() => { if (root.isConnected) update(lastState); else stopTicker(); }, 1000);
+    if (!running) stopTicker();
+  };
+  const stopTicker = (): void => { if (ticker !== null) { clearInterval(ticker); ticker = null; } };
+  const updateAndTick = (state: TeamBoardState): void => { lastState = state; update(state); syncTicker(); };
+  updateAndTick(initial);
+  return { root, update: updateAndTick };
+}

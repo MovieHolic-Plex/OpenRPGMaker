@@ -26,10 +26,16 @@ import {
   templateToolInstruction,
 } from "./narrativeHorrorWorkPlan";
 import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
-import { allTools, getTool } from "@/editor/tools/toolRegistry";
+import { VERIFICATION_TOOL_NAMES } from "./agentVerification";
+import { activeTools, getTool } from "@/editor/tools/toolRegistry";
+import { parseAcceptance, type AcceptancePromise } from "./assistantAcceptance";
+import { ACCEPTANCE_PLANNER_GUIDE } from "./assistantAcceptanceTools";
+import { parseWorkTargetIds, workTargetContractIssues } from "./workPlanTargets";
+import { parseVerificationChecks, type VerificationCheck } from "./toolVerificationEvidence";
 export type WorkItemStatus = "pending" | "in_progress" | "done" | "skipped" | "blocked";
 
 export interface WorkItem {
+  readonly requirementIds?: readonly string[];
   readonly id: string;
   readonly title: string;
   /** Concrete worker instruction (tool names + numbers preferred). */
@@ -41,6 +47,10 @@ export interface WorkItem {
   readonly doneWhen?: string;
   /** Tools that must all succeed before this item can auto-complete (orchestrator-authored). */
   readonly successTools?: readonly string[];
+  /** Accepted verification scope; absent/invalid declarations remain pending. */
+  readonly verificationChecks?: readonly VerificationCheck[];
+  /** Exact map identities; authoring is single-map, linking declares both endpoints. */
+  readonly mapTargets?: readonly string[] | null;
   /** Emergency generic fallback: require evidence from at least one successful write tool. */
   readonly requiresAnyWrite?: boolean;
   status: WorkItemStatus;
@@ -54,6 +64,8 @@ export interface WorkLayer {
 }
 
 export interface WorkPlan {
+  readonly requirements?: readonly AcceptancePromise[];
+  readonly acceptance?: readonly AcceptancePromise[];
   readonly id: string;
   readonly goal: string;
   readonly createdAt: string;
@@ -107,6 +119,8 @@ export type OrchestratorDecision =
        * 「마을=맵 1·NPC 3·상점 1」 막대를 씌우던 경로는 없다(2026-09-03 감사: 「이 마을에 상인 하나 추가」 폭주).
        */
       readonly volume?: PlannerVolumeBar;
+      readonly requirements?: readonly AcceptancePromise[];
+      readonly acceptance?: readonly AcceptancePromise[];
       readonly layers: readonly {
         readonly id?: string;
         readonly title: string;
@@ -116,6 +130,9 @@ export type OrchestratorDecision =
           readonly instruction: string;
           readonly doneWhen?: string;
           readonly successTools?: readonly string[];
+          readonly verificationChecks?: readonly VerificationCheck[];
+          readonly mapTargets?: readonly string[] | null;
+          readonly requirementIds?: readonly string[];
           readonly requiresAnyWrite?: boolean;
         }[];
       }[];
@@ -131,26 +148,30 @@ Harness contract:
 3. action=resume — incomplete WorkPlan already matches the user goal; keep it.
 4. action=new_plan — first multi-step hard request; author goal + layers + items.
 5. action=replan — active plan is wrong/stale or user wants restart/wipe/new goal.
-6. Prefer 2–4 layers, 1–3 items each, max ~8 items. Each item = one coherent sprint. Simple requests (one village, a few houses, terrain paint) should use action=direct or a 2-layer plan with ≤4 items — do NOT over-decompose.
+6. Plan at the scale the requested work requires. There is no layer or todo-count quota. Separate work that can be executed, retried or verified independently: individual regions, landmarks, connections, authoring passes and verification steps. Use direct only for genuinely atomic work, and do not invent extra scope or filler tasks merely to make the list longer.
+   **대상 전체를 짓는 파사드는 항목 1개가 아니다.** author_village / author_house / run_dungeon_room_pipeline 은 한 호출로 대상을 세우지만, 결과를 살아있게 만드는 인자는 전부 **선택**이라 비우면 법적 최소치만 나온다 — 주민은 대사 없이 놓이고(residents.lines), 집은 주인·용도가 없고(housePlans.ownerName/program), 인구(npcCount)·실내(interior)·배치(settlementLayout)·테마(theme)·숲(forestDensity)은 기본값이 된다. 사후 검사는 **집 수와 NPC 수만** 센다 — 대사·상점·실내·연결은 아무도 대신 확인해 주지 않는다. 그러니 채울 인자와 채울 대상을 항목으로 나눠라.
+   그 호출 **밖에 남는 것**은 반드시 별도 항목이다: 실내 가구·연결(furnish_interior_space, create_transfer_pair), 상점 재고(set_shop_stock), 퀘스트, 시작 위치(set_start_position), 인카운터·적, 보물·아이템, 그리고 마지막 show_map_region 전수 점검.
 7. Every item needs:
-   - title (short)
+   - title (identifies the independent result)
    - instruction (concrete tools/numbers: 신축=author_house, author_village, create_map, place_npc, create_transfer_pair, upsert_event, fill_region, paint_road, script_cutscene_preset, make_horror_loop, make_gallery_room / **수정=paint_tiles, tile_erase, fill_region, move_event, remove_event, set_map_properties, resize_map, furnish_interior_space, author_village(target:{kind:"existing",mapId,bounds})** … — 건설 지시는 목표 맵과 정확한 수량을, **수정 지시는 대상 맵 id 와 바꿀 대상을 반드시 명시**)
    - doneWhen (acceptance: what must be true when this item is complete)
    - successTools (tool names that must ALL succeed before the item auto-completes; they must cover **every clause of doneWhen**, not just the first one. If doneWhen also requires painting/decorating/placing after a map is created, list those tools too — e.g. doneWhen "맵이 생성되고 지형이 칠해짐" → ["create_map","fill_region"]. Modify items list modify tools, never creation tools — e.g. doneWhen "기존 광장 타일이 석재로 교체됨" → ["paint_tiles"], doneWhen "집 2채가 새 위치로 이동됨" → ["move_event"], doneWhen "잘못 깔린 담장이 정리되고 다시 깔림" → ["tile_erase","build_wall"]. Listing only the creation tool for such an item is a contract violation: the harness completes the item the moment those tools succeed, so the rest of doneWhen never runs. Never list alternatives.)
 8. Typical **greenfield** RPG content layers (신규 프로젝트/신규 맵을 만드는 요청에만 해당): meta/wipe → hub map → landmarks → side maps/transfers → quest chain → polish/QA.
    기존 산출물을 고치는 요청의 레이어는 다르다 — Repair/adjust: survey(get_map_region / find_layout_regions 로 현재 상태 확인) → cleanup(tile_erase) → rebuild in place → verify. 여기에 create_map/author_* new 를 끼워 넣지 마라.
 9. Titles/instructions/doneWhen in the **same language as the user** (usually Korean).
-10. **Be terse — a truncated response is worse than a small plan.** 2026-08-23 실측: 장문 goal + 큰 layers 로 응답이 출력 한도에서 잘려 JSON 이 깨졌고, 하니스가 무관한 폴백 템플릿으로 갈아타 사용자 요청의 5/6 이 조용히 누락됐다. reason ≤ 1 short sentence, goal ≤ 200 chars, each instruction ≤ 200 chars, no restating the user request verbatim.
-   단, 사용자의 **금지·보존 제약**("새로 만들지 마", "기존 것 유지", "이 맵만")은 축약 예외다 — instruction 에 그대로 남겨라. 축약해서 날리면 생성기가 신축으로 되돌아간다.
-11. A multi-deliverable request MUST have every deliverable represented by at least one item. Dropping one because the plan is getting long is a contract violation — merge related deliverables into one item instead.
-12. "volume" (optional, only with new_plan/replan): the minimum outputs you commit to for greenfield content — {"authoredMaps","multiPageNpcs","shops","quests"} as integers. The harness measures the project delta against it and re-injects work until it is met, so declare only what the user actually asked for (village ≈ maps 1 / npcs 3 / shops 1; RPG campaign ≈ maps 3 / npcs 6 / shops 1 / quests 1). Omit it for repairs, single facilities, and anything the user excluded.
+10. Preserve complete goals, instructions, quantities, dependencies and acceptance criteria without a character quota. Large plans are allowed. Avoid repetition, not required detail. Keep the user's prohibitions and preservation constraints (금지·보존 제약) explicit ("새로 만들지 마", "기존 것 유지", "이 맵만"). An interrupted response does not authorize treating a partial plan as the complete requested scope.
+11. A multi-deliverable request MUST have every deliverable represented by independently checkable items. Do not drop, merge or summarize independent tasks just to shorten the plan. Group them into meaningful layers while preserving their individual completion conditions.
+12. "volume" (optional, only with new_plan/replan): the minimum outputs you commit to for greenfield content — {"authoredMaps","multiPageNpcs","shops","quests"} as integers. The harness measures the project delta against it and re-injects work until it is met. Derive quantities from the requested scope, not a genre-sized preset or an arbitrary ceiling. Omit it for repairs, single facilities, and anything the user excluded.
 13. Only plan quest chains / bosses if the user asks for them. A genre preset or a guide NPC does not require a quest graph or boss.
    - create_quest compiles a step quest and define_quest authors a separate graph contract; they are NOT mandatory sequential calls. Graph verification uses verify_quest. Debugging state to a goal is not a playthrough and cannot prove completion.
    - 보스 전투 페이즈/광폭화/HP 임계 연출 → successTools MUST include ["author_boss_phases","simulate_battle"]. 페이즈가 실제로 발동했는지(phaseCoverage)를 시뮬로 확인해야 완료된다.
 14. Preserve an explicit numbered checklist and its dependencies. Put required project/map/event/DB reads in the first item, before any writes. Use only names from the canonical tool list below: get_database_records, set_start_position, set_session_start, upsert_troop are distinct tools. Do not invent get_database or set_player_start.
 15. For a full adventure JRPG stage request, include actual village buildings, a connected explorable dungeon with a return transfer, a reachable encounter, a real start party or changeParty join, and final full-map show_map_region inspection. A sign saying dungeon and an NPC talking about joining do not implement these. Seed-only database requests are exempt. Use upsert_equipment for equippable weapons and queried iconResourceId for items.
 16. For a party adventure, inspect the current party and supplies, make an accessible village-to-dungeon route, and inspect every affected map with show_map_region. A solid grass rectangle or a small decorated viewport does not complete a dungeon or whole-map stage. Preserve existing content while improving it. Separate visual inspection from authoring so premature tool-name completion cannot omit it.
+17. Verification successTools bind to accepted criteria on the item's mapTargets. Where no criterion resolves, declare verificationChecks:[{tool,args}] using complete validated tool input, or {tool,criterion:{promiseId,criterionIndex}}. Scenes also declare interactionTargets:[{stepIndex,mapId,eventId}] for every explicit interact step. Missing/invalid scope stays pending specification; the first probe is never a declaration. Accepted checks survive skipping/replanning and cannot be weakened. Do not invent additional game goals.
+18. Spatial authoring items MUST declare mapTargets:["exact_map_id"] (choose stable IDs for new maps). One map per authoring item, with that map's own single-map BuildSpec. Never combine terrain/buildings on different maps in one item. Put create_transfer_pair in a separate linking item with mapTargets:["map_a","map_b"] after both map authoring items in existing layer/item order. Each successTool is credited only for its declared targets; a no-op on A cannot discharge B. Include structure-authoring tools for promised buildings, not just fill_region, roads or transfers.
 ${NARRATIVE_HORROR_PLANNER_RULE}
+${ACCEPTANCE_PLANNER_GUIDE}
 
 JSON schema:
 {
@@ -169,12 +190,37 @@ JSON schema:
           "title": "todo",
           "instruction": "tools + numbers + placement",
           "doneWhen": "observable acceptance criteria",
-          "successTools": ["author_village"]
+          "successTools": ["create_map", "author_village"],
+          "mapTargets": ["map_hub"]
+        },
+        {
+          "id": "L1-b",
+          "title": "앞 항목이 만들지 않는 다음 독립 결과",
+          "instruction": "주민 대사 · 상점 재고 · 실내 연결처럼 파사드 호출 밖에 남는 것",
+          "doneWhen": "이 항목만으로 검증되는 조건",
+          "successTools": ["author_npc_cast", "set_shop_stock"],
+          "mapTargets": ["map_hub"]
+        }
+      ]
+    },
+    {
+      "id": "L2",
+      "title": "검증",
+      "items": [
+        {
+          "id": "L2-a",
+          "title": "전수 점검",
+          "instruction": "영향받은 맵을 전부 show_map_region 으로 확인",
+          "doneWhen": "대상 맵 전부를 실제로 확인함",
+          "successTools": ["show_map_region"],
+          "mapTargets": ["map_hub"]
         }
       ]
     }
   ]
-}`;
+}
+
+이 예시는 **모양**이다. 레이어·항목 수는 요청이 정한다 — 위 두 레이어를 상한으로 읽지 마라.`;
 
 /**
  * Max Ralph auto-continuations inside one user message after the first item.
@@ -197,14 +243,60 @@ export const MAX_RALPH_ATTEMPTS_PER_ITEM = 3;
 /** Soft cap: do not Ralph-continue past this many remaining steps in one burst. */
 export const MAX_WORK_PLAN_ITEMS_PER_BURST = 256;
 
+/**
+ * 계획 규모에 대한 **선언 사실**. 코드가 규모를 강제하지 않되(2026-09-03 폭주), 선언 계층이 이미
+ * 계산한 mode/needsPlan 을 플래너가 볼 수 있게 자세로 환산한다.
+ *
+ * 2026-09-09 진단: "마을을 만들어" 가 1항목 계획으로 끝났다. 플래너 프롬프트는 마을이면
+ * new_plan 을 쓰라고 말하지만, 페이로드에는 이것이 **신축 다단계** 라는 사실이 한 글자도 없었고
+ * `author_village` 는 대상 전체를 한 호출로 짓는 파사드라 rule 2 의 "single tool turn" 에 맞아
+ * 보였다. 반대로 `mode=modify` 를 분해로 밀면 「이 마을에 상인 하나 추가」가 다시 마을을 통째로
+ * 짓는다 — 그래서 수정은 명시적으로 보존 자세를 받는다.
+ */
+export type PlannerScopePosture = "decompose-greenfield" | "respect-existing" | "none";
+
+/** 자세 판정에 쓰는 선언 필드만 받는다 — 문장을 읽지 않는다. */
+export interface PlannerScopeIntent {
+  readonly mode: "create" | "modify" | "question" | "other";
+  readonly needsPlan: boolean;
+}
+
+export function plannerScopePosture(intent: PlannerScopeIntent | null | undefined): PlannerScopePosture {
+  if (!intent) return "none";
+  if (intent.mode === "modify") return "respect-existing";
+  if (intent.mode === "create") return intent.needsPlan ? "decompose-greenfield" : "none";
+  return "none";
+}
+
+const PLANNER_SCOPE_GUIDANCE: Record<Exclude<PlannerScopePosture, "none">, string> = {
+  "decompose-greenfield": [
+    "- 선언 계층이 이 요청을 **신축(create) + 다단계(needsPlan)** 로 확정했다. action=direct 는 여기서 오답이다.",
+    "- 대상 전체를 한 호출로 짓는 파사드(author_village 등)가 있어도 그것은 항목 1개가 아니다. 그 호출의"
+      + " **선택 인자를 비우면 최소치만 나온다** — 주민 대사(residents.lines), 집주인·용도(housePlans.ownerName/program),"
+      + " 인구(npcCount), 실내(interior), 배치·테마(settlementLayout/theme/forestDensity) 는 각각 채워야 생긴다.",
+    "- 그 호출 **밖에 남는 것**도 항목으로 세워라: 실내 가구·연결, 상점 재고, 퀘스트, 맵 간 이동, 시작 위치,"
+      + " 인카운터·적, 보물·아이템, 그리고 마지막 show_map_region 전수 점검.",
+    "- 각 항목은 독립적으로 실행·재시도·검증되는 결과여야 한다. 요청에 없는 범위를 새로 만들지는 마라.",
+  ].join("\n"),
+  "respect-existing": [
+    "- 선언 계층이 이 요청을 **수정(modify)** 으로 확정했다. 기존 산출물을 대상으로 삼고 신축 툴을 계획에 넣지 마라.",
+    "- 한 턴으로 끝나는 일이면 action=direct 가 맞다. 규모를 부풀리지 마라.",
+  ].join("\n"),
+};
+
 export function buildOrchestratorUserPayload(input: {
   readonly userText: string;
   readonly activePlan: WorkPlan | null;
   readonly projectSummary?: string;
+  readonly intent?: PlannerScopeIntent | null;
 }): string {
   const parts = [`## User request\n${input.userText.trim()}`];
   if (input.projectSummary?.trim()) {
     parts.push(`## Project snapshot\n${input.projectSummary.trim()}`);
+  }
+  const posture = plannerScopePosture(input.intent);
+  if (posture !== "none") {
+    parts.push(`## Scope declaration (코드가 아는 사실 — 추측 아님)\nposture=${posture}\n${PLANNER_SCOPE_GUIDANCE[posture]}`);
   }
   if (input.activePlan && !isWorkPlanComplete(input.activePlan)) {
     parts.push(`## Active WorkPlan (incomplete)\n${formatWorkPlanUserVisible(input.activePlan)}`);
@@ -221,7 +313,7 @@ export function buildOrchestratorUserPayload(input: {
   // create_map/author_village 항목으로 분해되고, successTools 에 생성툴이 박히면 그 툴이 성공할
   // 때까지 항목이 완료되지 않아 신축이 강제됐다.
   parts.push(TARGET_SELECTION_RULE);
-  parts.push(`## Canonical tool names\n${allTools().map((tool) => tool.name).join(", ")}\nUse exact names in successTools; unknown requirements block completion and require correcting the plan.`);
+  parts.push(`## Canonical tool names\n${activeTools().map((tool) => tool.name).join(", ")}\nUse exact names in successTools; unknown requirements block completion and require correcting the plan.`);
   parts.push("Respond with JSON only.");
   return parts.join("\n\n");
 }
@@ -234,6 +326,24 @@ export const TARGET_SELECTION_RULE = [
   "- 사용자가 신규 생성을 요구하지 않았다면 create_map / duplicate_map / reset_project / start_interior_room_session 을 계획에 넣지 않는다.",
   "- 사용자가 '새로 만들지 마'라고 명시했으면 신축 툴은 successTools 에도 넣지 않는다 — 넣으면 그 툴이 성공할 때까지 항목이 완료되지 않아 신축이 강제된다.",
 ].join("\n");
+
+// Keep the actual wire declarations until session preflight. Normalization may
+// discard malformed arrays or items, but must not erase a retained checkId.
+const verificationInputLayers = new WeakMap<object, unknown>();
+
+export function workPlanVerificationInputs(plan: WorkPlan) {
+  const layers = verificationInputLayers.get(plan) ?? plan.layers;
+  if (!Array.isArray(layers)) return [];
+  return layers.flatMap((layer, li) => {
+    if (!isRecord(layer)) return [];
+    const items = [layer.items, layer.steps, layer.tasks].find(Array.isArray);
+    if (!Array.isArray(items)) return [];
+    return items.flatMap((item, ii) => !isRecord(item) || item.verificationChecks === undefined ? [] : [{
+      itemId: typeof item.id === "string" && item.id.trim() ? item.id.trim() : `L${li + 1}-${ii + 1}`,
+      checks: item.verificationChecks,
+    }]);
+  });
+}
 
 /** 파싱 결과 — 실패 시 **어느 검증에서 걸렸는지** 를 문자열로 돌려준다. */
 export type OrchestratorParseResult =
@@ -284,15 +394,28 @@ export function parseOrchestratorDecision(raw: string): OrchestratorParseResult 
     return { decision: null, error: `모든 layer 가 형식 오류입니다(${rejected.join(", ")}). 필요한 형식: {title, items:[{title, instruction}]}` };
   }
   const volume = parsePlannerVolume(parsed.volume);
-  return {
-    decision: {
-      action,
-      goal,
-      ...(typeof parsed.plannerNote === "string" ? { plannerNote: parsed.plannerNote } : {}),
-      ...(volume ? { volume } : {}),
-      layers,
-    },
+  let acceptance = parseAcceptance(parsed.acceptance);
+  let requirements = parseAcceptance(parsed.requirements);
+  if (acceptance || requirements) {
+    try {
+      JSON.parse(jsonText);
+    } catch (cause) {
+      if (!(cause instanceof SyntaxError)) throw cause;
+      // Truncation repair can recover a plan, never a partial acceptance array.
+      acceptance = acceptance?.map(promise => ({ ...promise, criteria: null }));
+      requirements = requirements?.map(promise => ({ ...promise, required: true, criteria: null }));
+    }
+  }
+  const decision: Extract<OrchestratorDecision, { action: "new_plan" | "replan" }> = {
+    action, goal,
+    ...(typeof parsed.plannerNote === "string" ? { plannerNote: parsed.plannerNote } : {}),
+    ...(volume ? { volume } : {}),
+    ...(acceptance ? { acceptance } : {}),
+    ...(requirements ? { requirements } : {}),
+    layers,
   };
+  verificationInputLayers.set(decision, layersRaw);
+  return { decision };
 }
 
 /** 플래너가 선언한 볼륨 막대. 정수 0 이상만 받고, 전부 0 이면 없는 것으로 본다. */
@@ -301,7 +424,7 @@ export function parsePlannerVolume(value: unknown): PlannerVolumeBar | null {
   const read = (key: string): number => {
     const raw = value[key];
     if (typeof raw !== "number" || !Number.isFinite(raw)) return 0;
-    return Math.max(0, Math.min(50, Math.floor(raw)));
+    return Math.max(0, Math.floor(raw));
   };
   const bar = {
     authoredMaps: read("authoredMaps"),
@@ -375,16 +498,20 @@ export function workPlanFromOrchestratorDecision(
   /** 계획을 만든 턴의 대상 맵 id(`[컨텍스트] 현재 맵`). 신규 생성 요청이면 생략. */
   targetMapId?: string,
 ): WorkPlan {
-  return createWorkPlanFromLayers({
+  const plan = createWorkPlanFromLayers({
     goal: decision.goal,
+    acceptance: decision.acceptance,
+    requirements: decision.requirements,
     plannerNote: decision.plannerNote,
     layers: decision.layers,
     targetMapId,
     now,
   });
+  verificationInputLayers.set(plan, verificationInputLayers.get(decision) ?? decision.layers);
+  return plan;
 }
 
-/** In-loop set_work_plan tool (Claude TodoWrite-style): generator may replan via tools. */
+/** Parse an in-loop plan proposal; the session reconciles it with existing item identity. */
 export function workPlanFromSetToolArgs(args: Record<string, unknown>, now = new Date()): WorkPlan | null {
   const goal = typeof args.goal === "string" ? args.goal.trim() : "";
   if (!goal || !Array.isArray(args.layers)) return null;
@@ -392,15 +519,76 @@ export function workPlanFromSetToolArgs(args: Record<string, unknown>, now = new
     .map((layer, li) => normalizeLayer(layer, li))
     .filter((layer): layer is NonNullable<typeof layer> => layer !== null);
   if (layers.length === 0) return null;
-  return createWorkPlanFromLayers({
+  const plan = createWorkPlanFromLayers({
     goal,
+    acceptance: parseAcceptance(args.acceptance),
+    requirements: parseAcceptance(args.requirements),
     plannerNote: typeof args.plannerNote === "string" ? args.plannerNote : undefined,
     layers,
     now,
   });
+  verificationInputLayers.set(plan, args.layers);
+  return plan;
+}
+
+/** Generator repairs keep the goal's item identities; only the main planner may replace them. */
+export function repairWorkPlan(current: WorkPlan, replacement: WorkPlan):
+  | { readonly ok: true; readonly plan: WorkPlan }
+  | { readonly ok: false; readonly reason: string } {
+  const previous = new Map(current.layers.flatMap(layer => layer.items).map(item => [item.id, item]));
+  const incoming = replacement.layers.flatMap(layer => layer.items);
+  const ids = new Set(incoming.map(item => item.id));
+  if (ids.size !== incoming.length) {
+    return { ok: false, reason: "set_work_plan requires unique item IDs. Use get_work_plan and retain every existing item ID exactly once." };
+  }
+  const missing = [...previous.keys()].filter(id => !ids.has(id));
+  if (missing.length) {
+    return { ok: false, reason: `set_work_plan cannot erase existing items: ${missing.join(", ")}. Use get_work_plan; retain all IDs, including done/skipped items. Correct instructions/successTools or add/regroup items without replacing their IDs.` };
+  }
+  for (const item of incoming) {
+    const old = previous.get(item.id);
+    if (!old || old.status === "done" || old.status === "skipped") continue;
+    const removedChecks = (old.successTools ?? []).filter(name => VERIFICATION_TOOL_NAMES.has(name) && !item.successTools?.includes(name));
+    if (removedChecks.length) {
+      return { ok: false, reason: `set_work_plan cannot remove required verification from ${item.id}: ${removedChecks.join(", ")}. Fix the reported problems and rerun those checks; a summary query is not verification.` };
+    }
+  }
+  const layers = replacement.layers.map(layer => ({
+    ...layer,
+    items: layer.items.map((item): WorkItem => {
+      const old = previous.get(item.id);
+      if (old?.status === "done" || old?.status === "skipped") {
+        // Links are scheduler metadata, never canonical requirement ownership.
+        const { requirementIds: _previousLinks, ...settled } = old;
+        const newVerification = old.status === "done"
+          && JSON.stringify(old.verificationChecks) !== JSON.stringify(item.verificationChecks);
+        return { ...settled, ...(newVerification ? { status: "pending" as const } : {}),
+          verificationChecks: item.verificationChecks, mapTargets: item.mapTargets,
+          ...(item.requirementIds ? { requirementIds: item.requirementIds } : {}) };
+      }
+      return { ...item, status: old?.status ?? "pending", note: old?.note, requiresAnyWrite: old?.requiresAnyWrite ?? item.requiresAnyWrite };
+    }),
+  }));
+  const plan: WorkPlan = {
+    ...current,
+    goal: replacement.goal,
+    plannerNote: replacement.plannerNote ?? current.plannerNote,
+    acceptance: replacement.acceptance ?? current.acceptance,
+    requirements: replacement.requirements ?? current.requirements,
+    layers,
+    currentLayerIndex: current.currentItemId
+      ? layers.findIndex(layer => layer.items.some(item => item.id === current.currentItemId))
+      : 0,
+  };
+  // Reordering must not move evidence to a different item. A finished plan can gain new items.
+  if (!plan.currentItemId) activateFirstPending(plan);
+  verificationInputLayers.set(plan, verificationInputLayers.get(replacement) ?? replacement.layers);
+  return { ok: true, plan };
 }
 
 function createWorkPlanFromLayers(input: {
+  requirements?: readonly AcceptancePromise[];
+  acceptance?: readonly AcceptancePromise[];
   goal: string;
   plannerNote?: string;
   layers: readonly {
@@ -412,6 +600,9 @@ function createWorkPlanFromLayers(input: {
       instruction: string;
       doneWhen?: string;
       successTools?: readonly string[];
+      verificationChecks?: readonly VerificationCheck[];
+      mapTargets?: readonly string[] | null;
+      requirementIds?: readonly string[];
       requiresAnyWrite?: boolean;
     }[];
   }[];
@@ -427,13 +618,18 @@ function createWorkPlanFromLayers(input: {
       instruction: it.instruction.trim(),
       doneWhen: it.doneWhen?.trim() || undefined,
       successTools: sanitizeToolNames(it.successTools),
+      verificationChecks: parseVerificationChecks(it.verificationChecks),
+      mapTargets: it.mapTargets,
+      ...(it.requirementIds ? { requirementIds: it.requirementIds } : {}),
       requiresAnyWrite: it.requiresAnyWrite === true || undefined,
       status: "pending" as const,
     })),
   }));
   const plan: WorkPlan = {
     id: `wp_${input.now.getTime().toString(36)}`,
-    goal: input.goal.slice(0, 500),
+    goal: input.goal,
+    ...(input.acceptance ? { acceptance: input.acceptance } : {}),
+    ...(input.requirements ? { requirements: input.requirements } : {}),
     createdAt: input.now.toISOString(),
     layers,
     currentLayerIndex: 0,
@@ -457,6 +653,9 @@ function normalizeLayer(
     instruction: string;
     doneWhen?: string;
     successTools?: readonly string[];
+    verificationChecks?: readonly VerificationCheck[];
+    mapTargets?: readonly string[] | null;
+    requirementIds?: readonly string[];
   }[];
 } | null {
   if (!isRecord(layer)) return null;
@@ -474,7 +673,10 @@ function normalizeLayer(
         id: typeof it.id === "string" ? it.id : `L${li + 1}-${ii + 1}`,
         title: itemTitle,
         instruction,
+        ...(Array.isArray(it.requirementIds) ? { requirementIds: it.requirementIds.filter((id): id is string => typeof id === "string" && id.trim().length > 0) } : {}),
         doneWhen: typeof it.doneWhen === "string" ? it.doneWhen : undefined,
+        mapTargets: parseWorkTargetIds(it.mapTargets),
+        verificationChecks: parseVerificationChecks(it.verificationChecks),
         successTools: Array.isArray(it.successTools)
           ? it.successTools.filter((t): t is string => typeof t === "string")
           : undefined,
@@ -593,10 +795,13 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
   }
   if (s.current) {
     lines.push(`Current layer: ${s.current.layerTitle}`);
-    lines.push(`Current item: ${s.current.itemTitle}`);
+    lines.push(`Current item: ${s.current.itemTitle} (itemId: ${plan.currentItemId})`);
     lines.push(`Worker instruction:\n${s.current.instruction}`);
     if (s.current.doneWhen) lines.push(`Done when: ${s.current.doneWhen}`);
-    const required = getCurrentWorkItem(plan)?.successTools ?? [];
+    const item = getCurrentWorkItem(plan);
+    if (item?.mapTargets) lines.push(`Declared map targets: ${item.mapTargets.join(", ")}`);
+    if (item) for (const issue of workTargetContractIssues(item)) lines.push(`Plan correction [${issue.code}] ${issue.field}: ${issue.message}`);
+    const required = item?.successTools ?? [];
     if (required.length) lines.push(`Required successful tools for this item (including prior continuations): ${required.join(", ")}`);
     const unknown = required.filter((name) => !getTool(name));
     if (unknown.length) lines.push(`Invalid tool requirements: ${unknown.join(", ")}. Use find_tools, then correct these names with set_work_plan while preserving all unfinished checklist requirements. They cannot count as completed.`);
@@ -607,16 +812,18 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
     lines.push("All items complete. Summarize results briefly for the user.");
   }
   if (s.remainingTitles.length > 1) {
-    lines.push(`Remaining: ${s.remainingTitles.slice(0, 10).join(" → ")}`);
+    lines.push(`Remaining: ${s.remainingTitles.join(" → ")}`);
   }
   lines.push(
     "When all of this item's successTools succeed, the harness may auto-complete; " +
       "or call complete_work_item only after every listed tool succeeded for this item, including its continuations. " +
-      "If blocked (wrong tileset material, out of region, etc.), call skip_work_item with a note — " +
+      "For a non-verification item blocked by its premise, call skip_work_item with a note — " +
+      "required verification cannot be removed or skipped; fix its failures or report the blocker. " +
       "do NOT complete a failed item by succeeding a different tool. " +
       "If the item's premise is wrong (e.g. it prescribes creating a new map but the user asked to fix an " +
       "existing one), call set_work_plan to correct the plan instead of satisfying the wrong successTools. " +
-      "To restructure the remaining plan, call set_work_plan (full replacement). " +
+      "To repair or regroup the plan, use get_work_plan and submit set_work_plan with every existing item ID, including done/skipped items. " +
+      "Keep independent items separate; instructions/successTools may be corrected and new items added without restarting completed work. " +
       "Do not claim the full goal is finished while items remain."
   );
   return lines.join("\n");
@@ -634,7 +841,7 @@ export function formatRalphContinueMessage(plan: WorkPlan): string {
     `Progress: ${s.itemsDone}/${s.itemsTotal} items done.`,
   ];
   if (s.current) {
-    lines.push(`Current item: ${s.current.itemTitle}`);
+    lines.push(`Current item: ${s.current.itemTitle} (itemId: ${plan.currentItemId})`);
     lines.push(`Instruction:\n${s.current.instruction}`);
     if (s.current.doneWhen) lines.push(`Done when: ${s.current.doneWhen}`);
   }
@@ -662,7 +869,7 @@ export function formatWorkPlanUserVisible(plan: WorkPlan): string {
     }
   }
   if (s.current) {
-    lines.push(`\n다음: **${s.current.itemTitle}** — ${s.current.instruction.slice(0, 200)}`);
+    lines.push(`\n다음: **${s.current.itemTitle}** — ${s.current.instruction}`);
   }
   return lines.join("\n");
 }
@@ -671,28 +878,35 @@ export function formatWorkPlanUserVisible(plan: WorkPlan): string {
  * Should the harness Ralph-continue (re-inject + keep looping) instead of ending the turn?
  * Code decides continuation; model does not get a silent early exit on multi-step plans.
  */
-export function shouldRalphContinue(
+export type RalphContinuationDecision = "continue" | "complete" | "blocked" | "budget-exhausted" | "awaiting-user";
+
+export function ralphContinuationDecision(
   plan: WorkPlan | null,
   opts: {
     readonly autoStepsUsed: number;
     readonly assistantText?: string;
   }
-): boolean {
-  if (!plan || isWorkPlanComplete(plan)) return false;
+): RalphContinuationDecision {
+  if (!plan || isWorkPlanComplete(plan)) return "complete";
   const current = getCurrentWorkItem(plan);
-  if (!current) return false;
+  if (!current) return "complete";
   // 막힌 항목은 사람의 판단을 기다린다 — 재주입도, 자동 계속도 하지 않는다(2026-09-03).
-  if (current.status === "blocked") return false;
-  if (opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) return false;
+  if (current.status === "blocked") return "blocked";
+  if (opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) return "budget-exhausted";
   const remaining = summarizeWorkPlan(plan).itemsTotal - summarizeWorkPlan(plan).itemsDone;
   if (remaining > MAX_WORK_PLAN_ITEMS_PER_BURST && opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) {
-    return false;
+    return "budget-exhausted";
   }
   // Incomplete plans keep looping through a trailing ?; only explicit quick-replies pause.
   if (opts.assistantText?.includes(QUICK_REPLY_MARKER)) {
-    return false;
+    return "awaiting-user";
   }
-  return true;
+  return "continue";
+}
+
+/** Boolean compatibility for existing scheduling callers; the decision remains single-source. */
+export function shouldRalphContinue(plan: WorkPlan | null, opts: Parameters<typeof ralphContinuationDecision>[1]): boolean {
+  return ralphContinuationDecision(plan, opts) === "continue";
 }
 
 /**
@@ -883,12 +1097,12 @@ export function buildDefaultWorkPlan(goal: string, now = new Date(), opts: { rea
     (genre != null
       ? `${templateToolInstruction(genre)}
 
-요청: ${goal.slice(0, 600)}`
-      : goal.slice(0, 800)) + modifyGuard;
+요청: ${goal}`
+      : goal) + modifyGuard;
   return workPlanFromOrchestratorDecision(
     {
       action: "new_plan",
-      goal: goal.slice(0, 400),
+      goal,
       plannerNote:
         genre != null
           ? `fallback template (planner parse/API failed); ${plannerHintForNarrativeHorrorGenre(genre)}`

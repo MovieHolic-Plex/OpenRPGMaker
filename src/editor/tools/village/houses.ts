@@ -2,10 +2,12 @@
 // 집 배치·스탬프 — 후보 슬롯 생성, 키트 시공, 보호 마스크(footprint/스탠드오프), 문·용마루 복구.
 
 import { ALL_HOUSE_KIT_IDS, HOUSE_KITS as HOUSE_KIT_DEFS, stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
+import { stampHouseDoorBackground } from "@/editor/houseInteriors";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
 import type { Rng } from "@/util/rng";
 import { ToolError } from "../types";
+import { houseFootprintCells, protectedHouseCells, HOUSE_WALL_LADDER, roofDeckLadderAttachment } from "../houseProtection";
 import type { TerrainConstraintMasks } from "../villageTerrainPass";
 import type { VillageSketchSite } from "./sketch";
 import {
@@ -18,6 +20,7 @@ import {
   HOUSE_MARGIN,
   pointInMap,
   rectsOverlap,
+  ROAD_TILES,
   shuffled,
   type BuiltHouse,
   type HouseCandidate,
@@ -28,17 +31,10 @@ import {
   type VillageIntent,
 } from "./constants";
 
-export function houseBlockedCells(houses: readonly BuiltHouse[]): Set<string> {
-  const blocked = new Set<string>();
+export function houseBlockedCells(houses: readonly BuiltHouse[], map?: GameMap): Set<string> {
+  const blocked = new Set((map ? protectedHouseCells(map) : []).map(({ x, y }) => coordKey(x, y)));
   for (const house of houses) {
-    // bbox.y-1(용마루 행) 포함 — bright 키트는 지붕 용마루 upper를 bbox 한 행 위에 그린다
-    // (houseKit.ts stampFootprintHouseKit). 길 페인터는 칠하면서 upper를 지우므로,
-    // 이 행을 막지 않으면 길이 지붕 상단 장식을 찢는다. 집의 "절대 침범 금지 영역"이다.
-    for (let y = Math.max(0, house.bbox.y - 1); y < house.bbox.y + house.bbox.h; y += 1) {
-      for (let x = house.bbox.x; x < house.bbox.x + house.bbox.w; x += 1) {
-        blocked.add(`${x},${y}`);
-      }
-    }
+    for (const cell of houseFootprintCells(house.bbox)) blocked.add(`${cell.x},${cell.y}`);
   }
   return blocked;
 }
@@ -207,6 +203,7 @@ export function buildHouses(
   paintDoorTiles = false,
   sketchSites?: readonly VillageSketchSite[],
 ): BuiltHouse[] {
+  const existing = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   const available = houseCandidates(area, plaza, target, intent.templateCatalog, intent.settlementLayout, boulevard, sketchSites);
   const candidates = [
     ...shuffled(available.filter((candidate) => candidate.sketch === true), rng),
@@ -224,6 +221,7 @@ export function buildHouses(
     for (const candidate of list) {
       if (houses.length >= target) break;
       if (!canPlaceHouse(area, plaza.rect, houses, candidate.bbox)) continue;
+      if (bboxTouchesBlocked(candidate.bbox, existing, map.width)) continue;
       // 물 마스크 셀과 겹치는 후보는 버린다 — 나중에 지형 패스가 집을 침수시키지 않도록.
       if (terrainBlocked && bboxTouchesBlocked(candidate.bbox, terrainBlocked, map.width)) continue;
       const forced = intent.houseKits[houses.length];
@@ -253,14 +251,22 @@ export function buildHouses(
         warnings.push(`집 시공 실패(${candidate.template.name}): ${result.reason ?? "문 좌표 없음"}`);
         continue;
       }
+      // Only a successfully stamped new house replaces leftover streets under ridge caps/wing gaps.
+      // Existing ownership is excluded above; finish before sealing, never repair a completed house.
+      for (const { x, y } of houseFootprintCells(candidate.bbox, map)) {
+        const index = y * map.width + x;
+        if (ROAD_TILES.has(map.lowerTiles[index] ?? TILE.EMPTY)) map.lowerTiles[index] = TILE.GRASS;
+      }
       const doorAt = result.doorAt;
       const topIndex = (doorAt.y - 1) * map.width + doorAt.x;
       const bottomIndex = doorAt.y * map.width + doorAt.x;
       if (paintDoorTiles) {
         map.lowerTiles[topIndex] = DOOR_TOP_TILE;
         map.lowerTiles[bottomIndex] = DOOR_BOTTOM_TILE;
+      } else {
+        stampHouseDoorBackground(map, doorAt);
       }
-      // 도장 직후 값이 정본 — 이벤트 문이면 킷 벽 타일, 타일 문이면 116/146.
+      // 후처리 복원값 — 이벤트 문이면 359 두 칸, 타일 문이면 116/146.
       const doorTiles = {
         top: map.lowerTiles[topIndex] ?? DOOR_TOP_TILE,
         bottom: map.lowerTiles[bottomIndex] ?? DOOR_BOTTOM_TILE,
@@ -308,7 +314,6 @@ export function buildHouses(
 
 /** 다리 판자와 동일 — 상위 O가 하위 X를 덮는 통행 오버라이드. houseVariety 가 옥상 데크 판정에 쓴다. */
 export const ROOF_DECK_PLANK = 199;
-const WALL_LADDER = 322; // 벽 사다리(상위, 통과 O)
 
 /**
  * 옥상 데크(파랑 평지붕 전용) — 지붕 몸통 안쪽에 판자(199)를 얹어 보행면으로 만들고,
@@ -327,10 +332,10 @@ export function applyRoofDeck(map: GameMap, bbox: Rect, doorAt: { readonly x: nu
     }
   }
   // 사다리 기둥: 문에서 먼 쪽 벽 열, 처마→벽→지면 1칸까지 강제 설치(창문은 사다리로 대체).
-  const ladderX = Math.abs(right - 2 - doorAt.x) >= Math.abs(left + 2 - doorAt.x) ? right - 2 : left + 2;
+  const { x: ladderX } = roofDeckLadderAttachment(bbox, doorAt);
   for (let y = eaveY; y <= bbox.y + bbox.h; y += 1) {
     if (!pointInMap(map, { x: ladderX, y })) break;
-    map.upperTiles[y * map.width + ladderX] = WALL_LADDER;
+    map.upperTiles[y * map.width + ladderX] = HOUSE_WALL_LADDER;
   }
 }
 

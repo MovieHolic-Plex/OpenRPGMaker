@@ -1,5 +1,6 @@
 import { ruleToolRejectionText, type ProposedCall } from "@/ai/assistantSession";
 import { AGENT_RUN_MAX_TOTAL_STEPS } from "@/ai/assistantSession";
+import type { RunOutcome } from "@/ai/runOutcome";
 import type { WorkItem, WorkPlan } from "@/ai/workPlan";
 import { isItemFinished, layerItems, planLayers } from "./aiWorkPlanPages";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
@@ -9,6 +10,42 @@ import type { Project, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 import { deckIcon } from "./aiDeckIcons";
 import { toolIconKey, toolLabel } from "./aiToolLabels";
+
+const EXECUTION_LABEL: Readonly<Record<RunOutcome["execution"], string>> = {
+  "response-final": "응답 종료", "awaiting-user": "사용자 응답 대기", blocked: "진행 막힘",
+  cancelled: "사용자 중단", "budget-exhausted": "실행 한도 도달", failed: "실행 실패",
+};
+const GOAL_LABEL: Readonly<Record<RunOutcome["goal"], string>> = {
+  unassessed: "목표 미평가", incomplete: "목표 미충족", satisfied: "목표 충족",
+};
+const DELIVERY_LABEL: Readonly<Record<RunOutcome["delivery"], string>> = {
+  "no-change": "변경 없음", draft: "미적용 초안", applied: "적용됨",
+  persisted: "온라인 저장됨", "persisted-verified": "온라인 저장·검증됨",
+};
+
+/**
+ * 자료 전달은 **전달 사실만** 말한다. "이미지 전달됨" 은 그림이 실제 요청에 실렸다는 뜻이고,
+ * 모델이 그것을 이해했거나 좋다고 판단했다는 뜻이 아니다. 전달 사실을 모르는 실행에서는
+ * 이 조각을 아예 붙이지 않는다 — 없는 것을 "0건"이나 "실패"로 단정하지 않는다.
+ */
+const DELIVERY_RECEIPT_LABEL: Readonly<Record<"attached" | "unattached", string>> = {
+  attached: "이미지 전달됨", unattached: "이미지 미전달",
+};
+
+/** Presentation only: every axis is supplied by the session's canonical projection. */
+export function renderRunOutcome(outcome: RunOutcome): HTMLElement {
+  const receipt = outcome.visualDelivery
+    ? outcome.imageAttached ? "attached" as const : "unattached" as const
+    : null;
+  return el("p", {
+    class: "ai-run-outcome",
+    dataset: { testid: "ai-run-outcome", execution: outcome.execution, goal: outcome.goal, delivery: outcome.delivery,
+      ...(receipt ? { imageDelivery: receipt } : {}) },
+    attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
+    text: [EXECUTION_LABEL[outcome.execution], GOAL_LABEL[outcome.goal], DELIVERY_LABEL[outcome.delivery],
+      ...(receipt ? [DELIVERY_RECEIPT_LABEL[receipt]] : [])].join(" · "),
+  });
+}
 
 const AI_PROGRESS_TOOL_LIMIT = 30;
 const DRAFT_DESTRUCTIVE_TOOL_NAMES = new Set(["remove_map", "remove_event", "clear_region", "delete_tile_group", "reset_project"]);
@@ -66,8 +103,8 @@ export function formatToolActivityLine(name: string, result: ToolResult): string
 }
 
 export function reasoningToggleText(count: number, collapsed: boolean): string {
-  const label = count > 1 ? `💭 추론 ${count}회` : "💭 추론";
-  return collapsed ? `${label} 보기 ▸` : `${label} ▾`;
+  const label = count > 1 ? `추론 ${count}회` : "추론";
+  return collapsed ? `${label} 보기` : `${label} 접기`;
 }
 
 // ── 자율 실행 런 표면(todo 6) ────────────────────────────────────────────────
@@ -173,7 +210,7 @@ export function renderWorkPlanChecklist(
       el("span", {
         class: "ai-autonomous-chip",
         dataset: { testid: "ai-autonomous-chip" },
-        text: budget ? (active ? "⚡ 자율 실행 중" : "⚡ 자율 실행") : "할 일 목록",
+        text: budget ? (active ? "자율 실행 중" : "자율 실행") : "할 일 목록",
       }),
       ...(budget
         ? [

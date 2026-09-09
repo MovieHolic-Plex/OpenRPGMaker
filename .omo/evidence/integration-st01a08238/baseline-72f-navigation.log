@@ -1,0 +1,59 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --config .omo/evidence/integration-st01a08238/vitest.baseline.config.mjs test/eventValidationNavigationContract.test.ts --maxWorkers=1 --minWorkers=1 --reporter=default --reporter=json --outputFile=.omo/evidence/integration-st01a08238/baseline-72f-navigation.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238
+
+ ❯ test/eventValidationNavigationContract.test.ts (21 tests | 1 failed) 10759ms
+   ✓ validation navigation at the rendered modal seam > targets nested condition siblings rather than the first repeated field  897ms
+   ✓ validation navigation at the rendered modal seam > prepares an editable unsent handoff and retains the event editor draft  344ms
+   ✓ validation navigation at the rendered modal seam > focuses the exact command field after navigation instead of stopping on the row  774ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.switch.missing occurrence 0  604ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.switch.missing occurrence 1  591ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.variable.missing occurrence 0  607ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.item.missing occurrence 0  564ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.actor.missing occurrence 0  524ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.switch.missing occurrence 2  538ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.item.missing occurrence 1  557ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.switch.missing occurrence 3  567ms
+   ✓ validation navigation at the rendered modal seam > reveals cross-page nested command from list with filter and inspector synchronized  575ms
+   ✓ validation navigation at the rendered modal seam > reveals cross-page nested command from storyboard with filter and inspector synchronized  611ms
+   ✓ validation navigation at the rendered modal seam > reveals cross-page nested command from preview with filter and inspector synchronized  609ms
+   ✓ validation navigation at the rendered modal seam > reveals cross-page nested command from flow with filter and inspector synchronized  536ms
+   ✓ validation navigation at the rendered modal seam > dismisses only the bell on first Escape and restores summary focus 245ms
+   ✓ validation navigation at the rendered modal seam > registers once across refresh and unregisters synchronously on issue navigation  566ms
+   ✓ validation navigation at the rendered modal seam > releases its layer when refresh removes the final issue 252ms
+   ✓ validation navigation at the rendered modal seam > releases outside-dismiss resources before reopening through the summary 285ms
+   ✓ validation navigation at the rendered modal seam > cleans detached bell resources on the exact removal notification 237ms
+   × validation navigation at the rendered modal seam > removes its document listener and layer immediately when the parent closes 273ms
+     → expected 2 to be +0 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/eventValidationNavigationContract.test.ts > validation navigation at the rendered modal seam > removes its document listener and layer immediately when the parent closes
+AssertionError: expected 2 to be +0 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 2[39m
+
+ ❯ test/eventValidationNavigationContract.test.ts:244:43
+    242|     const remove = vi.spyOn(document, "removeEventListener");
+    243|     control("event-editor-cancel").click();
+    244|     expect(modalStackEntryCountForTest()).toBe(0);
+       |                                           ^
+    245|     expect(remove.mock.calls.some(([type]) => type === "pointerdown"))…
+    246|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 20 passed (21)
+   Start at  04:43:42
+   Duration  47.04s (transform 31.46s, setup 0ms, collect 35.42s, tests 10.76s, environment 262ms, prepare 70ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238/.omo/evidence/integration-st01a08238/baseline-72f-navigation.json

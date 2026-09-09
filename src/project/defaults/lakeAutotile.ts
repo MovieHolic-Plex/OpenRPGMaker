@@ -1,5 +1,8 @@
 import { animationStripForTile } from "./chipsetAnimation";
 import { CHIPSET_TILE_GROUPS } from "./chipsetMapping";
+import { worldCoastAutotileGroup, isWorldTileset } from "./worldCoastMapping";
+import { isWorldSnowTerrain } from "./worldTerrainAutotiles";
+import type { TilesetDef } from "../types";
 
 /**
  * Combined Town 타일 그림판 물 블록 (col 0–2):
@@ -91,45 +94,63 @@ const QUARTER_GEOMETRY = {
   Pick<LakeAutotileQuarterSource, "offsetX" | "offsetY">
 >;
 
-export function isLakeAutotileTile(tile: number): boolean {
+export function isLakeAutotileTile(tile: number, tileset?: Pick<TilesetDef, "image" | "autotileGroups" | "tileGrafts">): boolean {
+  if (isWorldTileset(tileset)) return Boolean(worldCoastAutotileGroup(tileset!)?.memberTileIds.includes(tile));
   return LAKE_AUTOTILE_TILES.has(tile);
 }
 
 export function lakeAutotileQuarterSources(
   map: LakeAutotileMap,
   x: number,
-  y: number
+  y: number,
+  tileset?: Pick<TilesetDef, "image" | "autotileGroups" | "tileGrafts">,
 ): readonly LakeAutotileQuarterSource[] {
   // 스킨은 저장 타일이 결정 — 수로 프레임(3 패밀리)이면 석축 스킨, 아니면 잔디 물가.
-  const skin = skinForStoredTile(map.lowerTiles[y * map.width + x]);
-  const north = hasLakeWater(map, x, y - 1);
-  const south = hasLakeWater(map, x, y + 1);
-  const west = hasLakeWater(map, x - 1, y);
-  const east = hasLakeWater(map, x + 1, y);
+  const world = isWorldTileset(tileset);
+  const coast = world ? worldCoastAutotileGroup(tileset!) : undefined;
+  const skin = world ? LAKE_AUTOTILE_TILE : skinForStoredTile(map.lowerTiles[y * map.width + x]);
+  const waterAt = (px: number, py: number) => hasLakeWater(map, px, py, world, coast?.connectTileIds);
+  const north = waterAt(x, y - 1);
+  const south = waterAt(x, y + 1);
+  const west = waterAt(x - 1, y);
+  const east = waterAt(x + 1, y);
+  const snowSkin = (dx: number, dy: number): WaterShoreSkin => {
+    // A retained v1 coast owns only grass shores. Do not sample snow art owned
+    // by another group (or replaced with a graft) merely because snow is nearby.
+    if (!world || !coast?.memberTileIds.includes(3)) return skin;
+    const verticalWater = waterAt(x, y + dy), horizontalWater = waterAt(x + dx, y);
+    // Only the land that contributes this quarter's visible shore selects its skin.
+    // A diagonal snow cell must not recolor a straight grass shore.
+    const borders = !verticalWater && !horizontalWater ? [[x, y + dy], [x + dx, y]]
+      : !verticalWater ? [[x, y + dy]] : !horizontalWater ? [[x + dx, y]] : [[x + dx, y + dy]];
+    const snowy = borders.some(([px, py]) => px! >= 0 && py! >= 0 && px! < map.width && py! < map.height
+      && isWorldSnowTerrain(map.lowerTiles[py! * map.width + px!]!));
+    return snowy ? CANAL_AUTOTILE_TILE : skin;
+  };
   return [
-    quarterSource(skin, {
+    quarterSource(snowSkin(-1, -1), {
       quarter: "nw",
       verticalWater: north,
       horizontalWater: west,
-      diagonalWater: hasLakeWater(map, x - 1, y - 1),
+      diagonalWater: waterAt(x - 1, y - 1),
     }),
-    quarterSource(skin, {
+    quarterSource(snowSkin(1, -1), {
       quarter: "ne",
       verticalWater: north,
       horizontalWater: east,
-      diagonalWater: hasLakeWater(map, x + 1, y - 1),
+      diagonalWater: waterAt(x + 1, y - 1),
     }),
-    quarterSource(skin, {
+    quarterSource(snowSkin(-1, 1), {
       quarter: "sw",
       verticalWater: south,
       horizontalWater: west,
-      diagonalWater: hasLakeWater(map, x - 1, y + 1),
+      diagonalWater: waterAt(x - 1, y + 1),
     }),
-    quarterSource(skin, {
+    quarterSource(snowSkin(1, 1), {
       quarter: "se",
       verticalWater: south,
       horizontalWater: east,
-      diagonalWater: hasLakeWater(map, x + 1, y + 1),
+      diagonalWater: waterAt(x + 1, y + 1),
     }),
   ];
 }
@@ -200,8 +221,9 @@ export function sourceQuarterForLakeChip(
   return destQuarter;
 }
 
-function hasLakeWater(map: LakeAutotileMap, x: number, y: number): boolean {
-  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+function hasLakeWater(map: LakeAutotileMap, x: number, y: number, world: boolean, worldConnections?: readonly number[]): boolean {
+  // The world canvas ends in open ocean, not an invented strip of land.
+  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return world;
   const tile = map.lowerTiles[y * map.width + x];
-  return typeof tile === "number" && isLakeAutotileTile(tile);
+  return typeof tile === "number" && (world ? Boolean(worldConnections?.includes(tile)) : isLakeAutotileTile(tile));
 }

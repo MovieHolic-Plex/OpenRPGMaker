@@ -1,0 +1,23 @@
+{
+  "reorder": [
+    "second",
+    0,
+    0,
+    1
+  ],
+  "duplicate": [
+    0,
+    true,
+    false
+  ],
+  "detachedIndex": 0,
+  "text": [
+    "Text label",
+    "Text label"
+  ],
+  "replace": [
+    "last",
+    "first",
+    "middle"
+  ]
+}

@@ -278,11 +278,11 @@ describe("event command staged-state regressions", () => {
       ...afterLabel,
       fields: { ...afterLabel.fields, stagedBetweenEdits: "keep" },
     });
-    change(findByTestId(body, "weighted-branch-weight-0"), "3");
+    change(findByTestId(body, "weighted-branch-chance-0"), "75");
 
     expect(staged.current()).toMatchObject({
       fields: {
-        table: "대성공=3\n실패=1",
+        table: "대성공=75\n실패=25",
         stagedBetweenEdits: "keep",
       },
     });
@@ -353,6 +353,14 @@ describe("Page 3 rich form canonical runtime fields", () => {
   });
 
   it("stores eventA/eventB and executes the selected swap", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("Missing fixture map");
+    map.events = [
+      { id: "event-a", x: 1, y: 1, trigger: { kind: "action" }, commands: [] },
+      { id: "event-b", x: 2, y: 2, trigger: { kind: "action" }, commands: [] },
+    ];
+    store.replace(project);
     const initial: M2Command = {
       kind: "m2Command",
       commandId: "m2-041-swap-event-location",
@@ -360,8 +368,12 @@ describe("Page 3 rich form canonical runtime fields", () => {
     };
     const staged = stagedContext(initial);
     const body = renderWithFakeDom(() => renderM2CommandBody(staged.context, initial)!);
-    change(findByTestId(body, "swap-event-location-event-a"), "event-a");
-    change(findByTestId(body, "swap-event-location-event-b"), "event-b");
+    const eventA = findByTestId(body, "swap-event-location-event-a");
+    const eventB = findByTestId(body, "swap-event-location-event-b");
+    expect(eventA?.options.map(option => option.value)).toContain("event-a");
+    expect(eventB?.options.map(option => option.value)).toContain("event-b");
+    change(eventA, "event-a");
+    change(eventB, "event-b");
     const command = staged.current() as M2Command;
     expect(command.fields).toMatchObject({ eventA: "event-a", eventB: "event-b" });
     expect(command.fields).not.toHaveProperty("target");

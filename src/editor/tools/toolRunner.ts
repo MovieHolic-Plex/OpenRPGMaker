@@ -14,6 +14,7 @@ import { commitChangeset, createDraft, summarizeChanges } from "./changeset";
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
 import { getTool } from "./toolRegistry";
 import { ToolError, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
+import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots, type HouseSnapshot } from "./houseProtection";
 
 export interface RunToolOptions {
   readonly dryRun?: boolean;
@@ -91,13 +92,15 @@ export function runToolDefinition(
   const normalizedArgs = normalizeArgsForSchema(tool.parameters, args) as Record<string, unknown>;
   const argErrors = validateArgs(tool.parameters, normalizedArgs);
   if (argErrors.length > 0) {
+    const repair = tool.invalidArgsRepair?.(normalizedArgs);
     return {
       ok: false,
       summary: `'${name}' 인자 검증 실패`,
       issues: argErrors.map((message) => ({
         severity: "error",
         code: "invalid-args",
-        message: argErrorMessage(message, tool.invalidArgsExample, tool.invalidArgsHint),
+        message: argErrorMessage(message, tool.invalidArgsExample, tool.invalidArgsHint)
+          + (repair ? `\nrepair: ${JSON.stringify(repair)}` : ""),
       })),
     };
   }
@@ -122,7 +125,9 @@ export function runToolDefinition(
   const before = ctx.project;
   const draft = createDraft(before);
   let exec;
+  let protectedHouses: HouseSnapshot[];
   try {
+    protectedHouses = captureHouseProtection(before);
     exec = tool.run(draft, normalizedArgs);
   } catch (cause) {
     const error = cause instanceof Error ? cause : new ToolError(String(cause), { code: "tool-exception" });
@@ -130,11 +135,13 @@ export function runToolDefinition(
   }
 
   try {
+    const builtHouses = newlyBuiltHouseSnapshots(draft, protectedHouses);
     // 후처리: 나무 밑동 위 수관(upper) 강제 — 고아 밑동(14,5 등) 방지.
     const treeRepair = repairTreePairsOnProject(draft, {
       canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(draft),
     });
     const treeRepairNote = formatTreePairRepairSummary(treeRepair);
+    assertHouseProtection(protectedHouses, draft, builtHouses);
 
     const diff = summarizeChanges(before, draft);
     if (exec.warnings) diff.warnings.push(...exec.warnings);
@@ -167,8 +174,10 @@ export function runToolDefinition(
   } catch (cause) {
     return {
       ok: false,
-      summary: postprocessFailureSummary(name, cause),
-      issues: [{ severity: "error", code: "tool-postprocess", message: cause instanceof Error ? cause.message : String(cause) }],
+      // Expected invariant rejections are tool failures, not postprocessor crashes.
+      summary: cause instanceof ToolError ? failureSummary(name, cause) : postprocessFailureSummary(name, cause),
+      issues: [cause instanceof ToolError ? issueFromError(cause)
+        : { severity: "error", code: "tool-postprocess", message: cause instanceof Error ? cause.message : String(cause) }],
     };
   }
 }

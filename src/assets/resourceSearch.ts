@@ -1,14 +1,12 @@
 // 리소스 시맨틱 텍스트 검색. Phase 1 `list_resources` 툴(핸드오프 0.4 DoD)이 사용할 조회 함수.
 // 부분 문자열 + 태그 매칭, 한국어 질의 기준.
 
-import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
+import { listAudioResources } from "@/assets/audioResourceCatalog";
+import type { AudioDescriptionSource, AudioResourceProject } from "@/assets/audioResourceCatalog";
 import { applyCharsetLabelOverrides, CHARSET_SEMANTICS } from "@/assets/charsetSemantics";
-import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
-import { EASYRPG_BACKDROP_ASSETS, EASYRPG_MUSIC_ASSETS, EASYRPG_RTP_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
-import { koreanMonsterTags } from "@/assets/monsterResourceSemantics";
-import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
-import { SCARLOXY_BACKDROP_ASSETS, SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
-import { SE_CATALOG } from "@/assets/seCatalog";
+import { charsetFrameIndex, EASYRPG_BACKDROP_ASSETS } from "@/assets/easyrpgRtp";
+import { listMonsterResources, type MonsterResourceProject } from "@/assets/monsterResourceCatalog";
+import { SCARLOXY_BACKDROP_ASSETS } from "@/assets/scarloxyPack";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
 import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon";
@@ -29,7 +27,7 @@ import {
   SHIP_TEXTURE_KEY,
   WORLD_TEXTURE_KEY,
 } from "@/project/tilesetHarness";
-import type { CharsetLabelOverride, TilesetDef } from "@/project/types";
+import type { CharsetLabelOverride, EventPageGraphic, TilesetDef } from "@/project/types";
 
 export type ResourceSearchKind = "backdrop" | "bgm" | "charset" | "monster" | "se" | "tile";
 
@@ -38,6 +36,8 @@ export interface ResourceSearchOptions {
   // 맵 인터뷰로 가르친 설명이 번들 기본값보다 우선 검색되게 하는 배선이다.
   readonly tileset?: TilesetDef;
   readonly charsetLabels?: readonly CharsetLabelOverride[];
+  readonly audioProject?: AudioResourceProject;
+  readonly monsterProject?: MonsterResourceProject;
 }
 
 export interface ResourceSearchResult {
@@ -45,9 +45,13 @@ export interface ResourceSearchResult {
   readonly label: string;
   readonly tags: readonly string[];
   readonly score: number;
+  readonly nativeGraphic?: EventPageGraphic;
+  readonly resourceId?: string;
+  readonly description?: string;
+  readonly descriptionSource?: AudioDescriptionSource;
 }
 
-type ResourceCandidate = Pick<ResourceSearchResult, "id" | "label" | "tags">;
+type ResourceCandidate = Omit<ResourceSearchResult, "score">;
 
 export function searchResources(kind: ResourceSearchKind, query: string, options: ResourceSearchOptions = {}): ResourceSearchResult[] {
   const trimmed = query.trim();
@@ -58,7 +62,16 @@ export function searchResources(kind: ResourceSearchKind, query: string, options
     return candidates.map((candidate) => ({ ...candidate, score: 1 }));
   }
   return candidates
-    .map((candidate) => ({ ...candidate, score: queryScore(trimmed, candidate.label, candidate.tags) }))
+    .map((candidate) => ({
+      ...candidate,
+      score: queryScore(
+        trimmed,
+        candidate.label,
+        candidate.description === undefined
+          ? candidate.tags
+          : [...candidate.tags, candidate.description],
+      ),
+    }))
     .filter((candidate) => candidate.score > 0)
     .sort((a, b) => b.score - a.score);
 }
@@ -115,53 +128,6 @@ function idWords(id: string): string[] {
     .split(/[^a-zA-Z0-9가-힣]+/u)
     .map((part) => part.trim())
     .filter((part) => part.length > 0);
-}
-
-function monsterCandidates(): ResourceCandidate[] {
-  const generated = GENERATED_ASSET_PLAN.assets
-    .filter((asset) => asset.status === "promoted" && asset.resourceKind === "monster")
-    .map((asset) => ({
-      id: asset.resourceId,
-      label: asset.id.replace(/-/g, " "),
-      tags: [
-        "monster",
-        "enemy",
-        "몬스터",
-        "적",
-        asset.id,
-        asset.resourceId,
-        ...idWords(asset.id),
-        ...idWords(asset.resourceId),
-        ...koreanMonsterTags(asset.id, asset.resourceId),
-        asset.prompt,
-      ],
-    }));
-  const builtin = builtinGeneratedResourceIds()
-    .filter((id) => id.startsWith("generated-enemy-") && !generated.some((asset) => asset.id === id))
-    .map((id) => ({
-      id,
-      label: id.replace(/^generated-enemy-/, "").replace(/-/g, " "),
-      tags: ["monster", "enemy", "몬스터", "적", id, ...idWords(id), ...koreanMonsterTags(id)],
-    }));
-  const rtpMonsters = EASYRPG_RTP_ASSETS
-    .filter((asset) => asset.category === "monster")
-    .map((asset) => ({
-      id: asset.id,
-      label: asset.name,
-      tags: [
-        ...moodTagsForAsset(asset),
-        asset.id,
-        ...idWords(asset.id),
-        ...idWords(asset.name),
-        ...koreanMonsterTags(asset.id, asset.name),
-      ],
-    }));
-  const scarloxyMonsters = SCARLOXY_MONSTER_ASSETS.map((asset) => ({
-    id: asset.id,
-    label: asset.name,
-    tags: ["monster", "enemy", "scarloxy", ...asset.tags, asset.id, ...idWords(asset.id)],
-  }));
-  return [...generated, ...builtin, ...rtpMonsters, ...scarloxyMonsters];
 }
 
 // 타일셋 텍스처에 맞는 번들 시맨틱 테이블 선택.
@@ -239,13 +205,24 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
     case "tile":
       return tileCandidates(options.tileset);
     case "charset":
-      return applyCharsetLabelOverrides(CHARSET_SEMANTICS, options.charsetLabels).map((entry) => ({
+      return applyCharsetLabelOverrides(CHARSET_SEMANTICS, options.charsetLabels).map((entry): ResourceCandidate => ({
         id: `charset:${entry.textureKey}:${entry.characterIndex}`,
         label: entry.label,
         tags: [...entry.tags, ...charsetDerivedTags(entry.textureKey)],
+        nativeGraphic: {
+          sprite: { type: "bundled", id: entry.textureKey },
+          direction: "down",
+          pattern: charsetFrameIndex({ characterIndex: entry.characterIndex, direction: "down", pattern: 1 }),
+        },
       }));
     case "monster":
-      return monsterCandidates();
+      return listMonsterResources(options.monsterProject ?? { resourceProfiles: [], assets: { uploaded: {} } }).map(resource => ({
+        id: resource.resourceId,
+        resourceId: resource.resourceId,
+        label: resource.name,
+        tags: resource.tags,
+        description: resource.description,
+      }));
     case "backdrop":
       return [
         ...EASYRPG_BACKDROP_ASSETS.map((asset) => ({
@@ -260,34 +237,21 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
         })),
       ];
     case "bgm":
-      return [
-        // 281곡 CC0 카탈로그가 기본 BGM 세트다. EasyRPG RTP 보다 앞에 둬서
-        // 동점일 때 카탈로그 곡이 먼저 나오게 한다.
-        ...BGM_CATALOG.map((track) => ({
-          id: `bgm:${track.id}`,
-          label: bgmTrackLabel(track),
-          tags: [...track.tags, track.trackCode, track.titleEn].filter((tag) => tag.length > 0),
-        })),
-        ...EASYRPG_MUSIC_ASSETS.map((asset) => ({
-          id: `bgm:${asset.id}`,
-          label: asset.name,
-          tags: moodTagsForAsset(asset),
-        })),
-      ];
-    case "se":
-      return [
-        // 456개 CC0 카탈로그가 기본 효과음 세트다. BGM 과 같은 이유로 RTP 앞에 둔다.
-        ...SE_CATALOG.map((entry) => ({
-          id: `se:${entry.id}`,
-          label: `${entry.title} — ${entry.category} (${entry.seconds.toFixed(2)}s)`,
-          tags: [...entry.tags, entry.category, entry.baseName].filter((tag) => tag.length > 0),
-        })),
-        ...EASYRPG_SOUND_ASSETS.map((asset) => ({
-          id: `se:${asset.id}`,
-          label: asset.name,
-          tags: moodTagsForAsset(asset),
-        })),
-      ];
+    case "se": {
+      const audioKinds = { bgm: "music", se: "sound" } as const;
+      const project = options.audioProject ?? {
+        resourceProfiles: [],
+        assets: { uploaded: {} },
+      };
+      return listAudioResources(audioKinds[kind], project).map(resource => ({
+        id: `${kind}:${resource.id}`,
+        resourceId: resource.id,
+        label: resource.name,
+        tags: resource.tags,
+        description: resource.description,
+        descriptionSource: resource.descriptionSource,
+      }));
+    }
     default:
       return [];
   }

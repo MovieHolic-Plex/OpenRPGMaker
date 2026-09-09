@@ -189,8 +189,10 @@ describe("showAnimation 본문 애니메이션 표시면", () => {
       ],
       url: undefined,
     };
-    const stage = new FakeElement("div") as unknown as HTMLElement;
-    const layer = new FakeElement("div") as unknown as HTMLElement;
+    const stage = document.createElement("div");
+    const layer = document.createElement("div");
+    stage.append(layer);
+    document.body.append(stage);
 
     playShowAnimation(stage, layer, source, { loop: true });
 
@@ -213,8 +215,10 @@ describe("showAnimation 본문 애니메이션 표시면", () => {
       ],
       url: undefined,
     };
-    const stage = new FakeElement("div") as unknown as HTMLElement;
-    const layer = new FakeElement("div") as unknown as HTMLElement;
+    const stage = document.createElement("div");
+    const layer = document.createElement("div");
+    stage.append(layer);
+    document.body.append(stage);
     const onFrame = vi.fn();
 
     playShowAnimation(stage, layer, source, { loop: true, onFrame });
@@ -262,8 +266,10 @@ describe("showAnimation 본문 애니메이션 표시면", () => {
       ],
       url: undefined,
     };
-    const stage = new FakeElement("div") as unknown as HTMLElement;
-    const layer = new FakeElement("div") as unknown as HTMLElement;
+    const stage = document.createElement("div");
+    const layer = document.createElement("div");
+    stage.append(layer);
+    document.body.append(stage);
     const onStop = vi.fn();
 
     playShowAnimationOnce(stage, layer, source, onStop);

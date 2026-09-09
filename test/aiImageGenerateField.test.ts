@@ -1,16 +1,16 @@
+// @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
+import { aiImageGenerateField, aiImagePromptPrefix } from "@/editor/panels/aiImageGenerateField";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
-
-let restoreDom: (() => void) | undefined;
+import { fieldByTestId as findByTestId, mountField as renderWithFakeDom, signal } from "./helpers/aiTestSignals";
 beforeEach(() => {
-  restoreDom = installFakeDom();
+  document.body.replaceChildren();
   store.replace(createBlankProject());
 });
 afterEach(() => {
-  restoreDom?.();
+  document.body.replaceChildren();
+  vi.unstubAllGlobals();
 });
 
 describe("aiImageGenerateField", () => {
@@ -63,23 +63,23 @@ describe("aiImageGenerateField", () => {
       }),
     );
     const inserted: string[] = [];
+    const completed = signal();
     const field = renderWithFakeDom(() =>
       aiImageGenerateField({
         kind: "backdrop",
         testidPrefix: "backdrop-ai",
-        onInserted: (id) => inserted.push(id),
+        onInserted: (id) => { inserted.push(id); completed.resolve(); },
       })
     );
     const prompt = findByTestId(field, "backdrop-ai-prompt");
     expect(prompt).not.toBeNull();
     if (prompt) prompt.value = "화산 동굴";
     findByTestId(field, "backdrop-ai-generate")?.click();
-    await vi.waitFor(() => {
-      expect(inserted.length).toBe(1);
-    });
+    await completed.promise;
+    expect(inserted).toHaveLength(1);
     expect(seen.length).toBe(1);
     expect(seen[0]).toContain("화산 동굴");
-    expect(seen[0]).toContain("battle background");
+    expect(JSON.parse(seen[0]).prompt).toBe(`${aiImagePromptPrefix("backdrop")}화산 동굴`);
     vi.unstubAllGlobals();
   });
 });

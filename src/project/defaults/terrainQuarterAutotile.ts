@@ -6,8 +6,12 @@ import {
   templateBlockFromAnchor,
 } from "./autotileGroups";
 import { DIRT_ROAD_TILE, SAND_TILE } from "./chipsetMapping";
+import { DEFAULT_TILESET_TEXTURE_KEY } from "./constants";
 import { dungeonTerrainQuarterKits } from "./dungeonTerrainQuarter";
 import { interiorWallFrameQuarterComposition } from "./interiorWallFrameQuarter";
+import { worldTerrainQuarterKit } from "./worldTerrainAutotiles";
+import { isWorldTileset } from "./worldCoastMapping";
+import { isLakeAutotileTile, lakeAutotileQuarterSources } from "./lakeAutotile";
 import type { TilesetDef } from "../types";
 
 // 모래/흙길 지형의 RM2003식 8×8 쿼터 합성 렌더링.
@@ -202,13 +206,21 @@ export function isTerrainQuarterTile(tile: number): boolean {
 
 export function chipsetQuarterComposition(
   map: TerrainQuarterMap,
-  tileset: Pick<TilesetDef, "autotileGroups" | "image">,
+  tileset: Pick<TilesetDef, "autotileGroups" | "image" | "tileGrafts">,
   x: number,
   y: number,
 ): ChipsetQuarterComposition | null {
   // 던전 킷을 먼저 본다 — dirt/moss 블록 위치가 combined-town 흙길/모래와 같아
   // 타일 id가 겹치므로, 텍스처 가드가 있는 던전 킷이 우선해야 connect 집합이 맞는다.
   const tile = tileAt(map, x, y);
+  // World IDs overlap village terrain IDs; never fall through to village kits.
+  if (isWorldTileset(tileset)) {
+    if (typeof tile !== "number") return null;
+    if (isLakeAutotileTile(tile, tileset)) return { sources: lakeAutotileQuarterSources(map, x, y, tileset) };
+    const kit = worldTerrainQuarterKit(tileset, tile);
+    const sources = kit && terrainQuarterSourcesForKit(map, kit, x, y);
+    return sources ? { sources } : null;
+  }
   const dungeonKit = typeof tile === "number"
     ? dungeonTerrainQuarterKits(tileset)?.find((kit) => kit.targetTiles.includes(tile))
     : undefined;
@@ -216,7 +228,9 @@ export function chipsetQuarterComposition(
     const dungeonSources = terrainQuarterSourcesForKit(map, dungeonKit, x, y);
     return dungeonSources ? { sources: dungeonSources } : null;
   }
-  const terrainSources = terrainQuarterSources(map, x, y);
+  const terrainSources = tileset.image.type === "bundled" && tileset.image.id === DEFAULT_TILESET_TEXTURE_KEY
+    ? terrainQuarterSources(map, x, y)
+    : null;
   if (terrainSources) return { sources: terrainSources };
   return interiorWallFrameQuarterComposition(map, tileset, x, y);
 }

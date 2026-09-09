@@ -1,0 +1,189 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/sidebarModeWorkflow.test.ts test/basicTilePalette.test.ts test/basicLeftRail.test.ts test/tilePaletteSelection.test.ts test/tilePaletteGridRoving.test.ts test/tileToolbarOverflowReach.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-stone-5ef1
+
+ ✓ test/basicTilePalette.test.ts (4 tests) 249ms
+ ✓ test/tileToolbarOverflowReach.test.ts (3 tests) 2920ms
+   ✓ 도구막대 오버플로 도달성 > 스크롤되는 도구들은 내부 컨테이너에, ⋯ 는 그 형제로 남는다  1163ms
+   ✓ 도구막대 오버플로 도달성 > 열린 드롭다운은 잘리는 스크롤 컨테이너의 자손이 아니다  1386ms
+   ✓ 도구막대 오버플로 도달성 > 도구막대 행은 더 이상 가로 스크롤 띠가 아니고, 내부 컨테이너가 스크롤을 맡는다  366ms
+ ✓ test/tilePaletteSelection.test.ts (6 tests) 2200ms
+   ✓ tile palette selection > switches to the tile's home layer when a lower tile is selected on the upper layer  975ms
+   ✓ tile palette selection > selects the sand cluster representative and paintTile applies builtin 8-neighbor sand shaping  339ms
+ ✓ test/tilePaletteGridRoving.test.ts (6 tests) 5355ms
+   ✓ tile palette grid roving tabindex > exposes exactly one tab stop across the whole grid  1899ms
+   ✓ tile palette grid roving tabindex > ArrowRight moves focus one column along the row  921ms
+   ✓ tile palette grid roving tabindex > ArrowDown moves focus one full row down, ArrowUp comes back  606ms
+   ✓ tile palette grid roving tabindex > Home/End jump to the first and last cell of the grid  634ms
+   ✓ tile palette grid roving tabindex > Enter on the focused cell selects that tile  580ms
+   ✓ tile palette grid roving tabindex > keeps the pointer selection path and per-cell testids intact  697ms
+ ✓ test/basicLeftRail.test.ts (17 tests) 7011ms
+   ✓ basic icon rail > 도구 6개 아이콘 버튼을 기존 testid로 렌더한다  1260ms
+   ✓ basic icon rail > hover 없이 모든 도구와 레이어의 한글 라벨을 DOM에 렌더한다  575ms
+   ✓ basic icon rail > 도구 클릭이 editorState를 갱신한다 (이벤트 도구는 레이어 동반 전환)  376ms
+   ✓ basic icon rail > 타일 토글 → 플라이아웃에 타일 그리드, 타일 클릭 시 브러시 전환  386ms
+   ✓ basic icon rail > 레이어 스위치는 아이콘 위에 바닥/장식/이벤트 한글을 보여 준다  327ms
+   ✓ basic icon rail > 레일에서 하위/상위/이벤트 레이어를 바로 고른다  450ms
+   ✓ basic icon rail > 열린 타일 플라이아웃에서 타일셋이 사라지면 초보용 빈 상태를 보여 준다  393ms
+   ✓ basic icon rail > 플라이아웃을 닫으면 포커스가 그것을 연 토글로 돌아온다  365ms
+   ✓ basic icon rail > 모드를 바꿨다 초보로 돌아오면 열지 않은 플라이아웃이 남지 않는다  487ms
+   ✓ basic icon rail > 타일을 고르면 타일 플라이아웃은 물러나고, 핀을 걸었으면 남는다  579ms
+   ✓ basic icon rail > 타일셋이 없으면 비활성 타일 버튼이 이벤트 레이어가 아니라 실제 원인을 말한다  317ms
+ ❯ test/sidebarModeWorkflow.test.ts (11 tests | 10 failed) 5689ms
+   × mode-specific sidebar painting workflow > mounts the beginner tile workflow without opening or pinning a flyout 415ms
+     → expected null not to be null
+   × mode-specific sidebar painting workflow > keeps the selected cell focused and the sheet mounted after beginner tile activation 372ms
+     → missing control basic-tile-0: expected null not to be null
+   × mode-specific sidebar painting workflow > preserves custom atlas cells and routes selection to the authored layer in the persistent panel 520ms
+     → Target cannot be null or undefined.
+   × mode-specific sidebar painting workflow > restores the persistent picker after leaving the event layer 253ms
+     → expected null not to be null
+   × mode-specific sidebar painting workflow > keeps map flyout Escape focus return without dismissing the persistent picker 345ms
+     → expected null not to be null
+   × mode-specific sidebar painting workflow > provides visible beginner undo wired to actual map history and its change event 266ms
+     → missing control oprn-tool-undo: expected null not to be null
+   ✓ mode-specific sidebar painting workflow > keeps standard daily tools direct and advanced actions reachable once through More  1143ms
+   × mode-specific sidebar painting workflow > opens expert oprn-tool-inspector directly and returns Escape focus to its own trigger 545ms
+     → missing control oprn-tool-inspector: expected null not to be null
+   × mode-specific sidebar painting workflow > opens expert toolbar-toggle-ruleAudit directly and returns Escape focus to its own trigger 340ms
+     → missing control toolbar-toggle-ruleAudit: expected null not to be null
+   × mode-specific sidebar painting workflow > opens expert toolbar-toggle-history directly and returns Escape focus to its own trigger 471ms
+     → missing control toolbar-toggle-history: expected null not to be null
+   × mode-specific sidebar painting workflow > preserves selected tile and tool across mode changes while remounting the beginner picker 1018ms
+     → expected null not to be null
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/sidebarModeWorkflow.test.ts > mode-specific sidebar painting workflow > mounts the beginner tile workflow without opening or pinning a flyout
+AssertionError: expected null not to be null
+ ❯ test/sidebarModeWorkflow.test.ts:83:41
+     81|
+     82|   it("mounts the beginner tile workflow without opening or pinning a f…
+     83|     expect(find("basic-tile-grid")).not.toBeNull();
+       |                                         ^
+     84|     expect(find("basic-tile-search")).not.toBeNull();
+     85|     expect(find("selected-tile-status")).not.toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  test/sidebarModeWorkflow.test.ts > mode-specific sidebar painting workflow > keeps the selected cell focused and the sheet mounted after beginner tile activation
+AssertionError: missing control basic-tile-0: expected null not to be null
+ ❯ control test/sidebarModeWorkflow.test.ts:49:47
+     47|   function control(id: string): HTMLButtonElement {
+     48|     const node = find(id);
+     49|     expect(node, `missing control ${id}`).not.toBeNull();
+       |                                               ^
+     50|     return node as HTMLButtonElement;
+     51|   }
+ ❯ test/sidebarModeWorkflow.test.ts:92:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  test/sidebarModeWorkflow.test.ts > mode-specific sidebar painting workflow > preserves custom atlas cells and routes selection to the authored layer in the persistent panel
+AssertionError: Target cannot be null or undefined.
+ ❯ test/sidebarModeWorkflow.test.ts:112:72
+    110|     } } });
+    111|     renderTilePalette(host);
+    112|     expect(find("basic-tile-grid")?.querySelectorAll(".chipset-tile"))…
+       |                                                                        ^
+    113|     control("basic-tile-127").click();
+    114|     expect(editorState.get()).toMatchObject({ selectedTile: 127, layer…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  test/sidebarModeWorkflow.test.ts > mode-specific sidebar painting workflow > restores the persistent picker after leaving the event layer
+AssertionError: expected null not to be null
+ ❯ test/sidebarModeWorkflow.test.ts:125:41
+    123|     control("layer-lower").click();
+    124|     expect(editorState.get()).toMatchObject({ layer: "lower", tool: "p…
+    125|     expect(find("basic-tile-grid")).not.toBeNull();
+       |                                         ^
+    126|   });
+    127|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  test/sidebarModeWorkflow.test.ts > mode-specific sidebar painting workflow > keeps map flyout Escape focus return without dismissing the persistent picker
+AssertionError: expected null not to be null
+ ❯ test/sidebarModeWorkflow.test.ts:135:41
+    133|     expect(find("basic-rail-flyout")).toBeNull();
+    134|     expect(document.activeElement).toBe(find("basic-rail-toggle-maps")…
+    135|     expect(find("basic-tile-grid")).not.toBeNull();
+       |                                         ^
+    136|   });
+    137|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  test/sidebarModeWorkflow.test.ts > mode-specific sidebar painting workflow > provides visible beginner undo wired to actual map history and its change event
+AssertionError: missing control oprn-tool-undo: expected null not to be null
+ ❯ control test/sidebarModeWorkflow.test.ts:49:47
+     47|   function control(id: string): HTMLButtonElement {
+     48|     const node = find(id);
+     49|     expect(node, `missing control ${id}`).not.toBeNull();
+       |                                               ^
+     50|     return node as HTMLButtonElement;
+     51|   }
+ ❯ test/sidebarModeWorkflow.test.ts:139:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  test/sidebarModeWorkflow.test.ts > mode-specific sidebar painting workflow > opens expert oprn-tool-inspector directly and returns Escape focus to its own trigger
+AssertionError: missing control oprn-tool-inspector: expected null not to be null
+ ❯ control test/sidebarModeWorkflow.test.ts:49:47
+     47|   function control(id: string): HTMLButtonElement {
+     48|     const node = find(id);
+     49|     expect(node, `missing control ${id}`).not.toBeNull();
+       |                                               ^
+     50|     return node as HTMLButtonElement;
+     51|   }
+ ❯ test/sidebarModeWorkflow.test.ts:174:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  test/sidebarModeWorkflow.test.ts > mode-specific sidebar painting workflow > opens expert toolbar-toggle-ruleAudit directly and returns Escape focus to its own trigger
+AssertionError: missing control toolbar-toggle-ruleAudit: expected null not to be null
+ ❯ control test/sidebarModeWorkflow.test.ts:49:47
+     47|   function control(id: string): HTMLButtonElement {
+     48|     const node = find(id);
+     49|     expect(node, `missing control ${id}`).not.toBeNull();
+       |                                               ^
+     50|     return node as HTMLButtonElement;
+     51|   }
+ ❯ test/sidebarModeWorkflow.test.ts:174:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  test/sidebarModeWorkflow.test.ts > mode-specific sidebar painting workflow > opens expert toolbar-toggle-history directly and returns Escape focus to its own trigger
+AssertionError: missing control toolbar-toggle-history: expected null not to be null
+ ❯ control test/sidebarModeWorkflow.test.ts:49:47
+     47|   function control(id: string): HTMLButtonElement {
+     48|     const node = find(id);
+     49|     expect(node, `missing control ${id}`).not.toBeNull();
+       |                                               ^
+     50|     return node as HTMLButtonElement;
+     51|   }
+ ❯ test/sidebarModeWorkflow.test.ts:174:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  test/sidebarModeWorkflow.test.ts > mode-specific sidebar painting workflow > preserves selected tile and tool across mode changes while remounting the beginner picker
+AssertionError: expected null not to be null
+ ❯ test/sidebarModeWorkflow.test.ts:198:41
+    196|     expect(editorState.get()).toMatchObject({ selectedTile: 0, tool: "…
+    197|     expect(find("basic-rail-flyout")).toBeNull();
+    198|     expect(find("basic-tile-grid")).not.toBeNull();
+       |                                         ^
+    199|   });
+    200| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  10 failed | 37 passed (47)
+   Start at  06:53:34
+   Duration  87.38s (transform 106.07s, setup 0ms, collect 353.77s, tests 23.42s, environment 1.61s, prepare 2.49s)

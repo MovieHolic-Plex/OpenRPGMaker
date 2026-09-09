@@ -92,6 +92,7 @@ function mergedWarnings(sources: readonly (readonly string[] | undefined)[]): re
 function toolDiff(diff: ChangeSummary | undefined): ConstructionDiffTotals {
   return {
     tilesChanged: diff?.tilesChanged ?? 0,
+    mapPropertiesChanged: diff?.mapPropertiesChanged ?? 0,
     eventsAdded: diff?.eventsAdded ?? 0,
     eventsModified: diff?.eventsModified ?? 0,
     eventsRemoved: diff?.eventsRemoved ?? 0,
@@ -106,6 +107,8 @@ function toolDiff(diff: ChangeSummary | undefined): ConstructionDiffTotals {
     palettePresetsAdded: diff?.palettePresetsAdded ?? 0,
     palettePresetsModified: diff?.palettePresetsModified ?? 0,
     endingsChanged: diff?.endingsChanged ?? 0,
+    audioDescriptionsChanged: diff?.audioDescriptionsChanged ?? 0,
+    monsterMetadataChanged: diff?.monsterMetadataChanged ?? 0,
     sessionChanged: diff?.sessionChanged ?? false,
     systemChanged: diff?.systemChanged ?? false,
   };

@@ -3,6 +3,7 @@ import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { branchEmptyActionLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
 import { openEventCommandEditDialog } from "./commandEditDialog";
 import { handleCommandShortcut, openCommandContextMenu } from "./commandListContextMenu";
+import { readEventCommandsClipboard } from "./commandClipboard";
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
 import { commandCategoryVisual, renderCategoryIcon } from "./commandCategoryIcons";
 import { renderEditorIcon } from "./editorIcons";
@@ -13,9 +14,9 @@ import {
   CHARSET_FRAME_HEIGHT,
 } from "@/assets/easyrpgRtp";
 import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
-import { sameInspectorPath, selectedCommandPath, showCommandInspector } from "./commandInspector";
+import { beginCommandSelectionScope, isCommandSelected, sameInspectorPath, selectedCommandPath, setCommandSelectionSurface, showCommandInspector } from "./commandInspector";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
-import { commandRuntimeSupport, type CommandRuntimeSupport, type M2RuntimeContext } from "@/project/eventCommands/runtimeSupport";
+import { commandRuntimeSupportDescriptor, type M2RuntimeContext } from "@/project/eventCommands/runtimeSupport";
 import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { CommandListActions } from "./types";
@@ -23,9 +24,10 @@ import { renderRuntimeSupportBadge } from "./commandRuntimeBadge";
 import type { EventDraftIssue } from "@/editor/eventDraftValidator";
 
 type CommandListRenderOptions = {
-  readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport;
+  readonly selectionScope?: string | HTMLElement;
+  readonly rootCommands?: readonly Command[];
   readonly issues?: readonly EventDraftIssue[];
-  /** 컨텍스트 메뉴 "삽입..." 피커에 넘길 편집 컨텍스트(맵/공통/배틀). 없으면 보수 배지. */
+  /** 목록 설명과 "삽입..." 피커가 공유하는 실행 맥락. 없으면 맥락 미지정 안내. */
   readonly pickerContext?: M2RuntimeContext;
   /** 빈 분기 버튼이 이 컨테이너에 명령을 추가하는 피커를 연다. */
   readonly openCommandPicker?: (containerPath: readonly number[]) => void;
@@ -47,8 +49,24 @@ export function renderCommandList(
   actions: CommandListActions,
   options: CommandListRenderOptions = {}
 ): void {
+  beginCommandSelectionScope(options.selectionScope ?? host);
+  setCommandSelectionSurface(host);
   clearChildren(host);
   host.dataset.containerPath = JSON.stringify(containerPath);
+  // The append line remains a clipboard destination even after Select All/Cut.
+  // A property handler is replaced on rerender, unlike accumulating listeners.
+  host.onkeydown = event => {
+    if (event.defaultPrevented || !(event.ctrlKey || event.metaKey) || event.altKey || event.key.toLowerCase() !== "v") return;
+    const target = event.target;
+    if (target instanceof HTMLElement && target.closest(".cmd-item, input, textarea, select, [contenteditable='true']")) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const inserted = readEventCommandsClipboard();
+    if (inserted.length === 0) return;
+    const path = [...containerPath, commands.length];
+    if (actions.insertCommands) actions.insertCommands(path, inserted);
+    else inserted.reverse().forEach(command => actions.insertCommand(path, command));
+  };
   if (commands.length === 0) {
     host.append(el("div", { class: "empty-hint", text: "(명령 없음)" }));
     return;
@@ -60,7 +78,7 @@ export function renderCommandList(
     const path = [...containerPath, index];
     // 행 하나가 터져도 형제는 살아남는다. 실패한 행만 자리 표시자로 그린다.
     try {
-      renderCommandTree(host, cmd, path, containerPath, actions, 0, faceState, options);
+      renderCommandTree(host, cmd, path, containerPath, actions, 0, faceState, { ...options, rootCommands: commands });
     } catch (error) {
       console.error("[event-editor] failed to render command row", path, error);
       host.append(renderBrokenCommandRow(cmd, path, actions));
@@ -80,7 +98,11 @@ function renderCommandTree(
 ): void {
   host.append(renderCommandItem(cmd, path, containerPath, actions, depth, faceState, options));
   if (cmd.kind === "changeFace") {
-    faceState.current = cmd.resourceId ? { resourceId: cmd.resourceId } : undefined;
+    faceState.current = cmd.resourceId ? {
+      resourceId: cmd.resourceId,
+      position: cmd.position,
+      flipHorizontally: cmd.flipHorizontally,
+    } : undefined;
   }
   appendCommandChildren(host, cmd, path, containerPath, actions, depth, faceState, options);
 }
@@ -137,7 +159,7 @@ function renderCommandItem(
   });
   // 핸들에서 누르면 항목을 드래그 가능하게 만든다.
   enableItemDrag(handle, item, path);
-  const supportBadge = renderRuntimeSupportBadge((options.runtimeSupport ?? commandRuntimeSupport)(cmd), `command-runtime-badge-list-${path.join("-")}`);
+  const supportBadge = renderRuntimeSupportBadge(commandRuntimeSupportDescriptor(cmd, options.pickerContext), `command-runtime-badge-list-${path.join("-")}`);
   const issueBadge = renderCommandIssueBadge(path, options.issues ?? []);
   // 문장 표시 줄: 직전 changeFace 상태를 화자 얼굴 16px 크롭으로 부가.
   const activeFaceForItem = faceState.current;
@@ -180,12 +202,13 @@ function renderCommandItem(
   // 재렌더 뒤에도 선택과 인스펙터가 유지되도록 복원한다.
   if (sameInspectorPath(path, selectedCommandPath())) {
     item.classList.add("selected");
-    showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
+    showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem, preserveSelection: true });
   }
+  if (isCommandSelected(path)) item.classList.add("selected");
   head.addEventListener("contextmenu", (event) => {
     event.preventDefault();
-    selectCommandLine(item);
-    openCommandContextMenu({ x: event.clientX, y: event.clientY, item, command: cmd, path, actions, openEditor, pickerContext: options.pickerContext });
+    if (!isCommandSelected(path)) showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
+    openCommandContextMenu({ x: event.clientX, y: event.clientY, item, command: cmd, path, actions, openEditor, pickerContext: options.pickerContext, commands: options.rootCommands });
   });
   head.addEventListener("dblclick", (event) => {
     // fakeDom 에는 Element 전역이 없다 — closest 덕타이핑으로 같은 계약을 지킨다.
@@ -199,8 +222,8 @@ function renderCommandItem(
   head.addEventListener("keydown", (event) => {
     // fakeDom 에는 KeyboardEvent 생성자가 없을 수 있다 — duck-type 으로 키 이벤트를 받는다.
     if (!isKeyboardLike(event)) return;
-    selectCommandLine(item);
-    handleCommandShortcut(event as KeyboardEvent, { x: 0, y: 0, item, command: cmd, path, actions, openEditor, pickerContext: options.pickerContext });
+    if (!isCommandSelected(path)) showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
+    handleCommandShortcut(event as KeyboardEvent, { x: 0, y: 0, item, command: cmd, path, actions, openEditor, pickerContext: options.pickerContext, commands: options.rootCommands });
   });
   item.append(head, commandActions(path, actions));
   ensureTerminalRowHint(item, cmd);

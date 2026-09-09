@@ -1,3 +1,4 @@
+import { isInteriorRoomShape } from "@/project/interiorRoomFootprint";
 // LLM 이 설계한 시설 plan → 시공 입력(꾸러미 구조).
 //
 // 2026-09-03: 「AI 는 소비만」을 철회한다. DB 「맵 → 타일셋 → 개념 꾸러미」의 시설은 **템플릿(출발점)**이고,
@@ -48,6 +49,8 @@ export type ConceptVocabularyEntry = {
   readonly snap: InteriorObjectDef["snap"];
   readonly role: string | null;
   readonly themes: readonly string[];
+  readonly description?: string;
+  readonly tileIds: readonly number[];
 };
 
 /** 타일셋 가구 킷 + 코드 카탈로그 합집합. 같은 id 는 타일셋 것이 이긴다(파이프라인 resolveObject 와 같은 우선순위). */
@@ -63,6 +66,8 @@ export function conceptVocabulary(vocab: InteriorRoomVocab, catalog: readonly In
     snap: object.snap,
     role: object.role,
     themes: object.themes,
+    ...(object.description ? { description: object.description } : {}),
+    tileIds: [...new Set(object.cells.map(cell => cell.tile))],
   }));
 }
 
@@ -112,6 +117,10 @@ function parsePlace(raw: unknown, index: number): ConceptPlaceRecord {
     const role = readString(raw.role, "role", where);
     if (!isConceptPlaceRole(role)) throw new ConceptPlanError(`plan.${where}.role="${role}" — 허용: ${CONCEPT_PLACE_ROLES.join("|")}`);
     place.role = role;
+  }
+  if (raw.shape !== undefined) {
+    if (!isInteriorRoomShape(raw.shape)) throw new ConceptPlanError(`plan.${where}.shape — 허용: rect|l|alcove`);
+    place.shape = raw.shape;
   }
   if (raw.size !== undefined) {
     const size = readString(raw.size, "size", where);

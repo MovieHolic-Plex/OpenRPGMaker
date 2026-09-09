@@ -337,21 +337,21 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(scenes?.getAttribute("role")).toBe("separator");
     expect(chat?.getAttribute("role")).toBe("separator");
     expect(deck?.getAttribute("role")).toBe("separator");
-    const before = shell?.style.getPropertyValue("--studio-scenes-w");
+    const before = shell?.style.getPropertyValue("--studio-scenes-col");
     expect(before).toContain("px");
     // FakeDom에는 KeyboardEvent 생성자가 없어 일반 Event에 key를 얹는다.
     const key = (name: string): Event => Object.assign(new Event("keydown", { bubbles: true }), { key: name });
     scenes?.dispatchEvent(key("ArrowRight"));
-    const after = shell?.style.getPropertyValue("--studio-scenes-w");
+    const after = shell?.style.getPropertyValue("--studio-scenes-col");
     expect(after).not.toBe(before);
     expect(Number.parseInt(after ?? "0", 10)).toBeGreaterThan(Number.parseInt(before ?? "0", 10));
     chat?.dispatchEvent(key("Home"));
-    expect(shell?.style.getPropertyValue("--studio-chat-w")).toBe("280px");
+    expect(shell?.style.getPropertyValue("--studio-chat-col")).toBe("280px");
     deck?.dispatchEvent(key("End"));
     expect(shell?.style.getPropertyValue("--studio-deck-h")).toBe("560px");
     // 더블클릭이면 기본값(장면 252 / 조수 400 / 덱 236)으로 돌아온다.
     scenes?.dispatchEvent(new Event("dblclick", { bubbles: true }));
-    expect(shell?.style.getPropertyValue("--studio-scenes-w")).toBe("252px");
+    expect(shell?.style.getPropertyValue("--studio-scenes-col")).toBe("252px");
     // 크기는 localStorage에 남아 다음 부팅에도 산다.
     const saved = JSON.parse(storage.get("oprn:ai-studio-layout") ?? "{}") as Record<string, unknown>;
     expect(typeof saved.scenes).toBe("number");
@@ -466,7 +466,7 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(findByTestId(root, "ai-studio-work")?.textContent).toContain("광장을 꾸민다");
   });
 
-  it("빈 대화에는 「지금 이 장면」 브리핑이 뜨고, 제안을 누르면 onSuggest 가 받는다", () => {
+  it("빈 대화에는 장면 정보만 보이고 추천은 없다", () => {
     const received: string[] = [];
     const { shell, root, chatLog } = standaloneShell({ onSuggest: (text) => received.push(text) });
     const briefing = findByTestId(root, "ai-studio-briefing");
@@ -474,10 +474,8 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(briefing?.hidden).toBe(false);
     expect(briefing?.textContent).toContain("빈 맵");
     const suggest = findByTestId(root, "ai-studio-suggest");
-    expect(suggest).toBeTruthy();
-    suggest?.click();
-    expect(received.length).toBe(1);
-    expect(received[0]?.length).toBeGreaterThan(0);
+    expect(suggest).toBeNull();
+    expect(received).toHaveLength(0);
 
     chatLog.append(new FakeElement("div"));
     shell.refreshMonitor();

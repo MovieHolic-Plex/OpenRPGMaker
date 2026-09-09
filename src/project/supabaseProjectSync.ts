@@ -9,6 +9,8 @@ import { defaultItemRecords } from "./defaults/defaultDatabaseItemRecords";
 import { defaultSkillRecords } from "./defaults/defaultDatabaseStarterRecords";
 import { collectProjectItemReferenceIds, validateProjectReferences } from "./io/references";
 import { projectWithoutEventDrafts } from "./eventDrafts";
+import { applyAudioDescriptionDelta } from "./audioDescriptions";
+import { applyMonsterMetadataDelta } from "./monsterMetadata";
 import { supabaseProjectConfig, type SupabaseProjectConfig } from "./supabaseProjectConfig";
 import { sha256HexText } from "../util/sha256";
 import { randomUuid } from "../util/id";
@@ -23,6 +25,7 @@ const DEFAULT_PROJECT_TITLE = PRODUCT_BRAND;
 export { DEFAULT_SUPABASE_PROJECT_ID } from "./supabaseProjectConfig";
 
 type SupabaseProjectRow = {
+  readonly project_id: string | null;
   readonly current_json: unknown;
   readonly current_sha256: string | null;
 };
@@ -125,6 +128,7 @@ export type SupabaseProjectCommitListItem = {
 };
 
 type SupabaseProjectSnapshot = {
+  readonly projectId: string | null;
   readonly project: Project;
   readonly sha256: string | null;
 };
@@ -153,6 +157,14 @@ export async function loadProjectFromSupabase(config = supabaseProjectConfig()):
   const project = (await loadProjectSnapshotFromSupabase(config))?.project ?? null;
   if (project && config) void hydrateLastRemoteCommitTip(config);
   return project;
+}
+
+/** Same normalized/hybrid read as editor load, without commit-tip hydration or store mutation. */
+export async function loadProjectForPersistenceProof(
+  config: SupabaseProjectConfig,
+  signal?: AbortSignal,
+): Promise<SupabaseProjectSnapshot | null> {
+  return loadProjectSnapshotFromSupabase(config, { includeProjectId: true, signal });
 }
 
 export async function listSupabaseProjects(config: SupabaseProjectListConfig): Promise<readonly SupabaseProjectListItem[]> {
@@ -214,10 +226,12 @@ export async function loadSupabaseProjectPreview(
 
 async function loadProjectRowFromSupabase(
   config = supabaseProjectConfig(),
+  options: { readonly includeProjectId?: boolean; readonly signal?: AbortSignal } = {},
 ): Promise<SupabaseProjectRow | null> {
   if (!config) return null;
-  const response = await fetch(supabaseProjectUrl(config), {
+  const response = await fetch(supabaseProjectUrl(config, options.includeProjectId), {
     headers: supabaseJsonHeaders(config, "read"),
+    signal: options.signal,
   });
   if (!response.ok) {
     throw new SupabaseProjectSyncError(await response.text(), response.status);
@@ -228,15 +242,16 @@ async function loadProjectRowFromSupabase(
 
 async function loadProjectSnapshotFromSupabase(
   config = supabaseProjectConfig(),
+  options: { readonly includeProjectId?: boolean; readonly signal?: AbortSignal } = {},
 ): Promise<SupabaseProjectSnapshot | null> {
   if (!config) return null;
-  const row = await loadProjectRowFromSupabase(config);
+  const row = await loadProjectRowFromSupabase(config, options);
   if (!row) return null;
   const project = deserializeSupabaseCurrentJson(row.current_json);
   // Hybrid maps SoT (editor open / public load): maps table map_json overlays current_json map bodies.
-  // Patch/conflict reads use the raw row separately and never overlay maps.
+  // Patch/conflict reads use the raw row loader separately and never overlay maps.
   try {
-    const mapRows = await loadMapRowsFromSupabase(config);
+    const mapRows = await loadMapRowsFromSupabase(config, options.signal);
     if (mapRows.length > 0) overlayMapsFromRows(project, mapRows);
   } catch (error) {
     if (!isOptionalTableMissingError(error)) throw error;
@@ -244,6 +259,7 @@ async function loadProjectSnapshotFromSupabase(
   return {
     project,
     sha256: row.current_sha256,
+    projectId: row.project_id,
   };
 }
 
@@ -297,6 +313,21 @@ export async function saveProjectMapPatchToSupabase(
     if (conflicts.length > 0) return { kind: "conflict", conflicts };
 
     const candidate = mergeProjectMaps(latestProject, persistedProject, changedMapIds, changedMapTreeIds);
+    const audioDescriptions = applyAudioDescriptionDelta(
+      baseProject.audioDescriptions,
+      persistedProject.audioDescriptions,
+      latestProject.audioDescriptions,
+    );
+    // mergeProjectMaps returns a detached root; never mutate any input snapshot.
+    if (audioDescriptions === undefined) delete candidate.audioDescriptions;
+    else candidate.audioDescriptions = audioDescriptions;
+    const monsterMetadata = applyMonsterMetadataDelta(
+      baseProject.monsterMetadata,
+      persistedProject.monsterMetadata,
+      latestProject.monsterMetadata,
+    );
+    if (monsterMetadata === undefined) delete candidate.monsterMetadata;
+    else candidate.monsterMetadata = monsterMetadata;
     // Do not let load repair silently discard invalid intended references. Only
     // the fully validated merge may enter the existing SHA-conditional write.
     validateProjectReferences(candidate);
@@ -460,12 +491,15 @@ function mergeAiActivityLogRows(
     .slice(0, limit);
 }
 
-async function fetchJsonArray(url: string, config: SupabaseProjectConfig): Promise<Record<string, unknown>[]> {
-  const response = await fetch(url, { headers: supabaseJsonHeaders(config, "read") });
+async function fetchJsonArray(url: string, config: SupabaseProjectConfig, signal?: AbortSignal, strict = false): Promise<Record<string, unknown>[]> {
+  const response = await fetch(url, { headers: supabaseJsonHeaders(config, "read"), signal });
   if (!response.ok) {
     throw new SupabaseProjectSyncError(await response.text(), response.status);
   }
   const parsed: unknown = await response.json();
+  if (strict && (!Array.isArray(parsed) || !parsed.every(isRecord))) {
+    throw new SupabaseProjectSyncError("Invalid conversation response");
+  }
   if (!Array.isArray(parsed)) return [];
   return parsed.filter(isRecord);
 }
@@ -473,6 +507,8 @@ async function fetchJsonArray(url: string, config: SupabaseProjectConfig): Promi
 // ── AI 대화 기록 미러 (로컬 정본, 여기는 기기 간 복원/검색용) ────────────────
 export type SupabaseConversationInput = {
   readonly conversationId: string;
+  /** Captured before local persistence. No credentials are serialized into the outbox. */
+  readonly destinationProjectId?: string | null;
   readonly title: string;
   readonly model: string;
   readonly projectContextKey?: string;
@@ -485,12 +521,14 @@ export async function recordSupabaseConversation(
   input: SupabaseConversationInput,
   config = supabaseProjectConfig(),
 ): Promise<SupabaseSaveResult> {
-  if (!config) return { kind: "not-configured" };
+  if (!config || input.destinationProjectId === null) return { kind: "not-configured" };
+  const projectId = input.destinationProjectId ?? (input.projectContextKey?.startsWith("remote:") ? input.projectContextKey.slice(7) : config.projectId);
+  const destination = { ...config, projectId };
   try {
-    await upsertRows(config, "ai_conversations", "conversation_id", [
+    await upsertRows(destination, "ai_conversations", "conversation_id", [
       {
         conversation_id: input.conversationId,
-        project_id: config.projectId,
+        project_id: destination.projectId,
         title: input.title.slice(0, 200),
         model: input.model,
         project_context_key: input.projectContextKey ?? null,
@@ -512,44 +550,41 @@ export async function recordSupabaseConversation(
 
 /** 대화 요약 목록 — query가 있으면 제목 부분일치(ilike) 검색. entries_json은 내리지 않는다. */
 export async function listSupabaseConversations(
-  opts: { readonly query?: string; readonly limit?: number } = {},
+  opts: { readonly query?: string; readonly limit?: number; readonly offset?: number; readonly signal?: AbortSignal; readonly includeEntries?: boolean; readonly projectContextKey?: string } = {},
   config = supabaseProjectConfig(),
 ): Promise<readonly Record<string, unknown>[]> {
-  if (!config) return [];
+  if (!config) throw new Error("Conversation recovery is not configured");
+  opts.signal?.throwIfAborted();
   const n = Math.max(1, Math.min(100, Math.floor(opts.limit ?? 50)));
   const params = new URLSearchParams({
     project_id: `eq.${config.projectId}`,
-    select: "conversation_id,title,model,project_context_key,saved_at",
-    order: "saved_at.desc",
+    select: `project_id,conversation_id,title,model,project_context_key,saved_at${opts.includeEntries ? ",entries_json" : ""}`,
+    order: "saved_at.desc,conversation_id.asc",
     limit: String(n),
+    offset: String(Math.max(0, Math.floor(opts.offset ?? 0))),
   });
   const query = opts.query?.trim();
   if (query) params.set("title", `ilike.*${query.replaceAll("*", "").replaceAll(",", "")}*`);
-  try {
-    return await fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config);
-  } catch {
-    return [];
-  }
+  if (opts.projectContextKey !== undefined) params.set("project_context_key", `eq.${opts.projectContextKey}`);
+  return fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config, opts.signal, true);
 }
 
 /** 대화 1건 전체(entries_json 포함) — 로컬에 없는 대화를 다른 기기에서 복원할 때. */
 export async function loadSupabaseConversation(
   conversationId: string,
   config = supabaseProjectConfig(),
+  signal?: AbortSignal,
 ): Promise<Record<string, unknown> | null> {
-  if (!config) return null;
+  if (!config) throw new Error("Conversation recovery is not configured");
+  signal?.throwIfAborted();
   const params = new URLSearchParams({
     project_id: `eq.${config.projectId}`,
     conversation_id: `eq.${conversationId}`,
-    select: "conversation_id,title,model,project_context_key,entries_json,saved_at",
+    select: "project_id,conversation_id,title,model,project_context_key,entries_json,saved_at",
     limit: "1",
   });
-  try {
-    const rows = await fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config);
-    return rows[0] ?? null;
-  } catch {
-    return null;
-  }
+  const rows = await fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config, signal, true);
+  return rows[0] ?? null;
 }
 
 /** 원격 최신 commit tip 을 세션 맵에 심는다 — 리로드 후 parent_commit 계보 유지. */
@@ -613,9 +648,9 @@ export async function listProjectCommitsFromSupabase(
   return rows;
 }
 
-function supabaseProjectUrl(config: SupabaseProjectConfig): string {
+function supabaseProjectUrl(config: SupabaseProjectConfig, includeProjectId = false): string {
   const query = new URLSearchParams({
-    select: "current_json,current_sha256",
+    select: includeProjectId ? "project_id,current_json,current_sha256" : "current_json,current_sha256",
     project_id: `eq.${config.projectId}`,
   });
   return `${config.url}/rest/v1/projects?${query.toString()}`;
@@ -728,6 +763,7 @@ async function parseProjectRows(response: Response): Promise<readonly SupabasePr
       throw new SupabaseProjectSyncError("Supabase project row is missing current_json");
     }
     return {
+      project_id: typeof entry.project_id === "string" ? entry.project_id : null,
       current_json: entry.current_json,
       current_sha256: typeof entry.current_sha256 === "string" ? entry.current_sha256 : null,
     };
@@ -1067,7 +1103,7 @@ function mapSaveConflicts(
  * references before root ownership is resolved. Malformed local intermediates
  * retain the existing comparison fallback; the completed candidate must validate.
  */
-function canonicalizeForMapComparison(project: Project): Pick<Project, "maps" | "mapTree"> {
+function canonicalizeForMapComparison(project: Project): MapPatchSnapshot {
   try {
     return readMapPatchSnapshot(JSON.parse(serialize(project)) as unknown);
   } catch {
@@ -1075,7 +1111,11 @@ function canonicalizeForMapComparison(project: Project): Pick<Project, "maps" | 
   }
 }
 
-function readMapPatchSnapshot(value: unknown): Pick<Project, "maps" | "mapTree"> {
+type MapPatchSnapshot = Pick<Project, "maps" | "mapTree"> & Partial<Pick<Project, "audioDescriptions" | "monsterMetadata">>;
+
+// Map merging only needs maps/mapTree, but the audio-description and monster-metadata
+// deltas compare the same remote snapshot, so those optional roots stay visible.
+function readMapPatchSnapshot(value: unknown): MapPatchSnapshot {
   if (!isRecord(value) || value.version !== SCHEMA_VERSION) return deserializeSupabaseCurrentJson(value);
   const snapshot = structuredClone(value);
   // Keep compatibility foundation changes, but never use ordinary load repair
@@ -1196,12 +1236,12 @@ function insertMapTreeNode(node: MapTreeNode, parentId: string | null, index: nu
   return { ...node, children: node.children.map((child) => insertMapTreeNode(child, parentId, index, childNode)) };
 }
 
-async function loadMapRowsFromSupabase(config: SupabaseProjectConfig): Promise<readonly Record<string, unknown>[]> {
+async function loadMapRowsFromSupabase(config: SupabaseProjectConfig, signal?: AbortSignal): Promise<readonly Record<string, unknown>[]> {
   const query = new URLSearchParams({
     project_id: `eq.${config.projectId}`,
     select: "map_id,map_json",
   });
-  return await fetchJsonArray(`${config.url}/rest/v1/maps?${query.toString()}`, config);
+  return await fetchJsonArray(`${config.url}/rest/v1/maps?${query.toString()}`, config, signal);
 }
 
 function overlayMapsFromRows(project: Project, rows: readonly Record<string, unknown>[]): void {
@@ -1229,7 +1269,7 @@ function mapSnapshot(map: GameMap | undefined): string {
  * 키를 재귀적으로 정렬해 문자열로 만들면 jsonb 왕복 여부와 무관하게 같은 논리 값은 같은
  * 문자열이 된다. 배열 순서·값은 그대로 유지한다(배열 순서는 의미가 있다).
  */
-function canonicalJsonString(value: unknown): string {
+export function canonicalJsonString(value: unknown): string {
   if (Array.isArray(value)) {
     return `[${value.map((entry) => canonicalJsonString(entry)).join(",")}]`;
   }

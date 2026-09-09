@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
+import { listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
 import { createBlankProject, createSampleAdventureProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -41,6 +42,51 @@ describe("database system view", () => {
   afterEach(() => {
     cleanupDom?.();
     cleanupDom = undefined;
+  });
+
+
+  it("reenables authored action combat without losing details", () => {
+    store.update((draft) => {
+      draft.system.actionCombat = { enabled: false, swingDamageBonus: 17, hud: { stamina: true } };
+    });
+    const host = renderSystem();
+    setCheckbox(host, "db-field-system-action-combat", true);
+    expect(store.getCurrent().system.actionCombat).toMatchObject({ enabled: true, swingDamageBonus: 17, hud: { stamina: true } });
+    expect(findByTestId(host, "db-field-system-action-combat-swing-bonus")).not.toBeNull();
+    setCheckbox(host, "db-field-system-action-combat", false);
+    expect(store.getCurrent().system.actionCombat).toMatchObject({ enabled: false, swingDamageBonus: 17 });
+  });
+
+  it("clears a title logo without clearing presentation or coordinates", () => {
+    store.update((draft) => {
+      draft.system.titleScreen!.titleGraphic = { mode: "both", resourceId: "easyrpg-title-title1", x: 92, y: 41 };
+    });
+    const host = renderSystem();
+    setSelectValue(host, "db-field-title-screen-logo", "");
+    expect(store.getCurrent().system.titleScreen?.titleGraphic).toEqual({ mode: "both", x: 92, y: 41 });
+  });
+
+  it("clears title sounds independently and omits the empty object", () => {
+    store.update((draft) => {
+      draft.system.titleScreen!.sounds = { cursorSeResourceId: "cursor", confirmSeResourceId: "confirm", cancelSeResourceId: "cancel" };
+    });
+    const host = renderSystem();
+    setSelectValue(host, "db-field-title-screen-se-cursor", "");
+    expect(store.getCurrent().system.titleScreen?.sounds).toEqual({ confirmSeResourceId: "confirm", cancelSeResourceId: "cancel" });
+    setSelectValue(host, "db-field-title-screen-se-confirm", "");
+    setSelectValue(host, "db-field-title-screen-se-cancel", "");
+    expect(store.getCurrent().system.titleScreen?.sounds).toBeUndefined();
+  });
+
+  it("preserves the authored calendar across disabling and reenabling", () => {
+    const host = renderSystem();
+    setCheckbox(host, "db-field-system-time-enabled", true);
+    setSelectValue(host, "db-field-system-time-days-per-season", "31");
+    const before = structuredClone(store.getCurrent().system.timeSystem);
+    setCheckbox(host, "db-field-system-time-enabled", false);
+    expect(store.getCurrent().system.timeSystem).toEqual({ ...before, enabled: false });
+    setCheckbox(host, "db-field-system-time-enabled", true);
+    expect(store.getCurrent().system.timeSystem).toEqual(before);
   });
 
   it("preserves multi-member start party when editing one slot", () => {
@@ -219,7 +265,7 @@ describe("database system view", () => {
     expect(store.getCurrent().system.battleFlow).toBe(before);
   });
 
-  it("renders title workbench preview and accepts musicResourceId", () => {
+  it("renders title workbench preview, rejects MIDI assignment and accepts playable musicResourceId", () => {
     const host = renderSystem();
     expect(findByTestId(host, "db-title-workbench")).not.toBeNull();
     expect(findByTestId(host, "db-title-workbench-preview")).not.toBeNull();
@@ -230,12 +276,16 @@ describe("database system view", () => {
 
     const music = findByTestId(host, "db-field-title-screen-music") as { value?: string } | null;
     if (!music) throw new Error("missing music field");
+    const before = store.getCurrent().system.titleScreen?.musicResourceId;
     music.value = "easyrpg-music-field-1";
     (music as FakeElement).dispatchEvent(new Event("change"));
+    expect(store.getCurrent().system.titleScreen?.musicResourceId).toBe(before);
 
-    expect(store.getCurrent().system.titleScreen?.musicResourceId).toBe("easyrpg-music-field-1");
+    music.value = "cc0-bgm-rtp-fld-003";
+    (music as FakeElement).dispatchEvent(new Event("change"));
+    expect(store.getCurrent().system.titleScreen?.musicResourceId).toBe("cc0-bgm-rtp-fld-003");
     const label = findByTestId(host, "db-title-workbench-music-id");
-    expect(label?.textContent).toContain("easyrpg-music-field-1");
+    expect(label?.textContent).toBe(listDatabaseResourceOptions("music", store.getCurrent()).find((entry) => entry.id === "cc0-bgm-rtp-fld-003")?.name);
   })
 
   it("groups title workbench into display/audio/menu fieldsets", () => {
@@ -289,7 +339,7 @@ describe("database system view", () => {
     expect(menuPreview.textContent).toContain("종료");
     // continueGame 의 기본 라벨은 "불러오기"다("이어하기"는 오토세이브 재개 쪽 라벨).
     expect(menuPreview.textContent).not.toContain("불러오기");
-    expect(menuPreview.childNodes).toHaveLength(2);
+    expect(menuPreview.childNodes).toHaveLength(3);
   });
 
   it("shows logo fields when presentation is graphic and previews logo", () => {

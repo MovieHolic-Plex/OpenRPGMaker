@@ -1,0 +1,205 @@
+[
+  {
+    "file": "eventValidationNavigationContract.test.ts",
+    "upstreamTests": 18,
+    "integrationTests": 18,
+    "integrationFailures": [
+      "validation navigation at the rendered modal seam removes its document listener and layer immediately when the parent closes"
+    ],
+    "upstreamFailures": [
+      "validation navigation at the rendered modal seam removes its document listener and layer immediately when the parent closes"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "validation navigation at the rendered modal seam removes its document listener and layer immediately when the parent closes": true
+    }
+  },
+  {
+    "file": "aiSpecGateHardening.test.ts",
+    "upstreamTests": 21,
+    "integrationTests": 21,
+    "integrationFailures": [
+      "암묵 스펙 — 선택 영역 선택 영역 암묵 스펙은 그 턴에만 유효하고 다음 턴으로 승격되지 않는다"
+    ],
+    "upstreamFailures": [
+      "암묵 스펙 — 선택 영역 선택 영역 암묵 스펙은 그 턴에만 유효하고 다음 턴으로 승격되지 않는다"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "암묵 스펙 — 선택 영역 선택 영역 암묵 스펙은 그 턴에만 유효하고 다음 턴으로 승격되지 않는다": true
+    }
+  },
+  {
+    "file": "assistantSessionIntent.test.ts",
+    "upstreamTests": 12,
+    "integrationTests": 12,
+    "integrationFailures": [
+      "의도 선언이 세션 라우팅을 정한다 auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)",
+      "의도 선언이 세션 라우팅을 정한다 툴 이름 언급은 사용자 발화(instruction)에서만 읽고 footer 는 보지 않는다"
+    ],
+    "upstreamFailures": [
+      "의도 선언이 세션 라우팅을 정한다 auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)",
+      "의도 선언이 세션 라우팅을 정한다 툴 이름 언급은 사용자 발화(instruction)에서만 읽고 footer 는 보지 않는다"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "의도 선언이 세션 라우팅을 정한다 auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)": true,
+      "의도 선언이 세션 라우팅을 정한다 툴 이름 언급은 사용자 발화(instruction)에서만 읽고 footer 는 보지 않는다": false
+    }
+  },
+  {
+    "file": "houseProtectionForest.test.ts",
+    "upstreamTests": 16,
+    "integrationTests": 16,
+    "integrationFailures": [
+      "direct forest composition writers rejects an entire puddle footprint touching a house and uses the other clearing"
+    ],
+    "upstreamFailures": [
+      "direct forest composition writers rejects an entire puddle footprint touching a house and uses the other clearing"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "direct forest composition writers rejects an entire puddle footprint touching a house and uses the other clearing": true
+    }
+  },
+  {
+    "file": "mapSurfaceFocus.test.ts",
+    "upstreamTests": 7,
+    "integrationTests": 7,
+    "integrationFailures": [
+      "historyHotkeyOwnedByPanel is true while a panel with its own history listener is mounted"
+    ],
+    "upstreamFailures": [
+      "historyHotkeyOwnedByPanel is true while a panel with its own history listener is mounted"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "historyHotkeyOwnedByPanel is true while a panel with its own history listener is mounted": true
+    }
+  },
+  {
+    "file": "aiWorkItemStall.test.ts",
+    "upstreamTests": 5,
+    "integrationTests": 5,
+    "integrationFailures": [
+      "진행이 멈춘 항목은 사람에게 넘긴다 (a)(b) 같은 항목에서 연속 3번 헛되이 나가면 blocked 로 표시하고 턴을 끝낸다 — 드라이버도 멈춘다",
+      "진행이 멈춘 항목은 사람에게 넘긴다 (a-2) 같은 쓰기 툴이 같은 이유로 반복 실패하면 Ralph 신호 없이도 막힌다",
+      "진행이 멈춘 항목은 사람에게 넘긴다 (c) 사용자의 다음 메시지가 막힌 항목을 되살린다"
+    ],
+    "upstreamFailures": [
+      "진행이 멈춘 항목은 사람에게 넘긴다 (a)(b) 같은 항목에서 연속 3번 헛되이 나가면 blocked 로 표시하고 턴을 끝낸다 — 드라이버도 멈춘다",
+      "진행이 멈춘 항목은 사람에게 넘긴다 (a-2) 같은 쓰기 툴이 같은 이유로 반복 실패하면 Ralph 신호 없이도 막힌다",
+      "진행이 멈춘 항목은 사람에게 넘긴다 (c) 사용자의 다음 메시지가 막힌 항목을 되살린다"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "진행이 멈춘 항목은 사람에게 넘긴다 (a)(b) 같은 항목에서 연속 3번 헛되이 나가면 blocked 로 표시하고 턴을 끝낸다 — 드라이버도 멈춘다": true,
+      "진행이 멈춘 항목은 사람에게 넘긴다 (a-2) 같은 쓰기 툴이 같은 이유로 반복 실패하면 Ralph 신호 없이도 막힌다": true,
+      "진행이 멈춘 항목은 사람에게 넘긴다 (c) 사용자의 다음 메시지가 막힌 항목을 되살린다": true
+    }
+  },
+  {
+    "file": "databaseSkillAnimationStage.test.ts",
+    "upstreamTests": 10,
+    "integrationTests": 10,
+    "integrationFailures": [
+      "스킬 탭 애니메이션 스테이지 프레임을 자동 반복 재생하고 프레임 카운터가 따라간다"
+    ],
+    "upstreamFailures": [
+      "스킬 탭 애니메이션 스테이지 프레임을 자동 반복 재생하고 프레임 카운터가 따라간다"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "스킬 탭 애니메이션 스테이지 프레임을 자동 반복 재생하고 프레임 카운터가 따라간다": true
+    }
+  },
+  {
+    "file": "interiorBench.test.ts",
+    "upstreamTests": 39,
+    "integrationTests": 39,
+    "integrationFailures": [
+      "interior benchmark scoring schemes 정본 답변은 모든 태스크에서 만점에 가깝다"
+    ],
+    "upstreamFailures": [
+      "interior benchmark scoring schemes 정본 답변은 모든 태스크에서 만점에 가깝다"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "interior benchmark scoring schemes 정본 답변은 모든 태스크에서 만점에 가깝다": true
+    },
+    "upstreamEvidence": "upstream-interior.json",
+    "assetProvisioning": "interior-asset-provenance.json"
+  },
+  {
+    "file": "showPictureForm.test.ts",
+    "upstreamTests": 12,
+    "integrationTests": 12,
+    "integrationFailures": [
+      "그림 표시 폼 프롬프트로 그림을 만들면 업로드 리소스가 커맨드에 실린다"
+    ],
+    "upstreamFailures": [
+      "그림 표시 폼 프롬프트로 그림을 만들면 업로드 리소스가 커맨드에 실린다"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "그림 표시 폼 프롬프트로 그림을 만들면 업로드 리소스가 커맨드에 실린다": true
+    }
+  },
+  {
+    "file": "aiMapContextPassabilityWiring.test.ts",
+    "upstreamTests": 2,
+    "integrationTests": 2,
+    "integrationFailures": [
+      "통행 그리드는 항상 최신 턴 컨텍스트에만 실린다 AssistantSession 이 턴마다 붙이는 뷰포트 블록도 그리드를 담는다"
+    ],
+    "upstreamFailures": [
+      "통행 그리드는 항상 최신 턴 컨텍스트에만 실린다 AssistantSession 이 턴마다 붙이는 뷰포트 블록도 그리드를 담는다"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "통행 그리드는 항상 최신 턴 컨텍스트에만 실린다 AssistantSession 이 턴마다 붙이는 뷰포트 블록도 그리드를 담는다": true
+    }
+  },
+  {
+    "file": "databaseAnimationPreview.test.ts",
+    "upstreamTests": 2,
+    "integrationTests": 2,
+    "integrationFailures": [
+      "database animation preview autoplays visible frames in a loop and restores the editing frame on stop"
+    ],
+    "upstreamFailures": [
+      "database animation preview autoplays visible frames in a loop and restores the editing frame on stop"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "database animation preview autoplays visible frames in a loop and restores the editing frame on stop": true
+    }
+  },
+  {
+    "file": "gen1DemoContent.test.ts",
+    "upstreamTests": 3,
+    "integrationTests": 3,
+    "integrationFailures": [
+      "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics"
+    ],
+    "upstreamFailures": [
+      "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics"
+    ],
+    "integrationFileMessage": "",
+    "upstreamFileMessage": "",
+    "identicalNormalizedFailureMessages": {
+      "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics": true
+    }
+  }
+]

@@ -1,6 +1,7 @@
 import type { M2CommandFields, Project } from "@/project/types";
 import type { M2RuntimeState, PlaySessionLike } from "@/project/sessionRuntimeTypes"
-import { nextSessionRandom } from "@/project/session";
+import { nextSessionRandom, setAudioState, type AudioChannel, type AudioTrackState } from "@/project/session";
+import { isLoopingChannel } from "@/player/audio/audioResources";
 import { evaluateM2Expression } from "./m2Expression";
 import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
@@ -115,16 +116,24 @@ export function waitConditionMet(
   return false;
 }
 
-function recordSoundLayer(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {
-  const channel = fieldString(fields, "channel", "bgm");
+export function recordSoundLayer(
+  session: PlaySessionLike,
+  runtime: M2RuntimeState,
+  fields: M2CommandFields
+): AudioTrackState & { readonly channel: AudioChannel } {
+  const requestedChannel = fieldString(fields, "channel", "bgm");
+  const channel = requestedChannel === "bgs" || requestedChannel === "ambient" || requestedChannel === "me" || requestedChannel === "se"
+    ? requestedChannel : "bgm";
   const layer = {
     resourceId: fieldString(fields, "resourceId", ""),
-    volume: fieldNumber(fields, "volume", 100),
-    fadeMs: fieldNumber(fields, "fadeMs", 0),
+    volume: Math.max(0, Math.min(100, fieldNumber(fields, "volume", 100))),
+    fadeMs: Math.max(0, fieldNumber(fields, "fadeMs", 0)),
   };
   runtime.audio[channel] = layer;
+  const audio = { channel, resourceId: layer.resourceId, loop: isLoopingChannel(channel), volume: layer.volume, fadeInMs: layer.fadeMs } satisfies AudioTrackState & { readonly channel: AudioChannel };
   session.audio ??= {};
-  session.audio[channel] = { resourceId: layer.resourceId, loop: channel === "bgm" || channel === "bgs" || channel === "ambient" };
+  setAudioState({ audio: session.audio }, audio);
+  return audio;
 }
 
 function recordCutsceneControl(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {

@@ -1,5 +1,23 @@
 # Autotiles (지형 자동 성형)
 
+## World 지형과 공통 구조물
+
+World 칩셋의 해안·설원 해안은 `worldCoastMapping.ts`, 연결 지형 11종은
+`worldTerrainAutotiles.ts`가 소유한다. 다른 칩셋의 같은 번호 문법으로 내려가지 않는다.
+렌더러와 캔버스 미리보기·미니맵은 같은 쿼터 합성/투명키 처리를 사용한다.
+사용자 그룹·이식·잠금은 원본 전용 규칙보다 우선한다.
+
+재사용 가능한 석교와 다층 산 시공은
+[world-structure-authoring.md](world-structure-authoring.md)를 따른다.
+`get_world_structure_rules`, `author_world_bridge`, `author_world_mountain`이
+`worldStructureRules.ts`의 공통 규칙을 사용한다. 교량 412·442를 긴 세로 다리 양끝에
+붙이지 않는다. 통행 가능한 upper 바닥/다리는 캐릭터 아래에 그린다.
+
+World 설명은 원본의 유효 슬롯 478개를 제공한다.
+빈 설명만 채우고, 정확히 알려진 옛 다리 설명만 교정한다. 사용자 잠금/문구/이식은 보존한다.
+관련 회귀: `worldCoastMapping`, `worldTerrainAutotiles`, `worldTileDescriptions`,
+`mapCanvasTexture`, `characterDepthYSort`, `worldStructureTools`.
+
 combined_town 칩셋의 지형 오토타일 정본 가이드. 붓·`fill_region`·`lay_path`·마을 하네스(`src/editor/tools/village/`)·DB 타일셋 위저드가 전부 이 체계 위에서 동작한다. **기계 정본은 코드다** — 이 문서는 개념·카탈로그·포인터를 제공하고, 수치가 갈리면 코드와 `test/builtinAutotileGroups.test.ts` 가 이긴다.
 
 ## 1. RM2K식 3×4 템플릿 블록 문법
@@ -96,6 +114,37 @@ T+3R:   [SW T+90]     [S T+91]        [SE T+92]
 3. **API** — `addAutotileGroupFromTemplate` (`tilesetActions.ts`). 첫 커스텀 그룹 추가 시 내장 그룹 전체가 tileset 에 승계된다(내장 흙길/모래가 죽는 회귀 방지 규약 — 절대 생략 금지).
 
 등록만 하면 붓(`shapeTerrainAfterLowerEdit`)·`fill_region`(vocab 겹침 최대 그룹)·`lay_path` 가 자동으로 성형한다. 추가 배선 불필요.
+
+## Integrated World snapshot (2026-09-06)
+
+- PR621 snapshot rendering shares `supportsChipsetTileAnimation(tileset, tile)` with
+  the existing interior fire path. World water/effect strips use the graft-aware
+  `isWorldAnimatedTile`; interior fire still requires strip base 124. Neither path
+  broadens `isDefaultTilesetTexture` or enables town road/tree rules on World/interior.
+- World metadata seeding retains the approved `chipsetLabelCorrections` overrides
+  after generic World descriptions/terrain metadata, including their existing
+  user/locked/graft guards. The World description test compares shipped-copy
+  precedence rather than replacing approved corrections with older snapshot prose.
+- Snapshot integration validation and dirty-replay boundaries:
+  `reports/pr617-621-integration.md`. No remote content writes or browser/build/full
+  gates were run by the integration child.
+
+## Terrain placement regression contracts (2026-09-08)
+
+- Combined Town hard adjacency expansion uses lower trunks and upper canopies consistently with paint routing. `isCombinedTownTileset` gates numeric trunk meanings; custom/interior groups retain their authored layers. A companion must not reintroduce the origin tile on a different layer.
+- Numeric tree repair requires exact bundled Combined Town image ownership. `repairTreePairsOnMap(map, tileset, options)` now requires namespace context; the project wrapper resolves each map's tileset, and paint/erase/fill callers pass theirs. Foreign or missing definitions are no-ops, including top-row IDs 290-293. Record-ID collisions do not grant Town semantics.
+- Tile-layer classification gates both numeric trunk and Town overlay shortcuts by that image namespace. Foreign authored groups/priority remain authoritative. Erase still expands authored hard groups, but numeric tree companions and tree-ground restoration are Town-only. Public tool/store, pen, fill and erase regressions plus the unchanged real-editor browser script cover this boundary (`legacy-terrain/namespace-store/` and `legacy-terrain/browser/namespace-fixed/` under `output/evidence/event-command-completion/`).
+- Scatter extracts connected object cells from both layers, excluding the sample's grass backdrop. Custom two-tile tree groups retain their lower trunk even when their canopy is upper.
+- Manual painting over a Combined Town canopy uses the existing companion-erase/ground-restoration plan before applying the new prop, so tree repair cannot resurrect the replaced canopy. Reused custom/interior tile numbers must not trigger that cleanup. Fence checks compare against already-shaped ground, not raw autotile brush IDs.
+- Palette scatter reserves each selected coordinate before painting. Its deferred tile selection does not grant permission to reuse an empty planning footprint and report duplicate placements.
+- Zero-placement scatter throws `ToolError` with code `placement-zero`; partial placement still reports requested/placed/skipped counts. Group-layout previews use the same canopy-upper/trunk-lower contract.
+- Single-prop scatter considers the candidate space before applying count/spacing to accepted cells. A blocked random candidate does not consume a requested placement; real partial yard completion still rolls back at the house facade. Zero-gap candidate generation returns the seeded shuffled cells directly, without Poisson pair checks; zero-gap acceptance also skips pair checks/storage. Positive gaps retain accepted-point spacing. Matched work-count evidence: `sparse-performance/` under the evidence directory below.
+- Yard flower tags resolve the canonical `꽃/자연 소품` material group. House outcomes carry `diff.mapPropertiesChanged` alongside the other structured totals, preserving parser equality.
+- Quarter rendering checks the texture before applying Combined Town kits. Interior whole-tile walls/deep void and unmatched dungeon cells must not inherit town numeric meanings.
+- Theme metadata reseeding applies the final owner of an overlapping tile once, preserving the existing last-group precedence without reporting transient changes to an identical result.
+- Dense forest feathering is decorative and cannot reopen 30% of the region. Its whole-cell opening budget is measured before removing edge bushes; density targets, tree counts and impassable closure remain unchanged.
+- Region/tile-flow integration tests supply deterministic model transcripts and the current intent-declaration seam; production tool execution, region clipping, pending review and application stay real. They do not read private credentials or rely on a live model cooperating.
+- Evidence: `output/evidence/event-command-completion/legacy-terrain/`; the supervisor owns full gates/builds during the shared-host resource constraint.
 
 ## 5. 검증
 

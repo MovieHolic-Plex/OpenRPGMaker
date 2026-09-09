@@ -46,7 +46,11 @@ export interface BuildSpec {
   plannedMap?: { mapId: string; width: number; height: number };
 }
 
-export interface SpecIssue { severity: "error" | "warning"; message: string; }
+export interface SpecIssue {
+  severity: "error" | "warning";
+  code?: "spec-new-plan-overlap" | "spec-existing-content" | "spec-destroy-confirmation";
+  message: string;
+}
 
 export interface AffectedRegion {
   mapId: string; x: number; y: number; w: number; h: number;
@@ -220,7 +224,7 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
       if (a === undefined || b === undefined || overlapAllowed(a, b, buildOrder)) continue;
       const rect = intersection(a, b);
       if (rect === null) continue;
-      issues.push({ severity: "error", message: `에셋 '${a.id}'와 '${b.id}'가 교차합니다: (${rect.x},${rect.y}) ${rect.w}×${rect.h}.` });
+      issues.push({ severity: "error", code: "spec-new-plan-overlap", message: `에셋 '${a.id}'와 '${b.id}'가 교차합니다: (${rect.x},${rect.y}) ${rect.w}×${rect.h}.` });
     }
   }
 
@@ -239,6 +243,7 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
           const at = built.sample ? ` 예: (${built.sample.x},${built.sample.y})` : "";
           issues.push({
             severity: "error",
+            code: "spec-destroy-confirmation",
             message:
               `clear 에셋 '${asset.id}'가 기존 구조물·비잔디 지형(호수/물·길·나무 등)을 덮습니다(${built.count}칸${at}). ` +
               `호수·물·길을 치우는 요청이면 이 에셋에 confirmDestroy:true를 넣고 set_build_spec을 재제출하세요. ` +
@@ -254,6 +259,7 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
         const at = conflict.sample ? ` 예: (${conflict.sample.x},${conflict.sample.y})` : "";
         issues.push({
           severity: "error",
+          code: "spec-existing-content",
           message: `에셋 '${asset.id}' 자리·주변에 기본 타일이 아닌 것이 ${conflict.count}칸 있습니다${at}. 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:"clear"(정리하고 배치) 또는 "keep"(그대로 위에 배치)을 넣어 재제출하세요.`,
         });
       }
@@ -433,6 +439,8 @@ export function builtCellsInRegions(map: GameMap, regions: readonly AffectedRegi
  *
  * 허가는 에셋의 선언이다 — `clear` 에셋의 `confirmDestroy:true`(철거) 또는 배치 에셋의 `overExisting`
  * (정리하고 배치 / 그대로 위에 배치). 밑그림 안이라도 선언이 없으면 기존 내용은 덮지 않는다.
+ * 이 일반 허가는 완성된 집 보호를 해제하지 않는다. toolRunner의 현재 프로젝트 기반
+ * 메타데이터·셀 불변식은 선택 영역과 이 선언을 받지 않으며 모든 쓰기에 별도로 적용된다.
  * 2026-09-03 적대적 리뷰: 구조물 보호가 제출 시점에만 돌아 밑그림 안에 지은 집을 같은 턴의 clear 가
  * 무검사로 지웠고, 밑그림 확정 뒤 사용자가 판 호수를 다음 턴의 채우기가 덮었다.
  */
@@ -698,8 +706,16 @@ function overlapAllowed(a: CheckedAsset, b: CheckedAsset, buildOrder: readonly s
     NON_TILE_ASSET_KINDS.has(a.kind) || NON_TILE_ASSET_KINDS.has(b.kind) ||
     (a.layer === "upper") !== (b.layer === "upper") ||
     (a.kind === "road" && b.kind === "road") ||
-    clearThenBuildOverlapAllowed(a, b, buildOrder)
+    clearThenBuildOverlapAllowed(a, b, buildOrder) ||
+    terrainThenRoadOverlapAllowed(a, b, buildOrder)
   );
+}
+
+function terrainThenRoadOverlapAllowed(a: CheckedAsset, b: CheckedAsset, buildOrder: readonly string[] | null): boolean {
+  if (!buildOrder || !((a.kind === "terrain" && b.kind === "road") || (a.kind === "road" && b.kind === "terrain"))) return false;
+  const terrainRank = buildOrder.indexOf("terrain");
+  const roadRank = buildOrder.indexOf("road");
+  return terrainRank >= 0 && roadRank > terrainRank;
 }
 
 function clearThenBuildOverlapAllowed(a: CheckedAsset, b: CheckedAsset, buildOrder: readonly string[] | null): boolean {

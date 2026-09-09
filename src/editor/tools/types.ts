@@ -17,6 +17,7 @@ export interface JsonSchema {
   readonly enum?: readonly (string | number)[];
   readonly minLength?: number;
   readonly maxLength?: number;
+  readonly pattern?: string;
   readonly minimum?: number;
   readonly maximum?: number;
   /** JSON Schema oneOf (툴 인자 유니온). type 없이 쓰일 수 있다. */
@@ -66,6 +67,11 @@ export interface ToolDefinition {
   readonly invalidArgsExample?: Record<string, unknown>;
   // 스키마 검증 실패 시 예시와 별도로 붙이는 짧은 교정 힌트.
   readonly invalidArgsHint?: string;
+  // Input-specific guidance only; the runner still rejects invalid arguments.
+  readonly invalidArgsRepair?: (args: Readonly<Record<string, unknown>>) => {
+    readonly path: string;
+    readonly example: unknown;
+  } | undefined;
   // 툴 버전(기본 1). 2026-07-07 타일 계열 v2 재구축부터 사용. 3 = 승인 보캐뷸러리 계열(v3).
   readonly version?: 1 | 2 | 3;
   // true면 LLM 노출(toOpenAiTools)에서 제외된다. getTool/실행 호환은 유지(구 세션·테스트).

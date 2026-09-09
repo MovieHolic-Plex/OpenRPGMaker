@@ -15,6 +15,7 @@ import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import { cloneGameMap } from "@/project/mapClone";
 import { clampMapSize, INTERIOR_FLOOR_TILE, INTERIOR_TILESET_ID, type MapCreateSpec } from "@/project/mapCreateSpec";
+import { exceedsMapDimensionLimit, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import {
   appendToTree,
   canReparentMap,
@@ -43,7 +44,21 @@ export type { TileStrokeCell } from "@/editor/tileActions";
 import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapId, MapMinimapSetting, TilesetDef, TroopId } from "@/project/types";
 
 // ── 맵 CRUD ──
+
+/**
+ * 지원 상한 최종 가드. 이 세 함수(addMap/addChildMap/resizeMap)가 사람 경로의 데이터 진입점이라
+ * 여기서 막으면 어떤 패널·다이얼로그를 새로 붙여도 지원 밖 크기가 프로젝트에 들어오지 못한다.
+ * 조용히 클램프하지 않는 이유: 요청한 크기와 다른 맵이 생기면 사용자는 왜 작아졌는지 모른다 —
+ * 상한과 회복 수단을 말하고 아무것도 만들지 않는다(OPRN-OUT-018).
+ */
+function allowMapSize(width: number, height: number): boolean {
+  if (!exceedsMapDimensionLimit(width, height)) return true;
+  toast(mapSizeLimitMessage(), "error");
+  return false;
+}
+
 export function addMap(name: string, width = 16, height = 16, tilesetId?: string, fillTile?: number): MapId {
+  if (!allowMapSize(width, height)) return "";
   let newId: MapId = "";
   store.update((p) => {
     const m = createBlankMap(name || "새 맵", width, height, tilesetId);
@@ -62,6 +77,7 @@ type AddChildMapSize = {
 };
 
 export function addChildMap(parentId: MapId, name: string, size: AddChildMapSize = { width: 16, height: 16 }, tilesetId?: string, fillTile?: number): MapId {
+  if (!allowMapSize(size.width, size.height)) return "";
   let newId: MapId = "";
   store.update((p) => {
     const parent = findTreeNode(p.mapTree, parentId);
@@ -178,6 +194,7 @@ export function renameMap(mapId: MapId, name: string): void {
 
 export function resizeMap(mapId: MapId, width: number, height: number): void {
   if (!allowMapMutation(mapId)) return;
+  if (!allowMapSize(width, height)) return;
   store.update((p) => {
     const m = p.maps[mapId];
     if (!m) return;

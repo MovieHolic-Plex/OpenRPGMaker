@@ -6,7 +6,7 @@ Hostile-review fixes for event command forms: fork/loop rerender, setSwitch valu
 
 
 
-- `shouldRerenderCommandForm` rebuilds the edit dialog for fork condition kind / else presence / branch lengths and loop body length.
+- `shouldRerenderCommandForm` rebuilds fork forms when else presence or branch lengths change. Condition editors own kind/query changes and their local inactive drafts; loop editors own their child-list structure. Ordinary edits do not remount these forms.
 - Fork/loop mini-lists call `rerender()` after add/delete so the staged UI matches `replaceCommand`.
 - Main command list expands `loop` body with `: 반복 ?댁슜` markers (path uses `LOOP_BODY_BRANCH_INDEX`).
 - **?뚮━ ?ъ깮 () form** (): channel chips BGM/SE, searchable resource list (CC0 + EasyRPG), live meta, **誘몃━ ?ｊ린/?뺤?**, catalog browse. MIDI BGM marked non-playable in browser. Play audio exposes BGM vs SE channel select + resource picker; show picture has picture resource picker.
@@ -22,6 +22,34 @@ Hostile-review fixes for event command forms: fork/loop rerender, setSwitch valu
 - **?꾩씠??蹂寃?(`changeItem`) 개수 蹂??(2026-07-17):** `amount` ?숈씪?섍쾶 `VariableOperand`. ?쇱? ?꾩씠???쎌빱 + ?곗궛 + 개수 ?뚯뒪(?レ옄/蹂?? + 蹂???쇱빱 + ?쒖옉 ?몃깽?좊━ ?????꾨━酉? ?고??꽷룹쟾???대깽?맞톝hape/李몄“/rename ?ы븿. ?뚯뒪?? `test/changeItemCommandBody.test.ts`.
 - **Page 3 留돠룹뿰異?forms (2026-07-17):** picker page 3 M2 titles (location/vehicle, screen tint쨌flash쨌shake, scroll, weather, picture, animation, tileset/parallax, encounter rate, key input) use real catalog field specs keyed to `m2Runtime` / `commandCatalog` (no generic `operation` on Tint/Flash/Weather). Rich shells root with `page3-command-body` (+ optional `actor-m2-command-body`), two-column intent/main + preview stage (weather/lighting/tint/flash/shake/picture helpers in `event-editor-rich-forms.css`). Native extras (`setLighting`/`addLight`/`removeLight`/`setWeather`/`showAnimation`/picture/tile) follow the same layout. Catalog remains backward compatible (extra fields ok; existing native kinds still map via `existingKind`).
 
+## Sound and system audio handoffs (U14)
+
+- Sound Layer selects music/sound resources, not pictures. `ambient` maps to looping BGS; BGM/BGS loop and ME/SE play once. Authored volume is a per-track multiplier of the user's group volume, and explicit `fadeMs: 0` reaches the engine unchanged. An ordinary Play BGM request or map entry with omitted gain resets a prior same-track layer gain to 1; explicit layer gain, including mute, is preserved across battle entry/exit.
+- Memorize Current BGM and Play Memorized BGM have no resource/volume inputs. Replay emits a real BGM playback step; no memorized track means no playback request.
+- The Fadeout BGM picker alias inserts `stopAudio { channel: "bgm" }`. Its form, summary and preview retain that intent through Confirm/Apply, reopen and project-file export/import. Saved M2 Fadeout BGM commands take the same channel-specific runtime path. Omitted channel retains stop-all behavior.
+- Change System BGM selects field-default or battle music; Change System SE selects defeat or escape. The runtime reads `resourceId`, with `value` as the legacy fallback. Overrides affect the next corresponding map/battle/cue consumer, not an immediate generic sound. Empty selection restores the project default.
+- Surface baseline/floor migration is limited to M2 027/028/063/064/210. Hard tests assert exact music/sound membership, supported channel/slot values and absence of dead memory inputs. Do not restore image options or unused volume inputs to satisfy historic counts. Unrelated M2 019 floor and other stale surface/CSS failures remain documented against actual base `a79a04bbd` in U14 `gate-review/classification.md`.
+- Coverage: `test/eventAudioCommandContracts.test.ts`, `test/eventAudioHandoffs.test.ts`, `test/battleEventWaitAudio.test.ts`, `test/e2e/event-command-remediation-U14.spec.ts`, and `scripts/qa/runtime/event-command-remediation-u14.scenario.mjs`. Actual editor package roundtrip and standalone-player native media events are recorded in `.omo/evidence/event-command-remediation/U14/verification.md`.
+
+## Named text record insertion (2026-09-06, G1-F18)
+
+- The easy name/variable tools open `openRecordPickerPanel` and insert only the chosen record, preserving textarea selection, speaker, emotion and auto-advance. Picker Cancel changes no text. Ordinary newline, emphasis and pause tools keep their direct insertion behavior.
+- Actor tokens use the current one-based actor order. Variable encoding mirrors the existing `resolveVariable` numeric aliases and precedence; it must not substitute project-array order for a variable ID.
+- `RecordPickerPanelRequest.disabledReason` is optional. Unavailable rows stay visible with their reason, are natively disabled, are skipped by keyboard selection and cannot Confirm. Existing callers without the callback are unchanged.
+- The codec and `store.replace` alone do not run the M2-209 migration. The existing store load normalization calls `rewriteLegacyAdvancedDialogueInProject`; tests of that seam must invoke the real migration rather than assume deserialization does it.
+- Unit coverage is in `test/eventCommandRemediation/U28.test.ts`. This slice does not alter stored M2-001 compatibility or the runtime text grammar.
+- Replay the actual editor and dedicated player with `U28_TEXT_STANDALONE=1 bun run test/e2e/event-command-remediation-U28-text.spec.ts`. It owns strict ephemeral ports, unique caches and disposable Firefox contexts; remote persistence is disabled. The player scenario is `scripts/qa/runtime/event-command-remediation-u28-text.scenario.mjs`.
+- G1-F18 receipts live in `.omo/evidence/event-command-remediation/U28/G1-F18/verification.md`: native and raw209 boot/load, Confirm/Apply/reopen/Cancel, real downloaded-package import, and unchanged exported native text rendering `HelloOther29 world`. Raw209 immediate-import normalization is not claimed. Real boot fills empty canonical variable slots; picker creation can reuse empty `var_0003` rather than append a new array row.
+
+## Nested command drafts and branch identity (2026-09-06, U02)
+
+- Loop edits patch the current staged body, preserving unrelated children and text speaker/emotion/autoAdvance. Every child can open the full command editor; child Cancel and parent Cancel leave their respective source unchanged. Break detection stops at nested loops, whose breaks cannot exit their parent.
+- Condition target changes retain current comparison/value/present controls, including all/any/not rows. Mode drafts belong to each mounted condition editor, not a module-global cache. Fork evaluation updates without remounting leaf controls.
+- Deleting a choice before the cancel destination adjusts its one-based index to retain the same branch. Nonempty branch deletion asks for consent. Deleting the cancel destination requires another cancel policy first. Add/delete restores adjacent focus; inactive cancel-branch bytes remain intact.
+- Timer start without seconds resumes remaining time. The start-mode control distinguishes resume from restart and preserves the inactive seconds draft. Stop hides/disables seconds; explicit restart 0 and 60 retain their meanings.
+- Input Number never picks a variable during render. Its scoped `event-command-validate` hook blocks Confirm for empty/missing destinations and focuses the picker, supplementing the weighted-branch guard. Empty destination is an unsaved factory draft, not a valid imported reference.
+- Tests: `test/eventCommandRemediation/U02.test.ts`, `test/e2e/event-command-remediation-U02.spec.ts`, and `scripts/qa/runtime/event-command-remediation-u02.scenario.mjs`. Evidence: `.omo/evidence/event-command-remediation/U02/` and `U02-supervisor/`. The player recipe uses explicit QA setup/termination around preserved editor-confirmed payloads.
+
 ## Page 3 canonical fields and staged commits (2026-07-30)
 - Rich Page 3 forms, `m2Catalog`, summaries, and runtime now share these canonical fields: Move to Variable Location = `mapVariableId` / `xVariableId` / `yVariableId`; Get On/Off Vehicle = `boarded`; Set Vehicle Location = `vehicle` / `mapId` / `x` / `y`; Swap Event Location = `eventA` / `eventB`.
 - Forms read canonical fields first, may read the old broken UI aliases for an existing draft, and remove those aliases when committing a canonical edit. Every field replacement merges into `context.getCurrentCommand?.()` so one change cannot erase an earlier staged change.
@@ -35,3 +63,35 @@ Hostile-review fixes for event command forms: fork/loop rerender, setSwitch valu
 ## 조명 백분율 입력 복구 (2026-09-05)
 
 `setLightingBody`의 숫자와 슬라이더는 모두 0~100이며 저장·미리보기에서만 100으로 나눈다. `ambient`는 어둠의 불투명도라 50은 0.5, 100은 완전 암전이다. 프리셋도 두 입력을 백분율로 동기화한다. `test/setLightingPercent.test.ts`와 `node scripts/qa/recovery-lighting.mjs`가 숫자·슬라이더·프리셋·실제 모달 적용을 검증한다. 브라우저 근거: `verify-shots/recovery-lighting/`.
+
+## Native media flags and picture completion (2026-09-06, U04)
+
+- Show Picture exposes `waitForPicture` and preserves explicit true/false during other field edits, including zero duration. Omission stays omitted until the user changes the toggle.
+- Play Movie treats omitted `wait` and `skippable` as true. Switching either off stores explicit false. Native movie skipping uses confirm keys such as Z; Escape is not the movie skip key.
+- `RuntimeDomOverlay.waitForPicture(pictureId)` observes the generation after `syncPictureLayer`. Completion follows the final DOM transform, not a parallel duration timer. Same-object/resource retargeting retains observers until the retargeted final write; authored object/resource replacement or erase resolves prior observers as `cancelled`.
+- Picture cancellation releases the operation but continues its live event once. Session replacement, scene shutdown and destroy still prevent stale continuation. `clearPictures()` cancels the picture frame and observers without clearing unrelated HUD/effects. The interpreter binds cleanup to the captured renderer even for non-waiting pictures; independent consumers must wire their own teardown.
+- Timing/interpolation remains in `pictures/pictureTween.ts`; completion bookkeeping adds no saved-project fields. The detailed contract is `.omo/evidence/event-command-remediation/U04/api-ownership.md`.
+- Coverage: `test/eventCommandRemediation/U04.test.ts`, `test/pictureWeatherDom.test.ts`, adjacent picture/movie tests, `test/e2e/event-command-remediation-U04.spec.ts`, and `scripts/qa/runtime/event-command-remediation-u04.scenario.mjs`. Tests distinguish elapsed timer time from delivered final frames and mount async generation forms before subscribing and triggering.
+
+## Actor targets and operand drafts (2026-09-06, U05)
+
+- Change Battle Commands stores the selected actor ID or explicit `party`. Only this command reads the old `target: "actor"` plus `actorId` shape; incomplete old individual targets do not become party or create an `actor` runtime key.
+- EXP retains variable operands and mounted inactive numeric/variable drafts. Same-kind edits update the existing form rather than remounting it. Creating a variable in the nested record picker replaces the project object, so validation, selected labels and preview read current store records.
+- Change Parameters and Damage Processing honor explicit numeric source even when an inactive variable ID remains. State editing preserves missing IDs and the existing set/toggle operations; unresolved or empty-catalog selection cannot Confirm.
+- Actor identity forms, EXP and Learn Skill distinguish explicit party mode from an incomplete individual selection. Invalid individual edits remain local rather than silently saving an all-party target. Existing legacy empty-party execution remains supported.
+- Coverage: `test/eventCommandRemediation/U05.test.ts`, adjacent actor/EXP/staged-form tests, `test/e2e/event-command-remediation-U05.spec.ts`, and `scripts/qa/runtime/event-command-remediation-u05.scenario.mjs`. Map/common/troop save paths, real file import, live record creation and next-actor battle-menu checks are separate acceptance paths.
+
+## Follower removal and graphic intent (2026-09-06, U06)
+
+- `removeFollowerBody` emits `all: true` only for explicit all mode. Empty or whitespace-only individual names remain incomplete; the existing form-validation event blocks Confirm and focuses the name. Typing or changing mode clears native validity feedback. Explicit all retains the existing actor-only removal behavior and preserves monster state.
+- The live custom-graphic checkbox is the enable authority. Off removes the saved `graphic`; mounted inactive controls retain edits through off/name-edit/on. Graphic edits preserve unrelated fields such as `scale`, while clearing the sprite ID removes that reference. Cancel does not persist the draft.
+- Runtime appearance is unchanged: an actor ID resolves its actor-default graphic, while a graphic-only follower uses its custom graphic. This change does not implement actor custom overrides.
+- Coverage: `test/eventCommandRemediation/U06.test.ts`, `test/e2e/event-command-remediation-U06.spec.ts`, and `scripts/qa/runtime/event-command-remediation-u06.scenario.mjs`. The editor checks actual `.oprn` export/import, and the dedicated player checks exact follower identities with a wrong-target discriminator.
+
+## Stable resource selections and field labels (2026-09-06, U07)
+
+- Same-kind forms retain their mounted controls. Generic resource/record selections update local names, images and map cards when the value changes; switch/variable names resolve on first render. Missing IDs remain explicit rather than becoming the first or empty value.
+- `setResourcePickerValue` adds a late picker/AI result before assigning the native select value. Actor and parallax previews read current store data. Resource-kind policy and U05 invalid-actor guards remain authoritative.
+- `dom.field` associates each label with its actual control, including wrapped inputs and picker triggers. Generated IDs use the existing `randomUuid` utility, preserving supported HTTP contexts without `crypto.randomUUID`.
+- Uploaded player charsets require both resource resolution and loader registration. The resolver accepts genuine charset uploads; `bundled.ts` loads referenced uploads through the canonical URL and registers the existing charset frames. Upload alpha, bundled color keys, aliases and texture ownership are preserved.
+- Coverage includes the original U07 cases, HTTP ID compatibility, actual uploaded idle/walk frames, untargeted actor state, 17 editor flows and three dedicated-player scenarios. Parallax/travel/vehicle/checkpoint consumer gaps remain separately tracked; these picker fixes do not claim to implement those effects.

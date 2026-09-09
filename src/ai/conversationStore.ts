@@ -1,26 +1,30 @@
+import { deleteTerminalRunCheckpointsForConversation } from "./runCheckpointStore";
 import type { AuditEntry } from "@/ai/assistantSession";
 import {
   AI_RECORD_STORES,
   clearAiRecords,
-  deleteAiRecords,
+  aiRecordBackendKind,
+  mutateScopedAiRecord,
+  isScopedAiRecordDeleted,
   readAiRecord,
   readAllAiRecords,
   registerAiRecordDbResetHook,
-  writeAiRecords,
 } from "@/ai/aiRecordDb";
 import { isConversationTurnContext } from "@/ai/conversationTurnContext";
+import { conversationTranscriptCompacted, indexConversationMaps, isConversationMapIndex, type ConversationMapIndex } from "@/ai/mapConversationStore";
+import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
 import { enqueueRemoteWrite, registerRemoteOutboxSender } from "@/project/remoteOutbox";
 import type { ProjectIdentity } from "@/project/store";
-import { recordSupabaseConversation, type SupabaseConversationInput } from "@/project/supabaseProjectSync";
+import { listSupabaseConversations, recordSupabaseConversation, type SupabaseConversationInput } from "@/project/supabaseProjectSync";
 import type { Project } from "@/project/types";
 
-export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; }
+export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; mapIndex?: ConversationMapIndex; }
 export interface ConversationSummary { id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; /** 마지막 조수(없으면 사용자) 발화 80자 — 목록에서 고를 근거(데크 2026-09-03). */ readonly preview?: string; }
 /**
  * 저장 결과 — `saveConversation` 은 **던지지 않는다.**
  * - `ok`: 이 세션에서 다시 읽을 수 있게 저장됐다(메모리 폴백 포함). false 면 IndexedDB 쓰기가 실패해 어디에도 없다.
  * - `durable`: IndexedDB 에 남았다 — 새로 고침 뒤에도 있다. IndexedDB 가 없거나 열기에 실패한 세션은 false.
- * - `evicted`: 상한(`CONVERSATION_MAX_RECORDS`)을 지키려 밀어낸 오래된 대화 수.
+ * - `evicted`: compatibility field, always 0; the archive has no count-based eviction.
  */
 export interface ConversationSaveOutcome { readonly ok: boolean; readonly durable: boolean; readonly evicted: number; }
 
@@ -30,7 +34,7 @@ export interface ConversationSaveOutcome { readonly ok: boolean; readonly durabl
  */
 export const LEGACY_CONVERSATION_STORAGE_KEY = "oprn:ai-conversations";
 const STORE = AI_RECORD_STORES.conversations;
-/** 보관 상한(건). 예전 localStorage 링버퍼와 같은 50 — 목록·복원 소비자가 그 규모를 전제한다. */
+/** Recent-list limit only; never a retention limit. */
 export const CONVERSATION_MAX_RECORDS = 50;
 const TITLE_LIMIT = 40;
 
@@ -73,7 +77,8 @@ function isAuditEntry(value: unknown): value is AuditEntry {
     case "user":
       return typeof value.text === "string" && (value.context === undefined || isConversationTurnContext(value.context));
     case "assistant":
-      return typeof value.text === "string";
+      return typeof value.text === "string" && (value.toolCalls === undefined ||
+        (Array.isArray(value.toolCalls) && value.toolCalls.every(call => isObject(call) && typeof call.name === "string" && typeof call.args === "string")));
     case "status": // 상태 전이/턴 수명주기 기록(결함 ⑬).
       return typeof value.text === "string";
     case "tool":
@@ -96,7 +101,7 @@ export function isConversationRecord(value: unknown): value is ConversationRecor
     typeof value.id === "string" &&
     typeof value.title === "string" &&
     typeof value.model === "string" &&
-    typeof value.savedAt === "number" &&
+    typeof value.savedAt === "number" && Number.isFinite(value.savedAt) &&
     (value.projectContextKey === undefined || typeof value.projectContextKey === "string") &&
     Array.isArray(value.entries) &&
     value.entries.every(isAuditEntry)
@@ -203,8 +208,9 @@ function fitEntriesToBudget(entries: readonly AuditEntry[]): AuditEntry[] {
   return [...rows.slice(0, headEnd), trimMarkerEntry(dropped), ...rows.slice(tailStart)];
 }
 
-function compactRecord(record: ConversationRecord): ConversationRecord {
-  return { ...record, entries: fitEntriesToBudget(record.entries) };
+function compactRecord(record: ConversationRecord): ConversationRecord & { mapIndex: ConversationMapIndex } {
+  const previous = isConversationMapIndex(record.mapIndex) ? record.mapIndex : undefined;
+  return { ...record, mapIndex: indexConversationMaps(record.entries, previous), entries: fitEntriesToBudget(record.entries) };
 }
 
 // ── 레거시 이관 ──────────────────────────────────────────────────────────────────
@@ -234,12 +240,7 @@ function ensureLegacyMigrated(): Promise<void> {
       legacy = [];
     }
     if (legacy.length > 0) {
-      const existing = new Map((await readAllAiRecords<ConversationRecord>(STORE)).map((record) => [record.id, record]));
-      const incoming = legacy.map(compactRecord).filter((record) => {
-        const current = existing.get(record.id);
-        return !current || current.savedAt < record.savedAt;
-      });
-      await writeAiRecords(STORE, incoming);
+      for (const record of legacy) await persistLocalConversation(compactRecord(record));
     }
     storage.removeItem(LEGACY_CONVERSATION_STORAGE_KEY);
   })().catch((error: unknown) => {
@@ -252,49 +253,97 @@ function ensureLegacyMigrated(): Promise<void> {
 async function readAll(): Promise<ConversationRecord[]> {
   await ensureLegacyMigrated();
   const records = await readAllAiRecords<ConversationRecord>(STORE);
-  return records.sort((left, right) => right.savedAt - left.savedAt);
+  return records.filter(isConversationRecord).sort((left, right) => right.savedAt - left.savedAt || left.id.localeCompare(right.id));
+}
+
+/** Exact stored JSON-shaped content, including own undefined fields and nested provenance.
+ * Unsupported structured-clone objects fail closed instead of comparing as empty JSON.
+ */
+function sameStoredValue(left: unknown, right: unknown): boolean {
+  if (Object.is(left, right)) return true;
+  if (!isObject(left) || !isObject(right) || Array.isArray(left) !== Array.isArray(right)) return false;
+  const supported = (value: object) => Array.isArray(value) || Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null;
+  if (!supported(left) || !supported(right)) return false;
+  const keys = Reflect.ownKeys(left);
+  return keys.length === Reflect.ownKeys(right).length && keys.every(key => Object.hasOwn(right, key)
+    && sameStoredValue(Reflect.get(left, key), Reflect.get(right, key)));
+}
+
+async function persistLocalConversation(record: ConversationRecord & { mapIndex: ConversationMapIndex }, options: {
+  readonly requireCurrent?: () => void; readonly replaceEqual?: boolean; readonly recoveryBaseline?: ConversationRecord | null;
+} = {}) {
+  return mutateScopedAiRecord<ConversationRecord>({ store: STORE, id: record.id, scope: record.projectContextKey ?? null, replaceEqual: options.replaceEqual,
+    admit: current => {
+      options.requireCurrent?.();
+      return options.recoveryBaseline === undefined || sameStoredValue(current, options.recoveryBaseline);
+    },
+  }, current => {
+    const prior = current && isConversationMapIndex(current.mapIndex) ? current.mapIndex : undefined;
+    const viewedMapIds = [...new Set([...record.mapIndex.viewedMapIds, ...(prior?.viewedMapIds ?? [])])].sort();
+    const targetMapIds = [...new Set([...record.mapIndex.targetMapIds, ...(prior?.targetMapIds ?? [])])].sort();
+    const mapAttribution = viewedMapIds.length + targetMapIds.length === 0 ? "unknown"
+      : record.mapIndex.mapAttribution === "complete" && (!prior || prior.mapAttribution === "complete") ? "complete" : "partial";
+    return { ...record, mapIndex: { viewedMapIds, targetMapIds, mapAttribution } };
+  });
 }
 
 let writeFailureWarned = false;
 
 registerRemoteOutboxSender("ai-conversation", async (payload) => {
-  const result = await recordSupabaseConversation(payload as SupabaseConversationInput);
+  if (!isObject(payload) || typeof payload.conversationId !== "string" || typeof payload.title !== "string"
+    || typeof payload.model !== "string" || typeof payload.savedAt !== "number" || !Array.isArray(payload.entries)
+    || !payload.entries.every(isAuditEntry)) throw new Error("Invalid conversation outbox payload");
+  const scope = typeof payload.projectContextKey === "string" ? payload.projectContextKey : null;
+  const destination = typeof payload.destinationProjectId === "string" ? payload.destinationProjectId
+    : scope?.startsWith("remote:") ? scope.slice(7) : null;
+  if (!destination) throw new Error("Conversation outbox has no originating destination");
+  if (await isScopedAiRecordDeleted(payload.conversationId, scope)) return;
+  const local = await loadConversationForScope(payload.conversationId, scope);
+  if (local && local.savedAt > payload.savedAt) return;
+  // Equal milliseconds can contain a later local save; retry that snapshot, not the queued copy.
+  const snapshot = local?.savedAt === payload.savedAt ? local
+    : { title: payload.title, model: payload.model, entries: payload.entries };
+  const result = await recordSupabaseConversation({ conversationId: payload.conversationId, title: snapshot.title,
+    model: snapshot.model, entries: snapshot.entries, savedAt: payload.savedAt, destinationProjectId: destination,
+    ...(scope === null ? {} : { projectContextKey: scope }) });
   if (result.kind === "not-configured") throw new Error("supabase not configured");
 });
 
 // ── 공개 API (모두 비동기, 던지지 않는다) ──────────────────────────────────────────────
 
 export async function saveConversation(record: ConversationRecord): Promise<ConversationSaveOutcome> {
-  const compacted = compactRecord(record);
+  // Freeze origin before the first await, even when a retired session saves after project switching.
+  const config = supabaseProjectConfig();
+  const destinationProjectId = record.projectContextKey?.startsWith("remote:")
+    ? record.projectContextKey.slice(7) : config?.projectId ?? null;
+  let compacted: ConversationRecord & { mapIndex: ConversationMapIndex };
   let outcome: ConversationSaveOutcome;
   try {
+    compacted = compactRecord(record);
     await ensureLegacyMigrated();
-    const backend = await writeAiRecords(STORE, [compacted]);
-    // 상한 유지 — 최신 순으로 상한 밖의 오래된 대화를 지운다. 동시 저장이 겹쳐도 없는 키 삭제는 무해하다.
-    const all = (await readAllAiRecords<ConversationRecord>(STORE)).sort((left, right) => right.savedAt - left.savedAt);
-    const surplus = all.slice(CONVERSATION_MAX_RECORDS).map((row) => row.id);
-    await deleteAiRecords(STORE, surplus);
+    const result = await persistLocalConversation(compacted, { replaceEqual: true });
+    if (!result.written) return { ok: true, durable: result.backend === "indexeddb", evicted: 0 };
     writeFailureWarned = false;
-    outcome = { ok: true, durable: backend === "indexeddb", evicted: surplus.length };
+    outcome = { ok: true, durable: result.backend === "indexeddb", evicted: 0 };
   } catch (error) {
     if (!writeFailureWarned) {
       writeFailureWarned = true;
       console.warn("[ai-conversation] 대화 기록을 이 브라우저에 저장하지 못했습니다. 이번 대화는 메모리에만 남습니다:", error);
     }
-    outcome = { ok: false, durable: false, evicted: 0 };
+    return { ok: false, durable: false, evicted: 0 };
   }
   // 원격 미러도 로컬과 **같은 압축본**을 받는다 — 정본이 하나여야 하고, 매 툴콜마다 수 MB 를 보내지 않는다.
   const remoteInput: SupabaseConversationInput = {
     conversationId: compacted.id,
+    destinationProjectId,
     title: compacted.title,
     model: compacted.model,
     ...(compacted.projectContextKey ? { projectContextKey: compacted.projectContextKey } : {}),
     entries: compacted.entries,
     savedAt: compacted.savedAt,
   };
-  // 로컬은 50건 링버퍼라 전송 성공/실패와 무관하게 자리를 밀어낸다. 실패를 조용히 무시하면
-  // 원격이 죽은 동안의 대화가 근거 없이 사라지므로, 실패분은 outbox 에 보존하고 나중에 재전송한다.
-  void recordSupabaseConversation(remoteInput).catch((error: unknown) => {
+  // Payload carries only the destination id, never credentials. Retry cannot adopt the current project.
+  void recordSupabaseConversation(remoteInput, config).catch((error: unknown) => {
     console.error("[ai-conversation] Supabase mirror failed:", error);
     enqueueRemoteWrite({ id: compacted.id, kind: "ai-conversation", payload: remoteInput, error });
   });
@@ -336,7 +385,7 @@ function toSummary(conversation: ConversationRecord): ConversationSummary {
 /** 최근 저장 순 요약 목록. 저장소 오류는 빈 목록으로 삼킨다(호출자는 UI 라 던져서 얻을 것이 없다). */
 export async function listConversations(): Promise<ConversationSummary[]> {
   try {
-    return (await readAll()).map(toSummary);
+    return (await readAll()).slice(0, CONVERSATION_MAX_RECORDS).map(toSummary);
   } catch (error) {
     console.warn("[ai-conversation] 대화 목록을 읽지 못했습니다:", error);
     return [];
@@ -354,7 +403,8 @@ export async function searchConversations(query: string): Promise<ConversationSu
 export async function loadConversation(id: string): Promise<ConversationRecord | null> {
   try {
     await ensureLegacyMigrated();
-    return await readAiRecord<ConversationRecord>(STORE, id);
+    const record = await readAiRecord<ConversationRecord>(STORE, id);
+    return isConversationRecord(record) ? record : null;
   } catch (error) {
     console.warn("[ai-conversation] 대화를 읽지 못했습니다:", error);
     return null;
@@ -404,7 +454,8 @@ export function conversationScopeKey(identity: ProjectIdentity, project: Pick<Pr
 export async function deleteConversation(id: string): Promise<void> {
   try {
     await ensureLegacyMigrated();
-    await deleteAiRecords(STORE, [id]);
+    const record = await loadConversation(id);
+    if (record) await deleteConversationForScope(id, record.projectContextKey ?? null);
   } catch (error) {
     console.warn("[ai-conversation] 대화를 지우지 못했습니다:", error);
   }
@@ -412,12 +463,116 @@ export async function deleteConversation(id: string): Promise<void> {
 
 export async function clearConversations(): Promise<void> {
   try {
+    await ensureLegacyMigrated();
     getLegacyStorage()?.removeItem(LEGACY_CONVERSATION_STORAGE_KEY);
     legacyMigration = Promise.resolve();
+    const conversations = await readAll();
     await clearAiRecords(STORE);
+    for (const record of conversations) if (record.projectContextKey) {
+      await deleteTerminalRunCheckpointsForConversation(record.id, record.projectContextKey);
+    }
   } catch (error) {
     console.warn("[ai-conversation] 대화 기록을 비우지 못했습니다:", error);
   }
+}
+
+export interface ConversationArchiveSummary extends ConversationSummary, ConversationMapIndex {
+  readonly mapIds: readonly string[];
+  readonly transcriptCompacted: boolean;
+}
+
+export interface ConversationArchiveQuery {
+  /** null explicitly selects legacy unscoped history, never the current project. */
+  readonly projectContextKey: string | null;
+  readonly mapId?: string;
+  readonly unknownOnly?: boolean;
+  readonly query?: string;
+  readonly offset?: number;
+  readonly limit?: number;
+}
+
+/** Full archive queries reject storage errors, unlike the compatibility recent-list API. */
+export async function queryConversationArchive(options: ConversationArchiveQuery): Promise<{
+  readonly records: readonly ConversationArchiveSummary[]; readonly total: number; readonly hasMore: boolean; readonly durable: boolean;
+}> {
+  const needle = options.query?.trim().toLowerCase();
+  const records = (await readAll()).filter(row => (row.projectContextKey ?? null) === options.projectContextKey).map(row => {
+    const index = isConversationMapIndex(row.mapIndex) ? row.mapIndex : indexConversationMaps(row.entries);
+    return { ...toSummary(row), ...index, mapIds: [...new Set([...index.viewedMapIds, ...index.targetMapIds])].sort(),
+      transcriptCompacted: conversationTranscriptCompacted(row.entries) };
+  }).filter(row => (!options.mapId || row.mapIds.includes(options.mapId))
+    && (!options.unknownOnly || row.mapAttribution === "unknown")
+    && (!needle || `${row.title}\n${row.preview ?? ""}`.toLowerCase().includes(needle)));
+  const offset = Math.max(0, Math.floor(options.offset ?? 0));
+  const limit = Math.max(1, Math.floor(options.limit ?? 50));
+  return { records: records.slice(offset, offset + limit), total: records.length, hasMore: offset + limit < records.length,
+    durable: await aiRecordBackendKind() === "indexeddb" };
+}
+
+export async function loadConversationForScope(id: string, projectContextKey: string | null): Promise<ConversationRecord | null> {
+  await ensureLegacyMigrated();
+  const record = await readAiRecord<ConversationRecord>(STORE, id);
+  return isConversationRecord(record) && (record.projectContextKey ?? null) === projectContextKey ? record : null;
+}
+
+/** Whole-conversation deletion is browser-local; it does not delete the remote mirror. */
+export async function deleteConversationForScope(id: string, projectContextKey: string | null): Promise<{ readonly durable: boolean }> {
+  await ensureLegacyMigrated();
+  const result = await mutateScopedAiRecord<ConversationRecord>({ store: STORE, id, scope: projectContextKey }, null);
+  if (result.written && projectContextKey) await deleteTerminalRunCheckpointsForConversation(id, projectContextKey);
+  return { durable: result.backend === "indexeddb" };
+}
+
+export interface ConversationArchiveHydrationOptions {
+  readonly projectContextKey: string;
+  readonly signal?: AbortSignal;
+  /** Capture the editor identity at open; return false on project switch or modal close. */
+  readonly isCurrent?: () => boolean;
+}
+
+/** Explicit, local-only recovery. Imported rows never call saveConversation or mirror back remotely. */
+export async function hydrateConversationArchive(options: ConversationArchiveHydrationOptions): Promise<{
+  readonly imported: number; readonly skipped: number; readonly rejected: number; readonly durable: boolean;
+}> {
+  const captured = supabaseProjectConfig();
+  if (!captured) throw new Error("Conversation recovery is not configured");
+  const config = { ...captured, projectId: options.projectContextKey.startsWith("remote:")
+    ? options.projectContextKey.slice(7) : captured.projectId };
+  const requireCurrent = () => {
+    options.signal?.throwIfAborted();
+    if (options.isCurrent && !options.isCurrent()) throw new DOMException("Conversation scope changed", "AbortError");
+  };
+  requireCurrent();
+  await ensureLegacyMigrated();
+  // One value snapshot for the whole operation, before the first network request.
+  // Memory reads return aliases, so retaining the returned objects would lose the veto.
+  const baseline = new Map((await readAll()).map(record => [record.id, structuredClone(record)]));
+  let imported = 0;
+  let skipped = 0;
+  let rejected = 0;
+  const pageSize = 100;
+  for (let offset = 0; ; offset += pageSize) {
+    requireCurrent();
+    const rows = await listSupabaseConversations({ offset, limit: pageSize, includeEntries: true,
+      projectContextKey: options.projectContextKey, signal: options.signal }, config);
+    requireCurrent();
+    for (const row of rows) {
+      const candidate = { id: row.conversation_id, title: row.title, model: row.model,
+        projectContextKey: row.project_context_key, entries: row.entries_json,
+        savedAt: typeof row.saved_at === "string" ? Date.parse(row.saved_at) : NaN };
+      if (row.project_id !== config.projectId || candidate.projectContextKey !== options.projectContextKey || !isConversationRecord(candidate) || !candidate.id) {
+        rejected++;
+        continue;
+      }
+      requireCurrent();
+      const result = await persistLocalConversation(compactRecord(candidate), { requireCurrent,
+        recoveryBaseline: baseline.get(candidate.id) ?? null });
+      if (result.written) imported++; else skipped++;
+    }
+    if (rows.length < pageSize) break;
+  }
+  requireCurrent();
+  return { imported, skipped, rejected, durable: await aiRecordBackendKind() === "indexeddb" };
 }
 
 export function deriveTitle(entries: readonly AuditEntry[]): string {

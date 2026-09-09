@@ -76,6 +76,12 @@ export function npcMoveIntervalMs(frequency: number): number {
   return Math.max(80, 1040 - rank * 160);
 }
 
+export function npcPageMoveIntervalMs(movement: EventPageMovement): number {
+  return movement.moveIntervalMs !== undefined
+    ? Math.max(80, Math.min(10000, Math.round(movement.moveIntervalMs)))
+    : npcMoveIntervalMs(movement.frequency);
+}
+
 function routeForPageMovement(
   movement: EventPageMovement
 ): (Pick<AutonomousMover, "moves" | "repeat" | "strategy">) | null {
@@ -111,9 +117,7 @@ function configurePageMover(
   mover.speedRank = clampSetting(movement.speed);
   mover.frequencyRank = clampSetting(movement.frequency);
   mover.moveDurationMs = npcMoveDurationMs(movement.speed);
-  mover.moveIntervalMs = movement.moveIntervalMs !== undefined
-    ? Math.max(80, Math.min(10000, Math.round(movement.moveIntervalMs)))
-    : npcMoveIntervalMs(movement.frequency);
+  mover.moveIntervalMs = npcPageMoveIntervalMs(movement);
   mover.sightRange = normalizeOptionalRange(movement.sightRange);
   mover.giveUpRange = normalizeOptionalRange(movement.giveUpRange);
   mover.pathfind = movement.pathfind !== false;

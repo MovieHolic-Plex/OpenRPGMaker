@@ -50,7 +50,9 @@ describe("default database starter party", () => {
     // Then: the starter party, matching classes, and every equipment slot are present.
     expect(actors).toEqual([...DATABASE_ACTOR_IDS]);
     expect(classes).toEqual([...STARTER_CLASS_IDS]);
-    expect(equipment).toEqual([...STARTER_EQUIPMENT_IDS]);
+    expect(equipment).toEqual(expect.arrayContaining([...STARTER_EQUIPMENT_IDS]));
+    expect(equipment).toHaveLength(86);
+    expect(new Set(equipment).size).toBe(equipment.length);
     expect(project.system.startActorIds).toEqual([...STARTER_ACTOR_IDS]);
     expect(project.session.partyActorIds).toEqual([...STARTER_ACTOR_IDS]);
     expect(equipmentSlots).toEqual(new Set(["weapon", "shield", "armor", "helmet", "accessory"]));

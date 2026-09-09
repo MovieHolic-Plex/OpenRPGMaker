@@ -1,5 +1,185 @@
 # Runtime Battle Behavior
 
+## Native event battle admission (2026-09-08)
+
+- `project/battleAdmission.ts` supplies typed missing/empty-troop errors to the
+  native editor and runtime constructor. Effective composition follows
+  `enemyBattlers`: populated members win, otherwise legacy enemyIds apply.
+  Hidden members count; an all-hidden encounter remains available for reveal
+  events. The project loader separately normalizes an explicitly authored empty
+  members array as authoritative; omit members for legacy enemyIds-only JSON.
+- `commandBattle.ts` resolves variable targets explicitly. Valid trimmed string
+  IDs and the existing numeric lookup remain compatible: truncate finite numbers,
+  try 1-based position, then zero-based position (so 0 aliases the first troop),
+  then the existing ID/suffix match. Invalid/missing values now throw instead of
+  falling back to the unused fixed troop. The actual resolved troop still goes
+  through runtime composition validation. No schema or migration was added.
+- `playSceneBattle.ts` owns initialization, audio restoration and runtime cleanup
+  across constructor, transition and mounted-host failure. Empty canonical or
+  legacy monster-party mode reports missing starters/party members instead of
+  returning escape or forcing defeat. Giving a starter permits a corrected retry.
+- Foreground event failures report `runtime-error` and end that interpreter without
+  resuming branches, subsequent commands or completion callbacks. Parallel failures
+  retain the existing stopped-process policy until page/map reactivation; they do
+  not repeatedly retry each frame. Action events can retry after correction, and
+  a new command battle clears the previous error. Existing random/field callers
+  also display typed admission errors rather than leaking their new rejections.
+- Autorun keys are claimed only after dialogue readiness and an active scene.
+  `PlayScene` waits for Phaser's `create` event when readiness occurs inside
+  `create()`: Phaser sets RUNNING after that method returns. Otherwise synchronous
+  invalid-variable errors look like shutdown cancellation and silently disappear.
+  Cancellation remains null, never a battle outcome; stale rejections do not report
+  into replacement sessions. Existing defeat and reward-writeback rules remain.
+- The `runtime-error` notice is styled in shipped `runtime/playSurface.css`,
+  not editor-only `core.part-1.css`. The old fallback was a static block below
+  the scaled canvas (browser RED: y=960 in a 960px viewport). The scoped notice
+  is absolutely positioned within crop bounds, inverse-scales its typography,
+  wraps long IDs, and does not claim pointer/input ownership. The browser probe
+  checks its viewport bounds, nonzero size/alpha, and actual menu after reveal.
+- Result confirmation uses the same failure boundary for a synchronous exit
+  transition factory/exit-method throw and an asynchronous exit rejection. The
+  DOM has already latched resultSent, so escaping that callback would otherwise
+  strand the battle promise and foreground lease. `battleResultTransitionFailure`
+  mounts real battle DOM/runtime and exercises that callback through the event
+  owner, including late rejection after cancellation/session replacement.
+- Contracts: `eventBattleFailure`, `battleInitializationAdmission`,
+  `npcScheduledBattle`, `npcBattleLifecycle`, `playSceneBattleCancellation`,
+  `battleDefeatOutcome`. Exported-player probe and limitations: `testing.md`.
+
+## Supported action authoring (2026-09-07)
+
+2D tile action combat remains supported alongside turn-based combat; the old
+deprecation warning and editor label were removed. `action-rpg` is authoring
+metadata, not a runtime branch. Its preset enables `system.actionCombat` only,
+and each intended map still requires `actionCombat: true`. The canonical
+controls text comes from `player/keyBindings.ts` (`ACTION_CONTROL_BINDINGS`,
+`ACTION_CONTROLS_GUIDE`) and the action guide NPC uses that same copy.
+Enemy/graphic/troop/spawn prerequisites are validated before mutation, and
+explicit spawn IDs make retries idempotent. Dodge and guard knobs exposed by
+the tool use the existing config normalizer. None of this adds a combat engine.
+
+## 적별 전투 표시 크기 (2026-09-06)
+
+`battleFieldDom.enemyButton`은 해당 적의 `battleScalePercent ?? 100`을 100으로 나눈 값을 노드의 `--battle-enemy-scale`에 넣는다. RM 정면/측면은 `_rm2000.css`의 glass 공용 이미지 크기(다수 160×180, 단독 200×240), 몬스터 대치는 `_battlers.css`의 Pokemon 이미지 크기(148×148)에 곱한다. 부모 이동/피격 `transform`, 이미지 숨쉬기 `scale`, 사망/포획 애니메이션은 변경하지 않는다. 이름·HP 글자 크기와 맵 외형은 배율 대상이 아니다. 기본 100% 이하의 치수·진형은 그대로 둔다. 100% 초과는 `battleEnemyFit.ts`가 필드 논리 크기에서 좌우 16px·상단 32px·하단 24px를 뺀 영역에 이미지를 균일 축소하고 발 앵커를 보정한다. 저장된 요청 백분율은 그대로이고 `--battle-enemy-fit`만 표현용으로 추가한다. 세 스킨의 `--battle-enemy-base-width/height`가 기본 치수의 단일 원천이다. 이미지 width/height에만 요청 배율×fit을 곱하며 이름·HP는 축소하지 않는다. 이웃 배틀러와의 겹침 방지는 별도 진형 작업이다.
+
+단독 골렘 175% 회귀: 640×360 필드에서 200×240×1.75=350×420 이미지를 발 y≈290에 고정하면 top≈−130이라 머리가 잘렸다. 현재는 253.33×304, top32/bottom336으로 맞춘다. 100%는 200×240과 원래 발 위치를 보존한다. 기존 `syncBattleField`의 mounted render 경로가 매번 저작 진형과 CSS 기본 치수로 다시 계산하므로 fit이 누적되거나 HP 공개로 위치가 바뀌지 않는다. 화면 리사이즈는 기존 `bindBattleStageScale`이 고정 논리 무대 전체를 확대하므로 새 observer/타이머가 없다. controller의 기존 cleanup 그대로이며, 분리된 필드는 레이아웃이 생긴 다음 sync까지 계산하지 않는다.
+
+`test/battleEnemyFit.test.ts`는 실제 `mountBattleScene`/runtime 경로에 측정된 논리 레이아웃만 주입해 175% clipping RED, 세 스킨 100% 보존·300% containment, 125% 정확 배율, hit/HP 안정성, 필드 폭 변경 후 재계산, destroy 후 타이머 정리를 검증한다.
+
+회귀는 `test/enemyBattleScale.test.ts`: 실제 정규화된 프로젝트→전투 엔진→DOM, Gen1의 선두 적 단독 표시, hit/idle 동기화 후 크기 유지, 출하 CSS 치수 선언을 검사한다. happy-dom은 calc 곱셈/`:where` 특정도를 정확히 계산하지 못하므로 CSS는 PostCSS로 선언을 검사하고, 실제 캐스케이드·사각형·동작 검증은 별도 `player.html` 런타임 QA에서 한다.
+
+## Capture-only victory (2026-09-08)
+
+Successful capture hides the target and sets its HP to zero. Outcome resolution must
+therefore accept an empty visible-enemy list when the battle has captured participants;
+a troop whose members were all hidden from the start still does not auto-win.
+Other living visible enemies prevent victory, and captured enemies remain excluded
+from EXP/gold/drop rewards. `test/monsterCollection.test.ts` and
+`test/battleRuntimeDefects.test.ts` cover all three outcome distinctions.
+Scripted nonlethal capture fixtures must control actor criticals and initial equipment,
+not merely set the actor's attack curve or rely on a seeded roll.
+
+## Event friendship and live level changes (2026-09-06)
+
+`changeFriendship` snapshots only keys written by the battle, following the
+relationship write-set contract. Returning victory, escape and permitted defeat
+merge those keys into the captured session; nonreturning defeat does not.
+Unrelated session friendship updates are preserved.
+
+`changeLevel` updates the existing mutable battler and calls the existing derived
+stat refresher. Current HP/MP, equipment and gauge are retained, with vitals
+clamped when maxima decrease. The party HUD updates its existing level node.
+The reward bridge copies battler vitals before writing the final event level,
+class, and growth state, then refreshes derived maxima without healing. Promotion
+lineage and permanent skills transfer as authoritative state, never replayed reclass.
+
+Contracts: `battleEventRepairState.test.ts`, `battleEventRepairHud.test.ts`.
+Shipping-player QA: `node scripts/qa-event-command-repairs.mjs --scenario battle-state`.
+The VX Ace skin intentionally hides maximum-vital text; screenshots show the
+level/current vitals, while DOM/session observations verify the maxima.
+
+## Sequential battle event completion (2026-09-08)
+
+The existing choice frames/API remain intact. `snapshot.eventPause` adds typed
+`wait` (`ms`), `inputWait` (`variableId?`), and `text` (body/speaker/face/settings/
+autoAdvance/emotion) requests. `resumeEventPause(id, response)` accepts only the
+matching kind/id; input responses additionally require an integer key code 0-19.
+Stale, duplicate, mismatched, and cancelled responses cannot run a tail.
+
+All native/M2 common calls and troop-page calls retain their frames at these
+boundaries. Strict queues/RNG/extra actions and gauge progress stay frozen until
+acknowledgement. The sequencer first drains preceding action facts, then schedules
+each authored wait separately at its unscaled duration (including reduced motion,
+AUTO, and skip speed). Waits no longer pre-execute their tails or become deferred
+strict timeline entries. Zero/negative durations continue immediately.
+
+The player uses its real abortable `DialogueUI.showText`; every page must complete.
+Face changes are battle-local, including clearing. Text/choices inherit captured
+settings and subsequent battle-local changes. Only authored settings changes enter
+the returning event write-set: victory/escape/canLose defeat apply them; cancellation
+and nonreturning defeat do not. Transparent dialogue owns the message surface only
+after earlier beats drain, hiding the old battle director text underneath.
+
+`headlessBattleSnapshot` explicitly bypasses wait/text presentation in balance,
+scene, and walkthrough simulations, but throws `BATTLE_EVENT_INPUT_REQUIRED` at
+choices/inputWait. Scene/walkthrough reward bridges pass `canLose` so returning
+defeat preserves executed event mutations rather than silently discarding them.
+
+Focused contracts: `battleEventSequentialWait`, `battleEventDialoguePresentation`,
+`battleEventSequentialHost`, `battleEventTextHost`, `battleEventSimulationInput`,
+`battleEventWaitAudio`. Shipping QA extends `scripts/qa-event-command-battle-flow.mjs`
+with `--case sequential --port <owned-port>` (optional `--pass`); observations are
+read-only and gameplay uses real keyboard input through player.html/export shim.
+Evidence and final-browser infrastructure limits:
+`output/evidence/event-command-completion/battle/VERIFICATION.md`.
+
+## Battle-event continuation and cancellation (2026-09-06)
+
+Battle execution remains synchronous between input boundaries. `battleEvents.ts`
+retains the page scan and per-call frame stacks for native/M2 common calls and
+M2 troop-page calls. A choice exposes `snapshot.eventChoice` and phase
+`eventChoice`; only `resumeEventChoice(request.id, index)` runs a branch. Invalid,
+stale, duplicate, or disposed responses do nothing. `-1` selects an authored
+cancel branch only; mapped-option cancellation is resolved by the dialogue UI.
+No browser/input host means no implicit first option. Empty saved choices log
+unsupported and continue without inventing a branch.
+
+`gameOver`, `killPlayer`, M2 abort and forced escape short-circuit all event
+callers and remaining pages. The first terminal wins. Gauge resumes only its
+post-action epilogue; strict retains its already-sorted queue, extra-action
+count, RNG decisions, and round timeline boundary. A terminal completes only
+the executed strict prefix. Wait/text/inputWait now use the sequential contract above.
+
+The sequencer drains preceding timeline facts before requesting input, remains
+busy while choices are open, and consumes only appended facts after resumption.
+`playSceneBattle` supplies the existing stage `DialogueUI.showChoices` host;
+battle keyboard/AUTO/skip handlers yield ownership. Choice signals, hide, and
+replacement remove listeners and settle cancellation rather than selecting the
+cancel branch. Result presentation is never overwritten by event diagnostics.
+
+`BattleRuntime.cancel()` disposes execution without an outcome. Player-side
+`playBattle` returns `null` on cancellation, not defeat/escape. `PlayScene` owns
+its abort controller before lazy import and aborts on shutdown, destruction,
+and session replacement. DOM destruction also settles the pending battle;
+transition destruction settles its waits. State/rewards/autosave commit once,
+after cancellable exit/reveal completes, to the captured session only.
+
+Synchronous balance/scene/walkthrough simulations throw/report
+`BATTLE_EVENT_INPUT_REQUIRED` instead of exhausting ticks and fabricating defeat.
+They do not provide an automatic choice policy. Simulation project-mode flags
+are restored in `finally`.
+
+Contracts: `battleEventRepairFlow`, `battleEventChoiceHost`,
+`playSceneBattleCancellation`, and `battleEventSimulationInput` tests, plus the
+existing strict/sequencer/active-slot/wait/defeat suites. DOM tests use real
+runtime/sequencer/dialogue and a controlled clock; they are not evidence of
+shipping-player browser QA. That acceptance check uses `player.html` and the
+export-store shim, never the editor shell.
+
+## 전투 명령 custom CSS (2026-09-05)
+
+`battleCommandDom.commandPanel`은 프로젝트의 `system.battleCommandCss`를 `mountBattleCommandCss`로 마운트한다. 내부 생성 scope 속성이 각 패널의 메뉴/버튼/라벨/포커스·disabled 상태만 겨냥한다. 패널이 재생성될 때 스타일도 함께 제거되며 타이틀·대화창·편집기 셸에는 적용되지 않는다. 하위 메뉴와 대상 선택도 같은 범위다. 파서는 8,000자 이하의 제한된 시각 속성만 허용하며 URL·CSS 변수·at-rule·임의 선택자를 거부한다. 실패한 스타일은 실행하지 않고 기본 스킨을 유지한다. 검증은 `node scripts/qa-battle-command-css.mjs`로 편집기 저작 후 별도 player.html 하네스에서 수행한다.
+
 ## 빈 페이지와 실행 빈도 계약 (2026-09-05)
 
 `battleEvents.ts`는 빈 `commands`를 부작용 없는 페이지로 실행한다. 과거의 첫 적/첫 상태 암묵 적용 폴백은 제거했다. 상태를 부여하려면 실제 명령을 저작해야 한다.
@@ -37,14 +217,15 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 
 ## 지원 전투 시스템은 둘뿐이다 (2026-08-28)
 
-- 지원: **정면 턴제(RM식)** (`system.battleModel` 미설정 또는 `"rm2k3"` + 배틀 스킨 `rm2000`, 둘 다 기본값) 과 **포켓몬식** (`system.battleModel: "gen1"` + 배틀 스킨 `pokemon`). 새 프로젝트는 이 둘 중 하나로만 저작한다.
-- **스킨 id 개명 (2026-09-03): 정면 스킨 `rm2003` → `rm2000`.** 옛 이름은 2003 이었지만 구도는 아군이 필드에 서지 않는 정면(2000식) 전투였다. 같은 구도의 deprecated `rm2000`(감청 창) 은 이 하나로 흡수해 등록 스킨은 12 → 11 종. `resolveSkinId("rm2003") === "rm2000"`, `"classic"` 도 같다 — 저장 프로젝트는 그대로 뜬다. CSS 파일은 `_rm2000.css` 하나(옛 `_rm2003.css` 재작성 + 옛 `_rm2000.css` 삭제). 사용자 노출 라벨에는 `RM2000/RM2003` 을 쓰지 않는다(`test/detsukuruBrandStrings.test.ts`) — 드롭다운 라벨은 「유리 창 · 정면 필드」.
+- 지원 규칙은 **RM식 턴제** (`system.battleModel` 미설정 또는 `"rm2k3"`, 기본값)와 **포켓몬식** (`"gen1"`)이다. 표시 방식은 **정면** (`rm2000`, 기본값), **측면** (`rm2003`), **몬스터 대치** (`pokemon`) 세 가지다. 규칙 모델과 표시 스킨은 별개다.
+- 기본 `rm2000`은 적만 필드에 세우고 아군은 이름·HP·MP 상태창으로 표시한다(`partyFacing: "hidden"`, `showAllySprites: false`). 2026-09-03 연출 추가 때 들어간 뒷모습 파티를 2026-09-06 사용자 요청으로 복구했다. 미설정·`classic`·명시적 `rm2000` 모두 같은 경로다. 측면 `rm2003`의 아군 전투 시트와 `pokemon`의 후면 스프라이트는 유지한다. 회귀: `test/battleFieldAllySprite.test.ts`; 출하 화면: `npm run qa:runtime -- --scenario battle-frontview`.
+- **스킨 id 이력 (2026-09-03):** 기존 정면 스킨 `rm2003`을 `rm2000`으로 개명한 뒤, 같은 날 `rm2003`을 별도 측면 스킨으로 되살렸다. 현재 `resolveSkinId("rm2003") === "rm2003"`이며 옛 별칭 `classic`만 `rm2000`으로 간다. 등록 스킨은 12종이다. 두 스킨은 `_rm2000.css`의 유리 HUD를 `family: "glass"`로 공유하고 측면 배치는 `_rm2003.css`가 담당한다. 사용자 노출 라벨은 「유리 창 · 정면 필드」와 「유리 창 · 측면 필드」이며 타사 제품명은 쓰지 않는다(`test/detsukuruBrandStrings.test.ts`).
 - 지원 종료(deprecated) 스킨 9종: `octopath`, `chrono`, `bravely`, `dragonquest`, `ff`, `mother`, `goldensun`, `mv`, `vxace`. 실시간 액션 전투 플러그인(`system.actionCombat`) 도 같이 지원 종료다 (`openwiki/runtime-action-combat.md`).
 - 지원 종료의 뜻은 좁다. 저장된 프로젝트는 그대로 돈다.
-  - 레지스트리는 여전히 지원 종료 스킨 9종을 들고 있다. 삭제도, 조용한 remap 도 없다(2026-09-03 의 `rm2003 → rm2000` 개명만 예외 — 위 항목).
+  - 레지스트리는 여전히 지원 종료 스킨 9종을 들고 있다. 삭제도, 조용한 remap도 없다.
   - `resolveSkinId` 는 저장된 지원 종료 id 를 다른 id 로 바꾸지 않는다 (`resolveSkinId("octopath") === "octopath"`).
   - 스킨별 CSS(`src/styles/runtime/battle-skins/`) 와 배경(backdrop) 은 그대로 남긴다. 지우지 말 것.
-  - 줄어드는 것은 **새 저작 노출뿐이다.** 자료집 → 시스템의 스킨 드롭다운은 활성 2종만 나열하고, 프로젝트가 이미 저장해 둔 지원 종료 id 가 있으면 그 항목 하나만 `(지원 종료)` 라벨로 덧붙여 선택을 보존한다.
+  - 줄어드는 것은 **새 저작 노출뿐이다.** 자료집 → 시스템의 스킨 드롭다운은 활성 3종만 나열하고, 프로젝트가 이미 저장해 둔 지원 종료 id가 있으면 그 항목 하나만 `(지원 종료)` 라벨로 덧붙여 선택을 보존한다.
 - 코드 권위자: `src/battle/skins/registry.ts` (`ACTIVE_BATTLE_SKIN_IDS` / `listActiveBattleSkinIds()` / `isDeprecatedBattleSkin()`), 저작 표면은 `src/editor/panels/databaseSystemView.ts`, 계약 테스트는 `test/battleSystemDeprecation.test.ts`.
 
 ## Roguelike run boundary (2026-08-24)

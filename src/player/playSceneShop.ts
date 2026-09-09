@@ -4,11 +4,15 @@ import {
   isSafeEconomyValue,
   isSafeShopTradeCountsRecord,
 } from "@/project/economyValues";
+import type { Project } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { store } from "@/project/store";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { dialogueHost } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
+import { attachShopDecisionInput } from "@/player/shopDecisionInput";
+import { previewShopEquipment } from "@/player/shopEquipmentPreview";
+import { renderShopComparison, shopComparisonSummary } from "@/player/shopComparisonDom";
 import { emitRuntimeJuice } from "@/player/runtimeJuice";
 import {
   adjustShopQuantity,
@@ -103,7 +107,59 @@ export function playShop(
     let detachCursor: (() => void) | null = null;
     let menuCursor = 0;
     let itemCursor = 0;
+    let comparisonActor: string | undefined;
+    let comparisonSlot: string | undefined;
+    let detailController: AbortController | undefined;
+    let detailOpener: HTMLElement | undefined;
+    const comparison = (goods: ShopGoods) => {
+      const project = store.getCurrent();
+      const actorId = scene.session.partyActorIds.includes(comparisonActor ?? "") ? comparisonActor : undefined;
+      const preview = previewShopEquipment({ project, session: scene.session, goods, actorId, slot: comparisonSlot });
+      if (preview.kind !== "unavailable") {
+        comparisonActor = preview.actorId;
+        comparisonSlot = preview.slot;
+      }
+      return preview;
+    };
+    const updateComparison = () => {
+      const host = overlay.querySelector<HTMLElement>("[data-testid='shop-stat-slot']");
+      const goods = viewItems[itemCursor];
+      host?.replaceChildren(...(goods ? [shopComparisonSummary(store.getCurrent(), comparison(goods))] : []));
+    };
+    const closeDetail = () => {
+      detailController?.abort();
+      detailController = undefined;
+      overlay.querySelector("[data-testid='shop-comparison']")?.remove();
+      const stock = overlay.querySelector<HTMLElement>(".runtime-shop-items-shell");
+      if (stock) { stock.hidden = false; stock.style.removeProperty("display"); }
+      updateComparison();
+      detailOpener?.focus({ preventScroll: true });
+      detailOpener = undefined;
+    };
+    const openDetail = (focusId?: string) => {
+      const goods = viewItems[itemCursor];
+      if (!goods) return;
+      detailOpener ??= overlay.querySelector<HTMLElement>("[data-testid='shop-detail-open']") ?? undefined;
+      detailController?.abort();
+      detailController = new AbortController();
+      const preview = comparison(goods);
+      const panel = renderShopComparison({ project: store.getCurrent(), goods, preview,
+        signal: detailController.signal, onClose: closeDetail,
+        onActor: id => { comparisonActor = id; openDetail(`shop-actor-${id}`); },
+        onSlot: id => { comparisonSlot = id; openDetail(`shop-slot-${id}`); },
+      });
+      overlay.querySelector("[data-testid='shop-comparison']")?.remove();
+      const stock = overlay.querySelector<HTMLElement>(".runtime-shop-items-shell");
+      if (stock) { stock.hidden = true; stock.style.display = "none"; }
+      overlay.append(panel);
+      const initial = focusId ?? (preview.kind === "unavailable" ? "shop-detail-scroll" : `shop-actor-${preview.actorId}`);
+      const target = panel.querySelector<HTMLElement>(`[data-testid='${initial}']`);
+      target?.focus({ preventScroll: true });
+      // Actor/slot focus rebuilds this panel; scroll the replacement, not the detached opener.
+      target?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+    };
     const teardownCursor = (): void => {
+      if (detailController) closeDetail();
       detachCursor?.();
       detachCursor = null;
     };
@@ -117,7 +173,7 @@ export function playShop(
         return attachCursorMenu(overlay, {
           items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice, .runtime-shop-confirm")),
           cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-haggle-cancel']"),
-          sound: true,
+          sound: true, audioContext: { project: store.getCurrent(), session: scene.session },
         });
       }
       if (view === "menu") {
@@ -126,29 +182,25 @@ export function playShop(
           items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice")),
           cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-menu-cancel']"),
           initialIndex: menuCursor,
-          sound: true,
+          sound: true, audioContext: { project: store.getCurrent(), session: scene.session },
           onSelect: (index) => {
             menuCursor = index;
           },
         });
       }
-      // 아이템 목록 — ↑↓ 이동, 선택 시 보유·도움말·합계 갱신, select 수량모드면 ←→ 로 수량 ±1.
-      const selectMode = (step.quantityMode ?? "single") === "select";
-      return attachCursorMenu(overlay, {
-        items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-item-row")),
-        cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-item-cancel']"),
+      return attachShopDecisionInput(overlay, {
         initialIndex: itemCursor,
-        sound: true,
         onSelect: (index) => {
           itemCursor = index;
           updateShopOwnedPanel(overlay, scene, viewItems[index]);
           updateShopHelpLine(overlay, step, viewItems[index]);
+          updateComparison();
           updateShopQuantityTotal(overlay);
         },
-        onHorizontal: selectMode ? (dir) => adjustShopQuantity(overlay, dir) : undefined,
+        onQuantity: dir => { adjustShopQuantity(overlay, dir, { project: store.getCurrent(), session: scene.session }); },
       });
     };
-    const renderShop = () => {
+    const renderShop = (focusId?: string) => {
       teardownCursor();
       clearElement(overlay);
       if (view === "items") viewItems = listForMode(mode);
@@ -187,14 +239,15 @@ export function playShop(
               showMenu,
               category,
               categorySource: baseForMode(mode),
+              onDetail: () => openDetail(),
               onCategory: (next) => {
                 category = next;
                 itemCursor = 0;
-                renderShop();
+                renderShop(`shop-category-${next}`);
               },
               // 입구 메뉴로 되돌아가지 않고 그 자리에서 구매/판매를 바꾼다.
               onMode: (next) => {
-                if (next !== mode) showItems(next);
+                if (next !== mode) showItems(next, `shop-tab-${next}`);
               },
               onItem: (item, nextMode, count) => {
                 if (step.economy?.haggleEnabled === true) {
@@ -211,6 +264,8 @@ export function playShop(
             })
       );
       detachCursor = attachShopCursor();
+      if (view === "items") updateShopQuantityTotal(overlay);
+      if (focusId) overlay.querySelector<HTMLElement>(`[data-testid='${focusId}']`)?.focus({ preventScroll: true });
     };
     const settleShopDeal = (
       item: (typeof stockItems)[number],
@@ -220,11 +275,11 @@ export function playShop(
     ): void => {
       const result = handleShopTransaction(scene, item, nextMode, count, merchantGold, agreed);
       if (!result.ok) {
-        emitRuntimeJuice({ event: "menu-invalid", target: shopItemRowEl(overlay, item.id, nextMode) });
+        emitRuntimeJuice({ event: "menu-invalid", target: shopItemRowEl(overlay, item.id, nextMode), project: store.getCurrent(), session: scene.session });
         setStatus(result.status);
         return;
       }
-      emitRuntimeJuice({ event: "menu-confirm" });
+      emitRuntimeJuice({ event: "menu-confirm", project: store.getCurrent(), session: scene.session });
       merchantGold = result.merchantGold;
       const qty = clampQuantity(count);
       const unit = agreed ?? (nextMode === "buy"
@@ -325,7 +380,7 @@ export function playShop(
       view = "menu";
       renderShop();
     };
-    const showItems = (nextMode: ShopMode) => {
+    const showItems = (nextMode: ShopMode, focusId?: string) => {
       mode = nextMode;
       view = "items";
       itemCursor = 0;
@@ -333,7 +388,7 @@ export function playShop(
       category = "all";
       viewItems = listForMode(nextMode);
       statusText = viewItems.length === 0 ? emptyListText(nextMode) : shopPromptText(step, mode, terms);
-      renderShop();
+      renderShop(focusId);
     };
     /** 실패 메시지는 제자리에서만 바꾼다 — 전체 재렌더는 커서·포커스를 날리고 낭독도 끊는다. */
     const setStatus = (text: string) => {
@@ -357,6 +412,7 @@ export function playShop(
       updateShopGoldPanel(overlay, scene, terms, merchantGold, mode);
       for (const entry of viewItems) refreshShopItemRow(overlay, scene, entry, mode, terms, merchantGold);
       updateShopOwnedPanel(overlay, scene, viewItems[itemCursor]);
+      updateComparison();
       updateShopQuantityTotal(overlay);
     };
     /** 필터를 걸지 않은 이 모드의 전체 진열. 카테고리 칩은 늘 이 목록으로 만든다. */
@@ -401,7 +457,7 @@ function recordPawnOnSell(
   session.shopPawnTickets = tickets;
 }
 
-function accrueShopLoyalty(scene: PlaySceneContext, step: ShopStep, cost: number): void {
+export function accrueShopLoyalty(scene: Pick<PlaySceneContext, "session" | "syncRuntimeState">, step: ShopStep, cost: number): void {
   const session = scene.session as typeof scene.session & {
     shopLoyaltySpend?: Record<string, number>;
     shopMileagePoints?: number;
@@ -451,7 +507,7 @@ function showShopNotice(scene: PlaySceneContext, terms: ResolvedTerms, message: 
     detach = attachCursorMenu(overlay, {
       items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice")),
       cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-notice-close']"),
-      sound: true,
+      sound: true, audioContext: { project: store.getCurrent(), session: scene.session },
     });
   });
 }
@@ -461,8 +517,8 @@ function showShopNotice(scene: PlaySceneContext, terms: ResolvedTerms, message: 
  * 예전에는 `database.items` 만 봐서 장비 id 는 조용히 사라졌고(무기점 불가),
  * 아이템 탭에 무기 타입 레코드를 새로 만들어 우회해도 장비 메뉴가 못 찾아 장착이 안 됐다.
  */
-function shopItems(step: ShopStep): ShopGoods[] {
-  const index = goodsIndex(store.getCurrent());
+export function shopItems(step: ShopStep, project: Project = store.getCurrent()): ShopGoods[] {
+  const index = goodsIndex(project);
   const rows: readonly { readonly itemId: string; readonly price?: number }[] =
     step.items ?? step.itemIds.map((itemId) => ({ itemId }));
   const resolved: ShopGoods[] = [];
@@ -502,7 +558,7 @@ function goldUnit(): string {
 
 /** 순수 거래 규칙 — 상인 소지금 한도를 포함. 단위 테스트용 export. */
 export function handleShopTransaction(
-  scene: PlaySceneContext,
+  scene: Pick<PlaySceneContext, "session" | "syncRuntimeState">,
   item: ShopTradeable,
   mode: ShopMode,
   count: number,

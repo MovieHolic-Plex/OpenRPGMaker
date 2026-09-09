@@ -5,7 +5,7 @@
 import { actorBattlers } from "@/battle/battleBattlers";
 import { chooseAutoBattleCommand } from "@/battle/battleAuto";
 import { computeGen1BaseDamage, usesGen1Damage } from "@/battle/battleDamage";
-import { createBattleRuntime } from "@/battle/runtime";
+import { headlessBattleSnapshot, createBattleRuntime } from "@/battle/runtime";
 import type { ActorCommand, BattleCapturedMonsterSnapshot, BattleEventLogSnapshot, BattleFlow, BattleRewardsSnapshot, BattleRoundLogSnapshot, BattleRuntimeOptions, BattleSnapshot } from "@/battle/types";
 import type { Project, SkillId, ItemId } from "@/project/types";
 import type { MonsterInstance } from "@/project/session";
@@ -132,69 +132,70 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
     rng,
   };
 
-  const rt = createBattleRuntime(options);
-  const maxSteps = input.maxSteps ?? 4000;
-  let turns = 0;
-  let potionsUsed = 0;
+  try {
+    const rt = createBattleRuntime(options);
+    const maxSteps = input.maxSteps ?? 4000;
+    let turns = 0;
+    let potionsUsed = 0;
 
-  for (let step = 0; step < maxSteps; step += 1) {
-    const snap = rt.snapshot();
-    if (snap.result) break;
-    if (snap.phase === "actorCommand") {
-      const actor = snap.actors.find((entry) => entry.recordId === snap.activeActorId);
-      const enemy = snap.enemies.find((entry) => !entry.defeated && entry.hp > 0);
-      const scripted = strictScriptCommand(input, snap);
-      if (scripted) {
+    for (let step = 0; step < maxSteps; step += 1) {
+      const snap = headlessBattleSnapshot(rt);
+      if (snap.result) break;
+      if (snap.phase === "actorCommand") {
+        const actor = snap.actors.find((entry) => entry.recordId === snap.activeActorId);
+        const enemy = snap.enemies.find((entry) => !entry.defeated && entry.hp > 0);
+        const scripted = strictScriptCommand(input, snap);
+        if (scripted) {
+          turns += 1;
+          rt.performActorCommand(scripted);
+          if (scripted.kind === "item") potionsUsed += 1;
+          continue;
+        }
+        if (snap.forcedSwitchActorId && snap.switchCandidateActorIds[0]) {
+          rt.performActorCommand({ kind: "switch", targetActorId: snap.switchCandidateActorIds[0] });
+          continue;
+        }
+        if (!enemy) {
+          rt.tick(1000);
+          continue;
+        }
         turns += 1;
-        rt.performActorCommand(scripted);
-        if (scripted.kind === "item") potionsUsed += 1;
-        continue;
-      }
-      if (snap.forcedSwitchActorId && snap.switchCandidateActorIds[0]) {
-        rt.performActorCommand({ kind: "switch", targetActorId: snap.switchCandidateActorIds[0] });
-        continue;
-      }
-      if (!enemy) {
-        rt.tick(1000);
-        continue;
-      }
-      turns += 1;
-      const lowHp = actor !== undefined && actor.hp <= actor.maxHp * 0.3;
-      const hasPotion = input.potionItemId !== undefined && (snap.eventState.inventory[input.potionItemId] ?? 0) > 0;
-      if (lowHp && hasPotion && input.potionItemId) {
-        rt.performActorCommand({ kind: "item", itemId: input.potionItemId, targetEnemyId: enemy.id });
-        potionsUsed += 1;
+        const lowHp = actor !== undefined && actor.hp <= actor.maxHp * 0.3;
+        const hasPotion = input.potionItemId !== undefined && (snap.eventState.inventory[input.potionItemId] ?? 0) > 0;
+        if (lowHp && hasPotion && input.potionItemId) {
+          rt.performActorCommand({ kind: "item", itemId: input.potionItemId, targetEnemyId: enemy.id });
+          potionsUsed += 1;
+        } else {
+          const command = input.project.system.battleModel === "gen1"
+            ? chooseAutoBattleCommand(input.project, snap, rng)
+            : undefined;
+          rt.performActorCommand(command ?? { kind: "attack", targetEnemyId: enemy.id });
+        }
       } else {
-        const command = input.project.system.battleModel === "gen1"
-          ? chooseAutoBattleCommand(input.project, snap, rng)
-          : undefined;
-        rt.performActorCommand(command ?? { kind: "attack", targetEnemyId: enemy.id });
+        rt.tick(1000);
       }
-    } else {
-      rt.tick(1000);
+    }
+
+    const final = headlessBattleSnapshot(rt);
+    const hpRemaining = [...final.actors, ...final.reserveActors].reduce((sum, entry) => sum + Math.max(0, entry.hp), 0);
+    return {
+      victory: final.result === "victory",
+      turns,
+      potionsUsed,
+      hpRemaining,
+      participatingActorIds: final.participatingActorIds,
+      roundLogs: final.roundLogs,
+      eventLogs: final.eventLogs,
+      capturedMonsters,
+      rewards: final.rewards,
+    };
+  } finally {
+    if (savedSystem) {
+      input.project.system.battleParty = savedSystem.battleParty;
+      input.project.system.monsterBattleParty = savedSystem.monsterBattleParty;
+      input.project.system.monsterCollection = savedSystem.monsterCollection;
     }
   }
-
-  const final = rt.snapshot();
-  // SC9 (M3): restore the caller's project system flags so the simulation
-  // is side-effect-free.
-  if (savedSystem) {
-    input.project.system.battleParty = savedSystem.battleParty;
-    input.project.system.monsterBattleParty = savedSystem.monsterBattleParty;
-    input.project.system.monsterCollection = savedSystem.monsterCollection;
-  }
-  const hpRemaining = [...final.actors, ...final.reserveActors].reduce((sum, entry) => sum + Math.max(0, entry.hp), 0);
-  return {
-    victory: final.result === "victory",
-    turns,
-    potionsUsed,
-    hpRemaining,
-    participatingActorIds: final.participatingActorIds,
-    roundLogs: final.roundLogs,
-    eventLogs: final.eventLogs,
-    capturedMonsters,
-    rewards: final.rewards,
-  };
 }
 
 function strictScriptCommand(input: SimulateBattleInput, snapshot: BattleSnapshot): ActorCommand | undefined {

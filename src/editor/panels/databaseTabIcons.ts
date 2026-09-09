@@ -27,6 +27,16 @@ const ANIMATION_NODES: readonly SvgNodeSpec[] = [
 ];
 
 const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
+  characterAppearances: [
+    { tag: "rect", attrs: { x: "3", y: "3", width: "16", height: "16", rx: "2" } },
+    { tag: "circle", attrs: { cx: "11", cy: "8", r: "3" } },
+    { tag: "path", attrs: { d: "M6 17c0-5 10-5 10 0" } },
+  ],
+  characterGraphics: [
+    { tag: "rect", attrs: { x: "3", y: "3", width: "16", height: "16", rx: "3" } },
+    { tag: "circle", attrs: { cx: "11", cy: "9", r: "3" } },
+    { tag: "path", attrs: { d: "M6 18v-1a5 5 0 0 1 10 0v1" } },
+  ],
   promotionTree: [{ tag: "path", attrs: { d: "M11 4v7M5 11h12M5 11v6M17 11v6" } }, { tag: "circle", attrs: { cx: "11", cy: "4", r: "2" } }, { tag: "circle", attrs: { cx: "5", cy: "18", r: "2" } }, { tag: "circle", attrs: { cx: "17", cy: "18", r: "2" } }],
   skillTrees: [{ tag: "path", attrs: { d: "M5 17l6-12 6 12H5zM11 5v12" } }, { tag: "circle", attrs: { cx: "11", cy: "5", r: "2" } }, { tag: "circle", attrs: { cx: "5", cy: "17", r: "2" } }, { tag: "circle", attrs: { cx: "17", cy: "17", r: "2" } }],
   // 그룹 밖 고정 — 대시보드 격자
@@ -247,6 +257,16 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "circle", attrs: { cx: "8.1", cy: "6.6", r: "1.9" } },
     { tag: "circle", attrs: { cx: "14.2", cy: "11", r: "1.9" } },
     { tag: "circle", attrs: { cx: "9.6", cy: "15.4", r: "1.9" } },
+  ],
+  // 오프닝 — 재생 프레임
+  opening: [
+    { tag: "rect", attrs: { x: "3", y: "4", width: "16", height: "14", rx: "2" } },
+    { tag: "path", attrs: { d: "m9 8 5 3-5 3Z" } },
+  ],
+  // 게임 오버 — 종료 프레임
+  gameOver: [
+    { tag: "rect", attrs: { x: "3", y: "4", width: "16", height: "14", rx: "2" } },
+    { tag: "path", attrs: { d: "m8 8 6 6m0-6-6 6" } },
   ],
   // 용어 — 펼친 책
   terms: [

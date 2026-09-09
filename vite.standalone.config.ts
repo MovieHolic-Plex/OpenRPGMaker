@@ -1,5 +1,8 @@
 import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
+import { resolve } from "node:path";
+import { writePlayerArtifactManifest } from "./scripts/lib/playerArtifactContract.mjs";
+import { writeReleaseCollector } from "./scripts/lib/releaseCollectorBuild.mjs";
 
 /**
  * 스탠드얼론(단일 HTML) 플레이어 빌드.
@@ -13,11 +16,21 @@ import { fileURLToPath, URL } from "node:url";
  * JS·CSS·에셋·프로젝트를 묶어 HTML 한 장으로 만든다.
  */
 const src = (path: string): string => fileURLToPath(new URL(`./src/${path}`, import.meta.url));
+let thisRoot: string;
+let outputDirectory: string;
 
 export default defineConfig({
   base: "./",
   envPrefix: "OPENRPG_PLAYER_",
   publicDir: false,
+  plugins: [{
+    name: "standalone-sdk",
+    configResolved(config) { thisRoot = config.root; outputDirectory = resolve(config.root, config.build.outDir); },
+    async closeBundle() {
+      await writeReleaseCollector(thisRoot, outputDirectory);
+      await writePlayerArtifactManifest({ artifactRoot: outputDirectory, repoRoot: thisRoot });
+    },
+  }],
   resolve: {
     alias: [
       { find: /^@\/app\/mode$/, replacement: src("player/exportAppModeShim.ts") },
@@ -33,7 +46,8 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: false,
     cssCodeSplit: false,
-    assetsInlineLimit: 0,
+    // CSS imports (including HUD icons) must not leave sibling files beside one HTML.
+    assetsInlineLimit: Number.POSITIVE_INFINITY,
     rollupOptions: {
       input: src("player/exportEntry.ts"),
       output: {

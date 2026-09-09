@@ -12,7 +12,7 @@ export type EnemyInspectorSection = { id: string; label: string; cards: HTMLElem
 /** Local UI state only. Every field keeps its existing databaseActions mutation path. */
 export function renderEnemyStudio(record: EnemyRecord, sections: EnemyInspectorSection[], actions: HTMLElement): HTMLElement {
   const stage = enemyStage(record);
-  const tabs = el("div", { class: "db-enemy-inspector-tabs", attrs: { role: "tablist", "aria-label": "몬스터 속성" } });
+  const tabs = el("div", { class: "db-enemy-inspector-tabs db-ws-section-tabs", attrs: { role: "tablist", "aria-label": "몬스터 속성" } });
   const panels = el("div", { class: "db-enemy-inspector-body" });
   const buttons: HTMLButtonElement[] = [];
   const bodies: HTMLElement[] = [];
@@ -29,6 +29,7 @@ export function renderEnemyStudio(record: EnemyRecord, sections: EnemyInspectorS
   for (const section of sections) {
     const id = `db-enemy-section-${section.id}`;
     const button = el("button", {
+      class: "db-ws-section-tab",
       text: section.label,
       attrs: { type: "button", role: "tab", id: `${id}-tab`, "aria-controls": id },
       dataset: { testid: `${id}-tab` },

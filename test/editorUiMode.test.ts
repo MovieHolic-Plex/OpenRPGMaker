@@ -84,10 +84,13 @@ describe("editorUiMode", () => {
     const standard = chromeForMode("standard");
     const expert = chromeForMode("expert");
 
+    expect(beginner.advancedSidebarControls).toBe(false);
+    expect(standard.advancedSidebarControls).toBe(false);
+    expect(expert.advancedSidebarControls).toBe(true);
     expect(beginner.mapTree).toBe(false);
     expect(beginner.toolStrip).toBe(false);
     expect(beginner.canvasChromeDense).toBe(false);
-    expect(standard.mapTree).toBe(true);
+    expect(standard.mapTree).toBe(false);
     expect(standard.toolStrip).toBe(false);
     expect(standard.canvasChromeDense).toBe(true);
     expect(expert.mapTree).toBe(true);
@@ -169,14 +172,14 @@ describe("editorUiMode", () => {
     expect(EDITOR_PRODUCT_BRAND).not.toMatch(/rpg\s*maker|rm2k|tkool|ツクール|쯔꾸르|쯔구르|RPG\s*만들기/i);
   });
 
-  it("keeps event tool id available in shared palette tool list (basic does not gate events)", async () => {
-    // Structural: shipped toolbar always includes event (basic only reduces chrome density).
-    // 구 tilePaletteToolbar.ts는 통합 툴바(rpgMakerTileToolbar.ts)로 흡수됨 (2026-07-18).
+  it("keeps Event available through shared layers and the unchanged beginner tools", async () => {
+    // Actual layer->tool state transitions are covered by sidebarFocusModes and
+    // tileToolbarMapModeClickWiring; this guards the shared rendered entry.
     const source = await import("node:fs/promises").then((fs) =>
-      fs.readFile(new URL("../src/editor/panels/tileToolbar.ts", import.meta.url), "utf8"),
+      fs.readFile(new URL("../src/editor/panels/leftLayerSwitcher.ts", import.meta.url), "utf8"),
     );
     expect(source).toMatch(/id:\s*"event"/);
-    expect(source).toMatch(/testid:\s*`tool-\$\{item\.id\}`|tool-event/);
+    expect(source).toMatch(/testid:\s*`layer-\$\{item\.id\}`|layer-event/);
     // chrome flags never include an "eventsBlocked" style switch
     const beginner = chromeForMode("beginner");
     expect("eventsBlocked" in beginner).toBe(false);

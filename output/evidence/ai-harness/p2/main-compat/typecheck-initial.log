@@ -1,0 +1,9 @@
+
+> rpg-zzu@0.1.0 typecheck:app
+> tsc --noEmit -p tsconfig.app.json
+
+src/ai/assistantAcceptanceLedger.ts(164,11): error TS2322: Type '(Readonly<{ id: string; title: string; status: "blocked"; reason: string; evidence: readonly never[]; withdrawal?: {} | undefined; source?: unknown; required: boolean; }> | Readonly<{ region?: Readonly<{ x: number; y: number; w: number; h: number; }> | undefined; ... 8 more ...; required: boolean; }>)[]' is not assignable to type 'AcceptanceItemSnapshot[]'.
+  Type 'Readonly<{ id: string; title: string; status: "blocked"; reason: string; evidence: readonly never[]; withdrawal?: {} | undefined; source?: unknown; required: boolean; }> | Readonly<{ region?: Readonly<{ x: number; y: number; w: number; h: number; }> | undefined; ... 8 more ...; required: boolean; }>' is not assignable to type 'AcceptanceItemSnapshot'.
+    Type 'Readonly<{ id: string; title: string; status: "blocked"; reason: string; evidence: readonly never[]; withdrawal?: {} | undefined; source?: unknown; required: boolean; }>' is not assignable to type 'AcceptanceItemSnapshot'.
+      Types of property 'source' are incompatible.
+        Type 'unknown' is not assignable to type 'AcceptanceSource | undefined'.

@@ -1,0 +1,1822 @@
+{
+  "config": {
+    "argv": [
+      "/usr/local/bin/node",
+      "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/node_modules/.bin/playwright",
+      "test",
+      "--config",
+      "playwright.db-css.config.ts",
+      "--project",
+      "firefox",
+      "--workers",
+      "1",
+      "--output",
+      "output/evidence/db-css-ownership/firefox/review3-final-results",
+      "--reporter",
+      "list,json"
+    ],
+    "configFile": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/playwright.db-css.config.ts",
+    "rootDir": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/output/evidence/db-css-ownership/firefox/review3-final-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e",
+        "testIgnore": [
+          "**/_*.spec.ts"
+        ],
+        "testMatch": [
+          "**/database-css-ownership.spec.ts"
+        ],
+        "timeout": 120000
+      },
+      {
+        "outputDir": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/output/evidence/db-css-ownership/firefox/review3-final-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e",
+        "testIgnore": [
+          "**/_*.spec.ts"
+        ],
+        "testMatch": [
+          "**/database-css-ownership.spec.ts"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "database-css-ownership.spec.ts",
+      "file": "database-css-ownership.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "animation ordinary scroll owns lower authoring at 1440",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 48997,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:32:18.442Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-b3e52c429663bc60d84c",
+          "file": "database-css-ownership.spec.ts",
+          "line": 131,
+          "column": 3
+        },
+        {
+          "title": "shared stepper is one 32px control at 1440",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 50413,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:33:39.429Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-a3f19b9ba568a39338b8",
+          "file": "database-css-ownership.spec.ts",
+          "line": 166,
+          "column": 3
+        },
+        {
+          "title": "animation ordinary scroll owns lower authoring at 1024",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 46323,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:34:57.663Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-824ceff1604f8ad450d4",
+          "file": "database-css-ownership.spec.ts",
+          "line": 131,
+          "column": 3
+        },
+        {
+          "title": "shared stepper is one 32px control at 1024",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 39236,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:36:07.950Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-8e488a0e7ffe15fbc55a",
+          "file": "database-css-ownership.spec.ts",
+          "line": 166,
+          "column": 3
+        },
+        {
+          "title": "equivalent shared roles and ordinary captions in actors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7410,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:37:06.556Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-ba9a3d8d7ef78b0be237",
+          "file": "database-css-ownership.spec.ts",
+          "line": 186,
+          "column": 3
+        },
+        {
+          "title": "equivalent shared roles and ordinary captions in enemies",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 16687,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:37:29.965Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-359e7a32ce562a1850c5",
+          "file": "database-css-ownership.spec.ts",
+          "line": 186,
+          "column": 3
+        },
+        {
+          "title": "equivalent shared roles and ordinary captions in lifeCrafting",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 13388,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:38:02.908Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-07afe4dbf74a9911044f",
+          "file": "database-css-ownership.spec.ts",
+          "line": 186,
+          "column": 3
+        },
+        {
+          "title": "required 32-primary destination matrix at 1440",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 189961,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    },
+                    {
+                      "buffer": ""
+                    },
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:38:35.902Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-452afd1e0f25cef4654c",
+          "file": "database-css-ownership.spec.ts",
+          "line": 227,
+          "column": 2
+        },
+        {
+          "title": "required 32-primary destination matrix at 1024",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 165176,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    },
+                    {
+                      "buffer": ""
+                    },
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:42:00.724Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-3f1ff9ff315a387f4250",
+          "file": "database-css-ownership.spec.ts",
+          "line": 227,
+          "column": 2
+        },
+        {
+          "title": "numeric and native control states preserve input and change semantics",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 42208,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:44:59.878Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-8746baf2877a4e78f1b7",
+          "file": "database-css-ownership.spec.ts",
+          "line": 295,
+          "column": 1
+        },
+        {
+          "title": "animation first lower panels and playback at 1440x900",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 39124,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:45:55.903Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-c60964552721388beb2b",
+          "file": "database-css-ownership.spec.ts",
+          "line": 455,
+          "column": 5
+        },
+        {
+          "title": "animation after-battle lower panels and playback at 1440x900",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 41511,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:46:48.796Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-5a851ecac9ea97ef5088",
+          "file": "database-css-ownership.spec.ts",
+          "line": 455,
+          "column": 5
+        },
+        {
+          "title": "animation return lower panels and playback at 1440x900",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 51061,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:47:39.571Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-5be51077e91e84aea05f",
+          "file": "database-css-ownership.spec.ts",
+          "line": 455,
+          "column": 5
+        },
+        {
+          "title": "animation reopen lower panels and playback at 1440x900",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 39974,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:48:39.654Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-e454f401f34915a5cb22",
+          "file": "database-css-ownership.spec.ts",
+          "line": 455,
+          "column": 5
+        },
+        {
+          "title": "animation keyboard and resource dialog at 1440x900",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 16901,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:49:30.691Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-f3c4da161fae80bac18b",
+          "file": "database-css-ownership.spec.ts",
+          "line": 495,
+          "column": 3
+        },
+        {
+          "title": "animation first lower panels and playback at 1024x900",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 34220,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:49:55.065Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-ba894f598d63dad7c975",
+          "file": "database-css-ownership.spec.ts",
+          "line": 455,
+          "column": 5
+        },
+        {
+          "title": "animation after-battle lower panels and playback at 1024x900",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 33858,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:50:37.189Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-5df4e1e74650081a70f9",
+          "file": "database-css-ownership.spec.ts",
+          "line": 455,
+          "column": 5
+        },
+        {
+          "title": "animation return lower panels and playback at 1024x900",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 46223,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:51:20.823Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-c4d3a8c9ac8cd7ce3fd8",
+          "file": "database-css-ownership.spec.ts",
+          "line": 455,
+          "column": 5
+        },
+        {
+          "title": "animation reopen lower panels and playback at 1024x900",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 45756,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:52:18.827Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-10dc6b5b4b190203307a",
+          "file": "database-css-ownership.spec.ts",
+          "line": 455,
+          "column": 5
+        },
+        {
+          "title": "animation keyboard and resource dialog at 1024x900",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 53786,
+                  "error": {
+                    "message": "Error: page.evaluate: Native Tab traversal did not reach timing controls\nwindow.__dbTabReached</timer<@debugger eval code line 303 > eval:16:18\nsetTimeout handler*window.__dbTabReached<@debugger eval code line 303 > eval:14:33\n@debugger eval code line 303 > eval:6:31\nevaluate@debugger eval code:305:16\n@debugger eval code:1:44\n@debugger eval code:1:62\n",
+                    "stack": "Error: page.evaluate: Native Tab traversal did not reach timing controls\nwindow.__dbTabReached</timer<@debugger eval code line 303 > eval:16:18\nsetTimeout handler*window.__dbTabReached<@debugger eval code line 303 > eval:14:33\n@debugger eval code line 303 > eval:6:31\nevaluate@debugger eval code:305:16\n@debugger eval code:1:44\n@debugger eval code:1:62\n\n    at window.__dbTabReached</timer<@debugger eval code line 303 > eval:16:18\n    at setTimeout handler*window.__dbTabReached<@debugger eval code line 303 > eval:14:33\n    at @debugger eval code line 303 > eval:6:31\n    at evaluate@debugger eval code:305:16\n    at @debugger eval code:1:44\n    at @debugger eval code:1:62\n    at /home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e/database-css-ownership.spec.ts:516:16",
+                    "location": {
+                      "file": "window.__dbTabReached</timer<@debugger eval code line 303 > eval",
+                      "column": 18,
+                      "line": 16
+                    }
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "window.__dbTabReached</timer<@debugger eval code line 303 > eval",
+                        "column": 18,
+                        "line": 16
+                      },
+                      "message": "Error: page.evaluate: Native Tab traversal did not reach timing controls\nwindow.__dbTabReached</timer<@debugger eval code line 303 > eval:16:18\nsetTimeout handler*window.__dbTabReached<@debugger eval code line 303 > eval:14:33\n@debugger eval code line 303 > eval:6:31\nevaluate@debugger eval code:305:16\n@debugger eval code:1:44\n@debugger eval code:1:62\n\n    at window.__dbTabReached</timer<@debugger eval code line 303 > eval:16:18\n    at setTimeout handler*window.__dbTabReached<@debugger eval code line 303 > eval:14:33\n    at @debugger eval code line 303 > eval:6:31\n    at evaluate@debugger eval code:305:16\n    at @debugger eval code:1:44\n    at @debugger eval code:1:62\n    at /home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e/database-css-ownership.spec.ts:516:16"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:53:16.579Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/output/evidence/db-css-ownership/firefox/review3-final-results/database-css-ownership-ani-e44b9-resource-dialog-at-1024x900-firefox/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/output/evidence/db-css-ownership/firefox/review3-final-results/database-css-ownership-ani-e44b9-resource-dialog-at-1024x900-firefox/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "window.__dbTabReached</timer<@debugger eval code line 303 > eval",
+                    "column": 18,
+                    "line": 16
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "0dc145400095013530d9-e0e83399038dab733517",
+          "file": "database-css-ownership.spec.ts",
+          "line": 495,
+          "column": 3
+        },
+        {
+          "title": "animation first lower panels and playback at 1024x768",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 50866,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:54:24.405Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-b74aeeabbd5abee43492",
+          "file": "database-css-ownership.spec.ts",
+          "line": 455,
+          "column": 5
+        },
+        {
+          "title": "animation after-battle lower panels and playback at 1024x768",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 59150,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:55:31.400Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-7d5c0b417c906f40a7f6",
+          "file": "database-css-ownership.spec.ts",
+          "line": 455,
+          "column": 5
+        },
+        {
+          "title": "animation return lower panels and playback at 1024x768",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 60003,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:56:40.957Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-1989478027fda680188b",
+          "file": "database-css-ownership.spec.ts",
+          "line": 455,
+          "column": 5
+        },
+        {
+          "title": "animation reopen lower panels and playback at 1024x768",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 73913,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:57:54.428Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-ddb0bd63d2a69d92fbf6",
+          "file": "database-css-ownership.spec.ts",
+          "line": 455,
+          "column": 5
+        },
+        {
+          "title": "animation keyboard and resource dialog at 1024x768",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 51357,
+                  "error": {
+                    "message": "Error: page.evaluate: Native Tab traversal did not reach timing controls\nwindow.__dbTabReached</timer<@debugger eval code line 303 > eval:16:18\nsetTimeout handler*window.__dbTabReached<@debugger eval code line 303 > eval:14:33\n@debugger eval code line 303 > eval:6:31\nevaluate@debugger eval code:305:16\n@debugger eval code:1:44\n@debugger eval code:1:62\n",
+                    "stack": "Error: page.evaluate: Native Tab traversal did not reach timing controls\nwindow.__dbTabReached</timer<@debugger eval code line 303 > eval:16:18\nsetTimeout handler*window.__dbTabReached<@debugger eval code line 303 > eval:14:33\n@debugger eval code line 303 > eval:6:31\nevaluate@debugger eval code:305:16\n@debugger eval code:1:44\n@debugger eval code:1:62\n\n    at window.__dbTabReached</timer<@debugger eval code line 303 > eval:16:18\n    at setTimeout handler*window.__dbTabReached<@debugger eval code line 303 > eval:14:33\n    at @debugger eval code line 303 > eval:6:31\n    at evaluate@debugger eval code:305:16\n    at @debugger eval code:1:44\n    at @debugger eval code:1:62\n    at /home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e/database-css-ownership.spec.ts:516:16",
+                    "location": {
+                      "file": "window.__dbTabReached</timer<@debugger eval code line 303 > eval",
+                      "column": 18,
+                      "line": 16
+                    }
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "window.__dbTabReached</timer<@debugger eval code line 303 > eval",
+                        "column": 18,
+                        "line": 16
+                      },
+                      "message": "Error: page.evaluate: Native Tab traversal did not reach timing controls\nwindow.__dbTabReached</timer<@debugger eval code line 303 > eval:16:18\nsetTimeout handler*window.__dbTabReached<@debugger eval code line 303 > eval:14:33\n@debugger eval code line 303 > eval:6:31\nevaluate@debugger eval code:305:16\n@debugger eval code:1:44\n@debugger eval code:1:62\n\n    at window.__dbTabReached</timer<@debugger eval code line 303 > eval:16:18\n    at setTimeout handler*window.__dbTabReached<@debugger eval code line 303 > eval:14:33\n    at @debugger eval code line 303 > eval:6:31\n    at evaluate@debugger eval code:305:16\n    at @debugger eval code:1:44\n    at @debugger eval code:1:62\n    at /home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e/database-css-ownership.spec.ts:516:16"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T10:59:22.231Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/output/evidence/db-css-ownership/firefox/review3-final-results/database-css-ownership-ani-d4a51-resource-dialog-at-1024x768-firefox/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/output/evidence/db-css-ownership/firefox/review3-final-results/database-css-ownership-ani-d4a51-resource-dialog-at-1024x768-firefox/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "window.__dbTabReached</timer<@debugger eval code line 303 > eval",
+                    "column": 18,
+                    "line": 16
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "0dc145400095013530d9-e6e9b767339f8c0d6b9c",
+          "file": "database-css-ownership.spec.ts",
+          "line": 495,
+          "column": 3
+        },
+        {
+          "title": "equipment filtering, selection and gallery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 360000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 46539,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:00:31.756Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-4490bd8f9b637a5dc28c",
+          "file": "database-css-ownership.spec.ts",
+          "line": 530,
+          "column": 1
+        },
+        {
+          "title": "actor and enemy navigation and portrait failure variant",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 20127,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:01:28.346Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-e3ada07a01c89fd217fc",
+          "file": "database-css-ownership.spec.ts",
+          "line": 562,
+          "column": 1
+        },
+        {
+          "title": "virtualized linked selection reveal in list",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 45760,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:01:56.084Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-f0aa59a13699f3a3e8e6",
+          "file": "database-css-ownership.spec.ts",
+          "line": 603,
+          "column": 2
+        },
+        {
+          "title": "virtualized linked selection reveal in gallery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 60405,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:02:49.727Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-fa9811f33b5227273cdc",
+          "file": "database-css-ownership.spec.ts",
+          "line": 603,
+          "column": 2
+        },
+        {
+          "title": "System fonts and runtime preview variants",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 33000,
+                  "error": {
+                    "message": "TimeoutError: locator.evaluate: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('db-title-workbench-stage').locator('.rm-title-menu-button').first()\u001b[22m\n",
+                    "stack": "TimeoutError: locator.evaluate: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('db-title-workbench-stage').locator('.rm-title-menu-button').first()\u001b[22m\n\n    at /home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e/database-css-ownership.spec.ts:680:80",
+                    "location": {
+                      "file": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e/database-css-ownership.spec.ts",
+                      "column": 80,
+                      "line": 680
+                    },
+                    "snippet": "  678 |   await preview.scrollIntoViewIfNeeded();\n  679 |   expect(await preview.evaluate(node => node.getBoundingClientRect().height)).toBeGreaterThan(100);\n> 680 |   const runtimeFamily = await preview.locator('.rm-title-menu-button').first().evaluate(node => getComputedStyle(node).fontFamily);\n      |                                                                                ^\n  681 |   await writeFile(resolve(evidenceDirectory, 'computed-runtime-role.json'), JSON.stringify({ runtimeFamily, expectedUiFamily: uiFamily }, null, 2));\n  682 |   expect(runtimeFamily).toBe(uiFamily);\n  683 |   await page.screenshot({ path: resolve(evidenceDirectory, 'system-preview-1024x768.png') });"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e/database-css-ownership.spec.ts",
+                        "column": 80,
+                        "line": 680
+                      },
+                      "message": "TimeoutError: locator.evaluate: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('db-title-workbench-stage').locator('.rm-title-menu-button').first()\u001b[22m\n\n\n  678 |   await preview.scrollIntoViewIfNeeded();\n  679 |   expect(await preview.evaluate(node => node.getBoundingClientRect().height)).toBeGreaterThan(100);\n> 680 |   const runtimeFamily = await preview.locator('.rm-title-menu-button').first().evaluate(node => getComputedStyle(node).fontFamily);\n      |                                                                                ^\n  681 |   await writeFile(resolve(evidenceDirectory, 'computed-runtime-role.json'), JSON.stringify({ runtimeFamily, expectedUiFamily: uiFamily }, null, 2));\n  682 |   expect(runtimeFamily).toBe(uiFamily);\n  683 |   await page.screenshot({ path: resolve(evidenceDirectory, 'system-preview-1024x768.png') });\n    at /home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e/database-css-ownership.spec.ts:680:80"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:04:01.335Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/output/evidence/db-css-ownership/firefox/review3-final-results/database-css-ownership-Sys-691ae-nd-runtime-preview-variants-firefox/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/output/evidence/db-css-ownership/firefox/review3-final-results/database-css-ownership-Sys-691ae-nd-runtime-preview-variants-firefox/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e/database-css-ownership.spec.ts",
+                    "column": 80,
+                    "line": 680
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "0dc145400095013530d9-ec94b5f3b4f5b09e0ac3",
+          "file": "database-css-ownership.spec.ts",
+          "line": 655,
+          "column": 1
+        },
+        {
+          "title": "world document control and typography variants",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 11495,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:04:44.742Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-06275bc76fc019195d5f",
+          "file": "database-css-ownership.spec.ts",
+          "line": 686,
+          "column": 1
+        },
+        {
+          "title": "distinctive child routes and tileset geometry at 1440",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 34831,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:05:06.581Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-7dc881f8cafe9b728798",
+          "file": "database-css-ownership.spec.ts",
+          "line": 700,
+          "column": 3
+        },
+        {
+          "title": "distinctive child routes and tileset geometry at 1024",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 34471,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:05:49.803Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-d865219f87554cb32fe5",
+          "file": "database-css-ownership.spec.ts",
+          "line": 700,
+          "column": 3
+        },
+        {
+          "title": "rendered contracts reject reintroduced animation and stepper ownership conflicts",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 21331,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:06:34.800Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-570f484b8b5cdef6291d",
+          "file": "database-css-ownership.spec.ts",
+          "line": 737,
+          "column": 1
+        },
+        {
+          "title": "shared action hover and disabled native states",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 25583,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:07:04.208Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-6822f93aa0997da088bd",
+          "file": "database-css-ownership.spec.ts",
+          "line": 756,
+          "column": 1
+        },
+        {
+          "title": "CRUD confirmation and representative shared text contrast",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 34261,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:07:40.688Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-b48bc3f1eeb5723c1924",
+          "file": "database-css-ownership.spec.ts",
+          "line": 771,
+          "column": 1
+        },
+        {
+          "title": "real classes main-form lower control wheel access at 1440",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7664,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:08:23.687Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-aaef3ac610f1ac2f5668",
+          "file": "database-css-ownership.spec.ts",
+          "line": 817,
+          "column": 5
+        },
+        {
+          "title": "real troops main-form lower control wheel access at 1440",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 15888,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:08:39.787Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-4ef74970f1aa9e1dbb0e",
+          "file": "database-css-ownership.spec.ts",
+          "line": 817,
+          "column": 5
+        },
+        {
+          "title": "narrow captions and intrinsic Battle Commands card action at 1440",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 19012,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:09:06.094Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-7f511423be8a3e9eb568",
+          "file": "database-css-ownership.spec.ts",
+          "line": 833,
+          "column": 3
+        },
+        {
+          "title": "real classes main-form lower control wheel access at 1024",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9850,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:09:35.063Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-f07587c886a13502b197",
+          "file": "database-css-ownership.spec.ts",
+          "line": 817,
+          "column": 5
+        },
+        {
+          "title": "real troops main-form lower control wheel access at 1024",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 18902,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:09:53.615Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-74e850e273d5c46e908c",
+          "file": "database-css-ownership.spec.ts",
+          "line": 817,
+          "column": 5
+        },
+        {
+          "title": "narrow captions and intrinsic Battle Commands card action at 1024",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 20723,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:10:20.587Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-1f44b7bd07233477f470",
+          "file": "database-css-ownership.spec.ts",
+          "line": 833,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-06T10:32:15.861Z",
+    "duration": 2315527.811,
+    "expected": 39,
+    "skipped": 0,
+    "unexpected": 3,
+    "flaky": 0
+  }
+}

@@ -1,6 +1,7 @@
-import { resolveCommandAtPath } from "@/editor/eventCommandPaths";
+import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import type { Command } from "@/project/types";
-import { copyEventCommandToClipboard } from "./commandClipboard";
+import { copyEventCommandsToClipboard } from "./commandClipboard";
+import { authoredCommandPaths, clearCommandInspector, isCommandSelected, notifyCommandSelectionChanged, selectedCommandPaths, selectedCommandRoots } from "./commandInspector";
 import type { CommandListActions } from "./types";
 
 type CommandToolbarHistoryOptions = {
@@ -12,6 +13,7 @@ type CommandToolbarHistoryOptions = {
 type CommandHistory = {
   readonly past: Command[][];
   readonly future: Command[][];
+  changing: boolean;
 };
 
 export type CommandToolbarHistory = {
@@ -42,61 +44,75 @@ export function clearCommandToolbarHistories(prefix: string): void {
 
 
 export function createCommandToolbarHistory(options: CommandToolbarHistoryOptions): CommandToolbarHistory {
+  historyFor(options.key);
   const history = () => historyFor(options.key);
-  const recordBeforeChange = () => {
-    const entry = history();
-    entry.past.push(cloneCommands(options.readCommands()));
-    if (entry.past.length > HISTORY_LIMIT) entry.past.shift();
-    entry.future.length = 0;
+  const change = (run: () => void, structural = true) =>
+    recordCommandToolbarChange(options.key, options.readCommands, run, structural);
+  const pathsFor = (path: readonly number[]) => selectedCommandRoots(
+    isCommandSelected(path) ? selectedCommandPaths() : [path]);
+  const copy = (path: readonly number[]) => {
+    const commands = options.readCommands();
+    copyEventCommandsToClipboard(pathsFor(path).flatMap(selected => {
+      const command = resolveCommandAtPath(commands, selected);
+      return command ? [command] : [];
+    }));
   };
   return {
     wrapActions: (actions) => ({
+      undo: () => restorePrevious(options, history()),
+      redo: () => restoreNext(options, history()),
+      deleteCommands: (paths) => change(() => {
+        const next = cloneCommands(options.readCommands());
+        for (const path of selectedCommandRoots(paths).reverse()) {
+          const list = resolveCommandListAtPath(next, path.slice(0, -1));
+          const index = path.at(-1);
+          if (list && index !== undefined) list.splice(index, 1);
+        }
+        options.replaceCommands(next);
+      }),
+      insertCommands: (path, commands) => change(() => {
+        const next = cloneCommands(options.readCommands());
+        const list = resolveCommandListAtPath(next, path.slice(0, -1));
+        const index = path.at(-1);
+        if (!list || index === undefined) return;
+        list.splice(index, 0, ...structuredClone([...commands]));
+        options.replaceCommands(next);
+      }),
       addCommand: (containerPath, command) => {
-        recordBeforeChange();
-        actions.addCommand(containerPath, command);
+        change(() => actions.addCommand(containerPath, command));
       },
       insertCommand: (path, command) => {
-        recordBeforeChange();
-        actions.insertCommand(path, command);
+        change(() => actions.insertCommand(path, command));
       },
       replaceCommand: (path, command) => {
-        recordBeforeChange();
-        actions.replaceCommand(path, command);
+        change(() => actions.replaceCommand(path, command), false);
       },
       deleteCommand: (path) => {
-        recordBeforeChange();
-        actions.deleteCommand(path);
+        change(() => actions.deleteCommand(path));
       },
       moveCommand: (path, dir) => {
-        recordBeforeChange();
-        actions.moveCommand(path, dir);
+        change(() => actions.moveCommand(path, dir));
       },
       moveCommandTo: (sourcePath, toIndex) => {
-        recordBeforeChange();
-        actions.moveCommandTo(sourcePath, toIndex);
+        change(() => actions.moveCommandTo(sourcePath, toIndex));
       },
       ...(actions.moveCommandAcross
         ? {
             moveCommandAcross: (sourcePath: readonly number[], targetContainerPath: readonly number[], toIndex: number) => {
-              recordBeforeChange();
-              actions.moveCommandAcross!(sourcePath, targetContainerPath, toIndex);
+              change(() => actions.moveCommandAcross?.(sourcePath, targetContainerPath, toIndex));
             },
           }
         : {}),
     }),
-    copySelected: (path) => {
-      const command = resolveCommandAtPath(options.readCommands(), path);
-      if (command) copyEventCommandToClipboard(command);
-    },
+    copySelected: copy,
     cutSelected: (path, actions) => {
-      const command = resolveCommandAtPath(options.readCommands(), path);
-      if (!command) return;
-      copyEventCommandToClipboard(command);
-      actions.deleteCommand(path);
+      const paths = pathsFor(path);
+      copy(path);
+      if (actions.deleteCommands) actions.deleteCommands(paths);
+      else change(() => paths.reverse().forEach(selected => actions.deleteCommand(selected)));
     },
     replaceAll: (commands) => {
-      recordBeforeChange();
-      options.replaceCommands(cloneCommands(commands as Command[]));
+      change(() => options.replaceCommands(structuredClone([...commands])));
     },
     undo: () => restorePrevious(options, history()),
     redo: () => restoreNext(options, history()),
@@ -105,9 +121,38 @@ export function createCommandToolbarHistory(options: CommandToolbarHistoryOption
   };
 }
 
+/** Legacy page catalog callers join an existing editor session, never create map history. */
+export function recordCommandToolbarChange(
+  key: string, readCommands: () => Command[], run: () => void, structural = true,
+): void {
+  const entry = histories.get(key);
+  if (!entry || entry.changing) { run(); return; }
+  const before = cloneCommands(readCommands());
+  const past = [...entry.past];
+  const future = [...entry.future];
+  // Publish before the synchronous store render so its toolbar sees the new history.
+  entry.changing = true;
+  entry.past.push(before);
+  entry.future.length = 0;
+  try {
+    run();
+  } finally {
+    entry.changing = false;
+    if (JSON.stringify(before) === JSON.stringify(readCommands())) {
+      entry.past.splice(0, entry.past.length, ...past);
+      entry.future.push(...future);
+    } else {
+      if (entry.past.length > HISTORY_LIMIT) entry.past.shift();
+      if (structural || JSON.stringify(authoredCommandPaths(before)) !== JSON.stringify(authoredCommandPaths(readCommands()))) clearCommandInspector();
+    }
+    notifyCommandSelectionChanged();
+  }
+}
+
 function restorePrevious(options: CommandToolbarHistoryOptions, history: CommandHistory): void {
   const previous = history.past.pop();
   if (!previous) return;
+  clearCommandInspector();
   history.future.push(cloneCommands(options.readCommands()));
   options.replaceCommands(previous);
 }
@@ -115,6 +160,7 @@ function restorePrevious(options: CommandToolbarHistoryOptions, history: Command
 function restoreNext(options: CommandToolbarHistoryOptions, history: CommandHistory): void {
   const next = history.future.pop();
   if (!next) return;
+  clearCommandInspector();
   history.past.push(cloneCommands(options.readCommands()));
   options.replaceCommands(next);
 }
@@ -122,7 +168,7 @@ function restoreNext(options: CommandToolbarHistoryOptions, history: CommandHist
 function historyFor(key: string): CommandHistory {
   const existing = histories.get(key);
   if (existing) return existing;
-  const created = { past: [], future: [] };
+  const created: CommandHistory = { past: [], future: [], changing: false };
   histories.set(key, created);
   return created;
 }

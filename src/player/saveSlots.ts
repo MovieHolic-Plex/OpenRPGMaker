@@ -1,7 +1,13 @@
 import { LifeReconciliationError, parseLifeState, preserveUnresolvedLifeSource, reconcileLifeState } from "@/project/lifeRecovery";
+import { isLocalSaveSourceKey, isSaveIdentity, publicationSaveKey, requireSaveIdentity, saveIdentity, saveIdentityBlocker, saveScopeBlocker, type SaveIdentity } from "./savePublication";
+import { PublicationError } from "../project/publication";
+export { setSavePublication } from "./savePublication";
+import { isDetectionEncounterCompletions } from '@/project/npcBehavior';
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { isHorrorState } from "@/project/horrorState";
+import { isPromotionLineage } from '@/project/growth/requirements';
 import { isGrowthProgress } from "@/project/growth/validation";
+import { refreshGrowthVitals } from '@/project/growth/vitals';
 import type { ActorInitialEquipment, CharacterFootprint, Project } from "@/project/types";
 import { normalizeRelationships } from "@/project/relationshipState";
 import { normalizeCharacterFootprint } from "@/project/footprint";
@@ -28,6 +34,7 @@ import { syncMonsterPartyFollowers } from "@/project/followers";
 import { normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { SYSTEM_AUDIO_SLOTS, systemAudioOverrideKey } from "@/player/systemAudioSlots";
 import {
   advanceGameDays,
   calendarDayKey,
@@ -37,6 +44,7 @@ import {
   type Season,
 } from "@/project/gameTime";
 import {
+  isSystemAudioOverrides,
   isActorEquipmentRecord,
   isActorParamBonusRecord,
   isActorRowsRecord,
@@ -110,7 +118,8 @@ export type SaveOrigin = "manual" | "auto";
 export type AutosaveTrigger = "transfer" | "battleVictory";
 
 export type SaveSnapshot = {
-  readonly schemaVersion: typeof SAVE_SCHEMA_VERSION;
+  readonly schemaVersion: typeof SAVE_SCHEMA_VERSION | 6;
+  readonly identity?: SaveIdentity;
   readonly projectTitle: string;
   readonly savedAt: string;
   readonly mapName?: string;
@@ -168,6 +177,7 @@ export type SaveSnapshot = {
     readonly actorLevels?: Record<string, number>;
     readonly actorVitals?: Record<string, ActorVitals>;
     readonly horror?: PlaySession["horror"];
+    readonly detectionEncounterCompletions?: PlaySession["detectionEncounterCompletions"];
     readonly eventLocations?: PlaySession["eventLocations"];
     readonly erasedEventIds?: readonly string[];
     readonly removedEventIds?: PlaySession["removedEventIds"];
@@ -201,6 +211,7 @@ export type SaveSnapshot = {
     readonly flags: Record<string, boolean>;
     readonly battleResult?: PlaySession["battleResult"];
     readonly audio: AudioCommandState;
+    readonly systemAudioOverrides?: PlaySession["systemAudioOverrides"];
     readonly pictures: Record<string, PictureState>;
     readonly actorEquipment?: Record<string, ActorInitialEquipment>;
     readonly actorRows?: Record<string, "front" | "back">;
@@ -209,6 +220,7 @@ export type SaveSnapshot = {
     readonly actorFaceResourceIds?: PlaySession["actorFaceResourceIds"];
     readonly actorCharacterResourceIds?: Record<string, string>;
     readonly growthProgress?: PlaySession["growthProgress"];
+    readonly promotionLineage?: PlaySession["promotionLineage"];
     readonly classOverrides?: Record<string, string>;
     readonly actorParamBonuses?: PlaySession["actorParamBonuses"];
     readonly actorStateIds?: PlaySession["actorStateIds"];
@@ -220,6 +232,7 @@ export type SaveSnapshot = {
     readonly screen?: SaveScreenState;
     // Change Save Access 등 접근 플래그(m2Runtime.access). 세이브 복원 대상.
     readonly access?: Partial<Record<"escape" | "menu" | "save" | "teleportation", boolean>>;
+    readonly systemAudio?: Record<string, string>;
   };
 };
 
@@ -240,12 +253,16 @@ export type SaveSlotReadResult =
   | { readonly kind: "present"; readonly slot: SaveSlotIndex; readonly snapshot: SaveSnapshot };
 
 export function saveSlotKey(slot: SaveSlotIndex): string {
+  const pinned = publicationSaveKey(slot);
+  if (pinned) return pinned;
   if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:v5:${slot}`;
   return `${SAVE_SLOT_PREFIX}${slot}`;
 }
 
 /** 전용 오토세이브 키 — 수동 3슬롯(SaveSlotIndex)과 완전히 분리된 별도 칸. */
 export function autosaveKey(): string {
+  const pinned = publicationSaveKey("auto");
+  if (pinned) return pinned;
   if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:v5:auto`;
   return `${SAVE_SLOT_PREFIX}auto`;
 }
@@ -260,11 +277,12 @@ function legacySaveKey(slot: SaveSlotIndex | "auto"): string {
 }
 
 export function writeAutosave(storage: Storage, snapshot: SaveSnapshot): void {
+  if (saveScopeBlocker(snapshot.identity)) throw new PublicationError("save-incompatible");
   storage.setItem(autosaveKey(), JSON.stringify(snapshot));
 }
 
 export function readAutosave(storage: Storage): AutosaveReadResult {
-  const text = storage.getItem(autosaveKey()) ?? storage.getItem(legacySaveKey("auto"));
+  const text = storage.getItem(autosaveKey()) ?? (publicationSaveKey("auto") ? null : storage.getItem(legacySaveKey("auto")));
   if (text === null) return { kind: "empty" };
   let value: unknown;
   try {
@@ -274,6 +292,8 @@ export function readAutosave(storage: Storage): AutosaveReadResult {
   }
   const parsed = parseSnapshotValue(value);
   if (!parsed.ok) return { kind: "corrupt", message: parsed.message };
+  const blocker = saveScopeBlocker(parsed.snapshot.identity);
+  if (blocker) return { kind: "corrupt", message: blocker };
   return { kind: "present", snapshot: parsed.snapshot };
 }
 
@@ -286,7 +306,8 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
   const normalizedItems = normalizeItemTransitionState(session, project.database.items);
   const bundleReceiptIds = normalizedBundleReceiptIds(session.completedBundleIds, session.bundleRewardAppliedIds);
   return {
-    schemaVersion: SAVE_SCHEMA_VERSION,
+    schemaVersion: project.meta.publication ? 6 : SAVE_SCHEMA_VERSION,
+    ...(project.meta.publication ? { identity: saveIdentity(project.meta.publication) } : {}),
     projectTitle: project.meta.title,
     savedAt: new Date().toISOString(),
     mapName: project.maps[session.currentMapId]?.name ?? "",
@@ -347,6 +368,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
       horror: session.horror ? structuredClone(session.horror) : undefined,
+      detectionEncounterCompletions: structuredClone(session.detectionEncounterCompletions),
       eventLocations: structuredClone(session.eventLocations),
       erasedEventIds: structuredClone(session.erasedEventIds),
       removedEventIds: structuredClone(session.removedEventIds),
@@ -383,6 +405,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       flags: structuredClone(session.flags),
       battleResult: session.battleResult,
       audio: structuredClone(session.audio),
+      systemAudioOverrides: structuredClone(session.systemAudioOverrides),
       pictures: structuredClone(session.pictures),
       actorEquipment: structuredClone(session.actorEquipment),
       actorRows: structuredClone(session.actorRows),
@@ -391,6 +414,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       actorFaceResourceIds: structuredClone(session.actorFaceResourceIds),
       actorCharacterResourceIds: structuredClone(session.actorCharacterResourceIds),
       growthProgress: structuredClone(session.growthProgress),
+      promotionLineage: structuredClone(session.promotionLineage),
       classOverrides: structuredClone(session.classOverrides),
       actorParamBonuses: structuredClone(session.actorParamBonuses),
       actorStateIds: structuredClone(session.actorStateIds),
@@ -399,6 +423,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       rng: cloneRngState(normalizeRngState(session.rng)),
       roguelikeRun: structuredClone(session.roguelikeRun),
       screen: pickScreenState(session),
+      systemAudio: parseSystemAudioState(session.m2Runtime?.system),
       access: session.m2Runtime?.access && Object.keys(session.m2Runtime.access).length > 0 ? { ...session.m2Runtime.access } : undefined,
     },
   };
@@ -418,6 +443,8 @@ function pickScreenState(session: PlaySession): SaveScreenState | undefined {
 // 저장 실패(quota 초과·프라이빗 모드)를 던지면 호출부의 클릭 핸들러가 그대로 끊겨
 // 성공도 실패도 표시되지 않았다. 오토세이브(performAutosave)와 같은 계약으로 결과를 돌려준다.
 export function saveToSlot(storage: Storage, slot: SaveSlotIndex, snapshot: SaveSnapshot): SaveWriteResult {
+  const blocker = saveScopeBlocker(snapshot.identity);
+  if (blocker) return { ok: false, message: blocker };
   try {
     storage.setItem(saveSlotKey(slot), JSON.stringify(snapshot));
     return { ok: true };
@@ -441,6 +468,8 @@ function isQuotaExceededError(error: unknown): boolean {
 // 실측 결함: 저장 당시의 맵이 지워진 슬롯을 그대로 적용하면 부팅이 project.maps[id].width 에서
 // 터져 배포 플레이어가 "맵·에셋 불러오는 중…" 화면에 영구히 갇혔다. 적용 전에 막는다.
 export function snapshotLoadBlocker(project: Project, snapshot: SaveSnapshot): string | null {
+  const identityBlocker = saveScopeBlocker(snapshot.identity) ?? saveIdentityBlocker(project.meta.publication, snapshot.identity);
+  if (identityBlocker) return identityBlocker;
   if (!project.maps[snapshot.session.currentMapId]) return "저장 당시의 맵이 이 프로젝트에 없습니다";
   for (const equipment of Object.values(snapshot.session.actorEquipment ?? {})) {
     if (Object.keys(equipment).some((slot) => !hasEquipmentSlot(project, slot))) return "저장 당시의 장비 부위가 이 프로젝트에 없습니다";
@@ -449,7 +478,7 @@ export function snapshotLoadBlocker(project: Project, snapshot: SaveSnapshot): s
 }
 
 export function readSaveSlot(storage: Storage, slot: SaveSlotIndex): SaveSlotReadResult {
-  const text = storage.getItem(saveSlotKey(slot)) ?? storage.getItem(legacySaveKey(slot));
+  const text = storage.getItem(saveSlotKey(slot)) ?? (publicationSaveKey(slot) ? null : storage.getItem(legacySaveKey(slot)));
   if (text === null) return { kind: "empty", slot };
   let value: unknown;
   try {
@@ -461,7 +490,9 @@ export function readSaveSlot(storage: Storage, slot: SaveSlotIndex): SaveSlotRea
       message: error instanceof Error ? error.message : "Invalid save data",
     };
   }
-  return parseSaveSnapshot(value, slot);
+  const parsed = parseSaveSnapshot(value, slot);
+  const blocker = parsed.kind === "present" ? saveScopeBlocker(parsed.snapshot.identity) : null;
+  return blocker ? { kind: "corrupt", slot, message: blocker } : parsed;
 }
 
 export function listSaveSlots(storage: Storage): readonly SaveSlotReadResult[] {
@@ -476,6 +507,7 @@ export function getSaveSlotStatus(
 }
 
 export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySession {
+  requireSaveIdentity(project.meta.publication, input.identity);
   const parsed = parseSnapshotValue(input);
   if (!parsed.ok) throw new LifeReconciliationError("snapshot", "session", parsed.message);
   const snapshot = { ...input, session: { ...input.session, ...parseLifeState(input.session) } };
@@ -552,6 +584,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
   if (snapshot.session.horror) session.horror = structuredClone(snapshot.session.horror);
+  session.detectionEncounterCompletions = structuredClone(snapshot.session.detectionEncounterCompletions);
   if (snapshot.session.eventLocations) session.eventLocations = structuredClone(snapshot.session.eventLocations);
   if (snapshot.session.erasedEventIds) session.erasedEventIds = [...snapshot.session.erasedEventIds];
   if (snapshot.session.removedEventIds) session.removedEventIds = structuredClone(snapshot.session.removedEventIds);
@@ -597,6 +630,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   session.flags = structuredClone(snapshot.session.flags);
   session.battleResult = snapshot.session.battleResult;
   session.audio = structuredClone(snapshot.session.audio);
+  session.systemAudioOverrides = structuredClone(snapshot.session.systemAudioOverrides);
   session.pictures = structuredClone(snapshot.session.pictures);
   if (snapshot.session.actorEquipment) session.actorEquipment = structuredClone(snapshot.session.actorEquipment);
   if (snapshot.session.actorRows) session.actorRows = structuredClone(snapshot.session.actorRows);
@@ -605,8 +639,12 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.actorFaceResourceIds) session.actorFaceResourceIds = structuredClone(snapshot.session.actorFaceResourceIds);
   if (snapshot.session.actorCharacterResourceIds) session.actorCharacterResourceIds = structuredClone(snapshot.session.actorCharacterResourceIds);
   if (snapshot.session.growthProgress) session.growthProgress = structuredClone(snapshot.session.growthProgress);
+  if (snapshot.session.promotionLineage) session.promotionLineage = structuredClone(snapshot.session.promotionLineage);
   if (snapshot.session.classOverrides) session.classOverrides = structuredClone(snapshot.session.classOverrides);
   if (snapshot.session.actorParamBonuses) session.actorParamBonuses = structuredClone(snapshot.session.actorParamBonuses);
+  // Authored curves/nodes may have changed since saving. Keep the historical
+  // investment ledger, but project current maxima only after every bonus restores.
+  for (const actor of project.database.actors) refreshGrowthVitals(project, session, actor.id);
   if (snapshot.session.actorStateIds) session.actorStateIds = structuredClone(snapshot.session.actorStateIds);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
   const restoredGameTime = normalizeRestorableGameTime(project, snapshot.session.gameTime);
@@ -625,6 +663,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   session.rng = normalizeRngState(snapshot.session.rng, session.rng?.seed);
   session.roguelikeRun = normalizeRoguelikeRunState(snapshot.session.roguelikeRun);
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
+  if (snapshot.session.systemAudio) Object.assign(ensureM2Runtime(session).system, snapshot.session.systemAudio);
   if (snapshot.session.access) {
     const runtime = ensureM2Runtime(session);
     runtime.access = { ...snapshot.session.access };
@@ -755,7 +794,8 @@ type ParsedSnapshotResult =
 // Save4 migrates in memory; Save5 is intentionally unreadable by the previous reader.
 function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
   if (!isRecord(value)) return { ok: false, message: "Save slot is not an object" };
-  if (value.schemaVersion !== 4 && value.schemaVersion !== SAVE_SCHEMA_VERSION) return { ok: false, message: "Unsupported save schema" };
+  if (value.schemaVersion !== 4 && value.schemaVersion !== 5 && value.schemaVersion !== 6) return { ok: false, message: "Unsupported save schema" };
+  if (value.schemaVersion === 6 ? !isSaveIdentity(value.identity) : value.identity !== undefined) return { ok: false, message: "Unsupported save schema" };
   if (typeof value.projectTitle !== "string") return { ok: false, message: "Missing project title" };
   if (typeof value.savedAt !== "string") return { ok: false, message: "Missing saved time" };
   if (!isRecord(value.session)) return { ok: false, message: "Missing session" };
@@ -764,7 +804,8 @@ function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
   return {
     ok: true,
     snapshot: {
-      schemaVersion: SAVE_SCHEMA_VERSION,
+      schemaVersion: value.schemaVersion === 6 ? 6 : SAVE_SCHEMA_VERSION,
+      ...(isSaveIdentity(value.identity) ? { identity: value.identity } : {}),
       projectTitle: value.projectTitle,
       savedAt: value.savedAt,
       mapName: typeof value.mapName === "string" ? value.mapName : undefined,
@@ -783,6 +824,55 @@ function leadPartyLevel(project: Project, session: PlaySession): number | undefi
   const actor = project.database.actors.find((record) => record.id === actorId);
   return session.actorLevels[actorId] ?? actor?.initialLevel;
 }
+
+/** Explicit copy only: never enumerates storage and never rewrites the source. */
+export function importSaveCopy(options: {
+  readonly project: Project;
+  readonly storage: Storage;
+  readonly sourceKey: string;
+  readonly slot: SaveSlotIndex;
+  readonly adoptLegacy?: boolean;
+}): void {
+  const { project, storage, sourceKey, slot } = options;
+  const publication = project.meta.publication;
+  if (!publication) throw new PublicationError("save-incompatible");
+  if (!isLocalSaveSourceKey(sourceKey, publication, options.adoptLegacy === true)) throw new PublicationError("save-incompatible");
+  const target = publicationSaveKey(slot, publication);
+  if (!target || sourceKey === target || storage.getItem(target) !== null) throw new PublicationError("save-incompatible");
+  const raw = storage.getItem(sourceKey);
+  if (raw === null) throw new PublicationError("save-incompatible");
+  const parsed = parseSnapshotValue(parseUniqueSaveJson(raw));
+  if (!parsed.ok) throw new PublicationError("save-incompatible");
+  const source = parsed.snapshot;
+  const adopted = !source.identity && options.adoptLegacy === true
+    ? { ...source, schemaVersion: 6 as const, identity: saveIdentity(publication) } : source;
+  if (snapshotLoadBlocker(project, adopted)) throw new PublicationError("save-incompatible");
+  const restored = applySaveSnapshot(project, adopted);
+  const copy = createSaveSnapshot(project, restored);
+  storage.setItem(target, JSON.stringify(copy));
+}
+
+/** Only call with bytes from a file the PLAYER selected, never uploader metadata or discovered storage. */
+export function importSelectedSaveFileCopy(options: {
+  readonly project: Project;
+  readonly storage: Storage;
+  readonly text: string;
+  readonly slot: SaveSlotIndex;
+}): void {
+  const { project, storage, text, slot } = options;
+  const publication = project.meta.publication;
+  if (!publication) throw new PublicationError("save-incompatible");
+  const target = publicationSaveKey(slot, publication);
+  if (!target || storage.getItem(target) !== null) throw new PublicationError("save-incompatible");
+  const parsed = parseSnapshotValue(parseUniqueSaveJson(text));
+  if (!parsed.ok || !parsed.snapshot.identity || saveIdentityBlocker(publication, parsed.snapshot.identity)) throw new PublicationError("save-incompatible");
+  // Explicit file selection permits scope transfer, not game/lineage incompatibility.
+  const adopted = { ...parsed.snapshot, identity: saveIdentity(publication) };
+  if (snapshotLoadBlocker(project, adopted)) throw new PublicationError("save-incompatible");
+  const copy = createSaveSnapshot(project, applySaveSnapshot(project, adopted));
+  storage.setItem(target, JSON.stringify(copy));
+}
+
 
 /** 얼굴은 낱장 파일 한 장(리소스 id 하나)다. 그러나 예전 세이본은 (시트 id, 셀 번호) 짝을
  *  따로 직렬화해 넣었다 — 그 셀 번호를 버리면 오래된 세이본이 전부 칸 0 얼굴로 보이게 된다.
@@ -820,6 +910,8 @@ type ParsedSessionResult =
   | { readonly ok: false; readonly message: string };
 
 function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResult {
+  if (session.growthProgress !== undefined && !isGrowthProgress(session.growthProgress)) return { ok: false, message: 'Invalid growth progress' };
+  if (session.promotionLineage !== undefined && !isPromotionLineage(session.promotionLineage)) return { ok: false, message: 'Invalid promotion lineage' };
   let life: ReturnType<typeof parseLifeState>;
   try {
     life = parseLifeState(session);
@@ -828,6 +920,12 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
   catch (error) {
     if (!(error instanceof LifeReconciliationError)) throw error;
     return { ok: false, message: error.message };
+  }
+  if (session.detectionEncounterCompletions !== undefined && !isDetectionEncounterCompletions(session.detectionEncounterCompletions)) {
+    return { ok: false, message: "Invalid detection completion state" };
+  }
+  if (session.horror !== undefined && !isHorrorState(session.horror)) {
+    return { ok: false, message: "Invalid pursuit state" };
   }
   if (session.actorEquipment !== undefined && !isActorEquipmentRecord(session.actorEquipment)) {
     return { ok: false, message: "Invalid actor equipment" };
@@ -841,6 +939,9 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
   if (!isRecord(session.mapOverrides)) return { ok: false, message: "Invalid map overrides" };
   if (!isBooleanRecord(session.flags)) return { ok: false, message: "Invalid flags" };
   if (!isRecord(session.audio)) return { ok: false, message: "Invalid audio" };
+  if (session.systemAudioOverrides !== undefined && !isSystemAudioOverrides(session.systemAudioOverrides)) {
+    return { ok: false, message: "Invalid system audio overrides" };
+  }
   if (!isPictureRecord(session.pictures)) return { ok: false, message: "Invalid pictures" };
   if (session.monsterInstances !== undefined && !isMonsterInstancesRecord(session.monsterInstances)) {
     return { ok: false, message: "Invalid monster instances" };
@@ -915,6 +1016,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
       horror: isHorrorState(session.horror) ? session.horror : undefined,
+      detectionEncounterCompletions: session.detectionEncounterCompletions,
       eventLocations: isRuntimeEventLocationRecord(session.eventLocations) ? session.eventLocations : undefined,
       erasedEventIds: isStringArray(session.erasedEventIds) ? session.erasedEventIds : undefined,
       removedEventIds: isRuntimeRemovedEventIds(session.removedEventIds) ? session.removedEventIds : undefined,
@@ -952,6 +1054,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       flags: session.flags,
       battleResult,
       audio: audio.value,
+      systemAudioOverrides: session.systemAudioOverrides,
       pictures: parsePictures(session.pictures),
       actorEquipment: isActorEquipmentRecord(session.actorEquipment) ? session.actorEquipment : undefined,
       actorRows: isActorRowsRecord(session.actorRows) ? session.actorRows : undefined,
@@ -960,6 +1063,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorFaceResourceIds: parseActorFaceResourceIds(session),
       actorCharacterResourceIds: isStringRecord(session.actorCharacterResourceIds) ? session.actorCharacterResourceIds : undefined,
       growthProgress: isGrowthProgress(session.growthProgress) ? session.growthProgress : undefined,
+      promotionLineage: isPromotionLineage(session.promotionLineage) ? session.promotionLineage : undefined,
       classOverrides: isStringRecord(session.classOverrides) ? session.classOverrides : undefined,
       actorParamBonuses: isActorParamBonusRecord(session.actorParamBonuses) ? session.actorParamBonuses : undefined,
       actorStateIds: isActorStateIdsRecord(session.actorStateIds) ? session.actorStateIds : undefined,
@@ -968,6 +1072,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       rng: parseRngState(session.rng),
       roguelikeRun: normalizeRoguelikeRunState(session.roguelikeRun),
       screen: parseScreenState(session.screen),
+      systemAudio: parseSystemAudioState(session.systemAudio),
       access: parseAccessState(session.access),
     },
   };
@@ -990,6 +1095,16 @@ function parseScreenState(value: unknown): SaveScreenState | undefined {
   if (typeof value.weather === "string") result.weather = value.weather;
   if (typeof value.hidden === "boolean") result.hidden = value.hidden;
   if (typeof value.tintDurationMs === "number") result.tintDurationMs = value.tintDurationMs;
+  return Object.keys(result).length > 0 ? result : undefined;
+}
+
+function parseSystemAudioState(value: unknown): SaveSnapshot["session"]["systemAudio"] {
+  if (!isRecord(value)) return undefined;
+  const result: Record<string, string> = {};
+  for (const slot of SYSTEM_AUDIO_SLOTS) {
+    const key = systemAudioOverrideKey(slot);
+    if (typeof value[key] === "string") result[key] = value[key];
+  }
   return Object.keys(result).length > 0 ? result : undefined;
 }
 

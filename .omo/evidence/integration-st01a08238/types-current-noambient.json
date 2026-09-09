@@ -1,0 +1,185 @@
+{
+  "ref": "working-merge",
+  "files": [
+    "src/ai/aiRecordDb.ts",
+    "src/ai/assistantAcceptanceLedger.ts",
+    "src/ai/assistantSession.ts",
+    "src/ai/conversationStore.ts",
+    "src/ai/independentReview.ts",
+    "src/ai/llmClient.ts",
+    "src/editor/panels/aiChatPanel.ts",
+    "src/editor/panels/aiConversationHistoryModal.ts",
+    "src/editor/panels/aiStickyChecklist.ts",
+    "src/editor/projectWikiCoordinator.ts",
+    "src/project/store.ts",
+    "src/project/supabaseProjectSync.ts",
+    "test/advisoryLintProvenance.test.ts",
+    "test/aiAssistantSession.test.ts",
+    "test/aiCompletionAccounting.test.ts",
+    "test/aiConversationRemoteHistory.test.ts",
+    "test/aiRunEndProof.test.ts",
+    "test/aiTurnAppliedAccounting.test.ts",
+    "test/aiWorkItemStall.test.ts",
+    "test/approachCorrection.test.ts",
+    "test/assistantAcceptanceRequestBaseline.test.ts",
+    "test/assistantAcceptanceSession.test.ts",
+    "test/assistantDependencyRetry.test.ts",
+    "test/assistantIndependentReview.test.ts",
+    "test/assistantReviewEvidenceOverflow.test.ts",
+    "test/assistantTilesetVisualReview.test.ts",
+    "test/assistantVerificationContinuation.test.ts",
+    "test/assistantVerificationEvidence.test.ts",
+    "test/assistantVisualEvidenceSession.test.ts",
+    "test/authoredSoftConfirmReviewEquality.test.ts",
+    "test/authoredWorldReviewApplication.test.ts",
+    "test/independentReview.test.ts",
+    "test/independentReviewFixture.ts",
+    "test/npcRewardSession.test.ts",
+    "test/pr687VerificationIntegration.test.ts",
+    "test/projectWikiTimeout.test.ts",
+    "test/runOutcomeApplyFixture.ts",
+    "test/toolSchemaProviderCompat.test.ts",
+    "test/historyRecoveryAdmission.test.ts",
+    "test/nonHistoryIntegrationSeams.test.ts"
+  ],
+  "diagnostics": [
+    {
+      "file": "src/editor/panels/aiChatPanel.ts",
+      "code": 2339,
+      "line": 2464,
+      "message": "Property '__oprnAiHarness' does not exist on type 'Window & typeof globalThis'."
+    },
+    {
+      "file": "src/editor/panels/aiChatPanel.ts",
+      "code": 2339,
+      "line": 3083,
+      "message": "Property '__oprnAiHarness' does not exist on type 'Window & typeof globalThis'."
+    },
+    {
+      "file": "src/editor/panels/aiChatPanel.ts",
+      "code": 2339,
+      "line": 3083,
+      "message": "Property '__oprnAiHarness' does not exist on type 'Window & typeof globalThis'."
+    },
+    {
+      "file": "test/aiRunEndProof.test.ts",
+      "code": 2550,
+      "line": 221,
+      "message": "Property 'withResolvers' does not exist on type 'PromiseConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2024' or later."
+    },
+    {
+      "file": "test/aiRunEndProof.test.ts",
+      "code": 2550,
+      "line": 222,
+      "message": "Property 'withResolvers' does not exist on type 'PromiseConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2024' or later."
+    },
+    {
+      "file": "test/aiRunEndProof.test.ts",
+      "code": 2550,
+      "line": 250,
+      "message": "Property 'withResolvers' does not exist on type 'PromiseConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2024' or later."
+    },
+    {
+      "file": "test/aiRunEndProof.test.ts",
+      "code": 2550,
+      "line": 251,
+      "message": "Property 'withResolvers' does not exist on type 'PromiseConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2024' or later."
+    },
+    {
+      "file": "test/aiRunEndProof.test.ts",
+      "code": 2550,
+      "line": 314,
+      "message": "Property 'withResolvers' does not exist on type 'PromiseConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2024' or later."
+    },
+    {
+      "file": "test/aiRunEndProof.test.ts",
+      "code": 2550,
+      "line": 315,
+      "message": "Property 'withResolvers' does not exist on type 'PromiseConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2024' or later."
+    },
+    {
+      "file": "test/aiRunEndProof.test.ts",
+      "code": 2550,
+      "line": 386,
+      "message": "Property 'withResolvers' does not exist on type 'PromiseConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2024' or later."
+    },
+    {
+      "file": "test/aiRunEndProof.test.ts",
+      "code": 2550,
+      "line": 387,
+      "message": "Property 'withResolvers' does not exist on type 'PromiseConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2024' or later."
+    },
+    {
+      "file": "test/aiTurnAppliedAccounting.test.ts",
+      "code": 2741,
+      "line": 49,
+      "message": "Property 'destructive' is missing in type '{ name: string; args: { title: string; }; result: ToolResult; summary: string; }' but required in type 'ProposedCall'."
+    },
+    {
+      "file": "test/aiTurnAppliedAccounting.test.ts",
+      "code": 2322,
+      "line": 226,
+      "message": "Type 'Promise<{ assistantText: string; proposedCalls: never[]; appliedCalls: { name: string; args: { mapId: string; name: string; }; result: ToolResult; summary: string; }[]; stoppedReason: \"final\"; }>' is not assignable to type 'Promise<TurnResult>'.\n  Type '{ assistantText: string; proposedCalls: never[]; appliedCalls: { name: string; args: { mapId: string; name: string; }; result: ToolResult; summary: string; }[]; stoppedReason: \"final\"; }' is not assignable to type 'TurnResult'.\n    Types of property 'appliedCalls' are incompatible.\n      Type '{ name: string; args: { mapId: string; name: string; }; result: ToolResult; summary: string; }[]' is not assignable to type 'ProposedCall[]'.\n        Property 'destructive' is missing in type '{ name: string; args: { mapId: string; name: string; }; result: ToolResult; summary: string; }' but required in type 'ProposedCall'."
+    },
+    {
+      "file": "test/aiTurnAppliedAccounting.test.ts",
+      "code": 2345,
+      "line": 281,
+      "message": "Argument of type '{ type: \"milestone_applied\"; title: string; toolCount: number; }' is not assignable to parameter of type 'SessionEvent'.\n  Property 'commitId' is missing in type '{ type: \"milestone_applied\"; title: string; toolCount: number; }' but required in type '{ type: \"milestone_applied\"; title: string; toolCount: number; commitId: string | null; }'."
+    },
+    {
+      "file": "test/authoredSoftConfirmReviewEquality.test.ts",
+      "code": 2345,
+      "line": 43,
+      "message": "Argument of type '(_config: AiConfig, request: ChatRequest) => Promise<ChatResult | { message: { role: string; content: null; tool_calls: { id: string; type: string; function: { ...; }; }[]; }; finishReason: string; }>' is not assignable to parameter of type 'NormalizedProcedure<(config: AiConfig, req: ChatRequest) => Promise<ChatResult>>'.\n  Type 'Promise<ChatResult | { message: { role: string; content: null; tool_calls: { id: string; type: string; function: { name: string; arguments: string; }; }[]; }; finishReason: string; }>' is not assignable to type 'Promise<ChatResult>'.\n    Type 'ChatResult | { message: { role: string; content: null; tool_calls: { id: string; type: string; function: { name: string; arguments: string; }; }[]; }; finishReason: string; }' is not assignable to type 'ChatResult'.\n      Type '{ message: { role: string; content: null; tool_calls: { id: string; type: string; function: { name: string; arguments: string; }; }[]; }; finishReason: string; }' is not assignable to type 'ChatResult'.\n        The types of 'message.role' are incompatible between these types.\n          Type 'string' is not assignable to type 'ChatRole'."
+    },
+    {
+      "file": "test/authoredSoftConfirmReviewEquality.test.ts",
+      "code": 6133,
+      "line": 93,
+      "message": "'mapId' is declared but its value is never read."
+    },
+    {
+      "file": "test/authoredSoftConfirmReviewEquality.test.ts",
+      "code": 2741,
+      "line": 112,
+      "message": "Property 'statusTimeline' is missing in type '{ session: AssistantSession; auditHistory: never[]; }' but required in type 'ChatController'."
+    },
+    {
+      "file": "test/authoredWorldReviewApplication.test.ts",
+      "code": 2550,
+      "line": 152,
+      "message": "Property 'withResolvers' does not exist on type 'PromiseConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2024' or later."
+    },
+    {
+      "file": "test/authoredWorldReviewApplication.test.ts",
+      "code": 2550,
+      "line": 153,
+      "message": "Property 'withResolvers' does not exist on type 'PromiseConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2024' or later."
+    },
+    {
+      "file": "test/authoredWorldReviewApplication.test.ts",
+      "code": 2339,
+      "line": 165,
+      "message": "Property 'push' does not exist on type 'readonly WorldEntity[]'."
+    },
+    {
+      "file": "test/authoredWorldReviewApplication.test.ts",
+      "code": 2339,
+      "line": 186,
+      "message": "Property 'push' does not exist on type 'readonly WorldEntity[]'."
+    },
+    {
+      "file": "test/authoredWorldReviewApplication.test.ts",
+      "code": 2339,
+      "line": 192,
+      "message": "Property 'push' does not exist on type 'readonly WorldRelation[]'."
+    },
+    {
+      "file": "test/authoredWorldReviewApplication.test.ts",
+      "code": 2339,
+      "line": 195,
+      "message": "Property 'push' does not exist on type 'readonly WorldEntity[]'."
+    }
+  ]
+}

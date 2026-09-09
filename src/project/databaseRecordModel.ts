@@ -1,3 +1,4 @@
+import { assertPromotionExtensions } from '@/project/growth/requirements';
 import {
   ACTOR_LEVEL_MAX,
   ACTOR_RATE_GRADES,
@@ -52,6 +53,7 @@ import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, Act
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
+import { normalizeCinematicSequence, normalizeGameOverSettings } from "@/project/cinematicSettings";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -184,6 +186,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     battleEscapeSeResourceId: cleanOptionalId(system.battleEscapeSeResourceId),
     initialTroopId: cleanOptionalId(system.initialTroopId),
     battleFlow: normalizeBattleFlow(system.battleFlow),
+    ...(system.battleCommandCss?.trim() ? { battleCommandCss: system.battleCommandCss } : {}),
     // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = rm2000)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
     // 보존해야 한다 — 기본이 바뀐 뒤에 명시값을 생략하면 왕복 후 다른 스킨으로 바뀌어버린다
     // (기본이 vxace 였던 시절 실제로 그랬다). 옛 id(rm2003·classic)도 여기서는 손대지 않고
@@ -233,6 +236,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       return monsterCare ? { monsterCare } : {};
     })(),
     titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
+    ...(system.opening !== undefined ? { opening: normalizeCinematicSequence(system.opening) } : {}),
+    ...(system.gameOver !== undefined ? { gameOver: normalizeGameOverSettings(system.gameOver) } : {}),
   };
 }
 
@@ -608,8 +613,12 @@ function normalizePromotions(promotions: readonly Partial<ClassPromotion>[] | un
 }
 
 function normalizePromotionRequirement(requires: Partial<ClassPromotionRequirement> | undefined): ClassPromotionRequirement {
+  assertPromotionExtensions(requires);
   const variableId = cleanOptionalId(requires?.variableId);
   return {
+    ...(requires?.requiredSkillIds !== undefined ? { requiredSkillIds: [...requires.requiredSkillIds] } : {}),
+    ...(requires?.requiredNodes !== undefined ? { requiredNodes: structuredClone(requires.requiredNodes) } : {}),
+    ...(requires?.requiredTreePoints !== undefined ? { requiredTreePoints: structuredClone(requires.requiredTreePoints) } : {}),
     level: typeof requires?.level === "number" ? clampInteger(requires.level, 1, ACTOR_LEVEL_MAX) : undefined,
     switchId: cleanOptionalId(requires?.switchId),
     itemId: cleanOptionalId(requires?.itemId),
@@ -752,7 +761,7 @@ function normalizeCareProfile(profile: Partial<ItemCareProfile> | undefined): It
   };
 }
 
-function normalizeMonsterCare(config: Partial<MonsterCareConfig> | undefined): MonsterCareConfig | undefined {
+export function normalizeMonsterCare(config: Partial<MonsterCareConfig> | undefined): MonsterCareConfig | undefined {
   if (!config) return undefined;
   const stepsPerTickRaw = typeof config.stepsPerTick === "number" && Number.isFinite(config.stepsPerTick)
     ? Math.trunc(config.stepsPerTick)

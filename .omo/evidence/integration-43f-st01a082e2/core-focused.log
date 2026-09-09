@@ -1,0 +1,5 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/nonHistoryIntegrationSeams.test.ts test/pr687VerificationIntegration.test.ts test/approachCorrection.test.ts test/aiCompletionAccounting.test.ts test/aiTurnAppliedAccounting.test.ts test/proposalCompleteness.test.ts test/assistantIndependentReview.test.ts test/independentReview.test.ts test/independentReviewReferenceScope.test.ts test/independentReviewEvidenceScale.test.ts test/assistantAcceptanceSession.test.ts test/assistantAcceptanceRequestBaseline.test.ts test/canonicalAcceptanceOwnership.test.ts test/assistantImageTransport.test.ts test/toolImageEventAcceptanceSession.test.ts test/assistantVerificationEvidence.test.ts test/storePersistenceLineage.test.ts test/aiConversationHistoryStartup.test.ts test/generateMapPaletteAuthority.test.ts test/generateMapPaletteReload.test.ts test/generateMap.test.ts test/runtimeMovementStability.test.ts --maxWorkers=2 --minWorkers=1 --no-cache --reporter=json --outputFile=.omo/integration-st01a082e2/core-focused.json
+
+JSON report written to /home/main/z-project/rpg-zzu-integration-43f-st01a082e2/.omo/integration-st01a082e2/core-focused.json

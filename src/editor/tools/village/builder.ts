@@ -11,6 +11,7 @@ import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import type { GameMap, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 import { inMapBounds } from "../mapHelpers";
+import { assertHouseProtection, captureHouseProtection, protectedHouseCells, uniqueHouseRegionId } from "../houseProtection";
 import {
   isYardDecorKind,
   type YardDecorKind,
@@ -73,7 +74,7 @@ import {
   type PresetOverrides,
 } from "./authoringData";
 import { auditVillage, critiqueBuiltVillage, critiqueVillageMap, roadComponentNotes } from "./audit";
-import { placeVillageDecor } from "./decor";
+import { finishVillageHouseDecor, placeVillageDecor } from "./decor";
 import { placeHouseLotFences } from "./fences";
 import {
   buildHouses,
@@ -207,6 +208,8 @@ export function buildVillageDomain(
     warnings.push(`상식 스펙 적용: ${requirements.mustExist.join(", ")}`);
   }
 
+  const existingHouses = captureHouseProtection(draft);
+  const existingCells = protectedHouseCells(map);
   const upperBefore = [...map.upperTiles];
   const rng = mulberry32(seed);
   const perf: string[] = [];
@@ -224,6 +227,10 @@ export function buildVillageDomain(
   // 대로 골격(대형 맵, 리서치 spine-first): 곡선 밴드를 집 배치 전에 예약해 구멍 없는 대로 보장.
   const boulevard = villageBoulevard(area, plaza);
   const houseBlockedIdx = new Set<number>(terrainBlockedCells(terrainMasks) ?? []);
+  for (const { x, y } of existingCells) houseBlockedIdx.add(y * map.width + x);
+  // Existing-target facade restores the accepted start after this invocation.
+  // Never let that restoration reopen a house completed here.
+  if (draft.startMapId === map.id) houseBlockedIdx.add(draft.startPos.y * map.width + draft.startPos.x);
   if (boulevard) {
     for (const cell of boulevardCells(area, boulevard, intent.settlementLayout === "street-grid" ? undefined : seed)) {
       if (cell.x >= 0 && cell.y >= 0 && cell.x < map.width && cell.y < map.height) {
@@ -243,7 +250,7 @@ export function buildVillageDomain(
     targetHouses,
     boulevard: boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol } : null,
   });
-  // 자연 시공 순서: 집 배치 → 광장·대로·집 연결 길(얽기설기) → 문 복구 → 울타리
+  // 자연 시공 순서: 집 배치·마감·보호 등록 → 광장·대로·집 연결 길 → 울타리
   // (예전엔 길→집이라 길이 집 자리를 선점하는 느낌이 났음)
   const houses = buildHouses(
     map, coreArea, plaza, targetHouses, rng, windows, intent, warnings,
@@ -252,6 +259,7 @@ export function buildVillageDomain(
     !doorEventsPlanned,
     sketchSites,
   );
+  assertHouseProtection(existingHouses, draft, []);
   perfLap("houses");
   if (houses.length === 0) {
     throw new ToolError(
@@ -260,8 +268,23 @@ export function buildVillageDomain(
       { code: "no-houses-built", mapId },
     );
   }
-  // 집 footprint(용마루 포함) + 장터 데크 = 하드 마스크 — 길이 절대 못 칠한다.
-  const hardBlocked = new Set([...houseBlockedCells(houses), ...plazaDeckBlockedCells(plaza, intent)]);
+  // Finish all house-owned writes before publishing metadata. No environmental stage gets a bypass.
+  restoreHouseDoors(map, houses);
+  clearHouseRidgeRowProps(map, houses);
+  assignShopPrograms(houses, plaza, warnings);
+  ensureInnSignGraft(draft, map.tilesetId);
+  const houseDecorPlaced = decorEnabled ? finishVillageHouseDecor(map, houses, plaza) : 0;
+  const houseInteriors = doorEventsPlanned
+    ? createVillageHouseInteriors(draft, map, houses, overrides, seed, warnings)
+    : [];
+  assertHouseProtection(existingHouses, draft, []);
+  setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout);
+  // Invocation-local immutable values: pipeline retries discard these with their attempt, never a project WeakMap.
+  const sealedHouses = captureHouseProtection(draft);
+  const assertSealed = (): void => assertHouseProtection(existingHouses, draft, sealedHouses);
+  assertSealed();
+  perfLap("finishing");
+  const hardBlocked = new Set([...houseBlockedCells(houses, map), ...plazaDeckBlockedCells(plaza, intent)]);
   // 간선·루프용 스탠드오프 마스크 — 벽에서 1칸 띄운다 (문 앞 행은 개방).
   const throughBlocked = new Set([...hardBlocked, ...houseStandoffCells(houses)]);
   // 침범 금지 구역: 하드 마스크 + 수역(마스크 roles) — 훅이 시공 후 강제 점검한다.
@@ -291,6 +314,7 @@ export function buildVillageDomain(
     boulevard,
     retryReport: roadRetryBox,
   });
+  assertSealed();
   if (roadRetryBox.report && (roadRetryBox.report.attempts > 0 || roadRetryBox.report.fallbackStraight)) {
     const trace = roadRetryBox.report.violationTrace.join("→");
     warnings.push(
@@ -299,15 +323,11 @@ export function buildVillageDomain(
     );
   }
   perfLap("roads");
-  // 문 하단/상단 안전 복구 (진입로 폭 확장·오프셋 대비)
-  restoreHouseDoors(map, houses);
-  // 길은 다 깐 뒤 울타리(길 칸 스킵)
-  if (fencesEnabled) placeHouseLotFences(map, houses, seed, area);
-  // 상점 클러스터(2026-07-17, 리서치: 상점=대로 접면+간판): 광장 게이트에 가장 가까운
-  // 집 2채를 무기점/잡화점으로, 3순위는 여관으로 지정한다(내부 프로그램 + 간판은 decor).
-  assignShopPrograms(houses, plaza, warnings);
-  // 여관 간판: retro House 타일 그림판의 INN 간판(443)을 밴 슬롯 443에 이식 — 번호 그대로 재활용.
-  ensureInnSignGraft(draft, map.tilesetId);
+  // Yard fences remain environmental and cannot modify the sealed house (including its ridge/deck).
+  if (fencesEnabled) {
+    placeHouseLotFences(map, houses, seed, area);
+    assertSealed();
+  }
 
   // E 지형 패스: 마스크의 water/forest를 fill_region·place_props로 채움 (솔버 교체 포인트)
   // multi-turn 세션은 skipTerrain=true 후 water/forest_big 레이어로 분리 시공
@@ -317,31 +337,33 @@ export function buildVillageDomain(
     const terrain = runTerrainConstraintPass(draft, map, requirements, warnings, baseArea, worldGenRules);
     landmarkNotes = [...terrain.notes];
     if (terrain.notes.length > 0) warnings.push(`terrainPass: ${terrain.notes.join("; ")}`);
-    restoreHouseDoors(map, houses);
+    assertSealed();
   } else if (skipTerrain) {
     landmarkNotes = ["skipTerrain: multi-turn forest/water layers"];
   }
   perfLap("terrain");
 
-  let decorPlaced = 0;
+  let decorPlaced = houseDecorPlaced;
   if (decorEnabled) {
-    decorPlaced = placeVillageDecor(draft, map, area, plaza, houses, seed, intent, warnings);
+    decorPlaced += placeVillageDecor(draft, map, area, plaza, houses, seed, intent, warnings);
+    assertSealed();
   }
-  // 용마루 행 보호구역 정리 — 범용 place_props가 심은 나무/소품을 걷어낸다.
-  clearHouseRidgeRowProps(map, houses);
+  // Corruption is rejected at the stage boundary, never repaired into a new baseline.
   perfLap("decor");
   // 조경(2026-07-17): 대형 맵(대로 모드)은 시가지 코어 밖을 수변·밭·숲·설원 지구로 채운다.
   // 문법 규칙(수로=물의 논리, 백사장 접안, 눈↔밭 이격, 어둠+계단 세트)은 landscape.ts가 보증.
   if (boulevard) {
     const landscaped = dressVillageLandscape(map, { area, houses, plaza, seed, warnings });
     warnings.push(`조경 지구 ${landscaped}칸`);
-    restoreHouseDoors(map, houses);
+    assertSealed();
   }
   perfLap("landscape");
   // 배치 충돌 정리 — 이후 스테이지(terrain 물·decor 나무·landscape 수로)가 서로 다른
   // 시점에 같은 칸을 차지해 생기는 순서 결함(물 위 수관·통행불가 위 수관)을 지운다.
   // 승인 게이트(validateLayoutPlacement)와 같은 규칙이므로, 지나치면 통과한다.
-  const scrubbed = scrubPlacementConflicts(draft, map);
+  const sealedCells = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
+  const scrubbed = scrubPlacementConflicts(draft, map, (index) => !sealedCells.has(index));
+  assertSealed();
   if (scrubbed.propsOnWater > 0 || scrubbed.treesOnImpassable > 0) {
     warnings.push(`배치 정리: 물 위 ${scrubbed.propsOnWater}칸·통행불가 위 ${scrubbed.treesOnImpassable}칸 소품/수관 제거`);
   }
@@ -384,15 +406,12 @@ export function buildVillageDomain(
       }
     }
   }
-  const houseInteriors = doorEventsPlanned
-    ? createVillageHouseInteriors(draft, map, houses, overrides, seed, warnings)
-    : [];
-  perfLap("interiors");
+
   const requestedNpcCount = integerArg(merged, "npcCount", houses.length + 2);
   placeVillageNpcs(draft, map, area, houses, plaza, overrides, seed, warnings, requestedNpcCount);
+  assertSealed();
   paintGroundThemeStrip(map, area, merged.groundTheme);
-  clearHouseRidgeRowProps(map, houses);
-  setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout);
+  assertSealed();
 
   // 시작 좌표가 집/울타리 아래로 가면 커밋이 거부된다 — 광장 길로 옮긴다.
   ensureVillageStartPosition(draft, map, plaza);
@@ -928,8 +947,8 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         },
         mapId: { type: "string", description: "기존 맵에 시공한다. 최소 36x36 필요." },
         name: { type: "string", description: "새 맵 이름(기본: 마을 50x50)" },
-        width: { type: "integer", description: "새 맵 가로(기본 50, 36~256)" },
-        height: { type: "integer", description: "새 맵 세로(기본 50, 36~256)" },
+        width: { type: "integer", description: `새 맵 가로(기본 ${DEFAULT_SIZE}, 36~${MAX_SIZE})` },
+        height: { type: "integer", description: `새 맵 세로(기본 ${DEFAULT_SIZE}, 36~${MAX_SIZE})` },
         theme: {
           type: "string",
           description:
@@ -1526,17 +1545,19 @@ function isVillageStartGround(tileId: number): boolean {
 export function paintGroundThemeStrip(map: GameMap, area: Rect, value: unknown): void {
   if (value === undefined || value === "grass") return;
   if (value !== "snow") throw new ToolError("groundTheme은 grass|snow여야 합니다.", { code: "invalid-args", mapId: map.id });
+  const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => coordKey(x, y)));
   const points: Point[] = [];
   for (let y = area.y; y < area.y + area.h; y += 1) {
     for (let x = area.x; x < area.x + area.w; x += 1) {
       const index = y * map.width + x;
+      if (protectedCells.has(coordKey(x, y))) continue;
       if (map.upperTiles[index] !== TILE.EMPTY || ROAD_TILES.has(map.lowerTiles[index] ?? TILE.EMPTY)) continue;
       if ((map.lowerTiles[index] ?? TILE.EMPTY) !== TILE.GRASS) continue;
       map.lowerTiles[index] = DEFAULT_SNOW_AUTOTILE_GROUP.memberTileIds[0] ?? 67;
       points.push({ x, y });
     }
   }
-  shapeAutotileGroupAround(map, DEFAULT_SNOW_AUTOTILE_GROUP, points);
+  shapeAutotileGroupAround(map, DEFAULT_SNOW_AUTOTILE_GROUP, points, (x, y) => !protectedCells.has(coordKey(x, y)));
 }
 
 function nearestPassableStart(project: Project, map: GameMap, origin: Point): Point | undefined {
@@ -1583,13 +1604,17 @@ function setVillageHarnessLayoutPlan(
   const multiStoryTarget = explicitTemplates.length === houses.length && explicitTemplates.every(Boolean)
     ? Number(houses.some((house) => house.stories > 1))
     : Number(map.width >= 46 && houses.length >= 6);
+  const oldRegions = map.layoutPlan?.regions ?? [];
+  const reservedIds = new Set<string>();
   setMapLayoutPlan(map, {
     version: 1,
     kind: "village-harness-natural-v2",
     seed,
     regions: [
+      ...oldRegions,
       {
-        id: "village_commons",
+        id: oldRegions.some((region) => region.id === "village_commons")
+          ? uniqueHouseRegionId(map, "village_commons", reservedIds) : "village_commons",
         role: "plaza",
         label: intent.plazaStyle === "market" ? "생활 장터와 중앙 녹지" : "중앙 녹지 광장",
         ...plaza.rect,
@@ -1605,15 +1630,16 @@ function setVillageHarnessLayoutPlan(
           `multistory-target:${multiStoryTarget}`,
         ],
       },
-      ...houses.map((house, index) => ({
-        id: `village_house_${index + 1}`,
+      ...houses.map((house) => ({
+        id: uniqueHouseRegionId(map, "village_house", reservedIds),
         role: "house",
         label: `${kitLabel[house.kitId]} ${house.stories > 1 ? `${house.stories}층 ` : ""}${house.templateId} 집`,
         ...house.bbox,
         kitId: house.kitId,
         shape: house.templateId,
         yardTheme: intent.yardStyle,
-        tags: [`${house.stories}f`, `shape:${house.templateId}`, "authored-reference-grammar"],
+        tags: [`${house.stories}f`, `shape:${house.templateId}`, "authored-reference-grammar",
+          ...(intent.templateCatalog.find((template) => template.id === house.templateId)?.roofDeck ? ["roof-deck"] : [])],
         doorAt: house.doorAt,
         front: house.front,
         hasFence: fencesEnabled,

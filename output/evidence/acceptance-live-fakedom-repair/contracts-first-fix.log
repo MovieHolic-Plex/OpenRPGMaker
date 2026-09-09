@@ -1,0 +1,157 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/fakeDomSelectContracts.test.ts --maxWorkers=1 --reporter=default --reporter=json --outputFile=output/evidence/acceptance-live-fakedom-repair/contracts-first-fix.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-acceptance-live-qa
+
+ ❯ test/fakeDomSelectContracts.test.ts (16 tests | 5 failed) 97ms
+   ✓ fake DOM select/adoption contracts > flattens optgroups and aligns value, selectedIndex, selected and option.index 6ms
+   ✓ fake DOM select/adoption contracts > clears invalid selections, chooses one duplicate value, and recovers on insertion 1ms
+   ✓ fake DOM select/adoption contracts > honors selected options, disabled defaults and removal of the selected optgroup 1ms
+   ✓ fake DOM select/adoption contracts > uses option text as fallback value and label, preserving explicit empty values 1ms
+   ✓ fake DOM select/adoption contracts > adopts into enhanced wrappers and unwraps without duplicate ownership 2ms
+   ✓ fake DOM select/adoption contracts > replaces with adopted siblings and descendants, including self replacement 1ms
+   ✓ fake DOM select/adoption contracts > clears parent links on removal, text replacement and replaceChildren 3ms
+   × happy DOM select/adoption contracts > flattens optgroups and aligns value, selectedIndex, selected and option.index 33ms
+     → expected [ 'first', 1, +0, 1 ] to deeply equal [ 'second', +0, +0, 1 ]
+   × happy DOM select/adoption contracts > clears invalid selections, chooses one duplicate value, and recovers on insertion 8ms
+     → expected [ 1, true, true ] to deeply equal [ +0, true, false ]
+   × happy DOM select/adoption contracts > honors selected options, disabled defaults and removal of the selected optgroup 6ms
+     → expected [ 'first', +0, -1 ] to deeply equal [ 'first', +0, +0 ]
+   × happy DOM select/adoption contracts > uses option text as fallback value and label, preserving explicit empty values 5ms
+     → expected [ '  Text\n label  ', undefined ] to deeply equal [ 'Text label', 'Text label' ]
+   ✓ happy DOM select/adoption contracts > adopts into enhanced wrappers and unwraps without duplicate ownership 6ms
+   × happy DOM select/adoption contracts > replaces with adopted siblings and descendants, including self replacement 7ms
+     → expected [ HTMLSpanElement{ …(47) }, …(1) ] to deeply equal [ HTMLSpanElement{ …(47) }, …(2) ]
+   ✓ happy DOM select/adoption contracts > clears parent links on removal, text replacement and replaceChildren 5ms
+   ✓ recognizes only SELECT elements and exposes current selectedOptions 1ms
+   ✓ runs real select refresh, native change and disposal without wrapping the dialog root 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > happy DOM select/adoption contracts > flattens optgroups and aligns value, selectedIndex, selected and option.index
+AssertionError: expected [ 'first', 1, +0, 1 ] to deeply equal [ 'second', +0, +0, 1 ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "second",[39m
+[32m-   0,[39m
+[31m+   "first",[39m
+[31m+   1,[39m
+[2m    0,[22m
+[2m    1,[22m
+[2m  ][22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:38:77
+     36|     expect([select.selectedIndex, first.selected, second.selected]).to…
+     37|     select.prepend(group);
+     38|     expect([select.value, select.selectedIndex, second.index, first.in…
+       |                                                                             ^
+     39|     select.selectedIndex = first.index;
+     40|     expect([select.value, first.selected, second.selected]).toEqual(["…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > happy DOM select/adoption contracts > clears invalid selections, chooses one duplicate value, and recovers on insertion
+AssertionError: expected [ 1, true, true ] to deeply equal [ +0, true, false ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   0,[39m
+[31m+   1,[39m
+[31m+   true,[39m
+[2m    true,[22m
+[32m-   false,[39m
+[2m  ][22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:47:69
+     45|     second.value = first.value;
+     46|     select.value = first.value;
+     47|     expect([select.selectedIndex, first.selected, second.selected]).to…
+       |                                                                     ^
+     48|     select.value = "missing";
+     49|     expect([select.value, select.selectedIndex, first.selected, second…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > happy DOM select/adoption contracts > honors selected options, disabled defaults and removal of the selected optgroup
+AssertionError: expected [ 'first', +0, -1 ] to deeply equal [ 'first', +0, +0 ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    "first",[22m
+[2m    0,[22m
+[32m-   0,[39m
+[31m+   -1,[39m
+[2m  ][22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:63:64
+     61|     expect([select.value, first.selected, second.selected]).toEqual(["…
+     62|     group.remove();
+     63|     expect([select.value, select.selectedIndex, second.index]).toEqual…
+       |                                                                ^
+     64|     first.disabled = true;
+     65|     const disabledGroup = doc.createElement("optgroup");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > happy DOM select/adoption contracts > uses option text as fallback value and label, preserving explicit empty values
+AssertionError: expected [ '  Text\n label  ', undefined ] to deeply equal [ 'Text label', 'Text label' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "Text label",[39m
+[32m-   "Text label",[39m
+[31m+   "  Text[39m
+[31m+  label  ",[39m
+[31m+   undefined,[39m
+[2m  ][22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:82:42
+     80|     const option = doc.createElement("option");
+     81|     option.textContent = "  Text\n label  ";
+     82|     expect([option.value, option.label]).toEqual(["Text label", "Text …
+       |                                          ^
+     83|     option.setAttribute("label", "Display");
+     84|     option.value = "";
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > happy DOM select/adoption contracts > replaces with adopted siblings and descendants, including self replacement
+AssertionError: expected [ HTMLSpanElement{ …(47) }, …(1) ] to deeply equal [ HTMLSpanElement{ …(47) }, …(2) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    <span />,[22m
+[2m    <span />,[22m
+[32m-   <span />,[39m
+[2m  ][22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:115:41
+    113|     host.append(first, middle, last);
+    114|     middle.replaceWith(last, first, middle);
+    115|     expect(Array.from(host.childNodes)).toEqual([last, first, middle]);
+       |                                         ^
+    116|     const inner = doc.createElement("select");
+    117|     middle.append(inner);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 11 passed (16)
+   Start at  14:09:58
+   Duration  1.08s (transform 203ms, setup 0ms, collect 554ms, tests 97ms, environment 0ms, prepare 102ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-fakedom-repair/contracts-first-fix.json
