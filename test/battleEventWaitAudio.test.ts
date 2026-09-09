@@ -1,5 +1,5 @@
 // 배틀 이벤트 wait/playAudio/stopAudio 명령과 pendingWaitMs 일시정지를 검증한다.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
 import { deserialize } from "@/project/io";
 import type { Command, Project } from "@/project/types";
@@ -26,6 +26,19 @@ function installPage(project: Project, commands: readonly Command[]): void {
 }
 
 describe("battle event wait/playAudio/stopAudio wiring", () => {
+  it("preserves an explicit audio channel and options through the battle runtime", () => {
+    const project = battleProject();
+    const command: Command = { kind: "playAudio", resourceId: "bgm_boss", loop: true, channel: "bgs", volume: 0.25, fadeInMs: 0 };
+    installPage(project, [command, { kind: "stopAudio", channel: "bgm" }]);
+    const playAudio = vi.fn();
+    const stopAudio = vi.fn();
+    const runtime = createBattleRuntime({ project, troopId: "troop_slime", canEscape: true, canLose: true, playAudio, stopAudio });
+    runtime.tick(1_000);
+    runtime.performActorCommand({ kind: "defend" });
+    expect(playAudio).toHaveBeenCalledWith("bgm_boss", true, command);
+    expect(stopAudio).toHaveBeenCalledWith("bgm");
+  });
+
   it("invokes playAudio/stopAudio callbacks from battle event commands", () => {
     const project = battleProject();
     installPage(project, [
