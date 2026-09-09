@@ -123,7 +123,7 @@ function isKnownRadioFreeScope(selector: string): boolean {
 }
 
 /** radio 원 외형을 실제로 덧칠하는 선언인가 — 레이아웃(box-sizing/width)만은 제외. */
-function paintsRadioChrome(body: string): boolean {
+function paintsRadioChrome(body: string, selector = ""): boolean {
   const props = body
     .split(";")
     .map((chunk) => chunk.slice(0, chunk.indexOf(":")).trim().toLowerCase())
@@ -131,9 +131,11 @@ function paintsRadioChrome(body: string): boolean {
   const painters = new Set([
     "background", "background-color", "background-image",
     "border", "border-color", "border-style", "border-width", "border-radius",
-    "box-shadow", "outline", "accent-color", "appearance",
+    "box-shadow", "accent-color", "appearance",
     "height", "min-height", "padding", "font", "color",
   ]);
+  // A keyboard focus outline is an accessibility indicator, not the radio's resting chrome.
+  if (!selector.endsWith(":focus-visible")) painters.add("outline");
   return props.some((prop) => painters.has(prop));
 }
 /** 함수형 의사클래스(:not/:has 등) 블록을 걷어낸다 — 제외와 라벨 래퍼는 radio 자체를 칠하지 않으므로. */
@@ -195,6 +197,9 @@ describe("database radio custom guard", () => {
   });
 
   it("radio 제외 없는 bare input 결합이 없다", () => {
+    expect(paintsRadioChrome("outline: 2px solid var(--accent); outline-offset: 3px", ":is(input, button):focus-visible")).toBe(false);
+    expect(paintsRadioChrome("outline: none", ":is(input, button)")).toBe(true);
+    expect(paintsRadioChrome("outline: 2px solid var(--accent); border: 0", ":is(input, button):focus-visible")).toBe(true);
     const offenders: string[] = [];
     for (const file of walk(databaseStyleRoot)) {
       if (rel(file) === BASELINE_RELPATH) continue;
@@ -207,7 +212,7 @@ describe("database radio custom guard", () => {
         if (rule.selector.includes(".db-segmented-pill")) continue;
         if (isKnownRadioFreeScope(rule.selector)) continue;
         if (!hasBareInputUnion(rule.selector)) continue;
-        if (!paintsRadioChrome(rule.body)) continue;
+        if (!paintsRadioChrome(rule.body, rule.selector)) continue;
         offenders.push(`${rel(file)}:${rule.line} ${rule.selector}`);
       }
     }

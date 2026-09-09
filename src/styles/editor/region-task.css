@@ -1208,7 +1208,7 @@ body.region-task-modal-open .ai-authoring-examples {
   color: var(--editor-text);
 }
 .region-task-mode-button.is-active {
-  background: var(--editor-surface, #fff);
+  background: var(--editor-surface);
   color: var(--editor-text);
 }
 
@@ -1298,10 +1298,10 @@ body.region-task-modal-open .ai-authoring-examples {
   padding: 3px 10px;
 }
 .region-task-operator-run {
-  background: var(--accent, #4f46e5);
+  background: var(--accent);
   border: 1px solid transparent;
   border-radius: var(--radius-s);
-  color: #fff;
+  color: var(--on-accent);
   cursor: pointer;
   font: 600 11px/1.6 var(--font-ui, system-ui, sans-serif);
   padding: 3px 12px;
@@ -1350,7 +1350,7 @@ body.region-task-modal-open .ai-authoring-examples {
   display: none;
 }
 .region-task-operator-intent-note.is-error {
-  color: var(--danger, #b91c1c);
+  color: var(--danger);
 }
 
 /* 재료 슬롯 보드 — 자동 해석 결과를 실물 타일로 드러내고 틀린 칸만 고치게 한다. */
@@ -1403,7 +1403,7 @@ body.region-task-modal-open .ai-authoring-examples {
   padding: 8px;
 }
 .slot-board-card.is-empty { border-style: dashed; opacity: 0.7; }
-.slot-board-card.is-user { border-color: var(--accent, #4f46e5); }
+.slot-board-card.is-user { border-color: var(--accent); }
 .slot-board-name {
   align-items: baseline;
   display: flex;

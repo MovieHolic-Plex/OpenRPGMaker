@@ -109,9 +109,11 @@ function installProject(frameCount: number): { readonly project: Project; readon
 }
 
 function mount(skill: SkillRecord, project: Project): { readonly host: FakeElement; readonly stop: () => void } {
-  const host = document.createElement("div") as unknown as FakeElement;
+  const host = document.createElement("div");
   const stage = renderSkillAnimationStage(skill, project);
-  host.append(stage.element as unknown as FakeElement);
+  host.append(stage.element);
+  document.body.append(host);
+  if (!(host instanceof FakeElement)) throw new Error("Expected fake stage host");
   return { host, stop: stage.stop };
 }
 

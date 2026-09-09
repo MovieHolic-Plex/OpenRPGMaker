@@ -4,6 +4,7 @@ import { createBattleRuntime } from "@/battle/runtime";
 import { deserialize } from "@/project/io";
 import type { Command, Project } from "@/project/types";
 import battleFixture from "./fixtures/projects/battle-v3.json";
+import { acknowledge, eventPause } from "./battleEventSequential.fixture";
 
 function battleProject(): Project {
   return deserialize(JSON.stringify(battleFixture));
@@ -51,6 +52,10 @@ describe("battle event wait/playAudio/stopAudio wiring", () => {
     runtime.performActorCommand({ kind: "defend" });
 
     expect(played).toEqual([{ resourceId: "bgm_boss", loop: true }]);
+    expect(stopCalls, "stopAudio must remain after the pending wait").toBe(0);
+    const request = eventPause(runtime);
+    expect(request).toMatchObject({ kind: "wait", ms: 500 });
+    expect(acknowledge(runtime, request.id, { kind: "wait" })).toBe(true);
     expect(stopCalls).toBe(1);
     const snapshot = runtime.snapshot();
     expect(snapshot.eventLogs.some((log) => log.kind === "message" && log.detail === "playAudio bgm_boss")).toBe(true);
@@ -58,7 +63,7 @@ describe("battle event wait/playAudio/stopAudio wiring", () => {
     expect(snapshot.eventLogs.some((log) => log.kind === "message" && log.detail === "stopAudio")).toBe(true);
   });
 
-  it("visual wait no longer blocks ATB: gauge keeps charging through wait", () => {
+  it("freezes ATB during an event wait and charges again after acknowledgement", () => {
     const project = battleProject();
     installPage(project, [{ kind: "wait", ms: 1_000 }]);
     const runtime = createBattleRuntime({
@@ -72,8 +77,12 @@ describe("battle event wait/playAudio/stopAudio wiring", () => {
     runtime.performActorCommand({ kind: "defend" });
     const gaugeAfterDefend = runtime.snapshot().enemies[0]?.gauge ?? 0;
     runtime.tick(500);
-    expect(runtime.snapshot().enemies[0]?.gauge ?? 0).toBeGreaterThan(gaugeAfterDefend);
+    expect(runtime.snapshot().enemies[0]?.gauge ?? 0).toBe(gaugeAfterDefend);
     runtime.tick(600);
+    expect(runtime.snapshot().enemies[0]?.gauge ?? 0).toBe(gaugeAfterDefend);
+    const request = eventPause(runtime);
+    expect(acknowledge(runtime, request.id, { kind: "wait" })).toBe(true);
+    runtime.tick(500);
     expect(runtime.snapshot().enemies[0]?.gauge ?? 0).toBeGreaterThan(gaugeAfterDefend);
   });
 

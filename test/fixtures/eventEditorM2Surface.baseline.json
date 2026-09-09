@@ -747,6 +747,8 @@
    "change-actor-faceset-actor-select-card",
    "change-actor-faceset-ai-generate",
    "change-actor-faceset-ai-prompt",
+   "change-actor-faceset-ai-queue",
+   "change-actor-faceset-ai-queue-list",
    "change-actor-faceset-command-body",
    "change-actor-faceset-face-grid",
    "change-actor-faceset-face-preview",
@@ -884,6 +886,10 @@
    "actor-m2-preview",
    "actor-m2-preview-line",
    "actor-m2-preview-note",
+   "ai-image-queue",
+   "ai-image-queue-composer",
+   "ai-image-queue-empty",
+   "ai-image-queue-list",
    "btn",
    "change-parameters-field",
    "change-parameters-field-label",
@@ -1046,11 +1052,11 @@
   ],
   "tags": {
    "button": 115,
-   "div": 132,
+   "div": 134,
    "img": 113,
    "input": 1,
    "option": 8,
-   "p": 3,
+   "p": 4,
    "select": 2,
    "span": 5
   },
@@ -1059,6 +1065,8 @@
    "change-actor-faceset-actor-select-card": "span",
    "change-actor-faceset-ai-generate": "button",
    "change-actor-faceset-ai-prompt": "input",
+   "change-actor-faceset-ai-queue": "div",
+   "change-actor-faceset-ai-queue-list": "div",
    "change-actor-faceset-command-body": "div",
    "change-actor-faceset-face-grid": "div",
    "change-actor-faceset-face-preview": "div",
@@ -1190,7 +1198,7 @@
    "change-actor-faceset-preview": "주인공 선택 · (선택 없음)얼굴 그림 한 장을 고르면 그 얼굴이 저장됩니다.",
    "event-command-edit-summary": "기타 명령"
   },
-  "testidCount": 128,
+  "testidCount": 130,
   "controlCount": 118
  },
  "m2-026-change-vehicle-graphic": {
@@ -1272,10 +1280,13 @@
    "audio-playback-status",
    "event-command-edit-summary",
    "m2-command-body-m2-027-change-system-bgm",
+   "m2-command-cue-option-select",
+   "m2-command-operation-option-select",
    "m2-command-resourceId-picker",
    "m2-command-resourceId-preview",
    "m2-command-resourceId-selected-name",
-   "m2-command-volume-input"
+   "m2-command-volume-input",
+   "m2-command-volume-note"
   ],
   "classes": [
    "cream-command-form",
@@ -1283,15 +1294,27 @@
    "empty-hint",
    "field",
    "m2-command-body",
+   "m2-field-note",
+   "m2-number-field",
    "m2-resource-audio-note",
    "m2-resource-picker",
    "m2-resource-selected-name"
   ],
   "controls": {
+   "m2-command-cue-option-select": "select{}",
+   "m2-command-operation-option-select": "select{}",
    "m2-command-resourceId-picker": "select{}",
    "m2-command-volume-input": "input[number]{}"
   },
   "selectOptions": {
+   "m2-command-cue-option-select": [
+    "battle",
+    "victory"
+   ],
+   "m2-command-operation-option-select": [
+    "set",
+    "reset"
+   ],
    "m2-command-resourceId-picker": [
     "",
     "cc0-bgm-rtp-fld-001",
@@ -1615,14 +1638,16 @@
   },
   "labels": [
    "BGM",
-   "볼륨"
+   "동작",
+   "볼륨",
+   "시스템 소리"
   ],
   "tags": {
-   "div": 13,
+   "div": 17,
    "input": 1,
-   "label": 2,
-   "option": 318,
-   "select": 1,
+   "label": 4,
+   "option": 322,
+   "select": 3,
    "small": 1,
    "span": 1
   },
@@ -1633,17 +1658,21 @@
    "audio-playback-status": "span",
    "event-command-edit-summary": "div",
    "m2-command-body-m2-027-change-system-bgm": "div",
+   "m2-command-cue-option-select": "select",
+   "m2-command-operation-option-select": "select",
    "m2-command-resourceId-picker": "select",
    "m2-command-resourceId-preview": "div",
    "m2-command-resourceId-selected-name": "div",
-   "m2-command-volume-input": "input"
+   "m2-command-volume-input": "input",
+   "m2-command-volume-note": "div"
   },
   "texts": {
    "event-command-edit-summary": "기타 명령",
-   "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다설명 없음미리 듣기 불가"
+   "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다설명 없음미리 듣기 불가",
+   "m2-command-volume-note": "적용 범위 #~#"
   },
-  "testidCount": 10,
-  "controlCount": 2
+  "testidCount": 13,
+  "controlCount": 4
  },
  "m2-028-change-system-se": {
   "testids": [
@@ -1653,10 +1682,13 @@
    "audio-playback-status",
    "event-command-edit-summary",
    "m2-command-body-m2-028-change-system-se",
+   "m2-command-cue-option-select",
+   "m2-command-operation-option-select",
    "m2-command-resourceId-picker",
    "m2-command-resourceId-preview",
    "m2-command-resourceId-selected-name",
-   "m2-command-volume-input"
+   "m2-command-volume-input",
+   "m2-command-volume-note"
   ],
   "classes": [
    "cream-command-form",
@@ -1664,15 +1696,38 @@
    "empty-hint",
    "field",
    "m2-command-body",
+   "m2-field-note",
+   "m2-number-field",
    "m2-resource-audio-note",
    "m2-resource-picker",
    "m2-resource-selected-name"
   ],
   "controls": {
+   "m2-command-cue-option-select": "select{}",
+   "m2-command-operation-option-select": "select{}",
    "m2-command-resourceId-picker": "select{}",
    "m2-command-volume-input": "input[number]{}"
   },
   "selectOptions": {
+   "m2-command-cue-option-select": [
+    "cursor",
+    "confirm",
+    "cancel",
+    "buzzer",
+    "attack",
+    "damage",
+    "critical",
+    "miss",
+    "heal",
+    "faint",
+    "defend",
+    "defeat",
+    "escape"
+   ],
+   "m2-command-operation-option-select": [
+    "set",
+    "reset"
+   ],
    "m2-command-resourceId-picker": [
     "",
     "cc0-se-orp-interface-interface1",
@@ -2410,15 +2465,17 @@
    ]
   },
   "labels": [
+   "동작",
    "볼륨",
+   "시스템 소리",
    "효과음"
   ],
   "tags": {
-   "div": 13,
+   "div": 17,
    "input": 1,
-   "label": 2,
-   "option": 733,
-   "select": 1,
+   "label": 4,
+   "option": 748,
+   "select": 3,
    "small": 1,
    "span": 1
   },
@@ -2429,17 +2486,21 @@
    "audio-playback-status": "span",
    "event-command-edit-summary": "div",
    "m2-command-body-m2-028-change-system-se": "div",
+   "m2-command-cue-option-select": "select",
+   "m2-command-operation-option-select": "select",
    "m2-command-resourceId-picker": "select",
    "m2-command-resourceId-preview": "div",
    "m2-command-resourceId-selected-name": "div",
-   "m2-command-volume-input": "input"
+   "m2-command-volume-input": "input",
+   "m2-command-volume-note": "div"
   },
   "texts": {
    "event-command-edit-summary": "기타 명령",
-   "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다설명 없음미리 듣기 불가"
+   "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다설명 없음미리 듣기 불가",
+   "m2-command-volume-note": "적용 범위 #~#"
   },
-  "testidCount": 10,
-  "controlCount": 2
+  "testidCount": 13,
+  "controlCount": 4
  },
  "m2-029-change-system-graphic": {
   "testids": [
@@ -5594,6 +5655,8 @@
   "testids": [
    "change-parallax-back-ai-generate",
    "change-parallax-back-ai-prompt",
+   "change-parallax-back-ai-queue",
+   "change-parallax-back-ai-queue-list",
    "change-parallax-back-command-body",
    "change-parallax-back-intent",
    "change-parallax-back-preview",
@@ -5616,6 +5679,10 @@
    "actor-m2-preview-line",
    "actor-m2-preview-note",
    "actor-m2-preview-stage",
+   "ai-image-queue",
+   "ai-image-queue-composer",
+   "ai-image-queue-empty",
+   "ai-image-queue-list",
    "btn",
    "change-parameters-field",
    "change-parameters-field-label",
@@ -5651,15 +5718,17 @@
   ],
   "tags": {
    "button": 2,
-   "div": 15,
+   "div": 17,
    "input": 1,
    "option": 7,
-   "p": 4,
+   "p": 5,
    "select": 1
   },
   "tagByTestid": {
    "change-parallax-back-ai-generate": "button",
    "change-parallax-back-ai-prompt": "input",
+   "change-parallax-back-ai-queue": "div",
+   "change-parallax-back-ai-queue-list": "div",
    "change-parallax-back-command-body": "div",
    "change-parallax-back-intent": "div",
    "change-parallax-back-preview": "div",
@@ -5676,7 +5745,7 @@
    "change-parallax-back-preview-image": "먼 배경을 선택하면 여기에 표시됩니다.",
    "event-command-edit-summary": "기타 명령"
   },
-  "testidCount": 10,
+  "testidCount": 12,
   "controlCount": 4
  },
  "m2-070-set-encounter-rate": {

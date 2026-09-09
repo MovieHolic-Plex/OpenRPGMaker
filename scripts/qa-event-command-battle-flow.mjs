@@ -13,7 +13,7 @@ const args = { flow: "both", case: "all", headed: false, out: "output/evidence/e
 for (let index = 2; index < process.argv.length; index += 1) {
   const key = process.argv[index];
   if (key === "--headed") args.headed = true;
-  else if (["--flow", "--case", "--out"].includes(key)) args[key.slice(2)] = process.argv[++index];
+  else if (["--flow", "--case", "--out", "--port", "--pass"].includes(key)) args[key.slice(2)] = process.argv[++index];
   else if (key === "--scenario" && process.argv[++index] === "battle-flow") continue;
   else throw new Error(`Unknown argument: ${key}`);
 }
@@ -23,6 +23,7 @@ await mkdir(out, { recursive: true });
 
 async function buildFixtures() {
   const server = await createServer({ root: ROOT, configFile: false, logLevel: "error",
+    cacheDir: join(ROOT, ".vite-cache/battle-flow-fixtures"),
     resolve: { alias: { "@": join(ROOT, "src") } }, optimizeDeps: { noDiscovery: true, include: [] },
     server: { watch: null, hmr: false },
   });
@@ -68,6 +69,8 @@ function installObserver(boot) {
       url: location.href, runtime,
       session: window.__oprnDebug?.readState() ?? null,
       phase: root?.dataset.battlePhase ?? null,
+      pause: root?.dataset.battleEventPause ?? null,
+      request: root?.dataset.battleEventRequest ?? null,
       busy: root?.dataset.battleSequenceBusy ?? null,
       cursor: root?.querySelector("[data-battle-command-cursor='true']")?.getAttribute("data-testid") ?? null,
       focus: document.activeElement?.getAttribute("data-testid") ?? null,
@@ -96,12 +99,18 @@ function installObserver(boot) {
       if (opacity < 0.9) return false;
     }
     if (spec.absent?.some(selector => get(selector))) return false;
-    for (const field of ["phase", "busy", "cursor", "focus", "result"]) {
+    for (const field of ["phase", "pause", "busy", "cursor", "focus", "result"]) {
       if (spec[field] !== undefined && state[field] !== spec[field]) return false;
     }
     if (spec.prompt && !state.prompt.startsWith(spec.prompt)) return false;
     if (spec.dialogue && !state.dialogue.startsWith(spec.dialogue)) return false;
+    if (spec.dialogueContains && !state.dialogue.includes(spec.dialogueContains)) return false;
     if (spec.shown && get("[data-testid='dialogue-box']")?.dataset.dialoguePhase !== "shown") return false;
+    if (spec.settledText) {
+      const box = get("[data-testid='dialogue-box']");
+      if (!box || box.getAnimations({ subtree: true }).some(animation =>
+        animation.playState === "running" && animation.effect.getComputedTiming().iterations !== Infinity)) return false;
+    }
     if (spec.ready && !(state.runtime?.inputEnabled && !state.runtime.running)) return false;
     if (spec.x !== undefined && state.session?.x !== spec.x) return false;
     if (spec.y !== undefined && state.session?.y !== spec.y) return false;
@@ -109,7 +118,7 @@ function installObserver(boot) {
   }
   function check(event) {
     const state = snapshot();
-    const signature = JSON.stringify({ phase: state.phase, busy: state.busy, cursor: state.cursor, focus: state.focus,
+    const signature = JSON.stringify({ phase: state.phase, pause: state.pause, request: state.request, busy: state.busy, cursor: state.cursor, focus: state.focus,
       prompt: state.prompt, dialogue: state.dialogue, director: state.director, result: state.result,
       party: state.party, choices: state.choices, position: [state.session?.x, state.session?.y] });
     if (signature !== last) {
@@ -169,14 +178,20 @@ const cleanup = { contexts: [], browserClosed: false, serverClosed: false };
 
 async function exercise(fixture, pass) {
   const dir = join(fixture.dir, pass); await mkdir(dir, { recursive: true });
-  const context = await browser.newContext({ viewport: { width: 1280, height: 960 } });
+  const context = await browser.newContext({ viewport: { width: 1280, height: 960 }, reducedMotion: pass === "reduced-motion" ? "reduce" : "no-preference" });
   const page = await context.newPage();
+  page.setDefaultNavigationTimeout(120_000);
+  page.setDefaultTimeout(120_000);
   const report = { flow: fixture.flow, scenario: fixture.scenario, pass, actions: [], observations: [], errors: [], warnings: [], requests: [], shots: [] };
   const snapshot = () => page.evaluate(() => window.__battleFlowQa.snapshot());
   async function shot(label) {
     await page.screenshot({ path: join(dir, `${label}.png`) }); report.shots.push(`${label}.png`);
   }
   async function capture(label) {
+    if (["03a-text-first-page", "03b-text-last-page", "03d-input-branch-face-cleared", "07-map-writeback"].includes(label)) {
+      const ticket = await page.evaluate(() => window.__battleFlowQa.arm({ selector: "[data-testid='dialogue-box'].page-ready", shown: true, settledText: true }));
+      await page.evaluate(id => window.__battleFlowQa.take(id), ticket);
+    }
     if (label === "06-result") {
       const ticket = await page.evaluate(() => window.__battleFlowQa.arm({ visible: "[data-testid='battle-result-panel']" }));
       await page.evaluate(id => window.__battleFlowQa.take(id), ticket);
@@ -204,7 +219,7 @@ async function exercise(fixture, pass) {
       try {
         // Only connection-reset retries for idempotent local asset GETs; never retry a scenario.
         const method = route.request().method();
-        await route.fulfill({ response: await route.fetch({ maxRetries: method === "GET" || method === "HEAD" ? 1 : 0 }) });
+        await route.fulfill({ response: await route.fetch({ timeout: 120_000, maxRetries: method === "GET" || method === "HEAD" ? 1 : 0 }) });
       } catch (error) {
         if (page.isClosed()) return;
         report.errors.push(`Local asset transport: ${error instanceof Error ? error.message : String(error)}`);
@@ -232,9 +247,41 @@ async function exercise(fixture, pass) {
     await capture("02-battle-command");
     const terminal = terminalCases.has(fixture.scenario);
     const expectedResult = ["game-over", "kill-player"].includes(fixture.scenario) ? "defeat" : "escape";
+    const sequential = fixture.scenario === "sequential";
     await press("Enter", terminal
       ? { result: expectedResult, busy: "false" }
+      : sequential ? { dialogue: "BF_TEXT", selector: "[data-testid='dialogue-box'].page-ready" }
       : { prompt: "BF_PICK", shown: true, phase: "eventChoice" });
+    if (sequential) {
+      const first = await capture("03a-text-first-page");
+      assert.equal(first.phase, "eventPause");
+      assert.equal(first.pause, "text");
+      assert.equal(await page.locator("[data-testid='battle-message-window']").evaluate(node => getComputedStyle(node).visibility), "hidden", "event text owns the message surface");
+      assert.deepEqual(numbers(first.dialogue), { e: 1, t: 0 });
+      assert(!first.dialogue.includes("BF_PAGE2"));
+      assert.equal(await page.locator(".dialogue-content.face-right .dialogue-face.flipped").count(), 1);
+      assert.equal(await page.locator(".dialogue-overlay.position-top .dialogue-box.transparent").count(), 1);
+      if (pass === "teardown-text") { report.cancelledAtPause = "text"; return report; }
+      await press("Enter", { dialogueContains: "BF_PAGE2", selector: "[data-testid='dialogue-box'].page-ready" });
+      const second = await capture("03b-text-last-page");
+      assert.equal(numbers(second.dialogue).w, 0);
+      if (pass === "teardown-wait") {
+        const held = await press("Enter", { pause: "wait" });
+        assert.equal(held.busy, "true");
+        report.cancelledAtPause = "wait"; return report;
+      }
+      await press("Enter", { pause: "inputWait", absent: ["[data-testid='dialogue-box']"] });
+      const input = await capture("03c-fresh-key-wait");
+      assert.equal(input.busy, "true");
+      assert(Object.values(input.session.variables).every(value => value === 0));
+      if (pass === "teardown-input") { report.cancelledAtPause = "inputWait"; return report; }
+      await press("ArrowRight", { dialogue: "BF_KEY", selector: "[data-testid='dialogue-box'].page-ready" });
+      const accepted = await capture("03d-input-branch-face-cleared");
+      assert.deepEqual(numbers(accepted.dialogue), { k: 3, r: 1, f: 0, w: 1, x: 1 });
+      assert.equal(await page.locator(".dialogue-content .dialogue-face").count(), 0);
+      assert.equal(await page.locator("[data-testid='battle-message-window']").evaluate(node => getComputedStyle(node).visibility), "hidden");
+      await press("Enter", { prompt: "BF_PICK", shown: true, phase: "eventChoice" });
+    }
     if (!terminal) {
       const pick = await capture("03-choice-before-input");
       assert.deepEqual(numbers(pick.prompt), { f: 0, s: 0, c: 0, e: 1, t: 0 });
@@ -262,6 +309,10 @@ async function exercise(fixture, pass) {
       1, 1, 1, 1, terminal ? 0 : 1, terminal ? 0 : 1, terminal ? 0 : 1, terminal ? 0 : 1, terminal ? 0 : 1, 0, 1];
     assert.deepEqual(values.map(([, value]) => value), expected, "exact branch/caller/page/terminal/map sentinel counts");
     assert.equal(returned.session.battleResult, expectedResult);
+    if (sequential) {
+      assert.deepEqual([15, 16, 17, 18, 19].map(index => returned.session.variables[`var_${String(index).padStart(4, "0")}`]), [1, 1, 3, 1, 0]);
+      assert.equal(await page.locator(".dialogue-overlay.position-top .dialogue-box.transparent").count(), 1, "returning settings are applied to the field dialogue");
+    }
     await press("Enter", { ready: true, absent: ["[data-testid='dialogue-box']", "[data-testid='battle-scene']"] });
     await press("ArrowRight", { x: 9, y: 8 });
     await capture("08-keyboard-restored");
@@ -272,6 +323,17 @@ async function exercise(fixture, pass) {
   } finally {
     try { report.observer = await page.evaluate(() => window.__battleFlowQa?.dispose()); }
     catch (error) { report.errors.push(`Observer cleanup: ${String(error)}`); }
+    if (fixture.scenario === "sequential" && !report.cancelledAtPause && report.observer) {
+      const events = report.observer.events;
+      const waits = events.filter((event, index) => event.view.pause === "wait" && events[index - 1]?.view.request !== event.view.request);
+      report.authoredWaits = waits.map(event => {
+        const next = events.find(candidate => candidate.at > event.at && candidate.view.request !== event.view.request);
+        return { request: event.view.request, elapsedMs: next ? next.at - event.at : null };
+      });
+      if (report.authoredWaits.length !== 2 || report.authoredWaits.some((wait, index) => wait.elapsedMs === null || wait.elapsedMs < [500, 700][index] - 1)) {
+        report.errors.push(`Authored wait durations failed: ${JSON.stringify(report.authoredWaits)}`);
+      }
+    }
     const closed = new Promise(resolveClose => page.once("close", resolveClose));
     await context.close(); await closed;
     cleanup.contexts.push({ flow: fixture.flow, scenario: fixture.scenario, pass, closed: page.isClosed(), remainingPages: context.pages().length,
@@ -290,11 +352,15 @@ async function exercise(fixture, pass) {
 
 try {
   const fixtures = await buildFixtures();
-  server = await startPlayerQaServer();
-  browser = await chromium.launch({ headless: !args.headed, args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-features=LocalNetworkAccessChecks,LocalNetworkAccessChecksWebRTC"] });
+  server = await startPlayerQaServer(args.port ? { port: Number(args.port) } : {});
+  browser = await chromium.launch({ headless: !args.headed, args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--alsa-output-device=null", "--disable-features=LocalNetworkAccessChecks,LocalNetworkAccessChecksWebRTC"] });
   for (const fixture of fixtures) {
     if (fixture.scenario === "teardown") await exercise(fixture, "teardown-pending");
-    await exercise(fixture, fixture.scenario === "teardown" ? "restart" : "play");
+    const passes = fixture.scenario === "sequential"
+      ? ["play", "reduced-motion", "teardown-text", "teardown-wait", "teardown-input"]
+      : [fixture.scenario === "teardown" ? "restart" : "play"];
+    assert(!args.pass || passes.includes(args.pass), "Unknown --pass for this scenario");
+    for (const pass of args.pass ? [args.pass] : passes) await exercise(fixture, pass);
   }
 } catch (error) {
   reports.push({ errors: [error.stack ?? String(error)] });
@@ -308,7 +374,7 @@ try {
   await writeFile(join(out, "SUMMARY.md"), `# Shipping-player battle-flow QA\n\nResult: ${failed ? "FAIL" : "PASS"}\n\n` +
     "Real player.html/export shim; authored fixture boot; gameplay uses keyboard only. Read-only session/DOM observations; no runtime resumption calls or effect injection.\n\n" +
     "Screenshots and full action/observed-state logs are in each flow/case/play (or teardown-pending/restart) directory. Terminal cases are authored canLose=true so their zero-tail sentinels are observable after result write-back.\n\n" +
-    "Teardown closes the entire browser context while a choice is open, then boots a new context and completes the battle. This does not claim in-document save/load teardown coverage. See cleanup.json.\n\n" +
+    "Sequential cases prove paginated text, right/flipped face, transparent/top settings, two separate unscaled waits, fresh-key branch ordering, cleared face, nested choices, and returning settings. play/reduced-motion report authored wait durations. Teardown closes the browser context during text, wait, input, or choices; it does not claim in-document save/load coverage. See cleanup.json.\n\n" +
     "Final acceptance requires supervisor direct execution; an agent debugging run is not supervisor acceptance.\n");
   process.exitCode = failed ? 1 : 0;
   console.log(`Evidence: ${out}/SUMMARY.md`);

@@ -358,8 +358,27 @@ export function captureFormSurface(kind: CommandKind): FormSurface {
 export function renderCommandSurfaceRoot(cmd: Command): HTMLElement {
   // 고정 캡처 프로젝트. createBlankProject() 를 쓰면 기준선의 27~30% 가 DB 레코드 id 가 되고
   // 아이템 카탈로그 증감만으로 게이트가 빨개진다(fixtures/captureProject.ts 주석 참조).
-  store.replace(createCaptureProject());
-  return renderCommandBody({ path: [0], actions: noopActions, lockKind: true }, cmd);
+  const descriptor = Object.getOwnPropertyDescriptor(window, "setInterval");
+  const schedule: Window["setInterval"] = window.setInterval;
+  const intervals: number[] = [];
+  // Static captures keep the initial rendered state, but own every interval
+  // created while constructing it, including callers that harvest the root later.
+  Object.defineProperty(window, "setInterval", {
+    configurable: true,
+    value: (handler: TimerHandler, timeout?: number, ...args: unknown[]): number => {
+      const timer = schedule.call(window, handler, timeout, ...args);
+      intervals.push(timer);
+      return timer;
+    },
+  });
+  try {
+    store.replace(createCaptureProject());
+    return renderCommandBody({ path: [0], actions: noopActions, lockKind: true }, cmd);
+  } finally {
+    if (descriptor) Object.defineProperty(window, "setInterval", descriptor);
+    else Reflect.deleteProperty(window, "setInterval");
+    for (const timer of intervals) window.clearInterval(timer);
+  }
 }
 
 export function captureCommandSurface(cmd: Command): FormSurface {

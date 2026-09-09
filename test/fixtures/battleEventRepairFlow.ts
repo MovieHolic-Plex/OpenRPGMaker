@@ -4,7 +4,7 @@ import strictFixture from "./projects/battle-strict-v3.json";
 
 export const BATTLE_FLOW_QA_CASES = [
   "choice-enter", "choice-z", "cancel-option", "cancel-branch",
-  "game-over", "kill-player", "abort", "force-escape", "teardown",
+  "game-over", "kill-player", "abort", "force-escape", "teardown", "sequential",
 ] as const;
 export type BattleFlowQaCase = (typeof BATTLE_FLOW_QA_CASES)[number];
 export const BATTLE_FLOW_QA_SENTINELS = [
@@ -44,7 +44,7 @@ export function buildBattleEventRepairFlowProject(flow: BattleFlow, scenario: Ba
   project.system.startActorIds = [actor.id];
   project.session.partyActorIds = [actor.id];
   project.session.inventory = {};
-  project.variables = BATTLE_FLOW_QA_SENTINELS.map((name, index) => ({ id: variable(index + 1), name }));
+  project.variables = [...BATTLE_FLOW_QA_SENTINELS, "waitOne", "waitTwo", "key", "right", "wrong"].map((name, index) => ({ id: variable(index + 1), name }));
   project.session.variables = Object.fromEntries(project.variables.map(record => [record.id, 0]));
   project.switches = [{ id: "qa_never", name: "Explicit-call-only page" }];
   project.session.switches = { qa_never: false };
@@ -64,6 +64,18 @@ export function buildBattleEventRepairFlowProject(flow: BattleFlow, scenario: Ba
     cancelBehavior: scenario === "cancel-option" ? "choice2" : scenario === "cancel-branch" ? "branch" : "disallow",
     cancelBranch: [mark(3)],
   };
+  const sequential: Command[] = scenario === "sequential" ? [
+    { kind: "changeFace", resourceId: "easyrpg-faceset-actor1-02", position: "right", flipHorizontally: true },
+    { kind: "displayTextSettings", format: "transparent", position: "top", preventObscuringPlayer: false, allowEventMovementDuringWait: true },
+    { kind: "text", speaker: "Guard", emotion: "angry", body: "\\>BF_TEXT e=\\v[7] t=\\v[8]\nSecond line\nThird line\nFourth line\nBF_PAGE2 w=\\v[15]" },
+    { kind: "wait", ms: 500 }, mark(15),
+    { kind: "text", body: "\\>BF_WAIT1 w=\\v[15] x=\\v[16]", autoAdvance: true },
+    { kind: "wait", ms: 700 }, mark(16),
+    { kind: "inputWait", variableId: variable(17) },
+    { kind: "fork", condition: { kind: "variable", variableId: variable(17), op: "==", value: 3 }, then: [mark(18)], else: [mark(19)] },
+    { kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false },
+    { kind: "text", body: "\\>BF_KEY k=\\v[17] r=\\v[18] f=\\v[19] w=\\v[15] x=\\v[16]" },
+  ] : [];
   project.commonEvents = [
     { id: "qa_outer", name: "Native outer call", trigger: "none", commands: [
       mark(5), m2("m2-106-call-common-event", { commonEventId: "qa_inner" }), mark(10),
@@ -79,7 +91,7 @@ export function buildBattleEventRepairFlowProject(flow: BattleFlow, scenario: Ba
     ] },
     { id: "qa_called", name: "Explicit nested page", span: "battle",
       conditions: [{ kind: "switch", switchId: "qa_never", value: true }],
-      commands: [mark(7), ...(end ? [end, mark(13)] : [pick]), mark(8)],
+      commands: [mark(7), ...sequential, ...(end ? [end, mark(13)] : [pick]), mark(8)],
     },
     { id: "qa_later", name: "Later automatic page", span: "battle", conditions: [...conditions], commands: [
       mark(12), { kind: "choices",

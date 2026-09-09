@@ -38,15 +38,19 @@ describe("RM2003 database utility records", () => {
       name: "초원",
       damage: 0,
       encounterRatePercent: 100,
-      battleBackgroundResourceId: "easyrpg-backdrop-sky1",
+      battleBackgroundResourceId: "easyrpg-backdrop-dawn1",
     });
     expect(database.battleCommands?.map((command) => command.name)).toEqual(["공격", "스킬", "방어", "아이템"]);
   });
 
   it("normalizes malformed utility records into RPG2003-safe defaults", () => {
-    const rawProject = JSON.parse(serialize(createBlankProject())) as Record<string, unknown>;
+    const project = createBlankProject();
+    // Retain unrelated reference targets while corrupting the utility row under test.
+    if (!project.database.elements) throw new Error("Fixture needs element records");
+    project.database.elements = project.database.elements.filter((element) => element.id !== "fire");
+    const rawProject = JSON.parse(serialize(project)) as Record<string, unknown>;
     const rawDatabase = rawProject.database as Record<string, unknown>;
-    rawDatabase.elements = [{ id: "fire", name: "Fire", kind: "nonsense", rateLabels: ["weak"], damageMultipliers: { A: 250, B: 125, E: -100 } }];
+    rawDatabase.elements = [{ id: "fire", name: "Fire", kind: "nonsense", rateLabels: ["weak"], damageMultipliers: { A: 250, B: 125, E: -100 } }, ...project.database.elements];
     rawDatabase.terrains = [{ id: "terrain_bad", name: "Bad", damage: -9, encounterRatePercent: 999 }];
     rawDatabase.battleCommands = [{ id: "cmd_bad", name: "", kind: "bogus" }];
 

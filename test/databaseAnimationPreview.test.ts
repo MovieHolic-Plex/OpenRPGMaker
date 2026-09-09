@@ -14,17 +14,19 @@ type FakeBrowserGlobals = {
 
 let restoreDom: (() => void) | undefined;
 let previousBrowserGlobals: FakeBrowserGlobals;
+let loadedImages: EventTarget[];
 
 beforeEach(() => {
   restoreDom = installFakeDom();
   previousBrowserGlobals = { Image: globalThis.Image, window: globalThis.window };
   vi.useFakeTimers();
+  loadedImages = [];
   Object.defineProperty(globalThis, "Image", {
     configurable: true,
     value: class extends EventTarget {
       readonly naturalWidth = 1920;
       readonly naturalHeight = 1920;
-      set src(_value: string) { this.dispatchEvent(new Event("load")); }
+      set src(_value: string) { loadedImages.push(this); }
     },
   });
   Object.defineProperty(globalThis, "window", {
@@ -67,6 +69,8 @@ describe("database animation preview", () => {
     });
     if (!(panel instanceof FakeElement)) throw new Error("Expected fake animation panel");
 
+    document.body.append(panel);
+    for (const image of loadedImages) image.dispatchEvent(new Event("load"));
     const play = findByTestId(panel, "db-animation-play");
     expect(play?.attrs["aria-pressed"]).toBe("true");
     expect(findByTestId(panel, "db-animation-stage-target")?.style.backgroundPosition).toBe("-0px -0px");

@@ -326,7 +326,7 @@ describe("dialogue presentation lifecycle", () => {
     expect(box(host)).toBeNull();
 
     // hide() 는 연출을 기다리지 않는다 — 맵 전환처럼 창이 남으면 안 되는 자리용이다.
-    const again = dialogue.showText(textRequest("다시"));
+    const again = expect(dialogue.showText(textRequest("다시"))).rejects.toMatchObject({ name: "AbortError" });
     expect(box(host)).not.toBeNull();
     dialogue.hide();
     expect(box(host)).toBeNull();

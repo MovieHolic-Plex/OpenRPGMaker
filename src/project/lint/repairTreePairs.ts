@@ -3,8 +3,8 @@
 // 쓰기 툴/붓질 후 post-hook 에서 호출.
 
 import { TILE } from "@/project/defaults/constants";
-import { isTreeTrunkTileId } from "@/project/tilesetHarness";
-import type { GameMap, Project } from "@/project/types";
+import { isCombinedTownTileset, isTreeTrunkTileId } from "@/project/tilesetHarness";
+import type { GameMap, Project, TilesetDef } from "@/project/types";
 
 /** 밑동 타일 → 바로 위 칸에 와야 할 수관(upper) 타일. */
 const TRUNK_TO_CANOPY: Readonly<Record<number, number>> = {
@@ -31,7 +31,7 @@ export function repairTreePairsOnProject(
   let canopiesPlaced = 0;
   let orphanTrunksRemoved = 0;
   for (const map of Object.values(project.maps)) {
-    const result = repairTreePairsOnMap(map, options);
+    const result = repairTreePairsOnMap(map, project.tilesets[map.tilesetId], options);
     canopiesPlaced += result.canopiesPlaced;
     orphanTrunksRemoved += result.orphanTrunksRemoved;
   }
@@ -45,8 +45,11 @@ export function repairTreePairsOnProject(
  */
 export function repairTreePairsOnMap(
   map: GameMap,
+  tileset: Pick<TilesetDef, "image"> | undefined,
   options: TreePairRepairOptions = {},
 ): TreePairRepairResult {
+  // Numeric trunk/canopy IDs belong to the exact bundled Town image only.
+  if (!tileset || !isCombinedTownTileset(tileset)) return { canopiesPlaced: 0, orphanTrunksRemoved: 0 };
   let canopiesPlaced = 0;
   let orphanTrunksRemoved = 0;
 

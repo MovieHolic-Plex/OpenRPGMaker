@@ -92,7 +92,7 @@ const ANIMATION_TARGET_SEGMENTS = [
   { value: "event", key: "event", label: "이벤트" },
 ] as const satisfies readonly SegmentOption<"player" | "event">[];
 
-// 런타임 keyInputCodeFor(playSceneInterpreter) 와 같은 코드 집합.
+// 런타임 keyInputCodeFor(player/eventInput) 와 같은 코드 집합.
 // 변수에 실제로 저장되는 값을 작성자가 눈으로 확인할 수 있게 프리뷰에 그린다.
 const KEY_INPUT_KEYCAPS = [
   { code: "1", keys: "↓ / S", label: "아래", badge: "1" },

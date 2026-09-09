@@ -1734,3 +1734,25 @@ keep running and `getBoundingClientRect()` lagged the committed `--ai-float-bar-
 and seed pointer gestures / ARIA from the **viewport-clamped effective width** (preferred `barSize` stays in storage across viewport-only shrinks).
 Contracts: `test/aiPanelGlassResize.test.ts`, `test/aiDeckResizeTransitionCss.test.ts`,
 e2e `ai-ui-audit-fixes` F10.
+
+### Legacy AI contract verification (2026-09-08)
+
+- Image-field tests mount real DOM before enqueueing. Detached fields deliberately unsubscribe;
+  changing the production `isConnected` guard to accommodate detached fixtures breaks record isolation.
+  Queue transitions and `onInserted` callbacks are completion signals, including store re-entry.
+- `whenAiChatPanelSettled()` drains conversation persistence/restoration, not an active chat turn.
+  Tests subscribe to the terminal chat audit receipt before sending, then drain persistence.
+  Region tests observe the running-state removal before inspecting their final receipt.
+- HTTP fixtures distinguish no-tool intent JSON requests from streaming tool requests using
+  parsed `tools`/`stream` fields. A blanket SSE response corrupts the intent/planner phase.
+  Retry tests observe registration of each actual backoff timer before advancing virtual time.
+- Current idle context pins stay visible. Keyboard guidance is an input title, not a separate
+  layout row; removed suggestion chips are not a composer-readiness contract.
+- `script_cutscene` replaces its named cutscene page by default; callers that test added-page
+  placement must explicitly pass `mode: "append"`. Reuse checks retain event identity/location
+  and verify replacement commands. Targeted mutations prove these updated contracts detect regressions.
+- World bridge/mountain tools map explicitly to world activity narration. Region generator
+  controls consume existing surface/accent/on-accent/danger tokens without literal-color fallbacks.
+- Lane receipts: `output/evidence/event-command-completion/legacy-ai/`. Browser QA uses an owned
+  strict-port 21050 server and private loopback namespace to avoid host network-change failures;
+  remote writes are intercepted and the disposable database edit is discarded through its real UI.

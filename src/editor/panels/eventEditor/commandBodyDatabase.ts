@@ -1,3 +1,4 @@
+import { expOperandControls } from "./commandBodyExp";
 import { equipmentSlots, equipmentSlotLabel } from "@/project/equipmentSlots";
 import { battleTroopError } from "@/project/battleAdmission";
 ﻿import { craftRecipesOf } from "@/project/craftRecipes";
@@ -1488,6 +1489,11 @@ function actorAmountBody(context: CommandEditContext, cmd: ActorAmountCommand): 
       })
     : null;
   const amount = numberInput(typeof cmd.amount === "number" ? cmd.amount : 0, labels.amountTitle, labels.amountTestId);
+  const stepper = amountStepper(amount, { testidBase: labels.amountTestId.replace(/-input$/, "") });
+  // Neutral wrappers preserve native hidden behavior despite the controls' flex display rules.
+  const amountField = cmd.kind === "changeExp" ? el("span", { children: [stepper] }) : stepper;
+  const actorField = cmd.kind === "changeExp" ? el("span", { children: [actor.root] }) : actor.root;
+  const exp = cmd.kind === "changeExp" ? expOperandControls(cmd, () => apply()) : null;
   const presetsHost = supportsPercent
     ? el("div", {
         class: "actor-amount-presets",
@@ -1502,7 +1508,7 @@ function actorAmountBody(context: CommandEditContext, cmd: ActorAmountCommand): 
       : cmd.kind === "changeActorMp"
         ? "change-actor-mp-preview"
         : "change-level-preview",
-    supportsPercent ? "고정 또는 최대치 %" : "시작값 기준"
+    supportsPercent ? "고정 또는 최대치 %" : cmd.kind === "changeExp" ? "실행할 경험치 조작" : "시작값 기준"
   );
 
   const currentMode = (): "flat" | "percent" => {
@@ -1523,6 +1529,16 @@ function actorAmountBody(context: CommandEditContext, cmd: ActorAmountCommand): 
   };
   const renderPreview = () => {
     const record = project.database.actors.find((entry) => entry.id === actor.select.value);
+    if (exp) {
+      const operand = exp.amount(resolveAmount());
+      const amountLabel = typeof operand === "number" ? String(operand)
+        : project.variables.find((variable) => variable.id === operand.id)?.name || operand.id;
+      preview.body.replaceChildren(el("span", {
+        class: "rich-preview-hint",
+        text: `${exp.actorId(actor.select.value) ? record?.name ?? "주인공" : "파티 전체"} · 경험치 ${op.select.value} ${amountLabel}`,
+      }));
+      return;
+    }
     if (!record) {
       preview.body.replaceChildren(el("span", { class: "rich-preview-hint", text: "주인공을 선택하면 전/후 값이 표시됩니다." }));
       return;
@@ -1551,7 +1567,13 @@ function actorAmountBody(context: CommandEditContext, cmd: ActorAmountCommand): 
       resolveAmount(),
       supportsPercent ? currentMode() : undefined
     );
-    context.actions.replaceCommand(context.path, next);
+    exp?.sync(actorField, amountField);
+    context.actions.replaceCommand(context.path, exp ? {
+      kind: "changeExp",
+      actorId: exp.actorId(actor.select.value),
+      op: selectedOptionValue(op.select, AMOUNT_OP_OPTIONS, cmd.op),
+      amount: exp.amount(resolveAmount()),
+    } : next);
   };
 
   if (presetsHost && amountMode) {
@@ -1636,6 +1658,7 @@ function actorAmountBody(context: CommandEditContext, cmd: ActorAmountCommand): 
   amountMode?.select.addEventListener("change", apply);
   amount.addEventListener("change", apply);
   amount.addEventListener("input", renderPreview);
+  exp?.sync(actorField, amountField);
   renderPreview();
 
   return el("div", {
@@ -1646,7 +1669,7 @@ function actorAmountBody(context: CommandEditContext, cmd: ActorAmountCommand): 
           ? "change-actor-hp-command-body"
           : cmd.kind === "changeActorMp"
             ? "change-actor-mp-command-body"
-            : "change-level-command-body",
+            : cmd.kind === "changeExp" ? "event-command-exp-form" : "change-level-command-body",
     },
     children: [
       el("div", {
@@ -1664,13 +1687,16 @@ function actorAmountBody(context: CommandEditContext, cmd: ActorAmountCommand): 
           }),
         ],
       }),
-      el("div", { class: "rich-form-row", children: [actor.root] }),
+      ...(exp ? [exp.target] : []),
+      el("div", { class: "rich-form-row", children: [actorField] }),
       el("div", {
         class: "rich-form-row actor-amount-controls",
         children: [
           op.root,
           ...(amountMode ? [amountMode.root] : []),
-          amountStepper(amount, { testidBase: labels.amountTestId.replace(/-input$/, "") }),
+          ...(exp ? [exp.source] : []),
+          amountField,
+          ...(exp ? [exp.variable] : []),
         ],
       }),
       ...(presetsHost ? [presetsHost] : []),

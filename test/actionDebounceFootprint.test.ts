@@ -132,6 +132,8 @@ describe("__oprnDebug 스냅샷이 두 사각을 실어 보낸다", () => {
       syncAudioState: () => undefined,
       syncPictureLayer: () => undefined,
     };
+    // Phaser always supplies a game registry, even when no dialogue host is mounted.
+    withDom.game = { registry: new Map() };
     withDom.getMapId = () => scene.map.id;
     withDom.inputEnabled = true;
     withDom.running = false;

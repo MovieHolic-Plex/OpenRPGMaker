@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createScarloxyPokemonDemoProject } from "@/project/defaults";
+import { battleSkillUseFailure, consumeBattleSkillResource } from "@/battle/battleSkillUse";
 
 const GEN1_TYPES = [
   "normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost",
@@ -49,10 +50,18 @@ describe("Scarloxy Gen1 authored content", () => {
       expect(state.runtimeEffects?.removeOnBattleEnd).toBe(false);
     }
 
-    const speciesSkillIds = new Set((project.database.monsterSpecies ?? [])
-      .flatMap((species) => species.skillsByLevel.map((entry) => entry.skillId)));
+    // The factory retains the RPG catalog for editing; the authored Gen1 roster is additive.
+    const demoSpecies = (project.database.monsterSpecies ?? []).filter((species) => species.id.startsWith("species_scarloxy_"));
+    expect(demoSpecies).toHaveLength(19);
+    const speciesSkillIds = new Set(demoSpecies.flatMap((species) => species.skillsByLevel.map((entry) => entry.skillId)));
     for (const skillId of speciesSkillIds) {
-      expect(project.database.skills.find((skill) => skill.id === skillId)?.maxPp).toBeGreaterThan(0);
+      const skill = project.database.skills.find((skill) => skill.id === skillId);
+      if (!skill?.maxPp) throw new Error(`Missing authored PP for ${skillId}`);
+      expect(skill.maxPp).toBeGreaterThan(0);
+      const user = { mp: 0, maxMp: 0, skillIds: [skillId], monsterInstanceId: "demo", skillPp: { [skillId]: 1 }, stateIds: [] };
+      expect(battleSkillUseFailure(project, user, skillId)).toBeUndefined();
+      expect(consumeBattleSkillResource(project, user, skillId)).toEqual({ kind: "pp", remaining: 0 });
+      expect(battleSkillUseFailure(project, user, skillId)).toBe("noPp");
     }
     expect(project.database.items.find((item) => item.id === "item_capture_orb")?.captureProfile?.ballClass).toBe("poke");
     expect(project.database.troops.find((troop) => troop.id === "troop_pkmn_rival")?.trainerBattle).toBe(true);

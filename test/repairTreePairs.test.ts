@@ -17,7 +17,7 @@ describe("repairTreePairs", () => {
     map.upperTiles[4 * map.width + 5] = TILE.EMPTY;
     map.lowerTiles[4 * map.width + 5] = TILE.GRASS;
 
-    const result = repairTreePairsOnMap(map);
+    const result = repairTreePairsOnMap(map, project.tilesets[map.tilesetId]);
     expect(result.canopiesPlaced).toBe(1);
     expect(map.upperTiles[4 * map.width + 5]).toBe(260);
     expect(map.lowerTiles[5 * map.width + 5]).toBe(290);
@@ -28,7 +28,7 @@ describe("repairTreePairs", () => {
     const map = project.maps[MAP];
     map.lowerTiles[0 * map.width + 3] = 290;
 
-    const result = repairTreePairsOnMap(map);
+    const result = repairTreePairsOnMap(map, project.tilesets[map.tilesetId]);
     expect(result.orphanTrunksRemoved).toBe(1);
     expect(map.lowerTiles[0 * map.width + 3]).toBe(TILE.GRASS);
   });
@@ -72,7 +72,7 @@ describe("repairTreePairs", () => {
     const map = project.maps[MAP];
     map.lowerTiles[5 * map.width + 5] = 290; // 침엽 밑동
     map.upperTiles[4 * map.width + 5] = 289; // 그 위에 덤불(저작 의도)
-    const result = repairTreePairsOnMap(map, {
+    const result = repairTreePairsOnMap(map, project.tilesets[map.tilesetId], {
       canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(project),
     });
     expect(map.upperTiles[4 * map.width + 5]).toBe(289);
@@ -87,7 +87,7 @@ describe("repairTreePairs", () => {
     directMap.lowerTiles[5 * directMap.width + 5] = 290;
     directMap.upperTiles[4 * directMap.width + 5] = 237;
 
-    const direct = repairTreePairsOnMap(directMap, {
+    const direct = repairTreePairsOnMap(directMap, directProject.tilesets[directMap.tilesetId], {
       canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(directProject),
     });
     expect(direct.canopiesPlaced).toBe(1);

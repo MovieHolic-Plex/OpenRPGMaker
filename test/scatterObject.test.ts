@@ -338,7 +338,7 @@ describe("scatter_object", () => {
     blockedByWater.map.lowerTiles.fill(TILE.GRASS);
     blockedByWater.map.lowerTiles[2 * blockedByWater.map.width + 2] = TILE.WATER;
 
-    const blockedResult = runScatter(blockedByWater.project, {
+    expect(() => runScatter(blockedByWater.project, {
       mapId: blockedByWater.map.id,
       groupId: GROUP_ID,
       area: { x: 2, y: 1, w: 1, h: 2 },
@@ -346,8 +346,7 @@ describe("scatter_object", () => {
       minGap: 0,
       maxGap: 0,
       avoidProtected: false,
-    });
-    expect(placementData(blockedResult.data)).toEqual({ placed: 0, requested: 1, skipped: 1 });
+    })).toThrow(expect.objectContaining({ code: "placement-zero", mapId: blockedByWater.map.id }));
     expect(treeOrigins(blockedByWater.map)).toEqual([]);
   });
 

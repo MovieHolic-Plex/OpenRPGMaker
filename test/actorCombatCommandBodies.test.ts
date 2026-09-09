@@ -50,7 +50,7 @@ describe("actor combat command modern bodies", () => {
   });
 
   it("modernizes change state with chips and party target", () => {
-    if (!stateId) return;
+    expect(stateId).not.toBe("");
     const replaceCommand = vi.fn();
     const body = renderWithFakeDom(() =>
       renderM2CommandBody(
@@ -72,10 +72,15 @@ describe("actor combat command modern bodies", () => {
       renderM2CommandBody(ctx(replaceCommand), m2("m2-021-damage-processing", { target: actorId, operation: "add", value: 1 }))!
     );
     expect(findByTestId(body, "damage-processing-command-body")).not.toBeNull();
-    (findByTestId(body, "damage-processing-preset-heal-20") as FakeElement | null)?.dispatchEvent(new Event("click"));
+    const operation = findByTestId(body, "damage-processing-operation");
+    if (!operation) throw new Error("missing damage operation");
+    operation.value = "remove";
+    operation.dispatchEvent(new Event("change"));
+    findByTestId(body, "damage-processing-preset-25")?.click();
     const next = replaceCommand.mock.calls.at(-1)?.[1] as Extract<Command, { kind: "m2Command" }>;
     expect(next.fields.operation).toBe("remove");
-    expect(next.fields.value).toBe(20);
+    expect(next.fields.value).toBe(25);
+    expect(next.fields.target).toBe(actorId);
   });
 
   it("modernizes actor name and nickname forms", () => {
@@ -108,29 +113,35 @@ describe("actor combat command modern bodies", () => {
       renderM2CommandBody(ctx(replaceCommand), m2("m2-091-change-actor-class", { target: actorId, value: classId }))!
     );
     expect(findByTestId(classBody, "change-actor-class-command-body")).not.toBeNull();
-    if (classId) {
-      (findByTestId(classBody, `change-actor-class-chip-${classId}`) as FakeElement | null)?.dispatchEvent(new Event("click"));
-      const next = replaceCommand.mock.calls.at(-1)?.[1] as Extract<Command, { kind: "m2Command" }>;
-      expect(next.fields.value).toBe(classId);
-    }
+    const classSelect = findByTestId(classBody, "change-actor-class-class-select");
+    if (!classSelect || !classId) throw new Error("missing class picker");
+    classSelect.value = classId;
+    classSelect.dispatchEvent(new Event("change"));
+    expect(replaceCommand).toHaveBeenLastCalledWith([0], {
+      kind: "m2Command", commandId: "m2-091-change-actor-class", fields: { target: actorId, value: classId },
+    });
   });
 
   it("modernizes recover all / enter hero name / promote", () => {
-    const recover = renderWithFakeDom(() => recoverAllBody(ctx(), { kind: "recoverAll", actorId: "" }));
-    expect(findByTestId(recover, "recover-all-command-body")).not.toBeNull();
-    expect(findByTestId(recover, "recover-all-intent")).not.toBeNull();
-    expect(findByTestId(recover, "recover-all-actor-select")).not.toBeNull();
+    const replaceCommand = vi.fn();
+    const recover = renderWithFakeDom(() => recoverAllBody(ctx(replaceCommand), { kind: "recoverAll", actorId: "" }));
+    const actor = findByTestId(recover, "recover-all-actor-select");
+    if (!actor) throw new Error("missing recovery actor picker");
+    actor.value = actorId;
+    actor.dispatchEvent(new Event("change"));
+    expect(replaceCommand).toHaveBeenLastCalledWith([0], { kind: "recoverAll", actorId });
 
     const name = renderWithFakeDom(() =>
       enterHeroNameBody(ctx(), { kind: "enterHeroName", actorId, maxLength: 6, showInitialName: true })
     );
-    expect(findByTestId(name, "enter-hero-name-command-body")).not.toBeNull();
+    expect(findByTestId(name, "enter-hero-name-max-length")?.value).toBe("6");
+    expect(findByTestId(name, "enter-hero-name-show-initial")?.checked).toBe(true);
     expect(findByTestId(name, "enter-hero-name-actor-select")?.value).toBe(actorId);
 
     const promote = renderWithFakeDom(() =>
       promoteActorBody(ctx(), { kind: "promoteActor", actorId, toClassId: classId, successBranch: [], failureBranch: [] })
     );
-    expect(findByTestId(promote, "promote-actor-command-body")).not.toBeNull();
+    expect(findByTestId(promote, "promote-class-select")?.value).toBe(classId);
     expect(findByTestId(promote, "promote-actor-select")?.value).toBe(actorId);
   });
 });

@@ -1,9 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-
-type Deferred<T> = {
-  readonly promise: Promise<T>;
-  readonly resolve: (value: T) => void;
-};
+import { bounded, deferred } from "./persistenceTestSignals";
 
 class TestElement {
   className = "";
@@ -27,20 +23,11 @@ class TestElement {
   }
 }
 
-function deferred<T>(): Deferred<T> {
-  let resolvePromise: ((value: T) => void) | undefined;
-  const promise = new Promise<T>((resolve) => {
-    resolvePromise = resolve;
-  });
-  if (!resolvePromise) {
-    throw new Error("deferred resolver was not initialized");
-  }
-  return { promise, resolve: resolvePromise };
-}
-
 function installDocument(): void {
   vi.stubGlobal("document", {
     createElement: (tagName: string) => new TestElement(tagName),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
     body: {
       setAttribute: vi.fn(),
       classList: { add: vi.fn(), remove: vi.fn() },
@@ -58,12 +45,9 @@ describe("mode transitions", () => {
 
   it("mounts play when a newer same-mode request overlaps an in-flight switch", async () => {
     installDocument();
-    const playerModuleGate = deferred<{
-      readonly renderPlayer: (parent: HTMLElement) => void;
-      readonly teardownPlayer: () => void;
-    }>();
     const renderEditor = vi.fn();
-    const teardownEditor = vi.fn();
+    const editorTornDown = deferred<void>();
+    const teardownEditor = vi.fn(() => editorTornDown.resolve());
     const renderPlayer = vi.fn((parent: HTMLElement) => {
       const surface = document.createElement("div");
       surface.className = "play-surface";
@@ -146,13 +130,7 @@ describe("mode transitions", () => {
       ensureGuestIdentityForAiSurface: vi.fn(),
       openLoginModalIfNeeded: vi.fn(),
     }));
-    vi.doMock("@/player/player", async () => {
-      await playerModuleGate.promise;
-      return {
-        renderPlayer,
-        teardownPlayer,
-      };
-    });
+    vi.doMock("@/player/player", () => ({ renderPlayer, teardownPlayer }));
     vi.doMock("@/app/editorPlayBootDiagnostics", () => ({
       editorPlayBootDiagnosticSink,
     }));
@@ -161,19 +139,20 @@ describe("mode transitions", () => {
     const root = document.createElement("div");
     await bootApp(root);
 
-    const firstSwitch = enterMode("play");
-    await vi.waitFor(() => {
-      expect(teardownEditor).toHaveBeenCalledTimes(1);
-    });
+    const teardownSignal = bounded(editorTornDown.promise);
+    let firstFinished = false;
+    const firstSwitch = enterMode("play").then(() => { firstFinished = true; });
+    await teardownSignal;
+    expect(firstFinished).toBe(false);
+    expect(teardownEditor).toHaveBeenCalledTimes(1);
 
     const secondSwitch = enterMode("play");
-    playerModuleGate.resolve({ renderPlayer, teardownPlayer });
-    await Promise.all([firstSwitch, secondSwitch]);
+    await bounded(Promise.all([firstSwitch, secondSwitch]));
 
     expect(renderPlayer).toHaveBeenCalledTimes(1);
     expect(renderPlayer).toHaveBeenCalledWith(
       expect.anything(),
-      { diagnosticSink: editorPlayBootDiagnosticSink },
+      { qaInstrumentation: true, diagnosticSink: editorPlayBootDiagnosticSink },
     );
     const playParent = renderPlayer.mock.calls[0]?.[0];
     expect(playParent?.children.length).toBe(1);

@@ -50,7 +50,8 @@ describe("m2 event command catalog", () => {
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Show Text"))).toBe(true);
     expect(requireEntry("Comment").runtimeSupport).toBe("editor-only");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Comment"))).toBe(true);
-    expect(requireEntry("Display Text Settings").runtimeSupport).toBe("runtime-partial");
+    expect(requireEntry("Display Text Settings").runtimeSupport).toBe("runtime-full");
+    expect(m2CommandRuntimeSupport(requireEntry("Display Text Settings").id, "troop")).toBe("runtime-partial");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Display Text Settings"))).toBe(true);
     // 배지 정직성(2026-08-20): 카탈로그의 정적 runtimeSupport 는 컨텍스트를 모르는
     // 보수 판정(세 컨텍스트 중 최저)이다. Open Load Menu(m2-093)는 검증 후
@@ -200,7 +201,7 @@ describe("m2 event command catalog", () => {
     ];
 
     // 배지 정직성(2026-08-20): 정적 runtimeSupport 는 보수 판정. 모던 커맨드 중
-    // Advanced Dialogue also inherits the narrower troop text contract.
+    // Advanced Dialogue inherits the completed native text contract, not its persisted alias.
     // map 컨텍스트 full 여부는 M2_MAP_COMMON_FULL_IDS 멤버십이 정본이다.
     // 2026-08-26 IA 수리: 모던 명령도 성격대로 탭을 받는다. 시스템·도구만 탭 4 에 남는다.
     const modernPageByTitle: Readonly<Record<string, number>> = {
@@ -225,7 +226,7 @@ describe("m2 event command catalog", () => {
     const mapFullModernTitles = new Set(["Camera Control", "Spawn Event", "Remove Event", "Pathfind Move", "Wait Until", "Sound Layer"]);
     for (const title of modernTitles) {
       const entry = requireEntry(title);
-      expect(entry.runtimeSupport).toBe("runtime-partial");
+      expect(entry.runtimeSupport).toBe(title === "Advanced Dialogue" ? "runtime-full" : "runtime-partial");
       expect(m2CatalogEntryRuntimeSupport(entry, "map")).toBe(
         title === "Advanced Dialogue" || mapFullModernTitles.has(title) ? "runtime-full" : "runtime-partial"
       );
@@ -233,6 +234,7 @@ describe("m2 event command catalog", () => {
         expect(entry.bodyStrategy).toBe("existing");
         expect(entry.existingKind).toBe("text");
         expect(createDefaultM2Fields(entry)).toEqual({});
+        expect(m2CommandRuntimeSupport(entry.id, "troop")).toBe("runtime-partial");
       } else {
         expect(entry.bodyStrategy).toBe("generic");
         expect(createDefaultM2Fields(entry)).not.toEqual({});
@@ -253,11 +255,14 @@ describe("m2 event command catalog", () => {
       M2_COMMAND_CATALOG.map((entry) => entry.runtimeSupport)
     );
     expect(requireEntry("Comment").supportStatus).toBe("editor-only");
-    // inputWait is map-full but troop-partial, so its context-free native alias grade is conservative.
-    expect(requireEntry("Key Input Processing").supportStatus).toBe("runtime-partial");
+    // Native input/text now use real troop hosts; persisted M2 aliases remain conservative.
+    expect(requireEntry("Key Input Processing").supportStatus).toBe("runtime-full");
     expect(m2CatalogEntryRuntimeSupport(requireEntry("Key Input Processing"), "map")).toBe("runtime-full");
-    expect(m2CatalogEntryRuntimeSupport(requireEntry("Key Input Processing"), "troop")).toBe("runtime-partial");
-    expect(requireEntry("Show Text").supportStatus).toBe("runtime-partial");
+    expect(m2CatalogEntryRuntimeSupport(requireEntry("Key Input Processing"), "troop")).toBe("runtime-full");
+    expect(requireEntry("Show Text").supportStatus).toBe("runtime-full");
+    for (const title of ["Key Input Processing", "Show Text"]) {
+      expect(m2CommandRuntimeSupport(requireEntry(title).id, "troop")).toBe("runtime-partial");
+    }
     // 아래 다섯 개는 M2_MAP_COMMON_FULL_IDS 멤버 — map/common 에서는 full 이지만
     // troop 에서는 partial 이므로 컨텍스트 없는 정적 값은 보수적으로 partial 이다.
     for (const title of ["Change Parameters", "Change State", "Damage Processing", "Change Actor Graphic", "Scroll Map"]) {

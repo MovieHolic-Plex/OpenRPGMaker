@@ -634,12 +634,13 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const closeMenuWithJuice = (): void => {
     const menu = currentStatusMenu(layout);
     if (!menu) return;
-    emitRuntimeJuice({ event: "menu-close" });
+    emitMenuJuice("menu-close");
     closeStatusMenu(menu);
   };
 
   const emitMenuJuice = (event: RuntimeJuiceEvent, target?: HTMLElement | null): void => {
-    emitRuntimeJuice({ event, target: target ?? layout.querySelector<HTMLElement>("[data-testid='main-menu']") });
+    emitRuntimeJuice({ event, target: target ?? layout.querySelector<HTMLElement>("[data-testid='main-menu']"),
+      project: store.getCurrent(), session: activeScene()?.session });
   };
 
   const statusMenu = createPlayerStatusMenuController({
@@ -705,7 +706,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (menu && event.key === "Tab") {
       event.preventDefault();
       event.stopPropagation();
-      emitRuntimeJuice({ event: "menu-invalid", target: menu });
+      emitMenuJuice("menu-invalid", menu);
       return;
     }
     const overlayActive = isDialogueSurfaceActive() || isModalOverlayActive();

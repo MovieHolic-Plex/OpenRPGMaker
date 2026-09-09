@@ -1,8 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 237개 툴 — 쓰기 176, 읽기 61.
-> 총 231개 툴 — 쓰기 174, 읽기 57.
+> 총 238개 툴 — 쓰기 176, 읽기 62.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -157,9 +156,9 @@
 | `set_audio_description` | `kind: music\|sound`, `resourceId: string`, `action: set\|reset`, `description?: string` | 음악·효과음 설명을 수정한다. set은 description 문자열이 필요하며 빈 문자열은 설명 비우기다. reset은 description 없이 기본 설명을 복원한다. |
 | `upsert_resource` | `resource: object` | 리소스 가져오기: 업로드 소재를 등록/수정한다. id·name·kind와 선택 dataUrl. 파일 선택 UI 없이 저작 데이터를 쓴다. |
 | `delete_resource` | `resourceId: string` | 업로드 리소스를 삭제한다. 맵/타일셋이 참조하면 거부한다. |
-| `plan_world` | `nodes: array`, `edges: array` | 선언형 worldGraph를 검증해 프로젝트에 등록한다. 맵은 만들지 않으며, edges는 nodes에 선언된 mapId만 참조할 수 있다. |
+| `plan_world` | `nodes: array`, `edges: array` | 선언형 worldGraph를 검증해 프로젝트에 등록한다. 맵은 만들지 않으며, edges는 nodes에 선언된 mapId만 참조할 수 있다. 크기 힌트는 build_world 와 같은 상한(최대 256×256)을 지켜야 한다. |
 | `link_maps` | `from: object`, `to: object`, `bidirectional?: boolean`, `fade?: black\|white\|none` | 두 맵 사이 transfer edge를 등록하고 실제 출입구 이벤트를 안정 ID로 생성/갱신한다. bidirectional 기본 true. |
-| `build_world` | `plan: object`, `fade?: black\|white\|none` | worldGraph 형태의 plan으로 다중 맵 월드를 만든다. 노드별 빈 맵과 역할 기본 지형만 만들고, transfer edges를 일괄 link_maps 처리한다. 마을 내부 콘텐츠(집/NPC)는 만들지 않는다. |
+| `build_world` | `plan: object`, `fade?: black\|white\|none` | worldGraph 형태의 plan으로 다중 맵 월드를 만든다. 노드별 빈 맵과 역할 기본 지형만 만들고, transfer edges를 일괄 link_maps 처리한다. 마을 내부 콘텐츠(집/NPC)는 만들지 않는다. 노드 맵 하나는 최대 256×256 — 더 넓은 월드는 노드를 늘려 나눠라. |
 | `upsert_palette_preset` | `tilesetId?: string`, `preset: object` | 타일셋 팔레트 프리셋을 추가/수정한다. 프리셋이 있으면 개별 타일 id 대신 presetId+paletteRole을 우선 사용하라. 잠긴 프리셋은 AI가 수정할 수 없다. |
 | `create_quest_flags` | `questKey: string`, `steps: integer` | 퀘스트용 스위치(sw_<key>_started/_done)와 진행 변수(var_<key>_progress)를 자동 등록한다. |
 | `create_quest` | `def: object` | 선언적 QuestDef로 퀘스트 이벤트·진행 플래그·단계 메타를 함께 만든다. talk는 target, collect는 sources, kill은 at가 필수. 생성 후 같은 ID로 define_quest를 호출하지 마세요. 그래프를 저장하는 도구는 define_quest이고 create_quest는 단계 정의를 보존한다. 단계형 자동 완주 검증은 현재 지원하지 않는다. |
@@ -235,7 +234,6 @@
 | `list_npc_graphics` | `query?: string` | NPC/캐릭터셋 그래픽 후보를 조회한다. query는 자유 질의 가능(예: 할머니, old woman, 노인 남성, 기사). 상위 20개를 반환한다. |
 | `list_resources` | `kind: tile\|charset\|monster\|backdrop\|bgm\|se`, `query: string`, `offset?: integer`, `limit?: integer` | 리소스를 시맨틱 검색한다(resourceSearch 위임). kind: tile/charset/monster/backdrop/bgm/se. |
 | `query_tiles` | `tilesetId?: string`, `role?: string`, `category?: string`, `presetId?: string`, `limit?: integer` | 타일셋의 타일 상세를 role/category/presetId로 조회한다. 프리셋이 있으면 배치 전에 개별 tile id 대신 presetId+paletteRole 후보를 확인하라. |
-| `get_database_records` | `collection: actors\|classes\|skills\|items\|equipment\|enemies\|troops\|states\|battleAnimations\|switches\|variables\|commonEvents\|quests\|maps\|elements\|monsterSpecies\|lifeSkills\|farmAnimalSpecies\|crops`, `include?: ids\|full`, `ids?: array`, `limit?: integer`, `offset?: integer` | 컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만 조회, limit/offset으로 페이지 조회 가능. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies/lifeSkills/farmAnimalSpecies/crops. |
 | `get_database_records` | `collection: actors\|classes\|skills\|items\|equipment\|enemies\|troops\|states\|battleAnimations\|switches\|variables\|commonEvents\|quests\|maps\|elements\|monsterSpecies\|lifeSkills\|farmAnimalSpecies\|crops\|characterAppearances`, `include?: ids\|full`, `ids?: array`, `limit?: integer`, `offset?: integer` | 컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만 조회, limit/offset으로 페이지 조회 가능. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies/lifeSkills/farmAnimalSpecies/crops/characterAppearances. |
 | `run_lint` | `reachability?: array` | projectLint, 타일셋 팔레트 lint, 타일 후검증을 실행해 무결성 issue 목록(error/warning/info)을 반환한다. |
 | `check_reachability` | `mapId: string`, `from: object`, `targets: array` | 지정 맵에서 from 지점으로부터 targets 각각에 인접 도달 가능한지 검사한다. |
@@ -249,7 +247,7 @@
 | `show_tiles` | `tileIds: array`, `tilesetId?: string` | 타일 이미지를 채팅에 표시해 사용자가 눈으로 확인하게 한다. 타일에 대해 질문하거나 설명할 때 반드시 먼저 호출하라(번호만으로는 사용자가 어떤 타일인지 알 수 없다). |
 | `show_tile_grid` | `mapId: string`, `x: integer`, `y: integer`, `w: integer`, `h: integer` | 맵 영역(최대 20×20)을 타일 그리드 이미지로 채팅에 표시한다. 구조물에 대해 질문/설명하기 전에 호출해 사용자가 영역 전체를 그림으로 보게 하라. |
 | `render_group_sample` | `tilesetId: string`, `groupId?: string`, `role?: building\|castle\|fence\|roof\|terrain\|water\|wall\|prop`, `tileIds?: array`, `patternGrammar?: object`, `proposed?: object` | 타일 그룹/후보를 실제 배치 샘플 이미지로 렌더하기 위한 데이터를 만든다. 클러스터 수정 전에는 현재 샘플을, 수정 제안 전에는 전/후 샘플을 먼저 보여줘라. |
-| `show_map_region` | `mapId: string`, `x: integer`, `y: integer`, `w: integer`, `h: integer` | 맵 영역을 하위/상위 타일 2D 배열로 반환하고 실제 타일 이미지로 보여준다. 맵에 뭔가 깐 뒤 말로 단정하지 말고 이 툴로 결과를 눈으로 확인하라. 한 변 최대 24타일(초과분은 중심 기준으로 잘림). 호수 위치는 get_map_region의 water.bounds를 쓰고, 전체 맵을 반복 스캔하지 마라. |
+| `show_map_region` | `mapId: string`, `x: integer`, `y: integer`, `w: integer`, `h: integer` | 맵 영역을 하위/상위 타일 2D 배열로 반환하고 실제 타일 이미지로 보여준다. 맵에 뭔가 깐 뒤 말로 단정하지 말고 이 툴로 결과를 눈으로 확인하라. 부분 영역은 한 변 최대 24타일(초과분은 중심 기준으로 잘림). 맵 전체가 필요하면 x:0,y:0,w:맵너비,h:맵높이로 한 번에 요청하라 — 전체 요청은 잘리지 않고 한 장으로 축소 렌더된다. 호수 위치는 get_map_region의 water.bounds를 쓰고, 큰 맵을 조각내어 반복 스캔하지 마라. |
 | `find_similar_tiles` | `tilesetId: string`, `tileId: integer`, `limit?: integer` | 기준 타일과 같이 쓰기 좋은 비슷한 타일 인덱스를 추천한다. 이미지 픽셀을 읽을 수 없는 환경에서는 시트 근접도, role/label, terrainTag, 그룹 정보를 결정적으로 점수화한다. |
 | `focus_editor_view` | `query?: string`, `mapId?: string`, `x?: integer`, `y?: integer`, `w?: integer`, `h?: integer` | 사용자 화면을 특정 위치로 옮긴다. 이름만 주면(query) 프로젝트에서 그 맵·NPC·건물을 찾아 그곳으로 데려간다. '어디야?', '어디에 있어?', '보여줘', '거기로 가자' 같은 요청에는 설명하기 전에 먼저 호출하라. 좌표를 이미 알고 있으면 mapId 와 x·y·w·h 로 직접 지정한다. mapId 가 있으면 query 는 무시한다. |
 | `generate_character_appearance` | `appearanceId: string`, `slot?: face\|bust` | 캐릭터 외형의 비어 있는 얼굴 또는 상반신 그림 후보를 만든다. 편집기에서는 캐릭터 외형 DB를 열고 생성을 시작한다. 후보는 사용자가 DB에서 적용해야 저장된다. 걷기 캐릭터칩은 생성·변경하지 않는다. 헤드리스에서는 UI 필요 상태만 반환한다. |

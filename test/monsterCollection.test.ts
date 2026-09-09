@@ -128,11 +128,30 @@ describe("monster collection core", () => {
     expect(snapshot.rewards.exp).toBe(0);
   });
 
+  it("capturing one enemy does not win while another visible enemy is alive", () => {
+    const project = monsterProject();
+    const troop = project.database.troops.find((record) => record.id === "troop_slime");
+    if (!troop) throw new Error("missing troop");
+    troop.members = [
+      { enemyId: "enemy_slime", x: 72, y: 88 },
+      { enemyId: "enemy_slime", x: 116, y: 120 },
+    ];
+    const runtime = captureRuntime(project);
+    runtime.performActorCommand({ kind: "capture", captureItemId: "item_capture_orb", targetEnemyId: "enemy-1" });
+    expect(runtime.snapshot().capturedMonsters).toHaveLength(1);
+    expect(runtime.snapshot().enemies.some((enemy) => enemy.id === "enemy-2" && enemy.hp > 0)).toBe(true);
+    expect(runtime.snapshot().result).toBeUndefined();
+  });
+
   it("simulateBattle strict script captures a weakened slime and fails at full HP", () => {
     const successProject = monsterProject();
     const hero = successProject.database.actors[0];
     if (!hero) throw new Error("missing hero");
     hero.parameterCurves.attack = Array.from({ length: 99 }, () => 1);
+    // Starter equipment and actor criticals can make this scripted hit lethal.
+    // Control both instead of depending on a particular seeded critical roll.
+    hero.initialEquipment = {};
+    hero.critical = { enabled: false, chanceDenominator: 30 };
     successProject.database.skills.push(normalizeSkillRecord({
       id: "skill_leave_one",
       name: "빈사 만들기",
@@ -163,6 +182,11 @@ describe("monster collection core", () => {
       ],
       maxSteps: 20,
     });
+    const openingHit = success.roundLogs[0]?.actions.find((action) => action.commandKind === "skill");
+    expect(openingHit?.hit).toBe(true);
+    expect(openingHit?.critical).toBe(false);
+    expect(openingHit?.amount).toBeGreaterThan(0);
+    expect(openingHit?.amount).toBeLessThan(enemy.stats.maxHp);
     expect(success.capturedCount).toBe(1);
     expect(success.capturedMonsters[0]?.speciesId).toBe("species_wild_slime");
 

@@ -49,6 +49,7 @@ export type DialogueTextContext = {
 };
 
 export type DialogueTextRequest = DialogueSurfaceSettings & {
+  readonly signal?: AbortSignal;
   readonly speaker?: string;
   readonly body: string;
   readonly face?: FaceGraphic;
@@ -146,6 +147,7 @@ export function createDialogueUI(
   // 지금 열려 있는 창의 퇴장 길이. close() 가 프로파일을 다시 볼 수 없어서 들고 있는다.
   let activeExitMs = 0;
   let cancelActiveChoice: (() => void) | undefined;
+  let cancelActiveText: (() => void) | undefined;
 
   const clearOverlay = (): void => {
     clearChildren(overlay);
@@ -162,6 +164,7 @@ export function createDialogueUI(
    * 그려지지 않고 여기서 취소되고, 진입 연출도 다시 재생되지 않는다.
    */
   const takeOverOverlay = (): boolean => {
+    cancelActiveText?.();
     cancelActiveChoice?.();
     const wasOpen = overlay.firstChild !== null;
     if (pendingExit) {
@@ -190,20 +193,22 @@ export function createDialogueUI(
     if (!settled) pendingExit = { cancelTimer, finish };
   };
 
-  const beginEnter = (box: HTMLElement, enterMs: number, animate: boolean): void => {
+  const beginEnter = (box: HTMLElement, enterMs: number, animate: boolean): (() => void) => {
     if (!animate) {
       box.dataset.dialoguePhase = "shown";
-      return;
+      return () => {};
     }
     box.dataset.dialoguePhase = "enter";
-    schedule(() => {
+    return schedule(() => {
       if (box.dataset.dialoguePhase === "enter") box.dataset.dialoguePhase = "shown";
     }, enterMs);
   };
 
   function showText(request: DialogueTextRequest): Promise<void> {
+    if (request.signal?.aborted) return Promise.reject(new DOMException("Text cancelled", "AbortError"));
     const wasOpen = takeOverOverlay();
-    return new Promise<void>((resolve) => {
+    return new Promise<void>((resolve, reject) => {
+      let settled = false;
       const box = dialogueBox("", "dialogue-box");
       const position = applyTextSettings(overlay, box, request);
       const profile = dialoguePresentationProfile(request.emotion, {
@@ -270,7 +275,7 @@ export function createDialogueUI(
       // 진입 연출은 페이지네이션이 끝난 뒤에 건다. 연출은 transform/opacity 뿐이라
       // clientHeight 에 영향이 없지만, 순서를 고정해 두면 나중에 레이아웃 속성을
       // 실수로 애니메이션해도 측정이 먼저 끝나 있다(줄 수가 틀어지면 문장이 조용히 잘린다).
-      beginEnter(box, profile.enterMs, !wasOpen);
+      const cancelEnter = beginEnter(box, profile.enterMs, !wasOpen);
       let pageIndex = 0;
       let visibleChars = 0;
       let tokenIndex = 0;
@@ -399,6 +404,7 @@ export function createDialogueUI(
         timer = window.setTimeout(typeStep, fastMode ? 0 : charDelayMs);
       };
       const advance = () => {
+        if (settled) return;
         if (waitingForControl) {
           waitingForControl = false;
           typing = true;
@@ -414,25 +420,37 @@ export function createDialogueUI(
           startPage(pageIndex + 1);
           return;
         }
+        settled = true;
         cleanup();
+        beginExit(box, profile.exitMs);
         resolve();
       };
       const onKey = (e: KeyboardEvent) => {
         // 텍스트 입력 컨트롤(런타임 디버그 패널)에 치는 Enter/Space 는 대사 진행이 아니다.
-        if (isTextEntryTarget(e.target)) return;
+        if (settled || e.repeat || e.isComposing || isTextEntryTarget(e.target)) return;
         if (isDialogueAdvanceKey(e.key)) {
           e.preventDefault();
+          e.stopImmediatePropagation();
           advance();
         }
       };
       const cleanup = () => {
+        cancelEnter();
         clearTimeout(timer);
         box.removeEventListener("click", advance);
         document.removeEventListener("keydown", onKey);
-        // 즉시 파괴하지 않고 퇴장을 예약한다. 뒤에 대사가 이어지면 다음 showText 의
-        // takeOverOverlay() 가 페인트 전에 취소하고, 이어지지 않으면 퇴장이 재생된다.
-        beginExit(box, profile.exitMs);
+        request.signal?.removeEventListener("abort", abort);
+        if (cancelActiveText === abort) cancelActiveText = undefined;
       };
+      const abort = (): void => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        clearOverlay();
+        reject(new DOMException("Text cancelled", "AbortError"));
+      };
+      cancelActiveText = abort;
+      request.signal?.addEventListener("abort", abort, { once: true });
       box.addEventListener("click", advance);
       document.addEventListener("keydown", onKey);
       startPage(0);
@@ -567,6 +585,7 @@ export function createDialogueUI(
 
   /** 즉시 컷. 퇴장 예약이 걸려 있으면 취소하고 바로 비운다. */
   function hide(): void {
+    cancelActiveText?.();
     cancelActiveChoice?.();
     if (pendingExit) {
       pendingExit.cancelTimer();
@@ -577,6 +596,7 @@ export function createDialogueUI(
 
   /** 퇴장 연출을 재생한 뒤 비운다. 이미 예약이 걸려 있으면 그대로 둔다. */
   function close(): void {
+    cancelActiveText?.();
     cancelActiveChoice?.();
     const box = overlay.querySelector<HTMLElement>(".dialogue-box");
     if (!box) {

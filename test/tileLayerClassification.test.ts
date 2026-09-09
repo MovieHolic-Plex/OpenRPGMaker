@@ -27,8 +27,8 @@ describe("tileLayerHome — 홈 레이어 판정", () => {
     expect(tileLayerHome(bundledTileset(), TILE.FLOWERS)).toBe("upper");
   });
 
-  it("불투명 mixed 소품(441)은 양쪽 레이어를 허용한다", () => {
-    expect(tileLayerHome(bundledTileset(), 441)).toBe("both");
+  it("소품(441)은 upper에 배치되어 기존 지면을 보존한다", () => {
+    expect(tileLayerHome(bundledTileset(), 441)).toBe("upper");
   });
 
   it("공백(EMPTY)은 요청 레이어를 따른다 — 덧그림 지우개가 바닥으로 라우팅되면 안 된다", () => {
@@ -61,9 +61,9 @@ describe("tileVisibleOnLayer — 팔레트 레이어별 노출", () => {
     expect(tileVisibleOnLayer(tileset, 378, "lower")).toBe(false);
   });
 
-  it("불투명 mixed 타일(441)은 양쪽 팔레트에, 투명 칩(FLOWERS)은 상위에만 보인다", () => {
+  it("소품(441)과 투명 칩(FLOWERS)은 상위 팔레트에만 보인다", () => {
     const tileset = bundledTileset();
-    expect(tileVisibleOnLayer(tileset, 441, "lower")).toBe(true);
+    expect(tileVisibleOnLayer(tileset, 441, "lower")).toBe(false);
     expect(tileVisibleOnLayer(tileset, 441, "upper")).toBe(true);
     expect(tileVisibleOnLayer(tileset, TILE.FLOWERS, "lower")).toBe(false);
     expect(tileVisibleOnLayer(tileset, TILE.FLOWERS, "upper")).toBe(true);

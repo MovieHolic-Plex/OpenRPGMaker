@@ -1,5 +1,12 @@
 # Editor Event Command Fixes (2026-07-15)
 
+## Sequential battle dialogue and explicit system cues (2026-09-08)
+
+- Native `text`, `changeFace`, `displayTextSettings`, `wait`, and `inputWait` use the completed troop contract in `commandGuaranteeRegistry.ts`. The picker reports the native representation it inserts, not the persisted M2 alias with the same catalog label. Do not promote the saved M2 aliases without separate runtime evidence.
+- System BGM/SE support is field-sensitive: map/common commands with a valid explicit `cue` use the real system consumer. Cue-less legacy commands retain the partial descriptor and are not silently assigned a new default. Troop system-audio M2 commands remain unsupported.
+- `commandPicker.ts` passes the actual `newM2Command` defaults to the shared support descriptor. New system-audio commands can therefore show full support while an old cue-less command in the list still asks for a system target. Both surfaces continue to use `runtimeSupport.ts`; there is no second cue allowlist in the editor.
+- Regression seams: `test/eventCommandCompletionSupport.test.ts`, `test/eventCommandSupportRepairs.test.ts`, and the actual picker script `node scripts/qa-event-command-editor-support.mjs --phase green`. These reporting checks supplement, not replace, sequential battle and system-audio player QA.
+
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
 
 Hostile-review fixes for event command forms: fork/loop rerender, setSwitch valueSource, moveEvent route preview, changeGold/changeExp/learnSkill/battleProcessing/changeBattleCommands/changeItem UX, and Page 3 rich forms.
@@ -31,6 +38,15 @@ Hostile-review fixes for event command forms: fork/loop rerender, setSwitch valu
 - The Show Picture form stores opacity as RM2K3 `0~255` but its input is a **percent** (`opacityToPercent` converts on seed, the label reads `불투명도(%)`, `percentToOpacity` converts back on commit). The live preview marker divided that percent by `255`, so a picture authored at `100%` previewed at `opacity: 0.39` while the game drew it fully opaque. The preview now divides by `100` and clamps through `clampPct`; the runtime path (`pictureCssOpacity`) keeps taking `0~255` and is unchanged.
 - When touching this preview, check which unit the value is in at that point. `commandBodyPage3Native.ts` holds both units in the same function: `cmd.opacity` is `0~255`, while the input and `previewOpacityPercent = intInRange(opacity, 100, 0, 100)` are `0~100`; `clampPct` only receives that explicitly named percent value. The marker carries `data-testid="show-picture-preview-marker"`; regression coverage is in `test/showPictureForm.test.ts`.
 
+
+## EXP operands and legacy event UI contracts (2026-09-08)
+
+- `changeExp` still accepts a number or `{ kind: "var", id }` at runtime. The shared numeric actor form had coerced existing variable operands to zero when another field changed. `commandBodyExp.ts` now adds target/source controls to the existing `actorAmountBody`; every commit reads the chosen operand without losing it on actor/operator edits. The local EXP preview shows the operation, not an invented initial EXP value derived from actor level.
+- Visibility belongs on neutral wrappers around the actor picker/number stepper: their flex display classes otherwise override the native `hidden` attribute. Browser QA checks actual visibility and staged modal commits, not just `element.hidden`.
+- Current party forms edit membership only; class selection uses the record picker, comments use catalog text/color fields, and page conditions use selectable chips inside exclusive settings-rail groups. Do not restore deleted follow-up cards, class chips, inline names, or inactive condition rows to satisfy old tests.
+- Playback fixtures must mount their stages: unmounted animation stages intentionally stop after two ticks, and detached image-queue fields release their subscriptions. Image-generation form tests await the command-commit signal after mounting, not a polling delay. Trust-loop tests use happy-dom browser APIs and the editor-close event.
+- Focused evidence and reversible mutation receipts: `output/evidence/event-command-completion/legacy-eventui/`. Structural baselines change only reviewed entries. The system cue integration adds cue/operation controls to two M2 entries and removes exactly two obsolete picker badges. Only `commandPickerTab4.testidCount` changes from 80 to 78; its control/class/root floors and the independent pre-feature control hashes stay fixed.
+- Static form capture owns and clears intervals created during construction before returning the initial DOM. This freezes the observed initial state without clicking Stop or changing its labels. Real animation playback remains covered separately; `eventEditorFormSurfaceLifecycle.test.ts` guards capture cleanup so callbacks cannot outlive the test window.
 
 ## 조명 백분율 입력 복구 (2026-09-05)
 

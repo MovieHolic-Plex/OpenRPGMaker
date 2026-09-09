@@ -86,6 +86,9 @@ const ALLOWED = new Map<string, { readonly matches: number; readonly why: string
   ["src/editor/tools/placementTools.ts", { matches: 13, why: "레이어/발자국 판정 + prop 가방 판정 + 두 enum 번역표, A-3 후보" }],
   // 어휘 선택 — "이 역할의 그룹을 골라라"는 질의이며 능력 조회가 아니다.
   ["src/editor/tools/v3/constructionTools.ts", { matches: 1, why: "역할로 그룹을 고르는 질의" }],
+  // Roof completeness compares authored wall/roof groups, not collision/render capabilities.
+  // Like constructionTools and benchmark groundTruth, substituting layerHome would mix in non-roof props.
+  ["src/project/lint/postTileVerify.ts", { matches: 2, why: "저작 wall/roof 그룹으로 지붕 덮임을 검증하는 질의" }],
   ["src/editor/tools/v3/rmTypeExpander.ts", { matches: 1, why: "역할로 후보를 고르는 질의" }],
   ["src/editor/tools/v3/vocabularyTools.ts", { matches: 1, why: "클레임의 역할 선언 검사" }],
   // terrainTag 를 0(NORMAL)으로 강제 — 현행 능력 필드는 terrainTag?: "water" 뿐이라

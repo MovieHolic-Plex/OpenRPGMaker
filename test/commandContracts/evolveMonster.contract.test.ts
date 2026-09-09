@@ -66,7 +66,8 @@ describe("evolveMonster 계약", () => {
     });
 
     expect(result.session.monsterInstances?.monster_1?.speciesId).toBe("species_king_slime");
-    expect(result.session.inventory.item_capture_orb).toBe(0);
+    // Item transitions keep inventory sparse: consuming the last unit removes the key.
+    expect(result.session.inventory).not.toHaveProperty("item_capture_orb");
     expect(result.session.flags.evolve_success).toBe(true);
     expect(result.finished).toBe(true);
   });

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createDevShowcaseProjectForLocation } from "@/editor/devShowcaseProjects";
+import fixture from "@/project/defaults/fixtures/dew-village-demo.json";
 
 describe("local dev project URL overrides", () => {
   afterEach(() => {
@@ -59,8 +60,9 @@ describe("local dev project URL overrides", () => {
     const project = createDevShowcaseProjectForLocation();
 
     if (!project) throw new Error("expected sample adventure project");
-    expect(project?.meta.title).toBe("이슬 마을의 종");
-    expect(Object.keys(project.maps)).toHaveLength(2);
+    expect(project.meta.title).toBe(fixture.meta.title);
+    expect(Object.keys(project.maps).sort()).toEqual(Object.keys(fixture.maps).sort());
+    expect(project.startMapId).toBe(fixture.startMapId);
   });
 
   it("keeps the sample adventure behind an explicit example URL flag", () => {
@@ -74,8 +76,9 @@ describe("local dev project URL overrides", () => {
     const project = createDevShowcaseProjectForLocation();
 
     if (!project) throw new Error("expected sample adventure project");
-    expect(project?.meta.title).toBe("이슬 마을의 종");
-    expect(Object.keys(project.maps)).toHaveLength(2);
+    expect(project.meta.title).toBe(fixture.meta.title);
+    expect(Object.keys(project.maps).sort()).toEqual(Object.keys(fixture.maps).sort());
+    expect(project.startMapId).toBe(fixture.startMapId);
   });
 
   it("keeps generated showcase URLs available behind the explicit devProject flag", () => {

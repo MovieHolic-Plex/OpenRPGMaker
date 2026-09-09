@@ -273,10 +273,24 @@ describe("battle active slots, switching, and battle events", () => {
     });
 
     runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    const text = runtime.snapshot().eventPause;
+    expect(text).toMatchObject({ kind: "text" });
+    if (!text) throw new Error("missing opening text");
+    expect(runtime.snapshot().eventState.switches.sw_choice).toBeUndefined();
+    expect(runtime.resumeEventPause(text.id, { kind: "text" })).toBe(true);
     expect(runtime.snapshot().phase).toBe("eventChoice");
     const request = runtime.snapshot().eventChoice;
     if (!request) throw new Error("missing battle event choice");
     expect(runtime.resumeEventChoice(request.id, 0)).toBe(true);
+    const wait = runtime.snapshot().eventPause;
+    expect(wait).toMatchObject({ kind: "wait", ms: 1 });
+    if (!wait) throw new Error("missing common-call wait");
+    expect(runtime.snapshot().eventState.variables.var_every ?? 0).toBe(0);
+    expect(runtime.resumeEventPause(wait.id, { kind: "wait" })).toBe(true);
+    const half = runtime.snapshot().eventPause;
+    expect(half).toMatchObject({ kind: "text" });
+    if (!half) throw new Error("missing HP-half text");
+    expect(runtime.resumeEventPause(half.id, { kind: "text" })).toBe(true);
     runtime.performActorCommand({ kind: "defend" });
 
     const snapshot = runtime.snapshot();

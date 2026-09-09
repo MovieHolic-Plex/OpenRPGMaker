@@ -611,8 +611,11 @@ function recordPickerControl(request: RecordPickerRequest): HTMLElement {
 
 function optionsControl(request: OptionsControlRequest): HTMLSelectElement {
   const select = el("select", { attrs: { "aria-label": request.semantic.label }, dataset: { testid: `m2-command-${request.key}-option-select` } }) as HTMLSelectElement;
+  const legacyCue = request.key === "cue" && request.cmd.fields.cue === undefined
+    && (request.cmd.commandId === "m2-027-change-system-bgm" || request.cmd.commandId === "m2-028-change-system-se");
+  if (legacyCue) select.append(el("option", { text: "기존 메타데이터 (소리를 선택하면 적용)", attrs: { value: "", disabled: "" } }));
   for (const option of request.semantic.options) select.append(el("option", { text: option.label, attrs: { value: option.value } }));
-  select.value = request.value;
+  select.value = legacyCue ? "" : request.value;
   select.addEventListener("change", () => updateField(request.context, request.cmd, request.key, select.value));
   return select;
 }

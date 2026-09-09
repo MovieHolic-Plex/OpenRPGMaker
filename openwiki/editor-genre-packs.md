@@ -42,6 +42,18 @@ Do not use one ambiguous `ready` flag. The contract has two stages:
 
 These checks reuse the canonical `Project`, `projectLint`, `collectProjectReferenceIssues`, collision/reachability helpers, and runtime journey ids. They are advisory authoring evidence, not a second schema or genre-specific runtime. Phase 4 must import the IDs from `src/project/genrePackId.ts` and supply evidence from a real runner-owned artifact; it must not synthesize evidence from a button click, default seed, or caller-shaped `{ booted, journeyIds }` object.
 
+## Dialog layering and receipt fixtures (2026-09-08)
+
+The exported starter dialog in `src/editor/panels/newProjectDialog.ts` registers with
+`modalStack` and unregisters on every settled result. Escape cancels only that layer;
+it must not dismiss an underlying Database window. This legacy exported panel is distinct
+from the live menu's `src/editor/ui/newProjectDialog.ts` entry.
+`test/modalEscapeLayerGate.test.ts` exercises the real dialog and Database world route.
+Receipt CLI fixtures must fingerprint the normalized loaded project: text-only title graphics
+without a resource are intentionally omitted during loading. Valid evidence alone does not
+make a blank project ready; missing authored commands remain `incomplete` and unsupported
+commands remain `blocked` (`test/genrePackReceiptCli.test.ts`).
+
 ## Validation
 
 - `test/genrePackRegistry.test.ts`: exact registry set, complete machine data, all-eight welcome mappings, honest blank-system-preset results, detached preset isolation, farm configuration negative controls, and fail-closed playability.

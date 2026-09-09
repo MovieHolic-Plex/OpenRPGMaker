@@ -1,7 +1,7 @@
 import { growthEffects, permanentActorSkillIds } from '@/project/growth/runtime';
 import { executeM2BattleCommand as executeM2Command } from "@/battle/battleM2CommandExecutor";
 import type { MutableBattler } from "@/battle/battleBattlers";
-import type { BattleEventChoiceSnapshot, BattleEventLogSnapshot, BattleEventStateSnapshot } from "@/battle/types";
+import type { BattleEventChoiceSnapshot, BattleEventPauseSnapshot, BattleEventPauseResponse, BattleEventLogSnapshot, BattleEventStateSnapshot } from "@/battle/types";
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "@/project/gameTime";
 import { clampFriendship } from "@/project/session";
@@ -11,10 +11,11 @@ import { transitionItemState } from "@/project/itemTransitions";
 import { transitionActorEquipment } from "@/project/equipmentRules";
 import { evalRoguelikeRunCondition, type RoguelikeRunState } from "@/project/roguelikeRun";
 import { effectiveActorClassId, promoteActor as promoteActorClass, type ClassOverrideSession } from "@/project/sessionClass";
-import type { ActorId, ActorInitialEquipment, Command, Condition, Project, ShowAnimationTarget, VariableOperand } from "@/project/types";
+import type { ActorId, ActorInitialEquipment, Command, Condition, FaceGraphic, MessageWindowSettings, Project, ShowAnimationTarget, VariableOperand } from "@/project/types";
 import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
 
 export type BattleEventRuntimeState = {
+  messageWindowSettings?: MessageWindowSettings;
   readonly switches: Record<string, boolean>;
   readonly variables: Record<string, number>;
   // 세션 셀프 스위치 스냅샷 사본(eventId → key → on). setSelfSwitch 가 여기 기록하고
@@ -109,10 +110,6 @@ export type BattleEventRuntimeOptions = {
   // playAudio/stopAudio 명령: 호스트가 실제 오디오 엔진으로 라우팅.
   readonly playAudio?: (resourceId: string, loop: boolean) => void;
   readonly stopAudio?: () => void;
-  // wait 명령(ms): 런타임이 전투 흐름을 지정 ms 동안 일시정지.
-  // 배틀 이벤트 루프는 동기식이라 wait 이후의 명령도 즉시 실행되지만,
-  // 런타임이 그 일시정지를 소비한다 — gauge 는 tick(pendingWaitMs), strict 는 타임라인 wait 엔트리.
-  readonly wait?: (ms: number) => void;
   // changeEquipment/promoteActor 가 오버레이(state.actorEquipment/classOverrides)를 갱신한 뒤
   // 해당 액터 배틀러의 파생 스탯을 재계산한다. 산식은 battleBattlers 생성 로직과 공유
   // (refreshActorBattlerDerivedStats) — 런타임이 세션 paramBonuses 를 닫아 주입한다.
@@ -123,11 +120,13 @@ export type BattleEventRuntimeOptions = {
 export type BattleEventRuntimeResult =
   | { readonly kind: "complete" }
   | { readonly kind: "choice"; readonly request: BattleEventChoiceSnapshot }
+  | { readonly kind: "pause"; readonly request: BattleEventPauseSnapshot }
   | { readonly kind: "terminated"; readonly result: "defeat" | "escape" };
 
 export type BattleEventRuntime = {
   applyTroopEvents(context: BattleEventContext): BattleEventRuntimeResult;
   resumeChoice(requestId: number, index: number): BattleEventRuntimeResult | undefined;
+  resumePause(requestId: number, response: BattleEventPauseResponse): BattleEventRuntimeResult | undefined;
   cancel(): void;
   consumeExtraActorAction(actorId: ActorId): boolean;
   logExternal(message: string): void;
@@ -139,7 +138,7 @@ export type BattleEventRuntime = {
 // promoteActor 는 잎이 아니라 여기 속한다 — success/failure 분기를 fork 와 같은 활성 프레임으로
 // 쌓아야 분기 안 gotoLabel 이 상위 라벨로 점프할 수 있다(맵 인터프리터 pushFrame 과 동형).
 // 나머지(잎) kind 만 executeBattleEventCommand 로 위임 — assertNever 전수 분류는 잎 유니온 기준.
-type BattleControlFlowKind = "fork" | "choices" | "label" | "gotoLabel" | "loop" | "breakLoop" | "promoteActor";
+type BattleControlFlowKind = "wait" | "inputWait" | "text" | "fork" | "choices" | "label" | "gotoLabel" | "loop" | "breakLoop" | "promoteActor";
 type BattleLeafCommand = Exclude<Command, { kind: BattleControlFlowKind }>;
 
 // pc 기반 실행 프레임: 트룹 페이지/커먼 이벤트 본문과 fork/choices 분기, 루프 본문이 쌓인다.
@@ -172,6 +171,10 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   let batch: { readonly context: BattleEventContext; nextPage: number } | undefined;
   let pendingChoice: { readonly command: Extract<Command, { kind: "choices" }>; readonly request: BattleEventChoiceSnapshot } | undefined;
   let nextChoiceId = 0;
+  let pendingPause: BattleEventPauseSnapshot | undefined;
+  let nextPauseId = 0;
+  let face: FaceGraphic | undefined;
+  let settingsChanged = false;
   let stopped = false;
   const ownerEvent = options.ownerEvent ?? findProjectEvent(options.project, options.ownerEventId);
   const conditionState: BattleConditionRuntimeState = options.state;
@@ -196,6 +199,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   function applyTroopEvents(context: BattleEventContext): BattleEventRuntimeResult {
     if (stopped) return { kind: "complete" };
     if (pendingChoice) return { kind: "choice", request: pendingChoice.request };
+    if (pendingPause) return { kind: "pause", request: pendingPause };
     batch ??= { context: { ...context }, nextPage: 0 };
     return drainBatch();
   }
@@ -206,7 +210,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       if (invocation) {
         const step = executeBattleEventCommands(invocation);
         if (step.kind === "terminated") { cancel(); return step; }
-        if (step.kind === "choice") return step;
+        if (step.kind === "choice" || step.kind === "pause") return step;
         if (invocations.at(-1) === invocation && invocation.frames.length === 0) invocations.pop();
         continue;
       }
@@ -240,10 +244,23 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     return drainBatch();
   }
 
+  function resumePause(requestId: number, response: BattleEventPauseResponse): BattleEventRuntimeResult | undefined {
+    if (stopped || !pendingPause || pendingPause.id !== requestId || pendingPause.kind !== response.kind) return;
+    if (response.kind === "inputWait") {
+      if (!Number.isInteger(response.keyCode) || response.keyCode < 0 || response.keyCode > 19) return;
+      if (pendingPause.kind === "inputWait" && pendingPause.variableId) {
+        options.state.variables[pendingPause.variableId] = response.keyCode;
+      }
+    }
+    pendingPause = undefined;
+    return drainBatch();
+  }
+
   function cancel(): void {
     stopped = true;
     batch = undefined;
     pendingChoice = undefined;
+    pendingPause = undefined;
     invocations.length = 0;
   }
 
@@ -256,6 +273,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
 
   function snapshot(): BattleEventStateSnapshot {
     return {
+      messageWindowSettings: settingsChanged && options.state.messageWindowSettings ? { ...options.state.messageWindowSettings } : undefined,
       switches: options.state.switches,
       variables: options.state.variables,
       selfSwitches: Object.fromEntries(
@@ -375,6 +393,25 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       }
       frame.pc += 1;
       switch (command.kind) {
+        case "wait": {
+          const ms = Math.max(0, Math.trunc(command.ms));
+          logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `wait ${ms}ms` });
+          if (!(ms > 0)) break;
+          pendingPause = { id: ++nextPauseId, kind: "wait", ms };
+          return { kind: "pause", request: pendingPause };
+        }
+        case "inputWait":
+          pendingPause = { id: ++nextPauseId, kind: "inputWait", variableId: command.variableId };
+          return { kind: "pause", request: pendingPause };
+        case "text":
+          logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: [command.speaker, command.body].filter(Boolean).join(": ") });
+          pendingPause = {
+            id: ++nextPauseId, kind: "text", body: command.body, speaker: command.speaker,
+            face: face ? { ...face } : undefined,
+            settings: options.state.messageWindowSettings ? { ...options.state.messageWindowSettings } : undefined,
+            autoAdvance: command.autoAdvance, emotion: command.emotion,
+          };
+          return { kind: "pause", request: pendingPause };
         case "fork": {
           const branch = evaluateCondition(command.condition) ? command.then : command.else ?? [];
           if (branch.length > 0) frames.push({ commands: branch, pc: 0 });
@@ -387,6 +424,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
             id: ++nextChoiceId, pageId: page.id, round: context.turn,
             prompt: command.prompt, options: command.options.map(option => ({ text: option.text })),
             cancelBehavior: command.cancelBehavior,
+            settings: options.state.messageWindowSettings ? { ...options.state.messageWindowSettings } : undefined,
           };
           pendingChoice = { command, request };
           return { kind: "choice", request };
@@ -517,9 +555,6 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
 
   function executeBattleEventCommand(page: BattleEventPageRecord, command: BattleLeafCommand, context: BattleEventContext, depth: number): boolean | "defeat" {
     switch (command.kind) {
-      case "text":
-        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: [command.speaker, command.body].filter(Boolean).join(": ") });
-        return false;
       case "setSwitch": {
         const raw = command.value;
         const next = typeof raw === "boolean"
@@ -700,16 +735,6 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `selfSwitch ${command.key}=${command.value}` });
         return false;
       }
-      case "wait": {
-        const ms = "ms" in command ? command.ms : 0;
-        options.wait?.(ms);
-        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `wait ${ms}ms` });
-        return false;
-      }
-      case "inputWait":
-        // 전투 중 입력 대기는 UI 연동이 필요. acknowledged 로그.
-        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: "inputWait" });
-        return false;
       case "playAudio":
         options.playAudio?.(command.resourceId, command.loop);
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `playAudio ${command.resourceId}` });
@@ -781,12 +806,19 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return false;
       }
       case "changeFace":
-        // 메시지 스트립 프레젠테이션 상태 — 이벤트 로그 detail 로 반영
-        // (battleDirectorDom 의 message 소비 경로와 동일한 채널, DOM 수정 없음).
+        face = command.resourceId ? {
+          resourceId: command.resourceId, position: command.position,
+          flipHorizontally: command.flipHorizontally,
+        } : undefined;
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: command.resourceId ? `changeFace ${command.resourceId}` : "changeFace clear" });
         return false;
       case "displayTextSettings":
-        // 메시지 표시 설정 프레젠테이션 상태 — 이벤트 로그 detail 로 반영.
+        options.state.messageWindowSettings = {
+          format: command.format, position: command.position,
+          preventObscuringPlayer: command.preventObscuringPlayer,
+          allowEventMovementDuringWait: command.allowEventMovementDuringWait,
+        };
+        settingsChanged = true;
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `displayTextSettings ${command.format}/${command.position}` });
         return false;
       case "transfer":
@@ -1038,7 +1070,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     pushInvocation(page, targetPage.commands, context, depth);
   }
 
-  return { applyTroopEvents, resumeChoice, cancel, consumeExtraActorAction, logExternal, snapshot, logs: eventLogs };
+  return { applyTroopEvents, resumeChoice, resumePause, cancel, consumeExtraActorAction, logExternal, snapshot, logs: eventLogs };
 }
 
 // playSceneInterpreter 의 default: assertNever(step) 전례를 따르는 로컬 전수 검증 헬퍼.

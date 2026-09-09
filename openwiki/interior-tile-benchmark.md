@@ -8,6 +8,15 @@
 그쪽은 에디터 UI 안에서 돌고 원문을 저장하지 않는다. 이쪽은 헤드리스 CLI 이고 원문을
 보관해 재채점한다.
 
+## Floor contract correction (2026-09-08)
+
+The legacy `deck` metadata-group ID now denotes solid wooden tabletops. Floor
+canonical answers therefore use only `floor`, `floor-stone`, and `floor-mat`;
+tabletops are excluded from both canonical and generous answers and retained as
+traps. This changes the derived ground-truth digest, not scoring weights or pass
+thresholds. The canonical floor answer scores 1.0 through the real module entry
+point; evidence is under `output/evidence/event-command-completion/legacy-terrain/`.
+
 ## 왜 interior 를 정답지로 쓰는가
 
 번들된 칩셋 13종 중 메타데이터 계약이 완결된 것은 interior 와 dungeon 뿐이다

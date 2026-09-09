@@ -28,6 +28,7 @@ import { resourceDisplayName } from "@/player/resourceDisplay";
 import { assertNever } from "@/player/playSceneTypes";
 import type { Command } from "@/project/types";
 import { characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
+import { waitForEventKey } from "@/player/eventInput";
 import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { applyCameraControl } from "@/player/playSceneCamera";
 import { applyLightingStep } from "@/player/playSceneLighting";
@@ -83,16 +84,25 @@ export async function runEvent(scene: PlaySceneContext, eventId: string): Promis
     continueAfterTransfer: true,
     onComplete: () => completeDetectionEncounter(session, eventId, completionPageId),
   };
-  if (shouldOfferGiftMenu(event, page, store.getCurrent())) {
-    const action = await showGiftMenu(scene, event, page?.name);
-    if (action === "talk") await runTalkPath(scene, event, commands, eventId, options);
-    if (action === "gift") await runGiftSelection(scene, event);
-    return;
+  const activeSession = scene.session;
+  try {
+    if (shouldOfferGiftMenu(event, page, store.getCurrent())) {
+      const action = await showGiftMenu(scene, event, page?.name);
+      if (action === "talk") await runTalkPath(scene, event, commands, eventId, options);
+      if (action === "gift") await runGiftSelection(scene, event);
+      return;
+    }
+    await runTalkPath(scene, event, commands, eventId, options);
+  } catch (error) {
+    // Social feedback is outside runCommands, but has the same cancellation boundary.
+    if (error instanceof DOMException && error.name === "AbortError"
+      && (scene.session !== activeSession || scene.sys?.isActive() === false)) return;
+    throw error;
   }
-  await runTalkPath(scene, event, commands, eventId, options);
 }
 
 async function runGiftSelection(scene: PlaySceneContext, event: CommandSourceEvent): Promise<void> {
+  const activeSession = scene.session;
   const previousRunning = scene.running;
   const previousInputEnabled = scene.inputEnabled;
   scene.running = true;
@@ -100,12 +110,14 @@ async function runGiftSelection(scene: PlaySceneContext, event: CommandSourceEve
   try {
     await playGiftSelection(scene, event);
   } finally {
-    scene.running = previousRunning;
-    scene.lastActionTargetKey = "";
-    scene.setInputEnabled(previousInputEnabled);
-    // 대화 세션이 끝나는 자리 — 퇴장 연출을 재생하고 빠진다(transfer 만 하드 컷).
-    dialogueUi(scene)?.close();
-    scene.refreshRuntimeSurfaces();
+    if (scene.session === activeSession && !scene.battleAbortController && scene.sys?.isActive() !== false) {
+      scene.running = previousRunning;
+      scene.lastActionTargetKey = "";
+      scene.setInputEnabled(previousInputEnabled);
+      // 대화 세션이 끝나는 자리 — 퇴장 연출을 재생하고 빠진다(transfer 만 하드 컷).
+      dialogueUi(scene)?.close();
+      scene.refreshRuntimeSurfaces();
+    }
   }
 }
 
@@ -116,7 +128,10 @@ async function runTalkPath(
   eventId: string,
   options: RunCommandsOptions = {}
 ): Promise<void> {
+  const activeSession = scene.session;
   await runCommands(scene, commands, eventId, options);
+  // An abandoned command run is not a completed social interaction.
+  if (scene.session !== activeSession || scene.sys?.isActive() === false) return;
   // Action-scoped, once per interaction (not gift path; multi-text cannot re-fire).
   if (!isTalkFriendshipEnabled(event)) return;
   const page = resolveEventPage(event, scene.session);
@@ -142,11 +157,13 @@ async function runTalkPath(
       mapHeight: scene.map.height,
     });
   } finally {
-    scene.running = previousRunning;
-    scene.lastActionTargetKey = "";
-    scene.setInputEnabled(previousInputEnabled);
-    dialogue.close();
-    scene.refreshRuntimeSurfaces();
+    if (scene.session === activeSession && !scene.battleAbortController && scene.sys?.isActive() !== false) {
+      scene.running = previousRunning;
+      scene.lastActionTargetKey = "";
+      scene.setInputEnabled(previousInputEnabled);
+      dialogue.close();
+      scene.refreshRuntimeSurfaces();
+    }
   }
 }
 
@@ -355,11 +372,19 @@ async function consumeBlockingStep(
       }
       return resumeAfterSurface(scene, interpreter);
     case "inputWait": {
-      const keyCode = await waitForKey();
-      if (step.variableId) {
-        return resumeWithValue(scene, interpreter, keyCode);
+      const session = scene.session;
+      const abort = new AbortController();
+      const cancel = (): void => abort.abort();
+      scene.events?.once("shutdown", cancel);
+      scene.events?.once("destroy", cancel);
+      try {
+        const keyCode = await waitForEventKey(abort.signal);
+        if (scene.session !== session || scene.sys?.isActive() === false) return { kind: "done" };
+        return step.variableId ? resumeWithValue(scene, interpreter, keyCode) : resumeAfterSurface(scene, interpreter);
+      } finally {
+        scene.events?.off("shutdown", cancel);
+        scene.events?.off("destroy", cancel);
       }
-      return resumeAfterSurface(scene, interpreter);
     }
     case "inputNumber":
       return resumeWithValue(scene, interpreter, await dialogue.showNumberInput({
@@ -743,32 +768,3 @@ function resumeInterpreter(interpreter: Interpreter): StepResult {
   return interpreter.resume(undefined);
 }
 
-// 아무 키나 누를 때까지 대기하고, 눌린 키의 RM2K3 호환 코드를 반환한다.
-// variableId 가 없는 inputWait 에서는 반환값을 무시한다.
-function waitForKey(): Promise<number> {
-  return new Promise<number>((resolve) => {
-    const handler = (event: KeyboardEvent): void => {
-      document.removeEventListener("keydown", handler);
-      resolve(keyInputCodeFor(event));
-    };
-    document.addEventListener("keydown", handler);
-  });
-}
-
-// RM2K3 Key Input Processing 호환 코드. 방향/결정/취소/숫자 등을 정수 코드로 매핑.
-// 변수에 저장된 코드를 이벤트 조건에서 검사하는 용도.
-function keyInputCodeFor(event: KeyboardEvent): number {
-  switch (event.key) {
-    case "ArrowDown": case "s": case "S": return 1;
-    case "ArrowLeft": case "a": case "A": return 2;
-    case "ArrowRight": case "d": case "D": return 3;
-    case "ArrowUp": case "w": case "W": return 4;
-    case "Enter": case " ": case "z": case "Z": return 5;  // 결정
-    case "Escape": case "x": case "X": return 6;            // 취소
-    case "Shift": return 7;
-    default:
-      // 숫자키 0-9
-      if (/^[0-9]$/.test(event.key)) return 10 + parseInt(event.key, 10);
-      return 0;
-  }
-}

@@ -140,6 +140,7 @@ function applyBattleClassOverridesToSession(
 // 전투 개시 때 세션에서 시드된 사본이므로 그대로 덮어써도 안전하다.
 function applyBattleEventStateToSession(session: PlaySession, eventState: BattleEventStateSnapshot | undefined): void {
   if (!eventState) return;
+  if (eventState.messageWindowSettings) session.messageWindowSettings = { ...eventState.messageWindowSettings };
   for (const [key, value] of Object.entries(eventState.switches)) session.switches[key] = value;
   for (const [key, value] of Object.entries(eventState.variables)) session.variables[key] = value;
   // 셀프 스위치: 스위치/변수와 동일한 RM2K3 관례 — 승리/도주/losable 패배 복귀 모두

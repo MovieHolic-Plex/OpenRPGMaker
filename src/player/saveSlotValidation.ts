@@ -16,6 +16,22 @@ import { normalizeRngState, RNG_STREAMS, type RngState } from "@/util/rng";
 import { isPositiveItemQuantity } from "@/project/itemQuantities";
 import { isSafeShopTradeCountsRecord } from "@/project/economyValues";
 
+import { isSystemBgmCue, isSystemSeCue, type SystemAudioOverrides } from "@/project/systemAudioOverrides";
+
+export function isSystemAudioOverrides(value: unknown): value is SystemAudioOverrides {
+  if (!isRecord(value)) return false;
+  return Object.entries(value).every(([family, cues]) => {
+    if ((family !== "bgm" && family !== "se") || !isRecord(cues)) return false;
+    return Object.entries(cues).every(([cue, track]) =>
+      (family === "bgm" ? isSystemBgmCue(cue) : isSystemSeCue(cue))
+      && isRecord(track)
+      && typeof track.resourceId === "string"
+      && typeof track.volume === "number" && Number.isFinite(track.volume)
+      && track.volume >= 0 && track.volume <= 100,
+    );
+  });
+}
+
 export function isActorEquipmentRecord(value: unknown): value is Record<string, ActorInitialEquipment> {
   if (!isRecord(value)) return false;
   return Object.values(value).every((equipment) => {

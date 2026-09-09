@@ -1,7 +1,28 @@
 // 미저장 변경 경고 근거(도그푸딩 결함 ⑧) 회귀 테스트.
 // store.hasUnsavedChanges(): 마지막 "실제 저장" 이후 변경 여부 —
 // fresh/blank(저장 스킵) 모드에서는 flush가 saved-local을 돌려줘도 true로 남아야 한다.
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+
+// Cold transformation of the complete default-project graph is setup, not a save deadline.
+// Each test still resets module state and exercises the unchanged bounded load/flush contract.
+beforeAll(async () => {
+  await import("@/project/store");
+  await import("@/editor/devShowcaseProjects");
+});
+
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.stubGlobal("fetch", vi.fn<typeof fetch>(async () => new Response("[]", { status: 200 })));
+});
+
+async function importBootConfiguredStore() {
+  const [storeModule, { createDevShowcaseProjectForLocation }] = await Promise.all([
+    import("@/project/store"),
+    import("@/editor/devShowcaseProjects"),
+  ]);
+  storeModule.setDevProjectFactory(createDevShowcaseProjectForLocation);
+  return storeModule;
+}
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -26,8 +47,8 @@ describe("store.hasUnsavedChanges", () => {
     const storage = new Map<string, string>();
     stubWindow("?devProject=1&logCabinShowcase=1", storage);
     vi.resetModules();
-    const { store } = await import("@/project/store");
-    await store.load(); // dev-showcase 경로 — 네트워크 불필요.
+    const { store } = await importBootConfiguredStore();
+    await store.load(); // Same factory wiring as bootApp; no remote project needed.
     expect(store.hasUnsavedChanges()).toBe(false);
 
     store.update((draft) => {
@@ -38,14 +59,15 @@ describe("store.hasUnsavedChanges", () => {
     const flushed = await store.flush();
     expect(flushed.kind).toBe("saved-local");
     expect(store.hasUnsavedChanges()).toBe(false); // 실제 localStorage 기록됨.
-    expect(storage.size).toBeGreaterThan(0);
+    const { loadDevProjectOverride } = await import("@/project/devProjectPersistence");
+    expect(loadDevProjectOverride()?.meta.title).toBe("미저장 변경");
   });
 
   it("freshProject(저장 스킵) 모드: flush가 saved-local이어도 미저장으로 남는다", async () => {
     const storage = new Map<string, string>();
     stubWindow("?freshProject=1", storage);
     vi.resetModules();
-    const { store } = await import("@/project/store");
+    const { store } = await importBootConfiguredStore();
     await store.load();
     expect(store.hasUnsavedChanges()).toBe(false);
 

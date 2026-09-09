@@ -68,6 +68,17 @@ the tool use the existing config normalizer. None of this adds a combat engine.
 
 회귀는 `test/enemyBattleScale.test.ts`: 실제 정규화된 프로젝트→전투 엔진→DOM, Gen1의 선두 적 단독 표시, hit/idle 동기화 후 크기 유지, 출하 CSS 치수 선언을 검사한다. happy-dom은 calc 곱셈/`:where` 특정도를 정확히 계산하지 못하므로 CSS는 PostCSS로 선언을 검사하고, 실제 캐스케이드·사각형·동작 검증은 별도 `player.html` 런타임 QA에서 한다.
 
+## Capture-only victory (2026-09-08)
+
+Successful capture hides the target and sets its HP to zero. Outcome resolution must
+therefore accept an empty visible-enemy list when the battle has captured participants;
+a troop whose members were all hidden from the start still does not auto-win.
+Other living visible enemies prevent victory, and captured enemies remain excluded
+from EXP/gold/drop rewards. `test/monsterCollection.test.ts` and
+`test/battleRuntimeDefects.test.ts` cover all three outcome distinctions.
+Scripted nonlethal capture fixtures must control actor criticals and initial equipment,
+not merely set the actor's attack curve or rely on a seeded roll.
+
 ## Event friendship and live level changes (2026-09-06)
 
 `changeFriendship` snapshots only keys written by the battle, following the
@@ -87,6 +98,41 @@ Shipping-player QA: `node scripts/qa-event-command-repairs.mjs --scenario battle
 The VX Ace skin intentionally hides maximum-vital text; screenshots show the
 level/current vitals, while DOM/session observations verify the maxima.
 
+## Sequential battle event completion (2026-09-08)
+
+The existing choice frames/API remain intact. `snapshot.eventPause` adds typed
+`wait` (`ms`), `inputWait` (`variableId?`), and `text` (body/speaker/face/settings/
+autoAdvance/emotion) requests. `resumeEventPause(id, response)` accepts only the
+matching kind/id; input responses additionally require an integer key code 0-19.
+Stale, duplicate, mismatched, and cancelled responses cannot run a tail.
+
+All native/M2 common calls and troop-page calls retain their frames at these
+boundaries. Strict queues/RNG/extra actions and gauge progress stay frozen until
+acknowledgement. The sequencer first drains preceding action facts, then schedules
+each authored wait separately at its unscaled duration (including reduced motion,
+AUTO, and skip speed). Waits no longer pre-execute their tails or become deferred
+strict timeline entries. Zero/negative durations continue immediately.
+
+The player uses its real abortable `DialogueUI.showText`; every page must complete.
+Face changes are battle-local, including clearing. Text/choices inherit captured
+settings and subsequent battle-local changes. Only authored settings changes enter
+the returning event write-set: victory/escape/canLose defeat apply them; cancellation
+and nonreturning defeat do not. Transparent dialogue owns the message surface only
+after earlier beats drain, hiding the old battle director text underneath.
+
+`headlessBattleSnapshot` explicitly bypasses wait/text presentation in balance,
+scene, and walkthrough simulations, but throws `BATTLE_EVENT_INPUT_REQUIRED` at
+choices/inputWait. Scene/walkthrough reward bridges pass `canLose` so returning
+defeat preserves executed event mutations rather than silently discarding them.
+
+Focused contracts: `battleEventSequentialWait`, `battleEventDialoguePresentation`,
+`battleEventSequentialHost`, `battleEventTextHost`, `battleEventSimulationInput`,
+`battleEventWaitAudio`. Shipping QA extends `scripts/qa-event-command-battle-flow.mjs`
+with `--case sequential --port <owned-port>` (optional `--pass`); observations are
+read-only and gameplay uses real keyboard input through player.html/export shim.
+Evidence and final-browser infrastructure limits:
+`output/evidence/event-command-completion/battle/VERIFICATION.md`.
+
 ## Battle-event continuation and cancellation (2026-09-06)
 
 Battle execution remains synchronous between input boundaries. `battleEvents.ts`
@@ -102,7 +148,7 @@ unsupported and continue without inventing a branch.
 callers and remaining pages. The first terminal wins. Gauge resumes only its
 post-action epilogue; strict retains its already-sorted queue, extra-action
 count, RNG decisions, and round timeline boundary. A terminal completes only
-the executed strict prefix. Existing wait/text/inputWait semantics are unchanged.
+the executed strict prefix. Wait/text/inputWait now use the sequential contract above.
 
 The sequencer drains preceding timeline facts before requesting input, remains
 busy while choices are open, and consumes only appended facts after resumption.

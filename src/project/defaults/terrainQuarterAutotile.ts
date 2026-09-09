@@ -6,6 +6,7 @@ import {
   templateBlockFromAnchor,
 } from "./autotileGroups";
 import { DIRT_ROAD_TILE, SAND_TILE } from "./chipsetMapping";
+import { DEFAULT_TILESET_TEXTURE_KEY } from "./constants";
 import { dungeonTerrainQuarterKits } from "./dungeonTerrainQuarter";
 import { interiorWallFrameQuarterComposition } from "./interiorWallFrameQuarter";
 import { worldTerrainQuarterKit } from "./worldTerrainAutotiles";
@@ -227,7 +228,9 @@ export function chipsetQuarterComposition(
     const dungeonSources = terrainQuarterSourcesForKit(map, dungeonKit, x, y);
     return dungeonSources ? { sources: dungeonSources } : null;
   }
-  const terrainSources = terrainQuarterSources(map, x, y);
+  const terrainSources = tileset.image.type === "bundled" && tileset.image.id === DEFAULT_TILESET_TEXTURE_KEY
+    ? terrainQuarterSources(map, x, y)
+    : null;
   if (terrainSources) return { sources: terrainSources };
   return interiorWallFrameQuarterComposition(map, tileset, x, y);
 }

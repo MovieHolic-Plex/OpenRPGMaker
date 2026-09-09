@@ -1,4 +1,5 @@
 import type { Command, M2CommandValue } from "@/project/types";
+import { SYSTEM_BGM_CUES, SYSTEM_SE_CUES } from "@/project/systemAudioOverrides";
 import {
   DEPRECATED_M2_COMMAND_IDS,
   EXISTING_KIND_BY_TITLE,
@@ -282,6 +283,18 @@ function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
       { key: "resourceId", label: "리소스 ID", type: "text", defaultValue: "" },
       { key: "x", label: "X", type: "number", defaultValue: 0 },
       { key: "y", label: "Y", type: "number", defaultValue: 0 },
+    ];
+  }
+  if (title === "Change System BGM" || title === "Change System SE") {
+    const bgm = title === "Change System BGM";
+    return [
+      { key: "cue", label: "시스템 소리", type: "select", defaultValue: bgm ? "battle" : "confirm",
+        options: (bgm ? SYSTEM_BGM_CUES : SYSTEM_SE_CUES).map(value => ({ value, label: value })) },
+      { key: "operation", label: "동작", type: "select", defaultValue: "set", options: [
+        { value: "set", label: "설정 (빈 리소스는 무음)" }, { value: "reset", label: "기본값 복원" },
+      ] },
+      { key: "resourceId", label: "리소스 ID", type: "text", defaultValue: "" },
+      { key: "volume", label: "볼륨", type: "number", defaultValue: 100, min: 0, max: 100 },
     ];
   }
   if (title.includes("BGM") || title.includes("SE") || title.includes("Movie")) {

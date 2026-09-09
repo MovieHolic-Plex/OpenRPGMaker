@@ -87,6 +87,18 @@ describe("changeExp modern form + variable operand", () => {
     expect(staged.actorId).toBe(actorId);
   });
 
+  it("preserves a variable operand while changing the operation on an existing command", () => {
+    const variableId = store.getCurrent().variables[0]?.id;
+    if (!variableId) throw new Error("missing variable fixture");
+    staged = { kind: "changeExp", actorId: "", op: "+=", amount: { kind: "var", id: variableId } };
+    const body = renderWithFakeDom(() => renderCommandBody({ path: [0], actions, lockKind: true }, staged));
+    const operation = findByTestId(body, "change-exp-op-select");
+    if (!operation) throw new Error("missing operation");
+    operation.value = "-=";
+    operation.dispatchEvent(new Event("change"));
+    expect(staged).toEqual({ kind: "changeExp", actorId: "", op: "-=", amount: { kind: "var", id: variableId } });
+  });
+
   it("요약에 파티 전체와 변수 경험치를 표시한다", () => {
     const variableId = store.getCurrent().variables[0]?.id ?? "var_0001";
     expect(commandSummary({

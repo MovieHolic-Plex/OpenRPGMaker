@@ -322,6 +322,10 @@
   border-radius: var(--radius-s);
   resize: vertical;
 }
+/* Keep code typography above studio-v2's shared textarea font shorthand. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement textarea {
+  font-family: var(--font-mono);
+}
 .db-command-css-preview .battle-command-menu {
   display: grid;
   gap: var(--space-2);

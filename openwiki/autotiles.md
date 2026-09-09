@@ -129,6 +129,23 @@ T+3R:   [SW T+90]     [S T+91]        [SE T+92]
   `reports/pr617-621-integration.md`. No remote content writes or browser/build/full
   gates were run by the integration child.
 
+## Terrain placement regression contracts (2026-09-08)
+
+- Combined Town hard adjacency expansion uses lower trunks and upper canopies consistently with paint routing. `isCombinedTownTileset` gates numeric trunk meanings; custom/interior groups retain their authored layers. A companion must not reintroduce the origin tile on a different layer.
+- Numeric tree repair requires exact bundled Combined Town image ownership. `repairTreePairsOnMap(map, tileset, options)` now requires namespace context; the project wrapper resolves each map's tileset, and paint/erase/fill callers pass theirs. Foreign or missing definitions are no-ops, including top-row IDs 290-293. Record-ID collisions do not grant Town semantics.
+- Tile-layer classification gates both numeric trunk and Town overlay shortcuts by that image namespace. Foreign authored groups/priority remain authoritative. Erase still expands authored hard groups, but numeric tree companions and tree-ground restoration are Town-only. Public tool/store, pen, fill and erase regressions plus the unchanged real-editor browser script cover this boundary (`legacy-terrain/namespace-store/` and `legacy-terrain/browser/namespace-fixed/` under `output/evidence/event-command-completion/`).
+- Scatter extracts connected object cells from both layers, excluding the sample's grass backdrop. Custom two-tile tree groups retain their lower trunk even when their canopy is upper.
+- Manual painting over a Combined Town canopy uses the existing companion-erase/ground-restoration plan before applying the new prop, so tree repair cannot resurrect the replaced canopy. Reused custom/interior tile numbers must not trigger that cleanup. Fence checks compare against already-shaped ground, not raw autotile brush IDs.
+- Palette scatter reserves each selected coordinate before painting. Its deferred tile selection does not grant permission to reuse an empty planning footprint and report duplicate placements.
+- Zero-placement scatter throws `ToolError` with code `placement-zero`; partial placement still reports requested/placed/skipped counts. Group-layout previews use the same canopy-upper/trunk-lower contract.
+- Single-prop scatter considers the candidate space before applying count/spacing to accepted cells. A blocked random candidate does not consume a requested placement; real partial yard completion still rolls back at the house facade. Zero-gap candidate generation returns the seeded shuffled cells directly, without Poisson pair checks; zero-gap acceptance also skips pair checks/storage. Positive gaps retain accepted-point spacing. Matched work-count evidence: `sparse-performance/` under the evidence directory below.
+- Yard flower tags resolve the canonical `꽃/자연 소품` material group. House outcomes carry `diff.mapPropertiesChanged` alongside the other structured totals, preserving parser equality.
+- Quarter rendering checks the texture before applying Combined Town kits. Interior whole-tile walls/deep void and unmatched dungeon cells must not inherit town numeric meanings.
+- Theme metadata reseeding applies the final owner of an overlapping tile once, preserving the existing last-group precedence without reporting transient changes to an identical result.
+- Dense forest feathering is decorative and cannot reopen 30% of the region. Its whole-cell opening budget is measured before removing edge bushes; density targets, tree counts and impassable closure remain unchanged.
+- Region/tile-flow integration tests supply deterministic model transcripts and the current intent-declaration seam; production tool execution, region clipping, pending review and application stay real. They do not read private credentials or rely on a live model cooperating.
+- Evidence: `output/evidence/event-command-completion/legacy-terrain/`; the supervisor owns full gates/builds during the shared-host resource constraint.
+
 ## 5. 검증
 
 - `test/builtinAutotileGroups.test.ts` — 앵커 카탈로그↔그룹 등록 대조, 내장 그룹 멤버 상호 배타, 위저드 공식 상호 대조, 수로 애니·물 분류.

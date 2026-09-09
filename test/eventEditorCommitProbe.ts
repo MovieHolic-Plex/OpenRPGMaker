@@ -401,6 +401,10 @@ function installProbeBrowserGlobals(): () => void {
     window: (globalThis as { window?: unknown }).window,
     Image: (globalThis as { Image?: unknown }).Image,
   };
+  const timerWindow = had.window ? window : undefined;
+  const timerDescriptors = timerWindow
+    ? (["setInterval", "clearInterval"] as const).map((key) => [key, Object.getOwnPropertyDescriptor(timerWindow, key)] as const)
+    : [];
   const define = (name: string, value: unknown): void => {
     Object.defineProperty(globalThis, name, { configurable: true, writable: true, value });
   };
@@ -416,6 +420,11 @@ function installProbeBrowserGlobals(): () => void {
       addEventListener: () => undefined,
       removeEventListener: () => undefined,
     });
+  } else if (timerWindow) {
+    Object.defineProperties(timerWindow, {
+      setInterval: { configurable: true, writable: true, value: () => 0 },
+      clearInterval: { configurable: true, writable: true, value: () => undefined },
+    });
   }
   if (!had.Image) {
     define(
@@ -427,6 +436,12 @@ function installProbeBrowserGlobals(): () => void {
     );
   }
   return () => {
+    if (timerWindow) {
+      for (const [key, descriptor] of timerDescriptors) {
+        if (descriptor) Object.defineProperty(timerWindow, key, descriptor);
+        else Reflect.deleteProperty(timerWindow, key);
+      }
+    }
     for (const name of ["window", "Image"] as const) {
       if (had[name]) define(name, previous[name]);
       else Reflect.deleteProperty(globalThis, name);

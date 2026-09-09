@@ -1,3 +1,4 @@
+import { EventEmitter } from "node:events";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CUTSCENE_END_LABEL } from "@/player/cutsceneControl";
 import { runCommands } from "@/player/playSceneInterpreter";
@@ -203,5 +204,90 @@ describe("skippable cutscene blocking waits", () => {
     });
 
     await expectDoubleEscapeSkips(fixture, commands);
+  });
+});
+
+describe("field input wait lifecycle", () => {
+  function inputFixture() {
+    const fixture = createFixture();
+    store.replaceProject(fixture.project);
+    fixture.scene.session.variables.key = 99;
+    const keys = new EventTarget();
+    // Native dispatch is needed for stopImmediatePropagation; fakeDom's document
+    // intentionally lacks that behavior. No production input handler is mocked.
+    vi.spyOn(document, "addEventListener").mockImplementation(keys.addEventListener.bind(keys));
+    vi.spyOn(document, "removeEventListener").mockImplementation(keys.removeEventListener.bind(keys));
+    vi.spyOn(document, "dispatchEvent").mockImplementation(keys.dispatchEvent.bind(keys));
+    const events = new EventEmitter();
+    let active = true;
+    Object.assign(fixture.scene, { events, sys: { isActive: () => active } });
+    const command: Command = { kind: "inputWait", variableId: "key" };
+    const tail: Command = { kind: "setSwitch", switchId: "inputTail", value: true };
+    return { ...fixture, keys, events, command, tail, deactivate: () => { active = false; } };
+  }
+  function inputKey(flags: { readonly repeat?: boolean; readonly isComposing?: boolean; readonly target?: EventTarget } = {}) {
+    const event = new Event("keydown", { cancelable: true });
+    Object.assign(event, { key: "ArrowRight", repeat: false, isComposing: false, ...flags });
+    return event;
+  }
+
+  it.each(["repeat", "composition", "text-entry"] as const)("ignores %s and waits for a fresh game key", async mode => {
+    const fixture = inputFixture();
+    const running = runCommands(fixture.scene, [fixture.command, fixture.tail]);
+    const invalid = inputKey(mode === "repeat" ? { repeat: true }
+      : mode === "composition" ? { isComposing: true } : {});
+    if (mode === "text-entry") Object.defineProperty(invalid, "target", { value: document.createElement("input") });
+    try {
+      fixture.keys.dispatchEvent(invalid);
+      await Promise.resolve();
+      expect(fixture.scene.session.variables.key, "invalid input must not overwrite the authored variable").toBe(99);
+      expect(fixture.scene.session.switches.inputTail).toBeUndefined();
+    } finally {
+      fixture.keys.dispatchEvent(inputKey());
+      await running;
+    }
+    expect(fixture.scene.session.variables.key).toBe(3);
+    expect(fixture.scene.session.switches.inputTail).toBe(true);
+  });
+
+  it("consumes an accepted key instead of leaking it to a later game listener", async () => {
+    const fixture = inputFixture();
+    const running = runCommands(fixture.scene, [fixture.command, fixture.tail]);
+    let leaked = 0;
+    const listener = () => { leaked += 1; };
+    fixture.keys.addEventListener("keydown", listener);
+    const accepted = inputKey();
+    fixture.keys.dispatchEvent(accepted);
+    await running;
+    fixture.keys.removeEventListener("keydown", listener);
+    expect(fixture.scene.session.variables.key).toBe(3);
+    expect(accepted.defaultPrevented).toBe(true);
+    expect(leaked, "accepted key must not reach battle/movement/next-surface handlers").toBe(0);
+  });
+
+  it.each(["shutdown", "destroy"] as const)("%s cancels the pending wait without writing its key or tail", async event => {
+    const fixture = inputFixture();
+    const running = runCommands(fixture.scene, [fixture.command, fixture.tail]);
+    fixture.deactivate();
+    fixture.events.emit(event);
+    // A late key is an adversarial input, not a way of completing the wait.
+    fixture.keys.dispatchEvent(inputKey());
+    await running;
+    expect(fixture.scene.session.variables.key, "dead scene input must not resume its interpreter").toBe(99);
+    expect(fixture.scene.session.switches.inputTail).toBeUndefined();
+  });
+
+  it("session replacement prevents a late key from mutating either session", async () => {
+    const fixture = inputFixture();
+    const oldSession = fixture.scene.session;
+    const running = runCommands(fixture.scene, [fixture.command, fixture.tail]);
+    fixture.scene.session = startSession(fixture.project, 8);
+    fixture.scene.session.variables.key = 77;
+    fixture.keys.dispatchEvent(inputKey());
+    await running;
+    expect(oldSession.variables.key, "replacement must invalidate the old interpreter before resumeWithValue").toBe(99);
+    expect(fixture.scene.session.variables.key).toBe(77);
+    expect(oldSession.switches.inputTail).toBeUndefined();
+    expect(fixture.scene.session.switches.inputTail).toBeUndefined();
   });
 });

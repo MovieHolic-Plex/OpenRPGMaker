@@ -5,7 +5,7 @@
 import { actorBattlers } from "@/battle/battleBattlers";
 import { chooseAutoBattleCommand } from "@/battle/battleAuto";
 import { computeGen1BaseDamage, usesGen1Damage } from "@/battle/battleDamage";
-import { BattleEventInputRequiredError, createBattleRuntime } from "@/battle/runtime";
+import { headlessBattleSnapshot, createBattleRuntime } from "@/battle/runtime";
 import type { ActorCommand, BattleCapturedMonsterSnapshot, BattleEventLogSnapshot, BattleFlow, BattleRewardsSnapshot, BattleRoundLogSnapshot, BattleRuntimeOptions, BattleSnapshot } from "@/battle/types";
 import type { Project, SkillId, ItemId } from "@/project/types";
 import type { MonsterInstance } from "@/project/session";
@@ -139,8 +139,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
     let potionsUsed = 0;
 
     for (let step = 0; step < maxSteps; step += 1) {
-      const snap = rt.snapshot();
-      if (snap.eventChoice) throw new BattleEventInputRequiredError(snap.eventChoice);
+      const snap = headlessBattleSnapshot(rt);
       if (snap.result) break;
       if (snap.phase === "actorCommand") {
         const actor = snap.actors.find((entry) => entry.recordId === snap.activeActorId);
@@ -177,8 +176,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
       }
     }
 
-    const final = rt.snapshot();
-    if (final.eventChoice) throw new BattleEventInputRequiredError(final.eventChoice);
+    const final = headlessBattleSnapshot(rt);
     const hpRemaining = [...final.actors, ...final.reserveActors].reduce((sum, entry) => sum + Math.max(0, entry.hp), 0);
     return {
       victory: final.result === "victory",

@@ -172,8 +172,10 @@ function deriveCeiling(): InteriorCategoryTruth {
 
 function deriveFloor(): InteriorCategoryTruth {
   const { passability } = interiorTileset();
-  const canonical = groupTileIds("floor", "floor-stone", "floor-mat", "deck");
-  const generous = [...INTERIOR_WALL_FRAME_FLOOR_TILES, ...groupTileIds("carpet-red", "carpet-teal")];
+  const canonical = groupTileIds("floor", "floor-stone", "floor-mat");
+  // The legacy deck id now describes solid wooden tabletops, not walkable floor.
+  const tabletops = new Set(groupTileIds("deck"));
+  const generous = difference([...INTERIOR_WALL_FRAME_FLOOR_TILES, ...groupTileIds("carpet-red", "carpet-teal")], tabletops);
   // 함정 두 종류: (1) 지형처럼 보이나 실측 통행 불가, (2) 실내 타일 그림판 안의 실외 지면.
   const looksLikeFloorButSolid = semanticsWhere(
     (entry) => (entry.role === "terrain" || entry.role === "floor") && isSolid(passability[entry.index]!),
@@ -182,8 +184,8 @@ function deriveFloor(): InteriorCategoryTruth {
     "floor",
     canonical,
     generous,
-    [...looksLikeFloorButSolid, ...groupTileIds("grass", "outdoor-ground")],
-    "themePacks 그룹 floor/floor-stone/floor-mat/deck (함정 = 통행 불가 지형 + 실외 지면)",
+    [...looksLikeFloorButSolid, ...tabletops, ...groupTileIds("grass", "outdoor-ground")],
+    "themePacks 그룹 floor/floor-stone/floor-mat (함정 = 탁자 상판 + 통행 불가 지형 + 실외 지면)",
   );
 }
 

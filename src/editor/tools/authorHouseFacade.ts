@@ -92,6 +92,7 @@ function mergedWarnings(sources: readonly (readonly string[] | undefined)[]): re
 function toolDiff(diff: ChangeSummary | undefined): ConstructionDiffTotals {
   return {
     tilesChanged: diff?.tilesChanged ?? 0,
+    mapPropertiesChanged: diff?.mapPropertiesChanged ?? 0,
     eventsAdded: diff?.eventsAdded ?? 0,
     eventsModified: diff?.eventsModified ?? 0,
     eventsRemoved: diff?.eventsRemoved ?? 0,

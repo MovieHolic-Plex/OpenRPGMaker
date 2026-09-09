@@ -237,7 +237,7 @@ describe("battle sequencer", () => {
     expect(consumed).toEqual(expected);
   });
 
-  it("honors a strict wait timeline entry as a scheduled presentation pause", () => {
+  it("acknowledges a strict event wait only after its scheduled presentation pause", () => {
     const project = deserialize(JSON.stringify(battleFixture));
     const troop = project.database.troops.find((record) => record.id === "troop_slime");
     if (!troop) throw new Error("missing troop_slime");
@@ -279,13 +279,16 @@ describe("battle sequencer", () => {
     const before = runtime.snapshot();
     runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
     const after = runtime.snapshot();
-    expect(after.timeline.some((entry) => entry.kind === "wait" && entry.waitMs === 500)).toBe(true);
+    expect(after.eventPause).toMatchObject({ kind: "wait", ms: 500 });
+    expect(after.roundLogs).toHaveLength(0);
 
     sequencer.runAfterActorCommand({ kind: "attack", targetEnemyId: "enemy-1" }, before, after);
     // Drain the queued beats; the authored 500ms pause must appear as one scheduled delay.
     for (let guard = 0; guard < 100 && pending.length > 0; guard += 1) pending.shift()?.();
 
-    expect(delays).toContain(500);
+    expect(delays.filter(ms => ms === 500)).toHaveLength(1);
+    expect(runtime.snapshot().eventPause).toBeUndefined();
+    expect(runtime.snapshot().roundLogs).toHaveLength(1);
   });
 
   it("holds intro lines before releasing command prompt", () => {

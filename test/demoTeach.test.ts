@@ -44,15 +44,20 @@ describe("buildDemonstrationMessage", () => {
   it("최종 그리드·붓질 순서·설명·해석 지침(교정 툴 안내)을 담는다", () => {
     const message = buildDemonstrationMessage(payload);
     expect(message).toContain("[시연]");
-    expect(message).toContain("나무는 2×2 이상 뭉쳐야");
+    expect(message).toContain(payload.explanation);
     expect(message).toContain("240 290 290"); // 하위 그리드 행.
     expect(message).toContain(". 87 ."); // 상위 그리드(빈 칸은 .).
     expect(message).toContain("1) lower (1,0) ← 타일 290"); // 붓질 순서 보존.
     expect(message).toContain("set_tile_metadata");
     expect(message).toContain("upsert_tile_group");
-    expect(message).toContain("집 구조물 문법은 하네싱 키트가 담당");
-    expect(message).toContain("map_v"); // 시드 출처 + 실제 맵 불변 안내.
-    expect(message).toContain("실제 맵은 바뀌지 않았음");
+    expect(message).toContain("show_tiles");
+    expect(message).toContain("confirmedByUser=true");
+    expect(message).toContain("placementRules");
+    expect(message).toContain("map_v");
+    expect(message).toContain("(5,7)");
+    expect([...message.matchAll(/^(\d+)\) (lower|upper) \((\d+),(\d+)\) ← 타일 (\d+)$/gm)]
+      .map((match) => ({ layer: match[2], x: Number(match[3]), y: Number(match[4]), tile: Number(match[5]) })))
+      .toEqual(payload.strokes);
     expect(message).toContain("[선택지]"); // 배운 내용 확인 칩.
   });
 

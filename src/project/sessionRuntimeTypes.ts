@@ -13,6 +13,7 @@ import type { RoguelikeRunState } from "@/project/roguelikeRun";
 import type { BattleResult } from "@/project/gameTime";
 
 export type RuntimeAudioState = AudioTrackState;
+export type { SystemAudioOverrides } from "./systemAudioOverrides";
 
 export type RuntimePictureState = {
   readonly pictureId: string;
@@ -264,6 +265,7 @@ export interface PlaySessionLike {
   monsterParty?: MonsterInstanceId[];
   monsterBox?: MonsterInstanceId[];
   audio?: Record<string, RuntimeAudioState>;
+  systemAudioOverrides?: import("./systemAudioOverrides").SystemAudioOverrides;
   pictures?: Record<string, RuntimePictureState>;
   actorSkillIds?: Record<ActorId, SkillId[]>;
   actorBattleCommands?: Record<ActorId, string[]>;

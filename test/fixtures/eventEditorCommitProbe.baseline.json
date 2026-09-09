@@ -282,12 +282,15 @@
  },
  "changeExp": {
   "probes": {
+   "change-exp-target-mode": "replaceCommand {\"actorId\":\"\",\"amount\":10,\"kind\":\"changeExp\",\"op\":\"+=\"}",
    "change-exp-actor-select": "replaceCommand {\"actorId\":\"actor_mage\",\"amount\":10,\"kind\":\"changeExp\",\"op\":\"+=\"}",
    "change-exp-op-select": "replaceCommand {\"actorId\":\"actor1\",\"amount\":10,\"kind\":\"changeExp\",\"op\":\"-=\"}",
-   "change-exp-amount-input": "replaceCommand {\"actorId\":\"actor1\",\"amount\":7232,\"kind\":\"changeExp\",\"op\":\"+=\"}"
+   "change-exp-amount-source": "replaceCommand {\"actorId\":\"actor1\",\"amount\":{\"id\":\"var_0001\",\"kind\":\"var\"},\"kind\":\"changeExp\",\"op\":\"+=\"}",
+   "change-exp-amount-input": "replaceCommand {\"actorId\":\"actor1\",\"amount\":7232,\"kind\":\"changeExp\",\"op\":\"+=\"}",
+   "change-exp-amount-variable-select": "replaceCommand {\"actorId\":\"actor1\",\"amount\":10,\"kind\":\"changeExp\",\"op\":\"+=\"}"
   },
-  "probeCount": 3,
-  "commitCount": 3,
+  "probeCount": 6,
+  "commitCount": 6,
   "noCommitCount": 0
  },
  "changeLevel": {

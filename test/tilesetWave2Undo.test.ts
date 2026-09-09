@@ -193,9 +193,14 @@ describe("tileset wave2 undo wiring", () => {
     if (!(cell instanceof HTMLElement)) throw new Error("missing passage cell");
     const before = store.getCurrent().tilesets[tilesetId]?.passability[0];
 
-    cell.click();
+    const openPaint = document.querySelector("[data-testid='tileset-settings-paint-open']");
+    if (!(openPaint instanceof HTMLElement)) throw new Error("missing passage brush");
+    openPaint.click();
+    const pointer = new Event("pointerdown", { cancelable: true });
+    Object.defineProperty(pointer, "button", { value: 0 });
+    cell.dispatchEvent(pointer);
 
-    expect(store.getCurrent().tilesets[tilesetId]?.passability[0]).not.toEqual(before);
+    expect(store.getCurrent().tilesets[tilesetId]?.passability[0]).toEqual({ up: true, down: true, left: true, right: true });
     expect(getMapEditHistoryState().canUndo).toBe(true);
     expect(undoMapEdit()).toBe(true);
     expect(store.getCurrent().tilesets[tilesetId]?.passability[0]).toEqual(before);

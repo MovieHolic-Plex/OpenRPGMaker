@@ -1,22 +1,29 @@
 import { playAudioCommand, playMusicEffect, playSoundEffect, stopAudioChannel } from "@/player/audio";
-import type { PlaySession } from "@/project/session";
+import type { AudioTrackState, PlaySession } from "@/project/session";
 import type { Project, SystemRecords } from "@/project/types";
 
 export type BattleResultCueKind = "victory" | "defeat" | "escape";
 
 export interface BattleAudioSession {
   readonly fieldBgmResourceId?: string;
+  readonly fieldBgm?: AudioTrackState;
 }
 
 /** 필드 BGM 을 기억하고 전투곡으로 갈아탄다. 같은 곡이면 건드리지 않는다. */
 export function enterBattleAudio(project: Project, session: PlaySession): BattleAudioSession {
-  const fieldBgmResourceId = session.audio.bgm?.resourceId;
-  const battleBgmResourceId = project.system.battleBgmResourceId;
-  if (battleBgmResourceId && battleBgmResourceId !== fieldBgmResourceId) {
-    playAudioCommand({ resourceId: battleBgmResourceId, loop: true }, project);
-    session.audio.bgm = { resourceId: battleBgmResourceId, loop: true };
+  const fieldBgm = session.audio.bgm ? { ...session.audio.bgm } : undefined;
+  const fieldBgmResourceId = fieldBgm?.resourceId;
+  const override = session.systemAudioOverrides?.bgm?.battle;
+  const battleBgmResourceId = override?.resourceId ?? project.system.battleBgmResourceId;
+  if (override && !battleBgmResourceId) {
+    stopAudioChannel("bgm", 0);
+    session.audio.bgm = undefined;
+  } else if (battleBgmResourceId && (override || battleBgmResourceId !== fieldBgmResourceId)) {
+    const track = { resourceId: battleBgmResourceId, loop: true, ...(override ? { volume: override.volume } : {}) };
+    playAudioCommand(track, project);
+    session.audio.bgm = track;
   }
-  return { fieldBgmResourceId };
+  return { fieldBgmResourceId, fieldBgm };
 }
 
 /**
@@ -51,8 +58,9 @@ export function playAuthoredBattleResultCue(project: Project, kind: BattleResult
 export function exitBattleAudio(project: Project, session: PlaySession, saved: BattleAudioSession): void {
   stopAudioChannel("bgm");
   if (saved.fieldBgmResourceId) {
-    playAudioCommand({ resourceId: saved.fieldBgmResourceId, loop: true }, project);
-    session.audio.bgm = { resourceId: saved.fieldBgmResourceId, loop: true };
+    const track = saved.fieldBgm ?? { resourceId: saved.fieldBgmResourceId, loop: true };
+    playAudioCommand(track, project);
+    session.audio.bgm = { ...track };
     return;
   }
   session.audio.bgm = undefined;

@@ -350,6 +350,7 @@ export interface PlaySession {
   battleResult?: BattleResult;
   commonEvents?: { id: string; commands: Command[] }[];
   audio: AudioCommandState;
+  systemAudioOverrides?: import("./systemAudioOverrides").SystemAudioOverrides;
   pictures: Record<string, PictureState>;
   messageWindowSettings?: MessageWindowSettings;
   m2Runtime?: M2RuntimeState;

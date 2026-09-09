@@ -185,11 +185,12 @@ describe("M2 persisted runtime classification completeness", () => {
       expect(catalogRowRuntimeSupport(commandId, undefined, "troop"), commandId).toBe("runtime-full");
       expect(catalogRowRuntimeSupport(commandId, undefined, "map"), commandId).toBe("runtime-partial");
     }
-    // The native text alias is narrower in troop (battle-message rendering only).
+    // Picker-native text is sequential in troop; its persisted M2 alias is still partial.
     const nativeAliasEntry = m2CommandById("m2-001-show-text");
     if (!nativeAliasEntry?.existingKind) throw new Error("Missing Show Text native alias entry");
-    expect(catalogRowRuntimeSupport(nativeAliasEntry.id, nativeAliasEntry.existingKind, "troop")).toBe("runtime-partial");
+    expect(catalogRowRuntimeSupport(nativeAliasEntry.id, nativeAliasEntry.existingKind, "troop")).toBe("runtime-full");
     expect(catalogRowRuntimeSupport(nativeAliasEntry.id, nativeAliasEntry.existingKind, "map")).toBe("runtime-full");
+    expect(m2CommandRuntimeSupport(nativeAliasEntry.id, "troop")).toBe("runtime-partial");
   });
 
   it("lints a map event containing a map-partial full-class m2 command", () => {

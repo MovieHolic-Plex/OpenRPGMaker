@@ -1,7 +1,33 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { bounded, deferred } from "./persistenceTestSignals";
+
+// Audit mirroring is fire-and-forget and has its own contracts; it must not escape into the next test's transport.
+vi.mock("@/project/projectCommitLog", () => ({
+  recordManualProjectCommitAfterSave: vi.fn(),
+  resetManualProjectCommitBaseline: vi.fn(),
+}));
+
+async function importBootConfiguredStore() {
+  const [storeModule, { createDevShowcaseProjectForLocation }] = await Promise.all([
+    import("@/project/store"),
+    import("@/editor/devShowcaseProjects"),
+  ]);
+  storeModule.setDevProjectFactory(createDevShowcaseProjectForLocation);
+  return storeModule;
+}
+
+function remoteCalls(fetchSpy: ReturnType<typeof vi.fn<typeof fetch>>) {
+  return fetchSpy.mock.calls.filter(([input]) => String(input).includes("/rest/v1/"));
+}
 
 describe("Project store remote persistence", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.stubGlobal("fetch", vi.fn<typeof fetch>(async () => new Response("[]", { status: 200 })));
+  });
+
   afterEach(() => {
+    vi.doUnmock("@/project/supabaseProjectSync");
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
     vi.unstubAllEnvs();
@@ -29,10 +55,9 @@ describe("Project store remote persistence", () => {
       draft.meta.title = "pre-load draft must stay local";
     });
     const saveResult = await store.flush();
-    await vi.advanceTimersByTimeAsync(1500);
-
     expect(saveResult).toEqual({ kind: "not-loaded" });
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(store.getAutoSaveState().kind).toBe("idle");
+    expect(remoteCalls(fetchSpy)).toEqual([]);
   });
 
   it("does not auto-save local dev showcase projects to Supabase", async () => {
@@ -51,14 +76,15 @@ describe("Project store remote persistence", () => {
     vi.stubGlobal("fetch", fetchSpy);
     vi.resetModules();
 
-    const { store } = await import("@/project/store");
+    const { store } = await importBootConfiguredStore();
     await store.load();
     store.update((draft) => {
       draft.meta.title = "must not overwrite canonical Supabase";
     });
-    await vi.advanceTimersByTimeAsync(1500);
-
-    expect(fetchSpy).not.toHaveBeenCalled();
+    // This session reports a non-persisted edit immediately and never arms remote autosave.
+    expect(store.getAutoSaveState()).toMatchObject({ kind: "error", code: "session-not-persisted" });
+    expect(await store.flush()).toEqual({ kind: "saved-local" });
+    expect(remoteCalls(fetchSpy)).toEqual([]);
   });
 
   it("always creates a new fresh project instead of reloading local dev overrides", async () => {
@@ -87,7 +113,7 @@ describe("Project store remote persistence", () => {
     storage.set("oprn:dev-project:127.0.0.1/?blankProject=1", serialize(staleProject));
 
     vi.resetModules();
-    const { store } = await import("@/project/store");
+    const { store } = await importBootConfiguredStore();
     const project = await store.load();
     store.update((draft) => {
       draft.meta.title = "fresh project edits stay temporary";
@@ -115,7 +141,7 @@ describe("Project store remote persistence", () => {
     vi.stubGlobal("fetch", fetchSpy);
     vi.resetModules();
 
-    const firstModule = await import("@/project/store");
+    const firstModule = await importBootConfiguredStore();
     await firstModule.store.load();
     const mapId = firstModule.store.getCurrent().startMapId;
     firstModule.store.update((draft) => {
@@ -126,7 +152,7 @@ describe("Project store remote persistence", () => {
     const saveResult = await firstModule.store.flush();
 
     vi.resetModules();
-    const secondModule = await import("@/project/store");
+    const secondModule = await importBootConfiguredStore();
     await secondModule.store.load();
 
     expect(saveResult).toEqual({ kind: "saved-local" });
@@ -147,7 +173,7 @@ describe("Project store remote persistence", () => {
     });
     vi.resetModules();
 
-    const { store } = await import("@/project/store");
+    const { store } = await importBootConfiguredStore();
     await store.load();
 
     expect(store.getDbPersistenceStatus()).toEqual({ kind: "disabled", reason: "dev-showcase" });
@@ -227,8 +253,10 @@ describe("Project store remote persistence", () => {
     const { store } = await import("@/project/store");
 
     await expect(store.load()).rejects.toMatchObject({ name: "DbConnectionRequiredError" });
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
-    expect(fetchSpy.mock.calls[0]?.[1]?.method ?? "GET").toBe("GET");
+    const calls = remoteCalls(fetchSpy);
+    expect(calls.filter(([input]) => String(input).includes("/rest/v1/projects?"))).toHaveLength(1);
+    expect(calls.every(([, init]) => (init?.method ?? "GET") === "GET")).toBe(true);
+    expect(store.isLoaded()).toBe(false);
   });
 
   it("skips remote flush when there are no unsaved changes", async () => {
@@ -271,16 +299,20 @@ describe("Project store remote persistence", () => {
     vi.resetModules();
 
     type Project = import("@/project/types").Project;
-    const submitted = Promise.withResolvers<void>();
-    const releaseSave = Promise.withResolvers<void>();
+    const fullStarted = deferred<void>();
+    const fullResponse = deferred<void>();
+    const patchStarted = deferred<void>();
+    const patchResponse = deferred<void>();
     const saveFull = vi.fn(async (project: Project) => {
-      submitted.resolve();
-      await releaseSave.promise;
+      fullStarted.resolve();
+      await fullResponse.promise;
       return { kind: "saved" as const, project };
     });
-    const saveMapPatch = vi.fn(async (input: { readonly project: Project; readonly baseProject: Project }) =>
-      ({ kind: "saved" as const, project: input.project }),
-    );
+    const saveMapPatch = vi.fn(async (input: { readonly project: Project; readonly baseProject: Project }) => {
+      patchStarted.resolve();
+      await patchResponse.promise;
+      return { kind: "saved" as const, project: input.project };
+    });
     vi.doMock("@/project/supabaseProjectSync", async () => {
       const actual = await vi.importActual<typeof import("@/project/supabaseProjectSync")>(
         "@/project/supabaseProjectSync",
@@ -307,13 +339,17 @@ describe("Project store remote persistence", () => {
     });
 
     const flushPromise = store.flush();
-    await submitted.promise;
+    await bounded(fullStarted.promise);
     // Paint again while save is still awaiting the network.
     store.updateMap(mapId, (map) => {
       map.lowerTiles[0] = secondTile;
     });
-    releaseSave.resolve();
-    const result = await flushPromise;
+    fullResponse.resolve();
+    await bounded(patchStarted.promise);
+    expect(store.getCurrent().maps[mapId]?.lowerTiles[0]).toBe(secondTile);
+    expect(store.hasUnsavedChanges()).toBe(true);
+    patchResponse.resolve();
+    const result = await bounded(flushPromise);
 
     expect(result.kind).toBe("saved");
     expect(store.getCurrent().maps[mapId]?.lowerTiles[0]).toBe(secondTile);
@@ -340,14 +376,19 @@ describe("Project store remote persistence", () => {
     vi.resetModules();
 
     type Project = import("@/project/types").Project;
-    const submitted = Promise.withResolvers<void>();
-    const releaseSave = Promise.withResolvers<void>();
+    const requests = [deferred<void>(), deferred<void>()];
+    const responses = [deferred<void>(), deferred<void>()];
+    let requestIndex = 0;
     const saveMapPatch = vi.fn(async (input: {
       readonly project: Project;
       readonly baseProject: Project;
     }) => {
-      submitted.resolve();
-      await releaseSave.promise;
+      const index = requestIndex++;
+      const request = requests[index];
+      const response = responses[index];
+      if (!request || !response) throw new Error("Unexpected extra map save");
+      request.resolve();
+      await response.promise;
       return { kind: "saved" as const, project: structuredClone(input.project) };
     });
     vi.doMock("@/project/supabaseProjectSync", async () => {
@@ -373,12 +414,16 @@ describe("Project store remote persistence", () => {
       map.lowerTiles[0] = 11;
     });
     const flushPromise = store.flush();
-    await submitted.promise;
+    await bounded(requests[0].promise);
     store.updateMap(mapId, (map) => {
       map.lowerTiles[0] = 22;
     });
-    releaseSave.resolve();
-    const result = await flushPromise;
+    responses[0].resolve();
+    await bounded(requests[1].promise);
+    expect(store.getCurrent().maps[mapId]?.lowerTiles[0]).toBe(22);
+    expect(store.hasUnsavedChanges()).toBe(true);
+    responses[1].resolve();
+    const result = await bounded(flushPromise);
 
     expect(result.kind).toBe("saved");
     expect(store.getCurrent().maps[mapId]?.lowerTiles[0]).toBe(22);

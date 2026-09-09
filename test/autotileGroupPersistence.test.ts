@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { serialize, deserialize } from "@/project/io";
 import { createBlankProject } from "@/project/defaults";
+import { normalizeSystemRecords } from "@/project/databaseRecordModel";
+import { DEFAULT_AUTOTILE_GROUPS } from "@/project/defaults/autotileGroups";
 import { store } from "@/project/store";
 import {
   addAutotileGroup,
@@ -18,13 +20,21 @@ function firstTilesetId(project: Project): string {
   return id;
 }
 
+function canonicalProject(): Project {
+  const project = createBlankProject();
+  // Text-only titleGraphic is omitted by system normalization. Keep that
+  // unrelated migration out of the autotile byte-stability precondition.
+  project.system = normalizeSystemRecords(project.system);
+  return project;
+}
+
 beforeEach(() => {
-  store.replace(createBlankProject());
+  store.replace(canonicalProject());
 });
 
 describe("오토타일 그룹 직렬화 왕복", () => {
   it("구버전(오토타일 필드 없음) 프로젝트가 그대로 로드된다", () => {
-    const project = createBlankProject();
+    const project = canonicalProject();
     // 기본 프로젝트에는 autotileGroups 가 없다 → optional 필드이므로 왕복 무손실.
     const restored = deserialize(serialize(project));
     expect(serialize(restored)).toBe(serialize(project));
@@ -65,13 +75,13 @@ describe("오토타일 그룹 뮤테이션", () => {
     const tilesetId = firstTilesetId(store.getCurrent());
 
     seedDefaultAutotileGroups(tilesetId);
-    expect(store.getCurrent().tilesets[tilesetId].autotileGroups).toHaveLength(2);
+    expect(store.getCurrent().tilesets[tilesetId].autotileGroups).toEqual(DEFAULT_AUTOTILE_GROUPS);
 
     const groupId = addAutotileGroup(tilesetId, "추가");
-    expect(store.getCurrent().tilesets[tilesetId].autotileGroups).toHaveLength(3);
+    expect(store.getCurrent().tilesets[tilesetId].autotileGroups).toHaveLength(DEFAULT_AUTOTILE_GROUPS.length + 1);
 
     removeAutotileGroup(tilesetId, groupId!);
-    expect(store.getCurrent().tilesets[tilesetId].autotileGroups).toHaveLength(2);
+    expect(store.getCurrent().tilesets[tilesetId].autotileGroups).toEqual(DEFAULT_AUTOTILE_GROUPS);
   });
 
   it("단일 비트마스크 항목 편집과 제거", () => {

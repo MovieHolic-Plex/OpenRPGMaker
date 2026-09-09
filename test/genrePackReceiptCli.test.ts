@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import { join, relative, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { serialize } from "@/project/io";
+import { deserialize, serialize } from "@/project/io";
 import {
   OFFICIAL_GENRE_PACK_IDS,
   OFFICIAL_GENRE_PACK_REQUIREMENTS,
@@ -26,7 +26,7 @@ describe("verify:genre-packs CLI", () => {
     mkdirSync(evidenceRoot, { recursive: true });
     const directory = mkdtempSync(join(evidenceRoot, "genre-cli-negative-"));
     createdDirectories.push(directory);
-    const projectRaw = serialize(createBlankProject());
+    const projectRaw = serialize(deserialize(serialize(createBlankProject())));
     const projectRevision = await sha256HexText(projectRaw);
     const projectPath = join(directory, "project.json");
     const receiptPath = join(directory, "receipts.json");
@@ -53,7 +53,8 @@ describe("verify:genre-packs CLI", () => {
     mkdirSync(evidenceRoot, { recursive: true });
     const directory = mkdtempSync(join(evidenceRoot, "genre-cli-matrix-"));
     createdDirectories.push(directory);
-    const projectRaw = serialize(createBlankProject());
+    // Receipts fingerprint the CLI's canonical loaded project, not pre-normalization defaults.
+    const projectRaw = serialize(deserialize(serialize(createBlankProject())));
     const projectRevision = await sha256HexText(projectRaw);
     const projectPath = join(directory, "project.json");
     const receiptPath = join(directory, "receipts.json");
@@ -82,13 +83,17 @@ describe("verify:genre-packs CLI", () => {
     writeFileSync(receiptPath, JSON.stringify(receipts), "utf8");
 
     const result = runCli(receiptPath, projectPath);
-    const output = `${result.stdout}\n${result.stderr}`;
+    expect(result.error).toBeUndefined();
     expect(result.status).toBe(1);
-    expect(output).toContain('"receiptVerification"');
-    expect(output).toContain('"monster-collect"');
-    expect(output).toContain('"status": "blocked"');
-    expect(output).toContain('"status": "incomplete"');
-    expect(output).toContain('"ok": false');
+    const output = JSON.parse(String(result.stdout));
+    expect(output.projectRevision).toBe(projectRevision);
+    expect(output.receiptVerification.ok).toBe(true);
+    expect(output.packs["monster-collect"]).toEqual({ ok: false, evidenceOk: true, readinessStatus: "blocked" });
+    expect(output.packs["adventure-jrpg"]).toEqual({ ok: false, evidenceOk: true, readinessStatus: "incomplete" });
+    expect(output.readiness.packs["adventure-jrpg"].authoredCommandChecks.every(
+      (check: { present: boolean }) => !check.present,
+    )).toBe(true);
+    expect(output.ok).toBe(false);
   }, CLI_TEST_TIMEOUT_MS);
 });
 

@@ -13,7 +13,7 @@ import type { AutotileGroup, GameMap, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 import { forestCoverageTarget, type ForestDensity } from "./forestDensity";
 import { protectedHouseCells } from "./houseProtection";
-import { inMapBounds, reachableCells } from "./mapHelpers";
+import { inMapBounds, passableCellCount, reachableCells } from "./mapHelpers";
 import { placePropsOnDraft } from "./placePropsDomain";
 import { isPathSurfaceTile, protectedEventCells } from "./placementTools";
 import { tilePassability } from "@/project/collision";
@@ -208,6 +208,10 @@ function featherForestEdge(draft: Project, map: GameMap, area: Rect, seed: numbe
   const edgeCells = 2 * area.w + 2 * area.h - 4;
   const edgeRatio = edgeCells / Math.max(1, area.w * area.h);
   const stride = edgeRatio > 0.4 ? 4 : 2;
+  // Feathering is decorative: it must not reopen 30% of a dense forest.
+  // Reserve whole-cell openings below the strict ratio before removing bushes.
+  const maxPassable = Math.ceil(area.w * area.h * 0.3) - 1;
+  const openingBudget = Math.max(0, maxPassable - passableCellCount(draft, map, area));
   let feathered = 0;
   for (let y = area.y; y < area.y + area.h; y += 1) {
     for (let x = area.x; x < area.x + area.w; x += 1) {
@@ -216,7 +220,7 @@ function featherForestEdge(draft: Project, map: GameMap, area: Rect, seed: numbe
       const index = y * map.width + x;
       if (!bushIds.has(map.upperTiles[index] ?? TILE.EMPTY)) continue;
       const hash = Math.imul(x * 0x1f1f1f1f ^ y * 0x85ebca6b ^ seed, 0xc2b2ae35) >>> 0;
-      if (hash % stride !== 0) continue;
+      if (hash % stride !== 0 || feathered >= openingBudget) continue;
       map.upperTiles[index] = TILE.EMPTY;
       feathered += 1;
     }
