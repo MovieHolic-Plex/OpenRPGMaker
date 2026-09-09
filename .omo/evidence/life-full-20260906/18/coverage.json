@@ -19,7 +19,9 @@
   },
   "receiptSequence": "1..7 strictly increasing — no beat passed on a stale receipt",
   "notYetProven": {
-    "fullMatrix": "The 51-row happy+failure matrix and F01..F13 are not fully executed on the live surface. Proven end-to-end so far: authoring across the seven 생활 editor tabs, farming day cycle, tree chop, shipping deposit -> day rollover -> settlement, manual save, and load/resume."
+    "perRowFailureQaOnLiveSurface": "The plan asks for happy+failure per row on the real surface. Happy paths are live for authoring, farming, day cycle, shipping/settlement, save/resume and residents; the remaining failure/edge contracts are covered by module tests named per row in rows.json, not by live QA.",
+    "recoveryTab": "복구 tab never renders because the session has no recovery claims; contract covered by test/lifeRecoveryLedgerUi.test.ts only.",
+    "craftingFailureLive": "No live crafting-failure execution in this run."
   },
   "harnessAdditions": [
     "expect.cropGrowthDays — asserts a real day transition (a mapId-only assertion had passed while nothing happened)",
@@ -107,5 +109,12 @@
       "R (주민/관계/선물/생일)": "relationships screen + choice menu",
       "quests": "31-quests.png"
     }
+  },
+  "rowAttribution": {
+    "file": "rows.json",
+    "rows": 51,
+    "findings": 13,
+    "crossChecked": "Every id in rows.json exists in lifeFullCoverageMap.ts and vice versa (notInMap [] / notInRows []), so nothing was invented or dropped.",
+    "limitsCarried": "rows.json states its own limits: recovery has no live surface (no claims in session), craftingFailure had no live failure run, upgrade rendered but was not executed, ledger-tab rows prove rendering rather than every mutation, and failure paths come from named module tests rather than live QA."
   }
 }

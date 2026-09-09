@@ -1,0 +1,387 @@
+{
+  "task": "18",
+  "generatedAt": "2026-09-09T15:03:30.562Z",
+  "whatThisIs": "Attribution of the 51 audited rows and F01..F13 to evidence actually produced in this execution. Live-surface evidence is a real browser run; module tests cover the failure/edge contracts. Rows whose live evidence is a rendered ledger surface are marked as such rather than claimed as executed actions.",
+  "honestLimits": [
+    "K7/recovery: the 복구 tab does not render because the session has no claims. Its contract is covered by module tests only.",
+    "F03/craftingFailure: no live failure-path execution in this run.",
+    "L7/upgrade: skill levels render, but no upgrade action was performed live.",
+    "Rows attributed to a ledger tab prove the surface renders real authored data; they do not prove every mutation in that tab was executed live.",
+    "The plan asks for happy+failure per row. Happy paths are live for the farming, day-cycle, shipping/settlement, save/resume, residents, and authoring groups; failure paths are covered by the module tests named per row, not by live QA."
+  ],
+  "rows": {
+    "C1": {
+      "group": "authoring",
+      "liveEvidence": "test/e2e/life-full-authoring.spec.ts — seven 생활 editor tabs at 1024x768 and 1440x900, 14 screenshots",
+      "artifacts": "18/editor-e2e/*.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "C2": {
+      "group": "authoring",
+      "liveEvidence": "test/e2e/life-full-authoring.spec.ts — seven 생활 editor tabs at 1024x768 and 1440x900, 14 screenshots",
+      "artifacts": "18/editor-e2e/*.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "C3": {
+      "group": "farming",
+      "liveEvidence": "scripts/qa/runtime life-full scenario — till/sow(seed 3->2)/water/sleep(growth 0->1)/water/sleep(1->2)/harvest(potato 0->1), receipts 1..7 strictly increasing",
+      "artifacts": "18/runtime/0*-*.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "C4": {
+      "group": "farming",
+      "liveEvidence": "scripts/qa/runtime life-full scenario — till/sow(seed 3->2)/water/sleep(growth 0->1)/water/sleep(1->2)/harvest(potato 0->1), receipts 1..7 strictly increasing",
+      "artifacts": "18/runtime/0*-*.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "C5": {
+      "group": "farming",
+      "liveEvidence": "scripts/qa/runtime life-full scenario — till/sow(seed 3->2)/water/sleep(growth 0->1)/water/sleep(1->2)/harvest(potato 0->1), receipts 1..7 strictly increasing",
+      "artifacts": "18/runtime/0*-*.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "C6": {
+      "group": "treeChop",
+      "liveEvidence": "qa:runtime life-tree-chop — item_wood x1, energy 100->99, foraging xp 10, repeat conserves",
+      "artifacts": "81/native-runtime-qa/*.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "C7": {
+      "group": "farming",
+      "liveEvidence": "scripts/qa/runtime life-full scenario — till/sow(seed 3->2)/water/sleep(growth 0->1)/water/sleep(1->2)/harvest(potato 0->1), receipts 1..7 strictly increasing",
+      "artifacts": "18/runtime/0*-*.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "C8": {
+      "group": "farming",
+      "liveEvidence": "scripts/qa/runtime life-full scenario — till/sow(seed 3->2)/water/sleep(growth 0->1)/water/sleep(1->2)/harvest(potato 0->1), receipts 1..7 strictly increasing",
+      "artifacts": "18/runtime/0*-*.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "R1": {
+      "group": "residents",
+      "liveEvidence": "runtime life-full.spec.ts — relationship list empty, talk to 촌장 via the 대화하기 choice, list then shows 촌장 ☆☆☆☆☆ (0/10) · 10 무관심; the 선물하기 option is visible in the same menu",
+      "artifacts": "18/menu-runtime/{30-relationships-empty,30-relationships}.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "R2": {
+      "group": "residents",
+      "liveEvidence": "runtime life-full.spec.ts — relationship list empty, talk to 촌장 via the 대화하기 choice, list then shows 촌장 ☆☆☆☆☆ (0/10) · 10 무관심; the 선물하기 option is visible in the same menu",
+      "artifacts": "18/menu-runtime/{30-relationships-empty,30-relationships}.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "R3": {
+      "group": "residents",
+      "liveEvidence": "runtime life-full.spec.ts — relationship list empty, talk to 촌장 via the 대화하기 choice, list then shows 촌장 ☆☆☆☆☆ (0/10) · 10 무관심; the 선물하기 option is visible in the same menu",
+      "artifacts": "18/menu-runtime/{30-relationships-empty,30-relationships}.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "R4": {
+      "group": "residents",
+      "liveEvidence": "runtime life-full.spec.ts — relationship list empty, talk to 촌장 via the 대화하기 choice, list then shows 촌장 ☆☆☆☆☆ (0/10) · 10 무관심; the 선물하기 option is visible in the same menu",
+      "artifacts": "18/menu-runtime/{30-relationships-empty,30-relationships}.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "R5": {
+      "group": "residents",
+      "liveEvidence": "runtime life-full.spec.ts — relationship list empty, talk to 촌장 via the 대화하기 choice, list then shows 촌장 ☆☆☆☆☆ (0/10) · 10 무관심; the 선물하기 option is visible in the same menu",
+      "artifacts": "18/menu-runtime/{30-relationships-empty,30-relationships}.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "R6": {
+      "group": "residents",
+      "liveEvidence": "runtime life-full.spec.ts — relationship list empty, talk to 촌장 via the 대화하기 choice, list then shows 촌장 ☆☆☆☆☆ (0/10) · 10 무관심; the 선물하기 option is visible in the same menu",
+      "artifacts": "18/menu-runtime/{30-relationships-empty,30-relationships}.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "R7": {
+      "group": "residents",
+      "liveEvidence": "runtime life-full.spec.ts — relationship list empty, talk to 촌장 via the 대화하기 choice, list then shows 촌장 ☆☆☆☆☆ (0/10) · 10 무관심; the 선물하기 option is visible in the same menu",
+      "artifacts": "18/menu-runtime/{30-relationships-empty,30-relationships}.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "R8": {
+      "group": "residents",
+      "liveEvidence": "runtime life-full.spec.ts — relationship list empty, talk to 촌장 via the 대화하기 choice, list then shows 촌장 ☆☆☆☆☆ (0/10) · 10 무관심; the 선물하기 option is visible in the same menu",
+      "artifacts": "18/menu-runtime/{30-relationships-empty,30-relationships}.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "L0": {
+      "group": "authoring",
+      "liveEvidence": "test/e2e/life-full-authoring.spec.ts — seven 생활 editor tabs at 1024x768 and 1440x900, 14 screenshots",
+      "artifacts": "18/editor-e2e/*.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "L1": {
+      "group": "crafting",
+      "liveEvidence": "ledger 기술 tab renders 농사/채광/채집/낚시/전투 Lv.1 with xp, and 가공 설비 tab renders 절임통/용광로 with 가공 시작",
+      "artifacts": "18/menu-runtime/{20-ledger-skills,20-ledger-makers}.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "L2": {
+      "group": "crafting",
+      "liveEvidence": "ledger 기술 tab renders 농사/채광/채집/낚시/전투 Lv.1 with xp, and 가공 설비 tab renders 절임통/용광로 with 가공 시작",
+      "artifacts": "18/menu-runtime/{20-ledger-skills,20-ledger-makers}.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "L3": {
+      "group": "crafting",
+      "liveEvidence": "ledger 기술 tab renders 농사/채광/채집/낚시/전투 Lv.1 with xp, and 가공 설비 tab renders 절임통/용광로 with 가공 시작",
+      "artifacts": "18/menu-runtime/{20-ledger-skills,20-ledger-makers}.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "L4": {
+      "group": "gathering",
+      "liveEvidence": "ledger 수집 도감 tab renders per-item 발견/출하/낚시/기부 state; 야생 부추 held 1 came from the fixture starting inventory and was shipped in this run",
+      "artifacts": "18/menu-runtime/20-ledger-collections.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "L5": {
+      "group": "treeChop",
+      "liveEvidence": "qa:runtime life-tree-chop — item_wood x1, energy 100->99, foraging xp 10, repeat conserves",
+      "artifacts": "81/native-runtime-qa/*.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "L6": {
+      "group": "gathering",
+      "liveEvidence": "ledger 수집 도감 tab renders per-item 발견/출하/낚시/기부 state; 야생 부추 held 1 came from the fixture starting inventory and was shipped in this run",
+      "artifacts": "18/menu-runtime/20-ledger-collections.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "L7": {
+      "group": "upgrade",
+      "liveEvidence": "ledger 기술 tab shows skill levels/xp that gate upgrades; no upgrade action was executed on the live surface in this run",
+      "artifacts": "18/menu-runtime/20-ledger-skills.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "L8": {
+      "group": "bundle",
+      "liveEvidence": "ledger 꾸러미 tab renders 봄 수확 꾸러미 · 감자 0/1, 딸기 0/1, 토마토 0/1, 광산 입문 꾸러미 · 돌 0/5",
+      "artifacts": "18/menu-runtime/20-ledger-bundles.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "L9": {
+      "group": "bundle",
+      "liveEvidence": "ledger 꾸러미 tab renders 봄 수확 꾸러미 · 감자 0/1, 딸기 0/1, 토마토 0/1, 광산 입문 꾸러미 · 돌 0/5",
+      "artifacts": "18/menu-runtime/20-ledger-bundles.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "L10": {
+      "group": "crafting",
+      "liveEvidence": "ledger 기술 tab renders 농사/채광/채집/낚시/전투 Lv.1 with xp, and 가공 설비 tab renders 절임통/용광로 with 가공 시작",
+      "artifacts": "18/menu-runtime/{20-ledger-skills,20-ledger-makers}.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "W1": {
+      "group": "dayCycle",
+      "liveEvidence": "runtime life-full.spec.ts — sleeping in ev_bed moved gameTime day 1 -> day 2 (measured before/after snapshots)",
+      "artifacts": "18/menu-runtime/11-after-sleep.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "W2": {
+      "group": "dayCycle",
+      "liveEvidence": "runtime life-full.spec.ts — sleeping in ev_bed moved gameTime day 1 -> day 2 (measured before/after snapshots)",
+      "artifacts": "18/menu-runtime/11-after-sleep.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "W3": {
+      "group": "dayCycle",
+      "liveEvidence": "runtime life-full.spec.ts — sleeping in ev_bed moved gameTime day 1 -> day 2 (measured before/after snapshots)",
+      "artifacts": "18/menu-runtime/11-after-sleep.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "W4": {
+      "group": "dayCycle",
+      "liveEvidence": "runtime life-full.spec.ts — sleeping in ev_bed moved gameTime day 1 -> day 2 (measured before/after snapshots)",
+      "artifacts": "18/menu-runtime/11-after-sleep.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "W5": {
+      "group": "dayCycle",
+      "liveEvidence": "runtime life-full.spec.ts — sleeping in ev_bed moved gameTime day 1 -> day 2 (measured before/after snapshots)",
+      "artifacts": "18/menu-runtime/11-after-sleep.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "A1": {
+      "group": "animals",
+      "liveEvidence": "ledger 동물 돌봄 tab renders 보리 닭 · 햇살 축사, 친밀도 0/1000, 생산 0/1, plus 먹이 주기(건초 1개) and 쓰다듬기(친밀도 +15) actions",
+      "artifacts": "18/menu-runtime/20-ledger-animals.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "A2": {
+      "group": "animals",
+      "liveEvidence": "ledger 동물 돌봄 tab renders 보리 닭 · 햇살 축사, 친밀도 0/1000, 생산 0/1, plus 먹이 주기(건초 1개) and 쓰다듬기(친밀도 +15) actions",
+      "artifacts": "18/menu-runtime/20-ledger-animals.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "A3": {
+      "group": "animals",
+      "liveEvidence": "ledger 동물 돌봄 tab renders 보리 닭 · 햇살 축사, 친밀도 0/1000, 생산 0/1, plus 먹이 주기(건초 1개) and 쓰다듬기(친밀도 +15) actions",
+      "artifacts": "18/menu-runtime/20-ledger-animals.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "A4": {
+      "group": "animals",
+      "liveEvidence": "ledger 동물 돌봄 tab renders 보리 닭 · 햇살 축사, 친밀도 0/1000, 생산 0/1, plus 먹이 주기(건초 1개) and 쓰다듬기(친밀도 +15) actions",
+      "artifacts": "18/menu-runtime/20-ledger-animals.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "A5": {
+      "group": "animals",
+      "liveEvidence": "ledger 동물 돌봄 tab renders 보리 닭 · 햇살 축사, 친밀도 0/1000, 생산 0/1, plus 먹이 주기(건초 1개) and 쓰다듬기(친밀도 +15) actions",
+      "artifacts": "18/menu-runtime/20-ledger-animals.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "A6": {
+      "group": "animals",
+      "liveEvidence": "ledger 동물 돌봄 tab renders 보리 닭 · 햇살 축사, 친밀도 0/1000, 생산 0/1, plus 먹이 주기(건초 1개) and 쓰다듬기(친밀도 +15) actions",
+      "artifacts": "18/menu-runtime/20-ledger-animals.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "S1": {
+      "group": "buildings",
+      "liveEvidence": "ledger 건물·꾸미기 tab renders 농장 작업실 배치 map_farming_demo (4, 5), Lv.1 · 수용량 2, and 봄 밭 (14, 11)",
+      "artifacts": "18/menu-runtime/20-ledger-spaces.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "S2": {
+      "group": "buildings",
+      "liveEvidence": "ledger 건물·꾸미기 tab renders 농장 작업실 배치 map_farming_demo (4, 5), Lv.1 · 수용량 2, and 봄 밭 (14, 11)",
+      "artifacts": "18/menu-runtime/20-ledger-spaces.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "S3": {
+      "group": "buildings",
+      "liveEvidence": "ledger 건물·꾸미기 tab renders 농장 작업실 배치 map_farming_demo (4, 5), Lv.1 · 수용량 2, and 봄 밭 (14, 11)",
+      "artifacts": "18/menu-runtime/20-ledger-spaces.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "S4": {
+      "group": "buildings",
+      "liveEvidence": "ledger 건물·꾸미기 tab renders 농장 작업실 배치 map_farming_demo (4, 5), Lv.1 · 수용량 2, and 봄 밭 (14, 11)",
+      "artifacts": "18/menu-runtime/20-ledger-spaces.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "S5": {
+      "group": "buildings",
+      "liveEvidence": "ledger 건물·꾸미기 tab renders 농장 작업실 배치 map_farming_demo (4, 5), Lv.1 · 수용량 2, and 봄 밭 (14, 11)",
+      "artifacts": "18/menu-runtime/20-ledger-spaces.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "S6": {
+      "group": "buildings",
+      "liveEvidence": "ledger 건물·꾸미기 tab renders 농장 작업실 배치 map_farming_demo (4, 5), Lv.1 · 수용량 2, and 봄 밭 (14, 11)",
+      "artifacts": "18/menu-runtime/20-ledger-spaces.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "K1": {
+      "group": "shipping",
+      "liveEvidence": "runtime life-full.spec.ts — deposit 야생 부추 (withdraw entry appears only when queued>0), then day rollover settles gold 0 -> 28, matching the ledger 예상 단가 28G",
+      "artifacts": "18/menu-runtime/{10-deposited,12-settled-gold}.png",
+      "failurePathModuleTests": "test/p0Shipping.test.ts — atomic deposit/withdraw; rejects unknown/disallowed/insufficient/over-withdraw with no partial mutation; settles one day exactly once, caps gold, bounds immutable history; refuses malformed queue and blank day key"
+    },
+    "K2": {
+      "group": "shipping",
+      "liveEvidence": "runtime life-full.spec.ts — deposit 야생 부추 (withdraw entry appears only when queued>0), then day rollover settles gold 0 -> 28, matching the ledger 예상 단가 28G",
+      "artifacts": "18/menu-runtime/{10-deposited,12-settled-gold}.png",
+      "failurePathModuleTests": "test/p0Shipping.test.ts — atomic deposit/withdraw; rejects unknown/disallowed/insufficient/over-withdraw with no partial mutation; settles one day exactly once, caps gold, bounds immutable history; refuses malformed queue and blank day key"
+    },
+    "K3": {
+      "group": "shipping",
+      "liveEvidence": "runtime life-full.spec.ts — deposit 야생 부추 (withdraw entry appears only when queued>0), then day rollover settles gold 0 -> 28, matching the ledger 예상 단가 28G",
+      "artifacts": "18/menu-runtime/{10-deposited,12-settled-gold}.png",
+      "failurePathModuleTests": "test/p0Shipping.test.ts — atomic deposit/withdraw; rejects unknown/disallowed/insufficient/over-withdraw with no partial mutation; settles one day exactly once, caps gold, bounds immutable history; refuses malformed queue and blank day key"
+    },
+    "K4": {
+      "group": "saveResume",
+      "liveEvidence": "runtime life-full.spec.ts — load-slot-1 비어 있음 -> save -> 저장됨 -> load returns to play; plus authored save point event",
+      "artifacts": "18/menu-runtime/{13-saved,14-resumed}.png, 18/runtime/12-save-slot-1.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "K5": {
+      "group": "saveResume",
+      "liveEvidence": "runtime life-full.spec.ts — load-slot-1 비어 있음 -> save -> 저장됨 -> load returns to play; plus authored save point event",
+      "artifacts": "18/menu-runtime/{13-saved,14-resumed}.png, 18/runtime/12-save-slot-1.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "K6": {
+      "group": "saveResume",
+      "liveEvidence": "runtime life-full.spec.ts — load-slot-1 비어 있음 -> save -> 저장됨 -> load returns to play; plus authored save point event",
+      "artifacts": "18/menu-runtime/{13-saved,14-resumed}.png, 18/runtime/12-save-slot-1.png",
+      "failurePathModuleTests": "test/p0LifeLedgerUi.test.ts, test/p2LifeLedgerUi.test.ts — five reachable tabs, empty tabs and stale records without mutation, atomic museum donation with repeat disabled"
+    },
+    "K7": {
+      "group": "recovery",
+      "liveEvidence": "NOT on the live surface: availableLifeLedgerTabs omits the 복구 tab because the session has no recovery claims. Measured and recorded as absent.",
+      "artifacts": "18/menu-runtime/ledger-tabs.json",
+      "failurePathModuleTests": "test/lifeRecoveryLedgerUi.test.ts — collects a known claim exactly once and rejects a duplicate retry with zero inventory; keeps unknown-item and quantity-cap refusals as raw claims; surfaces date-error stage without mutating the session"
+    }
+  },
+  "findings": {
+    "F01": {
+      "group": "farming",
+      "liveEvidence": "scripts/qa/runtime life-full scenario — till/sow(seed 3->2)/water/sleep(growth 0->1)/water/sleep(1->2)/harvest(potato 0->1), receipts 1..7 strictly increasing",
+      "artifacts": "18/runtime/0*-*.png"
+    },
+    "F02": {
+      "group": "farming",
+      "liveEvidence": "scripts/qa/runtime life-full scenario — till/sow(seed 3->2)/water/sleep(growth 0->1)/water/sleep(1->2)/harvest(potato 0->1), receipts 1..7 strictly increasing",
+      "artifacts": "18/runtime/0*-*.png"
+    },
+    "F03": {
+      "group": "craftingFailure",
+      "liveEvidence": "NOT executed on the live surface in this run.",
+      "artifacts": null
+    },
+    "F04": {
+      "group": "saveResume",
+      "liveEvidence": "runtime life-full.spec.ts — load-slot-1 비어 있음 -> save -> 저장됨 -> load returns to play; plus authored save point event",
+      "artifacts": "18/menu-runtime/{13-saved,14-resumed}.png, 18/runtime/12-save-slot-1.png"
+    },
+    "F05": {
+      "group": "shipping",
+      "liveEvidence": "runtime life-full.spec.ts — deposit 야생 부추 (withdraw entry appears only when queued>0), then day rollover settles gold 0 -> 28, matching the ledger 예상 단가 28G",
+      "artifacts": "18/menu-runtime/{10-deposited,12-settled-gold}.png"
+    },
+    "F06": {
+      "group": "treeChop",
+      "liveEvidence": "qa:runtime life-tree-chop — item_wood x1, energy 100->99, foraging xp 10, repeat conserves",
+      "artifacts": "81/native-runtime-qa/*.png"
+    },
+    "F07": {
+      "group": "residents",
+      "liveEvidence": "runtime life-full.spec.ts — relationship list empty, talk to 촌장 via the 대화하기 choice, list then shows 촌장 ☆☆☆☆☆ (0/10) · 10 무관심; the 선물하기 option is visible in the same menu",
+      "artifacts": "18/menu-runtime/{30-relationships-empty,30-relationships}.png"
+    },
+    "F08": {
+      "group": "buildings",
+      "liveEvidence": "ledger 건물·꾸미기 tab renders 농장 작업실 배치 map_farming_demo (4, 5), Lv.1 · 수용량 2, and 봄 밭 (14, 11)",
+      "artifacts": "18/menu-runtime/20-ledger-spaces.png"
+    },
+    "F09": {
+      "group": "buildings",
+      "liveEvidence": "ledger 건물·꾸미기 tab renders 농장 작업실 배치 map_farming_demo (4, 5), Lv.1 · 수용량 2, and 봄 밭 (14, 11)",
+      "artifacts": "18/menu-runtime/20-ledger-spaces.png"
+    },
+    "F10": {
+      "group": "shipping",
+      "liveEvidence": "runtime life-full.spec.ts — deposit 야생 부추 (withdraw entry appears only when queued>0), then day rollover settles gold 0 -> 28, matching the ledger 예상 단가 28G",
+      "artifacts": "18/menu-runtime/{10-deposited,12-settled-gold}.png"
+    },
+    "F11": {
+      "group": "animals",
+      "liveEvidence": "ledger 동물 돌봄 tab renders 보리 닭 · 햇살 축사, 친밀도 0/1000, 생산 0/1, plus 먹이 주기(건초 1개) and 쓰다듬기(친밀도 +15) actions",
+      "artifacts": "18/menu-runtime/20-ledger-animals.png"
+    },
+    "F12": {
+      "group": "dayCycle",
+      "liveEvidence": "runtime life-full.spec.ts — sleeping in ev_bed moved gameTime day 1 -> day 2 (measured before/after snapshots)",
+      "artifacts": "18/menu-runtime/11-after-sleep.png"
+    },
+    "F13": {
+      "group": "authoring",
+      "liveEvidence": "test/e2e/life-full-authoring.spec.ts — seven 생활 editor tabs at 1024x768 and 1440x900, 14 screenshots",
+      "artifacts": "18/editor-e2e/*.png"
+    }
+  }
+}
