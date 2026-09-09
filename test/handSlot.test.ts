@@ -29,6 +29,8 @@ describe("hand slot model", () => {
       // 광산을 싣면서 곡괭이도 시작 장비가 됐다 — 새 스타파이 아니라 달린 도구다.
       "item_pickaxe",
       "item_watering_can",
+      // 벌목 가능한 스타터 나무를 실으면서 도끼도 시작 장비가 됐다(task81).
+      "item_axe",
       "item_potato_seed",
       "item_strawberry_seed",
       "item_tomato_seed",
