@@ -44,10 +44,9 @@ export const LIFE_FULL_SCENARIOS = {
 export type LifeFullScenarioId = (typeof LIFE_FULL_SCENARIOS)[keyof typeof LIFE_FULL_SCENARIOS];
 
 /**
- * C6/L5/F06 depend on the choppable-tree starter owned by task 81, which is not yet
- * integrated. They map to the real chop scenario but are flagged pending so a green
- * matrix is never mistaken for proof that the starter tree exists. The fixture must
- * NOT fabricate a tree by runtime injection.
+ * C6/L5/F06 are the choppable-tree rows. Task 81 is now integrated and was proven on the
+ * shipped player, so the ordinary starter authors the tree and these rows are backed by a
+ * real resource. The tree still must come from the starter, never from runtime injection.
  */
 export const LIFE_FULL_PENDING_STARTER_ROWS = ["C6", "L5", "F06"] as const;
 

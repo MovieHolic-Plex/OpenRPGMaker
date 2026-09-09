@@ -115,18 +115,24 @@ describe("life-full deterministic fixture", () => {
     expect([...scenarioIds].filter((id) => !used.has(id))).toEqual([]);
   });
 
-  it("declares the tree-starter rows as pending instead of faking a tree", () => {
+  it("carries the real starter tree that C6/L5/F06 depend on", () => {
     const project = createLifeFullFixture();
-    // Task 81 owns the choppable starter tree; until it lands these rows are pending.
+    // Task 81 landed and was proven on the shipped player (npm run qa:runtime --scenario
+    // life-tree-chop): the ordinary starter now authors one choppable tree. These rows are
+    // therefore no longer pending — assert the real resource exists rather than asserting
+    // its absence, which is the stronger claim.
     for (const row of LIFE_FULL_PENDING_STARTER_ROWS) {
       expect(LIFE_FULL_FEATURE_SCENARIOS[row] ?? LIFE_FULL_FINDING_SCENARIOS[row]).toBe(
         LIFE_FULL_SCENARIOS.treeChop,
       );
     }
-    // And the fixture must not have invented a tree placeable to fake them green.
-    const placeables = project.session.placeables ?? {};
-    const treeKeys = Object.entries(placeables).filter(([, value]) => (value as { kind?: string })?.kind === "tree");
-    expect(treeKeys).toEqual([]);
+    const trees = Object.values(project.session.placeables ?? {})
+      .filter((placeable) => (placeable as { kind?: string }).kind === "tree");
+    expect(trees).toHaveLength(1);
+    expect(trees[0]).toMatchObject({ kind: "tree", itemId: "item_wood", x: 6, y: 11 });
+    // The chop must still be EARNED: no wood and no foraging XP are pre-granted.
+    expect(project.session.inventory.item_wood ?? 0).toBe(0);
+    expect(project.session.inventory.item_axe).toBe(1);
   });
 
   describe("validator rejects a fixture missing a required piece", () => {
