@@ -22,7 +22,7 @@
     "shippingAndSettlement": "BLOCKED on scenario-side menu activation, NOT on the product. Seven attempts. Narrowed by measurement: (1) the rail renders collapsed group entries — items, skills, equipment, party-menu, record-menu, system-menu — dumped from the live DOM; (2) counted ArrowDown x4 DOES move the cursor, proven because waitForAttr aria-current=true on status-menu-command-record-menu passed; (3) Enter on the selected group entry does not expand it under __oprnInput edge injection, so status-menu-command-life-ledger never appears. pressUntil is structurally unusable for multi-step cursor movement because it waits for its condition after each single press. hasLifeLedgerData(project, session) measures true, so the ledger is reachable for a human player. Left unproven rather than asserted.",
     "editorSevenTabE2E": "not attempted (test/e2e/life-full-authoring.spec.ts not created)",
     "fullMatrix": "the 51-row happy+failure matrix and F01..F13 are NOT covered by this scenario; only the farming/day-cycle happy path above is.",
-    "resumeAfterLoad": "Save is proven; loading that slot back and asserting the restored state is not yet done."
+    "resumeAfterLoad": "Save is proven; LOAD is not. Measured by dumping the live DOM after saving: save-slot-1..3 are present but no load-slot-* exists, because the 로드 command sits inside the collapsed system-menu rail group (playerStatusMenuModel.ts:43). That is the same rail-activation wall that blocked shipping across seven attempts — injected Enter does not expand a selected group entry. Not a product defect: a human player expands the group normally. Left unproven rather than asserted."
   },
   "harnessAdditions": [
     "expect.cropGrowthDays — asserts a real day transition (a mapId-only assertion had passed while nothing happened)",
@@ -40,5 +40,14 @@
       "waitForVisible + contains — that op checks visibility only and ignores text, so it would have passed vacuously",
       "\"덮어씁니다\" hint — only shown when re-selecting an already filled slot, not right after saving"
     ]
+  },
+  "railActivationWall": {
+    "symptom": "Cursor movement works (aria-current reaches the group entry) but injected Enter does not expand the collapsed group, so commands inside it never render.",
+    "blocks": [
+      "life ledger -> shipping deposit/settlement (record group)",
+      "load/resume (system group)"
+    ],
+    "evidence": "Live DOM dumps in this scenario: only the six collapsed rail entries plus the currently open detail ever appear.",
+    "notAProductDefect": "hasLifeLedgerData measures true and the groups are ordinary UI; this is a harness input limitation."
   }
 }
