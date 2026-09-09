@@ -91,7 +91,7 @@ export const DEFAULT_LITE_MODEL = "gemini-3.7-flash";
 export const DEFAULT_MAX_TOKENS = 200_000;
 export const DEFAULT_MAX_TOOL_CALLS = 2000;
 
-/** 저장 blob·주입 config 의 autonomyLevel 검증. 4단계 id 만 통과한다. */
+/** 저장 blob·주입 config 의 autonomyLevel 검증. AUTONOMY_LEVEL_IDS(5단계) 만 통과한다. */
 export function isAutonomyLevel(raw: unknown): raw is AutonomyLevel {
   return (AUTONOMY_LEVEL_IDS as readonly unknown[]).includes(raw);
 }
@@ -264,7 +264,7 @@ export function loadAiConfig(): AiConfig {
       // agentMode 백필(위 liteModel 패턴과 동일): 필드가 없는 옛 blob과 이상한 값은
       // 기본값 "auto"로 정규화한다. "chat"만 명시적으로 유지된다.
       agentMode: parsed.agentMode === "chat" ? "chat" : "auto",
-      // 자율성 다이얼 백필: 4단계 id 만 인정하고, 없는 옛 blob·이상한 값은 "balanced".
+      // 자율성 다이얼 백필: 알려진 id 만 인정하고, 없는 옛 blob·이상한 값은 "balanced".
       autonomyLevel: isAutonomyLevel(parsed.autonomyLevel) ? parsed.autonomyLevel : "balanced",
     };
   } catch {

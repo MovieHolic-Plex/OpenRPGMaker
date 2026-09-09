@@ -192,11 +192,17 @@ function readCell(page: Page, mapId: string, x: number, y: number): Promise<numb
   }, { id: mapId, cx: x, cy: y });
 }
 
+/**
+ * 지시줄 컨트롤은 자율성 다이얼 하나다 — 예전 모드 3칩은 이 레벨로 흡수됐다.
+ * ask → readonly(readOnly 레일), plan → confirm(planOnly), do → balanced.
+ */
+const LEVEL_FOR_MODE = { ask: "readonly", plan: "confirm", do: "balanced" } as const;
+
 async function sendViaComposer(page: Page, mode: "ask" | "plan" | "do", text: string): Promise<void> {
-  const chip = page.getByTestId(`ai-composer-mode-${mode}`);
-  await expect(chip).toBeVisible({ timeout: 30_000 });
-  await chip.click();
-  await expect(chip).toHaveAttribute("aria-checked", "true");
+  const dial = page.getByTestId("ai-composer-autonomy");
+  await expect(dial).toBeVisible({ timeout: 30_000 });
+  await dial.selectOption(LEVEL_FOR_MODE[mode]);
+  await expect(dial).toHaveValue(LEVEL_FOR_MODE[mode]);
   await page.getByTestId("ai-input").fill(text);
   await page.getByTestId("ai-send").click();
 }

@@ -46,7 +46,7 @@ import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { formatMaterialLabelHint } from "@/ai/turnGuide";
 import { createLlmIntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { SessionTurnScope } from "@/ai/assistantSession";
-import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
+import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyResolution } from "@/ai/autonomyLevels";
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
 import { store } from "@/project/store";
 import { combineDiffs } from "@/project/projectCommitLog";
@@ -89,7 +89,7 @@ import { AI_STUDIO_TOGGLE_EVENT, publishAiStudioChange } from "@/editor/aiStudio
 import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
 import { downloadAiUsageLogText } from "./aiUsageLogDownload";
 import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
-import { createComposerElements, type ComposerElements, type ComposerMode, type ComposerPopover, type ComposerReasoningEffort } from "./aiComposer";
+import { createComposerElements, type ComposerElements, type ComposerMode, type ComposerPopover } from "./aiComposer";
 import { deckIcon } from "./aiDeckIcons";
 import { createDeckRail, deckStateOfTone, type DeckState } from "./aiDeckRail";
 import { regionFromToolCall, renderMapChip } from "./aiMapChip";
@@ -498,8 +498,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let syncDeckState: () => void = () => {};
   /** 레일의 「· 현재 맵」 문구. 컨텍스트 칩과 같은 구독에서 갱신한다. */
   let syncRailContext: () => void = () => {};
-  /** 컴포저 모드(지시/질문/계획). 모델에게 가는 [컨텍스트] 꼬리에 한 줄로 실린다. */
-  let composerMode: ComposerMode = "do";
+  /**
+   * 턴의 composerMode 는 **자율성 다이얼에서 유도한다** — 지시줄에 모드 칩이 없다.
+   *
+   * `readonly` 레벨만 세션의 ask 레일(쓰기 툴 미노출·호출 거부·초안 불변)로 보낸다. 그 밖에는
+   * `do` 이고, 질문 판정은 세션이 의도 선언의 `mode=question` 으로 자동 승격한다. 예전 「계획」
+   * 칩의 일은 레벨의 `planOnly` 가 그대로 한다(세션이 두 경로를 OR 로 처리한다).
+   *
+   * 매번 저장소에서 다시 읽는다 — 다이얼은 설정 모달에서도 바뀌고, 전송 시점 값이 정본이다.
+   */
+  const currentAutonomy = (): AutonomyResolution => {
+    const raw = loadAiConfig().autonomyLevel;
+    return resolveAutonomy(isAutonomyLevel(raw) ? raw : "balanced");
+  };
+  const derivedComposerMode = (): ComposerMode => (currentAutonomy().readOnly ? "ask" : "do");
   const applyPanelFontSize = (size: AiFontSize): void => {
     applyAiFontSize(panel, size);
   };
@@ -513,10 +525,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     onSaved: (config) => {
       controller.session?.updateConfig(config);
       composerShell.setModelLabel(modelChipLabel());
-      composerShell.syncEffort(
-        isAutonomyLevel(config.autonomyLevel) ? config.autonomyLevel : "balanced",
-        config.reasoningEffort ?? "low",
-      );
+      composerShell.syncEffort(isAutonomyLevel(config.autonomyLevel) ? config.autonomyLevel : "balanced");
     },
     extraSections: settingsExtraSections,
   }));
@@ -752,7 +761,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
             const runtime = latest.checkpoint.runtime;
             if (!runtime) return;
             clearRecovery();
-            composerMode = runtime.composerMode; composerShell.setMode(composerMode);
+            // 복구 턴은 체크포인트에 직렬화된 모드를 그대로 되쓴다(현재 다이얼로 유도하지 않는다) —
+            // 중단된 런이 어떤 레일에서 돌던 중이었는지가 정본이다.
             const plan = session.getWorkPlan();
             if (plan) showWorkPlan(plan);
             stickyChecklist.update(session.getAcceptanceSnapshot());
@@ -1314,8 +1324,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 컴포저 모드(제안서 D4·§06). 강제는 세션이 한다(sendUserMessage 옵션 composerMode — 쓰기 툴 미노출·
     // 거부, 계획만 수립). 여기 한 절은 모델이 상황을 알게 하는 안내일 뿐이다. 지시(기본)는 덧붙이지 않는다 —
     // 기계 텍스트가 사용자 채널에 실리던 「도구 규칙」 사고(2026-09-03 의도 라우터 감사)를 되풀이하지 않기 위해.
-    if (composerMode === "ask") parts.push("모드: 질문 — 변경 도구는 제공되지 않는다. 조회 도구로만 답한다");
-    else if (composerMode === "plan") parts.push("모드: 계획 — 이 턴은 계획만 세운다. 사용자가 「계속」이라고 하면 실행한다");
+    const autonomy = currentAutonomy();
+    if (autonomy.readOnly) parts.push("모드: 읽기 전용 — 변경 도구는 제공되지 않는다. 조회 도구로만 답한다");
+    else if (autonomy.planOnly) parts.push("모드: 확인 — 이 턴은 계획만 세운다. 사용자가 「계속」이라고 하면 실행한다");
     return `[컨텍스트] ${parts.join(" · ")}`;
   };
 
@@ -1668,12 +1679,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const autonomous = loadAiConfig().agentMode === "auto";
     // 계획 모드의 첫 턴은 계획만 세우고 멈춘다(세션이 강제). 활성 계획이 있는 채 「계속」이면 실행 턴이다.
     const activePlan = session.getWorkPlan();
-    const planPreview = composerMode === "plan" && (!activePlan || isWorkPlanComplete(activePlan));
+    const planPreview = currentAutonomy().planOnly && (!activePlan || isWorkPlanComplete(activePlan));
     // 사용자 발화 + 사실(footer: 현재 맵·선택 영역·재료 라벨 예)만 보낸다. 예전에 여기 붙던 「도구 규칙」
     // 17줄은 툴 설명으로 옮겼다 — 기계 텍스트가 사용자 채널에 실려 되묻기·플래너 스킵·툴 노출을 어긋나게
     // 했던 근인이다(2026-09-03 의도 라우터 감사). 선택 사각형은 스코프 인자로 따로 넘긴다.
     const turnScope = resolveTurnScope();
     const payload = [trimmed, contextFooter(turnScope?.mapId)].filter((part) => part.length > 0).join("\n\n");
+    const composerMode = derivedComposerMode();
     await executeTurn(session, trimmed, (onEvent, signal) =>
       // instruction: 사용자 발화 원문 — 의도 선언·툴 이름 언급·능력 승격은 이것만 본다.
       session.sendUserMessage(payload, onEvent, signal, { autonomous, instruction: trimmed, scope: turnScope, composerMode }),
@@ -1722,14 +1734,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     notifyIfObscuredByTestPlay: () => notifyIfObscuredByTestPlay(),
     drainPendingSends: () => drainPendingSends(),
     persistConversation: (target) => persistConversation(target),
-    sendText: (text, displayAs, opts) => {
-      // The existing Continue control is explicit user authorization, not an Ask query.
-      if (opts?.userResume && !turnBusy) {
-        composerMode = "do";
-        composerShell.setMode(composerMode);
-      }
-      return sendText(text, displayAs, opts);
-    },
+    // 「계속」이 모드를 do 로 리셋하던 코드는 없앴다. 모드가 턴 단위였을 때는 무해했지만
+    // 이제 정본은 지속 설정인 자율성 다이얼이다 — 「계속」이 사용자의 읽기 전용을 몰래 풀면
+    // 다음 턴부터 쓰기 툴이 붙는다. 읽기 전용에서 「계속」은 읽기를 계속하는 뜻이다.
+    sendText: (text, displayAs, opts) => sendText(text, displayAs, opts),
     appendBubble: (role, text) => appendBubble(role, text),
     appendReasoning: () => appendReasoning(),
     closeToolActivity: () => closeToolActivity(),
@@ -2418,12 +2426,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const initialAutonomy: AutonomyLevel = isAutonomyLevel(effortInitial.autonomyLevel)
     ? effortInitial.autonomyLevel
     : "balanced";
-  const initialReasoning: ComposerReasoningEffort =
-    effortInitial.reasoningEffort === "off"
-    || effortInitial.reasoningEffort === "medium"
-    || effortInitial.reasoningEffort === "high"
-      ? effortInitial.reasoningEffort
-      : "low";
   const composerShell: ComposerElements = createComposerElements({
     input,
     collapseButton,
@@ -2445,10 +2447,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     onPreferenceOpen: () => preferenceMemory.refresh(),
     // 바깥 클릭 판정은 데크 전체 — 레일의 ⋯ 가 바 밖에 있다(데크 조립 전엔 바 기준).
     isInside: (target) => (deckRoot ?? composerShell.commandBar).contains(target),
-    modeChips: { initial: "do", onChange: (mode) => { composerMode = mode; } },
     effortChips: {
       initialAutonomy,
-      initialReasoning,
       onAutonomyChange: (level) => {
         const resolved = resolveAutonomy(level);
         applyComposerEffortConfig({
@@ -2457,10 +2457,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           reasoningEffort: resolved.reasoningEffort,
           agentMode: resolved.agentMode,
         });
-        composerShell.syncEffort(level, resolved.reasoningEffort);
-      },
-      onReasoningChange: (effort) => {
-        applyComposerEffortConfig({ ...loadAiConfig(), reasoningEffort: effort });
+        composerShell.syncEffort(level);
       },
     },
     modelLabel: modelChipLabel(),
@@ -2872,7 +2869,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   refreshAcceptanceMenus = () => {
     const available = stickyChecklist.hasSnapshot();
-    const hidden = stickyChecklist.root.hidden;
+    // lib.dom 의 hidden 은 `boolean | "until-found"` 다 — 그대로 넘기면 build 의
+    // tsc --noEmit 이 막는다(HEAD 에서도 깨져 있던 2건). "until-found" 는 숨은 상태이므로
+    // 불리언으로 좁히는 것이 의미도 맞다.
+    const hidden = Boolean(stickyChecklist.root.hidden);
     headerMenu.setAcceptanceState(available, hidden);
     composerMenu.setAcceptanceState(available, hidden);
   };

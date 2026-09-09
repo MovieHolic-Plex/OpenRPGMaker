@@ -38,7 +38,11 @@ afterEach(async () => {
   teardownAiChatPanel(); await bounded(whenAiChatPanelSettled()); await clearConversations();
   document.body.replaceChildren(); localStorage.clear(); vi.restoreAllMocks(); vi.unstubAllEnvs();
 });
-it("the real Continue control updates both the panel send mode and composer presentation after Ask", async () => {
+// 계약 변경(자율성 다이얼 단일화): 예전에는 「계속」 컨트롤이 "명시적 사용자 승인"이라는 이유로
+// composerMode 를 do 로 되돌렸다. 모드가 턴 단위 칩일 때는 무해했지만, 이제 정본은 **지속 설정**인
+// 자율성 다이얼이다 — 「계속」이 사용자의 읽기 전용을 풀면 그 뒤 모든 턴에 쓰기 툴이 붙는다.
+// 읽기 전용에서 「계속」은 읽기를 계속하라는 뜻이며, 승격은 다이얼로만 한다.
+it("no continuation path escalates a read-only composer out of the Ask rail", async () => {
   vi.stubEnv("VITE_LLM_API_URL", ""); vi.stubEnv("VITE_LLM_API_KEY", "");
   localStorage.clear(); await clearConversations();
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
@@ -49,11 +53,12 @@ it("the real Continue control updates both the panel send mode and composer pres
   });
   const factory = vi.spyOn(turnRunner, "createAiTurnRunner");
   document.body.append(renderAiChatPanel()); await bounded(whenAiChatPanelSettled());
-  node("ai-composer-mode-ask").click();
+  const dial = node<HTMLSelectElement>("ai-composer-autonomy");
+  dial.value = "readonly"; dial.dispatchEvent(new Event("change"));
   node<HTMLTextAreaElement>("ai-input").value = "QUERY_FIXTURE";
   const asked = terminalSignal(); node("ai-send").click(); await bounded(asked);
   expect(send.mock.calls[0]?.[3]?.composerMode).toBe("ask");
-  // A continuation string is not permission to change an Ask composer.
+  // A continuation string is not permission to leave the Ask rail.
   node<HTMLTextAreaElement>("ai-input").value = "계속";
   const typed = terminalSignal(); node("ai-send").click(); await bounded(typed);
   expect(send.mock.lastCall?.[3]?.composerMode).toBe("ask");
@@ -63,10 +68,8 @@ it("the real Continue control updates both the panel send mode and composer pres
   if (!surface) throw new Error("Missing actual Panel run surface");
   await bounded(surface.sendText("계속"));
   expect(send.mock.lastCall?.[3]?.composerMode).toBe("ask");
-  expect(node("ai-composer-mode").dataset.mode).toBe("ask");
+  // Break: the old userResume reset lived here — the Continue button must not grant write tools.
   const resumed = terminalSignal(); node("ai-continue-run").click(); await bounded(resumed);
-  expect(send.mock.lastCall?.[3]?.composerMode).toBe("do");
-  expect(node("ai-composer-mode").dataset.mode).toBe("do");
-  expect(node("ai-composer-mode-do").getAttribute("aria-checked")).toBe("true");
-  expect(node("ai-composer-mode-ask").getAttribute("aria-checked")).toBe("false");
+  expect(send.mock.lastCall?.[3]?.composerMode).toBe("ask");
+  expect(dial.value).toBe("readonly");
 });

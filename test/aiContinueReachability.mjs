@@ -46,7 +46,7 @@ firefox.launch = async options => {
             const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
             return { viewport: { width: innerWidth, height: innerHeight }, focused: document.activeElement === node,
               unique: document.querySelectorAll('[data-testid="ai-continue-run"]').length,
-              hit: hit === node || node.contains(hit), modeBefore: document.querySelector('[data-testid="ai-composer-mode"]').dataset.mode,
+              hit: hit === node || node.contains(hit), levelBefore: document.querySelector('[data-testid="ai-composer-autonomy"]').value,
               rect: { x: r.x, y: r.y, width: r.width, height: r.height, right: r.right, bottom: r.bottom },
               scrollOwner: { testid: log.dataset.testid, scrollTop: log.scrollTop, clientHeight: log.clientHeight, scrollHeight: log.scrollHeight,
                 rect: { x: l.x, y: l.y, right: l.right, bottom: l.bottom } },
@@ -56,7 +56,7 @@ firefox.launch = async options => {
           });
           exercise = { ...exercise, beforeScroll, activation, instrumentPath, instrumentHash };
           await writeFile(`${out}/continue-reachability.json`, JSON.stringify(exercise, null, 2));
-          assert.equal(exercise.unique, 1); assert.equal(exercise.modeBefore, 'ask');
+          assert.equal(exercise.unique, 1); assert.equal(exercise.levelBefore, 'readonly');
           assert.equal(exercise.focused, true); assert.equal(exercise.hit, true);
           assert.equal(exercise.inViewport, true); assert.equal(exercise.fullyExposed, true);
           await screenshot({ path: `${out}/continue-reachable-${width}-${activation}.png` });
@@ -76,7 +76,8 @@ await import('./aiOutcomeBrowserEvidence.mjs');
 const report = JSON.parse(await readFile(`${out}/actions.json`, 'utf8'));
 assert.ok(exercise, 'Actual Continue activation was not reached');
 assert.equal(report.pass, true);
-assert.equal(report.states['blocked-user-resume-in-flight'].turnOptions.composerMode, 'do');
+// 계약 변경: 「계속」은 읽기 전용을 해제하지 않는다 — 다이얼만 승격시킬 수 있다.
+assert.equal(report.states['blocked-user-resume-in-flight'].turnOptions.composerMode, 'ask');
 assert.deepEqual(report.states['blocked-user-resume-settled'].getter, { execution: 'blocked', goal: 'incomplete', delivery: 'no-change' });
 assert.equal(createHash('sha256').update(await readFile(instrumentPath)).digest('hex'), instrumentHash);
 await writeFile(`${out}/continue-action-result.json`, JSON.stringify({ pass: true, activation, width,

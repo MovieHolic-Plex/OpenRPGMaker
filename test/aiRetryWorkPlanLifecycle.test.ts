@@ -4,7 +4,7 @@ import { AssistantSession, type TurnResult } from "@/ai/assistantSession";
 import { buildAiActivityLogRecord, recordAiActivity } from "@/ai/activityLog";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { clearConversations } from "@/ai/conversationStore";
-import type { ComposerMode } from "@/ai/composerMode";
+import type { AutonomyLevel } from "@/ai/autonomyLevels";
 import type { WorkPlan } from "@/ai/workPlan";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
@@ -55,6 +55,14 @@ function button(panel: HTMLElement, testid: string): HTMLButtonElement {
   return node;
 }
 
+/** 지시줄의 유일한 컨트롤. composerMode·planOnly·추론은 전부 이 레벨에서 유도된다. */
+function selectAutonomy(panel: HTMLElement, level: AutonomyLevel): void {
+  const dial = panel.querySelector<HTMLSelectElement>("[data-testid='ai-composer-autonomy']");
+  if (!dial) throw new Error("Missing autonomy dial");
+  dial.value = level;
+  dial.dispatchEvent(new Event("change"));
+}
+
 beforeEach(async () => {
   vi.stubEnv("VITE_LLM_API_URL", "");
   vi.stubEnv("VITE_LLM_API_KEY", "");
@@ -76,17 +84,17 @@ afterEach(async () => {
 });
 
 describe("manual retry work-plan ownership", () => {
-  const cases: { agentMode: "auto" | "chat"; composerMode: ComposerMode; ending: "final" | "error" | "aborted" | "throw"; completed?: boolean }[] = [
-    { agentMode: "chat", composerMode: "do", ending: "final" },
-    { agentMode: "auto", composerMode: "do", ending: "final" },
-    { agentMode: "auto", composerMode: "plan", ending: "final" },
-    { agentMode: "chat", composerMode: "ask", ending: "error" },
-    { agentMode: "chat", composerMode: "do", ending: "aborted" },
-    { agentMode: "chat", composerMode: "do", ending: "throw" },
-    { agentMode: "chat", composerMode: "do", ending: "final", completed: true },
+  const cases: { agentMode: "auto" | "chat"; level: AutonomyLevel; ending: "final" | "error" | "aborted" | "throw"; completed?: boolean }[] = [
+    { agentMode: "chat", level: "balanced", ending: "final" },
+    { agentMode: "auto", level: "balanced", ending: "final" },
+    { agentMode: "auto", level: "confirm", ending: "final" },
+    { agentMode: "chat", level: "readonly", ending: "error" },
+    { agentMode: "chat", level: "balanced", ending: "aborted" },
+    { agentMode: "chat", level: "balanced", ending: "throw" },
+    { agentMode: "chat", level: "balanced", ending: "final", completed: true },
   ];
 
-  it.each(cases)("reopens live checklist on actual retry and removes it at $ending ($agentMode/$composerMode, completed=$completed)", async ({ agentMode, composerMode, ending, completed }) => {
+  it.each(cases)("reopens live checklist on actual retry and removes it at $ending ($agentMode/$level, completed=$completed)", async ({ agentMode, level, ending, completed }) => {
     localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode, autonomyLevel: "balanced" }));
     let retainedPlan: WorkPlan | null = null;
     const getPlan = vi.spyOn(AssistantSession.prototype, "getWorkPlan").mockImplementation(() => retainedPlan);
@@ -101,7 +109,7 @@ describe("manual retry work-plan ownership", () => {
     await bounded(whenAiChatPanelSettled());
     const input = panel.querySelector<HTMLTextAreaElement>("[data-testid='ai-input']");
     if (!input) throw new Error("Missing composer input");
-    if (composerMode !== "do") button(panel, `ai-composer-mode-${composerMode}`).click();
+    if (level !== "balanced") selectAutonomy(panel, level);
     const firstDone = terminalSignal();
     input.value = "RETRY_FIXTURE_REQUEST";
     input.dispatchEvent(new Event("input", { bubbles: true }));
@@ -124,8 +132,8 @@ describe("manual retry work-plan ownership", () => {
       if (ending === "aborted") expect(abort?.aborted).toBe(true);
       return { assistantText: "", proposedCalls: [], stoppedReason: ending, ...(ending === "error" ? { error: "RETRY_FIXTURE_ERROR" } : {}) } satisfies TurnResult;
     });
-    // Retry must use the original run options, not the currently selected mode/config.
-    button(panel, "ai-composer-mode-ask").click();
+    // Retry must use the original run options, not the currently selected dial/config.
+    selectAutonomy(panel, "readonly");
     localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: agentMode === "auto" ? "chat" : "auto", autonomyLevel: "balanced" }));
     const retryDone = terminalSignal();
     button(panel, "ai-retry-turn").click();
@@ -137,7 +145,8 @@ describe("manual retry work-plan ownership", () => {
       expect(carriedVisible).toBe(!completed);
       expect(getPlan.mock.results.some((result) => result.value === savedPlan)).toBe(true);
       const budget = panel.querySelector("[data-testid='ai-autonomous-budget']");
-      if (agentMode === "auto" && composerMode === "do") expect(budget?.textContent).toContain("0/16");
+      // 자율 예산 표시는 쓰기 레벨이고 planOnly 가 아닐 때만 뜬다(confirm 은 계획만 세우고 멈춘다).
+      if (agentMode === "auto" && level === "balanced") expect(budget?.textContent).toContain("0/16");
       else expect(budget).toBeNull();
       expect(store.getCurrent()).toBe(beforeRetry);
     } finally {

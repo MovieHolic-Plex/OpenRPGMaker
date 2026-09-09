@@ -66,7 +66,7 @@ describe("조수 데크 CSS 계약", () => {
       ".ai-deck-rail-dot[data-ai-state=\"attention\"]",
       ".ai-deck-rail[data-ai-state=\"run\"]::before",
       ".ai-collapsed-restore[data-ai-state=\"attention\"]",
-      ".ai-composer-mode-option",
+      ".ai-composer-effort-select",
       ".ai-command-menu-meta",
       ".ai-suggest-row",
     ]) {
