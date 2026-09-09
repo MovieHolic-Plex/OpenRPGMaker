@@ -1102,7 +1102,11 @@ export class AssistantSession {
       project, calls: this.finalizeProposals(this.turnProposals),
     } };
     this.captureCheckpoint();
-    await operation.wait(this.whenCheckpointed());
+    // 적용 직전 내구성은 **되도록** 확보한다. 다만 기록이 거부되면 사용자의 적용까지 실패하는
+    // 것은 순서가 뒤집힌 것이다 — 실측(2026-09-09, late-cancel): 이 대기가 던져 적용이 아예
+    // 일어나지 않았고 제안 완료 콜백도 오지 않았다. 실패는 감사에 남기고 적용은 진행한다.
+    // (거부 자체는 별개 결함으로 고쳤다: 프로젝트 신원·영수증 소유 불일치.)
+    await operation.wait(this.checkpointBestEffort());
   }
 
   /**
