@@ -1,0 +1,21 @@
+ok   outdoor-tree | solid | tiles=262,263,292,293
+ok   outdoor-pine | solid | tiles=260,290
+ok   outdoor-dead-tree | solid | tiles=261,291
+ok   outdoor-stump | solid | tiles=290
+ok   outdoor-rock | solid | tiles=29
+ok   outdoor-boulder | solid | tiles=29,59
+ok   outdoor-bush | solid | tiles=289
+ok   outdoor-flowers | passable | tiles=288,348
+ok   outdoor-well | solid | tiles=382
+ok   outdoor-sign | solid | tiles=319,320
+ok   outdoor-bench | solid | tiles=327,328
+ok   outdoor-lamp | solid | tiles=318,267,297
+ok   outdoor-crate | solid | tiles=237
+ok   outdoor-barrel | solid | tiles=177,207
+ok   outdoor-fence | solid | tiles=378,379,380
+ok   outdoor-gate | solid | tiles=116,146
+ok   outdoor-wood-bridge | passable | tiles=228,222,229
+ok   outdoor-stone-bridge | passable | tiles=342
+ok   outdoor-stairs | solid | tiles=111,112,113
+ok   outdoor-dock | passable | tiles=230,222,192
+count=20 problems=0

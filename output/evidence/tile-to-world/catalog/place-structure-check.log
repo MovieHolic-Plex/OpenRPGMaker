@@ -1,0 +1,10 @@
+facility ids: inn, house, shop, tavern, library, smithy, church, warehouse, guild, clinic, barracks, school, townhall, alchemist, bakery, farmhouse, manor, hunter, bank
+ok   lake-village | children=5 links=3
+ok   forest-hamlet | children=3 links=2
+ok   harbor-town | children=3 links=2
+ok   snow-outpost | children=3 links=2
+ok   mountain-pass | children=3 links=2
+ok   old-ruins | children=3 links=2
+ok   working-mine | children=3 links=2
+ok   forest-sanctuary | children=3 links=2
+count=8 problems=0

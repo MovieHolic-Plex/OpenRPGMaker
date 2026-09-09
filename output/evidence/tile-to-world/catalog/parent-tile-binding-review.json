@@ -1,0 +1,132 @@
+{
+ "schemaVersion": 1,
+ "reviewer": "parent-lead",
+ "target": ".omo/worktrees/spatial-catalog uncommitted draft from abandoned dispatch st_01a084bb",
+ "verdict": "draft-tile-bindings-unverified",
+ "method": "Executed src/project/defaults/tileSemanticsCombinedTown.ts (244 curated entries) and looked up every tile index the draft outdoorObjectCatalog.ts references.",
+ "confirmedCorrect": {
+  "29": "돌 무더기",
+  "59": "깨진 돌",
+  "177": "술통",
+  "202": "과일박스 좌",
+  "207": "오크통",
+  "237": "나무 상자",
+  "288": "꽃 덤불",
+  "289": "덤불",
+  "290": "나무/tree",
+  "297": "돌기둥 하단",
+  "318": "벽 횃불",
+  "348": "꽃잎",
+  "382": "우물",
+  "440": "팻말",
+  "327/328": "벤치 좌/우",
+  "378/379/380": "울타리",
+  "116/146": "나무 문 상/하단",
+  "111/112/113": "돌계단 좌/중/우"
+ },
+ "defects": [
+  {
+   "ids": [
+    260,
+    261,
+    291
+   ],
+   "claim": "draft calls these 수관/침엽수/짙은 수종",
+   "actual": "absent from the curated semantics table entirely",
+   "impact": "outdoor-tree, outdoor-pine and outdoor-dead-tree bind indexes with no verified label; plan requires a real verified tile-kit binding per object"
+  },
+  {
+   "ids": [
+    63,
+    64,
+    65
+   ],
+   "claim": "draft calls these 석조 다리 상판",
+   "actual": "수로 가로 변, role water, passage solid",
+   "impact": "outdoor-stone-bridge would be painted from water tiles, so a bridge reads as a canal and is not walkable"
+  },
+  {
+   "ids": [
+    144,
+    174,
+    204
+   ],
+   "claim": "draft calls these 잔교 널판",
+   "actual": "세로 탁자 상/중/하, role decoration",
+   "impact": "outdoor-dock would be built from a vertical table"
+  },
+  {
+   "ids": [
+    234,
+    235,
+    236
+   ],
+   "claim": "draft calls these 목교 널판",
+   "actual": "가로 탁자 좌/중/우, role decoration",
+   "impact": "outdoor-wood-bridge would be built from a horizontal table"
+  }
+ ],
+ "assetGap": "The curated table exposes exactly one tree tile (290) and contains no bridge or dock tiles; role scan for tree/bridge returns 290 only. Stairs exist (111-113, 246, 298-299).",
+ "consequence": "6 of the 20 required outdoor objects (tree, pine, dead-tree, wood-bridge, stone-bridge, dock) cannot be honestly satisfied from this curated table alone. Either a wider verified source (tileset.tileMeta / combinedTownGroups) supplies them, or the compositions must change to assets that actually exist.",
+ "notDone": "No catalog entry is accepted; spaces/places/regions/worlds and render receipts remain absent (0/48 delivered).",
+ "correction": "Initial \"absent\" call on 260/261/291 was WRONG: it used only the curated AI-search table. src/project/tilesetHarness/combinedTownGroups.ts verifies them as conifer-tree (260 top / 290 bottom) and dry-tree (261 top / 291 bottom), plus broadleaf 262/263/292/293 as a 2x2 atom and branch 259.",
+ "verifiedTreeFacts": {
+  "coniferVertical": "260 above 290, vertical 2-cell atom",
+  "dryTree": "261 stackable top chain ending at 291",
+  "broadleaf": "262/263 over 292/293, hard pair rules require the exact 2x2",
+  "branch": "259 passable prop",
+  "bushSolid": "289 solid, soft 2-cell spacing rule",
+  "flowersPassable": "CHIPSET_TILE_GROUPS.flowerObjects, passable, 2-cell spacing recommended",
+  "benchHorizontal": "327|328 solid 1x2; vertical chair is 358|388"
+ },
+ "remainingDefects": [
+  {
+   "ids": [
+    63,
+    64,
+    65
+   ],
+   "object": "outdoor-stone-bridge",
+   "actual": "수로 가로 변 / water / solid",
+   "verdict": "must change: a stone bridge cannot be painted from canal water tiles"
+  },
+  {
+   "ids": [
+    234,
+    235,
+    236
+   ],
+   "object": "outdoor-wood-bridge",
+   "actual": "가로 탁자 좌/중/우 / decoration",
+   "verdict": "must change: horizontal table is not a bridge deck"
+  },
+  {
+   "ids": [
+    144,
+    174,
+    204
+   ],
+   "object": "outdoor-dock",
+   "actual": "세로 탁자 상/중/하 / decoration",
+   "verdict": "must change: vertical table is not a pier"
+  },
+  {
+   "ids": [
+    261,
+    290
+   ],
+   "object": "outdoor-dead-tree",
+   "actual": "mixes dry-tree top 261 with conifer bottom 290",
+   "verdict": "must change: the verified dry-tree chain ends at 291, not 290"
+  },
+  {
+   "ids": [
+    260
+   ],
+   "object": "outdoor-tree labelled 활엽수",
+   "actual": "260 is conifer top, and the verified broadleaf is the 2x2 262/263/292/293",
+   "verdict": "must change: either rename to conifer or use the real broadleaf atom"
+  }
+ ],
+ "draftPassabilityClaim": "The draft header claims outdoor objects are drawn on upper so terrain passability survives; bench/bush/tree groups are however solid in the harness, so blanket \"upper keeps it walkable\" reasoning is not a substitute for per-object passability intent."
+}
