@@ -1,0 +1,8 @@
+{
+  "browser": "isolated Firefox",
+  "closed": true,
+  "server": "bash_115",
+  "port19847Unbound": true,
+  "trace": "browser-trace.zip",
+  "visualReviewLimit": "Read image tool reported this model cannot receive image pixels. Functional DOM state, source/copy equality, geometry and screenshots are captured; no pixel-aesthetic verdict claimed."
+}

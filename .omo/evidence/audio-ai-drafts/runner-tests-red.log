@@ -1,0 +1,179 @@
+✖ defaults to Pro and passes the selected model to the analyzer (938.848773ms)
+✔ preserves an explicitly chosen model (358.682371ms)
+✖ rejects malformed analysis {"description":"missing flag"} (388.894365ms)
+✖ rejects malformed analysis {"audio_available":"true","description":"wrong flag type"} (375.393524ms)
+✖ rejects malformed analysis {"audio_available":true,"description":""} (425.646649ms)
+✖ rejects malformed analysis {"audio_available":true,"description":" "} (349.079929ms)
+✖ rejects malformed analysis {"audio_available":true,"description":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx (304.72451ms)
+✖ no audio is not a successful batch exit (506.010003ms)
+✖ input failure is recorded and returns nonzero (71.3573ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 1
+ℹ fail 8
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3989.422226
+
+✖ failing tests:
+
+test at test/audioAiDescriptionRunner.test.mjs:28:1
+✖ defaults to Pro and passes the selected model to the analyzer (938.848773ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'gemini-3.8-flash-high'
+  - 'gemini-3.1-pro-high'
+              ^
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-clear-meadow-c0aa/test/audioAiDescriptionRunner.test.mjs:32:10)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'gemini-3.8-flash-high',
+    expected: 'gemini-3.1-pro-high',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/audioAiDescriptionRunner.test.mjs:41:3
+✖ rejects malformed analysis {"description":"missing flag"} (388.894365ms)
+  AssertionError [ERR_ASSERTION]: Expected "actual" to be strictly unequal to: 0
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-clear-meadow-c0aa/test/audioAiDescriptionRunner.test.mjs:44:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 0,
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }
+
+test at test/audioAiDescriptionRunner.test.mjs:41:3
+✖ rejects malformed analysis {"audio_available":"true","description":"wrong flag type"} (375.393524ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  'ok' !== 'fail'
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-clear-meadow-c0aa/test/audioAiDescriptionRunner.test.mjs:43:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'ok',
+    expected: 'fail',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/audioAiDescriptionRunner.test.mjs:41:3
+✖ rejects malformed analysis {"audio_available":true,"description":""} (425.646649ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  'ok' !== 'fail'
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-clear-meadow-c0aa/test/audioAiDescriptionRunner.test.mjs:43:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'ok',
+    expected: 'fail',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/audioAiDescriptionRunner.test.mjs:41:3
+✖ rejects malformed analysis {"audio_available":true,"description":" "} (349.079929ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  'ok' !== 'fail'
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-clear-meadow-c0aa/test/audioAiDescriptionRunner.test.mjs:43:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'ok',
+    expected: 'fail',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/audioAiDescriptionRunner.test.mjs:41:3
+✖ rejects malformed analysis {"audio_available":true,"description":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx (304.72451ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  'ok' !== 'fail'
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-clear-meadow-c0aa/test/audioAiDescriptionRunner.test.mjs:43:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'ok',
+    expected: 'fail',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/audioAiDescriptionRunner.test.mjs:47:1
+✖ no audio is not a successful batch exit (506.010003ms)
+  AssertionError [ERR_ASSERTION]: Expected "actual" to be strictly unequal to: 0
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-clear-meadow-c0aa/test/audioAiDescriptionRunner.test.mjs:50:10)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 0,
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }
+
+test at test/audioAiDescriptionRunner.test.mjs:52:1
+✖ input failure is recorded and returns nonzero (71.3573ms)
+  AssertionError [ERR_ASSERTION]: Expected "actual" to be strictly unequal to: 0
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-clear-meadow-c0aa/test/audioAiDescriptionRunner.test.mjs:55:10)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 0,
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }

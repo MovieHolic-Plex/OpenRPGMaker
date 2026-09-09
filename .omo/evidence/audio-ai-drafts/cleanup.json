@@ -1,0 +1,25 @@
+{
+  "qaTmpRootRemoved": true,
+  "baselineWorktreeRemoved": true,
+  "qaViteCacheRemoved": true,
+  "port19847Unbound": true,
+  "browserContextsClosed": true,
+  "recoveryTempMediaRemoved": true,
+  "ownedMonitorsCompletedOrStopped": [
+    "bash_107",
+    "bash_108",
+    "bash_109",
+    "bash_110",
+    "bash_111",
+    "bash_112",
+    "bash_113",
+    "bash_114",
+    "bash_115",
+    "bash_116",
+    "bash_117",
+    "bash_118",
+    "bash_119",
+    "bash_120"
+  ],
+  "child": "st_01a07f77 completed"
+}

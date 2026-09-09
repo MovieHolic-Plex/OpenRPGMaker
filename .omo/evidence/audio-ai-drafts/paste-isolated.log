@@ -1,0 +1,25 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/regionSelectionPastePreview.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-meadow-c0aa
+
+ ✓ test/regionSelectionPastePreview.test.ts (12 tests) 27446ms
+   ✓ 북여넣기 미리보기 모드 > 복사 후 enterPastePreview → confirmPastePreview로 실제 붙여넣기  8636ms
+   ✓ 북여넣기 미리보기 모드 > cancelPastePreview로 미리보기 취소 — 맵 변화 없음  858ms
+   ✓ 북여넣기 미리보기 모드 > 클립보드 없이 enterPastePreview → false + 안내 토스트  684ms
+   ✓ 북여넣기 미리보기 모드 > movePastePreview로 위치 갱신  594ms
+   ✓ 북여넣기 미리보기 모드 > movePastePreview가 맵 경계를 벗어나지 않게 클램프  554ms
+   ✓ clearSelection / clearSelectionRegion > clearSelection이 selection과 pastePreview를 모두 해제  774ms
+   ✓ clearSelection / clearSelectionRegion > clearSelectionRegion이 선택 영역을 빈 칸으로  956ms
+   ✓ clearSelection / clearSelectionRegion > clearSelectionRegion 토스트에 '지우기' 포함  928ms
+   ✓ copySelection 피드백 개선 > 복사 토스트에 크기 정보 포함  748ms
+   ✓ renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 > AI 작업이 첫 버튼이고, 크기 텍스트는 바에 없다  10141ms
+   ✓ renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 > 클립보드가 있으면 붙여넣기 버튼이 나타난다  1333ms
+   ✓ renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 > 클립보드가 없으면 붙여넣기 버튼이 없다  1236ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  15:22:35
+   Duration  28.81s (transform 12.74s, setup 0ms, collect 218ms, tests 27.45s, environment 0ms, prepare 233ms)
