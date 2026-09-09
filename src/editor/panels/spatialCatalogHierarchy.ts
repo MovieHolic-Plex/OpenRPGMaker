@@ -5,6 +5,7 @@ import type { SpatialKind } from "@/project/spatial/types";
 import type { SpatialShellTab } from "@/editor/panels/spatialAuthoringSession";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { spatialPresentationId } from "@/editor/panels/spatialPresentation";
+import { GEOGRAPHY_TERRAIN, REGION_CATALOG, WORLD_CATALOG } from "@/project/defaults/spatial/geographyCatalog";
 
 function boundInteriorTilesetId(): string | undefined {
   const tilesets = visibleAuthoringProject().tilesets;
@@ -97,27 +98,65 @@ function placeCards(): SpatialGalleryCard[] {
 }
 
 function regionCards(): SpatialGalleryCard[] {
-  return Object.values(visibleAuthoringProject().spatialAuthoring?.library.regions ?? {}).map((region) => ({
-    id: spatialPresentationId("library-region", "library", region.id),
+  // 배송 정본이 먼저 보인다. 오브젝트·공간·장소 탭과 같은 규약이며, 프로젝트 라이브러리가
+  // 비어 있어도 지역 탭이 빈 화면으로 열리지 않는다(읽기 전용 기본 설계).
+  const cards: SpatialGalleryCard[] = REGION_CATALOG.map((region) => ({
+    id: region.id,
     localId: region.id,
-    name: region.name,
-    source: "own" as const,
+    name: region.label,
+    source: "default" as const,
     kind: "regions" as const,
     usage: 0,
-    tilesetId: region.terrain.tilesetId,
+    tilesetId: GEOGRAPHY_TERRAIN.tilesetId,
+    subtitle: region.label,
   }));
+  const known = new Set(cards.map((card) => card.id));
+  for (const region of Object.values(visibleAuthoringProject().spatialAuthoring?.library.regions ?? {})) {
+    const id = spatialPresentationId("library-region", "library", region.id);
+    if (known.has(id)) continue;
+    known.add(id);
+    cards.push({
+      id,
+      localId: region.id,
+      canonicalSource: { kind: "region", id: region.id },
+      name: region.name,
+      source: "own",
+      kind: "regions",
+      usage: 0,
+      tilesetId: region.terrain.tilesetId,
+    });
+  }
+  return cards;
 }
 
 function worldCards(): SpatialGalleryCard[] {
-  return Object.values(visibleAuthoringProject().spatialAuthoring?.library.worlds ?? {}).map((world) => ({
-    id: spatialPresentationId("library-world", "library", world.id),
+  const cards: SpatialGalleryCard[] = WORLD_CATALOG.map((world) => ({
+    id: world.id,
     localId: world.id,
-    name: world.name,
-    source: "own" as const,
+    name: world.label,
+    source: "default" as const,
     kind: "worlds" as const,
     usage: 0,
-    tilesetId: world.terrain.tilesetId,
+    tilesetId: GEOGRAPHY_TERRAIN.tilesetId,
+    subtitle: world.label,
   }));
+  const known = new Set(cards.map((card) => card.id));
+  for (const world of Object.values(visibleAuthoringProject().spatialAuthoring?.library.worlds ?? {})) {
+    const id = spatialPresentationId("library-world", "library", world.id);
+    if (known.has(id)) continue;
+    known.add(id);
+    cards.push({
+      id,
+      localId: world.id,
+      canonicalSource: { kind: "world", id: world.id },
+      name: world.name,
+      source: "own",
+      kind: "worlds",
+      usage: 0,
+      tilesetId: world.terrain.tilesetId,
+    });
+  }
+  return cards;
 }
 
 function snapshotName(kind: SpatialKind, snapshotLibrary: {

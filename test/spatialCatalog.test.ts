@@ -567,6 +567,21 @@ describe("shipped spatial design catalog", () => {
     }
   });
 
+  it("offers the shipped regions and worlds as default gallery cards", () => {
+    // Given: 프로젝트 라이브러리가 비어 있는 새 프로젝트.
+    store.replace(createBlankProject(), { preserveEventDrafts: false });
+
+    // When: 지역·세계 탭 갤러리를 읽는다.
+    const regions = listSpatialGalleryCards(sessionFor({ tab: "regions", source: "all", mode: "design" }));
+    const worlds = listSpatialGalleryCards(sessionFor({ tab: "worlds", source: "all", mode: "design" }));
+
+    // Then: 배송 정본이 기본 설계로 보인다 — 빈 화면으로 열리지 않는다.
+    expect(regions.filter((card) => card.source === "default").map((card) => card.localId))
+      .toEqual(REGION_CATALOG.map((region) => region.id));
+    expect(worlds.filter((card) => card.source === "default").map((card) => card.localId))
+      .toEqual(WORLD_CATALOG.map((world) => world.id));
+  });
+
   it("assembles the whole catalog into a library the real validator accepts", () => {
     // Given: 배송 카탈로그만으로 조립한 라이브러리.
     const library = buildSpatialCatalogLibrary();
