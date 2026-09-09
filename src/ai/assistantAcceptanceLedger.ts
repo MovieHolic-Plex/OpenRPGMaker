@@ -104,7 +104,10 @@ export class AssistantAcceptanceLedger {
     source: AcceptanceSource = { requestId: this.id, text: this.goal, scope: null }): void {
     const additions = promises.filter(promise => !this.promises.has(promise.id));
     if (additions.length === 0) return;
-    const baseline = structuredClone(requestBaseline);
+    // 같은 원본이면 원장이 이미 가진 사본을 그대로 쓴다. 채택마다 새 사본을 만들면 한 행에
+    // 서로 다른 프로젝트가 여러 벌 실려 쓰기마다 그만큼 복제·검증한다 — 실측(2026-09-09):
+    // 공유 참조 3개는 복제 50ms, 서로 다른 사본 3개는 222ms.
+    const baseline = requestBaseline === this.baseline ? this.baseline : structuredClone(requestBaseline);
     const provenance = Object.freeze({ requestId: source.requestId, text: source.text,
       scope: source.scope ? Object.freeze({ mapId: source.scope.mapId, region: Object.freeze({ ...source.scope.region }) }) : null });
     for (const promise of additions) {
