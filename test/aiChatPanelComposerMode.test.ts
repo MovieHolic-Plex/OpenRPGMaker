@@ -3,7 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { clearConversations, loadConversation } from "@/ai/conversationStore";
 import { editorState } from "@/editor/editorState";
-import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
+import {
+  renderAiChatPanel,
+  teardownAiChatPanel,
+  whenAiChatPanelJobResultSettled,
+  whenAiChatPanelSettled,
+} from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -102,7 +107,8 @@ describe("컴포저 모드 → 세션 옵션", () => {
     const pending = harness.nextAdmitted();
     findByTestId(panel, "ai-send")?.click();
     await pending;
-    const shown = whenDom(document.body, () => Boolean(document.querySelector('[data-testid="ai-work-plan-checklist"]')));
+    // 가짜 DOM 은 패널을 document.body 에 달지 않는다 — 관찰 대상은 패널 자신이다.
+    const shown = whenDom(panel as unknown as Node, () => Boolean(findByTestId(panel, "ai-work-plan-checklist")));
     await harness.complete({
       assistantText: "계획을 세워두었습니다.",
       workPlan: plan,
@@ -128,10 +134,15 @@ describe("컴포저 모드 → 세션 옵션", () => {
     const second = harness.nextAdmitted();
     findByTestId(panel, "ai-send")?.click();
     await second;
+    const jobB = harness.lastJob().id;
     const status = findByTestId(panel, "ai-status");
+    // 접수 응답이 돌아왔다고 해서 앞면이 이미 B 를 그린 것은 아니다 — 그 상태를 기다렸다가 잡는다.
+    await whenDom(panel as unknown as Node, () => (status?.textContent ?? "").includes(jobB));
     const bStatus = status?.textContent ?? "";
     gate.release();
     await gate.idle;
+    // 붙잡은 읽기를 놓았으니, 이제는 「그 결과 처리가 끝났다」 신호를 기다릴 수 있다.
+    await whenAiChatPanelJobResultSettled();
     const log = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
     expect(log).toContain("A 답변");
     expect(status?.textContent).toBe(bStatus);
@@ -154,7 +165,7 @@ describe("컴포저 모드 → 세션 옵션", () => {
     await whenAiChatPanelSettled();
     gate.release();
     await gate.idle;
-    await whenAiChatPanelSettled();
+    await whenAiChatPanelJobResultSettled();
     const log = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
     expect(log).not.toContain("A 답변");
     expect(surface.conversationId).not.toBe(firstId);
@@ -179,9 +190,8 @@ describe("컴포저 모드 → 세션 옵션", () => {
     await whenAiChatPanelSettled();
     gate.release();
     await gate.idle;
-    await Promise.resolve();
-    await Promise.resolve();
-    await whenAiChatPanelSettled();
+    // 접수 거부도 이 전송의 결과다 — 마이크로태스크 수 세기 대신 귀속 신호를 기다린다.
+    await whenAiChatPanelJobResultSettled();
     const log = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
     expect(log).not.toContain("접수 거부");
     expect(log).not.toContain("AI jobs HTTP 500");
@@ -205,10 +215,10 @@ describe("컴포저 모드 → 세션 옵션", () => {
     findByTestId(panel, "ai-send")?.click();
     await second;
     const jobB = harness.lastJob().id;
-    const shownB = whenDom(document.body, () => (findByTestId(panel, "ai-chat-log")?.textContent ?? "").includes("B 답변"));
+    const shownB = whenDom(panel as unknown as Node, () => (findByTestId(panel, "ai-chat-log")?.textContent ?? "").includes("B 답변"));
     await harness.complete({ assistantText: "B 답변", proposedCalls: [], stoppedReason: "final" }, jobB);
     await shownB;
-    await whenAiChatPanelSettled();
+    await whenAiChatPanelJobResultSettled();
     const gate = harness.holdNextArtifact();
     await harness.complete({ assistantText: "A 답변", proposedCalls: [], stoppedReason: "final" }, jobA);
     await gate.started;
@@ -216,7 +226,7 @@ describe("컴포저 모드 → 세션 옵션", () => {
     await whenAiChatPanelSettled();
     gate.release();
     await gate.idle;
-    await whenAiChatPanelSettled();
+    await whenAiChatPanelJobResultSettled();
     const log = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
     expect(log).not.toContain("A 답변");
     expect(log).not.toContain("B 답변");
@@ -252,9 +262,9 @@ describe("컴포저 모드 → 세션 옵션", () => {
     await barrier.started;
     barrier.release();
     await barrier.idle;
-    await whenAiChatPanelSettled();
+    await whenAiChatPanelJobResultSettled();
     await harness.complete({ assistantText: "같은 답", proposedCalls: [], stoppedReason: "final" }, jobA);
-    await whenAiChatPanelSettled();
+    await whenAiChatPanelJobResultSettled();
     const log = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
     expect(log).not.toContain("같은 답");
     const entries = (await loadConversation(firstId))?.entries ?? [];

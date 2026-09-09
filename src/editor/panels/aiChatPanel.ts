@@ -43,7 +43,7 @@ import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { submitAssistantJob } from "@/editor/aiJobs/submitAssistantJob";
 import { getJobClient } from "@/editor/aiJobs/jobClient";
 import { jobSubmitMessage } from "@/editor/aiJobs/jobSubmitError";
-import { bindJobView, readJobResult } from "@/editor/aiJobs/jobViewBinding";
+import { bindJobApplied, bindJobView, readJobResult } from "@/editor/aiJobs/jobViewBinding";
 import { bindJobProgress, type JobProgressBinding, type JobProgressSnapshot } from "@/editor/aiJobs/jobProgress";
 import { jobOriginLink } from "@/editor/aiJobs/jobOriginLink";
 
@@ -144,15 +144,20 @@ import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
 import { changePreviewChips, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
 import { createStudioShell, type StudioShell } from "./aiStudioShell";
 import { proposalHumanSummaryLine } from "./aiProposalSummary";
+import { parseTurnProposedCalls } from "./aiJobTurnCalls";
+import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
+import { summarizeChanges } from "@/editor/tools";
 import { createAiRegionTaskRunner } from "./aiRegionTaskRunner";
 import type { AiRunSurface, ConversationPersistTarget as ConversationPersistTargetContract } from "./aiRunSurface";
 import {
+  currentHistoryMapId,
   displayUserAuditText,
   downloadJson,
   dropSession,
   exportCombinedAudit,
   isAiAssistDetail,
   isAiConfigReady,
+  proposalPreviewMapId,
   statusToneOf,
   STUDIO_MODE_KEY,
   type ChatController,
@@ -286,10 +291,25 @@ let activeAiChatPanelCleanup: (() => void) | null = null;
 // 패널이 띄운 비동기 저장·복원 작업. 대화 기록이 IndexedDB 로 가면서 «렌더 직후» 에는 아직 복원이
 // 안 끝나 있다 — 테스트·헤드리스 하네스는 이걸로 정착을 기다린다.
 const panelPendingWork = createPendingWorkTracker();
+// 터미널(성공·실패·취소) 작업 결과 처리 — **불변 아티팩트 읽기까지 포함한** 한 벌이다.
+// panelPendingWork 와 일부러 분리한다: 저장·복원 정착(whenAiChatPanelSettled)은 붙잡힌 아티팩트
+// 읽기를 기다려선 안 되고(그 읽기를 잡아 둔 채로 기다리는 표면이 있다), 반대로 「늦게 도착한
+// 결과가 자기 대화에 귀속됐는가」는 그 읽기가 끝나야 답할 수 있다. 신호 하나가 둘을 겸하면
+// 붙잡힌 읽기에서 교착한다(실측: 두 뜻을 한 트래커에 넣자 소유권 테스트가 통째로 타임아웃).
+const panelTerminalWork = createPendingWorkTracker();
 
 /** 패널의 비동기 저장·복원·프로젝트 전환 처리가 모두 끝날 때까지 기다린다. */
 export function whenAiChatPanelSettled(): Promise<void> {
   return panelPendingWork.settled();
+}
+
+/**
+ * 이 패널이 띄운 **작업 결과 처리**(결과 아티팩트 읽기 → 귀속 → 기록 저장 → 앞면 정산)가
+ * 모두 끝날 때까지 기다린다. 읽기를 붙잡아 둔 동안 부르면 당연히 풀리지 않는다 —
+ * 놓아준 **뒤**에 부르는 신호다.
+ */
+export function whenAiChatPanelJobResultSettled(): Promise<void> {
+  return panelTerminalWork.settled();
 }
 
 export function teardownAiChatPanel(): void {
@@ -658,6 +678,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): AiChatPanel
 
   // 사용자가 보고 싶은 것은 툴 호출 목록이 아니라 “무엇이 어떻게 바뀌었는가” 다. 자동 적용·수동
   // 재생 없이 상통 상태로 넘어가는 모든 적용 경로가 이 카드 하나로 모인다.
+  // 큐(durable job) 경로도 여기로 모인다 — 적용은 applyJobResult 가 하지만, 사용자가 「무엇이
+  // 바뀌었고 어떻게 되돌리나」를 보는 표면은 이 카드 한 장뿐이다.
   const emitChangeCard = (input: {
     readonly before: Project;
     readonly after: Project;
@@ -665,10 +687,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): AiChatPanel
     readonly title: string;
     readonly detail?: string;
     readonly calls: readonly ProposedCall[];
+    /** 실측 diff(있으면 이것이 사실이다) — 큐 경로는 store 전/후에서 직접 재어 온다. */
+    readonly diff?: ChangeSummary;
   }): void => {
-    const diffs = input.calls
-      .map((call) => call.result?.diff)
-      .filter((diff): diff is ChangeSummary => Boolean(diff));
+    const diffs = input.diff
+      ? [input.diff]
+      : input.calls
+        .map((call) => call.result?.diff)
+        .filter((diff): diff is ChangeSummary => Boolean(diff));
     const card = renderChangePreviewCard({
       before: input.before,
       after: input.after,
@@ -760,6 +786,67 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): AiChatPanel
   const getLastAppliedProposalMessage = () => proposalApi.lastAppliedProposalMessage;
   const setLastAppliedProposalMessage = (value: typeof proposalApi.lastAppliedProposalMessage) => {
     proposalApi.lastAppliedProposalMessage = value;
+  };
+
+  // 큐 경로의 「적용됨」 관찰자들. 패널이 걷힐 때 모두 끊는다.
+  const appliedJobBindings = new Set<() => void>();
+  const stopAppliedJobBindings = (): void => {
+    for (const unbind of appliedJobBindings) unbind();
+    appliedJobBindings.clear();
+  };
+  /**
+   * 큐 작업의 결과가 실제로 프로젝트에 반영되면 — 그때서야 — 변경 카드를 한 장 남긴다.
+   *
+   * 적용 자체는 applyJobResult(applyProposedProject) 가 한다 — 그 경로가 undo 스냅샷을 하나
+   * 남기므로 카드의 「되돌리기」와 컴포저 되돌리기가 그 한 장을 그대로 집는다.
+   * 전·후는 주장(payload.diff)이 아니라 스토어 스냅샷에서 재어 온다.
+   */
+  const bindDurableApplyCard = (
+    jobId: string,
+    calls: readonly ProposedCall[],
+    instruction: string,
+    assistantBubble: HTMLElement | null,
+    owns: () => boolean,
+  ): void => {
+    const unbind = bindJobApplied(jobId, () => {
+      appliedJobBindings.delete(unbind);
+      if (disposed) return;
+      const before = peekPreviousProject(1);
+      const after = store.getCurrent();
+      if (!before) return;
+      const diff = summarizeChanges(before, after);
+      const mapId = proposalPreviewMapId(calls, before, after) ?? currentHistoryMapId() ?? after.startMapId;
+      if (!mapId) return;
+      const summary = proposalHumanSummaryLine(calls)
+        || calls.map((call) => call.summary || call.name).filter(Boolean).join(" · ")
+        || "AI 작업 결과를 반영했습니다";
+      // 변경 카드는 **그 턴을 소유한 대화**에만 붙는다 — 다른 대화를 보는 로그에
+      // 다른 턴의 카드를 밀어 넣지 않는다.
+      if (owns()) {
+        // 되돌리기 배지(ai-msg-badge-reverted)와 「제안 N건… 되돌렸습니다」 안내가
+        // 큐 경로에서도 같은 문장으로 나오도록, 적용된 턴을 패널 상태에 기록한다.
+        setLastAppliedProposalMessage({ calls: [...calls], assistantBubble, summary });
+        emitChangeCard({
+          before,
+          after,
+          mapId,
+          title: summary,
+          detail: `작업 ${jobId} 결과를 반영했습니다. 되돌리기로 바로 복구합니다.`,
+          calls,
+          diff,
+        });
+      }
+      // 적용 자체는 대화가 아니라 프로젝트에 일어난 사실이다 — 대화를 갈아도 방금 적용된
+      // 변경의 되돌리기(컴포저·접힌 레일)는 남아 있어야 한다.
+      const selection = editorState.get().selection;
+      publishAiApplyCompletion({
+        mapId,
+        selection: selection?.mapId === mapId ? selection : null,
+        instruction,
+        summary,
+      });
+    });
+    appliedJobBindings.add(unbind);
   };
 
   const restoreConversationRecord = (record: ConversationRecord, source: "auto" | "manual" | "project-switch"): void => {
@@ -1524,6 +1611,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): AiChatPanel
     const capturedConversation = { id: conversationId, scope: conversationScope };
     const sameConversation = (): boolean =>
       conversationId === capturedConversation.id && conversationScope === capturedConversation.scope;
+    // 이 전송의 **접수 몫**: 접수가 받아들여지면 그 자리에서, 거부되면 그 사실이 캡처한 대화에
+    // 기록된 뒤에 끝난다. 접수 HTTP 를 붙잡은 표면이 「놓아준 뒤」를 기다릴 수 있도록
+    // 기다리기 전에 미리 등록해 둔다 — 나중에 등록하면 붙잡힌 사이에 「다 끝났다」가 된다.
+    let settleAdmissionWork = (): void => {};
+    void panelTerminalWork.track(new Promise<void>(resolve => { settleAdmissionWork = () => resolve(); }));
     try {
       const receipt = await submitAssistantJob({
         instruction: trimmed,
@@ -1532,6 +1624,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): AiChatPanel
         priorTranscript: prior,
       }, { idempotencyKey: key });
       pendingChatAdmission = null;
+      settleAdmissionWork();
       const ownedJobId = receipt.job.id;
       if (sameConversation()) {
         trackedJobId = ownedJobId;
@@ -1550,7 +1643,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): AiChatPanel
         if (job.generation === "succeeded") {
           unbind();
           const capturedSha = job.resultRef?.sha256;
-          void readJobResult(job).then(async result => {
+          // 결과 처리 전수를 터미널 트래커에 단다 — 「늦게 도착한 결과가 자기 대화에 귀속됐는가」를
+          // 밖에서 결정적으로 기다릴 수 있으려면 이 사슬이 신호여야 한다.
+          void panelTerminalWork.track(readJobResult(job).then(async result => {
             if (disposed) return;
             const live = getJobClient().jobs.get(ownedJobId);
             if (!result || !capturedSha || live?.resultRef?.sha256 !== capturedSha) return;
@@ -1565,10 +1660,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): AiChatPanel
               }
             }
             const text = typeof result.payload.assistantText === "string" ? result.payload.assistantText : "";
+            let assistantBubble: HTMLElement | null = null;
             if (text.trim()) {
               if (sameConversation()) {
                 if (!completedOwnedTurns.has(ownedJobId)) {
-                  appendBubble("assistant", text);
+                  assistantBubble = appendBubble("assistant", text);
                   controller.auditHistory = [...controller.auditHistory, { kind: "assistant", text }];
                   await persistConversation(undefined);
                   completedOwnedTurns.add(ownedJobId);
@@ -1580,6 +1676,26 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): AiChatPanel
             const liveOwner = sameConversation() && trackedJobId === ownedJobId;
             if (!liveOwner) return;
             if (text.trim()) renderQuickReplies(text);
+            // 이 턴이 만든 쓰기 — 표시·린트 전용이다(재생하지 않는다).
+            const calls = parseTurnProposedCalls(result.payload);
+            // 완성도 린트는 게이트가 아니다 — 적용을 막지 않고 사실만 남긴다. 지시(do) 모드에서만
+            // 잰다 — 물음(ask)/계획(plan) 모드는 변경이 없어도 정상이다.
+            if (composerMode === "do") {
+              const warnings = proposalCompletenessWarnings({
+                requestText: trimmed,
+                assistantText: text,
+                calls,
+              });
+              if (warnings.length > 0) appendBubble("system", warnings.join("\n"));
+            }
+            // 결과가 프로젝트에 들어오면(자동 반영·검토 반영 모두) 변경 카드를 한 장 남긴다.
+            bindDurableApplyCard(
+              ownedJobId,
+              calls,
+              trimmed,
+              assistantBubble,
+              () => sameConversation(),
+            );
             const retained = workPlanSurfaceState?.progress ?? null;
             trackedJobId = null;
             // 터미널 — 실행/중지 크롬은 모두 걷고(active:false) 종료된 계획만 읽을 수 있게 남긴다.
@@ -1607,7 +1723,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): AiChatPanel
             }
             setStatus("응답 완료");
             refreshAbortButton();
-          }).catch((cause: unknown) => {
+          }).catch(async (cause: unknown) => {
             if (disposed) return;
             const message = jobSubmitMessage(cause);
             if (sameConversation()) {
@@ -1622,13 +1738,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): AiChatPanel
               panel.classList.remove("is-turn-running");
               return;
             }
-            void persistOwnedEntry(capturedConversation, { kind: "status", text: message }, ownedJobId);
-          });
+            await persistOwnedEntry(capturedConversation, { kind: "status", text: message }, ownedJobId);
+          }));
         } else if (job.generation === "failed" || job.generation === "cancelled" || job.generation === "interrupted") {
           unbind();
           const label = job.generation === "cancelled" ? "취소됨" : job.generation === "interrupted" ? "중단됨" : "실패";
           if (!sameConversation()) {
-            void persistOwnedEntry(capturedConversation, { kind: "status", text: label }, ownedJobId);
+            void panelTerminalWork.track(persistOwnedEntry(capturedConversation, { kind: "status", text: label }, ownedJobId));
             return;
           }
           if (trackedJobId !== ownedJobId) return;
@@ -1666,9 +1782,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): AiChatPanel
         panel.classList.add("is-turn-error");
         panel.classList.remove("is-turn-running");
       } else {
-        void persistOwnedEntry(capturedConversation, { kind: "status", text: message }, `admit:${key}`);
+        // 소유권을 잃은 접수 실패도 「자기 대화에 귀속」로 끝난다 — 같은 신호로 기다릴 수 있어야 한다.
+        await persistOwnedEntry(capturedConversation, { kind: "status", text: message }, `admit:${key}`);
       }
     } finally {
+      settleAdmissionWork();
       turnBusy = false;
       if (!disposed) {
         refreshSendEnabled();
@@ -3054,6 +3172,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): AiChatPanel
     turnBusy = false;
     pendingSends.length = 0;
     clearWorkPlanSurface(); // 패널 해제 — 할 일 목록 정리.
+    stopAppliedJobBindings(); // 패널이 없으면 변경 카드를 붙일 자리도 없다.
     endTurnProgress();
     clearAutoCollapseTimer();
     resizeChrome.dispose();
