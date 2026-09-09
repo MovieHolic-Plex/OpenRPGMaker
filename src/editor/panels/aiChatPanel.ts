@@ -139,7 +139,6 @@ import { createAiRegionTaskRunner } from "./aiRegionTaskRunner";
 import type { AiRunSurface, ConversationPersistTarget as ConversationPersistTargetContract } from "./aiRunSurface";
 import {
   backupProjectSnapshot,
-  displayUserAuditText,
   dropSession,
   isAiAssistDetail,
   isAiConfigReady,
@@ -3065,17 +3064,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 예전 방식은, 다른 프로젝트의 대화가 더 최근이면 내 대화가 있어도 복원을 포기해 새 세션이 강요되는
   // 것처럼 보였다. 조회는 비동기(IndexedDB)라 패널 조립이 끝난 뒤 도착한다 — 그 사이 사용자가 먼저
   // 움직였으면(입력·전송·프로젝트 전환) 복원하지 않는다. 진행 중인 새 대화를 덮어쓰는 것이 더 나쁘다.
-  // 복원된 마지막 사용자 메시지(응답 없이 끊긴 턴)는 모든 panel/collapse 콜백이 초기화된 뒤 재생한다.
+  // Transcript adoption is not execution admission; an interrupted request must not be resent at boot.
   const restoreLatestForBoot = async (): Promise<void> => {
     const record = await loadLatestConversationForScope(currentProjectContextKey);
     if (disposed || !record) return;
     if (conversationScope !== currentProjectContextKey) return; // 프로젝트가 바뀌었다 — adopt 가 처리했다.
     if (turnBusy || controller.session !== null || controller.auditHistory.length > 0 || input.value.trim().length > 0) return;
     restoreConversationRecord(record, "auto");
-    const lastSpeak = [...record.entries].reverse().find((entry) => entry.kind === "user" || entry.kind === "assistant");
-    if (lastSpeak?.kind === "user" && lastSpeak.text.trim()) {
-      void sendText(displayUserAuditText(lastSpeak.text), undefined, { replay: true });
-    }
   };
   void panelPendingWork.track(restoreLatestForBoot());
 
