@@ -623,7 +623,8 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
 
 ### P5 마감 근거 (2026-09-09)
 
-- PR #733 **MERGED**, 병합 HEAD `7c4e164ac`, 공유 `main` `1cecbd497` 에 반영 확인
+- PR #733 **MERGED** (2026-09-09T13:23:48Z, 저장소의 자동 통합 프로세스가 병합 — 리드가 직접
+  누른 것이 아니다), 병합 커밋 `7c4e164ac`, 공유 `main` `1cecbd497` 에 반영 확인
   (사용자의 미커밋 PDF·reports·verify-shots 보존).
 - 최종 HEAD `40bd6b6e2` 감독자 게이트: typecheck exit 0, build exit 0 (HEAD·tree 불변,
   `resume-01a08291/p5/head-typecheck.log`, `head-build.log`).
