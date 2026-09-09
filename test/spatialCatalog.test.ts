@@ -28,6 +28,8 @@ import { OUTDOOR_OBJECT_CATALOG, outdoorObjectById } from "@/project/defaults/sp
 import { SPACE_CATALOG, spaceDefById } from "@/project/defaults/spatial/spaceCatalog";
 import { PLACE_CATALOG, placeDefById, FACILITY_ENTRY_PORT_ID } from "@/project/defaults/spatial/placeCatalog";
 import { REGION_CATALOG, WORLD_CATALOG, GEOGRAPHY_TERRAIN, regionDefById, regionsOfWorld } from "@/project/defaults/spatial/geographyCatalog";
+import { buildOutdoorObjectKits, buildSpatialCatalogLibrary } from "@/editor/content/spatial/catalogSeed";
+import { emptySpatialDocument } from "./support/spatialSchemaFixture";
 
 
 const previous = store.getCurrent();
@@ -562,6 +564,35 @@ describe("shipped spatial design catalog", () => {
         expect(owned).toContain(connection.from);
         expect(owned).toContain(connection.to);
       }
+    }
+  });
+
+  it("assembles the whole catalog into a library the real validator accepts", () => {
+    // Given: 배송 카탈로그만으로 조립한 라이브러리.
+    const library = buildSpatialCatalogLibrary();
+
+    // When: 실제 스키마 검증기를 통과시킨다(테스트용 느슨한 사본이 아니다).
+    const document = validateSpatialAuthoring({ ...emptySpatialDocument(), library });
+
+    // Then: 48개 정의가 그대로 남고, 세계는 자기 시작 지역을 자식으로 갖는다.
+    expect({
+      objects: Object.keys(document.library.objects).length,
+      spaces: Object.keys(document.library.spaces).length,
+      places: Object.keys(document.library.places).length,
+      regions: Object.keys(document.library.regions).length,
+      worlds: Object.keys(document.library.worlds).length,
+    }).toEqual({ objects: 20, spaces: 12, places: 8, regions: 6, worlds: 2 });
+
+    for (const world of Object.values(document.library.worlds)) {
+      const entry = world.regions.find((child) => child.id === world.entryPort.childId);
+      expect({ world: world.id, entryPresent: entry !== undefined }).toEqual({ world: world.id, entryPresent: true });
+    }
+    // 각 오브젝트 그림은 실제 킷 행으로 구워진다 — 빈 킷은 그림이 아니다.
+    const kits = buildOutdoorObjectKits();
+    expect(kits).toHaveLength(20);
+    for (const kit of kits) {
+      const painted = kit.rows.flatMap((row) => [...(row.tiles ?? []), ...(row.upperTiles ?? [])]).filter((tile) => tile >= 0);
+      expect({ kit: kit.id, painted: painted.length > 0 }).toEqual({ kit: kit.id, painted: true });
     }
   });
 });
