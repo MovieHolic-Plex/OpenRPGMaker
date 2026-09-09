@@ -141,7 +141,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 
 ## Event Authoring
 
-
+- Task15 economy command forms: actual owners are `commandBodyDatabase.ts` `craftRecipeBody` / `applyItemUpgradeBody` (not Commerce). Optional `resultVariableId` is authored only when a variable is selected; clearing the picker omits the property (never stores `""`). `commandSummary` and visual `commandPreview` show the declared variable name. Runtime still writes success1/failure0 through existing setVariable and continues.
 - `src/editor` is the main area to inspect for editor behavior. Start with `src/editor/EditScene.ts`, `src/editor/actions.ts`, `src/editor/editorState.ts`, and the feature modules under `src/editor/panels/`.
 - Map editing lives in `src/editor/map*`, `src/editor/tile*`, `src/editor/tileset*`, and `src/editor/structure*` files. Look at `src/editor/tileActions.ts`, `src/editor/tilePaletteStamp.ts`, `src/editor/tilePicking.ts`, `src/editor/mapEditHistory.ts`, `src/editor/mapShiftActions.ts`, and `src/editor/mapClipboard.ts` for common flows.
 - `src/editor/EditScene.ts` is the Phaser scene coordinator. Camera pan behavior lives in `src/editor/CameraPanController.ts`, drag-state branching in `src/editor/DragOperationHandler.ts`, tile paint/pick/stamp application in `src/editor/TilePaintEngine.ts`, and AI ghost/focus drawing in `src/editor/agentPreviewRenderers.ts`.

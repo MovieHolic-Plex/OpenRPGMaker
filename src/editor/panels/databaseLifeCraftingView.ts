@@ -829,11 +829,25 @@ function shippingCards(rerender: () => void): readonly HTMLElement[] {
             `db-life-shipping-item-${item.id}`,
             selected?.includes(item.id) ?? selected === undefined,
             (checked) => {
-              const current = store.getCurrent().system.shipping?.allowedItemIds;
-              const ids = new Set(current ?? []);
+              const project = store.getCurrent();
+              const current = project.system.shipping?.allowedItemIds;
+              // undefined = all: materialize every current item id before toggling one off/on.
+              const ids = new Set(
+                current === undefined
+                  ? project.database.items.map((entry) => entry.id)
+                  : current,
+              );
               if (checked) ids.add(item.id);
               else ids.delete(item.id);
               updateShipping({ allowedItemIds: [...ids] });
+              // 개별 토글은 목록을 실체화한다(undefined → 배열). 다시 그리지 않으면
+              // 위의 「판매 가능한 모든 아이템」이 계속 켜진 채로 남는다 — 전부 허용이
+              // 아닌데도 그렇게 보인다. 더 나쁜 건 그 체크박스의 핸들러가 **새** 체크
+              // 상태로 `checked ? undefined : []` 를 쓴다는 점이다. 그래서 낡은 켠
+              // 상태를 사용자가 한 번 누르면 「전부 허용」을 기대한 클릭이 출하 목록을
+              // 통째로 비운다([]). 실측: 2026-09-09 네이티브 v13 (231개 배열인데
+              // all-items checked:true).
+              rerender();
             },
             true,
           )),

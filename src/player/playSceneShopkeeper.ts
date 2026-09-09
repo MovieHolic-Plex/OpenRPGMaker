@@ -1,7 +1,7 @@
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import { emitRuntimeJuice } from "@/player/runtimeJuice";
 import { dialogueHost } from "@/player/playSceneDom";
-import { createShopOverlay, renderShopHaggle, renderShopNotice, sellPrice } from "@/player/playSceneShopDom";
+import { createShopOverlay, renderShopHaggle, renderShopNotice } from "@/player/playSceneShopDom";
 import { shopIsClosed, shopKeyOf, type ShopIdentity } from "@/player/playSceneShopVisit";
 import {
   haggleVisitKey,
@@ -10,7 +10,7 @@ import {
   resolveHaggleReserve,
   type HaggleSetup,
 } from "@/project/haggle";
-import { shopDayKey } from "@/project/shopPrice";
+import { resolveShopSellUnitPrice, shopDayKey } from "@/project/shopPrice";
 import {
   generateShopkeeperCustomers,
   reputationAfterVerdict,
@@ -93,7 +93,7 @@ export function playShopkeeper(
       const goods = index.get(customer.itemId);
       if (!goods) return;
       const cfg = normalizeHaggleConfig(step.economy?.haggle);
-      const reference = sellPrice(goods);
+      const reference = resolveShopSellUnitPrice(store.getCurrent(), goods.id, goods.price);
       const reserve = resolveHaggleReserve({
         role: "playerSells",
         reference,

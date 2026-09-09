@@ -272,11 +272,14 @@ describe("상점 빈 목록", () => {
 describe("상점 거래 메시지", () => {
   it("성공·실패 메시지가 모두 한국어이고 금액을 알려준다", () => {
     const project = createBlankProject();
+    const potion = item({ id: "item_potion", name: "포션", price: 40, type: "medicine" });
+    // Shop helper resolves sell from the active project row/item, not a detached price alone.
+    project.database.items = [...project.database.items.filter((entry) => entry.id !== potion.id), potion];
+    project.system.sellPrices = (project.system.sellPrices ?? []).filter((entry) => entry.itemId !== potion.id);
     store.replace(project);
     const session = startSession(project);
     session.gold = 100;
     const target = { session, syncRuntimeState: () => {} } as unknown as PlaySceneContext;
-    const potion = item({ id: "item_potion", name: "포션", price: 40, type: "medicine" });
 
     const bought = handleShopTransaction(target, potion, "buy", 2, 100);
     expect(bought.ok).toBe(true);

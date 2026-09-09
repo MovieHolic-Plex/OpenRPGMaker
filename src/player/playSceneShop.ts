@@ -21,7 +21,6 @@ import {
   renderShopItems,
   renderShopMenu,
   renderShopNotice,
-  sellPrice,
   shopItemRowEl,
   shopPromptText,
   updateShopGoldPanel,
@@ -228,7 +227,9 @@ export function playShop(
       emitRuntimeJuice({ event: "menu-confirm" });
       merchantGold = result.merchantGold;
       const qty = clampQuantity(count);
-      const unit = agreed ?? (nextMode === "buy" ? item.price : sellPrice(item));
+      const unit = agreed ?? (nextMode === "buy"
+        ? item.price
+        : resolveShopSellUnitPrice(store.getCurrent(), item.id, item.price));
       if (nextMode === "buy") {
         accrueShopLoyalty(scene, step, unit * qty);
       }
@@ -248,7 +249,9 @@ export function playShop(
       const ledgers = scene.session as { shopHaggleState?: Record<string, ShopHaggleVisitState> };
       const visit = ledgers.shopHaggleState?.[visitKey];
       const role = nextMode === "buy" ? "playerBuys" as const : "playerSells" as const;
-      const reference = nextMode === "buy" ? item.price : sellPrice(item);
+      const reference = nextMode === "buy"
+        ? item.price
+        : resolveShopSellUnitPrice(store.getCurrent(), item.id, item.price);
       const reserve = resolveHaggleReserve({
         role,
         reference,

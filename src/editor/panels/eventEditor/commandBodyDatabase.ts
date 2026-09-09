@@ -19,6 +19,7 @@ import {
   searchableRecordBrowser,
   segmentedSelect,
 } from "./recordPicker";
+import { databasePicker } from "./switchVariablePicker";
 import type { ActorAmountOp, ActorEquipmentSlot, ActorRecord, Command, EquipmentRecord, Project } from "@/project/types";
 import type { CommandEditContext } from "./types";
 
@@ -609,6 +610,29 @@ function deltaTone(before: number, after: number): string {
 }
 
 
+/** Empty string / undefined omits the property. Non-empty IDs are kept exact (no trim). */
+function optionalResultVariableId(raw: string | undefined): string | undefined {
+  if (raw === undefined || raw === "") return undefined;
+  return raw;
+}
+
+function resultVariableClearButton(
+  testid: string,
+  onClear: () => void,
+): HTMLButtonElement {
+  return el("button", {
+    class: "btn small",
+    text: "해제",
+    attrs: {
+      type: "button",
+      title: "결과 변수 선택 해제",
+      "aria-label": "결과 변수 선택 해제",
+    },
+    dataset: { testid },
+    on: { click: () => onClear() },
+  }) as HTMLButtonElement;
+}
+
 export function craftRecipeBody(
   context: CommandEditContext,
   cmd: Extract<Command, { kind: "craftRecipe" }>
@@ -621,6 +645,7 @@ export function craftRecipeBody(
     goldCost: recipe.goldCost ?? 0,
     ingredientCount: recipe.ingredients.length,
   }));
+  let resultVariableId = optionalResultVariableId(cmd.resultVariableId);
   const recipe = recordPickerWithPreview({
     records: recipes,
     selectedId: cmd.recipeId,
@@ -638,14 +663,39 @@ export function craftRecipeBody(
     },
   });
   const apply = () => {
+    const nextResult = optionalResultVariableId(resultVariableId);
     context.actions.replaceCommand(context.path, {
       kind: "craftRecipe",
       recipeId: recipe.select.value,
+      ...(nextResult !== undefined ? { resultVariableId: nextResult } : {}),
     });
   };
+  const resultVariable = databasePicker(
+    "variable",
+    resultVariableId ?? "",
+    (variableId) => {
+      resultVariableId = optionalResultVariableId(variableId);
+      apply();
+    },
+    "craft-recipe-result-variable",
+  );
+  const clearResult = resultVariableClearButton("craft-recipe-result-variable-clear", () => {
+    resultVariableId = undefined;
+    const select = resultVariable.querySelector("select");
+    if (select) select.value = "";
+    const trigger = resultVariable.querySelector<HTMLElement>('[data-testid="event-variable-picker-open"]');
+    if (trigger) trigger.textContent = "(선택)";
+    apply();
+  });
   recipe.select.addEventListener("change", apply);
   const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(el("span", { class: "rich-form-row", children: [recipe.root] }));
+  wrap.append(
+    el("label", {
+      class: "inline-field rich-form-row",
+      children: [el("span", { text: "결과 변수 (선택)" }), resultVariable, clearResult],
+    }),
+  );
   if (recipes.length === 0) {
     wrap.append(
       el("span", {
@@ -673,6 +723,7 @@ export function applyItemUpgradeBody(
       goldCost: rule.goldCost ?? 0,
     };
   });
+  let resultVariableId = optionalResultVariableId(cmd.resultVariableId);
   const upgrade = recordPickerWithPreview({
     records: rules,
     selectedId: cmd.upgradeId,
@@ -690,14 +741,39 @@ export function applyItemUpgradeBody(
     },
   });
   const apply = () => {
+    const nextResult = optionalResultVariableId(resultVariableId);
     context.actions.replaceCommand(context.path, {
       kind: "applyItemUpgrade",
       upgradeId: upgrade.select.value,
+      ...(nextResult !== undefined ? { resultVariableId: nextResult } : {}),
     });
   };
+  const resultVariable = databasePicker(
+    "variable",
+    resultVariableId ?? "",
+    (variableId) => {
+      resultVariableId = optionalResultVariableId(variableId);
+      apply();
+    },
+    "apply-item-upgrade-result-variable",
+  );
+  const clearResult = resultVariableClearButton("apply-item-upgrade-result-variable-clear", () => {
+    resultVariableId = undefined;
+    const select = resultVariable.querySelector("select");
+    if (select) select.value = "";
+    const trigger = resultVariable.querySelector<HTMLElement>('[data-testid="event-variable-picker-open"]');
+    if (trigger) trigger.textContent = "(선택)";
+    apply();
+  });
   upgrade.select.addEventListener("change", apply);
   const wrap = el("span", { class: "rich-command-form cream-command-form" });
   wrap.append(el("span", { class: "rich-form-row", children: [upgrade.root] }));
+  wrap.append(
+    el("label", {
+      class: "inline-field rich-form-row",
+      children: [el("span", { text: "결과 변수 (선택)" }), resultVariable, clearResult],
+    }),
+  );
   if (rules.length === 0) {
     wrap.append(
       el("span", {

@@ -4,13 +4,13 @@ import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import {
   EQUIPPABLE_ITEM_TYPES,
-  goodsSellPrice,
   itemToGoods,
   SHOP_CATEGORY_LABELS,
   type ShopCategory,
   type ShopGoods,
 } from "@/player/playSceneShopGoods";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
+import { resolveShopSellUnitPrice } from "@/project/shopPrice";
 import type { ItemRecord } from "@/project/types/database";
 import type { ResolvedTerms } from "@/project/terms";
 
@@ -25,7 +25,9 @@ export function toGoods(listing: ShopListing): ShopGoods {
 }
 
 export function listingPrice(goods: ShopGoods, mode: ShopMode): number {
-  return mode === "sell" ? goodsSellPrice(goods) : goods.price;
+  return mode === "sell"
+    ? resolveShopSellUnitPrice(store.getCurrent(), goods.id, goods.price)
+    : goods.price;
 }
 
 /* ────────────────────────── 아이콘 ────────────────────────── */

@@ -283,6 +283,38 @@ describe("database life skill and crafting view", () => {
     expect(findByTestId(host, "db-life-shipping-history-limit")?.value).toBe("14");
   });
 
+  // Break caught (2026-09-09 native editor QA v13): unchecking a single item
+  // materializes allowedItemIds (undefined -> array) but the per-item handler did
+  // not rerender, so "판매 가능한 모든 아이템" stayed checked while one item was
+  // excluded. That control writes `checked ? undefined : []` from its NEW checked
+  // state, so one click on the stale-checked box wiped the whole shipping list.
+  it("clears the all-items checkbox once a single item is excluded, so one click cannot wipe the list", () => {
+    const host = renderTab();
+    findByTestId(host, "db-life-section-shipping")?.click();
+    findByTestId(host, "db-life-package-create")?.click();
+
+    const allItemIds = store.getCurrent().database.items.map((item) => item.id);
+    const excluded = allItemIds[0];
+    if (!excluded || allItemIds.length < 2) throw new Error("need at least two default items");
+
+    // Starts as "all allowed": undefined, and the header renders checked.
+    expect(store.getCurrent().system.shipping?.allowedItemIds).toBeUndefined();
+    expect(findByTestId(host, "db-life-shipping-all-items")?.checked).toBe(true);
+
+    setChecked(host, `db-life-shipping-item-${excluded}`, false);
+
+    // The project now holds every id except the excluded one...
+    expect(store.getCurrent().system.shipping?.allowedItemIds).toEqual(
+      allItemIds.filter((id) => id !== excluded),
+    );
+    // ...and the header must no longer claim every item is shippable.
+    expect(findByTestId(host, "db-life-shipping-all-items")?.checked).toBe(false);
+
+    // Therefore the next click on it means "select all", not "clear everything".
+    setChecked(host, "db-life-shipping-all-items", true);
+    expect(store.getCurrent().system.shipping?.allowedItemIds).toBeUndefined();
+  });
+
   // Break caught: world unlock, bundle, and maker records have no discoverable
   // add/detail/duplicate/delete workflow even though they are persisted by ProjectIO.
   it("authors world unlock, bundle rewards, and maker processing without raw JSON", () => {
