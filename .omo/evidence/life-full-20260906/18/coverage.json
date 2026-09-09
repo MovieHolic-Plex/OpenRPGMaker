@@ -48,6 +48,13 @@
       "load/resume (system group)"
     ],
     "evidence": "Live DOM dumps in this scenario: only the six collapsed rail entries plus the currently open detail ever appear.",
-    "notAProductDefect": "hasLifeLedgerData measures true and the groups are ordinary UI; this is a harness input limitation."
+    "notAProductDefect": "hasLifeLedgerData measures true and the groups are ordinary UI; this is a harness input limitation.",
+    "pointerChannelAlsoTried": {
+      "attempt": "Added a real mouse-click op (strict contract: unique target, not disabled/hidden/zero-box, and elementFromPoint hit test) because every prior menu attempt used injected keyboard edges and the runtime harness had NO pointer op at all.",
+      "result": "pointer target occluded: status-menu-command-system-menu — both before and AFTER closing the save detail with Escape. So the rail is covered by a structural layer, not by the save panel.",
+      "conclusion": "Both input channels fail: injected keyboard edges do not expand a selected group entry, and a physical click cannot reach the rail because it is occluded. This is a harness/environment limitation, not a product defect.",
+      "valueOfTheGuard": "Without the elementFromPoint hit test the click would have landed on the overlay and reported success, hiding the reason load never opened.",
+      "selfInflictedBreakage": "My diagnostic probe was inserted in the wrong scope and broke the shared runner (title-screen never rendered, OCC=undefined was runner death, not a measurement). Reverted to the committed state with git checkout and re-verified the scenario passes; the shared harness is used by other scenarios and must not be left broken."
+    }
   }
 }
