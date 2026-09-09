@@ -35,7 +35,14 @@ describe("independent review evidence overflow", () => {
     // The envelope is refused before the request exists, so no reviewer round is spent.
     expect(reviewerCalls).toBe(0);
     expect(session.getResultReview()?.status).toBe("error");
-    expect(result.error).toContain("검수 증거가 한 번에 들어가지 않아");
+    expect(result.error).toContain("초안을 검수하지 못했습니다");
+    // Name the reviewer that could not hold it, and its window: the remedy is a wider one.
+    expect(result.error).toContain("tab_flash_lite_preview");
+    expect(result.error).toContain("16,384");
+    expect(result.error).toContain("컨텍스트 창이 더 큰 모델");
+    // Every rung of the fit ladder was already spent, so splitting the request cannot help
+    // and the message must not send the user down that road.
+    expect(result.error).toContain("변경 범위를 나눠도");
     expect(result.error).not.toContain("independent-review-window-exceeded");
     expect(result.error).not.toContain("complete evidence does not fit");
     // An unreviewable draft is still not approved.
@@ -67,7 +74,7 @@ describe("independent review evidence overflow", () => {
 
     // run_lint ran, then a write made it stale: that is a required problem the user can act
     // on, and it used to be replaced by the harness's own window-exceeded string.
-    expect(result.error).toContain("검수 증거가 한 번에 들어가지 않아");
+    expect(result.error).toContain("초안을 검수하지 못했습니다");
     expect(result.error).toContain("run_lint");
   });
 });

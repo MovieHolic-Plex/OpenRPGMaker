@@ -3,7 +3,7 @@ import { readLatestRunCheckpoint, saveRunCheckpoint, type RunCheckpoint, type Ru
 import { checkpointContentIdentity, reconcileRunCheckpoint, type RunRecovery, type RunRuntimeState } from "./runRecovery";
 import { ACCEPTANCE_EXAMPLES, acceptanceRecord, missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
-import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewEvidenceContexts, reviewEvidenceImages, reviewMapReferenceRoots, requiresVisualReview, type ResultReview } from "./independentReview";
+import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewEvidenceContexts, reviewEvidenceImages, reviewMapReferenceRoots, requiresVisualReview, type ResultReview, type ReviewEvidenceFit } from "./independentReview";
 import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
 import { parseFunctionalRequirements, type FunctionalCriterion } from "./functionalAcceptance";
 import { deriveRunOutcome, type RunOutcome } from "./runOutcome";
@@ -85,7 +85,7 @@ import { applyVocabSoftConfirmApprovals, extractVocabSoftConfirm } from "@/proje
 import { syncDraftWikiWithLive } from "@/project/world";
 import type { Project } from "@/project/types";
 import { buildGroundedRequest, buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextMapId, resolveContextViewport, type ContextOptions } from "./contextBuilder";
-import { extractOriginalContext, GET_ORIGINAL_CONTEXT_TOOL, OriginalContextStore } from "./originalContext";
+import { extractOriginalContext, GET_ORIGINAL_CONTEXT_TOOL, originalContextWindow, OriginalContextStore } from "./originalContext";
 import {
   buildConversationTurnContext,
   mapTransitionNote,
@@ -5112,30 +5112,59 @@ export class AssistantSession {
       if (signal?.aborted) throw new Error("independent-review-cancelled");
       knownProblems = requiredProblems;
       const captures = receipts.map(receipt => ({ mapId: receipt.mapId, images: this.reviewImages.get(receipt) ?? [] }));
-      const build = (reviewedIds: ReadonlySet<string>, target: string) => buildIndependentReviewRequest(config, { revision,
-        originalRequest: this.currentTurnRequestText, changes, requiredProblems, completionWarnings,
-        // Scoped to the maps this envelope reviews, so the narrowing retry sheds their
-        // renders too — the dominant cost — instead of only their text.
-        images: reviewEvidenceImages(captures, reviewedIds),
-        before: evidence(this.reviewBaseline, "before", reviewedIds, target),
-        after: evidence(this.ctx.project, "after", reviewedIds, target),
-        toolResults: this.reviewToolResults, acceptance: draftAcceptance }, signal);
-      // The reviewer is one-shot, so an oversized envelope is refused rather than truncated.
-      // Retry once judging only the changed maps: the target map is where the user is
-      // standing, and an unchanged one is surrounding context rather than the subject of this
-      // review — a large one can overflow the envelope by itself. It has to leave the context
-      // target too, which always includes its own map. Required evidence (changed maps, their
-      // renders, deterministic problems) is never dropped to make room; that would buy
-      // approval with less proof than the gate demands.
+      const build = (reviewedIds: ReadonlySet<string>, target: string, fit: ReviewEvidenceFit) =>
+        buildIndependentReviewRequest(config, { revision,
+          originalRequest: this.currentTurnRequestText, changes, requiredProblems, completionWarnings, fit,
+          // Scoped to the maps this envelope reviews, so the narrowing rung sheds their
+          // renders too — the dominant cost — instead of only their text.
+          images: reviewEvidenceImages(captures, reviewedIds),
+          before: evidence(this.reviewBaseline, "before", reviewedIds, target),
+          after: evidence(this.ctx.project, "after", reviewedIds, target),
+          toolResults: this.reviewToolResults, acceptance: draftAcceptance }, signal);
+      // The reviewer is one-shot, so an oversized envelope is refused rather than truncated —
+      // but only after every cheaper way to make room is spent, because "no review" is the
+      // worst verdict this gate can reach. Rungs run cheapest-harm first and each one shrinks
+      // strictly further than the last:
+      //
+      //  1. complete evidence, every reviewed map.
+      //  2. the same evidence with its grids losslessly run-length encoded, in the change list
+      //     as well as in the before/after record — a map is diffed whole, so renaming a
+      //     512x512 one spends 3,670,409 chars restating its grids on top of the 2,599,025 that
+      //     side's evidence already costs. Packing keeps every cell value, so it costs the
+      //     reviewer nothing, and measured it holds the envelope flat as the map grows.
+      //  3. judge only the changed maps. The target map is where the user is standing, and an
+      //     unchanged one is surrounding context rather than the subject of this review, yet a
+      //     large one can overflow the envelope by itself. It has to leave the context target
+      //     too, which always includes its own map.
+      //  4. omit reference definitions that are byte-identical before and after — measured, the
+      //     tileset alone is 68,435 chars carried unchanged on both sides. The envelope names
+      //     what it omitted so the reviewer can request changes instead of approving blind.
+      //
+      // Required evidence (changed maps, their renders, deterministic problems, any before/after
+      // difference) is never dropped to make room; that would buy approval with less proof than
+      // the gate demands.
       const [firstChangedMapId] = changedMapIds;
-      let request;
-      try {
-        request = build(mapIds, targetMapId);
-      } catch (cause) {
-        if (!(cause instanceof Error) || !cause.message.startsWith("independent-review-window-exceeded")
-          || firstChangedMapId === undefined || changedMapIds.size >= mapIds.size) throw cause;
-        request = build(changedMapIds, firstChangedMapId);
+      const ladder: [ReadonlySet<string>, string, ReviewEvidenceFit][] = [
+        [mapIds, targetMapId, "complete"],
+        [mapIds, targetMapId, "packed-grids"],
+      ];
+      if (firstChangedMapId !== undefined && changedMapIds.size < mapIds.size) {
+        ladder.push([changedMapIds, firstChangedMapId, "packed-grids"]);
       }
+      const [narrowestIds, narrowestTarget] = ladder[ladder.length - 1]!;
+      ladder.push([narrowestIds, narrowestTarget, "shared-reference-omitted"]);
+      let request: ReturnType<typeof build> | undefined;
+      let refused: unknown;
+      for (const [reviewedIds, target, fit] of ladder) {
+        try {
+          request = build(reviewedIds, target, fit);
+          break;
+        } catch (cause) {
+          if (!(cause instanceof Error) || !cause.message.startsWith("independent-review-window-exceeded")) throw cause;
+          refused = cause;
+        }
+      }
+      if (!request) throw refused;
       const response = await operation.wait(this.chat(config, request));
       if (signal?.aborted) throw new Error("independent-review-cancelled");
       if (identity !== JSON.stringify(this.ctx.project)) throw new Error("independent-review-stale-revision");
@@ -5157,8 +5186,17 @@ export class AssistantSession {
       // An unreviewable draft is never approved. But `independent-review-window-exceeded`
       // is the harness refusing its own envelope, and reporting only that string buried the
       // deterministic problems (failed lint, unmet acceptance) the user can actually act on.
+      //
+      // Name the remedy that works. This is reached only after the whole ReviewEvidenceFit
+      // ladder was refused, so "split the request" is advice that cannot succeed: what remains
+      // is a fixed floor (summary, start state, tileset, database reference) plus one map's
+      // grids, and no narrower request makes either smaller. A wider reviewer window does.
+      const reviewer = this.reviewConfig ?? this.config;
       const summary = message.startsWith("independent-review-window-exceeded")
-        ? ["이번 변경의 검수 증거가 한 번에 들어가지 않아 초안을 검수하지 못했습니다. 변경 범위를 나눠 다시 요청하세요.",
+        ? [`검수 증거가 검수 모델의 컨텍스트 창(${reviewer.model}, ${originalContextWindow(reviewer).toLocaleString("en-US")} 토큰)에 들어가지 않아 초안을 검수하지 못했습니다.`,
+          "격자 무손실 압축, 변경된 맵만 남기기, 양쪽이 동일한 참조 정의 생략까지 모두 적용한 뒤의 결과입니다."
+          + " 변경 범위를 나눠도 고정 증거(요약·시작 상태·타일셋·데이터베이스)와 맵 한 장의 타일 격자는 그대로 남으므로 줄어들지 않습니다.",
+          "컨텍스트 창이 더 큰 모델을 검수 모델로 지정하거나, 맵 크기를 줄이세요.",
           ...knownProblems.map(problem => `- ${problem}`)].join("\n")
         : message;
       review = { status: "error", revision, findings: [], summary };
