@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createComposerElements, type ComposerElements, type ComposerMode } from "@/editor/panels/aiComposer";
+import { createComposerElements, type ComposerElements } from "@/editor/panels/aiComposer";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 function button(testid: string): HTMLButtonElement {
@@ -15,7 +15,6 @@ function div(cls: string): HTMLElement {
 }
 
 function render(extra: {
-  readonly onMode?: (mode: ComposerMode) => void;
   readonly isInside?: (target: Node) => boolean;
   readonly modelLabel?: string | null;
 } = {}): { readonly shell: ComposerElements; readonly input: HTMLTextAreaElement; readonly collapse: HTMLButtonElement } {
@@ -39,7 +38,6 @@ function render(extra: {
     onOpenConversations: () => undefined,
     preferenceContent: div("ai-preference-settings"),
     ...(extra.isInside ? { isInside: extra.isInside } : {}),
-    ...(extra.onMode ? { modeChips: { initial: "do", onChange: extra.onMode } } : {}),
     ...(extra.modelLabel !== undefined ? { modelLabel: extra.modelLabel } : {}),
   });
   return { shell, input, collapse };
@@ -89,30 +87,13 @@ describe("aiComposer — 데크 컴포저", () => {
     expect(input.getAttribute("title")).toContain("Enter");
   });
 
-  it("모드 세그먼트는 지시/질문/계획 셋이고 클릭이 onChange 와 aria-checked 를 함께 바꾼다", () => {
-    // Break: 옵션 클릭이 콜백만 부르고 표시 상태를 안 바꾸거나, setMode 가 표시만 바꾸고 dataset 을 안 바꾼다.
-    const picked: ComposerMode[] = [];
-    const { shell } = render({ onMode: (mode) => picked.push(mode) });
-    const segment = shell.modeSegment;
-    expect(segment).not.toBeNull();
-    const options = segment?.querySelectorAll(".ai-composer-mode-option") ?? [];
-    expect([...options].map((node) => node.textContent)).toEqual(["지시", "질문", "계획"]);
-    expect(options[0]?.getAttribute("aria-checked")).toBe("true");
-    (options[1] as unknown as FakeElement).click();
-    expect(picked).toEqual(["ask"]);
-    expect(options[1]?.getAttribute("aria-checked")).toBe("true");
-    expect(options[0]?.getAttribute("aria-checked")).toBe("false");
-    expect(segment?.dataset.mode).toBe("ask");
-    shell.setMode("plan");
-    expect(segment?.dataset.mode).toBe("plan");
-    expect(options[2]?.getAttribute("aria-checked")).toBe("true");
-  });
-
-  it("모드 옵션을 주지 않으면 세그먼트를 만들지 않는다", () => {
-    // Break: 옵션 없이도 세그먼트가 생겨 콜백 없는 라디오가 행을 차지한다.
+  it("모드 세그먼트를 아예 만들지 않는다 — 지시줄 컨트롤은 자율성 다이얼 하나다", () => {
+    // Break: 세그먼트가 남으면 같은 노브(질문=readOnly, 계획=planOnly)를 두 컨트롤이 만지고,
+    // 둘이 어긋날 때 어느 쪽이 이기는지 사용자가 알 수 없다.
     const { shell } = render();
-    expect(shell.modeSegment).toBeNull();
-    expect((shell.actions as unknown as FakeElement).querySelector(".ai-composer-mode")).toBeNull();
+    const actions = shell.actions as unknown as FakeElement;
+    expect(actions.querySelector(".ai-composer-mode")).toBeNull();
+    expect(actions.querySelector(".ai-composer-mode-option")).toBeNull();
   });
 
   it("모델 칩은 라벨을 보이고 null 이면 숨는다", () => {

@@ -208,7 +208,33 @@ afterEach(async () => {
 });
 
 describe("자율성 다이얼 런 표면", () => {
-  it("confirm 저장 시 자율 런 예산이 0/6 으로 시작한다", async () => {
+  it("autonomous 저장 시 자율 런 예산이 0/32 으로 시작한다", async () => {
+    // 예전 픽스처는 confirm + agentMode:"auto" 였다. 다이얼이 프리셋의 agentMode 를 함께
+    // 저장하므로(confirm → "chat") UI 로는 만들 수 없는 조합이고, planOnly 레벨은 계획 턴에
+    // 자율 표면을 켜지 않는다(아래 별도 테스트). 분모가 레벨 cap 이라는 계약은 그대로 검증한다.
+    storage.set(
+      AI_CONFIG_STORAGE_KEY,
+      JSON.stringify({ ...defaultAiConfig(), agentMode: "auto", autonomyLevel: "autonomous" })
+    );
+    const panel = renderPanel();
+    assistantMock.setEmitter((onEvent) => {
+      onEvent({ type: "work_plan", plan: samplePlan() });
+    });
+    assistantMock.holdNextTurn();
+    const sending = bridgeSend("RPG 만들어줘");
+    await flushAsync();
+
+    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("0/32");
+
+    assistantMock.releaseHeldTurn();
+    await sending;
+    await flushAsync();
+  });
+
+  it("확인(planOnly) 레벨의 계획 턴은 자율 런 표면을 켜지 않는다", async () => {
+    // Break: 계획만 세우고 멈추는 턴에 「자율 실행 예산」을 띄우면 실행되지 않을 런의 진행률을
+    // 보여주는 거짓 표면이 된다. 예전 「계획」 칩은 이걸 눌렀고 다이얼 confirm 은 안 눌렀다 —
+    // 두 경로를 하나로 합치는 것이 이 작업의 목적이다.
     storage.set(
       AI_CONFIG_STORAGE_KEY,
       JSON.stringify({ ...defaultAiConfig(), agentMode: "auto", autonomyLevel: "confirm" })
@@ -221,7 +247,7 @@ describe("자율성 다이얼 런 표면", () => {
     const sending = bridgeSend("RPG 만들어줘");
     await flushAsync();
 
-    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("0/6");
+    expect(findByTestId(panel, "ai-autonomous-budget")).toBeNull();
 
     assistantMock.releaseHeldTurn();
     await sending;
@@ -253,7 +279,7 @@ describe("자율성 다이얼 런 표면", () => {
   it("계속 이벤트의 48분모 표시는 레벨 cap 으로 클램프된다", async () => {
     storage.set(
       AI_CONFIG_STORAGE_KEY,
-      JSON.stringify({ ...defaultAiConfig(), agentMode: "auto", autonomyLevel: "confirm" })
+      JSON.stringify({ ...defaultAiConfig(), agentMode: "auto", autonomyLevel: "autonomous" })
     );
     const panel = renderPanel();
     assistantMock.setEmitter((onEvent) => {
@@ -264,8 +290,8 @@ describe("자율성 다이얼 런 표면", () => {
     const sending = bridgeSend("RPG 만들어줘");
     await flushAsync();
 
-    // 세션 텍스트는 48분모지만 표시는 레벨 cap 6으로 내린다.
-    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("5/6");
+    // 세션 텍스트는 48분모지만 표시는 레벨 cap 32로 내린다.
+    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("5/32");
 
     assistantMock.releaseHeldTurn();
     await sending;

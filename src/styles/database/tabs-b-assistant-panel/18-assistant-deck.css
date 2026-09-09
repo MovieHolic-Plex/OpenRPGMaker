@@ -927,49 +927,8 @@
   gap: 8px;
 }
 
-/* 모드 세그먼트 — 지시 / 질문 / 계획 */
-.ai-composer-mode {
-  background: color-mix(in srgb, var(--text-1) 6%, transparent);
-  border-radius: 9px;
-  display: inline-flex;
-  flex: 0 0 auto;
-  gap: 2px;
-  padding: 3px;
-}
-
-.ai-composer-mode-option {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: 7px;
-  color: var(--ai-deck-secondary, var(--text-2));
-  cursor: pointer;
-  display: inline-flex;
-  font: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
-  height: 26px;
-  line-height: 1;
-  min-height: 0;
-  padding: 0 10px;
-  white-space: nowrap;
-}
-
-.ai-composer-mode-option:hover {
-  color: var(--text-1);
-}
-
-.ai-composer-mode-option.is-on,
-.ai-composer-mode-option[aria-checked="true"] {
-  background: var(--bg-raised);
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--text-1) 10%, transparent);
-  color: var(--text-1);
-}
-
-.ai-composer-mode-option:focus-visible {
-  box-shadow: var(--focus-ring);
-  outline: none;
-}
+/* 모드 세그먼트(지시/질문/계획)의 규칙은 없앴다 — 지시줄 컨트롤은 자율성 셀렉트 하나다.
+   「질문」은 레벨 readOnly, 「계획」은 planOnly 로 흡수됐다(src/ai/autonomyLevels.ts). */
 
 /* 컨텍스트 핀(현재 맵 · 선택 영역) */
 :is(.ai-deck, .ai-studio-composer) .ai-context-chips {

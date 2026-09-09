@@ -23,7 +23,7 @@ firefox.launch = async options => {
       const observe = () => page.evaluate(async () => {
         await qa.nextRender();
         const live = qa.store.getCurrent();
-        return { composerMode: document.querySelector('[data-testid="ai-composer-mode"]').dataset.mode,
+        return { composerMode: document.querySelector('[data-testid="ai-composer-autonomy"]').value === 'readonly' ? 'ask' : 'do',
           actualOptions: qa.turnOptions, outcome: qa.session.getRunOutcome(),
           work: qa.session.getWorkPlan().layers.flatMap(layer => layer.items).map(item => ({ id: item.id, status: item.status })),
           acceptance: qa.session.getAcceptanceSnapshot(), events: live.maps[live.startMapId].events,
@@ -33,7 +33,7 @@ firefox.launch = async options => {
         const result = await screenshot(options);
         if (exercised || basename(options.path) !== 'blocked-user-resume-settled.png') return result;
         exercised = true;
-        await page.getByTestId('ai-composer-mode-ask').click();
+        await page.getByTestId('ai-composer-autonomy').selectOption('readonly');
         const before = await observe();
         assert.equal(before.composerMode, 'ask');
         // Subscribe before the genuine composer send; no sleeps or polling.

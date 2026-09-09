@@ -45,13 +45,16 @@ async function openModal(): Promise<FakeElement> {
 }
 
 describe("자율성 다이얼", () => {
-  it("동작 섹션 맨 위에 4단계 옵션(한국어 라벨)을 렌더한다", async () => {
+  it("동작 섹션 맨 위에 전체 레벨 옵션(한국어 라벨)을 렌더한다", async () => {
     const modal = await openModal();
     const dial = findByTestId(modal, "ai-config-autonomy");
     expect(dial).not.toBeNull();
 
     const options = dial?.querySelectorAll("option") ?? [];
+    // Break: 읽기 전용이 빠지면 설정 모달에서 ask 레일을 고를 수단이 사라진다
+    // (지시줄 「질문」 칩이 없어진 뒤 이 다이얼이 유일한 트리거다).
     expect(options.map((option) => option.getAttribute("value"))).toEqual([
+      "readonly",
       "confirm",
       "balanced",
       "autonomous",

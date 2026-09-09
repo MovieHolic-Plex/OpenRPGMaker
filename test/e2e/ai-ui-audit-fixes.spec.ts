@@ -273,7 +273,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
           await route.fulfill({ json: { choices: [{ message: { role: "assistant", content }, finish_reason: "stop" }] } });
         }
       });
-      await page.getByTestId("ai-composer-mode-ask").click();
+      await page.getByTestId("ai-composer-autonomy").selectOption("readonly");
       await page.getByTestId("ai-input").fill("UI_FIX_TRANSCRIPT");
       const [completed] = await Promise.all([
         page.waitForRequest((request) => request.url().endsWith("/__oprn/ai-activity")
