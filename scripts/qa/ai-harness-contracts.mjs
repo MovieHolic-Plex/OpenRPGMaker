@@ -46,7 +46,9 @@ const p1Response = proofFailureResponse(titleToken);
 const ownsTitle = title => title === ownerTitle || p2?.ownsTitle(title) === true;
 const commits = new Set();
 const routes = new Set();
-const record = (type, data = {}) => { const entry = { sequence: report.actions.length + 1, type, ...data }; report.actions.push(entry); console.log(JSON.stringify(entry)); };
+const qaStartedAt = Date.now();
+// 실행 시각을 남긴다 — 성능 회귀를 추측이 아니라 구간 측정으로 판별하기 위해서다.
+const record = (type, data = {}) => { const entry = { sequence: report.actions.length + 1, atMs: Date.now() - qaStartedAt, type, ...data }; report.actions.push(entry); console.log(JSON.stringify(entry)); };
 const safeError = error => String(error?.stack ?? error).replaceAll(config?.anonKey || '\0', '[REDACTED]');
 function deferred() { const d = Promise.withResolvers(); void d.promise.catch(() => {}); return d; }
 async function bounded(promise, label) {
