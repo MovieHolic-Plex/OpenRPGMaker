@@ -4053,6 +4053,9 @@ export class AssistantSession {
       hasApplied: this.turnAppliedMilestoneCalls.length > 0 || this.wikiDelivery !== null,
       persistence: receipt === null ? "none"
         : proof?.receipt === receipt && proof.verified ? "verified-current" : "accepted",
+      // 전달 사실은 이 실행의 이미지 원장이 소유한다. 조회했다/품질을 봤다와 다른 축이고,
+      // 여기서 새로 만들어내지 않는다 — 원장이 이미 아는 것을 그대로 투영한다.
+      visualDelivery: this.imageEvidence.deliveryFacts(),
     });
   }
 

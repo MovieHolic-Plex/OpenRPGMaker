@@ -1,5 +1,25 @@
 # Editor AI Panel & Tools
 
+## Run outcome line: four independent axes (2026-09-09)
+
+The single `[data-testid="ai-run-outcome"]` line drawn by `renderRunOutcome` states four
+facts that never borrow each other's success.
+
+| dataset | means | does NOT mean |
+|---|---|---|
+| `execution` | how the run ended | that the goal was met |
+| `goal` | acceptance assessment state | that anything was saved |
+| `delivery` | draft / applied / persisted / verified stage | that an image was sent |
+| `imageDelivery` | material image was actually attached to the real request (`attached`/`unattached`) | that the model understood or liked the picture |
+
+`imageDelivery` carries only what `AssistantImageEvidence.deliveryFacts()` reports: `attempted`
+is the live render captures of this run, `attached` is the subset the provider acknowledged in
+the actual request. A capture without acknowledgment stays 0, and when the map changes afterwards
+both capture and delivery retire, because an outdated picture is not current evidence. A run that
+never reported delivery facts omits the attribute entirely — unknown is not rewritten as zero or
+as failure. Contract tests: `test/aiVisualEvidenceReceipt.test.ts`; the axis table lives in
+`test/aiRunOutcome.test.ts`.
+
 ## P3 run retirement and stale drafts (2026-09-07)
 
 P3 adds client-local execution ownership and a captured proposal base to the P1/P2

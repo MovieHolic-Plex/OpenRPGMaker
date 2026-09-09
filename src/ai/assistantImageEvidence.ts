@@ -29,6 +29,15 @@ export class AssistantImageEvidence {
     for (const receipt of receipts) if (this.captured.has(receipt)) this.delivered.add(receipt);
   }
 
+  /**
+   * 전달 사실만 센다. attempted 는 이번 실행에서 살아 있는 캡처 수, attached 는 그중
+   * **제공자가 실제로 수신을 확인한** 수다. 모델이 그림을 이해했거나 좋다고 판단했다는 뜻이 아니고,
+   * 품질 검사나 실제 플레이 확인과도 다른 축이다.
+   */
+  deliveryFacts(): { readonly attempted: number; readonly attached: number } {
+    return { attempted: this.captured.size, attached: this.delivered.size };
+  }
+
   /** Read applied-state evidence without retiring captures of an unapplied draft. */
   matching(project: Project): readonly AcceptanceImageReceipt[] {
     return [...this.delivered].filter(receipt => {
