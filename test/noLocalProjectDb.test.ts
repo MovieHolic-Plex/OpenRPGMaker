@@ -35,6 +35,15 @@ const forbiddenRuntimePatterns = [
   "supabaseRecoveredHouseTemplateProject",
 ] as const;
 
+// These exact capabilities are not canonical project persistence. The application
+// journal retains receipt snapshots, but recovery must never install them as live data
+// (behavioral negative controls in aiJobApplication.test.ts). All other uses, including
+// another indexedDB expression in either file, remain forbidden.
+const indexedDbCapabilities = new Map([
+  ["src/editor/aiJobs/applicationRecords.ts", "factory: IDBFactory = indexedDB"],
+  ["src/editor/panels/aiChatPanel.ts", 'typeof indexedDB !== "undefined"'],
+]);
+
 describe("canonical project persistence has no local DB fallback", () => {
   it("does not keep old local DB implementation files", async () => {
     const fs = await loadFs();
@@ -44,13 +53,18 @@ describe("canonical project persistence has no local DB fallback", () => {
     }
   });
 
-  it("does not reference IndexedDB SQLite or local JSON fallback in runtime source", async () => {
+  it("permits only the application-journal factory and reload capability check, not a local project DB", async () => {
     const fs = await loadFs();
     const files = runtimeSourceRoots.flatMap((root) => sourceFiles(fs, root));
     const offenders: string[] = [];
 
     for (const file of files) {
-      const text = fs.readFileSync(file, "utf8");
+      let text = fs.readFileSync(file, "utf8");
+      const capability = indexedDbCapabilities.get(file);
+      if (capability) {
+        expect(text.split(capability)).toHaveLength(2);
+        text = text.replace(capability, "");
+      }
       for (const pattern of forbiddenRuntimePatterns) {
         if (text.includes(pattern)) offenders.push(`${file}: ${pattern}`);
       }

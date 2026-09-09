@@ -59,7 +59,9 @@ function useJsonbTransport() {
 }
 
 describe("transactional new remote project switch", () => {
-  afterEach(() => {
+  afterEach(async () => {
+    const { _resetEventDraftVaultForTest } = await import("@/project/eventDraftVault");
+    _resetEventDraftVaultForTest();
     document.body.replaceChildren();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
@@ -72,7 +74,7 @@ describe("transactional new remote project switch", () => {
       anonKey: "test-anon-key",
       projectId: "keep-project",
       source: "custom",
-      url: "http://dbserver:8100",
+      url: "https://transaction-fixture.invalid",
     }));
     let rejectConfigWrite = false;
     const localStorage = {
@@ -110,7 +112,8 @@ describe("transactional new remote project switch", () => {
       localStorage,
     });
     vi.stubGlobal("localStorage", localStorage);
-    vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+    vi.stubEnv("VITE_SUPABASE_USE_PROXY", "0");
+    vi.stubEnv("VITE_SUPABASE_URL", "https://transaction-fixture.invalid");
     vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
     vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "keep-project");
     vi.resetModules();
@@ -118,10 +121,26 @@ describe("transactional new remote project switch", () => {
     const { store } = await import("@/project/store");
     const { createBlankProject } = await import("@/project/defaults");
     const {
+      eventDraftVaultStorageKey,
       getEventDraftVaultEntry,
       persistEventDraftVaultNow,
       rememberEventDraftVaultEntry,
     } = await import("@/project/eventDraftVault");
+    const remote = await import("@/project/supabaseProjectSync");
+    const resourceCache = await import("@/assets/supabaseResourceCache");
+    vi.spyOn(resourceCache, "cacheSupabaseRootResources").mockResolvedValue({ cached: [], skipped: [] });
+    vi.spyOn(remote, "loadProjectFromSupabase").mockResolvedValueOnce(createBlankProject());
+    await store.load();
+    expect(store.isLoaded()).toBe(true);
+    expect(store.getLoadedConnection()).toEqual({
+      url: "https://transaction-fixture.invalid", anonKey: "test-anon-key", projectId: "keep-project",
+    });
+    expect(store.getLoadedProjectIdentity()).toEqual({
+      backend: "supabase:https://transaction-fixture.invalid:rpg_zzu", projectId: "keep-project",
+    });
+    expect(eventDraftVaultStorageKey()).toBe(`oprn:event-draft-vault:${JSON.stringify([
+      "supabase:https://transaction-fixture.invalid:rpg_zzu", "keep-project",
+    ])}`);
     const flush = vi.spyOn(store, "flush").mockResolvedValue({ kind: "saved" });
     const openMapId = store.getCurrent().startMapId;
     rememberEventDraftVaultEntry(openMapId, {
@@ -133,7 +152,9 @@ describe("transactional new remote project switch", () => {
       pages: [],
       draft: { kind: "new" },
     });
-    persistEventDraftVaultNow("keep-project");
+    // Flush the same loaded namespace that remember scheduled, not the legacy ID.
+    persistEventDraftVaultNow();
+    expect(storage.has(eventDraftVaultStorageKey())).toBe(true);
     const before = {
       draft: getEventDraftVaultEntry(openMapId, "draft-event"),
       project: structuredClone(store.getCurrent()),

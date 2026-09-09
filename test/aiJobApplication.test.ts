@@ -191,6 +191,63 @@ it("never guesses application from equality when a previous process left only a 
   expect((await f.client.detail(f.jobId)).job.application).toBe("outcome-unknown");
 }, 30000);
 
+it.each(["prepared", "applied"] as const)("%s journal recovery cannot supply a missing canonical load or restore snapshots over human edits", async phase => {
+  const f = await applicationFixture();
+  const { job } = await f.client.detail(f.jobId);
+  if (phase === "applied") {
+    expect((await applyJobResult(f.jobId, { client: f.client, storage })).application).toBe("applied");
+  } else {
+    const resultRef = job.resultRef;
+    if (!resultRef) throw new Error("Expected the fixture job's durable result reference");
+    const input = await f.client.json<AiJobInput>(f.jobId, job.inputRef);
+    const result = await f.client.json<AiJobResult>(f.jobId, resultRef);
+    const generatedSnapshot = result.generatedSnapshot;
+    if (!generatedSnapshot) throw new Error("Expected the fixture result's generated snapshot");
+    const proposed = await f.client.json<Project>(f.jobId, generatedSnapshot);
+    const prepare = { claimId: "recovery-claim", receiptId: "recovery-receipt", project: { ...job.project },
+      resultSha256: resultRef.sha256, baselineSha256: input.projectSnapshot.sha256 };
+    const records = await openApplicationRecords(storage);
+    try {
+      await records.put({ key: `job:${f.jobId}`, jobId: f.jobId, project: job.project,
+        resultSha256: resultRef.sha256, claimId: prepare.claimId, receiptId: prepare.receiptId,
+        prepare, before: f.base, proposed, draftOnly: false, phase });
+    } finally { records.close(); }
+  }
+  // Close/reopen the durable journal; no mocked recovery or store replacement path.
+  const records = await openApplicationRecords(storage);
+  const retained = await records.get(`job:${f.jobId}`);
+  records.close();
+  expect(retained?.phase).toBe(phase);
+  expect(retained?.proposed.meta.title).toBe("generated");
+  store.update(project => {
+    project.meta.title = "later human title";
+    project.maps[project.startMapId].lowerTiles[0] = 17;
+    project.database.items[0].price = 731;
+  });
+  const live = structuredClone(store.getCurrent());
+  const history = [...getMapEditHistoryEntries()];
+  expect(live).not.toEqual(retained?.before);
+  expect(live).not.toEqual(retained?.proposed);
+  let mutations = 0;
+  const unsubscribe = store.subscribe(() => { mutations++; });
+  try {
+    store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false });
+    expect(await applyJobResult(f.jobId, { client: f.client, storage })).toMatchObject({
+      application: "awaiting-editor", reason: "project-not-loaded",
+    });
+    expect(store.isLoaded()).toBe(false);
+    expect(store.getCurrent()).toEqual(live);
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false });
+    const recovered = await applyJobResult(f.jobId, { client: f.client, storage });
+    expect(recovered.application, recovered.reason).toBe(phase === "applied" ? "applied" : "outcome-unknown");
+    expect(recovered.receiptId).toBe(retained?.receiptId);
+    expect((await f.client.detail(f.jobId)).job.application).toBe(recovered.application);
+    expect(store.getCurrent()).toEqual(live);
+    expect(getMapEditHistoryEntries()).toEqual(history);
+    expect(mutations).toBe(0);
+  } finally { unsubscribe(); }
+}, 30000);
+
 it("binds reviewed event commands to the live UUID/revision/owner, applies exclusions in one command undo, and never saves drafts", async () => {
   let commands: Command[] = [{ kind: "text", body: "before" }];
   let open = true;

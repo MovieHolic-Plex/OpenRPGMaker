@@ -1,4 +1,4 @@
-import { afterEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, vi } from "vitest";
 import { createHash } from "node:crypto";
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -23,7 +23,8 @@ const context = { budgetChars: 4096, preferenceMemorySection: "" };
 // Controlled captured PNG bytes, not a provider call or mutable URL.
 const bytes = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a/p8AAAAASUVORK5CYII=", "base64");
 const pin = { sha256: createHash("sha256").update(bytes).digest("hex"), byteLength: bytes.length, mediaType: "image/png" };
-const assetId = project.database.items[0].imageResourceId!;
+// Both generated bindings must change: unchanged sibling artwork is intentionally omitted.
+const assetId = "report-pins-captured-item-artwork";
 const reportAssets = { [assetId]: pin };
 const cases: Array<{ family: AiJobFamily; parse: (value: unknown) => object; payload: JsonObject }> = [
   { family: "assistant", parse: parseAssistantPayload, payload: { instruction: "Inspect map", domain: "map", config, context } },
@@ -98,12 +99,20 @@ it("validates optional pins in every tileset operation", () => {
   }
 });
 
-const cleanups: Array<() => unknown> = [];
-afterEach(async () => {
-  try { for (const cleanup of cleanups.splice(0).reverse()) await cleanup(); }
-  finally { vi.unstubAllGlobals(); }
+let cleanup: { signal: AbortSignal; after(cb: () => unknown): void };
+beforeEach(({ signal }) => {
+  const cleanups: Array<() => unknown> = [];
+  cleanup = { signal, after: cb => { cleanups.push(cb); } };
+  return async () => {
+    const errors: unknown[] = [];
+    try {
+      for (const close of cleanups.splice(0).reverse()) {
+        try { await close(); } catch (error) { errors.push(error); }
+      }
+      if (errors.length) throw new AggregateError(errors, "Report fixture cleanup failed");
+    } finally { vi.unstubAllGlobals(); }
+  };
 });
-const cleanup = { after: (cb: () => unknown) => cleanups.push(cb) };
 
 it.each(cases)("$family HTTP capture, executor, report and disk reload retain exact refs", async ({ family, parse, payload }) => {
   const decoded: string[] = [];
@@ -123,8 +132,13 @@ it.each(cases)("$family HTTP capture, executor, report and disk reload retain ex
       expect(parse(input.payload)).toEqual({ ...parse(payload), reportAssets });
       expect(Buffer.from(await host.readBlob(pin))).toEqual(bytes);
       const generated = structuredClone(project);
+      expect(project.database.items[0].iconResourceId).not.toBe(assetId);
+      expect(project.database.items[0].imageResourceId).not.toBe(assetId);
+      // Register the reference without embedded bytes, so rendering must use the captured pin.
+      generated.resourceProfiles.push({ kind: "picture", name: "Captured pin fixture", assetId });
       generated.database.items[0].name = "Captured pin fixture";
       generated.database.items[0].iconResourceId = assetId;
+      generated.database.items[0].imageResourceId = assetId;
       const proposalRef = family === "event-commands" ? await host.putJson({ baseCommands: [], finalCommands: [] }) : null;
       return { ...resultFor(input, host, proposalRef ? { proposalRef: jsonValue(proposalRef) } : {}),
         artifacts: proposalRef ? [proposalRef] : [], generatedSnapshot: await host.putJson(jsonValue(generated)) };

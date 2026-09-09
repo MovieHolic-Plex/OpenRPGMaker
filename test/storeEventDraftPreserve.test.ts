@@ -1,11 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
-import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
 import type { Project } from "@/project/types";
 
 vi.mock("@/project/supabaseProjectSync", () => ({
-  loadProjectFromSupabase: vi.fn(async () => null),
+  loadProjectFromSupabase: vi.fn(async (): Promise<Project | null> => null),
   saveProjectToSupabase: vi.fn(async (project: Project) => ({ kind: "saved" as const, project })),
   saveProjectMapPatchToSupabase: vi.fn(async (input: { project: Project }) => ({
     kind: "saved" as const,
@@ -14,7 +13,7 @@ vi.mock("@/project/supabaseProjectSync", () => ({
 }));
 
 vi.mock("@/assets/supabaseResourceCache", () => ({
-  cacheSupabaseRootResources: vi.fn(async () => undefined),
+  cacheSupabaseRootResources: vi.fn(async () => ({ skipped: [] })),
 }));
 
 vi.mock("@/project/projectCommitLog", () => ({
@@ -23,13 +22,35 @@ vi.mock("@/project/projectCommitLog", () => ({
 }));
 
 describe("store preserves open event drafts across remote autosave", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    vi.useFakeTimers();
     vi.resetModules();
-    _resetEventDraftVaultForTest();
+    vi.stubGlobal("window", undefined);
+    vi.stubGlobal("localStorage", undefined);
+    vi.stubEnv("VITE_SUPABASE_USE_PROXY", "0");
+    vi.stubEnv("VITE_SUPABASE_URL", "https://draft-save.invalid");
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "fixture-anon-key");
+    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "draft-save-fixture");
+    const { store } = await import("@/project/store");
+    const { loadProjectFromSupabase } = await import("@/project/supabaseProjectSync");
+    vi.mocked(loadProjectFromSupabase).mockResolvedValueOnce(createBlankProject());
+    await store.load();
+    expect(store.getLoadedConnection()).toEqual({
+      url: "https://draft-save.invalid", anonKey: "fixture-anon-key", projectId: "draft-save-fixture",
+    });
+    expect(store.getLoadedProjectIdentity()).toEqual({
+      backend: "supabase:https://draft-save.invalid:rpg_zzu", projectId: "draft-save-fixture",
+    });
+    vi.clearAllMocks();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    const { _resetEventDraftVaultForTest } = await import("@/project/eventDraftVault");
     _resetEventDraftVaultForTest();
+    vi.clearAllTimers();
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
     vi.clearAllMocks();
   });
 
@@ -38,7 +59,6 @@ describe("store preserves open event drafts across remote autosave", () => {
     const { createEventDraft, setEventDraftCharacterName, saveEventDraft } = await import("@/editor/eventDraftActions");
     const { saveProjectToSupabase, saveProjectMapPatchToSupabase } = await import("@/project/supabaseProjectSync");
     store.replaceProject(createBlankProject());
-    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true });
     const mapId = store.getCurrent().startMapId;
     const eventId = createEventDraft(mapId, 3, 3);
     setEventDraftCharacterName(mapId, eventId, "autosave-npc", "Staged name");
@@ -60,7 +80,6 @@ describe("store preserves open event drafts across remote autosave", () => {
     const { createEventDraft } = await import("@/editor/eventDraftActions");
     const project = createBlankProject();
     store.replaceProject(project);
-    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true });
     store._setPersistedBaselineForTest(structuredClone(projectWithoutEventDrafts(store.getCurrent())));
 
     const mapId = store.getCurrent().startMapId;

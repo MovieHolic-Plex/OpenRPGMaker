@@ -43,18 +43,46 @@ export function submission() {
     artwork: [{ mediaType: 'image/png', base64: Buffer.from('fixture-artwork').toString('base64') }] };
 }
 export async function httpFixture(t, runtime = {}, options = {}, httpOptions = {}) {
-  const f = await fixture(t, runtime, options);
+  // Compose one teardown instead of depending on the runner's hook order.
+  let closeFixture;
+  const f = await fixture({ after: close => { closeFixture = close; } }, runtime, options);
+  const controller = new AbortController();
+  const signal = t.signal ? AbortSignal.any([t.signal, controller.signal]) : controller.signal;
+  const requests = new Set();
+  const handlers = new Set();
   let origin;
   const handler = createAiJobsHttpHandler({ ...f, origins: () => [origin], onError: error => f.errors.push(error), ...httpOptions });
-  const server = createServer(handler);
+  const server = createServer((req, res) => {
+    const work = handler(req, res);
+    handlers.add(work);
+    work.then(() => handlers.delete(work), error => { handlers.delete(work); f.errors.push(error); });
+    return work;
+  });
   server.listen(0, '127.0.0.1'); await once(server, 'listening');
   origin = `http://127.0.0.1:${server.address().port}`;
-  t.after(async () => { handler.close(); server.closeAllConnections(); await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve())); });
-  const session = await fetch(`${origin}/api/ai-jobs/session`);
+  t.after(async () => {
+    controller.abort(new Error('HTTP fixture cleanup'));
+    handler.close();
+    const closed = new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
+    server.closeAllConnections();
+    // Aborted fetches are observed by their callers. Socket closure prevents new
+    // handlers, but only the returned route promises settle accepted handlers.
+    await Promise.allSettled([...requests]);
+    await closed;
+    await Promise.allSettled([...handlers]);
+    await closeFixture();
+  });
+  const ownedFetch = (...args) => {
+    const work = fetch(...args);
+    requests.add(work);
+    work.then(() => requests.delete(work), () => requests.delete(work));
+    return work;
+  };
+  const session = await ownedFetch(`${origin}/api/ai-jobs/session`, { signal });
   const cookie = session.headers.get('set-cookie').split(';')[0];
   const { csrfToken } = await session.json();
   const headers = { Origin: origin, Cookie: cookie, 'X-AI-Jobs-CSRF': csrfToken, 'Content-Type': 'application/json' };
-  const request = (path = '', { method = 'GET', body, headers: extra = {} } = {}) => fetch(`${origin}/api/ai-jobs${path}`, {
-    method, headers: { ...headers, ...extra }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
+  const request = (path = '', { method = 'GET', body, headers: extra = {} } = {}) => ownedFetch(`${origin}/api/ai-jobs${path}`, {
+    signal, method, headers: { ...headers, ...extra }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
   return { ...f, server, origin, headers, request, post: (path, body, extra = {}) => request(path, { method: 'POST', body, headers: extra }) };
 }
