@@ -1,0 +1,46 @@
+monitor_id=mon_P8QV3X6MAECPDFB7
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":"BOUNDARY_VALIDATION_STARTED"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceBoundaries.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":" ✓ test/placedPlaceBoundaries.test.ts (6 tests) 8637ms"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":"   ✓ rejects unsupported facility level 0 without draft or history writes  1713ms"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":"   ✓ rejects unsupported facility level 4 without draft or history writes  1552ms"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":"   ✓ reports exact lifecycle impact when inspecting a placed deletion  605ms"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":"   ✓ offers the exact uncompiled clone identity when cloning a frozen placed tree  1131ms"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":"   ✓ removes exact compiled transfers when deleting their containing actual inn  1841ms"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":"   ✓ extends only the selected frozen closure when adding a novel shared-descendant source  1794ms"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":" Test Files  1 passed (1)"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":"      Tests  6 passed (6)"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":"   Start at  07:28:16"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":"   Duration  14.34s (transform 3.53s, setup 0ms, collect 5.12s, tests 8.64s, environment 216ms, prepare 62ms)"}
+{"type":"line","id":"authoring-4108775","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-4108775","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+BOUNDARY_VALIDATION_STARTED
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceBoundaries.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit
+
+ ✓ test/placedPlaceBoundaries.test.ts (6 tests) 8637ms
+   ✓ rejects unsupported facility level 0 without draft or history writes  1713ms
+   ✓ rejects unsupported facility level 4 without draft or history writes  1552ms
+   ✓ reports exact lifecycle impact when inspecting a placed deletion  605ms
+   ✓ offers the exact uncompiled clone identity when cloning a frozen placed tree  1131ms
+   ✓ removes exact compiled transfers when deleting their containing actual inn  1841ms
+   ✓ extends only the selected frozen closure when adding a novel shared-descendant source  1794ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  07:28:16
+   Duration  14.34s (transform 3.53s, setup 0ms, collect 5.12s, tests 8.64s, environment 216ms, prepare 62ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

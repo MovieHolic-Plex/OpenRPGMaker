@@ -1,0 +1,298 @@
+{
+  "task": "source-build-ui",
+  "scope": "independent-visual-fix-recheck",
+  "verdict": "needs-fix",
+  "confidence": "HIGH",
+  "model": "xai/grok-4.6",
+  "actualModel": "grok-4.6",
+  "provider": "xai",
+  "sourceSHA": "2961dbe3b0878ecb06f1412183dbd1440dd63e29",
+  "boundSHA": "2961dbe3b0878ecb06f1412183dbd1440dd63e29",
+  "notWholeTaskApproval": true,
+  "finalSourceApproval": false,
+  "reasonNotFinal": "Original V-* layout defects are fixed on this freeze, but sequential keyboard typing of seed 19 and map id stamp-target loses focus on the first input/rerender. Values reach the proposal only via fill fallback. This file is source-bound to WIP 2961 + visual-fix hashes; it is not approval of tasks 11-15.",
+  "taskId": "st_01a083b5",
+  "replacedReviewer": "st_01a0838e",
+  "capturedAt": "2026-09-09T01:16:54Z",
+  "origin": "http://127.0.0.1:32921",
+  "cacheDir": "/home/main/z-project/rpg-zzu-tile-to-world/.vite-cache/source-build-ui-fixverify-subSsD",
+  "ns_net": "net:[4026531833]",
+  "ns_user": "user:[4026531837]",
+  "strictPort": true,
+  "shared9888": "untouched foreign MainThread pid=3844652",
+  "gotoCount": 5,
+  "errNetworkChanged": false,
+  "syntheticDivs": false,
+  "remoteCalls": 0,
+  "databaseResourcesCreated": 0,
+  "evaluateClick": false,
+  "keyboardTypingRequired": true,
+  "blankProjectOfflineWarning": {
+    "preserved": true,
+    "silentBypass": false,
+    "console": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "count": 10
+  },
+  "pageErrors": [],
+  "httpFailures": [],
+  "requestFailures": [
+    {
+      "url": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "webglWarningsPreserved": true,
+  "enumeratedStates": [
+    "objects-inspector-closed@1024x768,1280x800,1440x900",
+    "objects-inspector-open@1024x768,1280x800,1440x900",
+    "objects-targets@1024x768,1280x800,1440x900",
+    "objects-built-seed19@1024x768,1280x800,1440x900",
+    "objects-applied@1024x768,1280x800,1440x900",
+    "spaces-tab@1024x768,1280x800,1440x900",
+    "places-tab@1024x768,1280x800,1440x900",
+    "spaces-canonical-build-apply@1280x800",
+    "places-canonical-build-apply@1280x800"
+  ],
+  "pageCount": 25,
+  "capturedPageCount": 25,
+  "pages": [
+    "1024x768-objects-inspector-closed.png",
+    "1024x768-objects-inspector-open.png",
+    "1024x768-objects-targets.png",
+    "1024x768-objects-built.png",
+    "1024x768-objects-applied.png",
+    "1024x768-spaces.png",
+    "1024x768-places.png",
+    "1280x800-objects-inspector-closed.png",
+    "1280x800-objects-inspector-open.png",
+    "1280x800-objects-targets.png",
+    "1280x800-objects-built.png",
+    "1280x800-objects-applied.png",
+    "1280x800-spaces.png",
+    "1280x800-spaces-built.png",
+    "1280x800-spaces-applied.png",
+    "1280x800-places.png",
+    "1280x800-places-built.png",
+    "1280x800-places-applied.png",
+    "1440x900-objects-inspector-closed.png",
+    "1440x900-objects-inspector-open.png",
+    "1440x900-objects-targets.png",
+    "1440x900-objects-built.png",
+    "1440x900-objects-applied.png",
+    "1440x900-spaces.png",
+    "1440x900-places.png"
+  ],
+  "originalEvidencePreserved": {
+    "VisualVerify.json": true,
+    "source-build-ui-manual-qa.md": true,
+    "originalPngsNotOverwritten": true,
+    "originalIndependentPngCount": 25,
+    "newCaptureDir": "output/evidence/tile-to-world/source-build-ui/independent/visual-fix-recheck"
+  },
+  "pngHygiene": {
+    "allPngSignatureValid": true,
+    "viewportsMatch": true,
+    "alphaChannelIntact": true,
+    "minPixels": 786432,
+    "signature": "89504e47",
+    "actualBrowser": true,
+    "notSignatureOnly": true
+  },
+  "invocation": {
+    "surface": "Chromium Database spatial tabs against frozen worktree /home/main/z-project/rpg-zzu-tile-to-world",
+    "command": "cd /home/main/z-project/rpg-zzu-tile-to-world && flock /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock timeout 360s ./node_modules/.bin/vite-node output/evidence/tile-to-world/source-build-ui/independent/visual-fix-recheck/probe.mts",
+    "url": "http://127.0.0.1:32921/?blankProject=1&aiBridge=0",
+    "vite": "--host 127.0.0.1 --port 32921 --strictPort",
+    "clicks": "Playwright locator.click hit-testing, not node.click evaluate",
+    "typing": "locator.click then keyboard.insertText per character for seed 19 and map stamp-target; fill used only as labeled fallback after focus loss"
+  },
+  "sourceHashesAtCapture": {
+    "src/editor/panels/spatialBuildChrome.ts": "6b2eec79614bc6f10cd6d76da7a2cb74e69b1808cd9bd7c8f9014a11f10dd3b2",
+    "src/editor/panels/spatialStage.ts": "9c5b50f77c8b3f4c9a7b72a66690ede5c486254bd6da08be571cf26c171a6818",
+    "src/editor/panels/spatialObjectCommands.ts": "147c6bd657b333098df39875c5306035eb4bfa8c01e2c46479388a2aa6e4a10f",
+    "src/editor/panels/spatialSpaceCommands.ts": "ff12781d3a498a4de0acd0407e184c4aef2fccf19e083eae9fc360682395ae24",
+    "src/editor/panels/spatialPlaceCommands.ts": "7cc2974ddc263069fe9b6bad8e7a4b153ef3868ef1a53018c49f128b30bedeb6",
+    "src/editor/panels/spatialObjectInspector.ts": "b9e3d73064a509c4a3f326cfd9c54fe0e86674518ff3d826a6dc53af7c7d81fd",
+    "src/editor/panels/spatialTilesTab.ts": "554fcf96940451db42f430a5c9ad98f80992b8ae7dd7c6a1c157104ddfe7e331",
+    "src/editor/panels/spatialObjectChromeState.ts": "3d949e2192ba5fca134ac26ad3e47f3acdc214c1f42a486417f91fbe0102ee6b",
+    "src/editor/panels/spatialSpaceChromeState.ts": "68e9d905cfac5e786ee3f20e54c3ea7ff78094a457a16596a6fe6d031f7044e5",
+    "src/editor/panels/spatialPlaceChromeState.ts": "04a9d0db7a13e709ff512dcd12538efe136ca8e7306e7799b6616a1e56ac100e",
+    "src/styles/database/spatial-shell.css": "e7532cd9d6d60d00112ca68538255d92e4d5c5afeab8bc56571674c12a9e5e4d"
+  },
+  "hashDeltaVsVisualFixReceipt": {
+    "matchedSourceFiles": 11,
+    "mismatches": []
+  },
+  "producerEvidence": {
+    "staleForThisVerdict": true,
+    "notUsedForPass": true,
+    "reason": "Producer visual-fix/qa.json used Playwright fill+click, claimed PASS, did not sequential-type seed/map. This pass recaptured all three viewports with locator.click and per-character typing.",
+    "retainedPath": "output/evidence/tile-to-world/source-build-ui/visual-fix/"
+  },
+  "originalFindingsDisposition": {
+    "V-1024-CANVAS-COLLAPSE": "fixed",
+    "V-1024-TARGET-OFFSCREEN": "fixed",
+    "V-JSON-TOOLBAR": "fixed",
+    "V-CJK-FIELD-WRAP": "fixed",
+    "V-SELECTOR-GROUP": "fixed"
+  },
+  "geometry": {
+    "1024x768": {
+      "objectsInspectorClosedCanvas": { "x": 233, "y": 420.78125, "width": 777, "height": 281.21875 },
+      "objectsInspectorOpenCanvas": { "x": 233, "y": 420.78125, "width": 777, "height": 160, "scrollHeight": 172, "clientHeight": 160 },
+      "objectsInspectorOpenOverlap": { "width": 761, "height": 0, "inspectorHeight": 43.625, "canvasHit": "spatial-canvas" },
+      "objectsTargetMap": { "x": 280, "y": 216.4375, "width": 117.59375, "height": 32, "visibleInChromePanel": true },
+      "objectsBuiltJson": { "x": 245, "y": 186.9375, "width": 753, "height": 24, "text": "19 object hearth-design stamp-target 3,3 3x3 1,1" },
+      "objectsBuiltBuildButton": { "x": 477, "y": 122, "width": 46, "height": 32 },
+      "spacesCanvasInspectorOpen": { "x": 233, "y": 337.59375, "width": 777, "height": 160, "scrollHeight": 412 },
+      "placesCanvas": { "x": 233, "y": 337.59375, "width": 777, "height": 255.96875 }
+    },
+    "1280x800": {
+      "objectsCanvasAfterBuild": { "x": 584.21875, "y": 316.546875, "width": 401.78125, "height": 417.453125 },
+      "objectsBuiltBuildButton": { "x": 477, "y": 122, "width": 46, "height": 32 },
+      "objectsTargetMap": { "x": 280, "y": 221.546875, "width": 112.28125, "height": 32 },
+      "cjkLabelRects": [
+        { "text": "너비", "width": 26, "height": 19.59375, "lines": 1 },
+        { "text": "높이", "width": 26, "height": 19.59375, "lines": 1 },
+        { "text": "진입 X", "width": 37.859375, "height": 19.59375, "lines": 1 },
+        { "text": "타일셋", "width": 39, "height": 19.59375, "lines": 1 }
+      ],
+      "spaceBuild": {
+        "detached": true,
+        "liveOccurrencesBefore": 0,
+        "visibleAfterBuild": 5,
+        "liveAfterApply": 5,
+        "seed": 19,
+        "destination": { "kind": "new-maps" },
+        "inputText": "19 space room-design new-maps",
+        "canvasAfterBuild": { "width": 401.78125, "height": 539 }
+      },
+      "placeBuild": {
+        "detached": true,
+        "sourceId": "nested-village-design",
+        "liveOccurrencesBefore": 0,
+        "visibleAfterBuild": 24,
+        "liveAfterApply": 24,
+        "liveMapsAfterApply": 5,
+        "seed": 19,
+        "destination": { "kind": "new-maps" },
+        "inputText": "19 place nested-village-design new-maps",
+        "canvasAfterBuild": { "width": 401.78125, "height": 539 }
+      }
+    },
+    "1440x900": {
+      "objectsCanvasAfterBuild": { "x": 638.609375, "y": 276.546875, "width": 507.390625, "height": 557.453125 },
+      "objectsBuiltBuildButton": { "x": 754.515625, "y": 82, "width": 46, "height": 32 },
+      "objectsTargetMap": { "x": 280, "y": 181.546875, "width": 114.625, "height": 32 }
+    }
+  },
+  "typing": {
+    "1024x768": {
+      "map": { "expected": "stamp-target", "finalValue": "s", "focusSurvived": false, "ok": false, "error": "focus-lost-after-s" },
+      "seed": { "expected": "19", "finalValue": "", "focusSurvived": false, "ok": false, "error": "focus-lost-before-char after Control+A Backspace" },
+      "proposalReachedHow": "fill-fallback-after-keyboard-loss"
+    },
+    "1280x800": {
+      "map": { "expected": "stamp-target", "finalValue": "s", "focusSurvived": false, "ok": false },
+      "seed": { "ok": false, "focusSurvived": false },
+      "spaceSeed": { "ok": false, "focusSurvived": false },
+      "placeSeed": { "ok": false, "focusSurvived": false }
+    },
+    "1440x900": {
+      "map": { "expected": "stamp-target", "finalValue": "s", "focusSurvived": false, "ok": false },
+      "seed": { "ok": false, "focusSurvived": false }
+    },
+    "cause": "spatialBuildChrome input/change listeners call onChange()/rerender() on every input event, replacing the focused node. Seed Ctrl+A Backspace already detaches before '1'. Map keeps only the first character 's'."
+  },
+  "functional": {
+    "objectBuildApplyAllViewports": true,
+    "objectBuildApplyViaKeyboardOnly": false,
+    "objectBuildDoesNotArmPalette": true,
+    "objectBuildDoesNotMutateLiveOccurrences": true,
+    "spaceDetachedPreviewThenApply1280": true,
+    "placeDetachedPreviewThenApply1280": true,
+    "tabSwitchObjectsSpacesPlaces": true,
+    "realClickHitTestToolbar": true,
+    "realClickHitTestTargetFields": true,
+    "canvasHitTestInspectorOpen1024": true
+  },
+  "dimensions": {
+    "designSystemRealVsFaked": "good",
+    "featuresWork": "bad",
+    "responsiveResize": "good",
+    "alphaTransparency": "good",
+    "visualFidelityToIntent": "good",
+    "cjkPrecision": "good"
+  },
+  "findings": [
+    {
+      "id": "V-INPUT-RERENDER-FOCUS",
+      "tag": "[product]",
+      "severity": "blocking",
+      "dimension": "features / input lifecycle",
+      "what": "Sequential keyboard typing cannot enter seed 19 or multi-character map id stamp-target. Map input keeps 's' then loses focus; seed Backspace already rerenders and drops focus before '1'. Proposal seed 19 / map stamp-target appear only after fill fallback. Producer fill+click hid this.",
+      "where": "spatialBuildChrome.ts seed/map input listeners; spatialObjectCommands.ts onBuildSeed → rerender(); visual-fix-recheck/qa.json typing steps; 1024/1280/1440 objects-targets.png",
+      "fix": "Do not replace the focused input on every input event. Update chrome state without remounting the active field, or restore focus+caret after render."
+    }
+  ],
+  "resolvedOriginal": [
+    {
+      "id": "V-1024-CANVAS-COLLAPSE",
+      "was": "objects canvas 24px / spaces 69px, elementFromPoint hit inspector",
+      "now": "objects inspector-open canvas 160px hit-test spatial-canvas overlap height 0; closed 281px; spaces inspector-open 160px (was 69)"
+    },
+    {
+      "id": "V-1024-TARGET-OFFSCREEN",
+      "was": "map input y=726 outside 142px drawer",
+      "now": "시공 대상 in chrome panel; map y=216.4 visible and locator.click hit-test matches"
+    },
+    {
+      "id": "V-JSON-TOOLBAR",
+      "was": "raw JSON 392x112 stretching 시공 to 111.9px",
+      "now": "24px nowrap disclosure '19 object hearth-design stamp-target 3,3 3x3 1,1'; 시공 46x32"
+    },
+    {
+      "id": "V-CJK-FIELD-WRAP",
+      "was": "너비/높이 13x39 two lines, 진입 X 13x58",
+      "now": "너비/높이 26x19.59 lines=1; 진입 X 37.86x19.59 lines=1"
+    },
+    {
+      "id": "V-SELECTOR-GROUP",
+      "was": "seed in comma group with mode/chip",
+      "now": ".spatial-build-seed-field own rules; 시공 stays in .spatial-action group"
+    }
+  ],
+  "blocking": [
+    "V-INPUT-RERENDER-FOCUS"
+  ],
+  "goodKeep": [
+    "1024 inspector-open objects canvas is a usable 160px hearth, not a 24px strip; hit-test hits spatial-canvas.",
+    "시공 대상 map/rect/entry live in the chrome panel at y≈216 and are clickable at 1024/1280/1440 with inspector open and after Build.",
+    "Frozen input is a 24px nowrap summary plus data-* attrs; toolbar 시공/시드/적용 stay 32px.",
+    "Korean field labels stay one line.",
+    "Canonical object Build seed 19 dest stamp-target 3,3 3x3 entry 1,1 is detached (live 0) then Apply selects the instance at all three viewports. Palette stamp stays null.",
+    "Independent 1280 SPACE Build of room-design destination new-maps is detached (live 0, visible 5) then Apply adopts 5 occurrences.",
+    "Independent 1280 PLACE Build of nested-village-design is detached (live 0, visible 24) then Apply adopts 24 occurrences / 5 maps. Preview shows Outdoor fixture village.",
+    "blankProject autosave console errors remain visible; owned port 32921 released; cache removed; 9888 still foreign MainThread pid 3844652.",
+    "Original VisualVerify.json, source-build-ui-manual-qa.md, and 25 original PNGs were not overwritten."
+  ],
+  "notes": [
+    "1024 속성 drawer is now a ~44px sliver (scrollHeight 612). Targets no longer live there, so this is leftover inspector chrome, not the original offscreen-target bug.",
+    "Dual-oracle subagents were not dispatched: this child has no task tool and is the visual executor. Screenshots were opened and judged here.",
+    "Sibling BoundaryFixVerify is complementary logic, not this visual verdict."
+  ],
+  "dualOracle": "not-dispatched (qa-executor child; screenshots inspected in-session)",
+  "artifactDir": "/home/main/z-project/rpg-zzu-tile-to-world/output/evidence/tile-to-world/source-build-ui/independent/visual-fix-recheck",
+  "cleanup": {
+    "sourceSHA": "2961dbe3b0878ecb06f1412183dbd1440dd63e29",
+    "serversClosed": ["http://127.0.0.1:32921"],
+    "browserClosed": true,
+    "portsReleased": true,
+    "cacheRemoved": true,
+    "cacheDir": "/home/main/z-project/rpg-zzu-tile-to-world/.vite-cache/source-build-ui-fixverify-subSsD",
+    "remoteCalls": 0,
+    "databaseResourcesCreated": 0,
+    "priorEvidencePreserved": true,
+    "shared9888Untouched": true
+  }
+}

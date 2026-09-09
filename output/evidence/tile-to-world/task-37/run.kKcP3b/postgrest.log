@@ -1,0 +1,15 @@
+09/Sep/2026:02:42:34 +0900: Starting PostgREST 13.0.7...
+09/Sep/2026:02:42:34 +0900: API server listening on unix socket "/tmp/spatial-sql-st_01a07acd.cntPi7/postgrest.sock"
+09/Sep/2026:02:42:34 +0900: Successfully connected to PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+09/Sep/2026:02:42:34 +0900: Connection Pool initialized with a maximum size of 1 connections
+09/Sep/2026:02:42:34 +0900: Config reloaded
+09/Sep/2026:02:42:34 +0900: Schema cache queried in 4.3 milliseconds
+09/Sep/2026:02:42:34 +0900: Schema cache loaded 13 Relations, 12 Relationships, 5 Functions, 0 Domain Representations, 4 Media Type Handlers, 499 Timezones
+09/Sep/2026:02:42:34 +0900: Schema cache loaded in 0.6 milliseconds
+- - anon [09/Sep/2026:02:42:34 +0900] "GET /rpc/task20_session HTTP/1.1" 200 85 "" "Bun/1.4.2"
+- - anon [09/Sep/2026:02:42:34 +0900] "POST /projects?on_conflict=project_id HTTP/1.1" 201 0 "" "Bun/1.4.2"
+- - anon [09/Sep/2026:02:42:34 +0900] "DELETE /maps?project_id=eq.task37-audit HTTP/1.1" 204 - "" "Bun/1.4.2"
+- - anon [09/Sep/2026:02:42:34 +0900] "POST /maps?on_conflict=project_id%2Cmap_id HTTP/1.1" 201 0 "" "Bun/1.4.2"
+- - anon [09/Sep/2026:02:42:34 +0900] "DELETE /tilesets?project_id=eq.task37-audit HTTP/1.1" 204 - "" "Bun/1.4.2"
+- - anon [09/Sep/2026:02:42:34 +0900] "POST /tilesets?on_conflict=project_id%2Ctileset_id HTTP/1.1" 201 0 "" "Bun/1.4.2"
+- - anon [09/Sep/2026:02:42:35 +0900] "POST /project_commits HTTP/1.1" 401 99 "" "Bun/1.4.2"

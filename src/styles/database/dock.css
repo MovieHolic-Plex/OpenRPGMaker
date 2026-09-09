@@ -31,3 +31,10 @@
   cursor: default;
   opacity: 0.45;
 }
+
+/* Narrow dock: keep the AI chip on one line so 트 is not orphaned. */
+.database-modal-backdrop.is-docked .database-ai-toggle {
+  flex: 0 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+}

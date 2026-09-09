@@ -37,6 +37,7 @@ import type { GameMap, Project } from "@/project/types";
 import { deterministicRng } from "@/util/rng";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { REPLACE_EXISTING_SCHEMA } from "./schemaShapes";
+import { getCanonicalConcept, placeCanonicalConcept } from "./spatialConceptTools";
 
 const KIT = INTERIOR_ROOM_KIT.kitId;
 
@@ -151,6 +152,7 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
   },
   invalidArgsExample: { query: "여관", mapId: "map_inn_1" },
   run(draft, args): ToolExecResult {
+    if (draft.spatialAuthoring !== undefined) return placeCanonicalConcept(draft, args);
     const query = String(args.query ?? "").trim();
     const mapId = String(args.mapId ?? "").trim();
     if (!query) throw new ToolError("query 가 비어 있다 — 시설명(여관·상점·대장간)을 넣어라", { code: "invalid-args" });
@@ -389,10 +391,10 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
   },
   invalidArgsExample: { query: "여관" },
   run(draft, args): ToolExecResult {
+    if (draft.spatialAuthoring !== undefined) return getCanonicalConcept(draft, args);
     const tilesetId = args.tilesetId !== undefined ? String(args.tilesetId).trim() : INTERIOR_ROOM_TILESET_ID;
     // Phase 5: 읽기 도구는 쓰지 않는다 — 실외 칩셋의 ensure 빈 배열 쓰기를 건너뛴다.
     // liveBundlesForTileset이 미시드 실외를 []로 읽으므로 동작은 같다.
-    if (tilesetId === INTERIOR_ROOM_TILESET_ID) ensureConceptBundles(draft, tilesetId);
     const query = String(args.query ?? "").trim();
     const vocabulary = conceptVocabulary(interiorVocabFromTileset(draft.tilesets[tilesetId]), INTERIOR_OBJECT_CATALOG);
     const facilities = listLiveConceptFacilityLabels(draft, tilesetId);

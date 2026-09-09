@@ -1,0 +1,14 @@
+monitor_id=mon_3CNJMTNVEWPFVVQN
+{"type":"line","id":"authoring-373418","description":"task11 scoped validation","line":"src/editor/interiorConceptPlan.ts: 0 diagnostics"}
+{"type":"line","id":"authoring-373418","description":"task11 scoped validation","line":"src/editor/interiorPlaceAliases.ts: 0 diagnostics"}
+{"type":"line","id":"authoring-373418","description":"task11 scoped validation","line":"src/editor/spatial/legacyConcepts.ts: 0 diagnostics"}
+{"type":"line","id":"authoring-373418","description":"task11 scoped validation","line":"src/editor/spatial/legacyInteriorPlan.ts: 0 diagnostics"}
+{"type":"line","id":"authoring-373418","description":"task11 scoped validation","line":"test/spatialRoomQualifier.test.ts: 0 diagnostics"}
+{"type":"summary","id":"authoring-373418","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+src/editor/interiorConceptPlan.ts: 0 diagnostics
+src/editor/interiorPlaceAliases.ts: 0 diagnostics
+src/editor/spatial/legacyConcepts.ts: 0 diagnostics
+src/editor/spatial/legacyInteriorPlan.ts: 0 diagnostics
+test/spatialRoomQualifier.test.ts: 0 diagnostics
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

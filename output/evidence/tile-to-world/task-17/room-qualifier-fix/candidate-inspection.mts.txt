@@ -1,0 +1,21 @@
+import { convertLegacySpatialSnapshot } from "./src/project/spatial/legacyImport";
+import { own } from "./src/project/spatial/domain";
+import { preparedProject } from "./test/support/authorHouseFacadeFixture";
+import type { ConceptBundleRecord } from "./src/project/types/conceptBundle";
+
+for (const custom of [true, false]) {
+  const project = preparedProject();
+  if (custom) {
+    const bundle: ConceptBundleRecord = {
+      id: "qualified-facility", label: "Shared Facility",
+      facilities: [{ id: "qualified-facility", label: "Shared Facility", placeIds: ["bedroom"], layout: "row" }],
+      places: [{ id: "bedroom", label: "Shared Room", role: "room", floor: "wood", level: 1 }], things: [],
+    };
+    own(project.tilesets, "easyrpg_chipset_interior").scratchConceptBundles = [bundle];
+    own(project.tilesets, "easyrpg_chipset_world").scratchConceptBundles = [structuredClone(bundle)];
+  }
+  const document = convertLegacySpatialSnapshot(JSON.stringify(project)).raw.spatialAuthoring;
+  const aliases = document.legacyImport.mapping.filter(entry => entry.target.kind === "space" && entry.sourceKey.includes('"bedroom"'));
+  const spaces = Object.values(document.library.spaces).filter(space => space.name === "Shared Room" || aliases.some(entry => entry.target.id === space.id));
+  console.log(JSON.stringify({ custom, aliases, spaces }, null, 2));
+}

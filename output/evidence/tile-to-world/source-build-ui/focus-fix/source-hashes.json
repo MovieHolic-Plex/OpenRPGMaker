@@ -1,0 +1,8 @@
+{
+  "src/editor/panels/spatialBuildChrome.ts": "d030890be7bb0e07c239452e5e9c01cc36e36fb05fa94d0b7cde9f8fac62caab",
+  "src/editor/panels/spatialStage.ts": "44ee6563cacf83bb5b5f5996bf0d7f1b22e64cb5e3cadfb0c739421891f174cd",
+  "src/editor/panels/spatialObjectCommands.ts": "1d8e8239c680e55a6352357cfbbaa5797f1971288999ddb10d52cc44dba3756c",
+  "src/editor/panels/spatialSpaceCommands.ts": "60e2b034d32bf58860b1146db95e0e2aa54015cee2b559767d2556a76e951b16",
+  "src/editor/panels/spatialPlaceCommands.ts": "6d8f9daea55bd057f37156280887ccfc28f57ccf734b0e2a9008b2f5208cc06f",
+  "test/spatialSourceBuildUiFocus.test.ts": "2884b01e8b3215fa86397bb592d2c66dd1d80812b369a923e9d9d6042454af62"
+}

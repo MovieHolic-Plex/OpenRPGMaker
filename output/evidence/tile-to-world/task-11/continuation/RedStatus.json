@@ -1,0 +1,42 @@
+{
+  "task": "AV11-03",
+  "status": "red-confirmed-awaiting-parent-contract-coordination",
+  "worktree": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-preview-continuation-fix",
+  "head": "f9a9ebdfe",
+  "productChanges": 0,
+  "commitsCreated": 0,
+  "proposedContract": "continueDraft(preview: SpatialAuthoringPreview): SpatialAuthoringResult<SpatialAuthoringDraft>",
+  "reason": "Existing createDraft binds only to live state; preview accepts a mutable authored draft plus one operation. Copying a frozen preview into that draft conflates issued derived output with raw writes. Omitting derived output instead discards compile/delete intent. A separate issued continuation capability preserves provenance without changing current createDraft/preview/apply behavior or introducing operation replay.",
+  "proposedSemantics": [
+    "Only the issuing controller may continue its exact frozen preview handle; forged, foreign, stale and already-applied handles reject.",
+    "New detached continuation draft retains original live project fingerprint and uses the genuine frozen preview as its private ownership checkpoint.",
+    "No live apply, history write, fabricated baseline or guard bypass on continuation.",
+    "Subsequent authored changes compare protected fields against the checkpoint; aggregate impact compares final output against the original unchanged live project.",
+    "Existing public createDraft, preview and apply signatures and semantics remain unchanged; helper edit action explicitly obtains the continuation draft."
+  ],
+  "red": {
+    "monitorId": "mon_1P08A683J2BKWR2R",
+    "command": "node /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/authoring-monitor.mjs 'flock /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock timeout 180s node node_modules/vitest/vitest.mjs run test/spatialAuthoringContinuation.test.ts test/spatialAuthoringContinuationSafety.test.ts --maxWorkers=1 --no-file-parallelism --reporter=verbose --reporter=json --outputFile=output/evidence/tile-to-world/task-11/continuation/red.json'",
+    "passed": 5,
+    "failed": 4,
+    "exitCode": 1,
+    "timedOut": false,
+    "cancelled": false,
+    "durationSeconds": 22.89,
+    "failure": "Both exact independent compile/delete continuation cases reject. Extended whole-proposal cases capture code=ownership, message=ownership: Raster edits require the map editor, not a spatial draft.",
+    "controls": "Clone-design/edit preservation, forged maps, forged bindings, copied generated output through a fresh raw draft, and stale direct live mutation controls pass.",
+    "evidence": ["red.log", "red.json"]
+  },
+  "diagnostics": "Both new test files: no LSP diagnostics found.",
+  "size": { "test/spatialAuthoringContinuation.test.ts": 99, "test/spatialAuthoringContinuationSafety.test.ts": 70 },
+  "review": "Each file owns continuation behavior or continuation rejection. Typed fixtures, no new trust boundary, exhaustive switch branches, no type assertions or suppressions, no one-off production helpers, no parameter bloat or negative naming, no production logging. Exact regression assertions remain red, not skipped. Tests run synchronously without sleeps; existing timer scheduling contained with fake timers; factory/history/timers reset after each case.",
+  "sourceSHA256": {
+    "src/editor/panels/spatialAuthoringAccess.ts": "01e04f0bc4abe880898953eab80d92d57a4a1ca09b4cb53b1d698ef9b051c6fd",
+    "src/editor/spatial/actions.ts": "52ff1c9c59f9054a4f932404d1eba8caf54939ad151925d1c0ec05f872b43faf",
+    "src/editor/spatial/preview.ts": "f733c32a0d6c4d44c63c1b647200d6324be07d230d3de71e03c84a3fe6c79464",
+    "test/spatialAuthoringContinuation.test.ts": "f6cc11def281710da637ed2f2479481b47c9dd7fe568023527d64449d53f302f",
+    "test/spatialAuthoringContinuationSafety.test.ts": "4f90e54a17c2623589885b13a2fc70f5cf1c23d2d3612e4a294da145d258fb46"
+  },
+  "limits": "No product fix, GREEN, build, broad suite, browser acceptance or commit claimed. Inherited storeMutationInstrumentation activateSpatialAuthoring allow-list failure remains disclosed and was not rerun. AV11-01 refresh and AV11-02 reentrancy remain separately owned; their files were not modified.",
+  "cleanup": "Temporary dependency symlink and debug journal removed at coordination handoff. Monitor exited and disposed. Retain only two proposed permanent regression sources and run-owned evidence. No DB writes or extra workers."
+}

@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "taskId": "st_01a08184",
+  "finding": "AV11-01",
+  "status": "scoped-fix-verified",
+  "acceptanceLimit": "Not independent approval or whole-task11 acceptance. AV11-02 and AV11-03 are outside this lane.",
+  "source": {
+    "worktree": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix",
+    "branch": "fix/spatial-refresh-identity",
+    "baseCommit": "3a7c4a31d962023f49f57fb74f876b7e12755023",
+    "baselineRefreshSHA256": "834e62c56d76bcb986f5c2d7e67e70bee4e9d0b9e7d030cd6b2a4a391d6f8faa",
+    "fixedRefreshSHA256": "36c5eb8698b0d65b0dcbce7dea30d1b5de2aa05fe96542247956035d8cfeec26",
+    "fixedRefreshGitBlob": "91c2ccdf2fcd41037b5716084481b5c567ca34ec",
+    "regressionSHA256": "0206fa714bf295f61101a0cd6cfb8554164c759f2567ea33c24a2d60539ceef3",
+    "regressionGitBlob": "de2020b270bd37de00ef3a1de99cd69885b99346",
+    "unchangedRefreshTestSHA256": "69348aee8ecd68586422144d514f80e2fb7c6e9cb01a14d5ecdfe9e05def16d7",
+    "wikiSHA256": "2782c397b81dbc0f969aeb04e3bce64c2887c83e60ae656b8764668098c95d61",
+    "productFilesChanged": ["src/editor/spatial/authoringRefresh.ts"],
+    "testFilesAdded": ["test/spatialAuthoringRefreshCollision.test.ts"],
+    "documentationChanged": ["openwiki/spatial-authoring-controller.md"]
+  },
+  "rootCause": "Missing entries adopted constructor IDs without reserving identities of retained entries visited later. Both mapped to the same key and Object.fromEntries overwrote the missing repetition. A missing parent could also match the retained parent's ID and steal its descendant associations. Sparse validation permits the incomplete output.",
+  "fix": "Reserve current design, occurrence and port identities plus fresh connection identities before mapping. Allocate missing occurrence/port IDs with a deterministic collision-checked suffix, registering every allocation. Retained associations keep their IDs unchanged. A newly allocated parent cannot equal any persisted occurrence ID, so only genuinely retained lineage can match descendants. No opaque ID parsing, gap preservation, or rejection workaround.",
+  "execution": {
+    "runtime": "Node v24.11.1 / Vitest 3.2.4 / linux-x64",
+    "monitor": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/authoring-monitor.mjs",
+    "lock": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock",
+    "invocationPattern": "node <monitor> 'flock <lock> timeout 180s <command>' > <log> 2>&1",
+    "testTimeoutMs": 15000,
+    "hookTimeoutMs": 90000,
+    "maxWorkers": 1,
+    "fileParallelism": false,
+    "runs": [
+      {
+        "phase": "exact-red",
+        "source": "baseline",
+        "monitorId": "mon_ZF894X3HK4ZMZ1X3",
+        "command": "node node_modules/vitest/vitest.mjs run test/spatialAuthoringRefreshCollision.test.ts --maxWorkers=1 --no-file-parallelism --reporter=verbose --reporter=json --outputFile=output/evidence/tile-to-world/task-11/refresh-identity/red.json",
+        "exitCode": 1,
+        "passed": 2,
+        "failed": 1,
+        "output": "expected [ 1 ] to deeply equal [ +0, 1 ]",
+        "log": "red.log",
+        "results": "red.json",
+        "binding": "Before adding the two transitive collision cases; exact regression and ordinary/transitive controls unchanged in final source. Product fix was not yet written."
+      },
+      {
+        "phase": "exact-green",
+        "source": "fixedRefreshSHA256",
+        "monitorId": "mon_VEPWRPKXASKXR8PP",
+        "command": "node node_modules/vitest/vitest.mjs run test/spatialAuthoringRefreshCollision.test.ts --maxWorkers=1 --no-file-parallelism --reporter=verbose --reporter=json --outputFile=output/evidence/tile-to-world/task-11/refresh-identity/green.json",
+        "exitCode": 0,
+        "passed": 3,
+        "failed": 0,
+        "log": "green.log",
+        "results": "green.json"
+      },
+      {
+        "phase": "transitive-baseline-toggle-red",
+        "source": "baseline",
+        "monitorId": "mon_KT3W24XVGDYXTSN6",
+        "command": "node node_modules/vitest/vitest.mjs run test/spatialAuthoringRefreshCollision.test.ts -t \"recreates an entire missing subtree\" --maxWorkers=1 --no-file-parallelism --reporter=verbose --reporter=json --outputFile=output/evidence/tile-to-world/task-11/refresh-identity/red-transitive.json",
+        "exitCode": 1,
+        "passed": 0,
+        "failed": 2,
+        "unselectedByNameFilter": 3,
+        "outputs": ["expected [ 'nested-village', ...(17) ] to have a length of 24 but got 18", "invalid: duplicate global ID port:50:child:30:child:14:nested-village3:inn:07:floor-1:05:entry"],
+        "log": "red-transitive.log",
+        "results": "red-transitive.json",
+        "binding": "Final regression bytes; temporarily restored exact baseline refresh via git show, with EXIT trap restoring fixed product. No permanent skips or ignored assertions."
+      },
+      {
+        "phase": "final-focused-green",
+        "source": "fixedRefreshSHA256 + regressionSHA256 + unchangedRefreshTestSHA256",
+        "monitorId": "mon_7CYTZATES8G1H4BF",
+        "command": "node node_modules/vitest/vitest.mjs run test/spatialAuthoringRefreshCollision.test.ts test/spatialAuthoringRefresh.test.ts --maxWorkers=1 --no-file-parallelism --reporter=verbose --reporter=json --outputFile=output/evidence/tile-to-world/task-11/refresh-identity/green-final.json",
+        "exitCode": 0,
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0,
+        "durationSeconds": 24.73,
+        "log": "green-final.log",
+        "results": "green-final.json"
+      },
+      {
+        "phase": "scoped-types",
+        "monitorId": "mon_FKF01WMJQVBNZ1AK",
+        "command": "node node_modules/typescript/bin/tsc --noEmit -p output/evidence/tile-to-world/task-11/refresh-identity/tsconfig.json",
+        "exitCode": 0,
+        "log": "typecheck.log",
+        "config": "tsconfig.json"
+      }
+    ],
+    "allRunsTimedOut": false,
+    "allRunsCancelled": false,
+    "timingDiscipline": "Real synchronous controller/compiler/store/history and IO. Existing timeout/interval scheduling contained with fake timers, not time advancement. No sleeps, polling or delayed assertions. No dependency mocks; remote persistence disabled before fixtures."
+  },
+  "proved": [
+    "Exact seed-7 AV11-01 input passes checkedDocument, compileSpatialOccurrence and deserialize before store adoption.",
+    "Compiled refresh preview contains beds parentSlot indexes [0,1] with distinct IDs; index1 preserves the freed index0 ID as its opaque retained identity.",
+    "Two previews from the same draft and request are equal and leave live store unchanged.",
+    "Real controller apply adopts the exact preview; subsequent deserialize preserves both indexes and the complete spatial document.",
+    "Ordinary sparse refresh still restores both repetitions.",
+    "Transitive occurrence collision reconstructs 24 occurrences rather than losing six, retaining every surviving descendant and port association.",
+    "Transitive port collision preserves the opaque retained port while allocating a distinct missing port; valid input is no longer rejected.",
+    "Opaque nested-place control preserves all IDs and port associations while updating transitive frozen source revisions.",
+    "All four existing refresh tests pass unchanged, including quantity reduction, nested refresh, incoming overview cleanup and obsolete bound port removal."
+  ],
+  "diagnostics": {
+    "refresh": "No diagnostics found on both requests.",
+    "testInitial": "No diagnostics found.",
+    "testFinal": "Timed out waiting for fresh diagnostics within existing 3000ms tool limit. Not retried or relabeled clean; final scoped tsc includes this test and passed."
+  },
+  "architecturalReview": {
+    "pureLOC": { "authoringRefresh.ts": 84, "spatialAuthoringRefreshCollision.test.ts": 109, "spatial-authoring-controller.md": 108, "tsconfig.json": 9 },
+    "singleResponsibility": "Refresh identity reconciliation; regression owns collision behavior.",
+    "boundaryPurity": "Existing checkedDocument boundary preserved; allocator consumes branded SpatialId values.",
+    "variants": "No new tagged-variant discrimination.",
+    "escapeHatches": "None added.",
+    "defensiveLayers": "None added; reservation is the allocation invariant, not a post-write check.",
+    "helpers": "One local allocator reused for occurrence and port IDs; no new helper module.",
+    "tests": "Exact occurrence loss plus transitive occurrence/port cases fail against baseline and pass with fixed source.",
+    "parameters": "Existing refresh has two arguments; local allocator has one.",
+    "redundantVerification": "No production post-write or post-delete queries added. Test assertions observe public transaction outcomes.",
+    "naming": "Positive reserved/allocate names.",
+    "logging": "No logging or error-boundary changes. Existing project practice retained."
+  },
+  "inheritedFailures": [
+    { "test": "test/storeMutationInstrumentation.test.ts", "recordedOutput": "unexpected method activateSpatialAuthoring: expected [ 'activateSpatialAuthoring' ] to deeply equal []", "disposition": "Previously recorded unchanged failure; not rerun, modified or relabeled green." }
+  ],
+  "limits": [
+    "Only the refresh domain and its public controller/compile/apply/IO seams were exercised. No claim of browser, CSS, UI, live persistence or full integration approval.",
+    "No broad suite or build rerun, per user-approved execution policy; lead owns combined integration validation.",
+    "No actions.ts, preview.ts, store/history, UI helpers or other worker files changed."
+  ],
+  "cleanup": "Temporary dependency symlink, baseline-toggle backup and debug journal removed before commit. Monitor processes exited, cancelled=false, timedOut=false. Only scoped source/test/wiki and retained evidence staged. No dependency install, DB write, push, PR or merge."
+}

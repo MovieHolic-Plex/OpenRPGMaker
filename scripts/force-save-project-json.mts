@@ -1,7 +1,8 @@
-/** JSON 프로젝트를 Supabase에 전체 업서트 (map-patch conflict 우회). */
+/** Legacy-only JSON replacement. Never graft a freshly read canonical token onto an old file. */
 import fs from "node:fs";
-import { loadProjectFromSupabase, saveProjectToSupabase } from "../src/project/supabaseProjectSync.ts";
-import type { Project } from "../src/project/types.ts";
+import { loadProjectFromSupabase, loadProjectSnapshotFromSupabase, saveProjectToSupabase } from "../src/project/supabaseProjectSync.ts";
+import { ProjectRoutingError } from "../src/project/spatial/saveRouting";
+import { deserialize } from "../src/project/io";
 
 function loadEnv(): Record<string, string> {
   const env: Record<string, string> = {};
@@ -20,7 +21,11 @@ const config = {
   anonKey: env.VITE_SUPABASE_ANON_KEY!,
   projectId,
 };
-const project = JSON.parse(fs.readFileSync(projectPath, "utf8")) as Project;
+const project = deserialize(fs.readFileSync(projectPath, "utf8"));
+const snapshot = await loadProjectSnapshotFromSupabase(config);
+if (snapshot?.authority.mode === "canonical" || Object.hasOwn(project, "spatialAuthoring")) {
+  throw new ProjectRoutingError("authority-required", "This legacy force-save utility cannot publish canonical files. Load and edit with retained authority or explicitly create a new target.");
+}
 console.log("save", projectPath, "→", projectId, project.meta?.title);
 const saved = await saveProjectToSupabase(project, config);
 console.log("saved", saved);

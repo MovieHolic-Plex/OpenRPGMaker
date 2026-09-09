@@ -1,0 +1,6 @@
+33426e475805cf51329f0a9a65f5bff633ebb271d6cbdeb46952a26764d04734  output/evidence/tile-to-world/manual-build-core/independent/AdversarialVerify.json
+d0fecd15e9726737ca35a50b665b0d899cb7c1de3433af203d67d118f0610255  output/evidence/tile-to-world/manual-build-core/independent/adversarial.config.ts
+202da4f8e8cbc6a171ce994fd5024a170a3b5c86bed9d9bfe500eda42bada759  output/evidence/tile-to-world/manual-build-core/independent/adversarial.test.ts
+9b192be912ec5237a8c4472bb25c4b7ebbd0b51b0de4c447e2cd79cfac15499a  output/evidence/tile-to-world/manual-build-core/independent/probe-monitor.log
+df8f03f85906c532ec0d3f3a81ccf8d858d5f6be9c7f252917b085386dd96d93  output/evidence/tile-to-world/manual-build-core/independent/probe-results.json
+cdd7287b12b47c15419f28a18cc59c1dee656dec1bc38129523ee99aa9641097  output/evidence/tile-to-world/manual-build-core/independent/superseded-handoff-observation.json

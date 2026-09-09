@@ -1,0 +1,122 @@
+monitor_id=mon_065A47997NGRMB7J
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialRoomQualifier.test.ts test/spatialLegacyTools.test.ts test/interiorConceptRoutes.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-room-qualifier-fix"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts (32 tests) 15551ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is Shared Room  805ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is shared-room-tag  624ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is bedroom  726ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > foreign-first=true > binds an exact interior ID when same-atlas aliases are ambiguous  455ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is Shared Room  563ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is shared-room-tag  539ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is bedroom  519ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > foreign-first=false > binds an exact interior ID when same-atlas aliases are ambiguous  427ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is Shared Room  488ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is shared-room-tag  401ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is bedroom  426ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > preserves the atlas error when an exact foreign ID is requested  426ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > native origin=user > rejects native-plus-mapped ambiguity when the query is Shared Room  436ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > native origin=user > rejects native-plus-mapped ambiguity when the query is shared-room-tag  492ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > native origin=user > rejects native-plus-mapped ambiguity when the query is bedroom  485ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > native origin=user > binds a native source when its alias is unique  460ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > native origin=ai > rejects native-plus-mapped ambiguity when the query is Shared Room  431ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > native origin=ai > rejects native-plus-mapped ambiguity when the query is shared-room-tag  457ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > native origin=ai > rejects native-plus-mapped ambiguity when the query is bedroom  514ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > native origin=ai > binds a native source when its alias is unique  469ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > native origin=builtin > rejects native-plus-mapped ambiguity when the query is Shared Room  475ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > native origin=builtin > rejects native-plus-mapped ambiguity when the query is shared-room-tag  438ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > native origin=builtin > rejects native-plus-mapped ambiguity when the query is bedroom  463ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > native origin=builtin > binds a native source when its alias is unique  473ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > binds a layout-context room when its exact ID is requested  507ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > does not revive a deleted original when the query is Shared Room  402ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > does not revive a deleted original when the query is shared-room-tag  408ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > does not revive a deleted original when the query is bedroom  411ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > uses the existing house shorthand when default bedroom receipts are reversed  477ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > deduplicates an original when its name, tag and receipt alias all match  400ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > honors an exact ID when an earlier native label has the same spelling  468ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > uses the default atlas when binding wings by plan theme  469ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":" ✓ test/spatialLegacyTools.test.ts (9 tests) 15976ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs  765ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > places canonical sources without reviving retired furniture  2685ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions  477ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade  3168ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > builds village-linked interiors from the same canonical frozen source  1755ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > authors a village through the registered facade with canonical interiors  5020ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > rejects disconnected canonical house interiors without publishing partial maps  1568ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections  416ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts (14 tests) 2871ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > author_house preserves shipped inn flights and connects only the authored descent on each floor  680ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > author_house uses edited facility layout, objects, and keeps its return transfer  333ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > re-furnishing a room replaces only its generated interactions without duplicate ids  579ms"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":" Test Files  3 passed (3)"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"      Tests  55 passed (55)"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   Start at  03:18:15"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":"   Duration  51.35s (transform 9.21s, setup 0ms, collect 15.70s, tests 34.40s, environment 1ms, prepare 270ms)"}
+{"type":"line","id":"authoring-343985","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-343985","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialRoomQualifier.test.ts test/spatialLegacyTools.test.ts test/interiorConceptRoutes.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-room-qualifier-fix
+
+ ✓ test/spatialRoomQualifier.test.ts (32 tests) 15551ms
+   ✓ requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is Shared Room  805ms
+   ✓ requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is shared-room-tag  624ms
+   ✓ requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is bedroom  726ms
+   ✓ requested-atlas canonical room binding > foreign-first=true > binds an exact interior ID when same-atlas aliases are ambiguous  455ms
+   ✓ requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is Shared Room  563ms
+   ✓ requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is shared-room-tag  539ms
+   ✓ requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is bedroom  519ms
+   ✓ requested-atlas canonical room binding > foreign-first=false > binds an exact interior ID when same-atlas aliases are ambiguous  427ms
+   ✓ requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is Shared Room  488ms
+   ✓ requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is shared-room-tag  401ms
+   ✓ requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is bedroom  426ms
+   ✓ requested-atlas canonical room binding > preserves the atlas error when an exact foreign ID is requested  426ms
+   ✓ requested-atlas canonical room binding > native origin=user > rejects native-plus-mapped ambiguity when the query is Shared Room  436ms
+   ✓ requested-atlas canonical room binding > native origin=user > rejects native-plus-mapped ambiguity when the query is shared-room-tag  492ms
+   ✓ requested-atlas canonical room binding > native origin=user > rejects native-plus-mapped ambiguity when the query is bedroom  485ms
+   ✓ requested-atlas canonical room binding > native origin=user > binds a native source when its alias is unique  460ms
+   ✓ requested-atlas canonical room binding > native origin=ai > rejects native-plus-mapped ambiguity when the query is Shared Room  431ms
+   ✓ requested-atlas canonical room binding > native origin=ai > rejects native-plus-mapped ambiguity when the query is shared-room-tag  457ms
+   ✓ requested-atlas canonical room binding > native origin=ai > rejects native-plus-mapped ambiguity when the query is bedroom  514ms
+   ✓ requested-atlas canonical room binding > native origin=ai > binds a native source when its alias is unique  469ms
+   ✓ requested-atlas canonical room binding > native origin=builtin > rejects native-plus-mapped ambiguity when the query is Shared Room  475ms
+   ✓ requested-atlas canonical room binding > native origin=builtin > rejects native-plus-mapped ambiguity when the query is shared-room-tag  438ms
+   ✓ requested-atlas canonical room binding > native origin=builtin > rejects native-plus-mapped ambiguity when the query is bedroom  463ms
+   ✓ requested-atlas canonical room binding > native origin=builtin > binds a native source when its alias is unique  473ms
+   ✓ requested-atlas canonical room binding > binds a layout-context room when its exact ID is requested  507ms
+   ✓ requested-atlas canonical room binding > does not revive a deleted original when the query is Shared Room  402ms
+   ✓ requested-atlas canonical room binding > does not revive a deleted original when the query is shared-room-tag  408ms
+   ✓ requested-atlas canonical room binding > does not revive a deleted original when the query is bedroom  411ms
+   ✓ requested-atlas canonical room binding > uses the existing house shorthand when default bedroom receipts are reversed  477ms
+   ✓ requested-atlas canonical room binding > deduplicates an original when its name, tag and receipt alias all match  400ms
+   ✓ requested-atlas canonical room binding > honors an exact ID when an earlier native label has the same spelling  468ms
+   ✓ requested-atlas canonical room binding > uses the default atlas when binding wings by plan theme  469ms
+ ✓ test/spatialLegacyTools.test.ts (9 tests) 15976ms
+   ✓ legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs  765ms
+   ✓ legacy tools with active canonical designs > places canonical sources without reviving retired furniture  2685ms
+   ✓ legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions  477ms
+   ✓ legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade  3168ms
+   ✓ legacy tools with active canonical designs > builds village-linked interiors from the same canonical frozen source  1755ms
+   ✓ legacy tools with active canonical designs > authors a village through the registered facade with canonical interiors  5020ms
+   ✓ legacy tools with active canonical designs > rejects disconnected canonical house interiors without publishing partial maps  1568ms
+   ✓ legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections  416ms
+ ✓ test/interiorConceptRoutes.test.ts (14 tests) 2871ms
+   ✓ all AI interior routes consume concept bundles > author_house preserves shipped inn flights and connects only the authored descent on each floor  680ms
+   ✓ all AI interior routes consume concept bundles > author_house uses edited facility layout, objects, and keeps its return transfer  333ms
+   ✓ all AI interior routes consume concept bundles > re-furnishing a room replaces only its generated interactions without duplicate ids  579ms
+
+ Test Files  3 passed (3)
+      Tests  55 passed (55)
+   Start at  03:18:15
+   Duration  51.35s (transform 9.21s, setup 0ms, collect 15.70s, tests 34.40s, environment 1ms, prepare 270ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

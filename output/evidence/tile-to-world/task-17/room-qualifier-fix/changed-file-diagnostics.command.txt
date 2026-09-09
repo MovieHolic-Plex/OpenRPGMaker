@@ -1,0 +1,20 @@
+flock /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock timeout 120s node --input-type=module <<'JS'
+import ts from 'typescript';
+const files = ['src/editor/interiorConceptPlan.ts', 'src/editor/interiorPlaceAliases.ts', 'src/editor/spatial/legacyConcepts.ts', 'src/editor/spatial/legacyInteriorPlan.ts', 'test/spatialRoomQualifier.test.ts'];
+const config = ts.readConfigFile('tsconfig.json', ts.sys.readFile);
+if (config.error) throw new Error(ts.flattenDiagnosticMessageText(config.error.messageText, '\n'));
+const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, process.cwd());
+const program = ts.createProgram(files, { ...parsed.options, noEmit: true });
+const diagnostics = [...parsed.errors, ...program.getOptionsDiagnostics()];
+for (const file of files) {
+  const source = program.getSourceFile(file);
+  if (!source) throw new Error(`Missing diagnostic target: ${file}`);
+  const errors = [...program.getSyntacticDiagnostics(source), ...program.getSemanticDiagnostics(source)];
+  diagnostics.push(...errors);
+  console.log(`${file}: ${errors.length} diagnostics`);
+}
+if (diagnostics.length) {
+  console.error(ts.formatDiagnosticsWithColorAndContext(diagnostics, { getCanonicalFileName: file => file, getCurrentDirectory: () => process.cwd(), getNewLine: () => '\n' }));
+  process.exitCode = 1;
+}
+JS

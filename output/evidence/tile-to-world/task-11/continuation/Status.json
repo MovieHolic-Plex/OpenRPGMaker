@@ -1,0 +1,119 @@
+{
+  "task": "AV11-03",
+  "status": "scoped-continuation-fix-verified",
+  "scope": "Common UI helper -> real authoring controller/store/history continuation. Not whole-task11, browser, geography or publication acceptance.",
+  "worktree": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-preview-continuation-fix",
+  "branch": "fix/spatial-preview-continuation",
+  "base": "c9171a810",
+  "baseLineage": "3a7c4a31d + exact shared helper 59cbcde31 as f9a9ebdfe + parent-provided reentrancy 4e0569d61 as c9171a810",
+  "sourceIdentity": "source-files.sha256 binds exact validated product, test and wiki bytes; final commit is reported in the parent authoring-api-ready.json handoff.",
+  "contract": {
+    "approval": "Parent explicitly approved this additive method after reviewing RED evidence and the checkpoint design.",
+    "signature": "continueDraft(preview: SpatialAuthoringPreview): SpatialAuthoringResult<SpatialAuthoringDraft>",
+    "existingPublicMethods": "createDraft, preview, apply, undo and redo retain their signatures and behavior. Preview does not mutate or implicitly advance a draft.",
+    "ownership": "An exact issued frozen preview is held in a controller-private WeakMap as the continuation checkpoint. Its editable copy is returned through a newly issued draft handle. Raw/copied wrappers and copied output do not establish authority.",
+    "baseline": "Continuation preserves the original full live-project and identity fingerprint. Only protected-field comparison uses the genuine immutable checkpoint; final impact compares the complete proposal against the original live project.",
+    "consumption": "Continuation uses the same applied WeakSet guard as apply, including the parent-provided in-flight reservation. Foreign, fabricated, stale, accepted and in-flight previews reject. No apply-path change in this fix.",
+    "helper": "editAuthoringDraft obtains and preserves the new issued continuation handle. Earlier compile/delete/clone results and source edits remain in the detached proposal; no operation replay, automatic acceptance or weakened ownership guard."
+  },
+  "red": {
+    "base": "f9a9ebdfe",
+    "evidence": ["RedStatus.json", "red.log", "red.json"],
+    "logNormalization": "One trailing space in the runner's blank source-excerpt line was removed from red.log after staged diff --check identified it. Failure text, structured monitor lines and red.json are unchanged.",
+    "passed": 5,
+    "failed": 4,
+    "exitCode": 1,
+    "failure": "Two exact AV11-03 cases returned kind:error; extended compile/delete cases captured ownership: Raster edits require the map editor, not a spatial draft.",
+    "reuse": "Exact independent cases remain unchanged. Extended GREEN cases additionally assert redo and post-consumption rejection. New capability tests cover the parent-approved additive contract."
+  },
+  "verification": {
+    "runtime": "Node v24.11.1 / Vitest 3.2.4 / happy-dom / real helper, controller, compiler, store and history",
+    "monitorLauncher": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/authoring-monitor.mjs",
+    "lock": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock",
+    "validatorDeadlineSeconds": 180,
+    "testTimeoutMs": 15000,
+    "workers": 1,
+    "completedPositive": {
+      "monitorId": "mon_RTX30QQ3AAES7XVP",
+      "commandInsideLock": "timeout 180s node node_modules/vitest/vitest.mjs run test/spatialAuthoringContinuation.test.ts --maxWorkers=1 --no-file-parallelism --reporter=verbose --reporter=json --outputFile=output/evidence/tile-to-world/task-11/continuation/green-positive.json",
+      "passed": 5,
+      "failed": 0,
+      "exitCode": 0,
+      "durationSeconds": 18.82,
+      "timedOut": false,
+      "cancelled": false,
+      "evidence": ["green-positive.log", "green-positive.json"]
+    },
+    "completedSafetyAndConsumedGuard": {
+      "monitorId": "mon_KRNT2XGTPGM98A1D",
+      "commandInsideLock": "timeout 180s node node_modules/vitest/vitest.mjs run test/spatialAuthoringContinuationSafety.test.ts test/spatialAuthoringContinuationCapability.test.ts test/spatialAuthoringReentrancy.test.ts --maxWorkers=1 --no-file-parallelism --reporter=verbose --reporter=json --outputFile=output/evidence/tile-to-world/task-11/continuation/green-remaining.json",
+      "passed": 17,
+      "failed": 0,
+      "exitCode": 0,
+      "durationSeconds": 34.13,
+      "timedOut": false,
+      "cancelled": false,
+      "evidence": ["green-remaining.log", "green-remaining.json"]
+    },
+    "distinctCompletedTests": 22,
+    "newContinuationTests": 18,
+    "unchangedConsumedGuardTests": 4,
+    "scopedTypes": {
+      "monitorId": "mon_ZJNQ04K8JM9JYCPY",
+      "commandInsideLock": "timeout 180s node node_modules/typescript/bin/tsc --noEmit -p output/evidence/tile-to-world/task-11/continuation/scoped-tsconfig.json",
+      "exitCode": 0,
+      "timedOut": false,
+      "cancelled": false,
+      "evidence": ["types.log", "scoped-tsconfig.json"]
+    },
+    "diagnostics": "All seven changed TypeScript files: no LSP diagnostics found. git diff --check passed.",
+    "interruptedAttempt": {
+      "monitorId": "mon_H5PY41CX0D6CQQB8",
+      "evidence": "green.log",
+      "commandInsideLock": "timeout 180s node node_modules/vitest/vitest.mjs run test/spatialAuthoringContinuation.test.ts test/spatialAuthoringContinuationSafety.test.ts test/spatialAuthoringContinuationCapability.test.ts test/spatialAuthoringReentrancy.test.ts --maxWorkers=1 --no-file-parallelism --reporter=verbose --reporter=json --outputFile=output/evidence/tile-to-world/task-11/continuation/green.json",
+      "status": "incomplete-not-counted-as-a-completed-run",
+      "observed": "Outer bash tool reported Command timed out after 220 seconds. Log contains seven completed passing test lines but no runner summary, JSON report or monitor exit. The run was interrupted during the capability file. No assertion failure was observed in that partial output.",
+      "recovery": "Same unchanged product and test bytes were checked in two bounded file groups to obtain completed runner exits. No timeout increase, skipped assertion, test suppression, baseline rewrite or broad-suite retry. Both completed groups retain JSON and monitor exit receipts."
+    }
+  },
+  "regressionCoverage": [
+    "Both exact independent compile/delete-preview then ordinary title-edit cases",
+    "Multiple compile/delete continuations preserve earlier source edits and generated/deletion intent without touching live state",
+    "Original complete map/occurrence/event impact survives continuation; one acceptance plus one undo/redo restores exact before/after projects",
+    "Clone-design preview permits editing the new clone and later metadata without replaying the clone or modifying its source",
+    "Manual maps/bindings reject after genuine compilation; exact generated output copied into a fresh raw draft still rejects",
+    "Foreign preview and copied/fabricated checkpoints reject, including modified raster copies",
+    "Editable continuation mutation cannot rewrite its private frozen checkpoint",
+    "Live mutation before continuation and after draft issuance rejects; identical-content project switch rejects by identity",
+    "Accepted changed and no-op previews remain spent; final continued preview cannot be applied or continued again",
+    "Synchronous observer undo cannot continue an in-flight preview; unchanged reentrancy controls remain green"
+  ],
+  "review": {
+    "responsibilities": "actions: capability lifecycle; preview: detached proposal generation; authoringTypes: public contract; spatialAuthoringAccess: UI draft access; each test file owns positive continuation, rejection or capability behavior.",
+    "pureLOC": {
+      "src/editor/spatial/actions.ts": 89,
+      "src/editor/spatial/preview.ts": 61,
+      "src/editor/spatial/authoringTypes.ts": 54,
+      "src/editor/panels/spatialAuthoringAccess.ts": 130,
+      "test/spatialAuthoringContinuation.test.ts": 109,
+      "test/spatialAuthoringContinuationCapability.test.ts": 93,
+      "test/spatialAuthoringContinuationSafety.test.ts": 70,
+      "openwiki/spatial-authoring-controller.md": 125
+    },
+    "boundaryPurity": "Existing typed Project and IO/domain parsers retained. Provenance established only at the controller handle boundary, never inferred from structural equality.",
+    "variantDiscrimination": "New result and field switches are exhaustive with assertNever.",
+    "escapeHatches": "No any, type assertions, non-null assertions or error suppressions added.",
+    "defensiveLayers": "No speculative guard or fallback; checks enforce genuine foreign/stale/consumed handle and protected-field boundaries.",
+    "helpersAndParameters": "No new operation framework or one-off helper; all changed functions retain at most three parameters.",
+    "tests": "Behavior assertions only, no prose pins, sleeps or polling. Real synchronous integration; test timers contain existing scheduling and are reset after each case.",
+    "redundantVerificationAndNaming": "No production post-write rechecks, negative-form names or unrelated refactors introduced.",
+    "logging": "No logger or log/error-boundary changes; existing result conversion reused."
+  },
+  "limits": [
+    "No broad suite, product build, browser/pixel check or DB publication run in this lane. Parent owns combined build and actual panel acceptance under execution-policy.md.",
+    "Parent handles downstream test doubles needing the additive continueDraft method. No consumer mock was weakened here.",
+    "Inherited storeMutationInstrumentation.test.ts activateSpatialAuthoring allow-list failure remains disclosed, not rerun or relabeled.",
+    "authoringRefresh, apply reentrancy internals, store/history, concrete panels and CSS were not edited. AV11-01 and broader task11 acceptance are not claimed by this fix."
+  ],
+  "cleanup": "Temporary dependency symlink and debug journal removed before commit. No surviving lane-owned validation process observed after runs. Completed monitor launchers disposed normally; interrupted attempt remains disclosed. Only scoped source, permanent regressions, wiki and run-owned evidence retained. No DB writes, new dependencies, extra workers, push/PR/merge."
+}

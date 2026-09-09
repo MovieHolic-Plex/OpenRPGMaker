@@ -244,6 +244,10 @@
   color: var(--status-success);
 }
 
+.db-connection-status .db-autosave-state.persistence-mirror-warning {
+  color: var(--status-warning);
+}
+
 .db-connection-status.autosave-error .db-autosave-state {
   color: var(--status-error);
 }

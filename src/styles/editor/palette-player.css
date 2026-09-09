@@ -527,13 +527,14 @@
   line-height: 1.5;
 }
 
-/* 스택 컨테이너가 화면 고정·가운데 정렬을 맡는다. 개별 토스트는 흐름 안에 쌓인다.
+/* 스택은 화면 하단 왼쪽에 쌓인다. 가운데 정렬은 유휴 AI 데크
+   (--ai-float-compact-width 480px, right: var(--space-3)) 와 겹친다.
    column-reverse 라 최신 토스트가 항상 아래(눈이 가는 자리)에 온다. */
 .toast-stack {
   position: fixed;
   bottom: var(--space-4);
-  left: 50%;
-  transform: translateX(-50%);
+  left: var(--space-4);
+  transform: none;
   /* 앱 모달(테스트 플레이 창) 위에 떠야 한다 — 1000 일 때 테스트 플레이 백드롭(1300)에 가려졌다.
      런타임 디버그 막대(60)는 그 백드롭 안에 있어 직접 이긴 것이 아니다. 순서 근거는
      src/styles/tokens.css 의 --z-toast 주석. */
@@ -543,7 +544,9 @@
   align-items: center;
   gap: 8px;
   pointer-events: none;
-  max-width: min(560px, calc(100vw - 32px));
+  /* 유휴 컴포저 열(480px) + 데크 right inset(--space-3) + 스택 left(--space-4) + 간격(--space-2).
+     1024 전용 미디어쿼리는 1280에서 가운데 560px 스택이 컴포저를 덮었다. */
+  max-width: min(560px, calc(100vw - 480px - var(--space-3) - var(--space-4) - var(--space-2)));
 }
 
 .toast {
@@ -561,7 +564,7 @@
   pointer-events: none;
   /* 참조 위치 정보가 붙어 메시지가 길어질 수 있다(fix(db)) — 뷰포트 밖으로 새지 않도록
      너비를 제한하고 2줄까지만 보여준 뒤 자른다. 너비 상한은 스택 컨테이너와 같다. */
-  max-width: min(560px, calc(100vw - 32px));
+  max-width: min(560px, calc(100vw - 480px - var(--space-3) - var(--space-4) - var(--space-2)));
   display: flex;
   align-items: center;
   gap: 10px;

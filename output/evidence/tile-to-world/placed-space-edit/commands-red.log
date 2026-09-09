@@ -1,0 +1,76 @@
+monitor_id=mon_YNK7197NKCGF6VAV
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-space-edit"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":" × test/placedSpaceCommands.test.ts > displays typed missing feedback when an obsolete placed selection is edited 1248ms"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"   → missing: absent"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":" FAIL  test/placedSpaceCommands.test.ts > displays typed missing feedback when an obsolete placed selection is edited"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"SpatialOperationError: missing: absent"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":" ❯ own src/project/spatial/domain.ts:36:34"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"     34| export function own<T>(records: Readonly<Record<string, T>>, id: strin…"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"     35|   const value = Object.hasOwn(records, id) ? records[id] : undefined;"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"     36|   if (value === undefined) throw new SpatialOperationError(\"missing\", …"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"       |                                  ^"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"     37|   return value;"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"     38| }"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":" ❯ patchPlacedSpace src/editor/spatial/placedSpaceEdits.ts:142:22"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":" ❯ patchOccurrenceSpace src/editor/panels/spatialSpaceDraft.ts:100:10"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":" ❯ editSpace src/editor/panels/spatialSpaceDraft.ts:104:35"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":" ❯ src/editor/panels/spatialSpaceCommands.ts:61:33"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":" ❯ editAuthoringDraft src/editor/panels/spatialAuthoringAccess.ts:95:40"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":" ❯ mutateSpaceDraft src/editor/panels/spatialSpaceCommands.ts:52:18"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":" ❯ mutateWorkingSpace src/editor/panels/spatialSpaceCommands.ts:61:3"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":" ❯ test/placedSpaceCommands.test.ts:24:3"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"Serialized Error: { code: 'missing', path: 'absent' }"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"      Tests  1 failed (1)"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"   Start at  06:33:14"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":"   Duration  8.94s (transform 4.81s, setup 0ms, collect 7.04s, tests 1.25s, environment 266ms, prepare 73ms)"}
+{"type":"line","id":"authoring-3460705","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3460705","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-space-edit
+
+ × test/placedSpaceCommands.test.ts > displays typed missing feedback when an obsolete placed selection is edited 1248ms
+   → missing: absent
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/placedSpaceCommands.test.ts > displays typed missing feedback when an obsolete placed selection is edited
+SpatialOperationError: missing: absent
+ ❯ own src/project/spatial/domain.ts:36:34
+     34| export function own<T>(records: Readonly<Record<string, T>>, id: strin…
+     35|   const value = Object.hasOwn(records, id) ? records[id] : undefined;
+     36|   if (value === undefined) throw new SpatialOperationError("missing", …
+       |                                  ^
+     37|   return value;
+     38| }
+ ❯ patchPlacedSpace src/editor/spatial/placedSpaceEdits.ts:142:22
+ ❯ patchOccurrenceSpace src/editor/panels/spatialSpaceDraft.ts:100:10
+ ❯ editSpace src/editor/panels/spatialSpaceDraft.ts:104:35
+ ❯ src/editor/panels/spatialSpaceCommands.ts:61:33
+ ❯ editAuthoringDraft src/editor/panels/spatialAuthoringAccess.ts:95:40
+ ❯ mutateSpaceDraft src/editor/panels/spatialSpaceCommands.ts:52:18
+ ❯ mutateWorkingSpace src/editor/panels/spatialSpaceCommands.ts:61:3
+ ❯ test/placedSpaceCommands.test.ts:24:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'missing', path: 'absent' }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  06:33:14
+   Duration  8.94s (transform 4.81s, setup 0ms, collect 7.04s, tests 1.25s, environment 266ms, prepare 73ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

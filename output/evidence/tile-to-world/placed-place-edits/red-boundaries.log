@@ -1,0 +1,1036 @@
+monitor_id=mon_XE39XDASA9YDSE23
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceBoundaries.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":" ❯ test/placedPlaceBoundaries.test.ts (4 tests | 4 failed) 6935ms"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"   × rejects unsupported facility level 0 without draft or history writes 3100ms"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     → expected { kind: 'error', error: { …(2) } } to match object { kind: 'error', …(1) }"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"(2 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"   × rejects unsupported facility level 4 without draft or history writes 1858ms"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     → expected { kind: 'error', error: { …(2) } } to match object { kind: 'error', …(1) }"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"(2 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"   × reports exact lifecycle impact when inspecting a placed deletion 939ms"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     → expected undefined to deeply equal { occurrenceIds: [ …(19) ], …(5) }"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"   × offers the exact uncompiled clone identity when cloning a frozen placed tree 1036ms"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     → placedPlaceCloneProposal is not a function"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":" FAIL  test/placedPlaceBoundaries.test.ts > rejects unsupported facility level 0 without draft or history writes"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":" FAIL  test/placedPlaceBoundaries.test.ts > rejects unsupported facility level 4 without draft or history writes"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"AssertionError: expected { kind: 'error', error: { …(2) } } to match object { kind: 'error', …(1) }"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"(2 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"\u001b[2m  {\u001b[22m"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"\u001b[2m    \"error\": {\u001b[22m"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"\u001b[32m-     \"detail\": \"floor-limit\",\u001b[39m"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"\u001b[31m+     \"code\": \"invalid\",\u001b[39m"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"\u001b[31m+     \"message\": \"spatialAuthoring.occurrences.child:14:nested-village3:inn:0.snapshot.library.places.nested-inn-design.children[1].level: facility supports floors 1..3\",\u001b[39m"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"\u001b[2m    },\u001b[22m"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"\u001b[2m    \"kind\": \"error\",\u001b[22m"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"\u001b[2m  }\u001b[22m"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":" ❯ test/placedPlaceBoundaries.test.ts:35:18"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     33|     edit: { kind: \"move\", parentId: f.innId, slot: { slotId: spatialId…"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     34|   // Then neither source nor occurrence nor draft nor history is chang…"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     35|   expect(result).toMatchObject({ kind: \"error\", error: { detail: \"floo…"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"       |                  ^"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     36|   expect(f.draft.project).toEqual(before);"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     37|   expect(store.getCurrent()).toEqual(before);"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":" FAIL  test/placedPlaceBoundaries.test.ts > reports exact lifecycle impact when inspecting a placed deletion"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"AssertionError: expected undefined to deeply equal { occurrenceIds: [ …(19) ], …(5) }"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"\u001b[32m- Expected:\u001b[39m "}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"{"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"  \"artifacts\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"connectionIds\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"declared-stairs-1-2\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"contentDigest\": \"4698a809d0181dcdf498ced4f46fe1c69b484543d4bfaf7023894423555a6349\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"eventIds\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-1:0_child:50:child:30:child:14:nested-village3:inn:07:floor-1:06:hearth:0_1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-1:0_child:50:child:30:child:14:nested-village3:inn:07:floor-1:04:beds:0_1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-1:0_child:50:child:30:child:14:nested-village3:inn:07:floor-1:04:beds:1_1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"spatial-transfer:19:declared-stairs-1-2:89:port:72:child:50:child:30:child:14:nested-village3:inn:07:floor-1:09:stairs-up:07:landing\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-1:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"portId\": \"port:50:child:30:child:14:nested-village3:inn:07:floor-1:05:entry\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"x\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 18,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 20,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 0,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 0,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:30:child:14:nested-village3:inn:07:floor-1:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"connectionIds\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"declared-stairs-1-2\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"declared-stairs-2-3\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"contentDigest\": \"51a3af0d1e2b071d0c416d7762390a5f1c2efea2bc5a48bd33d83416a5278941\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"eventIds\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-2:0_child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:hearth:0_1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-2:0_child:50:child:30:child:14:nested-village3:inn:07:floor-2:04:beds:0_1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-2:0_child:50:child:30:child:14:nested-village3:inn:07:floor-2:04:beds:1_1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"spatial-transfer:19:declared-stairs-1-2:86:port:69:child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:stairs:07:landing\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"spatial-transfer:19:declared-stairs-2-3:89:port:72:child:50:child:30:child:14:nested-village3:inn:07:floor-2:09:stairs-up:07:landing\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-2:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"portId\": \"port:50:child:30:child:14:nested-village3:inn:07:floor-2:05:entry\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"x\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 18,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 20,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 0,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 0,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:30:child:14:nested-village3:inn:07:floor-2:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"connectionIds\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"declared-stairs-2-3\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"contentDigest\": \"7cc2d3dd2f925a8ae73213851ed6e263f7b4b9aca3b8bf5fdf33c6f7c32dd363\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"eventIds\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-3:0_child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:hearth:0_1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-3:0_child:50:child:30:child:14:nested-village3:inn:07:floor-3:04:beds:0_1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-3:0_child:50:child:30:child:14:nested-village3:inn:07:floor-3:04:beds:1_1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"spatial-transfer:19:declared-stairs-2-3:86:port:69:child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:stairs:07:landing\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-3:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"portId\": \"port:50:child:30:child:14:nested-village3:inn:07:floor-3:05:entry\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"x\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 18,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 20,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 0,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 0,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:30:child:14:nested-village3:inn:07:floor-3:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"  ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"  \"connections\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"bidirectional\": true,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"from\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-1:09:stairs-up:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"portId\": \"port:72:child:50:child:30:child:14:nested-village3:inn:07:floor-1:09:stairs-up:07:landing\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"id\": \"declared-stairs-1-2\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"to\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:stairs:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"portId\": \"port:69:child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:stairs:07:landing\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"bidirectional\": true,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"from\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-2:09:stairs-up:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"portId\": \"port:72:child:50:child:30:child:14:nested-village3:inn:07:floor-2:09:stairs-up:07:landing\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"id\": \"declared-stairs-2-3\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"to\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:stairs:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"portId\": \"port:69:child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:stairs:07:landing\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"  ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"  \"externalConnectionIds\": [],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"  \"occurrenceIds\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:14:nested-village3:inn:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:30:child:14:nested-village3:inn:07:floor-1:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:30:child:14:nested-village3:inn:07:floor-2:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:30:child:14:nested-village3:inn:07:floor-3:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-1:04:beds:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-1:04:beds:1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-1:06:hearth:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-1:06:stairs:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-1:09:stairs-up:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-2:04:beds:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-2:04:beds:1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:hearth:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:stairs:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-2:09:stairs-up:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-3:04:beds:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-3:04:beds:1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:hearth:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:stairs:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    \"child:50:child:30:child:14:nested-village3:inn:07:floor-3:09:stairs-up:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"  ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"  \"overviewEntries\": [],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"  \"projections\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-1:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": [],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 18,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 20,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 0,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 0,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:14:nested-village3:inn:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-2:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": [],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 18,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 20,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 0,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 0,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:14:nested-village3:inn:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-3:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": [],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 18,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 20,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 0,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 0,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:14:nested-village3:inn:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-1:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": [],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 2,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 9,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-1:04:beds:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-1:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": [],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 2,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 11,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-1:04:beds:1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-1:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": [],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 3,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 3,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 3,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 8,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-1:06:hearth:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-1:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"portId\": \"port:69:child:50:child:30:child:14:nested-village3:inn:07:floor-1:06:stairs:07:landing\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"x\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-1:06:stairs:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-1:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"portId\": \"port:72:child:50:child:30:child:14:nested-village3:inn:07:floor-1:09:stairs-up:07:landing\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"x\": 14,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 14,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-1:09:stairs-up:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-2:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": [],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 2,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-2:04:beds:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-2:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": [],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 2,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 8,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-2:04:beds:1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-2:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": [],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 3,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 3,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 3,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 8,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:hearth:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-2:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"portId\": \"port:69:child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:stairs:07:landing\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"x\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:stairs:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-2:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"portId\": \"port:72:child:50:child:30:child:14:nested-village3:inn:07:floor-2:09:stairs-up:07:landing\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"x\": 14,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 14,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-2:09:stairs-up:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-3:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": [],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 2,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 9,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-3:04:beds:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-3:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": [],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 2,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 11,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 9,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-3:04:beds:1\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-3:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": [],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 3,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 3,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 3,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 8,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:hearth:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-3:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"portId\": \"port:69:child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:stairs:07:landing\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"x\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 10,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:stairs:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"binding\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"kind\": \"projection\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"mapId\": \"spatial:child:30:child:14:nested-village3:inn:07:floor-3:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"ports\": ["}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"portId\": \"port:72:child:50:child:30:child:14:nested-village3:inn:07:floor-3:09:stairs-up:07:landing\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"x\": 14,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"            \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        \"rect\": {"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"height\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"width\": 1,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"x\": 14,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"          \"y\": 15,"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      \"occurrenceId\": \"child:50:child:30:child:14:nested-village3:inn:07:floor-3:09:stairs-up:0\","}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"  ],"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"}"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"\u001b[31m+ Received:\u001b[39m "}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"undefined"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":" ❯ test/placedPlaceBoundaries.test.ts:49:30"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     47|   const impact = query.previewPlaceDelete(project, { cardId: f.innId, …"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     48|   // Then exact occurrence, edge, artifact and projection data reaches…"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     49|   expect(impact?.occurrence).toEqual(expected);"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"       |                              ^"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     50|   expect(expected.connections.length).toBeGreaterThan(0);"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     51| });"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":" FAIL  test/placedPlaceBoundaries.test.ts > offers the exact uncompiled clone identity when cloning a frozen placed tree"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"TypeError: placedPlaceCloneProposal is not a function"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":" ❯ test/placedPlaceBoundaries.test.ts:59:22"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     57|   const rootId = spatialId(\"opaque-selected-clone\");"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     58|   // When the UI clone proposal is executed through the real controlle…"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     59|   const plan = query.placedPlaceCloneProposal(before, { occurrenceId: …"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"       |                      ^"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     60|   const preview = authoringValue(f.controller.preview(f.draft, plan.re…"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"     61|   // Then the UI can select this exact independent, not-yet-compiled r…"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"      Tests  4 failed (4)"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"   Start at  06:28:30"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":"   Duration  18.47s (transform 7.22s, setup 0ms, collect 10.49s, tests 6.94s, environment 305ms, prepare 86ms)"}
+{"type":"line","id":"authoring-3382401","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3382401","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceBoundaries.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit
+
+ ❯ test/placedPlaceBoundaries.test.ts (4 tests | 4 failed) 6935ms
+   × rejects unsupported facility level 0 without draft or history writes 3100ms
+     → expected { kind: 'error', error: { …(2) } } to match object { kind: 'error', …(1) }
+(2 matching properties omitted from actual)
+   × rejects unsupported facility level 4 without draft or history writes 1858ms
+     → expected { kind: 'error', error: { …(2) } } to match object { kind: 'error', …(1) }
+(2 matching properties omitted from actual)
+   × reports exact lifecycle impact when inspecting a placed deletion 939ms
+     → expected undefined to deeply equal { occurrenceIds: [ …(19) ], …(5) }
+   × offers the exact uncompiled clone identity when cloning a frozen placed tree 1036ms
+     → placedPlaceCloneProposal is not a function
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/placedPlaceBoundaries.test.ts > rejects unsupported facility level 0 without draft or history writes
+ FAIL  test/placedPlaceBoundaries.test.ts > rejects unsupported facility level 4 without draft or history writes
+AssertionError: expected { kind: 'error', error: { …(2) } } to match object { kind: 'error', …(1) }
+(2 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "error": {[22m
+[32m-     "detail": "floor-limit",[39m
+[31m+     "code": "invalid",[39m
+[31m+     "message": "spatialAuthoring.occurrences.child:14:nested-village3:inn:0.snapshot.library.places.nested-inn-design.children[1].level: facility supports floors 1..3",[39m
+[2m    },[22m
+[2m    "kind": "error",[22m
+[2m  }[22m
+
+ ❯ test/placedPlaceBoundaries.test.ts:35:18
+     33|     edit: { kind: "move", parentId: f.innId, slot: { slotId: spatialId…
+     34|   // Then neither source nor occurrence nor draft nor history is chang…
+     35|   expect(result).toMatchObject({ kind: "error", error: { detail: "floo…
+       |                  ^
+     36|   expect(f.draft.project).toEqual(before);
+     37|   expect(store.getCurrent()).toEqual(before);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/placedPlaceBoundaries.test.ts > reports exact lifecycle impact when inspecting a placed deletion
+AssertionError: expected undefined to deeply equal { occurrenceIds: [ …(19) ], …(5) }
+
+[32m- Expected:[39m
+{
+  "artifacts": [
+    {
+      "binding": {
+        "connectionIds": [
+          "declared-stairs-1-2",
+        ],
+        "contentDigest": "4698a809d0181dcdf498ced4f46fe1c69b484543d4bfaf7023894423555a6349",
+        "eventIds": [
+          "ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-1:0_child:50:child:30:child:14:nested-village3:inn:07:floor-1:06:hearth:0_1",
+          "ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-1:0_child:50:child:30:child:14:nested-village3:inn:07:floor-1:04:beds:0_1",
+          "ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-1:0_child:50:child:30:child:14:nested-village3:inn:07:floor-1:04:beds:1_1",
+          "spatial-transfer:19:declared-stairs-1-2:89:port:72:child:50:child:30:child:14:nested-village3:inn:07:floor-1:09:stairs-up:07:landing",
+        ],
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-1:0",
+        "ports": [
+          {
+            "portId": "port:50:child:30:child:14:nested-village3:inn:07:floor-1:05:entry",
+            "x": 10,
+            "y": 15,
+          },
+        ],
+        "rect": {
+          "height": 18,
+          "width": 20,
+          "x": 0,
+          "y": 0,
+        },
+      },
+      "occurrenceId": "child:30:child:14:nested-village3:inn:07:floor-1:0",
+    },
+    {
+      "binding": {
+        "connectionIds": [
+          "declared-stairs-1-2",
+          "declared-stairs-2-3",
+        ],
+        "contentDigest": "51a3af0d1e2b071d0c416d7762390a5f1c2efea2bc5a48bd33d83416a5278941",
+        "eventIds": [
+          "ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-2:0_child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:hearth:0_1",
+          "ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-2:0_child:50:child:30:child:14:nested-village3:inn:07:floor-2:04:beds:0_1",
+          "ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-2:0_child:50:child:30:child:14:nested-village3:inn:07:floor-2:04:beds:1_1",
+          "spatial-transfer:19:declared-stairs-1-2:86:port:69:child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:stairs:07:landing",
+          "spatial-transfer:19:declared-stairs-2-3:89:port:72:child:50:child:30:child:14:nested-village3:inn:07:floor-2:09:stairs-up:07:landing",
+        ],
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-2:0",
+        "ports": [
+          {
+            "portId": "port:50:child:30:child:14:nested-village3:inn:07:floor-2:05:entry",
+            "x": 10,
+            "y": 15,
+          },
+        ],
+        "rect": {
+          "height": 18,
+          "width": 20,
+          "x": 0,
+          "y": 0,
+        },
+      },
+      "occurrenceId": "child:30:child:14:nested-village3:inn:07:floor-2:0",
+    },
+    {
+      "binding": {
+        "connectionIds": [
+          "declared-stairs-2-3",
+        ],
+        "contentDigest": "7cc2d3dd2f925a8ae73213851ed6e263f7b4b9aca3b8bf5fdf33c6f7c32dd363",
+        "eventIds": [
+          "ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-3:0_child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:hearth:0_1",
+          "ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-3:0_child:50:child:30:child:14:nested-village3:inn:07:floor-3:04:beds:0_1",
+          "ev_concept_spatial:child:30:child:14:nested-village3:inn:07:floor-3:0_child:50:child:30:child:14:nested-village3:inn:07:floor-3:04:beds:1_1",
+          "spatial-transfer:19:declared-stairs-2-3:86:port:69:child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:stairs:07:landing",
+        ],
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-3:0",
+        "ports": [
+          {
+            "portId": "port:50:child:30:child:14:nested-village3:inn:07:floor-3:05:entry",
+            "x": 10,
+            "y": 15,
+          },
+        ],
+        "rect": {
+          "height": 18,
+          "width": 20,
+          "x": 0,
+          "y": 0,
+        },
+      },
+      "occurrenceId": "child:30:child:14:nested-village3:inn:07:floor-3:0",
+    },
+  ],
+  "connections": [
+    {
+      "bidirectional": true,
+      "from": {
+        "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-1:09:stairs-up:0",
+        "portId": "port:72:child:50:child:30:child:14:nested-village3:inn:07:floor-1:09:stairs-up:07:landing",
+      },
+      "id": "declared-stairs-1-2",
+      "to": {
+        "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:stairs:0",
+        "portId": "port:69:child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:stairs:07:landing",
+      },
+    },
+    {
+      "bidirectional": true,
+      "from": {
+        "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-2:09:stairs-up:0",
+        "portId": "port:72:child:50:child:30:child:14:nested-village3:inn:07:floor-2:09:stairs-up:07:landing",
+      },
+      "id": "declared-stairs-2-3",
+      "to": {
+        "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:stairs:0",
+        "portId": "port:69:child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:stairs:07:landing",
+      },
+    },
+  ],
+  "externalConnectionIds": [],
+  "occurrenceIds": [
+    "child:14:nested-village3:inn:0",
+    "child:30:child:14:nested-village3:inn:07:floor-1:0",
+    "child:30:child:14:nested-village3:inn:07:floor-2:0",
+    "child:30:child:14:nested-village3:inn:07:floor-3:0",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-1:04:beds:0",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-1:04:beds:1",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-1:06:hearth:0",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-1:06:stairs:0",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-1:09:stairs-up:0",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-2:04:beds:0",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-2:04:beds:1",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:hearth:0",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:stairs:0",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-2:09:stairs-up:0",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-3:04:beds:0",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-3:04:beds:1",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:hearth:0",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:stairs:0",
+    "child:50:child:30:child:14:nested-village3:inn:07:floor-3:09:stairs-up:0",
+  ],
+  "overviewEntries": [],
+  "projections": [
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-1:0",
+        "ports": [],
+        "rect": {
+          "height": 18,
+          "width": 20,
+          "x": 0,
+          "y": 0,
+        },
+      },
+      "occurrenceId": "child:14:nested-village3:inn:0",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-2:0",
+        "ports": [],
+        "rect": {
+          "height": 18,
+          "width": 20,
+          "x": 0,
+          "y": 0,
+        },
+      },
+      "occurrenceId": "child:14:nested-village3:inn:0",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-3:0",
+        "ports": [],
+        "rect": {
+          "height": 18,
+          "width": 20,
+          "x": 0,
+          "y": 0,
+        },
+      },
+      "occurrenceId": "child:14:nested-village3:inn:0",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-1:0",
+        "ports": [],
+        "rect": {
+          "height": 2,
+          "width": 1,
+          "x": 9,
+          "y": 10,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-1:04:beds:0",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-1:0",
+        "ports": [],
+        "rect": {
+          "height": 2,
+          "width": 1,
+          "x": 11,
+          "y": 10,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-1:04:beds:1",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-1:0",
+        "ports": [],
+        "rect": {
+          "height": 3,
+          "width": 3,
+          "x": 3,
+          "y": 8,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-1:06:hearth:0",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-1:0",
+        "ports": [
+          {
+            "portId": "port:69:child:50:child:30:child:14:nested-village3:inn:07:floor-1:06:stairs:07:landing",
+            "x": 10,
+            "y": 15,
+          },
+        ],
+        "rect": {
+          "height": 1,
+          "width": 1,
+          "x": 10,
+          "y": 15,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-1:06:stairs:0",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-1:0",
+        "ports": [
+          {
+            "portId": "port:72:child:50:child:30:child:14:nested-village3:inn:07:floor-1:09:stairs-up:07:landing",
+            "x": 14,
+            "y": 15,
+          },
+        ],
+        "rect": {
+          "height": 1,
+          "width": 1,
+          "x": 14,
+          "y": 15,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-1:09:stairs-up:0",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-2:0",
+        "ports": [],
+        "rect": {
+          "height": 2,
+          "width": 1,
+          "x": 10,
+          "y": 10,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-2:04:beds:0",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-2:0",
+        "ports": [],
+        "rect": {
+          "height": 2,
+          "width": 1,
+          "x": 8,
+          "y": 10,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-2:04:beds:1",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-2:0",
+        "ports": [],
+        "rect": {
+          "height": 3,
+          "width": 3,
+          "x": 3,
+          "y": 8,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:hearth:0",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-2:0",
+        "ports": [
+          {
+            "portId": "port:69:child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:stairs:07:landing",
+            "x": 10,
+            "y": 15,
+          },
+        ],
+        "rect": {
+          "height": 1,
+          "width": 1,
+          "x": 10,
+          "y": 15,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:stairs:0",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-2:0",
+        "ports": [
+          {
+            "portId": "port:72:child:50:child:30:child:14:nested-village3:inn:07:floor-2:09:stairs-up:07:landing",
+            "x": 14,
+            "y": 15,
+          },
+        ],
+        "rect": {
+          "height": 1,
+          "width": 1,
+          "x": 14,
+          "y": 15,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-2:09:stairs-up:0",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-3:0",
+        "ports": [],
+        "rect": {
+          "height": 2,
+          "width": 1,
+          "x": 9,
+          "y": 10,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-3:04:beds:0",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-3:0",
+        "ports": [],
+        "rect": {
+          "height": 2,
+          "width": 1,
+          "x": 11,
+          "y": 9,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-3:04:beds:1",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-3:0",
+        "ports": [],
+        "rect": {
+          "height": 3,
+          "width": 3,
+          "x": 3,
+          "y": 8,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:hearth:0",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-3:0",
+        "ports": [
+          {
+            "portId": "port:69:child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:stairs:07:landing",
+            "x": 10,
+            "y": 15,
+          },
+        ],
+        "rect": {
+          "height": 1,
+          "width": 1,
+          "x": 10,
+          "y": 15,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:stairs:0",
+    },
+    {
+      "binding": {
+        "kind": "projection",
+        "mapId": "spatial:child:30:child:14:nested-village3:inn:07:floor-3:0",
+        "ports": [
+          {
+            "portId": "port:72:child:50:child:30:child:14:nested-village3:inn:07:floor-3:09:stairs-up:07:landing",
+            "x": 14,
+            "y": 15,
+          },
+        ],
+        "rect": {
+          "height": 1,
+          "width": 1,
+          "x": 14,
+          "y": 15,
+        },
+      },
+      "occurrenceId": "child:50:child:30:child:14:nested-village3:inn:07:floor-3:09:stairs-up:0",
+    },
+  ],
+}
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/placedPlaceBoundaries.test.ts:49:30
+     47|   const impact = query.previewPlaceDelete(project, { cardId: f.innId, …
+     48|   // Then exact occurrence, edge, artifact and projection data reaches…
+     49|   expect(impact?.occurrence).toEqual(expected);
+       |                              ^
+     50|   expect(expected.connections.length).toBeGreaterThan(0);
+     51| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  test/placedPlaceBoundaries.test.ts > offers the exact uncompiled clone identity when cloning a frozen placed tree
+TypeError: placedPlaceCloneProposal is not a function
+ ❯ test/placedPlaceBoundaries.test.ts:59:22
+     57|   const rootId = spatialId("opaque-selected-clone");
+     58|   // When the UI clone proposal is executed through the real controlle…
+     59|   const plan = query.placedPlaceCloneProposal(before, { occurrenceId: …
+       |                      ^
+     60|   const preview = authoringValue(f.controller.preview(f.draft, plan.re…
+     61|   // Then the UI can select this exact independent, not-yet-compiled r…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  06:28:30
+   Duration  18.47s (transform 7.22s, setup 0ms, collect 10.49s, tests 6.94s, environment 305ms, prepare 86ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

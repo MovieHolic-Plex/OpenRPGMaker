@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "taskId": "st_01a08253",
+  "finding": "T17-AV-4-I1",
+  "verdict": "fixed-backend",
+  "baseCommit": "38020dfa26b58a8623e127d3a96eaf4d15b766e0",
+  "worktree": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-projection-fix",
+  "scope": "Only canonicalRoomAlias production behavior, focused real-binder regression tests, evidence and interior harness wiki note. Whole task17 acceptance remains separate.",
+  "inputs": {
+    "independentReport": "../independent-recheck/AdversarialVerify.json",
+    "independentReproduction": "../independent-recheck/decision-probes.mts:49-76",
+    "policy": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/room-alias-decision.md",
+    "fixture": "Actual preparedProject defaults converted by convertLegacySpatialSnapshot; mapped interior house/bedroom preserved; independent-native-bedroom inserted first with user provenance, name=bedroom and tags=[bedroom]; actual decision-room plan, seed=59, 16x14, room=(3,4,9,6), door=(7,9). Rebuilt through the same fixture factory, not a claim of byte-identical random project metadata.",
+    "assumption": "Apply the parent's explicit rule: shorthand selects among historical mapped sources, not over eligible native source identities. Do not alter other eligibility policy."
+  },
+  "mechanism": {
+    "callChain": ["bindInteriorConceptPlan", "bindCanonicalInteriorPlan", "canonicalRoomAlias"],
+    "before": "preferred.length selected only receipt-qualified sources, hiding eligible native name/tag matches.",
+    "after": "Filter the validated candidate collection once: when preferred exists include qualified IDs OR eligible non-legacy name/tag matches; otherwise retain the original general alias predicate.",
+    "identityDeduplication": "checkedDocument reference validation enforces collection key=id. Filtering that dictionary's values once prevents duplicate IDs even when receipt preference and native name/tag rules both match.",
+    "productionFile": "src/editor/spatial/legacyConcepts.ts",
+    "productionFunction": "canonicalRoomAlias",
+    "productionDiff": "4 added lines, 2 removed lines; all other functions unchanged"
+  },
+  "execution": {
+    "launcher": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/authoring-monitor.mjs",
+    "launchMode": "nohup node launcher '<command>' > evidence/<phase>.log 2>&1 < /dev/null &",
+    "monitorNote": "Existing launcher's static task11 description is historical; child command and cwd identify this run. Completion awaited by its runtime.session.waitExit; registry/runtime disposed in finally.",
+    "lock": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock",
+    "runtime": {"node": "v24.11.1", "vitest": "3.2.4", "workers": 1},
+    "red": {
+      "command": "flock /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock timeout 120s npm test -- test/spatialRoomNativeDefault.test.ts --maxWorkers=1 --minWorkers=1 --reporter=verbose",
+      "monitorId": "mon_22VN92Y883XXMANP",
+      "runs": 1,
+      "exitCode": 1,
+      "timedOut": false,
+      "cancelled": false,
+      "passed": 12,
+      "failed": 9,
+      "durationSeconds": 14.94,
+      "actual": {"code": null, "selectedId": "legacy:[\"easyrpg_chipset_interior\",\"house\",\"place\",\"bedroom\"]"},
+      "expected": {"code": "spatial-ambiguous", "selectedId": null},
+      "nullNote": "Null here represents undefined in the verbatim Vitest output.",
+      "log": "red.log",
+      "sha256": "40ea986d8b7e365f3057097a2ae14700cf13e62ba801f81bcee8a3ea9ceaaed9"
+    },
+    "green": {
+      "command": "flock /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock timeout 120s npm test -- test/spatialRoomNativeDefault.test.ts test/spatialRoomQualifier.test.ts test/interiorConceptRoutes.test.ts --maxWorkers=1 --minWorkers=1 --reporter=verbose",
+      "monitorId": "mon_7GVFKATW58N1AT7R",
+      "runs": 1,
+      "exitCode": 0,
+      "timedOut": false,
+      "cancelled": false,
+      "passed": 67,
+      "failed": 0,
+      "testFiles": 3,
+      "durationSeconds": 42.87,
+      "log": "green.log",
+      "sha256": "2b11da701003268e3f191e3ea7252d123db65892f04488f2ce324f679013e357"
+    },
+    "diagnostics": {
+      "tool": "lsp_diagnostics",
+      "severity": "all",
+      "src/editor/spatial/legacyConcepts.ts": "No diagnostics found",
+      "test/spatialRoomNativeDefault.test.ts": "No diagnostics found"
+    }
+  },
+  "coverage": {
+    "newTests": 21,
+    "redCases": "user/ai/builtin origins crossed with matching name+tag, name only, tag only",
+    "newControls": "Both native and mapped exact IDs, edited preferred original matching both native and receipt rules counted once, unrelated native does not disable shorthand; each tested for all three origins",
+    "retainedControls": "32 unchanged qualifier tests: converted-label identity, both atlas orders, general ambiguity, foreign exact-ID atlas error, default shorthand with reversed receipt/source order, deleted-original exclusion, exact layout-context access, general deduplication, default-atlas wings. 14 unchanged legacy interior-route tests.",
+    "testShape": "Real converter, parser/reference validation and bindInteriorConceptPlan; no mocks, sleeps, polling delays, retries, skipped assertions, timeout inflation or new dependencies. This is backend integration/regression evidence, not browser/provider E2E."
+  },
+  "sourceIdentity": {
+    "redManifest": "red-source.sha256",
+    "greenManifest": "green-source.sha256",
+    "testHashUnchangedAcrossRedGreen": "8b713af519638310df0e17272524f825c2bc14ad588940c2f5c372b6206df64f",
+    "originalEvidenceManifest": "original-artifacts.sha256",
+    "originalEvidenceFilesVerifiedUnchanged": 209
+  },
+  "review": {
+    "singleResponsibility": "Touched function owns room alias selection; new test file owns native/default room binding regression. No neighboring responsibility changed.",
+    "pureLOC": {"src/editor/spatial/legacyConcepts.ts": 133, "test/spatialRoomNativeDefault.test.ts": 67, "openwiki/editor-interior-room-harness.md": 118},
+    "boundaryPurity": "Existing checkedDocument parser/reference boundary retained; no new untrusted inputs.",
+    "variantDiscrimination": "No variant dispatch added; eligibility uses existing non-legacy predicate.",
+    "escapeHatches": "No casts, non-null assertions, any or suppressions added.",
+    "defensiveLayer": "No product defensive checks added; test catch narrows ToolError and rethrows all others.",
+    "helpers": "Only shared fixture and plan constructors, each with multiple test callers.",
+    "tests": "Same test hash fails before resolver change and passes after; actual selected identity exposed in RED.",
+    "parameterBloat": "No function added or modified with more than three parameters.",
+    "redundantVerification": "No product mutations added; test source comparisons assert read-only lookup contract.",
+    "negativeNaming": "None added.",
+    "logging": "No product logging or error boundary changed."
+  },
+  "notRun": ["Parent broad 142-test suite", "Product-wide typecheck", "Build", "Browser/UI", "Provider", "DB/publication", "Push/PR/merge", "Extra workers"],
+  "cleanup": "Owned monitor PIDs 697037 and 719995 exited; their logs report completion and finally-disposal. No debug instrumentation, servers, fixture copies, dependency/config changes or shared exclude changes were created. Temporary journal removed before commit. Original reports are preserved; new evidence is separate."
+}

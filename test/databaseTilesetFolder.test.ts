@@ -52,15 +52,15 @@ describe("Map primary workspaces and preserved legacy renderers", () => {
   it("mounts the primary workspaces without a folder", () => {
     const host = renderHost();
     expect(host.querySelector("[data-testid='db-tileset-folder']")).toBeNull();
-    expect(host.querySelector("[data-testid='db-tab-tilesets']")).not.toBeNull();
-    expect(host.querySelector("[data-testid='db-tab-scratch-concepts']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='db-tab-spatial-tiles']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='db-tab-spatial-places']")).not.toBeNull();
   });
 
   it("primary entries are not indented folder children", () => {
     const host = renderHost();
     for (const testid of [
-      "db-tab-tilesets",
-      "db-tab-scratch-concepts",
+      "db-tab-spatial-tiles",
+      "db-tab-spatial-places",
     ]) {
       expect(host.querySelector(`[data-testid='${testid}']`)?.dataset.folderChild).toBeUndefined();
     }
@@ -68,9 +68,9 @@ describe("Map primary workspaces and preserved legacy renderers", () => {
 
   it("공간 종류를 누르면 전용 워크스페이스가 열린다", () => {
     const host = renderHost();
-    switchDatabaseActiveTab("scratchConcepts", host as unknown as HTMLElement);
-    host.querySelector("[data-testid='db-context-tilesetSpaces']")!.click();
-    expect(getDatabaseActiveTab()).toBe("tilesetSpaces");
+    switchDatabaseActiveTab("tilesetSpaces", host as unknown as HTMLElement);
+    expect(getDatabaseActiveTab()).toBe("spatialSpaces");
+    expect(host.querySelector("[data-testid='spatial-gallery']")).not.toBeNull();
     expect(host.querySelector("[data-testid='tileset-spaces-workspace']")).not.toBeNull();
     expect(host.querySelector("[data-testid='structure-kit-new']")).toBeNull();
     expect(host.querySelector("[data-testid='structure-kit-source-all']")).toBeNull();
@@ -85,6 +85,7 @@ describe("Map primary workspaces and preserved legacy renderers", () => {
 
   it("context return buttons do not add primary keyboard rail entries", () => {
     const host = renderHost();
+    switchDatabaseActiveTab("terrain", host as unknown as HTMLElement);
     const back = host.querySelector("[data-testid='db-context-back']");
     expect(back).not.toBeNull();
     expect(back!.classList.contains("db-tab")).toBe(false);
@@ -94,6 +95,7 @@ describe("Map primary workspaces and preserved legacy renderers", () => {
   it("공간 종류 면의 제목은 「공간 종류」다", () => {
     const host = renderHost();
     switchDatabaseActiveTab("tilesetSpaces", host as unknown as HTMLElement);
+    expect(getDatabaseActiveTab()).toBe("spatialSpaces");
     expect(host.querySelector("[data-testid='tileset-spaces-heading']")?.textContent).toBe("공간 종류");
     expect(host.querySelector("[data-testid='structure-kit-heading']")).toBeNull();
   });
@@ -102,9 +104,8 @@ describe("Map primary workspaces and preserved legacy renderers", () => {
     setSelectedTileset(INTERIOR_ROOM_TILESET_ID);
     const host = renderHost();
     switchDatabaseActiveTab("structureKits", host as unknown as HTMLElement);
+    expect(getDatabaseActiveTab()).toBe("spatialObjects");
     expect(getSelectedTilesetId()).toBe(INTERIOR_ROOM_TILESET_ID);
-    expect(
-      host.querySelector(`[data-testid='structure-kit-tileset-${INTERIOR_ROOM_TILESET_ID}']`)?.classList.contains("active"),
-    ).toBe(true);
+    expect(host.querySelector("[data-testid='spatial-gallery']")).not.toBeNull();
   });
 });

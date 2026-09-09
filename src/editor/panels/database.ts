@@ -47,6 +47,16 @@ import { applyTilesetFolderFacet } from "@/editor/panels/tilesetMetadataEditor";
 import { getSelectedTilesetId, renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
 import { renderScratchConceptTab } from "@/editor/panels/scratchConceptTab";
 import { interiorRoomKindCount, renderTilesetSpacesTab } from "@/editor/panels/tilesetSpacesTab";
+import { renderSpatialAuthoringShell } from "@/editor/panels/spatialShell";
+import {
+  onSpatialTabReveal,
+  rememberLegacySpatialRoute,
+  setSpatialTab,
+  type SpatialShellTab,
+} from "@/editor/panels/spatialAuthoringSession";
+import { bindSpatialAuthoringControllerFactory } from "@/editor/panels/spatialAuthoringAccess";
+import { createSpatialAuthoringController } from "@/editor/spatial/actions";
+import { spatialAllSourceDesignCount } from "@/editor/panels/spatialCatalog";
 import { listUnlabeledTileIds } from "@/editor/panels/tilesetMetadataControls";
 import { renderWorldCanonTab } from "@/editor/panels/databaseWorldCanonView";
 import { renderWorldCodexTab } from "@/editor/panels/databaseWorldCodexView";
@@ -96,7 +106,13 @@ export type DatabaseTab =
   | "variables"
   | "worldCanon"
   | "worldCodex"
-  | "worldGen";
+  | "worldGen"
+  | "spatialTiles"
+  | "spatialObjects"
+  | "spatialSpaces"
+  | "spatialPlaces"
+  | "spatialRegions"
+  | "spatialWorlds";
 
 const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = [
   { id: "overview", label: "개요", testid: "db-tab-overview" },
@@ -135,6 +151,12 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "tilesetSpaces", label: "기존 방 규칙", testid: "db-tab-tileset-spaces" },
   { id: "scratchConcepts", label: "개념 꾸러미", testid: "db-tab-scratch-concepts" },
   { id: "villages", label: "기존 마을 설계", testid: "db-tab-villages" },
+  { id: "spatialTiles", label: "타일", testid: "db-tab-spatial-tiles" },
+  { id: "spatialObjects", label: "오브젝트", testid: "db-tab-spatial-objects" },
+  { id: "spatialSpaces", label: "공간", testid: "db-tab-spatial-spaces" },
+  { id: "spatialPlaces", label: "장소", testid: "db-tab-spatial-places" },
+  { id: "spatialRegions", label: "지역", testid: "db-tab-spatial-regions" },
+  { id: "spatialWorlds", label: "세계", testid: "db-tab-spatial-worlds" },
   { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
   { id: "system", label: "시스템", testid: "db-tab-system" },
   { id: "opening", label: "오프닝", testid: "db-tab-opening" },
@@ -166,25 +188,55 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
     tabs: ["elements", "states", "animations", "battleScreen", "battleCommands"],
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
-  { label: "맵", slug: "world", tabs: ["scratchConcepts", "tilesets"] },
+  { label: "맵", slug: "world", tabs: ["spatialTiles", "spatialObjects", "spatialSpaces", "spatialPlaces", "spatialRegions", "spatialWorlds"] },
   { label: "시스템", slug: "system", tabs: ["commonEvents", "system", "opening", "gameOver", "characterGraphics", "terms", "switches", "variables"] },
 ];
 
-/** Phase 1 changes navigation, not data ownership or legacy route IDs. */
+/** Facet editors hang off the tiles destination. Legacy map routes redirect below. */
 const MAP_PARENT_TAB: Partial<Record<DatabaseTab, DatabaseTab>> = {
-  structureKits: "scratchConcepts",
-  tilesetSpaces: "scratchConcepts",
-  villages: "scratchConcepts",
-  worldGen: "villages",
-  terrain: "tilesets",
-  tilesetAutotile: "tilesets",
-  tilesetUnlabeled: "tilesets",
+  terrain: "spatialTiles",
+  tilesetAutotile: "spatialTiles",
+  tilesetUnlabeled: "spatialTiles",
 };
 
+export const LEGACY_SPATIAL_ROUTE: Partial<Record<DatabaseTab, DatabaseTab>> = {
+  tilesets: "spatialTiles",
+  structureKits: "spatialObjects",
+  tilesetSpaces: "spatialSpaces",
+  scratchConcepts: "spatialPlaces",
+  villages: "spatialPlaces",
+  worldGen: "spatialRegions",
+};
+
+const SHELL_TAB_BY_SPATIAL: Partial<Record<DatabaseTab, SpatialShellTab>> = {
+  spatialTiles: "tiles",
+  spatialObjects: "objects",
+  spatialSpaces: "spaces",
+  spatialPlaces: "places",
+  spatialRegions: "regions",
+  spatialWorlds: "worlds",
+};
+
+const DATABASE_TAB_BY_SHELL: Record<SpatialShellTab, DatabaseTab> = {
+  tiles: "spatialTiles",
+  objects: "spatialObjects",
+  spaces: "spatialSpaces",
+  places: "spatialPlaces",
+  regions: "spatialRegions",
+  worlds: "spatialWorlds",
+};
+
+bindSpatialAuthoringControllerFactory(createSpatialAuthoringController);
+
+export function resolveCanonicalDatabaseTab(tab: DatabaseTab): DatabaseTab {
+  if (tab === "equipment") return "items";
+  return LEGACY_SPATIAL_ROUTE[tab] ?? tab;
+}
+
 export function databaseTabPath(tab: DatabaseTab): readonly DatabaseTab[] {
-  // These IDs are mode-entry aliases, not child editors. Their section can change
-  // locally, so the breadcrumb must not keep naming the original shortcut mode.
-  if (tab === "tilesetAutotile" || tab === "tilesetUnlabeled") return ["tilesets"];
+  const canonical = resolveCanonicalDatabaseTab(tab);
+  if (tab === "tilesetAutotile" || tab === "tilesetUnlabeled") return ["spatialTiles"];
+  if (canonical !== tab) return [canonical];
   const parent = MAP_PARENT_TAB[tab];
   return parent ? [...databaseTabPath(parent), tab] : [tab];
 }
@@ -315,6 +367,7 @@ const DATABASE_ACTIVE_TAB_KEY = "oprn:database.activeTab";
 const DATABASE_COLLAPSED_GROUPS_KEY = "oprn:database.collapsedTabGroups";
 
 let activeTab: DatabaseTab = readStoredActiveTab();
+let spatialDatabaseHost: HTMLElement | null = null;
 
 type DatabaseTabRenderCache = {
   readonly project: Project;
@@ -330,6 +383,19 @@ const tabRenderCaches = new WeakMap<HTMLElement, DatabaseTabRenderCache>();
 // 하는 표면용. DOM 이벤트 대신 순수 Set 인 이유: fake DOM 테스트에는 `document.dispatchEvent`
 // 가 없고, 구독자는 어차피 이 모듈 안의 setter 한 곳만 알면 된다.
 const activeTabListeners = new Set<(tab: DatabaseTab) => void>();
+
+onSpatialTabReveal((tab) => {
+  const requested = DATABASE_TAB_BY_SHELL[tab];
+  if (activeTab === requested) return;
+  activeTab = requested;
+  if (typeof window !== "undefined") window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, activeTab);
+  for (const listener of activeTabListeners) listener(activeTab);
+  const host = spatialDatabaseHost;
+  if (!host?.isConnected) return;
+  const header = host.querySelector(".db-tabs");
+  if (header instanceof HTMLElement) updateTabButtons(header);
+  refreshDatabasePanel(host);
+});
 
 export function subscribeDatabaseActiveTab(listener: (tab: DatabaseTab) => void): () => void {
   activeTabListeners.add(listener);
@@ -355,7 +421,15 @@ export function setDatabaseActiveTab(tab: DatabaseTab): void {
     catalog.subtype = "all";
     setSearchQueryForCollection("items", "");
   }
-  activeTab = tab === "equipment" ? "items" : tab;
+  const requested = tab === "equipment" ? "items" : tab;
+  const legacyOrigin = requested === "tilesetSpaces" ? "tilesetSpaces"
+    : requested === "villages" ? "villages"
+    : requested === "worldGen" ? "worldGen"
+    : null;
+  activeTab = resolveCanonicalDatabaseTab(requested);
+  const shellTab = SHELL_TAB_BY_SPATIAL[activeTab];
+  if (legacyOrigin) rememberLegacySpatialRoute(legacyOrigin);
+  else if (shellTab) setSpatialTab(shellTab);
   if (typeof window !== "undefined") window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, activeTab);
   for (const listener of activeTabListeners) listener(activeTab);
 }
@@ -383,6 +457,7 @@ export function databaseTabLabel(tab: DatabaseTab): string {
 }
 
 export function renderDatabasePanel(container: HTMLElement): void {
+  spatialDatabaseHost = container;
   const cache = tabRenderCaches.get(container);
   if (cache) for (const tab of cache.views.keys()) evictDatabaseTabView(cache, tab);
   clearChildren(container);
@@ -531,6 +606,7 @@ function databaseTabCount(tab: DatabaseTab): number | null {
         .map((def) => def.id)
         .filter((id) => id !== PLAYER_FACTION_ID && id !== DEFAULT_ENEMY_FACTION_ID)).size;
     case "tilesets":
+    case "spatialTiles":
       return Object.keys(project.tilesets).length;
     case "tilesetAutotile": {
       const tileset = project.tilesets[getSelectedTilesetId() ?? ""];
@@ -548,6 +624,16 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       const tileset = project.tilesets[getSelectedTilesetId() ?? ""];
       return tileset?.scratchConceptBundles?.length ?? 0;
     }
+    case "spatialObjects":
+      return spatialAllSourceDesignCount("objects");
+    case "spatialSpaces":
+      return spatialAllSourceDesignCount("spaces");
+    case "spatialPlaces":
+      return spatialAllSourceDesignCount("places");
+    case "spatialRegions":
+      return Object.values(project.spatialAuthoring?.library.regions ?? {}).length;
+    case "spatialWorlds":
+      return Object.values(project.spatialAuthoring?.library.worlds ?? {}).length;
     case "worldCanon":
       return worldCanonHasContent(project.worldCanon) ? 1 : 0;
     case "worldCodex":
@@ -615,10 +701,21 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
   structureKits: "구조물",
   tilesetSpaces: "공간 종류",
   worldGen: "생성 규칙",
+  spatialTiles: "타일셋 통행 지형 tilesets",
+  spatialObjects: "구조물 부품 보관함 오브젝트 structureKits",
+  spatialSpaces: "공간 종류 기존 방 규칙 tilesetSpaces",
+  spatialPlaces: "개념 꾸러미 마을 시설 scratchConcepts villages",
+  spatialRegions: "생성 규칙 지역 worldGen",
+  spatialWorlds: "세계 맵",
 };
 
 function tabMatchesQuery(tab: typeof tabs[number], query: string): boolean {
-  return `${tab.id} ${tab.label} ${LEGACY_TAB_SEARCH[tab.id] ?? ""}`.toLowerCase().includes(query);
+  const exact = tabs.find((entry) => entry.id.toLowerCase() === query);
+  if (exact) return tab.id === exact.id || tab.id === resolveCanonicalDatabaseTab(exact.id);
+  if (tab.id.toLowerCase().startsWith(query)) return true;
+  if (tab.label.toLowerCase().includes(query)) return true;
+  const aliases = (LEGACY_TAB_SEARCH[tab.id] ?? "").toLowerCase().split(/\s+/);
+  return aliases.some((token) => token === query || token.includes(query));
 }
 
 function appendTabSearch(header: HTMLElement, body: HTMLElement, container: HTMLElement): void {
@@ -632,7 +729,11 @@ function appendTabSearch(header: HTMLElement, body: HTMLElement, container: HTML
       if (query) {
         // Secondary destinations exist in search results, not as hidden legacy rail rows.
         for (const tab of tabs) {
-          if (!tabOrder.includes(tab.id) && tabMatchesQuery(tab, query)) {
+          if (
+            !tabOrder.includes(tab.id)
+            && resolveCanonicalDatabaseTab(tab.id) === tab.id
+            && tabMatchesQuery(tab, query)
+          ) {
             appendTabButton(header, body, container, tab, { searchSecondary: true });
           }
         }
@@ -717,13 +818,13 @@ function appendTabButton(
       },
       on: {
         click: () => {
-          if (activeTab === tab.id) return;
-          if (tab.id === "worldGen") resetWorldGenTabViewState();
+          const already = activeTab === tab.id;
+          if (tab.id === "worldGen" && !already) resetWorldGenTabViewState();
           setDatabaseActiveTab(tab.id);
           expandGroupFor(header, tab.id);
           // 탭 헤더/스캐폴드는 유지하고 본문만 다시 그린다(전체 재빌드 회피).
           updateTabButtons(header);
-          renderActiveTab(body, container, { forceFresh: tab.id === "worldGen" });
+          renderActiveTab(body, container, { forceFresh: tab.id === "worldGen" && !already });
         },
       },
     }),
@@ -953,6 +1054,16 @@ function renderActiveTabUnguarded(
     case "tilesetUnlabeled":
       renderTilesetsTab(content, rerender);
       break;
+    case "spatialTiles":
+    case "spatialObjects":
+    case "spatialSpaces":
+    case "spatialPlaces":
+    case "spatialRegions":
+    case "spatialWorlds": {
+      const shellTab = SHELL_TAB_BY_SPATIAL[tab];
+      if (shellTab) renderSpatialAuthoringShell(content, shellTab, rerender);
+      break;
+    }
     case "structureKits":
       renderStructureKitsTab(content, rerender);
       break;
@@ -1054,7 +1165,7 @@ function readStoredActiveTab(): DatabaseTab {
     inventoryCatalogSession().filter = "equipment";
     return "items";
   }
-  return isDatabaseTab(stored) ? stored : "actors";
+  return isDatabaseTab(stored) ? resolveCanonicalDatabaseTab(stored) : "actors";
 }
 
 function isDatabaseTab(value: string | null): value is DatabaseTab {
@@ -1079,7 +1190,7 @@ function renderMapContextNav(tab: DatabaseTab, container: HTMLElement): HTMLElem
   const parent = MAP_PARENT_TAB[tab];
   if (parent) addLink(parent, true);
   // Legacy mode routes are facets of the same tileset workspace, not extra rails.
-  const context = tab === "tilesetAutotile" || tab === "tilesetUnlabeled" ? "tilesets" : tab;
+  const context = tab === "tilesetAutotile" || tab === "tilesetUnlabeled" ? "spatialTiles" : tab;
   for (const [child, owner] of Object.entries(MAP_PARENT_TAB)) {
     if (owner === context && child !== "tilesetAutotile" && child !== "tilesetUnlabeled") {
       addLink(child as DatabaseTab);

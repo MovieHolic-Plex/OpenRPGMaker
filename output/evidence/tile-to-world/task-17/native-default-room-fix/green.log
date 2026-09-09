@@ -1,0 +1,164 @@
+monitor_id=mon_7GVFKATW58N1AT7R
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialRoomNativeDefault.test.ts test/spatialRoomQualifier.test.ts test/interiorConceptRoutes.test.ts --maxWorkers=1 --minWorkers=1 --reporter=verbose"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-projection-fix"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is Shared Room 631ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is shared-room-tag 465ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is bedroom 455ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=true > binds an exact interior ID when same-atlas aliases are ambiguous 438ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is Shared Room 478ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is shared-room-tag 459ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is bedroom 548ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=false > binds an exact interior ID when same-atlas aliases are ambiguous 468ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is Shared Room 420ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is shared-room-tag 468ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is bedroom 425ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > preserves the atlas error when an exact foreign ID is requested 387ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=user > rejects native-plus-mapped ambiguity when the query is Shared Room 408ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=user > rejects native-plus-mapped ambiguity when the query is shared-room-tag 391ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=user > rejects native-plus-mapped ambiguity when the query is bedroom 376ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=user > binds a native source when its alias is unique 389ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=ai > rejects native-plus-mapped ambiguity when the query is Shared Room 403ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=ai > rejects native-plus-mapped ambiguity when the query is shared-room-tag 367ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=ai > rejects native-plus-mapped ambiguity when the query is bedroom 350ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=ai > binds a native source when its alias is unique 388ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=builtin > rejects native-plus-mapped ambiguity when the query is Shared Room 415ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=builtin > rejects native-plus-mapped ambiguity when the query is shared-room-tag 416ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=builtin > rejects native-plus-mapped ambiguity when the query is bedroom 379ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=builtin > binds a native source when its alias is unique 452ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > binds a layout-context room when its exact ID is requested 429ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > does not revive a deleted original when the query is Shared Room 445ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > does not revive a deleted original when the query is shared-room-tag 417ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > does not revive a deleted original when the query is bedroom 471ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > uses the existing house shorthand when default bedroom receipts are reversed 522ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > deduplicates an original when its name, tag and receipt alias all match 406ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > honors an exact ID when an earlier native label has the same spelling 468ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > uses the default atlas when binding wings by plan theme 436ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ] 784ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'bedroom' / [] 539ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ] 565ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > honors exact ID independent-native-bedroom when default and native aliases collide 435ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > honors exact ID legacy:[\"easyrpg_chipset_interior\",\"house\",\"place\",\"bedroom\"] when default and native aliases collide 564ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > deduplicates identity when the preferred source also has native provenance and matching name/tag 507ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > keeps shorthand when a same-atlas native has no matching name or tag 545ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ] 561ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'bedroom' / [] 628ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ] 526ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > honors exact ID independent-native-bedroom when default and native aliases collide 488ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > honors exact ID legacy:[\"easyrpg_chipset_interior\",\"house\",\"place\",\"bedroom\"] when default and native aliases collide 500ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > deduplicates identity when the preferred source also has native provenance and matching name/tag 541ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > keeps shorthand when a same-atlas native has no matching name or tag 511ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ] 536ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'bedroom' / [] 564ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ] 561ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > honors exact ID independent-native-bedroom when default and native aliases collide 473ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > honors exact ID legacy:[\"easyrpg_chipset_interior\",\"house\",\"place\",\"bedroom\"] when default and native aliases collide 464ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > deduplicates identity when the preferred source also has native provenance and matching name/tag 468ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > keeps shorthand when a same-atlas native has no matching name or tag 464ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > author_house preserves shipped inn flights and connects only the authored descent on each floor 758ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > run_interior_room_pipeline records edited concept contents before building 269ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > start_interior_room_session records edited concept contents before building 249ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > author_house uses edited facility layout, objects, and keeps its return transfer 390ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > village-generated interiors consume the same edited bundle 54ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > linked manors use the authored manor and preserve the house fallback for older projects 66ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > linked upper floors and serialized plans keep the authored contents 148ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > unknown facilities expose actual authored source plans for composition 53ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > linking upper floors preserves the staircase drawn by the bundle 52ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > deleted bundles and unknown places cannot silently use legacy furniture 73ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > explicit room and plan materials take precedence over the concept default 41ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > generic generation cannot bypass concept interiors 77ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > re-furnishing a room replaces only its generated interactions without duplicate ids 655ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > new unknown facilities can be built by combining the returned sources 293ms"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":" Test Files  3 passed (3)"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":"      Tests  67 passed (67)"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":"   Start at  03:46:48"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":"   Duration  42.87s (transform 7.90s, setup 0ms, collect 13.23s, tests 28.40s, environment 1ms, prepare 248ms)"}
+{"type":"line","id":"authoring-719995","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-719995","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialRoomNativeDefault.test.ts test/spatialRoomQualifier.test.ts test/interiorConceptRoutes.test.ts --maxWorkers=1 --minWorkers=1 --reporter=verbose
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-projection-fix
+
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is Shared Room 631ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is shared-room-tag 465ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is bedroom 455ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=true > binds an exact interior ID when same-atlas aliases are ambiguous 438ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is Shared Room 478ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is shared-room-tag 459ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is bedroom 548ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=false > binds an exact interior ID when same-atlas aliases are ambiguous 468ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is Shared Room 420ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is shared-room-tag 468ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is bedroom 425ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > preserves the atlas error when an exact foreign ID is requested 387ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=user > rejects native-plus-mapped ambiguity when the query is Shared Room 408ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=user > rejects native-plus-mapped ambiguity when the query is shared-room-tag 391ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=user > rejects native-plus-mapped ambiguity when the query is bedroom 376ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=user > binds a native source when its alias is unique 389ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=ai > rejects native-plus-mapped ambiguity when the query is Shared Room 403ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=ai > rejects native-plus-mapped ambiguity when the query is shared-room-tag 367ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=ai > rejects native-plus-mapped ambiguity when the query is bedroom 350ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=ai > binds a native source when its alias is unique 388ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=builtin > rejects native-plus-mapped ambiguity when the query is Shared Room 415ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=builtin > rejects native-plus-mapped ambiguity when the query is shared-room-tag 416ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=builtin > rejects native-plus-mapped ambiguity when the query is bedroom 379ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > native origin=builtin > binds a native source when its alias is unique 452ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > binds a layout-context room when its exact ID is requested 429ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > does not revive a deleted original when the query is Shared Room 445ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > does not revive a deleted original when the query is shared-room-tag 417ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > does not revive a deleted original when the query is bedroom 471ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > uses the existing house shorthand when default bedroom receipts are reversed 522ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > deduplicates an original when its name, tag and receipt alias all match 406ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > honors an exact ID when an earlier native label has the same spelling 468ms
+ ✓ test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > uses the default atlas when binding wings by plan theme 436ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ] 784ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'bedroom' / [] 539ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ] 565ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > honors exact ID independent-native-bedroom when default and native aliases collide 435ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > honors exact ID legacy:["easyrpg_chipset_interior","house","place","bedroom"] when default and native aliases collide 564ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > deduplicates identity when the preferred source also has native provenance and matching name/tag 507ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > keeps shorthand when a same-atlas native has no matching name or tag 545ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ] 561ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'bedroom' / [] 628ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ] 526ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > honors exact ID independent-native-bedroom when default and native aliases collide 488ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > honors exact ID legacy:["easyrpg_chipset_interior","house","place","bedroom"] when default and native aliases collide 500ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > deduplicates identity when the preferred source also has native provenance and matching name/tag 541ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > keeps shorthand when a same-atlas native has no matching name or tag 511ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ] 536ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'bedroom' / [] 564ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ] 561ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > honors exact ID independent-native-bedroom when default and native aliases collide 473ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > honors exact ID legacy:["easyrpg_chipset_interior","house","place","bedroom"] when default and native aliases collide 464ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > deduplicates identity when the preferred source also has native provenance and matching name/tag 468ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > keeps shorthand when a same-atlas native has no matching name or tag 464ms
+ ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > author_house preserves shipped inn flights and connects only the authored descent on each floor 758ms
+ ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > run_interior_room_pipeline records edited concept contents before building 269ms
+ ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > start_interior_room_session records edited concept contents before building 249ms
+ ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > author_house uses edited facility layout, objects, and keeps its return transfer 390ms
+ ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > village-generated interiors consume the same edited bundle 54ms
+ ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > linked manors use the authored manor and preserve the house fallback for older projects 66ms
+ ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > linked upper floors and serialized plans keep the authored contents 148ms
+ ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > unknown facilities expose actual authored source plans for composition 53ms
+ ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > linking upper floors preserves the staircase drawn by the bundle 52ms
+ ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > deleted bundles and unknown places cannot silently use legacy furniture 73ms
+ ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > explicit room and plan materials take precedence over the concept default 41ms
+ ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > generic generation cannot bypass concept interiors 77ms
+ ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > re-furnishing a room replaces only its generated interactions without duplicate ids 655ms
+ ✓ test/interiorConceptRoutes.test.ts > all AI interior routes consume concept bundles > new unknown facilities can be built by combining the returned sources 293ms
+
+ Test Files  3 passed (3)
+      Tests  67 passed (67)
+   Start at  03:46:48
+   Duration  42.87s (transform 7.90s, setup 0ms, collect 13.23s, tests 28.40s, environment 1ms, prepare 248ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

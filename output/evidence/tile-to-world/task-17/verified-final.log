@@ -1,0 +1,94 @@
+monitor_id=mon_2M5YV64K57YRXC89
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialTools.test.ts test/spatialAiContext.test.ts test/spatialToolAcceptance.test.ts test/spatialLegacyTools.test.ts"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":" ✓ test/spatialAiContext.test.ts (1 test) 134ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":" ✓ test/spatialToolAcceptance.test.ts (7 tests) 8103ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > accepts the authored source in one reversible transaction  2019ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live source before any publication  1231ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live map before any publication  1225ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live identity before any publication  1112ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a forged project snapshot even when its spatial document is unchanged  675ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects map tampering after a valid tool proposal was issued  890ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a stale generic map proposal in canonical mode  949ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":" ✓ test/spatialTools.test.ts (13 tests) 8200ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > changes only the source when a revision is explicitly replaced  755ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > compiles only on the detached draft when an issued preview is applied  1153ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects forged preview acceptance without mutation  845ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects stale preview acceptance without mutation  1050ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects foreign preview acceptance without mutation  759ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects spent preview acceptance without mutation  1463ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > retains preview lineage when the normal assistant draft is cloned  1143ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":" ✓ test/spatialLegacyTools.test.ts (9 tests) 15803ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs  659ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > places canonical sources without reviving retired furniture  2580ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions  494ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade  3298ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > builds village-linked interiors from the same canonical frozen source  1708ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > authors a village through the registered facade with canonical interiors  4893ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > rejects disconnected canonical house interiors without publishing partial maps  1662ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections  398ms"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":" Test Files  4 passed (4)"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"      Tests  30 passed (30)"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   Start at  02:17:03"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"   Duration  25.57s (transform 9.47s, setup 0ms, collect 36.44s, tests 32.24s, environment 2ms, prepare 655ms)"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 typecheck:app"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"> tsc --noEmit -p tsconfig.app.json"}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"[edit-activity] 디스크 미러 실패 (/__oprn/edit-activity: fetch() URL is invalid) — output/edit-activity/ 가 갱신되지 않는다."}
+{"type":"line","id":"authoring-3538341","description":"task11 scoped validation","line":"{\"status\":\"passed\",\"transcript\":\"output/evidence/tile-to-world/task-17/tool-transcript.json\",\"calls\":7,\"bedCount\":2,\"undoRedoExact\":true}"}
+{"type":"summary","id":"authoring-3538341","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialTools.test.ts test/spatialAiContext.test.ts test/spatialToolAcceptance.test.ts test/spatialLegacyTools.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools
+
+ ✓ test/spatialAiContext.test.ts (1 test) 134ms
+ ✓ test/spatialToolAcceptance.test.ts (7 tests) 8103ms
+   ✓ spatial proposals at the actual shared acceptance boundary > accepts the authored source in one reversible transaction  2019ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live source before any publication  1231ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live map before any publication  1225ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live identity before any publication  1112ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a forged project snapshot even when its spatial document is unchanged  675ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects map tampering after a valid tool proposal was issued  890ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a stale generic map proposal in canonical mode  949ms
+ ✓ test/spatialTools.test.ts (13 tests) 8200ms
+   ✓ registered canonical spatial tools > changes only the source when a revision is explicitly replaced  755ms
+   ✓ registered canonical spatial tools > compiles only on the detached draft when an issued preview is applied  1153ms
+   ✓ registered canonical spatial tools > rejects forged preview acceptance without mutation  845ms
+   ✓ registered canonical spatial tools > rejects stale preview acceptance without mutation  1050ms
+   ✓ registered canonical spatial tools > rejects foreign preview acceptance without mutation  759ms
+   ✓ registered canonical spatial tools > rejects spent preview acceptance without mutation  1463ms
+   ✓ registered canonical spatial tools > retains preview lineage when the normal assistant draft is cloned  1143ms
+ ✓ test/spatialLegacyTools.test.ts (9 tests) 15803ms
+   ✓ legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs  659ms
+   ✓ legacy tools with active canonical designs > places canonical sources without reviving retired furniture  2580ms
+   ✓ legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions  494ms
+   ✓ legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade  3298ms
+   ✓ legacy tools with active canonical designs > builds village-linked interiors from the same canonical frozen source  1708ms
+   ✓ legacy tools with active canonical designs > authors a village through the registered facade with canonical interiors  4893ms
+   ✓ legacy tools with active canonical designs > rejects disconnected canonical house interiors without publishing partial maps  1662ms
+   ✓ legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections  398ms
+
+ Test Files  4 passed (4)
+      Tests  30 passed (30)
+   Start at  02:17:03
+   Duration  25.57s (transform 9.47s, setup 0ms, collect 36.44s, tests 32.24s, environment 2ms, prepare 655ms)
+
+
+> rpg-zzu@0.1.0 typecheck:app
+> tsc --noEmit -p tsconfig.app.json
+
+[edit-activity] 디스크 미러 실패 (/__oprn/edit-activity: fetch() URL is invalid) — output/edit-activity/ 가 갱신되지 않는다.
+{"status":"passed","transcript":"output/evidence/tile-to-world/task-17/tool-transcript.json","calls":7,"bedCount":2,"undoRedoExact":true}
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

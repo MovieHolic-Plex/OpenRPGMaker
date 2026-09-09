@@ -11,18 +11,10 @@ import type { InteriorRoomPlan, RoomSpec } from "./interiorRoomPipeline";
 import type { HouseInteriorProgram } from "./houseInteriors";
 import type { Project } from "@/project/types";
 import { ToolError } from "./tools/types";
+import { bindCanonicalInteriorPlan } from "./spatial/legacyInteriorPlan";
+import { PLACE_ALIASES } from "./interiorPlaceAliases";
 
 const TILESET = "easyrpg_chipset_interior";
-
-// Compatibility names select authored places, never hardcoded furniture manifests.
-const PLACE_ALIASES: Readonly<Record<string, readonly [string, string]>> = {
-  bedroom: ["house", "bedroom"], kitchen: ["house", "kitchen"],
-  dining: ["inn", "dining"], corridor: ["inn", "corridor"],
-  study: ["library", "study"], storage: ["warehouse", "hall"],
-  tavern: ["tavern", "hall"],
-  shop: ["shop", "salesfloor"], workshop: ["smithy", "workshop"],
-  dwelling: ["house", "living"], manor: ["house", "living"], inn: ["inn", "dining"],
-};
 const PROGRAM_FACILITIES: Readonly<Record<HouseInteriorProgram, string>> = {
   dwelling: "house", manor: "house", shop: "shop", inn: "inn",
   workshop: "smithy", study: "library",
@@ -68,6 +60,7 @@ export function bindInteriorConceptPlan(plan: InteriorRoomPlan, project: Project
     "개념 실내 시공은 실내 칩셋에서만 지원합니다. get_concept_facility로 지원되는 구성을 확인하세요.",
     { code: "invalid-tileset" },
   );
+  if (project.spatialAuthoring !== undefined && !plan.concept) return bindCanonicalInteriorPlan(plan, project);
   const bundles = liveBundlesForTileset(project, tilesetId);
   if (!bundles.length) throw new ToolError(
     "개념 꾸러미가 비어 있습니다. 사용할 장소·물건을 개념 꾸러미에 등록한 뒤 실내를 설계하세요.",

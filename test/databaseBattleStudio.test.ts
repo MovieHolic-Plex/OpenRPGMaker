@@ -98,7 +98,7 @@ describe("database battle studio", () => {
     requireTestId(panelRoot, "db-battle-studio-nav-terrain").dispatchEvent(new Event("click"));
 
     expect(getDatabaseActiveTab()).toBe("terrain");
-    expect(requireTestId(panelRoot, "db-tab-tilesets").classList.contains("active")).toBe(true);
+    expect(requireTestId(panelRoot, "db-tab-spatial-tiles").classList.contains("active")).toBe(true);
     expect(requireTestId(panelRoot, "db-battle-studio-nav-terrain").attrs["aria-current"]).toBe("page");
   }, 60_000);
 });

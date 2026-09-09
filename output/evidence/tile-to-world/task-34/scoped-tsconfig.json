@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["src/vite-env.d.ts", "test/spatialOverview*.test.ts", "test/support/spatialGeography*.ts", "test/support/spatialOverview*.ts", "scripts/qa/spatial-geography-contract.mts"]
+}

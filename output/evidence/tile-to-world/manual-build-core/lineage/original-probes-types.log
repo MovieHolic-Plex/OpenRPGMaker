@@ -1,0 +1,50 @@
+monitor_id=mon_5D9KTRHNBD879Q8X
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core"}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":" ✓ output/evidence/tile-to-world/manual-build-core/lineage-probes/adversarial.test.ts > continues a pending build through failed then corrected external compilation and adopts the exact retained handle 2991ms"}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":" ✓ output/evidence/tile-to-world/manual-build-core/lineage-probes/adversarial.test.ts > rejects cloned foreign consumed and live-stale handles without changing pending draft/proposal/selection/history 3602ms"}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":" ✓ output/evidence/tile-to-world/manual-build-core/lineage-probes/adversarial.test.ts > freezes every explicit object input and preserves its exact target during an external continuation 2326ms"}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":" ✓ output/evidence/tile-to-world/manual-build-core/lineage-probes/adversarial.test.ts > routes parsed geography descendants to actual world ownership and rejects unretained or extraneous stamp targets 165ms"}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":" ✓ output/evidence/tile-to-world/manual-build-core/lineage-probes/adversarial.test.ts > must not import a superseded shared-draft preview that drops pending build output and newer source edits 1712ms"}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":" Test Files  1 passed (1)"}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":"      Tests  5 passed (5)"}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":"   Start at  07:52:29"}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":"   Duration  16.36s (transform 3.59s, setup 0ms, collect 5.15s, tests 10.80s, environment 0ms, prepare 58ms)"}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":"JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core/output/evidence/tile-to-world/manual-build-core/lineage-probes/results.json"}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 typecheck:app"}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":"> tsc --noEmit -p tsconfig.app.json"}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":"src/editor/panels/spatialAuthoringAccess.ts(130,17): error TS18047: 'current.draft' is possibly 'null'."}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":"src/editor/panels/spatialAuthoringAccess.ts(130,63): error TS18047: 'current.draft' is possibly 'null'."}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":"src/editor/panels/spatialAuthoringAccess.ts(131,24): error TS2322: Type 'SpatialAuthoringDraft | null' is not assignable to type 'SpatialAuthoringDraft'."}
+{"type":"line","id":"authoring-205124","description":"task11 scoped validation","line":"  Type 'null' is not assignable to type 'SpatialAuthoringDraft'."}
+{"type":"summary","id":"authoring-205124","description":"task11 scoped validation","summary":"watcher exited_2 (exit code 2)"}
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core
+
+ ✓ output/evidence/tile-to-world/manual-build-core/lineage-probes/adversarial.test.ts > continues a pending build through failed then corrected external compilation and adopts the exact retained handle 2991ms
+ ✓ output/evidence/tile-to-world/manual-build-core/lineage-probes/adversarial.test.ts > rejects cloned foreign consumed and live-stale handles without changing pending draft/proposal/selection/history 3602ms
+ ✓ output/evidence/tile-to-world/manual-build-core/lineage-probes/adversarial.test.ts > freezes every explicit object input and preserves its exact target during an external continuation 2326ms
+ ✓ output/evidence/tile-to-world/manual-build-core/lineage-probes/adversarial.test.ts > routes parsed geography descendants to actual world ownership and rejects unretained or extraneous stamp targets 165ms
+ ✓ output/evidence/tile-to-world/manual-build-core/lineage-probes/adversarial.test.ts > must not import a superseded shared-draft preview that drops pending build output and newer source edits 1712ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  07:52:29
+   Duration  16.36s (transform 3.59s, setup 0ms, collect 5.15s, tests 10.80s, environment 0ms, prepare 58ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core/output/evidence/tile-to-world/manual-build-core/lineage-probes/results.json
+
+> rpg-zzu@0.1.0 typecheck:app
+> tsc --noEmit -p tsconfig.app.json
+
+src/editor/panels/spatialAuthoringAccess.ts(130,17): error TS18047: 'current.draft' is possibly 'null'.
+src/editor/panels/spatialAuthoringAccess.ts(130,63): error TS18047: 'current.draft' is possibly 'null'.
+src/editor/panels/spatialAuthoringAccess.ts(131,24): error TS2322: Type 'SpatialAuthoringDraft | null' is not assignable to type 'SpatialAuthoringDraft'.
+  Type 'null' is not assignable to type 'SpatialAuthoringDraft'.
+
+monitor_exit={"backend":"pipe-fallback","exitCode":2,"signal":null,"cancelled":false,"timedOut":false}

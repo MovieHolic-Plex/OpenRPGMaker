@@ -1,0 +1,134 @@
+monitor_id=mon_1P08A683J2BKWR2R
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-preview-continuation-fix"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" × test/spatialAuthoringContinuation.test.ts > permits a second draft preview when the user continues after a compile preview 1645ms"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"   → expected { kind: 'error', error: { …(3) } } to match object { kind: 'ok' }"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"(4 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" × test/spatialAuthoringContinuation.test.ts > permits a second draft preview when the user continues after a delete preview 1552ms"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"   → expected { kind: 'error', error: { …(3) } } to match object { kind: 'ok' }"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"(4 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" × test/spatialAuthoringContinuation.test.ts > accepts the whole proposal with one undo when a compile preview is continued 1329ms"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"   → {\"code\":\"ownership\",\"message\":\"ownership: Raster edits require the map editor, not a spatial draft\",\"detail\":\"ownership\"}"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" × test/spatialAuthoringContinuation.test.ts > accepts the whole proposal with one undo when a delete preview is continued 1449ms"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"   → {\"code\":\"ownership\",\"message\":\"ownership: Raster edits require the map editor, not a spatial draft\",\"detail\":\"ownership\"}"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuation.test.ts > preserves the clone and prior edits when a design-clone preview is edited repeatedly 2262ms"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects forged maps when editing a compiled preview 1582ms"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects forged bindings when editing a compiled preview 1497ms"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects copied generated output when it is supplied through a fresh raw draft 1244ms"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects a continued proposal when live state changes after the displayed preview 1281ms"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" FAIL  test/spatialAuthoringContinuation.test.ts > permits a second draft preview when the user continues after a compile preview"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" FAIL  test/spatialAuthoringContinuation.test.ts > permits a second draft preview when the user continues after a delete preview"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"AssertionError: expected { kind: 'error', error: { …(3) } } to match object { kind: 'ok' }"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"(4 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"\u001b[2m  {\u001b[22m"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"\u001b[32m-   \"kind\": \"ok\",\u001b[39m"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"\u001b[31m+   \"kind\": \"error\",\u001b[39m"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"\u001b[2m  }\u001b[22m"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" ❯ test/spatialAuthoringContinuation.test.ts:38:18"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"     36|   // Then generated private raster must not become a forged user edit …"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"     37|   expect(store.getCurrent()).toEqual(before);"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"     38|   expect(result).toMatchObject({ kind: \"ok\" });"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"       |                  ^"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"     39| });"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"     40| "}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" FAIL  test/spatialAuthoringContinuation.test.ts > accepts the whole proposal with one undo when a compile preview is continued"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" FAIL  test/spatialAuthoringContinuation.test.ts > accepts the whole proposal with one undo when a delete preview is continued"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"TypeError: {\"code\":\"ownership\",\"message\":\"ownership: Raster edits require the map editor, not a spatial draft\",\"detail\":\"ownership\"}"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" ❯ authoringValue test/support/spatialAuthoringFixture.ts:12:25"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"     10|   switch (result.kind) {"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"     11|     case \"ok\": return result.value;"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"     12|     case \"error\": throw new TypeError(JSON.stringify(result.error));"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"       |                         ^"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"     13|     default: return assertNever(result);"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"     14|   }"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" ❯ test/spatialAuthoringContinuation.test.ts:61:3"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":" Test Files  1 failed | 1 passed (2)"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"      Tests  4 failed | 5 passed (9)"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"   Start at  00:00:37"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"   Duration  22.89s (transform 4.56s, setup 0ms, collect 7.53s, tests 13.85s, environment 611ms, prepare 215ms)"}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1038153","description":"task11 scoped validation","line":"JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-preview-continuation-fix/output/evidence/tile-to-world/task-11/continuation/red.json"}
+{"type":"summary","id":"authoring-1038153","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-preview-continuation-fix
+
+ × test/spatialAuthoringContinuation.test.ts > permits a second draft preview when the user continues after a compile preview 1645ms
+   → expected { kind: 'error', error: { …(3) } } to match object { kind: 'ok' }
+(4 matching properties omitted from actual)
+ × test/spatialAuthoringContinuation.test.ts > permits a second draft preview when the user continues after a delete preview 1552ms
+   → expected { kind: 'error', error: { …(3) } } to match object { kind: 'ok' }
+(4 matching properties omitted from actual)
+ × test/spatialAuthoringContinuation.test.ts > accepts the whole proposal with one undo when a compile preview is continued 1329ms
+   → {"code":"ownership","message":"ownership: Raster edits require the map editor, not a spatial draft","detail":"ownership"}
+ × test/spatialAuthoringContinuation.test.ts > accepts the whole proposal with one undo when a delete preview is continued 1449ms
+   → {"code":"ownership","message":"ownership: Raster edits require the map editor, not a spatial draft","detail":"ownership"}
+ ✓ test/spatialAuthoringContinuation.test.ts > preserves the clone and prior edits when a design-clone preview is edited repeatedly 2262ms
+ ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects forged maps when editing a compiled preview 1582ms
+ ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects forged bindings when editing a compiled preview 1497ms
+ ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects copied generated output when it is supplied through a fresh raw draft 1244ms
+ ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects a continued proposal when live state changes after the displayed preview 1281ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialAuthoringContinuation.test.ts > permits a second draft preview when the user continues after a compile preview
+ FAIL  test/spatialAuthoringContinuation.test.ts > permits a second draft preview when the user continues after a delete preview
+AssertionError: expected { kind: 'error', error: { …(3) } } to match object { kind: 'ok' }
+(4 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "kind": "ok",[39m
+[31m+   "kind": "error",[39m
+[2m  }[22m
+
+ ❯ test/spatialAuthoringContinuation.test.ts:38:18
+     36|   // Then generated private raster must not become a forged user edit …
+     37|   expect(store.getCurrent()).toEqual(before);
+     38|   expect(result).toMatchObject({ kind: "ok" });
+       |                  ^
+     39| });
+     40|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/spatialAuthoringContinuation.test.ts > accepts the whole proposal with one undo when a compile preview is continued
+ FAIL  test/spatialAuthoringContinuation.test.ts > accepts the whole proposal with one undo when a delete preview is continued
+TypeError: {"code":"ownership","message":"ownership: Raster edits require the map editor, not a spatial draft","detail":"ownership"}
+ ❯ authoringValue test/support/spatialAuthoringFixture.ts:12:25
+     10|   switch (result.kind) {
+     11|     case "ok": return result.value;
+     12|     case "error": throw new TypeError(JSON.stringify(result.error));
+       |                         ^
+     13|     default: return assertNever(result);
+     14|   }
+ ❯ test/spatialAuthoringContinuation.test.ts:61:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  4 failed | 5 passed (9)
+   Start at  00:00:37
+   Duration  22.89s (transform 4.56s, setup 0ms, collect 7.53s, tests 13.85s, environment 611ms, prepare 215ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-preview-continuation-fix/output/evidence/tile-to-world/task-11/continuation/red.json
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

@@ -140,6 +140,25 @@
   instructions. Existing severity labels and focus states remain. Browser geometry and
   interaction evidence cover 1024x768, 1280x800 and 1440x900; lead owns visual approval.
 
+## Spatial tiles and objects (2026-09-08)
+
+- Database 맵 tabs 타일 / 오브젝트 reuse the cream spatial shell: gallery cards with
+  real chipset/object rasters, a live canvas, and a labelled inspector. No new
+  framework, emoji icons, or decorative motion.
+- Tiles canvas is the existing tileset passage/chipset editor for the selected
+  atlas. Objects show the authored kit/catalog image at pixelated scale, native
+  name/tileset/kit/anchor/chip fields, and copy-on-write before builtin edits.
+- Tokens: `--db-studio-canvas/surface/accent/text-1/2/3/border-subtle`, 8px radii,
+  32px controls, 12/13px type, 4/8/12px gaps. Inspector becomes a drawer below
+  1200px via the existing spatial shell container query. The drawer and the wide
+  inspector column own their own overflow; they stay inside the content pane and
+  never cover `닫기` / `지금 저장`. Object 칩 controls are a wrapping cluster with
+  32px hit targets. The gallery grid is the gallery scroll owner.
+- Browsing does not seed projects. Preview/apply/undo bind the published
+  `SpatialAuthoringController` when present; kit painter and passage tools remain
+  the pixel editors. Incompatible atlas placement is a visible error, not a stamp.
+
+
 ## Monster resource metadata editor (2026-09-07)
 
 - Database > 전투 몬스터 exposes 몬스터 소재 even with no gameplay records.
@@ -1384,3 +1403,55 @@ Disclose excluded factors in one concise note: defense, skill power, type chart/
   UI never synthesizes verification or persists snapshots into project/history.
   Browser matrix: 1024x768, 1280x800, 1440x900. Independent visual review of the
   compact bar is Grok-owned; grouping/count/hide/menu behavior is host-owned.
+  Browser matrix: 1024x768, 1280x800, 1440x900 plus narrow component showcase.
+  Independent final visual review and integrated backend typecheck are lead-owned.
+
+## Space composition canvas (task 14)
+
+- Database > 맵 > 공간 authors interior/outdoor `SpaceDesign` on a real tile
+  grid from `spaceLayout` / room primitives, not a decorative bitmap stage.
+- Reuse cream Database Studio tokens already in `spatial-shell.css`:
+  `--db-studio-canvas/surface/inset/well`, `--db-studio-text-1/2/3`,
+  `--db-studio-accent` and `-soft/-border`, `--db-studio-border-default/subtle`,
+  `--db-studio-shadow`, 8px radii, 32px controls, 4/8/12px gaps, 12/13px UI type.
+  Space-only overlay colors stay on those tokens (accent for selection, warning
+  well for missing sources). No new hex ramps.
+- Canvas owns integer-tile object slots and named ports. Object gallery is a
+  compact strip of real object thumbs; drag/select plus arrow-key nudge move
+  one slot or port. Required, chips, shape and size live in the inspector.
+  Preview/apply/undo/redo go through `SpatialAuthoringController` only.
+- Source versus placed: design edits patch `library.spaces`; instance edits
+  patch one occurrence snapshot. Empty `objectSlots` stay empty. Missing object
+  sources show a warning chip and disable refresh. Clone/delete show impacts
+  before apply. Escape cancels an in-canvas gesture without closing Database.
+- Narrow (`db-modal` <1200px) keeps the existing inspector drawer **in flow**
+  under the canvas (`max-height` + overflow auto), not an overlay on the modal
+  footer. Primary preview/apply remain in chrome and must not clip. Reduced
+  motion disables overlay transitions. Personas: room layout author,
+  keyboard/IME author, existing-project author with frozen occurrences.
+
+## Nested place and floor authoring (task 15)
+
+Operational Database Studio surface for settlement/facility/natural places.
+Reuse `--db-studio-*`, `--space-1..4`, 12/13px UI type, 32px controls, 8px radii
+and `--focus-outline`. No new palette, typeface, motion token or dependency.
+
+- Spatial model: StyleGallery list-detail already owned by the spatial shell.
+  Inside the place stage, the floor strip and child picker stay fixed;
+  `.spatial-places-board` is the only vertical scroll owner (`min-block-size: 0`).
+  The floor strip is a horizontal reel when floors overflow. Board imagery is a
+  frozen `spaceLayout` / facility-plan raster of nested children, never furniture
+  object sprites or an empty gray well. Sparse `-1` cells keep the checker/well.
+- Primitives: `placeFloorStrip` (level chips, `aria-pressed`), `placeChildPicker`
+  (space/place candidates), `placeChildToken` (positioned child), `placePortLink`
+  (visible connection plus keyboard row), `placeExteriorField` (tileset/kit).
+  States: rest, hover, pressed, selected, disabled (builtin lock / missing source),
+  rejected (polite status, no partial write). Reduced motion: no extra animation.
+- Source vs instance: design mode edits the library place; instance mode edits the
+  frozen occurrence snapshot. Refresh is previewed through the authoring controller
+  with an explicit compile request; missing source disables refresh.
+- Drill-down uses the existing spatial breadcrumb. Duplicate yields independent
+  occurrence identities. Deleting a referenced space shows strong/historical counts
+  before confirm. Ancestor nesting and missing-floor links reject in full.
+- Shared stage/controller/history stay untouched. Draft handles are controller-owned
+  via `spatialAuthoringAccess`; this tab does not keep a second draft authority.

@@ -1,0 +1,40 @@
+monitor_id=mon_A3CAB8A2C16VH7CY
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceBoundaries.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit"}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":" ✓ test/placedPlaceBoundaries.test.ts (4 tests) 6177ms"}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":"   ✓ rejects unsupported facility level 0 without draft or history writes  2167ms"}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":"   ✓ rejects unsupported facility level 4 without draft or history writes  1854ms"}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":"   ✓ reports exact lifecycle impact when inspecting a placed deletion  718ms"}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":"   ✓ offers the exact uncompiled clone identity when cloning a frozen placed tree  1433ms"}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":" Test Files  1 passed (1)"}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":"      Tests  4 passed (4)"}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":"   Start at  06:30:11"}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":"   Duration  14.60s (transform 5.26s, setup 0ms, collect 7.58s, tests 6.18s, environment 314ms, prepare 75ms)"}
+{"type":"line","id":"authoring-3436911","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3436911","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceBoundaries.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit
+
+ ✓ test/placedPlaceBoundaries.test.ts (4 tests) 6177ms
+   ✓ rejects unsupported facility level 0 without draft or history writes  2167ms
+   ✓ rejects unsupported facility level 4 without draft or history writes  1854ms
+   ✓ reports exact lifecycle impact when inspecting a placed deletion  718ms
+   ✓ offers the exact uncompiled clone identity when cloning a frozen placed tree  1433ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  06:30:11
+   Duration  14.60s (transform 5.26s, setup 0ms, collect 7.58s, tests 6.18s, environment 314ms, prepare 75ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

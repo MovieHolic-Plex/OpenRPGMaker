@@ -1,0 +1,24 @@
+{
+  "baseSha": "8aa1e3899413f11ecdbbefd557a0d5ef7da17854",
+  "compilerImplemented": false,
+  "receipts": [
+    {
+      "seed": 7,
+      "source": "/home/main/z-project/rpg-zzu-tile-to-world/output/evidence/tile-to-world/task-8/parent-contract/contract/input-7.json",
+      "sourceSha256": "e93ec519c6bb405c7b3027309a174ffac4a93d24baa9db4e7a3d64906bb9aa5c",
+      "mapDigest": "1993b42245f8e749bef9a368b9111e024572e448d9fcc53f27c82f058e4ef055"
+    },
+    {
+      "seed": 19,
+      "source": "/home/main/z-project/rpg-zzu-tile-to-world/output/evidence/tile-to-world/task-8/parent-contract/contract/input-19.json",
+      "sourceSha256": "4de24a6380961034b1e0e5d3b6e787536bdaca245703235cac978d80af1f69f8",
+      "mapDigest": "35f225569c07e3c655cdaeddf1f65af968b8f49375aebe95f5aa33ee1919efa6"
+    },
+    {
+      "seed": 31,
+      "source": "/home/main/z-project/rpg-zzu-tile-to-world/output/evidence/tile-to-world/task-8/parent-contract/contract/input-31.json",
+      "sourceSha256": "eac46e141996f33b2908a29486503625d03b55906331661bcc7b3c0a387965ef",
+      "mapDigest": "b6671e6b6023d413ce48fd988d1547fbda585b9eddaa9c6042e2e0033b44b09c"
+    }
+  ]
+}

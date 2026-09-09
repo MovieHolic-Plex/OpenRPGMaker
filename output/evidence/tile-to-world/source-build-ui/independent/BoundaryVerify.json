@@ -1,0 +1,172 @@
+{
+  "taskId": "st_01a0838f",
+  "parentSession": "01a07858-5330-7a2d-a1e3-7cf50e54cea1",
+  "verdict": "needs-fix",
+  "recordedAt": "2026-09-09T00:32:15Z",
+  "worktree": "/home/main/z-project/rpg-zzu-tile-to-world",
+  "base": "2961dbe3b0878ecb06f1412183dbd1440dd63e29",
+  "scope": "Read-only complementary source-build UI boundary verification. Real mounted Database DOM events under happy-dom and the real shared authoring controller/compiler/store/history. Not whole UI acceptance, visual approval, browser QA, app build, CSS gate, or remote persistence verification.",
+  "outcome": "Eight complementary probe cases executed once: five passed and three genuine behavioral failures. Project-keyed proposal authority remains intact, but global object target fields authorize a fresh build in another project with a coincident map ID. Blank seeds silently become zero. Invalid object coordinates are correctly rejected by the compiler, then leave an uncorrectable pending proposal with no mounted clear action.",
+  "findings": [
+    {
+      "id": "SBUI-BOUNDARY-01",
+      "priority": "P1",
+      "title": "Object target fields cross project identity and authorize a new build in the wrong project",
+      "locations": [
+        "src/editor/panels/spatialObjectChromeState.ts:16-41",
+        "src/editor/panels/spatialObjectCommands.ts:59-105",
+        "src/editor/panels/spatialBuildChrome.ts:98-140",
+        "src/editor/panels/spatialAuthoringAccess.ts:63-68",
+        "src/project/store.ts:892-901"
+      ],
+      "mechanism": "buildSeed/buildMapId/rect/entry are module-global mutable fields. Their reset function has no production caller beyond re-export. Shared authoring handles and build disclosure instead reset on spatialProjectKey changes. Selecting a canonical object in the new project makes destReady true from the previous project's fields and creates a fresh correctly-issued preview against the wrong project's coincident map. This is not acceptance of a stale A preview; A's proposal correctly disappeared before B's Build.",
+      "reproduction": "In project A, select hearth-design, enter seed 19, stamp-target rect 3,3,3,3 and entry 1,1, then Build. Use real store.replaceProject to install independent project B with a distinct project key and a same-ID map named Project B coincident map. Re-render Database and select B's canonical object using mounted card events. Enter no target or seed fields in B. Click mounted Build and Apply.",
+      "expected": { "previewIssued": false, "adoptedB": false },
+      "actual": {
+        "previewIssued": true,
+        "adoptedB": true,
+        "proposalTarget": {
+          "kind": "map",
+          "currentMapId": "stamp-target",
+          "selection": { "mapId": "stamp-target", "x": 3, "y": 3, "width": 3, "height": 3 },
+          "entry": { "x": 1, "y": 1 }
+        }
+      },
+      "requiredCorrection": "Bind object Build fields to the actual spatial project identity or invalidate the target on project change, so a coincident map ID cannot reuse another project's destination consent.",
+      "test": "boundary.test.ts:74-102"
+    },
+    {
+      "id": "SBUI-BOUNDARY-02",
+      "priority": "P2",
+      "title": "An empty numeric seed is coerced to an explicit zero seed",
+      "locations": [
+        "src/editor/panels/spatialBuildChrome.ts:69-76",
+        "src/editor/panels/spatialBuildActions.ts:39-41"
+      ],
+      "mechanism": "The mounted number field change handler calls Number(seed.value). Clearing the field produces Number('') === 0, which passes the real backend Number.isSafeInteger check. The rerender and proposal then adopt zero although the user provided no number. All three domains share this handler.",
+      "reproduction": "Select the canonical space, clear spatial-build-seed through its real change event, click Build.",
+      "expected": { "previewIssued": false },
+      "actual": { "previewIssued": true, "issuedSeed": 0, "liveChanged": false },
+      "requiredCorrection": "Preserve the invalid/empty numeric-input state at the mounted input boundary and reject it instead of manufacturing zero. Explicit numeric zero need not be prohibited.",
+      "causalControls": "Mounted decimal seed 1.5 and unsafe integer 9007199254740992 were both rejected with no proposal, preview, or live mutation.",
+      "test": "boundary.test.ts:104-114"
+    },
+    {
+      "id": "SBUI-BOUNDARY-03",
+      "priority": "P2",
+      "title": "A rejected object target traps the mounted UI in an immutable pending proposal",
+      "locations": [
+        "src/editor/panels/spatialBuildActions.ts:33-36,64-69",
+        "src/editor/panels/spatialBuildChrome.ts:38-42",
+        "src/editor/panels/spatialStage.ts:138-171",
+        "src/editor/panels/spatialAuthoringAccess.ts:92-95"
+      ],
+      "mechanism": "Build stores buildInput before real compile validation. Entry X=-1 is rejected at compile.target.entry.x, so no preview exists, but the invalid proposal remains pending. Correcting the mounted field changes the input; the existing pending-input guard rejects it with build-proposal-pending. The Stage action inventory exposes no clear/cancel action and no production UI path calls clearAuthoringSession. Removing the immutable pending guard is not the required remedy: valid pending proposals must retain their exact inputs.",
+      "reproduction": "Enter the valid explicit object target except entry X=-1, click Build and observe the compiler path error. Correct entry X to 1 in the mounted field and click Build again.",
+      "expected": { "previewIssued": true, "retainedRejectedInput": false, "error": "" },
+      "actual": { "previewIssued": false, "retainedRejectedInput": true, "error": "build-proposal-pending" },
+      "requiredCorrection": "Provide an explicit reachable clear/cancel-and-retry route, with truthful draft-discard semantics, or avoid pinning a numerically rejected attempt before it can become a valid proposal. Preserve exact valid-pending input retention.",
+      "causalControls": "The separate real clearAuthoringSession boundary does release the proposal, and a subsequent mounted Build at seed 31 obtains a different fresh root. That API-only clear control is not proof of mounted recovery.",
+      "test": "boundary.test.ts:129-145"
+    }
+  ],
+  "confirmedBoundaries": [
+    "Canonical source resolution uses canonicalSource plus own library membership, not card label, coincident local ID, or compatibility record identity. All eight producer tests were read; none was rerun here.",
+    "An explicitly entered map/rect/entry is allowed to differ from editorState.currentMapId and selection. A mounted causal-control test passes with that mismatch. This is deliberate explicit targeting, not an implicit current-map/start-map/selection fallback defect.",
+    "Object numeric entry X=-1 reaches and is rejected by the real compile parser. Source inspection confirms rect x/y >=0, width/height >=1, and entry x/y >=0 are safe integers. The coordinate defect reported here is recovery after rejection, not absent backend numeric checks.",
+    "The exact pending source, seed, destination and root survive object/space tab changes and an attempted competing object Build. A newer source width edit remains in the draft; returning to Spaces, rebuilding and applying adopts the exact preview project, retains width 14 and one root, and records one history entry.",
+    "freshSpatialId scans all source-library IDs and occurrence IDs in visibleAuthoringProject. Matching pending inputs reuse their allocated root; explicit shared clear followed by a new mounted Build produces a distinct root with no prior output in the new preview.",
+    "A real project switch clears the shared proposal and issued-preview view before the next build. The remaining cross-project defect is the lifetime of the newly added field state, not a stale-handle bypass."
+  ],
+  "sourceBinding": {
+    "initialBuildChromeSha256": "876cf30932c69503a5d4a23e1029284876b62c2f929b7b1aa9b6ee91abf9e417",
+    "testedBuildChromeSha256": "7bb9f745d4653b6c118d024dd4403158bb0dfb8b7b995a0dee60664741516cf9",
+    "authorizedProducerCorrection": "While probes were being prepared, the producer reconstructed source:{kind:source.kind,id:source.id} in both request branches and changed assertNever(source) to assertNever(source.kind). Both versions were read. The real probe execution used only the corrected version. No observed Build destination, seed, state-lifetime, or mounted-event behavior changed.",
+    "beforeManifest": "source-before.sha256",
+    "testedManifest": "source-tested.sha256",
+    "afterVerification": "source-after-check.log: all ten tested source/test manifest entries matched after execution",
+    "otherUiDeltas": "Stage, ObjectInspector and TilesTab hashes were checked against the producer's source-hashes.json and matched exactly. All chrome-state/command deltas were read from the frozen working diff.",
+    "initialPanelDiff": "panels-before.patch",
+    "parentTypecheck": "parent-types.log preserves three TS2345 errors at original spatialBuildChrome.ts lines 48, 54 and 56. parent-types-fixed.log contains the subsequent tsc invocation and no diagnostic text. Its exit status was not independently observed here; app-typecheck acceptance remains parent-owned. LSP results below do not substitute for app types."
+  },
+  "validation": {
+    "config": "boundary.config.ts",
+    "probeSource": "boundary.test.ts",
+    "configSha256": "cbc64321a566230eb1f476e4b06802189d46c9442dcc9ae6f1b0d17343b5349a",
+    "probeSha256": "ca8aaacab1f00806e4f528a4b8dad260b9f376d50956eb1eb8002b250d17735a",
+    "includeDiscipline": "Own config spreads base configuration but replaces test.include with exactly this evidence probe file; explicit positional filepath filter also supplied. No mergeConfig array concatenation.",
+    "command": "node /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/authoring-monitor.mjs 'flock -w 30 /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock timeout -k 10s 180s node node_modules/vitest/vitest.mjs run --config output/evidence/tile-to-world/source-build-ui/independent/boundary.config.ts --configLoader bundle output/evidence/tile-to-world/source-build-ui/independent/boundary.test.ts --reporter=verbose --reporter=json --outputFile=output/evidence/tile-to-world/source-build-ui/independent/boundary-results.json'",
+    "lock": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock",
+    "workers": 1,
+    "fileParallelism": false,
+    "testTimeoutMs": 15000,
+    "hookTimeoutMs": 90000,
+    "deadlineSeconds": 180,
+    "lockWaitSeconds": 30,
+    "monitor": "TerminalRuntimeSession/MonitorRegistry; subscribed line/exit events and waitExit; no sleeps or polling",
+    "initialInvocation": {
+      "monitorId": "mon_V1NBQYDG3W0QJC8T",
+      "exitCode": 1,
+      "classification": "Lock acquisition failure before Vitest execution, not a passing or failing behavioral test",
+      "evidence": "boundary-red.log",
+      "diagnosis": "No RUN header or JSON result. fuser/ps inspection showed the shared lock held by the producer's flock/timeout/npm test spatialSourceBuildUi run. Original command deadlines were unchanged for the later invocation.",
+      "missingResultRead": "Reading boundary-red.json returned ENOENT because this invocation never produced it; no result was fabricated."
+    },
+    "behavioralRun": {
+      "monitorId": "mon_9FVQFA5YS6CHAN0V",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationSeconds": 29.28,
+      "total": 8,
+      "passed": 5,
+      "failed": 3,
+      "skipped": 0,
+      "log": "boundary-execution.log",
+      "json": "boundary-results.json",
+      "jsonSha256": "4c76d374753230b7796d5e23a4ab6ec9a4ab444e03c32b494acc26fd2d44ae13",
+      "logSha256": "f179e8d3cbfab4d2193ecdf46e33a1f3bfb31563bc47895e744d800ae5e15993",
+      "redPreservation": "First actual behavioral execution retained unchanged. No probe edits, product fixes, skipped assertions, deadline increases, or rerun-to-green after these three failures."
+    },
+    "diagnostics": "Both owned TypeScript evidence files: No diagnostics found. No independent app typecheck/build or producer-suite run.",
+    "inspectionErrors": "Two broad rg calls included nonexistent filename globs (*arget* and database*Rail*), yielding explicit file-not-found stderr; exact existing-file reads and successful whole-src caller searches supplied the source findings. A final process grep returned exit 1 because there was no remaining owned matching validation process. These are tooling observations, not product test failures."
+  },
+  "priorEvidenceRead": [
+    "output/evidence/tile-to-world/source-build-ui/DoneClaim.json",
+    "output/evidence/tile-to-world/source-build-ui/red.log",
+    "output/evidence/tile-to-world/source-build-ui/source-hashes.json",
+    "output/evidence/tile-to-world/manual-build-core/lineage/receipt.json",
+    "output/evidence/tile-to-world/manual-build-core/lineage-probes/final-results.json",
+    "output/evidence/tile-to-world/combined-authoring/IntegrationVerify.json",
+    "output/evidence/tile-to-world/combined-authoring/ParentVerify.json"
+  ],
+  "architecturalReview": {
+    "pureLoc": { "boundary.test.ts": 161, "boundary.config.ts": 12 },
+    "singleResponsibility": "Mounted boundary regression scenarios; isolated validation configuration.",
+    "boundaryPurity": "Real input change/click events, canonical fixtures and actual shared APIs. No permissive controller/compiler mocks or unknown payloads passed into domain logic.",
+    "variantDiscrimination": "No new tagged-variant dispatch.",
+    "escapeHatches": "No any, type assertions, non-null assertions or suppressed diagnostics.",
+    "defensiveLayers": "Only required DOM/fixture precondition narrowing.",
+    "helpers": "All probe helpers have repeated callers; no production abstractions.",
+    "tests": "Three independent observable behavioral REDs plus five causal/continuation controls. Assertions target state, parsed values, structural compiler paths and stable error sentinel, not natural-language prose.",
+    "parameterBloat": "No new function takes more than two parameters.",
+    "redundantVerification": "Reads after actions are test assertions of the requested observable contract, not added production defensive checks.",
+    "negativeNaming": "No negative-form state/helper names added.",
+    "logging": "No production logging or error handling changed. Monitor output is preserved raw evidence."
+  },
+  "limitsAndCleanup": {
+    "productEdits": [],
+    "repositoryTestEdits": [],
+    "ownedWrites": "Only this independent evidence directory, its probe/config, manifests, logs and receipt.",
+    "commits": 0,
+    "extraReviewers": 0,
+    "browserOrScreenshots": false,
+    "remoteWrites": "Fixture disables loaded/remote persistence; no remote API or provider invoked.",
+    "teardown": "Mounted host removed, real controller factory unbound, authoring/chrome sessions and history reset, previous project/editor state restored after every case. Validation process exited and monitor disposed its runtime. No server started.",
+    "assumptions": [
+      "Explicit target coordinates may intentionally differ from the current map and canvas selection; only implicit cross-project reuse is rejected.",
+      "Project A and B may legitimately contain identical local map/source IDs. Real store.replaceProject must isolate their destination intent.",
+      "Shared clear intentionally discards the authoring draft; its API-only probe is not claimed as a mounted user-facing clear workflow.",
+      "Parent owns app types/build/CSS and producer regression validation; Grok owns visual acceptance. This receipt makes no whole-UI acceptance claim."
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "task": 11,
+  "status": "supported-domain backend ready; whole-task acceptance pending",
+  "originalBase": "67a81be3424ff7100c56f0e54ee7cb40fa0173bc",
+  "publicContractCommit": "5a0eddd43c30b6345b494024ebbc34c12443792a",
+  "verifiedTask34Source": "8be8780e667a0784dbc7a7041a3616b026d37cfe",
+  "worktreeTask34Commit": "5ff4559943921df05b4753f9e0f525964f1e76f8",
+  "sourceIdentity": "source-files.sha256 and transaction-hashes.json bind the final product blobs without a circular self-commit hash",
+  "implemented": [
+    "detached source/instance drafts and explicit operations",
+    "real object/space/place compilation",
+    "full project/identity and full logical spatial baseline",
+    "stale rejection before mutation",
+    "explicit clone/delete/refresh/detach via existing domain APIs",
+    "exact overview incoming/return owner preflight and event cleanup",
+    "ordinary external stair/door transfer cleanup without event-ID parsing",
+    "one store/history transaction visible before synchronous observers",
+    "exact undo/redo and redo preservation on rejected apply",
+    "source-only edits do not refresh frozen instances",
+    "manual raster and binding-forgery rejection"
+  ],
+  "validation": {
+    "ownedTests": "40 distinct controller tests passed across scoped runs; final affected lifecycle delta: 16/16",
+    "lastGreenMonitor": "mon_Y9B9Z5ZZRN0DWWGC",
+    "typecheck": "scoped tsc --noEmit passed, using unchanged project compiler options",
+    "driver": "real offline controller/store/history CLI passed object/space/place apply, exact undo/redo and stale rejection",
+    "logs": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/task11",
+    "build": "not run in this lane; lead owns combined build/acceptance",
+    "lsp": "focused diagnostics passed; three late refresh requests repeatedly hit the unchanged 3000ms deadline, covered by successful scoped tsc instead",
+    "inheritedFailure": {
+      "test": "test/storeMutationInstrumentation.test.ts",
+      "result": "1 structural failure, 7 passed",
+      "output": "unexpected method: activateSpatialAuthoring; expected []",
+      "sourceEvidence": "test byte-identical to starting commit; existing activation method assigns this.current; only replace history hook changed here",
+      "disposition": "recorded, not skipped, altered or treated as green"
+    }
+  },
+  "pendingFinalIntegration": [
+    "parent binds createSpatialAuthoringController via bindSpatialAuthoringControllerFactory",
+    "UI access retains original issued draft handle rather than constructing a replacement wrapper",
+    "task10 region/world compiler integration and positive geography controller tests",
+    "task10-produced shared/nested overview deletion/refresh/undo/redo witnesses",
+    "Q2/Q3 real panel browser acceptance and lead combined build"
+  ],
+  "cleanup": {
+    "remoteWrites": 0,
+    "uiCssImagesChanged": false,
+    "listeners": "test-owned subscriptions released in finally; CLI does not add subscriptions",
+    "processes": "all owned bounded monitors exited and disposed",
+    "retained": "isolated worktree, existing-dependency node_modules symlink, local evidence logs and monitor launcher",
+    "otherSessions": "untouched"
+  },
+  "sizeReview": "New modules are at most 73 pure LOC. Existing singleton history/store modules remain oversized; integration is limited to the shared history operation and store commitHistory hook, without moving activation/CAS/recovery authority."
+}

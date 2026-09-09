@@ -372,6 +372,12 @@ cat output/edit-activity/index.json  # CLI 표가 읽는 최근 200건 요약
 
 ### 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
 
+Audit writes to `project_commits` / `project_changes` are append-only POSTs with
+`Prefer: return=minimal`. Do not inherit `resolution=merge-duplicates` from ordinary
+upserts: anon intentionally has no UPDATE/DELETE privilege on these tables.
+Task37's disposable HTTP proof and limitations are in
+[`test/integration/spatial-audit-append.md`](../test/integration/spatial-audit-append.md).
+
 위의 두 채널은 **세션 자산**이다. 링버퍼는 새로고침에 끊기고, 디스크 미러는 워크트리를 바꾸면
 갈리고 배포 환경에는 아예 없다. 그래서 "며칠 전 그 세션에 무슨 행위가 있었나" 를 조사할 수단이
 없었다. 저장 경계마다 행위 기록을 **커밋 row 에 실어** 그 구멍을 메운다.

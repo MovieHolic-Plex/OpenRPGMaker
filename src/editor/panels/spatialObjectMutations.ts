@@ -1,0 +1,198 @@
+import { editorState } from "@/editor/editorState";
+import {
+  createBlankStructureKit,
+  deleteStructureKit,
+  duplicateIntoTileset,
+} from "@/editor/harnessSuggestion/structureKitActions";
+import { interiorObjectById } from "@/editor/interiorObjectCatalog";
+import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { patchSpatialSession, selectSpatialDesign } from "@/editor/panels/spatialAuthoringSession";
+import {
+  editAuthoringDraft,
+  spatialAuthoringController,
+  spatialAuthoringErrorText,
+  visibleAuthoringProject,
+} from "@/editor/panels/spatialAuthoringAccess";
+import { objectChromeState } from "@/editor/panels/spatialObjectChromeState";
+import {
+  copyBuiltinObjectIntoProject,
+  createBlankObjectIntoProject,
+  duplicateObjectIntoProject,
+  libraryObjectCardId,
+  ownedKitCardId,
+  previewObjectDelete,
+  removeKitFromProject,
+  replaceKitInProject,
+  type ObjectDraftTarget,
+} from "@/editor/panels/spatialObjectDraft";
+import { openStructureKitEditor, type StructureKitEditorAccess } from "@/editor/panels/structureKitEditorDialog";
+import type { Project } from "@/project/types";
+import { store } from "@/project/store";
+import { randomUuid } from "@/util/id";
+import { toast } from "@/util/toast";
+
+export function commitLiveOrDraft(rerender: () => void, mutate: (project: Project) => Project, live?: () => void): void {
+  const controller = spatialAuthoringController();
+  if (controller) {
+    const result = editAuthoringDraft(mutate);
+    objectChromeState.previewError = spatialAuthoringErrorText(result);
+    objectChromeState.saveState = objectChromeState.previewError ? "오류" : "초안";
+    rerender();
+    return;
+  }
+  live?.();
+  rerender();
+}
+
+export function openDetachedKitPainter(tilesetId: string, kitId: string, rerender: () => void): void {
+  const controller = spatialAuthoringController();
+  if (!controller) {
+    openStructureKitEditor(tilesetId, kitId, rerender);
+    return;
+  }
+  const access: StructureKitEditorAccess = {
+    read: () => {
+      const kit = visibleAuthoringProject().tilesets[tilesetId]?.structureKits?.find((entry) => entry.id === kitId);
+      return kit?.kind === "section" ? kit : undefined;
+    },
+    write: (kit) => {
+      editAuthoringDraft((project) => replaceKitInProject(project, tilesetId, kit));
+      objectChromeState.saveState = "초안";
+    },
+  };
+  openStructureKitEditor(tilesetId, kitId, rerender, access);
+}
+
+export function copyBuiltin(target: ObjectDraftTarget, rerender: () => void): void {
+  const builtin = interiorObjectById(target.kitId);
+  if (!builtin) return;
+  const controller = spatialAuthoringController();
+  if (controller) {
+    const kitId = `kit_${randomUuid()}`;
+    const designId = `obj_${randomUuid()}`;
+    const result = editAuthoringDraft((project) => {
+      const copied = copyBuiltinObjectIntoProject({
+        project,
+        tilesetId: target.tilesetId,
+        builtinId: target.kitId,
+        kitId,
+        designId: project.spatialAuthoring ? designId : undefined,
+      });
+      return "error" in copied ? project : copied.project;
+    });
+    objectChromeState.previewError = spatialAuthoringErrorText(result);
+    objectChromeState.saveState = objectChromeState.previewError ? "오류" : "초안";
+    if (!objectChromeState.previewError) {
+      if (visibleAuthoringProject().spatialAuthoring) selectSpatialDesign(libraryObjectCardId(designId));
+      else selectSpatialDesign(ownedKitCardId(target.tilesetId, kitId));
+      patchSpatialSession({ source: "own" });
+      rerender();
+      openDetachedKitPainter(target.tilesetId, kitId, rerender);
+      return;
+    }
+    rerender();
+    return;
+  }
+  recordProjectSnapshot();
+  const copy = duplicateIntoTileset(target.tilesetId, builtin);
+  toast(`'${copy.name}' 사본을 만들었습니다`, "ok");
+  selectSpatialDesign(ownedKitCardId(target.tilesetId, copy.id));
+  patchSpatialSession({ source: "own" });
+  openStructureKitEditor(target.tilesetId, copy.id, rerender);
+}
+
+export function duplicateObject(target: ObjectDraftTarget, rerender: () => void): void {
+  const controller = spatialAuthoringController();
+  if (controller) {
+    const nextKitId = `kit_${randomUuid()}`;
+    const nextDesignId = `obj_${randomUuid()}`;
+    const result = editAuthoringDraft((project) => {
+      const copied = duplicateObjectIntoProject({
+        project,
+        tilesetId: target.tilesetId,
+        kitId: target.kitId,
+        nextKitId,
+        sourceDesignId: target.libraryId,
+        nextDesignId,
+      });
+      return "error" in copied ? project : copied.project;
+    });
+    objectChromeState.previewError = spatialAuthoringErrorText(result);
+    objectChromeState.saveState = objectChromeState.previewError ? "오류" : "초안";
+    if (!objectChromeState.previewError) {
+      if (target.libraryId) selectSpatialDesign(libraryObjectCardId(nextDesignId));
+      else selectSpatialDesign(ownedKitCardId(target.tilesetId, nextKitId));
+    }
+    rerender();
+    return;
+  }
+  const kit = store.getCurrent().tilesets[target.tilesetId]?.structureKits?.find((entry) => entry.id === target.kitId);
+  if (!kit || kit.kind !== "section") return;
+  recordProjectSnapshot();
+  const copy = duplicateIntoTileset(target.tilesetId, kit);
+  selectSpatialDesign(ownedKitCardId(target.tilesetId, copy.id));
+  rerender();
+}
+
+export function addBlankObject(rerender: () => void): void {
+  const mapId = editorState.get().currentMapId;
+  const tilesetId = (mapId ? store.getCurrent().maps[mapId]?.tilesetId : undefined)
+    ?? Object.keys(store.getCurrent().tilesets)[0];
+  if (!tilesetId) return;
+  const controller = spatialAuthoringController();
+  if (controller) {
+    const kitId = `kit_${randomUuid()}`;
+    const designId = `obj_${randomUuid()}`;
+    const result = editAuthoringDraft((project) => {
+      const created = createBlankObjectIntoProject({
+        project, tilesetId, kitId, designId: project.spatialAuthoring ? designId : undefined,
+      });
+      return "error" in created ? project : created.project;
+    });
+    objectChromeState.previewError = spatialAuthoringErrorText(result);
+    objectChromeState.saveState = objectChromeState.previewError ? "오류" : "초안";
+    if (!objectChromeState.previewError) {
+      if (visibleAuthoringProject().spatialAuthoring) selectSpatialDesign(libraryObjectCardId(designId));
+      else selectSpatialDesign(ownedKitCardId(tilesetId, kitId));
+      patchSpatialSession({ source: "own" });
+      rerender();
+      openDetachedKitPainter(tilesetId, kitId, rerender);
+      return;
+    }
+    rerender();
+    return;
+  }
+  recordProjectSnapshot();
+  const kit = createBlankStructureKit(tilesetId);
+  selectSpatialDesign(ownedKitCardId(tilesetId, kit.id));
+  patchSpatialSession({ source: "own" });
+  openStructureKitEditor(tilesetId, kit.id, rerender);
+}
+
+export function confirmDelete(target: ObjectDraftTarget, rerender: () => void): void {
+  const preview = previewObjectDelete(visibleAuthoringProject(), target);
+  if (preview.strong.length > 0) {
+    objectChromeState.previewError = "참조 중인 설계는 지울 수 없습니다";
+    objectChromeState.deleteOpen = false;
+    rerender();
+    return;
+  }
+  const controller = spatialAuthoringController();
+  const libraryId = target.libraryId;
+  if (controller && libraryId) {
+    const result = editAuthoringDraft((project) => project, {
+      operation: { kind: "delete-design", source: { kind: "object", id: libraryId } },
+    });
+    objectChromeState.previewError = spatialAuthoringErrorText(result);
+    objectChromeState.saveState = objectChromeState.previewError ? "오류" : "초안";
+  } else if (controller) {
+    const result = editAuthoringDraft((project) => removeKitFromProject(project, target.tilesetId, target.kitId));
+    objectChromeState.previewError = spatialAuthoringErrorText(result);
+    objectChromeState.saveState = objectChromeState.previewError ? "오류" : "초안";
+  } else {
+    recordProjectSnapshot();
+    deleteStructureKit(target.tilesetId, target.kitId);
+  }
+  objectChromeState.deleteOpen = false;
+  rerender();
+}

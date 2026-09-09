@@ -1,0 +1,108 @@
+monitor_id=mon_KT3W24XVGDYXTSN6
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":" ↓ test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: false"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":" ↓ test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: true"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":" × test/spatialAuthoringRefreshCollision.test.ts > recreates an entire missing subtree when a retained floor aliases its constructor identity at port level: false 1862ms"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"   → expected [ 'nested-village', …(17) ] to have a length of 24 but got 18"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":" × test/spatialAuthoringRefreshCollision.test.ts > recreates an entire missing subtree when a retained floor aliases its constructor identity at port level: true 1098ms"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"   → {\"code\":\"invalid\",\"message\":\"spatialAuthoring.occurrences.child:30:child:14:nested-village3:inn:07:floor-2:0.snapshot.ports: duplicate global ID port:50:child:30:child:14:nested-village3:inn:07:floor-1:05:entry\"}"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":" ↓ test/spatialAuthoringRefreshCollision.test.ts > preserves transitive opaque identities and ports when a place refresh updates frozen object revisions"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":" FAIL  test/spatialAuthoringRefreshCollision.test.ts > recreates an entire missing subtree when a retained floor aliases its constructor identity at port level: false"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"AssertionError: expected [ 'nested-village', …(17) ] to have a length of 24 but got 18"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"\u001b[32m- 24\u001b[39m"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"\u001b[31m+ 18\u001b[39m"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":" ❯ test/spatialAuthoringRefreshCollision.test.ts:83:41"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"     81|   // Then the full source tree returns without stealing any surviving …"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"     82|   const next = fixtureDocument(preview.project);"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"     83|   expect(Object.keys(next.occurrences)).toHaveLength(Object.keys(origi…"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"       |                                         ^"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"     84|   expect(Object.values(next.occurrences).filter(entry => entry.parentI…"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"     85|     .toEqual([\"floor-1\", \"floor-2\", \"floor-3\"]);"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":" FAIL  test/spatialAuthoringRefreshCollision.test.ts > recreates an entire missing subtree when a retained floor aliases its constructor identity at port level: true"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"TypeError: {\"code\":\"invalid\",\"message\":\"spatialAuthoring.occurrences.child:30:child:14:nested-village3:inn:07:floor-2:0.snapshot.ports: duplicate global ID port:50:child:30:child:14:nested-village3:inn:07:floor-1:05:entry\"}"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":" ❯ authoringValue test/support/spatialAuthoringFixture.ts:12:25"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"     10|   switch (result.kind) {"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"     11|     case \"ok\": return result.value;"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"     12|     case \"error\": throw new TypeError(JSON.stringify(result.error));"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"       |                         ^"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"     13|     default: return assertNever(result);"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"     14|   }"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":" ❯ test/spatialAuthoringRefreshCollision.test.ts:79:19"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"      Tests  2 failed | 3 skipped (5)"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"   Start at  00:02:24"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"   Duration  11.18s (transform 5.33s, setup 0ms, collect 7.43s, tests 2.96s, environment 302ms, prepare 107ms)"}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1075312","description":"task11 scoped validation","line":"JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix/output/evidence/tile-to-world/task-11/refresh-identity/red-transitive.json"}
+{"type":"summary","id":"authoring-1075312","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix
+
+ ↓ test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: false
+ ↓ test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: true
+ × test/spatialAuthoringRefreshCollision.test.ts > recreates an entire missing subtree when a retained floor aliases its constructor identity at port level: false 1862ms
+   → expected [ 'nested-village', …(17) ] to have a length of 24 but got 18
+ × test/spatialAuthoringRefreshCollision.test.ts > recreates an entire missing subtree when a retained floor aliases its constructor identity at port level: true 1098ms
+   → {"code":"invalid","message":"spatialAuthoring.occurrences.child:30:child:14:nested-village3:inn:07:floor-2:0.snapshot.ports: duplicate global ID port:50:child:30:child:14:nested-village3:inn:07:floor-1:05:entry"}
+ ↓ test/spatialAuthoringRefreshCollision.test.ts > preserves transitive opaque identities and ports when a place refresh updates frozen object revisions
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialAuthoringRefreshCollision.test.ts > recreates an entire missing subtree when a retained floor aliases its constructor identity at port level: false
+AssertionError: expected [ 'nested-village', …(17) ] to have a length of 24 but got 18
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 24[39m
+[31m+ 18[39m
+
+ ❯ test/spatialAuthoringRefreshCollision.test.ts:83:41
+     81|   // Then the full source tree returns without stealing any surviving …
+     82|   const next = fixtureDocument(preview.project);
+     83|   expect(Object.keys(next.occurrences)).toHaveLength(Object.keys(origi…
+       |                                         ^
+     84|   expect(Object.values(next.occurrences).filter(entry => entry.parentI…
+     85|     .toEqual(["floor-1", "floor-2", "floor-3"]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/spatialAuthoringRefreshCollision.test.ts > recreates an entire missing subtree when a retained floor aliases its constructor identity at port level: true
+TypeError: {"code":"invalid","message":"spatialAuthoring.occurrences.child:30:child:14:nested-village3:inn:07:floor-2:0.snapshot.ports: duplicate global ID port:50:child:30:child:14:nested-village3:inn:07:floor-1:05:entry"}
+ ❯ authoringValue test/support/spatialAuthoringFixture.ts:12:25
+     10|   switch (result.kind) {
+     11|     case "ok": return result.value;
+     12|     case "error": throw new TypeError(JSON.stringify(result.error));
+       |                         ^
+     13|     default: return assertNever(result);
+     14|   }
+ ❯ test/spatialAuthoringRefreshCollision.test.ts:79:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 skipped (5)
+   Start at  00:02:24
+   Duration  11.18s (transform 5.33s, setup 0ms, collect 7.43s, tests 2.96s, environment 302ms, prepare 107ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix/output/evidence/tile-to-world/task-11/refresh-identity/red-transitive.json
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

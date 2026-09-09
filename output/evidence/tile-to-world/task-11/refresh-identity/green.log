@@ -1,0 +1,30 @@
+monitor_id=mon_VEPWRPKXASKXR8PP
+{"type":"line","id":"authoring-1026743","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1026743","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix"}
+{"type":"line","id":"authoring-1026743","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1026743","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: false 2749ms"}
+{"type":"line","id":"authoring-1026743","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: true 2416ms"}
+{"type":"line","id":"authoring-1026743","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringRefreshCollision.test.ts > preserves transitive opaque identities and ports when a place refresh updates frozen object revisions 1417ms"}
+{"type":"line","id":"authoring-1026743","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1026743","description":"task11 scoped validation","line":" Test Files  1 passed (1)"}
+{"type":"line","id":"authoring-1026743","description":"task11 scoped validation","line":"      Tests  3 passed (3)"}
+{"type":"line","id":"authoring-1026743","description":"task11 scoped validation","line":"   Start at  00:00:10"}
+{"type":"line","id":"authoring-1026743","description":"task11 scoped validation","line":"   Duration  13.74s (transform 4.51s, setup 0ms, collect 6.36s, tests 6.58s, environment 298ms, prepare 103ms)"}
+{"type":"line","id":"authoring-1026743","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1026743","description":"task11 scoped validation","line":"JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix/output/evidence/tile-to-world/task-11/refresh-identity/green.json"}
+{"type":"summary","id":"authoring-1026743","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix
+
+ ✓ test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: false 2749ms
+ ✓ test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: true 2416ms
+ ✓ test/spatialAuthoringRefreshCollision.test.ts > preserves transitive opaque identities and ports when a place refresh updates frozen object revisions 1417ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  00:00:10
+   Duration  13.74s (transform 4.51s, setup 0ms, collect 6.36s, tests 6.58s, environment 298ms, prepare 103ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix/output/evidence/tile-to-world/task-11/refresh-identity/green.json
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

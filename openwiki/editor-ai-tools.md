@@ -182,6 +182,10 @@ fail, and references from `roguelikeRoom.encounterSlots` block removal with
 Regression seam: `test/actionAuthoringPrerequisites.test.ts`, including direct
 handler rejection without mutation, real runner results and published schemas.
 
+Canonical spatial hierarchy tools, detached proposal ownership, legacy adapters and
+real-runner evidence: [spatial-ai-tools.md](spatial-ai-tools.md). In active spatial
+mode this supersedes the legacy concept-catalog ownership notes below.
+
 ## Monster resource discovery and AI appearance evidence (2026-09-07)
 
 `list_monster_resources({})` returns the entire current monster index, without a default

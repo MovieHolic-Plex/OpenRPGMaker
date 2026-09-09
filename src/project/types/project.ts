@@ -484,6 +484,8 @@ export interface StoryFlagDef {
 }
 
 export interface Project {
+  /** Optional spatial authoring authority, separate from lore, worldGraph and runtime saves. */
+  spatialAuthoring?: import("../spatial/types").SpatialAuthoringDocument;
   /** Independent skill graphs; promotion edges remain ClassRecord.promotions. */
   growth?: import("../growth/types").GrowthDefinition;
   version: number;

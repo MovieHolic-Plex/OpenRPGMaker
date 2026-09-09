@@ -1,0 +1,80 @@
+monitor_id=mon_ZF894X3HK4ZMZ1X3
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: false 2683ms"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":" × test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: true 1045ms"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"   → expected [ 1 ] to deeply equal [ +0, 1 ]"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringRefreshCollision.test.ts > preserves transitive opaque identities and ports when a place refresh updates frozen object revisions 1580ms"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":" FAIL  test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: true"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"AssertionError: expected [ 1 ] to deeply equal [ +0, 1 ]"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"\u001b[2m  [\u001b[22m"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"\u001b[32m-   0,\u001b[39m"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"\u001b[2m    1,\u001b[22m"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"\u001b[2m  ]\u001b[22m"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":" ❯ test/spatialAuthoringRefreshCollision.test.ts:43:61"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"     41|   const refreshed = fixtureDocument(preview.project);"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"     42|   const beds = Object.values(refreshed.occurrences).filter(value => va…"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"     43|   expect(beds.map(value => value.parentSlot?.index).sort()).toEqual([0…"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"       |                                                             ^"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"     44|   expect(new Set(beds.map(value => value.id)).size).toBe(2);"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"     45|   expect(own(refreshed.occurrences, retainedId).parentSlot).toEqual({ …"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"      Tests  1 failed | 2 passed (3)"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"   Start at  23:58:23"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"   Duration  11.69s (transform 3.90s, setup 0ms, collect 5.61s, tests 5.31s, environment 301ms, prepare 89ms)"}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1005935","description":"task11 scoped validation","line":"JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix/output/evidence/tile-to-world/task-11/refresh-identity/red.json"}
+{"type":"summary","id":"authoring-1005935","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix
+
+ ✓ test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: false 2683ms
+ × test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: true 1045ms
+   → expected [ 1 ] to deeply equal [ +0, 1 ]
+ ✓ test/spatialAuthoringRefreshCollision.test.ts > preserves transitive opaque identities and ports when a place refresh updates frozen object revisions 1580ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: true
+AssertionError: expected [ 1 ] to deeply equal [ +0, 1 ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   0,[39m
+[2m    1,[22m
+[2m  ][22m
+
+ ❯ test/spatialAuthoringRefreshCollision.test.ts:43:61
+     41|   const refreshed = fixtureDocument(preview.project);
+     42|   const beds = Object.values(refreshed.occurrences).filter(value => va…
+     43|   expect(beds.map(value => value.parentSlot?.index).sort()).toEqual([0…
+       |                                                             ^
+     44|   expect(new Set(beds.map(value => value.id)).size).toBe(2);
+     45|   expect(own(refreshed.occurrences, retainedId).parentSlot).toEqual({ …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  23:58:23
+   Duration  11.69s (transform 3.90s, setup 0ms, collect 5.61s, tests 5.31s, environment 301ms, prepare 89ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix/output/evidence/tile-to-world/task-11/refresh-identity/red.json
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

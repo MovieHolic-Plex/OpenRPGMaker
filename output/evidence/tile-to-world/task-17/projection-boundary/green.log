@@ -1,0 +1,92 @@
+monitor_id=mon_FD2NWSGS54Q26NV2
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialToolProjectionBoundary.test.ts test/spatialToolAcceptance.test.ts test/spatialTools.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-projection-fix"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":" ✓ test/spatialToolProjectionBoundary.test.ts (7 tests) 21253ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ full canonical projection at generic runner and acceptance boundaries > rejects registered NPC disabling when an invalid name already exists: false  3114ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ full canonical projection at generic runner and acceptance boundaries > rejects registered NPC disabling when an invalid name already exists: true  2108ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ full canonical projection at generic runner and acceptance boundaries > rejects event removal when the same missing-event projection error predates the write  2019ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ full canonical projection at generic runner and acceptance boundaries > rejects an issued invalid spatial-enter: proposal at acceptance without relying on runner rejection  1725ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ full canonical projection at generic runner and acceptance boundaries > rejects an issued invalid spatial-return: proposal at acceptance without relying on runner rejection  2357ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ full canonical projection at generic runner and acceptance boundaries > accepts a genuine projection repair through the registered runner with exact undo and reloadable redo  5283ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ full canonical projection at generic runner and acceptance boundaries > accepts an unrelated registered edit when a legacy start-position lint error already exists  4644ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":" ✓ test/spatialTools.test.ts (13 tests) 13973ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > changes only the source when a revision is explicitly replaced  1539ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > compiles only on the detached draft when an issued preview is applied  2268ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects forged preview acceptance without mutation  1566ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects stale preview acceptance without mutation  1670ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects foreign preview acceptance without mutation  1149ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects spent preview acceptance without mutation  2158ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects missing source writes without partial changes  446ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects cycle source writes without partial changes  824ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > rejects malformed hierarchy when a generic write bypasses spatial tools  421ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ registered canonical spatial tools > retains preview lineage when the normal assistant draft is cloned  1613ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":" ✓ test/spatialToolAcceptance.test.ts (7 tests) 12568ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > accepts the authored source in one reversible transaction  3321ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live source before any publication  1707ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live map before any publication  2094ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live identity before any publication  1781ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a forged project snapshot even when its spatial document is unchanged  600ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects map tampering after a valid tool proposal was issued  1445ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a stale generic map proposal in canonical mode  1617ms"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":" Test Files  3 passed (3)"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"      Tests  27 passed (27)"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   Start at  03:01:57"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"   Duration  85.28s (transform 17.64s, setup 0ms, collect 34.75s, tests 47.79s, environment 1ms, prepare 720ms)"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 typecheck:app"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":"> tsc --noEmit -p tsconfig.app.json"}
+{"type":"line","id":"authoring-52657","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-52657","description":"task11 scoped validation","summary":"watcher exited_124 (exit code 124)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialToolProjectionBoundary.test.ts test/spatialToolAcceptance.test.ts test/spatialTools.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-projection-fix
+
+ ✓ test/spatialToolProjectionBoundary.test.ts (7 tests) 21253ms
+   ✓ full canonical projection at generic runner and acceptance boundaries > rejects registered NPC disabling when an invalid name already exists: false  3114ms
+   ✓ full canonical projection at generic runner and acceptance boundaries > rejects registered NPC disabling when an invalid name already exists: true  2108ms
+   ✓ full canonical projection at generic runner and acceptance boundaries > rejects event removal when the same missing-event projection error predates the write  2019ms
+   ✓ full canonical projection at generic runner and acceptance boundaries > rejects an issued invalid spatial-enter: proposal at acceptance without relying on runner rejection  1725ms
+   ✓ full canonical projection at generic runner and acceptance boundaries > rejects an issued invalid spatial-return: proposal at acceptance without relying on runner rejection  2357ms
+   ✓ full canonical projection at generic runner and acceptance boundaries > accepts a genuine projection repair through the registered runner with exact undo and reloadable redo  5283ms
+   ✓ full canonical projection at generic runner and acceptance boundaries > accepts an unrelated registered edit when a legacy start-position lint error already exists  4644ms
+ ✓ test/spatialTools.test.ts (13 tests) 13973ms
+   ✓ registered canonical spatial tools > changes only the source when a revision is explicitly replaced  1539ms
+   ✓ registered canonical spatial tools > compiles only on the detached draft when an issued preview is applied  2268ms
+   ✓ registered canonical spatial tools > rejects forged preview acceptance without mutation  1566ms
+   ✓ registered canonical spatial tools > rejects stale preview acceptance without mutation  1670ms
+   ✓ registered canonical spatial tools > rejects foreign preview acceptance without mutation  1149ms
+   ✓ registered canonical spatial tools > rejects spent preview acceptance without mutation  2158ms
+   ✓ registered canonical spatial tools > rejects missing source writes without partial changes  446ms
+   ✓ registered canonical spatial tools > rejects cycle source writes without partial changes  824ms
+   ✓ registered canonical spatial tools > rejects malformed hierarchy when a generic write bypasses spatial tools  421ms
+   ✓ registered canonical spatial tools > retains preview lineage when the normal assistant draft is cloned  1613ms
+ ✓ test/spatialToolAcceptance.test.ts (7 tests) 12568ms
+   ✓ spatial proposals at the actual shared acceptance boundary > accepts the authored source in one reversible transaction  3321ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live source before any publication  1707ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live map before any publication  2094ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live identity before any publication  1781ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a forged project snapshot even when its spatial document is unchanged  600ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects map tampering after a valid tool proposal was issued  1445ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a stale generic map proposal in canonical mode  1617ms
+
+ Test Files  3 passed (3)
+      Tests  27 passed (27)
+   Start at  03:01:57
+   Duration  85.28s (transform 17.64s, setup 0ms, collect 34.75s, tests 47.79s, environment 1ms, prepare 720ms)
+
+
+> rpg-zzu@0.1.0 typecheck:app
+> tsc --noEmit -p tsconfig.app.json
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":124,"signal":null,"cancelled":false,"timedOut":false}

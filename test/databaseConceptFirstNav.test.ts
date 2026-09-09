@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   databaseTabGroupLabel, getDatabaseActiveTab, renderDatabasePanel,
-  setDatabaseActiveTab, switchDatabaseActiveTab, TAB_GROUPS, type DatabaseTab,
+  resolveCanonicalDatabaseTab, setDatabaseActiveTab, switchDatabaseActiveTab, TAB_GROUPS, type DatabaseTab,
 } from "@/editor/panels/database";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { getTilesetMetadataEditMode, setTilesetMetadataEditMode } from "@/editor/panels/tilesetMetadataEditor";
@@ -65,9 +65,11 @@ const LEGACY_DESTINATIONS: readonly DatabaseTab[] = [
 ];
 
 describe("concept-first Map navigation", () => {
-  it("mounts only two Map primary entries and moves common events to System, without a folder", () => {
+  it("mounts six Map primary entries and moves common events to System, without a folder", () => {
     const host = renderHost();
-    expect(TAB_GROUPS.find((group) => group.slug === "world")?.tabs).toEqual(["scratchConcepts", "tilesets"]);
+    expect(TAB_GROUPS.find((group) => group.slug === "world")?.tabs).toEqual([
+      "spatialTiles", "spatialObjects", "spatialSpaces", "spatialPlaces", "spatialRegions", "spatialWorlds",
+    ]);
     expect(TAB_GROUPS.find((group) => group.slug === "system")?.tabs).toContain("commonEvents");
     expect(databaseTabGroupLabel("commonEvents")).toBe(databaseTabGroupLabel("system"));
     expect(host.querySelector("[data-testid='db-tileset-folder']")).toBeNull();
@@ -79,44 +81,55 @@ describe("concept-first Map navigation", () => {
   });
 
   it.each([
-    ["structureKits", "scratchConcepts", "structure-kit-heading"],
-    ["tilesetSpaces", "scratchConcepts", "tileset-spaces-workspace"],
-    ["villages", "scratchConcepts", "db-context-worldGen"],
-    ["worldGen", "villages", "db-context-back"],
-    ["terrain", "tilesets", "db-terrain-inspector"],
-  ] as const)("opens %s from its contextual parent and returns with shared selection", (child, parent, surface) => {
+    ["structureKits", "spatialObjects", "db-tab-spatial-objects", "spatial-gallery"],
+    ["tilesetSpaces", "spatialSpaces", "db-tab-spatial-spaces", "spatial-gallery"],
+    ["villages", "spatialPlaces", "db-tab-spatial-places", "spatial-gallery"],
+    ["worldGen", "spatialRegions", "db-tab-spatial-regions", "spatial-gallery"],
+    ["scratchConcepts", "spatialPlaces", "db-tab-spatial-places", "spatial-gallery"],
+    ["tilesets", "spatialTiles", "db-tab-spatial-tiles", "spatial-gallery"],
+  ] as const)("redirects legacy %s onto replacement %s", (legacy, canonical, rail, surface) => {
     const host = renderHost();
-    jump(host, parent);
-    pick(host, `db-context-${child}`).click();
-    expect(getDatabaseActiveTab()).toBe(child);
+    jump(host, legacy);
+    expect(getDatabaseActiveTab()).toBe(canonical);
     expect(pick(host, surface)).toBeTruthy();
-    expect(pick(host, child === "terrain" ? "db-tab-tilesets" : "db-tab-scratch-concepts").classList.contains("active")).toBe(true);
-    expect(databaseTabGroupLabel(child)).toBe(databaseTabGroupLabel("scratchConcepts"));
-    pick(host, "db-context-back").click();
-    expect(getDatabaseActiveTab()).toBe(parent);
+    expect(pick(host, rail).classList.contains("active")).toBe(true);
+    expect(databaseTabGroupLabel(legacy)).toBe(databaseTabGroupLabel("spatialPlaces"));
     expect(getSelectedTilesetId()).toBe(INTERIOR_ROOM_TILESET_ID);
   });
 
-  it("keeps concept selection and contextual links through local redraw and child return", () => {
+  it("opens terrain as a tiles facet and returns to the tiles destination", () => {
     const host = renderHost();
-    pick(host, "scratch-concept-place-corridor").click();
-    pick(host, "scratch-concept-thing-upper_stair").click();
-    pick(host, "db-context-structureKits").click();
-    expect(pick(host, `structure-kit-tileset-${INTERIOR_ROOM_TILESET_ID}`).classList.contains("active")).toBe(true);
+    jump(host, "spatialTiles");
+    pick(host, "db-context-terrain").click();
+    expect(getDatabaseActiveTab()).toBe("terrain");
+    expect(pick(host, "db-terrain-inspector")).toBeTruthy();
+    expect(pick(host, "db-tab-spatial-tiles").classList.contains("active")).toBe(true);
     pick(host, "db-context-back").click();
-    expect(pick(host, "scratch-concept-place-corridor").classList.contains("active")).toBe(true);
-    expect(pick(host, "scratch-concept-thing-upper_stair").classList.contains("active")).toBe(true);
-    pick(host, "db-context-tilesetSpaces").click();
+    expect(getDatabaseActiveTab()).toBe("spatialTiles");
+    expect(getSelectedTilesetId()).toBe(INTERIOR_ROOM_TILESET_ID);
+  });
+
+  it("keeps a place card selected across a sibling tab visit", () => {
+    const host = renderHost();
+    const card = host.querySelector("[data-testid='spatial-card-inn']");
+    expect(card).not.toBeNull();
+    card!.click();
+    expect(pick(host, "spatial-card-inn").classList.contains("is-selected")).toBe(true);
+    jump(host, "spatialObjects");
+    expect(getDatabaseActiveTab()).toBe("spatialObjects");
+    jump(host, "spatialPlaces");
+    expect(pick(host, "spatial-card-inn").classList.contains("is-selected")).toBe(true);
     expect(host.querySelector("[data-testid='structure-kit-new']")).toBeNull();
-    expect(host.querySelector("[data-testid='structure-kit-source-all']")).toBeNull();
   });
 
   it.each(LEGACY_DESTINATIONS)("keeps legacy destination %s searchable and programmatically routable", (tab) => {
     const host = renderHost();
     search(host, tab);
-    const destination = tab === "equipment" ? "items" : tab;
-    const matches = host.querySelectorAll(".db-tab").filter((node) => !node.hidden && node.dataset.tab === destination);
-    expect(matches).toHaveLength(1);
+    const requested = tab === "equipment" ? "items" : tab;
+    const destination = resolveCanonicalDatabaseTab(requested);
+    const matches = host.querySelectorAll(".db-tab").filter((node) => !node.hidden && (node.dataset.tab === requested || node.dataset.tab === destination));
+    expect(matches.length).toBe(1);
+    expect(matches[0]!.dataset.tab).toBe(destination);
     matches[0]!.click();
     expect(getDatabaseActiveTab()).toBe(destination);
     jump(host, tab);
@@ -126,11 +139,35 @@ describe("concept-first Map navigation", () => {
     expect(host.querySelector("[data-search-secondary]")).toBeNull();
   });
 
+  it("shows one visible destination for legacy alias queries", () => {
+    const host = renderHost();
+    search(host, "villages");
+    const villageTabs = host.querySelectorAll(".db-tab").filter((node) => !node.hidden);
+    expect(villageTabs.map((node) => node.dataset.tab)).toEqual(["spatialPlaces"]);
+    search(host, "tilesets");
+    const tilesetTabs = host.querySelectorAll(".db-tab").filter((node) => !node.hidden);
+    expect(tilesetTabs.map((node) => node.dataset.tab)).toEqual(["spatialTiles"]);
+    expect(tilesetTabs.some((node) => node.dataset.tab === "spatialSpaces")).toBe(false);
+  });
+
+  it.each([
+    ["ani", "animations", "db-tab-animations"],
+    ["act", "actors", "db-tab-actors"],
+  ] as const)("exposes the existing %s route for English prefix %s", (query, tab, testid) => {
+    const host = renderHost();
+    search(host, query);
+    const matches = host.querySelectorAll(".db-tab").filter((node) => !node.hidden);
+    expect(host.querySelector("[data-testid='db-tab-search-empty']")).toBeNull();
+    expect(matches.map((node) => node.dataset.tab)).toEqual([tab]);
+    pick(host, testid).click();
+    expect(getDatabaseActiveTab()).toBe(tab);
+  });
+
   it("finds retired Korean names and clears the empty-search notice", () => {
     const host = renderHost();
     search(host, "구조물");
-    pick(host, "db-tab-structure-kits").click();
-    expect(getDatabaseActiveTab()).toBe("structureKits");
+    pick(host, "db-tab-spatial-objects").click();
+    expect(getDatabaseActiveTab()).toBe("spatialObjects");
     search(host, "no-such-destination");
     expect(pick(host, "db-tab-search-empty")).toBeTruthy();
     search(host, "");
@@ -141,7 +178,7 @@ describe("concept-first Map navigation", () => {
     const host = renderHost();
     jump(host, "tilesetAutotile");
     expect(getTilesetMetadataEditMode()).toBe("autotile");
-    expect(pick(host, "db-tab-tilesets").classList.contains("active")).toBe(true);
+    expect(pick(host, "db-tab-spatial-tiles").classList.contains("active")).toBe(true);
     jump(host, "tilesetUnlabeled");
     expect(getTilesetMetadataEditMode()).toBe("ai");
     expect(getUnlabeledOnlyFilter()).toBe(true);
@@ -149,12 +186,12 @@ describe("concept-first Map navigation", () => {
     pick(host, "tileset-edit-mode-terrain").click();
     pick(host, "db-context-terrain").click();
     pick(host, "db-context-back").click();
-    expect(getDatabaseActiveTab()).toBe("tilesets");
+    expect(getDatabaseActiveTab()).toBe("spatialTiles");
     expect(getTilesetMetadataEditMode()).toBe("terrain");
     expect(pick(host, "tileset-edit-mode-terrain").getAttribute("aria-selected")).toBe("true");
     jump(host, "tilesetAutotile");
     expect(getTilesetMetadataEditMode()).toBe("autotile");
-    pick(host, "db-tab-tilesets").click();
+    pick(host, "db-tab-spatial-tiles").click();
     expect(getTilesetMetadataEditMode()).toBe("autotile");
     expect(pick(host, "tileset-section-tab-compose").getAttribute("aria-selected")).toBe("true");
   });

@@ -1,0 +1,94 @@
+monitor_id=mon_H1N4E17K0D7BNC1R
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceEdits.test.ts test/placedPlaceLifecycle.test.ts test/placedPlaceBoundaries.test.ts test/placedPlaceAssociationEdges.test.ts test/placedPlaceRejections.test.ts test/placedPlaceCommandSelection.test.ts test/spatialPlaceActions.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":" ✓ test/placedPlaceLifecycle.test.ts (4 tests) 12665ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ instantiates only the selected subtree when adding another shared-descendant inn  4110ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ deletes exact actual descendants when removing one nested inn  2867ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ uses actual level and frozen child identity when moving a facility room  2450ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ compiles an empty actual composition when the last surviving child is deleted  3237ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":" ✓ test/spatialPlaceActions.test.ts (15 tests) 6709ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ spatial place actions > keeps source edits off the live store until apply  1353ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ spatial place actions > rejects a reconstructed draft handle on preview  340ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ spatial place actions > leaves clone, delete, refresh and detach on a proposal until apply  590ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ spatial place actions > renders floor strip, picker, port links and exterior controls  639ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ spatial place actions > navigates into a nested place and restores selection on back  1448ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ spatial place actions > authors a first empty place on the detached draft  367ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":" ✓ test/placedPlaceRejections.test.ts (6 tests) 9811ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ rejects missing source additions without partial subtree or history writes  1672ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ rejects ancestor source additions without partial subtree or history writes  1977ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ rejects conflict source additions without partial subtree or history writes  1519ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ requires persisted associations when a historical child has incomplete identity  968ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ rejects fresh recompilation when owned output was manually painted  1943ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ rejects a deleted child slot instead of resurrecting its template  1731ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":" ✓ test/placedPlaceBoundaries.test.ts (4 tests) 6019ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ rejects unsupported facility level 0 without draft or history writes  1842ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ rejects unsupported facility level 4 without draft or history writes  1885ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ reports exact lifecycle impact when inspecting a placed deletion  902ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ offers the exact uncompiled clone identity when cloning a frozen placed tree  1389ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":" ✓ test/placedPlaceEdits.test.ts (1 test) 2876ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ moves the associated actual child and compiled surface when a placed slot moves  2874ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":" ✓ test/placedPlaceAssociationEdges.test.ts (2 tests) 3539ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ moves the actual override when the requested position equals its unchanged template  2421ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ rejects an unrelated compile scope when a parent composition changes  1117ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":" ✓ test/placedPlaceCommandSelection.test.ts (2 tests) 2510ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ selects the actual proposed clone when the placed duplicate command succeeds  1701ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   ✓ preserves explicit instance selection when a previously created design is still remembered  807ms"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":" Test Files  7 passed (7)"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"      Tests  34 passed (34)"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   Start at  06:42:34"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":"   Duration  63.04s (transform 4.59s, setup 0ms, collect 13.90s, tests 44.13s, environment 2.09s, prepare 670ms)"}
+{"type":"line","id":"authoring-3664239","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3664239","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/placedPlaceEdits.test.ts test/placedPlaceLifecycle.test.ts test/placedPlaceBoundaries.test.ts test/placedPlaceAssociationEdges.test.ts test/placedPlaceRejections.test.ts test/placedPlaceCommandSelection.test.ts test/spatialPlaceActions.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-edit
+
+ ✓ test/placedPlaceLifecycle.test.ts (4 tests) 12665ms
+   ✓ instantiates only the selected subtree when adding another shared-descendant inn  4110ms
+   ✓ deletes exact actual descendants when removing one nested inn  2867ms
+   ✓ uses actual level and frozen child identity when moving a facility room  2450ms
+   ✓ compiles an empty actual composition when the last surviving child is deleted  3237ms
+ ✓ test/spatialPlaceActions.test.ts (15 tests) 6709ms
+   ✓ spatial place actions > keeps source edits off the live store until apply  1353ms
+   ✓ spatial place actions > rejects a reconstructed draft handle on preview  340ms
+   ✓ spatial place actions > leaves clone, delete, refresh and detach on a proposal until apply  590ms
+   ✓ spatial place actions > renders floor strip, picker, port links and exterior controls  639ms
+   ✓ spatial place actions > navigates into a nested place and restores selection on back  1448ms
+   ✓ spatial place actions > authors a first empty place on the detached draft  367ms
+ ✓ test/placedPlaceRejections.test.ts (6 tests) 9811ms
+   ✓ rejects missing source additions without partial subtree or history writes  1672ms
+   ✓ rejects ancestor source additions without partial subtree or history writes  1977ms
+   ✓ rejects conflict source additions without partial subtree or history writes  1519ms
+   ✓ requires persisted associations when a historical child has incomplete identity  968ms
+   ✓ rejects fresh recompilation when owned output was manually painted  1943ms
+   ✓ rejects a deleted child slot instead of resurrecting its template  1731ms
+ ✓ test/placedPlaceBoundaries.test.ts (4 tests) 6019ms
+   ✓ rejects unsupported facility level 0 without draft or history writes  1842ms
+   ✓ rejects unsupported facility level 4 without draft or history writes  1885ms
+   ✓ reports exact lifecycle impact when inspecting a placed deletion  902ms
+   ✓ offers the exact uncompiled clone identity when cloning a frozen placed tree  1389ms
+ ✓ test/placedPlaceEdits.test.ts (1 test) 2876ms
+   ✓ moves the associated actual child and compiled surface when a placed slot moves  2874ms
+ ✓ test/placedPlaceAssociationEdges.test.ts (2 tests) 3539ms
+   ✓ moves the actual override when the requested position equals its unchanged template  2421ms
+   ✓ rejects an unrelated compile scope when a parent composition changes  1117ms
+ ✓ test/placedPlaceCommandSelection.test.ts (2 tests) 2510ms
+   ✓ selects the actual proposed clone when the placed duplicate command succeeds  1701ms
+   ✓ preserves explicit instance selection when a previously created design is still remembered  807ms
+
+ Test Files  7 passed (7)
+      Tests  34 passed (34)
+   Start at  06:42:34
+   Duration  63.04s (transform 4.59s, setup 0ms, collect 13.90s, tests 44.13s, environment 2.09s, prepare 670ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

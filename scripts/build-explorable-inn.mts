@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import { configFromEnv } from "./supabase-resource-root/supabaseRest.mjs";
-import { loadProjectFromSupabase, saveProjectToSupabase } from "../src/project/supabaseProjectSync";
+import { loadProjectFromSupabase, loadProjectSnapshotFromSupabase, saveProjectToSupabase } from "../src/project/supabaseProjectSync";
 import { deserialize, serialize } from "../src/project/io";
 import { createBlankProject } from "../src/project/defaults";
 import { runTool } from "../src/editor/tools/toolRunner";
@@ -23,8 +23,9 @@ const tilesetId = "easyrpg_chipset_interior";
 const config = await configFromEnv();
 assert.equal(config.projectId, "rpg-zzu-house-template-gallery");
 const target = { ...config, projectId: "rpg-zzu-inn-exploration-v4" };
-const base = await loadProjectFromSupabase(target);
-assert.ok(base, "Remote project must load before authoring");
+const snapshot = await loadProjectSnapshotFromSupabase(target);
+assert.ok(snapshot, "Remote project must load before authoring");
+const base = snapshot.project;
 // Build against the live tileset in a detached project. The tool's global changeset
 // normalizers must not repaint unrelated village maps while authoring an interior.
 const ctx = { project: createBlankProject() };
@@ -131,7 +132,7 @@ if (process.argv.includes("--save")) {
   standalone.tilesets[tilesetId] = playable.tilesets[tilesetId]!;
   standalone.startMapId = mapId;
   standalone.startPos = playable.startPos;
-  const saved = await saveProjectToSupabase(standalone, target);
+  const saved = await saveProjectToSupabase(standalone, target, snapshot.authority);
   assert.equal(saved.kind, "saved");
   const reloaded = await loadProjectFromSupabase(target);
   assert.ok(reloaded);
