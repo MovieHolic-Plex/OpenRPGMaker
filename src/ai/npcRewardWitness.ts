@@ -1,6 +1,17 @@
 import type { OpenAiToolSchema } from "./llmClient";
-import type { Dir } from "@/project/types";
+import type { Dir, Project } from "@/project/types";
+import type { NpcRewardRequirement } from "@/ai/intentDeclaration";
 import { isSceneTestInput } from "@/testing/sceneTestRunner";
+
+/** Event-state comparison only: never derives reward expectations from event commands. */
+export function npcRewardTargetSnapshot(project: Project, requirement: NpcRewardRequirement): string {
+  const { target } = requirement;
+  return JSON.stringify(Object.values(project.maps)
+    .filter((map) => target.mapId === undefined || target.mapId === map.id)
+    .flatMap((map) => map.events
+      .filter((event) => target.eventId !== undefined ? event.id === target.eventId : (event.name ?? event.pages?.[0]?.name) === target.eventName)
+      .map((event) => [map.id, event])));
+}
 
 export type NpcRewardPreludeStep = { readonly mapId: string } & (
   | { readonly kind: "walk"; readonly to: { readonly x: number; readonly y: number }; readonly adjacent?: boolean }

@@ -11,7 +11,7 @@ import { RunOperation } from "./runOperation";
 import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
 import { acceptanceFingerprint } from "./assistantAcceptanceEvaluation";
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
-import { ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "./assistantAcceptanceTools";
+import { ACCEPTANCE_TOOLS } from "./assistantAcceptanceTools";
 import { adventureCompletionProblems, type AdventureRequirements } from "./adventureCompletion";
 import { buildActionArenaAuthoringGuide, selectActionArenaAuthoringRecipe } from "./actionArenaAuthoring";
 // ai/assistantSession.ts
@@ -24,14 +24,14 @@ import { workTargetContractIssues, workTargetIssues, workToolOutcome, type WorkT
 import { ToolReadEvidence } from "./toolReadEvidence";
 import { ToolVerificationEvidence, parseVerificationChecks, verificationInitialState, type VerificationRequirement, type ApproachPreview } from "./toolVerificationEvidence";
 import { runProjectLint } from "@/editor/tools/queryTools";
-import { isVerifyNpcRewardInput, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
+import { isVerifyNpcRewardInput, npcRewardTargetSnapshot, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
 import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTools";
 import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
 import { toOpenAiTools } from "@/editor/tools";
-import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
+import type { ToolContext, ToolResult } from "@/editor/tools";
 import {
   harnessToolReason,
   injectToolReasonIntoOpenAiTool,
@@ -67,7 +67,6 @@ import {
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { ComposerMode } from "@/ai/composerMode";
 import { store, type ProjectPersistenceReceipt, type ProjectPersistenceProof } from "@/project/store";
-import type { WikiPreparationOutcome, WikiTurnInput } from "@/editor/projectWikiCoordinator";
 import {
   PLAY_WALKTHROUGH_TOOL,
   EVALUATE_GAME_QUALITY_TOOL,
@@ -78,7 +77,6 @@ import {
   type LayerVerdictInput,
   type VerificationCallRecord,
 } from "./agentVerification";
-import type { LintIssue } from "@/project/lint/projectLint";
 import { beginAssistantToolDomainTurn, recordAssistantToolDomainUse } from "@/editor/assistantToolMode";
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { applyVocabSoftConfirmApprovals, extractVocabSoftConfirm } from "@/project/tileVocabulary";
@@ -108,7 +106,7 @@ import {
   type ContextUsage,
 } from "./contextCompaction";
 import { restoredTranscriptMessage } from "./conversationReplay";
-import { addSessionUsage, EMPTY_SESSION_USAGE, type SessionUsageTotals } from "./sessionUsage";
+import { addSessionUsage, EMPTY_SESSION_USAGE, estimateOutputTokens, type SessionUsageTotals } from "./sessionUsage";
 import {
   calibratedBudgetChars,
   estimatePromptChars,
@@ -140,8 +138,6 @@ import {
   type ChatResult,
   type ContentPart,
   type ImageUrlPart,
-  type OpenAiToolSchema,
-  type ToolCall,
 } from "./llmClient";
 import {
   SPATIAL_BUILD_TOOLS,
@@ -228,703 +224,140 @@ import {
   buildRunRecap,
   serializeRunRecap,
   usageDelta,
-  type RunRecap,
 } from "./runRecap";
 
-const MAX_ESCALATED_TOOLS_PER_TURN = 16;
-/**
- * 한 항목에서 **같은 쓰기 툴 + 같은 실패 요약**을 연속으로 몇 번까지 허용하는가 (2026-09-03).
- * 스펙 게이트 거부처럼 인자를 바꾸지 않으면 영원히 같은 결과인 실패가 여기서 끊긴다.
- */
-const MAX_REPEATED_TOOL_FAILURES_PER_ITEM = 4;
+import {
+  AGENT_RUN_MAX_TOTAL_STEPS,
+  MAX_ESCALATED_TOOLS_PER_TURN,
+  MAX_REPEATED_TOOL_FAILURES_PER_ITEM,
+  MAX_SPEC_REJECTIONS,
+} from "./session/budgets";
+import { isRecord } from "./session/unknownValue";
+import {
+  BUDGET_STOP_REASONS,
+  TOKEN_BUDGET_STATUS_TEXT,
+  assistantTextLooksLikeQuestion,
+  createRawMarkupTokenGuard,
+  hasRawToolCallMarkup,
+  sanitizeAssistantText,
+  truncatedTurnText,
+} from "./session/assistantText";
+import {
+  EXECUTION_PHASE_HINT,
+  UNBUILT_SPEC_REKICK_HINT,
+  ZERO_CHANGE_REKICK_HINT,
+  isOrchestrationMessage,
+  orchestrationContent,
+} from "./session/orchestration";
+import {
+  RULE_TOOLS,
+  VOCABULARY_PROPOSAL_TOOLS,
+  VOCAB_SOFT_CONFIRM_APPROVAL_WARNING,
+  approvalWarningFor,
+} from "./session/proposalApproval";
+import {
+  CORRECT_VERIFICATION_TOOL,
+  SET_BUILD_SPEC_TOOL,
+  VISION_TOOLS,
+  WORK_PLAN_TOOLS,
+  composerAskRefusal,
+  isWriteToolName,
+} from "./session/sessionTools";
+import {
+  SHOP_ROLE_NAME,
+  SPEC_REMEDY_FIELDS,
+  autoExpandedAssetKind,
+  buildSpecPlanLabel,
+  isSpecGatePass,
+  plannedTargetMismatch,
+  regionContains,
+  specFingerprint,
+  specGateResult,
+  specNpcName,
+  type SpecGatePass,
+} from "./session/buildSpecGate";
+import { appendDiffWarning, withSpecGateWarnings } from "./session/toolResultWarnings";
+import {
+  eventBaseTarget,
+  eventTargetKey,
+  moveEventTarget,
+  proposalKey,
+  withMovedEventBaseProposal,
+  writeDedupeKey,
+} from "./session/eventTargets";
+import {
+  deferredToolResult,
+  discoveredToolNames,
+  invalidJsonArgsResult,
+  isDeferredToolResult,
+  parseToolCall,
+  toolResultForModel,
+  toolRetryTarget,
+  toolTargetMapId,
+} from "./session/toolPayload";
+import { batchRecordTarget, failedRecordReference, type BatchRecordTarget } from "./session/recordReference";
+import { ASSISTANT_TURN_RETRY_ATTEMPTS, appendTransientRetryGuidance, sleep } from "./session/transientRetry";
+import { completedWorkItemIdFromResult, findWorkItemById } from "./session/workItemLookup";
+import type {
+  AssistantPhase,
+  AssistantSessionOptions,
+  AuditEntry,
+  ChatFn,
+  CompactionOutcome,
+  CompletionAssessment,
+  HarnessSnapshot,
+  ProposedCall,
+  RenderedToolImage,
+  RunEndProofState,
+  SessionEvent,
+  SessionTurnOptions,
+  SessionTurnScope,
+  ToolImageRenderer,
+  TurnResult,
+} from "./session/types";
 
-function discoveredToolNames(result: ToolResult): string[] {
-  if (!result.ok || typeof result.data !== "object" || result.data === null || Array.isArray(result.data)) return [];
-  const matches = (result.data as { readonly matches?: unknown }).matches;
-  if (!Array.isArray(matches)) return [];
-  return matches.flatMap((match) => {
-    if (typeof match !== "object" || match === null || Array.isArray(match)) return [];
-    const name = (match as { readonly name?: unknown }).name;
-    return typeof name === "string" ? [name] : [];
-  });
-}
-
-/** Persistence evidence only; execution and goal outcomes remain separate. */
-export interface RunEndProofState {
-  readonly status: "attempted" | "failed" | "succeeded";
-  readonly verified: boolean;
-  readonly receipt?: ProjectPersistenceReceipt;
-  readonly commitId?: string | null;
-  readonly proof?: ProjectPersistenceProof;
-  readonly reason?: string;
-}
-
-// UI 스트리밍/로그용 이벤트.
-export type SessionEvent =
-  | { type: "assistant_token"; delta: string }
-  | { type: "reasoning_token"; delta: string }
-  | { type: "assistant_message"; content: string }
-  | { type: "assistant_stream_reset" }
-  | { type: "tool_call"; name: string; args: Record<string, unknown>; result: ToolResult; reason?: string }
-  // 툴 실행 직전에 나가는 신호 이벤트 — 결과 도착 전에 "지금 무엇을 하는 중"을 그릴 수 있게 한다.
-  // index는 이번 턴의 1-based 실행 서수.
-  | { type: "tool_started"; name: string; index: number; args?: Record<string, unknown> }
-  | { type: "phase"; value: "plan" | "execute" | "review" }
-  | { type: "status"; text: string }
-  | { type: "work_plan"; plan: WorkPlan }
-  | { type: "acceptance"; snapshot: AcceptanceSnapshot | null }
-  | { type: "completion_assessment"; assessment: CompletionAssessment }
-  | { type: "result_review"; review: ResultReview }
-  // ── 마일스톤 자동 적용(todo 4) ─────────────────────────────────────
-  // 자율 런에서 작업 항목 완료가 안전 검사를 통과해 스토어에 자동 적용됐다.
-  | { type: "milestone_applied"; title: string; toolCount: number; commitId: string | null }
-  // 자동 적용이 차단됐다(파괴적/어휘/규칙 verdict 또는 완성도 경고) — 카드가 렌더되어
-  // 사용자 승인을 기다린다(런 일시정지).
-  | { type: "proposal_paused"; reason: string; warnings?: readonly string[] }
-  /** 사용자 목표(자율 런이면 드라이버 전체)가 끝났을 때 토큰·경과·과정 계량. */
-  | { type: "run_recap"; recap: RunRecap }
-  | { type: "run_outcome"; runOutcome: RunOutcome }
-  | { type: "persistence_proof"; state: RunEndProofState };
-
-// 제안(changeset)에 담기는 개별 쓰기 툴콜.
-export interface ProposedCall {
-  name: string;
-  args: Record<string, unknown>;
-  summary: string;
-  result: ToolResult;
-  destructive: boolean; // remove_event 등 파괴적 작업.
-  requiresApproval?: boolean;
-  approvalWarning?: string;
-  /** 이 쓰기를 한 한 줄 이유. 적용 감사·편집 로그로 복사된다. */
-  reason?: string;
-}
-
-export interface CompletionAssessment {
-  readonly acceptance: AcceptanceSnapshot | null;
-  readonly adventure: readonly string[];
-  readonly verification: readonly string[];
-  readonly blockingVerification: readonly string[];
-  readonly checks: readonly LayerVerdictInput[];
-}
-
-export interface TurnResult {
-  /** Session-owned settlement updates this value after ordinary apply/proof. Legacy callers may omit it. */
-  runOutcome?: RunOutcome;
-  assistantText: string;
-  proposedCalls: ProposedCall[]; // 성공한 쓰기 툴콜(수락 시 store에 적용할 시퀀스).
-  stoppedReason: "final" | "max-tool-calls" | "token-budget" | "error" | "aborted";
-  error?: string;
-  /** Independent approval of this exact draft, never a persistence receipt. */
-  review?: ResultReview;
-  /** 어려운 요청의 다층 To-do 진행 상태(있으면 UI/브리지에 노출). */
-  workPlan?: WorkPlan;
-  /** 이 사용자 목표가 태운 토큰·경과·과정. 채팅에는 토큰 줄만, 로그에는 전부. */
-  recap?: RunRecap;
-  readonly completionAssessment?: CompletionAssessment;
-  /**
-   * 이 턴에 **마일스톤으로 이미 저장소에 적용된** 쓰기 툴콜. `proposedCalls` 와 서로 배타적이다:
-   * 마일스톤 적용은 `turnProposals` 를 비우므로(maybeAutoApplyMilestone) 적용된 몫은
-   * `proposedCalls` 에서 사라진다.
-   *
-   * 왜 노출하는가: 턴 끝 정산(완성도 린트·"변경 없음" 배너·상태줄)이 `proposedCalls` 만 보면
-   * 마일스톤으로 다 지은 턴을 **0-변경 턴으로 오판**한다. 소비자는 판정에는 두 배열의 합집합을,
-   * 재적용에는 `proposedCalls` 만 써야 한다.
-   */
-  appliedCalls?: ProposedCall[];
-  /** Successful DB candidate request in this turn, not an applied project write. */
-  appearanceGeneration?: AppearanceGenerationHandoff;
-}
-
-// 감사 로그 항목(Phase 1 헤드리스 러너로 리플레이 가능한 시퀀스).
-// at: ISO 타임스탬프(결함 ⑬ — 상태 전이/툴 호출/오류 타임라인을 export 가능하게).
-// kind:"status"는 턴 수명주기(시작/종료 사유/오류/재시도) 전이 기록이다.
-export type AuditEntry =
-  | { kind: "user"; text: string; at?: string; context?: ConversationTurnContext }
-  | { kind: "assistant"; text: string; toolCalls?: { name: string; args: string }[]; at?: string }
-  | { kind: "tool"; name: string; args: Record<string, unknown>; ok: boolean; summary: string; reason?: string; issues?: string[]; issueCodes?: string[]; deferred?: boolean; construction?: import("@/editor/construction/constructionAudit").ConstructionAuditRecord; at?: string }
-  | { kind: "status"; text: string; at?: string };
-
-// 하네스 스냅샷 — 오케스트레이션 주입을 포함한 세션 원본 메시지와 감사 로그를 한 번에 관측한다.
-// 🔬 하네스 뷰어와 window.__oprnAiHarness(헤드리스 디버깅)가 소비한다.
-export interface HarnessSnapshot {
-  readonly runIdentity?: RunCheckpointKey | null;
-  readonly model: string;
-  readonly liteModel?: string;
-  readonly maxTokens: number;
-  readonly messages: readonly ChatMessage[];
-  readonly audit: readonly AuditEntry[];
-  readonly workPlan?: WorkPlan | null;
-  readonly acceptance?: AcceptanceSnapshot | null;
-  readonly verification?: ReturnType<ToolVerificationEvidence["snapshot"]>;
-  readonly runEndProof?: RunEndProofState | null;
-  readonly resultReview?: ResultReview | null;
-  readonly runOutcome?: RunOutcome | null;
-}
-
-type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
-
-// 파괴성 판정은 approvalPolicy.isDestructiveOutcome 한 곳으로 모았다(이름 목록 + 결과 diff).
-// 여기 있던 3개짜리 지역 목록은 approvalPolicy 의 6개짜리 정본과 어긋나 있었다.
-export const RULE_TOOLS: ReadonlySet<string> = new Set(["set_cluster_rule", "set_group_junction", "set_group_overlay"]);
-
-// 어휘 합의: propose_tile_vocabulary 또는 soft-confirm 시공(목업 확인)은 검수 전 초안에
-// origin:user 로 확정된다(reviewCurrentDraft — 승인 뒤 후보 변경 금지(R2)).
-export const VOCABULARY_PROPOSAL_TOOLS: ReadonlySet<string> = new Set(["propose_tile_vocabulary"]);
-const VOCABULARY_APPROVAL_WARNING = "🔒 재료 합의: 적용하면 해당 타일/그룹을 다음부터 바로 씁니다(되돌리기로 원복).";
-const VOCAB_SOFT_CONFIRM_APPROVAL_WARNING =
-  "🖼 맵 배치와 함께 재료를 합의했습니다(origin:user). 되돌리면 배치와 합의가 함께 원복됩니다.";
-const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는 모든 맵의 저장(커밋)이 규칙 위반 시 거부됩니다.";
-export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
-/**
- * 예산 안내를 낼 종료 사유 — 사용자에게 "이어서 요청해 주세요" 라고 말할 자격이 있는 것만.
- *
- * 이 안내는 **런 경계**(finishRunRecap)에서만 나간다. 한 턴 안의 라운드/토큰 상한은 자율
- * 드라이버가 스스로 다음 턴을 여는 흔한 중간 사건이라, 턴 루프에서 내보내면 자동 계속마다
- * 같은 문장이 채팅에 쌓인다(사용자는 이어서 요청한 적이 없는데 계속 그러라는 말을 듣는다).
- */
-const BUDGET_STOP_REASONS: ReadonlySet<TurnResult["stoppedReason"]> = new Set(["token-budget", "max-tool-calls"]);
-
-// 예산 소진으로 모델의 마무리가 없으면 실제 적용분과 아직 적용 전인 제안을 함께 알린다.
-// 마일스톤은 제안 큐를 비우므로 pending=0만으로 "변경 없음"을 판단하면 안 된다.
-export function truncatedTurnText(existing: string, proposals: number, budgetLabel: string, appliedCalls = 0): string {
-  if (existing.trim().length > 0) return existing;
-  const changes = [
-    ...(appliedCalls > 0 ? [`변경 ${appliedCalls}건은 이미 프로젝트에 적용했습니다.`] : []),
-    ...(proposals > 0 ? [`아직 적용 전인 제안 ${proposals}건이 남아 있습니다.`] : []),
-  ];
-  const progress = changes.length > 0 ? changes.join(" ") : "적용할 만한 변경은 만들지 못했습니다.";
-  return `${budgetLabel}을 다 써서 이번 턴을 여기서 멈췄습니다. ${progress} 이어서 요청해 주세요.`;
-}
-const EXECUTION_PHASE_HINT = "실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지. 한 응답에 여러 tool_calls를 배치해 라운드 수를 최소화하라(예: fill_region + author_house + paint_road를 동시에).";
-const ZERO_CHANGE_REKICK_HINT = "사용자는 변경을 기대합니다. 질문이 아니면 지금 계획을 세우고 실행하세요";
-const UNBUILT_SPEC_REKICK_HINT =
-  "밑그림(set_build_spec)만 확정되었고 실제 배치 툴이 한 번도 호출되지 않았습니다. " +
-  "밑그림은 사용자에게 보이지 않고 승인할 대상도 아닙니다 — 다시 밑그림을 제출하지 말고 " +
-  "명세의 에셋을 실제로 만드는 배치 툴(place_npc · make_villager · author_house · place_props 등)을 지금 호출하세요.";
-const ORCHESTRATION_PREFIX = "[오케스트레이션] ";
-const RAW_TOOL_CALL_OMISSION_NOTICE = "…(형식 오류로 일부 생략)";
-const RAW_STREAM_GUARD_CHARS = 64;
-
-type AssistantPhase = "plan" | "execute" | "review";
-
-export function proposalNeedsExplicitApproval(calls: readonly ProposedCall[]): boolean {
-  return calls.some((call) => call.requiresApproval === true);
-}
-
-export function proposalApprovalWarnings(calls: readonly ProposedCall[]): string[] {
-  const warnings = calls
-    .map((call) => call.approvalWarning)
-    .filter((warning): warning is string => typeof warning === "string" && warning.length > 0);
-  return [...new Set(warnings)];
-}
-
-export function ruleToolRejectionText(name: string, result: ToolResult): string | null {
-  if (!RULE_TOOLS.has(name) || result.ok) return null;
-  const issues = result.issues ?? [];
-  if (issues.length === 0) return `실패 · ${name} — 커밋 거부: ${result.summary}`;
-  const samples = issues
-    .filter((issue) => typeof issue.mapId === "string" && typeof issue.x === "number" && typeof issue.y === "number")
-    .slice(0, 2)
-    .map((issue) => `${issue.mapId} ${issue.x},${issue.y}`);
-  const coords = samples.length > 0 ? ` (${samples.join(" / ")}${issues.length > samples.length ? " …" : ""})` : "";
-  return `실패 · ${name} — 커밋 거부: 위반 ${issues.length}곳${coords}`;
-}
-
-function approvalWarningFor(name: string, args: Record<string, unknown>): string | undefined {
-  if (VOCABULARY_PROPOSAL_TOOLS.has(name)) return VOCABULARY_APPROVAL_WARNING;
-  const rule = args.rule;
-  if (name !== "set_cluster_rule" || !isRecord(rule)) return undefined;
-  return rule.strength === "hard" ? HARD_CLUSTER_RULE_WARNING : undefined;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function plannedTargetMismatch(spec: BuildSpec, args: Record<string, unknown>): string | null {
-  const expected = spec.plannedMap;
-  const target = args.target;
-  if (!expected || !isRecord(target) || target.kind !== "new") return null;
-
-  const planned = isRecord(target.plannedMap) ? target.plannedMap : target;
-  const actualMapId = typeof planned.mapId === "string"
-    ? planned.mapId
-    : typeof target.mapId === "string"
-      ? target.mapId
-      : null;
-  const actualWidth = typeof planned.width === "number" ? planned.width : null;
-  const actualHeight = typeof planned.height === "number" ? planned.height : null;
-  if (
-    actualMapId === expected.mapId
-    && actualWidth === expected.width
-    && actualHeight === expected.height
-  ) {
-    return null;
-  }
-
-  return `확정된 plannedMap은 '${expected.mapId}' ${expected.width}×${expected.height}이지만 요청 대상은 `
-    + `'${actualMapId ?? "?"}' ${actualWidth ?? "?"}×${actualHeight ?? "?"}입니다.`;
-}
-
-export function rawToolCallMarkupIndex(text: string): number {
-  const lower = text.toLowerCase();
-  // 공급자 고유의 센티넬 문자열은 여기서 열거하지 않는다 — 전에는 한 공급자의 raw 툴콜
-  // 구분자를 하드코딩했는데, 그 공급자를 쓰지 않게 되면서 죽은 문자열만 남았다.
-  // `<tool_call>` 과 `<invoke name=` 는 공급자를 가리지 않는 누출 형태다.
-  const indexes = [
-    lower.indexOf("<tool_call>"),
-  ].filter((index) => index >= 0);
-  const invoke = /<invoke\s+name\s*=/iu.exec(text);
-  if (invoke?.index !== undefined) indexes.push(invoke.index);
-  return indexes.length === 0 ? -1 : Math.min(...indexes);
-}
-
-export function hasRawToolCallMarkup(text: string): boolean {
-  return rawToolCallMarkupIndex(text) >= 0;
-}
-
-export function sanitizeAssistantText(text: string): string {
-  const index = rawToolCallMarkupIndex(text);
-  if (index < 0) return text;
-  const safePrefix = text.slice(0, index).trimEnd();
-  return `${safePrefix}${RAW_TOOL_CALL_OMISSION_NOTICE}`;
-}
-
-function assistantTextLooksLikeQuestion(text: string): boolean {
-  const lines = text
-    .split(/\r?\n/u)
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0)
-    .slice(-2);
-  return lines.some((line) => (
-    /[?？]\s*$/u.test(line) ||
-    /(까요|을까요|ㄹ까요|나요|인가요|습니까|하시겠어요|해도 될까요)[.!…\s]*$/u.test(line)
-  ));
-}
-
-function orchestrationContent(content: string): string {
-  return `${ORCHESTRATION_PREFIX}${content}`;
-}
-
-function isOrchestrationMessage(message: ChatMessage, index: number): boolean {
-  if (index === 0) return false;
-  if (typeof message.content !== "string") return false;
-  if (message.role === "user" && message.content.startsWith(ORCHESTRATION_PREFIX)) return true;
-  // 핫픽스 전 세션에 남아 있을 수 있는 mid-history system 주입도 턴 종료 시 제거한다.
-  if (message.role !== "system") return false;
-  return (
-    message.content === EXECUTION_PHASE_HINT ||
-    message.content.startsWith("검수 단계:") ||
-    message.content.startsWith("검수 보완 지시:")
-  );
-}
-
-function createRawMarkupTokenGuard(emit: (delta: string) => void): { feed(delta: string): void; flush(): void } {
-  let pending = "";
-  let blocked = false;
-  const emitSafe = (text: string): void => {
-    if (text) emit(text);
-  };
-  return {
-    feed(delta: string): void {
-      if (blocked || !delta) return;
-      pending += delta;
-      const rawIndex = rawToolCallMarkupIndex(pending);
-      if (rawIndex >= 0) {
-        emitSafe(pending.slice(0, rawIndex));
-        pending = "";
-        blocked = true;
-        return;
-      }
-      if (pending.length <= RAW_STREAM_GUARD_CHARS) return;
-      const emitLength = pending.length - RAW_STREAM_GUARD_CHARS;
-      emitSafe(pending.slice(0, emitLength));
-      pending = pending.slice(emitLength);
-    },
-    flush(): void {
-      if (blocked) return;
-      const rawIndex = rawToolCallMarkupIndex(pending);
-      if (rawIndex >= 0) {
-        emitSafe(pending.slice(0, rawIndex));
-        pending = "";
-        blocked = true;
-        return;
-      }
-      emitSafe(pending);
-      pending = "";
-    },
-  };
-}
-
-// ── 비전(BUG C) ───────────────────────────────────────────────────
-// 툴 결과는 지금까지 텍스트 JSON으로만 모델에 전달됐다 — 비전 모델이 타일을 '보지' 못해
-// 의미를 지어냈다(예: 타일 80을 '탁자'로 오인). 렌더러가 있으면 '보여줘' 계열 툴의 이미지를
-// 후속 user 메시지로 주입해 모델이 실제로 보게 한다. 렌더러는 브라우저 전용(패널이 주입).
-export interface RenderedToolImage {
-  dataUrl: string;
-  label: string;
-}
-export type ToolImageRenderer = (
-  project: Project,
-  toolName: string,
-  data: unknown
-) => Promise<RenderedToolImage[]>;
-
-// 이미지를 주입할 툴(명시적 '보여줘' 계열 + 미리보기). get_map_region 등 빈번 조회는 텍스트로 두어 토큰을 아낀다.
-const VISION_TOOLS = new Set(["show_tiles", "show_tile_grid", "show_map_region", "preview_house", "look_at_houses", "render_group_sample"]);
-
-// ── 스펙 게이트(2026-07-05, '모호도' 대체) ────────────────────────
-// 자기 신고 수치([모호도 N%]) 대신 코드가 검증하는 밑그림(명세)을 쓴다:
-// 공간 쓰기 툴은 set_build_spec으로 제출되어 결정적으로 검증(경계/겹침)된 명세를 기준으로 실행된다.
-// 명세 밖 빈 영역은 자동 확장 warning으로 통과하고, 기존 구조물 파괴 위험만 차단한다.
-// 사용자가 맵에서 선택한 영역은 암묵적 명세. 검증 3회 실패 시 그 계획은 폐기하고 새 명세로 재계획하게 한다.
-
-// 타일 지식 기록(인터뷰/시연의 답 기록)은 맵/이벤트를 바꾸지 않는 계열 —
-// 제안 카드 없이 즉시 저장되는 목록(패널이 자동 반영 판단에 공유한다).
-export const METADATA_ONLY_TOOLS = new Set([
-  "set_tile_metadata",
-  "set_tile_rules",
-  "upsert_tile_group",
-  "set_tile_passability",
-]);
-
-// 세션 전용 툴: 공간 빌드 전 밑그림 제출. 레지스트리 툴이 아니라(프로젝트를 바꾸지 않음)
-// 세션이 직접 처리하며, tools 배열에는 이 스키마를 덧붙여 모델에 노출한다.
-// 감사(test/toolSchemaProviderCompat.test.ts)가 레지스트리 툴과 함께 검사해야 하므로 export 한다.
-export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
-  type: "function",
-  function: {
-    name: "set_build_spec",
-    description:
-      "공간 빌드(집/마을/길/청소/NPC 배치/지형 채우기) 전 밑그림(명세)을 제출한다. 검증(경계/겹침) 통과 후 공간 빌드 툴을 실행한다. 명세 밖 빈 영역은 자동 확장 warning으로 통과하지만 기존 구조물 파괴 위험은 차단된다. 같은 층 영역(x,y,w,h)은 원칙적으로 겹치지 않게 배정하되 road-road 교차와 명시적 terrain-before-road 순서의 도로 덧칠은 허용한다(assets/buildOrder 참조).",
-    parameters: {
-      type: "object",
-      properties: {
-        mapId: { type: "string" },
-        title: { type: "string", description: "밑그림 이름(예: 잿불 마을 확장)" },
-        assets: {
-          type: "array",
-          description:
-            "에셋 목록. kind: house|road|npc|prop|clear|terrain 등, layer: lower(기본)|upper(장식). 길은 kind:\"road\"로 명시한다; id·style·재료 라벨로 kind를 추론하지 않는다. " +
-            "같은 층 road-road는 교차 가능, terrain-road는 buildOrder에 terrain과 road를 모두 넣고 terrain을 먼저 둘 때만 겹칠 수 있다. terrain-terrain은 순서나 overExisting과 무관하게 겹침·중복 불가: 영역을 비겹침으로 분할하라. 다른 층이나 타일을 쓰지 않는 npc/event/transfer는 겹칠 수 있다. " +
-            "clear 에셋이 기존 구조물(집 등)을 덮으면 confirmDestroy:true가 있어야 통과합니다 — '주변 청소'는 구조물을 피해 영역을 좁히세요. " +
-            "배치 에셋 자리·주변에 기존 타일이 있으면 overExisting:\"clear\"|\"keep\"이 있어야 통과합니다.",
-          // properties 를 선언하지 않으면(items:{type:"object"}) strict function-calling 경로에서
-          // 모델이 필드를 표현할 방법이 없어 `assets:[{}]` 만 보낸다 — 2026-08-23 실측: 밑그림 검증 10회 연속 실패.
-          //
-          // 같은 벽을 필드 단위로 또 밟았다(2026-08-29 실측): 검증기가 overExisting 을 요구하는데
-          // 여기 선언이 없어 모델이 9회 연속 재제출에서 단 한 번도 그 필드를 낼 수 없었다. 같은 턴에서
-          // 선언돼 있던 confirmDestroy 는 정상적으로 나왔다 — 차이는 오직 이 목록에 있느냐였다.
-          // 결과: 영역 턴이 24콜 예산을 태우고 max-tool-calls 로 잘렸다(313칸이 미적용으로 폐기).
-          // 검증기가 요구하는 필드는 반드시 여기 선언한다 — properties 는 계약이고 description 은 주석이다.
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string", description: "에셋 식별자(예: house_1)" },
-              kind: { type: "string", description: "house|road|npc|prop|clear|terrain 등. 도로는 road로 명시; id·style·재료 라벨은 kind를 바꾸지 않는다" },
-              x: { type: "integer", description: "영역 좌상단 타일 x(칸 좌표)" },
-              y: { type: "integer", description: "영역 좌상단 타일 y(칸 좌표)" },
-              w: { type: "integer", description: "가로 칸 수 — 차지하는 마지막 칸은 x+w-1" },
-              h: { type: "integer", description: "세로 칸 수 — 차지하는 마지막 칸은 y+h-1" },
-              layer: { type: "string", enum: ["lower", "upper"], description: "기본 lower" },
-              style: { type: "string", description: "종류별 스타일 힌트(선택)" },
-              shape: {
-                type: "string",
-                enum: ["rect", "ellipse", "circle"],
-                description: "면 채우기 형태 힌트(기본 rect). 원형 수역은 circle — fill_region.shape 와 맞춘다",
-              },
-              confirmDestroy: { type: "boolean", description: "clear가 기존 구조물을 덮을 때만 true" },
-              overExisting: {
-                type: "string",
-                enum: ["clear", "keep"],
-                description:
-                  "배치(비-clear) 에셋 자리·주변에 기본 타일이 아닌 것이 있을 때의 정리 방침. " +
-                  "clear=정리하고 배치, keep=그대로 위에 배치. 기존 내용 충돌 때만 요구되며 새 에셋끼리의 교차를 허용하지 않는다",
-              },
-            },
-            required: ["id", "kind", "x", "y", "w", "h"],
-          },
-        },
-        buildOrder: {
-          type: "array",
-          items: { type: "string" },
-          description: "건설 순서(kind 목록, 예: [\"clear\",\"terrain\",\"road\",\"prop\"]). clear와 후속 kind를 모두 넣고 clear를 먼저 두면 후속 배치가 clear 영역을 덮을 수 있다. 같은 층 terrain-road 겹침도 두 kind를 모두 넣고 terrain을 먼저 둘 때만 허용한다. road-road 교차에는 순서가 필요 없다. 어떤 순서도 terrain-terrain 겹침·중복을 허용하지 않는다. 선언한 순서대로 시공하라.",
-        },
-        pathWidth: { type: "integer", description: "통로 너비(칸)" },
-        density: { type: "string", enum: ["spacious", "normal", "dense"], description: "에셋 분배(넓찍/보통/다닥)" },
-        layoutStyle: { type: "string", enum: ["straight", "curved", "random"], description: "배치 스타일" },
-      },
-      required: ["mapId", "assets"],
-    },
-  },
-};
-
-// 검증 실패 허용 횟수(턴당). 초과하면 계획 폐기를 지시한다 — 루프 방지.
-const MAX_SPEC_REJECTIONS = 3;
-
-// 검증기가 재제출 때 채우라고 이름을 부르는 에셋 필드. 여기 있는 이름은 반드시
-// SET_BUILD_SPEC_TOOL 의 assets.items.properties 에도 선언돼 있어야 한다 —
-// 선언 없는 필드를 요구하면 모델이 낼 방법이 없어 거부 루프가 예산을 태운다.
-// 계약은 test/toolSchemaProviderCompat.test.ts 가 지킨다.
-export const SPEC_REMEDY_FIELDS = ["overExisting", "confirmDestroy"] as const;
-
-// 키 순서에 흔들리지 않는 명세 지문. JSON.stringify 는 키 삽입 순서를 그대로 따르므로
-// 모델이 같은 내용을 순서만 바꿔 보내면 다른 문자열이 된다 — 정렬해서 비교한다.
-function specFingerprint(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(specFingerprint).join(",")}]`;
-  if (value !== null && typeof value === "object") {
-    const body = Object.entries(value as Record<string, unknown>)
-      .filter(([, entry]) => entry !== undefined)
-      .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
-      .map(([key, entry]) => `${JSON.stringify(key)}:${specFingerprint(entry)}`)
-      .join(",");
-    return `{${body}}`;
-  }
-  return JSON.stringify(value) ?? "null";
-}
-const ASSISTANT_TURN_RETRY_ATTEMPTS = 3;
-const TRANSIENT_NETWORK_RETRY_GUIDANCE = "일시적 네트워크 문제로 보이면 재시도를 눌러 주세요.";
-
-/**
- * 자율 런(autonomous driver)의 총 예산 — 자동 계속 턴 수 상한.
- * 턴당 Ralph 상한(MAX_WORK_PLAN_AUTO_STEPS_PER_TURN)과 별개로, 하나의 목표에 대해
- * 하니스가 사용자 개입 없이 소비할 수 있는 총 턴 수를 묶는다. 소진 시
- * agent_run_budget_exhausted 감사를 남기고 멈추며, 사용자의 「계속」 한마디로 재가동된다.
- */
-export const AGENT_RUN_MAX_TOTAL_STEPS = 48;
-
-/**
- * Session-only WorkPlan tools (Claude TodoWrite / Anthropic task-list style).
- * Always available so the main model can plan/replan inside the ReAct loop;
- * the pre-turn planner also authors the first plan without tools.
- */
-/** 세션 전용 쓰기 툴(레지스트리 밖) — 질문 모드에서 함께 뺀다. */
-const SESSION_WRITE_TOOL_NAMES: ReadonlySet<string> = new Set(["set_build_spec", "set_work_plan", "complete_work_item", "skip_work_item", "repair_acceptance", "review_acceptance", APPEARANCE_GENERATION_TOOL]);
-
-/** 프로젝트를 바꾸는 툴인가 — 레지스트리 mode:"write" 또는 세션 전용 쓰기 툴. */
-export function isWriteToolName(name: string): boolean {
-  return getTool(name)?.mode === "write" || SESSION_WRITE_TOOL_NAMES.has(name);
-}
-
-function composerAskRefusal(name: string): ToolResult {
-  return {
-    ok: false,
-    summary: `질문 모드에서는 변경 도구(${name})를 실행하지 않습니다. 조회 도구로만 답하세요 — 변경이 필요하면 사용자가 지시 모드로 바꿔야 합니다.`,
-    issues: [{ severity: "error", code: "composer-mode-ask", message: `${name} 은(는) 프로젝트를 바꾸는 도구라 질문 모드에서 거부됐습니다.` }],
-  };
-}
-
-export const CORRECT_VERIFICATION_TOOL: OpenAiToolSchema = {
-  type: "function", function: {
-    name: "correct_verification",
-    description: "Rerun an adopted requirement or unresolved finding by its session checkId with compatible original-tool args. No verdict, deletion, baseline or weakened assertions. Only facing repairs preserve scene scripts; map-qualified host receipts must match. Read check IDs from get_work_plan or verification results.",
-    parameters: { type: "object", properties: {
-      checkId: { type: "string" }, args: { type: "object", additionalProperties: true },
-    }, required: ["checkId", "args"], additionalProperties: false },
-  },
-};
-
-export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
-  {
-    type: "function",
-    function: {
-      name: "get_work_plan",
-      description: "현재 다층 WorkPlan 진행 상태를 조회한다. 미완료 항목이 있으면 반드시 현재 항목만 실행한다.",
-      parameters: { type: "object", properties: {} },
-    },
-  },
-  {
-    type: "function",
-    function: {
-      name: "set_work_plan",
-      description:
-        "다층 작업 계획을 세우거나 기존 항목의 지시/성공 도구를 교정한다. " +
-        "수정 시 get_work_plan으로 실제 ID를 확인하고 완료/건너뜀을 포함한 모든 기존 항목 ID를 유지한다. " +
-        "항목 추가·재배치·레이어 재구성은 허용하지만 항목 삭제·통합·재시작은 불가. 새 사용자 목표 채택은 main 플래너가 담당한다. " +
-        "한 항목 완료에는 complete_work_item을 쓴다.",
-      parameters: {
-        type: "object",
-        properties: {
-          goal: { type: "string", description: "전체 목표" },
-          acceptance: ACCEPTANCE_SCHEMA,
-          requirements: ACCEPTANCE_SCHEMA,
-          plannerNote: { type: "string", description: "전략 메모(선택)" },
-          layers: {
-            type: "array",
-            description: "2~6 레이어. 각 레이어는 title 과 items 를 가지며, 항목마다 구체적인 instruction 이 필요하다.",
-            // items:{type:"object"} 로 두면 모델이 `layers:[{}]` 밖에 못 보낸다(2026-08-23 실측: 8회 연속 인자 오류).
-            items: {
-              type: "object",
-              properties: {
-                id: { type: "string", description: "생략 시 L1, L2 … 자동" },
-                title: { type: "string", description: "레이어 제목" },
-                items: {
-                  type: "array",
-                  description: "이 레이어의 작업 항목",
-                  items: {
-                    type: "object",
-                    properties: {
-                      id: { type: "string", description: "최초 생성 시 생략하면 L1-1 … 자동. 수정 시 get_work_plan의 기존 항목 ID를 유지" },
-                      title: { type: "string", description: "항목 제목" },
-                      instruction: { type: "string", description: "실행 모델이 그대로 수행할 구체 지시" },
-                      doneWhen: { type: "string", description: "완료 판정 기준(선택)" },
-                      mapTargets: {
-                        type: "array", items: { type: "string" },
-                        description: "Required for spatial work: one exact map ID per authoring item. Linking declares exactly both endpoint IDs in its separate item.",
-                      },
-                      verificationChecks: {
-                        type: "array", description: "Only for verification successTools lacking a resolved accepted criterion. Immutable validated specifications; missing scope stays pending.",
-                        items: { type: "object", properties: {
-                          tool: { type: "string" },
-                          checkId: { type: "string", description: "Optional existing pending check ID to specify without changing its owner; valid scopes remain immutable." },
-                          criterion: { type: "object", properties: { promiseId: { type: "string" }, criterionIndex: { type: "integer", minimum: 0 } }, required: ["promiseId", "criterionIndex"] },
-                          args: { type: "object", additionalProperties: true },
-                          interactionTargets: { type: "array", description: "Every scene interact step's frozen map/event ownership.", items: { type: "object", properties: {
-                            stepIndex: { type: "integer", minimum: 0 }, mapId: { type: "string" }, eventId: { type: "string" },
-                          }, required: ["stepIndex", "mapId", "eventId"] } },
-                        }, required: ["tool"], additionalProperties: false },
-                      },
-                      requirementIds: { type: "array", items: { type: "string" } },
-                      successTools: {
-                        type: "array",
-                        description: "이 항목의 성공을 증명하는 툴 이름(선택)",
-                        items: { type: "string" },
-                      },
-                    },
-                    required: ["title", "instruction"],
-                  },
-                },
-              },
-              required: ["title", "items"],
-            },
-          },
-        },
-        required: ["goal", "layers"],
-      },
-    },
-  },
-  {
-    type: "function",
-    function: {
-      name: "complete_work_item",
-      description:
-        "현재 또는 지정 항목을 완료하고 다음 항목으로 넘긴다. doneWhen 충족 또는 해당 단계 쓰기 툴 성공 후 호출.",
-      parameters: {
-        type: "object",
-        properties: {
-          itemId: { type: "string", description: "생략 시 현재 in_progress 항목" },
-          note: { type: "string", description: "완료 메모" },
-        },
-      },
-    },
-  },
-  {
-    type: "function",
-    function: {
-      name: "skip_work_item",
-      description: "현재 또는 지정 항목을 건너뛰고 다음으로 간다(막혔을 때만). run_lint 등 필수 검증이 있는 항목은 건너뛸 수 없다. 오류를 수정하고 검증하거나 막힌 이유를 보고한다.",
-      parameters: {
-        type: "object",
-        properties: {
-          itemId: { type: "string" },
-          note: { type: "string" },
-        },
-      },
-    },
-  },
-];
-
-function specGateResult(summary: string, guidance: readonly string[]): ToolResult {
-  return {
-    ok: false,
-    summary,
-    issues: [{ severity: "error", code: "spec-gate", message: guidance.join(" ") }],
-  };
-}
-
-interface SpecGatePass {
-  warnings: LintIssue[];
-  commitExpansion?: () => void;
-}
-
-/** 이번 턴이 손댈 범위 — 현재 맵의 선택 사각형. 사실이지 의도가 아니다. */
-export interface SessionTurnScope {
-  readonly mapId: string;
-  readonly region: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
-}
-
-export interface SessionTurnOptions {
-  /** Explicit host user action, never inferred from model source/reset claims. */
-  readonly goalAction?: "resume" | "new-goal";
-  readonly autonomous?: boolean;
-  /** 사용자 발화 원문. text 에 footer 가 붙어 올 때 의도 선언·툴 언급 스캔은 이것만 본다. */
-  readonly instruction?: string;
-  readonly scope?: SessionTurnScope | null;
-  /** 컴포저 모드(지시/질문/계획). 없으면 지시. 세션이 강제한다 — 프롬프트 힌트가 아니다(`@/ai/composerMode`). */
-  readonly composerMode?: ComposerMode;
-  /**
-   * 하네스 내부 플래그 — 자율 드라이버가 스스로 보낸 합성 「계속」 턴인가. 패널·브리지는 넘기지 않는다.
-   *
-   * 사용자의 새 메시지(직접 친 「계속」 포함)와 구분해야 하는 것이 둘 있다:
-   *  1. 막힌 항목 되살리기 — 사람이 다시 말을 걸었을 때만 재시도한다(2026-09-03).
-   *  2. 플래너 왕복 — 계획이 그대로인 드라이버 계속 턴은 resume 이 자명하므로 main 모델 콜을 건너뛴다.
-   */
-  readonly driverContinue?: boolean;
-}
-
-export interface AssistantSessionOptions {
-  readonly checkpoint?: Pick<RunCheckpointKey, "conversationId" | "projectId" | "projectContextKey">;
-  config?: AiConfig;
-  /** Optional supervisor configuration for a surface whose writer uses the lite tier. */
-  reviewConfig?: AiConfig;
-  contextOptions?: ContextOptions;
-  // 테스트/대체용 chat 구현. 기본은 설정 baseUrl의 OpenAI 호환 chatCompletion.
-  chat?: ChatFn;
-  /**
-   * 턴 시작에 사용자 발화를 구조화 의도로 선언하는 함수(한 번, JSON). 패널·영역 작업은 실제 모델
-   * 선언자(createLlmIntentDeclarer)를 넣는다. 없으면 중립 폴백 선언으로 진행한다 — 되묻기·계획·툴
-   * 도메인을 문장 키워드로 추측하는 경로는 없다(2026-09-03 의도 라우터 감사).
-   */
-  declareIntent?: IntentDeclarer;
-  /** Editor-owned checkpoint or explicit deferral. The detached session never persists wiki writes itself. */
-  prepareProjectWiki?: (input: WikiTurnInput) => Promise<WikiPreparationOutcome>;
-  /**
-   * 자율 실행 드라이버용 사용자-대기 조회 훅(peek-only). 패널의 pendingSends 큐에
-   * 메시지가 있는지 "만" 보고한다 — 드라이버는 절대 dequeue 하지 않는다(패널의 기존
-   * 드레인 루프가 전달한다). 비문자·빈 문자열은 null 로 취급한다(시스템 경계 검증).
-   */
-  peekPendingUserMessage?: () => string | null;
-  // 비전 이미지 렌더러(브라우저 전용). 없으면 텍스트 전용(Node/테스트에서 동일 동작).
-  renderImages?: ToolImageRenderer;
-  // Legacy scoped-consumer option. The session exposes the complete active catalog.
-  toolMode?: () => ToolDomain | undefined;
-  /**
-   * 턴 시점 선택 영역 조회(에디터 UI 상태). 사용자 감사 항목의 상황 스냅샷에만 쓰이며
-   * 시스템 프롬프트에는 들어가지 않는다 — 그래서 ContextOptions 가 아니라 여기 있다.
-   */
-  getTurnSelection?: () => TurnSelectionSnapshot | null | undefined;
-  /**
-   * 복원/되감기로 들어온 세션에 주입할 이전 대화 기록(conversationReplay.serializeAuditTranscript).
-   * 시스템 프롬프트 바로 뒤 role "user" 한 덩어리로 들어간다 — 화면만 복원하고 모델은 아무것도
-   * 기억하지 못하던 상태를 메꾸는 유일한 입력이다.
-   */
-  priorTranscript?: string;
-  /**
-   * 동기 도구 실행 직전에 이벤트 루프를 양보한다. 기본은 브라우저에서 rAF 1틱,
-   * Node/테스트는 즉시. 주입하면 테스트가 양보 횟수를 셀 수 있다.
-   */
-  yieldToUi?: YieldToUi;
-  /**
-   * 턴 수명 동안 탭 freeze 를 막는 keep-alive. 기본은 Web Lock 을 쥔다.
-   * Node/테스트는 no-op. 주입하면 테스트가 획득·해제 시점을 셀 수 있다.
-   */
-  freezeGuard?: FreezeGuard;
-}
-
-/** 수동 압축(compactNow) 결과. 건너뜀은 사유를 사람 문장으로 돌려준다(UI 가 그대로 보여준다). */
-export type CompactionOutcome =
-  | { readonly kind: "done"; readonly beforeTokens: number; readonly afterTokens: number; readonly summary: string }
-  | { readonly kind: "skipped"; readonly reason: string };
+// ── 공개 계약 ──────────────────────────────────────────────────────
+// 이 모듈은 클래스를 소유하고, 세션의 나머지 표면은 session/* 이 소유한다.
+// 61개 소비자가 이 경로로 import 하므로 기존 export 를 그대로 다시 내보낸다.
+export type {
+  AssistantSessionOptions,
+  AuditEntry,
+  CompactionOutcome,
+  CompletionAssessment,
+  HarnessSnapshot,
+  ProposedCall,
+  RenderedToolImage,
+  RunEndProofState,
+  SessionEvent,
+  SessionTurnOptions,
+  SessionTurnScope,
+  ToolImageRenderer,
+  TurnResult,
+} from "./session/types";
+export { AGENT_RUN_MAX_TOTAL_STEPS } from "./session/budgets";
+export {
+  TOKEN_BUDGET_STATUS_TEXT,
+  hasRawToolCallMarkup,
+  rawToolCallMarkupIndex,
+  sanitizeAssistantText,
+  truncatedTurnText,
+} from "./session/assistantText";
+export {
+  RULE_TOOLS,
+  VOCABULARY_PROPOSAL_TOOLS,
+  proposalApprovalWarnings,
+  proposalNeedsExplicitApproval,
+  ruleToolRejectionText,
+} from "./session/proposalApproval";
+export {
+  CORRECT_VERIFICATION_TOOL,
+  METADATA_ONLY_TOOLS,
+  SET_BUILD_SPEC_TOOL,
+  WORK_PLAN_TOOLS,
+  isWriteToolName,
+} from "./session/sessionTools";
+export { SPEC_REMEDY_FIELDS } from "./session/buildSpecGate";
+export { writeDedupeKey } from "./session/eventTargets";
 
 export class AssistantSession {
   private readonly checkpointHost: AssistantSessionOptions["checkpoint"];
@@ -5997,395 +5430,4 @@ export class AssistantSession {
       stoppedReason: "max-tool-calls",
     };
   }
-}
-
-/** Event-state comparison only: never derives reward expectations from event commands. */
-function npcRewardTargetSnapshot(project: Project, requirement: NpcRewardRequirement): string {
-  const { target } = requirement;
-  return JSON.stringify(Object.values(project.maps)
-    .filter((map) => target.mapId === undefined || target.mapId === map.id)
-    .flatMap((map) => map.events
-      .filter((event) => target.eventId !== undefined ? event.id === target.eventId : (event.name ?? event.pages?.[0]?.name) === target.eventName)
-      .map((event) => [map.id, event])));
-}
-
-interface EventTargetKey {
-  readonly mapId: string;
-  readonly eventId: string;
-}
-
-interface EventMoveTarget extends EventTargetKey {
-  readonly x: number;
-  readonly y: number;
-}
-
-function appendDiffWarning(result: ToolResult, warning: string): ToolResult {
-  const diff = result.diff;
-  if (!diff || diff.warnings.includes(warning)) return result;
-  return { ...result, diff: { ...diff, warnings: [...diff.warnings, warning] } };
-}
-
-/** 상점 역할 이름 판정 — eventTools 의 같은 정규식과 의미를 맞춘다(그쪽은 비공개). */
-const SHOP_ROLE_NAME = /상점\s*주인|잡화\s*상|잡화점|가게\s*주인|상인|merchant|shopkeeper|shop\s*owner/u;
-
-function specNpcName(asset: SpecAsset): string {
-  const style = asset.style?.trim();
-  if (style) return style;
-  const note = asset.note?.trim();
-  return note && note.length > 0 ? note : "주민";
-}
-
-function buildSpecPlanLabel(spec: BuildSpec): string {
-  const title = spec.title?.trim();
-  if (title) return title;
-  const assetLabels = spec.assets
-    .slice(0, 3)
-    .map((asset) => asset.id.trim() || asset.kind.trim())
-    .filter((label) => label.length > 0);
-  const suffix = spec.assets.length > assetLabels.length ? ` 외 ${spec.assets.length - assetLabels.length}개` : "";
-  return assetLabels.length > 0 ? `${assetLabels.join(", ")}${suffix}` : spec.mapId;
-}
-
-function proposalKey(proposal: ProposedCall): string {
-  return `${proposal.name}:${JSON.stringify(proposal.args)}`;
-}
-
-/** 산포 툴 중복 억제 키 — seed 는 무시(같은 배치 의도 재호출 방지). */
-export function writeDedupeKey(name: string, args: Record<string, unknown>): string | null {
-  if (name !== "place_props") return null;
-  const mapId = typeof args.mapId === "string" ? args.mapId : "";
-  const material = typeof args.material === "string" ? args.material.trim() : typeof args.propVocabId === "string" ? args.propVocabId.trim() : "";
-  const count = typeof args.count === "number" ? args.count : args.count;
-  const area = args.area;
-  return `place_props|${mapId}|${JSON.stringify(area)}|${material}|${String(count)}`;
-}
-
-function moveEventTarget(proposal: ProposedCall): EventMoveTarget | null {
-  if (proposal.name !== "move_event") return null;
-  const mapId = stringValue(proposal.args.mapId);
-  const eventId = stringValue(proposal.args.eventId);
-  const x = numberValue(proposal.args.x);
-  const y = numberValue(proposal.args.y);
-  return mapId === null || eventId === null || x === null || y === null ? null : { mapId, eventId, x, y };
-}
-
-function eventBaseTarget(proposal: ProposedCall): EventTargetKey | null {
-  if (proposal.name === "place_npc" || proposal.name === "make_villager" || proposal.name === "place_battle_blocker") {
-    const mapId = stringValue(proposal.args.mapId);
-    const data = isRecord(proposal.result.data) ? proposal.result.data : null;
-    const eventId = stringValue(data?.eventId) ?? stringValue(proposal.args.id);
-    return mapId === null || eventId === null ? null : { mapId, eventId };
-  }
-
-  if (proposal.name === "upsert_event") {
-    const mapId = stringValue(proposal.args.mapId);
-    const event = isRecord(proposal.args.event) ? proposal.args.event : null;
-    const eventId = stringValue(event?.id);
-    return mapId === null || eventId === null ? null : { mapId, eventId };
-  }
-
-  if (proposal.name === "duplicate_event") {
-    const mapId = stringValue(proposal.args.toMapId);
-    const data = isRecord(proposal.result.data) ? proposal.result.data : null;
-    const eventId = stringValue(data?.eventId) ?? stringValue(proposal.args.newId);
-    return mapId === null || eventId === null ? null : { mapId, eventId };
-  }
-
-  return null;
-}
-
-function withMovedEventBaseProposal(base: ProposedCall, move: EventMoveTarget): ProposedCall {
-  const args = structuredClone(base.args);
-
-  if (base.name === "place_npc" || base.name === "place_battle_blocker" || base.name === "duplicate_event") {
-    args.x = move.x;
-    args.y = move.y;
-  } else if (base.name === "make_villager") {
-    const home = isRecord(args.home) ? args.home : null;
-    if (home !== null) args.home = { ...home, x: move.x, y: move.y };
-  } else if (base.name === "upsert_event") {
-    const event = isRecord(args.event) ? args.event : null;
-    if (event !== null) args.event = { ...event, x: move.x, y: move.y };
-  } else {
-    return base;
-  }
-
-  return {
-    ...base,
-    args,
-    summary: summaryWithFinalEventPosition(base.summary, move),
-    result: { ...base.result, data: dataWithEventPosition(base.result.data, move) },
-  };
-}
-
-function summaryWithFinalEventPosition(summary: string, move: EventMoveTarget): string {
-  const coord = `(${move.x}, ${move.y})`;
-  const replaced = summary.replace(/배치 \(-?\d+,\s*-?\d+\)/, `배치 ${coord}`);
-  return replaced !== summary ? replaced : `${summary} — 최종 위치 ${coord}`;
-}
-
-function dataWithEventPosition(data: unknown, move: EventMoveTarget): unknown {
-  return isRecord(data) ? { ...data, x: move.x, y: move.y } : data;
-}
-
-function eventTargetKey(target: EventTargetKey): string {
-  return `${target.mapId}:${target.eventId}`;
-}
-
-function toolTargetMapId(args: Record<string, unknown>): string | undefined {
-  const mapId = args.mapId ?? (isRecord(args.target) ? args.target.mapId : undefined);
-  return typeof mapId === "string" ? mapId : undefined;
-}
-
-function toolRetryTarget(name: string, args: Record<string, unknown>): string {
-  const record = name.startsWith("upsert_") ? args[name.slice("upsert_".length)] : undefined;
-  const id = args.id ?? args.eventId ?? (isRecord(record) ? record.id : undefined) ?? args.name;
-  return JSON.stringify([name, toolTargetMapId(args) ?? null, typeof id === "string" ? id : null]);
-}
-
-function deferredToolResult(reason: string, summary: string): ToolResult {
-  return {
-    ok: false, summary,
-    issues: [{ severity: "error", code: reason, message: summary }],
-    data: { code: "tool-deferred", executed: false, reason },
-  };
-}
-
-function isDeferredToolResult(result: ToolResult): boolean {
-  return isRecord(result.data) && result.data.code === "tool-deferred" && result.data.executed === false;
-}
-
-// Only explicit DB ID contracts, matching ToolReadEvidence; never infer dependencies from prose.
-const BATCH_RECORD_COLLECTIONS = [
-  ["item", "items"], ["enemy", "enemies"], ["troop", "troops"],
-  ["actor", "actors"], ["skill", "skills"], ["equipment", "equipment"],
-] as const;
-type BatchRecordKind = typeof BATCH_RECORD_COLLECTIONS[number][0];
-interface BatchRecordTarget {
-  key: string;
-  kind: BatchRecordKind;
-  collection: typeof BATCH_RECORD_COLLECTIONS[number][1];
-  id: string;
-}
-
-function batchRecordTarget(name: string, args: Record<string, unknown>): BatchRecordTarget | null {
-  for (const [kind, collection] of BATCH_RECORD_COLLECTIONS) {
-    const value = args[kind];
-    if (name === `upsert_${kind}` && isRecord(value) && typeof value.id === "string") {
-      return { key: `${kind}:${value.id}`, kind, collection, id: value.id };
-    }
-  }
-  return null;
-}
-
-function failedRecordReference(value: unknown, failed: ReadonlyMap<string, BatchRecordTarget>): BatchRecordTarget | undefined {
-  if (failed.size === 0) return undefined;
-  if (Array.isArray(value)) {
-    for (const child of value) {
-      const found = failedRecordReference(child, failed);
-      if (found) return found;
-    }
-  } else if (isRecord(value)) {
-    for (const [key, child] of Object.entries(value)) {
-      for (const target of failed.values()) {
-        const idField = key === `${target.kind}Id` || key === `${target.kind}Ids`
-          || (target.kind === "actor" && (key === "partyActorIds" || key === "startActorIds"));
-        if (idField && (Array.isArray(child) ? child : [child]).includes(target.id)) return target;
-        if (target.kind === "item" && key === "inventory" && isRecord(child) && Object.hasOwn(child, target.id)) return target;
-      }
-      const found = failedRecordReference(child, failed);
-      if (found) return found;
-    }
-  }
-  return undefined;
-}
-
-function isSpecGatePass(result: ToolResult | SpecGatePass): result is SpecGatePass {
-  return "warnings" in result;
-}
-
-function regionContains(region: AffectedRegion, x: number, y: number): boolean {
-  return x >= region.x && y >= region.y && x < region.x + region.w && y < region.y + region.h;
-}
-
-function autoExpandedAssetKind(toolName: string): string {
-  switch (toolName) {
-    case "clear_region":
-    case "tile_erase":
-      return "clear";
-    case "paint_road":
-    case "tile_road":
-    case "lay_path":
-      return "road";
-    case "fill_region":
-    case "paint_tiles":
-    case "tile_paint":
-      return "terrain";
-    case "place_npc":
-    case "make_villager":
-      return "npc";
-    case "place_battle_blocker":
-    case "place_props":
-    case "tile_scatter":
-      return "prop";
-    case "build_house":
-    case "build_village":
-      return "house";
-    default:
-      return "structure";
-  }
-}
-
-function withSpecGateWarnings(result: ToolResult, warnings: readonly LintIssue[]): ToolResult {
-  if (!result.ok || warnings.length === 0) return result;
-  const warningMessages = warnings.map((warning) => warning.message);
-  return {
-    ...result,
-    diff: result.diff
-      ? { ...result.diff, warnings: [...result.diff.warnings, ...warningMessages] }
-      : result.diff,
-    issues: [...(result.issues ?? []), ...warnings],
-  };
-}
-
-// usage가 없는 응답(일부 스트리밍)의 출력 토큰 추정 — 한국어 기준 보수적으로 3자당 1토큰.
-function estimateOutputTokens(message: ChatMessage): number {
-  const contentLength = message.content?.length ?? 0;
-  const argsLength = (message.tool_calls ?? []).reduce((total, call) => total + call.function.arguments.length + call.function.name.length, 0);
-  return Math.ceil((contentLength + argsLength) / 3);
-}
-
-// 모델에 되돌려줄 툴 결과(자가수정을 위해 issues를 포함).
-// show_map_region 등의 거대한 lower/upper 2D 배열은 컨텍스트를 폭파시키므로 생략한다(이미지는 별도 주입).
-function toolResultForModel(result: ToolResult): Record<string, unknown> {
-  return {
-    ok: result.ok,
-    summary: result.summary,
-    diff: result.diff,
-    // issues가 있으면 원인을 읽고 인자를 고쳐 재시도하라는 신호.
-    issues: result.issues?.map((issue) => ({ severity: issue.severity, code: issue.code, message: issue.message,
-      ...(issue.relocation ? { mapId: issue.mapId, eventId: issue.eventId, x: issue.x, y: issue.y, relocation: issue.relocation } : {}),
-    })),
-    ...(result.warnings && result.warnings.length > 0 ? { warnings: result.warnings } : {}),
-    data: compactToolDataForModel(result.data),
-  };
-}
-
-function compactToolDataForModel(data: unknown): unknown {
-  if (data === null || data === undefined || typeof data !== "object") return data;
-  const rec = data as Record<string, unknown>;
-
-  // 비전 툴: 전체 타일 행렬 생략 (픽셀 이미지가 별도 user 메시지로 감).
-  if (Array.isArray(rec.lower) || Array.isArray(rec.upper)) {
-    const w = typeof rec.w === "number" ? rec.w : undefined;
-    const h = typeof rec.h === "number" ? rec.h : undefined;
-    return {
-      mapId: rec.mapId,
-      x: rec.x,
-      y: rec.y,
-      w,
-      h,
-      // look_at_houses 의 집계는 이미지로 대체되지 않는 판정 근거다 — 배열만 떼고 남긴다.
-      ...(rec.bounds === undefined ? {} : { bounds: rec.bounds }),
-      ...(rec.houses === undefined ? {} : { houses: rec.houses }),
-      ...(rec.variety === undefined ? {} : { variety: rec.variety }),
-      tileArraysOmitted: true,
-      note: "lower/upper 타일 배열은 컨텍스트 절약을 위해 생략됨. 같은 턴에 주입된 맵 이미지를 보거나, 좌표는 x/y/w/h·summary를 사용. 호수 위치는 get_map_region의 data.water.bounds를 우선.",
-    };
-  }
-
-  // get_map_region: 과대 그리드는 샘플+water 메타만.
-  if (Array.isArray(rec.grid)) {
-    const grid = rec.grid as string[];
-    const totalChars = grid.reduce((sum, row) => sum + row.length, 0);
-    if (totalChars > 900) {
-      const step = Math.max(1, Math.ceil(Math.sqrt(totalChars / 600)));
-      const sampled = grid.filter((_, index) => index % step === 0).map((row) => {
-        if (row.length <= 40) return row;
-        let out = "";
-        for (let i = 0; i < row.length; i += step) out += row[i];
-        return out;
-      });
-      return {
-        ...rec,
-        grid: sampled,
-        gridSampled: true,
-        gridSampleStep: step,
-        note: "그리드가 커서 샘플링됨. 호수 좌표는 water.bounds를 쓰고, 상세는 작은 영역으로 재조회.",
-      };
-    }
-  }
-
-  return data;
-}
-
-function parseToolCall(call: ToolCall): { name: string; args: Record<string, unknown>; parseError: string | null } {
-  const name = call.function.name;
-  const raw = call.function.arguments?.trim();
-  if (!raw) return { name, args: {}, parseError: null };
-  try {
-    const parsed = JSON.parse(raw);
-    if (parsed !== null && typeof parsed === "object" && !Array.isArray(parsed)) {
-      return { name, args: parsed as Record<string, unknown>, parseError: null };
-    }
-    return { name, args: {}, parseError: `인자가 JSON 객체가 아닙니다(${Array.isArray(parsed) ? "array" : typeof parsed}).` };
-  } catch (cause) {
-    // 예전엔 파싱 실패를 조용히 삼켜 빈 인자로 툴을 돌렸다. 그러면 모델은 `필수 인자 누락:
-    // mapId, x, y…` 를 받고 "인자를 안 보냈다"고 이해해 **똑같은 큰 페이로드를 그대로 재전송**한다 —
-    // 진짜 원인은 보통 출력 상한으로 JSON 이 중간에서 잘린 것이다. 사유를 그대로 알린다.
-    return { name, args: {}, parseError: cause instanceof Error ? cause.message : String(cause) };
-  }
-}
-
-/** 인자 JSON 자체가 깨진 툴콜 — 툴을 돌리지 않고 사유를 모델에 되돌려 자가수정을 유도한다. */
-function invalidJsonArgsResult(name: string, raw: string, reason: string): ToolResult {
-  const compact = raw.length > 160 ? `${raw.slice(0, 80)}…(중략)…${raw.slice(-40)}` : raw;
-  return {
-    ok: false,
-    summary: `'${name}' 인자 JSON 파싱 실패: ${reason}`,
-    issues: [
-      {
-        severity: "error",
-        code: "invalid-json-args",
-        message:
-          `인자 JSON 을 해석하지 못했습니다: ${reason}. 인자를 생략한 것이 아니라 깨진 문자열로 도달했으므로,`
-          + ` 같은 내용을 그대로 다시 보내면 또 실패합니다. 출력 길이 상한에 걸려 JSON 이 잘린 경우가 대부분이니`
-          + ` 한 호출에 담는 항목 수를 줄이거나 호출을 여러 번으로 나눠 다시 시도하세요.`
-          + ` 받은 원문(축약): ${compact}`,
-      },
-    ],
-  };
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function appendTransientRetryGuidance(message: string): string {
-  if (message.includes(TRANSIENT_NETWORK_RETRY_GUIDANCE)) return message;
-  return `${message}\n${TRANSIENT_NETWORK_RETRY_GUIDANCE}`;
-}
-
-function stringValue(value: unknown): string | null {
-  return typeof value === "string" && value.length > 0 ? value : null;
-}
-
-function numberValue(value: unknown): number | null {
-  return typeof value === "number" && Number.isFinite(value) ? value : null;
-}
-
-/** 완료된 work-item을 id로 찾는다 — 완료 직후 currentItemId는 다음 항목으로 넘어가 있다. */
-function findWorkItemById(plan: WorkPlan, itemId: string): WorkItem | null {
-  for (const layer of plan.layers) {
-    const item = layer.items.find((entry) => entry.id === itemId);
-    if (item) return item;
-  }
-  return null;
-}
-
-/** complete_work_item ToolResult.data.completed(항목 id)를 안전하게 꺼낸다. */
-function completedWorkItemIdFromResult(result: ToolResult): string | null {
-  if (!result.data || typeof result.data !== "object" || Array.isArray(result.data)) return null;
-  const completed = (result.data as Record<string, unknown>).completed;
-  return typeof completed === "string" && completed.length > 0 ? completed : null;
 }

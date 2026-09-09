@@ -1,6 +1,6 @@
 import { aiRecordBackendKind, AI_RECORD_STORES, mutateAiRecord, readAllAiRecords } from "./aiRecordDb";
 import type { AcceptanceSnapshot, AcceptanceSource } from "./assistantAcceptance";
-import type { ProposedCall, RunEndProofState } from "./assistantSession";
+import type { ProposedCall, RunEndProofState } from "./session/types";
 import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
 import type { WorkPlan } from "./workPlan";
 import type { ProjectPersistenceReceipt } from "@/project/store";

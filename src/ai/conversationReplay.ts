@@ -12,7 +12,7 @@
 // 바로 뒤의 role "user" 텍스트 한 덩어리 — 로만 주입한다. 이 자리는 이미 검증된 안전 지대다
 // (요약을 user 로 두는 이유와 동일: 첫 턴이 user 여야 하는 공급자 제약도 함께 만족한다).
 
-import type { AuditEntry } from "./assistantSession";
+import type { AuditEntry } from "./session/types";
 import type { ChatMessage } from "./llmClient";
 
 /** 주입된 기록을 다시 알아보기 위한 구조 토큰(사람이 읽는 문구가 아니라 식별자). */

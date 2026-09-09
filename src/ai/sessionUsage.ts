@@ -11,6 +11,8 @@
 // Antigravity = Google 구독)은 **구독제**라 토큰당 단가가 없다(modelCatalog.ts). 단가표를
 // 박아 "$0.42" 를 찍으면 근거 없는 숫자를 감독에게 파는 것이다. 그래서 토큰만 보고한다.
 
+import type { ChatMessage } from "./llmClient";
+
 export interface SessionModelUsage {
   readonly model: string;
   readonly calls: number;
@@ -39,6 +41,14 @@ export const EMPTY_SESSION_USAGE: SessionUsageTotals = {
 
 function positiveInt(value: unknown): number {
   return typeof value === "number" && Number.isFinite(value) && value > 0 ? Math.trunc(value) : 0;
+}
+
+// usage가 없는 응답(일부 스트리밍)의 출력 토큰 추정 — 한국어 기준 보수적으로 3자당 1토큰.
+// callsWithoutUsage 가 세는 그 호출들의 토큰을 여기서 메꾼다.
+export function estimateOutputTokens(message: ChatMessage): number {
+  const contentLength = message.content?.length ?? 0;
+  const argsLength = (message.tool_calls ?? []).reduce((total, call) => total + call.function.arguments.length + call.function.name.length, 0);
+  return Math.ceil((contentLength + argsLength) / 3);
 }
 
 /**
