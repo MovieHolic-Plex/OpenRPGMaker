@@ -1024,7 +1024,12 @@ export class AssistantSession {
     if (paused && pending?.stage === "proposal-ready") pending = null;
     const status: RunCheckpoint["status"] = paused ? pending ? "awaiting-user" : "terminal"
       : this.checkpointTerminal && !pending ? "terminal" : "active";
-    const checkpoint: RunCheckpoint = structuredClone({ ...key, schemaVersion: 1,
+    // exportRuntime()/snapshot()/getAcceptanceSnapshot() 는 이미 자기 몫을 복제해 돌려준다.
+    // 여기서 행 전체를 한 번 더 structuredClone 하면 프로젝트 여러 벌을 라운드마다 다시 복제한다 —
+    // 실측(2026-09-09): 원장 복원본 생성 약 96ms + 재복제 약 110ms 로 라운드마다 0.2초가
+    // 사라졌고, 실표면 required-skip 은 그 누적으로 정착 예산을 넘겼다.
+    // saveRunCheckpoint 가 쓰기 직전 자기 스냅샷을 다시 뜨므로 호출자 변형도 막힌다.
+    const checkpoint: RunCheckpoint = ({ ...key, schemaVersion: 1,
       savedAt: this.checkpointSavedAt = Math.max(Date.now(), this.checkpointSavedAt + 1), status,
       request: this.acceptanceRequestSource, baseContentIdentity: this.checkpointRequestBaseline.identity,
       currentContentIdentity: this.checkpointCurrentIdentity, workPlan: this.workPlan,
@@ -1036,7 +1041,7 @@ export class AssistantSession {
         ralphAttemptsByItemId: [...this.ralphAttemptsByItemId],
         repeatedToolFailures: [...this.repeatedToolFailures].map(([id, failures]) => [id, [...failures]] as const),
       }, verification: this.verificationEvidence.snapshot(), acceptance: this.getAcceptanceSnapshot(),
-      applied: this.checkpointApplied, save: this.runReceipt, proof: this.getRunEndProof(), pending });
+      applied: this.checkpointApplied, save: this.runReceipt, proof: this.getRunEndProof(), pending }) as RunCheckpoint;
     // Order is preserved, but a rejected predecessor must not skip this write: `.then` alone would
     // silently drop every later capture in this session after one failed row (unsupported existing row,
     // aborted transaction). Each capture waits for the previous attempt to settle and then writes itself.
