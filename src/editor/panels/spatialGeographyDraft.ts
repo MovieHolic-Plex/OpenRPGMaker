@@ -143,10 +143,10 @@ export function editGeography(
         : library;
     const occurrences = {
       ...syncPlacedChildren(document, target.occurrenceId, next),
-      [target.occurrenceId]: {
-        ...occurrence,
-        snapshot: { ...occurrence.snapshot, library: snapshotLibrary },
-      },
+      // Narrow before spreading so parentSlot retains its snapshot-port correlation.
+      [target.occurrenceId]: occurrence.parentSlot === undefined
+        ? { ...occurrence, snapshot: { ...occurrence.snapshot, library: snapshotLibrary } }
+        : { ...occurrence, snapshot: { ...occurrence.snapshot, library: snapshotLibrary } },
     };
     return {
       ...project,
