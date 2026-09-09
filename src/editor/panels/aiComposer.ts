@@ -25,6 +25,7 @@
 // Escape 를 공짜로 얻는다.
 
 import { AUTONOMY_LEVELS, type AutonomyLevel } from "@/ai/autonomyLevels";
+import { EXECUTION_ROUTES, EXECUTION_ROUTE_DESCRIPTION, EXECUTION_ROUTE_LABEL, isExecutionRoute, type ExecutionRoute } from "@/ai/piAgent/executionRoute";
 import { COMPOSER_MODES, COMPOSER_MODE_LABEL, type ComposerMode } from "@/ai/composerMode";
 import type { AiConfig } from "@/ai/llmClient";
 import { el } from "@/util/dom";
@@ -70,6 +71,9 @@ export interface ComposerElements {
   readonly setMode: (mode: ComposerMode) => void;
   /** 자율성 셀렉트. `effortChips` 를 주지 않았으면 null. */
   readonly autonomySelect: HTMLSelectElement | null;
+  /** 실행 경로 셀렉트. `routeChips` 를 주지 않았으면 null. */
+  readonly routeSelect: HTMLSelectElement | null;
+  readonly setRoute: (route: ExecutionRoute) => void;
   /** 추론 강도 셀렉트. `effortChips` 를 주지 않았으면 null. */
   readonly reasoningSelect: HTMLSelectElement | null;
   readonly syncEffort: (autonomy: AutonomyLevel, reasoning: ComposerReasoningEffort) => void;
@@ -129,6 +133,11 @@ export interface ComposerOptions {
   };
   /** 모델 칩 초기 라벨. null/미지정이면 숨긴 채 만든다(표준 이상 모드에서 패널이 채운다). */
   readonly modelLabel?: string | null;
+  /** 실행 경로 셀렉트(조수 / Pi 에이전트 / Pi 팀). 저장은 호출자가 맡는다. */
+  readonly routeChips?: {
+    readonly initial: ExecutionRoute;
+    readonly onChange: (route: ExecutionRoute) => void;
+  };
 }
 
 function iconButton(options: {
@@ -334,6 +343,30 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   }
   paintEffort();
 
+  // ── 실행 경로 셀렉트 ── 지시가 기존 조수 / Pi 에이전트 / Pi 팀 중 어디로 가는가.
+  let route: ExecutionRoute = options.routeChips?.initial ?? "pi-agent";
+  const routeSelect = options.routeChips
+    ? el("select", {
+      class: "ai-composer-effort-select ai-composer-route-select",
+      attrs: { title: EXECUTION_ROUTES.map((key) => `${EXECUTION_ROUTE_LABEL[key]} — ${EXECUTION_ROUTE_DESCRIPTION[key]}`).join("\n"), "aria-label": "실행 경로" },
+      dataset: { testid: "ai-composer-route" },
+      children: EXECUTION_ROUTES.map((key) => el("option", { attrs: { value: key }, text: EXECUTION_ROUTE_LABEL[key] })),
+    }) as HTMLSelectElement
+    : null;
+  const setRoute = (next: ExecutionRoute): void => {
+    route = next;
+    if (routeSelect) routeSelect.value = next;
+  };
+  if (routeSelect) {
+    routeSelect.value = route;
+    routeSelect.addEventListener("change", () => {
+      const next = routeSelect.value;
+      if (!isExecutionRoute(next)) { routeSelect.value = route; return; }
+      route = next;
+      options.routeChips?.onChange(next);
+    });
+  }
+
   // ── 모델 칩 ──
   const modelChip = el("span", { class: "ai-composer-model", dataset: { testid: "ai-composer-model" } });
   const setModelLabel = (label: string | null): void => {
@@ -352,6 +385,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
         class: "ai-composer-actions-lead",
         children: [
           ...(modeSegment ? [modeSegment] : []),
+          ...(routeSelect ? [routeSelect] : []),
           ...(autonomySelect ? [autonomySelect] : []),
           ...(reasoningSelect ? [reasoningSelect] : []),
           options.undoAppliedButton,
@@ -502,6 +536,8 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     modeSegment,
     setMode,
     autonomySelect,
+    routeSelect,
+    setRoute,
     reasoningSelect,
     syncEffort,
     setModelLabel,
