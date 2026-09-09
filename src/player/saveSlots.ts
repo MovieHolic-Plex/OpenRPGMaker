@@ -34,6 +34,7 @@ import { syncMonsterPartyFollowers } from "@/project/followers";
 import { normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { SYSTEM_AUDIO_SLOTS, systemAudioOverrideKey } from "@/player/systemAudioSlots";
 import {
   advanceGameDays,
   calendarDayKey,
@@ -231,6 +232,7 @@ export type SaveSnapshot = {
     readonly screen?: SaveScreenState;
     // Change Save Access 등 접근 플래그(m2Runtime.access). 세이브 복원 대상.
     readonly access?: Partial<Record<"escape" | "menu" | "save" | "teleportation", boolean>>;
+    readonly systemAudio?: Record<string, string>;
   };
 };
 
@@ -421,6 +423,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       rng: cloneRngState(normalizeRngState(session.rng)),
       roguelikeRun: structuredClone(session.roguelikeRun),
       screen: pickScreenState(session),
+      systemAudio: parseSystemAudioState(session.m2Runtime?.system),
       access: session.m2Runtime?.access && Object.keys(session.m2Runtime.access).length > 0 ? { ...session.m2Runtime.access } : undefined,
     },
   };
@@ -660,6 +663,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   session.rng = normalizeRngState(snapshot.session.rng, session.rng?.seed);
   session.roguelikeRun = normalizeRoguelikeRunState(snapshot.session.roguelikeRun);
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
+  if (snapshot.session.systemAudio) Object.assign(ensureM2Runtime(session).system, snapshot.session.systemAudio);
   if (snapshot.session.access) {
     const runtime = ensureM2Runtime(session);
     runtime.access = { ...snapshot.session.access };
@@ -1068,6 +1072,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       rng: parseRngState(session.rng),
       roguelikeRun: normalizeRoguelikeRunState(session.roguelikeRun),
       screen: parseScreenState(session.screen),
+      systemAudio: parseSystemAudioState(session.systemAudio),
       access: parseAccessState(session.access),
     },
   };
@@ -1090,6 +1095,16 @@ function parseScreenState(value: unknown): SaveScreenState | undefined {
   if (typeof value.weather === "string") result.weather = value.weather;
   if (typeof value.hidden === "boolean") result.hidden = value.hidden;
   if (typeof value.tintDurationMs === "number") result.tintDurationMs = value.tintDurationMs;
+  return Object.keys(result).length > 0 ? result : undefined;
+}
+
+function parseSystemAudioState(value: unknown): SaveSnapshot["session"]["systemAudio"] {
+  if (!isRecord(value)) return undefined;
+  const result: Record<string, string> = {};
+  for (const slot of SYSTEM_AUDIO_SLOTS) {
+    const key = systemAudioOverrideKey(slot);
+    if (typeof value[key] === "string") result[key] = value[key];
+  }
   return Object.keys(result).length > 0 ? result : undefined;
 }
 

@@ -156,6 +156,16 @@ function executeM2Command(
     return pause("playAudio", { kind: "playAudio", ...audio });
   }
 
+  if (entry.title === "Fadeout BGM") return pause("stopAudio", { kind: "stopAudio", channel: "bgm" });
+
+  if (entry.title === "Play Memorized BGM" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    const memorized = state.session.m2Runtime?.audio?.playedMemorizedBgm;
+    if (typeof memorized === "string" && memorized.length > 0) {
+      return pause("playAudio", { kind: "playAudio", resourceId: memorized, loop: true, channel: "bgm" });
+    }
+    return resumeNext(frame);
+  }
+
   if (entry.title === "Wait Until") {
     // Record once, then re-evaluate after each short wait (including parallel processes).
     if (!state.waitUntil) executeM2RuntimeCommand(state.session, entry, { ...command, fields: { condition: "switchOn", target: "", value: "", timeoutMs: 0, ...command.fields } }, m2Context);
@@ -569,9 +579,16 @@ export function executeCommand(
     case "erasePicture":
       return pause("erasePicture", { kind: "erasePicture", pictureId: command.pictureId });
     case "playAudio":
-      return pause("playAudio", { kind: "playAudio", resourceId: command.resourceId, loop: command.loop });
+      return pause("playAudio", {
+        kind: "playAudio",
+        resourceId: command.resourceId,
+        loop: command.loop,
+        ...(command.channel === undefined ? {} : { channel: command.channel }),
+        ...(command.fadeInMs === undefined ? {} : { fadeInMs: command.fadeInMs }),
+        ...(command.volume === undefined ? {} : { volume: command.volume }),
+      });
     case "stopAudio":
-      return pause("stopAudio", { kind: "stopAudio" });
+      return pause("stopAudio", command.channel === undefined ? { kind: "stopAudio" } : { kind: "stopAudio", channel: command.channel });
     case "cutsceneControl":
       if (command.mode === "begin") beginCutsceneControl(state.session, state.currentEventId, command.skippable === true);
       else endCutsceneControl(state.session);

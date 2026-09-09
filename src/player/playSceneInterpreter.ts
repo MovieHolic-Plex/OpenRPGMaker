@@ -11,7 +11,7 @@ import {
 } from "@/project/session";
 import { store } from "@/project/store";
 import { setEventSpritePattern } from "@/player/eventSpriteResources";
-import { playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
 import { resolveEventPage } from "@/project/io";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
 import type { Interpreter } from "@/player/interpreter";
@@ -530,9 +530,10 @@ async function consumeBlockingStep(
       scene.syncRuntimeState();
       return resumeInterpreter(interpreter);
     case "stopAudio":
-      clearAudioState(scene.session);
-      stopAudioCommand();
-      scene.clearRuntimeOverlay("audio-indicator");
+      clearAudioState(scene.session, step.channel);
+      if (step.channel === undefined) stopAudioCommand();
+      else stopAudioChannel(step.channel);
+      if (step.channel === undefined || step.channel === "bgm" || step.channel === "bgs") scene.clearRuntimeOverlay("audio-indicator");
       scene.syncRuntimeState();
       return resumeInterpreter(interpreter);
     case "flashScreen":

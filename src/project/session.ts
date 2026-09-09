@@ -774,8 +774,13 @@ export function setAudioState(
   };
 }
 
-export function clearAudioState(session: PlaySession): void {
-  session.audio = {};
+/** Omitted channel preserves the legacy stop-all behavior. */
+export function clearAudioState(session: PlaySession, channel?: AudioChannel): void {
+  if (channel === undefined) {
+    session.audio = {};
+    return;
+  }
+  session.audio[channel] = undefined;
 }
 
 export function showPictureState<T extends PictureState>(

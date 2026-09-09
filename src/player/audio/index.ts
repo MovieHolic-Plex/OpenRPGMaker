@@ -39,7 +39,7 @@ export function getAudioEngine(options?: { readonly qaInstrumentation: boolean }
 }
 
 // playAudio 명령: 리소스 해석 후 재생. 해석 실패 시 조용히 no-op.
-// options 는 선택적이다 — 기존 호출부(플레이어 런타임 전량)는 그대로 동작한다.
+// Explicit channel/options override the legacy loop-derived channel.
 export function playAudioCommand(
   step: AudioTrackState & { readonly channel?: AudioChannel },
   project: Pick<Project, "assets">,

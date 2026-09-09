@@ -11,6 +11,7 @@ export interface AudioRequest {
   readonly resourceId: string;
   readonly url: string;
   readonly loop: boolean;
+  readonly volume?: number;
   // 이 요청의 페이드인 길이(ms). 없으면 엔진 기본값. 언락 대기 중에도 보존돼야
   // 방출 시점의 페이드가 요청 시점의 의도와 같다.
   readonly fadeInMs?: number;

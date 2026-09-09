@@ -1,5 +1,7 @@
 import type {
   ActorId,
+  AudioCommandChannel,
+  Command,
   ActorInitialEquipment,
   ActorParameterKey,
   BattleAnimationId,
@@ -133,8 +135,8 @@ export interface BattleRuntimeOptions {
   readonly rng?: Rng;
   // 배틀 이벤트의 playAudio/stopAudio 명령을 호스트 오디오 엔진으로 라우팅.
   // 런타임(src/battle)은 자체 완결성을 위해 직접 오디오를 재생하지 않고 위임한다.
-  readonly playAudio?: (resourceId: string, loop: boolean) => void;
-  readonly stopAudio?: () => void;
+  readonly playAudio?: (resourceId: string, loop: boolean, command?: Extract<Command, { kind: "playAudio" }>) => void;
+  readonly stopAudio?: (channel?: AudioCommandChannel) => void;
 }
 
 export interface BattleSessionState {

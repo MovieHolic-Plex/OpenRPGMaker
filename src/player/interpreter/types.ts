@@ -1,6 +1,7 @@
 import type { EmoteKind } from "@/project/emotes";
 import type { AudioChannel, AudioTrackState } from "@/project/session";
 import type {
+  AudioCommandChannel,
   ChoiceCancelBehavior,
   Command,
   FaceGraphic,
@@ -94,7 +95,7 @@ export type StepResult =
     }
   | { kind: "erasePicture"; pictureId: string }
   | ({ kind: "playAudio"; channel?: AudioChannel } & AudioTrackState)
-  | { kind: "stopAudio" }
+  | { kind: "stopAudio"; channel?: AudioCommandChannel }
   | { kind: "setLighting"; ambient: number; color?: string; transitionMs: number }
   | { kind: "setWeather"; weather: WeatherKind; intensity: number; transitionMs: number }
   | { kind: "showAnimation"; target: ShowAnimationTarget; animationId: string; wait: boolean }

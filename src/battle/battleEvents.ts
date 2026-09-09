@@ -1,7 +1,7 @@
 import { growthEffects, permanentActorSkillIds } from '@/project/growth/runtime';
 import { executeM2BattleCommand as executeM2Command } from "@/battle/battleM2CommandExecutor";
 import type { MutableBattler } from "@/battle/battleBattlers";
-import type { BattleEventChoiceSnapshot, BattleEventPauseSnapshot, BattleEventPauseResponse, BattleEventLogSnapshot, BattleEventStateSnapshot } from "@/battle/types";
+import type { BattleEventChoiceSnapshot, BattleEventPauseSnapshot, BattleEventPauseResponse, BattleEventLogSnapshot, BattleEventStateSnapshot, BattleRuntimeOptions } from "@/battle/types";
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "@/project/gameTime";
 import { clampFriendship } from "@/project/session";
@@ -108,8 +108,13 @@ export type BattleEventRuntimeOptions = {
   // (applyBattleRewardsToSession/playSceneBattle)이 결정한다.
   readonly endBattleAsDefeat?: () => void;
   // playAudio/stopAudio 명령: 호스트가 실제 오디오 엔진으로 라우팅.
-  readonly playAudio?: (resourceId: string, loop: boolean) => void;
-  readonly stopAudio?: () => void;
+  // Reuse the runtime option contract so authored channel/volume/fade reach the host engine.
+  readonly playAudio?: BattleRuntimeOptions["playAudio"];
+  readonly stopAudio?: BattleRuntimeOptions["stopAudio"];
+  // wait 명령(ms): 런타임이 전투 흐름을 지정 ms 동안 일시정지.
+  // 배틀 이벤트 루프는 동기식이라 wait 이후의 명령도 즉시 실행되지만,
+  // 런타임이 그 일시정지를 소비한다 — gauge 는 tick(pendingWaitMs), strict 는 타임라인 wait 엔트리.
+  readonly wait?: (ms: number) => void;
   // changeEquipment/promoteActor 가 오버레이(state.actorEquipment/classOverrides)를 갱신한 뒤
   // 해당 액터 배틀러의 파생 스탯을 재계산한다. 산식은 battleBattlers 생성 로직과 공유
   // (refreshActorBattlerDerivedStats) — 런타임이 세션 paramBonuses 를 닫아 주입한다.
@@ -736,11 +741,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return false;
       }
       case "playAudio":
-        options.playAudio?.(command.resourceId, command.loop);
+        options.playAudio?.(command.resourceId, command.loop, command);
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `playAudio ${command.resourceId}` });
         return false;
       case "stopAudio":
-        options.stopAudio?.();
+        options.stopAudio?.(command.channel);
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: "stopAudio" });
         return false;
       case "setFlag":

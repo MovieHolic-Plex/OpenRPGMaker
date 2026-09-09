@@ -1,6 +1,7 @@
 import { playAudioCommand, playMusicEffect, playSoundEffect, stopAudioChannel } from "@/player/audio";
 import type { AudioTrackState, PlaySession } from "@/project/session";
 import type { Project, SystemRecords } from "@/project/types";
+import { systemAudioOverride } from "@/player/systemAudioSlots";
 
 export type BattleResultCueKind = "victory" | "defeat" | "escape";
 
@@ -14,7 +15,10 @@ export function enterBattleAudio(project: Project, session: PlaySession): Battle
   const fieldBgm = session.audio.bgm ? { ...session.audio.bgm } : undefined;
   const fieldBgmResourceId = fieldBgm?.resourceId;
   const override = session.systemAudioOverrides?.bgm?.battle;
-  const battleBgmResourceId = override?.resourceId ?? project.system.battleBgmResourceId;
+  // Two authoring surfaces choose the battle track: the override record (carries volume)
+  // and the M2 system-audio slot. The record wins when present.
+  const slotResourceId = systemAudioOverride(session.m2Runtime, "battle");
+  const battleBgmResourceId = override?.resourceId ?? slotResourceId ?? project.system.battleBgmResourceId;
   if (override && !battleBgmResourceId) {
     stopAudioChannel("bgm", 0);
     session.audio.bgm = undefined;
@@ -44,8 +48,9 @@ export function authoredBattleResultResourceId(
 }
 
 /** 자료집에서 고른 승패 큐를 재생한다. 없거나 URL 을 못 풀면 false → 호출부가 폴백. */
-export function playAuthoredBattleResultCue(project: Project, kind: BattleResultCueKind): boolean {
-  const resourceId = authoredBattleResultResourceId(project.system, kind);
+export function playAuthoredBattleResultCue(project: Project, kind: BattleResultCueKind, session?: Pick<PlaySession, "m2Runtime">): boolean {
+  const resourceId = (kind === "victory" ? undefined : systemAudioOverride(session?.m2Runtime, kind))
+    ?? authoredBattleResultResourceId(project.system, kind);
   if (kind === "victory") return playMusicEffect(resourceId, project);
   return playSoundEffect(resourceId, project);
 }
