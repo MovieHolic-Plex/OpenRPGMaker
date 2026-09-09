@@ -21,6 +21,9 @@ import {
   shouldCaptureShot,
 } from "./runtimeQa.mjs";
 
+import { pauseRuntimeFrames, performObservedFrames, resumeRuntimeFrames } from "./runtimeQaFrames.mjs";
+export { pauseRuntimeFrames, performObservedFrames, resumeRuntimeFrames } from "./runtimeQaFrames.mjs";
+
 const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
 
 /** exportEntry.ts 가 fetch 할 주소. 실제 파일이 아니라 page.route 로 가로채 채운다. */
@@ -30,6 +33,7 @@ const PROJECT_ROUTE = "**/__runtime-qa/project.json";
 /** 훅을 요구하는 op — 이들 앞에서는 런타임 훅 설치를 기다린다. */
 const HOOK_OPS = new Set([
   "seed", "dir", "hold", "face", "action", "attack", "skill", "teleport",
+  "pauseFrames", "stepFrames", "resumeFrames",
   // 체공 op 은 __oprnDebug / __oprnCharacterSprites 를 직접 읽는다.
   "playerRoute", "waitForLift", "waitForGrounded", "captureShadowSample",
 ]);
@@ -210,6 +214,18 @@ async function applyOp(page, op, runState) {
         { mapId: op.mapId, x: op.x, y: op.y },
         op.timeoutMs,
       );
+      return;
+    case "pauseFrames":
+      await pauseRuntimeFrames(page);
+      return;
+    case "stepFrames": {
+      const observed = await performObservedFrames(page, { frames: op.frames, deltaMs: op.deltaMs },
+        op.key === undefined ? undefined : () => page.keyboard.press(op.key), op.timeoutMs);
+      runState.frameReceipts.push(observed.receipt);
+      return;
+    }
+    case "resumeFrames":
+      await resumeRuntimeFrames(page);
       return;
     case "key":
       for (let i = 0; i < (op.times ?? 1); i += 1) {
@@ -656,6 +672,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
     // 계속 진행해야 리포트·샷이 남는다 — 초기 구현은 raw 스택만 남기고 죽어서
     // 정작 진단할 증거가 하나도 없었다(실측).
     const opFailures = [];
+    runState.frameReceipts = [];
     for (const op of beat.ops) {
       try {
         if (!hooksReady && HOOK_OPS.has(op.kind)) {
@@ -717,6 +734,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       failures,
       shadowInk: shadowInk ?? undefined,
       state: observed.state,
+      ...(runState.frameReceipts.length ? { frameReceipts: runState.frameReceipts } : {}),
       // 배치 근거는 리포트에 남긴다 — PNG 를 열지 않고도 수치로 판정할 수 있어야 한다.
       battlers: observed.battlers ?? undefined,
       ...((beat.expect?.emoteCountAtLeast != null || beat.expect?.emoteFrames || beat.expect?.emoteTargets)

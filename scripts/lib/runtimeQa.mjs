@@ -7,6 +7,8 @@
 // oprn-sample-v3 는 같은 resourceId(easyrpg-charset-actor1)로도 Phaser 가 __MISSING 을
 // 그린다(실측: scripts/_export-charset-fixtures.mjs — 4개 중 이 픽스처만 실패).
 // 깨진 스프라이트가 기본값이면 모든 시각 검증이 오염된다.
+import { validateFrameRequest } from "./runtimeQaFrames.mjs";
+
 export const DEFAULT_PROJECT_FIXTURE = "test/fixtures/projects/editor-authored-demo-v3.json";
 export const DEFAULT_VIEWPORT = { width: 1024, height: 768 };
 export const DEFAULT_SEED = 1;
@@ -25,6 +27,9 @@ export const OP_KINDS = [
   "attack",
   "skill",
   "key",
+  "pauseFrames",
+  "stepFrames",
+  "resumeFrames",
   "teleport",
   "waitForRuntime",
   "waitForEmote",
@@ -74,6 +79,10 @@ export function normalizeScenario(scenario) {
       // 시간 자체가 자극인 경우(막힘 검증)는 이름이 붙은 `hold` 를 쓴다.
       if (op.kind === "wait") throw new Error(`고정 wait op 은 런타임 게이트에서 금지됨: ${beat.id}`);
       if (!OP_KINDS.includes(op.kind)) throw new Error(`알 수 없는 op: ${op.kind}`);
+      if (op.kind === "stepFrames") {
+        validateFrameRequest(op);
+        if (op.key !== undefined && (typeof op.key !== "string" || !op.key.trim())) throw new Error("Invalid native frame key");
+      }
     }
     return { ...beat, ops: beat.ops ?? [], shot: beat.shot ?? false };
   });
