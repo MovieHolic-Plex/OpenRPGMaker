@@ -377,6 +377,46 @@ export function evaluateExpect(expected, observed) {
     }
   }
 
+  // 생활 소유물 단정 — 벌목/수확 같은 행위는 "무엇이 얼마나 늘었나"로만 증명된다.
+  // gold 처럼 스칼라 하나로는 표현할 수 없어서 항목별로 읽는다. 값이 없는 항목은 0 으로
+  // 본다(런타임은 0 개를 키 자체로 지우므로, undefined 를 실패로 만들면 정상 소진을
+  // 결함으로 읽는다).
+  if (expected.inventory !== undefined) {
+    if (state === null) failures.push("런타임 훅 없음 — 상태를 읽을 수 없다(inventory 확인 불가)");
+    else {
+      // 관측 자체가 없으면 0 으로 읽지 않는다 — 그러면 실제 1 개를 0 으로 보고
+      // 정상을 결함으로, 반대로 사라진 관측을 정상으로 읽는다(실측 2026-09-09).
+      if (state.inventory === undefined) {
+        failures.push("inventory 관측 없음 — 러너가 이 항목을 싣지 않았다");
+      } else {
+        for (const [itemId, want] of Object.entries(expected.inventory)) {
+          const actual = state.inventory[itemId] ?? 0;
+          if (actual !== want) failures.push(`inventory.${itemId}: 기대 ${want}, 실제 ${actual}`);
+        }
+      }
+    }
+  }
+  if (expected.energy !== undefined) {
+    if (state === null) failures.push("런타임 훅 없음 — 상태를 읽을 수 없다(energy 확인 불가)");
+    else if (state.energy !== expected.energy) failures.push(`energy: 기대 ${expected.energy}, 실제 ${state.energy}`);
+  }
+  // lifeSkillXp 축은 두지 않는다 — 세션 lifeSkills 는 readState() 에 없어서(실측 2026-09-09)
+  // 어떤 값으로도 만족시킬 수 없다. 만족 불가능한 축을 남기면 시나리오 저자가 "적었으니
+  // 검증됐다"고 오해한다. 생활 XP 는 아래 farmAttempt.xpAwarded 로 단정한다.
+  // 마지막 행위 영수증 — "몇 개 얻었나"만 보면 다른 경로로 생긴 아이템과 구별되지 않는다.
+  // 어떤 행위가 어떤 대상에 대해 성공/거절했는지를 런타임이 스스로 적은 값으로 단정한다.
+  if (expected.farmAttempt !== undefined) {
+    if (state === null) failures.push("런타임 훅 없음 — 상태를 읽을 수 없다(farmAttempt 확인 불가)");
+    else {
+      const attempts = state.actionReceipt?.farmAttempts ?? [];
+      const matched = attempts.some((attempt) =>
+        Object.entries(expected.farmAttempt).every(([field, want]) => sameShape(attempt?.[field], want)));
+      if (!matched) {
+        failures.push(`farmAttempt: 기대 ${JSON.stringify(expected.farmAttempt)} 와 일치하는 시도가 없다 — 실제 ${JSON.stringify(attempts)}`);
+      }
+    }
+  }
+
   for (const testid of expected.testidPresent ?? []) {
     if (!testids.includes(testid)) failures.push(`testid 누락: ${testid}`);
   }

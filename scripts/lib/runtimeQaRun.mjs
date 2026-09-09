@@ -434,7 +434,7 @@ function readBattlerGeometryInPage() {
  *   보므로 display:none 안의 노드도 통과한다 — 실제로 전투 적 HP 목록(.battle-enemy-list-panel)이
  *   숨겨진 스킨에서 `battle-enemy-list-hp-*` 를 단정하면 화면에 없는 숫자를 증거로 삼게 된다.
  */
-async function readObserved(page, { auditBattleTextNodes = false, watchedEventIds = [], watchedTestids = [] } = {}) {
+async function readObserved(page, { auditBattleTextNodes = false, watchedEventIds = [], watchedTestids = [], watchedItemIds = [] } = {}) {
   const base = await page.evaluate((watched) => {
     const debug = window.__oprnDebug;
     const full = debug ? debug.readState() : null;
@@ -449,6 +449,12 @@ async function readObserved(page, { auditBattleTextNodes = false, watchedEventId
           battleResult: full.battleResult ?? null,
           ...Object.fromEntries(["farmPlots", "energy", "makerInstances", "farmAnimals", "farmBuildingPlacements", "lifeRecovery", "actionReceipt"]
             .filter((key) => full[key] !== undefined).map((key) => [key, full[key]])),
+          // 전량은 여전히 싣지 않는다(노이즈). 시나리오가 이름을 댄 항목만 싣는다 —
+          // 싣지 않으면 expect 가 없는 값을 0 으로 읽어 정상을 결함으로, 결함을 정상으로
+          // 만든다(실측: item_axe 가 실제로는 1인데 관측에 없어 0 으로 읽혔다).
+          ...(watched.itemIds.length
+            ? { inventory: Object.fromEntries(watched.itemIds.map((id) => [id, full.inventory?.[id] ?? 0])) }
+            : {}),
         }
       : null;
     const sprite = window.__oprnPlayerSprite ? window.__oprnPlayerSprite() : null;
@@ -516,7 +522,7 @@ async function readObserved(page, { auditBattleTextNodes = false, watchedEventId
       audioObserved: Array.isArray(window.__oprnAudioObserved) ? [...window.__oprnAudioObserved] : null,
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
     };
-  }, { eventIds: watchedEventIds, testids: watchedTestids });
+  }, { eventIds: watchedEventIds, testids: watchedTestids, itemIds: watchedItemIds });
   if (!auditBattleTextNodes) return base;
   // 전투 글자 계측은 요청한 비트에서만 돌린다 — 모든 비트에서 트리 전체를 훑을 이유가 없다.
   const battleText = await page.evaluate(auditBattleText, {
@@ -662,6 +668,11 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const watchedTestids = [
     ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.visibleText ?? {}))),
   ];
+  // 생활 소유물도 같은 규칙으로 이름을 댄 것만 관측한다.
+  const watchedItemIds = [
+    ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.inventory ?? {}))),
+  ];
+
 
   let hooksReady = false;
   const beats = [];
@@ -690,6 +701,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       auditBattleTextNodes: Boolean(beat.expect?.battleTextClean),
       watchedEventIds,
       watchedTestids,
+      watchedItemIds,
     });
     const failures = [...opFailures, ...evaluateExpect(beat.expect ?? {}, observed)];
     let shot = null;

@@ -22,6 +22,7 @@ import { generatedMonsterSpriteUrl, isGeneratedMonsterSprite } from "@/assets/ge
 import { cropGraphicStages } from "@/project/farmModel";
 import { SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
 import { EMOTE_ASSET_PATH, EMOTE_FRAME_SIZE, EMOTE_KINDS, EMOTE_TEXTURE_KEY } from "@/project/emotes";
+import { PLACEABLE_OVERLAY_TEXTURE_KEYS } from "@/player/placeableOverlayGraphics";
 import type { Project } from "@/project/types";
 export { isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
 
@@ -296,6 +297,9 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   for (const asset of EASYRPG_PICTURE_ASSETS) {
     if (spatialGraphicResourceIds(project).has(asset.id)) keys.add(asset.id);
   }
+  // Rock/gem charset + tree chipset frames are hardcoded by the placeable overlay renderer,
+  // so they are not always present as project strings even when rocks/trees exist in session.
+  for (const textureKey of PLACEABLE_OVERLAY_TEXTURE_KEYS) keys.add(textureKey);
   return keys;
 }
 
