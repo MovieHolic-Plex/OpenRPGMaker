@@ -213,6 +213,49 @@ describe("spatial geography board gestures", () => {
     host.remove();
   });
 
+  it("keeps one stable drop subscription so a rerendered drag does not poison a later board", () => {
+    store.replace(geographyRecipeFixture("lake-kingdom"));
+    resetSpatialRegionsTabChrome();
+    resetSpatialWorldsTabChrome();
+    bindSpatialAuthoringControllerFactory(createSpatialAuthoringController);
+    const host = document.createElement("div");
+    document.body.append(host);
+    const paintRegion = (): void => {
+      host.replaceChildren(renderSpatialRegionsCanvas(regionSession(), regionCard(), paintRegion));
+    };
+    paintRegion();
+    const village = requireElement(
+      host.querySelector<HTMLButtonElement>("[data-testid='spatial-geography-child-lake-village']"),
+      "village",
+    );
+    mockBoardRect(requireElement(host.querySelector<HTMLElement>("[data-testid='spatial-geography-board']"), "board"));
+    // Given a region drag whose board is rerendered before the pointer is released.
+    village.dispatchEvent(pointer("pointerdown", 20 * GEOGRAPHY_TILE_PX + 4, 40 * GEOGRAPHY_TILE_PX + 4));
+    expect(geographyChromeState.gesture?.childId).toBe("lake-village");
+    paintRegion();
+    mockBoardRect(requireElement(host.querySelector<HTMLElement>("[data-testid='spatial-geography-board']"), "board"));
+    document.dispatchEvent(pointer("pointerup", 24 * GEOGRAPHY_TILE_PX + 4, 40 * GEOGRAPHY_TILE_PX + 4));
+    expect(geographyChromeState.gesture).toBeNull();
+    // When the operator moves to the placed world board and drops a child outside the atlas.
+    geographyChromeState.previewError = null;
+    geographyChromeState.selectedChildId = null;
+    const paintWorld = (): void => {
+      host.replaceChildren(renderSpatialWorldsCanvas(worldSession("instances"), worldCard("placed"), paintWorld));
+    };
+    paintWorld();
+    const country = requireElement(
+      host.querySelector<HTMLButtonElement>("[data-testid='spatial-geography-child-lake-country']"),
+      "lake-country",
+    );
+    const board = requireElement(host.querySelector<HTMLElement>("[data-testid='spatial-geography-board']"), "board");
+    mockBoardRect(board);
+    country.dispatchEvent(pointer("pointerdown", 16 * GEOGRAPHY_TILE_PX + 4, 24 * GEOGRAPHY_TILE_PX + 4));
+    document.dispatchEvent(pointer("pointerup", 200 * GEOGRAPHY_TILE_PX + 4, 8 * GEOGRAPHY_TILE_PX + 4));
+    // Then the live board reports the out-of-bounds destination, not a retired board's unknown child.
+    expect(geographyChromeState.previewError).toBe("clipped");
+    host.remove();
+  });
+
   it("sets world entry to the named port of the clicked child instead of keeping the previous child", () => {
     store.replace(geographyRecipeFixture("lake-kingdom"));
     resetSpatialWorldsTabChrome();

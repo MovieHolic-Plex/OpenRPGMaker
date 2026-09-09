@@ -44,6 +44,8 @@ function captureBoard(board: HTMLElement, event: PointerEvent): void {
 }
 
 const pendingDrop: { run: (event: PointerEvent) => void } = { run() { return; } };
+/** One stable subscription: a rerender replaces pendingDrop.run, so the listener identity must not change. */
+const dropListener = (event: PointerEvent): void => pendingDrop.run(event);
 
 function childButton(child: SpatialChildSlot<"place" | "region">, board: HTMLElement, tilePx: number): HTMLElement {
   const selected = geographyChromeState.selectedChildId === child.id;
@@ -66,7 +68,7 @@ function childButton(child: SpatialChildSlot<"place" | "region">, board: HTMLEle
         if (geographyChromeState.tool !== "select") return;
         geographyChromeState.gesture = { childId: child.id, originX: child.x, originY: child.y };
         if (event instanceof PointerEvent) captureBoard(board, event);
-        document.addEventListener("pointerup", pendingDrop.run);
+        document.addEventListener("pointerup", dropListener);
       },
     },
   });
@@ -159,7 +161,7 @@ export function renderSpatialGeographyCanvas(view: GeographyView, rerender: () =
     const gesture = geographyChromeState.gesture;
     if (!gesture || !target || !design) return;
     geographyChromeState.gesture = null;
-    document.removeEventListener("pointerup", pendingDrop.run);
+    document.removeEventListener("pointerup", dropListener);
     const tile = tileOf(event, board);
     if ("places" in design) commitWorkingGeography(target, moveGeographyChild(design, gesture.childId, tile.x, tile.y));
     else commitWorkingGeography(target, moveGeographyChild(design, gesture.childId, tile.x, tile.y));
@@ -195,7 +197,7 @@ export function renderSpatialGeographyCanvas(view: GeographyView, rerender: () =
       geographyChromeState.gesture = null;
       geographyChromeState.routeDraft = [];
       geographyChromeState.previewError = null;
-      document.removeEventListener("pointerup", pendingDrop.run);
+      document.removeEventListener("pointerup", dropListener);
       rerender();
       return;
     }
