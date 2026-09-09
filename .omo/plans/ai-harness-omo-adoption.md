@@ -508,6 +508,16 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - Commit: `feat(ai): expose truthful run and visual-delivery status`.
 
 - [ ] 10. 결정론적 편집기 시나리오와 실제 원격 저장 검증을 마무리한다
+  - 실행기 신설 `scripts/qa/ai-harness-all.mjs`: 시나리오마다 자기 포트·Firefox·격리 원격
+    프로젝트·정리 영수증을 가진 별도 프로세스로 돌리고, 첫 실패에서 멈춰 뒤 통과가 앞 실패를
+    덮지 못하게 한다(계획의 checkpoint-upgrade 는 전용 스크립트, crash-after-apply 는 P4 recovery).
+  - 실제 원격 증명 통과: `resume-01a08291/p5/remote-proof.json` (`qa-ai-proof-fa2867f8`, 15단계 —
+    저장→재조회 일치, 내용 변경 mismatch, 전송 503·취소·대상 오류 뒤 동일 영수증 재검증,
+    로컬 편집 경합 중 원격 보존, 삭제·부재 확인).
+  - 이 게이트가 드러낸 P4 회귀 7건을 병합 이전 main 대조로 귀속해 모두 고쳤다: 저장·증명 중단,
+    턴 경계 실패, 정착 대기 UI 잠금, 신원 재계산(160ms×2/라운드), 행 전체 재복제,
+    원장 복원본 반복 복제(92회 13.3초), 적용 자체를 막던 대기. 더해 체크포인트 키가
+    local-session id 로 굳어 **모든 기록이 거부**되던 결함과 다른 프로젝트 영수증 혼입도 고쳤다.
   - Recommended task executor category: deep
   - 선행: 2~9. 소유: 신규 예정
     `scripts/qa/ai-harness-contracts.mjs`,
