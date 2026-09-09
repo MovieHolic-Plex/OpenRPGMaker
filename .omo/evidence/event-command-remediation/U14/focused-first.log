@@ -1,0 +1,32 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventAudioHandoffs.test.ts test/eventAudioCommandContracts.test.ts test/battleEventWaitAudio.test.ts test/battleAudio.test.ts test/audioEnginePlaybackControls.test.ts test/audioEngine.test.ts test/cc0AudioPlayback.test.ts test/runtimeAudioIndicator.test.ts test/eventCommandPickerAudio.test.ts test/playAudioCommandBody.test.ts test/screenSaveRestore.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-event-u14
+
+ ✓ test/playAudioCommandBody.test.ts (1 test) 2060ms
+   ✓ playAudio command body > lists playable BGM/SE and previews selected audio  2053ms
+ ✓ test/eventAudioHandoffs.test.ts (13 tests) 3418ms
+   ✓ U14 actual audio handoffs > delivers ambient gain and explicit zero fade through blocking execution  459ms
+   ✓ U14 actual audio handoffs > delivers ambient gain and explicit zero fade through parallel execution  374ms
+   ✓ U14 actual audio handoffs > inserts the Fadeout BGM alias with its channel and preserves it through project export/import  606ms
+   ✓ U14 actual audio handoffs > keeps battle result overrides session-owned even with overlapping battle lifetimes  328ms
+ ✓ test/cc0AudioPlayback.test.ts (3 tests) 947ms
+   ✓ CC0 / bundled audio playback path > resolves browser-playable wav files that exist on disk  332ms
+   ✓ CC0 / bundled audio playback path > playAudioCommand routes SE/BGM to the audio engine with resolved urls  337ms
+ ✓ test/audioEnginePlaybackControls.test.ts (11 tests) 56ms
+ ✓ test/eventCommandPickerAudio.test.ts (3 tests) 609ms
+   ✓ event command picker audio intent > preserves the channel selected by BGM 재생...  354ms
+ ✓ test/battleEventWaitAudio.test.ts (4 tests) 114ms
+ ✓ test/eventAudioCommandContracts.test.ts (13 tests) 1077ms
+ ✓ test/screenSaveRestore.test.ts (5 tests) 637ms
+ ✓ test/runtimeAudioIndicator.test.ts (2 tests) 675ms
+   ✓ 오디오 배너는 루프 채널 전용 > 인터프리터: 루프 오디오는 배너를 띄우고 원샷 SE 는 띄우지 않는다  466ms
+ ✓ test/battleAudio.test.ts (6 tests) 215ms
+ ✓ test/audioEngine.test.ts (21 tests) 16ms
+
+ Test Files  11 passed (11)
+      Tests  82 passed (82)
+   Start at  06:01:33
+   Duration  50.04s (transform 28.15s, setup 0ms, collect 72.67s, tests 9.83s, environment 4.82s, prepare 3.15s)

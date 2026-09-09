@@ -43,13 +43,13 @@
       "commandIds": [
         "m2:m2-210-sound-layer"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U14",
-      "red": [],
-      "green": [],
-      "surface": [],
+      "red": [".omo/evidence/event-command-remediation/U14/handoff-red-final.log", ".omo/evidence/event-command-remediation/U14/gain-review-red.log", ".omo/evidence/event-command-remediation/U14/gain-channel-red.log"],
+      "green": [".omo/evidence/event-command-remediation/U14/gain-channel-green.log", ".omo/evidence/event-command-remediation/U14/gain-channel-player.log"],
+      "surface": [".omo/evidence/event-command-remediation/U14/surface/editor-receipt.json", ".omo/evidence/event-command-remediation/U14/surface/player-observations.json"],
       "commits": [],
-      "resolution": null
+      "resolution": "Sound Layer selects audio resources, maps ambient to looping BGS, and forwards channel, per-track gain and explicit zero fade. Blocking/parallel engine paths, native battle callback options, group-volume changes and save/resume are covered. Native media playing/volume events verify actual standalone playback. Review regressions additionally prove omitted same-track gain resets consistently through ordinary play/map entry and real save/load, while full field track state (including mute) survives same/different-track battle handoffs. Working-tree delivery only. Supervisor gates exited 1; gate-review/classification.json accounts for all 167 failed assertions against actual base a79a04bbd. U14 interpreter and five M2 baseline/floor contracts were narrowly corrected; remaining failures reproduce on base."
     },
     "G1-F3": {
       "title": "상점의 대사 3종이 프로젝트 재로드 실패를 만든다",
@@ -190,13 +190,13 @@
         "m2:m2-063-memorize-current-bgm",
         "m2:m2-064-play-memorized-bgm"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U14",
-      "red": [],
-      "green": [],
-      "surface": [],
+      "red": [".omo/evidence/event-command-remediation/U14/red.log"],
+      "green": [".omo/evidence/event-command-remediation/U14/focused-first.log"],
+      "surface": [".omo/evidence/event-command-remediation/U14/surface/editor-receipt.json", ".omo/evidence/event-command-remediation/U14/surface/player-layers/manifest.json"],
       "commits": [],
-      "resolution": null
+      "resolution": "Both memory commands expose no dead inputs. Play Memorized BGM reaches the actual engine and restores the original track after a different BGM; absence remains a no-op. Historical baseline red was 10 failures/3 passes across 13 tests; retained red.log is only a partial tail, not fresh preimplementation TDD evidence. The reviewed 063/064 surface baselines now enforce zero controls and retained snapshot membership instead of restoring dead inputs; unrelated M2 floor failures are classified against actual base."
     },
     "G1-F10": {
       "title": "저장된 M2 별칭의 설정 없이 실행 표시는 기존 부분 실행 계약을 숨긴다",
@@ -477,13 +477,13 @@
       "commandIds": [
         "m2:m2-062-fadeout-bgm"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U14",
-      "red": [],
-      "green": [],
-      "surface": [],
+      "red": [".omo/evidence/event-command-remediation/U14/handoff-red-final.log"],
+      "green": [".omo/evidence/event-command-remediation/U14/focused-first.log"],
+      "surface": [".omo/evidence/event-command-remediation/U14/surface/editor-receipt.json", ".omo/evidence/event-command-remediation/U14/surface/player-layers/manifest.json"],
       "commits": [],
-      "resolution": null
+      "resolution": "Actual picker insertion creates stopAudio channel=bgm and preserves it through .oprn export/import. Native and saved-M2 paths stop only BGM, with no stop-all call; standalone native pause/playing observations show BGS and SE continue. Omitted channel retains legacy stop-all behavior."
     },
     "G2-F1": {
       "title": "개인 대상 전투 명령 변경이 선택한 배우가 아니라 actor라는 키에 기록된다",
@@ -1378,13 +1378,13 @@
         "m2:m2-027-change-system-bgm",
         "m2:m2-028-change-system-se"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U14",
-      "red": [],
-      "green": [],
-      "surface": [],
+      "red": [".omo/evidence/event-command-remediation/U14/handoff-red-final.log"],
+      "green": [".omo/evidence/event-command-remediation/U14/focused-first.log"],
+      "surface": [".omo/evidence/event-command-remediation/U14/surface/editor-receipt.json", ".omo/evidence/event-command-remediation/U14/surface/player-observations.json"],
       "commits": [],
-      "resolution": null
+      "resolution": "The runtime consumes picker resourceId with legacy value fallback. Field/battle music and defeat/escape effects are session-owned overrides with additive save parsing/restoration. Battle results receive their owning session explicitly, with no global lifetime leak. Standalone map transfer, battle entry and a normal defeat transition play the editor-selected resources."
     },
     "G4-F4": {
       "title": "순간이동 위치는 위치 입력이 없고 순간이동/탈출 위치 기록은 이동에 쓰이지 않음",

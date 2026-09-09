@@ -1,0 +1,1108 @@
+{
+  "numTotalTestSuites": 29,
+  "numPassedTestSuites": 27,
+  "numFailedTestSuites": 2,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 95,
+  "numPassedTests": 94,
+  "numFailedTests": 1,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1788908299283,
+  "success": false,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "G1-F2 사운드 레이어는 채널을 그대로 실행에 넘긴다"
+          ],
+          "fullName": "G1-F2 사운드 레이어는 채널을 그대로 실행에 넘긴다 효과음 채널은 SE 로, 1회 재생으로 나간다",
+          "status": "passed",
+          "title": "효과음 채널은 SE 로, 1회 재생으로 나간다",
+          "duration": 124.2935010000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "G1-F2 사운드 레이어는 채널을 그대로 실행에 넘긴다"
+          ],
+          "fullName": "G1-F2 사운드 레이어는 채널을 그대로 실행에 넘긴다 환경음은 BGS 로 루프 재생하고 BGM 슬롯을 빼앗지 않는다",
+          "status": "passed",
+          "title": "환경음은 BGS 로 루프 재생하고 BGM 슬롯을 빼앗지 않는다",
+          "duration": 64.8510669999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "G1-F2 사운드 레이어는 채널을 그대로 실행에 넘긴다"
+          ],
+          "fullName": "G1-F2 사운드 레이어는 채널을 그대로 실행에 넘긴다 음악 채널은 여전히 BGM 루프다",
+          "status": "passed",
+          "title": "음악 채널은 여전히 BGM 루프다",
+          "duration": 50.262627999999495,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "G1-F9 BGM 기억/재생"
+          ],
+          "fullName": "G1-F9 BGM 기억/재생 두 명령 모두 고를 값이 없으므로 입력을 내주지 않는다",
+          "status": "passed",
+          "title": "두 명령 모두 고를 값이 없으므로 입력을 내주지 않는다",
+          "duration": 0.42944899999929476,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "G1-F9 BGM 기억/재생"
+          ],
+          "fullName": "G1-F9 BGM 기억/재생 기억한 곡을 실제 재생 스텝으로 넘긴다",
+          "status": "passed",
+          "title": "기억한 곡을 실제 재생 스텝으로 넘긴다",
+          "duration": 64.19439299999976,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "G1-F9 BGM 기억/재생"
+          ],
+          "fullName": "G1-F9 BGM 기억/재생 기억한 곡이 없으면 재생 스텝 없이 다음 명령으로 간다",
+          "status": "passed",
+          "title": "기억한 곡이 없으면 재생 스텝 없이 다음 명령으로 간다",
+          "duration": 36.249501999999666,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "G1-F23 BGM 페이드아웃은 BGM 만 끊는다"
+          ],
+          "fullName": "G1-F23 BGM 페이드아웃은 BGM 만 끊는다 별칭이 채널 지정 정지를 저작한다",
+          "status": "passed",
+          "title": "별칭이 채널 지정 정지를 저작한다",
+          "duration": 0.26258599999982835,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "G1-F23 BGM 페이드아웃은 BGM 만 끊는다"
+          ],
+          "fullName": "G1-F23 BGM 페이드아웃은 BGM 만 끊는다 채널 지정 정지 스텝은 그 채널만 실어 보낸다",
+          "status": "passed",
+          "title": "채널 지정 정지 스텝은 그 채널만 실어 보낸다",
+          "duration": 36.639428999999836,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "G1-F23 BGM 페이드아웃은 BGM 만 끊는다"
+          ],
+          "fullName": "G1-F23 BGM 페이드아웃은 BGM 만 끊는다 채널 없는 정지는 기존 계약(전부 정지) 그대로다",
+          "status": "passed",
+          "title": "채널 없는 정지는 기존 계약(전부 정지) 그대로다",
+          "duration": 41.59215099999983,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "G4-F3 시스템 BGM/SE 는 피커가 쓴 필드를 실행이 읽는다"
+          ],
+          "fullName": "G4-F3 시스템 BGM/SE 는 피커가 쓴 필드를 실행이 읽는다 BGM 은 슬롯 + 음악 리소스를 저작한다",
+          "status": "passed",
+          "title": "BGM 은 슬롯 + 음악 리소스를 저작한다",
+          "duration": 0.4705999999996493,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "G4-F3 시스템 BGM/SE 는 피커가 쓴 필드를 실행이 읽는다"
+          ],
+          "fullName": "G4-F3 시스템 BGM/SE 는 피커가 쓴 필드를 실행이 읽는다 고른 곡이 슬롯 오버라이드로 기록된다",
+          "status": "passed",
+          "title": "고른 곡이 슬롯 오버라이드로 기록된다",
+          "duration": 39.48204799999985,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "G4-F3 시스템 BGM/SE 는 피커가 쓴 필드를 실행이 읽는다"
+          ],
+          "fullName": "G4-F3 시스템 BGM/SE 는 피커가 쓴 필드를 실행이 읽는다 옛날 저장분의 value 필드도 계속 읽는다",
+          "status": "passed",
+          "title": "옛날 저장분의 value 필드도 계속 읽는다",
+          "duration": 35.959045000000515,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "G4-F3 시스템 BGM/SE 는 피커가 쓴 필드를 실행이 읽는다"
+          ],
+          "fullName": "G4-F3 시스템 BGM/SE 는 피커가 쓴 필드를 실행이 읽는다 필드 기본곡 오버라이드가 맵 BGM 해석의 폴백을 바꾼다",
+          "status": "passed",
+          "title": "필드 기본곡 오버라이드가 맵 BGM 해석의 폴백을 바꾼다",
+          "duration": 30.05578499999956,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788908314753,
+      "endTime": 1788908315280.0557,
+      "status": "passed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-event-u14/test/eventAudioCommandContracts.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs delivers ambient gain and explicit zero fade through blocking execution",
+          "status": "passed",
+          "title": "delivers ambient gain and explicit zero fade through blocking execution",
+          "duration": 125.15773000000081,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs delivers ambient gain and explicit zero fade through parallel execution",
+          "status": "passed",
+          "title": "delivers ambient gain and explicit zero fade through parallel execution",
+          "duration": 72.5147020000004,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs keeps per-track gain when the group volume changes and the same track is requested again",
+          "status": "passed",
+          "title": "keeps per-track gain when the group volume changes and the same track is requested again",
+          "duration": 79.61897900000076,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs resets omitted gain on the same track through command and keeps save/resume consistent",
+          "status": "passed",
+          "title": "resets omitted gain on the same track through command and keeps save/resume consistent",
+          "duration": 68.33187700000053,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs resets omitted gain on the same track through map and keeps save/resume consistent",
+          "status": "passed",
+          "title": "resets omitted gain on the same track through map and keeps save/resume consistent",
+          "duration": 57.62151900000026,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs restores field gain 0.25 after battle (same track: false)",
+          "status": "passed",
+          "title": "restores field gain 0.25 after battle (same track: false)",
+          "duration": 60.712681999999404,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs restores field gain +0 after battle (same track: false)",
+          "status": "passed",
+          "title": "restores field gain +0 after battle (same track: false)",
+          "duration": 62.65650199999982,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs restores field gain 0.25 after battle (same track: true)",
+          "status": "passed",
+          "title": "restores field gain 0.25 after battle (same track: true)",
+          "duration": 54.296400999999605,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs restores field gain +0 after battle (same track: true)",
+          "status": "passed",
+          "title": "restores field gain +0 after battle (same track: true)",
+          "duration": 54.694478999999774,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs preserves an explicit field loop flag through a battle handoff",
+          "status": "passed",
+          "title": "preserves an explicit field loop flag through a battle handoff",
+          "duration": 49.793917999999394,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs plays me once with its own gain without changing BGM",
+          "status": "passed",
+          "title": "plays me once with its own gain without changing BGM",
+          "duration": 58.88357499999984,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs plays se once with its own gain without changing BGM",
+          "status": "passed",
+          "title": "plays se once with its own gain without changing BGM",
+          "duration": 56.564016999998785,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs replays memorized BGM through the engine, not only the session record",
+          "status": "passed",
+          "title": "replays memorized BGM through the engine, not only the session record",
+          "duration": 61.104230000000825,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs inserts the Fadeout BGM alias with its channel and preserves it through project export/import",
+          "status": "passed",
+          "title": "inserts the Fadeout BGM alias with its channel and preserves it through project export/import",
+          "duration": 213.02961700000014,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs stops only BGM through the blocking path",
+          "status": "passed",
+          "title": "stops only BGM through the blocking path",
+          "duration": 52.84875100000136,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs stops only BGM through the parallel path",
+          "status": "passed",
+          "title": "stops only BGM through the parallel path",
+          "duration": 50.74297699999988,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs stops only BGM through the legacy path",
+          "status": "passed",
+          "title": "stops only BGM through the legacy path",
+          "duration": 56.64648800000032,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs persists system replacements through save-slot parsing and consumes them on map/battle entry",
+          "status": "passed",
+          "title": "persists system replacements through save-slot parsing and consumes them on map/battle entry",
+          "duration": 50.473181999999724,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs keeps battle result overrides session-owned even with overlapping battle lifetimes",
+          "status": "passed",
+          "title": "keeps battle result overrides session-owned even with overlapping battle lifetimes",
+          "duration": 86.09738099999959,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "U14 actual audio handoffs"
+          ],
+          "fullName": "U14 actual audio handoffs restores a layer's gain through save parsing and engine resume",
+          "status": "passed",
+          "title": "restores a layer's gain through save parsing and engine resume",
+          "duration": 59.64047000000028,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788908308867,
+      "endTime": 1788908310299.6404,
+      "status": "passed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-event-u14/test/eventAudioHandoffs.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 카탈로그 전량이 예외 없이 렌더된다",
+          "status": "passed",
+          "title": "카탈로그 전량이 예외 없이 렌더된다",
+          "duration": 2.4408599999987928,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 스냅샷 = 카탈로그 전량 − 빈 껍데기 별칭",
+          "status": "passed",
+          "title": "스냅샷 = 카탈로그 전량 − 빈 껍데기 별칭",
+          "duration": 0.8094060000003083,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 빈 껍데기 제외 목록이 정본과 정확히 일치한다",
+          "status": "passed",
+          "title": "빈 껍데기 제외 목록이 정본과 정확히 일치한다",
+          "duration": 0.27099599999928614,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 existing 이면서 전용 폼을 갖는 항목은 반드시 스냅샷에 있다",
+          "status": "passed",
+          "title": "existing 이면서 전용 폼을 갖는 항목은 반드시 스냅샷에 있다",
+          "duration": 0.33742700000220793,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 카탈로그 규모가 고정 수치와 일치한다",
+          "status": "passed",
+          "title": "카탈로그 규모가 고정 수치와 일치한다",
+          "duration": 0.45507999999972526,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 별칭 → kind 대응이 정본과 정확히 일치한다",
+          "status": "passed",
+          "title": "별칭 → kind 대응이 정본과 정확히 일치한다",
+          "duration": 0.48700999999709893,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 모든 별칭의 existingKind 가 COMMAND_KINDS 에 실재한다",
+          "status": "passed",
+          "title": "모든 별칭의 existingKind 가 COMMAND_KINDS 에 실재한다",
+          "duration": 0.30149600000004284,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 모든 별칭 대상 kind 가 실제로 렌더되는 폼을 갖는다",
+          "status": "passed",
+          "title": "모든 별칭 대상 kind 가 실제로 렌더되는 폼을 갖는다",
+          "duration": 3168.4906489999994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 필드가 있는 M2 항목은 반드시 컨트롤을 낸다 (control 0 ⟹ fields 0)",
+          "status": "passed",
+          "title": "필드가 있는 M2 항목은 반드시 컨트롤을 낸다 (control 0 ⟹ fields 0)",
+          "duration": 0.5480619999980263,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 필드가 없는데 컨트롤을 내는 항목은 손수 작성 폼 목록과 정확히 같다 (fields 0 ⟹ control 0)",
+          "status": "passed",
+          "title": "필드가 없는데 컨트롤을 내는 항목은 손수 작성 폼 목록과 정확히 같다 (fields 0 ⟹ control 0)",
+          "duration": 0.5352709999970102,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 m2-063-memorize-current-bgm exposes no dead inputs and remains in the surface axis",
+          "status": "passed",
+          "title": "m2-063-memorize-current-bgm exposes no dead inputs and remains in the surface axis",
+          "duration": 1.2547760000015842,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 m2-064-play-memorized-bgm exposes no dead inputs and remains in the surface axis",
+          "status": "passed",
+          "title": "m2-064-play-memorized-bgm exposes no dead inputs and remains in the surface axis",
+          "duration": 0.35715799999888986,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 m2-027-change-system-bgm keeps exact audio membership and supported channel/slot values",
+          "status": "passed",
+          "title": "m2-027-change-system-bgm keeps exact audio membership and supported channel/slot values",
+          "duration": 26.944580999999744,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 m2-028-change-system-se keeps exact audio membership and supported channel/slot values",
+          "status": "passed",
+          "title": "m2-028-change-system-se keeps exact audio membership and supported channel/slot values",
+          "duration": 27.02917200000229,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 m2-210-sound-layer keeps exact audio membership and supported channel/slot values",
+          "status": "passed",
+          "title": "m2-210-sound-layer keeps exact audio membership and supported channel/slot values",
+          "duration": 32.66801900000064,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 명령 폼 표면 스냅샷"
+          ],
+          "fullName": "M2 명령 폼 표면 스냅샷 기준선과 일치한다",
+          "status": "failed",
+          "title": "기준선과 일치한다",
+          "duration": 22.325626000001648,
+          "failureMessages": [
+            "AssertionError: [M2(commandId)] 하한선 위반\n  하한선 미달: m2-019-change-state.classCount 29 < 30\n  ── 함께 관측된 표면 변화 7건 (원인은 여기 있다) ──\n  m2-019-change-state: testid 신규 2종 [change-state-operation-segment-set, change-state-operation-segment-toggle] | 태그 개수 [button 7→9, option 12→14] | 컨트롤 신규 2개 [change-state-operation-segment-set, change-state-operation-segment-toggle] | select 선택지 변경 1개 [change-state-operation: 2→4종] | 검증텍스트 변경 1개 [change-state-preview: \"파티 전체 · 독 부여독·수면 같은 상태 이상을 붙이거나 뗍니다.\"→\"파티 전체 · (상태 선택) 부여독·수면 같은 상태 이상을 붙이거나 뗍니\"] | 라벨 신규 2개 [교체, 반전] | 클래스 소실 1개 [is-active]\n  m2-022-change-actor-name: testid 신규 3종 [change-actor-name-target-mode, change-actor-name-target-mode-segment-actor, change-actor-name-target-mode-segment-party] | 태그 개수 [button 등장(2), div 14→15, option 4→6, select 1→2, span 5→6] | 컨트롤 신규 3개 [change-actor-name-target-mode, change-actor-name-target-mode-segment-actor, change-actor-name-target-mode-segment-party] | 컨트롤 값 변경 1개 [change-actor-name-actor-select: select{}→select{hidden}] | select 신규 1개 [change-actor-name-target-mode] | 검증텍스트 변경 1개 [change-actor-name-preview: \"—주인공 선택 · (이름 비움)대화와 메뉴에 보이는 이름에 반영됩니다.\"→\"—파티 전체 · (이름 비움)대화와 메뉴에 보이는 이름에 반영됩니다.\"] | 라벨 신규 2개 [주인공, 파티 전체] | 클래스 신규 4개 [rich-native-select, rich-segment, rich-segment-group, selected]\n  m2-023-change-actor-nickname: testid 신규 3종 [change-actor-nickname-target-mode, change-actor-nickname-target-mode-segment-actor, change-actor-nickname-target-mode-segment-party] | 태그 개수 [button 등장(2), div 14→15, option 4→6, select 1→2, span 5→6] | 컨트롤 신규 3개 [change-actor-nickname-target-mode, change-actor-nickname-target-mode-segment-actor, change-actor-nickname-target-mode-segment-party] | 컨트롤 값 변경 1개 [change-actor-nickname-actor-select: select{}→select{hidden}] | select 신규 1개 [change-actor-nickname-target-mode] | 검증텍스트 변경 1개 [change-actor-nickname-preview: \"—주인공 선택 · (별명 비움)별명은 상태 창·일부 대화 치환에 쓰입니다\"→\"—파티 전체 · (별명 비움)별명은 상태 창·일부 대화 치환에 쓰입니다.\"] | 라벨 신규 2개 [주인공, 파티 전체] | 클래스 신규 4개 [rich-native-select, rich-segment, rich-segment-group, selected]\n  m2-024-change-actor-graphic: testid 신규 3종 [change-actor-graphic-target-mode, change-actor-graphic-target-mode-segment-actor, change-actor-graphic-target-mode-segment-party] | 태그 개수 [button 1→3, div 15→16, option 8→10, select 2→3, span 5→6] | 컨트롤 신규 3개 [change-actor-graphic-target-mode, change-actor-graphic-target-mode-segment-actor, change-actor-graphic-target-mode-segment-party] | 컨트롤 값 변경 1개 [change-actor-graphic-actor-select: select{}→select{hidden}] | select 신규 1개 [change-actor-graphic-target-mode] | 검증텍스트 변경 1개 [change-actor-graphic-preview: \"선주인공 선택 · (선택 없음)맵에서 보이는 모습을 바꿉니다. 대화 얼굴\"→\"선파티 전체 · (선택 없음)맵에서 보이는 모습을 바꿉니다. 대화 얼굴과\"] | 라벨 신규 2개 [주인공, 파티 전체] | 클래스 신규 4개 [rich-native-select, rich-segment, rich-segment-group, selected]\n  m2-025-change-actor-faceset: testid 신규 5종 [change-actor-faceset-ai-queue, change-actor-faceset-ai-queue-list, change-actor-faceset-target-mode, change-actor-faceset-target-mode-segment-actor, change-actor-faceset-target-mode-segment-party] | 태그 개수 [button 115→117, div 132→135, option 8→10, p 3→4, select 2→3, span 5→6] | 컨트롤 신규 3개 [change-actor-faceset-target-mode, change-actor-faceset-target-mode-segment-actor, change-actor-faceset-target-mode-segment-party] | 컨트롤 값 변경 1개 [change-actor-faceset-actor-select: select{}→select{hidden}] | select 신규 1개 [change-actor-faceset-target-mode] | 검증텍스트 변경 1개 [change-actor-faceset-preview: \"주인공 선택 · (선택 없음)얼굴 그림 한 장을 고르면 그 얼굴이 저장됩\"→\"파티 전체 · (선택 없음)얼굴 그림 한 장을 고르면 그 얼굴이 저장됩니\"] | 라벨 신규 2개 [주인공, 파티 전체] | 클래스 신규 8개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list, rich-native-select, rich-segment, rich-segment-group, selected]\n  m2-069-change-parallax-back: testid 신규 2종 [change-parallax-back-ai-queue, change-parallax-back-ai-queue-list] | 태그 개수 [div 15→17, p 4→5] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]\n  m2-091-change-actor-class: testid 신규 3종 [change-actor-class-target-mode, change-actor-class-target-mode-segment-actor, change-actor-class-target-mode-segment-party] | 태그 개수 [button 등장(2), div 12→13, option 8→10, select 2→3, span 8→9] | 컨트롤 신규 3개 [change-actor-class-target-mode, change-actor-class-target-mode-segment-actor, change-actor-class-target-mode-segment-party] | 컨트롤 값 변경 1개 [change-actor-class-actor-select: select{}→select{hidden}] | select 신규 1개 [change-actor-class-target-mode] | 검증텍스트 변경 1개 [change-actor-class-preview: \"주인공 선택 · (직업 선택)직업이 바뀝니다. 성장과 전투 기술은 새 직\"→\"파티 전체 · (직업 선택)직업이 바뀝니다. 성장과 전투 기술은 새 직업\"] | 라벨 신규 2개 [주인공, 파티 전체] | 클래스 신규 4개 [rich-native-select, rich-segment, rich-segment-group, selected]: expected [ Array(1) ] to deeply equal []\n    at assertSurfaceGate (/home/main/z-project/rpg-zzu-event-u14/test/surfaceGateSupport.ts:272:5)\n    at /home/main/z-project/rpg-zzu-event-u14/test/eventEditorM2Surface.baseline.test.ts:215:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788908315806,
+      "endTime": 1788908319092.3257,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-event-u14/test/eventEditorM2Surface.baseline.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "M2 interpreter control flow commands"
+          ],
+          "fullName": "M2 interpreter control flow commands End Event Processing terminates the whole call stack",
+          "status": "passed",
+          "title": "End Event Processing terminates the whole call stack",
+          "duration": 4.67311600000005,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 interpreter control flow commands"
+          ],
+          "fullName": "M2 interpreter control flow commands Erase Event, Wait for All Movement, and Stop All Movement produce runtime steps",
+          "status": "passed",
+          "title": "Erase Event, Wait for All Movement, and Stop All Movement produce runtime steps",
+          "duration": 2.004150999999979,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "소지금, 아이템, 파티 명령을 세션에 반영한다",
+          "status": "passed",
+          "title": "소지금, 아이템, 파티 명령을 세션에 반영한다",
+          "duration": 1.2762859999999137,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "배우 상태 명령을 세션에 반영한다",
+          "status": "passed",
+          "title": "배우 상태 명령을 세션에 반영한다",
+          "duration": 93.35234000000003,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "순차 실행"
+          ],
+          "fullName": "순차 실행 text 명령들을 순서대로 반환한다",
+          "status": "passed",
+          "title": "text 명령들을 순서대로 반환한다",
+          "duration": 0.5332710000000134,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "순차 실행"
+          ],
+          "fullName": "순차 실행 빈 명령 리스트는 즉시 done",
+          "status": "passed",
+          "title": "빈 명령 리스트는 즉시 done",
+          "duration": 0.26005499999996573,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "setFlag — 세션 반영"
+          ],
+          "fullName": "setFlag — 세션 반영 플래그를 세션에 기록한다",
+          "status": "passed",
+          "title": "플래그를 세션에 기록한다",
+          "duration": 0.3035859999999957,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "choices 분기"
+          ],
+          "fullName": "choices 분기 선택한 옵션의 branch만 실행된다",
+          "status": "passed",
+          "title": "선택한 옵션의 branch만 실행된다",
+          "duration": 0.41497800000001916,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "choices 분기"
+          ],
+          "fullName": "choices 분기 choices 후 상위 명령이 계속 실행된다",
+          "status": "passed",
+          "title": "choices 후 상위 명령이 계속 실행된다",
+          "duration": 0.45735000000001946,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "choices 분기"
+          ],
+          "fullName": "choices 분기 취소를 특정 선택지로 매핑한다",
+          "status": "passed",
+          "title": "취소를 특정 선택지로 매핑한다",
+          "duration": 0.609662999999955,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "choices 분기"
+          ],
+          "fullName": "choices 분기 취소 분기를 실행한다",
+          "status": "passed",
+          "title": "취소 분기를 실행한다",
+          "duration": 0.4560390000000325,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "maps cancel to the fifth choice branch",
+          "status": "passed",
+          "title": "maps cancel to the fifth choice branch",
+          "duration": 0.29293600000005426,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "common event recursion guard"
+          ],
+          "fullName": "common event recursion guard stops recursive common-event calls at the 1000-frame guard and resumes the caller",
+          "status": "passed",
+          "title": "stops recursive common-event calls at the 1000-frame guard and resumes the caller",
+          "duration": 3.633954000000017,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "문장 표시 옵션과 페이스셋 상태"
+          ],
+          "fullName": "문장 표시 옵션과 페이스셋 상태 Display Text Options는 다음 선택지에도 현재 창 설정을 전달한다",
+          "status": "passed",
+          "title": "Display Text Options는 다음 선택지에도 현재 창 설정을 전달한다",
+          "duration": 0.2890069999999696,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "문장 표시 옵션과 페이스셋 상태"
+          ],
+          "fullName": "문장 표시 옵션과 페이스셋 상태 Change Faceset의 좌우 반전 옵션은 다음 텍스트 얼굴 상태에 유지된다",
+          "status": "passed",
+          "title": "Change Faceset의 좌우 반전 옵션은 다음 텍스트 얼굴 상태에 유지된다",
+          "duration": 0.1957439999999906,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "문장 표시 옵션과 페이스셋 상태"
+          ],
+          "fullName": "문장 표시 옵션과 페이스셋 상태 Faceset 상태는 독립된 이벤트 실행 사이에 누수되지 않는다",
+          "status": "passed",
+          "title": "Faceset 상태는 독립된 이벤트 실행 사이에 누수되지 않는다",
+          "duration": 0.25412500000004457,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "transfer — 종료"
+          ],
+          "fullName": "transfer — 종료 transfer는 요청 후 종료(이후 명령 무시)",
+          "status": "passed",
+          "title": "transfer는 요청 후 종료(이후 명령 무시)",
+          "duration": 0.4391090000000304,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "wait"
+          ],
+          "fullName": "wait wait는 요청을 반환하고 resume 후 계속",
+          "status": "passed",
+          "title": "wait는 요청을 반환하고 resume 후 계속",
+          "duration": 0.3312869999999748,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "중첩 choices"
+          ],
+          "fullName": "중첩 choices choices 안의 choices 분기가 올바르게 실행된다",
+          "status": "passed",
+          "title": "choices 안의 choices 분기가 올바르게 실행된다",
+          "duration": 0.21551399999998466,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "일시정지/재개 상태 보존"
+          ],
+          "fullName": "일시정지/재개 상태 보존 text 사이에 다른 작업을 끼워도 순서가 보존된다",
+          "status": "passed",
+          "title": "text 사이에 다른 작업을 끼워도 순서가 보존된다",
+          "duration": 0.24258499999996275,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "setSwitch / setVariable — 세션 반영"
+          ],
+          "fullName": "setSwitch / setVariable — 세션 반영 setSwitch로 스위치를 설정한다",
+          "status": "passed",
+          "title": "setSwitch로 스위치를 설정한다",
+          "duration": 0.21100400000000263,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "setSwitch / setVariable — 세션 반영"
+          ],
+          "fullName": "setSwitch / setVariable — 세션 반영 setVariable 연산이 누적된다",
+          "status": "passed",
+          "title": "setVariable 연산이 누적된다",
+          "duration": 0.21309400000006917,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "setSwitch / setVariable — 세션 반영"
+          ],
+          "fullName": "setSwitch / setVariable — 세션 반영 setVariable 값으로 다른 변수를 참조할 수 있다",
+          "status": "passed",
+          "title": "setVariable 값으로 다른 변수를 참조할 수 있다",
+          "duration": 0.16951300000005176,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "setSwitch / setVariable — 세션 반영"
+          ],
+          "fullName": "setSwitch / setVariable — 세션 반영 inputNumber 입력값을 지정한 변수에 저장하고 다음 명령으로 진행한다",
+          "status": "passed",
+          "title": "inputNumber 입력값을 지정한 변수에 저장하고 다음 명령으로 진행한다",
+          "duration": 0.3512079999999287,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "fork — 조건 분기"
+          ],
+          "fullName": "fork — 조건 분기 조건 true면 then 실행",
+          "status": "passed",
+          "title": "조건 true면 then 실행",
+          "duration": 0.4766590000000406,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "fork — 조건 분기"
+          ],
+          "fullName": "fork — 조건 분기 조건 false면 else 실행",
+          "status": "passed",
+          "title": "조건 false면 else 실행",
+          "duration": 0.19967399999995905,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "fork — 조건 분기"
+          ],
+          "fullName": "fork — 조건 분기 변수 조건(>=)도 평가된다",
+          "status": "passed",
+          "title": "변수 조건(>=)도 평가된다",
+          "duration": 0.22688399999992725,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "label / gotoLabel — 루프"
+          ],
+          "fullName": "label / gotoLabel — 루프 gotoLabel로 라벨로 점프한다 (유한 반복 후 EXIT)",
+          "status": "passed",
+          "title": "gotoLabel로 라벨로 점프한다 (유한 반복 후 EXIT)",
+          "duration": 0.39667800000006537,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "changeTile / moveEvent / setEventGraphicPattern — 요청 반환"
+          ],
+          "fullName": "changeTile / moveEvent / setEventGraphicPattern — 요청 반환 changeTile은 요청을 반환하고 resume 후 계속",
+          "status": "passed",
+          "title": "changeTile은 요청을 반환하고 resume 후 계속",
+          "duration": 0.23076500000001943,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "changeTile / moveEvent / setEventGraphicPattern — 요청 반환"
+          ],
+          "fullName": "changeTile / moveEvent / setEventGraphicPattern — 요청 반환 moveEvent는 요청을 반환한다",
+          "status": "passed",
+          "title": "moveEvent는 요청을 반환한다",
+          "duration": 0.1631240000000389,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "changeTile / moveEvent / setEventGraphicPattern — 요청 반환"
+          ],
+          "fullName": "changeTile / moveEvent / setEventGraphicPattern — 요청 반환 setEventGraphicPattern은 프레임 변경 요청을 반환하고 resume 후 계속한다",
+          "status": "passed",
+          "title": "setEventGraphicPattern은 프레임 변경 요청을 반환하고 resume 후 계속한다",
+          "duration": 0.20721400000002177,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "battleProcessing / common event guard"
+          ],
+          "fullName": "battleProcessing / common event guard battleProcessing returns a battle handoff step",
+          "status": "passed",
+          "title": "battleProcessing returns a battle handoff step",
+          "duration": 0.24252500000000055,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "battleProcessing / common event guard"
+          ],
+          "fullName": "battleProcessing / common event guard picture, audio, shop, inn, gameOver, and title commands suspend as typed handoffs",
+          "status": "passed",
+          "title": "picture, audio, shop, inn, gameOver, and title commands suspend as typed handoffs",
+          "duration": 0.3128760000000739,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "battleProcessing / common event guard"
+          ],
+          "fullName": "battleProcessing / common event guard ending returns a title handoff with ending screen copy",
+          "status": "passed",
+          "title": "ending returns a title handoff with ending screen copy",
+          "duration": 0.19831399999998212,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "battleProcessing / common event guard"
+          ],
+          "fullName": "battleProcessing / common event guard bounds recursive common-event calls",
+          "status": "passed",
+          "title": "bounds recursive common-event calls",
+          "duration": 1.5542110000000093,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "callCommonEvent — 공통 이벤트 호출"
+          ],
+          "fullName": "callCommonEvent — 공통 이벤트 호출 세션의 commonEvents에서 commands를 가져와 실행",
+          "status": "passed",
+          "title": "세션의 commonEvents에서 commands를 가져와 실행",
+          "duration": 0.20056399999998575,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "callCommonEvent — 공통 이벤트 호출"
+          ],
+          "fullName": "callCommonEvent — 공통 이벤트 호출 존재하지 않는 공통 이벤트는 경고 후 계속",
+          "status": "passed",
+          "title": "존재하지 않는 공통 이벤트는 경고 후 계속",
+          "duration": 0.3014259999999922,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "inputWait"
+          ],
+          "fullName": "inputWait inputWait는 요청 반환 후 resume",
+          "status": "passed",
+          "title": "inputWait는 요청 반환 후 resume",
+          "duration": 0.1857239999999365,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "timer"
+          ],
+          "fullName": "timer timer set은 세션 타이머를 갱신",
+          "status": "passed",
+          "title": "timer set은 세션 타이머를 갱신",
+          "duration": 0.2089139999999361,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "timer"
+          ],
+          "fullName": "timer timer timerId로 타이머 1/2를 구분한다",
+          "status": "passed",
+          "title": "timer timerId로 타이머 1/2를 구분한다",
+          "duration": 0.17899500000009994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 generic map runtime executor"
+          ],
+          "fullName": "M2 generic map runtime executor does not emit catalog-disabled or missing-runtime skip warnings for non-battle rows",
+          "status": "passed",
+          "title": "does not emit catalog-disabled or missing-runtime skip warnings for non-battle rows",
+          "duration": 4.244866999999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 generic map runtime executor"
+          ],
+          "fullName": "M2 generic map runtime executor applies representative generic M2 picture, screen, audio, access, actor, map, and event effects",
+          "status": "passed",
+          "title": "applies representative generic M2 picture, screen, audio, access, actor, map, and event effects",
+          "duration": 2.545902000000069,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 generic map runtime executor"
+          ],
+          "fullName": "M2 generic map runtime executor applies M2 damage processing and actor graphic changes to live session actor state",
+          "status": "passed",
+          "title": "applies M2 damage processing and actor graphic changes to live session actor state",
+          "duration": 0.5233009999999467,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 generic map runtime executor"
+          ],
+          "fullName": "M2 generic map runtime executor emits a blocking scrollMap step with direction, return, and lock options",
+          "status": "passed",
+          "title": "emits a blocking scrollMap step with direction, return, and lock options",
+          "duration": 0.7478449999999839,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 generic map runtime executor"
+          ],
+          "fullName": "M2 generic map runtime executor emits a cameraControl step with pan target and wait options",
+          "status": "passed",
+          "title": "emits a cameraControl step with pan target and wait options",
+          "duration": 1.0230209999999715,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 generic map runtime executor"
+          ],
+          "fullName": "M2 generic map runtime executor records modern event commands into explicit runtime buckets without unsafe script execution",
+          "status": "passed",
+          "title": "records modern event commands into explicit runtime buckets without unsafe script execution",
+          "duration": 6.720887999999945,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788908316164,
+      "endTime": 1788908316297.721,
+      "status": "passed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-event-u14/test/interpreter.test.ts"
+    }
+  ]
+}

@@ -1,0 +1,2895 @@
+[
+  {
+    "id": "layers",
+    "receipt": {
+      "url": "http://127.0.0.1:35457/player.html",
+      "editor": false,
+      "audio": {
+        "requests": {
+          "u14-field": 2,
+          "u14-ambient": 1,
+          "u14-se": 1,
+          "u14-defeat": 1,
+          "u14-other": 2,
+          "u14-battle": 1
+        },
+        "latest": {
+          "u14-field": {
+            "playing": true,
+            "paused": true,
+            "volume": 0,
+            "loop": true
+          },
+          "u14-ambient": {
+            "playing": true,
+            "paused": false,
+            "volume": 0.175,
+            "loop": true
+          },
+          "u14-se": {
+            "playing": true,
+            "paused": false,
+            "volume": 0.4,
+            "loop": false
+          },
+          "u14-defeat": {
+            "playing": true,
+            "paused": false,
+            "volume": 0.27999999999999997,
+            "loop": false
+          },
+          "u14-other": {
+            "playing": true,
+            "paused": true,
+            "volume": 0,
+            "loop": true
+          },
+          "u14-battle": {
+            "playing": true,
+            "paused": false,
+            "volume": 0.7,
+            "loop": true
+          }
+        },
+        "events": [
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.000008,
+            "volume": 0.04666666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-ambient",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.175,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-ambient",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.175,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-se",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.4,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-defeat",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.27999999999999997,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.21317,
+            "volume": 0.24266666666666667,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-se",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.4,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-defeat",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.27999999999999997,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-ambient",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.175,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.21317,
+            "volume": 0.2905,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.30292,
+            "volume": 0.3453333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.343691,
+            "volume": 0.3931666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.38392,
+            "volume": 0.4398333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.38392,
+            "volume": 0.48533333333333334,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.424524,
+            "volume": 0.5331666666666667,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.506295,
+            "volume": 0.5996666666666667,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.587983,
+            "volume": 0.5586894444444445,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.628691,
+            "volume": 0.5187116666666667,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.669483,
+            "volume": 0.4787338888888889,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.707649,
+            "volume": 0.4387561111111111,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.748045,
+            "volume": 0.3977788888888889,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.788691,
+            "volume": 0.3578011111111111,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.829899,
+            "volume": 0.30283166666666667,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.256437,
+            "volume": 0.6533333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.882983,
+            "volume": 0.2628538888888889,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.296979,
+            "volume": 0.6066666666666667,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.923649,
+            "volume": 0.21987777777777778,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.340833,
+            "volume": 0.5599999999999999,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.964212,
+            "volume": 0.1799,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.381645,
+            "volume": 0.5121666666666667,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.004733,
+            "volume": 0.13892277777777778,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.422729,
+            "volume": 0.46549999999999997,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.04517,
+            "volume": 0.09894500000000006,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.463291,
+            "volume": 0.4188333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.085837,
+            "volume": 0.05796777777777784,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.503875,
+            "volume": 0.371,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.126504,
+            "volume": 0.01699055555555551,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.544333,
+            "volume": 0.32316666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "error",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": true,
+            "connected": false,
+            "sourceCleared": true,
+            "error": {
+              "code": 4,
+              "message": "Failed to open media"
+            }
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.584875,
+            "volume": 0.2753333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.62525,
+            "volume": 0.21816666666666662,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.380875,
+            "volume": 0.6533333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.662979,
+            "volume": 0.17149999999999999,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.4215,
+            "volume": 0.6066666666666667,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.703229,
+            "volume": 0.12366666666666659,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.46227,
+            "volume": 0.5576666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.743416,
+            "volume": 0.07816666666666672,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.502895,
+            "volume": 0.5109999999999999,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.784104,
+            "volume": 0.030333333333333323,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.543645,
+            "volume": 0.46433333333333326,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "error",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": true,
+            "connected": false,
+            "sourceCleared": true,
+            "error": {
+              "code": 4,
+              "message": "Failed to open media"
+            }
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.58425,
+            "volume": 0.4165,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.624791,
+            "volume": 0.3698333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.663187,
+            "volume": 0.31499999999999995,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.703604,
+            "volume": 0.26366666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.744062,
+            "volume": 0.21700000000000003,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.784708,
+            "volume": 0.16800000000000004,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.82552,
+            "volume": 0.12016666666666664,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.866229,
+            "volume": 0.06883333333333341,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.911395,
+            "volume": 0.02100000000000002,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "error",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": true,
+            "connected": false,
+            "sourceCleared": true,
+            "error": {
+              "code": 4,
+              "message": "Failed to open media"
+            }
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.540708,
+            "volume": 0.6521666666666667,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.585041,
+            "volume": 0.6043333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.625729,
+            "volume": 0.5576666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.663937,
+            "volume": 0.5098333333333334,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.744791,
+            "volume": 0.45966666666666667,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.744791,
+            "volume": 0.413,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.82702,
+            "volume": 0.364,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.82702,
+            "volume": 0.31733333333333336,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.90875,
+            "volume": 0.26599999999999996,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.90875,
+            "volume": 0.21933333333333332,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.992104,
+            "volume": 0.17033333333333334,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.992104,
+            "volume": 0.12250000000000005,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.075,
+            "volume": 0.07350000000000001,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.075,
+            "volume": 0.026833333333333376,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-other",
+            "type": "error",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": true,
+            "connected": false,
+            "sourceCleared": true,
+            "error": {
+              "code": 4,
+              "message": "Failed to open media"
+            }
+          }
+        ]
+      }
+    },
+    "remoteWrites": []
+  },
+  {
+    "id": "result",
+    "receipt": {
+      "url": "http://127.0.0.1:35457/player.html?e2eVitals=1",
+      "editor": false,
+      "audio": {
+        "requests": {
+          "u14-field": 1,
+          "u14-battle": 1,
+          "u14-defeat": 1
+        },
+        "latest": {
+          "u14-field": {
+            "playing": true,
+            "paused": true,
+            "volume": 0,
+            "loop": true
+          },
+          "u14-battle": {
+            "playing": true,
+            "paused": true,
+            "volume": 0,
+            "loop": true
+          },
+          "u14-defeat": {
+            "playing": true,
+            "paused": false,
+            "volume": 0.8,
+            "loop": false
+          }
+        },
+        "events": [
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.000009,
+            "volume": 0.05366666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.069126,
+            "volume": 0.10266666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.110793,
+            "volume": 0.09582222222222221,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.00001,
+            "volume": 0.04666666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.153106,
+            "volume": 0.08880666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.068837,
+            "volume": 0.09333333333333332,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.193814,
+            "volume": 0.08127777777777777,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.109358,
+            "volume": 0.14233333333333334,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.234356,
+            "volume": 0.07443333333333332,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.150025,
+            "volume": 0.189,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.274876,
+            "volume": 0.06724666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.190629,
+            "volume": 0.238,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.315585,
+            "volume": 0.06040222222222221,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.231275,
+            "volume": 0.2846666666666667,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.356251,
+            "volume": 0.053044444444444436,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.271921,
+            "volume": 0.3348333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.396481,
+            "volume": 0.04619999999999999,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.312858,
+            "volume": 0.3815,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.43721,
+            "volume": 0.03884222222222221,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.353691,
+            "volume": 0.43166666666666664,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.478022,
+            "volume": 0.03199777777777778,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.393941,
+            "volume": 0.47833333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.518606,
+            "volume": 0.024468888888888887,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.434546,
+            "volume": 0.5296666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.559231,
+            "volume": 0.017624444444444443,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.47515,
+            "volume": 0.5763333333333334,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.599856,
+            "volume": 0.010095555555555566,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.515796,
+            "volume": 0.6276666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.642397,
+            "volume": 0.0034222222222222154,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.558296,
+            "volume": 0.6731666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.639983,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "error",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": true,
+            "connected": false,
+            "sourceCleared": true,
+            "error": {
+              "code": 4,
+              "message": "Failed to open media"
+            }
+          },
+          {
+            "id": "u14-defeat",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.8,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.3424,
+            "volume": 0.05249999999999999,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-defeat",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.8,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "error",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": true,
+            "connected": false,
+            "sourceCleared": true,
+            "error": {
+              "code": 4,
+              "message": "Failed to open media"
+            }
+          }
+        ]
+      }
+    },
+    "remoteWrites": []
+  },
+  {
+    "id": "gain-command",
+    "receipt": {
+      "url": "http://127.0.0.1:35457/player.html",
+      "editor": false,
+      "audio": {
+        "requests": {
+          "u14-field": 2
+        },
+        "latest": {
+          "u14-field": {
+            "playing": true,
+            "paused": false,
+            "volume": 0.7,
+            "loop": true
+          }
+        },
+        "events": [
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.05483333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.05483333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.10966666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.175,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.458916,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "error",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": true,
+            "connected": false,
+            "sourceCleared": true,
+            "error": {
+              "code": 4,
+              "message": "Failed to open media"
+            }
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          }
+        ],
+        "savedBgm": {
+          "resourceId": "u14-field",
+          "loop": true
+        }
+      }
+    },
+    "remoteWrites": []
+  },
+  {
+    "id": "gain-map",
+    "receipt": {
+      "url": "http://127.0.0.1:35457/player.html",
+      "editor": false,
+      "audio": {
+        "requests": {
+          "u14-field": 2
+        },
+        "latest": {
+          "u14-field": {
+            "playing": true,
+            "paused": false,
+            "volume": 0.7,
+            "loop": true
+          }
+        },
+        "events": [
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.04666666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.10033333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.175,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.45227,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "error",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": true,
+            "connected": false,
+            "sourceCleared": true,
+            "error": {
+              "code": 4,
+              "message": "Failed to open media"
+            }
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          }
+        ],
+        "savedBgm": {
+          "resourceId": "u14-field",
+          "loop": true
+        }
+      }
+    },
+    "remoteWrites": []
+  },
+  {
+    "id": "battle-gain-25-same",
+    "receipt": {
+      "url": "http://127.0.0.1:35457/player.html?e2eVitals=1",
+      "editor": false,
+      "audio": {
+        "requests": {
+          "u14-field": 2,
+          "u14-defeat": 1
+        },
+        "latest": {
+          "u14-field": {
+            "playing": true,
+            "paused": false,
+            "volume": 0.175,
+            "loop": true
+          },
+          "u14-defeat": {
+            "playing": true,
+            "paused": false,
+            "volume": 0.8,
+            "loop": false
+          }
+        },
+        "events": [
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.000016,
+            "volume": 0.05366666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.000016,
+            "volume": 0.175,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-defeat",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.8,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.818839,
+            "volume": 0.024062499999999987,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-defeat",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.8,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "error",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": true,
+            "connected": false,
+            "sourceCleared": true,
+            "error": {
+              "code": 4,
+              "message": "Failed to open media"
+            }
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.175,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.175,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.175,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          }
+        ]
+      }
+    },
+    "remoteWrites": []
+  },
+  {
+    "id": "battle-gain-0-same",
+    "receipt": {
+      "url": "http://127.0.0.1:35457/player.html?e2eVitals=1",
+      "editor": false,
+      "audio": {
+        "requests": {
+          "u14-field": 2,
+          "u14-defeat": 1
+        },
+        "latest": {
+          "u14-field": {
+            "playing": true,
+            "paused": false,
+            "volume": 0,
+            "loop": true
+          },
+          "u14-defeat": {
+            "playing": true,
+            "paused": false,
+            "volume": 0.8,
+            "loop": false
+          }
+        },
+        "events": [
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.000011,
+            "volume": 0.05366666666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.065016,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-defeat",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.8,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-defeat",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.8,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "error",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": true,
+            "connected": false,
+            "sourceCleared": true,
+            "error": {
+              "code": 4,
+              "message": "Failed to open media"
+            }
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          }
+        ]
+      }
+    },
+    "remoteWrites": []
+  },
+  {
+    "id": "battle-gain-25-different",
+    "receipt": {
+      "url": "http://127.0.0.1:35457/player.html?e2eVitals=1",
+      "editor": false,
+      "audio": {
+        "requests": {
+          "u14-field": 2,
+          "u14-battle": 1,
+          "u14-defeat": 1
+        },
+        "latest": {
+          "u14-field": {
+            "playing": true,
+            "paused": false,
+            "volume": 0.175,
+            "loop": true
+          },
+          "u14-battle": {
+            "playing": true,
+            "paused": true,
+            "volume": 0,
+            "loop": true
+          },
+          "u14-defeat": {
+            "playing": true,
+            "paused": false,
+            "volume": 0.8,
+            "loop": false
+          }
+        },
+        "events": [
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.049,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.049,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.175,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.489312,
+            "volume": 0.16333333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.529854,
+            "volume": 0.15166666666666667,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.570333,
+            "volume": 0.13970833333333332,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.610833,
+            "volume": 0.12804166666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.651625,
+            "volume": 0.11637499999999999,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.689354,
+            "volume": 0.10470833333333332,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.73002,
+            "volume": 0.09304166666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.77025,
+            "volume": 0.08049999999999999,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.810458,
+            "volume": 0.06883333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.850687,
+            "volume": 0.05570833333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.890812,
+            "volume": 0.04404166666666667,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.931083,
+            "volume": 0.03179166666666666,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.971333,
+            "volume": 0.020125000000000004,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.0115,
+            "volume": 0.007000000000000006,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "error",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": true,
+            "connected": false,
+            "sourceCleared": true,
+            "error": {
+              "code": 4,
+              "message": "Failed to open media"
+            }
+          },
+          {
+            "id": "u14-defeat",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.8,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.306208,
+            "volume": 0.08750000000000002,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-defeat",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.8,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "error",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": true,
+            "connected": false,
+            "sourceCleared": true,
+            "error": {
+              "code": 4,
+              "message": "Failed to open media"
+            }
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.175,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.175,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.175,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          }
+        ]
+      }
+    },
+    "remoteWrites": []
+  },
+  {
+    "id": "battle-gain-0-different",
+    "receipt": {
+      "url": "http://127.0.0.1:35457/player.html?e2eVitals=1",
+      "editor": false,
+      "audio": {
+        "requests": {
+          "u14-field": 2,
+          "u14-battle": 1,
+          "u14-defeat": 1
+        },
+        "latest": {
+          "u14-field": {
+            "playing": true,
+            "paused": false,
+            "volume": 0,
+            "loop": true
+          },
+          "u14-battle": {
+            "playing": true,
+            "paused": true,
+            "volume": 0,
+            "loop": true
+          },
+          "u14-defeat": {
+            "playing": true,
+            "paused": false,
+            "volume": 0.8,
+            "loop": false
+          }
+        },
+        "events": [
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.047833333333333325,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.10033333333333333,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.061062,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.7,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "error",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": true,
+            "connected": false,
+            "sourceCleared": true,
+            "error": {
+              "code": 4,
+              "message": "Failed to open media"
+            }
+          },
+          {
+            "id": "u14-defeat",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0.8,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0.315458,
+            "volume": 0.043749999999999956,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-defeat",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.8,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-battle",
+            "type": "error",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": true,
+            "connected": false,
+            "sourceCleared": true,
+            "error": {
+              "code": 4,
+              "message": "Failed to open media"
+            }
+          },
+          {
+            "id": "u14-field",
+            "type": "volumechange",
+            "trusted": true,
+            "readyState": 0,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          },
+          {
+            "id": "u14-field",
+            "type": "playing",
+            "trusted": true,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0,
+            "paused": false,
+            "connected": true,
+            "sourceCleared": false,
+            "error": null
+          }
+        ]
+      }
+    },
+    "remoteWrites": []
+  }
+]

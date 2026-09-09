@@ -1,0 +1,32 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventAudioHandoffs.test.ts test/eventAudioCommandContracts.test.ts test/battleEventWaitAudio.test.ts test/battleAudio.test.ts test/audioEnginePlaybackControls.test.ts test/audioEngine.test.ts test/cc0AudioPlayback.test.ts test/runtimeAudioIndicator.test.ts test/eventCommandPickerAudio.test.ts test/playAudioCommandBody.test.ts test/screenSaveRestore.test.ts test/mapBgm.test.ts test/mapBgmVariety.test.ts test/m2RuntimeSupportCompleteness.test.ts test/battleDomKeyboard.test.ts test/battleDomIncremental.test.ts test/commandContracts/m2Command.contract.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-event-u14
+
+ ✓ test/playAudioCommandBody.test.ts (1 test) 696ms
+   ✓ playAudio command body > lists playable BGM/SE and previews selected audio  694ms
+ ✓ test/eventAudioHandoffs.test.ts (20 tests) 1487ms
+ ✓ test/battleDomKeyboard.test.ts (32 tests) 454ms
+ ✓ test/cc0AudioPlayback.test.ts (3 tests) 345ms
+ ✓ test/battleDomIncremental.test.ts (4 tests) 301ms
+ ✓ test/audioEnginePlaybackControls.test.ts (11 tests) 13ms
+ ✓ test/eventCommandPickerAudio.test.ts (3 tests) 108ms
+ ✓ test/commandContracts/m2Command.contract.test.ts (71 tests) 1985ms
+ ✓ test/m2RuntimeSupportCompleteness.test.ts (12 tests) 725ms
+ ✓ test/eventAudioCommandContracts.test.ts (13 tests) 480ms
+ ✓ test/mapBgmVariety.test.ts (20 tests) 2274ms
+   ✓ generate_map BGM > 테마마다 custom BGM 을 심고 요약/data 에 담는다  616ms
+   ✓ create_map BGM > 시드 없이 같은 이름을 두 번 만들면 같은 BGM 이다  307ms
+ ✓ test/screenSaveRestore.test.ts (5 tests) 293ms
+ ✓ test/battleAudio.test.ts (6 tests) 97ms
+ ✓ test/runtimeAudioIndicator.test.ts (2 tests) 307ms
+ ✓ test/battleEventWaitAudio.test.ts (4 tests) 53ms
+ ✓ test/audioEngine.test.ts (21 tests) 9ms
+ ✓ test/mapBgm.test.ts (13 tests) 6ms
+
+ Test Files  17 passed (17)
+      Tests  241 passed (241)
+   Start at  07:30:23
+   Duration  26.89s (transform 14.47s, setup 0ms, collect 37.32s, tests 9.63s, environment 1.70s, prepare 1.16s)

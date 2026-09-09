@@ -1,0 +1,239 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventAudioHandoffs.test.ts test/battleEventWaitAudio.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-event-u14
+
+ ❯ test/battleEventWaitAudio.test.ts (4 tests | 1 failed) 215ms
+   × battle event wait/playAudio/stopAudio wiring > preserves an explicit audio channel and options through the battle runtime 178ms
+     → expected "spy" to be called with arguments: [ 'bgm_boss', true, { …(6) } ][90m
+
+Received:
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    "bgm_boss",[22m
+[2m    true,[22m
+[32m-   {[90m
+[32m-     "channel": "bgs",[90m
+[32m-     "fadeInMs": 0,[90m
+[32m-     "kind": "playAudio",[90m
+[32m-     "loop": true,[90m
+[32m-     "resourceId": "bgm_boss",[90m
+[32m-     "volume": 0.25,[90m
+[32m-   },[90m
+[2m  ][22m
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   ✓ battle event wait/playAudio/stopAudio wiring > invokes playAudio/stopAudio callbacks from battle event commands 13ms
+   ✓ battle event wait/playAudio/stopAudio wiring > visual wait no longer blocks ATB: gauge keeps charging through wait 4ms
+   ✓ battle event wait/playAudio/stopAudio wiring > leaves playAudio/stopAudio as no-op callbacks when host does not supply them 10ms
+ ❯ test/eventAudioHandoffs.test.ts (13 tests | 9 failed) 2692ms
+   × U14 actual audio handoffs > delivers ambient gain and explicit zero fade through blocking execution 334ms
+     → expected +0 to be close to 0.175, received difference is 0.175, but expected 0.005
+   × U14 actual audio handoffs > delivers ambient gain and explicit zero fade through parallel execution 128ms
+     → expected +0 to be close to 0.175, received difference is 0.175, but expected 0.005
+   × U14 actual audio handoffs > keeps per-track gain when the group volume changes and the same track is requested again 112ms
+     → expected +0 to be close to 0.1, received difference is 0.1, but expected 0.005
+   × U14 actual audio handoffs > plays me once with its own gain without changing BGM 152ms
+     → expected 0.7 to be close to 0.35, received difference is 0.35, but expected 0.005
+   × U14 actual audio handoffs > plays se once with its own gain without changing BGM 194ms
+     → expected 0.8 to be close to 0.4, received difference is 0.4, but expected 0.005
+   ✓ U14 actual audio handoffs > replays memorized BGM through the engine, not only the session record 237ms
+   ✓ U14 actual audio handoffs > inserts the Fadeout BGM alias with its channel and preserves it through project export/import  718ms
+   ✓ U14 actual audio handoffs > stops only BGM through the blocking path 139ms
+   ✓ U14 actual audio handoffs > stops only BGM through the parallel path 149ms
+   × U14 actual audio handoffs > stops only BGM through the legacy path 121ms
+     → expected "stopChannel" to be called with arguments: [ 'bgm' ][90m
+
+Number of calls: [1m0[22m
+[39m
+   × U14 actual audio handoffs > persists system replacements through save-slot parsing and consumes them on map/battle entry 121ms
+     → expected [ 'cc0-bgm-rtp-fld-003', …(1) ] to deeply equal [ 'cc0-bgm-rtp-fld-002', …(1) ]
+   × U14 actual audio handoffs > keeps battle result overrides session-owned even with overlapping battle lifetimes 173ms
+     → expected [] to deeply equal [ [ 'se', …(1) ], …(1) ]
+   × U14 actual audio handoffs > restores a layer's gain through save parsing and engine resume 105ms
+     → expected 0.7 to be close to 0.21, received difference is 0.49, but expected 0.005
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/battleEventWaitAudio.test.ts > battle event wait/playAudio/stopAudio wiring > preserves an explicit audio channel and options through the battle runtime
+AssertionError: expected "spy" to be called with arguments: [ 'bgm_boss', true, { …(6) } ][90m
+
+Received:
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    "bgm_boss",[22m
+[2m    true,[22m
+[32m-   {[90m
+[32m-     "channel": "bgs",[90m
+[32m-     "fadeInMs": 0,[90m
+[32m-     "kind": "playAudio",[90m
+[32m-     "loop": true,[90m
+[32m-     "resourceId": "bgm_boss",[90m
+[32m-     "volume": 0.25,[90m
+[32m-   },[90m
+[2m  ][22m
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+ ❯ test/battleEventWaitAudio.test.ts:38:23
+     36|     runtime.tick(1_000);
+     37|     runtime.performActorCommand({ kind: "defend" });
+     38|     expect(playAudio).toHaveBeenCalledWith("bgm_boss", true, command);
+       |                       ^
+     39|     expect(stopAudio).toHaveBeenCalledWith("bgm");
+     40|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > delivers ambient gain and explicit zero fade through blocking execution
+AssertionError: expected +0 to be close to 0.175, received difference is 0.175, but expected 0.005
+ ❯ test/eventAudioHandoffs.test.ts:85:30
+     83|     expect(audio).toHaveLength(1);
+     84|     expect(audio[0]?.loop).toBe(true);
+     85|     expect(audio[0]?.volume).toBeCloseTo(0.7 * 0.25);
+       |                              ^
+     86|     expect(getAudioEngine().getFadeInMs()).toBe(0);
+     87|     expect(session.audio.bgs?.resourceId).toBe(FIELD);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > delivers ambient gain and explicit zero fade through parallel execution
+AssertionError: expected +0 to be close to 0.175, received difference is 0.175, but expected 0.005
+ ❯ test/eventAudioHandoffs.test.ts:85:30
+     83|     expect(audio).toHaveLength(1);
+     84|     expect(audio[0]?.loop).toBe(true);
+     85|     expect(audio[0]?.volume).toBeCloseTo(0.7 * 0.25);
+       |                              ^
+     86|     expect(getAudioEngine().getFadeInMs()).toBe(0);
+     87|     expect(session.audio.bgs?.resourceId).toBe(FIELD);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > keeps per-track gain when the group volume changes and the same track is requested again
+AssertionError: expected +0 to be close to 0.1, received difference is 0.1, but expected 0.005
+ ❯ test/eventAudioHandoffs.test.ts:95:40
+     93|     await runCommands(scene, [m2("Sound Layer", { channel: "bgm", reso…
+     94|     getAudioEngine().setVolume("bgm", 0.4);
+     95|     expect(audioElements()[0]?.volume).toBeCloseTo(0.1);
+       |                                        ^
+     96|     await runCommands(scene, [m2("Sound Layer", { channel: "bgm", reso…
+     97|     expect(audioElements()).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > plays me once with its own gain without changing BGM
+AssertionError: expected 0.7 to be close to 0.35, received difference is 0.35, but expected 0.005
+ ❯ test/eventAudioHandoffs.test.ts:109:40
+    107|     expect(field?.volume).toBeCloseTo(0.7);
+    108|     expect(audioElements()[1]?.loop).toBe(false);
+    109|     expect(audioElements()[1]?.volume).toBeCloseTo((channel === "me" ?…
+       |                                        ^
+    110|     getAudioEngine().setVolume(channel === "me" ? "bgm" : "se", 0.6);
+    111|     expect(audioElements()[1]?.volume).toBeCloseTo(0.3);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > plays se once with its own gain without changing BGM
+AssertionError: expected 0.8 to be close to 0.4, received difference is 0.4, but expected 0.005
+ ❯ test/eventAudioHandoffs.test.ts:109:40
+    107|     expect(field?.volume).toBeCloseTo(0.7);
+    108|     expect(audioElements()[1]?.loop).toBe(false);
+    109|     expect(audioElements()[1]?.volume).toBeCloseTo((channel === "me" ?…
+       |                                        ^
+    110|     getAudioEngine().setVolume(channel === "me" ? "bgm" : "se", 0.6);
+    111|     expect(audioElements()[1]?.volume).toBeCloseTo(0.3);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > stops only BGM through the legacy path
+AssertionError: expected "stopChannel" to be called with arguments: [ 'bgm' ][90m
+
+Number of calls: [1m0[22m
+[39m
+ ❯ test/eventAudioHandoffs.test.ts:151:18
+    149|     if (path === "parallel") applyNonBlockingStep(scene, { kind: "stop…
+    150|     else await runCommands(scene, [path === "legacy" ? m2("Fadeout BGM…
+    151|     expect(stop).toHaveBeenCalledWith("bgm");
+       |                  ^
+    152|     expect(stopAll).not.toHaveBeenCalled();
+    153|     expect(session.audio.bgm).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > persists system replacements through save-slot parsing and consumes them on map/battle entry
+AssertionError: expected [ 'cc0-bgm-rtp-fld-003', …(1) ] to deeply equal [ 'cc0-bgm-rtp-fld-002', …(1) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "cc0-bgm-rtp-fld-002",[39m
+[32m-   "cc0-bgm-rtp-btl-002",[39m
+[31m+   "cc0-bgm-rtp-fld-003",[39m
+[31m+   "cc0-bgm-rtp-btl-001",[39m
+[2m  ][22m
+
+ ❯ test/eventAudioHandoffs.test.ts:168:61
+    166|     startMapBgm(project, restored, project.startMapId);
+    167|     enterBattleAudio(project, restored);
+    168|     expect(play.mock.calls.map(([, resource]) => resource)).toEqual([F…
+       |                                                             ^
+    169|     expect(startSession(project, 3).m2Runtime).toBeUndefined();
+    170|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > keeps battle result overrides session-owned even with overlapping battle lifetimes
+AssertionError: expected [] to deeply equal [ [ 'se', …(1) ], …(1) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   [[39m
+[32m-     "se",[39m
+[32m-     "easyrpg-sound-decision1",[39m
+[32m-   ],[39m
+[32m-   [[39m
+[32m-     "se",[39m
+[32m-     "easyrpg-sound-cancel1",[39m
+[32m-   ],[39m
+[32m- ][39m
+[31m+ [][39m
+
+ ❯ test/eventAudioHandoffs.test.ts:183:79
+    181|     playAuthoredBattleResultCue(first.project, "defeat", first.session…
+    182|     playAuthoredBattleResultCue(second.project, "defeat", second.sessi…
+    183|     expect(play.mock.calls.map(([channel, resource]) => [channel, reso…
+       |                                                                               ^
+    184|   });
+    185|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > restores a layer's gain through save parsing and engine resume
+AssertionError: expected 0.7 to be close to 0.21, received difference is 0.49, but expected 0.005
+ ❯ test/eventAudioHandoffs.test.ts:195:40
+    193|     getAudioEngine().stopAll();
+    194|     resumeAudioState(restored.audio, project, { fadeInMs: 0 });
+    195|     expect(audioElements()[0]?.volume).toBeCloseTo(0.21);
+       |                                        ^
+    196|   });
+    197| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  10 failed | 7 passed (17)
+   Start at  05:56:24
+   Duration  36.65s (transform 32.56s, setup 0ms, collect 50.46s, tests 2.91s, environment 1.69s, prepare 813ms)

@@ -1,0 +1,104 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventAudioHandoffs.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-event-u14
+
+ ❯ test/eventAudioHandoffs.test.ts (20 tests | 7 failed) 1911ms
+   ✓ U14 actual audio handoffs > delivers ambient gain and explicit zero fade through blocking execution 157ms
+   ✓ U14 actual audio handoffs > delivers ambient gain and explicit zero fade through parallel execution 88ms
+   ✓ U14 actual audio handoffs > keeps per-track gain when the group volume changes and the same track is requested again 99ms
+   × U14 actual audio handoffs > resets omitted gain on the same track through command and keeps save/resume consistent 85ms
+     → expected 0.175 to be close to 0.7, received difference is 0.5249999999999999, but expected 0.005
+   × U14 actual audio handoffs > resets omitted gain on the same track through map and keeps save/resume consistent 76ms
+     → expected 0.175 to be close to 0.7, received difference is 0.5249999999999999, but expected 0.005
+   × U14 actual audio handoffs > restores field gain 0.25 after battle (same track: false) 88ms
+     → expected { …(2) } to deeply equal { …(3) }
+   × U14 actual audio handoffs > restores field gain +0 after battle (same track: false) 89ms
+     → expected { …(2) } to deeply equal { …(3) }
+   × U14 actual audio handoffs > restores field gain 0.25 after battle (same track: true) 70ms
+     → expected { …(2) } to deeply equal { …(3) }
+   × U14 actual audio handoffs > restores field gain +0 after battle (same track: true) 65ms
+     → expected { …(2) } to deeply equal { …(3) }
+   × U14 actual audio handoffs > preserves an explicit field loop flag through a battle handoff 64ms
+     → expected { …(2) } to deeply equal { …(3) }
+   ✓ U14 actual audio handoffs > plays me once with its own gain without changing BGM 74ms
+   ✓ U14 actual audio handoffs > plays se once with its own gain without changing BGM 93ms
+   ✓ U14 actual audio handoffs > replays memorized BGM through the engine, not only the session record 69ms
+   ✓ U14 actual audio handoffs > inserts the Fadeout BGM alias with its channel and preserves it through project export/import 295ms
+   ✓ U14 actual audio handoffs > stops only BGM through the blocking path 72ms
+   ✓ U14 actual audio handoffs > stops only BGM through the parallel path 68ms
+   ✓ U14 actual audio handoffs > stops only BGM through the legacy path 73ms
+   ✓ U14 actual audio handoffs > persists system replacements through save-slot parsing and consumes them on map/battle entry 83ms
+   ✓ U14 actual audio handoffs > keeps battle result overrides session-owned even with overlapping battle lifetimes 121ms
+   ✓ U14 actual audio handoffs > restores a layer's gain through save parsing and engine resume 80ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > resets omitted gain on the same track through command and keeps save/resume consistent
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > resets omitted gain on the same track through map and keeps save/resume consistent
+AssertionError: expected 0.175 to be close to 0.7, received difference is 0.5249999999999999, but expected 0.005
+ ❯ test/eventAudioHandoffs.test.ts:114:29
+    112|
+    113|     expect(audioElements()).toEqual([element]);
+    114|     expect(element?.volume).toBeCloseTo(0.7);
+       |                             ^
+    115|     expect(session.audio.bgm).toEqual({ resourceId: FIELD, loop: true …
+    116|     saveToSlot(localStorage, 1, createSaveSnapshot(project, session));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > restores field gain 0.25 after battle (same track: false)
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > restores field gain +0 after battle (same track: false)
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > restores field gain 0.25 after battle (same track: true)
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > restores field gain +0 after battle (same track: true)
+AssertionError: expected { …(2) } to deeply equal { …(3) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "loop": true,[22m
+[2m    "resourceId": "cc0-bgm-rtp-fld-002",[22m
+[32m-   "volume": 0.25,[39m
+[2m  }[22m
+
+ ❯ test/eventAudioHandoffs.test.ts:138:31
+    136|     exitBattleAudio(project, session, saved);
+    137|
+    138|     expect(session.audio.bgm).toEqual(before);
+       |                               ^
+    139|     expect(audioElements().at(-1)?.volume).toBeCloseTo(volume * 0.7);
+    140|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > preserves an explicit field loop flag through a battle handoff
+AssertionError: expected { …(2) } to deeply equal { …(3) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "loop": false,[39m
+[31m+   "loop": true,[39m
+[2m    "resourceId": "cc0-bgm-rtp-fld-002",[22m
+[32m-   "volume": 0.25,[39m
+[2m  }[22m
+
+ ❯ test/eventAudioHandoffs.test.ts:148:31
+    146|     const play = vi.spyOn(getAudioEngine(), "play");
+    147|     exitBattleAudio(project, session, saved);
+    148|     expect(session.audio.bgm).toEqual({ resourceId: FIELD, loop: false…
+       |                               ^
+    149|     expect(play.mock.calls.at(-1)?.[3]).toBe(false);
+    150|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 13 passed (20)
+   Start at  07:13:02
+   Duration  12.85s (transform 7.22s, setup 0ms, collect 10.22s, tests 1.91s, environment 263ms, prepare 74ms)
