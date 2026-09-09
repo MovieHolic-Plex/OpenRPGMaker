@@ -1,6 +1,7 @@
 // AI 설정 전용 모달 — 채팅 본문과 분리된 설정 표면.
 // loadAiConfig/saveAiConfig 자동 저장 계약을 유지한다.
 
+import { DEFAULT_EXECUTION_ROUTE, DEFAULT_PI_APPLY, EXECUTION_ROUTES, EXECUTION_ROUTE_DESCRIPTION, EXECUTION_ROUTE_LABEL, isExecutionRoute } from "@/ai/piAgent/executionRoute";
 import {
   fetchChatGptAuthStatus,
   hasStoredCompanionCredential,
@@ -307,6 +308,26 @@ export function renderAiSettingsForm(options: {
     "자율: AI가 요청을 스스로 작업 계획으로 분해해 진행합니다. 채팅: 종래처럼 대화로 진행합니다(감독·실행 모델이 다를 때만 계획 단계 사용).",
   );
 
+  // 실행 경로: 지시가 어느 루프로 가는가. 질문·계획·선택 영역은 경로와 무관하게 기존 조수.
+  const routeSelect = el("select", {
+    class: "ai-config-select",
+    dataset: { testid: "ai-config-route" },
+    children: EXECUTION_ROUTES.map((route) => el("option", { attrs: { value: route }, text: EXECUTION_ROUTE_LABEL[route] })),
+  }) as HTMLSelectElement;
+  routeSelect.value = config.executionRoute ?? DEFAULT_EXECUTION_ROUTE;
+  routeSelect.addEventListener("change", () => persist(false));
+  const routeRow = settingsRow("지시 실행 경로", EXECUTION_ROUTES.map((route) => `${EXECUTION_ROUTE_LABEL[route]}: ${EXECUTION_ROUTE_DESCRIPTION[route]}`).join(" "), routeSelect);
+  const piApplySelect = el("select", {
+    class: "ai-config-select",
+    dataset: { testid: "ai-config-pi-apply" },
+    children: [
+      el("option", { attrs: { value: "review" }, text: "검토 후 적용" }),
+      el("option", { attrs: { value: "auto" }, text: "바로 적용" }),
+    ],
+  }) as HTMLSelectElement;
+  piApplySelect.value = config.piApply ?? DEFAULT_PI_APPLY;
+  piApplySelect.addEventListener("change", () => persist(false));
+  const piApplyRow = settingsRow("Pi 결과 적용", "검토 후 적용은 보드의 검토 카드에서 승인해야 프로젝트가 바뀝니다. 바로 적용은 게이트만 통과하면 즉시 반영합니다.", piApplySelect);
   const fontSizeSelect = el("select", {
     class: "ai-config-select",
     dataset: { testid: "ai-font-size" },
@@ -390,6 +411,8 @@ export function renderAiSettingsForm(options: {
     reasoningEffort: (reasoningSelect.value as AiConfig["reasoningEffort"]) || "medium",
     agentMode: agentModeSelect.value === "chat" ? "chat" : "auto",
     autonomyLevel: isAutonomyLevel(autonomySelect.value) ? autonomySelect.value : "balanced",
+    executionRoute: isExecutionRoute(routeSelect.value) ? routeSelect.value : DEFAULT_EXECUTION_ROUTE,
+    piApply: piApplySelect.value === "auto" ? "auto" : DEFAULT_PI_APPLY,
   });
 
   let autoSaveTimer: number | null = null;
@@ -574,7 +597,9 @@ export function renderAiSettingsForm(options: {
         "behavior",
         "동작",
         "응답 예산과 작업 진행 방식을 조정합니다.",
-        [autonomyRow, maxTokens.row, reasoningRow, agentModeRow],
+        // The autonomy dial stays first: it is the only way to reach the read-only (ask)
+        // rail now that the composer has no mode chips, so it must not be pushed down.
+        [autonomyRow, routeRow, piApplyRow, maxTokens.row, reasoningRow, agentModeRow],
       ),
       settingsSection(
         "display",

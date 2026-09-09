@@ -5,13 +5,20 @@
 import { el } from "@/util/dom";
 import { teamBoardTotals, type TeamBoardAgent, type TeamBoardState } from "@/ai/piAgent/teamBoardState";
 
+export interface TeamBoardReview {
+  readonly onApply: () => void;
+  readonly onDiscard: () => void;
+}
+
 export interface TeamBoardHandle {
   readonly root: HTMLElement;
   update(state: TeamBoardState): void;
+  /** 검토 대기 단계의 적용/버리기 버튼 콜백. 단계가 바뀌면 버튼은 사라진다. */
+  setReview(review: TeamBoardReview | null): void;
 }
 
 const PHASE_TONE: Record<TeamBoardState["phase"], string> = {
-  "준비": "idle", "실행 중": "running", "적용 중": "running", "적용됨": "done", "중단": "muted", "실패": "error",
+  "준비": "idle", "실행 중": "running", "적용 중": "running", "검토 대기": "review", "적용됨": "done", "버림": "muted", "중단": "muted", "실패": "error",
 };
 const AGENT_TONE: Record<TeamBoardAgent["state"], string> = {
   "대기": "idle", "실행 중": "running", "완료": "done", "실패": "error", "중단": "muted",
@@ -92,6 +99,25 @@ export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
   const foot = el("footer", { class: "ai-team-foot", attrs: { hidden: "" } });
   root.append(head, list, foot);
 
+  let review: TeamBoardReview | null = null;
+  const reviewBlock = (state: TeamBoardState): HTMLElement => {
+    const block = el("div", { class: "ai-team-review-card", dataset: { testid: "ai-team-review" }, attrs: { role: "group", "aria-label": "검토" } });
+    block.append(el("p", { class: "ai-team-review-title", text: "결과를 검토하고 적용하세요. 적용 전까지 프로젝트는 바뀌지 않습니다." }));
+    if (state.reviewChips.length > 0) {
+      const chips = el("div", { class: "ai-change-chips ai-team-review-chips" });
+      for (const chip of state.reviewChips) chips.append(el("span", { class: "ai-change-chip", text: chip }));
+      block.append(chips);
+    }
+    const actions = el("div", { class: "ai-team-review-actions" });
+    const apply = el("button", { class: "ai-team-btn is-primary", text: "적용", attrs: { type: "button" }, dataset: { testid: "ai-team-apply" } });
+    apply.addEventListener("click", () => review?.onApply());
+    const discard = el("button", { class: "ai-team-btn", text: "버리기", attrs: { type: "button" }, dataset: { testid: "ai-team-discard" } });
+    discard.addEventListener("click", () => review?.onDiscard());
+    actions.append(apply, discard);
+    block.append(actions);
+    return block;
+  };
+
   const update = (state: TeamBoardState): void => {
     root.dataset.phase = state.phase;
     root.className = `ai-team-board is-${PHASE_TONE[state.phase]}`;
@@ -105,6 +131,7 @@ export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
     const footParts: HTMLElement[] = [];
     if (state.report) footParts.push(el("p", { class: "ai-team-report", text: state.report, dataset: { testid: "ai-team-report" } }));
     if (state.error) footParts.push(el("p", { class: "ai-team-error", text: state.error }));
+    if (state.phase === "검토 대기" && review) footParts.push(reviewBlock(state));
     if (state.applied) footParts.push(el("p", { class: "ai-team-applied", text: state.applied, dataset: { testid: "ai-team-applied" } }));
     if (footParts.length > 0) { foot.replaceChildren(...footParts); foot.removeAttribute("hidden"); }
     else foot.setAttribute("hidden", "");
@@ -120,5 +147,9 @@ export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
   const stopTicker = (): void => { if (ticker !== null) { clearInterval(ticker); ticker = null; } };
   const updateAndTick = (state: TeamBoardState): void => { lastState = state; update(state); syncTicker(); };
   updateAndTick(initial);
-  return { root, update: updateAndTick };
+  return {
+    root,
+    update: updateAndTick,
+    setReview(next) { review = next; update(lastState); },
+  };
 }

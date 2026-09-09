@@ -30,7 +30,7 @@ export interface TeamBoardAgent {
   readonly stats?: PiAgentStats;
 }
 
-export type TeamBoardPhase = "준비" | "실행 중" | "적용 중" | "적용됨" | "중단" | "실패";
+export type TeamBoardPhase = "준비" | "실행 중" | "적용 중" | "검토 대기" | "적용됨" | "버림" | "중단" | "실패";
 
 export interface TeamBoardState {
   readonly mode: "single" | "team";
@@ -41,12 +41,14 @@ export interface TeamBoardState {
   readonly error: string | null;
   readonly applied: string | null;
   readonly changedKeys: readonly string[];
+  /** 검토 대기 중 보여줄 변경 요약 칩. */
+  readonly reviewChips: readonly string[];
 }
 
 const ROLE_LABELS: Record<PiTeamRoleId, string> = { orchestrator: "팀장", builder: "시공", reviewer: "검수" };
 
 export function createTeamBoardState(mode: "single" | "team", task: string): TeamBoardState {
-  return { mode, task, phase: "준비", agents: [], report: null, error: null, applied: null, changedKeys: [] };
+  return { mode, task, phase: "준비", agents: [], report: null, error: null, applied: null, changedKeys: [], reviewChips: [] };
 }
 
 function agentRow(agentId: string, role: PiTeamRoleId, mapId: string | null, mapName: string | null, task: string, memberId: string | null = null, label?: string): TeamBoardAgent {
@@ -139,6 +141,15 @@ export function reduceTeamBoard(state: TeamBoardState, event: PiAgentEvent): Tea
 
 export function markTeamBoardApplied(state: TeamBoardState, text: string): TeamBoardState {
   return { ...state, phase: "적용됨", applied: text };
+}
+
+/** 결과가 나왔지만 사용자의 승인을 기다린다. */
+export function markTeamBoardReview(state: TeamBoardState, chips: readonly string[]): TeamBoardState {
+  return { ...state, phase: "검토 대기", reviewChips: chips };
+}
+
+export function markTeamBoardDiscarded(state: TeamBoardState): TeamBoardState {
+  return { ...state, phase: "버림", applied: "버렸습니다. 프로젝트는 그대로입니다." };
 }
 
 export function markTeamBoardAborted(state: TeamBoardState): TeamBoardState {
