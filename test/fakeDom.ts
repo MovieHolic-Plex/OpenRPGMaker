@@ -9,7 +9,8 @@ type DomGlobalName =
   | "Image"
   | "HTMLTextAreaElement"
   | "requestAnimationFrame"
-  | "cancelAnimationFrame";
+  | "cancelAnimationFrame"
+  | "MutationObserver";
 type PreviousDomGlobals = {
   readonly document: Document | undefined;
   readonly Node: typeof Node | undefined;
@@ -22,6 +23,7 @@ type PreviousDomGlobals = {
   readonly HTMLTextAreaElement: typeof HTMLTextAreaElement | undefined;
   readonly requestAnimationFrame: typeof requestAnimationFrame | undefined;
   readonly cancelAnimationFrame: typeof cancelAnimationFrame | undefined;
+  readonly MutationObserver: typeof MutationObserver | undefined;
 };
 
 type FakeDomOptions = {
@@ -30,6 +32,75 @@ type FakeDomOptions = {
 
 const animationFrames = new Map<number, FrameRequestCallback>();
 let nextAnimationFrameId = 1;
+
+type FakeMutationKind = "childList" | "attributes" | "characterData";
+/** 이 가짜 DOM 이 실제로 알 수 있는 것만 담는다 — MutationRecord 전부를 흉내내지 않는다. */
+export interface FakeMutationRecord {
+  readonly type: FakeMutationKind;
+  readonly target: FakeNode;
+}
+interface FakeMutationInit {
+  readonly subtree?: boolean;
+  readonly childList?: boolean;
+  readonly attributes?: boolean;
+  readonly characterData?: boolean;
+}
+interface MutationEntry {
+  readonly observer: FakeMutationObserver;
+  readonly target: FakeNode;
+  readonly options: FakeMutationInit;
+}
+const mutationEntries = new Set<MutationEntry>();
+
+/**
+ * 변형을 관찰자에게 알린다. 실제 MutationObserver 처럼 **호출 안에서 동기로 부르지 않고**
+ * 마이크로태스크로 미룬다 — 그래야 DOM 을 고치는 중간 상태를 술어가 보지 않는다.
+ */
+function notifyMutation(target: FakeNode | null, type: FakeMutationKind): void {
+  if (!target || mutationEntries.size === 0) return;
+  for (const entry of mutationEntries) {
+    if (type === "childList" && entry.options.childList !== true) continue;
+    if (type === "attributes" && entry.options.attributes !== true) continue;
+    if (type === "characterData" && entry.options.characterData !== true) continue;
+    const hit = entry.target === target || (entry.options.subtree === true && entry.target.contains(target));
+    if (!hit) continue;
+    entry.observer.enqueue({ type, target });
+  }
+}
+
+/** 술어를 깨우기에 충분한 최소 구현. 기록의 상세도는 보장하지 않는다. */
+export class FakeMutationObserver {
+  private readonly records: FakeMutationRecord[] = [];
+  private scheduled = false;
+  constructor(private readonly callback: (records: readonly FakeMutationRecord[], observer: FakeMutationObserver) => void) {}
+
+  observe(target: FakeNode, options: FakeMutationInit = {}): void {
+    mutationEntries.add({ observer: this, target, options });
+  }
+
+  disconnect(): void {
+    for (const entry of [...mutationEntries]) if (entry.observer === this) mutationEntries.delete(entry);
+    this.records.length = 0;
+  }
+
+  takeRecords(): readonly FakeMutationRecord[] {
+    return this.records.splice(0);
+  }
+
+  /** @internal 같은 틱의 변형은 한 번의 콜백으로 모은다. */
+  enqueue(record: FakeMutationRecord): void {
+    this.records.push(record);
+    if (this.scheduled) return;
+    this.scheduled = true;
+    queueMicrotask(() => {
+      this.scheduled = false;
+      // 끊긴 관찰자는 울리지 않는다.
+      if (![...mutationEntries].some((entry) => entry.observer === this)) return;
+      const delivered = this.takeRecords();
+      if (delivered.length) this.callback(delivered, this);
+    });
+  }
+}
 
 export class FakeNode {
   readonly childNodes: FakeNode[] = [];
@@ -59,6 +130,8 @@ export class FakeNode {
   set textContent(value: string) {
     this.ownText = value;
     this.childNodes.length = 0;
+    notifyMutation(this, "characterData");
+    notifyMutation(this, "childList");
   }
 
   append(...children: FakeNode[]): void {
@@ -66,11 +139,13 @@ export class FakeNode {
       child.parentNode = this;
       this.childNodes.push(child);
     }
+    notifyMutation(this, "childList");
   }
 
   removeChild(child: FakeNode): void {
     const index = this.childNodes.indexOf(child);
     if (index >= 0) this.childNodes.splice(index, 1);
+    if (index >= 0) notifyMutation(this, "childList");
   }
 
   remove(): void {
@@ -86,6 +161,7 @@ export class FakeNode {
     for (const node of nodes) node.parentNode = parent;
     parent.childNodes.splice(index, 1, ...nodes);
     this.parentNode = null;
+    notifyMutation(parent, "childList");
   }
 
   prepend(...children: FakeNode[]): void {
@@ -93,12 +169,14 @@ export class FakeNode {
       child.parentNode = this;
       this.childNodes.unshift(child);
     }
+    notifyMutation(this, "childList");
   }
 
   replaceChildren(...children: FakeNode[]): void {
     for (const child of this.childNodes) child.parentNode = null;
     this.childNodes.length = 0;
     this.append(...children);
+    notifyMutation(this, "childList");
   }
 
   contains(node: unknown): boolean {
@@ -189,6 +267,7 @@ export class FakeElement extends FakeNode {
         .replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase());
       this.dataset[camelKey] = value;
     }
+    notifyMutation(this, "attributes");
   }
 
   getAttribute(name: string): string | null {
@@ -207,6 +286,7 @@ export class FakeElement extends FakeNode {
 
   removeAttribute(name: string): void {
     delete this.attrs[name];
+    notifyMutation(this, "attributes");
   }
 
   // <canvas> 2D 컨텍스트는 흉내내지 않는다 — 호출부는 이미 null을 정상 처리하도록
@@ -283,6 +363,10 @@ export class FakeElement extends FakeNode {
   /** <input>.select() — 값 전체 선택. 텍스트 렌더가 없으니 범위만 남긴다. */
   select(): void {
     this.setSelectionRange(0, this.value.length);
+  }
+
+  matches(selector: string): boolean {
+    return matchesSelector(this, selector);
   }
 
   closest(selector: string): FakeElement | null {
@@ -393,9 +477,13 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     HTMLTextAreaElement: globalThis.HTMLTextAreaElement,
     requestAnimationFrame: globalThis.requestAnimationFrame,
     cancelAnimationFrame: globalThis.cancelAnimationFrame,
+    MutationObserver: globalThis.MutationObserver,
   } satisfies PreviousDomGlobals;
   animationFrames.clear();
   nextAnimationFrameId = 1;
+  // 이전 스위트가 남긴 관찰자는 이 DOM 을 볼 자격이 없다.
+  mutationEntries.clear();
+  defineDomGlobal("MutationObserver", FakeMutationObserver);
   defineDomGlobal("Node", FakeNode);
   defineDomGlobal("HTMLElement", FakeElement);
   defineDomGlobal("HTMLButtonElement", FakeElement);
@@ -472,6 +560,8 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     restoreDomGlobal("HTMLTextAreaElement", previous.HTMLTextAreaElement);
     restoreDomGlobal("requestAnimationFrame", previous.requestAnimationFrame);
     restoreDomGlobal("cancelAnimationFrame", previous.cancelAnimationFrame);
+    restoreDomGlobal("MutationObserver", previous.MutationObserver);
+    mutationEntries.clear();
   };
 }
 
@@ -532,6 +622,7 @@ function collectMatches(root: FakeNode, selector: string, matches: FakeElement[]
 
 function matchesSelector(element: FakeElement, selector: string): boolean {
   const simpleSelector = selector.trim().split(/\s+/).at(-1) ?? selector;
+  if (simpleSelector === ":disabled") return element.disabled;
   if (simpleSelector.startsWith(".")) return element.className.split(/\s+/).includes(simpleSelector.slice(1));
   const testId = simpleSelector.match(/^\[data-testid=['"]?([^'"\]]+)['"]?\]$/u)?.[1];
   if (testId) return element.dataset.testid === testId;

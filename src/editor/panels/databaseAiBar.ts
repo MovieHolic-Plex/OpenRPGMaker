@@ -16,8 +16,6 @@
 
 import {
   abortAiAssistantTurn,
-  getAiAssistantAudit,
-  getAiAssistantStatus,
   openAiAssistantPanel,
   sendAiAssistantMessage,
   type AiBridgeAuditEntry,
@@ -29,6 +27,9 @@ import { databaseTabLabel, TAB_GROUPS, type DatabaseTab } from "@/editor/panels/
 import { buildSvgIcon, type SvgNodeSpec } from "@/editor/panels/tileToolbarIcons";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { bindJobView, readJobResult } from "@/editor/aiJobs/jobViewBinding";
+import { getJobClient } from "@/editor/aiJobs/jobClient";
+import { jobOriginLink } from "@/editor/aiJobs/jobOriginLink";
 
 export type DatabaseAiRecordRef = { readonly name: string; readonly id: string };
 
@@ -83,8 +84,6 @@ export interface DatabaseAiBarHandle {
   readonly refreshContext: () => void;
   readonly dispose: () => void;
 }
-
-const POLL_MS = 400;
 
 /** 레코드 이름을 프롬프트에 넣을 때 쓰는 표기. */
 function recordName(record: DatabaseAiRecordRef): string {
@@ -215,11 +214,6 @@ function icon(name: keyof typeof ICONS, className = "database-ai-icon"): SVGSVGE
   return svg;
 }
 
-function defaultSchedule(fn: () => void, ms: number): () => void {
-  const id = setTimeout(fn, ms);
-  return () => clearTimeout(id);
-}
-
 /** 답변 평문을 문단·목록으로 나눈다. `- ` 로 시작하는 연속 줄은 목록이다. */
 function renderAnswer(host: HTMLElement, text: string): void {
   host.replaceChildren();
@@ -256,13 +250,10 @@ function renderAnswer(host: HTMLElement, text: string): void {
 export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBarHandle {
   const deps = options.deps ?? {};
   const send = deps.send ?? sendAiAssistantMessage;
-  const readStatus = deps.status ?? getAiAssistantStatus;
-  const readAudit = deps.audit ?? getAiAssistantAudit;
   const abort = deps.abort ?? abortAiAssistantTurn;
   const openPanel = deps.openPanel ?? openAiAssistantPanel;
   const undo = deps.undo ?? undoMapEdit;
   const undoLabel = deps.undoLabel ?? (() => pendingHistoryLabels().undo);
-  const schedule = deps.schedule ?? defaultSchedule;
 
   const toggle = el("button", {
     class: "database-ai-toggle",
@@ -366,6 +357,9 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
   let cancelPoll: (() => void) | null = null;
   let busy = false;
   let lastToolCount = 0;
+  let ownedJobId: string | null = null;
+  let unbindJob: (() => void) | null = null;
+  let requestEpoch = 0;
 
   const stopPolling = (): void => {
     cancelPoll?.();
@@ -458,41 +452,65 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
     turn.hidden = false;
     lastToolCount = -1;
     setBusy(true);
-    // 브리지 audit 은 세션 누적이다 — 이 턴의 시작 지점을 잡아 그 뒤만 그린다.
-    const startIndex = readAudit().length;
-    const sliceAudit = (entries: readonly AiBridgeAuditEntry[]): readonly AiBridgeAuditEntry[] =>
-      entries.slice(Math.min(startIndex, entries.length));
     paintSummary(summarizeDatabaseAiTurn([], { busy: true }));
-    let settled = false;
-    const poll = (): void => {
-      cancelPoll = null;
-      if (settled) return;
-      const entries = sliceAudit(readAudit());
-      // 약속이 살아 있는 동안은 이 턴이 진행 중이다. 패널이 아직 바쁘지 않은데 우리 항목도
-      // 없다면 채팅 패널이 앞선 턴이 끝나길 기다리는 중이다(브리지 send 의 waitUntilIdle).
-      const summary = summarizeDatabaseAiTurn(entries, { busy: true });
-      paintSummary(
-        !readStatus().turnBusy && entries.length === 0
-          ? { ...summary, statusText: "채팅 패널의 앞선 작업이 끝나길 기다리는 중…" }
-          : summary,
-      );
-      cancelPoll = schedule(poll, POLL_MS);
-    };
-    cancelPoll = schedule(poll, POLL_MS);
+    unbindJob?.();
+    unbindJob = null;
+    ownedJobId = null;
+    const epoch = ++requestEpoch;
     void send(message)
       .then((result) => {
-        settled = true;
-        stopPolling();
-        const entries = result.audit.length > 0 ? sliceAudit(result.audit) : sliceAudit(readAudit());
-        const withAnswer = result.lastAssistantText && !entries.some((entry) => entry.kind === "assistant" && entry.text?.trim())
-          ? [...entries, { kind: "assistant", text: result.lastAssistantText }]
-          : entries;
-        paintSummary(summarizeDatabaseAiTurn(withAnswer, { busy: false, error: result.ok ? undefined : result.error || "알 수 없는 오류" }));
+        if (epoch !== requestEpoch) return;
+        if (result.jobId) {
+          const ownedId = result.jobId;
+          ownedJobId = ownedId;
+          request.textContent = text;
+          paintSummary(summarizeDatabaseAiTurn([], { busy: true }));
+          unbindJob = bindJobView(ownedId, job => {
+            if (epoch !== requestEpoch || ownedJobId !== ownedId || job.id !== ownedId) return;
+            if (job.generation === "succeeded") {
+              unbindJob?.();
+              unbindJob = null;
+              const capturedSha = job.resultRef?.sha256;
+              void readJobResult(job).then(payload => {
+                if (epoch !== requestEpoch || ownedJobId !== ownedId) return;
+                const live = getJobClient().jobs.get(ownedId);
+                if (!capturedSha || live?.resultRef?.sha256 !== capturedSha) return;
+                const answer = typeof payload?.payload.assistantText === "string" ? payload.payload.assistantText : result.lastAssistantText;
+                const jobAudit = Array.isArray(payload?.payload.audit) ? payload.payload.audit as AiBridgeAuditEntry[] : [];
+                const withAnswer = answer && !jobAudit.some((entry) => entry.kind === "assistant" && entry.text?.trim())
+                  ? [...jobAudit, { kind: "assistant", text: answer }]
+                  : jobAudit;
+                paintSummary(summarizeDatabaseAiTurn(withAnswer, { busy: false }));
+                setBusy(false);
+                if (!status.querySelector('[data-testid="ai-job-origin"]')) {
+                  status.append(jobOriginLink(ownedId, runButton));
+                }
+              }).catch((cause: unknown) => {
+                if (epoch !== requestEpoch || ownedJobId !== ownedId) return;
+                paintSummary(summarizeDatabaseAiTurn([], {
+                  busy: false,
+                  error: cause instanceof Error ? cause.message : String(cause),
+                }));
+                setBusy(false);
+              });
+            } else if (job.generation === "failed" || job.generation === "cancelled" || job.generation === "interrupted") {
+              unbindJob?.();
+              unbindJob = null;
+              if (epoch !== requestEpoch || ownedJobId !== ownedId) return;
+              paintSummary(summarizeDatabaseAiTurn([], {
+                busy: false,
+                error: job.generation === "cancelled" ? "취소됨" : job.generation === "interrupted" ? "중단됨" : "실패",
+              }));
+              setBusy(false);
+            }
+          });
+          return;
+        }
+        paintSummary(summarizeDatabaseAiTurn([], { busy: false, error: result.ok ? undefined : result.error || "알 수 없는 오류" }));
         setBusy(false);
       })
       .catch((cause: unknown) => {
-        settled = true;
-        stopPolling();
+        if (epoch !== requestEpoch) return;
         paintSummary(summarizeDatabaseAiTurn([], { busy: false, error: cause instanceof Error ? cause.message : String(cause) }));
         setBusy(false);
       });
@@ -515,7 +533,8 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
   });
   input.addEventListener("focus", refreshContext);
   abortButton.addEventListener("click", () => {
-    abort();
+    if (ownedJobId) void getJobClient().cancel(ownedJobId);
+    else abort();
     statusText.textContent = "중단하는 중…";
   });
   undoButton.addEventListener("click", () => {
@@ -563,6 +582,10 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
     setOpen,
     refreshContext,
     dispose: () => {
+      requestEpoch += 1;
+      unbindJob?.();
+      unbindJob = null;
+      ownedJobId = null;
       stopPolling();
     },
   };

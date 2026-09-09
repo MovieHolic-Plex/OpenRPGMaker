@@ -8,6 +8,7 @@ import {
   proposalHumanSummaryLine,
   proposalSummaryLines,
   renderAiChatPanel,
+  teardownAiChatPanel,
 } from "@/editor/panels/aiChatPanel";
 import { computeMapTileChangeBounds, renderProposalMapThumbnail } from "@/editor/panels/aiProposalCard";
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
@@ -16,6 +17,9 @@ import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
+import { installAdmitClient } from "./aiJobAdmitSupport";
+import { IDBFactory } from "fake-indexeddb";
+import { locks } from "node:worker_threads";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -129,6 +133,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  // 마운트된 패널을 살려두면 늦게 도착한 작업 구독이 DOM 해제 뒤에 실행된다.
+  teardownAiChatPanel();
   restoreDom?.();
   restoreDom = null;
   clearAgentGhostPreview();
@@ -175,28 +181,48 @@ describe("제안 결과 요약", () => {
 });
 
 describe("AI 변경 즉시 적용", () => {
-  it.each(["remove_event", "reset_project"])(
-    "%s가 포함된 턴은 확인 없이 바로 적용한다",
-    async (toolName) => {
-      const after = structuredClone(store.getCurrent());
-      after.meta.title = `applied:${toolName}`;
-      const calls = [{
-        ...proposed(toolName, {}, { systemChanged: true }, `${toolName} 적용`),
-        destructive: true,
-      }];
-      vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn(calls));
-      vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(after));
+  async function autoAdmit(title: string, payload: Record<string, JsonValue> = {}) {
+    vi.stubGlobal("indexedDB", new IDBFactory());
+    vi.stubGlobal("navigator", { locks });
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: "load-failed" });
+    await store.loadFallbackProject(createBlankProject());
+    editorState.set({ currentMapId: store.getCurrent().startMapId, selection: null });
+    storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      ...defaultAiConfig(),
+      apiKey: "sk-test",
+      authMode: "apiKey",
+      baseUrl: "https://example.test/v1",
+      model: "m",
+      agentMode: "auto",
+    }));
+    const harness = installAdmitClient({ reconcile: true });
+    const panel = renderAiChatPanel({ clock: () => 1_000 }) as unknown as FakeElement;
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+    input.value = title;
+    const pending = harness.nextAdmitted();
+    findByTestId(panel, "ai-send")?.click();
+    const admitted = await pending;
+    expect(admitted.input.mode).toBe("auto");
+    const generated = structuredClone(store.getCurrent());
+    generated.meta.title = title;
+    const applied = new Promise<void>((resolve, reject) => {
+      const off = store.subscribe(() => {
+        if (store.getCurrent().meta.title === title) { off(); resolve(); }
+      });
+      setTimeout(() => { off(); reject(new Error("auto apply did not land")); }, 5000);
+    });
+    await harness.complete({ assistantText: "적용했습니다.", proposedCalls: [], stoppedReason: "final", ...payload }, undefined, generated);
+    await applied;
+    return panel;
+  }
 
-      const panel = renderPanel();
-      const input = findByTestId(panel, "ai-input") as FakeElement;
-      input.value = `${toolName} 실행`;
-      findByTestId(panel, "ai-send")?.click();
-      await flushAsync();
+  it.each(["applied:remove_event", "applied:reset_project"])(
+    "%s 자동 작업은 확인 없이 바로 적용한다",
+    async (title) => {
+      const panel = await autoAdmit(title);
       const root = document.body as unknown as Parameters<typeof findByTestId>[0];
       expect(findByTestId(root, "app-confirm-modal"), "확인 모달이 뜨면 안 된다").toBeNull();
-
-      expect(store.getCurrent().meta.title).toBe(`applied:${toolName}`);
-      expect(findByTestId(panel, "ai-msg-badge-applied")?.textContent).toBe("적용됨");
+      expect(store.getCurrent().meta.title).toBe(title);
       for (const testId of [
         "ai-proposal-card",
         "ai-proposal-host",
@@ -212,27 +238,21 @@ describe("AI 변경 즉시 적용", () => {
     },
   );
 
+  // 승인 메타데이터(requiresApproval/approvalWarning)는 **자동 모드의 적용을 막지 않는다.**
+  // 큐 경로에서도 같아야 한다: 결과 payload 가 승인 경고를 달고 와도 확인 모달 없이 적용된다.
   it("승인 메타데이터만 있는 재료 제안은 확인 없이 적용한다", async () => {
-    const after = structuredClone(store.getCurrent());
-    after.meta.title = "applied:propose_tile_vocabulary";
-    const calls = [{
-      ...proposed("propose_tile_vocabulary", {}, { systemChanged: true }, "재료 합의"),
-      destructive: false,
-      requiresApproval: true,
-      approvalWarning: "재료 합의",
-    }];
-    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn(calls));
-    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(after));
-
-    const panel = renderPanel();
-    const input = findByTestId(panel, "ai-input") as FakeElement;
-    input.value = "재료 합의 실행";
-    findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
-
+    const title = "applied:propose_tile_vocabulary";
+    const panel = await autoAdmit(title, {
+      proposedCalls: [{
+        ...proposed("propose_tile_vocabulary", {}, { systemChanged: true }, "재료 합의"),
+        requiresApproval: true,
+        approvalWarning: "재료 합의",
+      }] as unknown as JsonValue,
+    });
     const root = document.body as unknown as Parameters<typeof findByTestId>[0];
     expect(findByTestId(root, "app-confirm-modal"), "승인 메타데이터만으로 확인 모달이 뜨면 안 된다").toBeNull();
-    expect(store.getCurrent().meta.title).toBe("applied:propose_tile_vocabulary");
+    expect(store.getCurrent().meta.title).toBe(title);
+    expect(findByTestId(panel, "ai-proposal-card"), "자동 적용에는 검토 카드가 없다").toBeNull();
   });
 
   it("안전 분류 불통과와 완성도 경고도 적용을 막지 않는다", async () => {

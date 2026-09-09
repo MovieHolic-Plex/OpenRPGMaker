@@ -1,3 +1,36 @@
+## S0 격리 검증은 조용한 워크트리에서 돌려라 (2026-09-09 실측)
+
+`scripts/qa/isolated-validation.py` 는 캡처 동안 **소스 루트와 선택된 파일의 모든 부모 디렉터리**에
+inotify 감시를 건다(`Watch`, 마스크 0xFCE). 캡처 창은 node_modules 복사까지 포함해 수 분이므로,
+그 사이 감시 대상 디렉터리에 **한 번이라도 쓰기가 일어나면** `input-changed-during-capture` 로
+exit 125 가 나고 실행 자체가 시작되지 않는다.
+
+에이전트 세션이 살아 있는 워크트리(= 지금 작업 중인 메인)는 세션·작업 상태를 계속 쓰기 때문에
+이 조건을 만족하지 못한다. 실측: 통합 검증이 이 이유로 한 번 죽었다.
+
+```bash
+git worktree add --detach /var/tmp/rpgzzu-verify <검증할 커밋>
+# 런처는 --dependencies 로 node_modules 를 따로 받으므로 이 트리엔 설치가 필요 없다
+```
+
+깨끗한 트리는 dirty 파일이 없으므로 `--include` 도 필요 없다. 부수 효과로 **검증이 도는 동안
+메인에서 계속 편집할 수 있다** — 감시 대상이 분리되기 때문이다.
+
+미커밋 변경을 그대로 검증해야 한다면 `git diff --name-only HEAD` 의 **전부**를 `--include` 로
+넘겨야 한다(`unrequested-source-change`). 미추적 파일은 `changed` 에 안 들어가지만, 그 파일을
+쓰는 테스트를 돌린다면 함께 `--include` 해야 사본에 들어간다.
+
+## 가짜 DOM 의 MutationObserver (2026-09-09)
+
+`test/fakeDom.ts` 는 node 환경 UI 테스트용 수제 DOM 이다. 여기에 최소 `MutationObserver` 가 있다:
+`observe`/`disconnect`/`takeRecords`, 마이크로태스크 지연 콜백, 같은 틱 병합. 알림은
+`append`·`prepend`·`removeChild`·`replaceWith`·`replaceChildren`·`textContent`(childList/characterData)
+와 `setAttribute`·`removeAttribute`(attributes)에서 나온다.
+
+**`className`·`dataset` 직접 대입은 알리지 않는다** — 평범한 필드라 후킹 지점이 없다. 그 값 변화를
+기다리는 술어는 node 환경에서 깨어나지 않으니, 그런 테스트는 happy-dom 스위트로 두어라
+(`// @vitest-environment happy-dom`). 기록의 상세도는 보장하지 않는다: `type` 과 `target` 만 참이다.
+
 ## Clean plan-only human Continue (2026-09-08)
 
 `test/aiJobContinuation.test.ts` drives actual assistant executors, sessions, canonical repository
