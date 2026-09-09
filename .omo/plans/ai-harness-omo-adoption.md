@@ -475,7 +475,16 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - 증거: `output/evidence/ai-harness/recovery/`. No exactly-once claim.
   - Commit: `fix(ai): reconcile interrupted runs before resuming authoring`.
 
-- [ ] 14. P4를 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
+- [x] 14. P4를 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
+  - 병합: PR #724 → main `1ee10fc716d5decbfd7428389d779845281422da`, 병합된 HEAD
+    `dd7729ea004c1dedad54b495e8fa97232be6706d`(현재 main 조합 포함).
+  - 감독자 게이트(조합 HEAD): 복구 6파일 + main의 freeze guard·사용 로그 3파일 = 9파일 73건 통과,
+    타입 게이트 exit 0, 실표면 `--scenario recovery` 재통과(모델 14→14, 중복 0, 원격 삭제·부재 확인).
+  - 검토: ultrabrain은 제공자 사용량 한도로 6회 즉시 실패했다. 대체 제공자(anthropic/claude-opus-5)로
+    일반·델타·적대적 검토 3회를 돌려 모두 병합 차단 결함 없음을 받았고, 지적된 체크포인트 큐 결함은
+    RED/GREEN 확인 후 수정했다(`d9f7e6ab9`). 최종 병합은 사용자의 명시 승인으로 진행했다.
+  - 근거: `resume-01a08291/p4/` (native-recovery/run-4·run-5, composed-tests, composed-typecheck,
+    typecheck-gate-final, p4-focused-tests-calm, EVIDENCE-INDEX.md).
   - Recommended task executor category: ultrabrain
   - P3 병합 기반 새 worktree/mass-ulw에서 실제 IndexedDB 이관·새로고침·
     미확정 쓰기 조정과 회귀를 증명하고 감독자 gates 및 Draft PR을 준비한다.
