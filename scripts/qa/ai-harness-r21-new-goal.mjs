@@ -132,7 +132,9 @@ export function createNewGoalDraftContracts(harness) {
       fault = boundary === 'success' ? null : boundary; arm();
       await send(`${projectId}/${boundary}: inspect a completely different goal`, { composerMode: 'do', goalAction: 'new-goal' });
       const entered = await capture(`${boundary}-02-new-owner`);
-      const expected = { execution: boundary === 'success' ? 'response-final' : 'failed', goal: 'unassessed', delivery: 'no-change' };
+      // 새 목표 진입도 이미지 전달과 무관하다 — 축은 서로 성공을 빌리지 않는다.
+      const expected = { execution: boundary === 'success' ? 'response-final' : 'failed', goal: 'unassessed', delivery: 'no-change',
+        imageAttached: false, visualDelivery: { attempted: 0, attached: 0 } };
       assert.equal(entered.result.stoppedReason, boundary === 'success' ? 'final' : 'error');
       for (const outcome of [entered.result.runOutcome, entered.getter, entered.recap, entered.harnessOutcome]) assert.deepEqual(outcome, expected);
       assert.equal(entered.calls.length, 0); assert.equal(entered.sameLiveBytes, true); assert.equal(entered.sameDraftBytes, true);

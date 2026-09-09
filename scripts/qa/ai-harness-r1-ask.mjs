@@ -31,7 +31,8 @@ export function createR1AskContracts(harness) {
       options: qa.turnOptions, receipts: qa.r1Receipts,
       events: qa.events.filter(event => ['tool_call', 'run_outcome', 'milestone_applied'].includes(event.type)),
       ui: [...document.querySelectorAll('[data-testid="ai-run-outcome"]')].filter(node => node.getClientRects().length)
-        .map(node => ({ execution: node.dataset.execution, goal: node.dataset.goal, delivery: node.dataset.delivery })),
+        .map(node => ({ execution: node.dataset.execution, goal: node.dataset.goal, delivery: node.dataset.delivery,
+          imageDelivery: node.dataset.imageDelivery ?? null })),
       sameProjectBytes: JSON.stringify(qa.store.getCurrent()) === qa.r1Before,
       title: qa.store.getCurrent().system.titleScreen?.title,
       draftTitle: qa.session.getProposedProject().system.titleScreen?.title,
@@ -67,13 +68,17 @@ export function createR1AskContracts(harness) {
     await page.evaluate(() => qa.activityDone);
   }
   function assertQuestion(state) {
-    const expected = { execution: 'response-final', goal: 'unassessed', delivery: 'no-change' };
+    // 질문은 자료 이미지를 요청에 싣지 않는다 — 첨부는 거짓이고 "모름"으로 승격되지 않는다.
+    const expected = { execution: 'response-final', goal: 'unassessed', delivery: 'no-change',
+      imageAttached: false, visualDelivery: { attempted: 0, attached: 0 } };
+    const expectedUi = { execution: 'response-final', goal: 'unassessed', delivery: 'no-change', imageDelivery: 'unattached' };
     assert.equal(state.sameProjectBytes, true, 'Ask preserves exact live project bytes');
     assert.equal(state.receipts.length, 0, 'Ask does not reach a successful ordinary or milestone apply');
     assert.deepEqual(state.result.proposedCalls, [], 'Ask returns no apply-eligible calls');
     assert.deepEqual(state.result.appliedCalls, []);
     for (const actual of [state.result.runOutcome, state.result.recap.runOutcome, state.getter,
-      state.harnessOutcome, state.activityOutcome, state.activityRecap, state.ui[0]]) assert.deepEqual(actual, expected);
+      state.harnessOutcome, state.activityOutcome, state.activityRecap]) assert.deepEqual(actual, expected);
+    assert.deepEqual(state.ui[0], expectedUi);
     assert.equal(state.remoteEnabled, true);
   }
   async function run() {
