@@ -7,8 +7,8 @@ Same-load A/B (pre-merge main `9689f74e` vs this branch, alternating runs):
 
 | | pre-merge | this branch |
 |---|---|---|
-| whole scenario | 76.7s | 117.0s (was 144.6s before the fixes below) |
-| median gap between model rounds | 926ms | ~2.5s |
+| whole scenario | 76.7s | 101.4s (was 144.6s before the fixes below) |
+| median gap between model rounds | 926ms | ~2s |
 | A's apply entered at | 23.3s | ~50s |
 
 The harness arms a 60s signal window when it installs the proposal observer, so a run this much
@@ -18,7 +18,7 @@ Root cause: every checkpoint write deep-clones the whole row, and the row embeds
 copies (`runtime.requestBaseline`, each acceptance promise baseline, and — until now — the draft
 project). Landed mitigations: capture only on `tool_call` rather than every session event, drop
 the per-round wait, cache content identity and the acceptance recovery copy, and keep draft bytes
-only in the apply-stage row. Together they removed ~28s.
+only in the apply-stage row. Together they removed ~43s: 144.6s → 122.1s → 117.0s → 101.4s.
 
 The remaining gap needs the structural fix: write the immutable per-request baselines **once per
 run** into a companion record and reference them from each checkpoint row, so a row write stops
