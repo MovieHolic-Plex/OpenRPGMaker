@@ -1,3 +1,30 @@
+## P5 delivery gates and the P4 regressions they caught (2026-09-09)
+
+`node scripts/qa/ai-harness-all.mjs --scenario all --report <path>` runs every deterministic
+editor scenario, one owned process each (own Vite port, Firefox, isolated remote project,
+cleanup receipt), and stops at the first failure so a later pass cannot mask an earlier one.
+Membership: proof-failure, required-skip, outcome-matrix, retained-draft-ask, wiki-delivery,
+new-goal-draft, late-cancel, human-edit-race, checkpoint-upgrade (its own script) and
+crash-after-apply (the `recovery` scenario). Real remote save proof stays separate:
+`node scripts/qa/ai-harness-remote-proof.mjs --create-isolated-project --scenario all --report <path>`.
+
+That gate found four P4 regressions that unit tests and the recovery scenario had all missed;
+pre-merge main passed the same scenarios, which is how each was attributed:
+
+1. A rejected checkpoint row aborted `proveAppliedRevision` before `store.flush()`, so the
+   save and its proof disappeared entirely. Checkpoint writes are recovery convenience; the save
+   is the user's canonical work. Failures are now audit warnings (`agent_run:checkpoint-write-failed`)
+   and save/proof/turn progress continue. Only `prepareCheckpointApply` still demands durability.
+2. The same rejection killed the retry turn through `turn-boundary-error`.
+3. Content identity was recomputed twice per round at ~160ms each on the default project.
+4. `AssistantAcceptanceLedger.exportRecovery()` deep-cloned every promise baseline on every
+   capture, and the row was cloned again on top of that: 92 captures burned 13.3s, which pushed
+   the harness past its 60s settle budget and left the editor's send button disabled forever.
+
+Measure before optimizing here: the numbers above came from timing the real browser run
+(`report.checkpointCost`), not from reading the code. After the fixes required-skip is back to
+the pre-merge shape — 58 rounds, 112 contract checks, zero violations.
+
 ## P4 checkpoint storage and boot admission (2026-09-09)
 
 `test/aiRunCheckpointStore.test.ts` covers additive v1/v2 to v3 IndexedDB

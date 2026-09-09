@@ -482,7 +482,16 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - 읽기 전용 ultrabrain 검토 → 독립 deep 병렬 수정 → 통합 재검토를 반복한다.
     최종 승인 후 리드가 현재 HEAD만 병합하고 정리한 뒤 P5로 진행한다.
 
-- [ ] 9. 자료 전달 영수증과 간결한 결과 표시를 연결한다
+- [x] 9. 자료 전달 영수증과 간결한 결과 표시를 연결한다
+  - 구현 `6e344e425`. `RunOutcome` 에 전달 사실 축을 더했다: `imageAttached` 는 자료 이미지가
+    **실제 요청에 실렸는지**만 말하고, `visualDelivery`(attempted/attached)는 보고한 실행에만
+    존재한다 — "모름"을 0건이나 실패로 바꾸지 않는다. 모델이 그림을 이해했다는 주장은 만들지 않는다.
+  - 소유 경계만 건드렸다: `assistantImageEvidence.deliveryFacts()`, `runOutcome`, 세션의 투영,
+    `runRecap` 복원, `aiChatRenderers` 의 결과 줄(`data-image-delivery`). 패널 재설계 없음.
+  - RED 선행 8건 → GREEN. `npm test -- test/aiVisualEvidenceReceipt.test.ts test/aiRunOutcome.test.ts
+    test/assistantVerificationEvidence.test.ts` 470건 통과, 타입 게이트 exit 0,
+    인접 회귀(recap·activity 포함) 474건 통과.
+  - 실표면: `--scenario outcome-matrix` 156계약 전부 통과(전달 축 포함, 위반 0).
   - Recommended task executor category: deep
   - 선행: 4·5·8. 소유: session의 renderImages/request 경계,
     aiTurnRunner 결과 표시, bridge/activity/recap의 같은 투영.
