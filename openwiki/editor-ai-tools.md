@@ -824,6 +824,27 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - **상점 의도와 명시 툴은 노출 상한 밖에서도 보존한다 (2026-08-24 실측):** `상점`/`상인`/`재고` 및 `shop`/`merchant`/`stock`은 event 도메인을 연다. `set_shop_stock`은 event 대표 pinned tool이다. 사용자가 `get_event`처럼 정확한 레지스트리 이름을 프롬프트에 썼다면 `mentionedToolSchemas`가 40-tool 도메인 trimming 뒤 다시 합쳐 준다. 그렇지 않으면 타일 UI + 복합 보존 문구가 핀을 채워, 모델이 실제로 존재하는 조회 툴을 “없다”고 오보하고 work item을 skip할 수 있다.
 - **길 존재 판정은 autotile 패밀리 전체를 본다 (2026-08-24):** `aiAgentBrief.mapHasPath`와 원격 검증기는 단일 `TILE.PATH` id만 비교하지 않고 `isRoadTile`을 쓴다. 실제 dirt-road edge/corner id(예: 390/391/392/420/450)만 있는 맵을 “길 없음”으로 안내하면 안 된다.
 - The AI chat panel owns user-visible turn controls and wires sibling modules: `src/editor/panels/aiChatPanel.ts` (turn pipeline, selection task, chrome/layout assembly), `aiChatPanelHelpers.ts` (pure helpers/audit export), `aiSettingsModal.ts` + `aiAuthSettings.ts` (config/auth surface), `aiProposalCard.ts` (proposal card + accept/reject/fusion), `aiConversationLog.ts` (bubbles/reasoning/tool activity/tile visuals), plus thinner shells `aiProposalSummary.ts` / `aiChatRenderers.ts` / `aiProposalFusion.ts`. (`aiCommandBar.ts` 는 커버이서 재구축으로, `aiProposalModal.ts` 는 승인 게이트 폐지로 삭제된 파일이다 — 찾지 마라.) Public test imports stay on `aiChatPanel` via re-export. Readiness is auth-mode-aware: ChatGPT mode requires a model and a reachable companion/login, while API-key mode preflights endpoint + key. The panel opens settings with focus, restores the latest same-project conversation asynchronously from IndexedDB `oprn-ai-records` (`src/ai/aiRecordDb.ts`; the old `oprn:ai-conversations` localStorage key is migrated on first access — see `editor-ai-panel.md` 「대화 기록의 로컬 정본은 IndexedDB 다」), shows elapsed time plus a visible tool counter during running turns, and wires the visible abort button to `AssistantSession`/`llmClient` AbortSignal. Keep browser UI in the panel layer; `src/ai/assistantSession.ts` should remain browser-independent and only accept the optional signal.
+- **세션의 순수 표면은 `src/ai/session/` 이 소유한다 (2026-09-09 분할):** `src/ai/assistantSession.ts` 는 6,391줄이었고
+  그중 클래스 밖 top-level 선언이 930줄이었다. 그 100개 선언을 책임별 14개 모듈로 옮겼다 —
+  `session/types.ts`(공개 타입) · `sessionTools.ts`(세션 전용 툴 스키마·쓰기 툴 판정) · `assistantText.ts`(어시스턴트
+  텍스트 위생) · `orchestration.ts`(주입 메시지 판별) · `proposalApproval.ts`(승인 필요 판정·경고) ·
+  `buildSpecGate.ts`(밑그림 게이트 판정) · `toolResultWarnings.ts` · `eventTargets.ts`(이동 후 최종 좌표 접기) ·
+  `toolPayload.ts`(툴콜 파싱·결과 축약) · `recordReference.ts` · `budgets.ts`(수치 상한) · `transientRetry.ts` ·
+  `workItemLookup.ts` · `unknownValue.ts`. `estimateOutputTokens` 는 `sessionUsage.ts`, `npcRewardTargetSnapshot` 은
+  `npcRewardWitness.ts` 로 갔다. **`assistantSession.ts` 는 기존 32개 export 를 전부 re-export 한다** — 61개 소비자의
+  import 경로(`@/ai/assistantSession`)는 그대로다. 새 심볼을 추가할 때 이 파일에 top-level 선언을 다시 쌓지 말고
+  해당 `session/*` 모듈에 넣고 필요하면 re-export 만 늘려라.
+- **남은 5,072줄은 `class AssistantSession` 이고, 이건 파일 분할로 안 풀린다 (실측):** 필드 144개·메서드 173개이며
+  `executeTurnLoop`(732줄)이 필드 46개를 읽고 메서드 57개를 부르고, `executeUserTurn`(358줄)은 필드 144개 중
+  **73개**를 만진다. 상위 결합 필드는 `workPlan`(43개 메서드) · `ctx`(37) · `runOperation`(32) 로 클래스 전역이다.
+  즉 이 클래스는 세션 쓰기 파이프라인(`recordToolResult`·`upsertProposal`·`pushAudit`·`pushOrchestrationMessage`)을
+  공유하는 **코디네이터**라서, 도메인 클러스터(NPC 캐스트 저작 161줄 등)를 떼려 해도 협력자 15개를 실어야 한다.
+  협력 객체로 뽑을 수 있는 것은 상태가 클러스터 안에 갇힌 것뿐이다. 후보와 그 비용:
+  볼륨 계약(필드 3개·메서드 5개·약 40줄 — 단 `exportRuntime`/`restoreCheckpoint` 왕복을 건드린다),
+  레이어 자문 검증(필드 4개·약 81줄), 압축(필드 6개·약 109줄 — `messages`·`config` 공유가 걸림돌).
+  선례는 이미 있다: `ToolVerificationEvidence`·`AssistantAcceptanceLedger` 의 `exportRecovery`/`restoreRecovery` 쌍.
+  **`executeTurnLoop`·`executeUserTurn` 재작성은 그 분기를 잠글 세밀한 테스트가 생긴 뒤에 해라** — 지금 하면
+  리팩터가 아니라 회귀 도박이다.
 - **AI visual polish (?쒖븞 6):** start cards use fixed 16px icons + uniform 48px row height and 2/3-column grids; start screen stays top-aligned (no vertical center abyss). Header has a thin accent gradient bar. Status badge uses `data-status-tone` (`idle`/`running`/`review`/`error`/`ok`) via `statusToneOf` ??same token colors as the collapsed FAB rail dots. Full history groups prior turns into collapsible `.ai-turn-group` with day dividers (`.ai-day-divider`); mini-stream still hides `.is-prior-turn`. Styles live mainly in `tabs-b-assistant-panel.css`; tests: `test/aiVisualPolish.test.ts`.
 - **AI shared surface + dock modes:** Basic/expert editor chrome must not fork the AI panel. Start screen is the minimal empty-hint surface (`ai-start-screen` + `ai-start-empty-hint`, optional ?댁뼱媛湲? in both modes; there is no `ai-expert-board`. Chat layout is **side** (default full-height right column, accent border, header ?쒖궗?대뱶??chip) vs **float** (map-over command capsule, ?쒗뵆濡쒗똿??chip + ?쒗뵆濡쒗똿 諛?쨌 留????낅젰??label). Visible dock mode buttons: `ai-dock-mode-btn` / `ai-dock-mode-btn-header`; menu copy: ?쒗뵆濡쒗똿 바로 ?꾪솚??/ ?쒖궗?대뱶 ?⑤꼸濡?고정?? Tests: `test/aiSharedSurface.test.ts`.
 - **툴콜 응답 파싱은 프로토콜 계약의 일부다 (2026-08-30):** 툴 실패로 보이던 신고 중 상당수는 공급자 응답 파싱 결함이었다 — `index` 없는 스트리밍 delta 가 병렬 툴콜을 한 호출로 이어붙이고, id 없는 응답이 중복/빈 `tool_call_id` 를 만들고, 잘린 인자 JSON 이 `필수 인자 누락` 으로 위장됐다. 세부·회귀는 `openwiki/editor-ai-panel.md` 의 «툴콜 프로토콜은 경계에서 보정한다» 항목과 `test/aiToolCallProtocol.test.ts` / `test/aiToolCallSessionProtocol.test.ts` 를 보라. 툴 스키마 계약(array items·oneOf 금지)과 달리 이 계층은 **모델이 아니라 전송/파싱**의 문제이므로, 툴 실패를 조사할 때 스키마보다 먼저 여기를 확인한다.

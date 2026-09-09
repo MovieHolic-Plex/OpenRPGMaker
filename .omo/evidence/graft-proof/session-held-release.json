@@ -13,11 +13,14 @@
   ],
   "readyReviews": [
     {
-      "imageCount": 1
+      "imageCount": 0
+    },
+    {
+      "imageCount": 0
     }
   ],
   "pendingAuthority": false,
-  "readyAuthority": true,
+  "readyAuthority": false,
   "pendingReview": {
     "status": "changes_requested",
     "revision": 1,
@@ -33,10 +36,18 @@
     ]
   },
   "readyReview": {
-    "status": "approved",
+    "status": "changes_requested",
     "revision": 1,
     "summary": "Fixture review",
-    "findings": []
+    "findings": [
+      {
+        "id": "required-0",
+        "target": "required-evidence",
+        "problem": "show_map_region: current rendered coverage of changed map map_blank_start required — request x:0,y:0,w:4,h:4 in one call; complete coverage is not clipped",
+        "requestedChange": "Repair the reported requirement on this draft and rerun its evidence tool.",
+        "validation": "The same required check must pass on the current revision."
+      }
+    ]
   },
   "loads": [
     "/assets/easyrpg-chipset-combined-town-transparent.png",
