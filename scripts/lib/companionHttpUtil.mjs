@@ -12,6 +12,17 @@ export async function readRequestJson(req) {
 }
 
 export function writeCompanionResult(res, result, extraHeaders = {}) {
+  if (result.stream && result.ndjson) {
+    // Pi 에이전트 진행 스트림 — 워커 본문을 줄 단위로 그대로 흘린다(모아서 보내면 진행 표시가 죽는다).
+    res.writeHead(200, {
+      "Content-Type": "application/x-ndjson; charset=utf-8",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+      ...extraHeaders,
+    });
+    pipeWebStream(result.ndjson, res);
+    return;
+  }
   if (result.stream) {
     res.writeHead(200, {
       "Content-Type": "text/event-stream; charset=utf-8",
@@ -39,4 +50,19 @@ export function writeCompanionResult(res, result, extraHeaders = {}) {
   }
   res.writeHead(result.status ?? 200, headers);
   res.end(JSON.stringify(result.body ?? {}));
+}
+
+async function pipeWebStream(readable, res) {
+  const reader = readable.getReader();
+  try {
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (value) res.write(Buffer.from(value));
+    }
+  } catch (error) {
+    res.write(`${JSON.stringify({ type: "error", message: error instanceof Error ? error.message : String(error) })}\n`);
+  } finally {
+    res.end();
+  }
 }

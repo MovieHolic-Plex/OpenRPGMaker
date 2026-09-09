@@ -465,8 +465,11 @@ function codexOAuthPlugin(): Plugin {
           return;
         }
         const body = await readRequestJson(req);
+        // 브라우저가 응답을 다 받기 전에 끊으면(Pi 에이전트 중단 등) 어댑터 fetch 까지 취소되도록 신호를 만든다.
+        const disconnect = new AbortController();
+        res.on("close", () => { if (!res.writableFinished) disconnect.abort(); });
         const result = await handleCompanionRequest(
-          { method: req.method, url, headers: req.headers as Record<string, string>, body },
+          { method: req.method, url, headers: req.headers as Record<string, string>, body, signal: disconnect.signal },
           await getAdapters(),
         );
         writeCompanionResult(res, result);

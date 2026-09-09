@@ -30,6 +30,7 @@ export function isCompanionPath(url = "") {
     || path === "/oauth/launch"
     || path === "/v1/chat/completions"
     || path === "/v1/images/generations"
+    || path === "/v1/agent/run"
   );
 }
 
@@ -181,6 +182,14 @@ export async function handleCompanionRequest(req, adapters) {
         dataUrl: `data:${image.mimeType};base64,${image.base64}`,
       },
     });
+  }
+
+  if (method === "POST" && path === "/v1/agent/run") {
+    if (typeof adapters.runAgent !== "function") {
+      return json(501, { error: "이 동반 서비스는 Pi 에이전트 실행을 지원하지 않습니다." });
+    }
+    const result = await adapters.runAgent(provider, body, req.signal ? { signal: req.signal } : {});
+    return { status: 200, stream: true, ndjson: result.ndjson, body: null };
   }
 
   if (method === "POST" && path === "/v1/chat/completions") {
