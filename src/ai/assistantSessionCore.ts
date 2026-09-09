@@ -1,4 +1,5 @@
 import { adventureToolNames, adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
+import type { PlanOnlyContinuation, PlanOnlyGoalState } from "./planOnlyContinuation";
 // ai/assistantSession.ts
 // 어시스턴트 세션: user msg → LLM → tool_calls → runTool(dryRun 누적) → tool 메시지 → … → 최종 응답.
 // - 쓰기 툴은 로컬 draft(ctx.project)에 누적되어 연쇄 툴콜이 이전 결과를 본다(store는 건드리지 않음).
@@ -763,6 +764,8 @@ export interface SessionTurnOptions {
 
 export interface AssistantSessionOptions {
   host: SessionExecutionHost;
+  /** Trusted, externally validated clean planning state; never displayed progress. */
+  planOnlyContinuation?: PlanOnlyContinuation;
   config?: AiConfig;
   contextOptions?: ContextOptions;
   // 테스트/대체용 chat 구현. 기본은 설정 baseUrl의 OpenAI 호환 chatCompletion.
@@ -860,6 +863,9 @@ export class AssistantSession {
   private turnEscalatedToolNames: string[] = [];
   /** 이번 턴에 실행을 시작한 툴 수 — tool_started 이벤트의 1-based 서수 원천. */
   private turnToolStartedCount = 0;
+  private sessionToolStartedCount = 0;
+  private goalReadBeforeWrite: IntentDeclaration["readBeforeWrite"];
+  private restoredPlanPending = false;
   private eventBaseProposalKeys = new Map<string, string>();
   private currentTurnToolDomains: ReadonlySet<ToolDomain> | undefined;
   private currentTurnRequestText = "";
@@ -1017,6 +1023,16 @@ export class AssistantSession {
     this.declareIntent = options.declareIntent ?? null;
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
+    if (options.planOnlyContinuation) {
+      const seed = structuredClone(options.planOnlyContinuation);
+      this.workPlan = seed.workPlan;
+      this.goalReadBeforeWrite = seed.readBeforeWrite ?? undefined;
+      this.readEvidence.begin(this.goalReadBeforeWrite);
+      this.adventureRequirements = seed.adventure ?? undefined;
+      this.runVolumeBar = seed.volume?.minimum ?? null;
+      this.runVolumeBaseline = seed.volume?.baseline ?? null;
+      this.restoredPlanPending = true;
+    }
     // 토큰 보정: 명시 budgetChars가 없으면 실측 usage 관측(localStorage — 없으면 빈 목록)으로
     // 문자 예산을 재척도한다. 관측이 없으면 DEFAULT_BUDGET_CHARS 그대로(현행 동작).
     this.appliedBudgetChars = this.contextOptions.budgetChars
@@ -1177,6 +1193,14 @@ export class AssistantSession {
 
   clearWorkPlan(): void {
     this.workPlan = null;
+  }
+
+  /** Only a real tool-free planning return is eligible. This is not a mid-run export. */
+  getPlanOnlyContinuationState(): PlanOnlyGoalState | null {
+    if (!this.lastTurnPlanOnly || !this.workPlan || isWorkPlanComplete(this.workPlan)
+      || this.sessionToolStartedCount !== 0 || this.turnProposals.size !== 0 || this.turnAppliedMilestoneCalls.length !== 0) return null;
+    return structuredClone({ readBeforeWrite: this.goalReadBeforeWrite ?? null, adventure: this.adventureRequirements ?? null,
+      volume: this.runVolumeBar && this.runVolumeBaseline ? { baseline: this.runVolumeBaseline, minimum: this.runVolumeBar } : null });
   }
 
   // set_build_spec 처리: 검증 통과 시 활성화(턴 간 유지), 실패 시 사유를 되돌려 재제출 유도.
@@ -1513,6 +1537,10 @@ export class AssistantSession {
     signal?: AbortSignal,
     options: SessionTurnOptions = {},
   ): Promise<TurnResult> {
+    if (this.restoredPlanPending) {
+      this.restoredPlanPending = false;
+      this.emitWorkPlan(onEvent);
+    }
     // 토큰 보정: 직전 턴들의 usage 관측으로 문자 예산이 달라졌으면 시스템 프롬프트를 재조립한다.
     this.refreshSystemPromptBudget();
     // 매 턴: 에디터 뷰포트 좌표(+가능하면 맵 이미지)를 사용자 메시지에 붙여 "여기" 해석을 빠르게 한다.
@@ -1572,7 +1600,8 @@ export class AssistantSession {
       this.adventureIconRecords.clear();
     }
     if (!this.turnIsDriverContinue && intent.source !== "continuation") {
-      this.readEvidence.begin(intent.readBeforeWrite);
+      this.goalReadBeforeWrite = intent.readBeforeWrite;
+      this.readEvidence.begin(this.goalReadBeforeWrite);
       this.verificationEvidence.clear();
     }
     beginAssistantToolDomainTurn(intent);
@@ -2430,6 +2459,7 @@ export class AssistantSession {
   /** 툴 실행 직전 신호를 알린다(1-based 서수). 실행 로직은 건드리지 않는다. */
   private emitToolStarted(onEvent: (event: SessionEvent) => void, name: string, args: Record<string, unknown>): void {
     this.turnToolStartedCount += 1;
+    this.sessionToolStartedCount += 1;
     onEvent({ type: "tool_started", name, args, index: this.turnToolStartedCount });
   }
 

@@ -55,7 +55,8 @@ function choice<const T extends string>(value: unknown, choices: readonly T[]): 
   assert(typeof value === "string" && choices.includes(value as T), "Invalid progress enum");
   return value as T;
 }
-function plan(value: unknown): WorkPlan {
+/** Strict full-plan validation; independent of the optional observation projection. */
+export function parseWorkPlan(value: unknown): WorkPlan {
   assert(JSON.stringify(value).length <= SESSION_PLAN_LIMIT, "Oversized progress plan");
   const p = record(value, ["id", "goal", "createdAt", "layers", "currentLayerIndex", "currentItemId", "plannerNote", "targetMapId"]);
   const fullText = (v: unknown) => text(v, SESSION_PLAN_LIMIT);
@@ -137,7 +138,7 @@ export function parseSessionProgress(value: unknown): SessionProgress {
   const d = b.driverContinuations === null ? null : record(b.driverContinuations, ["used", "total", "exhausted"]);
   const driverContinuations = d === null ? null : { ...counter(d), exhausted: requireBoolean("exhausted", d.exhausted) };
   assert(driverContinuations === null || driverContinuations.exhausted === (driverContinuations.used === driverContinuations.total), "Invalid exhaustion state");
-  const workPlan = r.workPlan === null ? null : plan(r.workPlan);
+  const workPlan = r.workPlan === null ? null : parseWorkPlan(r.workPlan);
   const workPlanOmitted = r.workPlanOmitted === undefined ? undefined : requireBoolean("workPlanOmitted", r.workPlanOmitted);
   assert(!workPlanOmitted || workPlan === null, "Omitted plan must be null");
   const usageOmitted = r.usageOmitted === undefined ? undefined : requireBoolean("usageOmitted", r.usageOmitted);

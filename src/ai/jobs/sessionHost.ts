@@ -62,7 +62,7 @@ export function createSessionJobHost(host: AiJobHost, baseline: Project, state: 
       savedDraft = { json: draftJson, ref: draftRef };
       await host.saveCheckpoint(envelope({ stageKey, state: jsonObject(jsonValue({ version: 1, startedAt: snapshot.startedAt,
         toolRefs: refs, draftRef, progress: snapshot.progress, completed: snapshot.completed, partial: snapshot.partial })),
-        artifacts: [draftRef, ...refs, ...(snapshot.completed ? [snapshot.completed.generatedSnapshot] : [])] }));
+        artifacts: [draftRef, ...refs, ...(snapshot.completed ? [snapshot.completed.generatedSnapshot, ...(snapshot.completed.artifacts ?? [])] : [])] }));
     });
   };
   return {

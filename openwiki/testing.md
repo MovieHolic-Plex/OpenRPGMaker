@@ -1,3 +1,33 @@
+## Clean plan-only human Continue (2026-09-08)
+
+`test/aiJobContinuation.test.ts` drives actual assistant executors, sessions, canonical repository
+reopen and the scheduler/provider ledger, with real foreground same-session Continue as the
+reference. Cases distinguish ordinary human planner resume/replan from automatic driver skip;
+retain required reads, adventure checks and the original volume baseline; preserve fresh human
+project captures; reject source/result/input/provider/target mismatches before spend; and retain
+successor request/allocated-map identity across retry/cancellation. Corruption cases mutate a real
+producer's retained output, not a mock eligible seed. An oversized valid authored plan remains
+output but does not advertise continuation support. A real `upsert_item` fixture must supply its
+required item ID; generated-ID replay is exercised separately by real `create_map`.
+
+Audit regressions supply both valid structured scope and a recognized foreign/out-of-bounds
+footer, asserting zero successor provider operations. The real A -> B clean replan -> reopen -> C
+chain holds C's first execution request and checks a machine-value ancestor constraint under
+`RESTORED_TRANSCRIPT_MARKER`, independently of B's restored plan and read gates. Additional
+cases cover source-owned history bounds/checkpoint equality, root-versus-bound legacy history,
+malformed history and rejected client overrides. Test repository values go through existing
+`validateResult`/`validateInput` and JSON/payload guards, not double-cast DTOs or a duplicate parser.
+
+Run this suite together with `aiJobLiveProgress`, `aiSessionProgressEdges`, `aiJobCanonicalReplay`,
+`aiSessionJobHost`, `aiRegionJob`, `aiTilesetJob`, `aiJobApplication`, `aiJobWorkerIsolation` and
+`aiComposerModeSession` through the coordinated S0 one-worker boundary. Existing tests must not
+be weakened. Deferred acknowledgement signals and durable subscriptions precede actions; there
+are no sleeps/polling or live services. Typecheck the test with the project's ambient `.d.ts`
+roots as well as app typechecking and the app/worker build. Exact receipts and UI capture/read
+requirements are in `.omo/evidence/ai-job-queue/verification/CONTINUATION-HANDOFF.md`; prepared
+source alone is not a GREEN result. General mid-run/applied continuation and UI binding are not
+part of this clean planning boundary.
+
 ## Durable session progress contract (2026-09-08)
 
 `test/aiJobLiveProgress.test.ts` exercises real assistant/region/cluster executors,

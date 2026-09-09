@@ -15,7 +15,7 @@ export interface SessionJobState {
   toolRefs?: BlobRef[];
   draft: Project;
   progress?: SessionProgress;
-  completed?: { turn: JsonObject; generatedSnapshot: BlobRef };
+  completed?: { turn: JsonObject; generatedSnapshot: BlobRef; artifacts?: BlobRef[] };
   partial?: { reason: string; turn: JsonObject };
 }
 function parseJson(value: unknown): JsonValue {
@@ -91,7 +91,12 @@ export async function parseSessionJobState(value: unknown, host: AiJobHost): Pro
   if (r.completed !== undefined) {
     const c = requireRecord("completed checkpoint", r.completed);
     const turn = jsonObject(c.turn); assert(turn.stoppedReason === "final", "Invalid completed turn");
-    completed = { turn, generatedSnapshot: parseRef(c.generatedSnapshot) };
+    completed = { turn, generatedSnapshot: parseRef(c.generatedSnapshot),
+      ...(c.artifacts === undefined ? {} : { artifacts: requireArray("completed artifacts", c.artifacts).map(value => {
+        const ref = requireRecord("completed artifact", value);
+        assert(Object.keys(ref).every(key => ["sha256", "byteLength", "mediaType"].includes(key)), "Unexpected completed artifact field");
+        return parseRef(ref);
+      }) }) };
   }
   let partial: SessionJobState["partial"];
   if (r.partial !== undefined) { const p = requireRecord("partial checkpoint", r.partial); partial = { reason: requireString("reason", p.reason), turn: jsonObject(p.turn) }; }

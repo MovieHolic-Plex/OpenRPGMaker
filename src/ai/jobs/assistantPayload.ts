@@ -17,6 +17,7 @@ export interface AssistantJobPayload {
   selection?: TurnSelectionSnapshot;
   turn?: SessionTurnOptions;
   priorTranscript?: string;
+  continuation?: { sourceJobId: string; resultSha256: string };
   reportAssets?: Record<string, BlobRef>;
 }
 export function enumValue<const T extends string>(value: unknown, values: readonly T[]): T {
@@ -42,7 +43,7 @@ function viewport(value: unknown): MapViewportSnapshot | null | undefined {
     viewX: optionalNumber(r.viewX), viewY: optionalNumber(r.viewY), viewW: optionalNumber(r.viewW), viewH: optionalNumber(r.viewH) };
 }
 export function parseAssistantPayload(value: unknown): AssistantJobPayload {
-  const p = shape(value, ["instruction", "config", "context", "domain", "selection", "turn", "priorTranscript", "reportAssets"]);
+  const p = shape(value, ["instruction", "config", "context", "domain", "selection", "turn", "priorTranscript", "reportAssets", "continuation"]);
   const c = shape(p.config, ["authMode", "providerId", "model", "liteModel", "maxToolCalls", "maxTokens", "reasoningEffort", "autonomyLevel", "agentMode"]);
   const context = shape(p.context, ["currentMapId", "budgetChars", "viewport", "projectScopeKey", "preferenceMemorySection"]);
   const instruction = requireString("instruction", p.instruction); assert(instruction.trim().length > 0, "Instruction required");
@@ -57,6 +58,13 @@ export function parseAssistantPayload(value: unknown): AssistantJobPayload {
       composerMode: t.composerMode === undefined ? undefined : enumValue(t.composerMode, ["ask", "plan", "do"]),
       scope: scope == null ? scope : { mapId: requireString("mapId", scope.mapId), region: rectangle(scope.region) } };
   }
+  let continuation: AssistantJobPayload["continuation"];
+  if (p.continuation !== undefined) {
+    const c = shape(p.continuation, ["sourceJobId", "resultSha256"]);
+    const sourceJobId = requireString("sourceJobId", c.sourceJobId), resultSha256 = requireString("resultSha256", c.resultSha256);
+    assert(sourceJobId.trim().length > 0 && /^[a-f0-9]{64}$/.test(resultSha256), "Invalid continuation binding");
+    continuation = { sourceJobId, resultSha256 };
+  }
   return {
     instruction, domain: enumValue(p.domain, ["core", "tile", "map", "event", "database", "world", "quest", "battle", "system"]),
     config: { authMode: enumValue(c.authMode, ["chatgpt"]), providerId: c.providerId === undefined ? undefined : enumValue(c.providerId, ["google-antigravity", "openai-codex"]),
@@ -67,6 +75,7 @@ export function parseAssistantPayload(value: unknown): AssistantJobPayload {
     context: { currentMapId: optionalString(context.currentMapId), projectScopeKey: optionalString(context.projectScopeKey), viewport: viewport(context.viewport),
       budgetChars: positive(context.budgetChars), preferenceMemorySection: requireString("preferenceMemorySection", context.preferenceMemorySection) },
     selection, turn, priorTranscript: optionalString(p.priorTranscript),
+    ...(continuation ? { continuation } : {}),
     ...(p.reportAssets === undefined ? {} : { reportAssets: parseReportAssets(p.reportAssets) }),
   };
 }
