@@ -995,9 +995,13 @@ export class AssistantSession {
         repeatedToolFailures: [...this.repeatedToolFailures].map(([id, failures]) => [id, [...failures]] as const),
       }, verification: this.verificationEvidence.snapshot(), acceptance: this.getAcceptanceSnapshot(),
       applied: this.checkpointApplied, save: this.runReceipt, proof: this.getRunEndProof(), pending });
-    this.checkpointQueue = this.checkpointQueue.then(async () => { await saveRunCheckpoint(checkpoint); });
+    // Order is preserved, but a rejected predecessor must not skip this write: `.then` alone would
+    // silently drop every later capture in this session after one failed row (unsupported existing row,
+    // aborted transaction). Each capture waits for the previous attempt to settle and then writes itself.
+    const attempt = this.checkpointQueue.catch(() => {}).then(async () => { await saveRunCheckpoint(checkpoint); });
+    this.checkpointQueue = attempt;
     // Observe synchronous callback failures without pretending durability; awaited boundaries still reject.
-    void this.checkpointQueue.catch(cause => console.warn("[aiRunCheckpoint] Checkpoint persistence failed", cause));
+    void attempt.catch(cause => console.warn("[aiRunCheckpoint] Checkpoint persistence failed", cause));
   }
 
   private async beginCheckpoint(instruction: string, text: string, options: SessionTurnOptions): Promise<void> {

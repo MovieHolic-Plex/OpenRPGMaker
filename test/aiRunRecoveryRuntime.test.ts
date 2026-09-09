@@ -9,6 +9,7 @@ import * as adapter from "@/editor/tools/applyChangesetToStore";
 import * as commits from "@/project/projectCommitLog";
 import * as sync from "@/project/supabaseProjectSync";
 import { AI_RECORD_STORES, readAllAiRecords, resetAiRecordDbForTest, writeAiRecords } from "@/ai/aiRecordDb";
+import * as checkpoints from "@/ai/runCheckpointStore";
 import { readLatestRunCheckpoint, type RunCheckpoint } from "@/ai/runCheckpointStore";
 import { getTool, runTool } from "@/editor/tools";
 import { store } from "@/project/store";
@@ -219,4 +220,22 @@ it("reassesses completed recovered scheduling with real ending-quality checks an
     .toMatchObject({ verdict: { blocked: true }, coverage: { endings: { uninvokedIds: ["uninvoked-recovery-ending"] } } });
   expect(writer).not.toHaveBeenCalled(); expect(create).not.toHaveBeenCalled(); expect(apply).not.toHaveBeenCalled();
   expect(result.proposedCalls).toEqual([]); expect(store.getCurrent()).toEqual(before);
+});
+
+it("keeps checkpointing on the same session after one failed write instead of skipping later captures", async () => {
+  // A real failure mode: saveRunCheckpoint throws on an unsupported existing row or an aborted
+  // transaction. The awaited boundary must still reject, but the session must not go silent afterwards.
+  const save = vi.spyOn(checkpoints, "saveRunCheckpoint");
+  save.mockImplementationOnce(async () => { throw new TypeError("Injected checkpoint write failure"); });
+  const session = new AssistantSession(store.getCurrent(), { config, checkpoint: checkpointHost,
+    declareIntent: fixedDeclarer({ mode: "other" }), chat: reviewingChat(async () => final) });
+  const first = await bounded(session.sendUserMessage("First request"));
+  expect(first.error).toContain("Injected checkpoint write failure");
+  await bounded(session.sendUserMessage("Second request"));
+  await bounded(session.whenCheckpointed());
+  const saved = await checkpoint();
+  expect(saved.request.text).toBe("Second request");
+  expect(save.mock.calls.length).toBeGreaterThan(1);
+  // Retire this session's run like every other case here; a live run keeps shared authoring state owned.
+  session.retireRun(); await bounded(session.whenCheckpointed());
 });
