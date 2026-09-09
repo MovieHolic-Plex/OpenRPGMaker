@@ -49,6 +49,7 @@ import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
 import { store } from "@/project/store";
+import { parsePiCommand, runPiCommand } from "./aiPiAgentCommand";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
@@ -1520,6 +1521,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let abortButton: HTMLButtonElement | null = null;
   let activeAbortController: AbortController | null = null;
   let activeSelectionRegionController: AbortController | null = null;
+  /** `/pi` 실행 중인 Pi 에이전트의 취소 컨트롤러. 선택 영역 작업처럼 직접 abort 한다. */
+  let piRunController: AbortController | null = null;
   let activeSelectionRegionKey: string | null = null;
   const abortActiveSelectionRegionTask = (): void => {
     const regionController = activeSelectionRegionController;
@@ -1592,7 +1595,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   const abortActiveTurn = (): void => {
     if (!activeAbortController || activeAbortController.signal.aborted) return;
-    const regionOwner = activeAbortController === activeSelectionRegionController;
+    const regionOwner = activeAbortController === activeSelectionRegionController || activeAbortController === piRunController;
     // 중단 시점의 진행 정도를 함께 남긴다 — 툴 0개에서 끊긴 것과 40개 돌다 끊긴 것은 다른 사건이다.
     const toolsSoFar = (controller.session?.getAuditEntries() ?? []).filter((entry) => entry.kind === "tool").length;
     const droppedQueue = pendingSends.length;
@@ -1811,6 +1814,35 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     input.value = "";
     syncInputHeight();
     refreshSendEnabled();
+    // `/pi …` 는 Bun 쪽 Pi 에이전트 경로(실험). 기존 세션 루프를 거치지 않고 결과만 커밋 게이트로 적용한다.
+    const piCommand = parsePiCommand(text, store.getCurrent(), editorState.get().currentMapId ?? null);
+    if (piCommand) {
+      if (turnBusy) {
+        toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
+        return;
+      }
+      appendBubble("user", text);
+      // 기존 턴과 같은 중단 버튼을 쓴다 — 컨트롤러를 활성 자리에 앉히고 실행 중 표시(turnBusy)를 켠다.
+      piRunController = new AbortController();
+      activeAbortController = piRunController;
+      abortNoticeShown = false;
+      runSurface.turnBusy = true;
+      refreshAbortButton();
+      try {
+        await runPiCommand(piCommand, {
+          appendBubble: (role, line) => appendBubble(role, line),
+          setStatus,
+          getCurrentMapId: () => editorState.get().currentMapId ?? null,
+          signal: piRunController.signal,
+        });
+      } finally {
+        if (activeAbortController === piRunController) activeAbortController = null;
+        piRunController = null;
+        runSurface.turnBusy = false;
+        refreshAbortButton();
+      }
+      return;
+    }
     if (selectionTaskActive && currentSelectionForRegionTask()) await sendSelectionRegionTask(text);
     else await sendText(text);
   };
