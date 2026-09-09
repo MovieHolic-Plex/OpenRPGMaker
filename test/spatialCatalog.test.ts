@@ -20,6 +20,15 @@ import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { spatialFixture } from "./support/spatialSchemaFixture";
+import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
+import { COMBINED_TOWN_HARNESS_GROUPS } from "@/project/tilesetHarness/combinedTownGroups";
+import { MATERIAL_SLOT_IDS } from "@/editor/operators/materialSlots";
+import { CONCEPT_FACILITY_TEMPLATES } from "@/project/defaults/conceptFacilityTemplates";
+import { OUTDOOR_OBJECT_CATALOG, outdoorObjectById } from "@/project/defaults/spatial/outdoorObjectCatalog";
+import { SPACE_CATALOG, spaceDefById } from "@/project/defaults/spatial/spaceCatalog";
+import { PLACE_CATALOG, placeDefById, FACILITY_ENTRY_PORT_ID } from "@/project/defaults/spatial/placeCatalog";
+import { REGION_CATALOG, WORLD_CATALOG, GEOGRAPHY_TERRAIN, regionDefById, regionsOfWorld } from "@/project/defaults/spatial/geographyCatalog";
+
 
 const previous = store.getCurrent();
 
@@ -391,5 +400,168 @@ describe("spatial catalog draft and preview galleries", () => {
 
     // Then
     expect(listSpatialGalleryCards(sessionFor({ tab: "places", source: "own", mode: "design" })).some((card) => card.localId === "dock")).toBe(false);
+  });
+});
+
+describe("shipped spatial design catalog", () => {
+  // 계획서 94~109행의 정본 목록. 이름이 아니라 이 표가 기준이다.
+  const PLANNED_OBJECTS = [
+    "outdoor-tree", "outdoor-pine", "outdoor-dead-tree", "outdoor-stump", "outdoor-rock",
+    "outdoor-boulder", "outdoor-bush", "outdoor-flowers", "outdoor-well", "outdoor-sign",
+    "outdoor-bench", "outdoor-lamp", "outdoor-crate", "outdoor-barrel", "outdoor-fence",
+    "outdoor-gate", "outdoor-wood-bridge", "outdoor-stone-bridge", "outdoor-stairs", "outdoor-dock",
+  ] as const;
+  const PLANNED_SPACES = [
+    "market-square", "quiet-courtyard", "kitchen-garden", "forest-clearing", "lakeshore",
+    "river-crossing", "harbor-pier", "snow-camp", "mountain-gate", "cave-mouth",
+    "mine-chamber", "ruined-court",
+  ] as const;
+  const PLANNED_PLACES = [
+    "lake-village", "forest-hamlet", "harbor-town", "snow-outpost",
+    "mountain-pass", "old-ruins", "working-mine", "forest-sanctuary",
+  ] as const;
+  const PLANNED_REGIONS = [
+    { id: "lake-country", world: "lake-kingdom", places: ["lake-village", "working-mine"] },
+    { id: "deep-forest", world: "lake-kingdom", places: ["forest-hamlet", "forest-sanctuary"] },
+    { id: "harbor-coast", world: "lake-kingdom", places: ["harbor-town", "harbor-town"] },
+    { id: "snow-frontier", world: "northern-frontier", places: ["snow-outpost", "forest-hamlet"] },
+    { id: "high-pass", world: "northern-frontier", places: ["mountain-pass", "working-mine"] },
+    { id: "ancient-ruins", world: "northern-frontier", places: ["old-ruins", "forest-sanctuary"] },
+  ] as const;
+
+  it("binds every outdoor object to a verified tile group with matching passability", () => {
+    // Given: 배송 오브젝트와 승인된 타일 어휘.
+    const harness = new Map(COMBINED_TOWN_HARNESS_GROUPS.map((group) => [group.id, group]));
+    expect(OUTDOOR_OBJECT_CATALOG.map((entry) => entry.id)).toEqual([...PLANNED_OBJECTS]);
+
+    for (const object of OUTDOOR_OBJECT_CATALOG) {
+      // When: 선언한 근거에서 허용 타일을 읽는다.
+      const tiles = [...new Set(object.cells.map((cell) => cell.tile))];
+      const group = harness.get(object.authority);
+      const chipsetKey = object.authority.startsWith("CHIPSET_TILE_GROUPS.")
+        ? object.authority.slice("CHIPSET_TILE_GROUPS.".length)
+        : null;
+      const allowed = group
+        ? [...group.tileIds]
+        : chipsetKey
+          ? [...(CHIPSET_TILE_GROUPS as Record<string, readonly number[]>)[chipsetKey] ?? []]
+          : object.authority.replace("tileSemanticsCombinedTown:", "").split(",").map(Number);
+
+      // Then: 모든 칸이 그 근거 안에 있고, 통행성과 레이어가 어긋나지 않는다.
+      expect({ id: object.id, missing: tiles.filter((tile) => !allowed.includes(tile)) })
+        .toEqual({ id: object.id, missing: [] });
+      if (group) expect({ id: object.id, passage: object.passage }).toEqual({ id: object.id, passage: group.passage });
+      const layers = [...new Set(object.cells.map((cell) => cell.layer))];
+      expect({ id: object.id, layers }).toEqual({ id: object.id, layers: [object.passage === "passable" ? "lower" : "upper"] });
+      expect(object.cells.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("keeps every space walkable with named ports and at least two object families", () => {
+    // Given
+    const slots = new Set<string>(MATERIAL_SLOT_IDS);
+    expect(SPACE_CATALOG.map((entry) => entry.id)).toEqual([...PLANNED_SPACES]);
+
+    for (const space of SPACE_CATALOG) {
+      // When
+      const families = new Set(space.slots.flatMap((slot) => outdoorObjectById(slot.objectId)?.families ?? []));
+
+      // Then: 재료가 유도된 슬롯이고, 포트는 이름과 좌표를 갖고, 고정 배치가 포트를 막지 않는다.
+      if (space.environment === "outdoor") {
+        for (const area of space.areas) expect({ space: space.id, material: area.material, known: slots.has(area.material) })
+          .toEqual({ space: space.id, material: area.material, known: true });
+      }
+      expect(families.size).toBeGreaterThanOrEqual(2);
+      expect(space.ports.length).toBeGreaterThanOrEqual(2);
+      for (const port of space.ports) {
+        expect(port.name.trim().length).toBeGreaterThan(0);
+        expect({ id: port.id, inside: port.x >= 0 && port.y >= 0 && port.x < space.width && port.y < space.height })
+          .toEqual({ id: port.id, inside: true });
+      }
+      for (const slot of space.slots) {
+        const object = outdoorObjectById(slot.objectId);
+        expect({ space: space.id, object: slot.objectId, known: object !== undefined })
+          .toEqual({ space: space.id, object: slot.objectId, known: true });
+        if (!slot.at || !object || object.passage !== "solid") continue;
+        const blocked = space.ports.filter((port) =>
+          port.x >= slot.at!.x && port.x < slot.at!.x + object.width
+          && port.y >= slot.at!.y && port.y < slot.at!.y + object.height);
+        expect({ slot: slot.id, blocked: blocked.map((port) => port.id) }).toEqual({ slot: slot.id, blocked: [] });
+      }
+    }
+  });
+
+  it("links every place child to a port that actually exists on its design", () => {
+    // Given: 배송 시설 19종과 공간 카탈로그.
+    const facilities = new Map(CONCEPT_FACILITY_TEMPLATES.map((facility) => [facility.id, facility]));
+    expect(PLACE_CATALOG.map((entry) => entry.id)).toEqual([...PLANNED_PLACES]);
+
+    for (const place of PLACE_CATALOG) {
+      const children = new Map(place.children.map((child) => [child.id, child]));
+      expect(children.size).toBe(place.children.length);
+
+      for (const link of place.links) {
+        for (const side of [link.from, link.to]) {
+          if (side.childId === null) continue;
+          const child = children.get(side.childId);
+          expect({ link: link.id, child: side.childId, known: child !== undefined })
+            .toEqual({ link: link.id, child: side.childId, known: true });
+          if (!child) continue;
+          if (child.kind === "space") {
+            // When/Then: 공간 자식은 선언된 포트 id 를 실제로 갖는다.
+            const design = spaceDefById(child.designId);
+            expect({ link: link.id, design: child.designId, port: side.portId, exists: design?.ports.some((port) => port.id === side.portId) })
+              .toEqual({ link: link.id, design: child.designId, port: side.portId, exists: true });
+          } else {
+            // 시설 자식은 포트 목록 대신 진입 방을 갖는다. 계약 이름과 진입 방을 함께 본다.
+            const facility = facilities.get(child.designId);
+            expect({ link: link.id, facility: child.designId, known: facility !== undefined })
+              .toEqual({ link: link.id, facility: child.designId, known: true });
+            expect(side.portId).toBe(FACILITY_ENTRY_PORT_ID);
+            const entrances = (facility?.places ?? []).filter((room) => room.role === "entrance");
+            expect({ facility: child.designId, entrances: entrances.length > 0 })
+              .toEqual({ facility: child.designId, entrances: true });
+          }
+        }
+      }
+    }
+  });
+
+  it("reproduces the planned region table and keeps world overviews enterable", () => {
+    // Given
+    expect(REGION_CATALOG.map((entry) => entry.id)).toEqual(PLANNED_REGIONS.map((row) => row.id));
+
+    for (const row of PLANNED_REGIONS) {
+      const region = regionDefById(row.id);
+      // When/Then: 소속 세계와 품는 장소가 표와 같고, 경로 폴리라인이 마커에 정확히 물린다.
+      expect({ id: row.id, world: region?.world }).toEqual({ id: row.id, world: row.world });
+      expect({ id: row.id, places: [...(region?.places ?? [])].map((child) => child.designId).sort() })
+        .toEqual({ id: row.id, places: [...row.places].sort() });
+      for (const child of region?.places ?? []) {
+        expect({ child: child.id, known: placeDefById(child.designId) !== undefined })
+          .toEqual({ child: child.id, known: true });
+        expect({ child: child.id, inside: child.x >= 0 && child.y >= 0 && child.x < GEOGRAPHY_TERRAIN.width && child.y < GEOGRAPHY_TERRAIN.height })
+          .toEqual({ child: child.id, inside: true });
+      }
+      for (const path of region?.routes ?? []) {
+        const from = region?.places.find((child) => child.id === path.from);
+        const to = region?.places.find((child) => child.id === path.to);
+        expect(path.points.length).toBeGreaterThanOrEqual(2);
+        expect(path.points[0]).toEqual({ x: from?.x, y: from?.y });
+        expect(path.points[path.points.length - 1]).toEqual({ x: to?.x, y: to?.y });
+      }
+    }
+
+    for (const world of WORLD_CATALOG) {
+      const owned = regionsOfWorld(world.id).map((region) => region.id);
+      // 개요는 세 지역 입구를 모두 드러내야 한다 — 시작 지역만 열면 나머지로 들어갈 수 없다.
+      expect({ id: world.id, regions: world.regions.map((child) => child.designId) }).toEqual({ id: world.id, regions: owned });
+      expect({ id: world.id, ports: world.ports.length }).toEqual({ id: world.id, ports: world.regions.length });
+      expect(owned).toContain(world.entryRegion);
+      for (const connection of world.connections) {
+        expect(owned).toContain(connection.from);
+        expect(owned).toContain(connection.to);
+      }
+    }
   });
 });
