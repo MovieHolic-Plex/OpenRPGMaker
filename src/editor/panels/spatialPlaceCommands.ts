@@ -35,6 +35,7 @@ import {
 import { libraryPlaceCardId, placedPlaceCloneProposal, previewPlaceDelete } from "@/editor/panels/spatialPlaceQuery";
 import type { PlaceDesign, SpatialId } from "@/project/spatial/types";
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
+import { spatialAuthoringCompileScope } from "@/editor/spatial/authoringScope";
 import type { Project } from "@/project/types";
 
 export type SpatialPlaceChrome = SpatialDomainChrome;
@@ -44,10 +45,10 @@ export function workingProject(): Project {
 }
 
 function compileRequest(target: PlaceDraftTarget | undefined): SpatialAuthoringRequest {
-  if (target?.occurrenceId) {
-    return { operation: { kind: "edit" }, compile: { occurrenceId: target.occurrenceId } };
-  }
-  return { operation: { kind: "edit" } };
+  if (!target?.occurrenceId) return { operation: { kind: "edit" } };
+  const document = visibleAuthoringProject().spatialAuthoring;
+  if (!document) return { operation: { kind: "edit" }, compile: { occurrenceId: target.occurrenceId } };
+  return { operation: { kind: "edit" }, compile: spatialAuthoringCompileScope(document, target.occurrenceId) };
 }
 
 function note(result: ReturnType<typeof spatialAuthoringErrorText>, saveState?: string): void {
@@ -133,10 +134,13 @@ export function spatialPlacesChrome(card: SpatialGalleryCard | undefined, rerend
     undo: controller ? () => { controller.undo(); rerender(); } : undefined,
     redo: controller ? () => { controller.redo(); rerender(); } : undefined,
     refresh: controller && occurrenceId && !missing
-      ? () => queueOperation({
-        operation: { kind: "refresh", request: { occurrenceId, externalConnections: "reject" } },
-        compile: { occurrenceId },
-      }, rerender)
+      ? () => {
+        const compile = compileRequest(target).compile;
+        queueOperation({
+          operation: { kind: "refresh", request: { occurrenceId, externalConnections: "reject" } },
+          ...(compile ? { compile } : {}),
+        }, rerender);
+      }
       : undefined,
     detach: controller && occurrenceId
       ? () => queueOperation({ operation: { kind: "detach", occurrenceId } }, rerender)

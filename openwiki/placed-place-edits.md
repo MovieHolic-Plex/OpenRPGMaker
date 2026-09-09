@@ -72,7 +72,7 @@ exact subtree add/delete, empty actual composition, explicit floors, clone selec
 deletion impacts, association-incomplete history, missing/ancestor/conflicting sources,
 incorrect compile scope, and fresh manual-raster ownership rejection.
 
-UI acceptance is pending: parent binds the actual child rows and typed add/delete/move
-proposals into the shared proposal/session and drives the real canvas, floor controls,
-drill/back navigation and connected room edit through the browser. The parent also owns
-combined build and integration acceptance under the shared validation-lock policy.
+Place canvas/inspector/commands bind `placedPlaceChildren` tokens, picker add, move,
+level, delete, ordinary `edit-connection` floor links, and persisted drill destinations
+through `previewPlacedPlaceEdit` + `retainAuthoringPreview`. Source-mode local slots
+remain library edits. Browser evidence lives under `output/evidence/tile-to-world/place-member-ui/`.

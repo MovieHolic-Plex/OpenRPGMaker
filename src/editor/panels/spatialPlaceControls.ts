@@ -1,20 +1,27 @@
+import type { SpatialAuthoringSession } from "@/editor/panels/spatialAuthoringSession";
 import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
 import { commitWorkingPlace, mutateWorkingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
-import {
-  connectLocal,
-  nestChild,
-  placeDraftTarget,
-  withPlaceExterior,
-} from "@/editor/panels/spatialPlaceDraft";
-import { floorsOf, newConnectionId, pickerCandidates } from "@/editor/panels/spatialPlaceQuery";
+import { nestChild, placeDraftTarget, withPlaceExterior } from "@/editor/panels/spatialPlaceDraft";
+import { addPlacedPickerChild } from "@/editor/panels/spatialPlacePlaced";
+import { floorsOf, pickerCandidates } from "@/editor/panels/spatialPlaceQuery";
 import { childSourceLabel } from "@/editor/panels/spatialPlacePreview";
+import { placedPlaceChildren } from "@/editor/spatial/placedPlaceEdits";
 import { spatialId } from "@/project/spatial/domain";
 import { genId } from "@/util/id";
 import type { PlaceDesign } from "@/project/spatial/types";
 import { el } from "@/util/dom";
 
-export function renderPlaceFloorStrip(place: PlaceDesign, rerender: () => void): HTMLElement {
-  const floors = floorsOf(place);
+export { renderPlaceLinkActions } from "@/editor/panels/spatialPlaceLinks";
+
+export function renderPlaceFloorStrip(
+  place: PlaceDesign,
+  target: ReturnType<typeof placeDraftTarget>,
+  session: SpatialAuthoringSession,
+  rerender: () => void,
+): HTMLElement {
+  const levels = session.mode === "instances" && target.occurrenceId
+    ? [...new Set(placedPlaceChildren(workingProject(), target.occurrenceId).map((child) => child.level))].sort((a, b) => a - b)
+    : floorsOf(place);
   return el("div", {
     class: "spatial-place-floors",
     attrs: { role: "tablist", "aria-label": "층" },
@@ -27,7 +34,7 @@ export function renderPlaceFloorStrip(place: PlaceDesign, rerender: () => void):
         dataset: { testid: "spatial-place-floor-all" },
         on: { click: () => { placeChromeState.selectedFloor = null; rerender(); } },
       }),
-      ...floors.map((level) => el("button", {
+      ...levels.map((level) => el("button", {
         class: `spatial-source-chip${placeChromeState.selectedFloor === level ? " is-active" : ""}`,
         text: `${level}층`,
         attrs: { type: "button", role: "tab", "aria-pressed": String(placeChromeState.selectedFloor === level) },
@@ -41,6 +48,7 @@ export function renderPlaceFloorStrip(place: PlaceDesign, rerender: () => void):
 export function renderPlaceChildPicker(
   place: PlaceDesign,
   target: ReturnType<typeof placeDraftTarget>,
+  session: SpatialAuthoringSession,
   rerender: () => void,
 ): HTMLElement {
   const library = workingProject().spatialAuthoring?.library;
@@ -56,12 +64,16 @@ export function renderPlaceChildPicker(
       on: {
         click: () => {
           if (!library) return;
-          commitWorkingPlace(target, nestChild(place, library, {
-            ...slot,
-            id: spatialId(genId("place-child")),
-            x: 4,
-            y: 4,
-          }));
+          if (session.mode === "instances" && target.occurrenceId) {
+            addPlacedPickerChild(target.occurrenceId, slot);
+          } else {
+            commitWorkingPlace(target, nestChild(place, library, {
+              ...slot,
+              id: spatialId(genId("place-child")),
+              x: 4,
+              y: 4,
+            }));
+          }
           rerender();
         },
       },
@@ -122,36 +134,5 @@ export function renderPlaceExterior(
         ],
       }),
     ],
-  });
-}
-
-export function renderPlaceLinkActions(
-  place: PlaceDesign,
-  target: ReturnType<typeof placeDraftTarget>,
-  rerender: () => void,
-): HTMLElement {
-  const selected = placeChromeState.selectedChildId;
-  const others = place.children.filter((child) => child.id !== selected);
-  return el("div", {
-    class: "spatial-place-link-actions",
-    dataset: { testid: "spatial-place-link-actions" },
-    children: others.slice(0, 1).map((other) => el("button", {
-      class: "spatial-action",
-      text: "층 연결",
-      attrs: { type: "button", ...(selected ? {} : { disabled: "" }) },
-      dataset: { testid: "spatial-place-connect" },
-      on: {
-        click: () => {
-          if (!selected) return;
-          commitWorkingPlace(target, connectLocal(place, {
-            id: newConnectionId(),
-            from: { childId: selected, portId: spatialId("landing") },
-            to: { childId: other.id, portId: spatialId("landing") },
-            bidirectional: true,
-          }));
-          rerender();
-        },
-      },
-    })),
   });
 }

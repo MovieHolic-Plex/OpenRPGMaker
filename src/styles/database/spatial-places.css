@@ -16,6 +16,8 @@
   flex-wrap: wrap;
   gap: 6px;
   align-items: center;
+  position: relative;
+  z-index: 2;
 }
 
 .database-modal-body .spatial-place-floors {
@@ -129,4 +131,18 @@
   .database-modal-body .spatial-place-link {
     transition: none;
   }
+}
+
+.database-modal-body .spatial-place-link-actions select {
+  min-height: 32px;
+  max-width: 220px;
+  padding: 0 8px;
+  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+  border-radius: 8px;
+  background: var(--db-studio-surface, #fff);
+}
+
+.database-modal-body .spatial-inspector .spatial-open-child,
+.database-modal-body .spatial-inspector .spatial-action {
+  min-height: 32px;
 }

@@ -1,7 +1,14 @@
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
-import { mutateWorkingPlace, placeDeletePreview, workingPlace } from "@/editor/panels/spatialPlaceCommands";
+import { mutateWorkingPlace, placeDeletePreview, workingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
 import { placeDraftTarget, withPlaceKind, withPlaceLayout, withPlaceName } from "@/editor/panels/spatialPlaceDraft";
+import {
+  deletePlacedChild,
+  openPlaceChild,
+  ordinaryPlacedConnections,
+  selectedPlacedChild,
+  setPlacedChildLevel,
+} from "@/editor/panels/spatialPlacePlaced";
 import type { PlaceDesign } from "@/project/spatial/types";
 import { el } from "@/util/dom";
 
@@ -27,6 +34,7 @@ export function renderSpatialPlacesInspector(
 ): HTMLElement {
   const place = workingPlace(card);
   const target = card ? placeDraftTarget(card) : undefined;
+  const project = workingProject();
   const body: HTMLElement[] = [];
   if (card) {
     body.push(el("h3", { class: "spatial-inspector-name", text: card.name }));
@@ -83,32 +91,100 @@ export function renderSpatialPlacesInspector(
         rerender();
       },
     }));
-    const child = place.children.find((entry) => entry.id === placeChromeState.selectedChildId);
-    if (child) {
+    const placedChild = target.occurrenceId ? selectedPlacedChild(project, target.occurrenceId) : undefined;
+    const sourceChild = place.children.find((entry) => entry.id === placeChromeState.selectedChildId);
+    if (placedChild) {
       body.push(el("p", {
         class: "spatial-inspector-sub",
-        text: `${child.source.kind} (${child.x},${child.y}) L${child.level}`,
+        text: `${placedChild.name} ${placedChild.occurrenceId} (${placedChild.x},${placedChild.y}) L${placedChild.level} #${placedChild.slotId}:${placedChild.index}`,
+        dataset: { testid: "spatial-place-child-label" },
+      }));
+      body.push(el("label", {
+        class: "spatial-place-field",
+        children: [
+          el("span", { text: "층" }),
+          el("input", {
+            attrs: { type: "number", value: String(placedChild.level), min: place.kind === "facility" ? "1" : "0", max: "3" },
+            dataset: { testid: "spatial-place-child-level" },
+            on: {
+              change: (event) => {
+                const input = event.target;
+                if (!(input instanceof HTMLInputElement) || !target.occurrenceId) return;
+                setPlacedChildLevel(target.occurrenceId, placedChild, Number(input.value), place.kind);
+                rerender();
+              },
+            },
+          }),
+        ],
+      }));
+      body.push(el("button", {
+        class: "spatial-action",
+        text: "자식 삭제",
+        attrs: { type: "button" },
+        dataset: { testid: "spatial-place-child-delete" },
+        on: {
+          click: () => {
+            if (!target.occurrenceId) return;
+            deletePlacedChild(target.occurrenceId, placedChild);
+            placeChromeState.selectedChildId = null;
+            rerender();
+          },
+        },
+      }));
+    } else if (sourceChild) {
+      body.push(el("p", {
+        class: "spatial-inspector-sub",
+        text: `${sourceChild.source.kind} (${sourceChild.x},${sourceChild.y}) L${sourceChild.level}`,
         dataset: { testid: "spatial-place-child-label" },
       }));
     }
-    const link = place.connections.find((entry) => entry.id === placeChromeState.selectedConnectionId);
-    if (link) {
+    body.push(el("button", {
+      class: "spatial-open-child",
+      text: "열기",
+      attrs: { type: "button", ...((placedChild || sourceChild) ? {} : { disabled: "" }) },
+      dataset: { testid: "spatial-open-child" },
+      on: {
+        click: () => {
+          openPlaceChild(target, place, project);
+          rerender();
+        },
+      },
+    }));
+    const placedLink = target.occurrenceId
+      ? ordinaryPlacedConnections(project, target.occurrenceId).find((link) => link.id === placeChromeState.selectedConnectionId)
+      : undefined;
+    const sourceLink = place.connections.find((entry) => entry.id === placeChromeState.selectedConnectionId);
+    if (placedLink) {
       body.push(el("p", {
         class: "spatial-inspector-sub",
-        text: `${link.from.childId ?? "자체"} → ${link.to.childId ?? "자체"}`,
+        text: `${placedLink.from.occurrenceId}:${placedLink.from.portId} ${placedLink.bidirectional ? "↔" : "→"} ${placedLink.to.occurrenceId}:${placedLink.to.portId}`,
+        dataset: { testid: "spatial-place-link-label" },
+      }));
+    } else if (sourceLink) {
+      body.push(el("p", {
+        class: "spatial-inspector-sub",
+        text: `${sourceLink.from.childId ?? "자체"} → ${sourceLink.to.childId ?? "자체"}`,
         dataset: { testid: "spatial-place-link-label" },
       }));
     }
   }
   if (placeChromeState.deleteOpen) {
     const impact = placeDeletePreview(card);
+    const occurrence = impact?.occurrence;
     body.push(el("div", {
       class: "spatial-place-impact",
       dataset: { testid: "spatial-delete-impact" },
-      children: [
-        el("p", { text: `참조 ${impact?.strong.length ?? 0}` }),
-        el("p", { text: `스냅샷 ${impact?.historical.length ?? 0}` }),
-      ],
+      children: occurrence
+        ? [
+          el("p", { text: `맵 ${new Set(occurrence.artifacts.map((entry) => entry.binding.mapId)).size}` }),
+          el("p", { text: `이벤트 ${occurrence.artifacts.reduce((count, entry) => count + entry.binding.eventIds.length, 0)}` }),
+          el("p", { text: `연결 ${occurrence.connections.length}` }),
+          el("p", { text: `외부 ${occurrence.externalConnectionIds.length}` }),
+        ]
+        : [
+          el("p", { text: `참조 ${impact?.strong.length ?? 0}` }),
+          el("p", { text: `스냅샷 ${impact?.historical.length ?? 0}` }),
+        ],
     }));
   }
   if (placeChromeState.previewError) {
