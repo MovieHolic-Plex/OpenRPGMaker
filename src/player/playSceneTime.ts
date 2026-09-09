@@ -10,10 +10,158 @@ import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { StepResult } from "@/player/interpreter";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
-import { advanceTimeAcrossDayBoundaries, setTimeWithMakers, transitionToNextDay } from "@/player/dayTransition";
+import {
+  advanceTimeAcrossDayBoundaries,
+  setTimeWithMakers,
+  transitionToNextDay,
+  type DayTransitionResult,
+} from "@/player/dayTransition";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
+import { hasSessionLifeRecoveryClaims } from "@/player/lifeLedger";
+import { dialogueHost } from "@/player/playSceneDom";
+import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import { fadeCamera, TRANSFER_FADE_DURATION_MS } from "@/player/playSceneMapCommands";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
+import type { PlaySession } from "@/project/session";
+
+export type DayTransitionFailureView = {
+  readonly reason: string;
+  readonly stage?: string;
+  readonly problemId?: string;
+  readonly recoveryEntry?: string;
+};
+
+/** Scene surface required to present date-error UI (no silent Partial/catch fallback). */
+export type DayTransitionFailureScene = {
+  readonly showRuntimeOverlay: PlaySceneContext["showRuntimeOverlay"];
+  readonly game: PlaySceneContext["game"];
+  readonly session?: PlaySession;
+};
+
+export function formatDayTransitionFailureMessage(view: DayTransitionFailureView): string {
+  const parts = [view.reason];
+  if (view.stage) parts.push(`stage:${view.stage}`);
+  if (view.problemId) parts.push(`problem:${view.problemId}`);
+  if (view.recoveryEntry) parts.push(`recovery:${view.recoveryEntry}`);
+  return `새날 처리를 완료하지 못했습니다 (${parts.join(" ")})`;
+}
+
+function dayTransitionFailureFromResult(
+  result: Extract<DayTransitionResult, { ok: false }> | {
+    readonly reason: string;
+    readonly stage?: string;
+    readonly sourceKind?: string;
+    readonly sourceId?: string;
+  },
+): DayTransitionFailureView {
+  const problemId = result.sourceKind && result.sourceId
+    ? `${result.sourceKind}/${result.sourceId}`
+    : result.sourceKind ?? result.sourceId;
+  return {
+    reason: result.reason,
+    ...(result.stage ? { stage: result.stage } : {}),
+    ...(problemId ? { problemId } : {}),
+    recoveryEntry: "life-ledger:recovery",
+  };
+}
+
+function resolveDialogueHost(scene: DayTransitionFailureScene): HTMLElement | undefined {
+  // Browser/runtime contract only. Non-DOM unit hosts skip the rich overlay path.
+  if (typeof HTMLElement === "undefined") return undefined;
+  return dialogueHost(scene as unknown as import("phaser").Scene);
+}
+
+function resolveOpenLifeRecoveryLedger(scene: DayTransitionFailureScene): (() => void) | undefined {
+  const registry = scene.game.registry;
+  if (!registry || typeof registry.get !== "function") return undefined;
+  const open = registry.get("openLifeRecoveryLedger");
+  return typeof open === "function" ? () => { open(); } : undefined;
+}
+
+type DayTransitionErrorOverlay = HTMLElement & { __oprnDisposeCursor?: () => void };
+
+/** Drop owned cursor listeners before removing the date-error overlay. */
+export function disposeDayTransitionErrorOverlay(host: HTMLElement | undefined | null): void {
+  if (!host) return;
+  const overlay = host.querySelector("[data-testid='day-transition-error']") as DayTransitionErrorOverlay | null;
+  if (!overlay) return;
+  overlay.__oprnDisposeCursor?.();
+  overlay.__oprnDisposeCursor = undefined;
+  overlay.remove();
+}
+
+/** Installs stage/problem markers; recovery entry is actionable only when claims exist and menu open is registered. */
+export function presentDayTransitionFailure(
+  scene: DayTransitionFailureScene,
+  failure: string | DayTransitionFailureView,
+): void {
+  const view: DayTransitionFailureView = typeof failure === "string"
+    ? { reason: failure, recoveryEntry: "life-ledger:recovery" }
+    : { recoveryEntry: "life-ledger:recovery", ...failure };
+  const message = formatDayTransitionFailureMessage(view);
+  const host = resolveDialogueHost(scene);
+  if (!host) {
+    scene.showRuntimeOverlay("day-transition-error", message);
+    return;
+  }
+
+  // Replace any prior date-error UI and release its cursor ownership first.
+  disposeDayTransitionErrorOverlay(host);
+
+  const overlay = document.createElement("div") as DayTransitionErrorOverlay;
+  overlay.className = "runtime-overlay";
+  overlay.dataset.testid = "day-transition-error";
+  if (view.stage) overlay.dataset.stage = view.stage;
+  if (view.problemId) overlay.dataset.problemId = view.problemId;
+  overlay.dataset.recoveryEntry = view.recoveryEntry ?? "life-ledger:recovery";
+
+  const body = document.createElement("div");
+  body.className = "runtime-overlay-message";
+  body.textContent = message;
+  overlay.append(body);
+
+  const hasClaims = scene.session ? hasSessionLifeRecoveryClaims(scene.session) : false;
+  const openLedger = resolveOpenLifeRecoveryLedger(scene);
+  const actionable = hasClaims && openLedger !== undefined;
+  overlay.dataset.recoveryActionable = actionable ? "true" : "false";
+
+  if (actionable && openLedger) {
+    const entry = document.createElement("button");
+    entry.type = "button";
+    entry.dataset.testid = "day-transition-recovery-entry";
+    entry.dataset.recoveryEntry = view.recoveryEntry ?? "life-ledger:recovery";
+    entry.dataset.recoveryActionable = "true";
+    entry.textContent = "복구 장부";
+
+    const dismiss = document.createElement("button");
+    dismiss.type = "button";
+    dismiss.dataset.testid = "day-transition-error-dismiss";
+    dismiss.textContent = "닫기";
+
+    const release = (): void => {
+      overlay.__oprnDisposeCursor?.();
+      overlay.__oprnDisposeCursor = undefined;
+      if (overlay.isConnected) overlay.remove();
+    };
+
+    entry.addEventListener("click", () => {
+      release();
+      openLedger();
+    });
+    dismiss.addEventListener("click", () => {
+      release();
+    });
+
+    overlay.append(entry, dismiss);
+    host.append(overlay);
+    // Keyboard: confirm opens ledger once; cancel dismisses without reopening. Disposer retained.
+    const disposeCursor = attachCursorMenu(overlay, { items: [entry], cancelEl: dismiss });
+    overlay.__oprnDisposeCursor = disposeCursor;
+    return;
+  }
+
+  host.append(overlay);
+}
 
 const TIME_FIXED_STEP_MS = 1000;
 const TIME_TINT_DEPTH = 850_000;
@@ -67,7 +215,7 @@ export function updateGameTime(scene: PlaySceneContext, deltaMs: number): void {
     if (!advanced.ok) {
       scene.timeFixedAccumulatorMs = 0;
       scene.timeMinuteAccumulator = 0;
-      showDayTransitionFailure(scene, advanced.reason);
+      showDayTransitionFailure(scene, dayTransitionFailureFromResult(advanced));
       return;
     }
     const rollback = (): void => {
@@ -75,7 +223,7 @@ export function updateGameTime(scene: PlaySceneContext, deltaMs: number): void {
       scene.refreshRuntimeSurfaces();
       scene.syncRuntimeState();
     };
-    observeScheduledTimeTransition(scene, scene.sleepUntilMorning().then((ok) => {
+    observeScheduledTimeTransition(scene, (onFailurePresented) => scene.sleepUntilMorning(onFailurePresented).then((ok) => {
       if (!ok) rollback();
       return ok;
     }, (error: unknown) => { rollback(); throw error; }), "forced-sleep");
@@ -86,7 +234,7 @@ export function updateGameTime(scene: PlaySceneContext, deltaMs: number): void {
   if (!advanced.ok) {
     scene.timeFixedAccumulatorMs = 0;
     scene.timeMinuteAccumulator = 0;
-    showDayTransitionFailure(scene, advanced.reason);
+    showDayTransitionFailure(scene, dayTransitionFailureFromResult(advanced));
     return;
   }
   scene.clearRuntimeOverlay("day-transition-error");
@@ -133,7 +281,8 @@ export function updateTimeTint(scene: PlaySceneContext, deltaMs: number): void {
 
 export async function sleepUntilMorningScene(
   scene: PlaySceneContext,
-  runDayEndCommands: (commands: readonly Command[]) => Promise<void>
+  runDayEndCommands: (commands: readonly Command[]) => Promise<void>,
+  onFailurePresented?: () => void,
 ): Promise<boolean> {
   const project = store.getCurrent();
   const system = resolveTimeSystem(project);
@@ -145,7 +294,7 @@ export async function sleepUntilMorningScene(
     const sourceDayKey = calendarDayKey(scene.session.gameTime);
     const preflight = transitionToNextDay(project, structuredClone(scene.session), sourceDayKey);
     if (!preflight.ok) {
-      showDayTransitionFailure(scene, preflight.reason);
+      showDayTransitionFailure(scene, dayTransitionFailureFromResult(preflight), onFailurePresented);
       return false;
     }
     await fadeCamera(scene, "out", { red: 0, green: 0, blue: 0 }, TRANSFER_FADE_DURATION_MS);
@@ -155,12 +304,12 @@ export async function sleepUntilMorningScene(
       if (hook?.commands.length) await runDayEndCommands(hook.commands);
       const transition = transitionToNextDay(project, scene.session, sourceDayKey);
       if (!transition.ok) {
-        await recoverFailedSleep(scene, beforeHook, transition.reason);
+        await recoverFailedSleep(scene, beforeHook, dayTransitionFailureFromResult(transition), onFailurePresented);
         return false;
       }
     } catch (cause) {
       const detail = cause instanceof Error && cause.message ? `:${cause.message}` : "";
-      await recoverFailedSleep(scene, beforeHook, `day-end-hook${detail}`);
+      await recoverFailedSleep(scene, beforeHook, `day-end-hook${detail}`, onFailurePresented);
       return false;
     }
     scene.clearRuntimeOverlay("day-transition-error");
@@ -178,7 +327,8 @@ export async function sleepUntilMorningScene(
 
 export async function applyAdvanceTimeStep(
   scene: PlaySceneContext,
-  step: Extract<StepResult, { kind: "advanceTime" }>
+  step: Extract<StepResult, { kind: "advanceTime" }>,
+  onFailurePresented?: () => void,
 ): Promise<void> {
   const project = store.getCurrent();
   const system = resolveTimeSystem(project);
@@ -190,17 +340,17 @@ export async function applyAdvanceTimeStep(
   try {
     const days = Math.max(0, Math.trunc(step.days ?? 0));
     for (let index = 0; index < days; index += 1) {
-      if (!await scene.sleepUntilMorning()) throw new Error("Day transition failed during authored day advance");
+      if (!await scene.sleepUntilMorning(onFailurePresented)) throw new Error("Day transition failed during authored day advance");
     }
     const minutes = Math.max(0, Math.trunc(step.minutes ?? 0));
     if (minutes <= 0) return;
     if (system.forceSleep && minutesUntilDayEnd(scene.session.gameTime, system) <= minutes) {
-      if (!await scene.sleepUntilMorning()) throw new Error("Day transition failed during forced sleep");
+      if (!await scene.sleepUntilMorning(onFailurePresented)) throw new Error("Day transition failed during forced sleep");
       return;
     }
     const advanced = advanceTimeAcrossDayBoundaries(project, scene.session, minutes);
     if (!advanced.ok) {
-      showDayTransitionFailure(scene, advanced.reason);
+      showDayTransitionFailure(scene, dayTransitionFailureFromResult(advanced), onFailurePresented);
       throw new Error(`Day transition failed: ${advanced.reason}`);
     }
     scene.clearRuntimeOverlay("day-transition-error");
@@ -227,22 +377,26 @@ export function applySetTimeStep(scene: PlaySceneContext, step: Extract<StepResu
   scene.syncRuntimeState();
 }
 
-export function observeScheduledTimeTransition(
-  scene: Pick<PlaySceneContext, "showRuntimeOverlay">,
-  task: Promise<boolean | void>,
+export async function observeScheduledTimeTransition(
+  scene: DayTransitionFailureScene,
+  task: (onFailurePresented: () => void) => Promise<boolean | void>,
   reason: "forced-sleep" | "scheduled-sleep" | "scheduled-advance",
 ): Promise<boolean> {
-  return task.then((result) => {
+  // Acknowledgement belongs to this operation, not the scene's possibly stale or
+  // overlapping overlay. Create it before starting even synchronously failing work.
+  let failurePresented = false;
+  try {
+    const result = await task(() => { failurePresented = true; });
     if (result === false) {
-      showDayTransitionFailure(scene, reason);
+      if (!failurePresented) showDayTransitionFailure(scene, reason);
       return false;
     }
     return true;
-  }).catch((cause: unknown) => {
+  } catch (cause: unknown) {
     const detail = cause instanceof Error && cause.message ? `:${cause.message}` : "";
-    showDayTransitionFailure(scene, `${reason}${detail}`);
+    if (!failurePresented) showDayTransitionFailure(scene, `${reason}${detail}`);
     return false;
-  });
+  }
 }
 
 export function isGameTimePausedForRuntime(scene: Pick<PlaySceneContext, "game" | "session" | "timeSleepInProgress">): boolean {
@@ -308,17 +462,23 @@ function interpolateColor(from: number, to: number, progress: number): number {
   return (r << 16) | (g << 8) | b;
 }
 
-function showDayTransitionFailure(scene: Pick<PlaySceneContext, "showRuntimeOverlay">, reason: string): void {
-  scene.showRuntimeOverlay("day-transition-error", `새날 처리를 완료하지 못했습니다 (${reason})`);
+function showDayTransitionFailure(
+  scene: DayTransitionFailureScene,
+  failure: string | DayTransitionFailureView,
+  onFailurePresented?: () => void,
+): void {
+  presentDayTransitionFailure(scene, failure);
+  onFailurePresented?.();
 }
 
 async function recoverFailedSleep(
   scene: PlaySceneContext,
   beforeHook: PlaySceneContext["session"],
-  reason: string,
+  failure: string | DayTransitionFailureView,
+  onFailurePresented?: () => void,
 ): Promise<void> {
   restoreSession(scene.session, beforeHook);
-  showDayTransitionFailure(scene, reason);
+  showDayTransitionFailure(scene, failure, onFailurePresented);
   scene.refreshRuntimeSurfaces();
   scene.syncRuntimeState();
   await fadeCamera(scene, "in", { red: 0, green: 0, blue: 0 }, TRANSFER_FADE_DURATION_MS);

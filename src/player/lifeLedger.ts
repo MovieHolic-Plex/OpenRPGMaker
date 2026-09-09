@@ -12,6 +12,7 @@ import {
 import { calendarDayKey } from "@/project/gameTime";
 import { absoluteGameMinutes, collectMaker, startMaker } from "@/project/makers";
 import { donateMuseumItem } from "@/project/museum";
+import { collectLifeRecoveryClaim } from "@/project/lifeRecovery";
 import { depositShipping, withdrawShipping } from "@/project/shipping";
 import { resolveSellPrice } from "@/project/upgrades";
 import type { PlaySession } from "@/project/session";
@@ -40,7 +41,7 @@ import {
 import type { StatusMenuDetail, StatusMenuDetailEntry } from "@/player/playerStatusMenuDetailTypes";
 import type { Dir, SpatialFootprint } from "@/project/types";
 
-export const LIFE_LEDGER_TAB_IDS = ["shipping", "bundles", "skills", "makers", "animals", "spaces", "collections", "museum"] as const;
+export const LIFE_LEDGER_TAB_IDS = ["shipping", "bundles", "skills", "makers", "animals", "spaces", "collections", "museum", "recovery"] as const;
 export type LifeLedgerTabId = (typeof LIFE_LEDGER_TAB_IDS)[number];
 const BASE_LIFE_LEDGER_TAB_IDS: readonly LifeLedgerTabId[] = ["shipping", "bundles", "skills", "makers", "animals"];
 
@@ -53,6 +54,7 @@ const TAB_LABELS: Readonly<Record<LifeLedgerTabId, string>> = {
   spaces: "건물·꾸미기",
   collections: "수집 도감",
   museum: "박물관",
+  recovery: "복구",
 };
 
 const TAB_ART: Readonly<Record<LifeLedgerTabId, string>> = {
@@ -64,9 +66,11 @@ const TAB_ART: Readonly<Record<LifeLedgerTabId, string>> = {
   spaces: FARMING_LIFE_UI_ASSETS.decorating,
   collections: FARMING_LIFE_UI_ASSETS.foraging,
   museum: FARMING_LIFE_UI_ASSETS.museum,
+  recovery: FARMING_LIFE_UI_ASSETS.buildings,
 };
 
-export function hasLifeLedgerData(project: Project): boolean {
+/** Project-authored life packages only. Session claims are checked separately. */
+export function hasProjectLifeLedgerData(project: Project): boolean {
   return project.system.shipping?.enabled === true
     || (project.system.bundles?.length ?? 0) > 0
     || (project.system.skillSystem?.enabled === true && (project.database.lifeSkills?.length ?? 0) > 0)
@@ -84,6 +88,26 @@ export function hasLifeLedgerData(project: Project): boolean {
     || project.system.museum?.enabled === true;
 }
 
+export function hasSessionLifeRecoveryClaims(session: PlaySession): boolean {
+  const claims = session.lifeRecovery?.claims;
+  return !!claims && Object.keys(claims).length > 0;
+}
+
+/** Optional session unlocks the recovery-only resume path when packages are all off. */
+export function hasLifeLedgerData(project: Project, session?: PlaySession): boolean {
+  return hasProjectLifeLedgerData(project) || (session ? hasSessionLifeRecoveryClaims(session) : false);
+}
+
+export function resolveLifeLedgerTab(
+  project: Project,
+  session: PlaySession,
+  requested?: LifeLedgerTabId,
+): LifeLedgerTabId {
+  const available = availableLifeLedgerTabs(project, session);
+  if (requested && available.includes(requested)) return requested;
+  return available[0] ?? "recovery";
+}
+
 export function createLifeLedgerDetail(options: {
   readonly project: Project;
   readonly session: PlaySession;
@@ -95,9 +119,9 @@ export function createLifeLedgerDetail(options: {
   readonly getPlacementDirection?: () => Dir | undefined;
   readonly getScene?: () => LifePlacementSceneSource | undefined;
 }): StatusMenuDetail {
-  const tab = options.tab ?? "shipping";
+  const tab = resolveLifeLedgerTab(options.project, options.session, options.tab);
   const content = tabContent(options.project, options.session, tab, options.onMutation, options);
-  const availableTabs = availableLifeLedgerTabs(options.project);
+  const availableTabs = availableLifeLedgerTabs(options.project, options.session);
   return {
     title: "생활 장부",
     artwork: { src: TAB_ART[tab], alt: `${TAB_LABELS[tab]} 생활 장부 삽화` },
@@ -137,10 +161,14 @@ function tabContent(
     case "spaces": return spatialEntries(project, session, onMutation, live);
     case "collections": return collectionEntries(project, session);
     case "museum": return museumEntries(project, session, onMutation);
+    case "recovery": return recoveryEntries(project, session, onMutation);
   }
 }
 
-function availableLifeLedgerTabs(project: Project): readonly LifeLedgerTabId[] {
+function availableLifeLedgerTabs(project: Project, session: PlaySession): readonly LifeLedgerTabId[] {
+  if (!hasProjectLifeLedgerData(project) && hasSessionLifeRecoveryClaims(session)) {
+    return ["recovery"];
+  }
   const tabs: LifeLedgerTabId[] = [...BASE_LIFE_LEDGER_TAB_IDS];
   if ((project.database.farmBuildingTypes?.length ?? 0) > 0
     || (project.database.homeDecorationTypes?.length ?? 0) > 0
@@ -152,7 +180,66 @@ function availableLifeLedgerTabs(project: Project): readonly LifeLedgerTabId[] {
     tabs.push("collections");
   }
   if (project.system.museum?.enabled) tabs.push("museum");
+  if (hasSessionLifeRecoveryClaims(session)) tabs.push("recovery");
   return tabs;
+}
+
+/**
+ * Last explicit-activation outcomes only (never filled by render/preview).
+ * Keyed by live session identity so a re-render after notify can expose the real result.
+ */
+const recoveryActivationOutcomes = new WeakMap<PlaySession, Record<string, string>>();
+
+function recoveryOutcomeOf(session: PlaySession, claimId: string): string | undefined {
+  return recoveryActivationOutcomes.get(session)?.[claimId];
+}
+
+function recordRecoveryOutcome(session: PlaySession, claimId: string, outcome: string): void {
+  const current = recoveryActivationOutcomes.get(session) ?? {};
+  recoveryActivationOutcomes.set(session, { ...current, [claimId]: outcome });
+}
+
+/**
+ * Recovery rows are pure display of claim evidence until the player activates.
+ * collectLifeRecoveryClaim is the sole payout/refusal authority and runs only then —
+ * no structuredClone / speculative collect during tab construction.
+ */
+function recoveryEntries(
+  project: Project,
+  session: PlaySession,
+  onMutation?: (ok: boolean, message: string) => void,
+): { entries: StatusMenuDetailEntry[]; emptyLabel: string } {
+  const claims = Object.values(session.lifeRecovery?.claims ?? {})
+    .slice()
+    .sort((left, right) => left.id.localeCompare(right.id));
+  const entries = claims.map((entry): StatusMenuDetailEntry => {
+    const amounts = entry.items.map((item) => ({ itemId: item.itemId, count: item.count }));
+    const unresolvedReason = entry.unresolved?.detail ?? "";
+    const amountLabel = amounts.length > 0
+      ? amounts.map((item) => `${itemName(project, item.itemId)}×${item.count}`).join(" · ")
+      : "지급 품목 없음";
+    const lastOutcome = recoveryOutcomeOf(session, entry.id);
+    return {
+      label: `${entry.sourceKind}/${entry.sourceId}`,
+      value: amountLabel,
+      description: unresolvedReason || entry.reason,
+      testId: `life-ledger-recovery-collect-${entry.id}`,
+      disabled: false,
+      attributes: {
+        "data-claim-id": entry.id,
+        "data-claim-presentation": "open",
+        "data-item-amounts": JSON.stringify(amounts),
+        "data-unresolved-reason": unresolvedReason,
+        ...(lastOutcome ? { "data-claim-outcome": lastOutcome } : {}),
+      },
+      onActivate: () => {
+        const result = collectLifeRecoveryClaim(project, session, entry.id);
+        recordRecoveryOutcome(session, entry.id, result.ok ? "collected" : (result.reason ?? "failed"));
+        notify(onMutation, result, "복구 물품을 수령했습니다");
+      },
+    };
+  });
+  return { entries, emptyLabel: "수령 대기 중인 복구 청구가 없습니다" };
 }
 
 

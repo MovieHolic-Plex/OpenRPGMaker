@@ -21,6 +21,8 @@ export type PlayerStatusMenuController = {
   readonly reset: () => void;
   readonly renderMenu: (message?: string, selectedCommand?: StatusMenuCommandId) => HTMLElement | null;
   readonly openSaveMenu: () => void;
+  /** Opens the life ledger on the recovery tab when session claims remain. */
+  readonly openLifeRecoveryLedger: () => void;
   readonly toggleMenu: () => void;
   readonly handleKey: (key: RuntimeMenuKey) => boolean;
 };

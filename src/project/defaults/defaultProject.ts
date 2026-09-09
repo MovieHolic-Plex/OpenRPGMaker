@@ -284,13 +284,20 @@ export function createFarmingDemoProject(): Project {
       item_hoe: 1,
       item_watering_can: 1,
       item_pickaxe: 1,
+      item_axe: 1,
       item_potato_seed: 3,
       item_strawberry_seed: 2,
       item_tomato_seed: 2,
       item_corn_seed: 2,
       item_hay: 8,
     },
-    placeables: farmMineRockPlaceables(),
+    placeables: {
+      ...farmMineRockPlaceables(),
+      // Initial resource, not a painted tile or earned wood; only new starter creation authors it.
+      [placeableKey(map.id, 6, 11)]: {
+        id: "tree_farm_1", mapId: map.id, x: 6, y: 11, kind: "tree", itemId: "item_wood",
+      },
+    },
   };
   // 기본 CC0 카탈로그에 이미 세 도구와 주요 수확물이 있고, 세 도구 모두 farmTool까지 갖춘다.
   // 아래 도구 행은 데모 인벤토리와 가격을 한곳에서 명시하려는 중복 저작이다. push 대신 교체(upsert)해
@@ -307,6 +314,7 @@ export function createFarmingDemoProject(): Project {
     { id: "item_hoe", name: "괭이", scope: "none", price: 50, type: "normalGoods", farmTool: "hoe" },
     { id: "item_watering_can", name: "물뿌리개", scope: "none", price: 80, type: "normalGoods", farmTool: "wateringCan" },
     { id: "item_pickaxe", name: "곡괭이", scope: "none", price: 100, type: "normalGoods", farmTool: "pickaxe" },
+    { id: "item_axe", name: "도끼", scope: "none", price: 100, type: "normalGoods", farmTool: "axe", occasion: "never", consumable: false },
     // 광산 산출물. 파는 곳이 없으면 채굴이 인벤토리만 채우고 끝나므로 씨앗 상인이 사들인다.
     { id: "item_stone", name: "돌", scope: "none", price: 30, type: "normalGoods", iconResourceId: "cc0-jetrel-earth-ore", imageResourceId: "cc0-jetrel-earth-ore" },
     { id: "item_iron_ore", name: "철 광석", scope: "none", price: 120, type: "normalGoods", iconResourceId: "cc0-jetrel-iron-ore", imageResourceId: "cc0-jetrel-iron-ore" },

@@ -43,6 +43,7 @@ function sceneStub(session: ReturnType<typeof startSession>) {
         parentElement: null,
         ownerDocument: { querySelector: () => null },
       },
+      registry: { get: () => undefined },
     },
     showRuntimeOverlay: (_id: string, text: string) => overlays.push(text),
     clearRuntimeOverlay: vi.fn(),

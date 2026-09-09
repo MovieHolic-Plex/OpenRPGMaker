@@ -35,6 +35,9 @@ export type RuntimeQaOp =
   | { readonly kind: "attack" }
   | { readonly kind: "skill" }
   | { readonly kind: "key"; readonly key: string; readonly times?: number }
+  | { readonly kind: "pauseFrames" }
+  | { readonly kind: "stepFrames"; readonly frames: number; readonly deltaMs: number; readonly key?: string; readonly timeoutMs?: number }
+  | { readonly kind: "resumeFrames" }
   | { readonly kind: "teleport"; readonly mapId: string; readonly x: number; readonly y: number }
   | { readonly kind: "waitForEmote"; readonly target: string; readonly frame: number; readonly timeoutMs?: number }
   | { readonly kind: "waitForRuntime"; readonly timeoutMs?: number }
@@ -360,6 +363,7 @@ export type RuntimeQaAudioEvidence = {
 export type RuntimeQaBeatReport = {
   readonly actions?: readonly RuntimeQaOp[];
   readonly audio?: readonly RuntimeQaAudioEvidence[];
+  readonly frameReceipts?: readonly import("../../src/player/runtimeQaFrames").QaFrameReceipt[];
   readonly emotes?: readonly RuntimeQaEmote[];
   readonly index: number;
   readonly id: string;

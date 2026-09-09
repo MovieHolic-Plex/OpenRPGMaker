@@ -2,10 +2,11 @@ import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { shopBuyPromptText, shopGreetingText, shopListHeaderText } from "@/project/shopMessages";
 import { el } from "@/util/dom";
 import {
-  goodsSellPrice,
   type ShopCategory,
   type ShopGoods,
 } from "@/player/playSceneShopGoods";
+import { resolveShopSellUnitPrice } from "@/project/shopPrice";
+import { store } from "@/project/store";
 import {
   applyAffordability,
   detailHero,
@@ -208,9 +209,9 @@ export function shopPromptText(step: ShopStep, mode: ShopMode, terms: ResolvedTe
   return shopBuyPromptText(step.messageType);
 }
 
-/** 되팔기 값 — 정가의 절반, 최소 1G. 정가 0이면 0 유지(에디터에서 막는 게 정답). */
-export function sellPrice(item: { readonly price: number }): number {
-  return goodsSellPrice(item);
+/** 상점 되팔기 단가 — 공유 helper 의 상한/0/표 생략 계약을 그대로 쓴다. */
+export function sellPrice(item: { readonly id: string; readonly price: number }): number {
+  return resolveShopSellUnitPrice(store.getCurrent(), item.id, item.price);
 }
 
 /** 커서가 아이템을 옮길 때 상세 카드의 보유 줄을 갱신. */

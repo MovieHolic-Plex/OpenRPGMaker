@@ -180,7 +180,7 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
   // 그룹 순서대로 평탄화 — 화면 순서와 ↑↓ 이동 순서를 한 배열이 결정한다.
   return STATUS_MENU_COMMAND_GROUPS.flatMap((group) => group.commandIds).filter((id) => {
     if (id === "relationships") return showRelationships;
-    if (id === "life-ledger") return hasLifeLedgerData(project);
+    if (id === "life-ledger") return hasLifeLedgerData(project, session);
     if (id === "save") return !saveDisabled;
     return true;
   });

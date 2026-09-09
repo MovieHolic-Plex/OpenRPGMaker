@@ -1,4 +1,5 @@
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
+import { createInterpreter } from "@/player/interpreter";
 import { evalCondition, startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type { Command, Condition, VariableOperand } from "@/project/types";
@@ -24,6 +25,10 @@ export interface PreviewSimState {
   friendship?: PlaySession["friendship"];
   battleResult?: PlaySession["battleResult"];
   roguelikeRun?: PlaySession["roguelikeRun"];
+  itemUseCharges?: PlaySession["itemUseCharges"];
+  collections?: PlaySession["collections"];
+  unlockedRecipeIds?: PlaySession["unlockedRecipeIds"];
+  equippedToolItemId?: PlaySession["equippedToolItemId"];
 }
 
 export interface SimulatedStep {
@@ -89,6 +94,10 @@ function snapshotSession(session: PlaySession): PreviewSimState {
     ...(session.friendship ? { friendship: { ...session.friendship } } : {}),
     ...(session.battleResult ? { battleResult: session.battleResult } : {}),
     ...(session.roguelikeRun ? { roguelikeRun: structuredClone(session.roguelikeRun) } : {}),
+    ...(session.itemUseCharges ? { itemUseCharges: structuredClone(session.itemUseCharges) } : {}),
+    ...(session.collections ? { collections: structuredClone(session.collections) } : {}),
+    ...(session.unlockedRecipeIds ? { unlockedRecipeIds: [...session.unlockedRecipeIds] } : {}),
+    ...(session.equippedToolItemId !== undefined ? { equippedToolItemId: session.equippedToolItemId } : {}),
   };
 }
 
@@ -112,6 +121,10 @@ function cloneState(state: PreviewSimState): PreviewSimState {
     ...(state.friendship ? { friendship: { ...state.friendship } } : {}),
     ...(state.battleResult ? { battleResult: state.battleResult } : {}),
     ...(state.roguelikeRun ? { roguelikeRun: structuredClone(state.roguelikeRun) } : {}),
+    ...(state.itemUseCharges ? { itemUseCharges: structuredClone(state.itemUseCharges) } : {}),
+    ...(state.collections ? { collections: structuredClone(state.collections) } : {}),
+    ...(state.unlockedRecipeIds ? { unlockedRecipeIds: [...state.unlockedRecipeIds] } : {}),
+    ...(state.equippedToolItemId !== undefined ? { equippedToolItemId: state.equippedToolItemId } : {}),
   };
 }
 
@@ -234,6 +247,14 @@ function applyCommandToState(command: Command, state: PreviewSimState, hostEvent
       } else {
         delete state.face;
       }
+      break;
+    }
+    case "craftRecipe":
+    case "applyItemUpgrade": {
+      const project = store.getCurrent();
+      const session = Object.assign(startSession(project), state);
+      createInterpreter([command], session, project).start();
+      Object.assign(state, snapshotSession(session));
       break;
     }
     case "setSwitch": {

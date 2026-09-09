@@ -1,6 +1,7 @@
 // scripts/lib/runtimeQaRun.mjs 의 타입 계약(부수효과 담당).
 import type { Page } from "@playwright/test";
 import type { RuntimeQaReport, RuntimeQaScenario } from "./runtimeQa.d.mts";
+export { pauseRuntimeFrames, performObservedFrames, resumeRuntimeFrames } from "./runtimeQaFrames.mjs";
 
 export type PlayerQaServer = {
   readonly url: string;

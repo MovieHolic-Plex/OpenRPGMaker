@@ -155,7 +155,6 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "erasePicture":
     case "stopAudio":
     case "cutsceneControl":
-    case "inn":
     case "checkpointSave":
     case "runControl":
     case "killPlayer":
@@ -189,6 +188,9 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       for (const option of command.options) validateCommands(option.branch, context);
       validateCommands(command.cancelBranch ?? [], context);
       return;
+    case "loop":
+      validateCommands(command.body, context);
+      return;
     case "fork":
       validateCondition(command.condition, context.switchIds, context.variableIds);
       validateCommands(command.then, context);
@@ -208,6 +210,15 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "getFriendship":
       assert(context.variableIds.has(command.variableId), `getFriendship: variableId가 존재하지 않습니다: ${command.variableId}`);
+      return;
+    case "inn":
+      validateCommands(command.notEnoughBranch ?? [], context);
+      return;
+    case "craftRecipe":
+    case "applyItemUpgrade":
+      if (command.resultVariableId !== undefined) {
+        assert(context.variableIds.has(command.resultVariableId), `${command.kind}: resultVariableId does not exist: ${command.resultVariableId}`);
+      }
       return;
     case "inputNumber":
       assert(context.variableIds.has(command.variableId), `inputNumber: variableId가 존재하지 않습니다: ${command.variableId}`);
@@ -319,7 +330,8 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       const sellable = union(context.itemIds, context.equipmentIds);
       requireExistingIds("shop: item", command.itemIds, sellable);
       if (command.stock) requireExistingIds("shop stock: item", command.stock.map((entry) => entry.itemId), sellable);
-
+      validateCommands(command.transactionBranch ?? [], context);
+      validateCommands(command.failedTransactionBranch ?? [], context);
       return;
     }
   }

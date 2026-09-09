@@ -23,6 +23,9 @@ import {
   shouldCaptureShot,
 } from "./runtimeQa.mjs";
 
+import { pauseRuntimeFrames, performObservedFrames, resumeRuntimeFrames } from "./runtimeQaFrames.mjs";
+export { pauseRuntimeFrames, performObservedFrames, resumeRuntimeFrames } from "./runtimeQaFrames.mjs";
+
 const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
 
 /** exportEntry.ts 가 fetch 할 주소. 실제 파일이 아니라 page.route 로 가로채 채운다. */
@@ -32,6 +35,7 @@ const PROJECT_ROUTE = "**/__runtime-qa/project.json";
 /** 훅을 요구하는 op — 이들 앞에서는 런타임 훅 설치를 기다린다. */
 const HOOK_OPS = new Set([
   "seed", "dir", "hold", "face", "action", "attack", "skill", "teleport",
+  "pauseFrames", "stepFrames", "resumeFrames",
   // 체공 op 은 __oprnDebug / __oprnCharacterSprites 를 직접 읽는다.
   "playerRoute", "waitForLift", "waitForGrounded", "captureShadowSample",
 ]);
@@ -223,6 +227,18 @@ async function applyOp(page, op, runState) {
         { mapId: op.mapId, x: op.x, y: op.y },
         op.timeoutMs,
       );
+      return;
+    case "pauseFrames":
+      await pauseRuntimeFrames(page);
+      return;
+    case "stepFrames": {
+      const observed = await performObservedFrames(page, { frames: op.frames, deltaMs: op.deltaMs },
+        op.key === undefined ? undefined : () => page.keyboard.press(op.key), op.timeoutMs);
+      runState.frameReceipts.push(observed.receipt);
+      return;
+    }
+    case "resumeFrames":
+      await resumeRuntimeFrames(page);
       return;
     case "key":
       for (let i = 0; i < (op.times ?? 1); i += 1) {
@@ -449,6 +465,12 @@ async function readObserved(page, {
           battleResult: full.battleResult ?? null,
           ...Object.fromEntries(["farmPlots", "energy", "makerInstances", "farmAnimals", "farmBuildingPlacements", "lifeRecovery", "actionReceipt"]
             .filter((key) => full[key] !== undefined).map((key) => [key, full[key]])),
+          // 전량은 여전히 싣지 않는다(노이즈). 시나리오가 이름을 댄 항목만 싣는다 —
+          // 싣지 않으면 expect 가 없는 값을 0 으로 읽어 정상을 결함으로, 결함을 정상으로
+          // 만든다(실측: item_axe 가 실제로는 1인데 관측에 없어 0 으로 읽혔다).
+          ...(watched.itemIds.length
+            ? { inventory: Object.fromEntries(watched.itemIds.map((id) => [id, full.inventory?.[id] ?? 0])) }
+            : {}),
         }
       : null;
     // Count only named rewards. Unavailable collections are not evidence of zero ownership.
@@ -678,6 +700,11 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const watchedTestids = [
     ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.visibleText ?? {}))),
   ];
+  // 생활 소유물도 같은 규칙으로 이름을 댄 것만 관측한다.
+  const watchedItemIds = [
+    ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.inventory ?? {}))),
+  ];
+
 
   let hooksReady = false;
   const beats = [];
@@ -689,6 +716,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
     // 계속 진행해야 리포트·샷이 남는다 — 초기 구현은 raw 스택만 남기고 죽어서
     // 정작 진단할 증거가 하나도 없었다(실측).
     const opFailures = [];
+    runState.frameReceipts = [];
     for (const op of beat.ops) {
       try {
         if (!hooksReady && HOOK_OPS.has(op.kind)) {
@@ -708,6 +736,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       watchedTestids,
       watchedItemIds: Object.keys(beat.expect?.inventoryCounts ?? {}),
       watchedSpeciesIds: Object.keys(beat.expect?.ownedMonsterCounts ?? {}),
+      watchedItemIds,
     });
     const failures = [...opFailures, ...evaluateExpect(beat.expect ?? {}, observed)];
     let shot = null;
@@ -754,6 +783,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       state: observed.state,
       actions: beat.ops,
       ...(runState.audio.length > 0 ? { audio: runState.audio } : {}),
+      ...(runState.frameReceipts.length ? { frameReceipts: runState.frameReceipts } : {}),
       // 배치 근거는 리포트에 남긴다 — PNG 를 열지 않고도 수치로 판정할 수 있어야 한다.
       battlers: observed.battlers ?? undefined,
       ...((beat.expect?.emoteCountAtLeast != null || beat.expect?.emoteFrames || beat.expect?.emoteTargets)

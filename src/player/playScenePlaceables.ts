@@ -1,5 +1,5 @@
 /**
- * 세션 설치물(바위 등) 오버레이 렌더.
+ * 세션 설치물(바위·나무 등) 오버레이 렌더.
  *
  * 설치물은 맵 타일이 아니라 세션 상태다(`session.placeables`) — 캐면 사라져야 하므로
  * `lowerTiles` 에 새길 수 없다. 그런데 렌더 경로가 없어서 **곡괭이로 캘 수는 있지만 화면에는
@@ -8,17 +8,26 @@
  *
  * 그래픽이 없는 종류는 **그리지 않는다.** 상자(`kind: "chest"`)는 이미 이벤트로 저작하는
  * 관행이라, 여기서 회색 사각형을 얹으면 기존 프로젝트에 유령 상자가 겹쳐 보인다.
+ *
+ * 나무(`kind: "tree"`)는 기본 합본 마을 칩셋의 `TILE.TREE`(290) — 실측 한 칸 작은 나무 그림 —
+ * 을 쓴다. 바위/보석 캐릭셋 마커로 대체하지 않는다.
  */
-import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { TILE_SIZE } from "@/assets/bundled";
 import { characterDepth, characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { resolveEventSpriteTexture, resolveSpatialGraphicTexture } from "@/player/eventSpriteResources";
+import { resolvePlaceableOverlayGraphic } from "@/player/placeableOverlayGraphics";
 import { resolveForageAt } from "@/project/seasonalForage";
 import type { GameTime } from "@/project/gameTime";
 import type { PlaceableObjectState } from "@/project/placeables";
 import { isSpatialFootprint, orientedFootprint } from "@/project/spatialPlacements";
 import { store } from "@/project/store";
 import type { FarmBuildingPlacement, HomeDecorationPlacement, Project, SpatialFootprint } from "@/project/types";
+
+export {
+  PLACEABLE_OVERLAY_TEXTURE_KEYS,
+  PLACEABLE_TREE_GRAPHIC,
+  resolvePlaceableOverlayGraphic,
+} from "@/player/placeableOverlayGraphics";
 
 type OverlayGameObject = {
   setOrigin?(x: number, y: number): void;
@@ -42,12 +51,6 @@ type PlaceableOverlayScene = {
   };
 };
 
-/** 설치물 종류 → 캐릭셋 프레임. EasyRPG RTP Object2 의 5번이 바위, 6번이 보석이다. */
-const PLACEABLE_CHARSET: Readonly<Record<string, { readonly texture: string; readonly characterIndex: number }>> = {
-  rock: { texture: "tex_easyrpg_charset_object2", characterIndex: 5 },
-  gem: { texture: "tex_easyrpg_charset_object2", characterIndex: 6 },
-};
-
 export function renderPlaceableOverlays(scene: PlaceableOverlayScene): void {
   if (typeof scene.add.sprite !== "function") return;
   const project = store.getCurrent();
@@ -62,18 +65,20 @@ export function renderPlaceableOverlays(scene: PlaceableOverlayScene): void {
       if (!target.ok && (target.reason === "expired" || target.reason === "disabled")) continue;
     }
     // Forage entries have no authored graphic field: use a bundled pickup marker.
-    const charset = PLACEABLE_CHARSET[generated ? "gem" : placeable.kind];
-    if (!charset) continue;
-    const frame = charsetFrameIndex({ characterIndex: charset.characterIndex, direction: "down", pattern: 1 });
-    const resolved = resolveEventSpriteTexture(project, charset.texture, frame);
+    const graphic = resolvePlaceableOverlayGraphic(generated ? "gem" : placeable.kind);
+    if (!graphic) continue;
+    const resolved =
+      typeof graphic.frame === "number"
+        ? resolveEventSpriteTexture(project, graphic.texture, graphic.frame)
+        : null;
     const worldY = characterSpriteY(placeable.y);
     const sprite = scene.add.sprite(
       characterSpriteX(placeable.x),
       worldY,
-      resolved?.texture ?? charset.texture,
-      resolved?.frame ?? frame
+      resolved?.texture ?? graphic.texture,
+      resolved?.frame ?? graphic.frame
     );
-    // 캐릭터와 같은 정렬·깊이 규칙 — 플레이어가 바위 앞뒤로 자연스럽게 지나간다.
+    // 캐릭터와 같은 정렬·깊이 규칙 — 플레이어가 바위/나무 앞뒤로 자연스럽게 지나간다.
     sprite.setOrigin?.(0.5, 1);
     sprite.setDepth?.(characterDepth("same", worldY));
     scene.tileLayer.add(sprite);

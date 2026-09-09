@@ -1,12 +1,16 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { newCommand } from "@/editor/eventActions";
 import { handleShopTransaction } from "@/player/playSceneShop";
 import { sellPrice } from "@/player/playSceneShopDom";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_SHOP_MERCHANT_GOLD, resolveShopMerchantGold } from "@/project/shopStock";
 import { changeItem, startSession } from "@/project/session";
+import { store } from "@/project/store";
 import type { ItemRecord } from "@/project/types/database";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
+
+const previous = store.getCurrent();
+afterEach(() => store.replaceProject(previous));
 
 function fakeScene(session: ReturnType<typeof startSession>): PlaySceneContext {
   return {
@@ -62,6 +66,9 @@ describe("shop merchant gold", () => {
     const project = createBlankProject();
     const session = startSession(project);
     const item = potionLike(200); // sellPrice = 100
+    // The canonical price consumer reads the active authored project, as real shops do.
+    project.database.items = [...project.database.items.filter((entry) => entry.id !== item.id), item];
+    store.replaceProject(project);
     changeItem(session, item.id, "+=", 2);
     const scene = fakeScene(session);
 

@@ -262,8 +262,16 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     plainPart(" "),
     valuePart(typeof cmd.amount === "number" ? String(cmd.amount) : operandSummary(cmd.amount)),
   ),
-  craftRecipe: (cmd) => commandLine("제작", valuePart(recipeName(cmd.recipeId))),
-  applyItemUpgrade: (cmd) => commandLine("아이템 업그레이드", valuePart(upgradeName(cmd.upgradeId))),
+  craftRecipe: (cmd) => commandLine(
+    "제작",
+    valuePart(recipeName(cmd.recipeId)),
+    ...resultVariableSummaryParts(cmd.resultVariableId),
+  ),
+  applyItemUpgrade: (cmd) => commandLine(
+    "아이템 업그레이드",
+    valuePart(upgradeName(cmd.upgradeId)),
+    ...resultVariableSummaryParts(cmd.resultVariableId),
+  ),
   equipTool: (cmd) => commandLine("도구 장착", valuePart(cmd.itemId ? itemName(cmd.itemId) : "해제")),
   openChest: (cmd) => commandLine("보관 상자", valuePart(cmd.chestId || "이 타일 상자")),
   changeItem: (cmd) => commandLine(
@@ -1186,6 +1194,12 @@ function upgradeName(id: string): string {
   const rule = store.getCurrent().system.itemUpgrades?.find((entry) => entry.id === id);
   if (!rule) return "이름 없는 업그레이드";
   return `${itemName(rule.fromItemId)} → ${itemName(rule.toItemId)}`;
+}
+
+function resultVariableSummaryParts(resultVariableId: string | undefined): readonly CommandSummaryToken[] {
+  // Keep the authored id exact — display lookup may fall back to the id itself.
+  if (resultVariableId === undefined || resultVariableId === "") return [];
+  return [plainPart(" → "), valuePart(recordName("variable", resultVariableId))];
 }
 
 function monsterInstanceLabel(id: string): string {

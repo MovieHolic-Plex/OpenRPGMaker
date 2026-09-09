@@ -906,8 +906,14 @@ function validateCommand(
     case "enterHeroName": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); return;
     case "changeGold": variableOperand(command.amount, "골드 변수"); return;
     case "changeItem": require("reference.item.missing", "아이템", command.itemId, refs.items); variableOperand(command.amount, "아이템 수량 변수"); return;
-    case "craftRecipe": require("reference.recipe.missing", "제작법", command.recipeId, refs.recipes); return;
-    case "applyItemUpgrade": require("reference.upgrade.missing", "업그레이드", command.upgradeId, refs.upgrades); return;
+    case "craftRecipe":
+      require("reference.recipe.missing", "제작법", command.recipeId, refs.recipes);
+      if (command.resultVariableId !== undefined) require("reference.variable.missing", "결과 변수", command.resultVariableId, refs.variables);
+      return;
+    case "applyItemUpgrade":
+      require("reference.upgrade.missing", "업그레이드", command.upgradeId, refs.upgrades);
+      if (command.resultVariableId !== undefined) require("reference.variable.missing", "결과 변수", command.resultVariableId, refs.variables);
+      return;
     case "equipTool": require("reference.item.missing", "도구 아이템", command.itemId, refs.items, true); return;
     case "getFriendship": require("reference.variable.missing", "호감도 저장 변수", command.variableId, refs.variables); return;
     case "changeFactionStance":

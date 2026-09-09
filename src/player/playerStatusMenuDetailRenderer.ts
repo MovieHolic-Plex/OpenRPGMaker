@@ -400,11 +400,19 @@ function detailEntryId(entry: StatusMenuDetailEntry, actionIndex?: number): stri
 }
 
 function detailEntryDataset(entry: StatusMenuDetailEntry, actionIndex?: number): Record<string, string> | undefined {
-  if (!entry.testId && actionIndex === undefined) return undefined;
+  const fromAttributes = Object.fromEntries(
+    Object.entries(entry.attributes ?? {}).map(([key, value]) => {
+      const bare = key.startsWith("data-") ? key.slice(5) : key;
+      const camel = bare.replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase());
+      return [camel, value];
+    }),
+  );
+  if (!entry.testId && actionIndex === undefined && Object.keys(fromAttributes).length === 0) return undefined;
   return {
     ...(entry.testId ? { testid: entry.testId } : {}),
     ...(actionIndex === undefined ? {} : { actionIndex: String(actionIndex) }),
     ...(entry.unavailableReason ? { unavailableReason: entry.unavailableReason } : {}),
+    ...fromAttributes,
   };
 }
 

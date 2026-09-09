@@ -36,10 +36,11 @@ function runtime(time?: GameTime) {
   stage.append(canvas);
   document.body.append(stage);
   const scene = {
-    session, game: { canvas }, timeFixedAccumulatorMs: 0, timeMinuteAccumulator: 0, timeSleepInProgress: false,
+    // Phaser always supplies a registry; this clock-only scene has no optional dialogueHost.
+    session, game: { canvas, registry: new Map<string, unknown>() }, timeFixedAccumulatorMs: 0, timeMinuteAccumulator: 0, timeSleepInProgress: false,
     showRuntimeOverlay: vi.fn(), clearRuntimeOverlay: vi.fn(), refreshRuntimeSurfaces: vi.fn(), syncRuntimeState: vi.fn(),
   } as unknown as PlaySceneContext;
-  scene.sleepUntilMorning = () => sleepUntilMorningScene(scene, async () => undefined);
+  scene.sleepUntilMorning = (onFailurePresented) => sleepUntilMorningScene(scene, async () => undefined, onFailurePresented);
   return { project, session, scene, stage };
 }
 
@@ -190,9 +191,9 @@ describe("maker game-clock integration", () => {
       rejectSleep = reject;
       timeout = setTimeout(() => reject(new Error("forced sleep completion missing")), 1000);
     });
-    scene.sleepUntilMorning = async () => {
+    scene.sleepUntilMorning = async (onFailurePresented) => {
       try {
-        const result = await sleepUntilMorningScene(scene, async () => { hookTime = structuredClone(session.gameTime); });
+        const result = await sleepUntilMorningScene(scene, async () => { hookTime = structuredClone(session.gameTime); }, onFailurePresented);
         resolveSleep(result);
         return result;
       } catch (error) { rejectSleep(error); throw error; }
@@ -221,11 +222,11 @@ describe("maker game-clock integration", () => {
     project.commonEvents.push({ id: "clock_hook", name: "hook", trigger: "none", commands: [{ kind: "wait", ms: 0 }] });
     store.replaceProject(project);
     let calls = 0;
-    scene.sleepUntilMorning = () => sleepUntilMorningScene(scene, async () => {
+    scene.sleepUntilMorning = (onFailurePresented) => sleepUntilMorningScene(scene, async () => {
       calls += 1;
       session.gold += 1;
       if (calls === 2) throw new Error("second hook fails");
-    });
+    }, onFailurePresented);
     const before = structuredClone(session);
     await expect(applyAdvanceTimeStep(scene, { kind: "advanceTime", days: 2, minutes: 1 })).rejects.toThrow();
     expect(calls).toBe(2);
@@ -299,13 +300,22 @@ describe("maker game-clock integration", () => {
     store.replaceProject(project);
     const before = structuredClone(session);
     let timeout: ReturnType<typeof setTimeout> | undefined;
-    const failure = new Promise<void>((resolve, reject) => {
-      timeout = setTimeout(() => reject(new Error("forced sleep refusal missing")), 1000);
-      scene.showRuntimeOverlay = (_id, message) => { if (message.includes("forced-sleep")) resolve(); };
+    const sleep = vi.fn(scene.sleepUntilMorning);
+    scene.sleepUntilMorning = sleep;
+    // Presentation precedes the outer frame rollback. Subscribe to its final sync before triggering.
+    const rolledBack = new Promise<void>((resolve, reject) => {
+      timeout = setTimeout(() => reject(new Error("forced sleep rollback missing")), 1000);
+      scene.syncRuntimeState = vi.fn(() => resolve());
     });
     try {
       updateGameTime(scene, 1_201_000);
-      await failure;
+      expect(session.gameTime).toMatchObject({ day: 1, hour: 25, minute: 59 });
+      expect(status(session)).toBe("ready");
+      await rolledBack;
+      expect(sleep).toHaveBeenCalledTimes(1);
+      await expect(sleep.mock.results[0]!.value).resolves.toBe(false);
+      expect(scene.showRuntimeOverlay).toHaveBeenCalledExactlyOnceWith("day-transition-error", expect.any(String));
+      expect(scene.timeSleepInProgress).toBe(false);
       expect(session).toEqual(before);
     } finally { clearTimeout(timeout); }
   });

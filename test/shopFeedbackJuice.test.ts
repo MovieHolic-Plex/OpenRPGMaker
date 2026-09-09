@@ -101,6 +101,11 @@ describe("수량 상한 — RM2003 std::min(max, gold / price)", () => {
   });
 
   it("판매는 가진 개수가 먼저 상한이고 상인 지갑이 그다음이다", () => {
+    // listingPrice reads the active project sell helper; keep the fixture item authoritative.
+    const project = createBlankProject();
+    project.database.items = [...project.database.items.filter((entry) => entry.id !== POTION.id), POTION];
+    project.system.sellPrices = (project.system.sellPrices ?? []).filter((entry) => entry.itemId !== POTION.id);
+    store.replace(project);
     const goods = toGoods(POTION);
     // 5개 보유, 상인 지갑 넉넉 → 5
     expect(affordableQuantityMax(goods, "sell", 0, 900, 5)).toBe(5);

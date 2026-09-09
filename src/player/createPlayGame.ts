@@ -4,6 +4,7 @@ import type { PlaySession } from "@/project/session";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { store } from "@/project/store";
 import { importWithRetry } from "@/util/dynamicImport";
+import { installRuntimeQaFrames } from "@/player/runtimeQaFrames";
 
 export type PlayGameBootOptions = {
   /** Enables export-player QA locators and mutation hooks. Never enabled by normal export boot. */
@@ -48,6 +49,7 @@ export async function createPlayGame(
       preBoot: (game) => {
         if (options.qaInstrumentation === true) {
           game.registry.set("qaInstrumentation", true);
+          installRuntimeQaFrames(game);
         }
         if (initialSession) {
           game.registry.set("initialSession", initialSession);

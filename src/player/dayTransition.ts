@@ -51,7 +51,13 @@ export type DayTransitionResult =
 
 export type AdvanceTimeAcrossDayBoundariesResult =
   | { readonly ok: true; readonly time: GameTime; readonly receipts: readonly DayTransitionReceipt[] }
-  | { readonly ok: false; readonly reason: "disabled" | "missing-time" | "invalid-time" | "invalid-minutes" | "transition-failed" };
+  | {
+      readonly ok: false;
+      readonly reason: "disabled" | "missing-time" | "invalid-time" | "invalid-minutes" | "transition-failed";
+      readonly stage?: DayTransitionStage;
+      readonly sourceKind?: string;
+      readonly sourceId?: string;
+    };
 
 /** Advances ordinary clock minutes while delegating every crossed boundary to transitionToNextDay. */
 export function advanceTimeAcrossDayBoundaries(
@@ -70,7 +76,13 @@ export function advanceTimeAcrossDayBoundaries(
   try { draft = reconcileLifeState(project, session); }
   catch (error) {
     if (!(error instanceof LifeReconciliationError)) throw error;
-    return { ok: false, reason: "transition-failed" };
+    return {
+      ok: false,
+      reason: "transition-failed",
+      stage: "recovery",
+      sourceKind: error.sourceKind,
+      sourceId: error.sourceId,
+    };
   }
   const receipts: DayTransitionReceipt[] = [];
   let remaining = minutes;
@@ -83,12 +95,22 @@ export function advanceTimeAcrossDayBoundaries(
     }
     const sourceDayKey = calendarDayKey(draft.gameTime!);
     const transition = transitionToNextDay(project, draft, sourceDayKey);
-    if (!transition.ok) return { ok: false, reason: "transition-failed" };
+    if (!transition.ok) {
+      return {
+        ok: false,
+        reason: "transition-failed",
+        stage: transition.stage,
+        sourceKind: transition.sourceKind,
+        sourceId: transition.sourceId,
+      };
+    }
     receipts.push(transition.receipt);
     remaining -= untilBoundary;
   }
   const makers = syncMakersToGameTime(project, draft);
-  if (!makers.ok && makers.reason !== "disabled") return { ok: false, reason: "transition-failed" };
+  if (!makers.ok && makers.reason !== "disabled") {
+    return { ok: false, reason: "transition-failed", stage: "makers" };
+  }
   replaceSession(session, draft);
   return { ok: true, time: structuredClone(draft.gameTime!), receipts };
 }

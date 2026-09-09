@@ -477,11 +477,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     });
   }
 
-  async sleepUntilMorning(): Promise<boolean> {
+  async sleepUntilMorning(onFailurePresented?: () => void): Promise<boolean> {
     return sleepUntilMorningScene(this, async (commands) => {
       const { runCommands } = await import("@/player/playSceneInterpreter");
       await runCommands(this, commands, undefined, { allowNested: true });
-    });
+    }, onFailurePresented);
   }
 
   applyAdvanceTimeStep(step: Extract<StepResult, { kind: "advanceTime" }>): Promise<void> {

@@ -761,12 +761,16 @@ export function executeCommand(
       changeItem(state.session, command.itemId, command.op, amount);
       return resumeNext(frame);
     }
-    case "craftRecipe":
-      if (state.project) craftRecipe(state.project, state.session as PlaySession, command.recipeId);
+    case "craftRecipe": {
+      const result = state.project && craftRecipe(state.project, state.session as PlaySession, command.recipeId);
+      if (command.resultVariableId !== undefined) setVariable(state.session, command.resultVariableId, "=", result?.ok ? 1 : 0);
       return resumeNext(frame);
-    case "applyItemUpgrade":
-      if (state.project) applyItemUpgrade(state.project, state.session as PlaySession, command.upgradeId);
+    }
+    case "applyItemUpgrade": {
+      const result = state.project && applyItemUpgrade(state.project, state.session as PlaySession, command.upgradeId);
+      if (command.resultVariableId !== undefined) setVariable(state.session, command.resultVariableId, "=", result?.ok ? 1 : 0);
       return resumeNext(frame);
+    }
     case "equipTool":
       setEquippedTool(state.session as PlaySession, command.itemId);
       return resumeNext(frame);

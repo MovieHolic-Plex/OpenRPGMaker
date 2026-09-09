@@ -32,6 +32,8 @@ export type StatusMenuDetailEntry = {
   readonly statDelta?: readonly StatusMenuStatDelta[];
   /** Inventory showcase facts (type / active effects / use eligibility). Machine values, not row copy. */
   readonly facts?: readonly StatusMenuDetailFact[];
+  /** Semantic DOM attributes for state/behavior assertions (not prose). */
+  readonly attributes?: Readonly<Record<string, string>>;
   readonly onActivate?: () => void;
   readonly disabled?: boolean;
   readonly destructive?: boolean;
