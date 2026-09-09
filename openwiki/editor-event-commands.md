@@ -23,6 +23,11 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
   Use a fresh owned dev server with a unique `VITE_CACHE_DIR`. The driver blocks remote
   requests and all writes, uses `freshProject=1`, and checks disabled persistence.
   It exercises the production command dialog and toolbar, not production game content.
+## 장소 이동의 목적지 원복과 설정 보존 (2026-09-06)
+
+- `transferPlayerDialog.ts`는 창을 열 때의 값이 아니라 마지막으로 반영한 명령과 현재 선택을 비교한다. A → B → A로 고르면 초안도 다시 A가 된다.
+- 실시간 반영과 독립 창의 확인 모두 기존 명령에 수정 필드만 덧씌운다. `transition`과 다른 미수정 필드는 유지한다. 전환값은 `fade`·`mosaic`·`blinds`이며 별도의 이동 시간 필드는 없다.
+- 이벤트 명령 창의 확인이 초안을 확정하고 맵 이벤트 적용이 실제 프로젝트에 반영한다. 취소는 실시간 선택 변경을 버린다. `U03.test.ts`와 `transferCommandBody.test.ts`, 실제 편집기 재열기·파일 가져오기 및 출하 플레이어 이동 근거는 `.omo/evidence/event-command-remediation/U03/`에 있다.
 
 ## 확률로 결과 뽑기 / 가중 분기 (2026-09-06)
 
@@ -39,6 +44,7 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
 
 ## 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
 
+- 2026-09-06 저장 계약: `shapeCommandFields.ts`는 피커와 런타임의 정본인 `SHOP_MESSAGE_TYPES`를 그대로 검증한다. `festival`·`closingSale`·`vip`도 다른 세 유형처럼 프로젝트 재로드를 통과하며, 목록 밖 값은 계속 거부한다. `eventCommandRemediationShopMessages.test.ts`가 여섯 유형의 전체 프로젝트 serialize/deserialize와 인접 상점 설정 보존을 검증한다.
 - 소유자: `commandBodyShop.ts`(탭·거래 규칙·대사·분기), `shopEditorGoods.ts`(진열 목록·상품 추가·가격/계절), `shopEditorModel.ts`(아이템/장비 자료집과 순서 보존), `commandBodyShopEconomy.ts`(경제 설정). `commandBodyCommerce.ts`는 여관 본문과 상점 재수출만 남긴다. 스타일은 `event-editor.shop.css`.
 - 상점 창은 기존 full 모달을 유지한다. 첫 화면은 **진열 상품 목록 + 선택한 상품의 상세**다. 전체 자료집은 `shop-add-goods` → `shop-catalog-dialog`에서 검색/종류 필터/복수 선택 → `shop-catalog-add`로 한 번에 추가한다. 선택 중에는 명령을 바꾸지 않으며 취소/Escape는 선택을 폐기한다. `shop-item-check-{id}`는 이 추가창에만 존재한다. 진열 행은 선택 버튼이며 삭제는 상세의 `shop-remove-goods`다. 예전 `shop-stock-pool`과 모든 설정을 함께 담던 `shop-options-rail`은 없다.
 - 탭은 상품/거래 규칙/상인 대사/거래 후 행동이다. 활성 탭만 마운트하며 방향키/Home/End로 탭을 이동한다. view 상태는 `CommandListActions`에 대한 WeakMap으로 보관해 분기 명령 추가에 따른 호스트 재렌더에서도 탭·선택 상품을 보존한다. 일반 상품/필드 편집은 `shouldRerenderCommandForm`에서 shop을 재렌더하지 않는다. 상품 본문이 목록/상세만 갱신하고 최신 `getCurrentCommand`를 바탕으로 변경한다.

@@ -1,0 +1,204 @@
+{
+  "unit": "U03",
+  "findingIds": [
+    "G1-F20"
+  ],
+  "sourceCommit": "5d5d79eb8ce75b955b06870f7477268fdce687f1",
+  "integrationBaseBefore": "8a898762",
+  "status": "PASS",
+  "tests": {
+    "command": "npm test -- test/eventCommandRemediation/U03.test.ts test/transferCommandBody.test.ts --maxWorkers=2",
+    "passed": 13,
+    "exitCode": 0
+  },
+  "editor": {
+    "status": "PASS",
+    "restored": {
+      "kind": "transfer",
+      "mapId": "mapA",
+      "x": 2,
+      "y": 3,
+      "direction": "left",
+      "fade": "black",
+      "transition": "fade"
+    },
+    "directionEdit": {
+      "kind": "transfer",
+      "mapId": "mapA",
+      "x": 2,
+      "y": 3,
+      "direction": "up",
+      "fade": "black",
+      "transition": "fade"
+    },
+    "confirm": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "transfer",
+            "mapId": "mapA",
+            "x": 2,
+            "y": 3,
+            "direction": "left",
+            "fade": "black",
+            "transition": "fade"
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "transfer",
+            "mapId": "mapA",
+            "x": 2,
+            "y": 3,
+            "direction": "left",
+            "fade": "black",
+            "transition": "fade"
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "realImport": true,
+    "cancelPreserved": true,
+    "remoteWrites": []
+  },
+  "player": [
+    {
+      "name": "restored-A",
+      "command": {
+        "kind": "transfer",
+        "mapId": "mapA",
+        "x": 2,
+        "y": 3,
+        "direction": "left",
+        "fade": "black",
+        "transition": "fade"
+      },
+      "trace": {
+        "status": "success",
+        "before": [
+          {
+            "value": "mapA"
+          },
+          {
+            "value": {
+              "x": 1,
+              "y": 2
+            }
+          }
+        ],
+        "after": [
+          {
+            "value": "mapA"
+          },
+          {
+            "value": {
+              "x": 2,
+              "y": 3
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "surface": {
+        "url": "http://127.0.0.1:39872/player.html",
+        "editor": false,
+        "spriteDirection": "left",
+        "pending": false
+      }
+    },
+    {
+      "name": "direction-up",
+      "command": {
+        "kind": "transfer",
+        "mapId": "mapA",
+        "x": 2,
+        "y": 3,
+        "direction": "up",
+        "fade": "black",
+        "transition": "fade"
+      },
+      "trace": {
+        "status": "success",
+        "before": [
+          {
+            "value": "mapA"
+          },
+          {
+            "value": {
+              "x": 1,
+              "y": 2
+            }
+          }
+        ],
+        "after": [
+          {
+            "value": "mapA"
+          },
+          {
+            "value": {
+              "x": 2,
+              "y": 3
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "surface": {
+        "url": "http://127.0.0.1:39872/player.html",
+        "editor": false,
+        "spriteDirection": "up",
+        "pending": false
+      }
+    }
+  ],
+  "channels": {
+    "editor": "Firefox1280x800, native eval with actual H0 helpers",
+    "player": "Chromium1024x768, dedicated player.html export shim; actual UI-produced commands inserted into otherwise unchanged unit fixture"
+  },
+  "cleanup": {
+    "browserContextsClosed": true,
+    "portsClosed": [
+      39871,
+      39872
+    ],
+    "cachesRemoved": [
+      "/tmp/event-u03-supervisor-editor",
+      "/tmp/event-u03-supervisor-player"
+    ]
+  },
+  "screenshots": [
+    "supervisor-editor-restored-A.png",
+    "supervisor-player-restored-A.png",
+    "supervisor-player-direction-up.png"
+  ],
+  "limits": [
+    "Screenshots local; pixel review unavailable",
+    "No remote DB content writes",
+    "Full integrated gates still pending"
+  ]
+}

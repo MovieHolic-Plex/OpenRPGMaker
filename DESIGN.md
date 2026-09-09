@@ -355,6 +355,12 @@ existing purse emblem; actual party faces remain explicitly labelled as party.
   11.5px mono list ordinals. Workspace grid actions retain `justify-self: start`.
 - Destructive text uses the Studio danger token #B91C1C so its hover/confirmation
   tint retains normal-text contrast, not just contrast on white.
+## Named text record insertion (2026-09-06)
+
+- Text name/value tools open the existing searchable record picker; they do not insert a default record before confirmation. Selection replaces the saved textarea range and returns focus to the textarea. Cancel preserves the text and range.
+- Actor names use existing actor ordinals. Variable choices follow the existing numeric text-code aliases and their runtime precedence. Unrepresentable or shadowed variable IDs remain visible as disabled rows with a concise reason; arrow navigation skips them and Confirm cannot choose them.
+- Reuse the cream command form, record picker, native disabled state and current focus/scroll behavior. No new colors, motion, theme or runtime text grammar. Other record-picker callers retain their existing behavior when no availability callback is supplied.
+- G1-F18 actual-surface receipts cover 1024x768, 1280x800 and 1440x900 in Firefox: picker/composer actions remain in bounds without horizontal overflow, text focus returns after insertion/Cancel, and dedicated player dialogue stays in bounds. Screenshots are local evidence; the verification model cannot inspect their pixels, so geometry/interaction PASS is not pixel-level visual approval.
 
 ## Weighted outcome worksheet (2026-09-06)
 

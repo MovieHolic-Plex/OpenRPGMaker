@@ -1,0 +1,15 @@
+{
+  "raw": {
+    "kind": "text",
+    "body": "Hello world",
+    "speaker": "Narrator",
+    "emotion": "happy"
+  },
+  "loaded": {
+    "kind": "text",
+    "body": "Hello world",
+    "speaker": "Narrator",
+    "emotion": "happy"
+  },
+  "legacy": false
+}

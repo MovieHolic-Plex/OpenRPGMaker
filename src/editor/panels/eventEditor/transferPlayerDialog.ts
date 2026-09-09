@@ -110,9 +110,10 @@ export function renderTransferPicker(body: HTMLElement, request: TransferPickerR
     });
     rerenderFooter();
   };
+  let lastApplied = request.command;
   const applyDraft = () => {
     if (!request.liveApply) return;
-    const current = request.command;
+    const current = lastApplied;
     if (
       current.mapId === draft.mapId &&
       current.x === draft.x &&
@@ -122,14 +123,15 @@ export function renderTransferPicker(body: HTMLElement, request: TransferPickerR
     ) {
       return;
     }
-    request.onApply({
-      kind: "transfer",
+    lastApplied = {
+      ...current,
       mapId: draft.mapId,
       x: draft.x,
       y: draft.y,
       direction: draft.direction,
       fade: draft.fade,
-    });
+    };
+    request.onApply(lastApplied);
   };
   const rerenderFooter = () => {
     status.textContent = targetLabel(project, draft);
@@ -198,7 +200,7 @@ export function renderTransferPicker(body: HTMLElement, request: TransferPickerR
                 dataset: { testid: "transfer-player-ok" },
                 attrs: { type: "button" },
                 on: { click: () => {
-                  request.onApply({ kind: "transfer", mapId: draft.mapId, x: draft.x, y: draft.y, direction: draft.direction, fade: draft.fade });
+                  request.onApply({ ...lastApplied, mapId: draft.mapId, x: draft.x, y: draft.y, direction: draft.direction, fade: draft.fade });
                   close();
                 } },
               }),

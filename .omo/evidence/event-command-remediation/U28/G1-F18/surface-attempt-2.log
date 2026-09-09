@@ -1,0 +1,32 @@
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+
+  VITE v6.4.3  ready in 1512 ms
+
+  ➜  Local:   http://127.0.0.1:43533/
+U28 G1-F18 evidence .omo/evidence/event-command-remediation/U28/G1-F18/surface-NO1UTN
+15 |   try {
+16 |     await page.evaluate(() => {
+17 |       if (!window.__eventCommandQa) throw new Error("Observation not armed");
+18 |       window.__eventCommandQa.start();
+19 |     });
+20 |     await action();
+               ^
+error: click: Error: strict mode violation: getByTestId('event-command-text-tool-hero-name') resolved to 2 elements:
+    1) <button type="button" aria-label="주인공 이름" title="문장에 넣을 주인공을 고릅니다." class="event-command-text-tool" data-testid="event-command-text-tool-hero-name">…</button> aka getByTestId('event-inspector-body').getByTestId('event-command-text-tool-hero-name')
+    2) <button type="button" aria-label="주인공 이름" title="문장에 넣을 주인공을 고릅니다." class="event-command-text-tool" data-testid="event-command-text-tool-hero-name">…</button> aka getByTestId('event-command-edit-form').getByTestId('event-command-text-tool-hero-name')
+
+Call log:
+[2m  - waiting for getByTestId('event-command-text-tool-hero-name')[22m
+
+  log: [ "  - waiting for getByTestId('event-command-text-tool-hero-name')" ],
+
+      at observeEditorAction (/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-text-tools/test/e2e/eventCommandRemediationHarness.ts:20:11)
+      at choose (/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-text-tools/test/e2e/event-command-remediation-U28-text.spec.ts:24:9)
+      at proveEditor (/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-text-tools/test/e2e/event-command-remediation-U28-text.spec.ts:83:43)
+      at processTicksAndRejections (native:7:39)
+
+Bun v1.4.2 (Linux x64)
+
+DIRECT_EXIT=1

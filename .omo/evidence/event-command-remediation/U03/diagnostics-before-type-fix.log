@@ -1,0 +1,12 @@
+/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u03/src/editor/panels/eventEditor/transferPlayerDialog.ts 0 diagnostics
+/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u03/test/eventCommandRemediation/U03.test.ts 1 diagnostics
+[96mtest/eventCommandRemediation/U03.test.ts[0m:[93m17[0m:[93m63[0m - [91merror[0m[90m TS2344: [0mType '"drawTransferMapPreview"' does not satisfy the constraint 'never'.
+
+[7m17[0m let draws: ReturnType<typeof vi.spyOn<typeof transferPreview, "drawTransferMapPreview">>;
+[7m  [0m [91m                                                              ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u03/test/eventCommandRemediation/U03.fixture.ts 0 diagnostics
+/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u03/test/e2e/event-command-remediation-U03.spec.ts 0 diagnostics
+/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u03/.omo/evidence/event-command-remediation/U03/playwright.config.mts 0 diagnostics
+
+DIRECT_EXIT_CODE=1
