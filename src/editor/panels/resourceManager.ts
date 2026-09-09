@@ -104,7 +104,11 @@ function makeTilesetFromUpload(asset: UploadedAsset): TilesetDef {
   };
 }
 
-export function renderResourceManager(container: HTMLElement, initialKind?: ResourceKind): void {
+export function renderResourceManager(
+  container: HTMLElement,
+  initialKind?: ResourceKind,
+  recentAssetId?: string
+): void {
   const focused = document.activeElement;
   const editor = audioEditorFor(container);
   if (initialKind) editor.selectKind(initialKind);
@@ -160,6 +164,7 @@ export function renderResourceManager(container: HTMLElement, initialKind?: Reso
       : {}),
     onSelectKind: kind => editor.selectKind(kind),
     onImport,
+    ...(recentAssetId === undefined ? {} : { recentAssetId }),
   });
   container.append(
     el("div", {
@@ -240,7 +245,7 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
           const tileset = ensureTilesetFromUpload(asset);
           if (tileset.created) toast(`타일셋 추가됨: ${asset.name}`, "ok");
         }
-        renderResourceManager(container);
+        renderResourceManager(container, undefined, id);
       },
       (error: unknown) => {
         toast(error instanceof Error ? error.message : "이미지를 읽을 수 없습니다.", "error");
@@ -294,7 +299,7 @@ async function importFacesetSheetAsFaces(
     });
   });
   toast(`얼굴 시트를 낱장 ${slices.length}장으로 나눠 등록했습니다.`, "ok");
-  renderResourceManager(container);
+  renderResourceManager(container, undefined, `${baseId}-${faceCellSuffix(0)}`);
 }
 
 function addTilesetFromUpload(asset: UploadedAsset): void {

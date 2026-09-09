@@ -209,6 +209,13 @@
   color: var(--text-1);
 }
 
+/* 방금 가져온 줄 — 기본 포함 리소스 수십 줄 사이에서 어느 것이 새 것인지 짚어 준다. */
+.rm-asset-row.is-recent {
+  background: var(--accent-muted);
+  box-shadow: inset 2px 0 0 var(--accent);
+  color: var(--text-1);
+}
+
 .rm-profile-row::before {
   background: var(--accent-muted);
   border: 1px solid var(--accent-border);
