@@ -171,7 +171,9 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
     expect(statuses(question)).not.toContain("planner:start");
     expect(question.getWorkPlan()).toBeNull();
     expect(answer.error).toBeUndefined();
-    expect(answer.runOutcome).toEqual({ execution: "response-final", goal: "unassessed", delivery: "no-change" });
+    expect(answer.runOutcome).toEqual({ execution: "response-final", goal: "unassessed", delivery: "no-change",
+      // PR #733 added the visual-evidence receipt to every outcome.
+      imageAttached: false, visualDelivery: { attempted: 0, attached: 0 } });
 
     const plannedSeen: ChatRequest[] = [];
     const planned = new AssistantSession(createBlankProject(), {
@@ -355,7 +357,9 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
     expect(result.proposedCalls).toEqual([]);
     expect(session.getProposedProject()).toEqual(before);
     expect(session.getWorkPlan()).toBeNull();
-    expect(result.runOutcome).toEqual({ execution: "response-final", goal: "unassessed", delivery: "no-change" });
+    expect(result.runOutcome).toEqual({ execution: "response-final", goal: "unassessed", delivery: "no-change",
+      // PR #733 added the visual-evidence receipt to every outcome.
+      imageAttached: false, visualDelivery: { attempted: 0, attached: 0 } });
   });
 
   it("선택 영역은 사실로 붙고 선언에 따라 경계 또는 참고용 노트가 된다", async () => {
