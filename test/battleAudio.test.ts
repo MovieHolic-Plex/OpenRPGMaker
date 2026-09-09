@@ -49,7 +49,7 @@ describe("battle audio", () => {
     const saved = enterBattleAudio(project, session);
     exitBattleAudio(project, session, saved);
     expect(playAudioCommand).toHaveBeenCalledWith(
-      { resourceId: "cc0-bgm-rtp-fld-003", loop: true },
+      { resourceId: "cc0-bgm-rtp-fld-003", loop: true, channel: "bgm" },
       project,
     );
     expect(session.audio.bgm?.resourceId).toBe("cc0-bgm-rtp-fld-003");

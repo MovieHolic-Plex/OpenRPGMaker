@@ -1,27 +1,23 @@
 import { el } from "@/util/dom";
 import type { Command } from "@/project/types";
-import { store } from "@/project/store";
-import { listAudioResources } from "@/assets/audioResourceCatalog";
-import { audioDescriptionView, audioPlaybackBadge } from "@/editor/panels/audioResourcePresentation";
-import { renderEditorIcon as editorIcon } from "./editorIcons";
 
 // 오디오 명령(재생/정지) 프리뷰. 자동 재생은 하지 않는다(누수·의도치 않은 소리 방지) —
-// 선택한 음원 정보와 명령의 동작만 요약한다. 신호를 측정한 것처럼 그리지 않는다.
+// 파일명·반복 배지 + 정적 파형 장식만 시각 요약으로 보여준다.
 export function previewAudio(cmd: Extract<Command, { kind: "playAudio" | "stopAudio" }>): HTMLElement {
   const root = el("div", { class: "ecp-audio", dataset: { testid: "ecp-audio-preview" } });
   if (cmd.kind === "stopAudio") {
-    root.append(el("div", { class: "ecp-audio-icon stop", children: [editorIcon("stop")] }));
-    root.append(el("div", { class: "ecp-audio-name", text: "재생 중인 소리를 정지합니다" }));
+    root.append(el("div", { class: "ecp-audio-icon stop", text: "■" }));
+    root.append(
+      el("div", {
+        class: "ecp-audio-name",
+        text: cmd.channel === "bgm" ? "배경음(BGM)만 페이드아웃합니다" : "재생 중인 소리를 정지합니다",
+      }),
+    );
     return root;
   }
-  const project = store.getCurrent();
-  const resource = listAudioResources("music", project).find(entry => entry.id === cmd.resourceId)
-    ?? listAudioResources("sound", project).find(entry => entry.id === cmd.resourceId);
-  root.append(el("div", { class: "ecp-audio-icon play", children: [editorIcon("sound")] }));
-  root.append(el("div", { class: "ecp-audio-name", text: resource?.name ?? (cmd.resourceId || "(소리 선택 없음)") }));
-  root.append(audioDescriptionView(resource));
-  root.append(audioPlaybackBadge(cmd.resourceId, project));
-  root.append(el("div", { class: "audio-preview-meta", text: "명령 요약 · 자동 재생하지 않음" }));
+  root.append(el("div", { class: "ecp-audio-icon play", text: "▶" }));
+  root.append(el("div", { class: "ecp-audio-name", text: cmd.resourceId || "(소리 선택 없음)" }));
+  root.append(renderWaveform());
   root.append(
     el("div", {
       class: "ecp-audio-badges",
@@ -29,4 +25,16 @@ export function previewAudio(cmd: Extract<Command, { kind: "playAudio" | "stopAu
     })
   );
   return root;
+}
+
+// 정적 파형(결정적 높이 배열 — Math.random 미사용).
+function renderWaveform(): HTMLElement {
+  const wave = el("div", { class: "ecp-audio-wave", attrs: { "aria-hidden": "true" } });
+  const heights = [30, 60, 45, 80, 50, 70, 40, 92, 55, 65, 35, 78, 50, 62, 44, 86, 40, 72, 30, 58, 48, 68];
+  for (const h of heights) {
+    const bar = el("span", { class: "ecp-audio-bar" });
+    bar.style.height = `${h}%`;
+    wave.append(bar);
+  }
+  return wave;
 }

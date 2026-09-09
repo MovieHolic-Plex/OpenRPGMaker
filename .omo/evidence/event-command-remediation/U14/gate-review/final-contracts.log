@@ -1,0 +1,5 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/interpreter.test.ts test/eventEditorM2Surface.baseline.test.ts test/eventAudioHandoffs.test.ts test/eventAudioCommandContracts.test.ts --maxWorkers=2 --reporter=json --outputFile=.omo/evidence/event-command-remediation/U14/gate-review/final-contracts.json
+
+JSON report written to /home/main/z-project/rpg-zzu-event-u14/.omo/evidence/event-command-remediation/U14/gate-review/final-contracts.json

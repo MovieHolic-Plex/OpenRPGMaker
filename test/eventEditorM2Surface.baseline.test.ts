@@ -25,6 +25,8 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
+import { createCaptureProject } from "./fixtures/captureProject";
+import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { COMMAND_KINDS, type CommandKind } from "@/project/commandKindRegistry";
 import {
   captureFormSurface,
@@ -182,6 +184,32 @@ describe("M2 명령 폼 표면 스냅샷", () => {
     // 목록에 적힌 항목은 반드시 스냅샷 축에 존재해야 한다(오타로 조용히 무력화되는 걸 막는다).
     const unknown = HANDWRITTEN_FIELDLESS_BODIES.filter((id) => !(id in actual));
     expect(unknown, "손수 작성 폼 목록에 스냅샷 축에 없는 id 가 있다").toEqual([]);
+  });
+
+  it.each(["m2-063-memorize-current-bgm", "m2-064-play-memorized-bgm"])("%s exposes no dead inputs and remains in the surface axis", (id) => {
+    expect(snapshotIds).toContain(id);
+    expect(byId.get(id)?.fields).toEqual([]);
+    expect(actual[id].controls).toEqual({});
+    expect(actual[id].selectOptions).toEqual({});
+  });
+
+  it.each([
+    ["m2-027-change-system-bgm", ["music"], ["battle", "field"]],
+    ["m2-028-change-system-se", ["sound"], ["defeat", "escape"]],
+    ["m2-210-sound-layer", ["music", "sound"], ["ambient", "bgm", "bgs", "me", "se"]],
+  ] as const)("%s keeps exact audio membership and supported channel/slot values", (id, kinds, destinations) => {
+    const project = createCaptureProject();
+    // Audio pickers read the bundled audio catalog, not only authored resource profiles —
+    // that is what makes every shipped track selectable. Assert against the same source.
+    const expected = new Set(kinds.flatMap(kind => listAudioResources(kind, project).map(item => item.id)));
+    expect(actual[id].selectOptions["m2-command-resourceId-picker"].slice().sort()).toEqual(["", ...expected].sort());
+    const field = id === "m2-210-sound-layer" ? "channel" : "slot";
+    expect(actual[id].selectOptions[`m2-command-${field}-option-select`].slice().sort()).toEqual([...destinations].sort());
+    if (field === "slot") expect(actual[id].controls).not.toHaveProperty("m2-command-volume-input");
+    else {
+      expect(actual[id].controls).toHaveProperty("m2-command-volume-input");
+      expect(actual[id].controls).toHaveProperty("m2-command-fadeMs-input");
+    }
   });
 
   it("기준선과 일치한다", () => {

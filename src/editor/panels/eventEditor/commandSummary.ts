@@ -346,7 +346,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     ...(cmd.wait ? [plainPart(" / "), valuePart("대기")] : []),
     ...(cmd.skippable ? [plainPart(" / "), valuePart("건너뛰기 허용")] : [])
   ),
-  stopAudio: () => commandLine("소리 정지", valuePart("설정 없음")),
+  stopAudio: (c) => (c.channel === "bgm" ? commandLine("BGM 페이드아웃", valuePart("배경음만")) : commandLine("소리 정지", valuePart("설정 없음"))),
   cutsceneControl: (cmd) => commandLine("컷신 제어", valuePart(cmd.mode === "begin" ? "시작" : "종료"), ...(cmd.skippable ? [plainPart(" / "), valuePart("스킵 가능")] : [])),
   shop: (cmd) =>
     commandLine(

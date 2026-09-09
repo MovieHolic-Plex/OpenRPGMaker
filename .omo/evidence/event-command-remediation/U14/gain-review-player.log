@@ -1,0 +1,21 @@
+PLAYER PASS: layers, 8 beats, native media playing/volume/pause evidence
+PLAYER PASS: result, 3 beats, native media playing/volume/pause evidence
+PLAYER PASS: gain-command, 9 beats, native media playing/volume/pause evidence
+PLAYER PASS: gain-map, 10 beats, native media playing/volume/pause evidence
+PLAYER PASS: battle-gain-25-same, 5 beats, native media playing/volume/pause evidence
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: [{"id":"boot","failures":[]},{"id":"field-gain","failures":[]},{"id":"battle-gain","failures":[]},{"id":"battle-result","failures":["op eventCommand 실패: eventCommand observation timed out"]},{"id":"restored-field-gain","failures":["op eventCommand 실패: eventCommand observation timed out"]}]
+    at proveU14Player (file:///home/main/z-project/rpg-zzu-event-u14/scripts/qa/runtime/event-command-remediation-u14.scenario.mjs:180:53)
+    at async file:///home/main/z-project/rpg-zzu-event-u14/scripts/qa/runtime/event-command-remediation-u14.scenario.mjs:198:3 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.11.1

@@ -64,7 +64,8 @@ export function exitBattleAudio(project: Project, session: PlaySession, saved: B
   stopAudioChannel("bgm");
   if (saved.fieldBgmResourceId) {
     const track = saved.fieldBgm ?? { resourceId: saved.fieldBgmResourceId, loop: true };
-    playAudioCommand(track, project);
+    // Name the channel on the playback request only; the session record stays channel-free.
+    playAudioCommand({ ...track, channel: "bgm" }, project);
     session.audio.bgm = { ...track };
     return;
   }

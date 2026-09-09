@@ -1,0 +1,53 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventAudioHandoffs.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-event-u14
+
+ ❯ test/eventAudioHandoffs.test.ts (20 tests | 1 failed) 1398ms
+   ✓ U14 actual audio handoffs > delivers ambient gain and explicit zero fade through blocking execution 126ms
+   ✓ U14 actual audio handoffs > delivers ambient gain and explicit zero fade through parallel execution 66ms
+   ✓ U14 actual audio handoffs > keeps per-track gain when the group volume changes and the same track is requested again 76ms
+   ✓ U14 actual audio handoffs > resets omitted gain on the same track through command and keeps save/resume consistent 68ms
+   ✓ U14 actual audio handoffs > resets omitted gain on the same track through map and keeps save/resume consistent 69ms
+   ✓ U14 actual audio handoffs > restores field gain 0.25 after battle (same track: false) 56ms
+   ✓ U14 actual audio handoffs > restores field gain +0 after battle (same track: false) 60ms
+   ✓ U14 actual audio handoffs > restores field gain 0.25 after battle (same track: true) 48ms
+   ✓ U14 actual audio handoffs > restores field gain +0 after battle (same track: true) 49ms
+   × U14 actual audio handoffs > preserves an explicit field loop flag through a battle handoff 61ms
+     → expected 'se' to be 'bgm' // Object.is equality
+   ✓ U14 actual audio handoffs > plays me once with its own gain without changing BGM 58ms
+   ✓ U14 actual audio handoffs > plays se once with its own gain without changing BGM 47ms
+   ✓ U14 actual audio handoffs > replays memorized BGM through the engine, not only the session record 46ms
+   ✓ U14 actual audio handoffs > inserts the Fadeout BGM alias with its channel and preserves it through project export/import 224ms
+   ✓ U14 actual audio handoffs > stops only BGM through the blocking path 52ms
+   ✓ U14 actual audio handoffs > stops only BGM through the parallel path 49ms
+   ✓ U14 actual audio handoffs > stops only BGM through the legacy path 55ms
+   ✓ U14 actual audio handoffs > persists system replacements through save-slot parsing and consumes them on map/battle entry 48ms
+   ✓ U14 actual audio handoffs > keeps battle result overrides session-owned even with overlapping battle lifetimes 87ms
+   ✓ U14 actual audio handoffs > restores a layer's gain through save parsing and engine resume 52ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/eventAudioHandoffs.test.ts > U14 actual audio handoffs > preserves an explicit field loop flag through a battle handoff
+AssertionError: expected 'se' to be 'bgm' // Object.is equality
+
+Expected: [32m"bgm"[39m
+Received: [31m"se"[39m
+
+ ❯ test/eventAudioHandoffs.test.ts:149:41
+    147|     exitBattleAudio(project, session, saved);
+    148|     expect(session.audio.bgm).toEqual({ resourceId: FIELD, loop: false…
+    149|     expect(play.mock.calls.at(-1)?.[0]).toBe("bgm");
+       |                                         ^
+    150|     expect(play.mock.calls.at(-1)?.[3]).toBe(false);
+    151|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 19 passed (20)
+   Start at  07:29:17
+   Duration  10.50s (transform 6.05s, setup 0ms, collect 8.50s, tests 1.40s, environment 227ms, prepare 80ms)

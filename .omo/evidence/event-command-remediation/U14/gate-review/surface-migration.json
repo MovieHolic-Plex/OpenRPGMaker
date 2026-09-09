@@ -1,0 +1,682 @@
+{
+  "baseline": {
+    "m2-027-change-system-bgm": {
+      "before": {
+        "testids": [
+          "event-command-edit-summary",
+          "m2-command-body-m2-027-change-system-bgm",
+          "m2-command-resourceId-picker",
+          "m2-command-resourceId-preview",
+          "m2-command-resourceId-selected-name",
+          "m2-command-volume-input"
+        ],
+        "classes": [
+          "cream-command-form",
+          "cream-command-form-head",
+          "empty-hint",
+          "field",
+          "m2-command-body",
+          "m2-resource-audio-note",
+          "m2-resource-picker",
+          "m2-resource-selected-name"
+        ],
+        "controls": {
+          "m2-command-resourceId-picker": "select{}",
+          "m2-command-volume-input": "input[number]{}"
+        },
+        "selectOptions": {
+          "m2-command-resourceId-picker": [
+            "",
+            "cc0-music-field-loop",
+            "cc0-bgm-field",
+            "cc0-bgm-town"
+          ]
+        },
+        "labels": [
+          "BGM",
+          "볼륨"
+        ],
+        "tags": {
+          "div": 10,
+          "input": 1,
+          "label": 2,
+          "option": 4,
+          "select": 1
+        },
+        "tagByTestid": {
+          "event-command-edit-summary": "div",
+          "m2-command-body-m2-027-change-system-bgm": "div",
+          "m2-command-resourceId-picker": "select",
+          "m2-command-resourceId-preview": "div",
+          "m2-command-resourceId-selected-name": "div",
+          "m2-command-volume-input": "input"
+        },
+        "texts": {
+          "event-command-edit-summary": "기타 명령",
+          "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다"
+        },
+        "testidCount": 6,
+        "controlCount": 2
+      },
+      "after": {
+        "testids": [
+          "event-command-edit-summary",
+          "m2-command-body-m2-027-change-system-bgm",
+          "m2-command-resourceId-picker",
+          "m2-command-resourceId-preview",
+          "m2-command-resourceId-selected-name",
+          "m2-command-slot-option-select"
+        ],
+        "classes": [
+          "cream-command-form",
+          "cream-command-form-head",
+          "empty-hint",
+          "field",
+          "m2-command-body",
+          "m2-resource-audio-note",
+          "m2-resource-picker",
+          "m2-resource-selected-name"
+        ],
+        "controls": {
+          "m2-command-resourceId-picker": "select{}",
+          "m2-command-slot-option-select": "select{}"
+        },
+        "selectOptions": {
+          "m2-command-resourceId-picker": [
+            "",
+            "cc0-music-field-loop",
+            "cc0-bgm-field",
+            "cc0-bgm-town"
+          ],
+          "m2-command-slot-option-select": [
+            "field",
+            "battle"
+          ]
+        },
+        "labels": [
+          "BGM",
+          "바꿀 음악"
+        ],
+        "tags": {
+          "div": 10,
+          "label": 2,
+          "option": 6,
+          "select": 2
+        },
+        "tagByTestid": {
+          "event-command-edit-summary": "div",
+          "m2-command-body-m2-027-change-system-bgm": "div",
+          "m2-command-resourceId-picker": "select",
+          "m2-command-resourceId-preview": "div",
+          "m2-command-resourceId-selected-name": "div",
+          "m2-command-slot-option-select": "select"
+        },
+        "texts": {
+          "event-command-edit-summary": "기타 명령",
+          "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다"
+        },
+        "testidCount": 6,
+        "controlCount": 2
+      }
+    },
+    "m2-028-change-system-se": {
+      "before": {
+        "testids": [
+          "event-command-edit-summary",
+          "m2-command-body-m2-028-change-system-se",
+          "m2-command-resourceId-picker",
+          "m2-command-resourceId-preview",
+          "m2-command-resourceId-selected-name",
+          "m2-command-volume-input"
+        ],
+        "classes": [
+          "cream-command-form",
+          "cream-command-form-head",
+          "empty-hint",
+          "field",
+          "m2-command-body",
+          "m2-resource-audio-note",
+          "m2-resource-picker",
+          "m2-resource-selected-name"
+        ],
+        "controls": {
+          "m2-command-resourceId-picker": "select{}",
+          "m2-command-volume-input": "input[number]{}"
+        },
+        "selectOptions": {
+          "m2-command-resourceId-picker": [
+            "",
+            "cc0-sound-ui-confirm",
+            "easyrpg-sound-absorb1",
+            "easyrpg-sound-absorb2"
+          ]
+        },
+        "labels": [
+          "볼륨",
+          "효과음"
+        ],
+        "tags": {
+          "div": 10,
+          "input": 1,
+          "label": 2,
+          "option": 4,
+          "select": 1
+        },
+        "tagByTestid": {
+          "event-command-edit-summary": "div",
+          "m2-command-body-m2-028-change-system-se": "div",
+          "m2-command-resourceId-picker": "select",
+          "m2-command-resourceId-preview": "div",
+          "m2-command-resourceId-selected-name": "div",
+          "m2-command-volume-input": "input"
+        },
+        "texts": {
+          "event-command-edit-summary": "기타 명령",
+          "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다"
+        },
+        "testidCount": 6,
+        "controlCount": 2
+      },
+      "after": {
+        "testids": [
+          "event-command-edit-summary",
+          "m2-command-body-m2-028-change-system-se",
+          "m2-command-resourceId-picker",
+          "m2-command-resourceId-preview",
+          "m2-command-resourceId-selected-name",
+          "m2-command-slot-option-select"
+        ],
+        "classes": [
+          "cream-command-form",
+          "cream-command-form-head",
+          "empty-hint",
+          "field",
+          "m2-command-body",
+          "m2-resource-audio-note",
+          "m2-resource-picker",
+          "m2-resource-selected-name"
+        ],
+        "controls": {
+          "m2-command-resourceId-picker": "select{}",
+          "m2-command-slot-option-select": "select{}"
+        },
+        "selectOptions": {
+          "m2-command-resourceId-picker": [
+            "",
+            "cc0-sound-ui-confirm",
+            "easyrpg-sound-absorb1",
+            "easyrpg-sound-absorb2"
+          ],
+          "m2-command-slot-option-select": [
+            "defeat",
+            "escape"
+          ]
+        },
+        "labels": [
+          "바꿀 효과음",
+          "효과음"
+        ],
+        "tags": {
+          "div": 10,
+          "label": 2,
+          "option": 6,
+          "select": 2
+        },
+        "tagByTestid": {
+          "event-command-edit-summary": "div",
+          "m2-command-body-m2-028-change-system-se": "div",
+          "m2-command-resourceId-picker": "select",
+          "m2-command-resourceId-preview": "div",
+          "m2-command-resourceId-selected-name": "div",
+          "m2-command-slot-option-select": "select"
+        },
+        "texts": {
+          "event-command-edit-summary": "기타 명령",
+          "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다"
+        },
+        "testidCount": 6,
+        "controlCount": 2
+      }
+    },
+    "m2-063-memorize-current-bgm": {
+      "before": {
+        "testids": [
+          "event-command-edit-summary",
+          "m2-command-body-m2-063-memorize-current-bgm",
+          "m2-command-resourceId-picker",
+          "m2-command-resourceId-preview",
+          "m2-command-resourceId-selected-name",
+          "m2-command-volume-input"
+        ],
+        "classes": [
+          "cream-command-form",
+          "cream-command-form-head",
+          "empty-hint",
+          "field",
+          "m2-command-body",
+          "m2-resource-audio-note",
+          "m2-resource-picker",
+          "m2-resource-selected-name"
+        ],
+        "controls": {
+          "m2-command-resourceId-picker": "select{}",
+          "m2-command-volume-input": "input[number]{}"
+        },
+        "selectOptions": {
+          "m2-command-resourceId-picker": [
+            "",
+            "cc0-music-field-loop",
+            "cc0-bgm-field",
+            "cc0-bgm-town"
+          ]
+        },
+        "labels": [
+          "BGM",
+          "볼륨"
+        ],
+        "tags": {
+          "div": 10,
+          "input": 1,
+          "label": 2,
+          "option": 4,
+          "select": 1
+        },
+        "tagByTestid": {
+          "event-command-edit-summary": "div",
+          "m2-command-body-m2-063-memorize-current-bgm": "div",
+          "m2-command-resourceId-picker": "select",
+          "m2-command-resourceId-preview": "div",
+          "m2-command-resourceId-selected-name": "div",
+          "m2-command-volume-input": "input"
+        },
+        "texts": {
+          "event-command-edit-summary": "기타 명령",
+          "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다"
+        },
+        "testidCount": 6,
+        "controlCount": 2
+      },
+      "after": {
+        "testids": [
+          "event-command-edit-summary",
+          "m2-command-body-m2-063-memorize-current-bgm"
+        ],
+        "classes": [
+          "cream-command-form",
+          "cream-command-form-head",
+          "empty-hint",
+          "m2-command-body"
+        ],
+        "controls": {},
+        "selectOptions": {},
+        "labels": [],
+        "tags": {
+          "div": 6
+        },
+        "tagByTestid": {
+          "event-command-edit-summary": "div",
+          "m2-command-body-m2-063-memorize-current-bgm": "div"
+        },
+        "texts": {
+          "event-command-edit-summary": "기타 명령"
+        },
+        "testidCount": 2,
+        "controlCount": 0
+      }
+    },
+    "m2-064-play-memorized-bgm": {
+      "before": {
+        "testids": [
+          "event-command-edit-summary",
+          "m2-command-body-m2-064-play-memorized-bgm",
+          "m2-command-resourceId-picker",
+          "m2-command-resourceId-preview",
+          "m2-command-resourceId-selected-name",
+          "m2-command-volume-input"
+        ],
+        "classes": [
+          "cream-command-form",
+          "cream-command-form-head",
+          "empty-hint",
+          "field",
+          "m2-command-body",
+          "m2-resource-audio-note",
+          "m2-resource-picker",
+          "m2-resource-selected-name"
+        ],
+        "controls": {
+          "m2-command-resourceId-picker": "select{}",
+          "m2-command-volume-input": "input[number]{}"
+        },
+        "selectOptions": {
+          "m2-command-resourceId-picker": [
+            "",
+            "cc0-music-field-loop",
+            "cc0-bgm-field",
+            "cc0-bgm-town"
+          ]
+        },
+        "labels": [
+          "BGM",
+          "볼륨"
+        ],
+        "tags": {
+          "div": 10,
+          "input": 1,
+          "label": 2,
+          "option": 4,
+          "select": 1
+        },
+        "tagByTestid": {
+          "event-command-edit-summary": "div",
+          "m2-command-body-m2-064-play-memorized-bgm": "div",
+          "m2-command-resourceId-picker": "select",
+          "m2-command-resourceId-preview": "div",
+          "m2-command-resourceId-selected-name": "div",
+          "m2-command-volume-input": "input"
+        },
+        "texts": {
+          "event-command-edit-summary": "기타 명령",
+          "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다"
+        },
+        "testidCount": 6,
+        "controlCount": 2
+      },
+      "after": {
+        "testids": [
+          "event-command-edit-summary",
+          "m2-command-body-m2-064-play-memorized-bgm"
+        ],
+        "classes": [
+          "cream-command-form",
+          "cream-command-form-head",
+          "empty-hint",
+          "m2-command-body"
+        ],
+        "controls": {},
+        "selectOptions": {},
+        "labels": [],
+        "tags": {
+          "div": 6
+        },
+        "tagByTestid": {
+          "event-command-edit-summary": "div",
+          "m2-command-body-m2-064-play-memorized-bgm": "div"
+        },
+        "texts": {
+          "event-command-edit-summary": "기타 명령"
+        },
+        "testidCount": 2,
+        "controlCount": 0
+      }
+    },
+    "m2-210-sound-layer": {
+      "before": {
+        "testids": [
+          "event-command-edit-summary",
+          "m2-command-body-m2-210-sound-layer",
+          "m2-command-channel-option-select",
+          "m2-command-fadeMs-input",
+          "m2-command-resourceId-picker",
+          "m2-command-resourceId-preview",
+          "m2-command-resourceId-selected-name",
+          "m2-command-volume-input"
+        ],
+        "classes": [
+          "cream-command-form",
+          "cream-command-form-head",
+          "empty-hint",
+          "field",
+          "m2-command-body",
+          "m2-resource-picker",
+          "m2-resource-preview",
+          "m2-resource-selected-name"
+        ],
+        "controls": {
+          "m2-command-channel-option-select": "select{}",
+          "m2-command-fadeMs-input": "input[number]{}",
+          "m2-command-resourceId-picker": "select{}",
+          "m2-command-volume-input": "input[number]{}"
+        },
+        "selectOptions": {
+          "m2-command-channel-option-select": [
+            "bgm",
+            "bgs",
+            "me",
+            "se",
+            "ambient"
+          ],
+          "m2-command-resourceId-picker": [
+            "",
+            "tex_easyrpg_chipset_combined_town",
+            "tex_easyrpg_chipset_dungeon",
+            "tex_easyrpg_chipset_interior",
+            "tex_easyrpg_charset_actor1",
+            "tex_easyrpg_charset_actor2",
+            "tex_easyrpg_charset_actor3",
+            "cc0-jetrel-ale",
+            "cc0-jetrel-antidote-green",
+            "cc0-jetrel-antidote-plus",
+            "easyrpg-faceset-actor1-00",
+            "easyrpg-faceset-actor1-01",
+            "easyrpg-faceset-actor1-02",
+            "easyrpg-battle-arrow",
+            "easyrpg-battle-blow",
+            "easyrpg-battle-sword1",
+            "easyrpg-battle-weapon-weapon",
+            "easyrpg-game-over-game-over",
+            "easyrpg-monster-hornet",
+            "easyrpg-backdrop-cosmos1",
+            "easyrpg-backdrop-dawn1",
+            "easyrpg-backdrop-dawn2",
+            "easyrpg-system-royal",
+            "easyrpg-system-system",
+            "easyrpg-system-system-a",
+            "easyrpg-system2-system2-a",
+            "easyrpg-system2-system2-b",
+            "easyrpg-system2-system2-c",
+            "easyrpg-title-title1",
+            "easyrpg-title-title2",
+            "easyrpg-title-title3"
+          ]
+        },
+        "labels": [
+          "리소스",
+          "볼륨",
+          "채널",
+          "페이드(ms)"
+        ],
+        "tags": {
+          "div": 12,
+          "input": 2,
+          "label": 4,
+          "option": 36,
+          "select": 2
+        },
+        "tagByTestid": {
+          "event-command-edit-summary": "div",
+          "m2-command-body-m2-210-sound-layer": "div",
+          "m2-command-channel-option-select": "select",
+          "m2-command-fadeMs-input": "input",
+          "m2-command-resourceId-picker": "select",
+          "m2-command-resourceId-preview": "div",
+          "m2-command-resourceId-selected-name": "div",
+          "m2-command-volume-input": "input"
+        },
+        "texts": {
+          "event-command-edit-summary": "기타 명령",
+          "m2-command-resourceId-preview": "그림을 고르세요"
+        },
+        "testidCount": 8,
+        "controlCount": 4
+      },
+      "after": {
+        "testids": [
+          "event-command-edit-summary",
+          "m2-command-body-m2-210-sound-layer",
+          "m2-command-channel-option-select",
+          "m2-command-fadeMs-input",
+          "m2-command-resourceId-picker",
+          "m2-command-resourceId-preview",
+          "m2-command-resourceId-selected-name",
+          "m2-command-volume-input"
+        ],
+        "classes": [
+          "cream-command-form",
+          "cream-command-form-head",
+          "empty-hint",
+          "field",
+          "m2-command-body",
+          "m2-resource-audio-note",
+          "m2-resource-picker",
+          "m2-resource-selected-name"
+        ],
+        "controls": {
+          "m2-command-channel-option-select": "select{}",
+          "m2-command-fadeMs-input": "input[number]{}",
+          "m2-command-resourceId-picker": "select{}",
+          "m2-command-volume-input": "input[number]{}"
+        },
+        "selectOptions": {
+          "m2-command-channel-option-select": [
+            "bgm",
+            "bgs",
+            "me",
+            "se",
+            "ambient"
+          ],
+          "m2-command-resourceId-picker": [
+            "",
+            "cc0-music-field-loop",
+            "cc0-sound-ui-confirm",
+            "cc0-bgm-field",
+            "cc0-bgm-town",
+            "easyrpg-sound-absorb1",
+            "easyrpg-sound-absorb2"
+          ]
+        },
+        "labels": [
+          "리소스",
+          "볼륨",
+          "채널",
+          "페이드(ms)"
+        ],
+        "tags": {
+          "div": 12,
+          "input": 2,
+          "label": 4,
+          "option": 12,
+          "select": 2
+        },
+        "tagByTestid": {
+          "event-command-edit-summary": "div",
+          "m2-command-body-m2-210-sound-layer": "div",
+          "m2-command-channel-option-select": "select",
+          "m2-command-fadeMs-input": "input",
+          "m2-command-resourceId-picker": "select",
+          "m2-command-resourceId-preview": "div",
+          "m2-command-resourceId-selected-name": "div",
+          "m2-command-volume-input": "input"
+        },
+        "texts": {
+          "event-command-edit-summary": "기타 명령",
+          "m2-command-resourceId-preview": "선택한 음악이 여기에 표시됩니다"
+        },
+        "testidCount": 8,
+        "controlCount": 4
+      }
+    }
+  },
+  "floor": {
+    "m2-027-change-system-bgm": {
+      "before": {
+        "testidCount": 6,
+        "controlCount": 2,
+        "selectOptionCount": 4,
+        "classCount": 8,
+        "labelCount": 2,
+        "textCount": 2
+      },
+      "after": {
+        "testidCount": 6,
+        "controlCount": 2,
+        "selectOptionCount": 6,
+        "classCount": 8,
+        "labelCount": 2,
+        "textCount": 2
+      }
+    },
+    "m2-028-change-system-se": {
+      "before": {
+        "testidCount": 6,
+        "controlCount": 2,
+        "selectOptionCount": 4,
+        "classCount": 8,
+        "labelCount": 2,
+        "textCount": 2
+      },
+      "after": {
+        "testidCount": 6,
+        "controlCount": 2,
+        "selectOptionCount": 6,
+        "classCount": 8,
+        "labelCount": 2,
+        "textCount": 2
+      }
+    },
+    "m2-063-memorize-current-bgm": {
+      "before": {
+        "testidCount": 6,
+        "controlCount": 2,
+        "selectOptionCount": 4,
+        "classCount": 8,
+        "labelCount": 2,
+        "textCount": 2
+      },
+      "after": {
+        "testidCount": 2,
+        "controlCount": 0,
+        "selectOptionCount": 0,
+        "classCount": 4,
+        "labelCount": 0,
+        "textCount": 1
+      }
+    },
+    "m2-064-play-memorized-bgm": {
+      "before": {
+        "testidCount": 6,
+        "controlCount": 2,
+        "selectOptionCount": 4,
+        "classCount": 8,
+        "labelCount": 2,
+        "textCount": 2
+      },
+      "after": {
+        "testidCount": 2,
+        "controlCount": 0,
+        "selectOptionCount": 0,
+        "classCount": 4,
+        "labelCount": 0,
+        "textCount": 1
+      }
+    },
+    "m2-210-sound-layer": {
+      "before": {
+        "testidCount": 8,
+        "controlCount": 4,
+        "selectOptionCount": 36,
+        "classCount": 8,
+        "labelCount": 4,
+        "textCount": 2
+      },
+      "after": {
+        "testidCount": 8,
+        "controlCount": 4,
+        "selectOptionCount": 12,
+        "classCount": 8,
+        "labelCount": 4,
+        "textCount": 2
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+FAIL: 렌더로 증명되던 클래스 12종이 정본에서 사라졌다 (이전 1089종 → 현재 1101종) — 게이트의 증거가 줄었다.
+  .weighted-branch-bar
+  .weighted-branch-bar-empty
+  .weighted-branch-bar-seg
+  .weighted-branch-field
+  .weighted-branch-guide
+  .weighted-branch-legend
+  .weighted-branch-legend-item
+  .weighted-branch-legend-swatch
+  .weighted-branch-pct
+  .weighted-branch-summary-live
+  .weighted-branch-variable-warn
+  .weighted-branch-weight-input
+
+가능한 원인 두 가지:
+  1) 표면 축 기준선이 좁아졌다(축 수확이 깨졌거나 kind/포털이 빠졌다) — 표면 게이트를 먼저 보라.
+     현재 정본: eventEditorFormSurface.baseline.json(+487), eventEditorM2Surface.baseline.json(+78), eventEditorShellSurface.baseline.json(+298), eventEditorConditionSurface.baseline.json(+15), eventEditorPortalSurface.baseline.json(+205), eventEditorInteractionSurface.baseline.json(+18)
+  2) UI 가 정말로 그 클래스를 더 이상 그리지 않는다 — 표면 축에서 이미 승인했다면 이 기준선도 갱신하라.

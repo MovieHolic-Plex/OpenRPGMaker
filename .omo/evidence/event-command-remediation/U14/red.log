@@ -1,0 +1,69 @@
+
+ ❯ test/eventAudioCommandContracts.test.ts:128:44
+    126| describe("G4-F3 시스템 BGM/SE 는 피커가 쓴 필드를 실행이 읽는다", () => {
+    127|   it("BGM 은 슬롯 + 음악 리소스를 저작한다", () => {
+    128|     expect(fieldKeys("Change System BGM")).toEqual(["slot", "resourceI…
+       |                                            ^
+    129|     expect(fieldKeys("Change System SE")).toEqual(["slot", "resourceId…
+    130|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  test/eventAudioCommandContracts.test.ts > G4-F3 시스템 BGM/SE 는 피커가 쓴 필드를 실행이 읽는다 > 고른 곡이 슬롯 오버라이드로 기록된다
+AssertionError: expected undefined to be 'cc0-bgm-battle' // Object.is equality
+
+[32m- Expected:[39m
+"cc0-bgm-battle"
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/eventAudioCommandContracts.test.ts:136:75
+    134|     const session = mkSession(project);
+    135|     drain([m2Command("Change System BGM", { slot: "battle", resourceId…
+    136|     expect(session.m2Runtime?.system?.[systemAudioOverrideKey("battle"…
+       |                                                                           ^
+    137|     expect(session.m2Runtime?.system?.["system_bgm"]).toBe("cc0-bgm-ba…
+    138|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  test/eventAudioCommandContracts.test.ts > G4-F3 시스템 BGM/SE 는 피커가 쓴 필드를 실행이 읽는다 > 옛날 저장분의 value 필드도 계속 읽는다
+AssertionError: expected undefined to be 'easyrpg-sound-escape' // Object.is equality
+
+[32m- Expected:[39m
+"easyrpg-sound-escape"
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/eventAudioCommandContracts.test.ts:144:75
+    142|     const session = mkSession(project);
+    143|     drain([m2Command("Change System SE", { slot: "escape", value: "eas…
+    144|     expect(session.m2Runtime?.system?.[systemAudioOverrideKey("escape"…
+       |                                                                           ^
+    145|   });
+    146|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  test/eventAudioCommandContracts.test.ts > G4-F3 시스템 BGM/SE 는 피커가 쓴 필드를 실행이 읽는다 > 필드 기본곡 오버라이드가 맵 BGM 해석의 폴백을 바꾼다
+AssertionError: expected { kind: 'play', …(1) } to not deeply equal { kind: 'play', …(1) }
+
+[2mCompared values have no visual difference.[22m
+
+ ❯ test/eventAudioCommandContracts.test.ts:152:28
+    150|     const authored = resolveMapBgm(project, mapId);
+    151|     const overridden = resolveMapBgm(project, mapId, { defaultBgmResou…
+    152|     expect(overridden).not.toEqual(authored);
+       |                            ^
+    153|     expect(overridden).toMatchObject({ kind: "play", resourceId: "cc0-…
+    154|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 3 passed (13)
+   Start at  03:10:10
+   Duration  13.37s (transform 8.20s, setup 0ms, collect 10.53s, tests 1.76s, environment 0ms, prepare 167ms)

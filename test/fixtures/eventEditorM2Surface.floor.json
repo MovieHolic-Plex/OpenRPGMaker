@@ -48,11 +48,11 @@
   "textCount": 3
  },
  "m2-025-change-actor-faceset": {
-  "testidCount": 130,
-  "controlCount": 118,
+  "testidCount": 126,
+  "controlCount": 116,
   "selectOptionCount": 8,
-  "classCount": 36,
-  "labelCount": 2,
+  "classCount": 31,
+  "labelCount": 1,
   "textCount": 4
  },
  "m2-026-change-vehicle-graphic": {
@@ -64,17 +64,17 @@
   "textCount": 2
  },
  "m2-027-change-system-bgm": {
-  "testidCount": 10,
+  "testidCount": 6,
   "controlCount": 2,
-  "selectOptionCount": 318,
+  "selectOptionCount": 6,
   "classCount": 8,
   "labelCount": 2,
   "textCount": 2
  },
  "m2-028-change-system-se": {
-  "testidCount": 10,
+  "testidCount": 6,
   "controlCount": 2,
-  "selectOptionCount": 733,
+  "selectOptionCount": 6,
   "classCount": 8,
   "labelCount": 2,
   "textCount": 2
@@ -280,20 +280,20 @@
   "textCount": 3
  },
  "m2-063-memorize-current-bgm": {
-  "testidCount": 10,
-  "controlCount": 2,
-  "selectOptionCount": 318,
-  "classCount": 8,
-  "labelCount": 2,
-  "textCount": 2
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 4,
+  "labelCount": 0,
+  "textCount": 1
  },
  "m2-064-play-memorized-bgm": {
-  "testidCount": 10,
-  "controlCount": 2,
-  "selectOptionCount": 318,
-  "classCount": 8,
-  "labelCount": 2,
-  "textCount": 2
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 4,
+  "labelCount": 0,
+  "textCount": 1
  },
  "m2-066-play-movie": {
   "testidCount": 6,
@@ -320,11 +320,11 @@
   "textCount": 3
  },
  "m2-069-change-parallax-back": {
-  "testidCount": 12,
-  "controlCount": 4,
+  "testidCount": 8,
+  "controlCount": 2,
   "selectOptionCount": 7,
-  "classCount": 27,
-  "labelCount": 2,
+  "classCount": 22,
+  "labelCount": 1,
   "textCount": 5
  },
  "m2-070-set-encounter-rate": {
@@ -634,7 +634,7 @@
  "m2-210-sound-layer": {
   "testidCount": 8,
   "controlCount": 4,
-  "selectOptionCount": 36,
+  "selectOptionCount": 12,
   "classCount": 8,
   "labelCount": 4,
   "textCount": 2

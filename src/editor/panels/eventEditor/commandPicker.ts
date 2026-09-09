@@ -744,6 +744,9 @@ function createCommandFromEntry(entry: CommandEntry): Command {
       loop: m2CommandById(entry.commandId)?.title === "Play BGM",
     };
   }
+  if (entry.kind === "stopAudio" && m2CommandById(entry.commandId)?.title === "Fadeout BGM") {
+    return { kind: "stopAudio", channel: "bgm" };
+  }
   return entry.kind ? newCommand(entry.kind) : newM2Command(entry.commandId);
 }
 

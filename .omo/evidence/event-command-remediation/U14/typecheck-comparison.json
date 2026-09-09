@@ -1,0 +1,9 @@
+{
+  "base": "a79a04bbd",
+  "baselineExit": 2,
+  "currentExit": 2,
+  "baselineDiagnostics": 767,
+  "currentDiagnostics": 767,
+  "newDiagnostics": [],
+  "removedDiagnostics": []
+}

@@ -1,0 +1,249 @@
+{
+  "derivedFrom": "surface/editor-observations.json",
+  "rawObservationSha256": "21b8c19941d4989cc6a080144501e6fa455f39c560e96c74a5953e9d52d4b01e",
+  "commandTraces": [
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-210-sound-layer",
+            "fields": {
+              "channel": "bgm",
+              "resourceId": "u14-field",
+              "volume": 100,
+              "fadeMs": 0
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-210-sound-layer",
+            "fields": {
+              "channel": "ambient",
+              "resourceId": "u14-ambient",
+              "volume": 25,
+              "fadeMs": 0
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-063-memorize-current-bgm",
+            "fields": {}
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-063-memorize-current-bgm",
+            "fields": {}
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-064-play-memorized-bgm",
+            "fields": {}
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-064-play-memorized-bgm",
+            "fields": {}
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-027-change-system-bgm",
+            "fields": {
+              "slot": "battle",
+              "resourceId": "u14-field"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-027-change-system-bgm",
+            "fields": {
+              "slot": "battle",
+              "resourceId": "u14-battle"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-028-change-system-se",
+            "fields": {
+              "slot": "defeat",
+              "resourceId": "u14-se"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-028-change-system-se",
+            "fields": {
+              "slot": "defeat",
+              "resourceId": "u14-defeat"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-027-change-system-bgm",
+            "fields": {
+              "slot": "field",
+              "resourceId": "u14-field"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-027-change-system-bgm",
+            "fields": {
+              "slot": "field",
+              "resourceId": "u14-other"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "text",
+            "body": "U14_END"
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "stopAudio",
+            "channel": "bgm"
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    }
+  ],
+  "importObservation": {
+    "status": "success",
+    "cleanup": {
+      "observer": true,
+      "timer": true,
+      "event": true,
+      "pagehide": true,
+      "abort": true
+    }
+  },
+  "exportImport": true,
+  "remoteWrites": [],
+  "exportSha256": "4690d81d9d54ebd269feec2f9945c8593fcd310379319b415b1b7e72be426466",
+  "exportedJsonSha256": "fad15797b6867dbb0de7b11b06193bddf82ed378060268d2ad394e62d5e466f6"
+}

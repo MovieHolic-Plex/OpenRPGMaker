@@ -324,7 +324,10 @@ export class AudioEngine {
     if (existing && existing.resourceId === request.resourceId) {
       existing.audio.playbackRate = playbackRate;
       this.applyPan(existing.audio, pan);
-      if (request.gain !== undefined) existing.gain = request.gain;
+      // An omitted gain is a request for the default, not "keep the previous one".
+      // Otherwise a later plain replay of the same track silently inherits an old
+      // authored volume and no longer matches the saved session record.
+      existing.gain = request.gain ?? 1;
       this.updateTrackVolume(existing);
       return;
     }
