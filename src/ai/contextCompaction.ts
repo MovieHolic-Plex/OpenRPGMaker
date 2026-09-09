@@ -71,7 +71,7 @@ export const AUTO_COMPACTION_TRIGGER_TOKENS = 200_000;
 
 /**
  * 모델별 컨텍스트 창. 접두사 기준으로만 판정한다 — 카탈로그(modelCatalog.ts)가 자주 늘어나고
- * cpen 게이트웨이는 `cpen/` 같은 제공자 접두사를 붙여 오기 때문에 정확 일치는 금방 낡는다.
+ * 게이트웨이가 제공자 접두사를 붙여 오는 경우가 있어 정확 일치는 금방 낡는다.
  */
 const CONTEXT_WINDOW_BY_MODEL_PREFIX: ReadonlyArray<readonly [string, number]> = [
   ["gemini-", 1_048_576],
@@ -80,13 +80,12 @@ const CONTEXT_WINDOW_BY_MODEL_PREFIX: ReadonlyArray<readonly [string, number]> =
   ["codex", 400_000],
   ["claude-", 200_000],
   ["grok-", 256_000],
-  ["qwen", 262_144],
   ["kimi", 262_144],
   ["glm-", 200_000],
 ];
 
 export function resolveContextWindow(model: string): number {
-  // 제공자 접두사(`cpen/`, `z-ai/` 등)를 떼고 모델 ID 만 본다.
+  // 제공자 접두사(`z-ai/` 등)를 떼고 모델 ID 만 본다.
   const normalized = model.trim().toLowerCase();
   const bare = normalized.slice(normalized.lastIndexOf("/") + 1);
   for (const [prefix, window] of CONTEXT_WINDOW_BY_MODEL_PREFIX) {

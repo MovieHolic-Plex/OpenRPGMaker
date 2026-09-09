@@ -270,7 +270,7 @@ describe("resolveBenchmarkRequest — api mode resolution + key guard", () => {
     ]);
   });
 
-  it("Given a fenced JSON response When reading Then normalizeCpenResponseText semantics extract the object", async () => {
+  it("Given a fenced JSON response When reading Then normalizeTilesetResponseText semantics extract the object", async () => {
     vi.stubEnv("VITE_LLM_API_URL", "");
     vi.stubEnv("VITE_LLM_API_KEY", "");
     vi.stubGlobal("localStorage", new MemoryStorage());

@@ -398,8 +398,8 @@ notes.chatRequestCount = captured.length - capturedBeforeChat;
 console.log("tileset channel…");
 const beforeTileset = captured.length;
 notes.tilesetResult = await page.evaluate(async () => {
-  const client = await import("/src/editor/panels/tilesetAiCpenClient.ts");
-  return await client.requestCpenTilesetMapping({
+  const client = await import("/src/editor/panels/tilesetAiClient.ts");
+  return await client.requestTilesetMapping({
     prompt: "이 타일셋의 지형/소품 칸을 분류해 주세요.",
     imageDataUrl:
       "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==",

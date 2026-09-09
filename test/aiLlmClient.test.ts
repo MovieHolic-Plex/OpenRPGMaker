@@ -280,55 +280,7 @@ describe("chatCompletion 스트리밍 SSE 파서", () => {
     });
   });
 
-  it("cpen 은 툴이 붙으면 gpt- 모델이라도 스트리밍을 끈다", async () => {
-    // 실측 400: {"code":"unsupported_streaming_request",
-    //           "message":"Streaming currently supports text-only cpen/gpt-* chat."}
-    // 모델 접두사만 보고 스트리밍을 켜던 탓에 에디터의 모든 턴이 400 이었다.
-    const { chatCompletion } = await loadClient();
-    mockFetchOnce(new Response(JSON.stringify({ choices: [{ message: { content: "ok" } }] }), { status: 200, headers: { "Content-Type": "application/json" } }));
-    await chatCompletion(
-      { ...CONFIG_BASE, baseUrl: "/api/cpen", model: "cpen/gpt-5-6-luna" },
-      {
-        messages: [{ role: "user", content: "hi" }],
-        stream: true,
-        tools: [{ type: "function", function: { name: "t", description: "d", parameters: { type: "object", properties: {} } } }],
-      },
-    );
-    expect(sentBody().stream).toBe(false);
-  });
-
-  it("cpen 은 툴이 없으면 gpt- 모델에서 스트리밍을 유지한다", async () => {
-    const { chatCompletion } = await loadClient();
-    mockFetchOnce(new Response("data: [DONE]\n\n", { status: 200 }));
-    await chatCompletion(
-      { ...CONFIG_BASE, baseUrl: "/api/cpen", model: "cpen/gpt-5-6-luna" },
-      { messages: [{ role: "user", content: "hi" }], stream: true },
-    );
-    expect(sentBody().stream).toBe(true);
-  });
-
-  it("cpen 요청에서는 메시지의 name 을 떼어낸다", async () => {
-    // 실측 400: {"code":"unsupported_field","param":"messages[3].name"}
-    // 첫 요청에는 tool 메시지가 없어 200 이 나고 툴을 한 번 쓴 다음 턴부터 깨졌다.
-    const { chatCompletion } = await loadClient();
-    mockFetchOnce(new Response(JSON.stringify({ choices: [{ message: { content: "ok" } }] }), { status: 200, headers: { "Content-Type": "application/json" } }));
-    await chatCompletion(
-      { ...CONFIG_BASE, baseUrl: "/api/cpen", model: "cpen/gpt-5-6-luna" },
-      {
-        messages: [
-          { role: "user", content: "hi" },
-          { role: "tool", tool_call_id: "call_1", name: "get_project_summary", content: "{}" },
-        ],
-        stream: false,
-      },
-    );
-    const messages = sentBody().messages as Record<string, unknown>[];
-    expect(messages[1]?.name).toBeUndefined();
-    // tool_call_id 는 남아야 어느 호출의 결과인지 알 수 있다.
-    expect(messages[1]?.tool_call_id).toBe("call_1");
-  });
-
-  it("비-cpen 공급자에서는 메시지의 name 을 보존한다", async () => {
+  it("공급자 제약이 없으면 메시지의 name 을 보존한다", async () => {
     const { chatCompletion } = await loadClient();
     mockFetchOnce(new Response(JSON.stringify({ choices: [{ message: { content: "ok" } }] }), { status: 200, headers: { "Content-Type": "application/json" } }));
     await chatCompletion(CONFIG_BASE, {

@@ -1,7 +1,7 @@
 // benchmark/llmClient.ts
 // 벤치마크 LLM 클라이언트(todo 9) — direct API / paste 두 모드.
 //
-// 설계(계획 todo 9 + src/editor/panels/tilesetAiCpenClient.ts:60-105 미러):
+// 설계(계획 todo 9 + src/editor/panels/tilesetAiClient.ts:60-105 미러):
 //  - BenchmarkSettings {mode:"api"|"paste", baseUrl?, apiKey?, model?} 를
 //    localStorage "oprn:benchmark-settings" 에 저장한다(키가 저장되는 유일한 곳).
 //  - api 모드: loadAiConfig()(@/ai/llmClient) 기본값 + settings 오버라이드로
@@ -20,11 +20,11 @@
 // Node 실행 계약: 모듈 top-level 에서 DOM(localStorage/document/window)을
 // 접근하지 않는다 — 저장소는 storageFromGlobals() 로 호출 시점에 늦게 해석한다.
 import { isProxyAuth, loadAiConfig, type AiConfig } from "@/ai/llmClient";
-import { normalizeCpenResponseText } from "@/editor/panels/tilesetAiCpenClient";
+import { normalizeTilesetResponseText } from "@/editor/panels/tilesetAiClient";
 
 export const BENCHMARK_SETTINGS_STORAGE_KEY = "oprn:benchmark-settings";
 
-/** 요청/응답 정책 상수 — tilesetAiCpenClient.ts 실측값과 동일. */
+/** 요청/응답 정책 상수 — tilesetAiClient.ts 실측값과 동일. */
 const MAX_OUTPUT_TOKENS = 8192;
 const TEMPERATURE = 0.2;
 const REQUEST_TIMEOUT_MS = 120_000;
@@ -90,7 +90,7 @@ type ChatCompletionResponse = {
   }[];
 };
 
-/** JSON-only 시스템 프롬프트 — tilesetAiCpenClient.ts:22-25 계약 스타일. */
+/** JSON-only 시스템 프롬프트 — tilesetAiClient.ts:22-25 계약 스타일. */
 const JSON_ONLY_SYSTEM_PROMPT =
   "Return exactly one JSON object answering the benchmark task. Do not include markdown, prose, code fences, or hidden reasoning. Numbers must be JSON integers.";
 
@@ -165,7 +165,7 @@ function messageContent(request: BenchmarkSendRequest): string | readonly unknow
   ];
 }
 
-// ── fetch 유틸(tilesetAiCpenClient.ts 미러) ─────────────────────────────
+// ── fetch 유틸(tilesetAiClient.ts 미러) ─────────────────────────────
 
 async function fetchWithTimeout(url: string, init: RequestInit): Promise<Response> {
   const controller = new AbortController();
@@ -191,7 +191,7 @@ function toSendError(error: unknown): BenchmarkSendError {
   return { kind: "network", message: `AI 호출 실패: ${error instanceof Error ? error.message : String(error)}` };
 }
 
-/** choices[0].message.content — 문자열 또는 content-part 배열(cpen 미러). */
+/** choices[0].message.content — 문자열 또는 content-part 배열. */
 function readResponseText(data: unknown): string | null {
   if (!data || typeof data !== "object" || !("choices" in data)) return null;
   const choices = (data as ChatCompletionResponse).choices;
@@ -273,7 +273,7 @@ async function sendViaApi(request: BenchmarkSendRequest, settings: BenchmarkSett
     if (responseText === null) {
       return { ok: false, error: { kind: "response", message: "AI 응답을 읽지 못했습니다(빈 content)." } };
     }
-    return { ok: true, text: normalizeCpenResponseText(responseText) };
+    return { ok: true, text: normalizeTilesetResponseText(responseText) };
   } catch (error) {
     return { ok: false, error: toSendError(error) };
   }

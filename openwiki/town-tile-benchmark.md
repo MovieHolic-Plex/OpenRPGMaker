@@ -114,7 +114,7 @@ LLM API 는 비트 단위로 재현되지 않는다. 그래서 재현성을 모�
 # API 없이 배선·채점기 점검 (정본 답변으로 9축 만점이 나와야 한다)
 npx tsx scripts/town-bench.mts demo
 
-# 실제 모델 (키는 .env.local 의 CPENROUTER_API_KEY — 출력·보관하지 않는다)
+# 실제 모델 (엔드포인트 BENCH_GATEWAY_URL, 키는 .env.local 의 BENCH_API_KEY — 출력·보관하지 않는다)
 npx tsx scripts/town-bench.mts run --models <opus,sonnet,haiku> --repeats 3
 
 npx tsx scripts/town-bench.mts replay   --in output/town-bench   # 재현성 게이트

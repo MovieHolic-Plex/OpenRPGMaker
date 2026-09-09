@@ -730,7 +730,7 @@ ${namedChips([...groundTruth.banned].sort((a, b) => a - b))}
 <h2><span class="num">08</span>실행 · 비용</h2>
 <div class="pipe">
   <div class="step"><div class="n">demo</div><h5>API 없이 점검</h5><p><code>npx tsx scripts/town-bench.mts demo</code><br>정본 답변으로 9축 만점이 나와야 한다.</p></div>
-  <div class="step"><div class="n">run</div><h5>실제 모델</h5><p><code>run --models a,b,c --repeats 3</code><br>키는 <code>.env.local</code> 의 <code>CPENROUTER_API_KEY</code> — 출력·보관하지 않는다.</p></div>
+  <div class="step"><div class="n">run</div><h5>실제 모델</h5><p><code>run --models a,b,c --repeats 3</code><br>키는 <code>.env.local</code> 의 <code>BENCH_API_KEY</code>, 엔드포인트는 <code>BENCH_GATEWAY_URL</code> — 출력·보관하지 않는다.</p></div>
   <div class="step"><div class="n">replay</div><h5>재현성 게이트</h5><p><code>replay --in output/town-bench</code><br>바이트가 다르면 exit 1.</p></div>
   <div class="step"><div class="n">report</div><h5>9축 리더보드</h5><p><code>report --in output/town-bench</code></p></div>
   <div class="step"><div class="n">evidence</div><h5>증거 시트</h5><p><code>evidence --in output/town-bench</code><br>모델 답을 실제 칩셋으로 합성한 PNG + HTML.</p></div>

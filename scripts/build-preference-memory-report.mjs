@@ -417,7 +417,7 @@ node scripts/run-vitest.mjs run \\
   test/preferenceMemory.test.ts test/preferenceSignals.test.ts \\
   test/systemPromptEnvelope.test.ts test/preferenceDistiller.test.ts \\
   test/aiPreferenceMemorySettings.test.ts test/contextBuilder.test.ts \\
-  test/agentUxPolicyPrompt.test.ts test/tilesetAiCpenClient.test.ts \\
+  test/agentUxPolicyPrompt.test.ts test/tilesetAiClient.test.ts \\
   --configLoader bundle</code></pre>
 
 <p class="sub">캡처 스크립트는 자격증명을 쓰지 않는다. <code>/v1/chat/completions</code> 를 가로채서 응답만 가짜로 만들고,

@@ -44,7 +44,6 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - LLM tile-placement benchmark on the DEFAULT chipset (combined_town, 9 axes matching the art director's questions, engine-derived ground truth, PNG evidence sheet): `openwiki/town-tile-benchmark.md`
    - Coding-agent benchmark (throw the repo + chipset at `claude -p` and score what it actually builds; fixture-independent village detection, quality + scale): `openwiki/agent-tile-benchmark.md`
    - Parallel agent isolation & verification gates: `openwiki/agent-worktrees.md` (read before running more than one coding agent).
-   - `openwiki/cpen-openwiki.md` for refreshing wiki content through CPEN/OpenWiki.
 
 
 ## Agent Configuration Map

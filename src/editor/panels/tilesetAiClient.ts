@@ -5,9 +5,9 @@
 // 타일셋 AI 가 무증상으로 죽어 있었다(실측 2026-08-21). 헤더·인증·엔드포인트 판정을 llmClient 에
 // 넘기면 그 사고 유형이 구조적으로 막히고, 1회 자동 재시도·타임아웃·전송 건강/모델 강등 보고도 함께 붙는다.
 //
-// 버린 것: routing.max_input_per_1m (cpenrouter 게이트웨이 전용 비용 상한). 동반 서비스 경로에서는
+// 버린 것: routing.max_input_per_1m (옛 게이트웨이 전용 비용 상한). 동반 서비스 경로에서는
 // 이미 보내지 않고 있었고, 인증이 OAuth 전용이 된 뒤 남은 경로가 없다. 비용은 모델 선택으로 통제한다.
-// 지킨 것: max_tokens 고정값(매핑 JSON 은 길지만 공급자 상한이 낮다 — 실측 cpen 8192 통과·32768 은 422), temperature 0.2.
+// 지킨 것: max_tokens 고정값(매핑 JSON 은 길지만 공급자 상한이 낮다 — 실측 8192 통과·32768 은 422), temperature 0.2.
 // 모델 티어·토큰 예산·준비 판정은 assistantEndpoint 의 표면 정책이 소유한다 — 이 표면이 자기만의
 // 준비 판정을 들고 있는 동안 조수와 기준이 달랐다: 모델을 보지 않아 `model: ""` 로도 요청이 나갔고,
 // 프로덕션 reader 는 사라졌지만 마이그레이션이 보존하는 레거시 `oprn:llmApiKey` 하나로 버튼이 열렸다.
@@ -16,7 +16,7 @@ import { chatCompletion, loadAiConfig, LlmError, type ContentPart } from "@/ai/l
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { composeSystemPrompt } from "@/ai/systemPromptEnvelope";
 
-export type CpenTilesetRequest = {
+export type TilesetAiRequest = {
   readonly prompt: string;
   readonly imageDataUrl: string;
 };
@@ -25,7 +25,7 @@ const SAMPLING_TEMPERATURE = 0.2;
 const JSON_ONLY_SYSTEM_PROMPT =
   "Return exactly one JSON object for the requested tileset metadata. Do not quote the schema, do not include markdown, prose, code fences, or hidden reasoning. If uncertain, fill minimumQuestions and keep fields conservative.";
 
-export async function requestCpenTilesetMapping(request: CpenTilesetRequest): Promise<string> {
+export async function requestTilesetMapping(request: TilesetAiRequest): Promise<string> {
   const config = loadAiConfig();
   if (!isAssistantEndpointReady(config, getAiConnectionStatus(config))) {
     return "AI 연결을 먼저 완료하세요. 편집기 헤더의 AI 설정에서 로그인한 뒤 다시 시도해 주세요.";
@@ -52,7 +52,7 @@ export async function requestCpenTilesetMapping(request: CpenTilesetRequest): Pr
     const responseText = typeof content === "string"
       ? content
       : (content ?? []).map((part) => (part.type === "text" ? part.text : "")).filter(Boolean).join("\n");
-    return responseText ? normalizeCpenResponseText(responseText) : "AI 응답을 읽지 못했습니다.";
+    return responseText ? normalizeTilesetResponseText(responseText) : "AI 응답을 읽지 못했습니다.";
   } catch (error) {
     // LlmError.message 는 humanizeLlmStatus 가 만든 문장이다(401/402/429 에 조치 안내가 붙는다).
     // 예전의 `HTTP <status> <body>` 원문 덤프보다 사용자가 할 일을 알 수 있다.
@@ -67,7 +67,7 @@ export async function requestCpenTilesetMapping(request: CpenTilesetRequest): Pr
   }
 }
 
-export function normalizeCpenResponseText(responseText: string): string {
+export function normalizeTilesetResponseText(responseText: string): string {
   const trimmed = responseText.trim();
   if (isMappingJson(trimmed)) return trimmed;
   const fencedJson = extractFencedJson(trimmed);
@@ -77,14 +77,14 @@ export function normalizeCpenResponseText(responseText: string): string {
   return responseText;
 }
 
-export function hasCpenTilesetApiKey(): boolean {
+export function hasTilesetAiAccess(): boolean {
   const config = loadAiConfig();
   return isAssistantEndpointReady(config, getAiConnectionStatus(config));
 }
 
 // llmClient 의 ContentPart 를 그대로 쓴다 — 사본 타입을 두면 필드가 어긋나도 컴파일러가
 // 못 잡는다(전송층을 합친 이유와 같다). ChatMessage.content 가 가변 배열이므로 readonly 를 붙이지 않는다.
-function messageContent(request: CpenTilesetRequest): string | ContentPart[] {
+function messageContent(request: TilesetAiRequest): string | ContentPart[] {
   if (!request.imageDataUrl.startsWith("data:image/")) return request.prompt;
   return [
     { type: "text", text: request.prompt },

@@ -69,7 +69,7 @@ schemaVersion 1은 DB 버전과 별개이며, 메모리 backend는 durable=false
 |---|---|---|---|---|
 | **1. 시스템 프롬프트 예산** | `src/ai/tokenBudget.ts`<br>`src/ai/contextBuilder.ts` | 맵 요약, 리소스 카탈로그, 스타일 문서 등 시스템 프롬프트 각 섹션을 글자 수 예산 안에 맞춰 조립 | 미해당 (시스템 프롬프트 생성 시점) | 시스템 프롬프트가 대화 공간을 과도하게 차지하지 않도록 제어 |
 | **2. 컨텍스트 압축** | `src/ai/contextCompaction.ts`<br>`src/ai/assistantSession.ts` | 전체 대화 토큰 추정/실측이 임계값을 넘으면 LLM 요약을 생성하여 앞부분 대화를 요약본 1개로 영구 치환 | **영구 치환 (`splice`)** | 대화가 길어져도 목표, 제약, 결정사항 기억을 유지 |
-| **3. 요청 메시지 클램프** | `src/ai/messageBudget.ts` | 전송 직전 per-request 사본을 만들어 오래된 툴 결과 축약 및 이미지 제거, 필요 시 짝 맞춘 툴/어시스턴트 드롭 | **불변 (사본만 축소)** | CPEN/공급자의 64,000자(실측) 유효성 오류(422) 방지 |
+| **3. 요청 메시지 클램프** | `src/ai/messageBudget.ts` | 전송 직전 per-request 사본을 만들어 오래된 툴 결과 축약 및 이미지 제거, 필요 시 짝 맞춘 툴/어시스턴트 드롭 | **불변 (사본만 축소)** | 공급자의 64,000자(실측) 유효성 오류(422) 방지 |
 
 ---
 
@@ -87,7 +87,7 @@ schemaVersion 1은 DB 버전과 별개이며, 메모리 backend는 durable=false
 | `ESTIMATED_IMAGE_CHARS` | `4800` | `src/ai/contextCompaction.ts:77` | 원격/짧은 URL 이미지의 최소 등가 문자 수 바닥값 |
 | `COMPACTION_SUMMARY_MARKER` | `"[context-compaction-summary]"` | `src/ai/contextCompaction.ts:247` | 압축 요약 메시지 식별용 구조 마커 |
 | `TOOL_RESULT_MAX_CHARS` | `2000` | `src/ai/contextCompaction.ts:280` | 요약 직렬화 시 tool 결과 문자열 1개당 최대 보존 길이 |
-| `REQUEST_MESSAGE_CHAR_BUDGET` | `52_000` | `src/ai/messageBudget.ts:10` | messageBudget 클램프 안전 상한 (CPEN 64,000자 대비 여유) |
+| `REQUEST_MESSAGE_CHAR_BUDGET` | `52_000` | `src/ai/messageBudget.ts:10` | messageBudget 클램프 안전 상한 (과거 게이트웨이 64,000자 대비 여유) |
 | `DEFAULT_BUDGET_CHARS` | `12000` | `src/ai/contextBuilder.ts:39` | contextBuilder 시스템 프롬프트 기본 문자 예산 |
 
 ---
@@ -102,7 +102,7 @@ schemaVersion 1은 DB 버전과 별개이며, 메모리 backend는 durable=false
 
 ### 압축 트리거 판정 (`shouldCompact`, `resolveThresholdContextTokens`)
 - 모델 접두사에 따라 컨텍스트 윈도우를 계산한다 (`src/ai/contextCompaction.ts:48-69`). 예: `gemini-`는 1,048,576, `claude-`는 200,000, `gpt-5`/`codex`는 400,000.
-- 트리거 임계값 = `창 - reserveTokens`. 여기서 "창" 은 **모델 창이 아니라 작업 창**이다 — `assistantSession.runCompaction` 은 `resolveWorkingContextTokens(config)`(= `min(모델 창, WORKING_CONTEXT_TOKEN_CAP)`, CPEN 경로 예외)를 넘긴다.
+- 트리거 임계값 = `창 - reserveTokens`. 여기서 "창" 은 **모델 창이 아니라 작업 창**이다 — `assistantSession.runCompaction` 은 `resolveWorkingContextTokens(config)`(= `min(모델 창, WORKING_CONTEXT_TOKEN_CAP)`)를 넘긴다.
 - 작업 창 상한이 `AUTO_COMPACTION_TRIGGER_TOKENS + reserveTokens = 216,384` 이므로 창이 넉넉한 모델(gemini 1,048,576 / gpt-5 400,000)의 **지점은 정확히 200,000 토큰**이다. 창이 그보다 좁은 모델(claude-/glm- 200,000)은 자기 창이 먼저 걸린다(`200,000 - 16,384 = 183,616`).
 - 예전 상한은 `DEFAULT_CONTEXT_WINDOW`(128,000)여서 지점이 111,616 이었다. 창 1M 짜리 기본 모델이 **창의 11% 에서 앞부분 기억을 요약으로 바꿔 버렸다** — 창이 남는데도 이르게 잊었다. 반대로 모델 창을 그대로 쓰면 1,032,192 가 되어 사실상 압축이 없다. 200,000 은 그 사이에 명시한 지점이다.
 - 게이지(`describeContextUsage`)도 같은 창을 받는다(`getContextUsage` 가 `contextWindow: resolveWorkingContextTokens(this.config)` 를 넘긴다). 모델 창으로 세면 gemini 에서 "맥락 3%" 인데 압축이 도는 모순이 보인다.

@@ -8,9 +8,9 @@
 //      `configForLiteModel(loadAiConfig())`, 영역 작업은 거기에 maxToolCalls 캡, 타일셋 분석은
 //      `{...config, maxTokens: 8192}`, 구조 키트는 생 `loadAiConfig()`. 다섯 군데가 각자 정했다.
 //   2. 연결이 준비됐는지 누가 판정하는가 — 채팅·클러스터·이벤트는 `isAiConfigReady`,
-//      타일셋 분석은 자기만의 `hasCpenTilesetApiKey`, 구조 키트는 **아무 판정도 하지 않았다**.
+//      타일셋 분석은 자기만의 `hasTilesetAiAccess`, 구조 키트는 **아무 판정도 하지 않았다**.
 //
-// 2번이 실제 결함을 만들었다. `hasCpenTilesetApiKey` 는 (a) `config.model` 을 보지 않고
+// 2번이 실제 결함을 만들었다. `hasTilesetAiAccess` 는 (a) `config.model` 을 보지 않고
 // (b) 프로덕션 reader 는 사라진 레거시 `oprn:llmApiKey` localStorage 키를 폴백으로 읽었다. 그래서
 // 모델이 빈 설정에서 조수는 "설정 필요" 로 막는데 타일셋 AI 버튼은 열려 있고 `model: ""` 로 요청이
 // 나갔으며, 남아 있던 옛 키 하나가 나머지 전체와 어긋난 판정을 만들었다. 저장소 마이그레이션은 호환을
@@ -49,8 +49,8 @@ interface SurfacePolicy {
   readonly tier: ModelTier;
   /**
    * 출력 토큰 예산을 이 값으로 못박는다. 표면 산출물의 길이가 사용자 예산과 무관하게 정해질 때만 쓴다.
-   * 하한(Math.max)이 아니라 정확 지정이다. providerCapability 가 cpen 요청은 이미 8192로 clamp하므로
-   * cpen에는 중복이고, 실제 효과는 companion 등 더 큰 예산을 지원하는 공급자도 8192로 낮추는 것이다.
+   * 하한(Math.max)이 아니라 정확 지정이다. 실제 효과는 companion 등 더 큰 예산을 지원하는
+   * 공급자도 이 값으로 낮추는 것이다.
    * 새 정책이 아니라 통합 전 타일셋 분석의 정확 지정 동작을 그대로 물려받는다.
    */
   readonly maxTokens?: number;
@@ -62,8 +62,8 @@ interface SurfacePolicy {
 export const REGION_SURFACE_MAX_TOOL_CALLS = 2000;
 
 /**
- * 타일셋 매핑 응답의 상속된 고정 출력 예산. cpen은 전송층이 어차피 8192로 clamp하므로 이 핀의
- * 실효는 더 큰 예산을 지원하는 companion/Codex/Antigravity도 8192로 낮추는 데 있다. 이 통합에서
+ * 타일셋 매핑 응답의 상속된 고정 출력 예산. 이 핀의 실효는 더 큰 예산을 지원하는
+ * companion/Codex/Antigravity 도 8192로 낮추는 데 있다. 이 통합에서
  * 새로 고른 값이 아니라 통합 전 타일셋 분석의 `max_tokens: 8192` 동작을 보존한 것이다.
  */
 export const TILESET_ANALYSIS_MAX_TOKENS = 8192;

@@ -14,7 +14,6 @@ export interface AiModelCatalogGroup {
  * **조용히 제공자 기본 모델로 떨어진다** — 실측(2026-08-21, 동반 서비스에 같은 본문을 모델만 바꿔 재생):
  *   gpt-5.5           → model=gpt-5.5  "OK"
  *   gpt-5.1-codex-max → model=gpt-5.5  "OK"   ← 카탈로그 밖. 요청한 모델이 무시됐다.
- *   cpen/gpt-5-6-luna → model=gpt-5.5  "OK"   ← 마찬가지
  * 그래서 목록은 pi-catalog 와 동일해야 한다(실측 2026-08-27 `getBundledModels("openai-codex")` 8종).
  * 첫 항목은 제공자 기본값(gpt-5.6-sol)을 유지한다.
  */
@@ -66,7 +65,7 @@ const ANTIGRAVITY_MODELS: readonly string[] = [
 
 /**
  * 제공자별 모델 목록. 에디터가 고를 수 있는 제공자가 둘뿐이므로 카탈로그도 둘뿐이다.
- * 게이트웨이·cpenrouter·qwencloud 그룹은 걷어냈다 — 그 모델들에 닿을 제공자가 레지스트리에 없다.
+ * 옛 게이트웨이 그룹은 걷어냈다 — 그 모델들에 닿을 제공자가 레지스트리에 없다.
  */
 const PROVIDER_MODELS: Readonly<Record<string, readonly string[]>> = {
   [ANTIGRAVITY_PROVIDER_ID]: ANTIGRAVITY_MODELS,
@@ -112,7 +111,7 @@ export function defaultModelForAuthMode(authMode: "chatgpt" | "apiKey", provider
  * `resolveModel` 이 오류 대신 제공자 기본 모델로 조용히 강등시키므로(근거는 CODEX_MODELS 주석의
  * 실측), 다른 모델이 답한 줄 모르게 두기보다 미리 거부해 loadAiConfig 가 그 제공자의 기본값으로
  * 교정하게 한다. 이것이 남의 네임스페이스 ID(Antigravity 에 gpt-…, Codex 에 gemini-…, 옛 기본값
- * z-ai/…·cpen/…)가 그대로 실려 나가 400 이 되던 실측 장에를 막는다.
+ * z-ai/… 같은 제공자 접두사)가 그대로 실려 나가 400 이 되던 실측 장애를 막는다.
  *
  * 예외 하나: Antigravity 는 gemini 네임스페이스를 번들링 밖이라도 통과시킨다 — 카탈로그는 굳어
  * 있는 스냅샷이고, 아직 번들링에 없는 새 gemini 변형을 사용자가 직접 입력하는 것은 정상 사용이다.

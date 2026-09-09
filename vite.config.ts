@@ -68,24 +68,9 @@ function gatewayApiKey(mode: string): string {
   return (fromEnvFiles ?? process.env.APITOPIA_API_KEY ?? "").trim();
 }
 
-// qwencloud(알리바바 MaaS OpenAI 호환) 경로 /api/qwen 의 키도 서버 전용 QWENCLOUD_API_KEY (non-VITE)
-// 에서 읽는다 — gatewayApiKey 와 같은 이유: Vite 는 .env 를 process.env 에 넣지 않으므로 loadEnv 필수.
-function qwenCloudApiKey(mode: string): string {
-  const fromEnvFiles = loadEnv(mode, process.cwd(), "").QWENCLOUD_API_KEY;
-  return (fromEnvFiles ?? process.env.QWENCLOUD_API_KEY ?? "").trim();
-}
-
-// cpenrouter.space(OpenAI 호환 게이트웨이) 경로 /api/cpen 의 키도 서버 전용 CPENROUTER_API_KEY
-// (non-VITE) 에서 읽는다 — gatewayApiKey 와 같은 이유: Vite 는 .env 를 process.env 에 넣지 않으므로
-// loadEnv 필수.
-function cpenRouterApiKey(mode: string): string {
-  const fromEnvFiles = loadEnv(mode, process.cwd(), "").CPENROUTER_API_KEY;
-  return (fromEnvFiles ?? process.env.CPENROUTER_API_KEY ?? "").trim();
-}
-
 /**
  * /supabase 프록시가 주입하는 Supabase anon 키. 서버 전용(non-VITE) 이라 클라이언트 번들에
- * 인라인되지 않는다 — /api/ai·/api/qwen·/api/cpen 과 정확히 같은 패턴이다.
+ * 인라인되지 않는다 — /api/ai 와 정확히 같은 패턴이다.
  *
  * 왜: VITE_SUPABASE_ANON_KEY 는 접두사 때문에 번들에 그대로 박힌다. 지금 rpg_zzu 는 RLS 가
  * 없고(DRAFT_20260706_auth_rls.sql 미적용) anon 에게 SELECT/INSERT/UPDATE 가 열려 있으므로,
@@ -111,11 +96,11 @@ function isLoopbackAddress(address: string | undefined): boolean {
   return host === "::1" || host.startsWith("127.");
 }
 
-// /api/ai, /api/qwen, /api/cpen 프록시는 서버 측에서 유료 게이트웨이 키를 주입한다. dev 서버는
+// /api/ai 프록시는 서버 측에서 유료 게이트웨이 키를 주입한다. dev 서버는
 // 0.0.0.0 에 바인드되므로 (LAN 기기 테스트용) 가드 없이는 같은 네트워크의 누구나 이 경로로 키를
 // 무제한 사용할 수 있다 — 오픈 릴레이. 아래 CORS 미들웨어와 동일한 위협 모델을 프록시에도 적용한다.
 // Origin 헤더는 위조 가능하므로 소켓 원격 주소가 루프백인지로 판정한다.
-const LOCAL_ONLY_PROXY_PATHS = ["/api/ai", "/api/qwen", "/api/cpen"] as const;
+const LOCAL_ONLY_PROXY_PATHS = ["/api/ai"] as const;
 function localOnlyAiProxyPlugin(): Plugin {
   return {
     name: "rpgzzu-local-only-ai-proxy",
@@ -517,18 +502,6 @@ export default defineConfig(({ mode }) => {
       "[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요."
     );
   }
-  const qwenKey = qwenCloudApiKey(mode);
-  if (!qwenKey) {
-    console.warn(
-      "[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요."
-    );
-  }
-  const cpenKey = cpenRouterApiKey(mode);
-  if (!cpenKey) {
-    console.warn(
-      "[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요."
-    );
-  }
   // 키가 있는 경로만 프록시를 등록한다(빈 Bearer 전송 금지). 접근은 localOnlyAiProxyPlugin 이 루프백으로 제한.
   const proxy: Record<string, ProxyOptions> = {};
   // Supabase(Kong) 는 평문 HTTP 라, dev 서버를 HTTPS 로 열면 브라우저가 mixed content 로 차단한다.
@@ -568,31 +541,6 @@ export default defineConfig(({ mode }) => {
       rewrite: (path: string) => path.replace(/^\/api\/ai/, ""),
       headers: {
         Authorization: `Bearer ${apitopiaKey}`,
-      },
-    };
-  }
-  if (qwenKey) {
-    // qwencloud(알리바바 MaaS) OpenAI 호환 엔드포인트. rewrite 로 /api/qwen 접두사를 제거하면
-    // /api/qwen/chat/completions → target 뒤의 /compatible-mode/v1/chat/completions 로 이어진다.
-    proxy["/api/qwen"] = {
-      target: "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1",
-      changeOrigin: true,
-      rewrite: (path: string) => path.replace(/^\/api\/qwen/, ""),
-      headers: {
-        Authorization: `Bearer ${qwenKey}`,
-      },
-    };
-  }
-  if (cpenKey) {
-    // cpenrouter.space OpenAI 호환 게이트웨이(라이브 검증: POST /v1/chat/completions, GET /v1/models).
-    // rewrite 로 /api/cpen 접두사를 제거하면 /api/cpen/chat/completions → target 뒤의
-    // /chat/completions, 즉 https://cpenrouter.space/v1/chat/completions 로 이어진다.
-    proxy["/api/cpen"] = {
-      target: "https://cpenrouter.space/v1",
-      changeOrigin: true,
-      rewrite: (path: string) => path.replace(/^\/api\/cpen/, ""),
-      headers: {
-        Authorization: `Bearer ${cpenKey}`,
       },
     };
   }
@@ -671,7 +619,7 @@ export default defineConfig(({ mode }) => {
       : {
           ignored: ["**/.omo/**", "**/output/**", "**/tmp/**", "**/test-results/**"],
         },
-    // 상대 baseUrl(/api/ai, /api/qwen, /api/cpen)을 쓰는 클라이언트는 Authorization 을 보내지 않고
+    // 상대 baseUrl(/api/ai)을 쓰는 클라이언트는 Authorization 을 보내지 않고
     // 이 프록시가 주입한다. 키가 없는 경로는 등록하지 않는다(빈 Bearer 전송 금지). 접근은
     // localOnlyAiProxyPlugin 이 루프백으로 제한.
     proxy: Object.keys(proxy).length > 0 ? proxy : undefined,

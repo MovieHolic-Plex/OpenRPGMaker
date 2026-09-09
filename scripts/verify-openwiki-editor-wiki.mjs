@@ -17,7 +17,7 @@ const requiredPages = [
   },
   {
     file: "quickstart.md",
-    terms: ["AGENTS.md", "PROJECT_WIKI.md", "src/main.ts", "src/editor", "src/player", "src/project", "npm run openwiki:cpen"],
+    terms: ["AGENTS.md", "PROJECT_WIKI.md", "src/main.ts", "src/editor", "src/player", "src/project"],
   },
   {
     file: "architecture.md",
@@ -35,13 +35,9 @@ const requiredPages = [
     file: "testing.md",
     terms: ["npm test", "npm run typecheck", "playwright", "vitest", "test/e2e"],
   },
-  {
-    file: "cpen-openwiki.md",
-    terms: ["CPEN_API_KEY", "OPENAI_BASE_URL", "stream", "128,000", "npm run openwiki:cpen"],
-  },
 ];
 
-const secretPatterns = [/cpen_live_[A-Za-z0-9_-]+/u, /sk-[A-Za-z0-9_-]{20,}/u];
+const secretPatterns = [/sk-[A-Za-z0-9_-]{20,}/u];
 
 function readPage(file) {
   return readFileSync(path.join(wikiDir, file), "utf8");

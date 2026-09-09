@@ -35,7 +35,8 @@ import {
   type TownRunRecord,
 } from "../src/benchmark/town/types.ts";
 
-const GATEWAY_URL = "https://cpenrouter.space/v1/chat/completions";
+// 벤치용 OpenAI 호환 엔드포인트·키는 환경에서 받는다 — 특정 게이트웨이에 묶지 않는다.
+const GATEWAY_URL = process.env.BENCH_GATEWAY_URL ?? "";
 const DEFAULT_OUT_DIR = path.join("output", "town-bench");
 const REQUEST_TIMEOUT_MS = 180_000;
 
@@ -64,18 +65,18 @@ function parseArgs(argv: readonly string[]): { command: string; flags: Record<st
 function readGatewayKey(): string {
   const envPath = ".env.local";
   if (!fs.existsSync(envPath)) {
-    throw new Error(`${envPath} 이 없습니다 — CPENROUTER_API_KEY 를 설정하세요.`);
+    throw new Error(`${envPath} 이 없습니다 — BENCH_API_KEY 를 설정하세요.`);
   }
   for (const line of fs.readFileSync(envPath, "utf8").split(/\r?\n/)) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith("//")) continue;
     const index = trimmed.indexOf("=");
     if (index < 0) continue;
-    if (trimmed.slice(0, index).trim() !== "CPENROUTER_API_KEY") continue;
+    if (trimmed.slice(0, index).trim() !== "BENCH_API_KEY") continue;
     const value = trimmed.slice(index + 1).trim();
     if (value) return value;
   }
-  throw new Error(".env.local 에 CPENROUTER_API_KEY 가 없습니다.");
+  throw new Error(".env.local 에 BENCH_API_KEY 가 없습니다.");
 }
 
 function modelSlug(model: string): string {

@@ -907,7 +907,7 @@ function renderActions(
         class: "tileset-db-small-button",
         text: "분석 시작",
         attrs: { type: "button" },
-        dataset: { testid: "tileset-ai-cpen-analyze" },
+        dataset: { testid: "tileset-ai-analyze" },
         on: { click: () => void actions.onAnalyze() },
       }),
       el("button", {
@@ -922,7 +922,7 @@ function renderActions(
 }
 
 function readActionButtons(actions: HTMLElement): ActionButtons {
-  const analyzeButton = actions.querySelector('[data-testid="tileset-ai-cpen-analyze"]');
+  const analyzeButton = actions.querySelector('[data-testid="tileset-ai-analyze"]');
   const applyButton = actions.querySelector('[data-testid="tileset-ai-answer-apply"]');
   if (!(analyzeButton instanceof HTMLButtonElement) || !(applyButton instanceof HTMLButtonElement)) {
     throw new Error("AI modal action buttons were not rendered.");

@@ -2,7 +2,7 @@ import {
   buildProposalQuestion,
   renderAiProposalModal,
 } from "@/editor/panels/tilesetAiProposalModal";
-import { hasCpenTilesetApiKey } from "@/editor/panels/tilesetAiCpenClient";
+import { hasTilesetAiAccess } from "@/editor/panels/tilesetAiClient";
 import { applyAiMappingAnswer } from "@/editor/panels/tilesetAiMappingParser";
 import { createAiSelectionDragController } from "@/editor/panels/tilesetAiSelectionDrag";
 import { store } from "@/project/store";
@@ -27,7 +27,7 @@ const aiSelectionDrag = createAiSelectionDragController({
 
 export function renderAiQuestionPanel(tileset: TilesetDef, rerender: () => void, onApplyTiles: (tiles: readonly number[]) => void): HTMLElement {
   const selectedTiles = selectedAiTileIds();
-  const hasApiKey = hasCpenTilesetApiKey();
+  const hasApiKey = hasTilesetAiAccess();
   const answerInput = el("textarea", {
     class: "tileset-ai-answer",
     value: answerDraft,

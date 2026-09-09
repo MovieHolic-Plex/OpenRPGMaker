@@ -1,8 +1,8 @@
 /**
  * Fail-closed response contract for the tileset-vision benchmark.
  *
- * Mirrors the response-normalization mechanism of normalizeCpenResponseText
- * (src/editor/panels/tilesetAiCpenClient.ts): strip markdown fences, then
+ * Mirrors the response-normalization mechanism of normalizeTilesetResponseText
+ * (src/editor/panels/tilesetAiClient.ts): strip markdown fences, then
  * extract a balanced JSON object from the text. The parsed value is then
  * validated per BenchmarkTaskKind and ANY violation rejects the WHOLE answer
  * with a structured BenchmarkContractError naming the offending field —
@@ -238,7 +238,7 @@ type JsonExtraction =
   | { readonly kind: "none" };
 
 /**
- * Mirror of normalizeCpenResponseText (tilesetAiCpenClient.ts): accept the
+ * Mirror of normalizeTilesetResponseText (tilesetAiClient.ts): accept the
  * raw text when it parses as JSON, then try a ```json fence, then extract the
  * first balanced {...} object. Distinguishes "found but malformed" so the
  * caller can report invalid-json instead of silently treating it as prose.

@@ -124,8 +124,8 @@ generous 와 절대 겹치지 않는다** — 겹치면 같은 픽이 가점이�
 ## 실행
 
 ```bash
-# 라이브 실행 (키는 .env.local CPENROUTER_API_KEY, 출력·보관본에 절대 안 남는다)
-npx tsx scripts/interior-bench.mts run --models cpen/gpt-5-4-mini,cpen/zen/mimo-v2.5-free --repeats 2
+# 라이브 실행 (엔드포인트 BENCH_GATEWAY_URL, 키는 .env.local BENCH_API_KEY — 출력·보관본에 절대 안 남는다)
+npx tsx scripts/interior-bench.mts run --models <model-a>,<model-b> --repeats 2
 
 # 재현성 게이트 — 네트워크 없이 재채점, 바이트 다르면 exit 1
 npx tsx scripts/interior-bench.mts replay --in output/interior-bench
@@ -139,7 +139,7 @@ npx vitest run test/interiorBench.test.ts --config vitest.config.ts
 
 게이트웨이가 죽어 있으면(실측: `provider_5xx` / `upstream_cooldown` 503) 시도가
 `error` 로 기록되고 점수는 **null** 이다 — 0점이 아니다. "채점 불가"와 "0점"은 다른
-사실이므로 섞지 않는다. 모델 가용성은 `GET https://cpenrouter.space/v1/models` 로 먼저 확인할 것.
+사실이므로 섞지 않는다. 모델 가용성은 게이트웨이의 `GET /v1/models` 로 먼저 확인할 것.
 
 ## 안티-게이밍 규칙
 

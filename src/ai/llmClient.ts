@@ -90,9 +90,9 @@ export const DEFAULT_CHATGPT_BASE_URL = companionCompletionsBaseUrl();
 export const DEFAULT_MODEL = "gemini-3.7-flash";
 // DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
 export const DEFAULT_LITE_MODEL = "gemini-3.7-flash";
-// cpenrouter(cpenrouter.space) 모델 함정(실측): 짧은 max_tokens 로 호출하면 추론 토큰만 먼저
-// 소비되고 content 가 빈 문자열로 돌아온다(실측: max_tokens 16 → content "" 이면서 completion
-// 13토큰 소비, 512 → 정상). 추론 토큰을 먼저 쓰는 모델이므로 출력 예산을 넉넉히 잡아야 한다.
+// 추론 토큰을 먼저 쓰는 모델 함정(실측): 짧은 max_tokens 로 호출하면 추론 토큰만 소비되고
+// content 가 빈 문자열로 돌아온다(실측: max_tokens 16 → content "" 이면서 completion 13토큰
+// 소비, 512 → 정상). 그래서 출력 예산을 넉넉히 잡는다.
 export const DEFAULT_MAX_TOKENS = 200_000;
 export const DEFAULT_MAX_TOOL_CALLS = 2000;
 
@@ -319,7 +319,7 @@ export interface ChatRequest {
   disableTransientRetry?: boolean;
   // JSON 전용 응답 강제(OpenAI 호환). 타일셋 매핑·성향 증류처럼 산출물이 JSON 객체 하나인 호출용.
   // 이 필드가 없던 동안 그런 호출들은 llmClient를 우회해 직접 fetch 했고, 그래서 OAuth 분기와
-  // 재시도·타임아웃을 각자 재구현하다 조용히 죽었다(tilesetAiCpenClient 주석의 2026-08-21 사고).
+  // 재시도·타임아웃을 각자 재구현하다 조용히 죽었다(tilesetAiClient 주석의 2026-08-21 사고).
   response_format?: { type: "json_object" };
   // 분류/추출 호출의 표집 온도. 대화 경로는 지정하지 않아 공급자 기본값을 쓴다(현행 동작).
   // 직접 fetch 하던 타일셋 매핑이 0.2를 쓰고 있었고, 흡수하면서 그 값을 잃지 않으려 통과시킨다.
@@ -435,16 +435,11 @@ function headers(config: AiConfig): Record<string, string> {
 
 // ── 공급자 능력(capability) 선언 ─────────────────────────────────────────────
 // 공급자마다 지원하는 요청 필드가 다르다. 제약을 하드코딩 전역 하향으로 때우면 큰 max_tokens·
-// 스트리밍·reasoning 을 지원하는 다른 공급자(apitopia/qwencloud/ChatGPT)까지 손해 본다.
-// 그래서 제약을 데이터로 선언하고 본문 구성(requestBody)·전송 방식(chatCompletionOnce)에서 걸러낸다.
+// 스트리밍·reasoning 을 지원하는 공급자까지 손해 본다. 그래서 제약을 데이터로 선언하고 본문
+// 구성(requestBody)·전송 방식(chatCompletionOnce)에서 걸러낸다.
 //
-// cpenrouter(CPEN v1) 실측 근거(dev 서버 경유 curl, 모델 cpen/gemini-3-flash):
-//   - max_tokens 8192        → 200 OK
-//   - max_tokens 32768       → 422 "Request body does not match the CPEN v1 chat schema"
-//   - stream: true           → 400 "Streaming currently supports text-only cpen/gpt-* chat"
-//   - reasoning:{effort:low} → 400 "This OpenAI-compatible field is not supported by CPEN v1"
-// 즉 cpen 은 reasoning 전체 미지원, 스트리밍은 cpen/gpt-* 만 지원, max_tokens 는 8192 가 실측
-// 통과 안전값이다(정확한 상한은 미확인 — 32768 이 실패했으므로 통과가 확인된 8192 를 상한으로 쓴다).
+// 지금 남은 공급자는 제약이 없어 providerCapability 가 전부 지원을 돌려준다. 제약이 있는
+// 공급자가 다시 들어오면 이 선언에 그 공급자만 추가하면 된다.
 export interface ProviderCapability {
   /** 스트리밍(stream:true) 지원 여부. false 면 비스트리밍 경로를 탄다. */
   readonly supportsStreaming: boolean;
@@ -452,51 +447,21 @@ export interface ProviderCapability {
   readonly supportsReasoningField: boolean;
   /** max_tokens 상한. undefined 면 제한 없음. */
   readonly maxTokensCeiling?: number;
-  /** 메시지의 `name` 필드 지원 여부. false 면 본문에서 떼어낸다(실측: CPEN v1 400). */
+  /** 메시지의 `name` 필드 지원 여부. false 면 본문에서 떼어낸다. */
   readonly supportsMessageName: boolean;
 }
 
 /**
- * cpenrouter 경로 식별. model 접두사(`cpen/`)를 주 판정으로 쓴다 — 사용자가 절대 URL
- * (https://cpenrouter.space/v1 등)로 게이트웨이를 직접 치면 baseUrl 에 `/api/cpen` 이 나타나지
- * 않지만 model ID 는 여전히 `cpen/` 로 시작하므로 model 쪽이 더 견고하다. baseUrl(`/api/cpen`)은
- * 프록시 경로를 쓰는 기본 사례를 잡는 보조 판정으로 OR 한다.
- */
-function isCpenProvider(config: AiConfig): boolean {
-  if (config.model.trim().toLowerCase().startsWith("cpen/")) return true;
-  return config.baseUrl.trim().toLowerCase().includes("/api/cpen");
-}
-
-/**
- * 설정에서 공급자 능력을 판정한다. 비-cpen 공급자는 전부 지원(제한 없음)으로 둔다.
+ * 설정에서 공급자 능력을 판정한다. 지금 남은 공급자(apitopia·동반 서비스 OAuth)는 스트리밍·
+ * reasoning·message name 을 모두 지원하므로 제한이 없다.
  *
- * hasTools: 이번 요청에 tools 배열이 붙는가. cpen 스트리밍 판정에 필요하다 — 오류 문구의
- * "text-only" 가 문자 그대로라, 툴이 하나라도 붙으면 gpt-* 라도 스트리밍이 거부된다.
+ * hasTools 는 공급자별 제약이 다시 생길 때를 위한 자리다 — 현재 판정에는 쓰이지 않는다.
  */
 export function providerCapability(
-  config: AiConfig,
-  opts?: { readonly hasTools?: boolean },
+  _config: AiConfig,
+  _opts?: { readonly hasTools?: boolean },
 ): ProviderCapability {
-  if (!isCpenProvider(config)) {
-    return { supportsStreaming: true, supportsReasoningField: true, supportsMessageName: true };
-  }
-  // cpen 스트리밍은 "text-only cpen/gpt-* chat" 만 지원한다. 두 조건 다 필요하다:
-  //   모델이 cpen/gpt-* 이고 (gemini-* 는 툴이 없어도 스트리밍 불가)
-  //   이번 요청에 tools 가 없어야 한다.
-  // 실측(2026-07-26, 에디터 실제 본문 tools=45):
-  //   cpen/gpt-5-6-luna  stream=true  → 400 unsupported_streaming_request
-  //                                     "Streaming currently supports text-only cpen/gpt-* chat."
-  //   cpen/gpt-5-6-luna  stream=false → 200
-  // 모델 접두사만 보고 스트리밍을 켜던 탓에 에디터의 모든 턴이 400 이었다.
-  const isGpt = config.model.trim().toLowerCase().startsWith("cpen/gpt-");
-  const supportsStreaming = isGpt && !opts?.hasTools;
-  return {
-    supportsStreaming,
-    supportsReasoningField: false,
-    supportsMessageName: false,
-    // 실측: 8192 통과, 32768 실패. 정확한 상한은 모르므로 통과가 확인된 8192 를 안전 상한으로 쓴다.
-    maxTokensCeiling: 8192,
-  };
+  return { supportsStreaming: true, supportsReasoningField: true, supportsMessageName: true };
 }
 
 // 공급자 제약으로 본문/전송 방식을 조정한 사실을 개발자에게 한 번만 알린다(매 요청 스팸 방지).
@@ -511,10 +476,9 @@ function warnCapabilityOnce(key: string, message: string): void {
  * 메시지에서 `name` 을 떼어낸 사본. 원본은 건드리지 않는다.
  *
  * OpenAI 는 tool 결과 메시지에 `{role:"tool", tool_call_id, name, content}` 를 허용하지만
- * CPEN v1 은 이 필드를 거부한다(실측 400):
- *   {"code":"unsupported_field","param":"messages[3].name"}
- * 첫 요청에는 tool 메시지가 없어 200 이 나고 **툴을 한 번 쓴 다음 턴부터** 깨졌다 —
- * 그래서 "AI 가 답은 하는데 아무것도 못 만든다" 로 보였다.
+ * 이 필드를 거부하는 공급자가 있었다(실측 400 unsupported_field messages[3].name).
+ * 첫 요청에는 tool 메시지가 없어 200 이 나고 **툴을 한 번 쓴 다음 턴부터** 깨져서
+ * "AI 가 답은 하는데 아무것도 못 만든다" 로 보였다.
  * tool_call_id 가 어느 호출의 결과인지 이미 지목하므로 name 은 없어도 의미가 보존된다.
  */
 function stripMessageNames(messages: readonly ChatMessage[]): readonly ChatMessage[] {
@@ -528,7 +492,7 @@ function stripMessageNames(messages: readonly ChatMessage[]): readonly ChatMessa
 
 function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): string {
   const capability = providerCapability(config, { hasTools: Boolean(req.tools && req.tools.length > 0) });
-  // 공급자 max_tokens 상한이 있으면 클램프한다(실측: cpen 은 32768 → 422, 8192 → 200).
+  // 공급자 max_tokens 상한이 선언돼 있으면 클램프한다.
   let maxTokens = config.maxTokens;
   if (capability.maxTokensCeiling !== undefined && maxTokens > capability.maxTokensCeiling) {
     warnCapabilityOnce(
@@ -549,14 +513,14 @@ function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): strin
   if (req.tools && req.tools.length > 0) { body.tools = req.tools; body.tool_choice = req.tool_choice ?? "auto"; }
   if (req.response_format) body.response_format = req.response_format;
   if (typeof req.temperature === "number" && Number.isFinite(req.temperature)) body.temperature = req.temperature;
-  // reasoning 필드는 공급자가 지원할 때만 붙인다(실측: cpen 은 reasoning → 400).
+  // reasoning 필드는 공급자가 지원할 때만 붙인다(실측: 과거 게이트웨이는 reasoning → 400).
   if (config.reasoningEffort && config.reasoningEffort !== "off") {
     if (capability.supportsReasoningField) {
       body.reasoning = { effort: config.reasoningEffort };
     } else {
       warnCapabilityOnce(
         `reasoning:${config.model}`,
-        `[llmClient] 공급자 제약: ${config.model} 은(는) reasoning 필드를 지원하지 않아 본문에서 뺐습니다(실측: CPEN v1 400).`,
+        `[llmClient] 공급자 제약: ${config.model} 은(는) reasoning 필드를 지원하지 않아 본문에서 뺐습니다.`,
       );
     }
   }
@@ -769,7 +733,7 @@ function parseNonStream(json: Record<string, unknown>, requestedModel?: string):
 // 일시 오류(네트워크/429/5xx) 자동 재시도 1회의 백오프(도그푸딩 결함 ⑥).
 export const LLM_RETRY_BACKOFF_MS = 1500;
 
-// 단일 LLM 요청 수명 상한(실측 2026-08-15 자율 런): cpen 게이트웨이가 매달려 응답을
+// 단일 LLM 요청 수명 상한(실측 2026-08-15 자율 런): 게이트웨이가 매달려 응답을
 // 안 주면 턴이 영원히 대기했다. 게이트웨이 정상 응답은 50초 안팎까지 관측되므로 넉넉한
 // 180초로 매달림만 잡고 정상 체감은 해치지 않는다. 초과 시 504 로 일시 오류 처리(재시도 경로).
 export const LLM_REQUEST_TIMEOUT_MS = 180_000;
@@ -921,7 +885,7 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
     throw new LlmError("LLM 엔드포인트(baseUrl)가 설정되지 않았습니다. 어시스턴트 설정에서 OpenAI 호환 baseUrl을 입력하세요.", 400);
   }
   const wantsStream = req.stream ?? Boolean(req.onToken || req.onReasoning);
-  // 공급자가 스트리밍을 지원하지 않으면 비스트리밍으로 확정한다(실측: cpen 은 stream:true → 400).
+  // 공급자가 스트리밍을 지원하지 않으면 비스트리밍으로 확정한다(실측: 과거 게이트웨이는 stream:true → 400).
   // 여기서 확정해야 아래 requestBody(본문)와 응답 파싱 분기가 같은 stream 값으로 일관된다 —
   // 본문에서만 stream 을 false 로 바꾸면 응답 파싱이 SSE 를 기대해 깨진다.
   let stream = wantsStream;
@@ -929,13 +893,13 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
   if (stream && !providerCapability(config, { hasTools }).supportsStreaming) {
     warnCapabilityOnce(
       `stream:${config.model}:${hasTools ? "tools" : "text"}`,
-      `[llmClient] 공급자 제약: ${config.model}${hasTools ? "(툴 포함 요청)" : ""} 은(는) 스트리밍을 지원하지 않아 비스트리밍으로 전환했습니다(실측: CPEN v1 400).`,
+      `[llmClient] 공급자 제약: ${config.model}${hasTools ? "(툴 포함 요청)" : ""} 은(는) 스트리밍을 지원하지 않아 비스트리밍으로 전환했습니다.`,
     );
     stream = false;
   }
   let response: Response;
   try {
-    // 실측(2026-08-15 자율 런): cpen 게이트웨이가 요청을 조용히 매달아(응답 없음) 턴이
+    // 실측(2026-08-15 자율 런): 게이트웨이가 요청을 조용히 매달아(응답 없음) 턴이
     // 영원히 대기했다(수동 중단 외 복구 불가). 요청 수명을 LLM_REQUEST_TIMEOUT_MS 로 제한해
     // 매달림을 일시 오류로 바꾸고 기존 재시도 경로로 넘긴다(공급자 상한 — 게이트웨이는 느려도
     // 정상 응답이 50초 안팎이라 넉넉히 잡는다). 호출자 signal(중단)과 합성한다.

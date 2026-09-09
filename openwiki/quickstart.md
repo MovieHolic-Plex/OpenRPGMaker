@@ -164,7 +164,7 @@ SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwi
 - 소유 경계·사전 읽기 순서·데스크톱 UI 진상: `openwiki/PROJECT_WIKI.md` — 이 장의 모판이 되는 페이지다.
 - 영역 진입 전 함정 목록: `openwiki/editor-pre-edit-routing.md`, `openwiki/runtime-pre-edit-routing.md`.
 - 검증·증거 규약: `openwiki/testing.md`. 병렬 에이전트·워크트리: `openwiki/agent-worktrees.md`.
-- 위키 유지: CPEN 기반 재생은 `npm run openwiki:cpen` (동작은 `openwiki/cpen-openwiki.md`), 구조 검사는 `npm run openwiki:verify`.
+- 위키 유지: 구조 검사는 `npm run openwiki:verify`, 좌표 재생성은 `npm run openwiki:index`.
 - 페이지는 대부분 **날짜가 붙은 실측 기록**이다. 같은 주제에 여러 날짜가 있으면 **최신 날짜가 정본**이고,
   소스와 어긋나면 소스가 이긴다 — 고친 뒤 그 페이지도 같은 변경에서 갱신한다.
 - 문서가 이름을 부르는 파일이 없을 수도 있다(실측 60여 건, 정확한 목록은 INDEX). 대개 의도적으로 삭제된 모듈의 기록이다.

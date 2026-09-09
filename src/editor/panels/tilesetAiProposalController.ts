@@ -1,5 +1,5 @@
 import { editorState } from "@/editor/editorState";
-import { requestCpenTilesetMapping } from "@/editor/panels/tilesetAiCpenClient";
+import { requestTilesetMapping } from "@/editor/panels/tilesetAiClient";
 import { normalizeAiTileMetadata } from "@/editor/panels/tilesetAiMetadataNormalizer";
 import { analyzeTilesetSelection } from "@/editor/panels/tilesetAiMappingRules";
 import {
@@ -40,8 +40,8 @@ export function createTilesetAiProposalController(options: TilesetAiProposalCont
     analyze: async (lockedAnswer) => {
       await waitForSnapshot(options.readSnapshot);
       const snapshot = options.readSnapshot();
-      const prompt = cpenPrompt(options, mapContext, snapshot.summary, lockedAnswer);
-      const result = await requestCpenTilesetMapping({
+      const prompt = tilesetMappingPrompt(options, mapContext, snapshot.summary, lockedAnswer);
+      const result = await requestTilesetMapping({
         imageDataUrl: snapshot.imageDataUrl,
         prompt,
       });
@@ -76,7 +76,7 @@ async function waitForSnapshot(readSnapshot: () => TempMapSnapshot): Promise<voi
   }
 }
 
-function cpenPrompt(
+function tilesetMappingPrompt(
   model: TilesetAiProposalControllerOptions,
   mapContext: string,
   tempMapSummary: string,

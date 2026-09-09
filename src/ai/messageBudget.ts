@@ -1,20 +1,20 @@
 // ai/messageBudget.ts
 // 요청 총 문자 클램프 — 공급자가 받아들일 수 있는 크기 안에 요청을 가둔다. 자율 런(48단계 예산)은
-// 뷰포트 이미지(베이스64 수만 자)와 누적 툴 결과로 금방 커진다(CPEN 실측: 88,408자 → 422
+// 뷰포트 이미지(베이스64 수만 자)와 누적 툴 결과로 금방 커진다(실측: 88,408자 → 422
 // validation_error). 전송 직전 오래된 메시지를 요약·이미지 제거로 압축한다. 영구 대화
 // (this.messages)는 건드리지 않고 요청 전용 사본을 만든다 — 감사/하네스 원본 보존.
 //
-// 예산은 **모델에서 끌어낸다**(resolveRequestCharBudget). 고정 52,000자는 사라진 공급자(CPEN)의
+// 예산은 **모델에서 끌어낸다**(resolveRequestCharBudget). 고정 52,000자는 이제 없는 공급자의
 // 검증 상한이었고, 그것이 창 1M 토큰짜리 모델의 기억까지 잘라내고 있었다.
 import { AUTO_COMPACTION_TRIGGER_TOKENS, DEFAULT_COMPACTION_SETTINGS, resolveContextWindow } from "./contextCompaction";
 import type { AiConfig, ChatMessage, ContentPart } from "./llmClient";
 import { DEFAULT_CHARS_PER_TOKEN } from "./tokenBudget";
 
 /**
- * 공급자를 모를 때 쓰는 안전 예산 — CPEN 하드 상한 64,000 대비 여유를 남긴 값이다.
+ * 공급자를 모를 때 쓰는 안전 예산 — 과거 게이트웨이의 하드 상한 64,000 대비 여유를 남긴 값이다.
  *
  * **이 값은 폴백이고, 모델을 알면 resolveRequestCharBudget 이 대신 쓰인다.** 그대로 두면
- * CPEN(레지스트리에서 사라진 공급자)의 검증 상한이 창 1M 토큰짜리 모델에도 걸린다 —
+ * 이제 없는 공급자의 검증 상한이 창 1M 토큰짜리 모델에도 걸린다 —
  * 근거는 resolveRequestCharBudget 주석.
  */
 export const REQUEST_MESSAGE_CHAR_BUDGET = 52_000;
@@ -40,19 +40,12 @@ const KEEP_RECENT_MESSAGES = 6;
  */
 export const WORKING_CONTEXT_TOKEN_CAP = AUTO_COMPACTION_TRIGGER_TOKENS + DEFAULT_COMPACTION_SETTINGS.reserveTokens;
 
-/** cpenrouter 경로 판정 — llmClient.isCpenGateway 와 같은 규칙(순환 import 회피용 국소 사본). */
-function isCpenRoute(model: string, baseUrl: string): boolean {
-  if (model.trim().toLowerCase().startsWith("cpen/")) return true;
-  return baseUrl.trim().toLowerCase().includes("/api/cpen");
-}
-
 /**
  * 요청 총 문자 예산을 **모델에서** 끌어낸다.
  *
  * 왜 필요한가(2026-08-30 조사): 옛 구현은 어느 공급자든 52,000자로 클램프했다. 그 숫자의 출처는
- * CPEN 의 64,000자 검증 상한(422)인데 **CPEN 은 제공자 레지스트리에서 사라졌다** — 지금 고를 수
- * 있는 것은 Antigravity 와 Codex 둘뿐이고 CPEN 전송 코드는 `cpen/` 접두사로 게이트돼 있어
- * 주입 게이트웨이 외에는 닿지 않는다. 그런데도 클램프만 무조건 걸려서, 창 1,048,576 토큰짜리
+ * 이제 없는 게이트웨이의 64,000자 검증 상한(422)이었고, 그 공급자는 레지스트리에서 사라졌다 —
+ * 지금 고를 수 있는 것은 Antigravity 와 Codex 둘뿐이다. 그런데도 클램프만 무조건 걸려서, 창 1,048,576 토큰짜리
  * gemini-3.7-flash 가 **창의 1.3% 지점에서 대화 기억을 버렸다**
  * (pi-catalog `google-antigravity/gemini-3.7-flash`: contextWindow 1048576 / maxTokens 65536).
  *
@@ -63,10 +56,9 @@ function isCpenRoute(model: string, baseUrl: string): boolean {
  *
  * 그래서 예산을 압축 계약에서 끌어낸다: 남기기로 한 분량 + 요약·응답 여유 + 시스템 프롬프트 자리.
  * 이러면 클램프는 압축이 방금 한 일을 되돌리지 않는 **뒷받침**이 되고, 순서가 제자리로 온다.
- * 모델 창으로 한 번 더 조이고, CPEN 경로에서는 그 공급자의 하드 상한을 그대로 지킨다.
+ * 모델 창으로 한 번 더 조인다.
  */
 export function resolveRequestCharBudget(config: Pick<AiConfig, "model" | "baseUrl">): number {
-  if (isCpenRoute(config.model, config.baseUrl)) return REQUEST_MESSAGE_CHAR_BUDGET;
   // 클램프는 작업 창 전체를 담는다 — 그래야 압축이 방금 만든 결과(요약 + 잔존 꼬리)가 다시
   // 잘리지 않는다. 폴백(52,000)보다 좁아지지는 않는다.
   const workingChars = resolveWorkingContextTokens(config) * DEFAULT_CHARS_PER_TOKEN;
@@ -79,15 +71,13 @@ export function resolveRequestCharBudget(config: Pick<AiConfig, "model" | "baseU
  * 모델 창을 그대로 쓰면 gemini(1M)의 문턱이 1,032,192 토큰이 되는데 클램프가 그 79분의 1 지점에서
  * 먼저 걸려 요약이 영영 돌지 않았다. 둘을 같은 창에 묶어 요약 → 클램프 순서를 세운다.
  *
- * CPEN 경로는 예외다. 그 공급자의 하드 상한(52,000자 = 13,000토큰)은 압축 계약(잔존 20,000 +
- * 여유 16,384 = 36,384토큰)을 애초에 담지 못한다. 여기서 작업 창을 클램프에 맞추면 문턱이
+ * 하드 상한이 낮은 공급자(52,000자 = 13,000토큰)는 압축 계약(잔존 20,000 + 여유 16,384 =
+ * 36,384토큰)을 애초에 담지 못한다. 그런 경로에서 작업 창을 클램프에 맞추면 문턱이
  * `13,000 - 16,384 = -3,384` 로 **음수가 되어 매 라운드 요약 LLM 이 돈다**(구현 중 실측으로 잡음).
- * 요약해도 결과가 클램프에 안 들어가 이득이 없으므로, 옛 동작(모델 창 = 사실상 요약 없음)을
- * 유지하고 클램프에 맡긴다.
+ * 그래서 작업 창은 모델 창을 따르고 크기 제한은 클램프에 맡긴다.
  */
 export function resolveWorkingContextTokens(config: Pick<AiConfig, "model" | "baseUrl">): number {
   const window = resolveContextWindow(config.model);
-  if (isCpenRoute(config.model, config.baseUrl)) return window;
   return Math.min(window, WORKING_CONTEXT_TOKEN_CAP);
 }
 

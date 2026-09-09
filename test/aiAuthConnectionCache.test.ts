@@ -83,12 +83,12 @@ async function renderAuthPanel(): Promise<{ root: FakeElement; dispose: () => vo
 describe("인증 변경은 공유 AI gate 캐시를 즉시 갱신한다", () => {
   it("같은 제공자에서 로그인하면 reload 없이 타일셋 gate가 열리고 로그아웃하면 다시 닫힌다", async () => {
     const { refreshAiConnectionStatus } = await import("@/editor/panels/aiConnectionStatus");
-    const { hasCpenTilesetApiKey } = await import("@/editor/panels/tilesetAiCpenClient");
+    const { hasTilesetAiAccess } = await import("@/editor/panels/tilesetAiClient");
 
     const bootRefresh = refreshAiConnectionStatus();
     await settleNextFetch({ connected: false });
     await bootRefresh;
-    expect(hasCpenTilesetApiKey()).toBe(false);
+    expect(hasTilesetAiAccess()).toBe(false);
 
     const { root, dispose } = await renderAuthPanel();
     await settleNextFetch({ connected: false }); // panel initial status
@@ -102,7 +102,7 @@ describe("인증 변경은 공유 AI gate 캐시를 즉시 갱신한다", () => 
     await login.promise;
     await settleNextFetch({ connected: true, env: false, planType: "plus" }); // login follow-up
     await settleNextFetch({ connected: true, env: false, planType: "plus" }); // shared re-warm
-    expect(hasCpenTilesetApiKey()).toBe(true);
+    expect(hasTilesetAiAccess()).toBe(true);
 
     const logout = deferred<ChatGptAuthStatus>();
     disconnectCompanionAuth.mockReturnValueOnce(logout.promise);
@@ -111,7 +111,7 @@ describe("인증 변경은 공유 AI gate 캐시를 즉시 갱신한다", () => 
     logout.resolve({ connected: false });
     await logout.promise;
     await settleNextFetch({ connected: false }); // shared re-warm after logout applyStatus
-    expect(hasCpenTilesetApiKey()).toBe(false);
+    expect(hasTilesetAiAccess()).toBe(false);
 
     dispose();
   });

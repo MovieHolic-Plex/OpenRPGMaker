@@ -1,4 +1,4 @@
-import { hasCpenTilesetApiKey } from "@/editor/panels/tilesetAiCpenClient";
+import { hasTilesetAiAccess } from "@/editor/panels/tilesetAiClient";
 import { loadKnowledgeProposal } from "@/editor/panels/tilesetKnowledgeWorkspaceState";
 import { applyAiReviewProposals } from "@/editor/tilesetAiNativeReviewApply";
 import { analyzeTilesetKnowledge, tilesetKnowledgeFingerprint, type TilesetAiKnowledgeAnalysis } from "@/editor/tilesetAiNativeAnalysis";
@@ -64,7 +64,7 @@ export async function runTilesetAiReview(tileset: TilesetDef, rerender: () => vo
   const requestId = `tileset-review-${requestSequence += 1}`;
   session.state = startAiReview(session.state, requestId);
   rerender();
-  if (!analyzer && !hasCpenTilesetApiKey()) {
+  if (!analyzer && !hasTilesetAiAccess()) {
     session.state = markAiReviewOffline(session.state, "AI 연결이 필요합니다. 설정 후 다시 분석할 수 있습니다.");
     rerender();
     return;

@@ -130,50 +130,6 @@ npm run gates -- --only typecheck
 
 `verify-gates.mjs` 는 `spawnSync().status` 로 **진짜 종료 코드**를 읽는다.
 
-## 백그라운드 워커 (qwencloud / qwen3.8-max-preview)
-
-감독자(Claude)의 `Agent` 툴은 Claude 모델만 띄운다. qwen 에 일을 시키려면 툴 루프를 직접
-돌려야 하며, 그 구현이 `scripts/qwen-worker.mjs` 다.
-
-```bash
-npm run qwen -- --task <task.json>
-npm run qwen -- --prompt "..." --cwd ../rpg-zzu-<name> --name <name>
-```
-
-`task.json` 형식:
-
-```json
-{
-  "name": "짧은-작업명",
-  "cwd": "C:/Users/USER/Downloads/rpg-zzu-<worktree>",
-  "maxSteps": 40,
-  "prompt": "무엇을 · 어떻게 검증할지 · 무엇을 건드리지 말지"
-}
-```
-
-- **엔드포인트**: `https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1`
-  (Alibaba Cloud MaaS, OpenAI 호환). 키는 `QWENCLOUD_API_KEY` — env 우선, 없으면
-  `<cwd>/.env.local` 에서 읽는다(`wt create` 가 워크트리에 복사해둔다).
-- **툴**: `read_file` `write_file` `edit_file` `list_files` `grep` `run_bash`
-- **경로 이탈 차단**: 모든 파일 툴이 `--cwd` 밖을 거부한다. 다만 `run_bash` 는 셸이라 완전
-  격리가 아니다 — **반드시 워크트리를 `--cwd` 로 준다. 메인 워킹트리를 주지 말 것.**
-- **산출물**: `.omo/qwen-tasks/<name>-<stamp>/` 에 `log.jsonl`(툴 호출 전량) ·
-  `status.json`(상태·스텝·토큰) · `result.md`(워커의 최종 보고)
-
-### 감독자 사용법
-
-`run_in_background` 로 띄우고 즉시 손을 뗀다. 종료되면 알림이 온다. 그 사이 감독자는 계속
-대화 가능하다. 여러 작업을 동시에 던지려면 **워크트리를 작업당 하나씩** 만든다.
-
-### 프롬프트에 반드시 넣을 것
-
-`log.jsonl` 이 툴 호출을 전부 남기므로 워커가 실제로 무엇을 읽고 고쳤는지 사후 검증할 수 있다.
-그래도 프롬프트에 아래를 명시해야 결과가 쓸 만해진다:
-
-1. **검증 명령과 기대치** — "npx vitest run <파일> 이 통과해야 한다"
-2. **건드리지 말 것** — 인접하지만 손대면 연쇄로 깨지는 영역을 미리 차단한다
-3. **막히면 추측 말고 보고** — 반쯤 고친 상태로 끝내는 것이 조용히 틀리는 것보다 낫다
-
 ## 감독 절차
 
 1. `npm run wt create <name>` — 에이전트마다 하나

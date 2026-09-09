@@ -1,5 +1,5 @@
-import type { CpenTilesetRequest } from "@/editor/panels/tilesetAiCpenClient";
-import { requestCpenTilesetMapping } from "@/editor/panels/tilesetAiCpenClient";
+import type { TilesetAiRequest } from "@/editor/panels/tilesetAiClient";
+import { requestTilesetMapping } from "@/editor/panels/tilesetAiClient";
 import { renderTilesetAtlasImage } from "@/editor/panels/tilesetAiTempMapImage";
 import type { TilesetAiReviewProposal, TilesetAiReviewResult } from "@/editor/tilesetAiNativeReviewModel";
 import { tileMetaLocked } from "@/project/tilesetPalette";
@@ -10,7 +10,7 @@ import type { PassFlag, TilesetDef } from "@/project/types";
 type AnalysisOptions = {
   readonly feedback?: readonly string[];
   readonly renderImage?: (tileset: TilesetDef) => Promise<string>;
-  readonly request?: (request: CpenTilesetRequest) => Promise<string>;
+  readonly request?: (request: TilesetAiRequest) => Promise<string>;
 };
 
 export type TilesetAiKnowledgeAnalysis =
@@ -24,7 +24,7 @@ export async function analyzeTilesetKnowledge(
   const fingerprint = tilesetKnowledgeFingerprint(tileset);
   const imageDataUrl = await (options.renderImage ?? renderTilesetAtlasImage)(tileset);
   const prompt = buildTilesetKnowledgePrompt(tileset, options.feedback ?? []);
-  const rawAnswer = await (options.request ?? requestCpenTilesetMapping)({ imageDataUrl, prompt });
+  const rawAnswer = await (options.request ?? requestTilesetMapping)({ imageDataUrl, prompt });
   const parsed = parseTilesetKnowledgeAnswer(rawAnswer, tileset, fingerprint);
   return parsed
     ? { kind: "success", rawAnswer, review: parsed }

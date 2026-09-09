@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **61쪽 / 2296KB / 약 639,748 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **60쪽 / 2292KB / 약 638,663 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,8 +15,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 370KB | 97KB ⚠상한 초과 — 절을 더 쪼개라 | 1789 | ~104,526 |
-| `openwiki/editor-ai-tools.md` | 164KB | 79KB ⚠상한 초과 — 절을 더 쪼개라 | 1205 | ~45,293 |
+| `openwiki/editor-ai-panel.md` | 370KB | 97KB ⚠상한 초과 — 절을 더 쪼개라 | 1789 | ~104,509 |
+| `openwiki/editor-ai-tools.md` | 164KB | 79KB ⚠상한 초과 — 절을 더 쪼개라 | 1205 | ~45,286 |
 | `openwiki/editor-database.md` | 257KB | 56KB ⚠상한 초과 — 절을 더 쪼개라 | 1350 | ~73,776 |
 | `openwiki/editor-event-authoring.md` | 130KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 691 | ~37,356 |
 | `openwiki/editor-event-commands.md` | 53KB | 32KB | 158 | ~14,203 |
@@ -25,7 +25,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-battle.md` | 133KB | 31KB | 539 | ~37,775 |
 | `openwiki/runtime-project-schema.md` | 116KB | 46KB | 703 | ~30,724 |
 | `openwiki/runtime-sessions.md` | 89KB | 46KB | 318 | ~23,590 |
-| `openwiki/testing.md` | 181KB | 48KB | 1648 | ~49,557 |
+| `openwiki/testing.md` | 181KB | 48KB | 1648 | ~49,556 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -49,10 +49,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 건수 | 참조 |
 |---|---|---|
-| `openwiki/agent-worktrees.md` | 2 | `result.md`, `task.json` |
-| `openwiki/ai-workflow.md` | 2 | `src/ai/plannerSkip.ts`, `test/volumeContractSession.test.ts` |
+| `openwiki/ai-workflow.md` | 3 | `src/ai/plannerSkip.ts`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/bgm-catalog.md` | 4 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json` |
-| `openwiki/editor-ai-panel.md` | 34 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
+| `openwiki/editor-ai-panel.md` | 35 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/tilesetAiClient.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
 | `openwiki/editor-ai-tools.md` | 4 | `aiCommandBar.ts`, `aiProposalModal.ts`, `test/intentClarify.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/editor-database.md` | 18 | `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `output/evidence/battle-animation-ux/p1-implementation.md`, `output/evidence/battle-animation-ux/p2-implementation.md`, `output/evidence/battle-rules-ux/st_01a07318-manual-qa.md`, `output/evidence/battle-rules-ux/verification.md`, `output/evidence/concept-expansion/supabase-proof.json`, `output/evidence/concept-v2/supabase-proof.json`, `output/evidence/monster-concepts/b1/fix.md`, `output/evidence/monster-concepts/p2/verification.md`, `output/evidence/monster-concepts/r1/fix.md`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/generated-effect-showcase-2026-08-24.html`, `reveal-fix.md`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs`, `troops.part-1.css` |
 | `openwiki/editor-event-authoring.md` | 6 | `audit-before.md`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `verify-shots/page-preview-probe/02-preview-open.png`, `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md` |
@@ -73,7 +72,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
 | `openwiki/se-catalog.md` | 7 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
-| `openwiki/testing.md` | 15 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
+| `openwiki/testing.md` | 16 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
 | `openwiki/village-design.md` | 1 | `output/village-direction/index.html` |
@@ -81,17 +80,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 ## 페이지별 절 좌표
 
-### `openwiki/PROJECT_WIKI.md` — 10KB · 121줄 · ~2,551 토큰
+### `openwiki/PROJECT_WIKI.md` — 10KB · 120줄 · ~2,535 토큰
 
 - `L5` Purpose
 - `L16` Required pre-edit read order
-- `L57` Project identity
-- `L66` Main ownership boundaries
-- `L77` How an AI should use this wiki
-- `L88` Supabase DB mandatory (see root `AGENTS.md`)
-- `L94` Desktop UI integration truth (2026-08-11)
-- `L102` Per-project wiki structure
-- `L118` Staleness rule
+- `L56` Project identity
+- `L65` Main ownership boundaries
+- `L76` How an AI should use this wiki
+- `L87` Supabase DB mandatory (see root `AGENTS.md`)
+- `L93` Desktop UI integration truth (2026-08-11)
+- `L101` Per-project wiki structure
+- `L117` Staleness rule
 
 ### `openwiki/agent-tile-benchmark.md` — 11KB · 195줄 · ~3,365 토큰
 
@@ -108,7 +107,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L177` 턴 예산이 결과를 지배한다
 - `L191` 비용 주의
 
-### `openwiki/agent-worktrees.md` — 14KB · 218줄 · ~4,354 토큰
+### `openwiki/agent-worktrees.md` — 12KB · 174줄 · ~3,722 토큰
 
 - `L6` 적용 범위
 - `L16` 명령
@@ -119,13 +118,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L94` 통합 작업의 검증 대상 고정 (2026-09-06)
   - `L113` 왜 기준선 방식인가
   - `L124` 왜 별도 스크립트인가
-- `L133` 백그라운드 워커 (qwencloud / qwen3.8-max-preview)
-  - `L163` 감독자 사용법
-  - `L168` 프롬프트에 반드시 넣을 것
-- `L177` 감독 절차
-- `L188` 알려진 함정
+- `L133` 감독 절차
+- `L144` 알려진 함정
 
-### `openwiki/ai-context-compaction.md` — 16KB · 190줄 · ~4,784 토큰
+### `openwiki/ai-context-compaction.md` — 16KB · 190줄 · ~4,783 토큰
 
 - `L7` 대화 복원과 실행 체크포인트의 경계 (2026-09-09)
 - `L40` 1. 3개 예산·압축 계층의 분리와 실행 순서
@@ -156,7 +152,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L40` 3단계 — 이름 삭제 (메이저 정리)
 - `L45` 개별 판단 메모
 
-### `openwiki/ai-workflow.md` — 32KB · 255줄 · ~8,647 토큰
+### `openwiki/ai-workflow.md` — 32KB · 255줄 · ~8,612 토큰
 
 - `L5` Before changing files
 - `L13` While changing files
@@ -237,14 +233,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L167` Ops notes
 - `L171` Gotchas learned
 
-### `openwiki/cpen-openwiki.md` — 1KB · 30줄 · ~378 토큰
-
-- `L7` Required config
-- `L12` Compatibility notes
-- `L18` Output limits
-- `L24` Practical tips
-
-### `openwiki/editor-ai-panel.md` — 370KB · 1789줄 · ~104,526 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 370KB · 1789줄 · ~104,509 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` Run outcome line: four independent axes (2026-09-09)
 - `L23` P3 run retirement and stale drafts (2026-09-07)
@@ -288,7 +277,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1756` Assistant deck width resize (2026-09-07)
   - `L1768` Legacy AI contract verification (2026-09-08)
 
-### `openwiki/editor-ai-tools.md` — 164KB · 1205줄 · ~45,293 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 164KB · 1205줄 · ~45,286 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` Exact project values and sourced declarations (2026-09-08)
 - `L31` Measured zero-prop rejection diagnostics (2026-09-07)
@@ -585,7 +574,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L158` 검증 경로
 - `L172` 전체 게이트 후속 수정 (2026-09-05)
 
-### `openwiki/interior-tile-benchmark.md` — 9KB · 158줄 · ~2,810 토큰
+### `openwiki/interior-tile-benchmark.md` — 9KB · 158줄 · ~2,814 토큰
 
 - `L11` Floor contract correction (2026-09-08)
 - `L20` 왜 interior 를 정답지로 쓰는가
@@ -658,7 +647,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L107` Combat acceptance slice
 - `L119` Verification
 
-### `openwiki/quickstart.md` — 16KB · 179줄 · ~4,765 토큰
+### `openwiki/quickstart.md` — 16KB · 179줄 · ~4,754 토큰
 
 - `L6` 0. 여기서 에이전트가 실제로 헤매는 이유 (실측 2026-08-30)
 - `L17` 1. 환경 — 여기가 틀리면 이후 전부 헛수고
@@ -921,7 +910,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/testing.md` — 181KB · 1648줄 · ~49,557 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 181KB · 1648줄 · ~49,556 토큰 · 통째읽기 잘림
 
 - `L1` P5 delivery gates and the P4 regressions they caught (2026-09-09)
   - `L3` Open: checkpoint writes still slow the authoring loop
@@ -995,7 +984,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1635` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
 - `L1645` 실내 조립·형상 검증 (2026-09-05)
 
-### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,010 토큰
+### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,019 토큰
 
 - `L15` 9문항 = 9숫자
 - `L34` 정답은 손으로 쓰지 않는다
