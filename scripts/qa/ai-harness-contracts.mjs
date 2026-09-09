@@ -215,6 +215,8 @@ try {
   });
   page = await context.newPage();
   page.on('pageerror', error => report.errors.push(safeError(error)));
+  page.on('console', message => { const text = message.text();
+    if (text.startsWith('[aiRunCheckpoint] QA diagnose') || text.startsWith('[aiRunRecovery] QA diagnose')) record('qa-diagnose', { text: text.slice(0, 900) }); });
   await context.route('**/*', route => {
     const task = runRoute(route).catch(async error => { report.errors.push(safeError(error)); gate?.arrived.reject(error); gate?.completed.reject(error); await route.abort('failed'); });
     routes.add(task); task.then(() => routes.delete(task), () => routes.delete(task)); return task;
@@ -241,7 +243,10 @@ try {
   if (values.scenario === 'late-cancel' && !report.behaviorVerdict) report.behaviorVerdict = 'SETUP-FAILURE';
   report.failure = safeError(error); process.exitCode = 1; record('FAIL', { error: report.failure });
   if (page && !page.isClosed()) {
-    try { await page.screenshot({ path: `${out}/failure.png` }); report.failureEvents = await page.evaluate(() => window.qa?.events ?? []); }
+    try { await page.screenshot({ path: `${out}/failure.png` }); report.failureEvents = await page.evaluate(() => window.qa?.events ?? []);
+      // 실패 사유는 세션 감사 문자열에만 남는 경우가 있다(예: agent_run:save-failed). 이벤트만 담으면
+      // "왜 실패했는지 모르는 실패"가 되어 다음 실행이 같은 자리를 다시 헤맨다.
+      report.failureAudit = await page.evaluate(() => window.qa?.session?.getAuditEntries?.() ?? []); }
     catch (error) { report.errors.push(safeError(error)); }
   }
 } finally {

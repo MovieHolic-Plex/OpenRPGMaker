@@ -45,7 +45,8 @@ export function p2Observations(harness) {
         getterAvailable, ...(getterAvailable ? { getter: qa.session.getRunOutcome() } : {}),
         harness: qa.session.getHarnessSnapshot(), bridgeHarness: window.__oprnAiBridge.harness(), bridgeResult: qa.bridgeResult,
         result: qa.result, turnOptions: qa.turnOptions, acceptance: qa.session.getAcceptanceSnapshot(), activity: qa.activity,
-        ui: outcomeNodes.map(node => ({ execution: node.dataset.execution, goal: node.dataset.goal, delivery: node.dataset.delivery })),
+        ui: outcomeNodes.map(node => ({ execution: node.dataset.execution, goal: node.dataset.goal, delivery: node.dataset.delivery,
+          imageDelivery: node.dataset.imageDelivery ?? null })),
         events: qa.events, proof: qa.session.getRunEndProof(),
         live: { title: live.system.titleScreen?.title, mapId: map.id, width: map.width, height: map.height, events: map.events,
           layoutPlan: map.layoutPlan, remoteEnabled: qa.store.isRemotePersistenceEnabled(), dirty: qa.store.hasUnsavedChanges() },
@@ -68,12 +69,16 @@ export function p2Observations(harness) {
       recap: observed.result?.recap?.runOutcome, activityRecap: observed.activity?.result.recap?.runOutcome,
     };
     if (spec.bridge) values.bridgeResponse = observed.bridgeResult?.runOutcome;
+    // 전달 영수증 축은 세 축과 독립이다. 이 시나리오들은 자료 이미지를 요청에 싣지 않으므로
+    // 첨부는 거짓이어야 하고, "모름"이 성공으로 승격되지 않는지도 같이 본다.
+    const expected = { ...spec.expected, imageAttached: false, visualDelivery: { attempted: 0, attached: 0 } };
     for (const [surface, actual] of Object.entries(values)) {
-      check(`${prefix}: ${surface} typed outcome`, () => assert.deepEqual(actual, spec.expected));
+      check(`${prefix}: ${surface} typed outcome`, () => assert.deepEqual(actual, expected));
     }
-    check(`${prefix}: visible UI typed outcome`, () => assert.deepEqual(observed.ui, [spec.expected]));
+    check(`${prefix}: visible UI typed outcome`, () => assert.deepEqual(observed.ui,
+      [{ ...spec.expected, imageDelivery: 'unattached' }]));
     const outcomeEvents = observed.events.filter(event => event.type === 'run_outcome');
-    check(`${prefix}: terminal typed event`, () => assert.deepEqual(outcomeEvents.at(-1)?.runOutcome, spec.expected));
+    check(`${prefix}: terminal typed event`, () => assert.deepEqual(outcomeEvents.at(-1)?.runOutcome, expected));
     check(`${prefix}: real remaining content`, () => assert.equal(observed.live.events.length, 0));
     if (spec.tool) check(`${prefix}: real tool executed`, () => assert.ok(observed.events.some(event => event.type === 'tool_call' && event.name === spec.tool && event.result.ok)));
     if (spec.title) check(`${prefix}: actual applied title`, () => assert.equal(observed.live.title, spec.title));
