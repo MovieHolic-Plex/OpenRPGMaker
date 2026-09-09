@@ -96,7 +96,7 @@ export function renderResourceWorkbench(container: HTMLElement, options: Resourc
 
   shell.append(
     resourceCategoryList(options),
-    options.audioPanes?.entries ?? resourceEntryList(selectedProfiles, selectedUploaded, options.actions, handleSelect, () => selectedItem, options.onImport, options.selectedKind),
+    options.audioPanes?.entries ?? resourceEntryList(selectedProfiles, selectedUploaded, options.actions, handleSelect, () => selectedItem, options.onImport, options.selectedKind, options.recentAssetId),
     options.audioPanes?.commands ?? resourceCommandPanel(options, previewWell, () => selectedItem)
   );
 
@@ -243,7 +243,8 @@ function resourceEntryList(
   onSelect: (item: ResourceItem) => void,
   getSelectedItem: () => ResourceItem | null,
   onImport: () => void,
-  selectedKind: ResourceProfile["kind"]
+  selectedKind: ResourceProfile["kind"],
+  recentAssetId?: string
 ): HTMLElement {
   const container = el("div", { class: "rm-entry-container rm-modern-gallery-container" });
   
@@ -310,6 +311,7 @@ function resourceEntryList(
   toolbar.append(filterTabs, searchWrapper, viewToggle);
 
   const list = el("div", { class: "rm-entry-list rm-modern-entry-list", dataset: { testid: "resource-entry-list" } });
+  const recentId = recentAssetId;
   
   const renderList = (filterQuery = "") => {
     list.innerHTML = "";
@@ -385,7 +387,7 @@ function resourceEntryList(
         grid.append(renderUploadedCard(asset, isSelected, () => {
           onSelect({ type: "uploaded", asset });
           renderList(searchInput.value);
-        }));
+        }, asset.id === recentId));
       }
 
       list.append(grid);
@@ -407,7 +409,7 @@ function resourceEntryList(
           uploadList.append(uploadedAssetRow(asset, actions, isSelected, () => {
             onSelect({ type: "uploaded", asset });
             renderList(searchInput.value);
-          }));
+          }, asset.id === recentId));
         }
         list.append(uploadList);
       }
@@ -554,13 +556,14 @@ function renderProfileCard(profile: ResourceProfile, isSelected: boolean, onSele
 function renderUploadedCard(
   asset: UploadedAsset,
   isSelected: boolean,
-  onSelect: () => void
+  onSelect: () => void,
+  recent = false
 ): HTMLElement {
   const dims = asset.meta.width && asset.meta.height ? `${asset.meta.width}×${asset.meta.height}` : "";
 
   const card = el("div", {
-    class: isSelected ? "rm-asset-card uploaded active" : "rm-asset-card uploaded",
-    dataset: { testid: `resource-upload-${asset.id}` },
+    class: recent ? "rm-asset-card uploaded is-recent" : isSelected ? "rm-asset-card uploaded active" : "rm-asset-card uploaded",
+    dataset: recent ? { testid: `resource-upload-${asset.id}`, recent: "true" } : { testid: `resource-upload-${asset.id}` },
     on: { click: onSelect },
   });
 
@@ -711,13 +714,13 @@ function uploadedAssetRow(
   asset: UploadedAsset,
   actions: UploadedAssetActions,
   isSelected: boolean,
-  onSelect: () => void
+  onSelect: () => void,
+  recent = false
 ): HTMLElement {
   const row = el("div", {
-    class: isSelected ? "rm-asset-row active" : "rm-asset-row",
-    dataset: { testid: `resource-upload-${asset.id}` },
+    class: recent ? "rm-asset-row is-recent" : isSelected ? "rm-asset-row active" : "rm-asset-row",
+    dataset: recent ? { testid: `resource-upload-${asset.id}`, recent: "true" } : { testid: `resource-upload-${asset.id}` },
     on: { click: onSelect },
-
   });
   const preview = el("img", { attrs: { src: asset.dataUrl, alt: `${asset.name} 미리보기` } }) as HTMLImageElement;
   preview.className = "rm-preview";
