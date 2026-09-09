@@ -215,13 +215,30 @@ export async function saveRunCheckpoint(checkpoint: RunCheckpoint): Promise<{ re
   if (reason) {
     // 사유만 던지면 어느 필드가 깨졌는지 알 수 없어 다음 실행이 같은 자리를 다시 헤맨다.
     // 실측(2026-09-09): 실표면에서 malformed 만 남아 원인 추적에 여러 번의 재현이 필요했다.
-    const field = reason === "malformed"
-      ? [["key", validKey(row)], ["savedAt", count(row.savedAt)], ["status", oneOf(row.status, ["active", "awaiting-user", "terminal"])],
-        ["request", source(row.request)], ["baseContentIdentity", text(row.baseContentIdentity)],
-        ["currentContentIdentity", text(row.currentContentIdentity)], ["workPlan", workPlan(row.workPlan)],
-        ["runtime", row.runtime === undefined || isRunRuntimeState(row.runtime)], ["dataOnly", dataOnly(row)],
-      ].filter(([, ok]) => !ok).map(([name]) => name).join(",") || "payload"
-      : "";
+    const probe: Record<string, unknown> = row;
+    const named: readonly (readonly [string, boolean])[] = reason !== "malformed" ? [] : [
+      ["key", validKey(probe)], ["savedAt", count(probe.savedAt)],
+      ["status", oneOf(probe.status, ["active", "awaiting-user", "terminal"])],
+      ["request", source(probe.request)], ["baseContentIdentity", text(probe.baseContentIdentity)],
+      ["currentContentIdentity", text(probe.currentContentIdentity)], ["workPlan", workPlan(probe.workPlan)],
+      ["runtime", probe.runtime === undefined || isRunRuntimeState(probe.runtime)],
+      ["dataOnly", dataOnly(probe)],
+      ["acceptance", probe.acceptance === null || (record(probe.acceptance) && text(probe.acceptance.id)
+        && typeof probe.acceptance.goal === "string"
+        && oneOf(probe.acceptance.status, ["pending", "working", "verifying", "verified", "blocked"])
+        && Array.isArray(probe.acceptance.items))],
+      ["applied", probe.applied === null || (record(probe.applied) && text(probe.applied.operationId)
+        && text(probe.applied.contentIdentity) && (probe.applied.commitId === null || text(probe.applied.commitId))
+        && calls(probe.applied.calls))],
+      ["save", probe.save === null || receipt(probe.save, String(probe.projectId))],
+      ["proof", probe.proof === null || (record(probe.proof)
+        && oneOf(probe.proof.status, ["attempted", "failed", "succeeded"]) && typeof probe.proof.verified === "boolean"
+        && (probe.proof.receipt === undefined || receipt(probe.proof.receipt, String(probe.projectId))))],
+      ["pending", probe.pending === null || (record(probe.pending) && probe.status !== "terminal"
+        && text(probe.pending.operationId)
+        && oneOf(probe.pending.stage, ["proposal-ready", "applying", "saving", "proving"]))],
+    ];
+    const field = named.filter(([, ok]) => !ok).map(([name]) => name).join(",");
     throw new TypeError(`Invalid checkpoint: ${reason}${field ? ` (${field})` : ""}`);
   }
   // Capture before any await; caller mutation cannot alter this write on either backend.

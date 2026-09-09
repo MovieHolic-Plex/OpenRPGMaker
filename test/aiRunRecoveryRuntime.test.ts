@@ -252,8 +252,10 @@ it("keeps checkpointing on the same session after one failed write instead of sk
   save.mockImplementationOnce(async () => { throw new TypeError("Injected checkpoint write failure"); });
   const session = new AssistantSession(store.getCurrent(), { config, checkpoint: checkpointHost,
     declareIntent: fixedDeclarer({ mode: "other" }), chat: reviewingChat(async () => final) });
-  const first = await bounded(session.sendUserMessage("First request"));
-  expect(first.error).toContain("Injected checkpoint write failure");
+  // 기록 실패는 턴을 죽이지 않는다(정본 저장·진행 우선). 감사에 남는 것이 계약이다.
+  await bounded(session.sendUserMessage("First request"));
+  expect(session.getAuditEntries().some(entry => entry.kind === "status"
+    && entry.text.startsWith("agent_run:checkpoint-write-failed"))).toBe(true);
   await bounded(session.sendUserMessage("Second request"));
   await bounded(session.whenCheckpointed());
   const saved = await checkpoint();

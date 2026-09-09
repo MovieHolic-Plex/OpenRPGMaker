@@ -932,6 +932,21 @@ export class AssistantSession {
   private checkpointSavedAt = 0;
   private checkpointCurrentIdentity = "";
   private checkpointRequestBaseline: { readonly project: Project; readonly identity: string } | null = null;
+  /**
+   * 같은 프로젝트 객체의 신원 재계산을 막는다. 실측(2026-09-09, 기본 프로젝트): 신원 1회가
+   * **약 160ms** 인데 라운드마다 두 번 계산해 20라운드짜리 턴이 6초 이상을 여기에만 썼다.
+   * 실표면에서는 그 누적이 60초 정착 예산을 넘겨 UI 가 굳었다. 객체가 바뀌면 자동으로
+   * 무효화된다 — 내용이 바뀌면 저장소가 새 객체를 만들기 때문이다.
+   */
+  private checkpointIdentityCache = new WeakMap<Project, string>();
+
+  private identityOf(project: Project): string {
+    const cached = this.checkpointIdentityCache.get(project);
+    if (cached !== undefined) return cached;
+    const identity = checkpointContentIdentity(project);
+    this.checkpointIdentityCache.set(project, identity);
+    return identity;
+  }
   private checkpointQueue: Promise<void> = Promise.resolve();
   private checkpointPending: RunCheckpoint["pending"] = null;
   private checkpointApplied: RunCheckpoint["applied"] = null;
@@ -996,12 +1011,12 @@ export class AssistantSession {
     // This original-request baseline is replaced, never mutated; live draft identities are not cached.
     if (this.checkpointRequestBaseline?.project !== this.acceptanceRequestBaseline) {
       this.checkpointRequestBaseline = { project: this.acceptanceRequestBaseline,
-        identity: checkpointContentIdentity(this.acceptanceRequestBaseline) };
+        identity: this.identityOf(this.acceptanceRequestBaseline) };
     }
     let pending = this.checkpointPending;
     if (!pending && this.turnProposals.size && !this.checkpointTerminal) pending = {
       operationId: `${key.runId}:${key.epoch}:apply`, stage: "proposal-ready", proposal: {
-        baseContentIdentity: checkpointContentIdentity(this.baselineProject), contentIdentity: checkpointContentIdentity(this.ctx.project),
+        baseContentIdentity: this.identityOf(this.baselineProject), contentIdentity: this.identityOf(this.ctx.project),
         project: this.ctx.project, calls: this.finalizeProposals(this.turnProposals),
       },
     };
@@ -1038,7 +1053,7 @@ export class AssistantSession {
     const latest = await operation.wait(readLatestRunCheckpoint(host.conversationId, host.projectId, host.projectContextKey));
     this.checkpointKey = { ...host, runId: newCheckpointRunId(), epoch: Math.max(Date.now(), (this.checkpointKey?.epoch ?? 0) + 1, latest.kind === "found" ? latest.checkpoint.epoch + 1 : 0) };
     this.checkpointPending = null;
-    this.checkpointCurrentIdentity = checkpointContentIdentity(store.getCurrent());
+    this.checkpointCurrentIdentity = this.identityOf(store.getCurrent());
     this.checkpointTerminal = false;
     this.checkpointRoundLimit = this.recoveryBudget?.remainingToolCalls ?? this.config.maxToolCalls;
     this.checkpointRoundsUsed = 0;
@@ -1065,14 +1080,20 @@ export class AssistantSession {
     operation.assertCurrent();
     const project = this.getProposedProject();
     this.checkpointPending = { operationId: `${this.checkpointKey.runId}:${this.checkpointKey.epoch}:apply`, stage: "applying", proposal: {
-      baseContentIdentity: checkpointContentIdentity(this.baselineProject), contentIdentity: checkpointContentIdentity(project),
+      baseContentIdentity: this.identityOf(this.baselineProject), contentIdentity: this.identityOf(project),
       project, calls: this.finalizeProposals(this.turnProposals),
     } };
     this.captureCheckpoint();
     await operation.wait(this.whenCheckpointed());
   }
 
-  /** The runner, not the model-final event, settles delivery. Pending uncertainty stays active. */
+  /**
+   * The runner, not the model-final event, settles delivery. Pending uncertainty stays active.
+   *
+   * 이 대기는 **UI 잠금 해제 앞**에 있다. 기록이 끝나지 않으면 전송 버튼이 영원히 비활성으로
+   * 남아 사용자가 조수를 못 쓴다 — 실측(2026-09-09, required-skip 실표면)에서 정확히 그렇게
+   * 굳었다. 그래서 실패는 삼키고 진행한다(복구 가능성만 잃는다).
+   */
   async settleCheckpoint(): Promise<void> {
     this.checkpointTerminal = this.runExecution === "response-final" && this.turnProposals.size === 0
       && (!this.workPlan || isWorkPlanComplete(this.workPlan));
@@ -2610,7 +2631,7 @@ export class AssistantSession {
             if (owner !== this.runResult) return;
             if (milestone.kind === "applied") {
               this.wikiDelivery = { owner, project: milestone.project, receipt: null };
-              if (milestone.project) this.checkpointCurrentIdentity = checkpointContentIdentity(milestone.project);
+              if (milestone.project) this.checkpointCurrentIdentity = this.identityOf(milestone.project);
               this.lastAppliedProject = null;
               this.runReceipt = null;
             } else if (this.wikiDelivery?.owner === owner && this.wikiDelivery.project === milestone.project
@@ -4025,12 +4046,12 @@ export class AssistantSession {
     this.turnAppliedMilestoneCalls.push(...this.finalizeProposals(this.turnProposals));
     this.turnProposals.clear();
     if (mutation && this.checkpointKey) {
-      this.checkpointCurrentIdentity = checkpointContentIdentity(applied.applied);
+      this.checkpointCurrentIdentity = this.identityOf(applied.applied);
       this.checkpointApplied = { operationId: `${this.checkpointKey.runId}:${this.checkpointKey.epoch}:apply`,
-        contentIdentity: checkpointContentIdentity(applied.applied), commitId: null, calls: [...this.turnAppliedMilestoneCalls] };
+        contentIdentity: this.identityOf(applied.applied), commitId: null, calls: [...this.turnAppliedMilestoneCalls] };
       this.checkpointPending = null;
     } else if (this.checkpointApplied) {
-      if (applied.wikiDelivery?.project) this.checkpointCurrentIdentity = checkpointContentIdentity(applied.wikiDelivery.project);
+      if (applied.wikiDelivery?.project) this.checkpointCurrentIdentity = this.identityOf(applied.wikiDelivery.project);
       this.checkpointApplied = { ...this.checkpointApplied, commitId: applied.commit.commitId };
     }
     this.captureCheckpoint(); // Before publish can synchronously cancel or replace this owner.
@@ -4189,7 +4210,7 @@ export class AssistantSession {
         commitId = applied.commitId;
         if (outcomeOwner === this.runResult) {
           this.runReceipt = receipt;
-          if (store.isPersistenceReceiptCurrent(receipt)) this.checkpointCurrentIdentity = checkpointContentIdentity(store.getCurrent());
+          if (store.isPersistenceReceiptCurrent(receipt)) this.checkpointCurrentIdentity = this.identityOf(store.getCurrent());
         }
       }
       state = { status: "attempted", verified: false, receipt, commitId };
