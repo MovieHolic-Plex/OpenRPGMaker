@@ -434,7 +434,7 @@ function readBattlerGeometryInPage() {
  *   보므로 display:none 안의 노드도 통과한다 — 실제로 전투 적 HP 목록(.battle-enemy-list-panel)이
  *   숨겨진 스킨에서 `battle-enemy-list-hp-*` 를 단정하면 화면에 없는 숫자를 증거로 삼게 된다.
  */
-async function readObserved(page, { auditBattleTextNodes = false, watchedEventIds = [], watchedTestids = [], watchedItemIds = [] } = {}) {
+async function readObserved(page, { auditBattleTextNodes = false, watchedEventIds = [], watchedTestids = [], watchedItemIds = [], watchedPlaceableKeys = [], watchedTestidPrefixes = [] } = {}) {
   const base = await page.evaluate((watched) => {
     const debug = window.__oprnDebug;
     const full = debug ? debug.readState() : null;
@@ -452,15 +452,29 @@ async function readObserved(page, { auditBattleTextNodes = false, watchedEventId
           // 전량은 여전히 싣지 않는다(노이즈). 시나리오가 이름을 댄 항목만 싣는다 —
           // 싣지 않으면 expect 가 없는 값을 0 으로 읽어 정상을 결함으로, 결함을 정상으로
           // 만든다(실측: item_axe 가 실제로는 1인데 관측에 없어 0 으로 읽혔다).
+          // 하루 전환은 채집물을 새로 뿌린다. 그 칸이 밭과 겹치면 조사 입력이 farming 이 아니라
+          // lifeField(forage) 로 먹히므로(실측 2026-09-09: handled true, farmAttempts []),
+          // 시나리오가 이름을 댄 칸의 placeable 을 실어 원인을 수치로 볼 수 있게 한다.
+          ...(watched.placeableKeys.length
+            ? { placeablesAt: Object.fromEntries(watched.placeableKeys.map((k) => [k, full.placeables?.[k] ?? null])) }
+            : {}),
           ...(watched.itemIds.length
             ? { inventory: Object.fromEntries(watched.itemIds.map((id) => [id, full.inventory?.[id] ?? 0])) }
             : {}),
         }
       : null;
+    // 진단용: 시나리오가 요청한 접두사로 시작하는 실제 testid 를 그대로 싣는다.
+    // "무엇이 없다"만 보면 메뉴 계층을 추측하게 된다 — 무엇이 있는지 봐야 한다.
+    const domTestids = watched.testidPrefixes.length
+      ? [...document.querySelectorAll("[data-testid]")]
+          .map((node) => node.dataset.testid)
+          .filter((id) => watched.testidPrefixes.some((p) => id.startsWith(p)))
+      : [];
     const sprite = window.__oprnPlayerSprite ? window.__oprnPlayerSprite() : null;
     const characters = window.__oprnCharacterSprites ? window.__oprnCharacterSprites() : null;
     return {
       state,
+      domTestids,
       // 체공 계측. 리프트는 원점 채널에 있어 x/y 로는 보이지 않고, 접지 y 는 체공 중에도
       // 타일 경계에 남아야 한다(깊이 y-소트·카메라·조명이 이 값을 읽는다).
       playerLiftPx: characters ? characters.player.liftPx : null,
@@ -522,7 +536,7 @@ async function readObserved(page, { auditBattleTextNodes = false, watchedEventId
       audioObserved: Array.isArray(window.__oprnAudioObserved) ? [...window.__oprnAudioObserved] : null,
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
     };
-  }, { eventIds: watchedEventIds, testids: watchedTestids, itemIds: watchedItemIds });
+  }, { eventIds: watchedEventIds, testids: watchedTestids, itemIds: watchedItemIds, placeableKeys: watchedPlaceableKeys, testidPrefixes: watchedTestidPrefixes });
   if (!auditBattleTextNodes) return base;
   // 전투 글자 계측은 요청한 비트에서만 돌린다 — 모든 비트에서 트리 전체를 훑을 이유가 없다.
   const battleText = await page.evaluate(auditBattleText, {
@@ -672,6 +686,12 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const watchedItemIds = [
     ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.inventory ?? {}))),
   ];
+  const watchedPlaceableKeys = [
+    ...new Set(scenario.beats.flatMap((beat) => beat.expect?.placeablesAt ?? [])),
+  ];
+  const watchedTestidPrefixes = [
+    ...new Set(scenario.beats.flatMap((beat) => beat.expect?.dumpTestidPrefixes ?? [])),
+  ];
 
 
   let hooksReady = false;
@@ -702,6 +722,8 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       watchedEventIds,
       watchedTestids,
       watchedItemIds,
+      watchedPlaceableKeys,
+      watchedTestidPrefixes,
     });
     const failures = [...opFailures, ...evaluateExpect(beat.expect ?? {}, observed)];
     let shot = null;
@@ -746,6 +768,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       failures,
       shadowInk: shadowInk ?? undefined,
       state: observed.state,
+      ...(observed.domTestids?.length ? { domTestids: observed.domTestids } : {}),
       ...(runState.frameReceipts.length ? { frameReceipts: runState.frameReceipts } : {}),
       // 배치 근거는 리포트에 남긴다 — PNG 를 열지 않고도 수치로 판정할 수 있어야 한다.
       battlers: observed.battlers ?? undefined,

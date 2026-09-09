@@ -417,6 +417,20 @@ export function evaluateExpect(expected, observed) {
     }
   }
 
+  // 하루 전환 단정 — 위치·맵만 보면 "잠들지 않았는데 통과"가 된다(실측 2026-09-09).
+  // 런타임이 스스로 관리하는 작물 성장일로 하루가 실제 넘어갔는지 본다.
+  if (expected.cropGrowthDays !== undefined) {
+    const want = expected.cropGrowthDays;
+    if (state === null) failures.push("런타임 훅 없음 — 상태를 읽을 수 없다(cropGrowthDays 확인 불가)");
+    else {
+      const plot = state.farmPlots?.[want.mapId]?.[want.key];
+      if (!plot) failures.push(`cropGrowthDays: ${want.mapId}/${want.key} 밭이 없다`);
+      else if ((plot.growthDays ?? 0) !== want.growthDays) {
+        failures.push(`cropGrowthDays.${want.key}: 기대 ${want.growthDays}, 실제 ${plot.growthDays ?? 0}`);
+      }
+    }
+  }
+
   for (const testid of expected.testidPresent ?? []) {
     if (!testids.includes(testid)) failures.push(`testid 누락: ${testid}`);
   }
