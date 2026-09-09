@@ -927,7 +927,7 @@ export type CompactionOutcome =
   | { readonly kind: "skipped"; readonly reason: string };
 
 export class AssistantSession {
-  private readonly checkpointHost: AssistantSessionOptions["checkpoint"];
+  private checkpointHost: AssistantSessionOptions["checkpoint"];
   private checkpointKey: RunCheckpointKey | null = null;
   private checkpointSavedAt = 0;
   private checkpointCurrentIdentity = "";
@@ -1054,7 +1054,12 @@ export class AssistantSession {
   private async beginCheckpoint(instruction: string, text: string, options: SessionTurnOptions): Promise<void> {
     const operation = this.runOperation;
     if (!this.checkpointHost || !this.storeBacked) return;
-    const host = this.checkpointHost;
+    // 프로젝트 신원은 세션 생성 뒤에도 바뀐다 — 패널은 원격 로드 전에 세션을 만들 수 있고, 그때
+    // 굳은 local-session id 로 키를 잡으면 이후 저장 영수증(원격 id)과 어긋나 **모든 체크포인트가
+    // 거부된다**(실측 2026-09-09: outcome-matrix 에서 save/proof 필드가 통째로 malformed).
+    // 턴 시작 시점의 실제 신원을 쓰고, 그 이후로는 이 런의 키를 고정한다.
+    const host = { ...this.checkpointHost, projectId: store.getProjectIdentity().id };
+    this.checkpointHost = host;
     const latest = await operation.wait(readLatestRunCheckpoint(host.conversationId, host.projectId, host.projectContextKey));
     this.checkpointKey = { ...host, runId: newCheckpointRunId(), epoch: Math.max(Date.now(), (this.checkpointKey?.epoch ?? 0) + 1, latest.kind === "found" ? latest.checkpoint.epoch + 1 : 0) };
     this.checkpointPending = null;

@@ -245,6 +245,24 @@ it("still saves and proves the applied revision when a checkpoint write fails", 
   session.retireRun();
 });
 
+it("binds the checkpoint to the project identity current at turn start, not session construction", async () => {
+  // 실측 회귀(2026-09-09, outcome-matrix): 패널이 원격 로드 전에 세션을 만들면 키에 local-session
+  // id 가 굳어, 이후 저장 영수증(원격 id)과 어긋나 모든 체크포인트가 malformed 로 거부됐다.
+  const identity = vi.mocked(store.getProjectIdentity);
+  identity.mockReturnValue({ kind: "local-session", id: "local-before-load" });
+  const session = new AssistantSession(store.getCurrent(), { config, checkpoint: { ...checkpointHost, projectId: "local-before-load" },
+    declareIntent: fixedDeclarer({ mode: "other" }), chat: reviewingChat(async () => final) });
+  // 원격 프로젝트가 뒤늦게 로드된다.
+  identity.mockReturnValue({ kind: "remote", id: checkpointHost.projectId });
+  await bounded(session.sendUserMessage("After the remote project loaded"));
+  await bounded(session.whenCheckpointed());
+  const saved = await checkpoint();
+  expect(saved.projectId).toBe(checkpointHost.projectId);
+  expect(session.getAuditEntries().some(entry => entry.kind === "status"
+    && entry.text.startsWith("agent_run:checkpoint-write-failed"))).toBe(false);
+  session.retireRun(); await bounded(session.whenCheckpointed());
+});
+
 it("keeps checkpointing on the same session after one failed write instead of skipping later captures", async () => {
   // A real failure mode: saveRunCheckpoint throws on an unsupported existing row or an aborted
   // transaction. The awaited boundary must still reject, but the session must not go silent afterwards.
