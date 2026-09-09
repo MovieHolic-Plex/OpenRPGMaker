@@ -72,6 +72,7 @@
 @import "./database/spatial-shell.css";
 @import "./database/spatial-spaces.css";
 @import "./database/spatial-places.css";
+@import "./database/spatial-geography.css";
 /* DB AI 표면(바·생성 대화상자)은 studio-v2 뒤에 읽어 같은 특이성의 옛 오버라이드를 소스 순서로 이긴다. */
 @import "./database/ai-bar.css";
 @import "./resources/resource-manager.css";
