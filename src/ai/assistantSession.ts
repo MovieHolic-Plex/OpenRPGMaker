@@ -1,3 +1,6 @@
+import { genId as newCheckpointRunId } from "@/util/id";
+import { readLatestRunCheckpoint, saveRunCheckpoint, type RunCheckpoint, type RunCheckpointKey } from "./runCheckpointStore";
+import { checkpointContentIdentity, reconcileRunCheckpoint, type RunRecovery, type RunRuntimeState } from "./runRecovery";
 import { ACCEPTANCE_EXAMPLES, acceptanceRecord, missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewEvidenceContexts, reviewEvidenceImages, reviewMapReferenceRoots, requiresVisualReview, type ResultReview } from "./independentReview";
@@ -344,6 +347,7 @@ export type AuditEntry =
 // 하네스 스냅샷 — 오케스트레이션 주입을 포함한 세션 원본 메시지와 감사 로그를 한 번에 관측한다.
 // 🔬 하네스 뷰어와 window.__oprnAiHarness(헤드리스 디버깅)가 소비한다.
 export interface HarnessSnapshot {
+  readonly runIdentity?: RunCheckpointKey | null;
   readonly model: string;
   readonly liteModel?: string;
   readonly maxTokens: number;
@@ -869,6 +873,7 @@ export interface SessionTurnOptions {
 }
 
 export interface AssistantSessionOptions {
+  readonly checkpoint?: Pick<RunCheckpointKey, "conversationId" | "projectId" | "projectContextKey">;
   config?: AiConfig;
   /** Optional supervisor configuration for a surface whose writer uses the lite tier. */
   reviewConfig?: AiConfig;
@@ -922,6 +927,208 @@ export type CompactionOutcome =
   | { readonly kind: "skipped"; readonly reason: string };
 
 export class AssistantSession {
+  private readonly checkpointHost: AssistantSessionOptions["checkpoint"];
+  private checkpointKey: RunCheckpointKey | null = null;
+  private checkpointSavedAt = 0;
+  private checkpointCurrentIdentity = "";
+  private checkpointRequestBaseline: { readonly project: Project; readonly identity: string } | null = null;
+  private checkpointQueue: Promise<void> = Promise.resolve();
+  private checkpointPending: RunCheckpoint["pending"] = null;
+  private checkpointApplied: RunCheckpoint["applied"] = null;
+  private checkpointTerminal = false;
+  private checkpointRoundLimit = 0;
+  private checkpointRoundsUsed = 0;
+  private checkpointOutputStart = 0;
+  private checkpointOutputLimit = 0;
+  private recoveredCheckpoint: RunCheckpoint | null = null;
+  private recoveryOperation: RunOperation | null = null;
+  private recoveryBudget: RunCheckpoint["budget"] | null = null;
+
+  getRunIdentity(): RunCheckpointKey | null { return this.checkpointKey ? { ...this.checkpointKey } : null; }
+  /**
+   * 가장 최근 캡처 시도의 완료. 큐 전체의 과거 실패를 누적해서 보고하지 않는다 —
+   * capture 직후 await 하는 호출자는 자기 쓰기의 실패를 그대로 받고, 중간의
+   * best-effort 캡처 실패는 경고로만 남는다(그 지점들은 애초에 await 하지 않는다).
+   */
+  whenCheckpointed(): Promise<void> { return this.checkpointQueue; }
+
+  private exportRuntime(): RunRuntimeState {
+    // captureCheckpoint clones the whole row synchronously, including this runtime.
+    return { schemaVersion: 1, instruction: this.currentTurnInstruction,
+      requestText: this.currentTurnRequestText, composerMode: this.turnComposerMode, autonomous: this.milestoneAutoApply,
+      execution: this.runExecution, requestBaseline: this.acceptanceRequestBaseline,
+      acceptance: this.acceptance?.exportRecovery() ?? null, verification: this.verificationEvidence.exportRecovery(),
+      verificationOwnerSequence: this.verificationOwnerSequence,
+      verificationOwners: this.workPlan?.layers.flatMap(layer => layer.items.flatMap(item => {
+        const owner = this.verificationOwners.get(item);
+        return owner ? [[item.id, owner.ownerId, owner.checkIds] as const] : [];
+      })) ?? [],
+      currentTurnIndex: this.currentTurnIndex, specs: [...this.specsByMap], latestSpecMapId: this.latestSpecMapId,
+      implicitSpec: this.turnImplicitSpec, viewSpec: this.turnViewSpec, viewSpecWorkItemId: this.turnViewSpecWorkItemId,
+      originalContext: this.originalContext?.context ?? null, adventureRequirements: this.adventureRequirements,
+      npcRewardRequirements: this.npcRewardRequirements, statefulNpcRequirement: this.statefulNpcRequirement,
+      npcRewardItemBaselines: [...this.npcRewardItemBaseline].map(([requirement, baseline]) => [acceptanceFingerprint(requirement), baseline] as const),
+      volumeBaseline: this.runVolumeBaseline, volumeBar: this.runVolumeBar, volumeContinueUsed: this.volumeContinueUsed,
+      acceptanceRepairAttempts: this.acceptanceRepairAttempts, reviewAttempts: this.reviewAttempts,
+      lastBlockReasons: [...this.lastBlockReasonByItemId], roundLimit: this.config.maxToolCalls, outputLimit: this.config.maxTokens };
+  }
+
+  /** Capture synchronously, enqueue immutable rows. Retired completions keep their old run/epoch key. */
+  private captureCheckpoint(): void {
+    const key = this.checkpointKey;
+    if (!key || !this.storeBacked) return;
+    // This original-request baseline is replaced, never mutated; live draft identities are not cached.
+    if (this.checkpointRequestBaseline?.project !== this.acceptanceRequestBaseline) {
+      this.checkpointRequestBaseline = { project: this.acceptanceRequestBaseline,
+        identity: checkpointContentIdentity(this.acceptanceRequestBaseline) };
+    }
+    let pending = this.checkpointPending;
+    if (!pending && this.turnProposals.size && !this.checkpointTerminal) pending = {
+      operationId: `${key.runId}:${key.epoch}:apply`, stage: "proposal-ready", proposal: {
+        baseContentIdentity: checkpointContentIdentity(this.baselineProject), contentIdentity: checkpointContentIdentity(this.ctx.project),
+        project: this.ctx.project, calls: this.finalizeProposals(this.turnProposals),
+      },
+    };
+    const paused = this.runExecution === "cancelled" || this.runExecution === "awaiting-user";
+    if (paused && pending?.stage === "proposal-ready") pending = null;
+    const status: RunCheckpoint["status"] = paused ? pending ? "awaiting-user" : "terminal"
+      : this.checkpointTerminal && !pending ? "terminal" : "active";
+    const checkpoint: RunCheckpoint = structuredClone({ ...key, schemaVersion: 1,
+      savedAt: this.checkpointSavedAt = Math.max(Date.now(), this.checkpointSavedAt + 1), status,
+      request: this.acceptanceRequestSource, baseContentIdentity: this.checkpointRequestBaseline.identity,
+      currentContentIdentity: this.checkpointCurrentIdentity, workPlan: this.workPlan,
+      runtime: this.exportRuntime(), budget: {
+        remainingToolCalls: Math.max(0, this.checkpointRoundLimit - this.checkpointRoundsUsed),
+        remainingOutputTokens: Math.max(0, this.checkpointOutputLimit - (this.estimatedOutputTotal - this.checkpointOutputStart)),
+        remainingAutoRunSteps: Math.max(0, AGENT_RUN_MAX_TOTAL_STEPS - this.autoRunSteps),
+        remainingWorkPlanSteps: Math.max(0, MAX_WORK_PLAN_AUTO_STEPS_PER_TURN - this.workPlanAutoStepsThisUserMessage),
+        ralphAttemptsByItemId: [...this.ralphAttemptsByItemId],
+        repeatedToolFailures: [...this.repeatedToolFailures].map(([id, failures]) => [id, [...failures]] as const),
+      }, verification: this.verificationEvidence.snapshot(), acceptance: this.getAcceptanceSnapshot(),
+      applied: this.checkpointApplied, save: this.runReceipt, proof: this.getRunEndProof(), pending });
+    // Order is preserved, but a rejected predecessor must not skip this write: `.then` alone would
+    // silently drop every later capture in this session after one failed row (unsupported existing row,
+    // aborted transaction). Each capture waits for the previous attempt to settle and then writes itself.
+    const attempt = this.checkpointQueue.catch(() => {}).then(async () => { await saveRunCheckpoint(checkpoint); });
+    this.checkpointQueue = attempt;
+    // Observe synchronous callback failures without pretending durability; awaited boundaries still reject.
+    void attempt.catch(cause => console.warn("[aiRunCheckpoint] Checkpoint persistence failed", cause));
+  }
+
+  private async beginCheckpoint(instruction: string, text: string, options: SessionTurnOptions): Promise<void> {
+    const operation = this.runOperation;
+    if (!this.checkpointHost || !this.storeBacked) return;
+    const host = this.checkpointHost;
+    const latest = await operation.wait(readLatestRunCheckpoint(host.conversationId, host.projectId, host.projectContextKey));
+    this.checkpointKey = { ...host, runId: newCheckpointRunId(), epoch: Math.max(Date.now(), (this.checkpointKey?.epoch ?? 0) + 1, latest.kind === "found" ? latest.checkpoint.epoch + 1 : 0) };
+    this.checkpointPending = null;
+    this.checkpointCurrentIdentity = checkpointContentIdentity(store.getCurrent());
+    this.checkpointTerminal = false;
+    this.checkpointRoundLimit = this.recoveryBudget?.remainingToolCalls ?? this.config.maxToolCalls;
+    this.checkpointRoundsUsed = 0;
+    this.checkpointOutputStart = this.estimatedOutputTotal;
+    this.checkpointOutputLimit = Math.min(this.config.maxTokens, this.recoveryBudget?.remainingOutputTokens ?? this.config.maxTokens);
+    if (this.recoveryOperation !== operation) {
+      this.currentTurnInstruction = instruction;
+      this.currentTurnRequestText = text;
+      if (options.goalAction !== "resume" && !isContinuationText(instruction)) {
+        this.checkpointApplied = null;
+        this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
+        this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: instruction, scope: options.scope ?? null };
+      }
+    }
+    this.captureCheckpoint();
+    await operation.wait(this.whenCheckpointed());
+  }
+
+  /** Durably prepare the one candidate BEFORE the real store mutation; this grants no review authority. */
+  async prepareCheckpointApply(): Promise<void> {
+    if (!this.checkpointKey) return;
+    const operation = this.runOperation;
+    operation.assertCurrent();
+    const project = this.getProposedProject();
+    this.checkpointPending = { operationId: `${this.checkpointKey.runId}:${this.checkpointKey.epoch}:apply`, stage: "applying", proposal: {
+      baseContentIdentity: checkpointContentIdentity(this.baselineProject), contentIdentity: checkpointContentIdentity(project),
+      project, calls: this.finalizeProposals(this.turnProposals),
+    } };
+    this.captureCheckpoint();
+    await operation.wait(this.whenCheckpointed());
+  }
+
+  /** The runner, not the model-final event, settles delivery. Pending uncertainty stays active. */
+  async settleCheckpoint(): Promise<void> {
+    this.checkpointTerminal = this.runExecution === "response-final" && this.turnProposals.size === 0
+      && (!this.workPlan || isWorkPlanComplete(this.workPlan));
+    this.captureCheckpoint();
+    await this.whenCheckpointed();
+  }
+
+  /** No writes or capability import. Recheck the live project immediately before installing canonical state. */
+  restoreCheckpoint(checkpoint: RunCheckpoint, durable: boolean): RunRecovery {
+    const host = this.checkpointHost;
+    if (!host || store.getProjectIdentity().id !== host.projectId || checkpoint.conversationId !== host.conversationId || checkpoint.projectId !== host.projectId
+      || checkpoint.projectContextKey !== host.projectContextKey) return { kind: "unsupported", reason: "identity-mismatch", next: "open-transcript" };
+    const recovery = reconcileRunCheckpoint({ kind: "found", checkpoint, durable }, store.getCurrent());
+    if (recovery.kind !== "resumable" || !checkpoint.runtime) return recovery;
+    const state = checkpoint.runtime;
+    this.rebaseProject(store.getCurrent());
+    this.workPlan = structuredClone(checkpoint.workPlan);
+    this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
+    this.verificationOwnerSequence = state.verificationOwnerSequence;
+    for (const layer of this.workPlan?.layers ?? []) for (const item of layer.items) {
+      const owner = state.verificationOwners.find(([id]) => id === item.id);
+      if (owner) this.verificationOwners.set(item, { ownerId: owner[1], checkIds: [...owner[2]] });
+    }
+    this.acceptanceRequestBaseline = structuredClone(state.requestBaseline);
+    this.acceptanceRequestSource = structuredClone(checkpoint.request);
+    this.verificationEvidence.restoreRecovery(state.verification);
+    this.acceptance = state.acceptance ? AssistantAcceptanceLedger.restoreRecovery(state.acceptance, this.imageEvidence,
+      (project, requirement) => verifyNpcRewardsPlayable(project, [requirement], this.npcRewardWitnesses)) : null;
+    this.currentTurnInstruction = state.instruction; this.currentTurnRequestText = state.requestText;
+    this.currentTurnIndex = state.currentTurnIndex;
+    this.turnComposerMode = state.composerMode; this.turnScope = structuredClone(checkpoint.request.scope);
+    this.specsByMap.clear(); for (const [id, spec] of state.specs) this.specsByMap.set(id, structuredClone(spec));
+    this.latestSpecMapId = state.latestSpecMapId;
+    this.turnImplicitSpec = structuredClone(state.implicitSpec); this.turnViewSpec = structuredClone(state.viewSpec);
+    this.turnViewSpecWorkItemId = state.viewSpecWorkItemId;
+    this.originalContext = state.originalContext ? new OriginalContextStore(structuredClone(state.originalContext)) : null;
+    this.adventureRequirements = structuredClone(state.adventureRequirements);
+    this.npcRewardRequirements = structuredClone(state.npcRewardRequirements);
+    this.statefulNpcRequirement = state.statefulNpcRequirement;
+    this.npcRewardItemBaseline.clear();
+    if (Array.isArray(this.npcRewardRequirements)) for (const requirement of this.npcRewardRequirements) {
+      const baseline = state.npcRewardItemBaselines.find(([key]) => key === acceptanceFingerprint(requirement));
+      if (baseline) this.npcRewardItemBaseline.set(requirement, baseline[1]);
+    }
+    this.runVolumeBaseline = structuredClone(state.volumeBaseline); this.runVolumeBar = structuredClone(state.volumeBar);
+    this.volumeContinueUsed = state.volumeContinueUsed;
+    this.acceptanceRepairAttempts = state.acceptanceRepairAttempts; this.reviewAttempts = state.reviewAttempts;
+    this.lastBlockReasonByItemId = new Map(state.lastBlockReasons);
+    this.ralphAttemptsByItemId = new Map(checkpoint.budget.ralphAttemptsByItemId);
+    this.repeatedToolFailures = new Map(checkpoint.budget.repeatedToolFailures.map(([id, failures]) => [id, new Map(failures)]));
+    this.autoRunSteps = AGENT_RUN_MAX_TOTAL_STEPS - Math.min(AGENT_RUN_MAX_TOTAL_STEPS, checkpoint.budget.remainingAutoRunSteps);
+    this.workPlanAutoStepsThisUserMessage = MAX_WORK_PLAN_AUTO_STEPS_PER_TURN - Math.min(MAX_WORK_PLAN_AUTO_STEPS_PER_TURN, checkpoint.budget.remainingWorkPlanSteps);
+    this.recoveryBudget = structuredClone(checkpoint.budget);
+    this.turnAppliedMilestoneCalls = structuredClone([...(checkpoint.applied?.calls ?? [])]);
+    this.checkpointApplied = structuredClone(checkpoint.applied);
+    // Historical content and calls are context, never offered as unapplied tool calls.
+    this.messages.push(restoredTranscriptMessage(JSON.stringify({ originalRequest: checkpoint.request,
+      appliedCalls: checkpoint.applied?.calls ?? [], presentProposalCalls: recovery.reason === "prepared-content-present" ? checkpoint.pending?.proposal?.calls : [],
+      remainingWorkPlan: this.workPlan })));
+    this.recoveredCheckpoint = structuredClone(checkpoint);
+    this.publishAcceptance();
+    return recovery;
+  }
+
+  async resumeRecoveredRun(onEvent: (event: SessionEvent) => void = () => {}, signal?: AbortSignal): Promise<TurnResult> {
+    const checkpoint = this.recoveredCheckpoint;
+    if (!checkpoint?.runtime || store.getProjectIdentity().id !== this.checkpointHost?.projectId) throw new Error("No admitted checkpoint to continue");
+    const recovery = reconcileRunCheckpoint({ kind: "found", checkpoint, durable: true }, store.getCurrent());
+    if (recovery.kind !== "resumable") throw new Error(`Checkpoint requires reconciliation: ${recovery.reason}`);
+    return this.sendUserMessage("계속", onEvent, signal, { goalAction: "resume", driverContinue: true,
+      autonomous: checkpoint.runtime.autonomous, composerMode: checkpoint.runtime.composerMode, scope: checkpoint.request.scope });
+  }
+
   private readonly appearanceProjectIdentity = store.getProjectIdentity();
   private turnAppearanceGeneration: AppearanceGenerationHandoff | undefined;
   private config: AiConfig;
@@ -1210,6 +1417,7 @@ export class AssistantSession {
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.storeBacked = project === store.getCurrent();
+    this.checkpointHost = options.checkpoint;
     this.config = options.config ?? loadAiConfig();
     this.reviewConfig = options.reviewConfig;
     // 계량은 로그 파싱이 아니라 호출 지점에서 센다(sessionUsage.ts). 본문·플래너·검수·요약 콜이
@@ -2058,6 +2266,7 @@ export class AssistantSession {
   // 진행 중 스냅샷과 종료 후 스냅샷이 다를 수 있다 — 감사 로그가 영속 기록을 맡는다).
   getHarnessSnapshot(): HarnessSnapshot {
     return {
+      runIdentity: this.getRunIdentity(),
       model: this.config.model,
       ...(this.config.liteModel ? { liteModel: this.config.liteModel } : {}),
       maxTokens: this.config.maxTokens,
@@ -2084,10 +2293,13 @@ export class AssistantSession {
     if (!operation) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted",
       runOutcome: deriveRunOutcome({ execution: "cancelled", acceptance: null, hasPendingDraft: false, hasApplied: false, persistence: "none" }) };
     signal = operation.signal;
+    this.recoveryOperation = opts?.driverContinue && this.recoveredCheckpoint ? operation : null;
+    if (this.recoveryOperation !== operation) { this.recoveredCheckpoint = null; this.recoveryBudget = null; }
     const subscriber = onEvent;
     let authoring = true;
     onEvent = event => {
       if (!authoring || operation.signal.aborted || owner.settled) return;
+      if (event.type === "tool_call" || event.type === "work_plan" || event.type === "acceptance") this.captureCheckpoint();
       subscriber(event);
       operation.assertCurrent();
     };
@@ -2169,12 +2381,21 @@ export class AssistantSession {
       ...(opts?.instruction !== undefined ? { instruction: opts.instruction } : {}),
       scope: opts?.scope ?? null,
       composerMode: opts?.composerMode ?? "do",
+      ...(this.recoveryOperation === operation ? { driverContinue: true } : {}),
     };
     // 백그라운드 탭이 얼면 런이 통째로 선다(fetch 기반이라 타이머 스로틀로는 설명되지 않는다).
     // 런 수명 — 플래너 라운드부터 자율 드라이버·회수까지 — 동안만 keep-alive 를 쥔다.
     // 획득 실패는 런을 막지 않는다: 이 가드는 편의일 뿐 실행 조건이 아니다.
     const releaseFreezeGuard = await this.freezeGuard().catch(() => () => {});
     try {
+      await this.beginCheckpoint(entryInstruction, text, turnOptions);
+      operation.assertCurrent();
+      if (this.recoveryOperation === operation && (this.workPlan ? isWorkPlanComplete(this.workPlan)
+        : this.recoveredCheckpoint?.applied !== null || this.recoveredCheckpoint?.pending?.stage === "applying")) {
+        // Scheduling already finished before interruption. Assess current content, never rerun old creates.
+        return await this.finishAssessedRunRecap(this.withTurnLedger({ assistantText: "복원된 변경은 다시 적용하지 않았습니다.",
+          proposedCalls: [], stoppedReason: "final" }), startedAt, usageBefore, auditFrom, subscriber);
+      }
       if (startsGoal) {
         this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
         this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: entryInstruction,
@@ -2233,7 +2454,7 @@ export class AssistantSession {
   ): Promise<TurnResult> {
     const operation = this.runOperation;
     operation.assertCurrent();
-    this.autoRunSteps = 0;
+    if (this.recoveryOperation !== operation) this.autoRunSteps = 0;
     let last = first;
     while (this.shouldAutoContinue(last, onEvent, signal)) {
       this.autoRunSteps += 1;
@@ -2371,6 +2592,7 @@ export class AssistantSession {
             if (owner !== this.runResult) return;
             if (milestone.kind === "applied") {
               this.wikiDelivery = { owner, project: milestone.project, receipt: null };
+              if (milestone.project) this.checkpointCurrentIdentity = checkpointContentIdentity(milestone.project);
               this.lastAppliedProject = null;
               this.runReceipt = null;
             } else if (this.wikiDelivery?.owner === owner && this.wikiDelivery.project === milestone.project
@@ -2566,7 +2788,7 @@ export class AssistantSession {
     this.syncSuccessfulToolsToCurrentWorkItem();
     // 볼륨 막대는 플래너가 계획과 함께 선언한 것만 남는다. 이어가기(계속)는 유지, 새 요청은 풀어 준다.
     if (!question && !resumesGoal) this.releaseVolumeContractForNewRequest(intent);
-    this.volumeContinueUsed = 0;
+    if (this.recoveryOperation !== operation) this.volumeContinueUsed = 0;
     this.eventBaseProposalKeys = new Map();
     this.skipPlannerThisTurn = false;
 
@@ -2612,7 +2834,7 @@ export class AssistantSession {
     if (this.turnScope) this.pushOrchestrationMessage(formatScopeNote(this.turnScope, intent));
 
     // Orchestrator (main LLM): multi-step plan decision — harness does not regex-plan.
-    this.workPlanAutoStepsThisUserMessage = 0;
+    if (this.recoveryOperation !== operation) this.workPlanAutoStepsThisUserMessage = 0;
     // 진행 중인 계획은 resume/replan 이 필요하므로 건너뛰지 않는다. 그 외에는 선언이 정한다 —
     // 질문·단일 단계는 플래너 왕복을 내지 않고, 선택 영역 작업은 정의상 한 스프린트다.
     const skipReason = this.plannerSkipReasonFor(intent);
@@ -3508,6 +3730,8 @@ export class AssistantSession {
     const calls = this.finalizeProposals(this.turnProposals);
     if (calls.length === 0) return; // 이번 턴에 마일스톤 쓰기가 없으면 적용 대상이 없다.
     const proposed = this.getProposedProject();
+    await this.prepareCheckpointApply();
+    operation.assertCurrent();
     const applied = await operation.wait(applyProposedProject(proposed, {
       base: this.proposalBase,
       operation,
@@ -3757,10 +3981,10 @@ export class AssistantSession {
 
   /** Preserve actual local milestones even when their commit/save notification is retired. */
   recordAppliedMutation(applied: Extract<ApplyProposedProjectResult, { ok: true }>): void {
-    this.recordApplication(applied);
+    this.recordApplication(applied, true);
   }
 
-  private recordApplication(applied: Extract<ApplyProposedProjectResult, { ok: true }>): void {
+  private recordApplication(applied: Extract<ApplyProposedProjectResult, { ok: true }>, mutation = false): void {
     // The approval consumed by this successful apply keeps its recorded verdict
     // (revision included). This never grants authority: it is only read back by
     // getResultReview, while every apply path requires isDraftReviewApproved().
@@ -3782,6 +4006,16 @@ export class AssistantSession {
     }
     this.turnAppliedMilestoneCalls.push(...this.finalizeProposals(this.turnProposals));
     this.turnProposals.clear();
+    if (mutation && this.checkpointKey) {
+      this.checkpointCurrentIdentity = checkpointContentIdentity(applied.applied);
+      this.checkpointApplied = { operationId: `${this.checkpointKey.runId}:${this.checkpointKey.epoch}:apply`,
+        contentIdentity: checkpointContentIdentity(applied.applied), commitId: null, calls: [...this.turnAppliedMilestoneCalls] };
+      this.checkpointPending = null;
+    } else if (this.checkpointApplied) {
+      if (applied.wikiDelivery?.project) this.checkpointCurrentIdentity = checkpointContentIdentity(applied.wikiDelivery.project);
+      this.checkpointApplied = { ...this.checkpointApplied, commitId: applied.commit.commitId };
+    }
+    this.captureCheckpoint(); // Before publish can synchronously cancel or replace this owner.
     this.publishRunOutcome();
   }
 
@@ -3798,6 +4032,8 @@ export class AssistantSession {
     this.approvedReviewIdentity = null;
     this.approvedAuthoredIdentity = null;
     this.runExecution = "failed";
+    this.checkpointPending = null;
+    this.captureCheckpoint();
     this.publishRunOutcome(onEvent);
   }
 
@@ -3853,6 +4089,8 @@ export class AssistantSession {
   }
 
   private emitRunEndProof(state: RunEndProofState, onEvent: (event: SessionEvent) => void): void {
+    if (state.status === "succeeded") this.checkpointPending = null;
+    this.captureCheckpoint();
     onEvent({ type: "persistence_proof", state: this.projectRunEndProof(state) });
   }
 
@@ -3909,6 +4147,12 @@ export class AssistantSession {
     try {
       const applied = this.lastAppliedProject ?? (this.wikiDelivery?.project
         ? { project: this.wikiDelivery.project, commitId: null } : null);
+      if (this.checkpointKey) {
+        this.checkpointPending = { operationId: `${this.checkpointKey.runId}:save`, stage: "saving", proposal: null };
+        this.captureCheckpoint();
+        await this.whenCheckpointed();
+        if (outcomeOwner !== this.runResult || signal?.aborted) return retired();
+      }
       const flushResult = await store.flush();
       if (proofRetired) return this.projectRunEndProof(state);
       if (outcomeOwner !== this.runResult) return retired();
@@ -3920,13 +4164,22 @@ export class AssistantSession {
       // A catch-up save of a human revision cannot borrow that apply's metadata.
       if (applied && store.isPersistenceReceiptForProject(receipt, applied.project)) {
         commitId = applied.commitId;
-        if (outcomeOwner === this.runResult) this.runReceipt = receipt;
+        if (outcomeOwner === this.runResult) {
+          this.runReceipt = receipt;
+          if (store.isPersistenceReceiptCurrent(receipt)) this.checkpointCurrentIdentity = checkpointContentIdentity(store.getCurrent());
+        }
       }
       state = { status: "attempted", verified: false, receipt, commitId };
       this.emitRunEndProof(this.runEndProof = state, onEvent);
       if (outcomeOwner !== this.runResult) return retired();
       if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
       if (signal?.aborted) return fail("cancelled");
+      if (this.checkpointKey) {
+        this.checkpointPending = { operationId: `${this.checkpointKey.runId}:proof`, stage: "proving", proposal: null };
+        this.captureCheckpoint();
+        await this.whenCheckpointed();
+        if (outcomeOwner !== this.runResult || signal?.aborted) return retired();
+      }
       const proof = await store.verifyPersistedRevision(receipt, { signal, validate: project => {
         if (functionalDraftPending()) return "unapplied-functional-draft";
         const problems = acceptance?.functionalProblems(project) ?? [];
@@ -4170,6 +4423,7 @@ export class AssistantSession {
     onEvent({ type: "run_recap", recap });
     this.publishRunOutcome(onEvent);
     owner.settled = true;
+    this.captureCheckpoint();
     this.cancelPendingRun = undefined;
     if (result.stoppedReason === "aborted") operation.retire();
     for (const event of events) {
@@ -5035,20 +5289,30 @@ export class AssistantSession {
     // (maxToolCalls 기본 2000은 폭주 방지 안전핀), 누적 출력 토큰이 maxTokens를 넘으면 멈춘다.
     // 다이얼 명시 시 레벨의 budgetCap 을 추가로 씌운다 — 미지정 config 는 종래 상한 그대로.
     const autonomyCap = this.autonomy()?.budgetCap;
-    const roundCap = autonomyCap === undefined ? this.config.maxToolCalls : Math.min(this.config.maxToolCalls, autonomyCap);
+    const originalRoundCap = autonomyCap === undefined ? this.config.maxToolCalls : Math.min(this.config.maxToolCalls, autonomyCap);
+    const roundCap = Math.min(originalRoundCap, this.recoveryBudget?.remainingToolCalls ?? originalRoundCap);
+    const outputLimit = Math.min(this.config.maxTokens, this.recoveryBudget?.remainingOutputTokens ?? this.config.maxTokens);
+    this.recoveryBudget = null;
+    this.checkpointRoundLimit = roundCap;
+    this.checkpointOutputLimit = outputLimit;
+    this.checkpointRoundsUsed = 0;
+    this.checkpointOutputStart = this.estimatedOutputTotal;
     let spentOutputTokens = 0;
     // Turn-local: a failed/dropped request cannot revive these captures on a later turn.
     let pendingImages: { parts: ImageUrlPart[]; receipts: AcceptanceImageReceipt[] } | null = null;
     const outputAtStart = this.estimatedOutputTotal;
 
     for (let round = 0; round < roundCap; round += 1) {
+      this.checkpointRoundsUsed = round + 1;
+      this.captureCheckpoint();
+      await operation.wait(this.whenCheckpointed());
       if (signal?.aborted) {
         this.runExecution = "cancelled";
         this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
       }
       spentOutputTokens = this.estimatedOutputTotal - outputAtStart;
-      if (spentOutputTokens >= this.config.maxTokens) {
+      if (spentOutputTokens >= outputLimit) {
         this.runExecution = "budget-exhausted";
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "token-budget" };
       }
@@ -5275,17 +5539,20 @@ export class AssistantSession {
         if (this.turnComposerMode !== "ask" && proposedByKey.size > 0) {
           // A review consumes a round and the same output budget as the writer.
           spentOutputTokens = this.estimatedOutputTotal - outputAtStart;
-          if (spentOutputTokens >= this.config.maxTokens || round + 1 >= roundCap) {
+          if (spentOutputTokens >= outputLimit || round + 1 >= roundCap) {
             this.runExecution = "budget-exhausted";
             return { assistantText: "독립 검수 예산이 부족하여 초안을 적용하지 않았습니다.", proposedCalls: this.finalizeProposals(proposedByKey),
-              stoppedReason: spentOutputTokens >= this.config.maxTokens ? "token-budget" : "max-tool-calls" };
+              stoppedReason: spentOutputTokens >= outputLimit ? "token-budget" : "max-tool-calls" };
           }
           round += 1;
+          this.checkpointRoundsUsed = round + 1;
           this.adoptAcceptance(undefined, onEvent);
-          const review = await operation.wait(this.reviewCurrentDraft(onEvent, signal, this.config.maxTokens - spentOutputTokens));
+          this.captureCheckpoint();
+          await operation.wait(this.whenCheckpointed());
+          const review = await operation.wait(this.reviewCurrentDraft(onEvent, signal, outputLimit - spentOutputTokens));
           spentOutputTokens = this.estimatedOutputTotal - outputAtStart;
           if (signal?.aborted) return { assistantText: "사용자가 중단했습니다", proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted" };
-          if (spentOutputTokens >= this.config.maxTokens) {
+          if (spentOutputTokens >= outputLimit) {
             this.runExecution = "budget-exhausted";
             this.approvedReviewIdentity = null;
             this.approvedAuthoredIdentity = null;
@@ -5709,7 +5976,7 @@ export class AssistantSession {
 
       // 출력 토큰 예산 확인(라운드의 툴 실행까지 마친 뒤). 예산 소진이 유일한 사용자 제한.
       // 사용자용 안내는 여기서 내지 않는다 — 런이 실제로 멈출 때 finishRunRecap 이 한 번 낸다.
-      if (spentOutputTokens >= this.config.maxTokens) {
+      if (spentOutputTokens >= outputLimit) {
         this.runExecution = "budget-exhausted";
         this.pushAudit({ kind: "status", text: `턴 종료(token-budget) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
         return {

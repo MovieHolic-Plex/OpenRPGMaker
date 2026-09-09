@@ -1,3 +1,57 @@
+## P4 checkpoint storage and boot admission (2026-09-09)
+
+`test/aiRunCheckpointStore.test.ts` covers additive v1/v2 to v3 IndexedDB
+migration, conversation/index/tombstone preservation, atomic checkpoint writes,
+transaction abort, stale writes, unsupported identity/version data, terminal-only
+cleanup and nondurable memory fallback. `test/aiRunRecovery.test.ts` initially
+covers transcript-only boot admission: loading interrupted history must not call
+`AssistantSession.sendUserMessage` automatically.
+
+`node scripts/qa/ai-harness-checkpoint-upgrade.mjs` uses real isolated Firefox
+IndexedDB contexts and actual Vite-served storage modules. It verifies v1/v2
+upgrade, durable checkpoint equality after page reload, unsupported rows and
+owned cleanup. `EXPECTED_HEAD` optionally pins the source; `EVIDENCE_DIR` selects
+a new output directory. Exclusive output files retain earlier failures.
+This local storage API check does not require or access a Supabase project and
+is not proof of crash-after-apply execution recovery.
+
+`aiRunRecoveryLedgers.test.ts` and `aiRunReconciliation.test.ts` cover original
+contracts/baselines, stale historical verification, latest-epoch selection and
+revalidation after baseline mutation. `aiRunRecoveryRuntime.test.ts` forks actual
+durable IDB bytes after a native event apply, recreates the session/panel and
+clicks Continue: create/apply counts must not increase. Its other controls keep
+remaining WorkPlan/requirements and reviewer budgets, and run actual ending
+quality assessment without reauthoring. `aiRunRecoveryAdmission.test.ts` checks
+ten nonresumable classes through the real panel admission boundary.
+
+The runtime fixture keeps the actual start map and its referenced tileset rather
+than twelve unused bundled tilesets. Image delivery for the authored marker is
+still required; a transparent event is a visual map change. Do not replace
+review approval, fake checkpoint durability, extend deadlines or rely on a
+sleep to reach the commit boundary. Independent real page-reload QA is a
+separate final gate; unit IDB recreation alone is not browser reload evidence.
+
+`xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario recovery` is that
+final gate. Only model HTTP is scripted: the checkpoint bytes are the ones the
+runtime wrote. It saves and reads a fresh owned remote project, refuses an
+`upsert_event` without `show_map_region` through the real independent review,
+then authors the marker with real map render acknowledgment. A QA-only Vite
+observer awaits `__qaRecoveryCommit` after the actual remote commit returns and
+before the final conversation save, so `page.reload()` lands exactly on the
+crash-after-apply image. After reload it asserts the same IDB rows and event
+count, an available Continue, and after clicking Continue zero new model calls,
+creates, applies or undo entries, the retained original request/applied history,
+a new run id with a greater epoch, exactly one final save and an unchanged
+retired row. Click-time project-description drift must report
+`needs-reconciliation` and a faulted `schemaVersion` must report
+`unsupported`, both with zero writes; each injected fault is reverted through
+the actual store or `mutateAiRecord`, never by seeding a success row.
+`EXPECTED_HEAD` pins the source, and the run rehashes an explicit 29-file
+recovery/harness scope before and after execution. Large per-step state lives in
+`<EVIDENCE_DIR>/<label>.json` with its PNG; `actions.json` keeps paths and
+byte counts, because re-embedding those snapshots overflowed `JSON.stringify`
+after a passing run. Cleanup deletes the owned project and verifies absence.
+
 ## P3 request-bound fixture alignment (2026-09-08)
 
 `test/assistantAcceptanceProject.test.ts` exercises exact title/item values,
