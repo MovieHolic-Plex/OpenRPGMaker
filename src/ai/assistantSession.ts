@@ -1022,7 +1022,9 @@ export class AssistantSession {
       operationId: `${key.runId}:${key.epoch}:apply`, stage: "proposal-ready", proposal: {
         baseContentIdentity: this.identityOf(this.baselineProject),
         contentIdentity: this.checkpointIdentityCache.get(this.ctx.project) ?? this.checkpointCurrentIdentity,
-        project: this.ctx.project, calls: this.finalizeProposals(this.turnProposals),
+        // 초안 바이트는 적용 대기에서만 싣는다(prepareCheckpointApply). 여기서 실으면 쓰기마다
+        // 프로젝트를 한 벌 더 복제하는데, 재개는 이 단계에서 그 바이트를 쓰지 않는다.
+        calls: this.finalizeProposals(this.turnProposals),
       },
     };
     const paused = this.runExecution === "cancelled" || this.runExecution === "awaiting-user";

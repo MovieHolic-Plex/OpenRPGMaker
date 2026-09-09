@@ -172,7 +172,15 @@ function validPayload(value: Record<string, unknown>): boolean {
     if (pending.proposal === null) return pending.stage === "saving" || pending.stage === "proving";
     const proposal = pending.proposal;
     if (!record(proposal) || !text(proposal.baseContentIdentity) || !text(proposal.contentIdentity)
-      || !record(proposal.project) || !record(proposal.project.meta) || !record(proposal.project.maps) || !calls(proposal.calls)) return false;
+      || !calls(proposal.calls)) return false;
+    // 초안 바이트는 **적용 대기(applying)** 에서만 필요하다 — 거기서만 재개가 그 내용을 쓴다.
+    // proposal-ready 는 항상 재조정으로 가므로 바이트를 싣지 않는다. 쓰지 못할 것을 쓰기마다
+    // 복제하면 저작 왕복이 느려진다(2026-09-09 실측: 사건 캡처 한 줄이 30초).
+    if (pending.stage === "applying") {
+      if (!record(proposal.project) || !record(proposal.project.meta) || !record(proposal.project.maps)) return false;
+    } else if (proposal.project !== undefined) {
+      if (!record(proposal.project) || !record(proposal.project.meta) || !record(proposal.project.maps)) return false;
+    }
   }
   return true;
 }

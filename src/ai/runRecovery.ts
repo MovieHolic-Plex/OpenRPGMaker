@@ -147,8 +147,11 @@ export function reconcileRunCheckpoint(read: RunCheckpointRead, project: Project
   if (checkpoint.runtime.composerMode === "ask") return reconcile("question-mode");
   if (pending?.proposal) {
     try {
-      if (pending.proposal.contentIdentity !== checkpointContentIdentity(pending.proposal.project)
-        || pending.proposal.contentIdentity === pending.proposal.baseContentIdentity) return reconcile("ambiguous-proposal");
+      // 바이트가 실린 경우(적용 대기)에만 자기 정합성을 검사한다. proposal-ready 는 바이트를
+      // 싣지 않으므로 신원 두 개의 관계만 본다.
+      if (pending.proposal.project !== undefined
+        && pending.proposal.contentIdentity !== checkpointContentIdentity(pending.proposal.project)) return reconcile("ambiguous-proposal");
+      if (pending.proposal.contentIdentity === pending.proposal.baseContentIdentity) return reconcile("ambiguous-proposal");
     } catch { return { kind: "unsupported", reason: "malformed-proposal", next: "open-transcript" }; }
   }
   if (pending?.stage === "saving" || pending?.stage === "proving") return reconcile("save-or-proof-unconfirmed");
