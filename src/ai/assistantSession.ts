@@ -5381,13 +5381,11 @@ export class AssistantSession {
     const outputAtStart = this.estimatedOutputTotal;
 
     for (let round = 0; round < roundCap; round += 1) {
+      // 라운드 예산만 갱신한다. 쓰기는 저작 결과가 바뀌는 tool_call 과 적용·저장·증명 경계가
+      // 담당하고, 갱신된 예산은 그 다음 쓰기에 함께 실린다. 라운드마다 또 쓰면 같은 라운드에
+      // 두 번 쓰는 셈이고, 한 번의 쓰기가 프로젝트 여러 벌을 복제·재검증한다 —
+      // 실측(2026-09-09): 검증만 1회 약 120ms, 사건 캡처 한 줄이 30초였다.
       this.checkpointRoundsUsed = round + 1;
-      // 라운드 예산만 갱신하고 캡처는 **의미 있는 사건**(tool_call/work_plan/acceptance)과
-      // 적용·저장·증명 경계가 이미 담당한다. 라운드마다 캡처하고 그 완료를 기다리면 왕복이
-      // 통째로 느려진다 — 실측(2026-09-09, late-cancel A/B): 라운드 간격 중앙값이
-      // 926ms(병합 이전) → 3443ms 로 3.7배가 됐고, 그 누적이 늦은 적용 검증을 실패시켰다.
-      // 재개 정확도는 사건 기반 캡처가 유지한다(라운드 예산은 다음 캡처에 함께 실린다).
-      this.captureCheckpoint();
       if (signal?.aborted) {
         this.runExecution = "cancelled";
         this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
