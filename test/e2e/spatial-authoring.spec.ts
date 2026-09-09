@@ -6,6 +6,33 @@ import { expect, test, type Page } from "@playwright/test";
 // 세 뷰포트에서 주요 컨트롤이 잘리거나 덮이지 않는지, 콘솔 예외가 없는지 본다.
 // 표본 세계 원격 공개(task19)에 의존하지 않는 범위만 다룬다 — DB 접속 없이 돌아간다.
 
+// 실행 규약 (2026-09-09 실측, 동일 head·동일 호스트). 이 스펙은 편집기 전역을 띄우고 여섯
+// 탭을 돌며 탭당 스크린샷을 찍는다. 두 가지를 지켜야 초록이 재현된다.
+//
+// 1) trace 를 끈다. 저장소 기본값 `retain-on-failure` 로는 스냅샷 기록이 지배적 비용이 되어
+//    1024x768 이 `toolbar-database` 단계에서 540초 예산을 전부 태우고 실패했다. `--trace off`
+//    에선 같은 테스트가 27~39초에 통과한다.
+//
+// 2) 저장소 기본 재시도(`retries: 1`)를 끄지 마라. 호스트 네트워크가 흔들리면 크로미움은
+//    127.0.0.1 요청까지 포함해 진행 중 요청을 전부 취소하고(`net::ERR_NETWORK_CHANGED`),
+//    그 실행은 `#app` 이 빈 채로 남아 상단이 렌더되지 않는다. 러너와 같은 컨텍스트로 5회
+//    연속 부팅을 재면 3회는 4.4~4.6초에 뜨고 2회는 60초 안에 못 뜬다(실패 실행은
+//    appHtmlLen=0, 미완료 요청 0, ERR_NETWORK_CHANGED 반복). playwright.config.ts 가 이
+//    현상을 주석으로 설명하며 재시도로 흡수하게 해뒀다 — `E2E_RETRIES=0` 으로 끄면 호스트
+//    잡음이 제품 실패처럼 보인다. 재시도까지 물리면 사설 네트워크 네임스페이스에서 서버와
+//    브라우저를 함께 띄워 격리한다(memory: isolated-loopback-browser-qa).
+//
+// 증거는 뷰포트별로 프로세스를 나눠 로그를 분리해 모은다(각 24~32초):
+//
+//   for vp in 1024x768 1280x800 1440x900; do \
+//     DEV_SERVER_PORT=$PORT npx playwright test test/e2e/spatial-authoring.spec.ts \
+//       --workers=1 --trace off -g "$vp"; \
+//   done
+//
+// 예산을 늘리거나 단정을 약하게 하지 않고 원인 쪽을 끈다. 실패 증거는 탭당 PNG 와
+// Playwright 실패 스크린샷으로 남는다.
+test.use({ trace: "off" });
+
 const VIEWPORTS = [
   { width: 1024, height: 768 },
   { width: 1280, height: 800 },
@@ -88,6 +115,7 @@ for (const { width, height } of VIEWPORTS) {
     await page.goto("/?freshProject=1");
 
     // 실제 액션 메뉴 진입 — 숨은 버튼을 직접 부르지 않는다.
+    // (이 클릭이 무한히 매달리면 상단 자체가 렌더되지 않은 상태다 — 위 실행 규약 2번을 보라.)
     await page.getByTestId("toolbar-database").click();
     await expect(page.getByTestId("database-modal")).toBeVisible();
 
@@ -95,6 +123,11 @@ for (const { width, height } of VIEWPORTS) {
     // 공간 탭 여섯 개는 «맵» 그룹에 있으므로, 실제 사용자처럼 그 그룹 머리를 눌러 펼친다.
     const mapGroup = page.getByTestId("db-tab-group-world");
     await expect(mapGroup).toBeVisible();
+    // 사이드바는 자체 스크롤 컨테이너다(1024 에서 내용 741px > 뷰 646px). 사용자는 목록을
+    // 굴려서 그룹 머리를 화면 안으로 들인다. Playwright 의 자동 스크롤은 모달 본문 쪽을
+    // 굴려 그룹이 본문 경계 밑에 남는 경우가 있어 클릭이 계속 가로막힌다(실측: 1024·1280
+    // 에서 540초 예산 소진). 그래서 그 컨테이너를 명시적으로 굴린다 — 단정 완화가 아니다.
+    await mapGroup.evaluate((node) => node.scrollIntoView({ block: "center" }));
     if ((await mapGroup.getAttribute("aria-expanded")) !== "true") await mapGroup.click();
     await expect(mapGroup).toHaveAttribute("aria-expanded", "true");
 
@@ -103,7 +136,8 @@ for (const { width, height } of VIEWPORTS) {
       const entry = page.getByTestId(tab.testid);
       await expect(entry, `${tab.label} 탭이 사이드바에 없다`).toBeVisible();
 
-      // When: 사용자가 그 탭을 누른다.
+      // When: 사용자가 목록을 굴려 그 탭을 화면에 들인 뒤 누른다.
+      await entry.evaluate((node) => node.scrollIntoView({ block: "center" }));
       await entry.click();
 
       // Then: 본문이 비어 있지 않고, 원자-우선 빈 상태로 떨어지지 않는다.
