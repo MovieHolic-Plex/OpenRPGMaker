@@ -2365,7 +2365,11 @@ export class AssistantSession {
     let authoring = true;
     onEvent = event => {
       if (!authoring || operation.signal.aborted || owner.settled) return;
-      if (event.type === "tool_call" || event.type === "work_plan" || event.type === "acceptance") this.captureCheckpoint();
+      // 사건마다 캡처하면 쓰기마다 프로젝트 여러 벌이 복제된다 — 실측(2026-09-09,
+      // late-cancel A/B): 이 한 줄이 실행 시간의 30초를 썼다(144.6초 → 112.8초).
+      // 저작 결과가 실제로 바뀌는 사건(tool_call)만 남긴다. work_plan·acceptance 변화는
+      // 다음 tool_call 이나 적용·저장·증명 경계의 캡처에 그대로 실린다.
+      if (event.type === "tool_call") this.captureCheckpoint();
       subscriber(event);
       operation.assertCurrent();
     };
