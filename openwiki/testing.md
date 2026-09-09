@@ -1,3 +1,20 @@
+## P4 checkpoint storage and boot admission (2026-09-09)
+
+`test/aiRunCheckpointStore.test.ts` covers additive v1/v2 to v3 IndexedDB
+migration, conversation/index/tombstone preservation, atomic checkpoint writes,
+transaction abort, stale writes, unsupported identity/version data, terminal-only
+cleanup and nondurable memory fallback. `test/aiRunRecovery.test.ts` initially
+covers transcript-only boot admission: loading interrupted history must not call
+`AssistantSession.sendUserMessage` automatically.
+
+`node scripts/qa/ai-harness-checkpoint-upgrade.mjs` uses real isolated Firefox
+IndexedDB contexts and actual Vite-served storage modules. It verifies v1/v2
+upgrade, durable checkpoint equality after page reload, unsupported rows and
+owned cleanup. `EXPECTED_HEAD` optionally pins the source; `EVIDENCE_DIR` selects
+a new output directory. Exclusive output files retain earlier failures.
+This local storage API check does not require or access a Supabase project and
+is not proof of crash-after-apply execution recovery.
+
 ## P3 request-bound fixture alignment (2026-09-08)
 
 `test/assistantAcceptanceProject.test.ts` exercises exact title/item values,
