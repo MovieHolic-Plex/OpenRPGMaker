@@ -65,10 +65,26 @@ export class AssistantAcceptanceLedger {
     this.snapshot = Object.freeze({ id, goal, status: "pending", items: Object.freeze([]) });
   }
 
+  /** 마지막 복원본과 그때의 원장 형태. 바뀐 게 없으면 프로젝트 기준선을 다시 복제하지 않는다. */
+  private recoveryCache: { readonly shape: string; readonly state: AcceptanceRecoveryState } | null = null;
+
+  /**
+   * 복원본은 불변 사본이다. 다만 **매번 전체 복제**하면 약속마다 들어 있는 프로젝트 기준선을
+   * 통째로 다시 만든다 — 실측(2026-09-09): 체크포인트 92회가 13.3초를 썼고 그 대부분이 여기였다.
+   * 실표면에서는 그 누적이 턴 정착 예산을 넘겨 편집기 UI 가 굳었다.
+   *
+   * 그래서 원장 형태가 그대로면 직전 사본을 재사용한다. 형태 키는 약속·요구·바인딩의 신원과
+   * 중단 여부로 만들고, 하나라도 교체되면 새로 복제한다(약속은 교체되지 변형되지 않는다).
+   */
   exportRecovery(): AcceptanceRecoveryState {
-    return structuredClone({ schemaVersion: 1, id: this.id, goal: this.goal, baseline: this.baseline,
-      promises: [...this.promises.values()], actionRequirements: [...this.actionRequirements.values()],
-      bindings: [...this.bindings], stopped: this.stopped });
+    const promises = [...this.promises.values()], actionRequirements = [...this.actionRequirements.values()];
+    const shape = JSON.stringify([this.id, this.goal, this.stopped, [...this.bindings],
+      promises.map(promise => promise.id), actionRequirements.map(promise => promise.id), promises.length, actionRequirements.length]);
+    if (this.recoveryCache?.shape === shape) return this.recoveryCache.state;
+    const state = structuredClone({ schemaVersion: 1, id: this.id, goal: this.goal, baseline: this.baseline,
+      promises, actionRequirements, bindings: [...this.bindings], stopped: this.stopped } as AcceptanceRecoveryState);
+    this.recoveryCache = { shape, state };
+    return state;
   }
 
   /** Caller validates the versioned checkpoint first. Assessments are recomputed, never imported. */
