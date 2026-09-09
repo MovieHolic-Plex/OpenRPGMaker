@@ -45,7 +45,7 @@ export function spaceDraftTarget(card: SpatialGalleryCard): SpaceDraftTarget {
       occurrenceId: spatialId(card.id),
     };
   }
-  const libraryId = card.localId ? spatialId(card.localId) : undefined;
+  const libraryId = card.compatibility || !card.localId ? undefined : spatialId(card.localId);
   return {
     cardId: card.id,
     localId: card.localId ?? card.id,

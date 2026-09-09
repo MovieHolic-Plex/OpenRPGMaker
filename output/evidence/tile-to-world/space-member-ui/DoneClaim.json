@@ -1,0 +1,62 @@
+{
+  "task": "space-member-ui",
+  "title": "Spaces canvas edits actual placed members with one visual tile grid",
+  "model": { "provider": "xai", "id": "xai/grok-4.6", "resolved": "grok-4.6" },
+  "git": {
+    "worktree": "/home/main/z-project/rpg-zzu-tile-to-world",
+    "branch": "feat/tile-to-world-authoring",
+    "base": "0fbe6a6d9a4aaf4e7294b1821b3b5cb68de23d3d",
+    "commit": "uncommitted-source-ready"
+  },
+  "port": 44193,
+  "lock": ".omo/ulw-execute/tile-to-world/validation.lock",
+  "red": {
+    "command": "npx vitest run --configLoader bundle test/spatialSpaceMemberUi.test.ts",
+    "result": "7 failed (0 members, recipe tokens, scale 1, no clone select)"
+  },
+  "green": {
+    "command": "npx vitest run --configLoader bundle test/spatialSpaceMemberUi.test.ts test/spatialSpaceCanvas.test.ts test/spatialSpaceActions.test.ts test/placedSpaceMembers.test.ts test/placedSpaceEdits.test.ts test/spatialSourceBuildUi.test.ts",
+    "result": "member UI 7, canvas 1, actions 8, placed 5+?, build UI 9 — 24+ focused passed after split; 16/16 space files then 24/24 with build"
+  },
+  "browser": {
+    "command": "flock -x -w 120 .omo/ulw-execute/tile-to-world/validation.lock -c 'timeout 360 env QA_PORT=44193 npx vite-node --script scripts/qa/spatial-space-member-ui.mts'",
+    "result": "PASS",
+    "viewports": ["1024x768", "1280x800", "1440x900"],
+    "log": "output/evidence/tile-to-world/space-member-ui/qa.json",
+    "cleanup": "browserClosed+serverClosed+cacheRemoved"
+  },
+  "hashes": {
+    "src/editor/panels/spatialSpaceCanvas.ts": "1b78e7c2be390398cb8aab61575eaf9b48ec08df47693dda4e6ea48f6a86471f",
+    "src/editor/panels/spatialSpaceCommands.ts": "79849af5c6a1a755caa842c20a344f8c0c8c63940b7ff8f55de4a9471fc46e54",
+    "src/editor/panels/spatialSpaceInspector.ts": "31eb2b6660e3842e93c5bf5620526e455392c1b9a2424fd2a7c1c954e484b37c",
+    "src/editor/panels/spatialSpaceChrome.ts": "760ef0bca1ad5385b697b133c2100fb16ad473ab117c275f6016808ee6fd6d74",
+    "src/editor/panels/spatialSpaceDraft.ts": "191e4d65fdfaab5407f6ba72c12b23b670e393976dff1a0aa879b76ec92a49c6",
+    "src/editor/panels/spatialSpacePlacedActions.ts": "059fae9e02909da144c7a956df04f8067525f43e0e6f9397fe140e3e08cf4add",
+    "src/editor/panels/spatialSpaceMembers.ts": "4472a0236aa0fcc9b1b577595914869dbf939596b40bd37c66bcd8996da33af4",
+    "src/editor/panels/spatialSpaceLayoutView.ts": "7aaaa5c10c14a2cfdd24e92bc343b5d352fec2b63d5e8b778bb28ae46523d3b9",
+    "src/editor/panels/spatialSpaceChromeState.ts": "79bc2d35708773e596ef6cdf9f6acc8917bb600adf68c74d9737d7a430063a8d"
+  },
+  "supported": [
+    "Placed tokens are actual {slotId,index,occurrenceId} including opaque ids, repetitions, deleted gaps",
+    "Move/chips/remove/add/quantity via previewPlacedSpaceEdit + retainAuthoringPreview; Apply only adopts",
+    "Compile argument is spatialAuthoringCompileScope",
+    "Drop and board Enter add with fresh opaque slot id",
+    "Required/quantity stay slot-wide; chips target selected member",
+    "Clone selects new occurrence and stays 초안 not compiled preview",
+    "Blocked required landing rejects without live/history write",
+    "Art scale 24/16 and interior origin from spaceLayout().room, not hardcoded 2/4",
+    "Source slot gestures, build chrome, and existing space action tests preserved"
+  ],
+  "remainingLimits": [
+    "Browser did not drive chips/quantity/add/delete/port/blocked or nested room-under-place; those are unit-covered",
+    "Containing geography-root compiled-move is a separate backend worker",
+    "Placed-object inspector, Place floor, and connection UI are next lanes",
+    "Parent owns full app build/gates and git commit"
+  ],
+  "cleanup": {
+    "port": 44193,
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true
+  }
+}

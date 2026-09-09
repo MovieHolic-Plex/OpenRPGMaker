@@ -1,18 +1,15 @@
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { spaceChromeState } from "@/editor/panels/spatialSpaceChromeState";
-import { mutateWorkingSpace, spaceDeletePreview, workingSpace } from "@/editor/panels/spatialSpaceCommands";
+import { mutateWorkingSpace, spaceDeletePreview, workingProject, workingSpace } from "@/editor/panels/spatialSpaceCommands";
 import {
-  setSlotChips,
-  setSlotRequired,
-  spaceDraftTarget,
-  withEnvironment,
-  withShape,
-  withSize,
-} from "@/editor/panels/spatialSpaceDraft";
-import type { SpaceDesign } from "@/project/spatial/types";
+  spaceEnvironmentControls,
+  spaceShapeControls,
+  spaceSizeControls,
+} from "@/editor/panels/spatialSpaceInspectorControls";
+import { listPlacedSpaceMembers, memberChips } from "@/editor/panels/spatialSpaceMembers";
+import { issuePlacedSpaceEdit } from "@/editor/panels/spatialSpacePlacedActions";
+import { setSlotChips, setSlotRequired, spaceDraftTarget, type SpaceDraftTarget } from "@/editor/panels/spatialSpaceDraft";
 import { el } from "@/util/dom";
-
-const SHAPES: readonly SpaceDesign["shape"][] = ["rect", "l", "alcove"];
 
 export function renderSpatialSpacesInspector(
   card: SpatialGalleryCard | undefined,
@@ -37,49 +34,10 @@ export function renderSpatialSpacesInspector(
     }));
   }
   if (space && target) {
-    body.push(shapeControls(space, target, rerender));
-    body.push(sizeControls(space, target, rerender));
-    body.push(environmentControls(space, target, rerender));
-    const slot = space.objectSlots.find((entry) => entry.id === spaceChromeState.selectedSlotId);
-    if (slot) {
-      body.push(el("label", {
-        class: "spatial-space-field",
-        children: [
-          el("span", { text: "필수" }),
-          el("input", {
-            attrs: { type: "checkbox", ...(slot.required ? { checked: "" } : {}) },
-            dataset: { testid: "spatial-slot-required" },
-            on: {
-              change: (event) => {
-                const box = event.target;
-                if (!(box instanceof HTMLInputElement)) return;
-                mutateWorkingSpace(target, (current) => setSlotRequired(current, slot.id, box.checked));
-                rerender();
-              },
-            },
-          }),
-        ],
-      }));
-      body.push(el("label", {
-        class: "spatial-space-field",
-        children: [
-          el("span", { text: "칩" }),
-          el("input", {
-            attrs: { type: "text", value: (slot.chipOverrides ?? []).join(",") },
-            dataset: { testid: "spatial-slot-chips" },
-            on: {
-              change: (event) => {
-                const input = event.target;
-                if (!(input instanceof HTMLInputElement)) return;
-                const chips = input.value.split(",").map((part) => part.trim()).filter(Boolean);
-                mutateWorkingSpace(target, (current) => setSlotChips(current, slot.id, chips));
-                rerender();
-              },
-            },
-          }),
-        ],
-      }));
-    }
+    body.push(spaceShapeControls(space, target, rerender));
+    body.push(spaceSizeControls(space, target, rerender));
+    body.push(spaceEnvironmentControls(space, target, rerender));
+    body.push(...memberFields(space, target, rerender));
     const port = space.ports.find((entry) => entry.id === spaceChromeState.selectedPortId);
     if (port) {
       body.push(el("p", {
@@ -108,84 +66,112 @@ export function renderSpatialSpacesInspector(
   });
 }
 
-function shapeControls(space: SpaceDesign, target: ReturnType<typeof spaceDraftTarget>, rerender: () => void): HTMLElement {
-  return el("div", {
-    class: "spatial-space-shapes",
-    children: SHAPES.map((shape) => el("button", {
-      class: `spatial-source-chip${space.shape === shape ? " is-active" : ""}`,
-      text: shape,
-      attrs: { type: "button", "aria-pressed": String(space.shape === shape) },
-      dataset: { testid: `spatial-shape-${shape}` },
-      on: {
-        click: () => {
-          mutateWorkingSpace(target, (current) => withShape(current, shape));
-          rerender();
+function memberFields(space: ReturnType<typeof workingSpace>, target: SpaceDraftTarget, rerender: () => void): HTMLElement[] {
+  const slotId = spaceChromeState.selectedSlotId;
+  if (!slotId || !space) return [];
+  const occurrenceId = target.occurrenceId;
+  if (occurrenceId && spaceChromeState.selectedIndex !== null) {
+    const view = listPlacedSpaceMembers(workingProject(), occurrenceId)
+      .find((entry) => entry.member.slotId === slotId && entry.member.index === spaceChromeState.selectedIndex);
+    const slot = view?.slot;
+    if (!view || !slot) return [];
+    return [
+      requiredField(slot.required, (checked) => {
+        mutateWorkingSpace(target, (current) => setSlotRequired(current, slotId, checked));
+        rerender();
+      }),
+      quantityField(slot.quantity, (quantity) => {
+        issuePlacedSpaceEdit(workingProject(), occurrenceId, {
+          kind: "quantity", slotId, quantity,
+          positions: Array.from({ length: Math.max(0, quantity - slot.quantity) }, (_, offset) => (
+            { x: view.child.x + offset + 1, y: view.child.y }
+          )),
+        });
+        rerender();
+      }),
+      chipsField(memberChips(view.child).join(","), (chips) => {
+        issuePlacedSpaceEdit(workingProject(), occurrenceId, { kind: "chips", member: view.member, chips });
+        rerender();
+      }),
+      el("button", {
+        class: "spatial-source-chip",
+        text: "선택 삭제",
+        attrs: { type: "button" },
+        dataset: { testid: "spatial-member-remove" },
+        on: {
+          click: () => {
+            issuePlacedSpaceEdit(workingProject(), occurrenceId, { kind: "remove", member: view.member });
+            spaceChromeState.selectedSlotId = null;
+            spaceChromeState.selectedIndex = null;
+            rerender();
+          },
         },
-      },
-    })),
-  });
+      }),
+    ];
+  }
+  const slot = space.objectSlots.find((entry) => entry.id === slotId);
+  if (!slot) return [];
+  return [
+    requiredField(slot.required, (checked) => {
+      mutateWorkingSpace(target, (current) => setSlotRequired(current, slot.id, checked));
+      rerender();
+    }),
+    chipsField((slot.chipOverrides ?? []).join(","), (chips) => {
+      mutateWorkingSpace(target, (current) => setSlotChips(current, slot.id, chips));
+      rerender();
+    }),
+  ];
 }
 
-function sizeControls(space: SpaceDesign, target: ReturnType<typeof spaceDraftTarget>, rerender: () => void): HTMLElement {
-  const commit = (which: "width" | "height", raw: string): void => {
-    const value = Number(raw);
-    if (!Number.isFinite(value)) return;
-    mutateWorkingSpace(target, (current) => withSize(
-      current,
-      which === "width" ? value : current.width,
-      which === "height" ? value : current.height,
-    ));
-    rerender();
-  };
-  return el("div", {
-    class: "spatial-space-size",
+function requiredField(required: boolean, onChange: (checked: boolean) => void): HTMLElement {
+  return el("label", {
+    class: "spatial-space-field",
     children: [
-      el("label", {
-        class: "spatial-space-field",
-        children: [
-          el("span", { text: "너비" }),
-          el("input", {
-            attrs: { type: "number", min: "1", value: String(space.width) },
-            dataset: { testid: "spatial-space-width" },
-            on: { change: (event) => {
-              const input = event.target;
-              if (input instanceof HTMLInputElement) commit("width", input.value);
-            } },
-          }),
-        ],
-      }),
-      el("label", {
-        class: "spatial-space-field",
-        children: [
-          el("span", { text: "높이" }),
-          el("input", {
-            attrs: { type: "number", min: "1", value: String(space.height) },
-            dataset: { testid: "spatial-space-height" },
-            on: { change: (event) => {
-              const input = event.target;
-              if (input instanceof HTMLInputElement) commit("height", input.value);
-            } },
-          }),
-        ],
+      el("span", { text: "필수" }),
+      el("input", {
+        attrs: { type: "checkbox", ...(required ? { checked: "" } : {}) },
+        dataset: { testid: "spatial-slot-required" },
+        on: { change: (event) => {
+          const box = event.target;
+          if (box instanceof HTMLInputElement) onChange(box.checked);
+        } },
       }),
     ],
   });
 }
 
-function environmentControls(space: SpaceDesign, target: ReturnType<typeof spaceDraftTarget>, rerender: () => void): HTMLElement {
-  return el("div", {
-    class: "spatial-space-env-edit",
-    children: (["interior", "outdoor"] as const).map((environment) => el("button", {
-      class: `spatial-source-chip${space.environment === environment ? " is-active" : ""}`,
-      text: environment === "interior" ? "실내" : "실외",
-      attrs: { type: "button" },
-      dataset: { testid: `spatial-space-env-${environment}` },
-      on: {
-        click: () => {
-          mutateWorkingSpace(target, (current) => withEnvironment(current, environment));
-          rerender();
-        },
-      },
-    })),
+function quantityField(quantity: number, onChange: (value: number) => void): HTMLElement {
+  return el("label", {
+    class: "spatial-space-field",
+    children: [
+      el("span", { text: "용량" }),
+      el("input", {
+        attrs: { type: "number", min: "0", value: String(quantity) },
+        dataset: { testid: "spatial-slot-quantity" },
+        on: { change: (event) => {
+          const input = event.target;
+          if (!(input instanceof HTMLInputElement)) return;
+          const value = Number(input.value);
+          if (Number.isSafeInteger(value) && value >= 0) onChange(value);
+        } },
+      }),
+    ],
+  });
+}
+
+function chipsField(value: string, onChange: (chips: readonly string[]) => void): HTMLElement {
+  return el("label", {
+    class: "spatial-space-field",
+    children: [
+      el("span", { text: "칩" }),
+      el("input", {
+        attrs: { type: "text", value },
+        dataset: { testid: "spatial-slot-chips" },
+        on: { change: (event) => {
+          const input = event.target;
+          if (input instanceof HTMLInputElement) onChange(input.value.split(",").map((part) => part.trim()).filter(Boolean));
+        } },
+      }),
+    ],
   });
 }
