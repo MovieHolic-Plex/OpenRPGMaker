@@ -181,7 +181,12 @@ export function renderAdvancedCommandBody(
     case "playAudio":
       return playAudioBody(context, cmd);
     case "stopAudio":
-      return terminalHint("stop-audio-editor", "설정 없음. 현재 재생 중인 오디오를 정지합니다.");
+      return terminalHint(
+        "stop-audio-editor",
+        cmd.channel === "bgm"
+          ? "설정 없음. 배경음(BGM)만 페이드아웃합니다 — 효과음·환경음은 계속 흐릅니다."
+          : "설정 없음. 현재 재생 중인 오디오를 정지합니다.",
+      );
     case "gameOver":
       return terminalHint("game-over-editor", "설정 없음. 게임 오버 화면을 엽니다.");
     case "ending":

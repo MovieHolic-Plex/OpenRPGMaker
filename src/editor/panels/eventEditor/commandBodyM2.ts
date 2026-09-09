@@ -725,6 +725,7 @@ function valueSemantic(title: string, project: ReturnType<typeof store.getCurren
 
 function resourceSemantic(title: string): ResourceFieldSemantic {
   if (title.includes("Battleback")) return { kind: "resource", label: "전투 배경 선택", resourceKinds: new Set(["backdrop"]) };
+  if (title === "Sound Layer") return { kind: "resource", label: "소리 선택", resourceKinds: new Set(["music", "sound"]) };
   if (title.includes("Picture")) return { kind: "resource", label: "그림 선택", resourceKinds: new Set(["picture"]) };
   if (title.includes("BGM")) return { kind: "resource", label: "배경음 선택", resourceKinds: new Set(["music"]) };
   if (title.includes("SE")) return { kind: "resource", label: "효과음 선택", resourceKinds: new Set(["sound"]) };
