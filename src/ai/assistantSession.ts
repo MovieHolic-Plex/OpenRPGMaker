@@ -1041,7 +1041,15 @@ export class AssistantSession {
         ralphAttemptsByItemId: [...this.ralphAttemptsByItemId],
         repeatedToolFailures: [...this.repeatedToolFailures].map(([id, failures]) => [id, [...failures]] as const),
       }, verification: this.verificationEvidence.snapshot(), acceptance: this.getAcceptanceSnapshot(),
-      applied: this.checkpointApplied, save: this.runReceipt, proof: this.getRunEndProof(), pending }) as RunCheckpoint;
+      applied: this.checkpointApplied,
+      // 영수증은 이 체크포인트가 가리키는 프로젝트의 것만 담는다. 다른 프로젝트(전환·다중 세션)의
+      // 영수증을 넣으면 행 전체가 malformed 로 거부되어 **복구 기록이 통째로 사라진다** —
+      // 실측(2026-09-09, late-cancel): save/proof 필드가 계속 거부됐다. 소유가 다르면
+      // 기록하지 않는 편이 정확하다(없는 것은 "모름"이고, 거짓 증거가 아니다).
+      save: this.runReceipt?.projectId === key.projectId ? this.runReceipt : null,
+      proof: (() => { const proof = this.getRunEndProof();
+        return proof?.receipt && proof.receipt.projectId !== key.projectId ? null : proof; })(),
+      pending }) as RunCheckpoint;
     // Order is preserved, but a rejected predecessor must not skip this write: `.then` alone would
     // silently drop every later capture in this session after one failed row (unsupported existing row,
     // aborted transaction). Each capture waits for the previous attempt to settle and then writes itself.
