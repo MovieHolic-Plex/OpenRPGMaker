@@ -29,3 +29,4 @@
    change-first·modern-shell)를 걷고 여기 둘로 합쳤다. 앞 레이어의 같은 선택자는 특이도로 이긴다. */
 @import "./tabs-b-assistant-panel/18-assistant-deck.css";
 @import "./tabs-b-assistant-panel/19-assistant-cards.css";
+@import "./tabs-b-assistant-panel/20-team-board.css";

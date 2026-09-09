@@ -1828,9 +1828,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       abortNoticeShown = false;
       runSurface.turnBusy = true;
       refreshAbortButton();
+      // 유휴 판정을 갱신해야 로그 카드가 펼쳐진다 — 이 경로는 세션 턴 러너를 거치지 않아 스스로 부른다.
+      syncGlassIdle();
       try {
         await runPiCommand(piCommand, {
           appendBubble: (role, line) => appendBubble(role, line),
+          appendCard: (element) => { appendChangeCard(element); log.scrollTop = log.scrollHeight; },
           setStatus,
           getCurrentMapId: () => editorState.get().currentMapId ?? null,
           signal: piRunController.signal,
@@ -1840,6 +1843,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         piRunController = null;
         runSurface.turnBusy = false;
         refreshAbortButton();
+        syncGlassIdle();
       }
       return;
     }
