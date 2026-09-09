@@ -155,7 +155,7 @@
   padding: 0 8px;
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
   border-radius: 8px;
-  background: var(--db-studio-surface, #fff);
+  background: var(--db-studio-surface);
 }
 
 .database-modal-body .spatial-inspector .spatial-open-child,

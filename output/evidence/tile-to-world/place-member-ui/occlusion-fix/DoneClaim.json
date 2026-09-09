@@ -1,0 +1,70 @@
+{
+  "goal": "placed-place-member-ui-occlusion-fix",
+  "task": "st_01a08462",
+  "complete": true,
+  "handoff": true,
+  "parentAcceptance": "required",
+  "notWholeTask15": true,
+  "base": "0c4196ab3c602ed8a006562249daf2af45b39dcb",
+  "commit": "739ba1abdfc376572360de44556e7af74e96000a",
+  "branch": "feat/spatial-placed-place-ui",
+  "worktree": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-ui",
+  "model": { "provider": "xai", "id": "xai/grok-4.6", "PI_MODEL": "grok-4.6" },
+  "port": 9873,
+  "forbiddenPortsAvoided": [9841, 9842, 9853, 9860, 9888],
+  "shared9888": "untouched foreign MainThread pid=3844652",
+  "clicks": "Playwright locator.click, no evaluate-click, no force, no coordinate teleport",
+  "browser": {
+    "engine": "chromium",
+    "viewports": ["1024x768", "1280x800", "1440x900"],
+    "red": "output/evidence/tile-to-world/place-member-ui/occlusion-fix/red/hits.json",
+    "green": "output/evidence/tile-to-world/place-member-ui/occlusion-fix/green/VisualVerify.json",
+    "outcome": "PASS"
+  },
+  "redBlockers": [
+    "1024 inn elementFromPoint hit spatial-place-connect",
+    "1280/1440 inn elementFromPoint hit spatial-inspector",
+    "1024 drilled room locator.click intercepted by html",
+    "picker allocated place-root_* whose board token was missing under leftover floor-2 filter"
+  ],
+  "fixed": [
+    "placed tokens hittable at 1024/1280/1440",
+    "drilled Compiler room locator.click, chosen-port connect/retarget/remove, compiled transfer inspection",
+    "picker-added third child token visible and deletable",
+    "nudge/apply/undo/redo, stale rejection, Escape gesture-only, Back camera restore"
+  ],
+  "stillUnproven": [
+    "whole task 15 acceptance",
+    "catalog publication",
+    "geography compiled-motion (task 16)"
+  ],
+  "sourceHashes": {
+    "src/editor/panels/spatialPlaceCanvas.ts": "d526c058dd21066708209f819400726d2b60200e8a4ce5d28eea6059c1d47a88",
+    "src/editor/panels/spatialPlaceBoard.ts": "e3f8fa6e25805baaa80785def5a891ed2d4090d36b03ac5654609a80510cf47d",
+    "src/styles/database/spatial-places.css": "d0254fda50552472e15aef02c5bc136beedb2c061b66b2822af526d9b3a50e2d",
+    "test/spatialPlacePlacedUi.test.ts": "ece69d5daaefe86c2d1ab7391823070b49856695a4d35026c086a056a072ed38"
+  },
+  "tests": {
+    "typecheck": "npm run typecheck:app PASS",
+    "focused": "npx vitest run test/spatialPlacePlacedUi.test.ts test/spatialPlaceActions.test.ts test/placedPlaceCommandSelection.test.ts --config vitest.config.ts",
+    "passed": 28,
+    "log": "output/evidence/tile-to-world/place-member-ui/occlusion-fix/green-tests.log"
+  },
+  "cssGate": {
+    "command": "npm run gates -- --only css",
+    "hexLiteralsDeltaVsSep3Baseline": "+1 pre-existing on this branch (spatial-places.css 10 var() fallbacks unchanged by this commit)",
+    "thisCommitAddedHex": 0,
+    "baselineRaised": false
+  },
+  "cleanup": {
+    "serverClosed": true,
+    "browserClosed": true,
+    "cacheRemoved": true,
+    "port": 9873,
+    "lockHeld": false
+  },
+  "disclosures": [
+    "Geography compiled-motion backend is repaired elsewhere; this slice tested place-root and room scopes only.",
+    "Do not claim whole task 15 complete before parent independent acceptance and catalog dependencies."
+  ]
+}

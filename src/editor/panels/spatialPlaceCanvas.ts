@@ -47,7 +47,9 @@ function revealBoard(board: HTMLElement, camera: SpatialAuthoringSession["camera
   board.scrollTop = Math.max(0, -camera.y);
   const selected = board.querySelector<HTMLElement>(".spatial-place-child.is-selected");
   const fallback = board.querySelectorAll<HTMLElement>(".spatial-place-child");
-  (selected ?? fallback.item(fallback.length - 1))?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  const focused = selected ?? fallback[fallback.length - 1];
+  // Scrolling is a browser affordance; headless render walks provide no scrollIntoView.
+  if (typeof focused?.scrollIntoView === "function") focused.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
 export function renderSpatialPlacesCanvas(
