@@ -201,6 +201,18 @@ function lintErrorKeys(result: ToolResultLike): string[] | null {
   return keys;
 }
 
+/** Existing declarations and diagnostics, not transferable execution or proof authority. */
+export interface VerificationRecoveryState {
+  readonly schemaVersion: 1;
+  readonly requirements: readonly { readonly requirement: VerificationRequirement; readonly inactive?: boolean }[];
+  readonly findings: readonly Finding[];
+  readonly attempts: readonly VerificationAttempt[];
+  readonly sequence: number;
+  readonly revision: number;
+  /** undefined = uncaptured; null = capture failed; entries = original error multiset. */
+  readonly lintBaseline?: readonly (readonly [string, number])[] | null;
+}
+
 /** A session owns adoption. Invocation history can never declare a requirement. */
 export class ToolVerificationEvidence {
   private readonly requirements = new Map<string, RequirementState>();
@@ -212,6 +224,27 @@ export class ToolVerificationEvidence {
   private sequence = 0;
   private revision = 0;
   private lintBaseline: ReadonlyMap<string, number> | null | undefined;
+
+  exportRecovery(): VerificationRecoveryState {
+    return structuredClone({ schemaVersion: 1,
+      requirements: [...this.requirements.values()].map(({ requirement, inactive }) => ({ requirement, inactive })),
+      findings: [...this.findings.values()], attempts: this.attempts, sequence: this.sequence, revision: this.revision,
+      lintBaseline: this.lintBaseline ? [...this.lintBaseline] : this.lintBaseline });
+  }
+
+  /** Fresh revision invalidates even unowned exploratory passes. No confirmed approach is reauthorized. */
+  restoreRecovery(state: VerificationRecoveryState): void {
+    const saved = structuredClone(state);
+    this.clear();
+    this.sequence = saved.sequence;
+    this.revision = saved.revision + 1;
+    this.lintBaseline = saved.lintBaseline ? new Map(saved.lintBaseline) : saved.lintBaseline;
+    for (const { requirement, inactive } of saved.requirements) this.requirements.set(requirement.checkId, {
+      requirement, inactive, pass: false, stale: true, criterionPassed: !requirement.criterion,
+    });
+    for (const finding of saved.findings) this.findings.set(finding.checkId, finding);
+    this.attempts.push(...saved.attempts);
+  }
 
   hasLintBaseline(): boolean { return this.lintBaseline !== undefined; }
 

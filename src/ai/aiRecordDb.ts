@@ -11,8 +11,8 @@
 // 산다. 호출자는 `writeAiRecords` 가 돌려주는 backend 종류로 «새로 고침 뒤에도 남는가» 를 안다.
 
 export const AI_RECORD_DB_NAME = "oprn-ai-records";
-export const AI_RECORD_DB_VERSION = 2;
-export const AI_RECORD_STORES = { conversations: "conversations" } as const;
+export const AI_RECORD_DB_VERSION = 3;
+export const AI_RECORD_STORES = { conversations: "conversations", runCheckpoints: "runCheckpoints" } as const;
 export type AiRecordStoreName = (typeof AI_RECORD_STORES)[keyof typeof AI_RECORD_STORES];
 export type AiRecordBackendKind = "indexeddb" | "memory";
 
@@ -52,6 +52,12 @@ function transactionDone(transaction: IDBTransaction): Promise<void> {
 }
 
 function upgrade(db: IDBDatabase): void {
+  if (!db.objectStoreNames.contains(AI_RECORD_STORES.runCheckpoints)) {
+    const store = db.createObjectStore(AI_RECORD_STORES.runCheckpoints, { keyPath: "id" });
+    store.createIndex("conversationId", "conversationId");
+    store.createIndex("projectContextKey", "projectContextKey");
+    store.createIndex("savedAt", "savedAt");
+  }
   if (!db.objectStoreNames.contains(TOMBSTONES)) db.createObjectStore(TOMBSTONES, { keyPath: "id" });
   if (!db.objectStoreNames.contains(AI_RECORD_STORES.conversations)) {
     const store = db.createObjectStore(AI_RECORD_STORES.conversations, { keyPath: "id" });
@@ -122,6 +128,41 @@ export async function writeAiRecords<T extends AiRecordRow>(store: AiRecordStore
   for (const row of rows) objectStore.put(row);
   await transactionDone(transaction);
   return "indexeddb";
+}
+
+/** Atomic local checkpoint read/compare/write. Conversation callers must keep their tombstone-aware API. */
+export async function mutateAiRecord(
+  store: Exclude<AiRecordStoreName, typeof AI_RECORD_STORES.conversations>, id: string,
+  update: (current: unknown) => AiRecordRow | null | undefined,
+): Promise<{ readonly backend: AiRecordBackendKind; readonly written: boolean }> {
+  const db = await openDatabase();
+  if (!db) {
+    const rows = memoryStore(store);
+    const next = update(structuredClone(rows.get(id) ?? null));
+    if (next === null) rows.delete(id);
+    else if (next !== undefined) rows.set(id, structuredClone(next));
+    return { backend: "memory", written: next !== undefined };
+  }
+  const transaction = db.transaction(store, "readwrite");
+  // Subscribe before scheduling requests. Request success alone is not durable completion.
+  const done = transactionDone(transaction);
+  const rows = transaction.objectStore(store);
+  let written = false;
+  let callbackError: unknown;
+  const request = rows.get(id);
+  request.onsuccess = () => {
+    try {
+      const next = update(request.result ?? null);
+      if (next === null) rows.delete(id);
+      else if (next !== undefined) rows.put(next);
+      written = next !== undefined;
+    } catch (error) {
+      callbackError = error;
+      transaction.abort();
+    }
+  };
+  try { await done; } catch (error) { throw callbackError ?? error; }
+  return { backend: "indexeddb", written };
 }
 
 export async function deleteAiRecords(store: AiRecordStoreName, ids: readonly string[]): Promise<void> {
