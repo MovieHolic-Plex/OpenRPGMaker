@@ -1,0 +1,16 @@
+{
+  "config": "tsconfig.json",
+  "file": ".omo/evidence/life-full-20260906/12/ui/fixtures-r4/fixture.mts",
+  "diagnostics": [
+    {
+      "code": 6133,
+      "line": 6,
+      "message": "'PlaySession' is declared but its value is never read."
+    },
+    {
+      "code": 2339,
+      "line": 35,
+      "message": "Property 'name' does not exist on type 'Project'."
+    }
+  ]
+}

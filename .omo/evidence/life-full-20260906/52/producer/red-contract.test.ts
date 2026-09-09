@@ -1,0 +1,119 @@
+import { describe, expect, it } from "vitest";
+import { normalizeSystemRecords } from "@/project/databaseRecordModel";
+import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
+import { ProjectFormatError, deserialize, serialize } from "@/project/io";
+import { resolvePlayerBody } from "@/project/playerFootprint";
+import { startSession } from "@/project/session";
+import { createLegacyLifeProject } from "./fixtures/life-full/legacyProject";
+
+describe("player body Project persistence", () => {
+  it("keeps legacy absent fields absent and Project4 bytes stable", () => {
+    const project = createLegacyLifeProject();
+    const raw = serialize(project);
+    const loaded = deserialize(raw);
+    expect(loaded.version).toBe(4);
+    expect(serialize(loaded)).toBe(raw);
+    expect(Object.hasOwn(loaded.system, "playerFootprint")).toBe(false);
+    expect(Object.hasOwn(loaded.system, "playerPassRows")).toBe(false);
+    expect(resolvePlayerBody(loaded, startSession(loaded, 52))).toEqual({
+      footprint: { width: 1, height: 1 }, passRows: 1,
+    });
+    expect(normalizeSystemRecords(loaded.system)).toEqual(loaded.system);
+    expect(serialize(deserialize(serialize(loaded)))).toBe(raw);
+  });
+
+  it.each([
+    { width: 3, height: 3, rows: 1 },
+    { width: 2, height: 5, rows: 2 },
+    { width: 8, height: 8, rows: 7 },
+  ])("starts the authored $width x $height / $rows body after public IO", ({ width, height, rows }) => {
+    const project = createLegacyLifeProject();
+    project.system.playerFootprint = { width, height };
+    project.system.playerPassRows = rows;
+    let loaded = deserialize(serialize(project));
+    const raw = serialize(loaded);
+    for (let cycle = 0; cycle < 3; cycle += 1) {
+      const session = startSession(loaded, 52);
+      expect(resolvePlayerBody(loaded, session)).toEqual({ footprint: { width, height }, passRows: rows });
+      expect(loaded.system.playerFootprint).toEqual({ width, height });
+      expect(loaded.system.playerPassRows).toBe(rows);
+      expect(normalizeSystemRecords(loaded.system)).toEqual(loaded.system);
+      expect(serialize(loaded)).toBe(raw);
+      loaded = deserialize(serialize(loaded));
+    }
+  });
+
+  it.each([
+    { playerFootprint: { width: 3, height: 3 } },
+    { playerPassRows: 1 },
+    { playerFootprint: undefined, playerPassRows: undefined },
+  ])("does not materialize an independently absent optional: %j", (fields) => {
+    const project = createLegacyLifeProject();
+    Object.assign(project.system, fields);
+    const loaded = deserialize(serialize(project));
+    for (const key of ["playerFootprint", "playerPassRows"] as const) {
+      expect(Object.hasOwn(loaded.system, key)).toBe(fields[key] !== undefined);
+    }
+    expect(resolvePlayerBody(loaded, startSession(loaded, 52))).toEqual(resolvePlayerBody(project));
+  });
+
+  it.each([
+    { footprint: { width: 99, height: 99 }, rows: 99 },
+    { footprint: { width: -2, height: 3 }, rows: 0 },
+    { footprint: { width: 2.5, height: 3 }, rows: -1 },
+    { footprint: { width: "3", height: 4 }, rows: 1.5 },
+    { footprint: { height: 3 }, rows: "1" },
+    { footprint: { width: 3, height: 3 }, rows: null },
+    { footprint: { width: 3, height: 3 }, rows: Number.MAX_SAFE_INTEGER + 1 },
+    { footprint: null, rows: 2 },
+    { footprint: [], rows: 1 },
+    { footprint: "3x3", rows: 1 },
+    { footprint: { width: 3, height: Number.MAX_SAFE_INTEGER + 1 }, rows: 2 },
+  ])("rejects malformed wire values but normalizes direct inputs with runtime authority: %j", ({ footprint, rows }) => {
+    const project = createLegacyLifeProject();
+    Object.assign(project.system, { playerFootprint: footprint, playerPassRows: rows });
+    const expectedFootprint = normalizeCharacterFootprint(footprint);
+    const expected = { footprint: expectedFootprint, passRows: normalizePassRows(rows, expectedFootprint.height) };
+    expect(resolvePlayerBody(project)).toEqual(expected);
+    expect(() => deserialize(serialize(project))).toThrow(ProjectFormatError);
+    project.system = normalizeSystemRecords(project.system);
+    expect(project.system.playerFootprint).toEqual(expected.footprint);
+    expect(project.system.playerPassRows).toBe(expected.passRows);
+    const loaded = deserialize(serialize(project));
+    expect(resolvePlayerBody(loaded, startSession(loaded, 52))).toEqual(expected);
+    expect(loaded.system.playerFootprint).toEqual(expected.footprint);
+    expect(loaded.system.playerPassRows).toBe(expected.passRows);
+    expect(normalizeSystemRecords(loaded.system)).toEqual(loaded.system);
+    expect(serialize(deserialize(serialize(loaded)))).toBe(serialize(loaded));
+  });
+
+  it.each([NaN, Infinity, -Infinity])("normalizes nonfinite direct inputs with the existing helpers: %s", (value) => {
+    const project = createLegacyLifeProject();
+    project.system.playerFootprint = { width: value, height: 3 };
+    project.system.playerPassRows = value;
+    const system = normalizeSystemRecords(project.system);
+    expect(system.playerFootprint).toEqual({ width: 1, height: 3 });
+    expect(system.playerPassRows).toBe(3);
+    expect(resolvePlayerBody({ system })).toEqual(resolvePlayerBody(project));
+  });
+
+  it("keeps independent session override priority and resolved-height clamping after IO", () => {
+    const project = createLegacyLifeProject();
+    project.system.playerFootprint = { width: 3, height: 3 };
+    project.system.playerPassRows = 2;
+    const loaded = deserialize(serialize(project));
+    const session = startSession(loaded, 52);
+    expect(session.playerFootprint).toBeUndefined();
+    expect(session.playerPassRows).toBeUndefined();
+    session.playerPassRows = 1;
+    expect(resolvePlayerBody(loaded, session)).toEqual({ footprint: { width: 3, height: 3 }, passRows: 1 });
+    session.playerFootprint = { width: 2, height: 5 };
+    expect(resolvePlayerBody(loaded, session)).toEqual({ footprint: { width: 2, height: 5 }, passRows: 1 });
+    delete session.playerPassRows;
+    expect(resolvePlayerBody(loaded, session)).toEqual({ footprint: { width: 2, height: 5 }, passRows: 2 });
+    session.playerFootprint = { width: 2, height: 1 };
+    expect(resolvePlayerBody(loaded, session)).toEqual({ footprint: { width: 2, height: 1 }, passRows: 1 });
+    expect(loaded.system.playerFootprint).toEqual({ width: 3, height: 3 });
+    expect(loaded.system.playerPassRows).toBe(2);
+  });
+});

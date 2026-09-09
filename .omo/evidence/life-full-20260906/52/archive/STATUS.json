@@ -1,0 +1,14 @@
+{
+  "task": 52,
+  "model": "gpt-6-astra",
+  "state": "encoding_started",
+  "scope": [
+    "producer",
+    "verify"
+  ],
+  "expected_files": 328,
+  "authorized_capture_files": 133,
+  "authorized_capture_bytes": 436989272,
+  "privacy": "All preserved payloads restricted; not publication-cleared. No image interpretation, credential content, or private reasoning published.",
+  "manifest_sha256": "8af0fc0cce3182e75dd267644fd4f7428414818a8aa4856794f7883abd354a1b"
+}

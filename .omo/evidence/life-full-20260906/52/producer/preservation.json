@@ -1,0 +1,15 @@
+{
+  "head": "ea6b2b358088cb6061783f6ffd162169764a07e9",
+  "carryoverCount": 14,
+  "uiAndTests": 11,
+  "wiki": 3,
+  "carryoverBeforeEqualsAfter": true,
+  "matchesProducerR2SourceAndBuildR2SourceDocs": true,
+  "onlyChangedAcrossTrackedVerificationInputs": [
+    "src/project/databaseRecordModel.ts",
+    "test/playerBodyProjectPersistence.test.ts"
+  ],
+  "finalTestEqualsBehavioralRedTest": true,
+  "sourceBeforeEqualsHEAD": true,
+  "eachValidationBeforeEqualsAfter": true
+}

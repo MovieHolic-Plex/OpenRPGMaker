@@ -1,0 +1,35 @@
+{
+  "originalWrapperExit": 1,
+  "originalReceiptsUnchanged": true,
+  "meaning": "git diff --no-index implies difference exit1, including with --check; actual whitespace diagnostics plus a difference produce exit3 (bits2|1). Calibration retains both direct results. Four original new-file checks have exit1 and empty streams, not whitespace failures. Serial runner conservatively classified any nonzero as failure; no validator was retried.",
+  "checks": [
+    {
+      "label": "whitespace-new-0",
+      "exit": 1,
+      "stdoutBytes": 0,
+      "stderrBytes": 0,
+      "clean": true
+    },
+    {
+      "label": "whitespace-new-1",
+      "exit": 1,
+      "stdoutBytes": 0,
+      "stderrBytes": 0,
+      "clean": true
+    },
+    {
+      "label": "whitespace-new-2",
+      "exit": 1,
+      "stdoutBytes": 0,
+      "stderrBytes": 0,
+      "clean": true
+    },
+    {
+      "label": "whitespace-new-3",
+      "exit": 1,
+      "stdoutBytes": 0,
+      "stderrBytes": 0,
+      "clean": true
+    }
+  ]
+}

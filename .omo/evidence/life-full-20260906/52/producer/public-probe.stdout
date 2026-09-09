@@ -1,0 +1,218 @@
+{
+  "inputSystem": {
+    "startActorIds": [
+      "actor_hero"
+    ],
+    "titleResourceId": "oprn-title-field",
+    "systemResourceId": "windowskin-warm",
+    "battleSystemResourceId": "easyrpg-system2-system2-c",
+    "battleBgmResourceId": "cc0-bgm-rtp-btl-001",
+    "defaultBgmResourceId": "cc0-bgm-rtp-fld-003",
+    "initialTroopId": "troop_slime",
+    "battleFlow": "gauge",
+    "typeChart": {
+      "types": [
+        "fire",
+        "water",
+        "grass"
+      ],
+      "multipliers": {
+        "fire": {
+          "fire": 0.5,
+          "water": 0.5,
+          "grass": 2
+        },
+        "water": {
+          "fire": 2,
+          "water": 0.5,
+          "grass": 0.5
+        },
+        "grass": {
+          "fire": 0.5,
+          "water": 2,
+          "grass": 0.5
+        }
+      }
+    },
+    "titleScreen": {
+      "title": "새 프로젝트",
+      "backgroundResourceId": "oprn-title-field",
+      "layout": {
+        "titleX": 32,
+        "titleY": 48,
+        "menuX": 34,
+        "menuY": 128
+      },
+      "menuLabels": {
+        "newGame": "새 게임",
+        "continueGame": "불러오기",
+        "quit": "종료"
+      },
+      "menuVisibility": {
+        "newGame": true,
+        "continueGame": true,
+        "quit": true
+      },
+      "titleGraphic": {
+        "mode": "text",
+        "x": 32,
+        "y": 62
+      },
+      "showInputHint": true
+    },
+    "playerFootprint": {
+      "width": 3,
+      "height": 3
+    },
+    "playerPassRows": 1
+  },
+  "parsedSystem": {
+    "startActorIds": [
+      "actor_hero"
+    ],
+    "playerFootprint": {
+      "width": 3,
+      "height": 3
+    },
+    "playerPassRows": 1,
+    "titleResourceId": "oprn-title-field",
+    "systemResourceId": "windowskin-warm",
+    "battleSystemResourceId": "easyrpg-system2-system2-c",
+    "battleBgmResourceId": "cc0-bgm-rtp-btl-001",
+    "defaultBgmResourceId": "cc0-bgm-rtp-fld-003",
+    "initialTroopId": "troop_slime",
+    "battleFlow": "gauge",
+    "typeChart": {
+      "types": [
+        "fire",
+        "water",
+        "grass"
+      ],
+      "multipliers": {
+        "fire": {
+          "fire": 0.5,
+          "water": 0.5,
+          "grass": 2
+        },
+        "water": {
+          "fire": 2,
+          "water": 0.5,
+          "grass": 0.5
+        },
+        "grass": {
+          "fire": 0.5,
+          "water": 2,
+          "grass": 0.5
+        }
+      }
+    },
+    "titleScreen": {
+      "title": "새 프로젝트",
+      "backgroundResourceId": "oprn-title-field",
+      "layout": {
+        "titleX": 32,
+        "titleY": 48,
+        "menuX": 34,
+        "menuY": 128
+      },
+      "menuLabels": {
+        "newGame": "새 게임",
+        "continueGame": "불러오기",
+        "quit": "종료"
+      },
+      "menuVisibility": {
+        "newGame": true,
+        "continueGame": true,
+        "quit": true
+      },
+      "showInputHint": true
+    }
+  },
+  "projectVersion": 4,
+  "saveVersion": 5,
+  "body": {
+    "footprint": {
+      "width": 3,
+      "height": 3
+    },
+    "passRows": 1
+  },
+  "bodyRect": {
+    "left": 4,
+    "right": 6,
+    "top": 5,
+    "bottom": 7
+  },
+  "passageRect": {
+    "left": 4,
+    "right": 6,
+    "top": 7,
+    "bottom": 7
+  },
+  "rounds": [
+    {
+      "cycle": 0,
+      "body": {
+        "footprint": {
+          "width": 3,
+          "height": 3
+        },
+        "passRows": 1
+      },
+      "stable": true
+    },
+    {
+      "cycle": 1,
+      "body": {
+        "footprint": {
+          "width": 3,
+          "height": 3
+        },
+        "passRows": 1
+      },
+      "stable": true
+    },
+    {
+      "cycle": 2,
+      "body": {
+        "footprint": {
+          "width": 3,
+          "height": 3
+        },
+        "passRows": 1
+      },
+      "stable": true
+    }
+  ],
+  "overridden": {
+    "footprint": {
+      "width": 2,
+      "height": 2
+    },
+    "passRows": 2
+  },
+  "resumedBody": {
+    "footprint": {
+      "width": 3,
+      "height": 3
+    },
+    "passRows": 1
+  },
+  "absentBody": {
+    "footprint": {
+      "width": 1,
+      "height": 1
+    },
+    "passRows": 1
+  },
+  "malformedWireRejected": true,
+  "normalizedMalformedBody": {
+    "footprint": {
+      "width": 8,
+      "height": 3
+    },
+    "passRows": 3
+  },
+  "startingFarmPlots": {}
+}
+Public probe Vite module loader closed; no HTTP listener or browser was started.

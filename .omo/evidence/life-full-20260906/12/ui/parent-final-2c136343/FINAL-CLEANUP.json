@@ -1,0 +1,25 @@
+{
+  "task": "Task12 감독자 최종 재검증 자원을 정리한다",
+  "scratch": "/dev/shm/life-t12-parent-01a0727b",
+  "absent": true,
+  "allCommandsTerminated": true,
+  "initialBatchExit": 1,
+  "initialFailure": "missing general fixture copy; preserved",
+  "passingFinalCases": [
+    "ui",
+    "arena-lastexit",
+    "rug",
+    "general-replay",
+    "safety"
+  ],
+  "sharedLockRetained": true,
+  "originalEvidenceUnmodified": true,
+  "receipts": [
+    "native/ui.cleanup.json",
+    "native/arena-lastexit.cleanup.json",
+    "native/rug.cleanup.json",
+    "native/general.cleanup.json",
+    "native/general-replay.cleanup.json",
+    "native/safety.cleanup.json"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "when": "2026-09-07T13:49:42.335663+00:00",
+  "scenario": "arena-lastexit",
+  "scriptSha256": "427adbce9db20d0d48d18859c283c8350cd4e09a7a0f9a0f58bf4877870ae95f",
+  "env": {
+    "TASK12_V5_SCRATCH": "/dev/shm/st_01a07c17/native-arena",
+    "TASK12_V5_ARENA": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/fixtures-r4/arena.reloaded.json",
+    "TASK12_V5_LAST_EXIT": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/fixtures-r4/lastExit.reloaded.json"
+  },
+  "fixtureHashes": {
+    "TASK12_V5_ARENA": "d8a44e6019cb015ca557bdedb551efd006975f1ba754bc2a3cd611b301b234f8",
+    "TASK12_V5_LAST_EXIT": "ca7bb0339b1472d602db720620e927bc5b81e93cfafa18a9f1ed20df07e24813"
+  },
+  "head": "2c136343eae7e39700fe4b0752d96b6e9c89e70d"
+}

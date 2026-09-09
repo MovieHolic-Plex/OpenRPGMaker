@@ -1,0 +1,3 @@
+{"step":"server","url":"http://127.0.0.1:41875","port":41875}
+{"step":"browser","scratch":"/dev/shm/st_01a07b22"}
+{"step":"goto","url":"http://127.0.0.1:41875/player.html"}

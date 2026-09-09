@@ -1,0 +1,50 @@
+[
+  {
+    "path": "src/player/lifePlacementScene.ts",
+    "sha256": "275318021fbdfdfa0a8bcb131314fd7a75bf5a8fba1c37fdd35b47eac4739565",
+    "bytes": 6063,
+    "preserved": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/preserved-current/src__player__lifePlacementScene.ts"
+  },
+  {
+    "path": "src/player/lifeLedger.ts",
+    "sha256": "9e7ffb6f6e3bdd24f22d723556513570be03a5cb0394640ea718d918e5cfebcb",
+    "bytes": 30221,
+    "preserved": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/preserved-current/src__player__lifeLedger.ts"
+  },
+  {
+    "path": "src/player/playerStatusMenuDetails.ts",
+    "sha256": "26b30f5a06f8fc49ce9a815d7493300c4aae42d2d8b1693304cf9a2a3f96b67b",
+    "bytes": 36013,
+    "preserved": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/preserved-current/src__player__playerStatusMenuDetails.ts"
+  },
+  {
+    "path": "src/player/playerStatusMenu.ts",
+    "sha256": "5d33e4a4844ddf2a5f623928b2c730ca514cdca29922d7435feeff2a4a3d6370",
+    "bytes": 16481,
+    "preserved": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/preserved-current/src__player__playerStatusMenu.ts"
+  },
+  {
+    "path": "src/player/playerStatusMenuController.ts",
+    "sha256": "7cf1dd019700f5ad8e19a170f6aa33fccfa0bfdce388eb00241c364bf81565e7",
+    "bytes": 31985,
+    "preserved": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/preserved-current/src__player__playerStatusMenuController.ts"
+  },
+  {
+    "path": "src/player/playerStatusMenuTypes.ts",
+    "sha256": "40efe968f6d087034ec01e134f87043327eac5108d0b20ddb4b1b6ddee54972c",
+    "bytes": 3556,
+    "preserved": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/preserved-current/src__player__playerStatusMenuTypes.ts"
+  },
+  {
+    "path": "src/player/playerStatusMenuDetailTypes.ts",
+    "sha256": "42ac4b0a3b6e06b1f6f5b594843b7c61cf85f141dd46c6711a9fc9b30a89614a",
+    "bytes": 5081,
+    "preserved": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/preserved-current/src__player__playerStatusMenuDetailTypes.ts"
+  },
+  {
+    "path": "src/player/PlayScene.ts",
+    "sha256": "a3c2fe2b3baad143cdef4db6de14590137316669961a451ec65407b0c156225d",
+    "bytes": 27542,
+    "preserved": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/preserved-current/src__player__PlayScene.ts"
+  }
+]

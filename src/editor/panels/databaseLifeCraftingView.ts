@@ -14,6 +14,7 @@ import {
 } from "@/editor/panels/databaseWorkspace";
 import type { CraftIngredient, CraftRecipe } from "@/project/craftRecipes";
 import { store } from "@/project/store";
+import { MAX_LIFE_SKILL_LEVEL } from "@/project/skillModel";
 import { toolActionRulesOf, toolRuleRequiresFarmable, type ToolActionRule, type ToolWorldAction } from "@/project/toolActions";
 import type {
   BundleDefinition,
@@ -463,7 +464,10 @@ function skillCards(record: LifeSkillRecord, index: number, rerender: () => void
       hint: enabled ? "레벨업 시스템이 켜져 있습니다." : "레벨업 시스템이 꺼져 있어 경험치가 쌓이지 않습니다.",
       children: [
         selectControl("종류", "db-life-skill-type", record.skillType, SKILL_TYPE_LABELS as readonly (readonly [string, string])[], (value) => updateSkill(index, { skillType: value as LifeSkillType })),
-        numberControl("최대 레벨", "db-life-skill-max-level", record.maxLevel, (value) => updateSkill(index, { maxLevel: positiveInteger(value) })),
+        numberControl("최대 레벨", "db-life-skill-max-level", record.maxLevel, (value) => {
+          updateSkill(index, { maxLevel: value });
+          rerender();
+        }, { min: 1, max: MAX_LIFE_SKILL_LEVEL }),
         checkboxControl("레벨업 시스템 사용", "db-life-skill-enabled", enabled, (checked) => {
           updateProject("skills:enabled", (draft) => { draft.system.skillSystem = { enabled: checked }; });
         }),
@@ -472,11 +476,15 @@ function skillCards(record: LifeSkillRecord, index: number, rerender: () => void
     }),
     rowsCard({
       title: "레벨 보상",
-      hint: "지정한 레벨에 도달하면 스위치를 켜거나 제작법을 엽니다.",
+      hint: "레벨 2부터 최대 레벨까지 도달 보상을 설정합니다. 기존 레벨 1 보상은 보존되지만 레벨업으로 지급되지 않습니다.",
       addLabel: "+ 보상",
       addTestId: "db-life-skill-reward-add",
       onAdd: () => {
-        updateSkill(index, { levelUpRewards: [...record.levelUpRewards, { level: 1 }] }, false);
+        if (record.maxLevel < 2) {
+          toast("최대 레벨이 2 이상이어야 레벨업 보상을 추가할 수 있습니다.", "error");
+          return;
+        }
+        updateSkill(index, { levelUpRewards: [...record.levelUpRewards, { level: 2 }] }, false);
         rerender();
       },
       emptyText: "아직 레벨 보상이 없습니다.",
@@ -486,7 +494,7 @@ function skillCards(record: LifeSkillRecord, index: number, rerender: () => void
         class: "db-life-nested-row db-life-reward-row",
         dataset: { testid: `db-life-skill-reward-row-${rewardIndex}` },
         children: [
-          numberControl("레벨", `db-life-skill-reward-level-${rewardIndex}`, reward.level, (value) => updateReward(index, rewardIndex, { level: positiveInteger(value) })),
+          numberControl("레벨", `db-life-skill-reward-level-${rewardIndex}`, reward.level, (value) => updateReward(index, rewardIndex, { level: value }), { min: 2, max: Math.min(record.maxLevel, MAX_LIFE_SKILL_LEVEL) }),
           selectControl("스위치", `db-life-skill-reward-switch-${rewardIndex}`, reward.switchId ?? "", idOptions(project.switches, "없음"), (value) => updateReward(index, rewardIndex, { switchId: value || undefined })),
           selectControl("제작법", `db-life-skill-reward-recipe-${rewardIndex}`, reward.recipeId ?? "", idOptions(project.system.craftRecipes ?? [], "없음"), (value) => updateReward(index, rewardIndex, { recipeId: value || undefined })),
           removeButton(`db-life-skill-reward-delete-${rewardIndex}`, () => {
@@ -1295,9 +1303,15 @@ function textControl(label: string, testid: string, value: string, onChange: (va
   return wsField(label, input);
 }
 
-function numberControl(label: string, testid: string, value: number, onChange: (value: number) => void): HTMLElement {
-  const input = el("input", { attrs: { type: "number", step: "1" }, value: String(value), dataset: { testid } }) as HTMLInputElement;
-  input.addEventListener("change", () => onChange(Number(input.value)));
+function numberControl(label: string, testid: string, value: number, onChange: (value: number) => void, bounds?: { min: number; max: number }): HTMLElement {
+  const input = el("input", { attrs: { type: "number", step: "1", ...(bounds ? { min: String(bounds.min), max: String(bounds.max) } : {}) }, value: String(value), dataset: { testid } }) as HTMLInputElement;
+  if (bounds && bounds.max < bounds.min) input.disabled = true;
+  input.addEventListener("change", () => {
+    if (bounds && bounds.max < bounds.min) return;
+    const next = bounds ? Math.min(bounds.max, Math.max(bounds.min, positiveInteger(Number(input.value)))) : Number(input.value);
+    if (bounds) input.value = String(next);
+    onChange(next);
+  });
   return wsField(label, input);
 }
 

@@ -76,12 +76,22 @@ describe("database per-collection view mode session", () => {
     // 기본 상태만으로는 localStorage에 아무것도 기록되지 않는다.
     expect(storage.getItem(VIEW_MODE_STORAGE_KEY)).toBeNull();
   });
+});
+
+// Same-named scopes keep acquisition case-local and preserve reported test names.
+describe("database per-collection view mode session", () => {
+  let renderRecordTab: typeof import("@/editor/panels/databaseRecordViews").renderRecordTab;
+  let session: typeof import("@/editor/panels/databaseRecordViewSession");
+
+  beforeEach(async () => {
+    const recordViews = await import("@/editor/panels/databaseRecordViews");
+    const { resetDatabaseRecordViewSession } = recordViews;
+    renderRecordTab = recordViews.renderRecordTab;
+    resetDatabaseRecordViewSession();
+    session = await import("@/editor/panels/databaseRecordViewSession");
+  });
 
   it("clicking db-view-toggle-gallery on items flips state to gallery and persists across re-render and localStorage re-read", async () => {
-    const { renderRecordTab, resetDatabaseRecordViewSession } = await import("@/editor/panels/databaseRecordViews");
-    resetDatabaseRecordViewSession();
-    const session = await import("@/editor/panels/databaseRecordViewSession");
-
     const host = document.createElement("div") as unknown as FakeElement;
     const rerender = (): void => {
       host.replaceChildren();
@@ -116,9 +126,16 @@ describe("database per-collection view mode session", () => {
     expect(freshSession.viewModeForCollection("items")).toBe("gallery");
     expect(freshSession.viewModeForCollection("skills")).toBe("list");
   });
+});
+
+describe("database per-collection view mode session", () => {
+  let renderRecordTab: typeof import("@/editor/panels/databaseRecordViews").renderRecordTab;
+
+  beforeEach(async () => {
+    ({ renderRecordTab } = await import("@/editor/panels/databaseRecordViews"));
+  });
 
   it("toggle buttons exist with correct aria-pressed and active class", async () => {
-    const { renderRecordTab } = await import("@/editor/panels/databaseRecordViews");
     const host = renderRecordHost(renderRecordTab, "skills");
 
     const gallery = findByTestId(host, "db-view-toggle-gallery");
@@ -137,11 +154,18 @@ describe("database per-collection view mode session", () => {
     list.click();
     expect(list.attrs["aria-pressed"]).toBe("true");
   });
+});
+
+describe("database per-collection view mode session", () => {
+  let renderSwitchesTab: typeof import("@/editor/panels/databaseUtilityViews").renderSwitchesTab;
+  let renderElementsTab: typeof import("@/editor/panels/databaseUtilityRecordViews").renderElementsTab;
+
+  beforeEach(async () => {
+    ({ renderSwitchesTab } = await import("@/editor/panels/databaseUtilityViews"));
+    ({ renderElementsTab } = await import("@/editor/panels/databaseUtilityRecordViews"));
+  });
 
   it("elements/terrain/utility tabs never render the view toggle", async () => {
-    const { renderSwitchesTab } = await import("@/editor/panels/databaseUtilityViews");
-    const { renderElementsTab } = await import("@/editor/panels/databaseUtilityRecordViews");
-
     const switchesHost = document.createElement("div") as unknown as FakeElement;
     renderSwitchesTab(switchesHost, () => undefined);
     expect(switchesHost.querySelectorAll(".db-view-toggle")).toHaveLength(0);

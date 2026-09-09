@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--no-index",
+    "--check",
+    "/dev/null",
+    "/dev/shm/st_01a07b66-certify/bad"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "exit": 3,
+  "inputSha256": "2f3c20bc55247d84f657651db3a71e056d85ddcc5e98c8d01e8ed3e9dcd56fd2",
+  "input": "line \n",
+  "stdoutSha256": "d17e5c2f05a81ecae2a30e54256ba4778dad411eaee4c47e907ddee9c6c343b3",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

@@ -1,0 +1,17 @@
+/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok/src/project/io/guards.ts:60
+  throw new __vite_ssr_import_1__.ProjectFormatError(`${label}가 boolean이 아닙니다.`);
+        ^
+
+ProjectFormatError: database.homeDecorationTypes[0].blocksMovement가 boolean이 아닙니다.
+    at requireBoolean (/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok/src/project/io/guards.ts:63:9)
+    at validateHomeDecorationTypes (/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok/src/project/io/shapeDatabaseFields.ts:528:5)
+    at validateDatabase (/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok/src/project/io/shapeDatabaseFields.ts:77:51)
+    at validateProjectV4 (/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok/src/project/io/shape.ts:79:3)
+    at deserialize (/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok/src/project/io/serialize.ts:42:42)
+    at prepareWebExport (/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok/src/project/webExport.ts:58:3)
+    at /home/main/z-project/rpg-zzu-life-full-receipt-ui-grok/.omo/evidence/life-full-20260906/grok-spatial-ui-review-rereview1-tmp/check-export-rereview1.mjs:92:34
+    at ViteNodeRunner.runModule (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:397:4)
+    at ViteNodeRunner.directRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:375:3)
+    at ViteNodeRunner.cachedRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:189:11)
+
+Node.js v24.11.1

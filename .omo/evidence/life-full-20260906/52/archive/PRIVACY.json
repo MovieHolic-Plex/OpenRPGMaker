@@ -1,0 +1,7 @@
+{
+  "status": "payload publication withheld pending privacy review",
+  "inspection": "Bounded inventory/structured-key inspection and automated marker scanning without printing matched content. No embedded image interpretation.",
+  "limitation": "No claim of full credential/private-reasoning clearance. Scan results were not persisted before metadata argument-size failure; payload publication is conservatively denied.",
+  "access": "Directories 0700; files 0600.",
+  "publication": "Only generated mapping/receipt metadata is allowlisted. All payloads excluded, including historical reports, source snapshots, scripts, and command streams. No network publication performed."
+}

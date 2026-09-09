@@ -1,0 +1,420 @@
+[save] failed to write save slot: DOMException [QuotaExceededError]: Owned storage quota refusal
+    at new DOMException (node:internal/per_context/domexception:76:18)
+    at MemoryStorage.setItem (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/47-48/r3/producer/public-rights.mts:25:64)
+    at saveToSlot (/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3/src/player/saveSlots.ts:422:13)
+    at /home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/47-48/r3/producer/public-rights.mts:97:17
+    at ViteNodeRunner.runModule (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:397:4)
+    at ViteNodeRunner.directRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:375:3)
+    at ViteNodeRunner.cachedRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:189:11)
+    at ViteNodeRunner.executeFile (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:162:10)
+    at CAC.run (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/cli.mjs:102:28)
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+... Skipped lines
+
+  {
+    actorCharacterResourceIds: {},
+    actorEquipment: {
+      actor_cleric: {
+        accessory: 'equip_focus_charm',
+...
+    homeDecorationPlacements: {},
++   inventory: [Object: null prototype] {
+-   inventory: {
+      item_potion: 9
+    },
++   itemUseCharges: [Object: null prototype] {},
+-   itemUseCharges: {},
+    lifeSkills: {},
+    lighting: {
+      ambient: 0,
+      sources: []
+    },
+
+    at /home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/47-48/r3/producer/public-rights.mts:140:12
+    at ViteNodeRunner.runModule (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:397:4)
+    at ViteNodeRunner.directRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:375:3)
+    at ViteNodeRunner.cachedRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:189:11)
+    at ViteNodeRunner.executeFile (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:162:10)
+    at CAC.run (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/cli.mjs:102:28) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: {
+    switches: {
+      sw_0001: false,
+      sw_0002: false,
+      sw_0003: false,
+      sw_0004: false,
+      sw_0005: false,
+      sw_0006: false,
+      sw_0007: false,
+      sw_0008: false,
+      sw_0009: false,
+      sw_0010: false,
+      sw_0011: false,
+      sw_0012: false,
+      sw_0013: false,
+      sw_0014: false,
+      sw_0015: false,
+      sw_0016: false,
+      sw_0017: false,
+      sw_0018: false,
+      sw_0019: false,
+      sw_0020: false
+    },
+    selfSwitches: {},
+    variables: {
+      var_0001: 0,
+      var_0002: 0,
+      var_0003: 0,
+      var_0004: 0,
+      var_0005: 0,
+      var_0006: 0,
+      var_0007: 0,
+      var_0008: 0,
+      var_0009: 0,
+      var_0010: 0,
+      var_0011: 0,
+      var_0012: 0,
+      var_0013: 0,
+      var_0014: 0,
+      var_0015: 0,
+      var_0016: 0,
+      var_0017: 0,
+      var_0018: 0,
+      var_0019: 0,
+      var_0020: 0
+    },
+    timers: {},
+    gold: 90,
+    inventory: [Object: null prototype] { item_potion: 9 },
+    collections: undefined,
+    museumRewardAppliedIds: undefined,
+    itemUseCharges: [Object: null prototype] {},
+    partyActorIds: [ 'actor_hero' ],
+    energy: undefined,
+    shippingQueue: {},
+    shippingHistory: [],
+    bundleContributions: {},
+    completedBundleIds: [],
+    bundleRewardAppliedIds: [],
+    unlockedRegionIds: [],
+    unlockedRecipeIds: [],
+    makerInstances: {},
+    farmAnimals: undefined,
+    farmBuildingPlacements: {
+      b1: {
+        instanceId: 'b1',
+        typeId: 'b',
+        mapId: 'map_blank_start',
+        x: 8,
+        y: 5,
+        orientation: 'down',
+        level: 1,
+        paymentReceipt: { gold: 10, items: [ [Object] ] }
+      }
+    },
+    homeDecorationPlacements: {},
+    monsterInstances: {},
+    monsterParty: [],
+    monsterBox: [],
+    actorSkillIds: {},
+    actorSkillPp: {},
+    actorExperience: { actor_hero: 0 },
+    actorLevels: {
+      actor_hero: 1,
+      actor_guardian: 1,
+      actor_mage: 1,
+      actor_scout: 1,
+      actor_cleric: 1,
+      actor_ranger: 1
+    },
+    actorVitals: { actor_hero: { hp: 514, mp: 43, maxHp: 514, maxMp: 43 } },
+    eventLocations: {},
+    erasedEventIds: [],
+    removedEventIds: {},
+    spawnedEvents: {},
+    camera: { mode: 'follow', target: { kind: 'player' } },
+    lighting: { ambient: 0, sources: [] },
+    npcTravelStates: {},
+    npcActivities: {},
+    npcScheduleStates: {},
+    lifeSkills: {},
+    followers: [],
+    followerTrail: [],
+    actorEquipment: {
+      actor_hero: {
+        weapon: 'equip_sword',
+        shield: 'equip_oak_shield',
+        armor: 'equip_leather_armor',
+        helmet: 'equip_traveler_hat',
+        accessory: 'equip_focus_charm'
+      },
+      actor_guardian: {
+        weapon: 'equip_sword',
+        shield: 'equip_oak_shield',
+        armor: 'equip_leather_armor',
+        helmet: 'equip_traveler_hat',
+        accessory: 'equip_focus_charm'
+      },
+      actor_mage: {
+        weapon: 'equip_mage_staff',
+        armor: 'equip_mystic_robe',
+        helmet: 'equip_traveler_hat',
+        accessory: 'equip_focus_charm'
+      },
+      actor_scout: {
+        weapon: 'equip_scout_dagger',
+        armor: 'equip_leather_armor',
+        helmet: 'equip_traveler_hat',
+        accessory: 'equip_focus_charm'
+      },
+      actor_cleric: {
+        weapon: 'equip_mage_staff',
+        shield: 'equip_oak_shield',
+        armor: 'equip_mystic_robe',
+        helmet: 'equip_traveler_hat',
+        accessory: 'equip_focus_charm'
+      },
+      actor_ranger: {
+        weapon: 'equip_scout_dagger',
+        armor: 'equip_leather_armor',
+        helmet: 'equip_traveler_hat',
+        accessory: 'equip_focus_charm'
+      }
+    },
+    actorRows: { actor_hero: 'front' },
+    actorNames: {},
+    actorCharacterResourceIds: {},
+    classOverrides: {},
+    actorParamBonuses: {},
+    actorStateIds: {},
+    factionStanceOverrides: {},
+    currentMapId: 'map_blank_start',
+    x: 10,
+    y: 8,
+    mapOverrides: {},
+    farmPlots: {},
+    placeables: {},
+    farmPlotsAdvancedThrough: undefined,
+    friendship: {},
+    relationships: {},
+    dailyGifts: {},
+    dailyTalks: {},
+    flags: {},
+    audio: {},
+    pictures: {},
+    messageWindowSettings: {
+      format: 'normal',
+      position: 'bottom',
+      preventObscuringPlayer: true,
+      allowEventMovementDuringWait: false
+    },
+    playTimeSeconds: 0,
+    rng: {
+      seed: 12948,
+      streams: {
+        encounter: { seed: 1873196490, state: 1873196490 },
+        battle: { seed: 3008590215, state: 3008590215 },
+        movement: { seed: 3686797160, state: 3686797160 },
+        fishing: { seed: 2975948869, state: 2975948869 },
+        misc: { seed: 3579623225, state: 3579623225 }
+      }
+    },
+    gameTime: undefined,
+    dailyWeather: undefined
+  },
+  expected: {
+    switches: {
+      sw_0001: false,
+      sw_0002: false,
+      sw_0003: false,
+      sw_0004: false,
+      sw_0005: false,
+      sw_0006: false,
+      sw_0007: false,
+      sw_0008: false,
+      sw_0009: false,
+      sw_0010: false,
+      sw_0011: false,
+      sw_0012: false,
+      sw_0013: false,
+      sw_0014: false,
+      sw_0015: false,
+      sw_0016: false,
+      sw_0017: false,
+      sw_0018: false,
+      sw_0019: false,
+      sw_0020: false
+    },
+    selfSwitches: {},
+    variables: {
+      var_0001: 0,
+      var_0002: 0,
+      var_0003: 0,
+      var_0004: 0,
+      var_0005: 0,
+      var_0006: 0,
+      var_0007: 0,
+      var_0008: 0,
+      var_0009: 0,
+      var_0010: 0,
+      var_0011: 0,
+      var_0012: 0,
+      var_0013: 0,
+      var_0014: 0,
+      var_0015: 0,
+      var_0016: 0,
+      var_0017: 0,
+      var_0018: 0,
+      var_0019: 0,
+      var_0020: 0
+    },
+    timers: {},
+    gold: 90,
+    inventory: { item_potion: 9 },
+    collections: undefined,
+    museumRewardAppliedIds: undefined,
+    itemUseCharges: {},
+    partyActorIds: [ 'actor_hero' ],
+    energy: undefined,
+    shippingQueue: {},
+    shippingHistory: [],
+    bundleContributions: {},
+    completedBundleIds: [],
+    bundleRewardAppliedIds: [],
+    unlockedRegionIds: [],
+    unlockedRecipeIds: [],
+    makerInstances: {},
+    farmAnimals: undefined,
+    farmBuildingPlacements: {
+      b1: {
+        instanceId: 'b1',
+        typeId: 'b',
+        mapId: 'map_blank_start',
+        x: 8,
+        y: 5,
+        orientation: 'down',
+        level: 1,
+        paymentReceipt: { gold: 10, items: [ [Object] ] }
+      }
+    },
+    homeDecorationPlacements: {},
+    monsterInstances: {},
+    monsterParty: [],
+    monsterBox: [],
+    actorSkillIds: {},
+    actorSkillPp: {},
+    actorExperience: { actor_hero: 0 },
+    actorLevels: {
+      actor_hero: 1,
+      actor_guardian: 1,
+      actor_mage: 1,
+      actor_scout: 1,
+      actor_cleric: 1,
+      actor_ranger: 1
+    },
+    actorVitals: { actor_hero: { hp: 514, mp: 43, maxHp: 514, maxMp: 43 } },
+    eventLocations: {},
+    erasedEventIds: [],
+    removedEventIds: {},
+    spawnedEvents: {},
+    camera: { mode: 'follow', target: { kind: 'player' } },
+    lighting: { ambient: 0, sources: [] },
+    npcTravelStates: {},
+    npcActivities: {},
+    npcScheduleStates: {},
+    lifeSkills: {},
+    followers: [],
+    followerTrail: [],
+    actorEquipment: {
+      actor_hero: {
+        weapon: 'equip_sword',
+        shield: 'equip_oak_shield',
+        armor: 'equip_leather_armor',
+        helmet: 'equip_traveler_hat',
+        accessory: 'equip_focus_charm'
+      },
+      actor_guardian: {
+        weapon: 'equip_sword',
+        shield: 'equip_oak_shield',
+        armor: 'equip_leather_armor',
+        helmet: 'equip_traveler_hat',
+        accessory: 'equip_focus_charm'
+      },
+      actor_mage: {
+        weapon: 'equip_mage_staff',
+        armor: 'equip_mystic_robe',
+        helmet: 'equip_traveler_hat',
+        accessory: 'equip_focus_charm'
+      },
+      actor_scout: {
+        weapon: 'equip_scout_dagger',
+        armor: 'equip_leather_armor',
+        helmet: 'equip_traveler_hat',
+        accessory: 'equip_focus_charm'
+      },
+      actor_cleric: {
+        weapon: 'equip_mage_staff',
+        shield: 'equip_oak_shield',
+        armor: 'equip_mystic_robe',
+        helmet: 'equip_traveler_hat',
+        accessory: 'equip_focus_charm'
+      },
+      actor_ranger: {
+        weapon: 'equip_scout_dagger',
+        armor: 'equip_leather_armor',
+        helmet: 'equip_traveler_hat',
+        accessory: 'equip_focus_charm'
+      }
+    },
+    actorRows: { actor_hero: 'front' },
+    actorNames: {},
+    actorCharacterResourceIds: {},
+    classOverrides: {},
+    actorParamBonuses: {},
+    actorStateIds: {},
+    factionStanceOverrides: {},
+    currentMapId: 'map_blank_start',
+    x: 10,
+    y: 8,
+    mapOverrides: {},
+    farmPlots: {},
+    placeables: {},
+    farmPlotsAdvancedThrough: undefined,
+    friendship: {},
+    relationships: {},
+    dailyGifts: {},
+    dailyTalks: {},
+    flags: {},
+    audio: {},
+    pictures: {},
+    messageWindowSettings: {
+      format: 'normal',
+      position: 'bottom',
+      preventObscuringPlayer: true,
+      allowEventMovementDuringWait: false
+    },
+    playTimeSeconds: 0,
+    rng: {
+      seed: 12948,
+      streams: {
+        encounter: { seed: 1873196490, state: 1873196490 },
+        battle: { seed: 3008590215, state: 3008590215 },
+        movement: { seed: 3686797160, state: 3686797160 },
+        fishing: { seed: 2975948869, state: 2975948869 },
+        misc: { seed: 3579623225, state: 3579623225 }
+      }
+    },
+    gameTime: undefined,
+    dailyWeather: undefined
+  },
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.11.1

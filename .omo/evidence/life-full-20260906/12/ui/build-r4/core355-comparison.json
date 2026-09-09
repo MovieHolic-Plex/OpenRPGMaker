@@ -1,0 +1,19 @@
+{
+  "receipt": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/tests.before.json",
+  "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c",
+  "compared": 6651,
+  "declaredLaterDifferences": [
+    "src/player/PlayScene.ts",
+    "src/player/lifeLedger.ts",
+    "src/player/playerStatusMenu.ts",
+    "src/player/playerStatusMenuController.ts",
+    "src/player/playerStatusMenuDetailTypes.ts",
+    "src/player/playerStatusMenuDetails.ts",
+    "src/player/playerStatusMenuTypes.ts",
+    "src/project/databaseRecordModel.ts",
+    "test/p2SpatialPlayIntegration.test.ts",
+    "test/p2SpatialRuntimeUi.test.ts"
+  ],
+  "unexpectedDifferences": [],
+  "rerun": false
+}

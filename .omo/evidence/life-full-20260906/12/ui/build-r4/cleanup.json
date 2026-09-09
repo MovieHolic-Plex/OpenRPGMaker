@@ -1,0 +1,19 @@
+{
+  "scratch": "/dev/shm/st_01a07bcd",
+  "removed": true,
+  "lockRetained": true,
+  "sharedCleanup": false,
+  "browserServerRemoteActions": false,
+  "headIndexSourceUnchanged": true,
+  "borrowedAllPreserved": true,
+  "results": {
+    "openwiki-index": 0,
+    "openwiki-index-check": 0,
+    "openwiki-verify": 0,
+    "whitespace": 0,
+    "whitespace-new-0": 1,
+    "whitespace-new-1": 1,
+    "whitespace-new-2": 1,
+    "whitespace-new-3": 1
+  }
+}

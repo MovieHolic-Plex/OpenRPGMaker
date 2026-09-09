@@ -1,0 +1,18 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "head": "3df665bf28c3eb4f87252a4acb6260d25589850c",
+  "diffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "fixtureSha256": "a8c7579e316d4fa6bb943ec6ae505b750d0d119e7887e27be6eb13f41f7d1943",
+  "surface": "Native Firefox player.html/exportProjectStoreShim. Public imported transactions on the actual PlayScene session; native Z sleep. Local fixture GET substituted; no action endpoints mocked, no ready state injected.",
+  "errors": [],
+  "writes": [],
+  "port": 39941,
+  "failure": "browserType.launch: Executable doesn't exist at /dev/shm/st_01a07924-ui-val/xdg/ms-playwright/firefox-1532/firefox/firefox\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝\n    at /home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/grok-integrated-ui-validation/public-player-green.mjs:176:27",
+  "cleanup": {
+    "contextClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "ownedCacheRemoved": "/dev/shm/st_01a07924-ui-val/vite",
+    "fixtureNotShipped": true
+  }
+}

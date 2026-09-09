@@ -1,0 +1,7 @@
+{"step":"server","url":"http://127.0.0.1:43955","port":43955}
+{"step":"browser","scratch":"/dev/shm/st_01a07b22"}
+{"step":"goto","url":"http://127.0.0.1:43955/player.html"}
+{"step":"title","url":"http://127.0.0.1:43955/player.html"}
+{"step":"runtime","mapId":"map_blank_start","player":{"x":8,"y":8},"gold":500,"farmPlots":{}}
+{"step":"npc-interpolation","move":{"fromX":16,"fromY":5,"toX":16,"toY":6,"dir":"down"},"sprite":{"x":264,"y":96},"fractional":false,"eventLocations":null,"player":{"x":8,"y":8},"logical":{"x":16,"y":6,"pageId":"walk","priority":"same","trigger":"action","direction":"down","footprint":{"width":3,"height":3},"passRows":1,"bodyRect":{"left":15,"right":17,"top":4,"bottom":6},"passRect":{"left":15,"right":17,"top":6,"bottom":6}}}
+{"step":"failed","error":"jsHandle.evaluate: Error: timeout selected life-ledger-space-building-place-shed\n    at eval (eval at evaluate (:303:30), <anonymous>:21:59)"}

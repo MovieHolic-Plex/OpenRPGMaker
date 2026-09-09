@@ -1,0 +1,85 @@
+{
+  "captured_utc": "2026-09-07T01:51:14.118843+00:00",
+  "base_sha": "b5c679efc6c5e575f7a1afb65dfa86939aade325",
+  "files": [
+    {
+      "source": "/home/main/z-project/rpg-zzu-life-full-spatial-rights/src/project/lifeRecovery.ts",
+      "artifact": "source/src/project/lifeRecovery.ts.gz",
+      "bytes": 13969,
+      "sha256": "9784966b7814cdaebb36dd1ef7ee989349a0b88c3b6174442ff42823bf0e877f",
+      "compressed_sha256": "e8fa2a65444d86fd75d16b5bb53edc4896dc4a6a92878ec07734ecfc32f0d615",
+      "decode_equals_source": true
+    },
+    {
+      "source": "/home/main/z-project/rpg-zzu-life-full-spatial-rights/src/project/lifeStateReconciliation.ts",
+      "artifact": "source/src/project/lifeStateReconciliation.ts.gz",
+      "bytes": 12077,
+      "sha256": "935711cd9615b571a1de5be8f5da7755290eeb2568bfda96c4affcdb78a96a1b",
+      "compressed_sha256": "d0e7c24d0b93c24bcab8a51b7e5aee83088ff9e21d0d0e9b796304a16b4e5a4c",
+      "decode_equals_source": true
+    },
+    {
+      "source": "/home/main/z-project/rpg-zzu-life-full-spatial-rights/src/project/spatialPlacementTransactions.ts",
+      "artifact": "source/src/project/spatialPlacementTransactions.ts.gz",
+      "bytes": 14855,
+      "sha256": "246ea4a90c3235fe87f451e10b8463f75a54adfd52ca8100093804a84082e981",
+      "compressed_sha256": "eb407478b70ad560ba1a0b870200d0f469a9bcdc6904b3bb984d82dd043be690",
+      "decode_equals_source": true
+    },
+    {
+      "source": "/home/main/z-project/rpg-zzu-life-full-spatial-rights/src/player/saveSlotSpatialValidation.ts",
+      "artifact": "source/src/player/saveSlotSpatialValidation.ts.gz",
+      "bytes": 2692,
+      "sha256": "ea49d3f70ef164f68cd1754351d1d769840363ca6fd469a9411a4900e13881eb",
+      "compressed_sha256": "7b2baf94023a7edf252169b9f7e0236d452ecfae437f329f77873c9801a86da2",
+      "decode_equals_source": true
+    },
+    {
+      "source": "/home/main/z-project/rpg-zzu-life-full-spatial-rights/test/lifePlacementSafety.test.ts",
+      "artifact": "source/test/lifePlacementSafety.test.ts.gz",
+      "bytes": 11841,
+      "sha256": "93e53419ae63867b56ac7ea62ec9bb281eab38b6e676ca7b6602e3075a1a65a7",
+      "compressed_sha256": "eeaba8532ec23b5b19ecb82da0f81c75edd7bc2e45a58de0b47e683cb78c20fd",
+      "decode_equals_source": true
+    },
+    {
+      "source": "/home/main/z-project/rpg-zzu-life-full-spatial-rights/test/linkedAnimalHousing.test.ts",
+      "artifact": "source/test/linkedAnimalHousing.test.ts.gz",
+      "bytes": 22232,
+      "sha256": "a501e06966346870c2db09266bdfdc559d14713027ab3ab73de7a3e9b23278ae",
+      "compressed_sha256": "6709c15acbf7530d021dfa460eca5a49bd9200335dc9cc361ffe5b0c210620b0",
+      "decode_equals_source": true
+    },
+    {
+      "source": "/home/main/z-project/rpg-zzu-life-full-spatial-rights/test/spatialPaymentReceipts.test.ts",
+      "artifact": "source/test/spatialPaymentReceipts.test.ts.gz",
+      "bytes": 14227,
+      "sha256": "c0622c7317df90a7751bafdf9c90a3b0468cd8ac08e0a280a3db603c54568c2c",
+      "compressed_sha256": "de2124ee06772a8aac9d0a0524eb7e8f7c842862ead30acf0b95c157aea013c1",
+      "decode_equals_source": true
+    },
+    {
+      "source": "/home/main/z-project/rpg-zzu-life-full-spatial-rights/test/spatialRecoveryRights.test.ts",
+      "artifact": "source/test/spatialRecoveryRights.test.ts.gz",
+      "bytes": 17788,
+      "sha256": "e6d3300defb9eed694edc619bf0acb651ff65ab8bf5fb31c52fc81deda8e0fba",
+      "compressed_sha256": "95d2d5c3ebe711d1baf7a028a97139be5bad41a5112450ea2806695e196d3c91",
+      "decode_equals_source": true
+    },
+    {
+      "source": "/home/main/z-project/rpg-zzu-life-full-spatial-rights/openwiki/runtime-sessions.md",
+      "artifact": "source/openwiki/runtime-sessions.md.gz",
+      "bytes": 82223,
+      "sha256": "1bb9f87d8cf0f90ac4db3058bae01df9720944c7f55d394295a64a02776753bd",
+      "compressed_sha256": "8f2e3ee25249df42063a0759d0d9163b04d981aa9a4432338059a0fd4cf1c4d5",
+      "decode_equals_source": true
+    }
+  ],
+  "diff": {
+    "artifact": "source/git-diff.binary.gz",
+    "sha256": "ca2551d3dcbab9308e98231a85bb106497bf5f1e099da7e3665a853007bff076",
+    "bytes": 19910,
+    "note": "Exact git diff --binary; untracked test separately preserved in source/test/spatialRecoveryRights.test.ts.gz"
+  },
+  "status": " M openwiki/runtime-sessions.md\n M src/player/saveSlotSpatialValidation.ts\n M src/project/lifeRecovery.ts\n M src/project/lifeStateReconciliation.ts\n M src/project/spatialPlacementTransactions.ts\n M test/lifePlacementSafety.test.ts\n M test/linkedAnimalHousing.test.ts\n M test/spatialPaymentReceipts.test.ts\n?? test/spatialRecoveryRights.test.ts\n"
+}

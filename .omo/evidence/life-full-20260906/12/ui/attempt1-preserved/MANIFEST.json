@@ -1,0 +1,505 @@
+{
+  "status": "preserved-not-approved",
+  "createdUtc": "2026-09-07T05:46:06.475811+00:00",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "baseCommit": "a51149b344d345f134cf2831c06867ba2a8a003c",
+  "currentCommit": "a51149b344d345f134cf2831c06867ba2a8a003c",
+  "fileCount": 14,
+  "untrackedFiles": [
+    "src/player/lifePlacementScene.ts",
+    "test/lifePlacementSceneUi.test.ts"
+  ],
+  "files": [
+    {
+      "path": "src/player/lifePlacementScene.ts",
+      "dirtyStatus": "??",
+      "currentSha256": "9d9883603fe70704820117adca31ff3a8844842df95d4726f7839f09d90d47c3",
+      "baseSha256": null,
+      "baseExists": false,
+      "currentBackup": {
+        "path": "current/src/player/lifePlacementScene.ts.gz",
+        "gzipSha256": "405a4ac17b38652428e6e5145ade3c8695757e02700fe60f4500c403199267c7",
+        "decodedSha256": "9d9883603fe70704820117adca31ff3a8844842df95d4726f7839f09d90d47c3",
+        "decodedBytes": 3016,
+        "decodeEqualsOriginal": true
+      }
+    },
+    {
+      "path": "src/player/lifeLedger.ts",
+      "dirtyStatus": " M",
+      "currentSha256": "3354b86b2a14695a1becc8320a3b67049db17c814a02909895e50200eaab7427",
+      "baseSha256": "0b8dd38dbc927b27414c3dc38ea3fb4b5ef2a069ecb129fd1a72af04542dd210",
+      "baseExists": true,
+      "currentBackup": {
+        "path": "current/src/player/lifeLedger.ts.gz",
+        "gzipSha256": "ffcb097f72949b6be177d3d4f5b6c6745e6b2cff1c0f67cfe4ef531c8b315fb1",
+        "decodedSha256": "3354b86b2a14695a1becc8320a3b67049db17c814a02909895e50200eaab7427",
+        "decodedBytes": 28478,
+        "decodeEqualsOriginal": true
+      },
+      "baseBackup": {
+        "path": "base/src/player/lifeLedger.ts.gz",
+        "gzipSha256": "eff2b321e773be78365ce13f3a695b8962c6f4d34ebe91dfaf078d0ac49f329a",
+        "decodedSha256": "0b8dd38dbc927b27414c3dc38ea3fb4b5ef2a069ecb129fd1a72af04542dd210",
+        "decodedBytes": 24524,
+        "decodeEqualsOriginal": true
+      }
+    },
+    {
+      "path": "src/player/playerStatusMenuDetails.ts",
+      "dirtyStatus": " M",
+      "currentSha256": "28850de334abfcd152eef34b0b4b1b8efe7060cde9da27f2e29d2e7b0335878d",
+      "baseSha256": "53f81f7c0002ac49912a8d5665536932127055db295259876bf88d32901cba7d",
+      "baseExists": true,
+      "currentBackup": {
+        "path": "current/src/player/playerStatusMenuDetails.ts.gz",
+        "gzipSha256": "c3d2a2419409b8b7405e4a7ba33dbcd73b8172702473c1f8902c412ea33ab04c",
+        "decodedSha256": "28850de334abfcd152eef34b0b4b1b8efe7060cde9da27f2e29d2e7b0335878d",
+        "decodedBytes": 35979,
+        "decodeEqualsOriginal": true
+      },
+      "baseBackup": {
+        "path": "base/src/player/playerStatusMenuDetails.ts.gz",
+        "gzipSha256": "c99738d6020af47d3d9522325df72f80dbbd73fa84b3c0db7a04afae5a54ee01",
+        "decodedSha256": "53f81f7c0002ac49912a8d5665536932127055db295259876bf88d32901cba7d",
+        "decodedBytes": 35831,
+        "decodeEqualsOriginal": true
+      }
+    },
+    {
+      "path": "src/player/playerStatusMenu.ts",
+      "dirtyStatus": " M",
+      "currentSha256": "4deae4b467cfcde8d98f1fdebfea77e8c9cb5aca54d154a9b5f510889d0a3a87",
+      "baseSha256": "739841d52ac65902f3c49999670a5704de7a37f71711fce5e179ef0ff987af61",
+      "baseExists": true,
+      "currentBackup": {
+        "path": "current/src/player/playerStatusMenu.ts.gz",
+        "gzipSha256": "c2e4dc82d9cbb0e141d4f7f4059259b56050c70ec349f4f62a35bb1a19d18f86",
+        "decodedSha256": "4deae4b467cfcde8d98f1fdebfea77e8c9cb5aca54d154a9b5f510889d0a3a87",
+        "decodedBytes": 16449,
+        "decodeEqualsOriginal": true
+      },
+      "baseBackup": {
+        "path": "base/src/player/playerStatusMenu.ts.gz",
+        "gzipSha256": "7e15c1ad40e0efeb57c9a57b153c2e706a55f8ea5b0209200698ce7c00a50194",
+        "decodedSha256": "739841d52ac65902f3c49999670a5704de7a37f71711fce5e179ef0ff987af61",
+        "decodedBytes": 16307,
+        "decodeEqualsOriginal": true
+      }
+    },
+    {
+      "path": "src/player/playerStatusMenuController.ts",
+      "dirtyStatus": " M",
+      "currentSha256": "11fdbcd84834886d7241cb3894edb851de37c1bd9d9b2d7f065da7a77af3af01",
+      "baseSha256": "e4bd1b24758c62338b1a871712222b2412b9c4b8c01c9cdd45af9295f2504155",
+      "baseExists": true,
+      "currentBackup": {
+        "path": "current/src/player/playerStatusMenuController.ts.gz",
+        "gzipSha256": "36ac8931ca2cc4512345254acb2b7642694131a5512c5b08c01ebdabf6dddd50",
+        "decodedSha256": "11fdbcd84834886d7241cb3894edb851de37c1bd9d9b2d7f065da7a77af3af01",
+        "decodedBytes": 31937,
+        "decodeEqualsOriginal": true
+      },
+      "baseBackup": {
+        "path": "base/src/player/playerStatusMenuController.ts.gz",
+        "gzipSha256": "1159414b52a72746f75600e4698ebd74725be86b4062a1338172db5e1f5e7285",
+        "decodedSha256": "e4bd1b24758c62338b1a871712222b2412b9c4b8c01c9cdd45af9295f2504155",
+        "decodedBytes": 31601,
+        "decodeEqualsOriginal": true
+      }
+    },
+    {
+      "path": "src/player/playerStatusMenuTypes.ts",
+      "dirtyStatus": " M",
+      "currentSha256": "424604a71dd6c12b1526618dc27b6c5be8cc14d08d3c22327803ab8784f1383c",
+      "baseSha256": "8eb1343617b5bccbaed5c677f533aa5493e37e1293c3a553ac4b4af3dfc66749",
+      "baseExists": true,
+      "currentBackup": {
+        "path": "current/src/player/playerStatusMenuTypes.ts.gz",
+        "gzipSha256": "930d03cc2cf78a3fcfff100cc8dab479deff094c009142f454b2543199c79879",
+        "decodedSha256": "424604a71dd6c12b1526618dc27b6c5be8cc14d08d3c22327803ab8784f1383c",
+        "decodedBytes": 3452,
+        "decodeEqualsOriginal": true
+      },
+      "baseBackup": {
+        "path": "base/src/player/playerStatusMenuTypes.ts.gz",
+        "gzipSha256": "689115204eddd6d402f87a52188a2557d06e3d8ddabd47c979280a57c2210a21",
+        "decodedSha256": "8eb1343617b5bccbaed5c677f533aa5493e37e1293c3a553ac4b4af3dfc66749",
+        "decodedBytes": 3220,
+        "decodeEqualsOriginal": true
+      }
+    },
+    {
+      "path": "src/player/playerStatusMenuDetailTypes.ts",
+      "dirtyStatus": " M",
+      "currentSha256": "81cdb6fdce59ba6c53bc548e6ee777222ce549b7be454dfe7b84cdffee5a1ea6",
+      "baseSha256": "ebca108ad62491e7f4928041c48e4f2f37dbc8812d334cc044886a1a53d3f2ea",
+      "baseExists": true,
+      "currentBackup": {
+        "path": "current/src/player/playerStatusMenuDetailTypes.ts.gz",
+        "gzipSha256": "eb537ffd5c9dd9de89e33b1dd721c7ea3d8a63bcb285b3bf3ca1a44dbee7e987",
+        "decodedSha256": "81cdb6fdce59ba6c53bc548e6ee777222ce549b7be454dfe7b84cdffee5a1ea6",
+        "decodedBytes": 4977,
+        "decodeEqualsOriginal": true
+      },
+      "baseBackup": {
+        "path": "base/src/player/playerStatusMenuDetailTypes.ts.gz",
+        "gzipSha256": "74c6d83ca5f1f3e19ac6d9c5935c43eaff657b8769d9f2ca98fff0e5ba3bf8c4",
+        "decodedSha256": "ebca108ad62491e7f4928041c48e4f2f37dbc8812d334cc044886a1a53d3f2ea",
+        "decodedBytes": 4745,
+        "decodeEqualsOriginal": true
+      }
+    },
+    {
+      "path": "src/player/PlayScene.ts",
+      "dirtyStatus": " M",
+      "currentSha256": "a3c2fe2b3baad143cdef4db6de14590137316669961a451ec65407b0c156225d",
+      "baseSha256": "48c2ae1782b417b3a1ca0323e1ea8c84e4bb38ef7af419bd33ad56611c8015a8",
+      "baseExists": true,
+      "currentBackup": {
+        "path": "current/src/player/PlayScene.ts.gz",
+        "gzipSha256": "1be48df3a0f9084bda12ef31562e3f8ed9cb59d135aca8364f01127c4c5c7471",
+        "decodedSha256": "a3c2fe2b3baad143cdef4db6de14590137316669961a451ec65407b0c156225d",
+        "decodedBytes": 27542,
+        "decodeEqualsOriginal": true
+      },
+      "baseBackup": {
+        "path": "base/src/player/PlayScene.ts.gz",
+        "gzipSha256": "80ffeaade1b4c62b92fc92638add96ae232c17e4f1377ad2a68ced999281993f",
+        "decodedSha256": "48c2ae1782b417b3a1ca0323e1ea8c84e4bb38ef7af419bd33ad56611c8015a8",
+        "decodedBytes": 27363,
+        "decodeEqualsOriginal": true
+      }
+    },
+    {
+      "path": "test/lifePlacementSceneUi.test.ts",
+      "dirtyStatus": "??",
+      "currentSha256": "4adde05f9f78ce496d7aa8482ce5be24c00091dbbaf07398a9edde748681e13f",
+      "baseSha256": null,
+      "baseExists": false,
+      "currentBackup": {
+        "path": "current/test/lifePlacementSceneUi.test.ts.gz",
+        "gzipSha256": "bfb1c9cdfc25d2b6b765407649608617644e36e58f85ff1efb4160299839ce07",
+        "decodedSha256": "4adde05f9f78ce496d7aa8482ce5be24c00091dbbaf07398a9edde748681e13f",
+        "decodedBytes": 25123,
+        "decodeEqualsOriginal": true
+      }
+    },
+    {
+      "path": "test/p2SpatialPlayIntegration.test.ts",
+      "dirtyStatus": " M",
+      "currentSha256": "b7329262d031932ab515ec5647026e0a956c8275a145051e40f8ccc8403a9e51",
+      "baseSha256": "03f5842d15079b924835ed572c39a8e850770a634c2025aad995be621ab2abda",
+      "baseExists": true,
+      "currentBackup": {
+        "path": "current/test/p2SpatialPlayIntegration.test.ts.gz",
+        "gzipSha256": "ce467d53852902409bb8912693ce91d7a2f63c6c22027a8b958d5f669fd447ab",
+        "decodedSha256": "b7329262d031932ab515ec5647026e0a956c8275a145051e40f8ccc8403a9e51",
+        "decodedBytes": 8496,
+        "decodeEqualsOriginal": true
+      },
+      "baseBackup": {
+        "path": "base/test/p2SpatialPlayIntegration.test.ts.gz",
+        "gzipSha256": "d2bef3bdf9ceec100a7e298da3b52f7444125f2bee296ac5003d0be7630d139a",
+        "decodedSha256": "03f5842d15079b924835ed572c39a8e850770a634c2025aad995be621ab2abda",
+        "decodedBytes": 6481,
+        "decodeEqualsOriginal": true
+      }
+    },
+    {
+      "path": "test/p2SpatialRuntimeUi.test.ts",
+      "dirtyStatus": " M",
+      "currentSha256": "927d55ec45b0a72e8cd0240270701f9983f76734f1ace7b1d145cd822663be2f",
+      "baseSha256": "be3736daca0de6189707144f564653f8259a54a06384ddcaa5eea815b940e078",
+      "baseExists": true,
+      "currentBackup": {
+        "path": "current/test/p2SpatialRuntimeUi.test.ts.gz",
+        "gzipSha256": "1999c733866edae41bd5c6d9d1159e72417dcb1e1315dcc2cecc4f8447b78e6e",
+        "decodedSha256": "927d55ec45b0a72e8cd0240270701f9983f76734f1ace7b1d145cd822663be2f",
+        "decodedBytes": 2873,
+        "decodeEqualsOriginal": true
+      },
+      "baseBackup": {
+        "path": "base/test/p2SpatialRuntimeUi.test.ts.gz",
+        "gzipSha256": "26b5b7230b04c56290fe06769c54e6e52c9a276ad993bc32c414e8998975a3f6",
+        "decodedSha256": "be3736daca0de6189707144f564653f8259a54a06384ddcaa5eea815b940e078",
+        "decodedBytes": 2631,
+        "decodeEqualsOriginal": true
+      }
+    },
+    {
+      "path": "openwiki/runtime-sessions.md",
+      "dirtyStatus": " M",
+      "currentSha256": "9184b3206751003d7b120d78b0d0fba4a8f7e0d2f3e14b5109e10e3e472f2521",
+      "baseSha256": "1bb9f87d8cf0f90ac4db3058bae01df9720944c7f55d394295a64a02776753bd",
+      "baseExists": true,
+      "currentBackup": {
+        "path": "current/openwiki/runtime-sessions.md.gz",
+        "gzipSha256": "9828e6bb3f33b6eb8002abf670ec86d265ab3863a6185b080587552f3b6ee24e",
+        "decodedSha256": "9184b3206751003d7b120d78b0d0fba4a8f7e0d2f3e14b5109e10e3e472f2521",
+        "decodedBytes": 82094,
+        "decodeEqualsOriginal": true
+      },
+      "baseBackup": {
+        "path": "base/openwiki/runtime-sessions.md.gz",
+        "gzipSha256": "8f2e3ee25249df42063a0759d0d9163b04d981aa9a4432338059a0fd4cf1c4d5",
+        "decodedSha256": "1bb9f87d8cf0f90ac4db3058bae01df9720944c7f55d394295a64a02776753bd",
+        "decodedBytes": 82223,
+        "decodeEqualsOriginal": true
+      }
+    },
+    {
+      "path": "openwiki/runtime-project-schema.md",
+      "dirtyStatus": " M",
+      "currentSha256": "3202a75594b7d1f573e2071a3fc7b12a4d43b4c7718cd6a6348d9ec864c446d7",
+      "baseSha256": "b0761595a9aa56c69573182d61803afc6aa3a5fe2502994adb05ca2433b4c2c7",
+      "baseExists": true,
+      "currentBackup": {
+        "path": "current/openwiki/runtime-project-schema.md.gz",
+        "gzipSha256": "ad664cefb53ebe995fd95bdb56136050d9e2af0b7173d907dbdf6c61bbc5d62f",
+        "decodedSha256": "3202a75594b7d1f573e2071a3fc7b12a4d43b4c7718cd6a6348d9ec864c446d7",
+        "decodedBytes": 73872,
+        "decodeEqualsOriginal": true
+      },
+      "baseBackup": {
+        "path": "base/openwiki/runtime-project-schema.md.gz",
+        "gzipSha256": "d37be4c80f26f5eb42fe6eb09ab317db6a43e17397aa7128ecd79d06d82e4b58",
+        "decodedSha256": "b0761595a9aa56c69573182d61803afc6aa3a5fe2502994adb05ca2433b4c2c7",
+        "decodedBytes": 73099,
+        "decodeEqualsOriginal": true
+      }
+    },
+    {
+      "path": "openwiki/INDEX.md",
+      "dirtyStatus": " M",
+      "currentSha256": "b38de3bfba9123126fff191d666f5326490878cb0b7f0d952138d878d75d4475",
+      "baseSha256": "a9c27db7610e32591b7ab20cef7e373ad349741e6877b90b169ba39cebd0fa41",
+      "baseExists": true,
+      "currentBackup": {
+        "path": "current/openwiki/INDEX.md.gz",
+        "gzipSha256": "6061f48ee37855c8be5a5fcce198dcbf993269192f2a76de70d6efb98b333556",
+        "decodedSha256": "b38de3bfba9123126fff191d666f5326490878cb0b7f0d952138d878d75d4475",
+        "decodedBytes": 38587,
+        "decodeEqualsOriginal": true
+      },
+      "baseBackup": {
+        "path": "base/openwiki/INDEX.md.gz",
+        "gzipSha256": "d1911099108651ec9aa8e900eb5247d81d6e9b04f5afca2796e65200ef014d12",
+        "decodedSha256": "a9c27db7610e32591b7ab20cef7e373ad349741e6877b90b169ba39cebd0fa41",
+        "decodedBytes": 38587,
+        "decodeEqualsOriginal": true
+      }
+    }
+  ],
+  "binaryDiff": {
+    "path": "git-diff--binary.patch.gz",
+    "gzipSha256": "06b86d8871daa642c4d01a707f686af09f4fdb8e2c591ba8e55a3403a50cbc05",
+    "decodedSha256": "b7d040b590440bc468e82588908f86126c54409b7c85a04215533a4220d44837",
+    "decodedBytes": 33407,
+    "decodeEqualsOriginal": true
+  },
+  "binaryDiffArgv": [
+    "git",
+    "diff",
+    "--binary"
+  ],
+  "binaryDiffExit": 0,
+  "binaryDiffStderr": "",
+  "initialDirtyStatus": " M openwiki/INDEX.md\n M openwiki/runtime-project-schema.md\n M openwiki/runtime-sessions.md\n M src/player/PlayScene.ts\n M src/player/lifeLedger.ts\n M src/player/playerStatusMenu.ts\n M src/player/playerStatusMenuController.ts\n M src/player/playerStatusMenuDetailTypes.ts\n M src/player/playerStatusMenuDetails.ts\n M src/player/playerStatusMenuTypes.ts\n M test/p2SpatialPlayIntegration.test.ts\n M test/p2SpatialRuntimeUi.test.ts\n?? src/player/lifePlacementScene.ts\n?? test/lifePlacementSceneUi.test.ts\n",
+  "finalDirtyStatus": " M openwiki/INDEX.md\n M openwiki/runtime-project-schema.md\n M openwiki/runtime-sessions.md\n M src/player/PlayScene.ts\n M src/player/lifeLedger.ts\n M src/player/playerStatusMenu.ts\n M src/player/playerStatusMenuController.ts\n M src/player/playerStatusMenuDetailTypes.ts\n M src/player/playerStatusMenuDetails.ts\n M src/player/playerStatusMenuTypes.ts\n M test/p2SpatialPlayIntegration.test.ts\n M test/p2SpatialRuntimeUi.test.ts\n?? src/player/lifePlacementScene.ts\n?? test/lifePlacementSceneUi.test.ts\n",
+  "sourceBytesUnchanged": true,
+  "producerAndBuildEvidenceUnchanged": true,
+  "producerAndBuildEvidenceHashes": {
+    ".omo/evidence/life-full-20260906/12/ui/producer/CHECKPOINT.json": "2230c77fc505ff2505e65e1a92ccfc981d94b5c5c47feb6f22d05cd7ea53cc5f",
+    ".omo/evidence/life-full-20260906/12/ui/producer/HANDOFF.md": "f0a3895fc4cd44795a0e4c707817efebf150ec3ea859053ae5e0f9ef86ef4a40",
+    ".omo/evidence/life-full-20260906/12/ui/producer/SOURCE-HANDOFF.json": "29ab0124b77579142ff4c954642d35f5b958ce515861eb9f76493370735885b2",
+    ".omo/evidence/life-full-20260906/12/ui/producer/cleanup.json": "ce6fc9aedc896b6e588b497a13cc9c2a49b535b6aa11f4dcae46b0486e8b8534",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/build-fixture.mts": "5407abd4751a1edf22545f10fb225b82d4fc5f8002664ccec32be1f8a665be1e",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/fixture.json": "5c5e3d25c2b016165961451f08687303ef8e6188b6383f0bf07d2fdbeee18a95",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-2.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-2.log": "51119a323a748d703d3073de13fae3a8bc35339e1b7b77d87d46b7e1588f89d4",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-2.log.gz": "26e7a9cd861eeefdd0b5c237521d66bcb04bfa187bc8e8e279fefdae7d9b3581",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-3.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-3.log": "1ccab855a9ac6065bddeace52fcdc3600f5df7d2e4070a2ddc6bb351c73b6c4c",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-3.log.gz": "ddcff0e5a6bbf03749f459776369d15e823b3120ef2e7e049625653b50848f14",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-4.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-4.log": "15eb181f32e26aa61486cdb357e92aa79e8b79029d930ef6bfbd7b992cb93054",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-4.log.gz": "b4afed7989b40e21cbeebd5e870a79cccc0c50694eec9130c7d519601b486c80",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-5.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-5.log": "47156bd3757f542ca796c15469a89eca4d3a35dc15aef3b3c924af791c62210c",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-5.log.gz": "031bdefe366c9c064dc71a2dac93e3606f5589fec16a48648529e3d211878ba1",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-6.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-6.log": "aae995b57a4ff0f35d5ec25e0e3d165677cd7cf473716180353f162db2d5ba04",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa-6.log.gz": "b190906aa1431068f5c76de3b7524236d8b8e69d0b05062ca525dcd40c5ec1cb",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa.exit": "ca2ebdf97d7469496b1f4b78958f9dc8447efdcb623953fee7b6996b762f6fff",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa.log.gz": "c5f2d2078fc6cfd3fd1744c3cf4162bef9d12516251af6ef1cf1ebc1bc476fa3",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/native-qa.mjs": "87268c05a1620f4ca4688a5882e8bbb0f014e2c1cb389f0513aa9af8ee3caa91",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/remote-proof.json": "3115403324ff424b5f98e0a437a51cb14c0d0ccb0bc9d750dbfd5a2f92775b9d",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/remote-save.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/remote-save.log": "d4847bf51807b0ea277d65687d0de5c0f8f66fe98e80a2c9310309f552b37248",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/remote-save.log.gz": "b651952a5e2e7fd42d39be885de7163aaf266a44ddacf2afe918c562727960ef",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/spaces-before-place-1024.png": "d7d8e5176bfcfec6c323eb8c82669f277c5b06e413e48bb48dd0ef78e7377f0d",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/spaces-before-place-1440.png": "25f73f50f34f349fcf8b5e9ab05e7e2d7a69b5c8b23d7ffe2d019841658a4e08",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/title-fail.json": "409907a747ec3868b8ecd205c1167e961f5c7c01d1bfa1d78f045d9cbcb89a68",
+    ".omo/evidence/life-full-20260906/12/ui/producer/native/title-fail.png": "3878570f4a62a0d65f57cf1754e0269e56ec797f4e36e26b44c172eb6e800401",
+    ".omo/evidence/life-full-20260906/12/ui/producer/pre/HEAD": "049281b1346d96e56b79167ffd07322673294949ad56533d5d5bc598d550b00f",
+    ".omo/evidence/life-full-20260906/12/ui/producer/pre/characterization.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    ".omo/evidence/life-full-20260906/12/ui/producer/pre/characterization.log": "690c7911e08c01762676eb391f9cff1836e4944e5c038b0dd4172459160e4724",
+    ".omo/evidence/life-full-20260906/12/ui/producer/pre/foot-tile-probe.exit": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/producer/pre/foot-tile-probe.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/producer/pre/foot-tile-probe.mts": "b71fb39651f42aa2de751935050a8e40c734fe9215a240e26e10c14781f87564",
+    ".omo/evidence/life-full-20260906/12/ui/producer/pre/source.sha256": "0119959281a1438c618697408791d5edadfe43a9aa9cfd1a33d6bdabed0be3e3",
+    ".omo/evidence/life-full-20260906/12/ui/producer/pre/space-check.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/producer/source.sha256": "775631e176670048c9988a08ca56d08a8b265ce0a2874c96619cb7e5ffd77ec8",
+    ".omo/evidence/life-full-20260906/12/ui/producer/tests/ui-green-attempt.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    ".omo/evidence/life-full-20260906/12/ui/producer/tests/ui-green-attempt.log": "f3fc8565205e109b44254c484fafa7c95fa758b30672891deb8d2c2550c2a0cb",
+    ".omo/evidence/life-full-20260906/12/ui/producer/tests/ui-green-attempt.log.gz": "a704ceb4057277e516aacc083c421e59ba440864f8c117b369fe90f12d680351",
+    ".omo/evidence/life-full-20260906/12/ui/producer/tests/ui-green-final.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    ".omo/evidence/life-full-20260906/12/ui/producer/tests/ui-green-final.log": "1c4426b2fbebacf4a3998f96c2ed892340ec406ac11869a6b4900e2e7ae26cce",
+    ".omo/evidence/life-full-20260906/12/ui/producer/tests/ui-green-final.log.gz": "697b43fe37ba0fb087b4cc5e3d6a952554b29731b785a2904c8a8c8080836ba7",
+    ".omo/evidence/life-full-20260906/12/ui/build/NEEDS-FIX.json": "6b9cba7dc3f5c5a1c56dadf15b6507852488fc0e6faa2fe83e284a34397d1319",
+    ".omo/evidence/life-full-20260906/12/ui/build/SUMMARY.md": "552f21c23f0925b44c1cbb0a42c67cc8d8c66172aca2cd31464932f428cbabfc",
+    ".omo/evidence/life-full-20260906/12/ui/build/build.after.json": "ff930b6ebd9e56d861ead57a8c324ec500f2326f359b9e76607fbd766f188691",
+    ".omo/evidence/life-full-20260906/12/ui/build/build.before.json": "ff930b6ebd9e56d861ead57a8c324ec500f2326f359b9e76607fbd766f188691",
+    ".omo/evidence/life-full-20260906/12/ui/build/build.command.json": "312606131949419c4ebbdf35ecf1ffb9c16ac22715422cad1007f4ed8339dfa9",
+    ".omo/evidence/life-full-20260906/12/ui/build/build.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    ".omo/evidence/life-full-20260906/12/ui/build/build.stderr": "b9bcc2da370854cf464fa56788072c9effa0c608c320068db45c20e676f73e6f",
+    ".omo/evidence/life-full-20260906/12/ui/build/build.stdout": "b36baac3407dfb0bd70e5e5be05f1dbd06ccd1040a28be3c0d0685d45665fa1f",
+    ".omo/evidence/life-full-20260906/12/ui/build/certify.py": "b7bd09a86c7b1503bb967e80300ada92b060c6b1a746bfabd561c1798856dba0",
+    ".omo/evidence/life-full-20260906/12/ui/build/cleanup.json": "cbbd7b8e2e909b48a7790c32a995184b0276e04eb548e3f2aa8af320e2486c2f",
+    ".omo/evidence/life-full-20260906/12/ui/build/diagnostics.after.json": "ff930b6ebd9e56d861ead57a8c324ec500f2326f359b9e76607fbd766f188691",
+    ".omo/evidence/life-full-20260906/12/ui/build/diagnostics.before.json": "ff930b6ebd9e56d861ead57a8c324ec500f2326f359b9e76607fbd766f188691",
+    ".omo/evidence/life-full-20260906/12/ui/build/diagnostics.command.json": "a73a37ab9210fda0427f386e8d3a4e0a31f153e474fba9aadd3be29e05456e2f",
+    ".omo/evidence/life-full-20260906/12/ui/build/diagnostics.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    ".omo/evidence/life-full-20260906/12/ui/build/diagnostics.mjs": "75cdc8b6bf886af5ac902f9bc91f332c5a6e2e03108d993026824fe38f7fceb7",
+    ".omo/evidence/life-full-20260906/12/ui/build/diagnostics.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/build/diagnostics.stdout": "3a487d32a12ac26017cae53a8a4ea7eb26cbb8515b4fcd463f6c508beda89fba",
+    ".omo/evidence/life-full-20260906/12/ui/build/evidence-manifest.json": "9fdbdb066ff517e1fd0c78a7a5f3eab876c2a786b09b26460e9d9a611d9ad844",
+    ".omo/evidence/life-full-20260906/12/ui/build/final-cleanup.json": "ee6cf4e219a9b3319f5b65c9954fef38dd1daa78fcc15eab31a1d4fd79393144",
+    ".omo/evidence/life-full-20260906/12/ui/build/final-identity.json": "ae0dd585fd78a911e8c6f94f3aea1a7fea77112ddb079fd2266c8a2fd50d7007",
+    ".omo/evidence/life-full-20260906/12/ui/build/initial-identity.json": "d27f104eccc76cee25b0d7be53539d1cea0ca0853ee9d9de2a6690b76a0fe4f4",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-check-final.after.json": "ae0dd585fd78a911e8c6f94f3aea1a7fea77112ddb079fd2266c8a2fd50d7007",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-check-final.before.json": "ae0dd585fd78a911e8c6f94f3aea1a7fea77112ddb079fd2266c8a2fd50d7007",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-check-final.command.json": "7b625e0eb7b187154f98c817437daaa4a11edc89addfc4189f96ac4844df32c6",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-check-final.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-check-final.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-check-final.stdout": "3f2805fa72c4dc3a0ea9a97a5f20db40593b9faba6ed867b8703ff05fac259b5",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-check.after.json": "1fd2b7f9a11d287c72361e3d5b38908ca61c62e3ed79e8605252107f89f7e5e0",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-check.before.json": "1fd2b7f9a11d287c72361e3d5b38908ca61c62e3ed79e8605252107f89f7e5e0",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-check.command.json": "94f7c5330a2deaa20939b27427288688c61dad2c0070587ebeddb7455bca3595",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-check.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-check.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-check.stdout": "3f2805fa72c4dc3a0ea9a97a5f20db40593b9faba6ed867b8703ff05fac259b5",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-final.after.json": "ae0dd585fd78a911e8c6f94f3aea1a7fea77112ddb079fd2266c8a2fd50d7007",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-final.before.json": "a89039db7fc3964c51bfaf454a1e6c5f63b0bf1b0f0606ac609a0e6feef8c1d3",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-final.command.json": "31b7c5950818f8de732ed3cc6d60745917185b4d19322753d958bc35f31fe222",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-final.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-final.stderr": "a7c465bd7725ac7b7c6cb87429d55f6dc0500b449fa7617d46e3f3237dcb32c7",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index-final.stdout": "ad2610739ef505c2fac4464cfe59eb8af1024884d51b4d6bab7dcaa3ee1e1e08",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index.after.json": "1fd2b7f9a11d287c72361e3d5b38908ca61c62e3ed79e8605252107f89f7e5e0",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index.before.json": "ff930b6ebd9e56d861ead57a8c324ec500f2326f359b9e76607fbd766f188691",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index.command.json": "a545c80bc0b8b1f5c85134820b51afcb41d14d35d3160b60eeed1d1f95269eff",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-index.stdout": "8710d10e6708c085fc32723c240a4b9c568abee07a1b6eb419a78545a6750aee",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-verify-final.after.json": "ae0dd585fd78a911e8c6f94f3aea1a7fea77112ddb079fd2266c8a2fd50d7007",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-verify-final.before.json": "ae0dd585fd78a911e8c6f94f3aea1a7fea77112ddb079fd2266c8a2fd50d7007",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-verify-final.command.json": "4cc7734f1c37cb0cab928211fb81d8cd8b926da14648139ecb9eb921adc02319",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-verify-final.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-verify-final.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-verify-final.stdout": "619e5c4341f1ba9f34774acc44fa2ca983859f5a8cb76e79f03649f142b09566",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-verify.after.json": "1fd2b7f9a11d287c72361e3d5b38908ca61c62e3ed79e8605252107f89f7e5e0",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-verify.before.json": "1fd2b7f9a11d287c72361e3d5b38908ca61c62e3ed79e8605252107f89f7e5e0",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-verify.command.json": "5b757b9ec493eea1984ac3f13fff2bfd48de5d1b9cae37846e544f2ebf2477a1",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-verify.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-verify.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/build/openwiki-verify.stdout": "619e5c4341f1ba9f34774acc44fa2ca983859f5a8cb76e79f03649f142b09566",
+    ".omo/evidence/life-full-20260906/12/ui/build/prerequisites.json": "1aa2a41aba692c06cfd7f78796b5323d7e04adb1d3d40018a2b364d1d874f4e3",
+    ".omo/evidence/life-full-20260906/12/ui/build/typecheck-app.after.json": "ff930b6ebd9e56d861ead57a8c324ec500f2326f359b9e76607fbd766f188691",
+    ".omo/evidence/life-full-20260906/12/ui/build/typecheck-app.before.json": "ff930b6ebd9e56d861ead57a8c324ec500f2326f359b9e76607fbd766f188691",
+    ".omo/evidence/life-full-20260906/12/ui/build/typecheck-app.command.json": "f67d1d421fdc14a1b53c21ef5d6f0975e5cd194dd91ec4793191f6cbe640ff72",
+    ".omo/evidence/life-full-20260906/12/ui/build/typecheck-app.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    ".omo/evidence/life-full-20260906/12/ui/build/typecheck-app.stderr": "a7c465bd7725ac7b7c6cb87429d55f6dc0500b449fa7617d46e3f3237dcb32c7",
+    ".omo/evidence/life-full-20260906/12/ui/build/typecheck-app.stdout": "9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-final.after.json": "ae0dd585fd78a911e8c6f94f3aea1a7fea77112ddb079fd2266c8a2fd50d7007",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-final.before.json": "ae0dd585fd78a911e8c6f94f3aea1a7fea77112ddb079fd2266c8a2fd50d7007",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-final.command.json": "035f7961a186d1a8b67cfdd1bd220f5ae358bb64ca7431c7067ef453be8a354d",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-final.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-final.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-final.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-new-source.after.json": "ae0dd585fd78a911e8c6f94f3aea1a7fea77112ddb079fd2266c8a2fd50d7007",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-new-source.before.json": "ae0dd585fd78a911e8c6f94f3aea1a7fea77112ddb079fd2266c8a2fd50d7007",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-new-source.command.json": "e4babaf13b027bb499ab545eb8a712100367cbb527233b231d23f1954b52b432",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-new-source.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-new-source.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-new-source.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-new-test.after.json": "ae0dd585fd78a911e8c6f94f3aea1a7fea77112ddb079fd2266c8a2fd50d7007",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-new-test.before.json": "ae0dd585fd78a911e8c6f94f3aea1a7fea77112ddb079fd2266c8a2fd50d7007",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-new-test.command.json": "95b7f9a860fe837bcbc7ec55e720ccb943472c09f277c496786cdbdd76ec74ff",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-new-test.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-new-test.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace-new-test.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace.after.json": "1fd2b7f9a11d287c72361e3d5b38908ca61c62e3ed79e8605252107f89f7e5e0",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace.before.json": "1fd2b7f9a11d287c72361e3d5b38908ca61c62e3ed79e8605252107f89f7e5e0",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace.command.json": "36f8bcccb1c6142778c52883ec7d8dfc03000dfab3f5bff67b149fd3fab3207f",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/build/whitespace.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".omo/evidence/life-full-20260906/12/ui/build/writer-check.json": "ee22d9434c38594f53a2df0b57a5bfb2e4c8ef583b7975af17db9db183108363"
+  },
+  "upstreamCorrection": {
+    "path": ".omo/evidence/life-full-20260906/47-48/VERIFY.md",
+    "sha256": "ceedc4a7fb52ffb0633a9acd4d65e5ff0a56ee5751616e36cde8d2dbb26193e2",
+    "priorDiagnosisPreservedAsHistory": true,
+    "coordinatorShorthandError": true
+  },
+  "stagingIndexEmpty": true,
+  "metadataEngine": "/usr/bin/patch (installed GNU patch)",
+  "metadataReceipts": [
+    {
+      "argv": [
+        "/usr/bin/patch",
+        "--batch",
+        "--forward",
+        "-p0"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/attempt1-preserved",
+      "exit": 0,
+      "stdout": "patching file dirty-status.txt\n",
+      "stderr": "",
+      "patchSha256": "44a414b2b412a12114d196d8980f20ec07833474f23b679b8a2acc0f906feae9",
+      "outputSha256": "e10eeecdfb1d5cca30d487f9ba04a59897cb7a86d35cabdc215689c5eab4eeb5"
+    },
+    {
+      "argv": [
+        "/usr/bin/patch",
+        "--batch",
+        "--forward",
+        "-p0"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/attempt1-preserved",
+      "exit": 0,
+      "stdout": "patching file SAFE-STAGE-LIST.txt\n",
+      "stderr": "",
+      "patchSha256": "6fb7a376cf3d6ddb7d51ae9c6e9ed4240edab76623a2ce6f37e04aecfa37721e",
+      "outputSha256": "37233dd747e9bac3de0c93478c7a2d623c98fd2f063136d7c04a8bb5553cd39e"
+    },
+    {
+      "argv": [
+        "/usr/bin/patch",
+        "--batch",
+        "--forward",
+        "-p0"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/attempt1-preserved",
+      "exit": 0,
+      "stdout": "patching file README.md\n",
+      "stderr": "",
+      "patchSha256": "0307bd7065acd10d09f7664f4d172571acdbdcb27acc17bdbdd64dc9726a5a48",
+      "outputSha256": "5152c8cd7f4c1a9e74f3dc5de4593650e6e5b7b79df130a30d214dd798bf9bfb"
+    }
+  ],
+  "stageList": "SAFE-STAGE-LIST.txt",
+  "stageListExecuted": false
+}

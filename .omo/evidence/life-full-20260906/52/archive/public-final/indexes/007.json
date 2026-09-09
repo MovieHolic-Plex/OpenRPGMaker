@@ -1,0 +1,204 @@
+{
+  "results": [
+    {
+      "archive_path": "archive/payload/verify/captures/invalid6-input.json.gz",
+      "result_path": "archive/public-final/results/280.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/invalid6-input.wire.json.gz",
+      "result_path": "archive/public-final/results/281.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/invalid6-normalized.json.gz",
+      "result_path": "archive/public-final/results/282.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/invalid6-normalized.wire.json.gz",
+      "result_path": "archive/public-final/results/283.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/invalid6-result.json.gz",
+      "result_path": "archive/public-final/results/284.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/invalid7-input.json.gz",
+      "result_path": "archive/public-final/results/285.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/invalid7-input.wire.json.gz",
+      "result_path": "archive/public-final/results/286.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/invalid7-normalized.json.gz",
+      "result_path": "archive/public-final/results/287.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/invalid7-normalized.wire.json.gz",
+      "result_path": "archive/public-final/results/288.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/invalid7-result.json.gz",
+      "result_path": "archive/public-final/results/289.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/invalid8-input.json.gz",
+      "result_path": "archive/public-final/results/290.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/invalid8-input.wire.json.gz",
+      "result_path": "archive/public-final/results/291.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/invalid8-normalized.json.gz",
+      "result_path": "archive/public-final/results/292.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/invalid8-normalized.wire.json.gz",
+      "result_path": "archive/public-final/results/293.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/invalid8-result.json.gz",
+      "result_path": "archive/public-final/results/294.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/override0.json.gz",
+      "result_path": "archive/public-final/results/295.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/override1.json.gz",
+      "result_path": "archive/public-final/results/296.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/override2.json.gz",
+      "result_path": "archive/public-final/results/297.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/override3.json.gz",
+      "result_path": "archive/public-final/results/298.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/pass-only-cycle0.json.gz",
+      "result_path": "archive/public-final/results/299.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/pass-only-cycle0.wire.json.gz",
+      "result_path": "archive/public-final/results/300.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/pass-only-cycle1.json.gz",
+      "result_path": "archive/public-final/results/301.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/pass-only-cycle1.wire.json.gz",
+      "result_path": "archive/public-final/results/302.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/pass-only-cycle2.json.gz",
+      "result_path": "archive/public-final/results/303.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/pass-only-cycle2.wire.json.gz",
+      "result_path": "archive/public-final/results/304.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/pass-only-cycle3.json.gz",
+      "result_path": "archive/public-final/results/305.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/pass-only-cycle3.wire.json.gz",
+      "result_path": "archive/public-final/results/306.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/pass-only-input.json.gz",
+      "result_path": "archive/public-final/results/307.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/pass-only-input.wire.json.gz",
+      "result_path": "archive/public-final/results/308.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/pass-only-parsed.json.gz",
+      "result_path": "archive/public-final/results/309.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/result.json.gz",
+      "result_path": "archive/public-final/results/310.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/save4-input.wire.json.gz",
+      "result_path": "archive/public-final/results/311.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/save4-parsed.json.gz",
+      "result_path": "archive/public-final/results/312.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/save4-resumed.json.gz",
+      "result_path": "archive/public-final/results/313.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/save5-input.wire.json.gz",
+      "result_path": "archive/public-final/results/314.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/save5-parsed.json.gz",
+      "result_path": "archive/public-final/results/315.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/save5-resumed.json.gz",
+      "result_path": "archive/public-final/results/316.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/undefined-cycle0.json.gz",
+      "result_path": "archive/public-final/results/317.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/undefined-cycle0.wire.json.gz",
+      "result_path": "archive/public-final/results/318.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/captures/undefined-cycle1.json.gz",
+      "result_path": "archive/public-final/results/319.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    }
+  ]
+}

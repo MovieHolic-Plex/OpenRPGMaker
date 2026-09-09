@@ -1,0 +1,61 @@
+{
+  "config": "tsconfig.json",
+  "results": [
+    {
+      "file": "src/player/lifePlacementScene.ts",
+      "diagnostics": []
+    },
+    {
+      "file": "src/player/lifeLedger.ts",
+      "diagnostics": []
+    },
+    {
+      "file": "src/player/playerStatusMenuDetails.ts",
+      "diagnostics": []
+    },
+    {
+      "file": "src/player/playerStatusMenu.ts",
+      "diagnostics": []
+    },
+    {
+      "file": "src/player/playerStatusMenuController.ts",
+      "diagnostics": []
+    },
+    {
+      "file": "src/player/playerStatusMenuTypes.ts",
+      "diagnostics": []
+    },
+    {
+      "file": "src/player/playerStatusMenuDetailTypes.ts",
+      "diagnostics": []
+    },
+    {
+      "file": "src/player/PlayScene.ts",
+      "diagnostics": []
+    },
+    {
+      "file": "test/lifePlacementSceneUi.test.ts",
+      "diagnostics": []
+    },
+    {
+      "file": "test/p2SpatialPlayIntegration.test.ts",
+      "diagnostics": []
+    },
+    {
+      "file": "test/p2SpatialRuntimeUi.test.ts",
+      "diagnostics": []
+    },
+    {
+      "file": "test/lifePlacementRenderedBodyReplay.test.ts",
+      "diagnostics": []
+    },
+    {
+      "file": "src/project/databaseRecordModel.ts",
+      "diagnostics": []
+    },
+    {
+      "file": "test/playerBodyProjectPersistence.test.ts",
+      "diagnostics": []
+    }
+  ]
+}

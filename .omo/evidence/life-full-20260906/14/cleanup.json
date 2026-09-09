@@ -1,0 +1,19 @@
+{
+  "distRemoved": true,
+  "taskCachesAbsent": true,
+  "ports": {
+    "39841": "closed",
+    "39842": "closed"
+  },
+  "matchingProcesses": [
+    {
+      "pid": "2431113",
+      "command": "/bin/bash -c cd /home/main/z-project/rpg-zzu-life-full-authoring-bounds && python3 - <<'PY'\nfrom pathlib import Path\nimport json,shutil,os,socket\nroot=Path.cwd(); out=root/'.omo/evidence/life-full-202"
+    }
+  ],
+  "preservedPreExistingCache": ".vite-cache (birth 03:31, before task-owned browser/build execution)",
+  "remoteWrites": {
+    "editor": [],
+    "player": []
+  }
+}

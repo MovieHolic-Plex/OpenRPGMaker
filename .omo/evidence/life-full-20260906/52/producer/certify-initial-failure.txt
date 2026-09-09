@@ -1,0 +1,7 @@
+Initial certify.py exited 1 at line37 because its evidence-only assertion expected git diff --no-index --check /dev/null test/playerBodyProjectPersistence.test.ts to return0. Actual command returned1 with empty stdout/stderr (preserved as whitespace-new-test-initial.*). This is the nonempty addition exit convention, not a whitespace diagnostic or product/test failure. Preserved certify-initial.py and corrected only the certifier's exit interpretation to require exit1 plus both empty streams. No product/test/probe changes and no behavioral test rerun.
+
+Original tool traceback:
+Traceback (most recent call last):
+  File "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/producer/certify.py", line 37, in <module>
+    assert command('whitespace-new-test', ['git','diff','--no-index','--check','/dev/null',test]).returncode==0
+AssertionError

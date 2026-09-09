@@ -1,0 +1,78 @@
+{
+  ".omo/evidence/life-full-20260906/12/ui/producer-r3/native/after-place-1024.png": {
+    "sha256": "3259d0581149d98e00b06c80ad2d9d41e0b7a5529e390d0848debb5c4217fe5d",
+    "bytes": 126148
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r3/native/field-after-load-1024.png": {
+    "sha256": "e523bb36ccf01a8757ad2790de6da3aba6ea36d54c9d670b73ad22554c5856a7",
+    "bytes": 35856
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r3/native/field-after-load-1440.png": {
+    "sha256": "6904b28ee240d25cc7d9997f9e2bd77ec050eb4b0a8f423fd67b745bb56de9c4",
+    "bytes": 38402
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r3/native/npc-overlap-menu-1024.png": {
+    "sha256": "f953145a333454697c2c4b598b1242d1617decd5737cb9e9bdda38baac6d4a6f",
+    "bytes": 130312
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r3/native/npc-overlap-menu-1440.png": {
+    "sha256": "376dfa594ccc18db7858812fb24f9e75624d2335c96942f2465ddb8a12a51b89",
+    "bytes": 133775
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r3/native/spaces-before-place-1024.png": {
+    "sha256": "7aff98167bc9d0adb56c1902fa1542e1fd1f02a5772a9012c7d3adc7ae73faff",
+    "bytes": 193836
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r3/native/spaces-before-place-1440.png": {
+    "sha256": "b2c2443dfcbac8b75b29c03b2779f4d440e955b15575a3f0194b460bf336ead0",
+    "bytes": 198328
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-after-move-1024.png": {
+    "sha256": "47b0cfc62f25495f2dbba1dd58479c84a0c270226824c39fa9777849a3721784",
+    "bytes": 122539
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-after-move-1440.png": {
+    "sha256": "a23651e409f964792c863b1a1250b584c64725c9e847b27a1cdef2716d2b6eb2",
+    "bytes": 126516
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-after-place-1024.png": {
+    "sha256": "f3925a837b8a5c75221a66f3fd3cd315ea3442491572c2f03253f14326754f9b",
+    "bytes": 123766
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-after-place-1440.png": {
+    "sha256": "b0ce98f67df9a173cb9b9bf98fa5e4f9937548e7ba35cfd1b708d1283de97097",
+    "bytes": 127478
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-after-rotate-1024.png": {
+    "sha256": "00aca9048917dec82c11d75dc21c1d789c431a4ba46412fa6bdb57d685124b60",
+    "bytes": 119597
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-after-rotate-1440.png": {
+    "sha256": "4be17178f25f06c543abc43650c8d9ed508ca5f80a52d3c03e22b6d025bc7ff0",
+    "bytes": 123084
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-before-place-1024.png": {
+    "sha256": "934a5cfded74f2f28b9ade7c7ce3b85637a10bb011cea4211f187ee0436c568d",
+    "bytes": 263136
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-before-place-1440.png": {
+    "sha256": "923e15ecddc938c52ce4da8ee66ced0c85bf3278bfc3042721ebd82579beb69a",
+    "bytes": 269712
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r4/native/last-exit-after-refuse-1024.png": {
+    "sha256": "3ab36617ecf2b88c7dc4050abb2386c6a5b5c9f3b39273d3a5b420f5afe0032c",
+    "bytes": 124458
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r4/native/last-exit-after-refuse-1440.png": {
+    "sha256": "e5cc57484ec532e1390f86b3cd49f2fd8643028238fb66aa2edd1665dd0c6944",
+    "bytes": 128806
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r4/native/last-exit-before-place-1024.png": {
+    "sha256": "86c318d8777a950214457a7a7b65948a041009e7a7a2887603f23fc062359188",
+    "bytes": 127427
+  },
+  ".omo/evidence/life-full-20260906/12/ui/producer-r4/native/last-exit-before-place-1440.png": {
+    "sha256": "e9cb22f1583a05ed198a41636120a6271b185174d1483f0ad1bec02671af0021",
+    "bytes": 131874
+  }
+}

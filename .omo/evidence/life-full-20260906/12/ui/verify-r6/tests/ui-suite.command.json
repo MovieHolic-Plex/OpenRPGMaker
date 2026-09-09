@@ -1,0 +1,58 @@
+{
+  "when": "2026-09-07T13:47:57.533915+00:00",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "argv": [
+    "node",
+    "scripts/run-vitest.mjs",
+    "run",
+    "--configLoader",
+    "runner",
+    "--cache=false",
+    "--maxWorkers=2",
+    "--minWorkers=1",
+    "test/lifePlacementSceneUi.test.ts",
+    "test/lifePlacementRenderedBodyReplay.test.ts",
+    "test/p2SpatialPlayIntegration.test.ts",
+    "test/p2SpatialRuntimeUi.test.ts",
+    "test/playerStatusMenu.test.ts",
+    "test/playerOpenSaveMenu.test.ts",
+    "test/lifeFieldInteraction.test.ts"
+  ],
+  "inputs": {
+    "test/lifePlacementSceneUi.test.ts": {
+      "sha256": "78403533ace4a55fa78c8b1e77e8466c87a18f1db187c5c38e0968a4821f6b56",
+      "bytes": 35644
+    },
+    "test/lifePlacementRenderedBodyReplay.test.ts": {
+      "sha256": "f7ffd8d8a89a2fb10ef67ee13a459a8bda592e63e7035a50b63a75d27b06cc97",
+      "bytes": 7659
+    },
+    "test/p2SpatialPlayIntegration.test.ts": {
+      "sha256": "b7329262d031932ab515ec5647026e0a956c8275a145051e40f8ccc8403a9e51",
+      "bytes": 8496
+    },
+    "test/p2SpatialRuntimeUi.test.ts": {
+      "sha256": "927d55ec45b0a72e8cd0240270701f9983f76734f1ace7b1d145cd822663be2f",
+      "bytes": 2873
+    },
+    "test/playerStatusMenu.test.ts": {
+      "sha256": "7fcb3f9b5df3d35fddac87e8355985663ee8be8d38b56cf42d52dcc713ea2c91",
+      "bytes": 20687
+    },
+    "test/playerOpenSaveMenu.test.ts": {
+      "sha256": "918c886d7dc2c8779bdd82232b24b2238cd763f33a3b377f745ef02276656327",
+      "bytes": 8253
+    },
+    "test/lifeFieldInteraction.test.ts": {
+      "sha256": "92a75ef32f97df963f5f0d264bb1f7993c6d6290b2d8244fa98f3126b77dcf78",
+      "bytes": 19679
+    }
+  },
+  "exit": 0,
+  "summary": {
+    "testFiles": 7,
+    "tests": 91,
+    "passed": true,
+    "lifeFieldInteraction": 45
+  }
+}

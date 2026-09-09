@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/run-vitest.mjs",
+    "run",
+    "--configLoader",
+    "runner",
+    "--config",
+    ".omo/evidence/life-full-20260906/14/crop-baseline/baseline.config.mjs",
+    "test/lifeAuthoringBounds.test.ts"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-authoring-bounds",
+  "head": "be63008fa143fef11f7843cac3e01a81dd05cfbe",
+  "tree": "2cda46b35a1d4a4f7fe0708fa1b155805fb89590",
+  "exit": 1,
+  "signal": null
+}

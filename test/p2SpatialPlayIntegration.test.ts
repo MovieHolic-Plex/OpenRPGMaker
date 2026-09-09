@@ -7,6 +7,9 @@ import { createLifeLedgerDetail } from "@/player/lifeLedger";
 import { playerCanStep } from "@/player/playSceneMovement";
 import { renderPlaceableOverlays } from "@/player/playScenePlaceables";
 import type { StatusMenuDetail } from "@/player/playerStatusMenuDetailTypes";
+import { adjacentSpatialPosition } from "@/project/spatialOccupancy";
+import { resolvePlayerBody } from "@/project/playerFootprint";
+import type { PlaySession } from "@/project/session";
 
 function spatialProject() {
   const project = createBlankProject();
@@ -53,31 +56,67 @@ describe("P2 spatial play integration", () => {
     session.y = 2;
     session.inventory[itemId] = 1;
     const mutations: boolean[] = [];
+    const liveFor = (current: PlaySession) => () => {
+      const body = resolvePlayerBody(project, current);
+      return {
+        player: {
+          mapId: current.currentMapId,
+          x: current.x,
+          y: current.y,
+          footprint: body.footprint,
+          passRows: body.passRows,
+        },
+        npcs: [],
+      };
+    };
+    const adjacent = (current: PlaySession, width: number, height: number) => {
+      const body = resolvePlayerBody(project, current);
+      return adjacentSpatialPosition(
+        { mapId: current.currentMapId, x: current.x, y: current.y, footprint: body.footprint, passRows: body.passRows },
+        "down",
+        { width, height },
+        "down",
+      );
+    };
     const detail = (): StatusMenuDetail => createLifeLedgerDetail({
       project,
       session,
       tab: "spaces",
       onMutation: (ok) => mutations.push(ok),
+      readLive: liveFor(session),
+      placementDirection: "down",
     });
 
-    // When: each player-facing building action is activated.
+    // When: each player-facing building action is activated against the adjacent body, not the foot tile.
+    const buildingAt = adjacent(session, 2, 1);
+    expect(buildingAt).toEqual({ mapId: project.startMapId, x: 2, y: 3, orientation: "down" });
+    expect(detail().entries.find((entry) => entry.testId === "life-ledger-space-building-place-shed")?.value)
+      .toBe(`${project.startMapId} (2, 3)`);
     activate(detail(), "life-ledger-space-building-place-shed");
     const buildingId = Object.keys(session.farmBuildingPlacements ?? {})[0];
     if (!buildingId) throw new Error("building placement was not created");
+    expect(session.farmBuildingPlacements?.[buildingId]).toMatchObject({ x: 2, y: 3 });
+    expect(session.farmBuildingPlacements?.[buildingId]).not.toMatchObject({ x: 2, y: 2 });
     session.x = 5;
+    const movedBuilding = adjacent(session, 2, 1);
     activate(detail(), `life-ledger-space-building-move-${buildingId}`);
-    expect(session.farmBuildingPlacements?.[buildingId]).toMatchObject({ x: 5, y: 2 });
+    expect(session.farmBuildingPlacements?.[buildingId]).toMatchObject({ x: movedBuilding.x, y: movedBuilding.y });
+    expect(session.farmBuildingPlacements?.[buildingId]).not.toMatchObject({ x: 5, y: 2 });
     activate(detail(), `life-ledger-space-building-remove-${buildingId}`);
 
     // Then: decoration place/move/remove is reachable through the same ledger and conserves its item.
     session.x = 8;
+    const decorationAt = adjacent(session, 1, 1);
     activate(detail(), "life-ledger-space-decoration-place-table");
     const decorationId = Object.keys(session.homeDecorationPlacements ?? {})[0];
     if (!decorationId) throw new Error("decoration placement was not created");
     expect(session.inventory[itemId] ?? 0).toBe(0);
+    expect(session.homeDecorationPlacements?.[decorationId]).toMatchObject({ x: decorationAt.x, y: decorationAt.y });
+    expect(session.homeDecorationPlacements?.[decorationId]).not.toMatchObject({ x: 8, y: 2 });
     session.x = 10;
+    const movedDecoration = adjacent(session, 1, 1);
     activate(detail(), `life-ledger-space-decoration-move-${decorationId}`);
-    expect(session.homeDecorationPlacements?.[decorationId]).toMatchObject({ x: 10, y: 2 });
+    expect(session.homeDecorationPlacements?.[decorationId]).toMatchObject({ x: movedDecoration.x, y: movedDecoration.y });
     activate(detail(), `life-ledger-space-decoration-remove-${decorationId}`);
     expect(session.inventory[itemId]).toBe(1);
     expect(session.farmBuildingPlacements).toEqual({});

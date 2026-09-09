@@ -1,0 +1,437 @@
+[
+  {
+    "step": "arena-runtime",
+    "player": {
+      "x": 8,
+      "y": 8
+    },
+    "gold": 500,
+    "inventory": {
+      "item_hoe": 1,
+      "item_potion": 8
+    },
+    "farmPlots": {},
+    "buildings": {}
+  },
+  {
+    "step": "arena-rotate",
+    "rotateMsg": {
+      "text": "Table을(를) 회전했습니다"
+    },
+    "gold": 500,
+    "inventory": {
+      "item_hoe": 1,
+      "item_potion": 7
+    },
+    "player": {
+      "x": 8,
+      "y": 8
+    },
+    "ownerAfterRotate": {
+      "text": "Table왼쪽 · 1×2빈 맵 (7, 9) ",
+      "x": 7,
+      "y": 9,
+      "orientation": "left"
+    }
+  },
+  {
+    "step": "save-slot",
+    "ns": "task12-ui-verify-r5-arena",
+    "filename": "raw-slot-arena-rotated.json",
+    "saveMsg": {
+      "text": "1번 저장 칸에 저장했습니다"
+    },
+    "key": "task12-ui-verify-r5-arena:save-slot:v5:1",
+    "bytes": 3583,
+    "owners": {
+      "buildings": {},
+      "decorations": {
+        "ledger:decoration:table:1": {
+          "instanceId": "ledger:decoration:table:1",
+          "typeId": "table",
+          "mapId": "map_blank_start",
+          "x": 7,
+          "y": 9,
+          "orientation": "left",
+          "recoveryItem": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        }
+      },
+      "x": 8,
+      "y": 8,
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      }
+    }
+  },
+  {
+    "step": "arena-move",
+    "moveMsg": {
+      "text": "Table을(를) 이동했습니다"
+    },
+    "gold": 500,
+    "inventory": {
+      "item_hoe": 1,
+      "item_potion": 7
+    },
+    "player": {
+      "x": 7,
+      "y": 8
+    },
+    "ownerAfterMove": {
+      "text": "Table왼쪽 · 1×2빈 맵 (5, 6) ",
+      "x": 5,
+      "y": 6,
+      "orientation": "left"
+    }
+  },
+  {
+    "step": "save-slot",
+    "ns": "task12-ui-verify-r5-arena",
+    "filename": "raw-slot-arena-moved.json",
+    "saveMsg": {
+      "text": "1번 저장 칸에 저장했습니다"
+    },
+    "key": "task12-ui-verify-r5-arena:save-slot:v5:1",
+    "bytes": 3604,
+    "owners": {
+      "buildings": {},
+      "decorations": {
+        "ledger:decoration:table:1": {
+          "instanceId": "ledger:decoration:table:1",
+          "typeId": "table",
+          "mapId": "map_blank_start",
+          "x": 5,
+          "y": 6,
+          "orientation": "left",
+          "recoveryItem": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        }
+      },
+      "x": 7,
+      "y": 8,
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      }
+    }
+  },
+  {
+    "step": "arena-ok",
+    "instanceId": "ledger:decoration:table:1",
+    "place": {
+      "text": "Table아래 · 2×1빈 맵 (7, 9) ",
+      "x": 7,
+      "y": 9,
+      "orientation": "down"
+    },
+    "rotate": {
+      "text": "Table왼쪽 · 1×2빈 맵 (7, 9) ",
+      "x": 7,
+      "y": 9,
+      "orientation": "left"
+    },
+    "move": {
+      "text": "Table왼쪽 · 1×2빈 맵 (5, 6) ",
+      "x": 5,
+      "y": 6,
+      "orientation": "left"
+    },
+    "rotatedSlot": {
+      "instanceId": "ledger:decoration:table:1",
+      "typeId": "table",
+      "mapId": "map_blank_start",
+      "x": 7,
+      "y": 9,
+      "orientation": "left",
+      "recoveryItem": {
+        "itemId": "item_potion",
+        "count": 1
+      }
+    },
+    "movedSlot": {
+      "instanceId": "ledger:decoration:table:1",
+      "typeId": "table",
+      "mapId": "map_blank_start",
+      "x": 5,
+      "y": 6,
+      "orientation": "left",
+      "recoveryItem": {
+        "itemId": "item_potion",
+        "count": 1
+      }
+    },
+    "gold": 500,
+    "potions": 7,
+    "playerAfterMove": {
+      "x": 7,
+      "y": 8
+    }
+  },
+  {
+    "step": "last-exit-refuse",
+    "refuseMsg": {
+      "text": "처리할 수 없습니다: blocked"
+    },
+    "gold": 500,
+    "inventory": {
+      "item_hoe": 1,
+      "item_potion": 8
+    },
+    "player": {
+      "x": 1,
+      "y": 2
+    },
+    "buildings": {
+      "r4-block-up": {
+        "instanceId": "r4-block-up",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 1,
+        "y": 1,
+        "orientation": "down",
+        "level": 1
+      },
+      "r4-block-right": {
+        "instanceId": "r4-block-right",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 3,
+        "y": 2,
+        "orientation": "down",
+        "level": 1
+      }
+    }
+  },
+  {
+    "step": "save-slot",
+    "ns": "task12-ui-verify-r5-last-exit",
+    "filename": "raw-slot-last-exit.json",
+    "saveMsg": {
+      "text": "1번 저장 칸에 저장했습니다"
+    },
+    "key": "task12-ui-verify-r5-last-exit:save-slot:v5:1",
+    "bytes": 3650,
+    "owners": {
+      "buildings": {
+        "r4-block-up": {
+          "instanceId": "r4-block-up",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 1,
+          "y": 1,
+          "orientation": "down",
+          "level": 1
+        },
+        "r4-block-right": {
+          "instanceId": "r4-block-right",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 3,
+          "y": 2,
+          "orientation": "down",
+          "level": 1
+        }
+      },
+      "decorations": {},
+      "x": 1,
+      "y": 2,
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 8
+      }
+    }
+  },
+  {
+    "step": "last-exit-ok",
+    "refuseMsg": {
+      "text": "처리할 수 없습니다: blocked"
+    },
+    "player": {
+      "x": 1,
+      "y": 2
+    },
+    "gold": 500,
+    "inventory": {
+      "item_hoe": 1,
+      "item_potion": 8
+    },
+    "buildings": {
+      "r4-block-up": {
+        "instanceId": "r4-block-up",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 1,
+        "y": 1,
+        "orientation": "down",
+        "level": 1
+      },
+      "r4-block-right": {
+        "instanceId": "r4-block-right",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 3,
+        "y": 2,
+        "orientation": "down",
+        "level": 1
+      }
+    },
+    "slot": {
+      "buildings": {
+        "r4-block-up": {
+          "instanceId": "r4-block-up",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 1,
+          "y": 1,
+          "orientation": "down",
+          "level": 1
+        },
+        "r4-block-right": {
+          "instanceId": "r4-block-right",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 3,
+          "y": 2,
+          "orientation": "down",
+          "level": 1
+        }
+      },
+      "decorations": {},
+      "x": 1,
+      "y": 2,
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 8
+      }
+    }
+  },
+  {
+    "step": "ok",
+    "scratch": "/dev/shm/st_01a07c17/native-arena",
+    "arena": {
+      "instanceId": "ledger:decoration:table:1",
+      "place": {
+        "text": "Table아래 · 2×1빈 맵 (7, 9) ",
+        "x": 7,
+        "y": 9,
+        "orientation": "down"
+      },
+      "rotate": {
+        "text": "Table왼쪽 · 1×2빈 맵 (7, 9) ",
+        "x": 7,
+        "y": 9,
+        "orientation": "left"
+      },
+      "move": {
+        "text": "Table왼쪽 · 1×2빈 맵 (5, 6) ",
+        "x": 5,
+        "y": 6,
+        "orientation": "left"
+      },
+      "rotatedSlot": {
+        "instanceId": "ledger:decoration:table:1",
+        "typeId": "table",
+        "mapId": "map_blank_start",
+        "x": 7,
+        "y": 9,
+        "orientation": "left",
+        "recoveryItem": {
+          "itemId": "item_potion",
+          "count": 1
+        }
+      },
+      "movedSlot": {
+        "instanceId": "ledger:decoration:table:1",
+        "typeId": "table",
+        "mapId": "map_blank_start",
+        "x": 5,
+        "y": 6,
+        "orientation": "left",
+        "recoveryItem": {
+          "itemId": "item_potion",
+          "count": 1
+        }
+      },
+      "gold": 500,
+      "potions": 7,
+      "playerAfterMove": {
+        "x": 7,
+        "y": 8
+      }
+    },
+    "lastExit": {
+      "refuseMsg": {
+        "text": "처리할 수 없습니다: blocked"
+      },
+      "player": {
+        "x": 1,
+        "y": 2
+      },
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 8
+      },
+      "buildings": {
+        "r4-block-up": {
+          "instanceId": "r4-block-up",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 1,
+          "y": 1,
+          "orientation": "down",
+          "level": 1
+        },
+        "r4-block-right": {
+          "instanceId": "r4-block-right",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 3,
+          "y": 2,
+          "orientation": "down",
+          "level": 1
+        }
+      },
+      "slot": {
+        "buildings": {
+          "r4-block-up": {
+            "instanceId": "r4-block-up",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 1,
+            "y": 1,
+            "orientation": "down",
+            "level": 1
+          },
+          "r4-block-right": {
+            "instanceId": "r4-block-right",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 3,
+            "y": 2,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "decorations": {},
+        "x": 1,
+        "y": 2,
+        "gold": 500,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 8
+        }
+      }
+    }
+  }
+]

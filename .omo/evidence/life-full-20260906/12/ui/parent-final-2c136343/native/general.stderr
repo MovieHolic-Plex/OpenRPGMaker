@@ -1,0 +1,15 @@
+node:internal/fs/promises:642
+  return new FileHandle(await PromisePrototypeThen(
+                        ^
+
+Error: ENOENT: no such file or directory, open '/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/fixture-general.json'
+    at async open (node:internal/fs/promises:642:25)
+    at async readFile (node:internal/fs/promises:1279:14)
+    at async file:///home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/native-qa-general.mjs:725:21 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/fixture-general.json'
+}
+
+Node.js v24.11.1

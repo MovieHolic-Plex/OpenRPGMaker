@@ -1,0 +1,36 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "argv": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--kill-after=10s",
+    "600s",
+    "node",
+    "scripts/run-vitest.mjs",
+    "run",
+    "--configLoader",
+    "runner",
+    "--cache=false",
+    "--maxWorkers=2",
+    "--minWorkers=1",
+    "test/playerBodyProjectPersistence.test.ts",
+    "test/playerFootprint.test.ts",
+    "test/characterFootprint.test.ts",
+    "test/ioFootprintValidation.test.ts",
+    "test/lifeSaveVersion.test.ts",
+    "test/p0ProjectSchema.test.ts",
+    "test/p1FoundationSchema.test.ts",
+    "test/p2ProjectSchema.test.ts",
+    "test/p2SpatialSchema.test.ts"
+  ],
+  "scratch": "/dev/shm/task52-green-4c9b22i_",
+  "env": {
+    "TMPDIR": "/dev/shm/task52-green-4c9b22i_",
+    "XDG_CACHE_HOME": "/dev/shm/task52-green-4c9b22i_/xdg",
+    "VITE_CACHE_DIR": "/dev/shm/task52-green-4c9b22i_/vite",
+    "npm_config_cache": "/dev/shm/task52-green-4c9b22i_/npm"
+  }
+}

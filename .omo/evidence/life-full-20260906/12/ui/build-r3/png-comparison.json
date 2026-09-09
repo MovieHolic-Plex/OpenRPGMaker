@@ -1,0 +1,48 @@
+{
+  "visualInspection": false,
+  "comparisons": [
+    {
+      "path": "native/after-place-1024.png",
+      "before": "3259d0581149d98e00b06c80ad2d9d41e0b7a5529e390d0848debb5c4217fe5d",
+      "after": "3259d0581149d98e00b06c80ad2d9d41e0b7a5529e390d0848debb5c4217fe5d",
+      "equal": true
+    },
+    {
+      "path": "native/field-after-load-1024.png",
+      "before": "e523bb36ccf01a8757ad2790de6da3aba6ea36d54c9d670b73ad22554c5856a7",
+      "after": "e523bb36ccf01a8757ad2790de6da3aba6ea36d54c9d670b73ad22554c5856a7",
+      "equal": true
+    },
+    {
+      "path": "native/field-after-load-1440.png",
+      "before": "6904b28ee240d25cc7d9997f9e2bd77ec050eb4b0a8f423fd67b745bb56de9c4",
+      "after": "6904b28ee240d25cc7d9997f9e2bd77ec050eb4b0a8f423fd67b745bb56de9c4",
+      "equal": true
+    },
+    {
+      "path": "native/npc-overlap-menu-1024.png",
+      "before": "f953145a333454697c2c4b598b1242d1617decd5737cb9e9bdda38baac6d4a6f",
+      "after": "f953145a333454697c2c4b598b1242d1617decd5737cb9e9bdda38baac6d4a6f",
+      "equal": true
+    },
+    {
+      "path": "native/npc-overlap-menu-1440.png",
+      "before": "376dfa594ccc18db7858812fb24f9e75624d2335c96942f2465ddb8a12a51b89",
+      "after": "376dfa594ccc18db7858812fb24f9e75624d2335c96942f2465ddb8a12a51b89",
+      "equal": true
+    },
+    {
+      "path": "native/spaces-before-place-1024.png",
+      "before": "7aff98167bc9d0adb56c1902fa1542e1fd1f02a5772a9012c7d3adc7ae73faff",
+      "after": "7aff98167bc9d0adb56c1902fa1542e1fd1f02a5772a9012c7d3adc7ae73faff",
+      "equal": true
+    },
+    {
+      "path": "native/spaces-before-place-1440.png",
+      "before": "b2c2443dfcbac8b75b29c03b2779f4d440e955b15575a3f0194b460bf336ead0",
+      "after": "b2c2443dfcbac8b75b29c03b2779f4d440e955b15575a3f0194b460bf336ead0",
+      "equal": true
+    }
+  ],
+  "limit": "Before/after identity of all producer-r3 PNG bytes, not a visual judgment or invented execution-time producer manifest."
+}

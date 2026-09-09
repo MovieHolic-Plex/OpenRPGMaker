@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "task": 12,
+  "sourceCommit": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "status": "verified",
+  "currentParentExecutions": [
+    {
+      "label": "UI suite",
+      "tests": 91,
+      "files": 7,
+      "exit": 0,
+      "receipts": {
+        "command": "ui/parent-final-2c136343/native/ui.command.json",
+        "stdout": "ui/parent-final-2c136343/native/ui.stdout",
+        "stderr": "ui/parent-final-2c136343/native/ui.stderr",
+        "exit": "ui/parent-final-2c136343/native/ui.exit"
+      }
+    },
+    {
+      "label": "named placement safety",
+      "tests": 11,
+      "files": 1,
+      "exit": 0,
+      "receipts": {
+        "command": "ui/parent-final-2c136343/native/safety.command.json",
+        "stdout": "ui/parent-final-2c136343/native/safety.stdout",
+        "stderr": "ui/parent-final-2c136343/native/safety.stderr",
+        "exit": "ui/parent-final-2c136343/native/safety.exit"
+      }
+    },
+    {
+      "label": "native arena and last exit",
+      "exit": 0,
+      "receipts": {
+        "command": "ui/parent-final-2c136343/native/arena-lastexit.command.json",
+        "stdout": "ui/parent-final-2c136343/native/arena-lastexit.stdout",
+        "stderr": "ui/parent-final-2c136343/native/arena-lastexit.stderr",
+        "exit": "ui/parent-final-2c136343/native/arena-lastexit.exit"
+      }
+    },
+    {
+      "label": "native rug passage and restoration",
+      "exit": 0,
+      "receipts": {
+        "command": "ui/parent-final-2c136343/native/rug.command.json",
+        "stdout": "ui/parent-final-2c136343/native/rug.stdout",
+        "stderr": "ui/parent-final-2c136343/native/rug.stderr",
+        "exit": "ui/parent-final-2c136343/native/rug.exit"
+      }
+    },
+    {
+      "label": "native general",
+      "exit": 0,
+      "receipts": {
+        "command": "ui/parent-final-2c136343/native/general-replay.command.json",
+        "stdout": "ui/parent-final-2c136343/native/general-replay.stdout",
+        "stderr": "ui/parent-final-2c136343/native/general-replay.stderr",
+        "exit": "ui/parent-final-2c136343/native/general-replay.exit"
+      }
+    }
+  ],
+  "preservedParentSetupFailure": {
+    "exit": 1,
+    "receipts": {
+      "command": "ui/parent-final-2c136343/native/general.command.json",
+      "stdout": "ui/parent-final-2c136343/native/general.stdout",
+      "stderr": "ui/parent-final-2c136343/native/general.stderr",
+      "exit": "ui/parent-final-2c136343/native/general.exit"
+    },
+    "reason": "Missing copied fixture-general.json; only input-path binding corrected in separate replay, no assertion or product changes"
+  },
+  "independent": "ui/verify-r6/VERIFY.md",
+  "historicalCore": [
+    {
+      "scope": "original core",
+      "tests": 269,
+      "files": 15,
+      "receipt": "core/SUMMARY.md"
+    },
+    {
+      "scope": "later scoped recovery corrections and broader regression run",
+      "tests": 355,
+      "files": 18,
+      "receipt": "../47-48/VERIFY.md"
+    }
+  ],
+  "sourceBoundBuild": {
+    "receipt": "ui/build-r5/build-reuse.json",
+    "original": "ui/build-r3/build.exit",
+    "exit": 0,
+    "note": "Recorded full build reused with6655 compiled inputs equal; not a new parent build"
+  },
+  "task52": "../52/FINAL-DELIVERY.md"
+}

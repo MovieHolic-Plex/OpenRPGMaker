@@ -1,0 +1,1217 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-authoring-bounds",
+  "port": 39841,
+  "surface": "native Firefox editor controls",
+  "remoteWrites": [],
+  "writes": [
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    }
+  ],
+  "errors": [],
+  "runs": [
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "actions": [
+        {
+          "label": "keyboard birthday40",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 40
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1
+                  }
+                ]
+              }
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "Ctrl+Z birthday",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 39
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1
+                  }
+                ]
+              }
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "Ctrl+Y birthday",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 40
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1
+                  }
+                ]
+              }
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "keyboard explicit forecast3",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 40
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1
+                  }
+                ]
+              },
+              "forecastDays": 3
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "keyboard explicit intensity0.65",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 40
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1,
+                    "intensity": 0.65
+                  }
+                ]
+              },
+              "forecastDays": 3
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "keyboard new reward2",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 40
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1,
+                    "intensity": 0.65
+                  }
+                ]
+              },
+              "forecastDays": 3
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  },
+                  {
+                    "level": 2
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "keyboard reward switch",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 40
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1,
+                    "intensity": 0.65
+                  }
+                ]
+              },
+              "forecastDays": 3
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  },
+                  {
+                    "level": 2,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "roundtrip": {
+        "stable": false,
+        "weatherKeyOrder": {
+          "before": [
+            "enabled",
+            "seasons",
+            "forecastDays"
+          ],
+          "after": [
+            "enabled",
+            "forecastDays",
+            "seasons"
+          ]
+        },
+        "canonicalStable": true,
+        "state": {
+          "characters": {
+            "resident": {
+              "displayName": "Task14 resident",
+              "birthday": {
+                "season": "spring",
+                "day": 40
+              }
+            }
+          },
+          "weather": {
+            "enabled": true,
+            "forecastDays": 3,
+            "seasons": {
+              "spring": [
+                {
+                  "kind": "rain",
+                  "weight": 1,
+                  "intensity": 0.65
+                }
+              ]
+            }
+          },
+          "skills": [
+            {
+              "id": "skill",
+              "name": "Task14 skill",
+              "skillType": "farming",
+              "maxLevel": 10,
+              "levelUpRewards": [
+                {
+                  "level": 1,
+                  "switchId": "sw_0001"
+                },
+                {
+                  "level": 2,
+                  "switchId": "sw_0001"
+                }
+              ]
+            }
+          ],
+          "crops": [
+            {
+              "id": "unlinked",
+              "name": "Task14 crop",
+              "seedItemId": "item_potion",
+              "harvestItemId": "item_potion",
+              "harvestCount": 1,
+              "stages": [
+                {
+                  "days": 2
+                }
+              ],
+              "seasons": [
+                "spring"
+              ]
+            }
+          ]
+        },
+        "version": 4
+      },
+      "ruleLimit": {
+        "mutations": 0,
+        "count": 128
+      },
+      "cropLabel": "연결된 그림이 없어 밭에는 색 사각형이 표시됩니다. 단계 번호나 라벨은 맵에 표시되지 않습니다.",
+      "finalRemote": false,
+      "pass": true,
+      "contextClosed": true
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "actions": [
+        {
+          "label": "keyboard birthday40",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 40
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1
+                  }
+                ]
+              }
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "Ctrl+Z birthday",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 39
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1
+                  }
+                ]
+              }
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "Ctrl+Y birthday",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 40
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1
+                  }
+                ]
+              }
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "keyboard explicit forecast3",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 40
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1
+                  }
+                ]
+              },
+              "forecastDays": 3
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "keyboard explicit intensity0.65",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 40
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1,
+                    "intensity": 0.65
+                  }
+                ]
+              },
+              "forecastDays": 3
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "keyboard new reward2",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 40
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1,
+                    "intensity": 0.65
+                  }
+                ]
+              },
+              "forecastDays": 3
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  },
+                  {
+                    "level": 2
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "keyboard reward switch",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 40
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1,
+                    "intensity": 0.65
+                  }
+                ]
+              },
+              "forecastDays": 3
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  },
+                  {
+                    "level": 2,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "roundtrip": {
+        "stable": false,
+        "weatherKeyOrder": {
+          "before": [
+            "enabled",
+            "seasons",
+            "forecastDays"
+          ],
+          "after": [
+            "enabled",
+            "forecastDays",
+            "seasons"
+          ]
+        },
+        "canonicalStable": true,
+        "state": {
+          "characters": {
+            "resident": {
+              "displayName": "Task14 resident",
+              "birthday": {
+                "season": "spring",
+                "day": 40
+              }
+            }
+          },
+          "weather": {
+            "enabled": true,
+            "forecastDays": 3,
+            "seasons": {
+              "spring": [
+                {
+                  "kind": "rain",
+                  "weight": 1,
+                  "intensity": 0.65
+                }
+              ]
+            }
+          },
+          "skills": [
+            {
+              "id": "skill",
+              "name": "Task14 skill",
+              "skillType": "farming",
+              "maxLevel": 10,
+              "levelUpRewards": [
+                {
+                  "level": 1,
+                  "switchId": "sw_0001"
+                },
+                {
+                  "level": 2,
+                  "switchId": "sw_0001"
+                }
+              ]
+            }
+          ],
+          "crops": [
+            {
+              "id": "unlinked",
+              "name": "Task14 crop",
+              "seedItemId": "item_potion",
+              "harvestItemId": "item_potion",
+              "harvestCount": 1,
+              "stages": [
+                {
+                  "days": 2
+                }
+              ],
+              "seasons": [
+                "spring"
+              ]
+            }
+          ]
+        },
+        "version": 4
+      },
+      "ruleLimit": {
+        "mutations": 0,
+        "count": 128
+      },
+      "cropLabel": "연결된 그림이 없어 밭에는 색 사각형이 표시됩니다. 단계 번호나 라벨은 맵에 표시되지 않습니다.",
+      "finalRemote": false,
+      "pass": true,
+      "contextClosed": true
+    }
+  ],
+  "limits": [
+    "Life navigation group is an existing pointer-only div",
+    "Project roundtrip uses public serialize/deserialize and local Storage, not the remote save dialog"
+  ],
+  "pass": true,
+  "cleanup": {
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true
+  }
+}

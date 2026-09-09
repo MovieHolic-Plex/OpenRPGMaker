@@ -1,0 +1,49 @@
+{
+  "name": "focused-tests-run",
+  "recordedBeforeRun": true,
+  "argv": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "env",
+    "TMPDIR=/dev/shm/st_01a07924-ui-val/tmp",
+    "VITE_CACHE_DIR=/dev/shm/st_01a07924-ui-val/vite",
+    "XDG_CACHE_HOME=/dev/shm/st_01a07924-ui-val/xdg",
+    "npm_config_cache=/dev/shm/st_01a07924-ui-val/npm-cache",
+    "npm",
+    "test",
+    "--",
+    "test/spatialCatalogPictureRender.test.ts",
+    "test/playScenePlaceableOverlay.test.ts",
+    "test/p2SpatialPlayIntegration.test.ts",
+    "test/generatedMonsterFieldSprites.test.ts",
+    "test/bundledAssetWarmup.test.ts"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "root": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "head": "3df665bf28c3eb4f87252a4acb6260d25589850c",
+  "gitStatusPorcelain": "",
+  "sourceIdentities": {
+    "src/assets/bundled.ts": "ddb6af223e92d6c6cf1d6c897794c92b50895aef162b0d7de488a0344e1d2688",
+    "src/player/eventSpriteResources.ts": "7ec273fd3c851e3ef8f8ed914850d576206f16784eb05215e3394162c5ccf72d",
+    "src/player/playScenePlaceables.ts": "b07d6177ef14accff0eee7e6ec5e3ff6ca81f48670e947d275cb999b07925b9a",
+    "test/spatialCatalogPictureRender.test.ts": "d9f3f524361fe7b1c722b606c7dd4e7f6cb1bc7731391cff14618aecb8973e6e"
+  },
+  "envSubset": {
+    "TMPDIR": "/dev/shm/st_01a07924-ui-val/tmp",
+    "VITE_CACHE_DIR": "/dev/shm/st_01a07924-ui-val/vite",
+    "XDG_CACHE_HOME": "/dev/shm/st_01a07924-ui-val/xdg",
+    "PI_MODEL": "grok-4.6",
+    "PI_PROVIDER": "xai"
+  },
+  "exit": 0,
+  "stdoutPath": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/grok-integrated-ui-validation/receipts/focused-tests-run.stdout.txt",
+  "stderrPath": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/grok-integrated-ui-validation/receipts/focused-tests-run.stderr.txt",
+  "stdoutBytes": 815,
+  "stderrBytes": 0
+}

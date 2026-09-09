@@ -1,0 +1,171 @@
+{
+  "archive_commit": "08d601403f987c32537cdf61cfb1d22cc72180dd",
+  "source_commit": "462a7f3425079abc94fefafe2142dfcd5b42b034",
+  "started_utc": "2026-09-07T02:00:27.862106+00:00",
+  "authorization": "Coordinator explicitly authorized only these two removals; old owners st_01a0791b and st_01a0792c confirmed complete and idle by coordinator task_output.",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/main/z-project/rpg-zzu-life-full-p4",
+        "merge-base",
+        "--is-ancestor",
+        "462a7f3425079abc94fefafe2142dfcd5b42b034",
+        "08d601403f987c32537cdf61cfb1d22cc72180dd"
+      ],
+      "direct_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/main/z-project/rpg-zzu-life-full-p4",
+        "worktree",
+        "unlock",
+        "/home/main/z-project/rpg-zzu-life-full-placement-core-verify"
+      ],
+      "direct_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/main/z-project/rpg-zzu-life-full-p4",
+        "worktree",
+        "remove",
+        "/home/main/z-project/rpg-zzu-life-full-placement-core"
+      ],
+      "direct_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/main/z-project/rpg-zzu-life-full-p4",
+        "worktree",
+        "remove",
+        "/home/main/z-project/rpg-zzu-life-full-placement-core-verify"
+      ],
+      "direct_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/main/z-project/rpg-zzu-life-full-p4",
+        "merge-base",
+        "--is-ancestor",
+        "462a7f3425079abc94fefafe2142dfcd5b42b034",
+        "08d601403f987c32537cdf61cfb1d22cc72180dd"
+      ],
+      "direct_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "guards": {
+    "committed_archive_paths_verified": 21,
+    "trees": [
+      {
+        "root": "/home/main/z-project/rpg-zzu-life-full-placement-core",
+        "head": "462a7f3425079abc94fefafe2142dfcd5b42b034",
+        "status_inventory_bytes_match": true,
+        "lock_paths": [],
+        "allocated_bytes_before": 342151168,
+        "dependency_target": "/home/main/z-project/rpg-zzu/node_modules"
+      },
+      {
+        "root": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify",
+        "head": "462a7f3425079abc94fefafe2142dfcd5b42b034",
+        "status_inventory_bytes_match": true,
+        "lock_paths": [
+          "/home/main/z-project/rpg-zzu/.git/worktrees/rpg-zzu-life-full-placement-core-verify/locked"
+        ],
+        "allocated_bytes_before": 342233088,
+        "dependency_target": "/home/main/z-project/rpg-zzu/node_modules"
+      }
+    ],
+    "counts": {
+      "populated_hashes": 14065,
+      "sparse_absence": 9526,
+      "tracked_templates_blob_equal": 6,
+      "evidence_decoded_equal": 69,
+      "owned_source_inputs_equal": 13
+    },
+    "activity": {
+      "matching_users": [],
+      "permission_inaccessible_processes": 652,
+      "vanished_processes": 0,
+      "visibility_limit": "Inaccessible unrelated processes are not proof of active use; coordinator confirms both task owners complete and idle. No environ/cmdline inspected."
+    }
+  },
+  "private_disposition": [
+    {
+      "original_path": "/home/main/z-project/rpg-zzu-life-full-placement-core/.env.local",
+      "original_regular_non_symlink": true,
+      "private_destination": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-env-retention/placement-core.env.local",
+      "mode": "0600",
+      "exclusive_created": true,
+      "byte_equal": true,
+      "secret_contents_and_hashes_recorded": false
+    },
+    {
+      "original_path": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify/.env.local",
+      "original_regular_non_symlink": true,
+      "private_destination": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-env-retention/placement-core-verify.env.local",
+      "mode": "0600",
+      "exclusive_created": true,
+      "byte_equal": true,
+      "secret_contents_and_hashes_recorded": false
+    }
+  ],
+  "removed": [
+    "/home/main/z-project/rpg-zzu-life-full-placement-core",
+    "/home/main/z-project/rpg-zzu-life-full-placement-core-verify"
+  ],
+  "status": "REMOVED",
+  "private_directory": {
+    "path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-env-retention",
+    "mode": "0700"
+  },
+  "space": {
+    "filesystem_free_bytes_immediately_before": 477884416,
+    "old_allocated_bytes_before": 684384256,
+    "filesystem_free_bytes_after": 1151950848,
+    "observed_free_bytes_delta": 674066432,
+    "removed_tree_allocated_bytes": 684384256,
+    "measurement_note": "Tree allocated bytes were measured without following symlinks. Filesystem free-space delta is observational and may include concurrent unrelated writes."
+  },
+  "postchecks": {
+    "trees": [
+      {
+        "root": "/home/main/z-project/rpg-zzu-life-full-placement-core",
+        "directory_absent": true,
+        "registry_absent": true
+      },
+      {
+        "root": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify",
+        "directory_absent": true,
+        "registry_absent": true
+      }
+    ],
+    "producer_branch_preserved": true,
+    "source_reachability_preserved": true,
+    "shared_dependency_targets_preserved": [
+      "/home/main/z-project/rpg-zzu/node_modules"
+    ],
+    "private_backups_remain_mode0600_and_byte_equal": true
+  },
+  "finished_utc": "2026-09-07T02:00:32.112999+00:00",
+  "historical_verdicts_unchanged": true,
+  "no_staging_commits_qa_force_branch_deletion_or_shared_cleanup": true
+}

@@ -1,0 +1,40 @@
+{
+  "status": "complete",
+  "supersedes_publication_hold_in": [
+    "archive/PRIVACY.json",
+    "archive/PUBLICATION.json",
+    "archive/FINALIZATION.json",
+    "archive/PREPARED.md",
+    "archive/records/*.json publication field only"
+  ],
+  "prior_receipts": "Preserved unchanged as historical records. Recovery metadata and original manifests remain authoritative and unchanged.",
+  "files_inspected": 328,
+  "decoded_bytes_inspected": 452745499,
+  "cleared_payload_count": 328,
+  "withheld_payload_count": 0,
+  "finding_reason_counts": {},
+  "per_file_result_indexes": [
+    "archive/public-final/indexes/000.json",
+    "archive/public-final/indexes/001.json",
+    "archive/public-final/indexes/002.json",
+    "archive/public-final/indexes/003.json",
+    "archive/public-final/indexes/004.json",
+    "archive/public-final/indexes/005.json",
+    "archive/public-final/indexes/006.json",
+    "archive/public-final/indexes/007.json",
+    "archive/public-final/indexes/008.json"
+  ],
+  "scope": "Only immutable archive payloads and archive metadata read; decoded payloads inspected in memory, one file at a time; immediate durable per-file results written via small official apply_patch calls.",
+  "rules": [
+    "Full decoded UTF-8 text scanned for private-key blocks, provider-secret tokens, literal bearer credentials, JWTs, credentials in URLs, literal sensitive assignments, marked reasoning blocks/transcript channels.",
+    "JSON traversed for sensitive credential and private-reasoning fields. Obvious test/dummy/reference placeholders excluded from credential-value findings.",
+    "Structured image data and opaque base64 values were counted, not decoded or interpreted. No candidate values printed or included in metadata."
+  ],
+  "limitations": [
+    "This is bounded automated inspection, not a universal secrecy guarantee or human semantic review.",
+    "Opaque/encoded/encrypted secrets, unmarked private prose, and unsupported credential formats may evade these rules.",
+    "Public clearance means inspected without a detected finding under these rules, not a new product approval."
+  ],
+  "integrity": "All 328 compressed and decompressed hashes/sizes match exact existing records. All pre-existing archive files rehashed unchanged.",
+  "operations": "No source/current UI/parent-check access; no product tests/build/probes; no Git/index/staging/commit/network; no new helper source or further raw deletion."
+}

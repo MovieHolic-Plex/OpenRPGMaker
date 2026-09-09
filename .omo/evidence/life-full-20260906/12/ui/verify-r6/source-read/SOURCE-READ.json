@@ -1,0 +1,217 @@
+{
+  "when": "2026-09-07T14:18:43.828395+00:00",
+  "head": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "committedSha": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "sourceMatchesCommitted": true,
+  "source": {
+    "src/player/lifePlacementScene.ts": {
+      "sha256": "275318021fbdfdfa0a8bcb131314fd7a75bf5a8fba1c37fdd35b47eac4739565",
+      "bytes": 6063,
+      "matchesCommitted": true
+    },
+    "src/player/lifeLedger.ts": {
+      "sha256": "9e7ffb6f6e3bdd24f22d723556513570be03a5cb0394640ea718d918e5cfebcb",
+      "bytes": 30221,
+      "matchesCommitted": true
+    },
+    "src/player/playerStatusMenuDetails.ts": {
+      "sha256": "26b30f5a06f8fc49ce9a815d7493300c4aae42d2d8b1693304cf9a2a3f96b67b",
+      "bytes": 36013,
+      "matchesCommitted": true
+    },
+    "src/player/playerStatusMenu.ts": {
+      "sha256": "5d33e4a4844ddf2a5f623928b2c730ca514cdca29922d7435feeff2a4a3d6370",
+      "bytes": 16481,
+      "matchesCommitted": true
+    },
+    "src/player/playerStatusMenuController.ts": {
+      "sha256": "7cf1dd019700f5ad8e19a170f6aa33fccfa0bfdce388eb00241c364bf81565e7",
+      "bytes": 31985,
+      "matchesCommitted": true
+    },
+    "src/player/playerStatusMenuTypes.ts": {
+      "sha256": "40efe968f6d087034ec01e134f87043327eac5108d0b20ddb4b1b6ddee54972c",
+      "bytes": 3556,
+      "matchesCommitted": true
+    },
+    "src/player/playerStatusMenuDetailTypes.ts": {
+      "sha256": "42ac4b0a3b6e06b1f6f5b594843b7c61cf85f141dd46c6711a9fc9b30a89614a",
+      "bytes": 5081,
+      "matchesCommitted": true
+    },
+    "src/player/PlayScene.ts": {
+      "sha256": "a3c2fe2b3baad143cdef4db6de14590137316669961a451ec65407b0c156225d",
+      "bytes": 27542,
+      "matchesCommitted": true
+    },
+    "test/lifePlacementSceneUi.test.ts": {
+      "sha256": "78403533ace4a55fa78c8b1e77e8466c87a18f1db187c5c38e0968a4821f6b56",
+      "bytes": 35644,
+      "matchesCommitted": true
+    },
+    "test/p2SpatialPlayIntegration.test.ts": {
+      "sha256": "b7329262d031932ab515ec5647026e0a956c8275a145051e40f8ccc8403a9e51",
+      "bytes": 8496,
+      "matchesCommitted": true
+    },
+    "test/p2SpatialRuntimeUi.test.ts": {
+      "sha256": "927d55ec45b0a72e8cd0240270701f9983f76734f1ace7b1d145cd822663be2f",
+      "bytes": 2873,
+      "matchesCommitted": true
+    },
+    "test/lifePlacementRenderedBodyReplay.test.ts": {
+      "sha256": "f7ffd8d8a89a2fb10ef67ee13a459a8bda592e63e7035a50b63a75d27b06cc97",
+      "bytes": 7659,
+      "matchesCommitted": true
+    },
+    "src/project/databaseRecordModel.ts": {
+      "sha256": "c27eb4c534e39a6b0c68c2d3650aadb905c8f42e0d053d10f79c8092aa6cbdfd",
+      "bytes": 46246,
+      "matchesCommitted": true
+    },
+    "test/playerBodyProjectPersistence.test.ts": {
+      "sha256": "0dd6e5c03614aa124a4d953c8f80e6189fbdaebe0c31bf0b3335619861372ef1",
+      "bytes": 6375,
+      "matchesCommitted": true
+    },
+    "openwiki/INDEX.md": {
+      "sha256": "3671e8357729819f30c557ec70a345a1e26593bcfec1db25cc400f30f120ca45",
+      "bytes": 38587,
+      "matchesCommitted": true
+    },
+    "openwiki/runtime-project-schema.md": {
+      "sha256": "0d88d9040930ec3a1d7a88105bbd56e193d660da0b10703520d7986793c3753d",
+      "bytes": 76618,
+      "matchesCommitted": true
+    },
+    "openwiki/runtime-sessions.md": {
+      "sha256": "8c3d2d7ae0eb27d1666ace7365b6c66b1299cb132ec18bd294d6d6237d9db975",
+      "bytes": 83643,
+      "matchesCommitted": true
+    }
+  },
+  "uiSuite": {
+    "rerun": false,
+    "reason": "adapter-only verify-r6; exact source/test/commit equality licenses reuse of verify-r5 independent 91/7 suite",
+    "borrow": {
+      "ui-suite.command.json": {
+        "r5Sha256": "251221acc188a82930690e1e2e03a448317ba94ffb1aaa046a59d66d887d33ab",
+        "r6CopySha256": "251221acc188a82930690e1e2e03a448317ba94ffb1aaa046a59d66d887d33ab",
+        "equal": true,
+        "r5Bytes": 1794
+      },
+      "ui-suite.exit": {
+        "r5Sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "r6CopySha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "equal": true,
+        "r5Bytes": 2
+      },
+      "ui-suite.stderr": {
+        "r5Sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "r6CopySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "equal": true,
+        "r5Bytes": 0
+      },
+      "ui-suite.stdout": {
+        "r5Sha256": "64c77de6b932240c758fa8a61b967f34206aac831baa5c030392294e055ddc04",
+        "r6CopySha256": "64c77de6b932240c758fa8a61b967f34206aac831baa5c030392294e055ddc04",
+        "equal": true,
+        "r5Bytes": 644
+      }
+    },
+    "r5Command": {
+      "when": "2026-09-07T13:47:57.533915+00:00",
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+      "argv": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "--configLoader",
+        "runner",
+        "--cache=false",
+        "--maxWorkers=2",
+        "--minWorkers=1",
+        "test/lifePlacementSceneUi.test.ts",
+        "test/lifePlacementRenderedBodyReplay.test.ts",
+        "test/p2SpatialPlayIntegration.test.ts",
+        "test/p2SpatialRuntimeUi.test.ts",
+        "test/playerStatusMenu.test.ts",
+        "test/playerOpenSaveMenu.test.ts",
+        "test/lifeFieldInteraction.test.ts"
+      ],
+      "inputs": {
+        "test/lifePlacementSceneUi.test.ts": {
+          "sha256": "78403533ace4a55fa78c8b1e77e8466c87a18f1db187c5c38e0968a4821f6b56",
+          "bytes": 35644
+        },
+        "test/lifePlacementRenderedBodyReplay.test.ts": {
+          "sha256": "f7ffd8d8a89a2fb10ef67ee13a459a8bda592e63e7035a50b63a75d27b06cc97",
+          "bytes": 7659
+        },
+        "test/p2SpatialPlayIntegration.test.ts": {
+          "sha256": "b7329262d031932ab515ec5647026e0a956c8275a145051e40f8ccc8403a9e51",
+          "bytes": 8496
+        },
+        "test/p2SpatialRuntimeUi.test.ts": {
+          "sha256": "927d55ec45b0a72e8cd0240270701f9983f76734f1ace7b1d145cd822663be2f",
+          "bytes": 2873
+        },
+        "test/playerStatusMenu.test.ts": {
+          "sha256": "7fcb3f9b5df3d35fddac87e8355985663ee8be8d38b56cf42d52dcc713ea2c91",
+          "bytes": 20687
+        },
+        "test/playerOpenSaveMenu.test.ts": {
+          "sha256": "918c886d7dc2c8779bdd82232b24b2238cd763f33a3b377f745ef02276656327",
+          "bytes": 8253
+        },
+        "test/lifeFieldInteraction.test.ts": {
+          "sha256": "92a75ef32f97df963f5f0d264bb1f7993c6d6290b2d8244fa98f3126b77dcf78",
+          "bytes": 19679
+        }
+      },
+      "exit": 0,
+      "summary": {
+        "testFiles": 7,
+        "tests": 91,
+        "passed": true,
+        "lifeFieldInteraction": 45
+      }
+    },
+    "r5Exit": "0",
+    "r5Stdout": "\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p4\n\n \u2713 test/lifePlacementSceneUi.test.ts (15 tests) 804ms\n \u2713 test/lifeFieldInteraction.test.ts (45 tests) 1753ms\n \u2713 test/p2SpatialPlayIntegration.test.ts (3 tests) 224ms\n \u2713 test/lifePlacementRenderedBodyReplay.test.ts (3 tests) 150ms\n \u2713 test/playerOpenSaveMenu.test.ts (7 tests) 1327ms\n \u2713 test/playerStatusMenu.test.ts (17 tests) 838ms\n \u2713 test/p2SpatialRuntimeUi.test.ts (1 test) 119ms\n\n Test Files  7 passed (7)\n      Tests  91 passed (91)\n   Start at  22:47:01\n   Duration  20.32s (transform 10.77s, setup 0ms, collect 24.02s, tests 5.22s, environment 1.30s, prepare 598ms)\n\n"
+  },
+  "verifyR5PreservedScripts": {
+    "native-qa-general.mjs": {
+      "sha256": "8bab8536afe7098aa793e7c9fc34a8fdf4447f809e16140c6881e29c775213c7",
+      "bytes": 43564,
+      "preserved": true
+    },
+    "native-qa-arena-lastexit.mjs": {
+      "sha256": "427adbce9db20d0d48d18859c283c8350cd4e09a7a0f9a0f58bf4877870ae95f",
+      "bytes": 41752,
+      "preserved": true
+    },
+    "native-qa-rug.mjs": {
+      "sha256": "c60c859544e15a3372f7d2b8a428eae848997bffe205522118045e513699f5f6",
+      "bytes": 54732,
+      "preserved": true
+    }
+  },
+  "adapterFixes": {
+    "general": [
+      "equipHoe catch-to-null removed; already-selected via data-slot; no localStorage.clear; owned keys empty assert; ns r6"
+    ],
+    "arena-lastexit": [
+      "no localStorage.clear; owned keys empty assert; ns r6"
+    ],
+    "rug": [
+      "storage wait catch-to-null removed; require changed storage; slot2 absent-before; no localStorage.clear/window flag; owned keys empty assert; ns r6"
+    ]
+  },
+  "fixtures": {
+    "arena": "d8a44e6019cb015ca557bdedb551efd006975f1ba754bc2a3cd611b301b234f8",
+    "lastExit": "ca7bb0339b1472d602db720620e927bc5b81e93cfafa18a9f1ed20df07e24813",
+    "rug": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+    "general": "e48e935a33b8f6ed42e987ea7231ca508d1ae05abfc4862e11364e0357c54ff2"
+  }
+}

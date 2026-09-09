@@ -1,0 +1,52 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p4
+
+ ❯ test/playerBodyProjectPersistence.test.ts (22 tests | 20 failed) 2855ms
+   ✓ player body Project persistence > keeps legacy absent fields absent and Project4 bytes stable  479ms
+   × player body Project persistence > starts the authored 3 x 3 / 1 body after public IO 279ms
+     → expected { …(2) } to deeply equal { …(2) }
+   × player body Project persistence > starts the authored 2 x 5 / 2 body after public IO 218ms
+     → expected { …(2) } to deeply equal { …(2) }
+   × player body Project persistence > starts the authored 8 x 8 / 7 body after public IO 242ms
+     → expected { …(2) } to deeply equal { …(2) }
+   × player body Project persistence > does not materialize an independently absent optional: {"playerFootprint":{"width":3,"height":3}} 134ms
+     → expected false to be true // Object.is equality
+   × player body Project persistence > does not materialize an independently absent optional: {"playerPassRows":1} 141ms
+     → expected false to be true // Object.is equality
+   ✓ player body Project persistence > does not materialize an independently absent optional: {} 116ms
+   × player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":99,"height":99},"rows":99} 89ms
+     → expected undefined to deeply equal { width: 8, height: 8 }
+   × player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":-2,"height":3},"rows":0} 88ms
+     → expected undefined to deeply equal { width: 1, height: 3 }
+   × player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":2.5,"height":3},"rows":-1} 74ms
+     → expected undefined to deeply equal { width: 1, height: 3 }
+   × player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":"3","height":4},"rows":1.5} 85ms
+     → expected undefined to deeply equal { width: 1, height: 4 }
+   × player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"height":3},"rows":"1"} 94ms
+     → expected undefined to deeply equal { width: 1, height: 3 }
+   × player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":3,"height":3},"rows":null} 84ms
+     → expected undefined to deeply equal { width: 3, height: 3 }
+   × player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":3,"height":3},"rows":9007199254740992} 89ms
+     → expected undefined to deeply equal { width: 3, height: 3 }
+   × player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":null,"rows":2} 100ms
+     → expected undefined to deeply equal { width: 1, height: 1 }
+   × player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":[],"rows":1} 96ms
+     → expected undefined to deeply equal { width: 1, height: 1 }
+   × player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":"3x3","rows":1} 79ms
+     → expected undefined to deeply equal { width: 1, height: 1 }
+   × player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":3,"height":9007199254740992},"rows":2} 97ms
+     → expected undefined to deeply equal { width: 3, height: 1 }
+   × player body Project persistence > normalizes nonfinite direct inputs with the existing helpers: NaN 38ms
+     → expected undefined to deeply equal { width: 1, height: 3 }
+   × player body Project persistence > normalizes nonfinite direct inputs with the existing helpers: Infinity 35ms
+     → expected undefined to deeply equal { width: 1, height: 3 }
+   × player body Project persistence > normalizes nonfinite direct inputs with the existing helpers: -Infinity 33ms
+     → expected undefined to deeply equal { width: 1, height: 3 }
+   × player body Project persistence > keeps independent session override priority and resolved-height clamping after IO 161ms
+     → expected { …(2) } to deeply equal { …(2) }
+
+ Test Files  1 failed (1)
+      Tests  20 failed | 2 passed (22)
+   Start at  17:23:42
+   Duration  8.43s (transform 3.66s, setup 0ms, collect 5.17s, tests 2.86s, environment 0ms, prepare 110ms)
+

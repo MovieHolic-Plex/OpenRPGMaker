@@ -1,0 +1,1 @@
+node scripts/run-vitest.mjs run --configLoader runner --cache=false --maxWorkers=2 --minWorkers=1 test/lifePlacementSceneUi.test.ts

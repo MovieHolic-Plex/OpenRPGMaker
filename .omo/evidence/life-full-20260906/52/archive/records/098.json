@@ -1,0 +1,24 @@
+{
+  "original_relative_to_task52": "producer/typecheck-app.stderr",
+  "original_absolute": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/producer/typecheck-app.stderr",
+  "original_bytes": 211,
+  "original_sha256": "a7c465bd7725ac7b7c6cb87429d55f6dc0500b449fa7617d46e3f3237dcb32c7",
+  "original_mode_octal": "0o644",
+  "original_mtime_ns": 1788769621633108268,
+  "original_allocated_bytes": 4096,
+  "archive_relative_to_task52": "archive/payload/producer/typecheck-app.stderr.gz",
+  "archive_bytes": 158,
+  "archive_sha256": "9f2f6bc50766f7cfe23da91232c4dcfa80e3119c87b883107d09d97097266f9e",
+  "archive_mode_octal": "0o600",
+  "archive_allocated_bytes": 4096,
+  "encoding": "gzip (no filename, mtime=0); raw bytes unchanged",
+  "verification": {
+    "original_manifest_match": null,
+    "independent_decoder": "system gzip -cd",
+    "decoded_bytes": 211,
+    "decoded_sha256": "a7c465bd7725ac7b7c6cb87429d55f6dc0500b449fa7617d46e3f3237dcb32c7",
+    "byte_equal": true
+  },
+  "original_disposition": "retained_unchanged",
+  "publication": "withheld: restricted payload, not privacy-cleared"
+}

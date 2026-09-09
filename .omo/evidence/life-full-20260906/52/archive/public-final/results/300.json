@@ -1,0 +1,21 @@
+{
+  "archive_path": "archive/payload/verify/captures/pass-only-cycle0.wire.json.gz",
+  "archive_sha256": "5fac511bdf9233a4fef4be54f9ba3f62541fef9f21eac540289f1ca0420b36dc",
+  "archive_bytes": 160874,
+  "original_sha256": "192f6397d3aea06855b3067868b67b185f357aa6e93002bab883c9ea2b0ae861",
+  "original_bytes": 2291832,
+  "record_path": "archive/records/300.json",
+  "integrity": "encoded and decoded hash/size match immutable record",
+  "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits",
+  "finding_reasons": [],
+  "inspection": {
+    "utf8": true,
+    "entire_utf8_text_marker_scan": true,
+    "structured_json": true,
+    "structured_nodes": 159807,
+    "structured_strings": 69047,
+    "opaque_asset_or_base64_strings_not_decoded": 0,
+    "notes": []
+  },
+  "limitation": "Automated bounded inspection does not establish absence of opaque/encoded secrets or unmarked sensitive prose. No embedded assets decoded or interpreted; no candidate values emitted."
+}

@@ -1,0 +1,100 @@
+{
+  "task": "12-ui-producer-r5",
+  "status": "composite-native-rug-passage-resume-frozen-uncommitted",
+  "head": "ea6b2b358088cb6061783f6ffd162169764a07e9",
+  "productBase": "a51149b344d345f134cf2831c06867ba2a8a003c",
+  "branch": "agent/life-full-p4",
+  "sourceEditedThisNode": false,
+  "testsRerunThisNode": false,
+  "buildRerunThisNode": false,
+  "r3Immutable": {
+    "handoff": "../producer-r3/HANDOFF.md",
+    "sourceHandoff": "../producer-r3/SOURCE-HANDOFF.json",
+    "nativeFinalExit": 0,
+    "uiSuite": {
+      "exit": 0,
+      "tests": 91,
+      "log": "../producer-r3/tests/ui-green-final.stdout"
+    },
+    "renderedBodyReplayRed": {
+      "exit": 1,
+      "failed": 3,
+      "log": "../producer-r3/replay/red.stdout"
+    }
+  },
+  "r4Immutable": {
+    "handoff": "../producer-r4/HANDOFF.md",
+    "sourceHandoff": "../producer-r4/SOURCE-HANDOFF.json",
+    "criterionMap": "../producer-r4/CRITERION-MAP.json",
+    "nativeFinalExit": 0,
+    "closures": [
+      "decoration-rotate-orientation-change",
+      "decoration-move-different-coords",
+      "last-local-exit-refuse"
+    ]
+  },
+  "buildR3": {
+    "summary": "../build-r3/SUMMARY.md",
+    "reusedNotRerun": true
+  },
+  "buildR4": {
+    "summary": "../build-r4/SUMMARY.md",
+    "rugTraversalAudit": "../build-r4/rug-traversal-audit.json",
+    "needsFix": "../build-r4/NEEDS-FIX.json",
+    "gapClosedByThisNode": "nonblocking-rug passage + Save/resume with divergent Load proof"
+  },
+  "verifyR3": {
+    "verify": "../verify-r3/VERIFY.md"
+  },
+  "task52Receipt": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/PARENT-WORKING-VERIFIED.md",
+  "fixturesR5": {
+    "handoff": "../fixtures-r5/FIXTURE-HANDOFF.json",
+    "nativeContract": "../fixtures-r5/HANDOFF.md",
+    "coreProof": "../fixtures-r5/core-proof.json",
+    "rug": {
+      "projectId": "rpg-zzu-life-full-p4-t12-rug-st-01a07be4",
+      "fixture": "../fixtures-r5/rug.reloaded.json",
+      "sha256": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b"
+    }
+  },
+  "changed": [
+    {"path": "src/player/lifePlacementScene.ts", "sha256": "275318021fbdfdfa0a8bcb131314fd7a75bf5a8fba1c37fdd35b47eac4739565", "bytes": 6063, "sameAsProducerR3": true},
+    {"path": "src/player/lifeLedger.ts", "sha256": "9e7ffb6f6e3bdd24f22d723556513570be03a5cb0394640ea718d918e5cfebcb", "bytes": 30221, "sameAsProducerR3": true},
+    {"path": "src/player/playerStatusMenuDetails.ts", "sha256": "26b30f5a06f8fc49ce9a815d7493300c4aae42d2d8b1693304cf9a2a3f96b67b", "bytes": 36013, "sameAsProducerR3": true},
+    {"path": "src/player/playerStatusMenu.ts", "sha256": "5d33e4a4844ddf2a5f623928b2c730ca514cdca29922d7435feeff2a4a3d6370", "bytes": 16481, "sameAsProducerR3": true},
+    {"path": "src/player/playerStatusMenuController.ts", "sha256": "7cf1dd019700f5ad8e19a170f6aa33fccfa0bfdce388eb00241c364bf81565e7", "bytes": 31985, "sameAsProducerR3": true},
+    {"path": "src/player/playerStatusMenuTypes.ts", "sha256": "40efe968f6d087034ec01e134f87043327eac5108d0b20ddb4b1b6ddee54972c", "bytes": 3556, "sameAsProducerR3": true},
+    {"path": "src/player/playerStatusMenuDetailTypes.ts", "sha256": "42ac4b0a3b6e06b1f6f5b594843b7c61cf85f141dd46c6711a9fc9b30a89614a", "bytes": 5081, "sameAsProducerR3": true},
+    {"path": "src/player/PlayScene.ts", "sha256": "a3c2fe2b3baad143cdef4db6de14590137316669961a451ec65407b0c156225d", "bytes": 27542, "sameAsProducerR3": true},
+    {"path": "test/lifePlacementSceneUi.test.ts", "sha256": "78403533ace4a55fa78c8b1e77e8466c87a18f1db187c5c38e0968a4821f6b56", "bytes": 35644, "sameAsProducerR3": true},
+    {"path": "test/p2SpatialPlayIntegration.test.ts", "sha256": "b7329262d031932ab515ec5647026e0a956c8275a145051e40f8ccc8403a9e51", "bytes": 8496, "sameAsProducerR3": true},
+    {"path": "test/p2SpatialRuntimeUi.test.ts", "sha256": "927d55ec45b0a72e8cd0240270701f9983f76734f1ace7b1d145cd822663be2f", "bytes": 2873, "sameAsProducerR3": true},
+    {"path": "test/lifePlacementRenderedBodyReplay.test.ts", "sha256": "f7ffd8d8a89a2fb10ef67ee13a459a8bda592e63e7035a50b63a75d27b06cc97", "bytes": 7659, "sameAsProducerR3": true},
+    {"path": "src/project/databaseRecordModel.ts", "sha256": "c27eb4c534e39a6b0c68c2d3650aadb905c8f42e0d053d10f79c8092aa6cbdfd", "bytes": 46246, "sameAsProducerR3": true},
+    {"path": "test/playerBodyProjectPersistence.test.ts", "sha256": "0dd6e5c03614aa124a4d953c8f80e6189fbdaebe0c31bf0b3335619861372ef1", "bytes": 6375, "sameAsProducerR3": true}
+  ],
+  "wikiCurrentSha256": {
+    "openwiki/INDEX.md": "d2655a73e67d99bca9bf8eab2947a00e24f9092b74b23d88aa3f28c6a58bbf82",
+    "openwiki/runtime-project-schema.md": "e3bf9a0c581d3c6957db1a03ed30116695854cb878659a2df0f9e037341cd060",
+    "openwiki/runtime-sessions.md": "d0bc255fdaa7edf993695e28c6c0f28647c3fee4c20d325b6d5a0765a89d0fcb"
+  },
+  "wikiMatchesBuildR4Certified": true,
+  "wikiUntouchedByThisNode": true,
+  "native": {
+    "entryPoint": "native/native-qa.mjs",
+    "entryPointSha256": "6f4998ccf997deda46cb7c2cc442d6c760bb0f1899c9bf346d07d3b9eff0b928",
+    "attempt1Exit": 1,
+    "attempt1Reason": "openSaveMenu after Load still highlighted load group; live foot/rug restore already succeeded",
+    "attempt2Exit": 1,
+    "attempt2Reason": "harness skipped required system Enter when group labels already visible",
+    "finalAttempt": 3,
+    "exit": 0,
+    "log": "native/native-qa-final.log",
+    "command": "native-qa-3.command.json",
+    "saveNamespace": "task12-ui-native-r5-rug",
+    "slots": {
+      "slot1": "native/raw-slot-standing-on-rug.json",
+      "slot2": "native/raw-slot-after-load-slot2.json"
+    }
+  }
+}

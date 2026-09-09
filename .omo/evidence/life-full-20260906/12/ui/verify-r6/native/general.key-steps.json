@@ -1,0 +1,501 @@
+{
+  "scenario": "general",
+  "exit": 0,
+  "pageErrors": [],
+  "errors": [],
+  "cleanupErrors": null,
+  "uncaught": null,
+  "importantSteps": [
+    {
+      "step": "owned-initial-keys-empty",
+      "at": "2026-09-07T14:17:24.102Z",
+      "ns": "task12-ui-verify-r6-general",
+      "keys": []
+    },
+    {
+      "step": "place-building",
+      "at": "2026-09-07T14:17:27.524Z",
+      "placedMsg": {
+        "text": "Shed\uc744(\ub97c) \ubc30\uce58\ud588\uc2b5\ub2c8\ub2e4"
+      },
+      "placed": {
+        "id": "ledger:building:shed:1",
+        "instanceId": "ledger:building:shed:1",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 7,
+        "y": 9,
+        "orientation": "down",
+        "level": 1,
+        "paymentReceipt": {
+          "gold": 10,
+          "items": []
+        }
+      },
+      "gold": 490,
+      "player": {
+        "x": 8,
+        "y": 8
+      }
+    },
+    {
+      "step": "overlap-refuse",
+      "at": "2026-09-07T14:17:27.657Z",
+      "overlapMsg": {
+        "text": "\ucc98\ub9ac\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4: blocked"
+      },
+      "gold": 490,
+      "count": 1
+    },
+    {
+      "step": "upgrade",
+      "at": "2026-09-07T14:17:27.800Z",
+      "upgradeMsg": {
+        "text": "Shed\uc744(\ub97c) \uc5c5\uadf8\ub808\uc774\ub4dc\ud588\uc2b5\ub2c8\ub2e4"
+      },
+      "gold": 470,
+      "placement": {
+        "instanceId": "ledger:building:shed:1",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 7,
+        "y": 9,
+        "orientation": "down",
+        "level": 2,
+        "paymentReceipt": {
+          "gold": 30,
+          "items": []
+        }
+      }
+    },
+    {
+      "step": "move-building",
+      "at": "2026-09-07T14:17:28.556Z",
+      "moveMsg": {
+        "text": "Shed\uc744(\ub97c) \uc774\ub3d9\ud588\uc2b5\ub2c8\ub2e4"
+      },
+      "placement": {
+        "instanceId": "ledger:building:shed:1",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 11,
+        "y": 6,
+        "orientation": "down",
+        "level": 2,
+        "paymentReceipt": {
+          "gold": 30,
+          "items": []
+        }
+      },
+      "player": {
+        "x": 9,
+        "y": 8
+      }
+    },
+    {
+      "step": "place-rug-ok-for-save-existence",
+      "at": "2026-09-07T14:17:30.898Z",
+      "rugMoveId": "life-ledger-space-decoration-move-ledger:decoration:rug:1"
+    },
+    {
+      "step": "hand-slot",
+      "at": "2026-09-07T14:17:32.424Z",
+      "digit": "1",
+      "text": "\uad2d\uc774 \u00d71",
+      "before": "\ube48 \uc190"
+    },
+    {
+      "step": "till",
+      "at": "2026-09-07T14:17:32.463Z",
+      "before": {
+        "x": 7,
+        "y": 8
+      },
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      },
+      "player": {
+        "x": 7,
+        "y": 8
+      },
+      "actionReceipt": {
+        "kind": "action",
+        "mapId": "map_blank_start",
+        "handled": true,
+        "farmAttempts": [
+          {
+            "kind": "tilled",
+            "x": 7,
+            "y": 9,
+            "itemId": "item_hoe",
+            "energySpent": 0,
+            "xpAwarded": {},
+            "affectedTiles": [
+              {
+                "x": 7,
+                "y": 9,
+                "kind": "tilled"
+              }
+            ]
+          }
+        ],
+        "sequence": 1
+      }
+    },
+    {
+      "step": "plot-refuse",
+      "at": "2026-09-07T14:17:33.470Z",
+      "plotMsg": {
+        "text": "\ucc98\ub9ac\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4: blocked"
+      },
+      "gold": 470,
+      "buildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        }
+      },
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "edge-refuse",
+      "at": "2026-09-07T14:17:35.156Z",
+      "edgeMsg": {
+        "text": "\ucc98\ub9ac\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4: blocked"
+      },
+      "gold": 470,
+      "player": {
+        "x": 1,
+        "y": 8
+      },
+      "buildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        }
+      }
+    },
+    {
+      "step": "npc-overlap-candidate",
+      "at": "2026-09-07T14:17:39.598Z",
+      "move": {
+        "fromX": 16,
+        "fromY": 5,
+        "toX": 16,
+        "toY": 6,
+        "dir": "down"
+      },
+      "logical": {
+        "x": 16,
+        "y": 6,
+        "bodyRect": {
+          "left": 15,
+          "right": 17,
+          "top": 4,
+          "bottom": 6
+        },
+        "passRect": {
+          "left": 15,
+          "right": 17,
+          "top": 6,
+          "bottom": 6
+        }
+      },
+      "sprite": {
+        "x": 264,
+        "y": 103.14314285714288
+      },
+      "fractional": true,
+      "player": {
+        "x": 16,
+        "y": 2
+      },
+      "eventLocations": null
+    },
+    {
+      "step": "npc-overlap-refuse",
+      "at": "2026-09-07T14:17:39.765Z",
+      "npcPlace": {
+        "text": "\ucc98\ub9ac\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4: blocked"
+      },
+      "gold": 470,
+      "player": {
+        "x": 16,
+        "y": 2
+      },
+      "buildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        }
+      },
+      "logical": {
+        "x": 16,
+        "y": 6,
+        "bodyRect": {
+          "left": 15,
+          "right": 17,
+          "top": 4,
+          "bottom": 6
+        },
+        "passRect": {
+          "left": 15,
+          "right": 17,
+          "top": 6,
+          "bottom": 6
+        }
+      },
+      "move": {
+        "fromX": 16,
+        "fromY": 5,
+        "toX": 16,
+        "toY": 6,
+        "dir": "down"
+      }
+    },
+    {
+      "step": "save-slot",
+      "at": "2026-09-07T14:17:40.306Z",
+      "saveMsg": {
+        "text": "1\ubc88 \uc800\uc7a5 \uce78\uc5d0 \uc800\uc7a5\ud588\uc2b5\ub2c8\ub2e4"
+      }
+    },
+    {
+      "step": "load-slot",
+      "at": "2026-09-07T14:17:40.694Z",
+      "loadMsg": {
+        "text": ""
+      },
+      "player": {
+        "x": 16,
+        "y": 2
+      }
+    },
+    {
+      "step": "load-restored",
+      "at": "2026-09-07T14:17:40.891Z",
+      "loadedTestids": [
+        "life-ledger-space-decoration-place-rug",
+        "life-ledger-space-decoration-place-table",
+        "life-ledger-space-decoration-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-rotate-ledger:decoration:rug:1"
+      ],
+      "loadedBuildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        }
+      },
+      "gold": 470
+    },
+    {
+      "step": "ok",
+      "at": "2026-09-07T14:17:41.266Z",
+      "scratch": "/dev/shm/st_01a07c36/native-general"
+    }
+  ],
+  "allStepNames": [
+    "server",
+    "browser",
+    "goto",
+    "title",
+    "owned-initial-keys-empty",
+    "runtime",
+    "npc-interpolation",
+    "open-spaces-start",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "spaces",
+    "place-building",
+    "overlap-refuse",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "upgrade",
+    "menu-close-step",
+    "menu-close-step",
+    "menu-close-step",
+    "menu-closed-idle",
+    "walk-right-before-move",
+    "open-spaces-start",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "move-building",
+    "menu-close-step",
+    "menu-close-step",
+    "menu-close-step",
+    "menu-closed-idle",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "open-spaces-start",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "place-rug",
+    "place-rug-ok-for-save-existence",
+    "menu-close-step",
+    "menu-close-step",
+    "menu-close-step",
+    "menu-closed-idle",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "hand-slot",
+    "till",
+    "tilled-keys",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "open-spaces-start",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "menu-step",
+    "plot-refuse",
+    "menu-close-step",
+    "menu-close-step",
+    "menu-close-step",
+    "menu-closed-idle",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "open-spaces-start",
+    "edge-refuse",
+    "menu-close-step",
+    "menu-close-step",
+    "menu-close-step",
+    "menu-closed-idle",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "walk-step",
+    "npc-overlap-candidate",
+    "open-spaces-start",
+    "npc-overlap-refuse",
+    "menu-close-step",
+    "menu-close-step",
+    "menu-close-step",
+    "save-slot",
+    "raw-slot",
+    "menu-close-step",
+    "menu-close-step",
+    "menu-close-step",
+    "load-slot",
+    "menu-closed-idle",
+    "open-spaces-start",
+    "load-restored",
+    "menu-close-step",
+    "menu-close-step",
+    "menu-close-step",
+    "menu-closed-idle",
+    "ok"
+  ]
+}

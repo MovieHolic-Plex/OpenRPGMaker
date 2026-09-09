@@ -1,0 +1,9 @@
+{"path":"src/editor/panels/databaseCharacterView.ts","diagnostics":[]}
+{"path":"src/editor/panels/databaseCropView.ts","diagnostics":[]}
+{"path":"src/editor/panels/databaseDailyWeatherView.ts","diagnostics":[]}
+{"path":"src/editor/panels/databaseLifeCraftingView.ts","diagnostics":[]}
+{"path":"src/player/playSceneGift.ts","diagnostics":[]}
+{"path":"src/player/playSceneInterpreter.ts","diagnostics":[]}
+{"path":"src/project/characterProfiles.ts","diagnostics":[]}
+{"path":"src/project/dailyWeather.ts","diagnostics":[]}
+{"path":"test/lifeAuthoringBounds.test.ts","diagnostics":[{"code":2353,"start":1326,"message":"Object literal may only specify known properties, and 'initial' does not exist in type 'SwitchDef'."},{"code":2540,"start":3359,"message":"Cannot assign to 'birthday' because it is a read-only property."},{"code":2540,"start":6202,"message":"Cannot assign to 'maxLevel' because it is a read-only property."},{"code":2322,"start":6909,"message":"Type 'number' is not assignable to type 'CropStageRecord'."},{"code":2353,"start":9428,"message":"Object literal may only specify known properties, and 'text' does not exist in type '{ kind: \"text\"; speaker?: string | undefined; body: string; emotion?: string | undefined; autoAdvance?: boolean | undefined; }'."},{"code":2353,"start":9464,"message":"Object literal may only specify known properties, and 'text' does not exist in type '{ kind: \"text\"; speaker?: string | undefined; body: string; emotion?: string | undefined; autoAdvance?: boolean | undefined; }'."},{"code":2353,"start":9514,"message":"Object literal may only specify known properties, and 'text' does not exist in type '{ kind: \"text\"; speaker?: string | undefined; body: string; emotion?: string | undefined; autoAdvance?: boolean | undefined; }'."}]}

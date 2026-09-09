@@ -1,0 +1,134 @@
+{
+  "SUMMARY.md": {
+    "bytes": 6056,
+    "sha256": "e97e9eabaa3db219f9eb8232e250cdb332ae03e642b918394cda81c5e48ce29c"
+  },
+  "adoption.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "adoption.stdout": {
+    "bytes": 163,
+    "sha256": "e14d58c7bcaacf276849e91068b498d328e0cc817ccbeff6f2502c43b5c278b0"
+  },
+  "build-artifact-hashes.json": {
+    "bytes": 307601,
+    "sha256": "4b9b014fdc3d0d489d0b8f8266c8a2736657898ea88a56cbc460a462ef48f532"
+  },
+  "build.json": {
+    "bytes": 2122,
+    "sha256": "31765229f50b54fe5bb5a59d5d25a78fd84794db6c9df18e3d7c77732c600048"
+  },
+  "build.stderr": {
+    "bytes": 13483,
+    "sha256": "b6e0b500468e0edeae63604eb2af2ad8f5dcbd0070d26c4bfafd018960c90d2a"
+  },
+  "build.stdout": {
+    "bytes": 5257,
+    "sha256": "904b150c5a57b758f8f73927c5a3d1d2180aba7663bafce2389e2215f992979c"
+  },
+  "cleanup.json": {
+    "bytes": 74103,
+    "sha256": "9b3da3b2c60848a51d18563e98cdf6bfbf9fa02eb1445187e9eff9cff0bd214d"
+  },
+  "diagnostic-results.json": {
+    "bytes": 237,
+    "sha256": "bbe1fd4762c494d20b91ccddae530e46c046e3ae4502b231d1349b11fb71f3f3"
+  },
+  "diagnostics.json": {
+    "bytes": 2249,
+    "sha256": "154c8cea17cb7f737810847196e6d0fd60b7089510d76979bed701b5590bf1e2"
+  },
+  "diagnostics.mjs": {
+    "bytes": 1255,
+    "sha256": "71da91adfa757e310ad207216fa52391a1c73dc97404f822383a9bf46348417a"
+  },
+  "diagnostics.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "diagnostics.stdout": {
+    "bytes": 68,
+    "sha256": "10f02305be6c97acbe18cd1fcfe79a22f50a3f5e5a1d02eede1579bc3a1c8caa"
+  },
+  "final-audit.json": {
+    "bytes": 826,
+    "sha256": "47bd0a657ed2233388e313bb35c479468f4d903553c49d268350824c8d66d567"
+  },
+  "focused-cleanup.json": {
+    "bytes": 661,
+    "sha256": "7c870220f268149a1d667bc59e27ee405891e04dabe7e9f397ec76be4b7b295f"
+  },
+  "focused-launcher-correction.py": {
+    "bytes": 2559,
+    "sha256": "12f70ebc61af568f3272f7d64915e494a3b02d428a1888d94ee3259c56d51bf1"
+  },
+  "focused-tests-executed.json": {
+    "bytes": 3143,
+    "sha256": "95771cae96f80602ed3d8e2875ecd828c2020e695e60c295e92739d59df081c0"
+  },
+  "focused-tests-executed.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused-tests-executed.stdout": {
+    "bytes": 2634,
+    "sha256": "31879a071e1fc8e375aac0685019cb6ecc671c8e9c0c162a400f5fafbddd90dc"
+  },
+  "focused-tests.json": {
+    "bytes": 2888,
+    "sha256": "e4db04a4007d08a606ad31e2637c4a10e6302448a2f88f394f1be6b01ea3d2f7"
+  },
+  "focused-tests.stderr": {
+    "bytes": 1071,
+    "sha256": "4007f5acf2a0738afe9e3bbd57db96dbc5a8a4a14a27cea663f6393c7e38ed98"
+  },
+  "focused-tests.stdout": {
+    "bytes": 705,
+    "sha256": "399592cb964d24cd642730c60117605d672370cc906729beb0317623c18a4dbc"
+  },
+  "initial.json": {
+    "bytes": 74090,
+    "sha256": "afdc7404c4bab44463044be79db7154bbc55bb72ae693a7133edb5eb90b03f95"
+  },
+  "parent-probe.json": {
+    "bytes": 2318,
+    "sha256": "d2018ab2c8de27fc93d8992af27624dbfc4f2505f3594c494a644345a2f87cfd"
+  },
+  "parent-probe.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "parent-probe.stdout": {
+    "bytes": 392,
+    "sha256": "e3d58ef7102145d168ef50805316f2b4c37fcbd6fb2d7c1394289c8bc3a1f42a"
+  },
+  "payment-capacity-green.json": {
+    "bytes": 491,
+    "sha256": "0b8dce9f765d633a8336553ced03643a09332c500b67c950c72ed2684fc3c861"
+  },
+  "results.json": {
+    "bytes": 98,
+    "sha256": "a493bd8cfb654e362a557b7c227c12237356ee07baf60e8d3a29ab9eeef04c8d"
+  },
+  "typecheck.json": {
+    "bytes": 2137,
+    "sha256": "bf7a5bd7adc5f43d90dd4cfb08d0644b0c63886e2b710de073096da0ad41799d"
+  },
+  "typecheck.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "typecheck.stdout": {
+    "bytes": 68,
+    "sha256": "9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe"
+  },
+  "validate.py": {
+    "bytes": 4456,
+    "sha256": "b4c5198e3bb05310b009cb084b53dc4f537abfcdb0e56074a0a689d4ce307781"
+  },
+  "vitest.config.ts": {
+    "bytes": 197,
+    "sha256": "dfd4304f907789bdab5344133187243bd734504c8f3ba6a91206902a6a0f4e45"
+  }
+}

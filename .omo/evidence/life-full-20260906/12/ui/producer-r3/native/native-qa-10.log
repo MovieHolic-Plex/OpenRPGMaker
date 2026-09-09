@@ -1,0 +1,24 @@
+{"step":"server","url":"http://127.0.0.1:38335","port":38335}
+{"step":"browser","scratch":"/dev/shm/st_01a07b22"}
+{"step":"goto","url":"http://127.0.0.1:38335/player.html"}
+{"step":"title","url":"http://127.0.0.1:38335/player.html"}
+{"step":"runtime","mapId":"map_blank_start","player":{"x":8,"y":8},"gold":500,"farmPlots":{}}
+{"step":"npc-interpolation","move":{"fromX":16,"fromY":5,"toX":16,"toY":6,"dir":"down"},"sprite":{"x":264,"y":96},"fractional":false,"eventLocations":null,"player":{"x":8,"y":8},"logical":{"x":16,"y":6,"pageId":"walk","priority":"same","trigger":"action","direction":"down","footprint":{"width":3,"height":3},"passRows":1,"bodyRect":{"left":15,"right":17,"top":4,"bottom":6},"passRect":{"left":15,"right":17,"top":6,"bottom":6}}}
+{"step":"menu-step","key":"ArrowDown","from":"life-ledger-tab-shipping","to":"life-ledger-tab-bundles","want":"life-ledger-tab-spaces"}
+{"step":"menu-step","key":"ArrowDown","from":"life-ledger-tab-bundles","to":"life-ledger-tab-skills","want":"life-ledger-tab-spaces"}
+{"step":"menu-step","key":"ArrowDown","from":"life-ledger-tab-skills","to":"life-ledger-tab-makers","want":"life-ledger-tab-spaces"}
+{"step":"menu-step","key":"ArrowDown","from":"life-ledger-tab-makers","to":"life-ledger-tab-animals","want":"life-ledger-tab-spaces"}
+{"step":"menu-step","key":"ArrowDown","from":"life-ledger-tab-animals","to":"life-ledger-tab-spaces","want":"life-ledger-tab-spaces"}
+{"step":"spaces","placeLabel":"Shed 배치map_blank_start (7, 9)","selected":"life-ledger-space-building-place-shed"}
+{"step":"place-building","placedMsg":{"text":"Shed을(를) 배치했습니다"},"placed":{"id":"ledger:building:shed:1","instanceId":"ledger:building:shed:1","typeId":"shed","mapId":"map_blank_start","x":7,"y":9,"orientation":"down","level":1,"paymentReceipt":{"gold":10,"items":[]}},"gold":490,"player":{"x":8,"y":8}}
+{"step":"overlap-refuse","overlapMsg":{"text":"처리할 수 없습니다: blocked"},"gold":490,"count":1}
+{"step":"menu-step","key":"ArrowDown","from":"life-ledger-space-building-place-shed","to":"life-ledger-space-building-move-ledger:building:shed:1","want":"life-ledger-space-building-upgrade-ledger:building:shed:1"}
+{"step":"menu-step","key":"ArrowDown","from":"life-ledger-space-building-move-ledger:building:shed:1","to":"life-ledger-space-building-remove-ledger:building:shed:1","want":"life-ledger-space-building-upgrade-ledger:building:shed:1"}
+{"step":"menu-step","key":"ArrowDown","from":"life-ledger-space-building-remove-ledger:building:shed:1","to":"life-ledger-space-building-upgrade-ledger:building:shed:1","want":"life-ledger-space-building-upgrade-ledger:building:shed:1"}
+{"step":"upgrade","upgradeMsg":{"text":"Shed을(를) 업그레이드했습니다"},"gold":470,"placement":{"instanceId":"ledger:building:shed:1","typeId":"shed","mapId":"map_blank_start","x":7,"y":9,"orientation":"down","level":2,"paymentReceipt":{"gold":30,"items":[]}}}
+{"step":"menu-close-step","kind":"mode","from":"{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}","to":"{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"}
+{"step":"menu-close-step","kind":"mode","from":"{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}","to":"{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"}
+{"step":"menu-close-step","kind":"absent"}
+{"step":"menu-closed-idle","player":{"x":8,"y":8}}
+{"step":"walk-right-before-move","from":{"x":8,"y":8},"to":{"x":9,"y":8},"gold":470,"farmPlots":{}}
+{"step":"failed","error":"jsHandle.evaluate: Error: timeout present life-ledger-tab-shipping\n    at eval (eval at evaluate (:303:30), <anonymous>:19:59)"}

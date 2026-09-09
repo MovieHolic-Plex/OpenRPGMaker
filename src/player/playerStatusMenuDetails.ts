@@ -65,6 +65,10 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
       tab: options.lifeLedgerTab,
       onSelectTab: options.onSelectLifeLedgerTab,
       onMutation: options.onLifeLedgerMutation,
+      readLive: options.readLive,
+      placementDirection: options.placementDirection,
+      getPlacementDirection: options.getPlacementDirection,
+      getScene: options.getScene,
     });
     case "wait": return waitDetail(options.waitModeEnabled);
     case "to-title": return toTitleDetail(options);

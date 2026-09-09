@@ -1,0 +1,21 @@
+{
+  "steps": [
+    {
+      "step": "server",
+      "at": "2026-09-07T09:39:27.177Z",
+      "url": "http://127.0.0.1:38221",
+      "port": 38221
+    },
+    {
+      "step": "failed",
+      "at": "2026-09-07T09:39:27.192Z",
+      "error": "browserType.launch: Pass userDataDir parameter to 'browserType.launchPersistentContext(userDataDir, options)' instead of specifying '--user-data-dir' argument"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "pageErrors": [],
+  "requestFailures": [],
+  "scenarioErrors": [],
+  "uncaught": "browserType.launch: Pass userDataDir parameter to 'browserType.launchPersistentContext(userDataDir, options)' instead of specifying '--user-data-dir' argument\n    at /home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:629:34"
+}

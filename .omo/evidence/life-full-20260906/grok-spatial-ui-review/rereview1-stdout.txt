@@ -1,0 +1,63 @@
+[edit-activity] 프로젝트 교체
+{
+  "criterion": "export-evidence-rereview1",
+  "originalFailureUnchanged": {
+    "files": [
+      "export-decoration.json",
+      "commands.json",
+      "check-export-decoration.mjs"
+    ],
+    "ok": false,
+    "exit": 1,
+    "cause": "extra assertion blankHasCloud === false contradicted default resourceProfiles image-catalog export"
+  },
+  "catalog": {
+    "onlyPicture": [
+      {
+        "id": "easyrpg-picture-cloud",
+        "path": "assets/easyrpg/picture/Cloud.png"
+      }
+    ],
+    "runtimeInventoryIncludesCloud": false
+  },
+  "schema": {
+    "note": "validateResourceProfiles requires kind+name only. collectResourceIds always includes EASYRPG_RTP_ASSETS, so Cloud graphicResourceId remains a known id without a profile row. ensureBundledResourceProfiles is editor store normalize, not deserialize.",
+    "deserializeSerializeWithoutCloudProfile": true,
+    "roundTripError": null,
+    "roundTripStillOmitsCloudProfile": true,
+    "roundTripExportIncludesCloud": true
+  },
+  "phaserPreload": {
+    "policy": "blank must not load unreferenced Cloud",
+    "blankDefaultDoesNotLoadCloud": true,
+    "blankStrippedDoesNotLoadCloud": true,
+    "decorationStrippedLoadsCloud": true,
+    "orientationStrippedLoadsCloud": true,
+    "buildingLevelTwoStrippedLoadsCloud": true
+  },
+  "exportProfiles": {
+    "policy": "blank may export Cloud via default image resourceProfiles",
+    "blankDefaultMayExportCloud": true,
+    "blankStrippedDoesNotExportCloud": true
+  },
+  "exportReferencedWithoutProfileFallback": {
+    "decorationStrippedProfileHasCloud": false,
+    "decorationStrippedExportsCloud": true,
+    "orientationStrippedExportsCloud": true,
+    "buildingLevelTwoStrippedExportsCloud": true,
+    "prepareWebExportError": null,
+    "prepareWebExportStillOmitsCloudProfile": true,
+    "prepareWebExportIncludesCloud": true
+  },
+  "resolve": {
+    "spatial": {
+      "texture": "easyrpg-picture-cloud",
+      "frame": "__BASE"
+    },
+    "event": null,
+    "overlayTextureKeys": [
+      "easyrpg-picture-cloud"
+    ]
+  },
+  "ok": true
+}

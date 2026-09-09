@@ -1,0 +1,9 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--exit-code"
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "task": "52",
+  "taskId": "st_01a07af2",
+  "status": "FROZEN UNCOMMITTED",
+  "head": "ea6b2b358088cb6061783f6ffd162169764a07e9",
+  "worktree": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "correction": {
+    "path": "src/project/databaseRecordModel.ts",
+    "beforeSha256": "390700d58fe0cd382dab957e096351047ff76c81c25e0018964bdfca5e9a299f",
+    "sha256": "c27eb4c534e39a6b0c68c2d3650aadb905c8f42e0d053d10f79c8092aa6cbdfd",
+    "bytes": 46246,
+    "addedLines": 7
+  },
+  "newTest": {
+    "path": "test/playerBodyProjectPersistence.test.ts",
+    "sha256": "0dd6e5c03614aa124a4d953c8f80e6189fbdaebe0c31bf0b3335619861372ef1",
+    "bytes": 6375,
+    "tests": 22
+  },
+  "carryoverBefore": {
+    "src/player/lifePlacementScene.ts": "275318021fbdfdfa0a8bcb131314fd7a75bf5a8fba1c37fdd35b47eac4739565",
+    "src/player/lifeLedger.ts": "9e7ffb6f6e3bdd24f22d723556513570be03a5cb0394640ea718d918e5cfebcb",
+    "src/player/playerStatusMenuDetails.ts": "26b30f5a06f8fc49ce9a815d7493300c4aae42d2d8b1693304cf9a2a3f96b67b",
+    "src/player/playerStatusMenu.ts": "5d33e4a4844ddf2a5f623928b2c730ca514cdca29922d7435feeff2a4a3d6370",
+    "src/player/playerStatusMenuController.ts": "7cf1dd019700f5ad8e19a170f6aa33fccfa0bfdce388eb00241c364bf81565e7",
+    "src/player/playerStatusMenuTypes.ts": "40efe968f6d087034ec01e134f87043327eac5108d0b20ddb4b1b6ddee54972c",
+    "src/player/playerStatusMenuDetailTypes.ts": "42ac4b0a3b6e06b1f6f5b594843b7c61cf85f141dd46c6711a9fc9b30a89614a",
+    "src/player/PlayScene.ts": "a3c2fe2b3baad143cdef4db6de14590137316669961a451ec65407b0c156225d",
+    "test/lifePlacementSceneUi.test.ts": "78403533ace4a55fa78c8b1e77e8466c87a18f1db187c5c38e0968a4821f6b56",
+    "test/p2SpatialPlayIntegration.test.ts": "b7329262d031932ab515ec5647026e0a956c8275a145051e40f8ccc8403a9e51",
+    "test/p2SpatialRuntimeUi.test.ts": "927d55ec45b0a72e8cd0240270701f9983f76734f1ace7b1d145cd822663be2f",
+    "openwiki/INDEX.md": "f4f8175857676327901917c0311aaaa8aa075fa7da9dc500cfbdb88793344106",
+    "openwiki/runtime-project-schema.md": "feb484a28a8f8eac0030f1bb087950e9e271b856489daa12d7fa49dc755c8b8d",
+    "openwiki/runtime-sessions.md": "9184b3206751003d7b120d78b0d0fba4a8f7e0d2f3e14b5109e10e3e472f2521"
+  },
+  "carryoverAfter": {
+    "src/player/lifePlacementScene.ts": "275318021fbdfdfa0a8bcb131314fd7a75bf5a8fba1c37fdd35b47eac4739565",
+    "src/player/lifeLedger.ts": "9e7ffb6f6e3bdd24f22d723556513570be03a5cb0394640ea718d918e5cfebcb",
+    "src/player/playerStatusMenuDetails.ts": "26b30f5a06f8fc49ce9a815d7493300c4aae42d2d8b1693304cf9a2a3f96b67b",
+    "src/player/playerStatusMenu.ts": "5d33e4a4844ddf2a5f623928b2c730ca514cdca29922d7435feeff2a4a3d6370",
+    "src/player/playerStatusMenuController.ts": "7cf1dd019700f5ad8e19a170f6aa33fccfa0bfdce388eb00241c364bf81565e7",
+    "src/player/playerStatusMenuTypes.ts": "40efe968f6d087034ec01e134f87043327eac5108d0b20ddb4b1b6ddee54972c",
+    "src/player/playerStatusMenuDetailTypes.ts": "42ac4b0a3b6e06b1f6f5b594843b7c61cf85f141dd46c6711a9fc9b30a89614a",
+    "src/player/PlayScene.ts": "a3c2fe2b3baad143cdef4db6de14590137316669961a451ec65407b0c156225d",
+    "test/lifePlacementSceneUi.test.ts": "78403533ace4a55fa78c8b1e77e8466c87a18f1db187c5c38e0968a4821f6b56",
+    "test/p2SpatialPlayIntegration.test.ts": "b7329262d031932ab515ec5647026e0a956c8275a145051e40f8ccc8403a9e51",
+    "test/p2SpatialRuntimeUi.test.ts": "927d55ec45b0a72e8cd0240270701f9983f76734f1ace7b1d145cd822663be2f",
+    "openwiki/INDEX.md": "f4f8175857676327901917c0311aaaa8aa075fa7da9dc500cfbdb88793344106",
+    "openwiki/runtime-project-schema.md": "feb484a28a8f8eac0030f1bb087950e9e271b856489daa12d7fa49dc755c8b8d",
+    "openwiki/runtime-sessions.md": "9184b3206751003d7b120d78b0d0fba4a8f7e0d2f3e14b5109e10e3e472f2521"
+  },
+  "carryoverUnchanged": true,
+  "scopedDiff": {
+    "path": "scoped.diff",
+    "sha256": "49a65f01aa7c243141e956a7d3388ae3733ab3577eaf69dbe963b9db70812d80"
+  },
+  "publicProbe": {
+    "path": "public-probe.ts",
+    "sha256": "1f3b5b2ea3233f699dfd2519bc1c29061d5f6bd9354b9e8a82948e4111a3b3f9",
+    "runnerSha256": "918cb40aba5652020751f96ea6aa92256c5c5eec0ffcc994e9572fb81674a511",
+    "inputSha256": "f45faa951edfc22a80763ad0838b920c9158a927ce8316d67fd0139cfbc3fb35",
+    "resultSha256": "732113daa1cc9060f3a2643b08d5f3edb74937fa8eafbd502330c7ed33678c65"
+  },
+  "coreAcceptance": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/47-48/VERIFY.md",
+  "canonicalPlan": "/home/main/.herdr/worktrees/rpg-zzu/wish-html/.omo/plans/life-systems-full-implementation.md",
+  "receipts": {
+    "baseline": {
+      "exit": 0,
+      "command": "baseline.command.json",
+      "stdout": "baseline.stdout",
+      "stderr": "baseline.stderr",
+      "beforeIdentity": "baseline.before.json",
+      "afterIdentity": "baseline.after.json",
+      "cleanup": "baseline.cleanup.json"
+    },
+    "red": {
+      "exit": 1,
+      "command": "red.command.json",
+      "stdout": "red.stdout",
+      "stderr": "red.stderr",
+      "beforeIdentity": "red.before.json",
+      "afterIdentity": "red.after.json",
+      "cleanup": "red.cleanup.json"
+    },
+    "red-contract": {
+      "exit": 1,
+      "command": "red-contract.command.json",
+      "stdout": "red-contract.stdout",
+      "stderr": "red-contract.stderr",
+      "beforeIdentity": "red-contract.before.json",
+      "afterIdentity": "red-contract.after.json",
+      "cleanup": "red-contract.cleanup.json"
+    },
+    "diagnostics": {
+      "exit": 0,
+      "command": "diagnostics.command.json",
+      "stdout": "diagnostics.stdout",
+      "stderr": "diagnostics.stderr",
+      "beforeIdentity": "diagnostics.before.json",
+      "afterIdentity": "diagnostics.after.json",
+      "cleanup": "diagnostics.cleanup.json"
+    },
+    "green": {
+      "exit": 0,
+      "command": "green.command.json",
+      "stdout": "green.stdout",
+      "stderr": "green.stderr",
+      "beforeIdentity": "green.before.json",
+      "afterIdentity": "green.after.json",
+      "cleanup": "green.cleanup.json"
+    },
+    "public-probe": {
+      "exit": 0,
+      "command": "public-probe.command.json",
+      "stdout": "public-probe.stdout",
+      "stderr": "public-probe.stderr",
+      "beforeIdentity": "public-probe.before.json",
+      "afterIdentity": "public-probe.after.json",
+      "cleanup": "public-probe.cleanup.json"
+    },
+    "typecheck-app": {
+      "exit": 0,
+      "command": "typecheck-app.command.json",
+      "stdout": "typecheck-app.stdout",
+      "stderr": "typecheck-app.stderr",
+      "beforeIdentity": "typecheck-app.before.json",
+      "afterIdentity": "typecheck-app.after.json",
+      "cleanup": "typecheck-app.cleanup.json"
+    }
+  },
+  "counts": {
+    "baseline": {
+      "passed": 28,
+      "files": 5
+    },
+    "initialRed": {
+      "failed": 20,
+      "passed": 2
+    },
+    "contractCorrectedRed": {
+      "failed": 20,
+      "passed": 2
+    },
+    "green": {
+      "passed": 135,
+      "files": 9
+    }
+  },
+  "originalRedRetained": true,
+  "testContractCorrection": "Initial RED expected malformed wire values to normalize. Existing strict shape validation instead rejects them. Final test preserves all cases, asserts rejection, then separately checks direct helper normalization. Exact final test failed before product edit; no test skipped or removed.",
+  "diagnostics": "configured tsconfig.json source/test plus explicit evidence probe root; zero diagnostics before app typecheck",
+  "saveBoundary": "Existing Save4->5 tests pass; probe applies Save5 without session body overrides. No override persistence contract invented.",
+  "build": {
+    "run": false,
+    "owner": "later final combined Task12 CLI delivery after native prerequisites",
+    "waived": false
+  },
+  "docsBrief": "WIKI-BRIEF.md",
+  "cleanup": "cleanup.json",
+  "preservation": "preservation.json",
+  "approvals": {
+    "task12": false,
+    "native": false,
+    "phase4": false,
+    "overall": false
+  },
+  "commitCreated": false
+}

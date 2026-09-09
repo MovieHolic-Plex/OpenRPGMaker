@@ -1,11 +1,13 @@
 import { PRODUCT_BRAND } from "@/brand";
 import { deserialize, serialize } from "./io";
+import { readProjectV4MapMergeSnapshot } from "./io/shape";
+import { SCHEMA_VERSION } from "./types";
 import { defaultResourceProfiles, removeLegacySpriteReferences } from "./defaults/defaultAssets";
 import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
 import { defaultEquipmentRecords } from "./defaults/defaultDatabaseEquipmentRecords";
 import { defaultItemRecords } from "./defaults/defaultDatabaseItemRecords";
 import { defaultSkillRecords } from "./defaults/defaultDatabaseStarterRecords";
-import { collectProjectItemReferenceIds } from "./io/references";
+import { collectProjectItemReferenceIds, validateProjectReferences } from "./io/references";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { applyAudioDescriptionDelta } from "./audioDescriptions";
 import { applyMonsterMetadataDelta } from "./monsterMetadata";
@@ -222,10 +224,10 @@ export async function loadSupabaseProjectPreview(
   };
 }
 
-async function loadProjectSnapshotFromSupabase(
+async function loadProjectRowFromSupabase(
   config = supabaseProjectConfig(),
-  options: { readonly overlayMaps?: boolean; readonly includeProjectId?: boolean; readonly signal?: AbortSignal } = {},
-): Promise<SupabaseProjectSnapshot | null> {
+  options: { readonly includeProjectId?: boolean; readonly signal?: AbortSignal } = {},
+): Promise<SupabaseProjectRow | null> {
   if (!config) return null;
   const response = await fetch(supabaseProjectUrl(config, options.includeProjectId), {
     headers: supabaseJsonHeaders(config, "read"),
@@ -235,18 +237,24 @@ async function loadProjectSnapshotFromSupabase(
     throw new SupabaseProjectSyncError(await response.text(), response.status);
   }
   const rows = await parseProjectRows(response);
-  const row = rows[0];
+  return rows[0] ?? null;
+}
+
+async function loadProjectSnapshotFromSupabase(
+  config = supabaseProjectConfig(),
+  options: { readonly includeProjectId?: boolean; readonly signal?: AbortSignal } = {},
+): Promise<SupabaseProjectSnapshot | null> {
+  if (!config) return null;
+  const row = await loadProjectRowFromSupabase(config, options);
   if (!row) return null;
   const project = deserializeSupabaseCurrentJson(row.current_json);
   // Hybrid maps SoT (editor open / public load): maps table map_json overlays current_json map bodies.
-  // Patch/conflict loads pass overlayMaps:false so concurrent merge still compares current_json.
-  if (options.overlayMaps !== false) {
-    try {
-      const mapRows = await loadMapRowsFromSupabase(config, options.signal);
-      if (mapRows.length > 0) overlayMapsFromRows(project, mapRows);
-    } catch (error) {
-      if (!isOptionalTableMissingError(error)) throw error;
-    }
+  // Patch/conflict reads use the raw row loader separately and never overlay maps.
+  try {
+    const mapRows = await loadMapRowsFromSupabase(config, options.signal);
+    if (mapRows.length > 0) overlayMapsFromRows(project, mapRows);
+  } catch (error) {
+    if (!isOptionalTableMissingError(error)) throw error;
   }
   return {
     project,
@@ -286,17 +294,10 @@ export async function saveProjectMapPatchToSupabase(
   const baseProject = projectWithoutEventDrafts(input.baseProject);
   removeLegacySpriteReferences(persistedProject);
   removeLegacySpriteReferences(baseProject);
-  // 비교 정규화(todo 8 실측 결함): 로드 경로(repairSupabaseCurrentJson + deserialize →
-  // validateProjectV4)는 저장본을 로드할 때 맵을 **변형**한다 — normalizeShopCommands가
-  // shop 커맨드에 branchOnTransaction/transactionBranch/branchOnFailedTransaction/
-  // failedTransactionBranch 기본 필드를 주입하고, stampCharacterIdsForSocialEvents가
-  // characterId를 스탬프하며, repairProjectReferences가 끊긴 참조를 정리한다. 에디터
-  // 메모리의 persistedBaseline/로컬 프로젝트는 이 변형을 거치지 않으므로 같은 논리 맵도
-  // JSON 문자열이 달라져 매 flush가 가짜 conflict로 끝났다(데모 행이 첫 마일스톤 이후
-  // 저장 불가). base/로컬을 동일한 serialize→deserialize 파이프라인에 통과시켜 비교를
-  // 대칭으로 만든다 — 로드가 이미 정규형인 latest와 어느 쪽도 깨지지 않는다.
-  // 검증을 통과하지 못하는 중간 상태(끊긴 참조 등)는 원본 그대로 폴백해 기존 conflict
-  // 동작을 유지한다(새 예외를 만들지 않는다).
+  // Compare all three snapshots with the same shape/compatibility normalization
+  // (shop defaults, social IDs, load foundation), without pruning references.
+  // Remote roots may lack targets restored by local edits; repairing here would
+  // erase concurrent commands before conflict detection or candidate validation.
   const canonicalBase = canonicalizeForMapComparison(baseProject);
   const canonicalLocal = canonicalizeForMapComparison(persistedProject);
   const changedMapIds = input.changedMapIds ?? changedMapIdsBetween(canonicalBase, canonicalLocal);
@@ -304,29 +305,33 @@ export async function saveProjectMapPatchToSupabase(
   for (let attempt = 0; attempt < MAP_PATCH_MAX_ATTEMPTS; attempt += 1) {
     // Conflict/merge against current_json only (no maps overlay). RTT cut: drop
     // saveChangedMapRowsFromCanonical's before/after full-snapshot pair.
-    const latestSnapshot = await loadProjectSnapshotFromSupabase(config, { overlayMaps: false });
-    const latestProject = latestSnapshot?.project ?? canonicalBase;
-    const latestSha = latestSnapshot?.sha256 ?? null;
+    const latestRow = await loadProjectRowFromSupabase(config);
+    const latestProject = latestRow ? readMapPatchSnapshot(latestRow.current_json) : canonicalBase;
+    const latestSha = latestRow?.current_sha256 ?? null;
 
     const conflicts = mapSaveConflicts(canonicalBase, canonicalLocal, latestProject, changedMapIds);
     if (conflicts.length > 0) return { kind: "conflict", conflicts };
 
-    const mergedProject = mergeProjectMaps(latestProject, persistedProject, changedMapIds, changedMapTreeIds);
+    const candidate = mergeProjectMaps(latestProject, persistedProject, changedMapIds, changedMapTreeIds);
     const audioDescriptions = applyAudioDescriptionDelta(
       baseProject.audioDescriptions,
       persistedProject.audioDescriptions,
       latestProject.audioDescriptions,
     );
     // mergeProjectMaps returns a detached root; never mutate any input snapshot.
-    if (audioDescriptions === undefined) delete mergedProject.audioDescriptions;
-    else mergedProject.audioDescriptions = audioDescriptions;
+    if (audioDescriptions === undefined) delete candidate.audioDescriptions;
+    else candidate.audioDescriptions = audioDescriptions;
     const monsterMetadata = applyMonsterMetadataDelta(
       baseProject.monsterMetadata,
       persistedProject.monsterMetadata,
       latestProject.monsterMetadata,
     );
-    if (monsterMetadata === undefined) delete mergedProject.monsterMetadata;
-    else mergedProject.monsterMetadata = monsterMetadata;
+    if (monsterMetadata === undefined) delete candidate.monsterMetadata;
+    else candidate.monsterMetadata = monsterMetadata;
+    // Do not let load repair silently discard invalid intended references. Only
+    // the fully validated merge may enter the existing SHA-conditional write.
+    validateProjectReferences(candidate);
+    const mergedProject = deserializeSupabaseCurrentJson(candidate);
     const wire = await projectWire(mergedProject);
     const saved = await saveProjectSnapshotToSupabase(config, mergedProject, latestSha, wire);
     if (!saved) continue;
@@ -1071,16 +1076,16 @@ async function sha256Hex(value: string): Promise<string> {
   return sha256HexText(value);
 }
 
-function changedMapIdsBetween(baseProject: Project, project: Project): readonly string[] {
+function changedMapIdsBetween(baseProject: Pick<Project, "maps" | "mapTree">, project: Pick<Project, "maps" | "mapTree">): readonly string[] {
   const mapIds = [...new Set([...Object.keys(baseProject.maps), ...Object.keys(project.maps)])]
     .filter((mapId) => mapSnapshot(baseProject.maps[mapId]) !== mapSnapshot(project.maps[mapId]));
   return [...new Set([...mapIds, ...changedMapTreeIdsBetween(baseProject.mapTree, project.mapTree)])];
 }
 
 function mapSaveConflicts(
-  baseProject: Project,
-  project: Project,
-  latestProject: Project,
+  baseProject: Pick<Project, "maps">,
+  project: Pick<Project, "maps">,
+  latestProject: Pick<Project, "maps">,
   changedMapIds: readonly string[],
 ): readonly SupabaseMapSaveConflict[] {
   return changedMapIds
@@ -1094,36 +1099,33 @@ function mapSaveConflicts(
 }
 
 /**
- * 맵 스냅샷 비교를 위한 정규화(todo 8 실측 결함 수정).
- *
- * 로드 경로(loadProjectSnapshotFromSupabase)는 저장본을 deserialize(→ validateProjectV4)
- * 로 통과시키면서 맵을 **변형**한다: normalizeShopCommands가 shop 커맨드에 branch
- * 필드(branchOnTransaction/transactionBranch/...)를 주입하고,
- * stampCharacterIdsForSocialEvents가 소셜 이벤트에 characterId를 스탬프하며,
- * repairProjectReferences가 끊긴 참조를 정리한다. 에디터 메모리의 persistedBaseline/로컬
- * 프로젝트는 이 변형을 거치지 않으므로, 같은 논리 맵이라도 원본 JSON 문자열이 달라져
- * 매 flush가 가짜 conflict로 끝났다(데모 행이 첫 마일스톤 이후 저장 불가).
- *
- * 세 주체(base/local/latest)를 같은 serialize→repair→deserialize 파이프라인에 통과시키면
- * 비교가 대칭이 된다 — 실제 동시 수정만 conflict로 감지하고, 로드 정규화 차이는
- * 사라진다. repairSupabaseCurrentJson을 함께 통과시키는 이유: 로드 경로가 먼저
- * villageInfoDocuments 를 prune 하고 resourceProfiles 를 보충하는데, deserialize(serialize)
- * 만 돌리면 stale villageInfoDocuments 를 검증 단계에서 거부해 새 예외가 된다 — 로드와
- * 완전히 같은 파이프라인을 써야 대칭이다. 검증을 통과하지 못하는 중간 상태(끊긴 참조 등)는
- * 원본 그대로 폴백해 기존 conflict 동작을 유지한다(새 예외를 만들지 않는다).
+ * Symmetric map comparison keeps load-compatible shape defaults without erasing
+ * references before root ownership is resolved. Malformed local intermediates
+ * retain the existing comparison fallback; the completed candidate must validate.
  */
-function canonicalizeForMapComparison(project: Project): Project {
+function canonicalizeForMapComparison(project: Project): MapPatchSnapshot {
   try {
-    // 로드 경로와 동일: repairSupabaseCurrentJson(row.current_json) → deserialize.
-    const asWire = JSON.parse(serialize(project)) as unknown;
-    return deserialize(JSON.stringify(repairSupabaseCurrentJson(asWire)));
+    return readMapPatchSnapshot(JSON.parse(serialize(project)) as unknown);
   } catch {
     return project;
   }
 }
 
+type MapPatchSnapshot = Pick<Project, "maps" | "mapTree"> & Partial<Pick<Project, "audioDescriptions" | "monsterMetadata">>;
+
+// Map merging only needs maps/mapTree, but the audio-description and monster-metadata
+// deltas compare the same remote snapshot, so those optional roots stay visible.
+function readMapPatchSnapshot(value: unknown): MapPatchSnapshot {
+  if (!isRecord(value) || value.version !== SCHEMA_VERSION) return deserializeSupabaseCurrentJson(value);
+  const snapshot = structuredClone(value);
+  // Keep compatibility foundation changes, but never use ordinary load repair
+  // to prune map references against roots that the local candidate may restore.
+  repairSupabaseLoadFoundation(snapshot);
+  return readProjectV4MapMergeSnapshot(snapshot);
+}
+
 function mergeProjectMaps(
-  latestProject: Project,
+  latestProject: Pick<Project, "maps" | "mapTree">,
   project: Project,
   changedMapIds: readonly string[],
   changedMapTreeIds: readonly string[],
@@ -1279,7 +1281,7 @@ export function canonicalJsonString(value: unknown): string {
   return JSON.stringify(value);
 }
 
-function mapConflictName(mapId: string, project: Project, latestProject: Project, baseProject: Project): string {
+function mapConflictName(mapId: string, project: Pick<Project, "maps">, latestProject: Pick<Project, "maps">, baseProject: Pick<Project, "maps">): string {
   return project.maps[mapId]?.name ?? latestProject.maps[mapId]?.name ?? baseProject.maps[mapId]?.name ?? mapId;
 }
 

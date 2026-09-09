@@ -1,0 +1,118 @@
+{
+  "status": "confirmed",
+  "cases": [
+    {
+      "name": "3x3-pass1",
+      "body": {
+        "footprint": {
+          "width": 3,
+          "height": 3
+        },
+        "passRows": 1
+      },
+      "cycles": 4,
+      "byteStable": true
+    },
+    {
+      "name": "2x5-pass2",
+      "body": {
+        "footprint": {
+          "width": 2,
+          "height": 5
+        },
+        "passRows": 2
+      },
+      "cycles": 4,
+      "byteStable": true
+    },
+    {
+      "name": "8x8-pass7",
+      "body": {
+        "footprint": {
+          "width": 8,
+          "height": 8
+        },
+        "passRows": 7
+      },
+      "cycles": 4,
+      "byteStable": true
+    },
+    {
+      "name": "4x6-default",
+      "body": {
+        "footprint": {
+          "width": 4,
+          "height": 6
+        },
+        "passRows": 6
+      },
+      "cycles": 4,
+      "byteStable": true
+    },
+    {
+      "name": "pass-only",
+      "body": {
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1
+      },
+      "cycles": 4,
+      "byteStable": true
+    },
+    {
+      "name": "absent",
+      "body": {
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1
+      },
+      "cycles": 4,
+      "byteStable": true
+    },
+    {
+      "name": "undefined",
+      "body": {
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1
+      },
+      "cycles": 4,
+      "byteStable": true
+    }
+  ],
+  "overrides": 4,
+  "malformed": 9,
+  "projectVersion": 4,
+  "saveInputs": [
+    4,
+    5
+  ],
+  "saveParsedVersion": 5,
+  "body": {
+    "footprint": {
+      "width": 3,
+      "height": 3
+    },
+    "passRows": 1
+  },
+  "bodyRect": {
+    "left": 4,
+    "right": 6,
+    "top": 5,
+    "bottom": 7
+  },
+  "passageRect": {
+    "left": 4,
+    "right": 6,
+    "top": 7,
+    "bottom": 7
+  },
+  "startingFarmPlots": {}
+}
+Public probe Vite module loader closed; no HTTP listener or browser was started.

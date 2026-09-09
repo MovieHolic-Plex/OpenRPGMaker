@@ -1,0 +1,9 @@
+{
+  "priorFailure": "native/general.stderr: ENOENT missing copied fixture-general.json; prior receipts preserved",
+  "input": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/fixture-general.json",
+  "inputSha256": "e48e935a33b8f6ed42e987ea7231ca508d1ae05abfc4862e11364e0357c54ff2",
+  "sourceScriptSha256": "c4c623affb63d69437ea320977cf5d0e3335ca4752b2902a24171af00f6d788b",
+  "replayScriptSha256": "73cc3433ad046736595907fe45fbfe996fb9a430d7b4130776aecd79af752b52",
+  "scriptChange": "Only bind input read to existing hash-verified immutable fixture; native action/assertion logic unchanged",
+  "rerun": "general-replay only; ui/arena/rug passing results retained"
+}

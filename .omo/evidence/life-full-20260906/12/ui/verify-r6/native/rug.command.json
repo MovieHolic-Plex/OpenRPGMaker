@@ -1,0 +1,25 @@
+{
+  "when": "2026-09-07T14:16:49.414868+00:00",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "argv": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--kill-after=30s",
+    "600s",
+    "node",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/native-qa-rug.mjs"
+  ],
+  "envSubset": {
+    "HOME": "/dev/shm/st_01a07c36",
+    "PLAYWRIGHT_BROWSERS_PATH": "/home/main/.cache/ms-playwright",
+    "TASK12_V5_RUG": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/fixtures-r5/rug.reloaded.json",
+    "TASK12_V5_SCRATCH": "/dev/shm/st_01a07c36/native-rug",
+    "TMPDIR": "/dev/shm/st_01a07c36/tmp",
+    "VITE_CACHE_DIR": "/dev/shm/st_01a07c36/vite-cache"
+  },
+  "scriptSha256": "5ef0e08728b281fab931a8f4e968ca639638319dbd899f34e0a859eb8858e099",
+  "verify": "r6"
+}

@@ -1,0 +1,27 @@
+{
+  "head": "e486e536954d69c59c7bcc82602646cc6712c445",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "node",
+    "scripts/run-vitest.mjs",
+    "run",
+    "--configLoader",
+    "runner",
+    "--config",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/phase4-parent/bounds/vitest.config.mjs",
+    "test/lifeAuthoringBounds.test.ts"
+  ],
+  "started": "2026-09-06T20:13:22.362Z",
+  "finished": "2026-09-06T20:18:31.289Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-authoring-bounds\n\n ✓ test/lifeAuthoringBounds.test.ts (14 tests) 14963ms\n   ✓ authoring bounds > accepts day40 in a 40-day calendar and bounds new input to that calendar  2143ms\n   ✓ authoring bounds > diagnoses day29 in a 28-day calendar without silently changing it  1253ms\n   ✓ authoring bounds > shows effective omitted weather values without authoring them  435ms\n   ✓ authoring bounds > rejects both 129th-rule add controls without mutation or an undo entry  802ms\n   ✓ authoring bounds > caps skill input at10, starts new rewards at2, and retains legacy level1  2093ms\n   ✓ authoring bounds > refuses a new level-up reward when maxLevel is1  890ms\n   ✓ authoring bounds > does not author crop graphics during rendering (undefined)  1117ms\n   ✓ authoring bounds > does not author crop graphics during rendering ([])  1245ms\n   ✓ authoring bounds > does not author crop graphics during rendering ([ { frame: +0, label: 'Editor-only' } ])  1366ms\n   ✓ public automatic speaker consumers > shares talk identity across events and preserves explicit command speaker overrides  382ms\n   ✓ legacy characterization > uses effective forecast 1 and rain intensity 0.5 without backfilling  335ms\n   ✓ legacy characterization > retains explicit forecast 3 and intensity 0.65 through render and roundtrip  1358ms\n   ✓ legacy characterization > preserves the legacy level1 reward and authored birthday on render/serialize  1253ms\n\n Test Files  1 passed (1)\n      Tests  14 passed (14)\n   Start at  05:17:26\n   Duration  63.32s (transform 33.68s, setup 0ms, collect 46.20s, tests 14.96s, environment 556ms, prepare 344ms)\n\n",
+  "stderr": ""
+}

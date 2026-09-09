@@ -1,23 +1,29 @@
 import { isSpatialOrientation, SPATIAL_LEVEL_LIMIT, SPATIAL_PLACEMENT_LIMIT } from "@/project/spatialPlacements";
-import type { FarmBuildingPlacement, HomeDecorationPlacement } from "@/project/types";
+import type { HomeDecorationPlacement } from "@/project/types";
+import type { FarmBuildingPlacementState, HomeDecorationPlacementState } from "@/project/session";
+import { isDecorationRecoveryItem, isSpatialPaymentReceipt } from "@/project/lifeRecovery";
 
-export function parseFarmBuildingPlacementRecord(value: unknown): Record<string, FarmBuildingPlacement> | undefined {
+export function parseFarmBuildingPlacementRecord(value: unknown): Record<string, FarmBuildingPlacementState> | undefined {
   if (!isRecord(value)) return undefined;
-  const result: Record<string, FarmBuildingPlacement> = {};
+  const result: Record<string, FarmBuildingPlacementState> = Object.create(null);
   for (const [key, raw] of Object.entries(value).slice(0, SPATIAL_PLACEMENT_LIMIT)) {
     const base = parseBasePlacement(key, raw);
     if (!base || !isRecord(raw) || !Number.isSafeInteger(raw.level) || (raw.level as number) < 1 || (raw.level as number) > SPATIAL_LEVEL_LIMIT) continue;
-    result[key] = { ...base, level: raw.level as number };
+    if (raw.paymentReceipt !== undefined && !isSpatialPaymentReceipt(raw.paymentReceipt)) continue;
+    result[key] = { ...base, level: raw.level as number,
+      ...(raw.paymentReceipt !== undefined ? { paymentReceipt: structuredClone(raw.paymentReceipt) } : {}) };
   }
   return result;
 }
 
-export function parseHomeDecorationPlacementRecord(value: unknown): Record<string, HomeDecorationPlacement> | undefined {
+export function parseHomeDecorationPlacementRecord(value: unknown): Record<string, HomeDecorationPlacementState> | undefined {
   if (!isRecord(value)) return undefined;
-  const result: Record<string, HomeDecorationPlacement> = {};
+  const result: Record<string, HomeDecorationPlacementState> = {};
   for (const [key, raw] of Object.entries(value).slice(0, SPATIAL_PLACEMENT_LIMIT)) {
     const base = parseBasePlacement(key, raw);
-    if (base) result[key] = base;
+    if (!base || !isRecord(raw)) continue;
+    if (raw.recoveryItem !== undefined && !isDecorationRecoveryItem(raw.recoveryItem)) continue;
+    result[key] = { ...base, ...(raw.recoveryItem !== undefined ? { recoveryItem: structuredClone(raw.recoveryItem) } : {}) };
   }
   return result;
 }

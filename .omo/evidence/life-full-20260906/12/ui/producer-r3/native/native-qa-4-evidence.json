@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "step": "server",
+      "at": "2026-09-07T09:40:12.603Z",
+      "url": "http://127.0.0.1:42343",
+      "port": 42343
+    },
+    {
+      "step": "browser",
+      "at": "2026-09-07T09:40:12.770Z",
+      "scratch": "/dev/shm/st_01a07b22"
+    },
+    {
+      "step": "title",
+      "at": "2026-09-07T09:40:14.940Z",
+      "url": "http://127.0.0.1:42343/player.html"
+    },
+    {
+      "step": "runtime",
+      "at": "2026-09-07T09:40:17.457Z",
+      "mapId": "map_blank_start",
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "gold": 500,
+      "farmPlots": {}
+    },
+    {
+      "step": "npc-interpolation",
+      "at": "2026-09-07T09:40:17.498Z",
+      "move": {
+        "fromX": 16,
+        "fromY": 5,
+        "toX": 16,
+        "toY": 6,
+        "dir": "down"
+      },
+      "sprite": {
+        "x": 264,
+        "y": 96
+      },
+      "fractional": false,
+      "eventLocations": null,
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "logical": {
+        "x": 16,
+        "y": 6,
+        "pageId": "walk",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 3,
+          "height": 3
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 15,
+          "right": 17,
+          "top": 4,
+          "bottom": 6
+        },
+        "passRect": {
+          "left": 15,
+          "right": 17,
+          "top": 6,
+          "bottom": 6
+        }
+      }
+    },
+    {
+      "step": "failed",
+      "at": "2026-09-07T09:40:25.827Z",
+      "error": "jsHandle.evaluate: Error: timeout selection change from status-menu-command-record-menu\n    at eval (eval at evaluate (:303:30), <anonymous>:19:59)"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "pageErrors": [],
+  "requestFailures": [],
+  "scenarioErrors": [],
+  "uncaught": "jsHandle.evaluate: Error: timeout selection change from status-menu-command-record-menu\n    at eval (eval at evaluate (:303:30), <anonymous>:19:59)\n    at Object.wait (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:157:30)\n    at stepToward (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:192:32)\n    at async ensureSelected (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:203:9)\n    at async openSpaces (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:461:7)\n    at async file:///home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:699:3"
+}

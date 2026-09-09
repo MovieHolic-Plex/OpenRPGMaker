@@ -1,0 +1,38 @@
+[
+  {
+    "method": "GET",
+    "path": "/rest/v1/projects",
+    "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.rpg-zzu-life-full-p4-t12-rug-st-01a07be4",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "path": "/rest/v1/maps",
+    "query": "?project_id=eq.rpg-zzu-life-full-p4-t12-rug-st-01a07be4&select=map_id%2Cmap_json",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "path": "/rest/v1/project_commits",
+    "query": "?project_id=eq.rpg-zzu-life-full-p4-t12-rug-st-01a07be4&limit=1&order=created_at.desc&select=commit_id%2Cmessage%2Csummary%2Creview_status%2Cauthor_id%2Cauthor_label%2Cauthor_kind%2Cagent_name%2Ccreated_at",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "path": "/rest/v1/projects",
+    "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.rpg-zzu-life-full-p4-t12-rug-st-01a07be4",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "path": "/rest/v1/maps",
+    "query": "?project_id=eq.rpg-zzu-life-full-p4-t12-rug-st-01a07be4&select=map_id%2Cmap_json",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "path": "/rest/v1/project_commits",
+    "query": "?project_id=eq.rpg-zzu-life-full-p4-t12-rug-st-01a07be4&limit=1&order=created_at.desc&select=commit_id%2Cmessage%2Csummary%2Creview_status%2Cauthor_id%2Cauthor_label%2Cauthor_kind%2Cagent_name%2Ccreated_at",
+    "status": 200
+  }
+]

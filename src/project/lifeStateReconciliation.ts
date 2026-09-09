@@ -1,6 +1,7 @@
 import type { PlaySession } from "./session";
 import type { Project } from "./types";
-import { isLifeRecoveryJson, isLifeRecoveryState, moveLifeRecoverySource, type LifeRecoverySource } from "./lifeRecovery";
+import { reconcileLinkedAnimalHousing } from "./animalHousing";
+import { isDecorationRecoveryItem, isLifeRecoveryJson, isLifeRecoveryState, isSpatialPaymentReceipt, moveLifeRecoverySource, type LifeRecoverySource } from "./lifeRecovery";
 import { absoluteGameMinutes } from "./makers";
 import { resolveTimeSystem } from "./gameTime";
 import { resolveSellPrice } from "./upgrades";
@@ -81,16 +82,27 @@ export function parseLifeState(raw: Partial<Record<LifeSourceKind | "lifeRecover
           break;
         }
         case "farmAnimals": {
+          if (isRecord(original) && original.housingPlacementId !== undefined
+            && (typeof original.housingPlacementId !== "string" || !original.housingPlacementId.trim()
+              || original.housingPlacementId !== original.housingPlacementId.trim() || original.buildingId !== undefined)) {
+            throw new LifeReconciliationError(field, id, "invalid-housing-reference");
+          }
           const parsed = parseFarmAnimalStateRecord({ [id]: original })?.[id];
           if (parsed && isRecord(original)) { result.farmAnimals = { ...result.farmAnimals, [id]: { ...structuredClone(original), ...parsed } }; accepted = true; }
           break;
         }
         case "farmBuildingPlacements": {
+          if (isRecord(original) && original.paymentReceipt !== undefined && !isSpatialPaymentReceipt(original.paymentReceipt)) {
+            throw new LifeReconciliationError(field, id, "invalid-payment-receipt");
+          }
           const parsed = parseFarmBuildingPlacementRecord({ [id]: original })?.[id];
           if (parsed && isRecord(original)) { result.farmBuildingPlacements = { ...result.farmBuildingPlacements, [id]: { ...structuredClone(original), ...parsed } }; accepted = true; }
           break;
         }
         case "homeDecorationPlacements": {
+          if (isRecord(original) && original.recoveryItem !== undefined && !isDecorationRecoveryItem(original.recoveryItem)) {
+            throw new LifeReconciliationError(field, id, "invalid-recovery-item");
+          }
           const parsed = parseHomeDecorationPlacementRecord({ [id]: original })?.[id];
           if (parsed && isRecord(original)) { result.homeDecorationPlacements = { ...result.homeDecorationPlacements, [id]: { ...structuredClone(original), ...parsed } }; accepted = true; }
           break;
@@ -114,10 +126,10 @@ export function reconcileLifeState(project: Project, input: PlaySession): PlaySe
   const spatial = restoreSpatialPlacementRecords(project, draft, draft);
   for (const sourceKind of ["farmBuildingPlacements", "homeDecorationPlacements"] as const) {
     for (const sourceId of Object.keys(draft[sourceKind] ?? {})) {
-      if (!Object.hasOwn(spatial[sourceKind] ?? {}, sourceId)) move({ sourceKind, sourceId, reason: "incompatible-placement", unresolvedOnly: true });
+      if (!Object.hasOwn(spatial[sourceKind] ?? {}, sourceId)) move({ sourceKind, sourceId, reason: "incompatible-placement" });
     }
   }
-  // Linked housing is derived here when introduced; no optional housing fields are invented now.
+  // Spatial recovery removes invalid placements before the only linked-home derivation.
   const species = new Set((project.database.farmAnimalSpecies ?? []).map((entry) => entry.id));
   for (const [sourceId, animal] of Object.entries(draft.farmAnimals ?? {})) {
     if (!species.has(animal.speciesId)) move({ sourceKind: "farmAnimals", sourceId, reason: "removed-species", unresolvedOnly: true });
@@ -126,7 +138,7 @@ export function reconcileLifeState(project: Project, input: PlaySession): PlaySe
   for (const sourceId of Object.keys(draft.farmAnimals ?? {})) {
     if (!Object.hasOwn(animals ?? {}, sourceId)) move({ sourceKind: "farmAnimals", sourceId, reason: "animal-runtime-limit", unresolvedOnly: true });
   }
-  draft.farmAnimals = animals;
+  draft.farmAnimals = reconcileLinkedAnimalHousing(project, draft, animals);
   const known = new Set(project.database.items.map((item) => item.id));
   for (const sourceId of Object.keys(draft.shippingQueue ?? {})) {
     if (project.system.shipping?.enabled !== true || !known.has(sourceId) || resolveSellPrice(project, sourceId) === undefined

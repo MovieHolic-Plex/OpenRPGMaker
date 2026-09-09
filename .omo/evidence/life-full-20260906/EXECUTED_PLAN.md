@@ -278,6 +278,38 @@ Phase는 순차, phase 내부는 아래 matrix가 허용하는 작업만 병렬.
   - Acceptance/QA: 신규 `npm test -- test/linkedAnimalHousing.test.ts`; happy 배치2개독립정원/upgrade2→5/이동ID유지, failure 충돌·비용·종거절전체불변, shrink/철거동물삭제0/정렬고정/이중ref거부. `E/11/{red,green,lifecycle}.json`.
   - Commit: Y | `feat(life): link animal housing to farm building instances`.
 
+- [x] 51. 유실된 실행 증거와 미커밋 수정본을 보존 복구한다
+  - Result: 아홉 수정본·binary diff와 복구 자료384개의 무결성을 직접 확인했다. 공개389경로 검증0, 비공개 원본30파일은 별도 보존한다. 원본 실행 발췌는 복구했지만 r2 전체 로그·상태 캡처는 미복구이며, 이 완료는 제품 승인이나 누락 원본 복구 주장이 아니다. 수정본 체크포인트 `2e847642`; r3 검증은 별도 실행한다.
+  - Scope: `spatial-rights` r2 작업자의 sparse 재설정으로 삭제된 ignored 증거와 남은 아홉 소스/테스트/위키 변경. 새 기능이나 원본 테스트 결과 생성이 아니다.
+  - Acceptance: 먼저 현재 변경과 신규 테스트를 별도 안전 경로에 바이트 일치로 보관한다. st_01a07964/972 및 독립967/982의 실제 세션/tool 원문·사본에서 복구 가능한 자료를 출처와 함께 보관하고, 복구 불가능·부분 자료는 그대로 구분한다. 누락 raw를 요약/재실행 결과로 원본인 척 채우지 않는다. `E/51/`에 복구 매핑·현재 수정 해시·명시한 증거 공백을 기록한다.
+  - 재실행 조건: 미커밋 원본 트리의 reset/read-tree/sparse 변경 금지. 새로운 검증 시도는 필요한 빌드 입력과 증거 경로를 먼저 보존 설정하고 이후 sparse 재설정을 하지 않는다. 보존된 수정본을 재사용하되 실제 새 baseline/RED/GREEN/공개 probe/build를 새 시도로 기록한다. 기존355 통과 주장은 검증 근거가 아니다.
+
+- [x] 47. 미지급 건물 금액 증빙을 수령 뒤에도 보존한다
+  - Tier: HEAVY. Astra 전담 비시각 복구 거래 수정. Task12 승인 전 선행 조건.
+  - Source: 통합 `b5c679ef`의 `placement-parent-astra/recovery-rights.mts` 실제 exit1. 지불 gold10+item1 건물 격리 후 item 수령이 미지급 gold10 원본까지 삭제하며 Save5 재개에서도 복구 기록이 없다.
+  - Work: 기존 claim 스키마와 골드 자동 환급 없음 정책을 유지하면서 미지급 증빙을 보존한다. 지급된 claim 제거·단조 sequence·원자성·분할 claim 상한·정상 무환급 철거를 유지한다. 분할 품목마다 미지급 권리를 재발행하지 않고, 옛 혼합 기록도 추정 지급/자의적 중복 제거 없이 보존한다.
+  - Acceptance/QA: 기존 정상 거래 characterization GREEN 후 양성 반례 RED-first. 수령·중복 재시도·Save5 writer/parser/apply·분할·capacity/sequence/재고 실패의 전체 상태와 원문 보존을 공개 API로 검증한다. 증거 `E/47-48/`, 독립 Astra 판정 필요. 기존 녹색 테스트로 보존 승인을 대체하지 않는다.
+
+- [x] 48. 장식의 실제 지불 품목 증빙을 동결해 복구한다
+  - Tier: HEAVY. Task47과 같은 복구 경로를 쓰므로 한 소유자가 직렬 수정한다.
+  - Source: `placement-parent-astra/recovery-rights-state.json`에서 실제 item1을 소비한 새 장식이 증빙 없는 여섯 배치 필드만 저장되고, 비호환 격리 뒤 payable items가 비어 있다.
+  - Work: 새 장식의 실제 지불/회수 품목 증빙을 런타임 배치와 Save5에 동결한다. 현재 정의 변경·삭제 후에도 입증 품목만 정확히 한 번 회수한다. 현재 공개 배치는 필수 placementItemId의 품목 한 개를 소비한다. 무료 배치 기능이나 시작 배치의 지불 증빙 규칙을 새로 만들지 않는다. 증빙 없는 시작/legacy 배치는 미해결 원본으로 보존하며 옛 비용을 현재 정의로 소급 추정하지 않는다. Project4/Save4→Save5 정책과 live context 비저장은 유지한다.
+  - Acceptance/QA: RED-first, 신규 유료·legacy/시작·품목 ID 누락 거절·정의/품목 변경·삭제·unknown 복구·상한 실패·정상 회수·중복 수령·반복 저장/재개를 실제 공개 API로 검증한다. H1/H2/무환급 철거/공간 안전 회귀도 보존한다. 증거 `E/47-48/`, 다른 Astra 문맥의 독립 판정 필요.
+
+- [x] 49. 배치 코어 제작 워크트리의 증거를 보관하고 정리한다
+  - Scope: `/home/main/z-project/rpg-zzu-life-full-placement-core`만. 디스크 여유2.0G에서 완료된 이 트리가327M를 점유한다. 활성47/48 트리는 건드리지 않는다.
+  - Acceptance: 추적 소스가 통합 head에 실제 보존됐는지 확인하고 미추적/ignored 증거를 바이트 해시로 기존 커밋 또는 신규 아카이브에 대응시킨다. 불명 파일·활성 사용자가 있으면 제거하지 않는다. 감독자가 보관 커밋과 경로 대응을 확인한 뒤 소유 트리만 제거하고 브랜치·공유 의존성·원격 상태를 보존한다. 제거·공간 회수 영수증은 `E/49-50/`.
+
+- [x] 50. 배치 코어 독립 검증 워크트리의 증거를 보관하고 정리한다
+  - Scope: `/home/main/z-project/rpg-zzu-life-full-placement-core-verify`만. 완료된 독립 검증의327M 체크아웃이며 새 `spatial-rights-verify-r2`와 다르다.
+  - Acceptance: 원본 VERIFY·성공/실패·공개 상태/저장 증거를 손실 없이 커밋 가능한 경로에 보관하고 해시·재독해 경로를 확인한다. 필요한 증거가 미보관이면 삭제하지 않는다. 감독자 보관 확인 후 이 소유 트리만 해제·제거하고 기존 결과를 새 코드 승인으로 재분류하지 않는다. `E/49-50/`에 실제 정리를 기록한다.
+
+- [ ] 52. 저작한 플레이어 몸과 통행 설정의 정규화 손실을 고친다
+  - Tier: HEAVY. Astra 전담 기존 Project4 직렬화/파싱 경계 수정. `resolvePlayerBody`의 저작된 system.playerFootprint/playerPassRows 계약과 달리 `databaseRecordModel.ts:normalizeSystemRecords` 화이트리스트가 두 필드를 누락한다. Task12 r2 원격 재로드에서 null, 실제 플레이1x1로 관측됐다.
+  - Work: 기존 정규화 권한을 재사용해 명시된 몸/통행 설정을 보존한다. 미설정 optional은 생성하지 않고 유효/비정규 값은 기존 몸·통행 해석과 일치시킨다. Project4/Save4→Save5와 세션 오버라이드 우선순위를 유지한다.
+  - Acceptance: 변경 전 정상 기본값 characterization, 실제 공개 Project serialize/parse 및 startSession/resolvePlayerBody 경계의 RED-first,3x3/passRows1 반복 왕복·legacy absence·정규화 안정성·오버라이드/저장 회귀 검증과 별도 Astra 판정. UI 소스는 고정한다. 이 수정과 Task12는 같은 검증된 통합 증분으로 최종 CLI/문서/커밋하며, 중간 uncommitted 인계는 명시한다.
+  - Boundary: `ProjectSession`에 authored farmPlots 계약은 없다. startSession의 빈 밭 초기화는 바꾸지 않는다. G의 native 밭 입력은 실제 경작 또는 명시한 유효 Save 입력을 사용한다. 증거 `E/52/`.
+
 - [ ] 12. live 배치 안전과 저장 복원 점유를 분리한다
   - Recommended task executor category: deep — 같은 점유 함수의 거래·복원·스폰 소비자 구별.
   - Scope/References: `spatialOccupancy.ts:28-88`, `spatialPlacementTransactions.ts`, `spatialPlacementRestore.ts`, `lifeLedger.ts:135-230`, `playerStatusMenuController.ts`, live event/body 해석 모듈, `seasonalForage.ts`.

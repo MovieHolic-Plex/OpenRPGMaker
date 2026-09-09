@@ -1,0 +1,1 @@
+node scripts/run-vitest.mjs run --configLoader runner --cache=false --maxWorkers=2 --minWorkers=1 test/lifePlacementSceneUi.test.ts test/lifePlacementRenderedBodyReplay.test.ts test/p2SpatialPlayIntegration.test.ts test/p2SpatialRuntimeUi.test.ts test/playerStatusMenu.test.ts test/playerOpenSaveMenu.test.ts test/lifeFieldInteraction.test.ts

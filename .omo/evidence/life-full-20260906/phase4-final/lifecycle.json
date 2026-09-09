@@ -1,0 +1,234 @@
+{
+  "passed": true,
+  "completeFiles": 2,
+  "cases": 12,
+  "pendingAtTeardown": 0,
+  "matrix": [
+    {
+      "file": "test/databaseOverviewTab.test.ts",
+      "fullName": "database overview tab shell summarizes the authored game across world, story, cast, systems, and readiness",
+      "setupMs": 2.885830000000169,
+      "bodyMs": 12433.045371,
+      "imports": [
+        {
+          "phase": "BODY",
+          "moduleId": "/src/project/store.ts",
+          "durationMs": 1174.102894
+        },
+        {
+          "phase": "BODY",
+          "moduleId": "/src/editor/panels/database.ts",
+          "durationMs": 11091.254859
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "file": "test/databaseOverviewTab.test.ts",
+      "fullName": "database overview tab shell renders stat chips for all 9 collections with counts from the project data",
+      "setupMs": 2.6236340000014025,
+      "bodyMs": 1278.6262399999996,
+      "imports": [
+        {
+          "phase": "BODY",
+          "moduleId": "/src/project/store.ts",
+          "durationMs": 329.0502029999989
+        },
+        {
+          "phase": "BODY",
+          "moduleId": "/src/editor/panels/database.ts",
+          "durationMs": 800.3180719999982
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "file": "test/databaseOverviewTab.test.ts",
+      "fullName": "database overview tab shell empty project renders chips with 0 counts without crashing",
+      "setupMs": 1.9147789999988163,
+      "bodyMs": 1123.8354389999986,
+      "imports": [
+        {
+          "phase": "BODY",
+          "moduleId": "/src/project/store.ts",
+          "durationMs": 306.8425419999985
+        },
+        {
+          "phase": "BODY",
+          "moduleId": "/src/editor/panels/database.ts",
+          "durationMs": 734.4460360000012
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "file": "test/databaseOverviewTab.test.ts",
+      "fullName": "database overview tab shell default open tab after modal open is the stored last tab, NOT overview unless stored",
+      "setupMs": 1.6586239999996906,
+      "bodyMs": 1284.3307660000028,
+      "imports": [
+        {
+          "phase": "BODY",
+          "moduleId": "/src/project/store.ts",
+          "durationMs": 363.9549650000008
+        },
+        {
+          "phase": "BODY",
+          "moduleId": "/src/editor/panels/database.ts",
+          "durationMs": 785.0442340000009
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "file": "test/databaseOverviewTab.test.ts",
+      "fullName": "database overview tab shell persists across hard reload: stored 'overview' lands on the overview tab",
+      "setupMs": 1.7827760000000126,
+      "bodyMs": 1134.6657109999978,
+      "imports": [
+        {
+          "phase": "BODY",
+          "moduleId": "/src/project/store.ts",
+          "durationMs": 327.22471399999995
+        },
+        {
+          "phase": "BODY",
+          "moduleId": "/src/editor/panels/database.ts",
+          "durationMs": 721.6795889999994
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "file": "test/databaseOverviewTab.test.ts",
+      "fullName": "database overview tab shell setDatabaseActiveTab('overview') + renderDatabasePanel renders the overview tab",
+      "setupMs": 1.3678279999985534,
+      "bodyMs": 1036.465064,
+      "imports": [
+        {
+          "phase": "BODY",
+          "moduleId": "/src/project/store.ts",
+          "durationMs": 282.18466900000203
+        },
+        {
+          "phase": "BODY",
+          "moduleId": "/src/editor/panels/database.ts",
+          "durationMs": 651.9645139999993
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "file": "test/databaseOverviewTab.test.ts",
+      "fullName": "database overview tab shell stat chips are buttons that switch to the matching tab (G006)",
+      "setupMs": 1141.8638580000006,
+      "bodyMs": 24.95452700000169,
+      "imports": [
+        {
+          "phase": "SETUP",
+          "moduleId": "/src/project/store.ts",
+          "durationMs": 323.6829190000026
+        },
+        {
+          "phase": "SETUP",
+          "moduleId": "/src/editor/panels/database.ts",
+          "durationMs": 707.8118000000031
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "file": "test/databaseOverviewTab.test.ts",
+      "fullName": "database overview tab shell databaseTabLabel resolves the overview label for the AI footer",
+      "setupMs": 1.4066100000018196,
+      "bodyMs": 1232.934655000001,
+      "imports": [
+        {
+          "phase": "BODY",
+          "moduleId": "/src/project/store.ts",
+          "durationMs": 318.23436500000025
+        },
+        {
+          "phase": "BODY",
+          "moduleId": "/src/editor/panels/database.ts",
+          "durationMs": 832.2315699999999
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "file": "test/databaseViewToggle.test.ts",
+      "fullName": "database per-collection view mode session defaults: every tab to list without stored state (gallery is opt-in)",
+      "setupMs": 133.67917299999954,
+      "bodyMs": 15.681166000000303,
+      "imports": [
+        {
+          "phase": "BODY",
+          "moduleId": "/src/editor/panels/databaseRecordViewSession.ts",
+          "durationMs": 13.492400000000089
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "file": "test/databaseViewToggle.test.ts",
+      "fullName": "database per-collection view mode session clicking db-view-toggle-gallery on items flips state to gallery and persists across re-render and localStorage re-read",
+      "setupMs": 11114.164262999999,
+      "bodyMs": 75.70688000000155,
+      "imports": [
+        {
+          "phase": "SETUP",
+          "moduleId": "/src/editor/panels/databaseRecordViews.ts",
+          "durationMs": 11029.965328
+        },
+        {
+          "phase": "SETUP",
+          "moduleId": "/src/editor/panels/databaseRecordViewSession.ts",
+          "durationMs": 0.061461000001145294
+        },
+        {
+          "phase": "BODY",
+          "moduleId": "/src/editor/panels/databaseRecordViewSession.ts",
+          "durationMs": 14.263075999999273
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "file": "test/databaseViewToggle.test.ts",
+      "fullName": "database per-collection view mode session toggle buttons exist with correct aria-pressed and active class",
+      "setupMs": 1208.2235689999998,
+      "bodyMs": 15.994721999999456,
+      "imports": [
+        {
+          "phase": "SETUP",
+          "moduleId": "/src/editor/panels/databaseRecordViews.ts",
+          "durationMs": 1124.7545889999983
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "file": "test/databaseViewToggle.test.ts",
+      "fullName": "database per-collection view mode session elements/terrain/utility tabs never render the view toggle",
+      "setupMs": 1153.6115969999992,
+      "bodyMs": 8.829272999999375,
+      "imports": [
+        {
+          "phase": "SETUP",
+          "moduleId": "/src/editor/panels/databaseUtilityViews.ts",
+          "durationMs": 355.4995009999984
+        },
+        {
+          "phase": "SETUP",
+          "moduleId": "/src/editor/panels/databaseUtilityRecordViews.ts",
+          "durationMs": 689.5408149999967
+        }
+      ],
+      "status": "passed"
+    }
+  ],
+  "kind": "bounded-projection-not-original",
+  "sourceCommit": "bae1f8624e9ec26f6e511a527d2bc3f1f96ba7a6",
+  "originalSha256": "160d6e7974700ed866c5f25abeb4e128d9b0c8e5866771ba8ec181289644fa2e"
+}

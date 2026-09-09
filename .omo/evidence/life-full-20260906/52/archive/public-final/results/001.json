@@ -1,0 +1,21 @@
+{
+  "archive_path": "archive/payload/producer/JOURNAL.md.gz",
+  "archive_sha256": "d7cbb0c3dfb44bfc86c849637b20bdd11c04fd0da670b89765e45f19dd8ad6a5",
+  "archive_bytes": 2371,
+  "original_sha256": "304f6b8ad4cdcf6cabfc5acd981621be2918ca07b65e5089b4aed8fb1ca811c6",
+  "original_bytes": 4771,
+  "record_path": "archive/records/001.json",
+  "integrity": "encoded and decoded hash/size match immutable record",
+  "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits",
+  "finding_reasons": [],
+  "inspection": {
+    "utf8": true,
+    "entire_utf8_text_marker_scan": true,
+    "structured_json": false,
+    "structured_nodes": 0,
+    "structured_strings": 0,
+    "opaque_asset_or_base64_strings_not_decoded": 0,
+    "notes": []
+  },
+  "limitation": "Automated bounded inspection does not establish absence of opaque/encoded secrets or unmarked sensitive prose. No embedded assets decoded or interpreted; no candidate values emitted."
+}

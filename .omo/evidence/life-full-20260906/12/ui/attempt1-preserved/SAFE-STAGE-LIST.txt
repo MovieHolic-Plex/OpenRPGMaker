@@ -1,0 +1,14 @@
+src/player/lifePlacementScene.ts
+src/player/lifeLedger.ts
+src/player/playerStatusMenuDetails.ts
+src/player/playerStatusMenu.ts
+src/player/playerStatusMenuController.ts
+src/player/playerStatusMenuTypes.ts
+src/player/playerStatusMenuDetailTypes.ts
+src/player/PlayScene.ts
+test/lifePlacementSceneUi.test.ts
+test/p2SpatialPlayIntegration.test.ts
+test/p2SpatialRuntimeUi.test.ts
+openwiki/runtime-sessions.md
+openwiki/runtime-project-schema.md
+openwiki/INDEX.md

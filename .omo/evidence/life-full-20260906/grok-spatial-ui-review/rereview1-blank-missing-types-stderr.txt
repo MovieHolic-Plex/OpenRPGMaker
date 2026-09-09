@@ -1,0 +1,15 @@
+/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok/.omo/evidence/life-full-20260906/grok-spatial-ui-review-rereview1-tmp/check-export-rereview1.mjs:41
+  if (!type) throw new Error("blank project missing homeDecorationTypes[0]");
+                   ^
+
+Error: blank project missing homeDecorationTypes[0]
+    at requireDecoration (/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok/.omo/evidence/life-full-20260906/grok-spatial-ui-review-rereview1-tmp/check-export-rereview1.mjs:41:20)
+    at decorationReferenced (/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok/.omo/evidence/life-full-20260906/grok-spatial-ui-review-rereview1-tmp/check-export-rereview1.mjs:53:16)
+    at /home/main/z-project/rpg-zzu-life-full-receipt-ui-grok/.omo/evidence/life-full-20260906/grok-spatial-ui-review-rereview1-tmp/check-export-rereview1.mjs:83:28
+    at ViteNodeRunner.runModule (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:397:4)
+    at ViteNodeRunner.directRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:375:3)
+    at ViteNodeRunner.cachedRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:189:11)
+    at ViteNodeRunner.executeFile (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:162:10)
+    at CAC.run (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/cli.mjs:102:28)
+
+Node.js v24.11.1

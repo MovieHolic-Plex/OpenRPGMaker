@@ -1,0 +1,4 @@
+{
+  "policy": "Path/hash/reason only; candidate values are never included. Referenced payloads remain private.",
+  "findings": []
+}

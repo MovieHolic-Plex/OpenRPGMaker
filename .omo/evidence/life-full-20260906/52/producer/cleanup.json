@@ -1,0 +1,20 @@
+{
+  "runtimeScratchRemoved": true,
+  "commandCleanupReceipts": [
+    "baseline.cleanup.json",
+    "diagnostics.cleanup.json",
+    "green.cleanup.json",
+    "public-probe.cleanup.json",
+    "red-contract.cleanup.json",
+    "red.cleanup.json",
+    "typecheck-app.cleanup.json"
+  ],
+  "probeLoaderClosed": true,
+  "httpListenerStarted": false,
+  "browserStarted": false,
+  "remoteWrites": false,
+  "evidenceRemoved": false,
+  "indexUnchanged": true,
+  "build": "not run; explicitly owned by later final combined Task12 CLI node",
+  "frozenUncommitted": true
+}

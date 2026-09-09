@@ -1,0 +1,8 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "argv": [
+    "git",
+    "show",
+    "HEAD:src/project/databaseRecordModel.ts"
+  ]
+}

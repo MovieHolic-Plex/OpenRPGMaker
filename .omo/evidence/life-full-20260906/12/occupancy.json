@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "task": 12,
+  "sourceCommit": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "independentVerdict": "ui/verify-r6/VERIFY.md",
+  "parentCommandRoot": "ui/parent-final-2c136343",
+  "contracts": [
+    {
+      "name": "persistent/live split, full-body targeting, moved-reader recheck and farming self-plot exemption",
+      "receipt": "core/SUMMARY.md",
+      "currentTest": "ui/parent-final-2c136343/native/safety.stdout"
+    },
+    {
+      "name": "six live UI mutation readers and rendered-body guard",
+      "receipt": "ui/parent-final-2c136343/native/ui.stdout"
+    },
+    {
+      "name": "building placement, upgrade, different-coordinate move, plot/edge refusals and actual rendered NPC overlap",
+      "receipt": "ui/parent-final-2c136343/native/general-replay/native-evidence.json"
+    },
+    {
+      "name": "decoration rotation and different-coordinate move; stationary last-exit refusal",
+      "receipt": "ui/parent-final-2c136343/native/arena-lastexit/native-evidence.json"
+    },
+    {
+      "name": "nonblocking rug passage and divergent live Load restoration",
+      "receipt": "ui/parent-final-2c136343/native/rug/native-evidence.json",
+      "passage": {
+        "left": 7,
+        "right": 9,
+        "top": 9,
+        "bottom": 9
+      },
+      "rugCells": [
+        {
+          "x": 7,
+          "y": 9
+        },
+        {
+          "x": 8,
+          "y": 9
+        }
+      ],
+      "divergent": {
+        "foot": {
+          "x": 8,
+          "y": 10
+        },
+        "rug": {
+          "x": 7,
+          "y": 11
+        }
+      },
+      "restored": {
+        "foot": {
+          "x": 8,
+          "y": 9
+        },
+        "rug": {
+          "x": 7,
+          "y": 9
+        }
+      }
+    },
+    {
+      "name": "new slot2 write rather than rereading slot1",
+      "slots": [
+        "ui/parent-final-2c136343/native/rug/raw-slot-standing-on-rug.json",
+        "ui/parent-final-2c136343/native/rug/raw-slot-after-load-slot2.json"
+      ],
+      "newWriteSignal": true,
+      "domainEquality": [
+        "foot",
+        "building owners",
+        "decoration owners",
+        "recovery rights",
+        "inventory",
+        "gold"
+      ]
+    }
+  ],
+  "remoteInputs": [
+    "rpg-zzu-life-full-p4-t12-ui-01a07b22",
+    "rpg-zzu-life-full-p4-t12-arena-st-01a07ba6",
+    "rpg-zzu-life-full-p4-t12-last-exit-st-01a07ba6",
+    "rpg-zzu-life-full-p4-t12-rug-st-01a07be4"
+  ],
+  "visualReview": "ui/verify-r6/png-read.json",
+  "historicalFalseRugLabelNotReused": true
+}

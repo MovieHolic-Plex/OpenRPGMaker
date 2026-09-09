@@ -1,0 +1,28 @@
+{
+  "candidateCount": 1976,
+  "task52ArchivePaths": 1152,
+  "task52PathBase": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52",
+  "explicitOwnedRoots": [
+    "producer-r3",
+    "producer-r4",
+    "producer-r5",
+    "fixtures-r4",
+    "fixtures-r5",
+    "build-r3",
+    "build-r4",
+    "build-r5",
+    "52/producer",
+    "52/verify",
+    "52/parent-check"
+  ],
+  "excluded": [
+    "__pycache__",
+    "Task52 redundant captures",
+    "unowned parent metadata",
+    "environment files",
+    "private reasoning"
+  ],
+  "boundedTokenScanFindings": [],
+  "initialPreparationError": "Allowed suffix set omitted existing .lock-exit; no file written or staged. Actual suffix inventory read and .lock-exit/.sha256 included.",
+  "limits": "Existing archive public clearances reused by exact byte equality; no universal privacy or image interpretation claim."
+}

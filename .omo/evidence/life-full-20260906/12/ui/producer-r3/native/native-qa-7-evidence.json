@@ -1,0 +1,150 @@
+{
+  "steps": [
+    {
+      "step": "server",
+      "at": "2026-09-07T09:52:33.157Z",
+      "url": "http://127.0.0.1:40175",
+      "port": 40175
+    },
+    {
+      "step": "browser",
+      "at": "2026-09-07T09:52:33.293Z",
+      "scratch": "/dev/shm/st_01a07b22"
+    },
+    {
+      "step": "goto",
+      "at": "2026-09-07T09:52:33.300Z",
+      "url": "http://127.0.0.1:40175/player.html"
+    },
+    {
+      "step": "title",
+      "at": "2026-09-07T09:52:35.594Z",
+      "url": "http://127.0.0.1:40175/player.html"
+    },
+    {
+      "step": "runtime",
+      "at": "2026-09-07T09:52:38.235Z",
+      "mapId": "map_blank_start",
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "gold": 500,
+      "farmPlots": {}
+    },
+    {
+      "step": "npc-interpolation",
+      "at": "2026-09-07T09:52:38.275Z",
+      "move": {
+        "fromX": 16,
+        "fromY": 5,
+        "toX": 16,
+        "toY": 6,
+        "dir": "down"
+      },
+      "sprite": {
+        "x": 264,
+        "y": 96
+      },
+      "fractional": false,
+      "eventLocations": null,
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "logical": {
+        "x": 16,
+        "y": 6,
+        "pageId": "walk",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 3,
+          "height": 3
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 15,
+          "right": 17,
+          "top": 4,
+          "bottom": 6
+        },
+        "passRect": {
+          "left": 15,
+          "right": 17,
+          "top": 6,
+          "bottom": 6
+        }
+      }
+    },
+    {
+      "step": "spaces",
+      "at": "2026-09-07T09:52:39.032Z",
+      "placeLabel": "Shed 배치map_blank_start (7, 9)",
+      "selected": "life-ledger-tab-shipping"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T09:52:39.321Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-shipping",
+      "to": "life-ledger-tab-bundles",
+      "want": "life-ledger-space-building-place-shed"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T09:52:39.350Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-bundles",
+      "to": "life-ledger-tab-skills",
+      "want": "life-ledger-space-building-place-shed"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T09:52:39.368Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-skills",
+      "to": "life-ledger-tab-makers",
+      "want": "life-ledger-space-building-place-shed"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T09:52:39.391Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-makers",
+      "to": "life-ledger-tab-animals",
+      "want": "life-ledger-space-building-place-shed"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T09:52:39.422Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-animals",
+      "to": "life-ledger-tab-spaces",
+      "want": "life-ledger-space-building-place-shed"
+    },
+    {
+      "step": "failed",
+      "at": "2026-09-07T09:52:47.449Z",
+      "error": "jsHandle.evaluate: Error: timeout selection change from life-ledger-tab-spaces\n    at eval (eval at evaluate (:303:30), <anonymous>:27:59)"
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "spaces-before-place",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/spaces-before-place-1024.png"
+    },
+    {
+      "name": "spaces-before-place",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/spaces-before-place-1440.png"
+    }
+  ],
+  "errors": [],
+  "pageErrors": [],
+  "requestFailures": [],
+  "scenarioErrors": [],
+  "uncaught": "jsHandle.evaluate: Error: timeout selection change from life-ledger-tab-spaces\n    at eval (eval at evaluate (:303:30), <anonymous>:27:59)\n    at Object.wait (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:173:30)\n    at stepToward (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:208:32)\n    at async ensureSelected (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:219:9)\n    at async activateByTestid (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:404:3)\n    at async file:///home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:731:21"
+}

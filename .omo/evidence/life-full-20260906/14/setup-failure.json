@@ -1,0 +1,5 @@
+{
+  "command": "npm test -- test/lifeAuthoringBounds.test.ts",
+  "exit": 1,
+  "head": "966f414c07729e7d9474c568cbaf19a94d2bc740"
+}

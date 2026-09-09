@@ -1,0 +1,47 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p4
+
+ ✓ test/p1FoundationSchema.test.ts (9 tests) 1947ms
+   ✓ P1 weather and farm-animal authored schema > keeps legacy projects byte-stable without optional P1 authored fields  392ms
+   ✓ P1 weather and farm-animal authored schema > rejects unknown weather kinds, unsafe numbers, duplicate ids, and oversized arrays  1029ms
+ ✓ test/characterFootprint.test.ts (33 tests) 22ms
+ ✓ test/p0ProjectSchema.test.ts (11 tests) 3238ms
+   ✓ P0 authored system records > keeps old projects free of newly invented optional fields and byte-stable  361ms
+   ✓ P0 authored system records > omits only the redundant text-only title seed on the first load  612ms
+   ✓ P0 authored system records > preserves authored text title graphics across repeated loads  360ms
+   ✓ P0 authored system records > preserves authored graphic title graphics across repeated loads  359ms
+   ✓ P0 authored system records > rejects duplicate P0 definition ids at the wire boundary and reference lint boundary  496ms
+ ✓ test/playerFootprint.test.ts (20 tests) 4993ms
+   ✓ 대각 통행 — canMoveFootprint 교체가 1x1 에서 항등이다 > 세 이웃 칸의 벽 조합 8가지 × 네 대각 모두에서 같은 걸음이 나온다  2853ms
+ ✓ test/lifeSaveVersion.test.ts (18 tests) 904ms
+ ✓ test/p2SpatialSchema.test.ts (3 tests) 1438ms
+   ✓ P2 spatial authored schema > round-trips independent building/decor definitions and instantiates keyed runtime placements  354ms
+   ✓ P2 spatial authored schema > rejects duplicate ids, unsafe footprints, non-contiguous levels, and unknown orientations  788ms
+ ✓ test/ioFootprintValidation.test.ts (15 tests) 3430ms
+   ✓ 로드 검증 — 몸 크기 > 1..8 경계는 받는다  347ms
+   ✓ 로드 검증 — 통행 행 > 1..몸 높이 경계는 받는다  330ms
+   ✓ 로드 검증 — 배율 > 0.25..8 경계는 받는다  365ms
+ ✓ test/playerBodyProjectPersistence.test.ts (22 tests) 7343ms
+   ✓ player body Project persistence > keeps legacy absent fields absent and Project4 bytes stable  657ms
+   ✓ player body Project persistence > starts the authored 3 x 3 / 1 body after public IO  720ms
+   ✓ player body Project persistence > starts the authored 2 x 5 / 2 body after public IO  649ms
+   ✓ player body Project persistence > starts the authored 8 x 8 / 7 body after public IO  573ms
+   ✓ player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":99,"height":99},"rows":99}  376ms
+   ✓ player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":-2,"height":3},"rows":0}  365ms
+   ✓ player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":2.5,"height":3},"rows":-1}  332ms
+   ✓ player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":"3","height":4},"rows":1.5}  387ms
+   ✓ player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"height":3},"rows":"1"}  364ms
+   ✓ player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":3,"height":3},"rows":null}  398ms
+   ✓ player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":3,"height":3},"rows":9007199254740992}  384ms
+   ✓ player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":null,"rows":2}  404ms
+   ✓ player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":[],"rows":1}  363ms
+   ✓ player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":"3x3","rows":1}  353ms
+   ✓ player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":3,"height":9007199254740992},"rows":2}  363ms
+ ✓ test/p2ProjectSchema.test.ts (4 tests) 931ms
+   ✓ P2 authored foundation schema > keeps legacy projects byte-stable without P2 fields  351ms
+
+ Test Files  9 passed (9)
+      Tests  135 passed (135)
+   Start at  17:36:09
+   Duration  24.12s (transform 6.41s, setup 0ms, collect 16.93s, tests 24.25s, environment 2ms, prepare 932ms)
+

@@ -1,0 +1,683 @@
+{
+  "steps": [
+    {
+      "step": "server",
+      "at": "2026-09-07T12:14:10.932Z",
+      "url": "http://127.0.0.1:46591",
+      "port": 46591,
+      "scratch": "/dev/shm/st_01a07bb6"
+    },
+    {
+      "step": "arena-fixture",
+      "at": "2026-09-07T12:14:10.974Z",
+      "sha256": "d8a44e6019cb015ca557bdedb551efd006975f1ba754bc2a3cd611b301b234f8",
+      "bytes": 2077014,
+      "path": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/fixtures-r4/arena.reloaded.json"
+    },
+    {
+      "step": "goto",
+      "at": "2026-09-07T12:14:11.344Z",
+      "url": "http://127.0.0.1:46591/player.html",
+      "profileName": "profile-arena",
+      "saveNamespace": "task12-ui-native-r4-arena"
+    },
+    {
+      "step": "arena-runtime",
+      "at": "2026-09-07T12:14:16.307Z",
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 8
+      },
+      "farmPlots": {},
+      "buildings": {}
+    },
+    {
+      "step": "not-moving",
+      "at": "2026-09-07T12:14:16.333Z",
+      "label": "arena-boot",
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 25,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 136,
+        "y": 144
+      },
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "running": false
+    },
+    {
+      "step": "open-spaces-start",
+      "at": "2026-09-07T12:14:16.476Z",
+      "debug": "{\"selectedCommand\":\"items\",\"mode\":\"main\"}",
+      "selected": [
+        "status-menu-command-items",
+        "status-menu-item-item_potion"
+      ],
+      "tabs": [],
+      "group": [],
+      "spaces": []
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:17.067Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-shipping",
+      "to": "life-ledger-tab-bundles",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:17.096Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-bundles",
+      "to": "life-ledger-tab-skills",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:17.134Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-skills",
+      "to": "life-ledger-tab-makers",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:17.179Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-makers",
+      "to": "life-ledger-tab-animals",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:17.216Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-animals",
+      "to": "life-ledger-tab-spaces",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "not-moving",
+      "at": "2026-09-07T12:14:17.268Z",
+      "label": "arena-before-place",
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 25,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 136,
+        "y": 144
+      },
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "running": false
+    },
+    {
+      "step": "arena-place-label",
+      "at": "2026-09-07T12:14:17.330Z",
+      "tableLabel": "Table 배치map_blank_start (7, 9)",
+      "selected": "life-ledger-space-building-place-shed",
+      "spaces": [
+        {
+          "testid": "life-ledger-space-building-place-shed",
+          "text": "Shed 배치map_blank_start (7, 9)",
+          "aria": "Shed 배치"
+        },
+        {
+          "testid": "life-ledger-space-decoration-place-table",
+          "text": "Table 배치map_blank_start (7, 9)",
+          "aria": "Table 배치"
+        }
+      ]
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:17.633Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-place-shed",
+      "to": "life-ledger-space-decoration-place-table",
+      "want": "life-ledger-space-decoration-place-table"
+    },
+    {
+      "step": "arena-place",
+      "at": "2026-09-07T12:14:17.711Z",
+      "placedMsg": {
+        "text": "Table을(를) 배치했습니다"
+      },
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      },
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "instanceId": "ledger:decoration:table:1",
+      "ownerAfterPlace": {
+        "text": "Table아래 · 2×1빈 맵 (7, 9) ",
+        "x": 7,
+        "y": 9,
+        "orientation": "down"
+      },
+      "spacesAfterPlace": [
+        {
+          "testid": "life-ledger-space-building-place-shed",
+          "text": "Shed 배치map_blank_start (7, 9)",
+          "aria": "Shed 배치"
+        },
+        {
+          "testid": "life-ledger-space-decoration-place-table",
+          "text": "Table 배치map_blank_start (7, 9)",
+          "aria": "Table 배치"
+        },
+        {
+          "testid": "life-ledger-space-decoration-ledger:decoration:table:1",
+          "text": "Table아래 · 2×1빈 맵 (7, 9)",
+          "aria": null
+        },
+        {
+          "testid": "life-ledger-space-decoration-move-ledger:decoration:table:1",
+          "text": "Table 이동map_blank_start (7, 9)",
+          "aria": "Table 이동"
+        },
+        {
+          "testid": "life-ledger-space-decoration-remove-ledger:decoration:table:1",
+          "text": "Table 치우기인벤토리로 회수",
+          "aria": "Table 치우기"
+        },
+        {
+          "testid": "life-ledger-space-decoration-rotate-ledger:decoration:table:1",
+          "text": "Table 회전왼쪽으로 돌리기",
+          "aria": "Table 회전"
+        }
+      ]
+    },
+    {
+      "step": "not-moving",
+      "at": "2026-09-07T12:14:17.931Z",
+      "label": "arena-before-rotate",
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 25,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 136,
+        "y": 144
+      },
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "running": false
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:17.965Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-place-table",
+      "to": "life-ledger-space-decoration-move-ledger:decoration:table:1",
+      "want": "life-ledger-space-decoration-rotate-ledger:decoration:table:1"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:17.996Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-move-ledger:decoration:table:1",
+      "to": "life-ledger-space-decoration-remove-ledger:decoration:table:1",
+      "want": "life-ledger-space-decoration-rotate-ledger:decoration:table:1"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:18.030Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-remove-ledger:decoration:table:1",
+      "to": "life-ledger-space-decoration-rotate-ledger:decoration:table:1",
+      "want": "life-ledger-space-decoration-rotate-ledger:decoration:table:1"
+    },
+    {
+      "step": "arena-rotate",
+      "at": "2026-09-07T12:14:18.099Z",
+      "rotateMsg": {
+        "text": "Table을(를) 회전했습니다"
+      },
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      },
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "ownerAfterRotate": {
+        "text": "Table왼쪽 · 1×2빈 맵 (7, 9) ",
+        "x": 7,
+        "y": 9,
+        "orientation": "left"
+      },
+      "spacesAfterRotate": [
+        {
+          "testid": "life-ledger-space-building-place-shed",
+          "text": "Shed 배치map_blank_start (7, 9)",
+          "aria": "Shed 배치"
+        },
+        {
+          "testid": "life-ledger-space-decoration-place-table",
+          "text": "Table 배치map_blank_start (7, 9)",
+          "aria": "Table 배치"
+        },
+        {
+          "testid": "life-ledger-space-decoration-ledger:decoration:table:1",
+          "text": "Table왼쪽 · 1×2빈 맵 (7, 9)",
+          "aria": null
+        },
+        {
+          "testid": "life-ledger-space-decoration-move-ledger:decoration:table:1",
+          "text": "Table 이동map_blank_start (7, 9)",
+          "aria": "Table 이동"
+        },
+        {
+          "testid": "life-ledger-space-decoration-remove-ledger:decoration:table:1",
+          "text": "Table 치우기인벤토리로 회수",
+          "aria": "Table 치우기"
+        },
+        {
+          "testid": "life-ledger-space-decoration-rotate-ledger:decoration:table:1",
+          "text": "Table 회전아래으로 돌리기",
+          "aria": "Table 회전"
+        }
+      ]
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T12:14:18.326Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T12:14:18.349Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T12:14:18.502Z",
+      "kind": "absent"
+    },
+    {
+      "step": "save-slot",
+      "at": "2026-09-07T12:14:18.723Z",
+      "ns": "task12-ui-native-r4-arena",
+      "filename": "raw-slot-arena-rotated.json",
+      "saveMsg": {
+        "text": "1번 저장 칸에 저장했습니다"
+      },
+      "key": "task12-ui-native-r4-arena:save-slot:v5:1",
+      "bytes": 3583,
+      "owners": {
+        "buildings": {},
+        "decorations": {
+          "ledger:decoration:table:1": {
+            "instanceId": "ledger:decoration:table:1",
+            "typeId": "table",
+            "mapId": "map_blank_start",
+            "x": 7,
+            "y": 9,
+            "orientation": "left",
+            "recoveryItem": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          }
+        },
+        "x": 8,
+        "y": 8,
+        "gold": 500,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 7
+        }
+      }
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T12:14:18.749Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"save\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"system-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T12:14:18.798Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"system-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"system-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T12:14:18.969Z",
+      "kind": "absent"
+    },
+    {
+      "step": "arena-left-step",
+      "at": "2026-09-07T12:14:19.146Z",
+      "from": {
+        "x": 8,
+        "y": 8
+      },
+      "to": {
+        "x": 7,
+        "y": 8
+      },
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      }
+    },
+    {
+      "step": "not-moving",
+      "at": "2026-09-07T12:14:19.161Z",
+      "label": "arena-after-left-step",
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 37,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 120,
+        "y": 144
+      },
+      "player": {
+        "x": 7,
+        "y": 8
+      },
+      "running": false
+    },
+    {
+      "step": "open-spaces-start",
+      "at": "2026-09-07T12:14:19.197Z",
+      "debug": "{\"selectedCommand\":\"system-menu\",\"mode\":\"main\"}",
+      "selected": [
+        "status-menu-command-system-menu",
+        "status-menu-group-command-save"
+      ],
+      "tabs": [],
+      "group": [
+        "status-menu-group-command-save",
+        "status-menu-group-command-load",
+        "status-menu-group-command-wait",
+        "status-menu-group-command-to-title"
+      ],
+      "spaces": []
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:19.388Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-rotate-ledger:decoration:table:1",
+      "to": "life-ledger-tab-shipping",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:19.430Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-shipping",
+      "to": "life-ledger-tab-bundles",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:19.462Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-bundles",
+      "to": "life-ledger-tab-skills",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:19.494Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-skills",
+      "to": "life-ledger-tab-makers",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:19.530Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-makers",
+      "to": "life-ledger-tab-animals",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:19.567Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-animals",
+      "to": "life-ledger-tab-spaces",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "not-moving",
+      "at": "2026-09-07T12:14:19.628Z",
+      "label": "arena-before-move",
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 37,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 120,
+        "y": 144
+      },
+      "player": {
+        "x": 7,
+        "y": 8
+      },
+      "running": false
+    },
+    {
+      "step": "arena-move-label",
+      "at": "2026-09-07T12:14:19.633Z",
+      "moveLabel": "Table 이동map_blank_start (5, 6)",
+      "selected": "life-ledger-space-building-place-shed"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:19.661Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-place-shed",
+      "to": "life-ledger-space-decoration-place-table",
+      "want": "life-ledger-space-decoration-move-ledger:decoration:table:1"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T12:14:19.705Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-place-table",
+      "to": "life-ledger-space-decoration-move-ledger:decoration:table:1",
+      "want": "life-ledger-space-decoration-move-ledger:decoration:table:1"
+    },
+    {
+      "step": "arena-move",
+      "at": "2026-09-07T12:14:19.810Z",
+      "moveMsg": {
+        "text": "Table을(를) 이동했습니다"
+      },
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      },
+      "player": {
+        "x": 7,
+        "y": 8
+      },
+      "ownerAfterMove": {
+        "text": "Table왼쪽 · 1×2빈 맵 (5, 6) ",
+        "x": 5,
+        "y": 6,
+        "orientation": "left"
+      },
+      "spacesAfterMove": [
+        {
+          "testid": "life-ledger-space-building-place-shed",
+          "text": "Shed 배치map_blank_start (5, 6)",
+          "aria": "Shed 배치"
+        },
+        {
+          "testid": "life-ledger-space-decoration-place-table",
+          "text": "Table 배치map_blank_start (4, 6)",
+          "aria": "Table 배치"
+        },
+        {
+          "testid": "life-ledger-space-decoration-ledger:decoration:table:1",
+          "text": "Table왼쪽 · 1×2빈 맵 (5, 6)",
+          "aria": null
+        },
+        {
+          "testid": "life-ledger-space-decoration-move-ledger:decoration:table:1",
+          "text": "Table 이동map_blank_start (5, 6)",
+          "aria": "Table 이동"
+        },
+        {
+          "testid": "life-ledger-space-decoration-remove-ledger:decoration:table:1",
+          "text": "Table 치우기인벤토리로 회수",
+          "aria": "Table 치우기"
+        },
+        {
+          "testid": "life-ledger-space-decoration-rotate-ledger:decoration:table:1",
+          "text": "Table 회전아래으로 돌리기",
+          "aria": "Table 회전"
+        }
+      ]
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T12:14:20.126Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T12:14:20.150Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T12:14:20.335Z",
+      "kind": "absent"
+    },
+    {
+      "step": "save-slot",
+      "at": "2026-09-07T12:14:20.506Z",
+      "ns": "task12-ui-native-r4-arena",
+      "filename": "raw-slot-arena-moved.json",
+      "saveMsg": {
+        "text": "1번 저장 칸을 덮어쓰려면 다시 선택하세요"
+      },
+      "key": "task12-ui-native-r4-arena:save-slot:v5:1",
+      "bytes": 3583,
+      "owners": {
+        "buildings": {},
+        "decorations": {
+          "ledger:decoration:table:1": {
+            "instanceId": "ledger:decoration:table:1",
+            "typeId": "table",
+            "mapId": "map_blank_start",
+            "x": 7,
+            "y": 9,
+            "orientation": "left",
+            "recoveryItem": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          }
+        },
+        "x": 8,
+        "y": 8,
+        "gold": 500,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 7
+        }
+      }
+    },
+    {
+      "step": "failed",
+      "at": "2026-09-07T12:14:20.506Z",
+      "error": "moved slot owner {\"instanceId\":\"ledger:decoration:table:1\",\"typeId\":\"table\",\"mapId\":\"map_blank_start\",\"x\":7,\"y\":9,\"orientation\":\"left\",\"recoveryItem\":{\"itemId\":\"item_potion\",\"count\":1}}"
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "arena-before-place",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-before-place-1024.png"
+    },
+    {
+      "name": "arena-before-place",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-before-place-1440.png"
+    },
+    {
+      "name": "arena-after-place",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-after-place-1024.png"
+    },
+    {
+      "name": "arena-after-place",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-after-place-1440.png"
+    },
+    {
+      "name": "arena-after-rotate",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-after-rotate-1024.png"
+    },
+    {
+      "name": "arena-after-rotate",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-after-rotate-1440.png"
+    },
+    {
+      "name": "arena-after-move",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-after-move-1024.png"
+    },
+    {
+      "name": "arena-after-move",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r4/native/arena-after-move-1440.png"
+    }
+  ],
+  "errors": [],
+  "pageErrors": [],
+  "requestFailures": [],
+  "sessions": {},
+  "uncaught": "Error: moved slot owner {\"instanceId\":\"ledger:decoration:table:1\",\"typeId\":\"table\",\"mapId\":\"map_blank_start\",\"x\":7,\"y\":9,\"orientation\":\"left\",\"recoveryItem\":{\"itemId\":\"item_potion\",\"count\":1}}\n    at runArena (file:///home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r4/native/native-qa.mjs:729:11)\n    at async file:///home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r4/native/native-qa.mjs:853:3"
+}

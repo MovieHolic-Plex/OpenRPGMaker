@@ -1,0 +1,44 @@
+{
+  "task": "st_01a07843",
+  "phase": "initial Phase4 independent verification",
+  "lane": 14,
+  "verdict": "confirmed",
+  "producerHead": "e486e536954d69c59c7bcc82602646cc6712c445",
+  "sourceTree": "7a6a7b107ab05b34991440eccb559db3e1a81969",
+  "allSourceHashes": "identity.json",
+  "sourceManifestSha256": "f48d2551b2f42a2498a23b43d12ba35f2e4d554523ce1991439053a6d293e2b3",
+  "required": {
+    "exit": 0,
+    "passed": 14,
+    "runs": 1
+  },
+  "related": {
+    "exit": 0,
+    "files": 9,
+    "passed": 103,
+    "runs": 1
+  },
+  "typecheckExit": 0,
+  "diagnosticsExit": 0,
+  "nativeExits": {
+    "native-editor.json": 0,
+    "native-player.json": 0
+  },
+  "mandatoryProductFindings": [],
+  "retainedFailures": [
+    "wiki-index-check.json: producer-disclosed stale INDEX exit1",
+    "editor-state.json:10 optional loopback bridge requests failed NS_ERROR_DOM_BAD_URI"
+  ],
+  "wholeRepositoryGateRerun": false,
+  "buildRerun": false,
+  "inheritedPhase3LimitsRetained": true,
+  "visualApproval": false,
+  "task34Approval": false,
+  "overallCompletion": false,
+  "sourceOrTestEdits": 0,
+  "commits": 0,
+  "remoteContentWrites": 0,
+  "cleanup": "cleanup.json",
+  "verdictPath": "/home/main/z-project/rpg-zzu-life-full-p4-bounds-verify/.omo/evidence/life-full-20260906/phase4-initial-verification/VERIFY.md",
+  "gitignoredEvidenceNeedsExplicitArchival": true
+}

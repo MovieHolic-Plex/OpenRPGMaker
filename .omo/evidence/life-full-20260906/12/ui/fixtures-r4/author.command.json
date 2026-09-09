@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "600s",
+    "node",
+    "node_modules/vite-node/vite-node.mjs",
+    "--script",
+    ".omo/evidence/life-full-20260906/12/ui/fixtures-r4/fixture.mts",
+    "--",
+    "author"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "environment": {
+    "TMPDIR": "/dev/shm/st_01a07ba6",
+    "XDG_CACHE_HOME": "/dev/shm/st_01a07ba6/xdg",
+    "VITE_CACHE_DIR": "/dev/shm/st_01a07ba6/vite"
+  },
+  "started": 1788781351.7458112,
+  "exit": 0,
+  "finished": 1788781365.8890684,
+  "stdoutSha256": "5980e22f096b5a9a106b2d3c68294761ce17ff69e44d3f10ab077a6b66d02ea9",
+  "stderrSha256": "a59fad9430b7e8b04c98c88280a4c1e9dc6fce8c2d9f4fb799670f6217e5b742"
+}

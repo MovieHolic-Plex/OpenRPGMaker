@@ -1,0 +1,9 @@
+{"path":"src/editor/panels/databaseCharacterView.ts","diagnostics":[]}
+{"path":"src/editor/panels/databaseCropView.ts","diagnostics":[]}
+{"path":"src/editor/panels/databaseDailyWeatherView.ts","diagnostics":[]}
+{"path":"src/editor/panels/databaseLifeCraftingView.ts","diagnostics":[]}
+{"path":"src/player/playSceneGift.ts","diagnostics":[]}
+{"path":"src/player/playSceneInterpreter.ts","diagnostics":[]}
+{"path":"src/project/characterProfiles.ts","diagnostics":[]}
+{"path":"src/project/dailyWeather.ts","diagnostics":[]}
+{"path":"test/lifeAuthoringBounds.test.ts","diagnostics":[{"code":2741,"start":6823,"message":"Property 'harvestCount' is missing in type '{ graphicStages?: { frame: number; label: string; }[] | undefined; id: string; name: string; seedItemId: string; harvestItemId: string; seasons: \"spring\"[]; stages: { days: number; }[]; }' but required in type 'CropRecord'."}]}

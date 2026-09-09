@@ -1,0 +1,15 @@
+{
+  "recordedBeforeRun": true,
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok",
+  "url": "http://127.0.0.1:39931/player.html",
+  "port": 39931,
+  "command": [
+    "flock", "--timeout", "900", "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout", "--signal=TERM", "--kill-after=15s", "360s",
+    "env",
+    "TMPDIR=/dev/shm/st_01a078c5-receipt-ui-grok/tmp",
+    "VITE_CACHE_DIR=/dev/shm/st_01a078c5-receipt-ui-grok/vite",
+    "node",
+    ".omo/evidence/life-full-20260906/model-routing/grok-ui-diagnosis/diagnose.mjs"
+  ]
+}

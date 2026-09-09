@@ -1,0 +1,23 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "360s",
+    "env",
+    "TMPDIR=/dev/shm/st_01a0786a-receipt-qa/tmp",
+    "node",
+    ".omo/evidence/life-full-20260906/11/receipt-correction/public-player-final.mjs"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-housing-receipts",
+  "head": "b8f7b00e38c4d18badb2d8ea5211d03daf6384f0",
+  "sourceHash": "f7fb8f6793aa1350bccae6f78b71aad79f14cd8bb4c642568a4add71db95f86d",
+  "exit": 1,
+  "signal": null,
+  "stdout": "",
+  "stderr": "node:internal/modules/run_main:107\n    triggerUncaughtException(\n    ^\n\npage.evaluate: unsafe receipt apply accepted\ncheck@debugger eval code line 303 > eval:7:50\n@debugger eval code line 303 > eval:56:12\nasync*evaluate@debugger eval code:305:16\n@debugger eval code:1:44\n@debugger eval code:1:62\n\n    at /home/main/z-project/rpg-zzu-life-full-housing-receipts/.omo/evidence/life-full-20260906/11/receipt-correction/public-player-final.mjs:202:39 {\n  log: [],\n  name: 'Error'\n}\n\nNode.js v24.11.1\n"
+}

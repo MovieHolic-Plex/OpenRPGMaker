@@ -1,0 +1,2662 @@
+{
+  "steps": [
+    {
+      "step": "server",
+      "at": "2026-09-07T10:09:27.417Z",
+      "url": "http://127.0.0.1:36627",
+      "port": 36627
+    },
+    {
+      "step": "browser",
+      "at": "2026-09-07T10:09:27.549Z",
+      "scratch": "/dev/shm/st_01a07b22"
+    },
+    {
+      "step": "goto",
+      "at": "2026-09-07T10:09:27.555Z",
+      "url": "http://127.0.0.1:36627/player.html"
+    },
+    {
+      "step": "title",
+      "at": "2026-09-07T10:09:29.548Z",
+      "url": "http://127.0.0.1:36627/player.html"
+    },
+    {
+      "step": "runtime",
+      "at": "2026-09-07T10:09:31.706Z",
+      "mapId": "map_blank_start",
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "gold": 500,
+      "farmPlots": {}
+    },
+    {
+      "step": "npc-interpolation",
+      "at": "2026-09-07T10:09:31.743Z",
+      "move": {
+        "fromX": 16,
+        "fromY": 5,
+        "toX": 16,
+        "toY": 6,
+        "dir": "down"
+      },
+      "sprite": {
+        "x": 264,
+        "y": 96
+      },
+      "fractional": false,
+      "eventLocations": null,
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "logical": {
+        "x": 16,
+        "y": 6,
+        "pageId": "walk",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 3,
+          "height": 3
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 15,
+          "right": 17,
+          "top": 4,
+          "bottom": 6
+        },
+        "passRect": {
+          "left": 15,
+          "right": 17,
+          "top": 6,
+          "bottom": 6
+        }
+      }
+    },
+    {
+      "step": "open-spaces-start",
+      "at": "2026-09-07T10:09:31.849Z",
+      "debug": "{\"selectedCommand\":\"items\",\"mode\":\"main\"}",
+      "selected": [
+        "status-menu-command-items",
+        "status-menu-item-item_potion"
+      ],
+      "tabs": [],
+      "group": []
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:32.215Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-shipping",
+      "to": "life-ledger-tab-bundles",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:32.240Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-bundles",
+      "to": "life-ledger-tab-skills",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:32.259Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-skills",
+      "to": "life-ledger-tab-makers",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:32.280Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-makers",
+      "to": "life-ledger-tab-animals",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:32.311Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-animals",
+      "to": "life-ledger-tab-spaces",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "spaces",
+      "at": "2026-09-07T10:09:32.382Z",
+      "placeLabel": "Shed 배치map_blank_start (7, 9)",
+      "selected": "life-ledger-space-building-place-shed"
+    },
+    {
+      "step": "place-building",
+      "at": "2026-09-07T10:09:32.732Z",
+      "placedMsg": {
+        "text": "Shed을(를) 배치했습니다"
+      },
+      "placed": {
+        "id": "ledger:building:shed:1",
+        "instanceId": "ledger:building:shed:1",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 7,
+        "y": 9,
+        "orientation": "down",
+        "level": 1,
+        "paymentReceipt": {
+          "gold": 10,
+          "items": []
+        }
+      },
+      "gold": 490,
+      "player": {
+        "x": 8,
+        "y": 8
+      }
+    },
+    {
+      "step": "overlap-refuse",
+      "at": "2026-09-07T10:09:32.883Z",
+      "overlapMsg": {
+        "text": "처리할 수 없습니다: blocked"
+      },
+      "gold": 490,
+      "count": 1
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:32.908Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-place-shed",
+      "to": "life-ledger-space-building-move-ledger:building:shed:1",
+      "want": "life-ledger-space-building-upgrade-ledger:building:shed:1"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:32.928Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-move-ledger:building:shed:1",
+      "to": "life-ledger-space-building-remove-ledger:building:shed:1",
+      "want": "life-ledger-space-building-upgrade-ledger:building:shed:1"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:32.961Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-remove-ledger:building:shed:1",
+      "to": "life-ledger-space-building-upgrade-ledger:building:shed:1",
+      "want": "life-ledger-space-building-upgrade-ledger:building:shed:1"
+    },
+    {
+      "step": "upgrade",
+      "at": "2026-09-07T10:09:33.011Z",
+      "upgradeMsg": {
+        "text": "Shed을(를) 업그레이드했습니다"
+      },
+      "gold": 470,
+      "placement": {
+        "instanceId": "ledger:building:shed:1",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 7,
+        "y": 9,
+        "orientation": "down",
+        "level": 2,
+        "paymentReceipt": {
+          "gold": 30,
+          "items": []
+        }
+      }
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:33.030Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:33.060Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:33.234Z",
+      "kind": "absent"
+    },
+    {
+      "step": "menu-closed-idle",
+      "at": "2026-09-07T10:09:33.250Z",
+      "player": {
+        "x": 8,
+        "y": 8
+      }
+    },
+    {
+      "step": "walk-right-before-move",
+      "at": "2026-09-07T10:09:33.430Z",
+      "from": {
+        "x": 8,
+        "y": 8
+      },
+      "to": {
+        "x": 9,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "open-spaces-start",
+      "at": "2026-09-07T10:09:33.465Z",
+      "debug": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}",
+      "selected": [
+        "status-menu-command-record-menu",
+        "status-menu-group-command-life-ledger"
+      ],
+      "tabs": [],
+      "group": [
+        "status-menu-group-command-quests",
+        "status-menu-group-command-life-ledger"
+      ]
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:33.640Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-place-rug",
+      "to": "life-ledger-space-decoration-place-table",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:33.664Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-place-table",
+      "to": "life-ledger-tab-shipping",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:33.695Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-shipping",
+      "to": "life-ledger-tab-bundles",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:33.727Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-bundles",
+      "to": "life-ledger-tab-skills",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:33.745Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-skills",
+      "to": "life-ledger-tab-makers",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:33.764Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-makers",
+      "to": "life-ledger-tab-animals",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:33.792Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-animals",
+      "to": "life-ledger-tab-spaces",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:33.828Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-place-shed",
+      "to": "life-ledger-space-building-move-ledger:building:shed:1",
+      "want": "life-ledger-space-building-move-ledger:building:shed:1"
+    },
+    {
+      "step": "move-building",
+      "at": "2026-09-07T10:09:33.879Z",
+      "moveMsg": {
+        "text": "Shed을(를) 이동했습니다"
+      },
+      "placement": {
+        "instanceId": "ledger:building:shed:1",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 11,
+        "y": 6,
+        "orientation": "down",
+        "level": 2,
+        "paymentReceipt": {
+          "gold": 30,
+          "items": []
+        }
+      },
+      "player": {
+        "x": 9,
+        "y": 8
+      }
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:33.900Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:33.927Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:34.101Z",
+      "kind": "absent"
+    },
+    {
+      "step": "menu-closed-idle",
+      "at": "2026-09-07T10:09:34.113Z",
+      "player": {
+        "x": 9,
+        "y": 8
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:34.295Z",
+      "want": {
+        "x": 4,
+        "y": 4
+      },
+      "from": {
+        "x": 9,
+        "y": 8
+      },
+      "to": {
+        "x": 8,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:34.476Z",
+      "want": {
+        "x": 4,
+        "y": 4
+      },
+      "from": {
+        "x": 8,
+        "y": 8
+      },
+      "to": {
+        "x": 7,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:34.660Z",
+      "want": {
+        "x": 4,
+        "y": 4
+      },
+      "from": {
+        "x": 7,
+        "y": 8
+      },
+      "to": {
+        "x": 6,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:34.845Z",
+      "want": {
+        "x": 4,
+        "y": 4
+      },
+      "from": {
+        "x": 6,
+        "y": 8
+      },
+      "to": {
+        "x": 5,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:35.029Z",
+      "want": {
+        "x": 4,
+        "y": 4
+      },
+      "from": {
+        "x": 5,
+        "y": 8
+      },
+      "to": {
+        "x": 4,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:35.210Z",
+      "want": {
+        "x": 4,
+        "y": 4
+      },
+      "from": {
+        "x": 4,
+        "y": 8
+      },
+      "to": {
+        "x": 4,
+        "y": 7
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:35.396Z",
+      "want": {
+        "x": 4,
+        "y": 4
+      },
+      "from": {
+        "x": 4,
+        "y": 7
+      },
+      "to": {
+        "x": 4,
+        "y": 6
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:35.579Z",
+      "want": {
+        "x": 4,
+        "y": 4
+      },
+      "from": {
+        "x": 4,
+        "y": 6
+      },
+      "to": {
+        "x": 4,
+        "y": 5
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:35.763Z",
+      "want": {
+        "x": 4,
+        "y": 4
+      },
+      "from": {
+        "x": 4,
+        "y": 5
+      },
+      "to": {
+        "x": 4,
+        "y": 4
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "open-spaces-start",
+      "at": "2026-09-07T10:09:35.866Z",
+      "debug": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}",
+      "selected": [
+        "status-menu-command-record-menu",
+        "status-menu-group-command-life-ledger"
+      ],
+      "tabs": [],
+      "group": [
+        "status-menu-group-command-quests",
+        "status-menu-group-command-life-ledger"
+      ]
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:36.296Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-move-ledger:building:shed:1",
+      "to": "life-ledger-space-building-remove-ledger:building:shed:1",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:36.331Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-remove-ledger:building:shed:1",
+      "to": "life-ledger-space-decoration-place-rug",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:36.376Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-place-rug",
+      "to": "life-ledger-space-decoration-place-table",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:36.414Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-place-table",
+      "to": "life-ledger-tab-shipping",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:36.445Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-shipping",
+      "to": "life-ledger-tab-bundles",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:36.475Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-bundles",
+      "to": "life-ledger-tab-skills",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:36.498Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-skills",
+      "to": "life-ledger-tab-makers",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:36.529Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-makers",
+      "to": "life-ledger-tab-animals",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:36.561Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-animals",
+      "to": "life-ledger-tab-spaces",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:36.644Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-place-shed",
+      "to": "life-ledger-space-building-move-ledger:building:shed:1",
+      "want": "life-ledger-space-decoration-place-rug"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:36.676Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-move-ledger:building:shed:1",
+      "to": "life-ledger-space-building-remove-ledger:building:shed:1",
+      "want": "life-ledger-space-decoration-place-rug"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:36.711Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-remove-ledger:building:shed:1",
+      "to": "life-ledger-space-decoration-place-rug",
+      "want": "life-ledger-space-decoration-place-rug"
+    },
+    {
+      "step": "place-rug",
+      "at": "2026-09-07T10:09:36.781Z",
+      "rugPlace": {
+        "text": "Rug을(를) 배치했습니다"
+      },
+      "gold": 470,
+      "decorationTestids": [
+        "life-ledger-space-decoration-place-rug",
+        "life-ledger-space-decoration-place-table",
+        "life-ledger-space-decoration-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-rotate-ledger:decoration:rug:1"
+      ]
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:36.809Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:36.832Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:37.018Z",
+      "kind": "absent"
+    },
+    {
+      "step": "menu-closed-idle",
+      "at": "2026-09-07T10:09:37.032Z",
+      "player": {
+        "x": 4,
+        "y": 4
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:37.227Z",
+      "want": {
+        "x": 2,
+        "y": 2
+      },
+      "from": {
+        "x": 4,
+        "y": 4
+      },
+      "to": {
+        "x": 3,
+        "y": 4
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:37.410Z",
+      "want": {
+        "x": 2,
+        "y": 2
+      },
+      "from": {
+        "x": 3,
+        "y": 4
+      },
+      "to": {
+        "x": 2,
+        "y": 4
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:37.592Z",
+      "want": {
+        "x": 2,
+        "y": 2
+      },
+      "from": {
+        "x": 2,
+        "y": 4
+      },
+      "to": {
+        "x": 2,
+        "y": 3
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:37.775Z",
+      "want": {
+        "x": 2,
+        "y": 2
+      },
+      "from": {
+        "x": 2,
+        "y": 3
+      },
+      "to": {
+        "x": 2,
+        "y": 2
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "open-spaces-start",
+      "at": "2026-09-07T10:09:37.813Z",
+      "debug": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}",
+      "selected": [
+        "status-menu-command-record-menu",
+        "status-menu-group-command-life-ledger"
+      ],
+      "tabs": [],
+      "group": [
+        "status-menu-group-command-quests",
+        "status-menu-group-command-life-ledger"
+      ]
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:37.927Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-place-rug",
+      "to": "life-ledger-space-decoration-place-table",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:37.945Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-place-table",
+      "to": "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:37.966Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+      "to": "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:37.996Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+      "to": "life-ledger-space-decoration-rotate-ledger:decoration:rug:1",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:38.027Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-rotate-ledger:decoration:rug:1",
+      "to": "life-ledger-tab-shipping",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:38.057Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-shipping",
+      "to": "life-ledger-tab-bundles",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:38.079Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-bundles",
+      "to": "life-ledger-tab-skills",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:38.109Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-skills",
+      "to": "life-ledger-tab-makers",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:38.134Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-makers",
+      "to": "life-ledger-tab-animals",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:38.159Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-animals",
+      "to": "life-ledger-tab-spaces",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:38.211Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-place-shed",
+      "to": "life-ledger-space-building-move-ledger:building:shed:1",
+      "want": "life-ledger-space-decoration-move-ledger:decoration:rug:1"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:38.232Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-move-ledger:building:shed:1",
+      "to": "life-ledger-space-building-remove-ledger:building:shed:1",
+      "want": "life-ledger-space-decoration-move-ledger:decoration:rug:1"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:38.277Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-remove-ledger:building:shed:1",
+      "to": "life-ledger-space-decoration-place-rug",
+      "want": "life-ledger-space-decoration-move-ledger:decoration:rug:1"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:38.376Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-place-rug",
+      "to": "life-ledger-space-decoration-place-table",
+      "want": "life-ledger-space-decoration-move-ledger:decoration:rug:1"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:38.412Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-place-table",
+      "to": "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+      "want": "life-ledger-space-decoration-move-ledger:decoration:rug:1"
+    },
+    {
+      "step": "move-rug",
+      "at": "2026-09-07T10:09:38.460Z",
+      "rugMove": {
+        "text": "처리할 수 없습니다: blocked"
+      },
+      "testids": [
+        "life-ledger-space-decoration-place-rug",
+        "life-ledger-space-decoration-place-table",
+        "life-ledger-space-decoration-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-rotate-ledger:decoration:rug:1"
+      ]
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:38.493Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+      "to": "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+      "want": "life-ledger-space-decoration-rotate-ledger:decoration:rug:1"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:38.526Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+      "to": "life-ledger-space-decoration-rotate-ledger:decoration:rug:1",
+      "want": "life-ledger-space-decoration-rotate-ledger:decoration:rug:1"
+    },
+    {
+      "step": "rotate-rug",
+      "at": "2026-09-07T10:09:38.562Z",
+      "rugRotate": {
+        "text": "처리할 수 없습니다: blocked"
+      }
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:38.581Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:38.612Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:38.784Z",
+      "kind": "absent"
+    },
+    {
+      "step": "menu-closed-idle",
+      "at": "2026-09-07T10:09:38.795Z",
+      "player": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "step": "decorations-before-rug-walk",
+      "at": "2026-09-07T10:09:38.798Z",
+      "rawBeforeWalk": []
+    },
+    {
+      "step": "walk-onto-rug",
+      "at": "2026-09-07T10:09:38.977Z",
+      "from": {
+        "x": 2,
+        "y": 2
+      },
+      "to": {
+        "x": 2,
+        "y": 3
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "menu-closed-idle",
+      "at": "2026-09-07T10:09:38.985Z",
+      "player": {
+        "x": 2,
+        "y": 3
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:39.176Z",
+      "want": {
+        "x": 7,
+        "y": 7
+      },
+      "from": {
+        "x": 2,
+        "y": 3
+      },
+      "to": {
+        "x": 3,
+        "y": 3
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:39.363Z",
+      "want": {
+        "x": 7,
+        "y": 7
+      },
+      "from": {
+        "x": 3,
+        "y": 3
+      },
+      "to": {
+        "x": 4,
+        "y": 3
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:39.544Z",
+      "want": {
+        "x": 7,
+        "y": 7
+      },
+      "from": {
+        "x": 4,
+        "y": 3
+      },
+      "to": {
+        "x": 5,
+        "y": 3
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:39.726Z",
+      "want": {
+        "x": 7,
+        "y": 7
+      },
+      "from": {
+        "x": 5,
+        "y": 3
+      },
+      "to": {
+        "x": 6,
+        "y": 3
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:39.910Z",
+      "want": {
+        "x": 7,
+        "y": 7
+      },
+      "from": {
+        "x": 6,
+        "y": 3
+      },
+      "to": {
+        "x": 7,
+        "y": 3
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:40.092Z",
+      "want": {
+        "x": 7,
+        "y": 7
+      },
+      "from": {
+        "x": 7,
+        "y": 3
+      },
+      "to": {
+        "x": 7,
+        "y": 4
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:40.276Z",
+      "want": {
+        "x": 7,
+        "y": 7
+      },
+      "from": {
+        "x": 7,
+        "y": 4
+      },
+      "to": {
+        "x": 7,
+        "y": 5
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:40.458Z",
+      "want": {
+        "x": 7,
+        "y": 7
+      },
+      "from": {
+        "x": 7,
+        "y": 5
+      },
+      "to": {
+        "x": 7,
+        "y": 6
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:40.627Z",
+      "want": {
+        "x": 7,
+        "y": 7
+      },
+      "from": {
+        "x": 7,
+        "y": 6
+      },
+      "to": {
+        "x": 7,
+        "y": 7
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:40.808Z",
+      "want": {
+        "x": 7,
+        "y": 8
+      },
+      "from": {
+        "x": 7,
+        "y": 7
+      },
+      "to": {
+        "x": 7,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "hand-slot",
+      "at": "2026-09-07T10:09:40.835Z",
+      "digit": "1",
+      "text": "괭이 ×1"
+    },
+    {
+      "step": "till",
+      "at": "2026-09-07T10:09:40.867Z",
+      "before": {
+        "x": 7,
+        "y": 8
+      },
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      },
+      "player": {
+        "x": 7,
+        "y": 8
+      },
+      "actionReceipt": {
+        "kind": "action",
+        "mapId": "map_blank_start",
+        "handled": true,
+        "farmAttempts": [
+          {
+            "kind": "tilled",
+            "x": 7,
+            "y": 9,
+            "itemId": "item_hoe",
+            "energySpent": 0,
+            "xpAwarded": {},
+            "affectedTiles": [
+              {
+                "x": 7,
+                "y": 9,
+                "kind": "tilled"
+              }
+            ]
+          }
+        ],
+        "sequence": 1
+      }
+    },
+    {
+      "step": "tilled-keys",
+      "at": "2026-09-07T10:09:40.875Z",
+      "plotKeys": [
+        "7,9"
+      ],
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:41.061Z",
+      "want": {
+        "x": 8,
+        "y": 7
+      },
+      "from": {
+        "x": 7,
+        "y": 8
+      },
+      "to": {
+        "x": 8,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:41.243Z",
+      "want": {
+        "x": 8,
+        "y": 7
+      },
+      "from": {
+        "x": 8,
+        "y": 8
+      },
+      "to": {
+        "x": 8,
+        "y": 7
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:41.425Z",
+      "want": {
+        "x": 8,
+        "y": 8
+      },
+      "from": {
+        "x": 8,
+        "y": 7
+      },
+      "to": {
+        "x": 8,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "open-spaces-start",
+      "at": "2026-09-07T10:09:41.460Z",
+      "debug": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}",
+      "selected": [
+        "status-menu-command-record-menu",
+        "status-menu-group-command-life-ledger"
+      ],
+      "tabs": [],
+      "group": [
+        "status-menu-group-command-quests",
+        "status-menu-group-command-life-ledger"
+      ]
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:41.610Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-rotate-ledger:decoration:rug:1",
+      "to": "life-ledger-tab-shipping",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:41.630Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-shipping",
+      "to": "life-ledger-tab-bundles",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:41.661Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-bundles",
+      "to": "life-ledger-tab-skills",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:41.693Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-skills",
+      "to": "life-ledger-tab-makers",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:41.727Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-makers",
+      "to": "life-ledger-tab-animals",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T10:09:41.759Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-animals",
+      "to": "life-ledger-tab-spaces",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "plot-refuse",
+      "at": "2026-09-07T10:09:41.851Z",
+      "plotMsg": {
+        "text": "처리할 수 없습니다: blocked"
+      },
+      "gold": 470,
+      "buildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        }
+      },
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:41.876Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:41.910Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:42.084Z",
+      "kind": "absent"
+    },
+    {
+      "step": "menu-closed-idle",
+      "at": "2026-09-07T10:09:42.098Z",
+      "player": {
+        "x": 8,
+        "y": 8
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:42.292Z",
+      "want": {
+        "x": 1,
+        "y": 8
+      },
+      "from": {
+        "x": 8,
+        "y": 8
+      },
+      "to": {
+        "x": 7,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:42.477Z",
+      "want": {
+        "x": 1,
+        "y": 8
+      },
+      "from": {
+        "x": 7,
+        "y": 8
+      },
+      "to": {
+        "x": 6,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:42.664Z",
+      "want": {
+        "x": 1,
+        "y": 8
+      },
+      "from": {
+        "x": 6,
+        "y": 8
+      },
+      "to": {
+        "x": 5,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:42.842Z",
+      "want": {
+        "x": 1,
+        "y": 8
+      },
+      "from": {
+        "x": 5,
+        "y": 8
+      },
+      "to": {
+        "x": 4,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:43.028Z",
+      "want": {
+        "x": 1,
+        "y": 8
+      },
+      "from": {
+        "x": 4,
+        "y": 8
+      },
+      "to": {
+        "x": 3,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:43.208Z",
+      "want": {
+        "x": 1,
+        "y": 8
+      },
+      "from": {
+        "x": 3,
+        "y": 8
+      },
+      "to": {
+        "x": 2,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:43.393Z",
+      "want": {
+        "x": 1,
+        "y": 8
+      },
+      "from": {
+        "x": 2,
+        "y": 8
+      },
+      "to": {
+        "x": 1,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "open-spaces-start",
+      "at": "2026-09-07T10:09:43.427Z",
+      "debug": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}",
+      "selected": [
+        "status-menu-command-record-menu",
+        "status-menu-group-command-life-ledger"
+      ],
+      "tabs": [],
+      "group": [
+        "status-menu-group-command-quests",
+        "status-menu-group-command-life-ledger"
+      ]
+    },
+    {
+      "step": "edge-refuse",
+      "at": "2026-09-07T10:09:43.585Z",
+      "edgeMsg": {
+        "text": "처리할 수 없습니다: blocked"
+      },
+      "gold": 470,
+      "player": {
+        "x": 1,
+        "y": 8
+      },
+      "buildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        }
+      }
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:43.610Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:43.646Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:43.817Z",
+      "kind": "absent"
+    },
+    {
+      "step": "menu-closed-idle",
+      "at": "2026-09-07T10:09:43.831Z",
+      "player": {
+        "x": 1,
+        "y": 8
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:44.012Z",
+      "want": {
+        "x": 1,
+        "y": 1
+      },
+      "from": {
+        "x": 1,
+        "y": 8
+      },
+      "to": {
+        "x": 1,
+        "y": 7
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:44.195Z",
+      "want": {
+        "x": 1,
+        "y": 1
+      },
+      "from": {
+        "x": 1,
+        "y": 7
+      },
+      "to": {
+        "x": 1,
+        "y": 6
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:44.378Z",
+      "want": {
+        "x": 1,
+        "y": 1
+      },
+      "from": {
+        "x": 1,
+        "y": 6
+      },
+      "to": {
+        "x": 1,
+        "y": 5
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:44.559Z",
+      "want": {
+        "x": 1,
+        "y": 1
+      },
+      "from": {
+        "x": 1,
+        "y": 5
+      },
+      "to": {
+        "x": 1,
+        "y": 4
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:44.742Z",
+      "want": {
+        "x": 1,
+        "y": 1
+      },
+      "from": {
+        "x": 1,
+        "y": 4
+      },
+      "to": {
+        "x": 1,
+        "y": 3
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:44.928Z",
+      "want": {
+        "x": 1,
+        "y": 1
+      },
+      "from": {
+        "x": 1,
+        "y": 3
+      },
+      "to": {
+        "x": 1,
+        "y": 2
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:45.110Z",
+      "want": {
+        "x": 1,
+        "y": 1
+      },
+      "from": {
+        "x": 1,
+        "y": 2
+      },
+      "to": {
+        "x": 1,
+        "y": 1
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:45.296Z",
+      "want": {
+        "x": 1,
+        "y": 2
+      },
+      "from": {
+        "x": 1,
+        "y": 1
+      },
+      "to": {
+        "x": 1,
+        "y": 2
+      },
+      "gold": 470,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "open-spaces-start",
+      "at": "2026-09-07T10:09:45.372Z",
+      "debug": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}",
+      "selected": [
+        "status-menu-command-record-menu",
+        "status-menu-group-command-life-ledger"
+      ],
+      "tabs": [],
+      "group": [
+        "status-menu-group-command-quests",
+        "status-menu-group-command-life-ledger"
+      ]
+    },
+    {
+      "step": "last-exit-setup-place",
+      "at": "2026-09-07T10:09:45.590Z",
+      "lastExitPlace": {
+        "text": "Shed을(를) 배치했습니다"
+      },
+      "buildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        },
+        "ledger:building:shed:2": {
+          "instanceId": "ledger:building:shed:2",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 0,
+          "y": 3,
+          "orientation": "down",
+          "level": 1,
+          "paymentReceipt": {
+            "gold": 10,
+            "items": []
+          }
+        }
+      }
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:45.645Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:45.698Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:45.868Z",
+      "kind": "absent"
+    },
+    {
+      "step": "menu-closed-idle",
+      "at": "2026-09-07T10:09:45.883Z",
+      "player": {
+        "x": 1,
+        "y": 2
+      }
+    },
+    {
+      "step": "last-exit-moved",
+      "at": "2026-09-07T10:09:46.067Z",
+      "from": {
+        "x": 1,
+        "y": 2
+      },
+      "to": {
+        "x": 2,
+        "y": 2
+      },
+      "gold": 460,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "open-spaces-start",
+      "at": "2026-09-07T10:09:46.127Z",
+      "debug": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}",
+      "selected": [
+        "status-menu-command-record-menu",
+        "status-menu-group-command-life-ledger"
+      ],
+      "tabs": [],
+      "group": [
+        "status-menu-group-command-quests",
+        "status-menu-group-command-life-ledger"
+      ]
+    },
+    {
+      "step": "last-exit-refuse",
+      "at": "2026-09-07T10:09:46.333Z",
+      "lastExitMsg": {
+        "text": "Shed을(를) 배치했습니다"
+      },
+      "gold": 450,
+      "buildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        },
+        "ledger:building:shed:2": {
+          "instanceId": "ledger:building:shed:2",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 0,
+          "y": 3,
+          "orientation": "down",
+          "level": 1,
+          "paymentReceipt": {
+            "gold": 10,
+            "items": []
+          }
+        },
+        "ledger:building:shed:3": {
+          "instanceId": "ledger:building:shed:3",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 4,
+          "y": 0,
+          "orientation": "down",
+          "level": 1,
+          "paymentReceipt": {
+            "gold": 10,
+            "items": []
+          }
+        }
+      }
+    },
+    {
+      "step": "last-exit-verdict",
+      "at": "2026-09-07T10:09:46.335Z",
+      "lastExitBlocked": false,
+      "goldBeforeExit": 460,
+      "gold": 450,
+      "buildingsBeforeExit": 2
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:46.377Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:46.430Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:46.601Z",
+      "kind": "absent"
+    },
+    {
+      "step": "menu-closed-idle",
+      "at": "2026-09-07T10:09:46.618Z",
+      "player": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:46.814Z",
+      "want": {
+        "x": 8,
+        "y": 2
+      },
+      "from": {
+        "x": 2,
+        "y": 2
+      },
+      "to": {
+        "x": 3,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:46.993Z",
+      "want": {
+        "x": 8,
+        "y": 2
+      },
+      "from": {
+        "x": 3,
+        "y": 2
+      },
+      "to": {
+        "x": 4,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:47.183Z",
+      "want": {
+        "x": 8,
+        "y": 2
+      },
+      "from": {
+        "x": 4,
+        "y": 2
+      },
+      "to": {
+        "x": 5,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:47.358Z",
+      "want": {
+        "x": 8,
+        "y": 2
+      },
+      "from": {
+        "x": 5,
+        "y": 2
+      },
+      "to": {
+        "x": 6,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:47.544Z",
+      "want": {
+        "x": 8,
+        "y": 2
+      },
+      "from": {
+        "x": 6,
+        "y": 2
+      },
+      "to": {
+        "x": 7,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:47.727Z",
+      "want": {
+        "x": 8,
+        "y": 2
+      },
+      "from": {
+        "x": 7,
+        "y": 2
+      },
+      "to": {
+        "x": 8,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:47.908Z",
+      "want": {
+        "x": 16,
+        "y": 1
+      },
+      "from": {
+        "x": 8,
+        "y": 2
+      },
+      "to": {
+        "x": 9,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:48.091Z",
+      "want": {
+        "x": 16,
+        "y": 1
+      },
+      "from": {
+        "x": 9,
+        "y": 2
+      },
+      "to": {
+        "x": 10,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:48.274Z",
+      "want": {
+        "x": 16,
+        "y": 1
+      },
+      "from": {
+        "x": 10,
+        "y": 2
+      },
+      "to": {
+        "x": 11,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:48.461Z",
+      "want": {
+        "x": 16,
+        "y": 1
+      },
+      "from": {
+        "x": 11,
+        "y": 2
+      },
+      "to": {
+        "x": 12,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:48.645Z",
+      "want": {
+        "x": 16,
+        "y": 1
+      },
+      "from": {
+        "x": 12,
+        "y": 2
+      },
+      "to": {
+        "x": 13,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:48.826Z",
+      "want": {
+        "x": 16,
+        "y": 1
+      },
+      "from": {
+        "x": 13,
+        "y": 2
+      },
+      "to": {
+        "x": 14,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:49.007Z",
+      "want": {
+        "x": 16,
+        "y": 1
+      },
+      "from": {
+        "x": 14,
+        "y": 2
+      },
+      "to": {
+        "x": 15,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:49.192Z",
+      "want": {
+        "x": 16,
+        "y": 1
+      },
+      "from": {
+        "x": 15,
+        "y": 2
+      },
+      "to": {
+        "x": 16,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:49.374Z",
+      "want": {
+        "x": 16,
+        "y": 1
+      },
+      "from": {
+        "x": 16,
+        "y": 2
+      },
+      "to": {
+        "x": 16,
+        "y": 1
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:09:49.559Z",
+      "want": {
+        "x": 16,
+        "y": 2
+      },
+      "from": {
+        "x": 16,
+        "y": 1
+      },
+      "to": {
+        "x": 16,
+        "y": 2
+      },
+      "gold": 450,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "npc-overlap-candidate",
+      "at": "2026-09-07T10:09:49.891Z",
+      "move": {
+        "fromX": 16,
+        "fromY": 5,
+        "toX": 16,
+        "toY": 6,
+        "dir": "down"
+      },
+      "logical": {
+        "x": 16,
+        "y": 6,
+        "bodyRect": {
+          "left": 15,
+          "right": 17,
+          "top": 4,
+          "bottom": 6
+        },
+        "passRect": {
+          "left": 15,
+          "right": 17,
+          "top": 6,
+          "bottom": 6
+        }
+      },
+      "sprite": {
+        "x": 264,
+        "y": 96
+      },
+      "fractional": false,
+      "player": {
+        "x": 16,
+        "y": 2
+      },
+      "eventLocations": null
+    },
+    {
+      "step": "open-spaces-start",
+      "at": "2026-09-07T10:09:49.916Z",
+      "debug": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}",
+      "selected": [
+        "status-menu-command-record-menu",
+        "status-menu-group-command-life-ledger"
+      ],
+      "tabs": [],
+      "group": [
+        "status-menu-group-command-quests",
+        "status-menu-group-command-life-ledger"
+      ]
+    },
+    {
+      "step": "npc-overlap-refuse",
+      "at": "2026-09-07T10:09:50.051Z",
+      "npcPlace": {
+        "text": "처리할 수 없습니다: blocked"
+      },
+      "gold": 450,
+      "player": {
+        "x": 16,
+        "y": 2
+      },
+      "buildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        },
+        "ledger:building:shed:2": {
+          "instanceId": "ledger:building:shed:2",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 0,
+          "y": 3,
+          "orientation": "down",
+          "level": 1,
+          "paymentReceipt": {
+            "gold": 10,
+            "items": []
+          }
+        },
+        "ledger:building:shed:3": {
+          "instanceId": "ledger:building:shed:3",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 4,
+          "y": 0,
+          "orientation": "down",
+          "level": 1,
+          "paymentReceipt": {
+            "gold": 10,
+            "items": []
+          }
+        }
+      },
+      "logical": {
+        "x": 16,
+        "y": 6,
+        "bodyRect": {
+          "left": 15,
+          "right": 17,
+          "top": 4,
+          "bottom": 6
+        },
+        "passRect": {
+          "left": 15,
+          "right": 17,
+          "top": 6,
+          "bottom": 6
+        }
+      },
+      "move": {
+        "fromX": 16,
+        "fromY": 5,
+        "toX": 16,
+        "toY": 6,
+        "dir": "down"
+      }
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:50.343Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:50.376Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T10:09:50.533Z",
+      "kind": "absent"
+    },
+    {
+      "step": "failed",
+      "at": "2026-09-07T10:09:58.572Z",
+      "error": "jsHandle.evaluate: Error: timeout selected status-menu-command-skills\n    at eval (eval at evaluate (:303:30), <anonymous>:21:59)"
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "spaces-before-place",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/spaces-before-place-1024.png"
+    },
+    {
+      "name": "spaces-before-place",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/spaces-before-place-1440.png"
+    },
+    {
+      "name": "after-place",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/after-place-1024.png"
+    },
+    {
+      "name": "npc-overlap-menu",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/npc-overlap-menu-1024.png"
+    },
+    {
+      "name": "npc-overlap-menu",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/npc-overlap-menu-1440.png"
+    }
+  ],
+  "errors": [],
+  "pageErrors": [],
+  "requestFailures": [],
+  "scenarioErrors": [],
+  "uncaught": "jsHandle.evaluate: Error: timeout selected status-menu-command-skills\n    at eval (eval at evaluate (:303:30), <anonymous>:21:59)\n    at Object.wait (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:132:30)\n    at keyUntilSelected (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:197:16)\n    at async openSaveMenu (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:560:5)\n    at async file:///home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:932:3"
+}

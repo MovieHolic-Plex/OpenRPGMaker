@@ -1,0 +1,10 @@
+{
+  "when": "2026-09-07T14:54:13.355400+00:00",
+  "scenario": "safety",
+  "exit": 0,
+  "elapsedSec": 5.101,
+  "stdoutBytes": 297,
+  "stderrBytes": 0,
+  "scratchExists": true,
+  "archived": []
+}

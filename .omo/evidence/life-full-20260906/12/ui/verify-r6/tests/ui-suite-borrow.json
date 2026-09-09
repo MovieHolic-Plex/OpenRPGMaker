@@ -1,0 +1,27 @@
+{
+  "reused": true,
+  "rerun": false,
+  "reason": "adapter-only verify-r6; source/test/commit equality",
+  "files": {
+    "ui-suite.command.json": {
+      "sha256": "251221acc188a82930690e1e2e03a448317ba94ffb1aaa046a59d66d887d33ab",
+      "bytes": 1794,
+      "source": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/tests/ui-suite.command.json"
+    },
+    "ui-suite.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2,
+      "source": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/tests/ui-suite.exit"
+    },
+    "ui-suite.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/tests/ui-suite.stderr"
+    },
+    "ui-suite.stdout": {
+      "sha256": "64c77de6b932240c758fa8a61b967f34206aac831baa5c030392294e055ddc04",
+      "bytes": 644,
+      "source": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/tests/ui-suite.stdout"
+    }
+  }
+}

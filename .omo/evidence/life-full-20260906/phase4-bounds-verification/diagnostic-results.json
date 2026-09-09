@@ -1,0 +1,15 @@
+{
+  "files": [
+    "src/editor/panels/databaseCharacterView.ts",
+    "src/editor/panels/databaseCropView.ts",
+    "src/editor/panels/databaseDailyWeatherView.ts",
+    "src/editor/panels/databaseLifeCraftingView.ts",
+    "src/player/playSceneGift.ts",
+    "src/player/playSceneInterpreter.ts",
+    "src/project/characterProfiles.ts",
+    "src/project/dailyWeather.ts",
+    "test/lifeAuthoringBounds.test.ts"
+  ],
+  "count": 0,
+  "formatted": ""
+}

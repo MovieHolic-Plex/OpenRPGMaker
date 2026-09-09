@@ -1,0 +1,147 @@
+{
+  "when": "2026-09-07T13:46:35.550249+00:00",
+  "task": "verify-r5-independent-acceptance",
+  "taskId": "st_01a07c17",
+  "worktree": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "branch": "agent/life-full-p4",
+  "head": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "committedSha": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "headMatchesCommitted": true,
+  "commitSubject": "feat(life): deliver live placement safety and authored body persistence",
+  "statusPorcelain": "",
+  "workingTreeCleanForProduct": true,
+  "sourceHashesLive": {
+    "src/player/lifePlacementScene.ts": {
+      "sha256": "275318021fbdfdfa0a8bcb131314fd7a75bf5a8fba1c37fdd35b47eac4739565",
+      "bytes": 6063,
+      "match": true
+    },
+    "src/player/lifeLedger.ts": {
+      "sha256": "9e7ffb6f6e3bdd24f22d723556513570be03a5cb0394640ea718d918e5cfebcb",
+      "bytes": 30221,
+      "match": true
+    },
+    "src/player/playerStatusMenuDetails.ts": {
+      "sha256": "26b30f5a06f8fc49ce9a815d7493300c4aae42d2d8b1693304cf9a2a3f96b67b",
+      "bytes": 36013,
+      "match": true
+    },
+    "src/player/playerStatusMenu.ts": {
+      "sha256": "5d33e4a4844ddf2a5f623928b2c730ca514cdca29922d7435feeff2a4a3d6370",
+      "bytes": 16481,
+      "match": true
+    },
+    "src/player/playerStatusMenuController.ts": {
+      "sha256": "7cf1dd019700f5ad8e19a170f6aa33fccfa0bfdce388eb00241c364bf81565e7",
+      "bytes": 31985,
+      "match": true
+    },
+    "src/player/playerStatusMenuTypes.ts": {
+      "sha256": "40efe968f6d087034ec01e134f87043327eac5108d0b20ddb4b1b6ddee54972c",
+      "bytes": 3556,
+      "match": true
+    },
+    "src/player/playerStatusMenuDetailTypes.ts": {
+      "sha256": "42ac4b0a3b6e06b1f6f5b594843b7c61cf85f141dd46c6711a9fc9b30a89614a",
+      "bytes": 5081,
+      "match": true
+    },
+    "src/player/PlayScene.ts": {
+      "sha256": "a3c2fe2b3baad143cdef4db6de14590137316669961a451ec65407b0c156225d",
+      "bytes": 27542,
+      "match": true
+    },
+    "test/lifePlacementSceneUi.test.ts": {
+      "sha256": "78403533ace4a55fa78c8b1e77e8466c87a18f1db187c5c38e0968a4821f6b56",
+      "bytes": 35644,
+      "match": true
+    },
+    "test/p2SpatialPlayIntegration.test.ts": {
+      "sha256": "b7329262d031932ab515ec5647026e0a956c8275a145051e40f8ccc8403a9e51",
+      "bytes": 8496,
+      "match": true
+    },
+    "test/p2SpatialRuntimeUi.test.ts": {
+      "sha256": "927d55ec45b0a72e8cd0240270701f9983f76734f1ace7b1d145cd822663be2f",
+      "bytes": 2873,
+      "match": true
+    },
+    "test/lifePlacementRenderedBodyReplay.test.ts": {
+      "sha256": "f7ffd8d8a89a2fb10ef67ee13a459a8bda592e63e7035a50b63a75d27b06cc97",
+      "bytes": 7659,
+      "match": true
+    },
+    "src/project/databaseRecordModel.ts": {
+      "sha256": "c27eb4c534e39a6b0c68c2d3650aadb905c8f42e0d053d10f79c8092aa6cbdfd",
+      "bytes": 46246,
+      "match": true
+    },
+    "test/playerBodyProjectPersistence.test.ts": {
+      "sha256": "0dd6e5c03614aa124a4d953c8f80e6189fbdaebe0c31bf0b3335619861372ef1",
+      "bytes": 6375,
+      "match": true
+    },
+    "openwiki/INDEX.md": {
+      "sha256": "3671e8357729819f30c557ec70a345a1e26593bcfec1db25cc400f30f120ca45",
+      "bytes": 38587,
+      "match": true
+    },
+    "openwiki/runtime-project-schema.md": {
+      "sha256": "0d88d9040930ec3a1d7a88105bbd56e193d660da0b10703520d7986793c3753d",
+      "bytes": 76618,
+      "match": true
+    },
+    "openwiki/runtime-sessions.md": {
+      "sha256": "8c3d2d7ae0eb27d1666ace7365b6c66b1299cb132ec18bd294d6d6237d9db975",
+      "bytes": 83643,
+      "match": true
+    }
+  },
+  "sourceHashesMatchCommitted": true,
+  "fixtures": {
+    "r3_general": {
+      "path": ".omo/evidence/life-full-20260906/12/ui/producer-r3/native/fixture.json",
+      "sha256": "e48e935a33b8f6ed42e987ea7231ca508d1ae05abfc4862e11364e0357c54ff2",
+      "bytes": 2293303
+    },
+    "r4_arena": {
+      "path": ".omo/evidence/life-full-20260906/12/ui/fixtures-r4/arena.reloaded.json",
+      "sha256": "d8a44e6019cb015ca557bdedb551efd006975f1ba754bc2a3cd611b301b234f8",
+      "bytes": 2292505
+    },
+    "r4_lastExit": {
+      "path": ".omo/evidence/life-full-20260906/12/ui/fixtures-r4/lastExit.reloaded.json",
+      "sha256": "ca7bb0339b1472d602db720620e927bc5b81e93cfafa18a9f1ed20df07e24813",
+      "bytes": 2292738
+    },
+    "r5_rug": {
+      "path": ".omo/evidence/life-full-20260906/12/ui/fixtures-r5/rug.reloaded.json",
+      "sha256": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+      "bytes": 2292631
+    }
+  },
+  "fixtureExpected": {
+    "r4_arena": "d8a44e6019cb015ca557bdedb551efd006975f1ba754bc2a3cd611b301b234f8",
+    "r4_lastExit": "ca7bb0339b1472d602db720620e927bc5b81e93cfafa18a9f1ed20df07e24813",
+    "r5_rug": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+    "r3_general": "e48e935a33b8f6ed42e987ea7231ca508d1ae05abfc4862e11364e0357c54ff2"
+  },
+  "fixturesMatchExpected": true,
+  "entryGate": {
+    "committedJsonPresent": true,
+    "shaMatch": true,
+    "sourceFrozenMatch": true,
+    "fixturesImmutableMatch": true,
+    "pass": true
+  },
+  "cliReceiptsReadNotRerun": {
+    "build-r3/build.exit": "0",
+    "build-r3/typecheck-app.exit": "0",
+    "build-r3/diagnostics.exit": "0",
+    "build-r3/openwiki-verify.exit": "0",
+    "build-r5/composite-final.exit": "0",
+    "build-r5/openwiki-verify.exit": "0",
+    "build-r5/openwiki-index.exit": "0",
+    "build-r5/openwiki-index-check.exit": "0"
+  }
+}

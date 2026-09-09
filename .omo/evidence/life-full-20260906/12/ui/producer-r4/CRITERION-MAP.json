@@ -1,0 +1,30 @@
+{
+  "originalScope": "DAG.json grok-live-ui plus DAG.attempt3.json remaining through composite evidence",
+  "paths": {
+    "original": "producer-r3 immutable receipts; reused by exact source/test identity, not rerun",
+    "supplementary": "producer-r4 native-qa-2 on fixtures-r4 arena/lastExit; newly executed only for the three missing native criteria"
+  },
+  "criteria": [
+    {"id": "ui-suite-91", "requirement": "focused UI suite 91/91 including 45 lifeFieldInteraction and 3 rendered-body replay", "path": "original", "status": "pass", "receipt": "../producer-r3/tests/ui-green-final.exit"},
+    {"id": "replay-red3", "requirement": "NEW rendered-body replay RED on pre-render UI, 3 failed / 0 passed", "path": "original", "status": "pass", "receipt": "../producer-r3/replay/red.exit"},
+    {"id": "remote-3x3-pass1", "requirement": "isolated remote save+reload playerFootprint 3x3 playerPassRows 1", "path": "original", "status": "pass", "receipt": "../producer-r3/native/fixture.json"},
+    {"id": "place-building", "requirement": "native place shed adjacent (7,9), gold 500->490", "path": "original", "status": "pass", "receipt": "../producer-r3/native/native-qa-final.log"},
+    {"id": "overlap-refuse", "requirement": "overlap re-place blocked, gold unchanged", "path": "original", "status": "pass", "receipt": "../producer-r3/native/native-qa-final.log"},
+    {"id": "upgrade-building", "requirement": "upgrade level 2 at stored (7,9)", "path": "original", "status": "pass", "receipt": "../producer-r3/native/native-qa-final.log"},
+    {"id": "move-building-different-coords", "requirement": "building move (7,9)->(11,6) keep level 2", "path": "original", "status": "pass", "receipt": "../producer-r3/native/native-qa-final.log"},
+    {"id": "till-then-plot-refuse", "requirement": "hoe till 7,9 then place blocked", "path": "original", "status": "pass", "receipt": "../producer-r3/native/native-qa-final.log"},
+    {"id": "edge-refuse", "requirement": "edge place from (1,8) facing left blocked", "path": "original", "status": "pass", "receipt": "../producer-r3/native/native-qa-final.log"},
+    {"id": "npc-overlap-refuse", "requirement": "rendered NPC origin/destination overlap place blocked", "path": "original", "status": "pass", "receipt": "../producer-r3/native/native-qa-final.log"},
+    {"id": "save-load-owner-ids", "requirement": "menu Save raw slot has buildings+rug; Load restores those ids/testids. Existence, not divergent restoration.", "path": "original", "status": "pass", "receipt": "../producer-r3/native/raw-slot-1.parsed.json", "notClaimed": "restoration from divergent state"},
+    {"id": "catalog-pictures", "requirement": "no .runtime-missing-resource / __MISSING", "path": "original", "status": "pass", "receipt": "../producer-r3/HANDOFF.md"},
+    {"id": "handler-tests-last-exit", "requirement": "handler tests cover last-exit", "path": "original", "status": "pass", "receipt": "../producer-r3/tests/ui-green-final.stdout"},
+    {"id": "decoration-rotate-orientation-change", "requirement": "accepted decoration rotation with actual orientation change", "path": "supplementary", "status": "pass", "receipt": "native/raw-slot-arena-rotated.parsed.json", "result": {"id": "ledger:decoration:table:1", "from": "down", "to": "left", "coordsUnchanged": {"x": 7, "y": 9}}},
+    {"id": "decoration-move-different-coords", "requirement": "accepted decoration movement to different coordinates", "path": "supplementary", "status": "pass", "receipt": "native/raw-slot-arena-moved.parsed.json", "result": {"id": "ledger:decoration:table:1", "from": {"x": 7, "y": 9}, "to": {"x": 5, "y": 6}, "orientationKept": "left"}},
+    {"id": "last-local-exit-refuse", "requirement": "last-local-exit construction refusal with costs and owners unchanged, stationary foot/facing", "path": "supplementary", "status": "pass", "receipt": "native/raw-slot-last-exit.parsed.json", "result": {"target": {"x": 0, "y": 3}, "foot": {"x": 1, "y": 2}, "gold": 500, "potion": 8, "hoe": 1, "buildingOwners": ["r4-block-up", "r4-block-right"]}}
+  ],
+  "r3HonestFailuresNotReusedAsPass": [
+    "producer-r3 move-rug blocked",
+    "producer-r3 rotate-rug blocked",
+    "producer-r3 lastExitBlocked:false after walking away and spending"
+  ]
+}

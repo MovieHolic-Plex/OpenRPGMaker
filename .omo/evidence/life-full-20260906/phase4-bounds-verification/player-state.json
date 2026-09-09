@@ -1,0 +1,889 @@
+{
+  "surface": "Native Firefox player.html with exportProjectStoreShim",
+  "fixture": "Local HTTP project endpoint substitute only; real player boot, scene, input, dialogue, gift and interpreter",
+  "writes": [],
+  "errors": [],
+  "actions": [
+    {
+      "label": "automatic gift menu",
+      "text": "Linked resident"
+    },
+    {
+      "label": "EXPLICIT",
+      "speaker": "Explicit command",
+      "text": "EXPLICIT",
+      "state": {
+        "farmPlots": {},
+        "energy": 1,
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        },
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 2,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {
+          "item_potion": 2
+        },
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "gameTime": {
+          "minute": 0,
+          "hour": 12,
+          "day": 1,
+          "season": "spring",
+          "year": 1
+        },
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 162768773,
+          "streams": {
+            "encounter": {
+              "seed": 4204023989,
+              "state": 4204023989
+            },
+            "battle": {
+              "seed": 4255086298,
+              "state": 4255086298
+            },
+            "movement": {
+              "seed": 3048113749,
+              "state": 3048113749
+            },
+            "fishing": {
+              "seed": 1384867910,
+              "state": 1384867910
+            },
+            "misc": {
+              "seed": 2219761752,
+              "state": 2219761752
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "AUTOMATIC",
+      "speaker": "Linked resident",
+      "text": "AUTOMATIC",
+      "state": {
+        "farmPlots": {},
+        "energy": 1,
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        },
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 2,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {
+          "item_potion": 2
+        },
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "gameTime": {
+          "minute": 0,
+          "hour": 12,
+          "day": 1,
+          "season": "spring",
+          "year": 1
+        },
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 162768773,
+          "streams": {
+            "encounter": {
+              "seed": 4204023989,
+              "state": 4204023989
+            },
+            "battle": {
+              "seed": 4255086298,
+              "state": 4255086298
+            },
+            "movement": {
+              "seed": 3048113749,
+              "state": 3048113749
+            },
+            "fishing": {
+              "seed": 1384867910,
+              "state": 1384867910
+            },
+            "misc": {
+              "seed": 2219761752,
+              "state": 2219761752
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "호감",
+      "speaker": "Linked resident",
+      "text": "호감 +10 (0/10)",
+      "state": {
+        "farmPlots": {},
+        "energy": 1,
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        },
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 2,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {
+          "item_potion": 2
+        },
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "gameTime": {
+          "minute": 0,
+          "hour": 12,
+          "day": 1,
+          "season": "spring",
+          "year": 1
+        },
+        "npcActivities": {},
+        "friendship": {
+          "resident": 10
+        },
+        "rng": {
+          "seed": 162768773,
+          "streams": {
+            "encounter": {
+              "seed": 4204023989,
+              "state": 4204023989
+            },
+            "battle": {
+              "seed": 4255086298,
+              "state": 4255086298
+            },
+            "movement": {
+              "seed": 3048113749,
+              "state": 3048113749
+            },
+            "fishing": {
+              "seed": 1384867910,
+              "state": 1384867910
+            },
+            "misc": {
+              "seed": 2219761752,
+              "state": 2219761752
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "automatic gift menu",
+      "text": "Linked resident"
+    },
+    {
+      "label": "THANKS",
+      "speaker": "Linked resident",
+      "text": "THANKS\n호감 +160 (1/10)",
+      "state": {
+        "farmPlots": {},
+        "energy": 1,
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 2
+        },
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 2,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {
+          "item_potion": 1
+        },
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "gameTime": {
+          "minute": 0,
+          "hour": 12,
+          "day": 1,
+          "season": "spring",
+          "year": 1
+        },
+        "npcActivities": {},
+        "friendship": {
+          "resident": 170
+        },
+        "rng": {
+          "seed": 162768773,
+          "streams": {
+            "encounter": {
+              "seed": 4204023989,
+              "state": 4204023989
+            },
+            "battle": {
+              "seed": 4255086298,
+              "state": 4255086298
+            },
+            "movement": {
+              "seed": 3048113749,
+              "state": 3048113749
+            },
+            "fishing": {
+              "seed": 1384867910,
+              "state": 1384867910
+            },
+            "misc": {
+              "seed": 2219761752,
+              "state": 2219761752
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "automatic gift menu",
+      "text": "Linked resident"
+    },
+    {
+      "label": "DAILY LIMIT",
+      "speaker": "Linked resident",
+      "text": "DAILY LIMIT",
+      "state": {
+        "farmPlots": {},
+        "energy": 1,
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 3
+        },
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 2,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {
+          "item_potion": 1
+        },
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "gameTime": {
+          "minute": 0,
+          "hour": 12,
+          "day": 1,
+          "season": "spring",
+          "year": 1
+        },
+        "npcActivities": {},
+        "friendship": {
+          "resident": 170
+        },
+        "rng": {
+          "seed": 162768773,
+          "streams": {
+            "encounter": {
+              "seed": 4204023989,
+              "state": 4204023989
+            },
+            "battle": {
+              "seed": 4255086298,
+              "state": 4255086298
+            },
+            "movement": {
+              "seed": 3048113749,
+              "state": 3048113749
+            },
+            "fishing": {
+              "seed": 1384867910,
+              "state": 1384867910
+            },
+            "misc": {
+              "seed": 2219761752,
+              "state": 2219761752
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "automatic gift menu",
+      "text": "Linked resident"
+    },
+    {
+      "label": "SECOND",
+      "speaker": "Linked resident",
+      "text": "SECOND",
+      "state": {
+        "farmPlots": {},
+        "energy": 1,
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 4
+        },
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 2,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {
+          "item_potion": 1
+        },
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "gameTime": {
+          "minute": 0,
+          "hour": 12,
+          "day": 1,
+          "season": "spring",
+          "year": 1
+        },
+        "npcActivities": {},
+        "friendship": {
+          "resident": 170
+        },
+        "rng": {
+          "seed": 162768773,
+          "streams": {
+            "encounter": {
+              "seed": 4204023989,
+              "state": 4204023989
+            },
+            "battle": {
+              "seed": 4255086298,
+              "state": 4255086298
+            },
+            "movement": {
+              "seed": 3048113749,
+              "state": 3048113749
+            },
+            "fishing": {
+              "seed": 1384867910,
+              "state": 1384867910
+            },
+            "misc": {
+              "seed": 2219761752,
+              "state": 2219761752
+            }
+          }
+        }
+      }
+    }
+  ],
+  "faceSetup": "QA face hook changes direction only; all interactions and choices are native keyboard",
+  "initial": {
+    "farmPlots": {},
+    "energy": 1,
+    "makerInstances": {},
+    "eventLocations": {},
+    "currentMapId": "map_blank_start",
+    "x": 2,
+    "y": 2,
+    "gold": 0,
+    "switches": {
+      "sw_0001": false,
+      "sw_0002": false,
+      "sw_0003": false,
+      "sw_0004": false,
+      "sw_0005": false,
+      "sw_0006": false,
+      "sw_0007": false,
+      "sw_0008": false,
+      "sw_0009": false,
+      "sw_0010": false,
+      "sw_0011": false,
+      "sw_0012": false,
+      "sw_0013": false,
+      "sw_0014": false,
+      "sw_0015": false,
+      "sw_0016": false,
+      "sw_0017": false,
+      "sw_0018": false,
+      "sw_0019": false,
+      "sw_0020": false
+    },
+    "variables": {
+      "var_0001": 0,
+      "var_0002": 0,
+      "var_0003": 0,
+      "var_0004": 0,
+      "var_0005": 0,
+      "var_0006": 0,
+      "var_0007": 0,
+      "var_0008": 0,
+      "var_0009": 0,
+      "var_0010": 0,
+      "var_0011": 0,
+      "var_0012": 0,
+      "var_0013": 0,
+      "var_0014": 0,
+      "var_0015": 0,
+      "var_0016": 0,
+      "var_0017": 0,
+      "var_0018": 0,
+      "var_0019": 0,
+      "var_0020": 0
+    },
+    "selfSwitches": {},
+    "timers": {},
+    "inventory": {
+      "item_potion": 2
+    },
+    "partyActorIds": [
+      "actor_hero"
+    ],
+    "gameTime": {
+      "minute": 0,
+      "hour": 12,
+      "day": 1,
+      "season": "spring",
+      "year": 1
+    },
+    "npcActivities": {},
+    "friendship": {},
+    "rng": {
+      "seed": 162768773,
+      "streams": {
+        "encounter": {
+          "seed": 4204023989,
+          "state": 4204023989
+        },
+        "battle": {
+          "seed": 4255086298,
+          "state": 4255086298
+        },
+        "movement": {
+          "seed": 3048113749,
+          "state": 3048113749
+        },
+        "fishing": {
+          "seed": 1384867910,
+          "state": 1384867910
+        },
+        "misc": {
+          "seed": 2219761752,
+          "state": 2219761752
+        }
+      }
+    }
+  },
+  "final": {
+    "farmPlots": {},
+    "energy": 1,
+    "makerInstances": {},
+    "actionReceipt": {
+      "kind": "action",
+      "mapId": "map_blank_start",
+      "handled": true,
+      "farmAttempts": [],
+      "sequence": 4
+    },
+    "eventLocations": {},
+    "currentMapId": "map_blank_start",
+    "x": 2,
+    "y": 2,
+    "gold": 0,
+    "switches": {
+      "sw_0001": false,
+      "sw_0002": false,
+      "sw_0003": false,
+      "sw_0004": false,
+      "sw_0005": false,
+      "sw_0006": false,
+      "sw_0007": false,
+      "sw_0008": false,
+      "sw_0009": false,
+      "sw_0010": false,
+      "sw_0011": false,
+      "sw_0012": false,
+      "sw_0013": false,
+      "sw_0014": false,
+      "sw_0015": false,
+      "sw_0016": false,
+      "sw_0017": false,
+      "sw_0018": false,
+      "sw_0019": false,
+      "sw_0020": false
+    },
+    "variables": {
+      "var_0001": 0,
+      "var_0002": 0,
+      "var_0003": 0,
+      "var_0004": 0,
+      "var_0005": 0,
+      "var_0006": 0,
+      "var_0007": 0,
+      "var_0008": 0,
+      "var_0009": 0,
+      "var_0010": 0,
+      "var_0011": 0,
+      "var_0012": 0,
+      "var_0013": 0,
+      "var_0014": 0,
+      "var_0015": 0,
+      "var_0016": 0,
+      "var_0017": 0,
+      "var_0018": 0,
+      "var_0019": 0,
+      "var_0020": 0
+    },
+    "selfSwitches": {},
+    "timers": {},
+    "inventory": {
+      "item_potion": 1
+    },
+    "partyActorIds": [
+      "actor_hero"
+    ],
+    "gameTime": {
+      "minute": 0,
+      "hour": 12,
+      "day": 1,
+      "season": "spring",
+      "year": 1
+    },
+    "npcActivities": {},
+    "friendship": {
+      "resident": 170
+    },
+    "rng": {
+      "seed": 162768773,
+      "streams": {
+        "encounter": {
+          "seed": 4204023989,
+          "state": 4204023989
+        },
+        "battle": {
+          "seed": 4255086298,
+          "state": 4255086298
+        },
+        "movement": {
+          "seed": 3048113749,
+          "state": 3048113749
+        },
+        "fishing": {
+          "seed": 1384867910,
+          "state": 1384867910
+        },
+        "misc": {
+          "seed": 2219761752,
+          "state": 2219761752
+        }
+      }
+    }
+  },
+  "pass": true,
+  "cleanup": {
+    "contextClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "ownedCacheRemoved": true
+  }
+}

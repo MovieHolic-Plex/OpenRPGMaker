@@ -1,0 +1,24 @@
+{
+  "original_relative_to_task52": "producer/WIKI-BRIEF.md",
+  "original_absolute": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/producer/WIKI-BRIEF.md",
+  "original_bytes": 2158,
+  "original_sha256": "9b4fac1973adc891ce5e9407ac4b50fbc9c00c1668db2818436ed1ab9431cb76",
+  "original_mode_octal": "0o644",
+  "original_mtime_ns": 1788769691807805694,
+  "original_allocated_bytes": 4096,
+  "archive_relative_to_task52": "archive/payload/producer/WIKI-BRIEF.md.gz",
+  "archive_bytes": 1138,
+  "archive_sha256": "55dd90c37dd7cfd18514022caed9ad8368eb298db59b585c9bd8ee4b2ed00c06",
+  "archive_mode_octal": "0o600",
+  "archive_allocated_bytes": 4096,
+  "encoding": "gzip (no filename, mtime=0); raw bytes unchanged",
+  "verification": {
+    "original_manifest_match": null,
+    "independent_decoder": "system gzip -cd",
+    "decoded_bytes": 2158,
+    "decoded_sha256": "9b4fac1973adc891ce5e9407ac4b50fbc9c00c1668db2818436ed1ab9431cb76",
+    "byte_equal": true
+  },
+  "original_disposition": "retained_unchanged",
+  "publication": "withheld: restricted payload, not privacy-cleared"
+}

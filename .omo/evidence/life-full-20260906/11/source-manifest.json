@@ -1,0 +1,30 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-housing",
+  "branch": "agent/life-full-housing",
+  "head": "966f414c07729e7d9474c568cbaf19a94d2bc740",
+  "baseTree": "6ff79d95e11ba95ae47a9db97e106936728088fa",
+  "ancestor": {
+    "sha": "bd81a933cbecfeb8b25ef15bf57bc24911011aa8",
+    "exit": 0
+  },
+  "files": {
+    "openwiki/INDEX.md": "dc7396a922451eda6e943b8410f87f39853d40bf3302341673fb0f0d8159d276",
+    "openwiki/runtime-project-schema.md": "480483509704a9344d8f86f7c3d344f47fd9d0b50ac8ddcd83fa1e4e662affad",
+    "src/player/saveSlotSpatialValidation.ts": "a8b778bfae615129d6a438acae5d7f57bf61aab87f2e46102c68eec95bf3cc50",
+    "src/project/farmAnimals.ts": "3f5f8e8b70458e084788c8181ec67c380917e1f8836bf79dcce6b4b75ca26450",
+    "src/project/io/references.ts": "beb674c2f9bc95ac095fc554b349bdc4b32d69d43bd407089e6bd49ea400e7f8",
+    "src/project/io/shapeDatabaseFields.ts": "b05b8cce338e3909e5a578a95b957d080556b6dc1d7dcec1895e4b40da6848fa",
+    "src/project/lifeRecovery.ts": "7ad17a4cc6cba9d542efd113bc714ea17244cdf69ded5d80699fb03e1ec7d616",
+    "src/project/lifeStateReconciliation.ts": "563bea29adda6713e092b4857f9128d8dabb052d22a09423ba6d72e4b5e04665",
+    "src/project/mapDeletion.ts": "a49fdcfb69e2e8f97f01df7805b3d53353096921ffb06a54b04f30b7ec8d8bb4",
+    "src/project/p1FoundationRecords.ts": "875cf27b8da0d9cbba572b36904da855139120d847234b83febca0c6be09c8c6",
+    "src/project/session.ts": "d57f6ee87c19d14f47f057458502451fbb8c2d78f802beb2a84d99f548fabc32",
+    "src/project/spatialPlacementTransactions.ts": "188fd3a41f6ee54671bdc6ab5df3fdb4061a49ed5f11976c01dfe9f32c4326eb",
+    "src/project/spatialPlacements.ts": "430dfd41f8b9f06cf1c0ca2620d45b1dec2c76f584b4b49dfb86401f68ba9e36",
+    "src/project/types/database.ts": "bda5b6fe3948448d35684a5299b5e30667427820b55630a0ab73f9bb7f8f7532",
+    "src/project/types/project.ts": "c733a867d6f48dfd89db7477ee67d26bd09261a9b3ead20d0764e558497efc07",
+    "src/project/animalHousing.ts": "0b19d0655caca15a45a7d7855cb8324c36c599a454ebd5ea1f6a15e61d202b2d",
+    "test/linkedAnimalHousing.test.ts": "e61e88e51db36f3096db4870b4c99d51e49d72e3cb31df652ef71ff584608490"
+  },
+  "diagnostics": 15
+}

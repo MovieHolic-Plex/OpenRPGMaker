@@ -1,0 +1,3540 @@
+{
+  "format_version": 1,
+  "kind": "Public-safe subset allowlist; not a redacted-original collection or product approval",
+  "repository_relative_root": ".omo/evidence/life-full-20260906/51",
+  "manifest_self_hash": "Excluded to avoid circular hashing; reported by the portable verifier for independent comparison.",
+  "public_files": [
+    {
+      "path": "INTEGRITY.json",
+      "bytes": 937,
+      "sha256": "56f21a1c46ac1d8823049640425fa09fa15a14f79cd02d08a5316687a283844a",
+      "decoded_bytes": 937,
+      "decoded_sha256": "56f21a1c46ac1d8823049640425fa09fa15a14f79cd02d08a5316687a283844a",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "PARENT-CHECKS.md",
+      "bytes": 1372,
+      "sha256": "689f482d4e836ef7b2cb0227886afe53c05b76daea8a185591d13c241d77a335",
+      "decoded_bytes": 1372,
+      "decoded_sha256": "689f482d4e836ef7b2cb0227886afe53c05b76daea8a185591d13c241d77a335",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "PARENT-INTEGRITY.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "PARENT-INTEGRITY.json",
+      "bytes": 1404,
+      "sha256": "d987456e07fa52fa10d2a033bf4d47387bd5b90690f2538c93b9d421d41b1bc8",
+      "decoded_bytes": 1404,
+      "decoded_sha256": "d987456e07fa52fa10d2a033bf4d47387bd5b90690f2538c93b9d421d41b1bc8",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "PARENT-INTEGRITY.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "PARENT-INTEGRITY.stdout",
+      "bytes": 1404,
+      "sha256": "d987456e07fa52fa10d2a033bf4d47387bd5b90690f2538c93b9d421d41b1bc8",
+      "decoded_bytes": 1404,
+      "decoded_sha256": "d987456e07fa52fa10d2a033bf4d47387bd5b90690f2538c93b9d421d41b1bc8",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "PROVENANCE.json",
+      "bytes": 306053,
+      "sha256": "d0fa98dea2918cd7f580bc0d60a28b3fc4a109a44823d7d844911f4e089f6668",
+      "decoded_bytes": 306053,
+      "decoded_sha256": "d0fa98dea2918cd7f580bc0d60a28b3fc4a109a44823d7d844911f4e089f6668",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "PUBLIC-PRESERVATION.json",
+      "bytes": 74202,
+      "sha256": "add5f774b324e31a00be9c3a5015d151e65da767d92d727e7fe735b7df362e3c",
+      "decoded_bytes": 74202,
+      "decoded_sha256": "add5f774b324e31a00be9c3a5015d151e65da767d92d727e7fe735b7df362e3c",
+      "classification": "public-safe new archival preparation artifact"
+    },
+    {
+      "path": "PUBLIC-PRIVATE-RETENTION.json",
+      "bytes": 22169,
+      "sha256": "bebe75d1492e6f56b90af866aa09dda0c8f163f40234c79d7857cd2da6c1c2cc",
+      "decoded_bytes": 22169,
+      "decoded_sha256": "bebe75d1492e6f56b90af866aa09dda0c8f163f40234c79d7857cd2da6c1c2cc",
+      "classification": "public-safe new archival preparation artifact"
+    },
+    {
+      "path": "PUBLIC-README.md",
+      "bytes": 5030,
+      "sha256": "0c6bcf6c560224aa83c0246e841f4b38701bca34600a9e053ffb579c6b667434",
+      "decoded_bytes": 5030,
+      "decoded_sha256": "0c6bcf6c560224aa83c0246e841f4b38701bca34600a9e053ffb579c6b667434",
+      "classification": "public-safe new archival preparation artifact"
+    },
+    {
+      "path": "PUBLIC-SAFETY-SCAN.json",
+      "bytes": 153956,
+      "sha256": "d6faa03c1162c2a141a2a3b668290566d49128450823dd31e09f6b520247f150",
+      "decoded_bytes": 153956,
+      "decoded_sha256": "d6faa03c1162c2a141a2a3b668290566d49128450823dd31e09f6b520247f150",
+      "classification": "public-safe new archival preparation artifact"
+    },
+    {
+      "path": "PUBLIC-stage-list.txt",
+      "bytes": 31618,
+      "sha256": "ef6dcf74c213320bf7e0d651db1b70b7cf0fdf8befb85f0a7a7296ef51a50be7",
+      "decoded_bytes": 31618,
+      "decoded_sha256": "ef6dcf74c213320bf7e0d651db1b70b7cf0fdf8befb85f0a7a7296ef51a50be7",
+      "classification": "public-safe new archival preparation artifact"
+    },
+    {
+      "path": "RECOVERED-SCRIPT-NOTES.json",
+      "bytes": 436,
+      "sha256": "030d1201f2c802f06388b92c6422aa585bb75e9d3a1be997bae382c4c59ec2af",
+      "decoded_bytes": 436,
+      "decoded_sha256": "030d1201f2c802f06388b92c6422aa585bb75e9d3a1be997bae382c4c59ec2af",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "RECOVERY-IDENTITY.json",
+      "bytes": 317,
+      "sha256": "908228c0fde749bdd690b1c62dc4d82a3b0ab6d44d9d036bb6049cbbdc4b1b9d",
+      "decoded_bytes": 317,
+      "decoded_sha256": "908228c0fde749bdd690b1c62dc4d82a3b0ab6d44d9d036bb6049cbbdc4b1b9d",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "RECOVERY.md",
+      "bytes": 20491,
+      "sha256": "d55d3d1cd7fab4cb0e0c79ba262682cd98092759f2674fe4cb8b6abe57937100",
+      "decoded_bytes": 20491,
+      "decoded_sha256": "d55d3d1cd7fab4cb0e0c79ba262682cd98092759f2674fe4cb8b6abe57937100",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "SESSION-INDEX.json",
+      "bytes": 55318,
+      "sha256": "afb90185ac337ca5f9da7da50551d74c11999641093da674a466da65ef8cfad5",
+      "decoded_bytes": 55318,
+      "decoded_sha256": "afb90185ac337ca5f9da7da50551d74c11999641093da674a466da65ef8cfad5",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "SHA256SUMS",
+      "bytes": 45338,
+      "sha256": "75016b6465b4bf57ae727bbfdc240e8685b2b6789dc6b01c009cde557ea578d4",
+      "decoded_bytes": 45338,
+      "decoded_sha256": "75016b6465b4bf57ae727bbfdc240e8685b2b6789dc6b01c009cde557ea578d4",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "SOURCE-MANIFEST.json",
+      "bytes": 4598,
+      "sha256": "c4aeaa099233bb4e75070ee37e561035df71f220afc7fbd06a58ead11f05742e",
+      "decoded_bytes": 4598,
+      "decoded_sha256": "c4aeaa099233bb4e75070ee37e561035df71f220afc7fbd06a58ead11f05742e",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "complete-recovery.py",
+      "bytes": 6950,
+      "sha256": "0c7fbf552b43d35061f1bca5d79d5d31e345ee7f0931798ab70b89c23a02248e",
+      "decoded_bytes": 6950,
+      "decoded_sha256": "0c7fbf552b43d35061f1bca5d79d5d31e345ee7f0931798ab70b89c23a02248e",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/parent-original/VERIFY.md.gz",
+      "bytes": 4174,
+      "sha256": "89b0fc81d78a9ffac4a131d78071c2839e2131b6aac76c1ebf93f6ad5d4af8f8",
+      "decoded_bytes": 8834,
+      "decoded_sha256": "22ce11b94ad6cd53daf4214c7c8b05d2343d7fd3653bbb75af1ebbd75dce2b88",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/parent-original/commands.txt.gz",
+      "bytes": 601,
+      "sha256": "a790fba9a93c9a969054d8774ec52f8407b91dc6b3681fda5a7076d006f2fc07",
+      "decoded_bytes": 2028,
+      "decoded_sha256": "edf38a660740e049d69418c9b45d66ce933d9d7dc87010f5ae16703e04718a11",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/parent-original/recovery-rights-cleanup.txt.gz",
+      "bytes": 96,
+      "sha256": "850d92ac8b246bca1efccb4d848415a4460cbe5121af4d2bdb208e462db1a903",
+      "decoded_bytes": 138,
+      "decoded_sha256": "7a0963908a54c4a4a325e747647c3b838e72018d143edddf8cddf7c07c4f9b80",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/parent-original/recovery-rights-clone-error.exit.gz",
+      "bytes": 22,
+      "sha256": "d381e5a9b7c1c71b5fb3fef202103bf4b6098ce288f148735de1ecf61d4e3b75",
+      "decoded_bytes": 2,
+      "decoded_sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/parent-original/recovery-rights-clone-error.mts.gz",
+      "bytes": 1215,
+      "sha256": "9c1ec1c35df5dcc9d1a9d2a5b1eb69a8e538564839eb0d220ecd7ee398bcd894",
+      "decoded_bytes": 3151,
+      "decoded_sha256": "bd72b5baeb598db115c4b1bf24592b2f795f9437cfdb45540b1a79aa40d1c954",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/parent-original/recovery-rights-clone-error.stderr.gz",
+      "bytes": 1987,
+      "sha256": "3cab65cf532791c45ade524fff764298c54087b2f640f8ca42f9de11efea4b58",
+      "decoded_bytes": 11447,
+      "decoded_sha256": "21bb75d21d08df2707a7aeab75a7bbea8574902e3ebe716200a97466cf99035f",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/parent-original/recovery-rights-clone-error.stdout.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/parent-original/recovery-rights-state.json.gz",
+      "bytes": 2703,
+      "sha256": "3731736a0eb0944d2d84965148a74728e43e1b9e2f2fb0eea440274b6aa7f8a1",
+      "decoded_bytes": 36557,
+      "decoded_sha256": "7d648ce403d7131b49e9c70c2f0e7b76ed269bb8a55627a3758e9c96e8fdefd7",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/parent-original/recovery-rights.exit.gz",
+      "bytes": 22,
+      "sha256": "d381e5a9b7c1c71b5fb3fef202103bf4b6098ce288f148735de1ecf61d4e3b75",
+      "decoded_bytes": 2,
+      "decoded_sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/parent-original/recovery-rights.mts.gz",
+      "bytes": 1216,
+      "sha256": "1a75571f757eadc7f310d1b468acfbf05247d2fecf8e04959fe718fa6408411d",
+      "decoded_bytes": 3168,
+      "decoded_sha256": "18c6c095a4bbba28b6cdef3719e44ec0d4a238d298c7c93e483979a0b3ece08c",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/parent-original/recovery-rights.stderr.gz",
+      "bytes": 504,
+      "sha256": "f3569fbfd8523bc61663c6782241e16215793f28a02c318051c8dabcb158e4d8",
+      "decoded_bytes": 1075,
+      "decoded_sha256": "44fa0172864d5a228dbeb246c37aaa674e9adf17f00587a4a45617e6be9bb3af",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/parent-original/recovery-rights.stdout.gz",
+      "bytes": 354,
+      "sha256": "5677a8ba30a3d90ff03ddcf355e327f48f6baded9f00661630cf98e1039cdc2c",
+      "decoded_bytes": 828,
+      "decoded_sha256": "143821bb268dab67373272bab70ff2a95364e7cb4015f15961b339193f3373a5",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/parent-original/run-checks.sh.gz",
+      "bytes": 1150,
+      "sha256": "af94d9a11ca240a57ad56fc6304b1540d8a91fbba314dfa225f867b10ca7d220",
+      "decoded_bytes": 2611,
+      "decoded_sha256": "e41000163046c5eb8b47f7c691219117897eccd55908f49dfcb9cef7a03db178",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/post-loss-r2/SUMMARY.md.gz",
+      "bytes": 3509,
+      "sha256": "178021b03538f1dba7b5952953f1b04611c2acfa894adda3afad46305917b2b7",
+      "decoded_bytes": 7662,
+      "decoded_sha256": "eab52def3c64680c9e70fdbbb34b3a24a1cffbf9edc2a0839800edbda5b97852",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/post-loss-r2/parent-originals.sha256.gz",
+      "bytes": 320,
+      "sha256": "6b768b3def8fa849a21c4f2d3846e31c55f438ac1541bba485e6f7405d8e40de",
+      "decoded_bytes": 736,
+      "decoded_sha256": "de63d5b227c0aa19583abe1cbc38a2f73b81732ba5410f4d6b39e5b2cd9b15ee",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/post-loss-r2/post-loss-state.txt.gz",
+      "bytes": 615,
+      "sha256": "d22dc2c50159100c3b07ed61322ce75d27a5e65bd132198530aaf2c0e63f6713",
+      "decoded_bytes": 1149,
+      "decoded_sha256": "3692abf8eb58915a96262e5672c7ba8b9710aa33875cd0cb13e4bbac402334cd",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/post-loss-r2/remaining-source.sha256.gz",
+      "bytes": 557,
+      "sha256": "1af2b545b24ef0afd510db10f6b17633616d0372b8511300caa1e0acbed5907c",
+      "decoded_bytes": 911,
+      "decoded_sha256": "56b69cb721aa629fe188550f80d9fbbf72b46862c64d6fc7f82c2bd214f586fa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/VERIFY.md.gz",
+      "bytes": 2578,
+      "sha256": "e4698f536ed3f56c9ee54d47bb24f103ac4b6f86bb40cfa46d4dc926c2263cab",
+      "decoded_bytes": 5409,
+      "decoded_sha256": "0d15580b79b79d852c0674cbd3f1f6976fc2c61f7db9cc6030394a134f4dc925",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/base-diff.command.json.gz",
+      "bytes": 139,
+      "sha256": "09f84dc2a14409c3163ab9c1097c45fdf8244731566e04aa19790a0329839fb5",
+      "decoded_bytes": 151,
+      "decoded_sha256": "464ee30d68bb4c210749bce250f5b06ed5a6884cfe430b8e3c8ce8f22b63be68",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/base-diff.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/base-diff.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/base-diff.stdout.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/canonical-plan.txt.gz",
+      "bytes": 26281,
+      "sha256": "e74d0277dd37bae4db89782fdf4d76950ea2333db14aed5f57e9f0698364f176",
+      "decoded_bytes": 66283,
+      "decoded_sha256": "1a0ad2050e4ad6dcbdc9027b8d85ed9f14f13c18b28b07966bfdaefa40933b10",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/capture.command.gz",
+      "bytes": 114,
+      "sha256": "33d3b0da678a3c43afc1d84ce4de93fc7eaa194dbc76078151255c0e1db6e4b6",
+      "decoded_bytes": 110,
+      "decoded_sha256": "dc84cc18b95780c4f5ea40a4b2fbf99876723bcd13db46f989637e87c436e18e",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/capture.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/capture.py.gz",
+      "bytes": 1206,
+      "sha256": "e1055b454c09c02c38c08ad12c31823a8ba34c4c0bb9856398435addc81acc87",
+      "decoded_bytes": 2731,
+      "decoded_sha256": "26f54ee9787fa62abdc4717c61813ed82a7210bd127e549be9bd7a78f62e1282",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/capture.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/capture.stdout.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/cleanup.json.gz",
+      "bytes": 272,
+      "sha256": "05f2f9616ecf1ff5e46ccc87ededb671b40c7ec853aa3e5206f2296e1e7ca35f",
+      "decoded_bytes": 403,
+      "decoded_sha256": "be9cad8739ab73b981d6768485e0e3b365a0af0d37cd8f08f0393f5602cd9b49",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/historical-parent-VERIFY.md.gz",
+      "bytes": 4174,
+      "sha256": "89b0fc81d78a9ffac4a131d78071c2839e2131b6aac76c1ebf93f6ad5d4af8f8",
+      "decoded_bytes": 8834,
+      "decoded_sha256": "22ce11b94ad6cd53daf4214c7c8b05d2343d7fd3653bbb75af1ebbd75dce2b88",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/historical-parent-recovery-rights.exit.gz",
+      "bytes": 22,
+      "sha256": "d381e5a9b7c1c71b5fb3fef202103bf4b6098ce288f148735de1ecf61d4e3b75",
+      "decoded_bytes": 2,
+      "decoded_sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/historical-parent-recovery-rights.stderr.gz",
+      "bytes": 504,
+      "sha256": "f3569fbfd8523bc61663c6782241e16215793f28a02c318051c8dabcb158e4d8",
+      "decoded_bytes": 1075,
+      "decoded_sha256": "44fa0172864d5a228dbeb246c37aaa674e9adf17f00587a4a45617e6be9bb3af",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/identity-after.command.json.gz",
+      "bytes": 68,
+      "sha256": "eea9c68de22703b2fac3c85b108f7ec36b7a236edc3ca5b9ca6cdf990fbe1e21",
+      "decoded_bytes": 57,
+      "decoded_sha256": "f9081193dd45ffce86b459c343a93afa5f9ada149f93691c5b86cd6a6a199606",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/identity-after.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/identity-after.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/identity-after.stdout.gz",
+      "bytes": 241,
+      "sha256": "4d88495bc0242cae21c50967a42f06a577cf7a7bb6c825581e31ff535ed6714d",
+      "decoded_bytes": 344,
+      "decoded_sha256": "d4e9c49ef775606e307b412458e624b2f31ca6eeec69f069453319724b8e1bff",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/identity-before.command.json.gz",
+      "bytes": 68,
+      "sha256": "eea9c68de22703b2fac3c85b108f7ec36b7a236edc3ca5b9ca6cdf990fbe1e21",
+      "decoded_bytes": 57,
+      "decoded_sha256": "f9081193dd45ffce86b459c343a93afa5f9ada149f93691c5b86cd6a6a199606",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/identity-before.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/identity-before.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/identity-before.stdout.gz",
+      "bytes": 241,
+      "sha256": "4d88495bc0242cae21c50967a42f06a577cf7a7bb6c825581e31ff535ed6714d",
+      "decoded_bytes": 344,
+      "decoded_sha256": "d4e9c49ef775606e307b412458e624b2f31ca6eeec69f069453319724b8e1bff",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/producer-summary.txt.gz",
+      "bytes": 2842,
+      "sha256": "d6a07295a509c16c122c3d821c2ea42605bfb078490124615b96b1c901ffc10d",
+      "decoded_bytes": 5988,
+      "decoded_sha256": "c6c4974b39ffc2afee5893fd4b1f414ba15efdf9ddf2e01261551ec8e500a0e3",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/source-sha256.json.gz",
+      "bytes": 388,
+      "sha256": "fe1bcb963ced821594012bbfa408714c2527824a8900bbcbb8c268d269ce81da",
+      "decoded_bytes": 649,
+      "decoded_sha256": "b26b354b1444e541d10f4164267111bf7c8e3fd22e15cbcde7098d8130f483b6",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/source-src__project__lifeRecovery.ts.gz",
+      "bytes": 3582,
+      "sha256": "8689d5172aa18aac071d2c96e7dd60af547cacd184e22e95b520ad19f5f31e01",
+      "decoded_bytes": 12514,
+      "decoded_sha256": "1c1a8e26ab196755601793b52d97f4cf79581ada83732216e1fe3118d035c601",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/source-src__project__spatialPlacementTransactions.ts.gz",
+      "bytes": 2921,
+      "sha256": "62d1c8e050402e88b679b7d01c68db5f2db894df3b025316fc7293af2f8f6f3a",
+      "decoded_bytes": 14518,
+      "decoded_sha256": "fa7de88b6bc8e563b4b13db1aefe37d1699831a87902098cd7e21ec0d649330a",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/source-src__project__spatialPlacements.ts.gz",
+      "bytes": 2551,
+      "sha256": "e8c737b2e7d66b6fc5d36da8cc5fd885d8c3091ca3645e92d8d830a85453644a",
+      "decoded_bytes": 10863,
+      "decoded_sha256": "430dfd41f8b9f06cf1c0ca2620d45b1dec2c76f584b4b49dfb86401f68ba9e36",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/source-src__project__types__database.ts.gz",
+      "bytes": 12864,
+      "sha256": "bcc6413c94ff3e4dbba9a42558fff42f1f022d5512be8399b3b8d8f1c9413f3d",
+      "decoded_bytes": 39820,
+      "decoded_sha256": "bda5b6fe3948448d35684a5299b5e30667427820b55630a0ab73f9bb7f8f7532",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/source-test__lifeRecoveryPersistence.test.ts.gz",
+      "bytes": 5584,
+      "sha256": "cd465005f70754248575710be549fb92beaae86ea7478b1b20958b8ff021b334",
+      "decoded_bytes": 28345,
+      "decoded_sha256": "368ee8c3bc9760c4a0475059a548f64f8a1ded7354499350d0bf2e80d1a77ed8",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/source-test__spatialPaymentReceipts.test.ts.gz",
+      "bytes": 3396,
+      "sha256": "ec88d736338e6a495b7940eb2a6df06cbd27da9cd12e88ba88ca30ee3a2a55cc",
+      "decoded_bytes": 13878,
+      "decoded_sha256": "f90b5dbdc6839fbdea93e17e6709d184d003de3ee2dbaa706c7eaaba0c70fc15",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/status-after.command.json.gz",
+      "bytes": 74,
+      "sha256": "75bacb9d9b7820bfa7a9fca2b36126f73a4fae428cd17508fe98efdd0f79474f",
+      "decoded_bytes": 61,
+      "decoded_sha256": "4dc4a30ce556f72a8e7abfdae368d6138c1fcec4c713184dff051243c9b4c7f2",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/status-after.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/status-after.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/status-after.stdout.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/status-before.command.json.gz",
+      "bytes": 74,
+      "sha256": "75bacb9d9b7820bfa7a9fca2b36126f73a4fae428cd17508fe98efdd0f79474f",
+      "decoded_bytes": 61,
+      "decoded_sha256": "4dc4a30ce556f72a8e7abfdae368d6138c1fcec4c713184dff051243c9b4c7f2",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/status-before.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/status-before.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/status-before.stdout.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/working-diff-after.command.json.gz",
+      "bytes": 54,
+      "sha256": "3ed0916c09ffe947f39bf3814bb5760a95f9d56cdfd5d96702e4c7f1bd4950bd",
+      "decoded_bytes": 39,
+      "decoded_sha256": "a5849b0ef8adf5e59f620fa307cf43caeff7f637bc52baa837704c528282a202",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/working-diff-after.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/working-diff-after.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/working-diff-after.stdout.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/working-diff.command.json.gz",
+      "bytes": 54,
+      "sha256": "3ed0916c09ffe947f39bf3814bb5760a95f9d56cdfd5d96702e4c7f1bd4950bd",
+      "decoded_bytes": 39,
+      "decoded_sha256": "a5849b0ef8adf5e59f620fa307cf43caeff7f637bc52baa837704c528282a202",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/working-diff.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/working-diff.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-first/working-diff.stdout.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/VERIFY.md.gz",
+      "bytes": 2690,
+      "sha256": "dc3c42c9891313e7ec74538dfb5a2f1f1f48193c2dc4340404f4a486d701fb3d",
+      "decoded_bytes": 5837,
+      "decoded_sha256": "f624144da6f61a61c4114a58082a0454d7a4117c440ba51aa8f1e71b93dd88bf",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/cleanup.command.gz",
+      "bytes": 254,
+      "sha256": "03959acb63504c94eefbb813c3c253ccd621df1519a32cb9114d08ac9fea1b88",
+      "decoded_bytes": 510,
+      "decoded_sha256": "9f4c01838806de43db892a0a2f4125766b9f4f757df7448b3e4a9acffbfca892",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/cleanup.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/cleanup.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/cleanup.stdout.gz",
+      "bytes": 146,
+      "sha256": "ba617f4eca320c067cb56abc16b3b5376503fee022288acc4f7394f7b07ede52",
+      "decoded_bytes": 181,
+      "decoded_sha256": "34bc79e10e2860f9cd543766239d6738d56a49c3e51ba965b0ce7909ecca19fc",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/committed-source.command.gz",
+      "bytes": 108,
+      "sha256": "01a6b8d8bb2209aa4a6d24db6f50592abe7ac07b50387eb5c2e2928875d23f6a",
+      "decoded_bytes": 100,
+      "decoded_sha256": "ff36a305d71b7544dcbe98d554b6ab68c3b9572898b0b3a706a2f9f4ba9b7467",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/committed-source.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/committed-source.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/committed-source.stdout.gz",
+      "bytes": 3582,
+      "sha256": "8689d5172aa18aac071d2c96e7dd60af547cacd184e22e95b520ad19f5f31e01",
+      "decoded_bytes": 12514,
+      "decoded_sha256": "1c1a8e26ab196755601793b52d97f4cf79581ada83732216e1fe3118d035c601",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/committed-test.command.gz",
+      "bytes": 113,
+      "sha256": "6473fb71276adde0e406cdac12ddeff85b3acc617220bd3e220b18135f2faee5",
+      "decoded_bytes": 110,
+      "decoded_sha256": "6fddfff8ff5842a67082ae535b2be30c3fd53f143ca9113e6d0d475951330508",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/committed-test.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/committed-test.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/committed-test.stdout.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/diff.command.gz",
+      "bytes": 180,
+      "sha256": "66ff10a51be213457f8e5b73a23612b6402b4ca9cc3a54cdfab39628301bba5e",
+      "decoded_bytes": 269,
+      "decoded_sha256": "68e1dd17722b7fdcc65fbe64d685ba65244db0a00bd668dff1a1113d3803ad46",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/diff.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/diff.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/diff.stdout.gz",
+      "bytes": 5737,
+      "sha256": "5fbe5996c03863bc5aa24cbe49e3d623f4e22c85297918ca6ea320625d1e22ba",
+      "decoded_bytes": 19910,
+      "decoded_sha256": "ca2551d3dcbab9308e98231a85bb106497bf5f1e099da7e3665a853007bff076",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/disk.command.gz",
+      "bytes": 38,
+      "sha256": "a40fc7357bcd22d5d106e2e1b54cb7b4f88ae74b381e695aaa218ec028323ca4",
+      "decoded_bytes": 18,
+      "decoded_sha256": "db17431fdba5ad27fd6baf58c9a652feda44be5842fe9d13ed880c7d25b892ab",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/disk.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/disk.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/disk.stdout.gz",
+      "bytes": 127,
+      "sha256": "986c2a8caae6a42c095c075e0583df014a2d74cc05a7c073b2d4f5b55abad473",
+      "decoded_bytes": 136,
+      "decoded_sha256": "1be66d844b7745eeb05b7f1497eaea6da533d08b234d283dc4f6230d861fdf1d",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/evidence-inventory.command.gz",
+      "bytes": 119,
+      "sha256": "6e6fee33a514d7392e1d499f5b46f4490f456889e043115b5d4c57cade7ad1b4",
+      "decoded_bytes": 119,
+      "decoded_sha256": "08e04cc7714f542ebc5b3e9336353a9f2905e2bf726751cbc9d44e6e52aab4aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/evidence-inventory.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/evidence-inventory.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/evidence-inventory.stdout.gz",
+      "bytes": 163,
+      "sha256": "b654110d3865e0346a9847cc0f1e16c1013ff1b693f54d5a5a3be34299b071d4",
+      "decoded_bytes": 463,
+      "decoded_sha256": "9c085d90e7f87d65bd11890dfa03c4066cc2e60eca9e4b6dee700c5f095d82fc",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/head-after.command.gz",
+      "bytes": 92,
+      "sha256": "1212ae6167f9e8d87961d244f1bdedeac5fefef9d80e06e7ae462b68da4b9bf1",
+      "decoded_bytes": 77,
+      "decoded_sha256": "0b9a910af10efa5cf86a58a5a69bef21063847798cd2b71905fc2ce43a1f48bd",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/head-after.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/head-after.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/head-after.stdout.gz",
+      "bytes": 59,
+      "sha256": "bbf72dd9121d05b302468ad9b6698ccafef8969ac288b63bbe06e1ccb9973333",
+      "decoded_bytes": 41,
+      "decoded_sha256": "dea7d9b42e95d9f896ab67e39d8fd019fb851cd93bc3fb5d6f9690780c32b328",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/head-before.command.gz",
+      "bytes": 92,
+      "sha256": "1212ae6167f9e8d87961d244f1bdedeac5fefef9d80e06e7ae462b68da4b9bf1",
+      "decoded_bytes": 77,
+      "decoded_sha256": "0b9a910af10efa5cf86a58a5a69bef21063847798cd2b71905fc2ce43a1f48bd",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/head-before.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/head-before.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/head-before.stdout.gz",
+      "bytes": 59,
+      "sha256": "bbf72dd9121d05b302468ad9b6698ccafef8969ac288b63bbe06e1ccb9973333",
+      "decoded_bytes": 41,
+      "decoded_sha256": "dea7d9b42e95d9f896ab67e39d8fd019fb851cd93bc3fb5d6f9690780c32b328",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/model.command.gz",
+      "bytes": 48,
+      "sha256": "6669d0d0b554ee00f60114a37f630f22e1855fd986dd2423607474e53b432fd1",
+      "decoded_bytes": 31,
+      "decoded_sha256": "65795d7de4a5cbc19365485f4c166bb3730cb00e1490be4daafc580fb262938f",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/model.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/model.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/model.stdout.gz",
+      "bytes": 42,
+      "sha256": "2e425e0a326e9687dd8f6e844505fc281df58739e52b537c384641c3ca49edc8",
+      "decoded_bytes": 22,
+      "decoded_sha256": "fe7e01e348156ad38df236b03378bfc4bfda2bc792be48a4a5c74b7718e2001b",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/parent-originals.command.gz",
+      "bytes": 176,
+      "sha256": "1c1c152e56b0bd3b8582f55740f2fd4c2e98d6ea4c935a2699b976b5ab41213d",
+      "decoded_bytes": 234,
+      "decoded_sha256": "7eef0367f75ebcc0434d946b69b361a9cdafd4a466c1cbeba949f691b4f78e17",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/parent-originals.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/parent-originals.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/parent-originals.stdout.gz",
+      "bytes": 284,
+      "sha256": "f5032c35f6dcb2a9b1c2e2879b6fb01b4ca15d83ff2e1e5ebcc862eb89b08d3f",
+      "decoded_bytes": 431,
+      "decoded_sha256": "5e7862fa234a1b2d02b6b47b27fbacfdda71464a056b92ffec098869112672c9",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/producer-summary.copy.md.gz",
+      "bytes": 3509,
+      "sha256": "178021b03538f1dba7b5952953f1b04611c2acfa894adda3afad46305917b2b7",
+      "decoded_bytes": 7662,
+      "decoded_sha256": "eab52def3c64680c9e70fdbbb34b3a24a1cffbf9edc2a0839800edbda5b97852",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/source-after.command.gz",
+      "bytes": 237,
+      "sha256": "fcb0dbdc9e2ce5ea8c924c3db5dd5e46293c8df6ce0a7ebcfa358b50809a235c",
+      "decoded_bytes": 410,
+      "decoded_sha256": "e278d94cb38a7511caa5d333a38a55749eb8573e5daa97e25557ceb19ea59c06",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/source-after.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/source-after.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/source-after.stdout.gz",
+      "bytes": 557,
+      "sha256": "1af2b545b24ef0afd510db10f6b17633616d0372b8511300caa1e0acbed5907c",
+      "decoded_bytes": 911,
+      "decoded_sha256": "56b69cb721aa629fe188550f80d9fbbf72b46862c64d6fc7f82c2bd214f586fa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/source-before.command.gz",
+      "bytes": 237,
+      "sha256": "fcb0dbdc9e2ce5ea8c924c3db5dd5e46293c8df6ce0a7ebcfa358b50809a235c",
+      "decoded_bytes": 410,
+      "decoded_sha256": "e278d94cb38a7511caa5d333a38a55749eb8573e5daa97e25557ceb19ea59c06",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/source-before.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/source-before.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/source-before.stdout.gz",
+      "bytes": 557,
+      "sha256": "1af2b545b24ef0afd510db10f6b17633616d0372b8511300caa1e0acbed5907c",
+      "decoded_bytes": 911,
+      "decoded_sha256": "56b69cb721aa629fe188550f80d9fbbf72b46862c64d6fc7f82c2bd214f586fa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/status-after.command.gz",
+      "bytes": 88,
+      "sha256": "890205194a56b50c623a82d95c4c7dae0cef9850b09fc578cb6d265c358a6578",
+      "decoded_bytes": 77,
+      "decoded_sha256": "bb9b0b67c7672fe7385a56623a9ad0ae9b2fc76442807dd68627f7450cc7c0d0",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/status-after.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/status-after.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/status-after.stdout.gz",
+      "bytes": 191,
+      "sha256": "317460de96d5dccc1a691405636aec7c0b6d202b8d84ba33db9dec20c5adbfe0",
+      "decoded_bytes": 344,
+      "decoded_sha256": "442abb8d1f9d34f662b515c1de9ba7f0054a0fd1ec9a8a791e5a1bcf145aca8e",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/status-before.command.gz",
+      "bytes": 88,
+      "sha256": "890205194a56b50c623a82d95c4c7dae0cef9850b09fc578cb6d265c358a6578",
+      "decoded_bytes": 77,
+      "decoded_sha256": "bb9b0b67c7672fe7385a56623a9ad0ae9b2fc76442807dd68627f7450cc7c0d0",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/status-before.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/status-before.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/status-before.stdout.gz",
+      "bytes": 191,
+      "sha256": "317460de96d5dccc1a691405636aec7c0b6d202b8d84ba33db9dec20c5adbfe0",
+      "decoded_bytes": 344,
+      "decoded_sha256": "442abb8d1f9d34f662b515c1de9ba7f0054a0fd1ec9a8a791e5a1bcf145aca8e",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/unchanged.command.gz",
+      "bytes": 98,
+      "sha256": "145251bec7c0d453bf504d14a129f9e93b77a0a2fc28e4d2c37f9f0739ec52fd",
+      "decoded_bytes": 208,
+      "decoded_sha256": "13dce7fa31d56f7cd65584c18135a4e6b54785646c6a42f3afedd5c854e6c208",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/unchanged.exit.gz",
+      "bytes": 22,
+      "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+      "decoded_bytes": 2,
+      "decoded_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/unchanged.stderr.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "existing/verifier-r2/unchanged.stdout.gz",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "original-tool-archive/st_01a07964-range0.txt.gz",
+      "bytes": 117,
+      "sha256": "7345a39271a870a404c9513e254be4f529a96ef143254aa9189db07d88349b43",
+      "decoded_bytes": 108,
+      "decoded_sha256": "57b50a5b340725c8c6ef700a7df170dde9e2ff8872ea25e7fdbf7da9730a7797",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "original-tool-archive/st_01a07964-range1.txt.gz",
+      "bytes": 119,
+      "sha256": "2ddd2d052c37138a4f844fa9644e65b8d226ece8f0eececd68c0c1e07e20c192",
+      "decoded_bytes": 125,
+      "decoded_sha256": "4fc65a7d22c5ef752aa321dd07697180d0426701b6e4993b7a2a861c962ae3d9",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "original-tool-archive/st_01a07964-range2.txt.gz",
+      "bytes": 115,
+      "sha256": "8a8d7f8d8a9b2fc9150359b1879bb7b233c5dc569fce6800ee76bb026744c13a",
+      "decoded_bytes": 118,
+      "decoded_sha256": "1c152841944a4add182fd4cc19cd32858a1f7ac835feb5abaf855d76771cd8c7",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "original-tool-archive/st_01a07982-range0.txt.gz",
+      "bytes": 1409,
+      "sha256": "ae38bfdb78b0b640e1990948568b1eaaff99bbb76632f6e7dadcb75595b3afeb",
+      "decoded_bytes": 8677,
+      "decoded_sha256": "7a211d2f3425e868a6e9a733add043facab7957033f4e8a8848b8a020aee0b1e",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/016-result-0.txt.gz",
+      "bytes": 13948,
+      "sha256": "f2202d24fa0da5c614ab1b677556f938c720196966d4f332d63008bc1fedeb97",
+      "decoded_bytes": 32867,
+      "decoded_sha256": "e355969228dd051fe0d63422234230862f19ca79b1eee043e583de894fd1073c",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/019-call-0-command.txt.gz",
+      "bytes": 322,
+      "sha256": "2b9078a7660e5ae95ca24602e0db6771c3540a9016b336ce63c20b0b1ae30be4",
+      "decoded_bytes": 711,
+      "decoded_sha256": "9b02a8e9d2a3dc1d378acf7b6de1399e39a36eb920c8afce37468afd049be54b",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/020-result-0.txt.gz",
+      "bytes": 177,
+      "sha256": "c023f56ff5693741eecbcc4ae07a8688000769cd78ca88f7fe40d881c9505367",
+      "decoded_bytes": 295,
+      "decoded_sha256": "1b222f2ba16cb5e21c6f4a6d9a405429ebe82fd5aff20450799e6a880c252ada",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/023-result-0.txt.gz",
+      "bytes": 4174,
+      "sha256": "89b0fc81d78a9ffac4a131d78071c2839e2131b6aac76c1ebf93f6ad5d4af8f8",
+      "decoded_bytes": 8834,
+      "decoded_sha256": "22ce11b94ad6cd53daf4214c7c8b05d2343d7fd3653bbb75af1ebbd75dce2b88",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/024-result-0.txt.gz",
+      "bytes": 1216,
+      "sha256": "1a75571f757eadc7f310d1b468acfbf05247d2fecf8e04959fe718fa6408411d",
+      "decoded_bytes": 3168,
+      "decoded_sha256": "18c6c095a4bbba28b6cdef3719e44ec0d4a238d298c7c93e483979a0b3ece08c",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/025-result-0.txt.gz",
+      "bytes": 1136,
+      "sha256": "714eeab443f56adb8432ea98d714957712184729a069a9cbd210e08bcdda63ba",
+      "decoded_bytes": 4742,
+      "decoded_sha256": "a72609c3d12dfd3c9931ec1ef49b0200df92b9f5a083d10e4c6b8747b08e1baf",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/026-result-0.txt.gz",
+      "bytes": 504,
+      "sha256": "f3569fbfd8523bc61663c6782241e16215793f28a02c318051c8dabcb158e4d8",
+      "decoded_bytes": 1075,
+      "decoded_sha256": "44fa0172864d5a228dbeb246c37aaa674e9adf17f00587a4a45617e6be9bb3af",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/027-result-0.txt.gz",
+      "bytes": 2300,
+      "sha256": "c2de15e2034de3676046a977062ca410b5e5aa8ffca7f3d383f9533b90a526a0",
+      "decoded_bytes": 4297,
+      "decoded_sha256": "0c1315dc536bad384ec662a263c3b453097ecc73a16e02c1e1e032e837d919f4",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/028-call-0-command.txt.gz",
+      "bytes": 327,
+      "sha256": "bb1b02a7ce7b3942aa37f45dc1fce4be2e34fc5d880335d8dc85d9a962cb949e",
+      "decoded_bytes": 632,
+      "decoded_sha256": "fdcbfdaf0c0580387cd8750e5be9ac29759068ed8f7fc8ff306435f6e777c921",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/029-result-0.txt.gz",
+      "bytes": 255,
+      "sha256": "886d2de827641aa4b53a59f4b321f060b461e8aa22c3f2246b7dd8110aab0bab",
+      "decoded_bytes": 412,
+      "decoded_sha256": "75869e2a7f5d412467695ab4bc448d95f1fcc8bd75aa888561e84391cbac464d",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/030-call-0-command.txt.gz",
+      "bytes": 300,
+      "sha256": "7e68af932a37772ca306ac445df7a2cbaea5de62cecbddb72b0e5a356a5c6a33",
+      "decoded_bytes": 451,
+      "decoded_sha256": "93fa4953c37988d5267a0487038c1b19d11e17a69d6f500638984a9ec0aa7cb1",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/031-result-0.txt.gz",
+      "bytes": 2303,
+      "sha256": "5a30031a063984d076d5f3a9f2f8b6b4b613eeb9976a6268baf5c9d3c73ef301",
+      "decoded_bytes": 8811,
+      "decoded_sha256": "54a4728b847ad1311a27edd99253d8f04c45d6d9ac0c65af65128d088b6f83ac",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/039-call-1-command.txt.gz",
+      "bytes": 299,
+      "sha256": "147bfb4a656d86bd0312e010cba1ab0ba63b95286eea9a4486098c5d92c9ae0e",
+      "decoded_bytes": 491,
+      "decoded_sha256": "a7f60fafa59409a8f640be7b6f8155852f41f8a5e6b6095007e5476eb07ee09a",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/040-result-0.txt.gz",
+      "bytes": 1505,
+      "sha256": "870f0992e832bdd3f77733c3d39b6d6df67911d0913442e3db3204f11562dcee",
+      "decoded_bytes": 5093,
+      "decoded_sha256": "d6407490cabd4dd4cc575baea3d7786a75c90735747fc4c6792547de186a5b30",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/044-result-0.txt.gz",
+      "bytes": 192,
+      "sha256": "ac12376e5d16de65ecd70c1ef14ca5d4b5d1dd386b7ecdf6516bf5b282198916",
+      "decoded_bytes": 288,
+      "decoded_sha256": "28b04ba59e18d60e023dde3ffc997192ca6f032a85c99a01f0e2385f30d5452d",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/046-call-1-command.txt.gz",
+      "bytes": 731,
+      "sha256": "16ee29a77aa85201b241a53b4b0a71c14bf400139fa1f5b90bf34702cf1cc863",
+      "decoded_bytes": 1474,
+      "decoded_sha256": "0683d4a6a8091a9d2df8c92e6c3cbc902364c1019a7dc664e1a78a50fce16b96",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/047-result-0.txt.gz",
+      "bytes": 36,
+      "sha256": "470df22e67cc3da2ed38cdc70f087681c5c3ca538e37d1c769d2ef30b392f843",
+      "decoded_bytes": 16,
+      "decoded_sha256": "f732c6fe5074f06c7e582123d9554ce0cde968072cbfa7909d7cd55b8ae75a28",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/048-call-0-content.txt.gz",
+      "bytes": 2842,
+      "sha256": "d6a07295a509c16c122c3d821c2ea42605bfb078490124615b96b1c901ffc10d",
+      "decoded_bytes": 5988,
+      "decoded_sha256": "c6c4974b39ffc2afee5893fd4b1f414ba15efdf9ddf2e01261551ec8e500a0e3",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/decoded/049-result-0.txt.gz",
+      "bytes": 129,
+      "sha256": "78d611aa8b9cf8db071ec36f355601b4059841f9200d06b8a51e566a24c6d3d8",
+      "decoded_bytes": 125,
+      "decoded_sha256": "4ce8b81ff4bc626b5a626c3a819894f6b196694632395d7890ab282ae20d0ec2",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/001-01a07964-615e-7f0c-83b2-8e07b9aa9ba1.json.gz",
+      "bytes": 160,
+      "sha256": "0c58013d590867ced32e66b07d1266f37fadd45ada34c678555011303d6b6522",
+      "decoded_bytes": 168,
+      "decoded_sha256": "47b38fcdbf1cb3aa5b4a53c872b4fb7749804f4289f5465af955a3926f279a7f",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/012-0eb71f8c.json.gz",
+      "bytes": 674,
+      "sha256": "76a77f59ee2bdd1f99b934fa48ca78294a4eba6c110cd1a388777b3198cfbd06",
+      "decoded_bytes": 1499,
+      "decoded_sha256": "bacc20ba2708b46509352b20922f3b93585f66d9b597f32d23e57ebf7ddb0823",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/016-144a74af.json.gz",
+      "bytes": 14227,
+      "sha256": "77a7f77623bc062899c020f9bc46b9a327b45d03f1019267ad038e8ce069092e",
+      "decoded_bytes": 33439,
+      "decoded_sha256": "cdf789c622aaf5ef93a73eeb5b2cb8a6b910519610897aa1bc49674b6c33e60c",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/019-471f8184.json.gz",
+      "bytes": 718,
+      "sha256": "48534dd897630d9e92216c3eafba76904427fbba92458821c9c92805d81086fe",
+      "decoded_bytes": 1406,
+      "decoded_sha256": "05edcc0a17fe84f9af6b269129d3435af579576b8c24ae4f91e0783cb3ec9264",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/020-182ac410.json.gz",
+      "bytes": 408,
+      "sha256": "894d82e335701eccd12e3bd84de3c587e2a661df1563b9a6f4b7b78454a90d38",
+      "decoded_bytes": 628,
+      "decoded_sha256": "f3d33f9d353311544bbbd18bd7cb3a8f455f478d14048ee8598e5631018d8660",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/023-45fa4b5b.json.gz",
+      "bytes": 4407,
+      "sha256": "1ffab730b6c9dc7cb1818181e7c61007ea78a1eee462bf30c72edea9d524ad91",
+      "decoded_bytes": 9219,
+      "decoded_sha256": "9188bf40a9a2c936cc045c275b8b91861122365ab2a4fd867ee93e785bb48ebb",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/024-6cba5c5b.json.gz",
+      "bytes": 1445,
+      "sha256": "5f2941db68236c3d2a029587b0d43ed6a91973c68a7a7eef0ee70bbbb9c3eb00",
+      "decoded_bytes": 3520,
+      "decoded_sha256": "7e17abdd07603e5df2766dad978c407b3f15afa5070d5755fdf1b694ca00bb2d",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/025-2183771e.json.gz",
+      "bytes": 1380,
+      "sha256": "27655e2fe083ff5b0daeff1dab25fe3495497b8378be70e26086dcd97c02ef12",
+      "decoded_bytes": 5694,
+      "decoded_sha256": "afd03b981b544ce197c1d613e69fd5f3bdb1daa349317fa134a1cc8eed6ea9c2",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/026-d0d19360.json.gz",
+      "bytes": 719,
+      "sha256": "9615f52286d1c4ff73a46440157787daeabc082fb63cb7e052a75e99064d08a8",
+      "decoded_bytes": 1420,
+      "decoded_sha256": "529cb076ecc1c05d09bad097ef80c2634ffd994171ec461e7ddb2dd3a4c9e9aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/027-b16d5ed7.json.gz",
+      "bytes": 2549,
+      "sha256": "abcd949a6f4830277b4bf270a467100d03c6d74b1fd9a603e9274b469cbac074",
+      "decoded_bytes": 4648,
+      "decoded_sha256": "bc110a7bd07007495e3312a3c52d4d097afe6eed3ad16ca55a44fca83e0ad29d",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/028-34b9fef8.json.gz",
+      "bytes": 738,
+      "sha256": "269186c367a4db64c93cd4cb2a2152de9666903cf930163f3a187e49a17af28a",
+      "decoded_bytes": 1336,
+      "decoded_sha256": "a974655e79ac67dd9a9e2860a5da0b6d6c3886c2b101e5d1dfa1a2722e34ed64",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/029-cbd308cf.json.gz",
+      "bytes": 481,
+      "sha256": "d61450dde03461d1a4d697dc8f50792e7f8cd8b40c181fb60eb3ab399f3d0f7e",
+      "decoded_bytes": 744,
+      "decoded_sha256": "a7894dd840b7c77b17c42a2125bd8f8d2d7982ba8f2aaa5b377e5d56ced70dc6",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/030-81c9f156.json.gz",
+      "bytes": 701,
+      "sha256": "b00d4f8ef152792d0357ef460600a7573bf2f76cc42d3dd580f12db9f1f2a4db",
+      "decoded_bytes": 1144,
+      "decoded_sha256": "fb6cb1ba01dc09d0a7e1804e6bae1cc7fc474571b1b11a2842e0abb4cf433b84",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/031-1664145b.json.gz",
+      "bytes": 2545,
+      "sha256": "36f0a08398277a49f3b0b3798108237993bc0df4c5c0dc626d4ff295f58f579f",
+      "decoded_bytes": 9256,
+      "decoded_sha256": "5191014120cfbcca40028c21a1f152008b89f59f087a09412709d6fc14cc9081",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/040-215ed15d.json.gz",
+      "bytes": 1744,
+      "sha256": "8e189c5ddebdb6987f33cb42bf7c09f9466b5497d3bc0fc96a5ad8454d65e900",
+      "decoded_bytes": 5501,
+      "decoded_sha256": "8608ec291446e6f3b0da77aa51a1abe9d536705f75db36c3893894e23897236a",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/044-5b10710a.json.gz",
+      "bytes": 424,
+      "sha256": "b6337b33f5846471e49a827d5b402aa924c8296e58dc0d40d6c73eb90cfcb81c",
+      "decoded_bytes": 619,
+      "decoded_sha256": "9ccf62d3d6c77672ebe489f29b9474afe88322469a4a7f1e18ccbd8eb9c1848e",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/047-6753fe39.json.gz",
+      "bytes": 276,
+      "sha256": "0a3b925d0f49a8bb19e957e9483ae8f2a1477e711d1df36be3d37a56c2ce0600",
+      "decoded_bytes": 342,
+      "decoded_sha256": "f6e03223718777f13d2df4e73f3a6f818ed2e84621e8c39ee2217e6fc70caf0e",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/048-d826ea60.json.gz",
+      "bytes": 3282,
+      "sha256": "ac5b66ded9a694db155108578541d3ffd7cd3788d2fcdb2c50b0631139896828",
+      "decoded_bytes": 6883,
+      "decoded_sha256": "1bbf749ac49f5b85bd7b0f62b9f262cb67015c4c1fb6c96ddd4dea08fa6cccf8",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/events/049-bd6b4d5d.json.gz",
+      "bytes": 3195,
+      "sha256": "404065b2227b2b881426a967247a3e2b4a23f222b9a99be9f8460324ab2265fa",
+      "decoded_bytes": 6820,
+      "decoded_sha256": "c8deb473bfee8e103427b5184f3aa5243dcce2dc48f26ca2cee899786c4d20cc",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/lifecycle.jsonl.gz",
+      "bytes": 1240,
+      "sha256": "bf6fea53e9d6a22a729bacad60c6790da8b544e689e3482ade6ba94b5567eeed",
+      "decoded_bytes": 4578,
+      "decoded_sha256": "113eb10e70a99811ff1f496f3554e34dddcabe2695571ef030155a7d3f3c8f90",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07964/task.json.gz",
+      "bytes": 4111,
+      "sha256": "e2b349adf7d14b2e920de6e3acac27da6148a5ae87beeeb0f9e17a0ae397cc13",
+      "decoded_bytes": 8317,
+      "decoded_sha256": "96723dca38cf0aaf12f0c4300cf383db40e93dc82600934f73067a390b46df01",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/005-call-1-command.txt.gz",
+      "bytes": 139,
+      "sha256": "851b84abd25a20318cefb10feff9e5ebf8b5b09b16c0845891d057a0dcbc6b2b",
+      "decoded_bytes": 188,
+      "decoded_sha256": "b6f21f834c0ccb3af5673b49a4d64df5d5c34573e446c84290f2f4847809384b",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/006-result-0.txt.gz",
+      "bytes": 513,
+      "sha256": "ffb904a6ca84a9fd7b53bfb56016340b9da1e5c85b8bbcdf8e18b0804a392137",
+      "decoded_bytes": 1542,
+      "decoded_sha256": "6161b4e526542e557dd62bfd6c3fff398cbb2ecc17504b612e76697ea840d5d3",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/007-call-2-command.txt.gz",
+      "bytes": 194,
+      "sha256": "2a53095495af0ea68e5f84257fad978ad2489f22c28eac3d9b7c56134ec80a60",
+      "decoded_bytes": 327,
+      "decoded_sha256": "aaf07813665aa59bccfec8899701152394fd692fd887d5b3395efad899188454",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/008-result-0.txt.gz",
+      "bytes": 2842,
+      "sha256": "d6a07295a509c16c122c3d821c2ea42605bfb078490124615b96b1c901ffc10d",
+      "decoded_bytes": 5988,
+      "decoded_sha256": "c6c4974b39ffc2afee5893fd4b1f414ba15efdf9ddf2e01261551ec8e500a0e3",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/009-result-0.txt.gz",
+      "bytes": 4174,
+      "sha256": "89b0fc81d78a9ffac4a131d78071c2839e2131b6aac76c1ebf93f6ad5d4af8f8",
+      "decoded_bytes": 8834,
+      "decoded_sha256": "22ce11b94ad6cd53daf4214c7c8b05d2343d7fd3653bbb75af1ebbd75dce2b88",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/010-result-0.txt.gz",
+      "bytes": 1581,
+      "sha256": "9fda6474080dee2fe97479844fec3cb7ad4efd50a99479824d53ab2701694a9c",
+      "decoded_bytes": 2454,
+      "decoded_sha256": "c1089fac55eb588db2667ad517148362188fe42639fcd287e58b83de7d6990b1",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/011-call-5-command.txt.gz",
+      "bytes": 228,
+      "sha256": "cf2c3ab9f2dd154d6ddbb638c672587136ed49cca253c308573879f14fa92dda",
+      "decoded_bytes": 527,
+      "decoded_sha256": "eb4c73fc65d793ecdabaf561185d9ccbf763b2b3cffdf825f5caf5cbf8fd9f2f",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/015-result-0.txt.gz",
+      "bytes": 504,
+      "sha256": "f3569fbfd8523bc61663c6782241e16215793f28a02c318051c8dabcb158e4d8",
+      "decoded_bytes": 1075,
+      "decoded_sha256": "44fa0172864d5a228dbeb246c37aaa674e9adf17f00587a4a45617e6be9bb3af",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/016-result-0.txt.gz",
+      "bytes": 1399,
+      "sha256": "7402c7bacfcda6ce63ffcd05bc597a1f6898b9134d0b53d9c04cd46e0c031aa6",
+      "decoded_bytes": 6871,
+      "decoded_sha256": "8bfbb14fbd19c186284b446507b27fe11ca059715f7a5212b730e5ab8010bc04",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/019-call-0-command.txt.gz",
+      "bytes": 119,
+      "sha256": "9100cd25cd5c70112de4c0352682e95697010444883113d39f598ca36dae5caa",
+      "decoded_bytes": 121,
+      "decoded_sha256": "24ba92d9a7d3d6750b6c3e1640bd76fb0d6349c997103dc2672c2ed705c2d03d",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/020-result-0.txt.gz",
+      "bytes": 31,
+      "sha256": "323e9dfc07574dca116e0b4b90bc99c1523eba4fc7c52d443ee6a4fff0069903",
+      "decoded_bytes": 11,
+      "decoded_sha256": "efefc15c24ee8645a3f5f6958389db729c1577eb6b32aeac4caab2a86d90daa3",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/021-call-0-content.txt.gz",
+      "bytes": 1206,
+      "sha256": "e1055b454c09c02c38c08ad12c31823a8ba34c4c0bb9856398435addc81acc87",
+      "decoded_bytes": 2731,
+      "decoded_sha256": "26f54ee9787fa62abdc4717c61813ed82a7210bd127e549be9bd7a78f62e1282",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/022-result-0.txt.gz",
+      "bytes": 135,
+      "sha256": "906809bdafbe54f2486d69eaf87ff6ceb503d1bdba20185eafafa5e312b793e1",
+      "decoded_bytes": 145,
+      "decoded_sha256": "15ab3c0e9492cc9772c1a8ecd42ad21eb907b9e79c1a02fe073b7e5f74011992",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/023-call-0-command.txt.gz",
+      "bytes": 377,
+      "sha256": "f49265d6f294e39141253decc46f67c99754259d512acdfacb3737a0da0939de",
+      "decoded_bytes": 690,
+      "decoded_sha256": "38c2e31ade8b0dc4a16d612f510deb5309e29787451a7391ae57dfab0b82536b",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/024-result-0.txt.gz",
+      "bytes": 365,
+      "sha256": "7388e49e880a4fe1dc9efd9682364c5c6433cff92dc8f5d44efb009cccd8f942",
+      "decoded_bytes": 624,
+      "decoded_sha256": "4698ea28a77f566d7ca685d65e046e4c4be4d98959eba832c35d10ab35c1ab6c",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/025-call-0-content.txt.gz",
+      "bytes": 2578,
+      "sha256": "e4698f536ed3f56c9ee54d47bb24f103ac4b6f86bb40cfa46d4dc926c2263cab",
+      "decoded_bytes": 5409,
+      "decoded_sha256": "0d15580b79b79d852c0674cbd3f1f6976fc2c61f7db9cc6030394a134f4dc925",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/decoded/026-result-0.txt.gz",
+      "bytes": 141,
+      "sha256": "ea204c85447d49814352e8044066f9e81444fd6172a19fec8acf2b50f4f969de",
+      "decoded_bytes": 144,
+      "decoded_sha256": "d51f3412b42d5f0fe7f59d705ea20c512137b496e8e021b9ef78c66563395392",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/001-01a07967-cc4c-72c1-8bf5-94498ae2d7f7.json.gz",
+      "bytes": 161,
+      "sha256": "b20dbc6549da4ea54ac9d33da03f58a20229a9833db49ca5b458d6c53f8b561a",
+      "decoded_bytes": 168,
+      "decoded_sha256": "aeb42fde26101d796ea814081a89206981e47db2474eea6417f784cdd07862cf",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/005-3ce69039.json.gz",
+      "bytes": 749,
+      "sha256": "cae2537c694ee8dd696bbe6c9046f8742de0cf7eac3ff0f3a5287fea9877de91",
+      "decoded_bytes": 1294,
+      "decoded_sha256": "f067f0e275a6396159923e3a900e7bf585644437d20bf47cedbbcff7953fd989",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/006-6971990a.json.gz",
+      "bytes": 751,
+      "sha256": "49c25d577b6ec2958fb8ab14b88fee509cd8c6b560e16e7d31be63c483bf1e13",
+      "decoded_bytes": 1933,
+      "decoded_sha256": "8bdea0305a06fceb6c9744bf8fa8e5990b8d6e9ca4922b9948ee55d26818b179",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/007-8252f6d3.json.gz",
+      "bytes": 737,
+      "sha256": "a6f4187e2875ab6acfa7f425e227f32915ab47460e88b121fb98e3afa06f2de6",
+      "decoded_bytes": 1572,
+      "decoded_sha256": "df8efd88b6b33f3553483cf6181c2a031747062099fe931a3ed05fb4579f51db",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/008-2caa6924.json.gz",
+      "bytes": 3099,
+      "sha256": "90696ecac9758273842733c7483216db7ff9b4c15df9f9e36263f1b2a0691a74",
+      "decoded_bytes": 6413,
+      "decoded_sha256": "4ff9a331231090c3ed9e6f1848f4603a1ba464bdc75f820f32b699bed4308103",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/009-3ac2cc65.json.gz",
+      "bytes": 4409,
+      "sha256": "d791de5be01368788d68f2a2fd6097935cb246e87cc10589319d32b56ac73b36",
+      "decoded_bytes": 9219,
+      "decoded_sha256": "61f736d8bc33ff8c1e36c235e0705fecdee425e7e8d29476bc151986dc808796",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/010-a31246f7.json.gz",
+      "bytes": 1814,
+      "sha256": "9de1ca6b4325bc368822b67e3ffe43c966082741c49b24e1770e3da0d8199c4e",
+      "decoded_bytes": 2801,
+      "decoded_sha256": "93fc14e1b29a190e95a2334109b118ea254fb783b95532169d2ff57c4a601845",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/015-15dc516b.json.gz",
+      "bytes": 721,
+      "sha256": "a31b546850868e9891b81bcc97ee3caf0c67417f057e6a5259eca2083bb8e4dd",
+      "decoded_bytes": 1420,
+      "decoded_sha256": "d778aaea69b07e620253c56a306cfbd58a9a917fe562e06a60c5e1c04a3676bb",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/016-a8cc5256.json.gz",
+      "bytes": 1636,
+      "sha256": "8a3efa369d6e7e9fcb5290fe4c392b80dbabb25192662036b4612cb9f4f8f7e2",
+      "decoded_bytes": 7287,
+      "decoded_sha256": "1f44ce3c8b8ce478627f8ce1fcfd7a42c2e6113ac2be6ddc056452a78fd47df8",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/019-cadc7fbb.json.gz",
+      "bytes": 510,
+      "sha256": "7b3cd78f3d3b529901f8fe37a967610be113fa3f058228ad28abf5fb84636a06",
+      "decoded_bytes": 814,
+      "decoded_sha256": "3989644599465ab28904d266977d62083933f3d2bf18e92d2f2fa21c40fde576",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/020-0635b4bc.json.gz",
+      "bytes": 270,
+      "sha256": "5667ec7112e82735a58c46239cdcfbc9a2b8ab527fa0e0ff8b59a9db97766f6b",
+      "decoded_bytes": 336,
+      "decoded_sha256": "ef07c8c0ad41dd7ab5ddaa4de67fd85e3d1908c4ea3aa2325373d81a16cd5a14",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/021-ca3f614c.json.gz",
+      "bytes": 1627,
+      "sha256": "085e4587fd7e6c935e69fcf9e8d0af69abf24d5a8b6f32cd1363047e36aae362",
+      "decoded_bytes": 3581,
+      "decoded_sha256": "47e326a34ce812e8f364a626d87aa23587e4adaf0edefdbb3b76c43e3398e697",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/022-3efe646e.json.gz",
+      "bytes": 1527,
+      "sha256": "6e38cced177a3375650b0eceb297a676ff0ffe35a75be265b97fa34162d2ad78",
+      "decoded_bytes": 3473,
+      "decoded_sha256": "37618799348f0a1ec77c353df8a7758900249812ffa88d515c6cc18ffe95f92f",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/023-12c6a197.json.gz",
+      "bytes": 779,
+      "sha256": "aabecf22fe356433ac734ce7fa7330d8efcdfbb6f67bbb63a5b3026880ab62aa",
+      "decoded_bytes": 1410,
+      "decoded_sha256": "13525fd0e92bdf2ac8987d75c50883353c20acf4987a7a28717486259db85ee8",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/024-84eb8143.json.gz",
+      "bytes": 589,
+      "sha256": "f8bbb66e3eb65f3e100fda394cd1748cface00f245c35007fc60811d45818256",
+      "decoded_bytes": 997,
+      "decoded_sha256": "1b35376f3c1e695125422e6e8835ee9f8dbc6ae2e4944cd2547ba7a0d7becc67",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/025-8adca3a8.json.gz",
+      "bytes": 3038,
+      "sha256": "77a7cb6842000742607cce423ab23ce1e3ca78c2dedc47b62bc8c3249aaf5ac4",
+      "decoded_bytes": 6256,
+      "decoded_sha256": "521d0e5903d693819dfa17f70f5cbb2ed5e69016f49cb5599454f9e6da591902",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/events/026-eede4c82.json.gz",
+      "bytes": 2946,
+      "sha256": "2aa1a49245ca9e069a7ce147623814a9f36c6e90f027e1ed72402ffbbdefcbf9",
+      "decoded_bytes": 6143,
+      "decoded_sha256": "37ee97f0ee6a72bae128bafd322492cce3beceb425dc459a2ab922898e76e9e1",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/lifecycle.jsonl.gz",
+      "bytes": 961,
+      "sha256": "a403ffda0676548efbd0156f36ac81b65c55dcb8153af88b341dedf5f9412cf3",
+      "decoded_bytes": 2899,
+      "decoded_sha256": "8e1221c38395971cd63618e4ffc92ca3db3242ae8008c204a4409e2ad5048821",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07967/task.json.gz",
+      "bytes": 2957,
+      "sha256": "279b024326ab5955dde0b029ea8e0d7f945002f7ae6afe9e9d1406543025f984",
+      "decoded_bytes": 5888,
+      "decoded_sha256": "7cbfed01607c0ebe58a1fbaf028dbada67509ed4a72a8ed75dbde167b8487671",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/005-call-1-command.txt.gz",
+      "bytes": 190,
+      "sha256": "11dfdd7409d9b8caa1413de6f530c9c573f75b1d4a8e79ba0a75609af1ed74f1",
+      "decoded_bytes": 422,
+      "decoded_sha256": "cf149fdadef5b97fc04f70453ba18983cc892c0b00756f0751e5e4d4857b9989",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/006-result-0.txt.gz",
+      "bytes": 477,
+      "sha256": "753080a29a0a6d7c7bb0a8210c1edc10ec2d7fd21803e37a8624d1c51e45cad5",
+      "decoded_bytes": 735,
+      "decoded_sha256": "969433bd953c56f1f6480bd6f230ed010536b700810cc26748a5d9e8198ea18b",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/014-result-0.txt.gz",
+      "bytes": 13948,
+      "sha256": "f2202d24fa0da5c614ab1b677556f938c720196966d4f332d63008bc1fedeb97",
+      "decoded_bytes": 32867,
+      "decoded_sha256": "e355969228dd051fe0d63422234230862f19ca79b1eee043e583de894fd1073c",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/015-call-1-command.txt.gz",
+      "bytes": 332,
+      "sha256": "3ae3bcf02b8421260f9e678d01a5cf50bf4d2e121b83937f24389111224c0eef",
+      "decoded_bytes": 619,
+      "decoded_sha256": "ee82698b600aa1184696303124f8659ddb0632b0cb4c300ca1b0eee9147a1abd",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/016-result-0.txt.gz",
+      "bytes": 442,
+      "sha256": "7b862d7d10f1d6e1c38542a83cec430fce0295cc1809a703e6de645a69cc8de6",
+      "decoded_bytes": 892,
+      "decoded_sha256": "c69ef0014e3f6c5faf907ec84b7ab213a122e40b67bd6da0efd56683af5471a6",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/019-result-0.txt.gz",
+      "bytes": 1216,
+      "sha256": "1a75571f757eadc7f310d1b468acfbf05247d2fecf8e04959fe718fa6408411d",
+      "decoded_bytes": 3168,
+      "decoded_sha256": "18c6c095a4bbba28b6cdef3719e44ec0d4a238d298c7c93e483979a0b3ece08c",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/020-result-0.txt.gz",
+      "bytes": 4174,
+      "sha256": "89b0fc81d78a9ffac4a131d78071c2839e2131b6aac76c1ebf93f6ad5d4af8f8",
+      "decoded_bytes": 8834,
+      "decoded_sha256": "22ce11b94ad6cd53daf4214c7c8b05d2343d7fd3653bbb75af1ebbd75dce2b88",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/021-result-0.txt.gz",
+      "bytes": 504,
+      "sha256": "f3569fbfd8523bc61663c6782241e16215793f28a02c318051c8dabcb158e4d8",
+      "decoded_bytes": 1075,
+      "decoded_sha256": "44fa0172864d5a228dbeb246c37aaa674e9adf17f00587a4a45617e6be9bb3af",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/022-result-0.txt.gz",
+      "bytes": 1309,
+      "sha256": "2d2752638b33f64333c73f78dafc92c506e677d2fe0309aed6b5aab959f71bd1",
+      "decoded_bytes": 5217,
+      "decoded_sha256": "877a636bf425744fbb4771fe625f1843caaf696c35116a76d8f2ddf2456a7c58",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/023-result-0.txt.gz",
+      "bytes": 2256,
+      "sha256": "9d50c22f970858551250213d4c43de7be68f83fbeeba80a2c733e5d0c00273ec",
+      "decoded_bytes": 4119,
+      "decoded_sha256": "5e0e6ee731286c3cc0ec808bae19bc860f396dbd353cc5ac5f9036c5d45dc92e",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/024-result-0.txt.gz",
+      "bytes": 2842,
+      "sha256": "d6a07295a509c16c122c3d821c2ea42605bfb078490124615b96b1c901ffc10d",
+      "decoded_bytes": 5988,
+      "decoded_sha256": "c6c4974b39ffc2afee5893fd4b1f414ba15efdf9ddf2e01261551ec8e500a0e3",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/025-call-1-command.txt.gz",
+      "bytes": 303,
+      "sha256": "aacb077a0153e3cbef4e97e610866210c404c07d25f840785122e3cac8f381a6",
+      "decoded_bytes": 472,
+      "decoded_sha256": "3125ee96220bac7a5fa477c7112d3dd39d1c89f27cb719dc38c431e955c06ef1",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/026-result-0.txt.gz",
+      "bytes": 1645,
+      "sha256": "1aa92794ef7552c53791c2a6c215099b893760240f7a3153aef6c2a1195e7f14",
+      "decoded_bytes": 7369,
+      "decoded_sha256": "9df9b7016eaac91204a46ce31a2ae79ae59346a821f9ed1e96b5c8b23c8747aa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/040-result-0.txt.gz",
+      "bytes": 1150,
+      "sha256": "af94d9a11ca240a57ad56fc6304b1540d8a91fbba314dfa225f867b10ca7d220",
+      "decoded_bytes": 2611,
+      "decoded_sha256": "e41000163046c5eb8b47f7c691219117897eccd55908f49dfcb9cef7a03db178",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/043-call-2-command.txt.gz",
+      "bytes": 938,
+      "sha256": "2977d05100e24df522da49ce8e958309390893a0d11a86ee698c8e1b6abcb94a",
+      "decoded_bytes": 1576,
+      "decoded_sha256": "31f4457b7ad752bd3a8baba795f576b84e24a7afffdfa0fa94b93750ade53565",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/044-result-0.txt.gz",
+      "bytes": 111,
+      "sha256": "e35879e0a42abd8d7794130140be295e0eec4f6167dcdd63dcececd644738e29",
+      "decoded_bytes": 93,
+      "decoded_sha256": "a2cad4abdd46dd7645af2362e28d31ea4431e9738d541efc5709b79cda5d3697",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/045-call-1-command.txt.gz",
+      "bytes": 491,
+      "sha256": "6f447ded8822a6b5cfc9b77e2ece152094d9e618f45504f190962b9b01514bcb",
+      "decoded_bytes": 1090,
+      "decoded_sha256": "63e4ac30315a17ae28816d1940b253f39af7fe18f8ba4b8215e158a89d5ec864",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/046-result-0.txt.gz",
+      "bytes": 530,
+      "sha256": "f999b22c1a96650802515a76b9e53321c19c49cb894b0cdea7b9ac4c2523eb33",
+      "decoded_bytes": 958,
+      "decoded_sha256": "293e3bce8be1ce9b82dd2a14e0f845adab4631b234686e7d0f86497280290197",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/047-call-1-command.txt.gz",
+      "bytes": 4054,
+      "sha256": "e2c35e26de1b9bdc8dbb780ad20927e451b07884452e8dea22e245f3c4aa817e",
+      "decoded_bytes": 16343,
+      "decoded_sha256": "4bd342530ee8e31f4b6946adf9446a2bf5dfd52f11040ac5e678dfc14ea68faa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/048-result-0.txt.gz",
+      "bytes": 752,
+      "sha256": "b350bff45e63ec9a089bdc686efbea0642f7ed2c8e59380a2350a475205cbdac",
+      "decoded_bytes": 1698,
+      "decoded_sha256": "559f48b47de65c93c4ef5da5952c686ed7bb4fe49e913e148dc110cc6a9b3ec1",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/049-call-1-command.txt.gz",
+      "bytes": 317,
+      "sha256": "76d47c564a10b16f12301ae64b072e3da46aeee2249b31ac162d48e4ddc1ba40",
+      "decoded_bytes": 492,
+      "decoded_sha256": "4fe0aed6b4902386e7069ceb1e522598cf6e07b628ae53cfdd4a9f38ad5d90f5",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/050-result-0.txt.gz",
+      "bytes": 3812,
+      "sha256": "243b00af393e8afdcf5d62ea26191b61767ff1780344e02dab8013ea79c8244f",
+      "decoded_bytes": 11090,
+      "decoded_sha256": "5572c39f6d458809f8e356200455137e79e352d234d5ad0e939b6735342c3853",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/051-call-1-command.txt.gz",
+      "bytes": 2031,
+      "sha256": "5a95d89d0b864b8385903656edcac245883fe266939c03a1735eb44e1d9d8bd2",
+      "decoded_bytes": 6727,
+      "decoded_sha256": "c13683d749467fbb23e445c1963719cc056d4fda3d1014d593c2bf6d2128d518",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/052-result-0.txt.gz",
+      "bytes": 143,
+      "sha256": "c1585efe43a4b92cbfff5b0ae49f6f7ae65c6856e565c9529985b0c68e05af72",
+      "decoded_bytes": 197,
+      "decoded_sha256": "3f3f798b344b1076b8f6a36999489f65e4541a123154b052d84db67fd674082b",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/057-result-0.txt.gz",
+      "bytes": 1755,
+      "sha256": "2ba419a1f120e4e91ebc34c1dc92c6067113f7010e89fe024cd4ef7b98213272",
+      "decoded_bytes": 5366,
+      "decoded_sha256": "b24089f09db57ecab27a33533b7c5f21cb97fc1f0ce2c9b8ddeff6a05098ec19",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/060-result-0.txt.gz",
+      "bytes": 541,
+      "sha256": "545303c67f0fc3bb2e9a763015ce874720dc29e4a46ba093a628a82258231f56",
+      "decoded_bytes": 1147,
+      "decoded_sha256": "dc99e7cd329c5fe06b6205906b1d255172a92a11fbd26aad916241baec0990ce",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/063-call-1-command.txt.gz",
+      "bytes": 214,
+      "sha256": "0e0e5ff805f73ee15412628bc5253ab27f86de7c736aadd51731d4ad6ddeada8",
+      "decoded_bytes": 333,
+      "decoded_sha256": "76efabb41cbcfea16741c81a6b4a625c8383ea3f25afa97e292ecb85bf1c866a",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/064-result-0.txt.gz",
+      "bytes": 828,
+      "sha256": "4b3d096bbdfd654cfa0010a6153898fca1050c3ac3922296c2af0b5ca6f937d2",
+      "decoded_bytes": 2670,
+      "decoded_sha256": "93a65ca7848034d38cdb03892988df86cf62a7a4c0749436034b7d15868e0fcb",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/067-call-1-command.txt.gz",
+      "bytes": 1687,
+      "sha256": "b0e8410b0e3d71ba3f0333b5a97d73e148db7b7ce604b9932dc8b124856a396f",
+      "decoded_bytes": 4618,
+      "decoded_sha256": "46ea186ab1078f011e1f40d476660d2985a12adb64ac8fb7014d725ecebd8327",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/068-result-0.txt.gz",
+      "bytes": 145,
+      "sha256": "d4d418e409c6cc95e4a738180b78f4b9c5f9ca0e92204ef5a516e5bcec168c5e",
+      "decoded_bytes": 177,
+      "decoded_sha256": "3df89169827c00483f32de09ee666c3c810f88c8f9125bd930cb2d0adaf2f8dc",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/070-result-0.txt.gz",
+      "bytes": 40,
+      "sha256": "373fff8c43171f015886a467c27911556c228f088d168deffb320be7973b5a07",
+      "decoded_bytes": 20,
+      "decoded_sha256": "601e42a548ea64a1d7d13aa4eb446cbd64bd746ef39e3d3e822ea9114644c694",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/071-result-0.txt.gz",
+      "bytes": 40,
+      "sha256": "373fff8c43171f015886a467c27911556c228f088d168deffb320be7973b5a07",
+      "decoded_bytes": 20,
+      "decoded_sha256": "601e42a548ea64a1d7d13aa4eb446cbd64bd746ef39e3d3e822ea9114644c694",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/072-result-0.txt.gz",
+      "bytes": 40,
+      "sha256": "373fff8c43171f015886a467c27911556c228f088d168deffb320be7973b5a07",
+      "decoded_bytes": 20,
+      "decoded_sha256": "601e42a548ea64a1d7d13aa4eb446cbd64bd746ef39e3d3e822ea9114644c694",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/073-result-0.txt.gz",
+      "bytes": 40,
+      "sha256": "373fff8c43171f015886a467c27911556c228f088d168deffb320be7973b5a07",
+      "decoded_bytes": 20,
+      "decoded_sha256": "601e42a548ea64a1d7d13aa4eb446cbd64bd746ef39e3d3e822ea9114644c694",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/074-result-0.txt.gz",
+      "bytes": 40,
+      "sha256": "373fff8c43171f015886a467c27911556c228f088d168deffb320be7973b5a07",
+      "decoded_bytes": 20,
+      "decoded_sha256": "601e42a548ea64a1d7d13aa4eb446cbd64bd746ef39e3d3e822ea9114644c694",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/075-result-0.txt.gz",
+      "bytes": 40,
+      "sha256": "373fff8c43171f015886a467c27911556c228f088d168deffb320be7973b5a07",
+      "decoded_bytes": 20,
+      "decoded_sha256": "601e42a548ea64a1d7d13aa4eb446cbd64bd746ef39e3d3e822ea9114644c694",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/076-result-0.txt.gz",
+      "bytes": 40,
+      "sha256": "373fff8c43171f015886a467c27911556c228f088d168deffb320be7973b5a07",
+      "decoded_bytes": 20,
+      "decoded_sha256": "601e42a548ea64a1d7d13aa4eb446cbd64bd746ef39e3d3e822ea9114644c694",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/077-result-0.txt.gz",
+      "bytes": 40,
+      "sha256": "373fff8c43171f015886a467c27911556c228f088d168deffb320be7973b5a07",
+      "decoded_bytes": 20,
+      "decoded_sha256": "601e42a548ea64a1d7d13aa4eb446cbd64bd746ef39e3d3e822ea9114644c694",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/078-call-1-command.txt.gz",
+      "bytes": 268,
+      "sha256": "cb2abbafe6f15a7893183705dce163ede919cc3da4d75ac4a9f6f819f2251b74",
+      "decoded_bytes": 355,
+      "decoded_sha256": "613db4b57f865ac2acbfc888aec977534842fdd801428aaa10b3ac04a630bc4e",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/079-result-0.txt.gz",
+      "bytes": 1948,
+      "sha256": "a932409a3e317cea8c669aa2b1713a8651f979e244c3d91e00680caebc988773",
+      "decoded_bytes": 8021,
+      "decoded_sha256": "1bbfbe9aca67d421ce8c3f2e4224d0bff0543e0d86c3c987f886fcf5b6f12f9c",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/080-call-1-command.txt.gz",
+      "bytes": 1203,
+      "sha256": "0a01a727a6c340c84cc3e5df5d9934dfa97dc3290fd302d1dcd782d0dcc8cc02",
+      "decoded_bytes": 3137,
+      "decoded_sha256": "8de023f2be5c65dae49952f94ddefc42b3c937f8b04ea0a14d97e995550f2b8c",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/081-result-0.txt.gz",
+      "bytes": 92,
+      "sha256": "9bafebb557f22d7fa4a5df8b63f9361dbcf3ad2b343dbc69d999d1e23087073f",
+      "decoded_bytes": 75,
+      "decoded_sha256": "bca3187ba16592dbd7fb51e8054986c2467cc00c5141a9db34c430094df891da",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/084-call-2-command.txt.gz",
+      "bytes": 4594,
+      "sha256": "eb2c190b9df441ff20720aa0938b1846b1cc598c9f4ad5f75ea4ff000c2b6022",
+      "decoded_bytes": 14760,
+      "decoded_sha256": "63988c3b48184ab1a4dbb4fa246126c70092919ca574dbbbc9be4b1c07911cfa",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/085-result-0.txt.gz",
+      "bytes": 136,
+      "sha256": "8dffda0a12525c25309a3246a32b3ad436e2709bf29e6d1accb8003871a09f06",
+      "decoded_bytes": 217,
+      "decoded_sha256": "20ba496b1857881cba94e25ff6c2819fb47642ad85d5f4a247a1d8a7989ae8e5",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/086-call-1-command.txt.gz",
+      "bytes": 276,
+      "sha256": "7a8d910af76e67dbe7492cf02b8a176f054cf497321294d36bdcb5f2276eb015",
+      "decoded_bytes": 478,
+      "decoded_sha256": "f0d48f32d891147663eb90c5702e683ac7744c09882d8312f374b92a059e4646",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/087-result-0.txt.gz",
+      "bytes": 622,
+      "sha256": "597bb0b2ed300e95ed61667135e13d105bb4b648e224f0f44a2dc798b210d3d8",
+      "decoded_bytes": 2047,
+      "decoded_sha256": "8e3108e4abd09b53c109b5c125c2af6cd7bed697d848662af5b1b7dc62686fa0",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/088-call-1-command.txt.gz",
+      "bytes": 867,
+      "sha256": "f83db86bdcc437833bafe999f6075e6ea9856a5386476db9978e8abb944aa783",
+      "decoded_bytes": 2050,
+      "decoded_sha256": "a77221c40b56e4b0a577eeb2bdb3693271829076d8740f32862146cd7e442d88",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/089-result-0.txt.gz",
+      "bytes": 193,
+      "sha256": "a12c621635d3b63a88591286d3b480c4e9b9ce9f42944c8f2c4f33bad684bb29",
+      "decoded_bytes": 248,
+      "decoded_sha256": "b0a7d2fe59453187599d47e95ea0375a83a1ec0832fd03090bc16af3eef2315e",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/090-call-1-command.txt.gz",
+      "bytes": 179,
+      "sha256": "665a0a3b445cafaeb0500f1c7edab520e537e24f33b730cb61fb1b990f25badd",
+      "decoded_bytes": 255,
+      "decoded_sha256": "c5d9e0ce33f1bc2196e30cb1d19e4d2289e48392c407e6d61efb3fd9f1ba352c",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/091-result-0.txt.gz",
+      "bytes": 1973,
+      "sha256": "4aa6f7f6cbc7f487b7f6cf7880cb431a51dfd653707c2d4e401a303a74b73522",
+      "decoded_bytes": 6413,
+      "decoded_sha256": "6b18b3778aa168b515f5f2411432476dd47e891b6ea115a1a5b977973b79ea33",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/094-call-2-command.txt.gz",
+      "bytes": 728,
+      "sha256": "2413754babcd3469d27e0b9757e9f15c4653a871168655625b71d51fee075683",
+      "decoded_bytes": 1692,
+      "decoded_sha256": "0cb68b5acd557a17371ee3f140ebe2b11ec0f799f6fa80ddddb445b97ef0f1da",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/095-result-0.txt.gz",
+      "bytes": 258,
+      "sha256": "071bf2ccc0ff8f16f4e32c123ae9aefcdbaf61a85549481cc9df990faf026366",
+      "decoded_bytes": 1177,
+      "decoded_sha256": "b037b646b6b7eb9191c04e70d302279be507167b714514db46f43d80523a1990",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/096-call-1-command.txt.gz",
+      "bytes": 350,
+      "sha256": "7ea435920e576771c7427f3c73487002c9b79ed20ea003f9d41a0a46b469aaf3",
+      "decoded_bytes": 628,
+      "decoded_sha256": "018d1025112ab4f2d625e886b4ad22db91baff7d853b5a6fb65754e552fea79b",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/097-result-0.txt.gz",
+      "bytes": 592,
+      "sha256": "880e9158d05bf4749bd94f830307a5192e3c54c669c85e63d679305b8bef8d36",
+      "decoded_bytes": 1788,
+      "decoded_sha256": "c8a501fda43f0da1a10422fc88d9831bfd95d70880ba1393bd3844ac0fc88c40",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/098-call-3-command.txt.gz",
+      "bytes": 3665,
+      "sha256": "a3a1020a0626a338c5073844330a2ba4fd96567bbabc7b2e051ab09add577782",
+      "decoded_bytes": 8105,
+      "decoded_sha256": "61cb7f18f78da50eee82b1cbbb4d87b36cc767693beb100a11edfe46bf48b261",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/099-result-0.txt.gz",
+      "bytes": 110,
+      "sha256": "d3edc4b3da359de23e5422968352ee0b72ad5136d81128ce9ef5e22ec1b1deaa",
+      "decoded_bytes": 93,
+      "decoded_sha256": "88f39a54b41e37ab945e28367b972cbd53442e72879ac36fd0cb6e46d07c58b0",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/100-call-1-command.txt.gz",
+      "bytes": 698,
+      "sha256": "e274223164d09501c4a5d93d289951302d18ab62f2abeb60c912029464227cb0",
+      "decoded_bytes": 1856,
+      "decoded_sha256": "ba54100a462f1d0197c7ebb11e809a507cc5ebbd19e2449790b3e0614e2f0d9d",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/decoded/101-result-0.txt.gz",
+      "bytes": 170,
+      "sha256": "75ff57bc74c6b60f187f3eb51aa522eb76f8141ca1095bd1cd376700fec4721b",
+      "decoded_bytes": 276,
+      "decoded_sha256": "4b252315ec90da678bba318a5df4befb1cb91de8bc113d0516a0f57eddd29ba2",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/001-01a07972-3d61-7166-aa77-70fc1974434a.json.gz",
+      "bytes": 160,
+      "sha256": "b16072d396301c5c1032fcac6bb585ce805de300e82378c1ddbc249be05471ef",
+      "decoded_bytes": 168,
+      "decoded_sha256": "077dcac69c7c7559e402e902f2a3fb55f6ef60741498fa013f8fa5b10d367803",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/005-69c55ff6.json.gz",
+      "bytes": 831,
+      "sha256": "3c50246591a22e7f72bb113321b85128c70f249596f6b3a7738ffdf47a0f4d85",
+      "decoded_bytes": 1535,
+      "decoded_sha256": "cc18881a76a21620faa8461bab2a1ff92bbbd7d7af981f76dceab1347664e1d6",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/006-f107da09.json.gz",
+      "bytes": 701,
+      "sha256": "ef4a56f2f6e507de2a7014f5509da3ced9b6104502f1f0915b7f7795d0a6be27",
+      "decoded_bytes": 1089,
+      "decoded_sha256": "abc66cb382dacef97f79cdcd3094d032a3d2ff07876edbb9e2247ae13a5070ce",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/009-c7160c7e.json.gz",
+      "bytes": 738,
+      "sha256": "d11233cc8a2a27ffd1458d85ca05cfc1eef2cd7dee812d3cff192de2f6cca6d7",
+      "decoded_bytes": 1771,
+      "decoded_sha256": "59fec74c3f0a514c2cf69cbfdf500b7f3341eb7da847d84bafa8db0e9109d495",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/014-ab421c26.json.gz",
+      "bytes": 14222,
+      "sha256": "282cedcfe7115fb8482f5491067d0179abe5f9d7183a6946f2e26270be675c0c",
+      "decoded_bytes": 33439,
+      "decoded_sha256": "afbd4e2997b06ea9bf5a596c42eb206bd53cef25bec1d422ca5d650d303e362b",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/016-a46a1c98.json.gz",
+      "bytes": 674,
+      "sha256": "8290a08c6b8ff77252d704bfa7866b6e106ac8775d252b46fe8aa9d4853b53f6",
+      "decoded_bytes": 1234,
+      "decoded_sha256": "1cee5306f17ddccd3f751c2a6551934e85c0548c60539051095f04aa327911f2",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/017-2c107528.json.gz",
+      "bytes": 874,
+      "sha256": "c008677d329f5e4761e9d4062c7e7f7f6353262a4dbef6fd5cd65e5a32018ffd",
+      "decoded_bytes": 2475,
+      "decoded_sha256": "5fe41ae2aa63d4a61926767ee7b1edf7648297c0b31b5ebf8761429aebf5052e",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/019-e0503dbb.json.gz",
+      "bytes": 1449,
+      "sha256": "904dde511579d8a9b7e435d4ca5a32e7e0cd647dd1c37a2f1436f2b2e6365085",
+      "decoded_bytes": 3520,
+      "decoded_sha256": "e1a4c72f1daf4d5f2d8c732686cc51988ad4776627cc658d7ea10442cdfc0595",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/020-77ccf109.json.gz",
+      "bytes": 4413,
+      "sha256": "6991f07ed659f3a1068b273feb916bb700476524026699af5af9f4f3f23e74fd",
+      "decoded_bytes": 9219,
+      "decoded_sha256": "f3ed8cf8ac0c49a1d82c1a2ad36cc9a301963f0b1958cfe5c3f2d120a0156dbe",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/021-c7d5e6db.json.gz",
+      "bytes": 718,
+      "sha256": "dfe15eadc614d2bb3b6c2f1392aa09b409e7db97bc8f356d068de51d20d4a860",
+      "decoded_bytes": 1420,
+      "decoded_sha256": "14e72afcc18a846c86666dd854ffc16aa4dadab3a319a60fbafd41e562788e4d",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/022-15451b1c.json.gz",
+      "bytes": 1551,
+      "sha256": "b2bb5ddf510aeda14c6b81f09b65b9f209e3346b74cd1fe87667cad6e9ffb9d6",
+      "decoded_bytes": 6227,
+      "decoded_sha256": "388372a739fef8988135edfe783d471562b9ec13b78164866a2d437d421f31f7",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/023-ebf9c8fa.json.gz",
+      "bytes": 2505,
+      "sha256": "ecca10cd8c7e4b831e7e9452fa125d404217f09a2129fcb08e7c07d401021e14",
+      "decoded_bytes": 4468,
+      "decoded_sha256": "ed631ab89eb71d1a260e2dd5a55fcb64cd5b262a78b555045bed683bc3782a73",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/024-458fdd3f.json.gz",
+      "bytes": 3100,
+      "sha256": "48ae66d2a3f72ac27a99c014cf040711fcb4079e60d83c6ff2e9ccdc729435ae",
+      "decoded_bytes": 6413,
+      "decoded_sha256": "a632012b3192dfd2cb30383744de9ee4117011071dbbc1c40fc80e99b4473d63",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/026-a4792240.json.gz",
+      "bytes": 1885,
+      "sha256": "a259b903f6e8a8ed734293363217d35ed057b459f8b4c2dc83e7a6222c3090b1",
+      "decoded_bytes": 7805,
+      "decoded_sha256": "645335432c65807e0f3a34b504d1446c9a5b2b3da140670d5216b8a329204793",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/040-ec7325ea.json.gz",
+      "bytes": 1390,
+      "sha256": "ac0aa6824c4710685daf26e77ae3b4aa01da74a6c829d84e08221dc6a38d7cdc",
+      "decoded_bytes": 3072,
+      "decoded_sha256": "2c00339b22f2de7a24769a583ed27f29d6bc1780e73206574a2787c5cc04dffe",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/044-a98306c1.json.gz",
+      "bytes": 330,
+      "sha256": "a7fcb8ecf25c3022dcda66cfaab8f824f9231fd7ee88e9ebf13f59d2d34758f9",
+      "decoded_bytes": 420,
+      "decoded_sha256": "007bb94a9d69f08b81f9b4a30f256182c8b05c839d89a85ea3cff3d2695dea29",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/046-c0984352.json.gz",
+      "bytes": 760,
+      "sha256": "a235d9cc2cb407cfee2ec285f9d38eee89d35015cc2fc77f308952d242029b5e",
+      "decoded_bytes": 1296,
+      "decoded_sha256": "bc2d15c5d68c7721d68e1bcc3e9df2f05f009d38a3efaab0f4335b632d50c022",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/048-0c79e8d5.json.gz",
+      "bytes": 981,
+      "sha256": "b6af1afdf29e30892c9abdbcdaf939983adc8a57384091d8975cb7d932a4588e",
+      "decoded_bytes": 2100,
+      "decoded_sha256": "df92dd78e75df4dc2ac42e6e5f713341529a27096c926b9c9f72592cc5d9d276",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/050-bed4736e.json.gz",
+      "bytes": 4049,
+      "sha256": "b1950ef85f674de0de7af437a9e31a9e42ee4cf56e7d1bcce4018b6f21732628",
+      "decoded_bytes": 11477,
+      "decoded_sha256": "fa3c2436f73753bb7ba8061e75446e2bf77b958f91815a89cd04aed7c21de639",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/052-c73a8751.json.gz",
+      "bytes": 369,
+      "sha256": "f8f65c98ef5873252289a9a0bb50b3c1a20730888e8c0ffc143a318d1ccbb1f6",
+      "decoded_bytes": 527,
+      "decoded_sha256": "a9a9344c73e9b4695592631f1bd96f10b49fd0f872d51a5cc2648a5caa9508fc",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/057-6f6ad885.json.gz",
+      "bytes": 2011,
+      "sha256": "b7c1d9b4b2e9d67158b73231a44256a84445636f07b33fcb30cf1ddb301cc293",
+      "decoded_bytes": 5844,
+      "decoded_sha256": "1e0f377ff28884c053dbee8be4d21da3fc20b5cc860da2108140579f42f25547",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/060-47703047.json.gz",
+      "bytes": 769,
+      "sha256": "e199852654c70bdd570d6c34bd5d01a40d5513bcbd66651845eb2f4696f90e80",
+      "decoded_bytes": 1509,
+      "decoded_sha256": "3ae16e297f230c1db061022badc9c389c08d9d04dcb98f233f9e503e937c0f58",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/064-8a3f22b2.json.gz",
+      "bytes": 1057,
+      "sha256": "3e6c2f00f34d1c779fe0adaed9403e35e8a18b63cc253edb915b55136954a554",
+      "decoded_bytes": 3028,
+      "decoded_sha256": "dca9bbbbd0adea7514c0c34a9a69707b8a707bf28d4f92d5c545ce5c40492a1f",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/068-cdd5eb74.json.gz",
+      "bytes": 371,
+      "sha256": "3a5e8f8154515c27c8927cee7d76899eff1e968e4af66367eea517cb7446467e",
+      "decoded_bytes": 507,
+      "decoded_sha256": "e380becc3b0e7300778c5ab97405bf636123a1011c612b9ccfc54b021bdb79ac",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/070-670c4c08.json.gz",
+      "bytes": 390,
+      "sha256": "ea789b5938d86bd5dfe9d8979b9e184038a585a26d9d58d648c4b1d351511a13",
+      "decoded_bytes": 550,
+      "decoded_sha256": "faf7fed54e4e810ccd0f451e00e2e06b21be597461f70e0c94a889f16171feff",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/071-c97dde7b.json.gz",
+      "bytes": 394,
+      "sha256": "a7b30c59e55f6ad62b5c05bb662c84620843befd371a63dbb4edd052f97c0e47",
+      "decoded_bytes": 561,
+      "decoded_sha256": "37a1864c1ced7de33e3e9da9c928c954326645a3865d0833d947e239283510d9",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/072-3dda8635.json.gz",
+      "bytes": 400,
+      "sha256": "27dc1e82f9ef1b373e97d036aa4793935f7976babb8a5b3f040f23f9ce34b81a",
+      "decoded_bytes": 566,
+      "decoded_sha256": "205b34c58e7cbaf596583dc1a865994672e343f3e24d27b12490bce8c4294ebd",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/073-1491b228.json.gz",
+      "bytes": 402,
+      "sha256": "7a7ef6882bc96e0e27e7d828e6cf424742998a32530fc518cd989798d23bea1e",
+      "decoded_bytes": 562,
+      "decoded_sha256": "adbc989d56002f71be04fe3bf1dfe49d771087588187e9ce21796d859f695ccf",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/074-2e4372fd.json.gz",
+      "bytes": 392,
+      "sha256": "b8d82e102e71e655a87587d95da56aa855b2d9505c0ea05b0037fc7975d276c2",
+      "decoded_bytes": 557,
+      "decoded_sha256": "90cf3651ad456f747223bb32de31fa6c442dc44f789e0c4c5721f6ff0cf488f7",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/075-8c784fcd.json.gz",
+      "bytes": 397,
+      "sha256": "c69dc87042b5ec654e0ebe73c7260f0a1896addc8ad990755628b33615a8976a",
+      "decoded_bytes": 558,
+      "decoded_sha256": "1ac43a88d754368f9cecdc74d2f7d76e03b9b95029ccf60e8662957f642b58a0",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/076-5669e12e.json.gz",
+      "bytes": 396,
+      "sha256": "90ac92e6faa9ce8d6c2f072d01002a002c7be719ed957063334f5cb136c0a2ab",
+      "decoded_bytes": 555,
+      "decoded_sha256": "422be4ca8b0cc3ddc84e1ef7c02063f3dd7e554a95a0e94e6e920a6164a191cb",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/077-ec0a39bd.json.gz",
+      "bytes": 396,
+      "sha256": "be5d11026623871a27d59a469922599729ec4bda50453c8d89c53c61b813b790",
+      "decoded_bytes": 555,
+      "decoded_sha256": "a128022eea13b4a5a21a68b7fb1fbc3f85f51fa6709012e7291f97413bd6a7d6",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/079-b85f2cee.json.gz",
+      "bytes": 2176,
+      "sha256": "5777b89dfa5251596bf4c1d8fa2b7a9416ea326ebd86611c19c233b96c7c6d5b",
+      "decoded_bytes": 8553,
+      "decoded_sha256": "fdbe992fcdf269c5a070694cd96b7aca6ca09b7455275b881e6f7ab718a8fb9c",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/081-6aee564e.json.gz",
+      "bytes": 315,
+      "sha256": "937e4bf86fd97c18f5c06b8c805f7a574f7b4386fde0f026d1d4577582b2284b",
+      "decoded_bytes": 402,
+      "decoded_sha256": "30ef6c118250c2201c17333203921ef7d421652a219bd8c322b4db01b93d07bc",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/085-f3842f98.json.gz",
+      "bytes": 363,
+      "sha256": "408567cd4ab3c95a4b86cd6396c5228412ac2f815af6ab77441b7d048d028cc5",
+      "decoded_bytes": 546,
+      "decoded_sha256": "c2e5324a555e39f787c4c391aa7adc435d5b6812043dbba668515dcd8d8f1db8",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/087-aaa804dd.json.gz",
+      "bytes": 851,
+      "sha256": "4a39d8eba6b6b603260d85ee1dde0025f8d792deec180015545e99aa756357f8",
+      "decoded_bytes": 2466,
+      "decoded_sha256": "9c509b0bb5d06d6a027a228b227410c8085f13865fadd0c2055ad9cc66c21028",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/089-f8aef8af.json.gz",
+      "bytes": 422,
+      "sha256": "2b8ee01d34ad91302ef12a54cee8b143a4ec448f088f06c6d030e1b56344de25",
+      "decoded_bytes": 595,
+      "decoded_sha256": "5b7ab9328d509a213401c3710a376fc81c41e061a662397fd753acb92f85d329",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/091-3f9f1b66.json.gz",
+      "bytes": 2207,
+      "sha256": "1f826df3d7fe223dcf9b6452c89ee902d53727e71a5cf0cff11cee8a7fb16406",
+      "decoded_bytes": 6834,
+      "decoded_sha256": "d381c727e1a1d41e4387d1f806abf177a0b19db13b5b6a52fe687ea87b7bed11",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/095-dbdf48cf.json.gz",
+      "bytes": 485,
+      "sha256": "e743dd8e6673be72da0084fbd792c516557162ebf1a549276f77b7c70dab9e9d",
+      "decoded_bytes": 1510,
+      "decoded_sha256": "18fdeba670bfa357af547e40f85b3ba0ee98389fac197d5845a1c757f07f1f4a",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/097-24ae4045.json.gz",
+      "bytes": 825,
+      "sha256": "8790320347d6e10b04dd7fd5c8276bfd95f29f71d13d856171cafd2b906dc35b",
+      "decoded_bytes": 2147,
+      "decoded_sha256": "a423d8daa77915fc410d51b11fe1ea6cc51d4bc853f8a375a910a1a501ef3c14",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/099-f1ca0b1e.json.gz",
+      "bytes": 334,
+      "sha256": "015ac5611be51bd92e4462c6ee8454437ed77a245e91bce235425f789e0db30e",
+      "decoded_bytes": 420,
+      "decoded_sha256": "de76f6b82ac65b4299a37e92246b4f01effafd83bc31726594d23b1fad4b607a",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/events/101-c0ce3184.json.gz",
+      "bytes": 389,
+      "sha256": "765d4fd179dcb4c0185bd0495711c1c7276f69963012c84f0f7cd2b05f4fb487",
+      "decoded_bytes": 607,
+      "decoded_sha256": "bac0865bb2ad05be9511d70262e996aea011ed0ffe82f0d12fdc27c2988bc8fc",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/lifecycle.jsonl.gz",
+      "bytes": 1680,
+      "sha256": "1491a4f97ca29b8c24f82e20ab6a3293512fdee5973368d5c8f081d3bd59879e",
+      "decoded_bytes": 8317,
+      "decoded_sha256": "ddac22fcf1761b9205c8d0af16d5486c458fa9084b647cd8150a1156b8884dbf",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07972/task.json.gz",
+      "bytes": 4604,
+      "sha256": "d2b0c518facd5dcdfef2e1d8aa407d126b31e8664c529bb74325e868ee634e9e",
+      "decoded_bytes": 9527,
+      "decoded_sha256": "37dffd508114a020db6c92bf17782e3052165785da802d3642cc0a5f116cc0cb",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/decoded/005-call-1-command.txt.gz",
+      "bytes": 153,
+      "sha256": "dacc1dffff8f71e4bff8ca569c4cdc3037ab5e2aca1fd9eba3882fd1a9fe216d",
+      "decoded_bytes": 220,
+      "decoded_sha256": "a0c67ce010380ed432a334c6b4494f8dbc0ef6e5be5ad5adc81c758bd787cf74",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/decoded/006-result-0.txt.gz",
+      "bytes": 336,
+      "sha256": "fd4b7834f6c488c33b3c8f2e6c4c167758a4097908a2ee9e9cdf98380048491a",
+      "decoded_bytes": 576,
+      "decoded_sha256": "33fc4eb1c3537d592a95300ab890c4c37cd07820ddfc5941af8269476180c838",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/decoded/008-result-0.txt.gz",
+      "bytes": 3509,
+      "sha256": "178021b03538f1dba7b5952953f1b04611c2acfa894adda3afad46305917b2b7",
+      "decoded_bytes": 7662,
+      "decoded_sha256": "eab52def3c64680c9e70fdbbb34b3a24a1cffbf9edc2a0839800edbda5b97852",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/decoded/011-call-1-command.txt.gz",
+      "bytes": 244,
+      "sha256": "63d4065bf6315dfb112e0a7b9d3c60588371d86502a27ad40fe684c0f08edf31",
+      "decoded_bytes": 380,
+      "decoded_sha256": "6aac164f72fd67e54be3d338c4bd469036e8745a452b2d47acbb067e3a314dcc",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/decoded/012-result-0.txt.gz",
+      "bytes": 968,
+      "sha256": "bac004f875a90277cc63d821c25f29a2772967aa89cc38da670ab2c0200e8a46",
+      "decoded_bytes": 3320,
+      "decoded_sha256": "678b7c5e35dfc99d3b988e851b8279da161c50d2399d5431c5aa92608e1497ee",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/decoded/014-result-0.txt.gz",
+      "bytes": 4174,
+      "sha256": "89b0fc81d78a9ffac4a131d78071c2839e2131b6aac76c1ebf93f6ad5d4af8f8",
+      "decoded_bytes": 8834,
+      "decoded_sha256": "22ce11b94ad6cd53daf4214c7c8b05d2343d7fd3653bbb75af1ebbd75dce2b88",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/decoded/018-call-2-command.txt.gz",
+      "bytes": 956,
+      "sha256": "4cc304970f6824633d8524a5a3bff98a56fdc67274fbc927cbff015bb61a54eb",
+      "decoded_bytes": 3004,
+      "decoded_sha256": "5b98f74a419c33be20a87b9bce53ddd526a7eee71c4d749e6f136b61c8b50b51",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/decoded/019-result-0.txt.gz",
+      "bytes": 45,
+      "sha256": "5b78122e87ef87ac8a2064e663bfb5e545f9627ee4048c0016e85335ac8c08fb",
+      "decoded_bytes": 25,
+      "decoded_sha256": "13fc54c0162a3c193725b8ed0a530819b1961ea32e94da52e61bb8fd2147985f",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/decoded/021-result-0.txt.gz",
+      "bytes": 1704,
+      "sha256": "f24af1605254d8c5749fe2f8a577cad4b1f16e32c3c1343e17c101bd5b590490",
+      "decoded_bytes": 5261,
+      "decoded_sha256": "15630d6509ad1e4ff08d5b2ded1fafb8f9fda0daf3b642144498bddca892b5b0",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/decoded/022-result-0.txt.gz",
+      "bytes": 163,
+      "sha256": "b654110d3865e0346a9847cc0f1e16c1013ff1b693f54d5a5a3be34299b071d4",
+      "decoded_bytes": 463,
+      "decoded_sha256": "9c085d90e7f87d65bd11890dfa03c4066cc2e60eca9e4b6dee700c5f095d82fc",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/decoded/023-result-0.txt.gz",
+      "bytes": 504,
+      "sha256": "f3569fbfd8523bc61663c6782241e16215793f28a02c318051c8dabcb158e4d8",
+      "decoded_bytes": 1075,
+      "decoded_sha256": "44fa0172864d5a228dbeb246c37aaa674e9adf17f00587a4a45617e6be9bb3af",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/decoded/026-call-1-command.txt.gz",
+      "bytes": 234,
+      "sha256": "95eb4f769c43314117f429d0d820b4446a3c889b40361510476f5f6c755dd72c",
+      "decoded_bytes": 334,
+      "decoded_sha256": "581c30112390240664ae3897dfa06249e13d03ebec8462ea01c96110936a7cc8",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/decoded/027-result-0.txt.gz",
+      "bytes": 310,
+      "sha256": "05e526176fb80d645bb97c4816c5a38b9b50ba2c38a9ed2b2608d671e5a05fb1",
+      "decoded_bytes": 547,
+      "decoded_sha256": "0383a2862b637cb17408276f7cffefc05208e6e22d1be64087f274fb5cdbadb0",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/events/001-01a07982-85e2-7876-a93e-af889bcf16cb.json.gz",
+      "bytes": 161,
+      "sha256": "18b7256f80cfa8ed018b97413934167d997ef85459a10cb2865920bb49706f42",
+      "decoded_bytes": 168,
+      "decoded_sha256": "54a32979bd192d09ee16d73d5177d5cff5041cb97242a5b0a2b607fb14dbf0b7",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/events/005-39f6b3ec.json.gz",
+      "bytes": 779,
+      "sha256": "76fb56e1759216a163a7e1c9482a619028f1a5508e62b13ec0db9289e76b3273",
+      "decoded_bytes": 1337,
+      "decoded_sha256": "cc237b37da1ed296e72d69fb248e14d6105ca12c0fd696d2f17983c7917f64f4",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/events/006-7e406eab.json.gz",
+      "bytes": 567,
+      "sha256": "0de8cd716b545f9c4a02d44e36c7082bfbdc7737fc1f7abf3a8883d92a44bfaa",
+      "decoded_bytes": 926,
+      "decoded_sha256": "982c3fa0af7c6ae2a02475c0e7f92b2af03402bf1860a73434ebc21015de60d1",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/events/007-3da336cf.json.gz",
+      "bytes": 759,
+      "sha256": "be5767b34be8e8eddc8a3e9f46c38bfa05ebae709a7d82399d70a5fbfa00456f",
+      "decoded_bytes": 1602,
+      "decoded_sha256": "29a09d99e6b2a56e764cc239e390b515c0ed0568983a2ad9b8b2389ba9c315a7",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/events/008-fa0dece2.json.gz",
+      "bytes": 3772,
+      "sha256": "5fd44261104fc1b54da98e8fa308f25539a45869a189ee5ae4ef9338cbd174b8",
+      "decoded_bytes": 8111,
+      "decoded_sha256": "550fd17d9ba809486bfd3eadb0b08b21c77c7a887cf517d8ec6b5d460cf33c5a",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/events/012-959c0926.json.gz",
+      "bytes": 1208,
+      "sha256": "729180608ce1c94341eb164828c49734c5615d9afe06a989c4175613d145a7cb",
+      "decoded_bytes": 3775,
+      "decoded_sha256": "7674bee09c3b5dd46e6cfdced9ee8d4c2abce4f8cbc8e746b35d2fcfafe2d1dd",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/events/013-df20d595.json.gz",
+      "bytes": 734,
+      "sha256": "5ef8d0df8a987ddf9e5684f2871328ba47a2ac3e1199211466cd7ced4444069a",
+      "decoded_bytes": 1584,
+      "decoded_sha256": "ffb161f7e0e217c0463117bc9535bce2b2767e4f5e2b9369bbd9eea842e9c4b6",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/events/014-662fae7c.json.gz",
+      "bytes": 4407,
+      "sha256": "f6b8ef0788ea7a255d32a0276e43e37f9f9f690cdc07037c80de58091585f085",
+      "decoded_bytes": 9219,
+      "decoded_sha256": "65727c4ff74a1136a93b8d099850a4ffd945a29593bc725811587748a9dc7cb8",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/events/019-23f97edb.json.gz",
+      "bytes": 279,
+      "sha256": "2e4a6814ea21354c9b185539f6da8f3dcc3d7989e6d280da54336abdebe571d3",
+      "decoded_bytes": 351,
+      "decoded_sha256": "187e20f279ede90b665bd48ff5a10bd1dd708de5f7c8f614778271d039b05031",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/events/020-272414ee.json.gz",
+      "bytes": 667,
+      "sha256": "9afc4622982c015d8fa74126de6907deeb0b3dd12aef64394f0bbd701e6f6bc5",
+      "decoded_bytes": 1445,
+      "decoded_sha256": "4c695dd48e13b13fc92fa83478fc8ca97400bfe56dbc38ee5cd058eae98791f9",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/events/021-1e8d1f96.json.gz",
+      "bytes": 1953,
+      "sha256": "0005bdf027157c44b758a56c4394f03b8f602cfa3e51ffd184bb5128d87cec2b",
+      "decoded_bytes": 5724,
+      "decoded_sha256": "8ff3a4ac75c7e0106f6be51f0335395c4410b705c34c8a46c1ca6b0b11bb7c5f",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/events/022-5f5c0992.json.gz",
+      "bytes": 384,
+      "sha256": "661687d3983f7970d8cbd910558cf18fb855d71da5a40117ffe3752fcf883af3",
+      "decoded_bytes": 792,
+      "decoded_sha256": "e672ca990384b4e81dd13cd0f0b723161be0d6a1d76b295fac3071b7b0084c4e",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/events/023-72b52cf4.json.gz",
+      "bytes": 722,
+      "sha256": "d7513c029591d5c6bc732b4b0e99e7a5a299c1a571a154dcef90d3026752a103",
+      "decoded_bytes": 1420,
+      "decoded_sha256": "77467e5c09b292d450ae963c526d0f86e5cf3548f8403374ee1e6abd9cca2759",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/events/027-41f5ade1.json.gz",
+      "bytes": 532,
+      "sha256": "7a154dbf7fa2400d21d2df4b8fa9b01d88717f6d105d0960503484fd08f8151f",
+      "decoded_bytes": 889,
+      "decoded_sha256": "473c8cb5a73089f907cb1e3b1580d70a27324a0111c5f2b0b9ff9e80341eb6fd",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/lifecycle.jsonl.gz",
+      "bytes": 1047,
+      "sha256": "dc2a77e6e4571ee517498c308122ba5613f86cd6552a0d708b4da7a0efb56902",
+      "decoded_bytes": 3083,
+      "decoded_sha256": "280dd56156d0c2ae147dd23fd73c90eea64d8c5d126aeaa9977c6ae2ce87d27d",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "owned/st_01a07982/task.json.gz",
+      "bytes": 3527,
+      "sha256": "2ece693ef32d89e0e6c14790d0bb9fd6d48c39c5c9933dd78d2872ec8ef5818f",
+      "decoded_bytes": 7160,
+      "decoded_sha256": "4dc1c3bac3e97a075ae5ac2e4bf021bcc2a2ece5f67325caa39a2bc9b56d3448",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "prepare-public.py",
+      "bytes": 10751,
+      "sha256": "09688ebed5902c25e831cd2afbf2a9bdc4295bda0e3bda692c3108ef3a4d1b9e",
+      "decoded_bytes": 10751,
+      "decoded_sha256": "09688ebed5902c25e831cd2afbf2a9bdc4295bda0e3bda692c3108ef3a4d1b9e",
+      "classification": "public-safe new archival preparation artifact"
+    },
+    {
+      "path": "recorded-patches/st_01a07972-line43.patch.gz",
+      "bytes": 851,
+      "sha256": "44dd1d35568bbdb57d575a84395207bac2b60d1caa590f5a91083246f2ce4ed7",
+      "decoded_bytes": 1353,
+      "decoded_sha256": "762ed3675fe9e9c3946e4a52c148e4cdf7014da78d70570377fdcfb6452e65ae",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recorded-patches/st_01a07972-line47-built.patch.gz",
+      "bytes": 3501,
+      "sha256": "cf95b39724e4841ff3790ae05ed47493d2ecc04e154dc0d973416c749709c144",
+      "decoded_bytes": 15455,
+      "decoded_sha256": "6b2f9201d946910f39753807daede98d886956a936e45c1aa81cb2f4ce65529a",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recorded-patches/st_01a07972-line51.patch.gz",
+      "bytes": 1841,
+      "sha256": "a2375b791c2235b0c8cef83859c19854dcd25eaab4c785da1cca89dddc37d1dc",
+      "decoded_bytes": 6417,
+      "decoded_sha256": "44defcec77eb25f9121849950aca18d27c8b2848fa21d8f30bd58b1dbc5c4bca",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recorded-patches/st_01a07972-line67.patch.gz",
+      "bytes": 1500,
+      "sha256": "fc6b032c97c1c021e7fea88f3849d369c804a60de136dbc589c404d42fbea366",
+      "decoded_bytes": 4308,
+      "decoded_sha256": "c3ee648d037ebd0c372b40231696ece4eb4c8b156529e9a15d0434a0f46e8eb8",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recorded-patches/st_01a07972-line80-built.patch.gz",
+      "bytes": 960,
+      "sha256": "746c3cda9ee62a58afa85454eef412fa2c21d341ea53092f21ce5c3a17a9d2de",
+      "decoded_bytes": 2790,
+      "decoded_sha256": "36a9517beec838432072e929dc88091f1be65fbf4de9617ebc257862e8f1ef86",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recorded-patches/st_01a07972-line84-built.patch.gz",
+      "bytes": 4391,
+      "sha256": "1e8fca5145a9608ebb35e7a1cde7cb090f1f95e86a00ffc2e4c368809487a478",
+      "decoded_bytes": 14495,
+      "decoded_sha256": "a45c1bdfa861bb5bfa479c80f76fdb2819d7e571de678363258b3cdff13aca04",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recorded-patches/st_01a07972-line88.patch.gz",
+      "bytes": 442,
+      "sha256": "d4f1b69d06f1c103f11ef65e9aad112678daed57017e0e1ea2522c72e51066f0",
+      "decoded_bytes": 1105,
+      "decoded_sha256": "cda37973f09995ecd30d2d9719f6e01b213227c52330bb407dafbdcd9ca161d6",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recorded-patches/st_01a07972-line98.patch.gz",
+      "bytes": 3569,
+      "sha256": "d73f5d8ae800bcf6c86be9643a152122f1d1c3a65f46884419cbe8bb6d75f988",
+      "decoded_bytes": 7882,
+      "decoded_sha256": "17debac382d3fd17092f7695ac10c30668404c7283c3ebc3f48fc7fd2979fb60",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recorded-patches/st_01a07982-line24.patch.gz",
+      "bytes": 2792,
+      "sha256": "580983590eac4cf5a3617112374795bd573e57f59654e37282dd67607468c3a1",
+      "decoded_bytes": 6040,
+      "decoded_sha256": "7ed9a33c9a631f635dcc25ad2b10a83f1c41fd231eb3a77df78d6708db5c4c15",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recover.py",
+      "bytes": 12495,
+      "sha256": "d06f2d30502056eeca666cf4fd08bfc72a322504c3c5ace3a656e009e15e13e2",
+      "decoded_bytes": 12495,
+      "decoded_sha256": "d06f2d30502056eeca666cf4fd08bfc72a322504c3c5ace3a656e009e15e13e2",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recovered-created/first/SUMMARY.md.gz",
+      "bytes": 2842,
+      "sha256": "d6a07295a509c16c122c3d821c2ea42605bfb078490124615b96b1c901ffc10d",
+      "decoded_bytes": 5988,
+      "decoded_sha256": "c6c4974b39ffc2afee5893fd4b1f414ba15efdf9ddf2e01261551ec8e500a0e3",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recovered-created/first/adopt.stdout.gz",
+      "bytes": 192,
+      "sha256": "ac12376e5d16de65ecd70c1ef14ca5d4b5d1dd386b7ecdf6516bf5b282198916",
+      "decoded_bytes": 288,
+      "decoded_sha256": "28b04ba59e18d60e023dde3ffc997192ca6f032a85c99a01f0e2385f30d5452d",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recovered-created/r2-final-recorded-patches/public-rights.mts.gz",
+      "bytes": 3077,
+      "sha256": "9124288d883fba6d191b51e6ab95975b54b153803e4ca835dc32eb2dba5bdf39",
+      "decoded_bytes": 10479,
+      "decoded_sha256": "bbb4d4562544f0bcd8c65f11c2bed6d6d5cc1f61d6a83a0406eeba90ebec08b6",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recovered-created/r2-line43/JOURNAL.md.gz",
+      "bytes": 781,
+      "sha256": "3efb0d2e14d0945080790588c28a2c97fff9b24f7e95b5e1a134045140ce3e0c",
+      "decoded_bytes": 1248,
+      "decoded_sha256": "b5cf9f05eafb684797cbaa6a6fc4ffa77bd2cc40fde98d13d1f5e19fee2d0199",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recovered-created/r2-line47/spatialRecoveryRights.test.ts.gz",
+      "bytes": 3436,
+      "sha256": "587c41235fce02beaf72f22ac872a12faeaaf3d3901a0c7c4834f3750a70c3a2",
+      "decoded_bytes": 15127,
+      "decoded_sha256": "4d5d742c1871153edb775b1e7c7ac27bc6df65f4e8825f3fd7ff4364df19a572",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recovered-created/r2-line84/diagnostics.mjs.gz",
+      "bytes": 638,
+      "sha256": "7ea313e6a2077b9c21a75adf2cb9b64b6bd50edd99f06f2d931594b25fba3750",
+      "decoded_bytes": 1337,
+      "decoded_sha256": "7dd169a9d5405316dde0ee0ec267e3db56ca3371d1269fba8ea7aca1ae0110dd",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recovered-created/r2-line84/public-rights.mts.gz",
+      "bytes": 3063,
+      "sha256": "b4d9bbe9cf3554270d332eec46255f2c59b1b6bc5a6ef110c9e05aa1badf9908",
+      "decoded_bytes": 10438,
+      "decoded_sha256": "ad1ff00556eeb84b653c87a11e1e52a48cb10e774ea1ab6635d255d0ca70ee8b",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "recovered-created/r2-line84/run-final.sh.gz",
+      "bytes": 1029,
+      "sha256": "687e9a845a68e7db632d82ae95120712e036ccc72f5795f7a6182dc8b9446e38",
+      "decoded_bytes": 2276,
+      "decoded_sha256": "ffd5439abe2854a949594c03e9788a031d385446b92d6e84513e11d25792b027",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "source/git-diff.binary.gz",
+      "bytes": 5737,
+      "sha256": "5fbe5996c03863bc5aa24cbe49e3d623f4e22c85297918ca6ea320625d1e22ba",
+      "decoded_bytes": 19910,
+      "decoded_sha256": "ca2551d3dcbab9308e98231a85bb106497bf5f1e099da7e3665a853007bff076",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "source/openwiki/runtime-sessions.md.gz",
+      "bytes": 34295,
+      "sha256": "8f2e3ee25249df42063a0759d0d9163b04d981aa9a4432338059a0fd4cf1c4d5",
+      "decoded_bytes": 82223,
+      "decoded_sha256": "1bb9f87d8cf0f90ac4db3058bae01df9720944c7f55d394295a64a02776753bd",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "source/src/player/saveSlotSpatialValidation.ts.gz",
+      "bytes": 755,
+      "sha256": "7b2baf94023a7edf252169b9f7e0236d452ecfae437f329f77873c9801a86da2",
+      "decoded_bytes": 2692,
+      "decoded_sha256": "ea49d3f70ef164f68cd1754351d1d769840363ca6fd469a9411a4900e13881eb",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "source/src/project/lifeRecovery.ts.gz",
+      "bytes": 3944,
+      "sha256": "e8fa2a65444d86fd75d16b5bb53edc4896dc4a6a92878ec07734ecfc32f0d615",
+      "decoded_bytes": 13969,
+      "decoded_sha256": "9784966b7814cdaebb36dd1ef7ee989349a0b88c3b6174442ff42823bf0e877f",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "source/src/project/lifeStateReconciliation.ts.gz",
+      "bytes": 3314,
+      "sha256": "d0e7c24d0b93c24bcab8a51b7e5aee83088ff9e21d0d0e9b796304a16b4e5a4c",
+      "decoded_bytes": 12077,
+      "decoded_sha256": "935711cd9615b571a1de5be8f5da7755290eeb2568bfda96c4affcdb78a96a1b",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "source/src/project/spatialPlacementTransactions.ts.gz",
+      "bytes": 3041,
+      "sha256": "eb407478b70ad560ba1a0b870200d0f469a9bcdc6904b3bb984d82dd043be690",
+      "decoded_bytes": 14855,
+      "decoded_sha256": "246ea4a90c3235fe87f451e10b8463f75a54adfd52ca8100093804a84082e981",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "source/test/lifePlacementSafety.test.ts.gz",
+      "bytes": 3122,
+      "sha256": "eeaba8532ec23b5b19ecb82da0f81c75edd7bc2e45a58de0b47e683cb78c20fd",
+      "decoded_bytes": 11841,
+      "decoded_sha256": "93e53419ae63867b56ac7ea62ec9bb281eab38b6e676ca7b6602e3075a1a65a7",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "source/test/linkedAnimalHousing.test.ts.gz",
+      "bytes": 4415,
+      "sha256": "6709c15acbf7530d021dfa460eca5a49bd9200335dc9cc361ffe5b0c210620b0",
+      "decoded_bytes": 22232,
+      "decoded_sha256": "a501e06966346870c2db09266bdfdc559d14713027ab3ab73de7a3e9b23278ae",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "source/test/spatialPaymentReceipts.test.ts.gz",
+      "bytes": 3475,
+      "sha256": "de2124ee06772a8aac9d0a0524eb7e8f7c842862ead30acf0b95c157aea013c1",
+      "decoded_bytes": 14227,
+      "decoded_sha256": "c0622c7317df90a7751bafdf9c90a3b0468cd8ac08e0a280a3db603c54568c2c",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "source/test/spatialRecoveryRights.test.ts.gz",
+      "bytes": 3729,
+      "sha256": "95d2d5c3ebe711d1baf7a028a97139be5bad41a5112450ea2806695e196d3c91",
+      "decoded_bytes": 17788,
+      "decoded_sha256": "e6d3300defb9eed694edc619bf0acb651ff65ab8bf5fb31c52fc81deda8e0fba",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "verify-public.py",
+      "bytes": 7033,
+      "sha256": "704a37fe641546a6e284f874ff5f5729820ee44d850adebd831730f2c22de7e2",
+      "decoded_bytes": 7033,
+      "decoded_sha256": "704a37fe641546a6e284f874ff5f5729820ee44d850adebd831730f2c22de7e2",
+      "classification": "public-safe new archival preparation artifact"
+    },
+    {
+      "path": "verify-recovery.parent.py",
+      "bytes": 5349,
+      "sha256": "e93affa623dbb2f0a447304f8971c626687bd8d2e497e8c835b374d4e2c84064",
+      "decoded_bytes": 5349,
+      "decoded_sha256": "e93affa623dbb2f0a447304f8971c626687bd8d2e497e8c835b374d4e2c84064",
+      "classification": "public-safe exact existing artifact"
+    },
+    {
+      "path": "verify-recovery.py",
+      "bytes": 4393,
+      "sha256": "416a550d2e722d378920e9ad41f64d84b166acc59a2ec61b9ad839d14d33d3d9",
+      "decoded_bytes": 4393,
+      "decoded_sha256": "416a550d2e722d378920e9ad41f64d84b166acc59a2ec61b9ad839d14d33d3d9",
+      "classification": "public-safe exact existing artifact"
+    }
+  ],
+  "private_retained": [
+    {
+      "path": "owned/st_01a07964/events/021-215c8476.json.gz",
+      "bytes": 2214,
+      "sha256": "1d3d25d6e68f34076fe35c38df32d5577330d3411a8888d42514174a11cd318d",
+      "decoded_bytes": 4086,
+      "decoded_sha256": "848be974ce3e6d834a6f899fea9dafc4c1f9cfc5a5bb80042749c304d05a7cd1",
+      "event_id": "215c8476",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07964/events/021-215c8476.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07964/events/039-5f2c9d99.json.gz",
+      "bytes": 2116,
+      "sha256": "7245e23048b65f54010083f7c432a304218598a245714938df280ee366a1a9da",
+      "decoded_bytes": 3073,
+      "decoded_sha256": "469d03f171846c4c7693d69e233e0563c39d932cb965aa5fe3a4730be64e90f1",
+      "event_id": "5f2c9d99",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07964/events/039-5f2c9d99.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07964/events/041-3e25a5b1.json.gz",
+      "bytes": 3484,
+      "sha256": "fd4cb33e216aab4818c288b73646172095e99c69c70552c56ca44cf4445fa4e4",
+      "decoded_bytes": 5496,
+      "decoded_sha256": "4503e0b3f3ae36e2abb1e55dd9cf8cb7f9c96e40a4fd2c9cfb91f01798de542d",
+      "event_id": "3e25a5b1",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07964/events/041-3e25a5b1.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07964/events/046-0caba8b4.json.gz",
+      "bytes": 2614,
+      "sha256": "98069f1c3aedc33e3922bfcb9747b320d2f57b8f30dae3ee076463555dbca2b8",
+      "decoded_bytes": 4139,
+      "decoded_sha256": "a0d715fd2ea04a71893de2268b81e498a94c1daf8cf41d6081bf36602dc1e72f",
+      "event_id": "0caba8b4",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07964/events/046-0caba8b4.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07967/events/011-19851f03.json.gz",
+      "bytes": 2324,
+      "sha256": "071e1815ab47f56427c9b124dc568b08c221dca7f3ca4cac43a5f41b0c6818fb",
+      "decoded_bytes": 4117,
+      "decoded_sha256": "61bf24a289723962c72c92dd69d3aecf654f0c1cb0e1973173628ebf1e90e3ef",
+      "event_id": "19851f03",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07967/events/011-19851f03.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/015-d282ceff.json.gz",
+      "bytes": 1993,
+      "sha256": "43c0da3dcf621793632082f5f1440d3b71f9454d13b1233574cd5ad45a46f482",
+      "decoded_bytes": 2972,
+      "decoded_sha256": "b8ca0885361a5a03436d57923e7299c8fb8f01ff1bb556e57df9c542b307a69e",
+      "event_id": "d282ceff",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/015-d282ceff.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/025-b3ff2891.json.gz",
+      "bytes": 1951,
+      "sha256": "0803b5bb05bafd5e1102280a2921e66115a500bfac2f4e4bc87b814fed513f10",
+      "decoded_bytes": 2803,
+      "decoded_sha256": "f2f30bac3b8afee294a2bdbb16352e16528e42259222bea335980e18d2a7689b",
+      "event_id": "b3ff2891",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/025-b3ff2891.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/036-31b80f06.json.gz",
+      "bytes": 2116,
+      "sha256": "ecb13664baa0025f4cbbdd430352a0c6643aba8c8f9611b2c232298af4121b95",
+      "decoded_bytes": 3784,
+      "decoded_sha256": "d424c3f6361eb213ba291cac162503710da18e1b0f20a359d0f23f08bb0e0947",
+      "event_id": "31b80f06",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/036-31b80f06.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/043-72e07c5a.json.gz",
+      "bytes": 3675,
+      "sha256": "2b8e4d420d57a1297e074857eddcdca20111e1d0f502dd97edc85683d0d08e40",
+      "decoded_bytes": 5615,
+      "decoded_sha256": "d33375c8a9da2867ab8844d054c14e28460fff686e83a6446b8de436d6f62638",
+      "event_id": "72e07c5a",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/043-72e07c5a.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/045-f6bf1e8b.json.gz",
+      "bytes": 2493,
+      "sha256": "2b96981a0a429bad37fe60dfafb5dcdf3209d43383ff4875599adab6ebd9d847",
+      "decoded_bytes": 3948,
+      "decoded_sha256": "b808a8218f3cb4ec60d10f0ad7eacbb5d21b8e3616ad5eba49e55572eb078629",
+      "event_id": "f6bf1e8b",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/045-f6bf1e8b.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/047-900f4d08.json.gz",
+      "bytes": 5952,
+      "sha256": "c0fe1edad8f442e82049701b90895fc303dd15c2c837b350086a1f73b52c68d0",
+      "decoded_bytes": 19253,
+      "decoded_sha256": "5b2a8cb7192d46a20a4398d4c7f5a052aecd3981049c6b3b8bb67b30ee4d5d98",
+      "event_id": "900f4d08",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/047-900f4d08.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/049-50af4aab.json.gz",
+      "bytes": 1969,
+      "sha256": "e7ce134892b3ddd95a5d85cf65104819a43b257eb8c99f496dbd0b0c9eed7cf5",
+      "decoded_bytes": 2863,
+      "decoded_sha256": "0657fe5be87b5785fe5c355e86d43923e84cc3e815bc97f30c14ed2eeb8737b1",
+      "event_id": "50af4aab",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/049-50af4aab.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/051-15a5ae9c.json.gz",
+      "bytes": 3910,
+      "sha256": "daae252347c7297afa09a62a9d120b2ff31e8322f792a726a822c851b247fd6f",
+      "decoded_bytes": 9424,
+      "decoded_sha256": "809db0fdb4364cc2616b2f4b918c8345ae618b426ad4bcd7cf3d7724147abd76",
+      "event_id": "15a5ae9c",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/051-15a5ae9c.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/053-6e81ef0c.json.gz",
+      "bytes": 2341,
+      "sha256": "a11f9505f214a4cfea43c5cf19bf19fb7a07f2597935045c8d6671220ef89243",
+      "decoded_bytes": 4334,
+      "decoded_sha256": "986c81d7691c5568274c5ad63f4c3262b19f9f51ecb9fbe8227064cc4c80de50",
+      "event_id": "6e81ef0c",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/053-6e81ef0c.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/063-9f852e06.json.gz",
+      "bytes": 2017,
+      "sha256": "880ad1d01073a391213e97d7f814bba24c1e48f9c81d2fa73cb552795527c0a7",
+      "decoded_bytes": 2931,
+      "decoded_sha256": "4932463cd9f13662b0797b2e7667cc39490c227ca539cc3ca6c9d0a23ceefccc",
+      "event_id": "9f852e06",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/063-9f852e06.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/067-a9ae504e.json.gz",
+      "bytes": 3428,
+      "sha256": "dcb7658c0dcb64c70b6961b707022d1f52e969f3b224a8a8593565cb26899b46",
+      "decoded_bytes": 7074,
+      "decoded_sha256": "18a11e9b75a7e6043128fedcca6f1ef4ccae358d2d98790aaedefb6661dd3311",
+      "event_id": "a9ae504e",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/067-a9ae504e.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/069-df30ec4c.json.gz",
+      "bytes": 3216,
+      "sha256": "dff86f1e8824ce82ecae84c4ac3fb7d5ab3875f5df7dec9a8811373b8b07dfce",
+      "decoded_bytes": 5849,
+      "decoded_sha256": "fefe9048317eefb9c34520bbb53675ff69270bc8d269d0c176b6789d3cc51e8f",
+      "event_id": "df30ec4c",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/069-df30ec4c.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/078-c6a90976.json.gz",
+      "bytes": 2024,
+      "sha256": "00d96c252af231d2d5f41f79697f4bc372e0aae9ea10f159fbdc211bc1479d6a",
+      "decoded_bytes": 2891,
+      "decoded_sha256": "4b0d281c348358b36386593490dbad36123f127a4ddc27907ae55f8f0fa08a40",
+      "event_id": "c6a90976",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/078-c6a90976.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/080-5636d25e.json.gz",
+      "bytes": 2957,
+      "sha256": "90b55cb791b8028c07f79d2187de22c4f84eae7bcad5c462abecbd1eac4b107d",
+      "decoded_bytes": 5622,
+      "decoded_sha256": "19d5fb3673ef7c49d7416437556c1c9b6326552b384ef23c325786acb3c5e05e",
+      "event_id": "5636d25e",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/080-5636d25e.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/084-3973e557.json.gz",
+      "bytes": 7292,
+      "sha256": "cea3fd5ddafc4a9bd4a7d53cb3c7ee8c8844f95c12f08f4cfa6b65de1f8f5911",
+      "decoded_bytes": 18825,
+      "decoded_sha256": "cd760e2b75f27540778bdf98ca1f7436ed6970814d3ec5d93d76d788869fa8e4",
+      "event_id": "3973e557",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/084-3973e557.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/086-13f8cd5f.json.gz",
+      "bytes": 2576,
+      "sha256": "b60dffb33747fff2c08e46549345107fe0a06903daa61370fc4d9193c7f867d2",
+      "decoded_bytes": 3718,
+      "decoded_sha256": "a67bc02f7740377f29a8d6402169cf7aa47fd77a6a00efcf27297c575af0626c",
+      "event_id": "13f8cd5f",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/086-13f8cd5f.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/088-e9cdd018.json.gz",
+      "bytes": 2902,
+      "sha256": "a7dbba89b11df2132b292432c5d5dddeb3596fe3d48425dc5fe5f4c424405c43",
+      "decoded_bytes": 4916,
+      "decoded_sha256": "0aa405646042ea1abdb94c31281ede15984cda557b593a3a2c188054dcaaf133",
+      "event_id": "e9cdd018",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/088-e9cdd018.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/090-87e00f66.json.gz",
+      "bytes": 1836,
+      "sha256": "2451e7448cab4d3c2f01419636ee81bf0e4ad92bf01c1bff9b5783b480119768",
+      "decoded_bytes": 2654,
+      "decoded_sha256": "713f8f6d67a048d1726771a15e78ed09aeed45395b03a18b5110efef5c3ace0d",
+      "event_id": "87e00f66",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/090-87e00f66.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/094-9bd5fdd1.json.gz",
+      "bytes": 2934,
+      "sha256": "a760f3c7c2e181a1ac419e91594aa005b5d2fcb458f7fcd3df73f6c9a730a183",
+      "decoded_bytes": 5007,
+      "decoded_sha256": "233ecce56279962cf338d03b2d1f52d5b58d1c4afcdb3d253cacb0f85d4fbfbe",
+      "event_id": "9bd5fdd1",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/094-9bd5fdd1.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/096-b8da9121.json.gz",
+      "bytes": 3526,
+      "sha256": "d59a3c8d201b11517f2aacf97c1b0213c7b8b35d181f6b05052e6b6812e721f0",
+      "decoded_bytes": 5064,
+      "decoded_sha256": "a10a0daa0e1fbd2beb73d7c79aee89dd38320e9523e5119d45f7c0236b060e7b",
+      "event_id": "b8da9121",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/096-b8da9121.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/098-c59070d3.json.gz",
+      "bytes": 7968,
+      "sha256": "08e7252502b94d9d52c3d5398f58bb370c4fe08840823e2ab1188db368877b31",
+      "decoded_bytes": 14425,
+      "decoded_sha256": "bb407ce55ff2f058f3902b816f66666bfbf82c0c4b8f6c7ff95bbe63d2617071",
+      "event_id": "c59070d3",
+      "private_reasoning_blocks": 2,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/098-c59070d3.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07972/events/100-6531cf8b.json.gz",
+      "bytes": 2374,
+      "sha256": "c65722d071f2e5b8d7c45f94ddd229a8582a64191341c9e5049cb89e7aa347de",
+      "decoded_bytes": 4306,
+      "decoded_sha256": "6ca759bd3050e8668e621f9a8c51483905ec042043f9653359f229808814d09d",
+      "event_id": "6531cf8b",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07972/events/100-6531cf8b.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07982/events/011-efc3716f.json.gz",
+      "bytes": 2000,
+      "sha256": "704ecc9d6129384a76e8274bb15119059e8f34b56f59cce7707b0eb360eed282",
+      "decoded_bytes": 2909,
+      "decoded_sha256": "fee665b92da205936a334cc2d7706b1a24185c70bf2cf202b98007a77df23dbe",
+      "event_id": "efc3716f",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07982/events/011-efc3716f.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07982/events/018-822efa02.json.gz",
+      "bytes": 2993,
+      "sha256": "a2f151451c27bb6a48dabf0e7b24839336a4d8bcfe0bed8d3660e38cec996955",
+      "decoded_bytes": 6077,
+      "decoded_sha256": "a9f0fa029318107e242ec72e42595d170ae84fcc6be19dc4ceb032dff660458c",
+      "event_id": "822efa02",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07982/events/018-822efa02.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    },
+    {
+      "path": "owned/st_01a07982/events/026-4b568bfb.json.gz",
+      "bytes": 1978,
+      "sha256": "4ceb27a810128362836149d3c50913166eabede800610c2516f1710a366c51e7",
+      "decoded_bytes": 2847,
+      "decoded_sha256": "5cb291ca236801a0f06bf54de6c74394d79d04360537c9710c727c8be05bf546",
+      "event_id": "4b568bfb",
+      "private_reasoning_blocks": 1,
+      "classification": "private-retained exact original event; excluded from public subset",
+      "private_path": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51/originals/owned/st_01a07982/events/026-4b568bfb.json.gz",
+      "compressed_bytes_equal": true,
+      "decoded_bytes_equal": true,
+      "file_mode": "0600"
+    }
+  ],
+  "private_root": "/home/main/z-project/rpg-zzu/.git/life-full-20260906-forensic-private/51",
+  "original_provenance": "PROVENANCE.json is unchanged and contains full original hash/path references, including private-excluded events. References are not stage instructions.",
+  "source_record_requirement": "Full forensic checking needs privately retained original event/source records and authorized immutable session files; public subset validation cannot establish full original provenance.",
+  "partial_evidence_limits": "Unchanged: full r2 streams/state/import-resolution/final-source receipt remain unavailable; build failed; no plan47/48 or broader product approval.",
+  "local_post_manifest_receipt": "PUBLIC-VERIFY.json is a local verification receipt, intentionally outside the frozen public subset.",
+  "preparation": "No recover.py rerun, product validators, source mutations, sparse/read-tree, staging, or commit."
+}

@@ -1,0 +1,23 @@
+{
+  "when": "2026-09-07T13:52:12.736947+00:00",
+  "reader": "verify-r5 independent Grok visual pass",
+  "frames": [
+    {
+      "path": "native/rug/rug-standing-on-1024.png",
+      "observed": "Player sprite standing on white cloud/rug graphic on green field; empty-hand HUD; no missing-resource overlay; domain proof of standing on nonblocking rug (not footer alone)."
+    },
+    {
+      "path": "native/rug/rug-after-place-1024.png",
+      "observed": "Spaces menu; gold 500G; shed owner row 빈 맵 (12, 6)·아래; message Rug을(를) 배치했습니다; no __MISSING overlay."
+    },
+    {
+      "path": "native/arena-lastexit/arena-after-rotate-1024.png",
+      "observed": "Message Table을(를) 회전했습니다; gold 500G; rotate button label shows NEXT action 아래로 돌리기 (not current orientation). Current orientation taken from owner/slot left, not this button."
+    },
+    {
+      "path": "native/general/npc-overlap-menu-1024.png",
+      "observed": "Gold 470G; shed Lv.2 at (11, 6); place target map_blank_start (15, 3); footer 처리할 수 없습니다: blocked; NPC silhouette visible mid-field behind menu."
+    }
+  ],
+  "catalog": "No .runtime-missing-resource or __MISSING text in inspected frames; harness also asserts count==0 after place."
+}

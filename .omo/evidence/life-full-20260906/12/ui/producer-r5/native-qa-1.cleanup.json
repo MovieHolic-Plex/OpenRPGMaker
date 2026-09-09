@@ -1,0 +1,10 @@
+{
+  "scratchAbsent": true,
+  "protectedIdentityUnchanged": true,
+  "lockRetained": true,
+  "playwrightBrowsersPath": "/home/main/.cache/ms-playwright",
+  "playwrightBrowsersDeleted": false,
+  "nodeModulesUntouched": true,
+  "olderEvidenceUntouched": true,
+  "fixturesR5Untouched": true
+}

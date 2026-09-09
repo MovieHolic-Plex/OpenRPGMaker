@@ -1,0 +1,14 @@
+import {spawnSync,execFileSync} from 'node:child_process';
+import {writeFile,rm,readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {dirname,join} from 'node:path';
+import {fileURLToPath} from 'node:url';
+const out=dirname(fileURLToPath(import.meta.url)),head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+if(head!=='966f414c07729e7d9474c568cbaf19a94d2bc740')throw Error('Baseline HEAD changed');
+if(execFileSync('git',['diff','--name-only','--','src'],{encoding:'utf8'}))throw Error('Baseline source dirty');
+const command=['flock','--timeout','900','/tmp/rpg-zzu-life-full-qa-01a0727b.lock','timeout','--signal=TERM','--kill-after=15s','300s','node','scripts/run-vitest.mjs','run','--configLoader','runner','--config',join(out,'vitest.config.mjs'),'--reporter=verbose','--reporter=json','--outputFile.json='+join(out,'report.json')];
+console.log('PARENT_BOUNDS_BASELINE_START');const started=new Date().toISOString();
+const r=spawnSync(command[0],command.slice(1),{encoding:'utf8',maxBuffer:64*1024*1024});
+await writeFile(join(out,'receipt.json'),JSON.stringify({head,command,started,finished:new Date().toISOString(),exit:r.status,signal:r.signal,stdout:r.stdout??'',stderr:r.stderr??'',testSha256:createHash('sha256').update(await readFile(join(out,'lifeAuthoringBounds.test.ts'))).digest('hex')},null,2)+'\n',{flag:'wx'});
+await rm(join(out,'cache'),{recursive:true,force:true});
+console.log('PARENT_BOUNDS_BASELINE_END exit='+r.status);process.exitCode=r.status??2;

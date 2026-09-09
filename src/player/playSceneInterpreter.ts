@@ -54,6 +54,7 @@ import { formatFriendshipFeedback, isGiftableEvent, isGiftSystemEnabled, isTalkF
 import { playGiftSelection } from "@/player/playSceneGift";
 import { completeDetectionEncounter } from "@/project/npcBehavior";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
+import { getCharacterProfile, resolveCharacterSpeaker } from "@/project/characterProfiles";
 
 export type RunCommandsOptions = {
   readonly allowNested?: boolean;
@@ -150,7 +151,7 @@ async function runTalkPath(
   try {
     const feedback = formatFriendshipFeedback({ delta: result.delta, friendship: result.friendship });
     await dialogue.showText({
-      speaker: event.pages?.[0]?.name,
+      speaker: resolveCharacterSpeaker(store.getCurrent(), event),
       body: feedback,
       textContext: { session: scene.session, project: store.getCurrent() },
       playerTileY: scene.tileY,
@@ -187,7 +188,7 @@ async function showGiftMenu(
   scene.setInputEnabled(false);
   try {
     const choice = await dialogue.showChoices({
-      prompt: speaker ?? event.id,
+      prompt: getCharacterProfile(store.getCurrent(), event.characterId)?.displayName ?? speaker ?? event.id,
       options: [{ text: "대화하기" }, { text: "선물하기" }, { text: "취소" }],
       settings: scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
       cancelBehavior: "choice3",
@@ -330,9 +331,13 @@ async function consumeBlockingStep(
   const dialogue = dialogueUi(scene);
   if (!dialogue) return { kind: "done" };
   switch (step.kind) {
-    case "text":
+    case "text": {
+      const project = store.getCurrent();
+      const event = step.speaker === undefined && currentEventId
+        ? runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions).find((view) => view.event.id === currentEventId)?.event
+        : undefined;
       await dialogue.showText({
-        speaker: step.speaker,
+        speaker: step.speaker ?? getCharacterProfile(project, event?.characterId)?.displayName,
         body: step.body,
         face: step.face,
         settings: scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
@@ -347,6 +352,7 @@ async function consumeBlockingStep(
         if (skipped) return skipped;
       }
       return resumeAfterSurface(scene, interpreter);
+    }
     case "choices":
       {
         const choice = await dialogue.showChoices({

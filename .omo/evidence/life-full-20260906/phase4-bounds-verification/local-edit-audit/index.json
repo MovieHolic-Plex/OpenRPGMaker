@@ -1,0 +1,187 @@
+[
+  {
+    "seq": 25,
+    "at": "2026-09-06T20:00:39.936Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 24,
+    "at": "2026-09-06T20:00:37.585Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 23,
+    "at": "2026-09-06T20:00:33.529Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 22,
+    "at": "2026-09-06T20:00:29.852Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 21,
+    "at": "2026-09-06T20:00:25.077Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 20,
+    "at": "2026-09-06T20:00:10.418Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 19,
+    "at": "2026-09-06T20:00:05.269Z",
+    "scope": "database",
+    "label": null,
+    "collection": "skills",
+    "origin": "human"
+  },
+  {
+    "seq": 18,
+    "at": "2026-09-06T20:00:02.473Z",
+    "scope": "database",
+    "label": null,
+    "collection": "skills",
+    "origin": "human"
+  },
+  {
+    "seq": 17,
+    "at": "2026-09-06T19:59:58.788Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 16,
+    "at": "2026-09-06T19:59:56.309Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 15,
+    "at": "2026-09-06T19:59:52.811Z",
+    "scope": "database",
+    "label": null,
+    "collection": "skills",
+    "origin": "human"
+  },
+  {
+    "seq": 14,
+    "at": "2026-09-06T19:59:46.118Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 13,
+    "at": "2026-09-06T19:59:43.461Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 12,
+    "at": "2026-09-06T19:59:41.912Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 11,
+    "at": "2026-09-06T19:59:40.463Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 10,
+    "at": "2026-09-06T19:59:39.311Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 9,
+    "at": "2026-09-06T19:59:36.668Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 8,
+    "at": "2026-09-06T19:59:33.661Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 7,
+    "at": "2026-09-06T19:59:30.865Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 6,
+    "at": "2026-09-06T19:59:26.295Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 5,
+    "at": "2026-09-06T19:59:23.741Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 4,
+    "at": "2026-09-06T19:59:20.124Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 3,
+    "at": "2026-09-06T19:59:19.170Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 2,
+    "at": "2026-09-06T19:59:17.292Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 1,
+    "at": "2026-09-06T19:59:06.149Z",
+    "scope": "project",
+    "label": null,
+    "origin": "human"
+  },
+  {
+    "seq": 0,
+    "at": "2026-09-06T19:58:54.564Z",
+    "scope": "system",
+    "label": "프로젝트 정규화 (1종)",
+    "origin": "system"
+  }
+]

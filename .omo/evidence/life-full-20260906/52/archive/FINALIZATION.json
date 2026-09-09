@@ -1,0 +1,6 @@
+{
+  "status": "complete",
+  "historical_blocker": "archive/BLOCKER.json",
+  "resolution": "After all 328 per-file records and 133 removal receipts were durable, aggregate RECOVERY.json exceeded the Linux single-argument limit for the official patch engine. Replaced the proposed aggregate layout with a portable index of existing exact records, without overwriting any unknown destination. Reverified all archived bytes and all remaining originals. Historical BLOCKER.json and STATUS.json retained unchanged; this receipt supersedes their intermediate states.",
+  "payload_publication": "still withheld pending privacy clearance"
+}

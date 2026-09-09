@@ -1,0 +1,26 @@
+[
+  {
+    "file": "src/project/spatialOccupancy.ts",
+    "diagnostics": []
+  },
+  {
+    "file": "src/project/spatialPlacementTransactions.ts",
+    "diagnostics": []
+  },
+  {
+    "file": "src/project/spatialPlacementRestore.ts",
+    "diagnostics": []
+  },
+  {
+    "file": "src/player/farming.ts",
+    "diagnostics": []
+  },
+  {
+    "file": "test/lifePlacementSafety.test.ts",
+    "diagnostics": []
+  },
+  {
+    "file": ".omo/evidence/life-full-20260906/12/core/public-probe.mts",
+    "diagnostics": []
+  }
+]

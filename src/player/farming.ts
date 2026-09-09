@@ -193,7 +193,11 @@ function interactWithFarmPlotSingle(
   const targetKey = placeableKey(map.id, tileX, tileY);
   const target = placeables[targetKey];
   if (target?.kind === "tree" || target?.kind === "rock") delete placeables[targetKey];
-  if (!canOccupySpatialFootprint(project, { ...session, placeables },
+  // Exempt only this transaction's plot; neighboring plots still reserve space.
+  const mapPlots = { ...session.farmPlots?.[map.id] };
+  delete mapPlots[farmPlotKey(tileX, tileY)];
+  const farmPlots = { ...session.farmPlots, [map.id]: mapPlots };
+  if (!canOccupySpatialFootprint(project, { ...session, placeables, farmPlots },
     { mapId: map.id, x: tileX, y: tileY, orientation: "down" }, { width: 1, height: 1 })) {
     return ignored(tileX, tileY, "not-farmable");
   }

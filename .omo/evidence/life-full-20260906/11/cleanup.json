@@ -1,0 +1,13 @@
+{
+  "command": "remove task-owned npm build dist output; inspect task-owned native teardown and cache absence",
+  "distAbsent": true,
+  "nativeCacheAbsent": true,
+  "native": {
+    "contextClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "ownedCacheRemoved": "/home/main/z-project/rpg-zzu-life-full-housing/.omo/evidence/life-full-20260906/11/native/cache",
+    "fixtureNotShipped": true
+  },
+  "ownedProcesses": "1910573 /bin/bash -c cd /home/main/z-project/rpg-zzu-life-full-housing && node - <<'JS' const fs=require('fs'),cp=require('child_process'),crypto=require('crypto');const root='.omo/evidence/life-full-20260906/11';const files=[...cp.execSync('git diff --name-only').toString().trim().split('\\n'),'src/project/animalHousing.ts','test/linkedAnimalHousing.test.ts'];const manifest={cwd:process.cwd(),branch:cp.execSync('git branch --show-current').toString().trim(),head:cp.execSync('git rev-parse HEAD').toString().trim(),baseTree:cp.execSync('git rev-parse HEAD^{tree}').toString().trim(),ancestor:{sha:'bd81a933cbecfeb8b25ef15bf57bc24911011aa8',exit:cp.spawnSync('git',['merge-base','--is-ancestor','bd81a933cbecfeb8b25ef15bf57bc24911011aa8','HEAD']).status},files:Object.fromEntries(files.map(p=>[p,crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')])),diagnostics:JSON.parse(fs.readFileSync(root+'/diagnostics.json')).files.length};fs.writeFileSync(root+'/source-manifest.json',JSON.stringify(manifest,null,2)+'\\n');console.log(manifest); fs.rmSync('dist',{recursive:true}); const cleanup={command:'remove task-owned npm build dist output; inspect task-owned native teardown and cache absence',distAbsent:!fs.existsSync('dist'),nativeCacheAbsent:!fs.existsSync(root+'/native/cache'),native:JSON.parse(fs.readFileSync(root+'/native/public-lifecycle.json')).cleanup,ownedProcesses:cp.execFileSync('bash',['-c',`ps -eo pid,args | grep '[r]pg-zzu-life-full-housing' || true`],{encoding:'utf8'})};fs.writeFileSync(root+'/cleanup.json',JSON.stringify(cleanup,null,2)+'\\n'); JS git add openwiki/INDEX.md openwiki/runtime-project-schema.md src/project/animalHousing.ts src/project/farmAnimals.ts src/project/io/references.ts src/project/io/shapeDatabaseFields.ts src/project/lifeRecovery.ts src/project/lifeStateReconciliation.ts src/project/mapDeletion.ts src/project/p1FoundationRecords.ts src/project/session.ts src/project/spatialPlacementTransactions.ts src/project/spatialPlacements.ts src/project/types/database.ts src/project/types/project.ts src/player/saveSlotSpatialValidation.ts test/linkedAnimalHousing.test.ts git write-tree\n"
+}

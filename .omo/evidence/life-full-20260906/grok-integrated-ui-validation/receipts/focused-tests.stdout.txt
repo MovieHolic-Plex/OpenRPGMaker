@@ -1,0 +1,4 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --cacheDir /dev/shm/st_01a07924-ui-val/vitest test/spatialCatalogPictureRender.test.ts test/playScenePlaceableOverlay.test.ts test/p2SpatialPlayIntegration.test.ts test/generatedMonsterFieldSprites.test.ts test/bundledAssetWarmup.test.ts
+

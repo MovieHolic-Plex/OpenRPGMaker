@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "900s",
+    "python3",
+    "-B",
+    ".omo/evidence/life-full-20260906/12/ui/build-r5/audit.py"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "started": 1788787814.5481284,
+  "finished": 1788787820.5656195,
+  "directBoundedExit": 0,
+  "stdoutSha256": "58673f93ab90bd0852e4affd3147c1ac82336b007bed454156653ae8ef57f8bc",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

@@ -1,0 +1,764 @@
+{
+  "count": 33,
+  "pngs": [
+    {
+      "path": "native/arena-lastexit/arena-after-move-1024.png",
+      "bytes": 122559,
+      "sha256": "4b38a6e4067432c2e3ec1baa1605947bc635a7c9af6c35b19e3e5c7bf5939bc8",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 20,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/arena-lastexit/arena-after-move-1440.png",
+      "bytes": 126516,
+      "sha256": "a23651e409f964792c863b1a1250b584c64725c9e847b27a1cdef2716d2b6eb2",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 19,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/arena-lastexit/arena-after-place-1024.png",
+      "bytes": 123766,
+      "sha256": "f3925a837b8a5c75221a66f3fd3cd315ea3442491572c2f03253f14326754f9b",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 20,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/arena-lastexit/arena-after-place-1440.png",
+      "bytes": 127478,
+      "sha256": "b0ce98f67df9a173cb9b9bf98fa5e4f9937548e7ba35cfd1b708d1283de97097",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 18,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/arena-lastexit/arena-after-rotate-1024.png",
+      "bytes": 119454,
+      "sha256": "ebc8b70eb2add06369ef1e43505f07cc8017881b8274012387a01ef2a081bf86",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 20,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/arena-lastexit/arena-after-rotate-1440.png",
+      "bytes": 123084,
+      "sha256": "4be17178f25f06c543abc43650c8d9ed508ca5f80a52d3c03e22b6d025bc7ff0",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 19,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/arena-lastexit/arena-before-place-1024.png",
+      "bytes": 263136,
+      "sha256": "934a5cfded74f2f28b9ade7c7ce3b85637a10bb011cea4211f187ee0436c568d",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 27,
+      "samples": {
+        "center": [
+          16,
+          22,
+          37
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/arena-lastexit/arena-before-place-1440.png",
+      "bytes": 269712,
+      "sha256": "923e15ecddc938c52ce4da8ee66ced0c85bf3278bfc3042721ebd82579beb69a",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 22,
+      "samples": {
+        "center": [
+          16,
+          22,
+          37
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/arena-lastexit/last-exit-after-refuse-1024.png",
+      "bytes": 124419,
+      "sha256": "6d80cd2af86a05c0703048f65c1e1a0d1f6f024acdc432f8b475fb0afaba0713",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 20,
+      "samples": {
+        "center": [
+          37,
+          45,
+          80
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/arena-lastexit/last-exit-after-refuse-1440.png",
+      "bytes": 128806,
+      "sha256": "e5cc57484ec532e1390f86b3cd49f2fd8643028238fb66aa2edd1665dd0c6944",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 18,
+      "samples": {
+        "center": [
+          38,
+          45,
+          80
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/arena-lastexit/last-exit-before-place-1024.png",
+      "bytes": 127427,
+      "sha256": "86c318d8777a950214457a7a7b65948a041009e7a7a2887603f23fc062359188",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 20,
+      "samples": {
+        "center": [
+          37,
+          45,
+          80
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/arena-lastexit/last-exit-before-place-1440.png",
+      "bytes": 131874,
+      "sha256": "e9cb22f1583a05ed198a41636120a6271b185174d1483f0ad1bec02671af0021",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 18,
+      "samples": {
+        "center": [
+          38,
+          45,
+          80
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/general/after-place-1024.png",
+      "bytes": 126108,
+      "sha256": "aede99f4e04a3b9d039962f16fd5bfc2df487f521139cb0ccd8efbefa7322aab",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 20,
+      "samples": {
+        "center": [
+          36,
+          44,
+          78
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/general/field-after-load-1024.png",
+      "bytes": 35176,
+      "sha256": "7623920d99a25bbc14c8c32b442961b5bfc99d85d475508c4b3a2782494022ad",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 8,
+      "samples": {
+        "center": [
+          84,
+          176,
+          67
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/general/field-after-load-1440.png",
+      "bytes": 37618,
+      "sha256": "b7077712343bb0d4f21f118d54b6a27b4a00e4ea38ada099f755de44092250e2",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 7,
+      "samples": {
+        "center": [
+          84,
+          176,
+          67
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/general/npc-overlap-menu-1024.png",
+      "bytes": 130828,
+      "sha256": "95d8f974eeb7589312daf63b83fa8f78e2a385adabdbb715dae46c2a3f79d5bd",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 24,
+      "samples": {
+        "center": [
+          38,
+          45,
+          80
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/general/npc-overlap-menu-1440.png",
+      "bytes": 132838,
+      "sha256": "43f4a91a63c91c0671bfbd84ef7220cd5f43fdb816b89dab62be25007cec72c6",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 19,
+      "samples": {
+        "center": [
+          38,
+          45,
+          80
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/general/spaces-before-place-1024.png",
+      "bytes": 194091,
+      "sha256": "ee74b18d55ae878b23e3870992d8a2254df45f466a5e3ec606b919f46f577edf",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 23,
+      "samples": {
+        "center": [
+          199,
+          170,
+          77
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/general/spaces-before-place-1440.png",
+      "bytes": 198328,
+      "sha256": "b2c2443dfcbac8b75b29c03b2779f4d440e955b15575a3f0194b460bf336ead0",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 20,
+      "samples": {
+        "center": [
+          200,
+          170,
+          77
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/rug/rug-after-divergent-move-1024.png",
+      "bytes": 120577,
+      "sha256": "7a2511d23f14278f8c2d0d2cbdbd086750122207a1b15d4ea9ed0e30505b1593",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 21,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/rug/rug-after-divergent-move-1440.png",
+      "bytes": 124269,
+      "sha256": "beaf21b0455f39c2b46b5e98e1dc83ad036f28ee7b271f3588f86583fc14b956",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 18,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/rug/rug-after-load-1024.png",
+      "bytes": 128755,
+      "sha256": "f9e6f82da828ff71156ef437054e30b4c1986031b42fc430e0493809ec2743a4",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 21,
+      "samples": {
+        "center": [
+          36,
+          44,
+          78
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/rug/rug-after-load-1440.png",
+      "bytes": 133227,
+      "sha256": "e20f86dc833f0fc2c068b98f4ce74f0ff82a902ceb625eeb958838517732ef82",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 18,
+      "samples": {
+        "center": [
+          38,
+          45,
+          80
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/rug/rug-after-place-1024.png",
+      "bytes": 122956,
+      "sha256": "3b38f01141ace656d8f1dee4bc8488779cfe57b85bc365c634fe37a5b923949f",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 20,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/rug/rug-after-place-1440.png",
+      "bytes": 126911,
+      "sha256": "6ac785994e84e433f3e66add01078a57b7717a18b79dd7d23ea7c1cddca17407",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 18,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/rug/rug-after-save-slot1-1024.png",
+      "bytes": 110211,
+      "sha256": "f918c748583da26ed5ba0b39802f88e8889bd63cc6bf60512f188a91bd7b250b",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 22,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/rug/rug-after-save-slot1-1440.png",
+      "bytes": 113819,
+      "sha256": "74c56b405b6102a53031855e996d26f44ef0115e7e36f4701294be3c5df240c5",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 18,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/rug/rug-after-save-slot2-1024.png",
+      "bytes": 110974,
+      "sha256": "520511a5a84e17f0e2225a5f6be8b1b797fde930e9a10b932e78cfabd45ad83b",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 24,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/rug/rug-after-save-slot2-1440.png",
+      "bytes": 114789,
+      "sha256": "014bcf39f347151040185d8f987486f2d63749d91171bc58eb0f1b0de3b3d256",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 18,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/rug/rug-before-place-1024.png",
+      "bytes": 125142,
+      "sha256": "31682f296482b22ea675b3d698eb3fee4061298620f52f583c3becb674a55eec",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 20,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/rug/rug-before-place-1440.png",
+      "bytes": 128946,
+      "sha256": "e060b6e6989bccfaf4b1a1d0b7f8e1d765e5fe4c9c366766ee1e4235603c090d",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 19,
+      "samples": {
+        "center": [
+          21,
+          27,
+          42
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    },
+    {
+      "path": "native/rug/rug-standing-on-1024.png",
+      "bytes": 28418,
+      "sha256": "c009900dde1a5126936cf76d55fb0859b1f11e81e889034d46bc8daa552d57cc",
+      "width": 1024,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 7,
+      "samples": {
+        "center": [
+          84,
+          176,
+          67
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": true,
+      "is1440": false
+    },
+    {
+      "path": "native/rug/rug-standing-on-1440.png",
+      "bytes": 30790,
+      "sha256": "4ca4007652bbc5189bfb63a804276cdbf204ea19661a1c48f2b905b2d949d18e",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB",
+      "uniqueSampleColors": 5,
+      "samples": {
+        "center": [
+          84,
+          176,
+          67
+        ],
+        "tl": [
+          0,
+          0,
+          0
+        ]
+      },
+      "is1024": false,
+      "is1440": true
+    }
+  ]
+}

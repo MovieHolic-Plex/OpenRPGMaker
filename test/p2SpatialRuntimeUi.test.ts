@@ -30,7 +30,17 @@ describe("P2 spatial runtime status surface", () => {
 
     expect(listStatusMenuCommandIds(project, session)).toContain("life-ledger");
     const mutations: boolean[] = [];
-    const detail = createLifeLedgerDetail({ project, session, tab: "spaces", onMutation: (ok) => mutations.push(ok) });
+    const detail = createLifeLedgerDetail({
+      project,
+      session,
+      tab: "spaces",
+      onMutation: (ok) => mutations.push(ok),
+      readLive: () => ({
+        player: { mapId: session.currentMapId, x: session.x, y: session.y, footprint: { width: 1, height: 1 }, passRows: 1 },
+        npcs: [],
+      }),
+      placementDirection: "down",
+    });
     expect(detail.tabs?.at(-1)).toMatchObject({ id: "spaces", testId: "life-ledger-tab-spaces", selected: true });
     expect(detail.artwork?.src).toBe("/assets/farming/life-ui/decorating-card.png");
     expect(detail.entries).toEqual(expect.arrayContaining([

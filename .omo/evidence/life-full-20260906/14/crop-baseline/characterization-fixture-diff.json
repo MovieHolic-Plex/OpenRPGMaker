@@ -1,0 +1,46 @@
+{
+  "source": "../characterization.txt",
+  "sourceSha256": "1582c6ce57b317e91bb37e5a9c4b8113ba3729d9028d56d629e293f9b987f08f",
+  "twoFailedCasesHaveSameSemanticDiff": true,
+  "changes": [
+    {
+      "path": ".system.timeSystem.dayEndHour",
+      "beforePresent": false,
+      "afterPresent": true,
+      "before": null,
+      "after": 26
+    },
+    {
+      "path": ".system.timeSystem.dayStartHour",
+      "beforePresent": false,
+      "afterPresent": true,
+      "before": null,
+      "after": 6
+    },
+    {
+      "path": ".system.timeSystem.forceSleep",
+      "beforePresent": false,
+      "afterPresent": true,
+      "before": null,
+      "after": false
+    },
+    {
+      "path": ".system.timeSystem.minutesPerRealSecond",
+      "beforePresent": false,
+      "afterPresent": true,
+      "before": null,
+      "after": 1
+    },
+    {
+      "path": ".system.titleScreen.titleGraphic",
+      "beforePresent": true,
+      "afterPresent": false,
+      "before": {
+        "mode": "text",
+        "x": 32,
+        "y": 62
+      },
+      "after": null
+    }
+  ]
+}

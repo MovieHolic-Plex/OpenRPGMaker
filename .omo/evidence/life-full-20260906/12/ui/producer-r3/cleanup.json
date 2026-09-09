@@ -1,0 +1,15 @@
+{
+  "lock": "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+  "nestedLocks": false,
+  "sharedCleanup": false,
+  "privateTmpfs": "/dev/shm/st_01a07b22",
+  "privateTmpfsRemovedAfterEvidenceRetained": true,
+  "playwrightBrowsersPath": "/home/main/.cache/ms-playwright",
+  "playwrightBrowsersDeleted": false,
+  "nodeModulesUntouched": true,
+  "lockDeleted": false,
+  "evidenceDirPreserved": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3",
+  "priorEvidenceUntouched": ["producer-r2", "build-r2", "verify-r2", "attempt1-preserved", "52/producer", "52/verify"],
+  "ownedVitePlayerQaLeftover": false,
+  "task52FilesModified": false
+}

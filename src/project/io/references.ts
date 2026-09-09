@@ -1,5 +1,7 @@
 import { equipmentSlots, hasEquipmentSlot } from "@/project/equipmentSlots";
 import { characterAppearanceReferenceIssues } from "./characterAppearanceValidation";
+import { resolveAnimalHome } from "../animalHousing";
+import { placementRecord } from "../spatialPlacements";
 import { growthIssues } from "@/project/growth/validation";
 import type { Command, GameEvent, GameMap, NpcScheduleEntry, Project } from "../types";
 import { assert } from "./guards";
@@ -352,8 +354,8 @@ export function repairProjectReferences(project: Project): void {
   const eventIds = new Set(Object.values(project.maps).flatMap((map) => map.events.map((event) => event.id)));
   const animationIds = new Set(project.database.battleAnimations.map((record) => record.id));
   const commonEventIds = new Set(project.commonEvents.map((record) => record.id));
-  repairFarmAnimalReferences(project);
   repairSpatialReferences(project);
+  repairFarmAnimalReferences(project);
   repairStructurePlacements(project);
   repairP2References(project);
   if (project.system.timeSystem?.onDayEnd && !commonEventIds.has(project.system.timeSystem.onDayEnd)) {
@@ -781,6 +783,8 @@ function validateFarmAnimalReferences(
   );
   const eventIds = new Set(Object.values(project.maps).flatMap((map) => map.events.map((event) => event.id)));
   const occupancy = new Map<string, number>();
+  const linkedOccupancy = new Map<string, number>();
+  const housingState = { farmBuildingPlacements: placementRecord(project.session.farmBuildingPlacements) };
   for (const [index, animal] of animals.entries()) {
     const speciesExists = farmSpeciesIds.has(animal.speciesId);
     if (!speciesExists) {
@@ -788,6 +792,19 @@ function validateFarmAnimalReferences(
     }
     if (animal.eventId && !eventIds.has(animal.eventId)) {
       issues.push(`session.farmAnimals[${index}].eventId does not exist: ${animal.eventId}`);
+    }
+    if (animal.housingPlacementId !== undefined) {
+      const path = `session.farmAnimals[${index}].housingPlacementId`;
+      if (animal.buildingId !== undefined) issues.push(`${path} conflicts with buildingId`);
+      const home = resolveAnimalHome(project, housingState, animal);
+      if (!home) issues.push(`${path} does not resolve enabled housing: ${animal.housingPlacementId}`);
+      else if (!home.allowedSpeciesIds.includes(animal.speciesId)) issues.push(`${path} does not allow speciesId ${animal.speciesId}`);
+      else {
+        const count = (linkedOccupancy.get(home.id) ?? 0) + 1;
+        linkedOccupancy.set(home.id, count);
+        if (count > home.capacity) issues.push(`${path} exceeds animalCapacity: ${home.id} (${home.capacity})`);
+      }
+      continue;
     }
     if (!animal.buildingId) continue;
     const building = firstBuildingById.get(animal.buildingId);
@@ -867,6 +884,11 @@ function validateSpatialReferences(
   collectDuplicateValuePathIssues("database.farmBuildingTypes", "id", buildingTypes.map((row) => row.id), issues);
   const buildingTypeById = new Map(buildingTypes.map((row) => [row.id, row] as const));
   for (const [typeIndex, type] of buildingTypes.entries()) {
+    for (const [index, speciesId] of (type.animalHousing?.allowedSpeciesIds ?? []).entries()) {
+      if (!project.database.farmAnimalSpecies?.some((species) => species.id === speciesId)) {
+        issues.push(`database.farmBuildingTypes[${typeIndex}].animalHousing.allowedSpeciesIds[${index}] does not exist: ${speciesId}`);
+      }
+    }
     for (const [mapIndex, mapId] of (type.allowedMapIds ?? []).entries()) {
       if (!mapIds.has(mapId)) issues.push(`database.farmBuildingTypes[${typeIndex}].allowedMapIds[${mapIndex}] does not exist: ${mapId}`);
     }

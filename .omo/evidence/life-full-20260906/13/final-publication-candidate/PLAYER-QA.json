@@ -1,0 +1,366 @@
+{
+  "kind": "bounded-projection-not-original",
+  "original": {
+    "path": "/home/main/.herdr/worktrees/rpg-zzu/.omo/recovery/life-full-20260908/player-final/attempts/attempt-1/HANDOFF.json",
+    "sha256": "8fa50c621090cd83f008e5f37afb90990ac3c146ceec3a514bc3fed0b73d9b31",
+    "bytes": 470984
+  },
+  "omitted": "Raw state, sessions, inventories, request bodies, asset URLs, internal endpoints, full transport decisions. Recorded criteria, not newly executed tests.",
+  "attempt": "attempt-1",
+  "liveHead": "1474a5d861c74e276518037bad0f673b5ab092d6",
+  "runnerSha256": "267fd598e9ad72e620137e383b8d1c8b15a2f6c6967e17f77c5959477e3908d7",
+  "nativeAcceptance": true,
+  "criteria": {
+    "gate-worktree-status": {
+      "pass": true
+    },
+    "gate-manifest-source": {
+      "pass": true
+    },
+    "gate-manifest-helper": {
+      "pass": true
+    },
+    "gate-input-wire-save": {
+      "pass": true
+    },
+    "gate-runner-frozen": {
+      "pass": true
+    },
+    "gate-ready-for-execution": {
+      "pass": true
+    },
+    "PRE-action-load-slot2": {
+      "pass": true
+    },
+    "MISSING-home-care-unavailable-a4": {
+      "pass": true
+    },
+    "LABEL-full-a4-placementA": {
+      "pass": true
+    },
+    "LABEL-species-a3-placementA": {
+      "pass": true
+    },
+    "LABEL-linked-a4-placementB": {
+      "pass": true
+    },
+    "FULL-refusal-a4-placementA": {
+      "pass": true
+    },
+    "SPECIES-refusal-a3-placementA": {
+      "pass": true
+    },
+    "LINKED-success-a4-placementB": {
+      "pass": true
+    },
+    "CARE-feed-pet-a4": {
+      "pass": true
+    },
+    "REASSIGN-a4-legacy-coop": {
+      "pass": true
+    },
+    "DUP-feed-pet-blocked-after-reassign": {
+      "pass": true
+    },
+    "COLLECT-a1-while-assigned": {
+      "pass": true,
+      "invDelta": 2
+    },
+    "DEMOLISH-first-impact-unchanged": {
+      "pass": true,
+      "midUnchanged": true,
+      "placementPresent": true
+    },
+    "LIFECYCLE-menu-close-invalidates-arm": {
+      "pass": true
+    },
+    "LIFECYCLE-same-context-rerender-keeps-arm": {
+      "pass": true
+    },
+    "DEMOLISH-confirm-removes-placement-preserves-animals": {
+      "pass": true
+    },
+    "COLLECT-a2-while-unassigned": {
+      "pass": true,
+      "invDelta": 1
+    },
+    "PERSIST-save-slot1-raw": {
+      "pass": true
+    },
+    "PERSIST-diverge-both-exclusive-refs": {
+      "pass": true,
+      "savedRefs": {
+        "housingPlacementId": null,
+        "buildingId": "legacy:coop"
+      },
+      "liveRefs": {
+        "housingPlacementId": "farm_building_placement_bed35969-1d31-4134-a8f7-892b6c8f4d23",
+        "buildingId": null
+      }
+    },
+    "PERSIST-load-slot1-deep-equality": {
+      "pass": true,
+      "restoreAnimalsOk": true,
+      "restorePlacementsOk": true,
+      "restoreInvOk": true,
+      "restoreGameTimeOk": true,
+      "restoredDiffersFromDiverged": true,
+      "restoredMatchesSavedRefs": true,
+      "loadWait": {
+        "predicateTrueBeforeLoad": false,
+        "resolution": {
+          "already": false,
+          "name": "load-slot1-restored-a4-and-field"
+        },
+        "nonVacuous": true
+      },
+      "loadedRefs": {
+        "housingPlacementId": null,
+        "buildingId": "legacy:coop"
+      }
+    },
+    "PERSIST-slot3-matches-slot1-and-live": {
+      "pass": true,
+      "slot3EqualsSlot1Domain": true,
+      "slot3EqualsLive": true,
+      "storageChanged": true
+    },
+    "PERSIST-not-noop": {
+      "pass": true
+    },
+    "gate-after-run-identity": {
+      "pass": true
+    },
+    "gate-write-guard-no-remote-mutations": {
+      "pass": true,
+      "blockedCount": 0,
+      "decisionsBlocked": 0,
+      "decisionsAllowed": 981,
+      "illegalAllowCount": 0
+    }
+  },
+  "failedCriteria": [],
+  "errors": [],
+  "pageErrors": [],
+  "cleanup": {
+    "ok": true,
+    "errors": [],
+    "finishedAt": "2026-09-08T18:57:11.077Z"
+  },
+  "blockedWrites": 0,
+  "sourceIdentityAfter": {
+    "src/editor/panels/databaseFarmSpatialView.ts": {
+      "sha256": "ee161495b6a381bf58091064159efa1f1621ef236a198fa7be93802d55130084",
+      "bytes": 82229,
+      "match": true
+    },
+    "src/editor/databaseReferences.ts": {
+      "sha256": "2cdfe84ee1baf30c03918b3c59a0a864210b0062a803346231d9dbddff7700b1",
+      "bytes": 23564,
+      "match": true
+    },
+    "src/editor/panels/databaseFarmAnimalsView.ts": {
+      "sha256": "39143d7ee86e587f3c95f4748362b1b2e26a5a139669d26f3af37b8029a8e281",
+      "bytes": 48855,
+      "match": true
+    },
+    "src/editor/panels/databaseModal.ts": {
+      "sha256": "55d06d285b2f7984201f1715c5d3390ca1b8f6eb3ab889eb6f4432e214793cc9",
+      "bytes": 26806,
+      "match": true
+    },
+    "src/player/lifeLedger.ts": {
+      "sha256": "564ee11491092ea27a4fc9a31a312a3ad31e6e717d47b6790eb1e5a54b33efac",
+      "bytes": 39261,
+      "match": true
+    },
+    "src/player/playerStatusMenuControllerDom.ts": {
+      "sha256": "9abe5e150659319cc5ceb430793035d580dc246ac905689367c7ab71fea8c1c5",
+      "bytes": 3184,
+      "match": true
+    },
+    "src/player/playerStatusMenuDetailRenderer.ts": {
+      "sha256": "a8d70df065f7e9a253c2ff7a2a4cc3b260c0e76e66ed0d3e06458e76e22da152",
+      "bytes": 15055,
+      "match": true
+    },
+    "test/animalHousingAuthoringUi.test.ts": {
+      "sha256": "bf4d4c7098a43453aa0241bb0d6952dba6892beffe385a5cde9bc2db1a25937a",
+      "bytes": 42149,
+      "match": true
+    },
+    "test/animalHousingConfirmationLifecycle.test.ts": {
+      "sha256": "7e2e645b8268a876d55b9d0194e33ddc59b59f43ae575f408c8c75c44f273ae9",
+      "bytes": 19171,
+      "match": true
+    },
+    "src/project/supabaseProjectSync.ts": {
+      "sha256": "27e5a0de2dbe154e65686be85a832022369503f8a8ecd25f12ab11a198aad31b",
+      "bytes": 60954,
+      "match": true
+    },
+    "src/project/io/shape.ts": {
+      "sha256": "863029e5a69fa5fd7354a965f6db636bf8ac6aca54e5ff38a0d6a4352185c376",
+      "bytes": 29533,
+      "match": true
+    },
+    "src/editor/panels/database.ts": {
+      "sha256": "15a48924cf7b7ebe528556295182833260ced0501660024bd0407d9998968f9e",
+      "bytes": 44588,
+      "match": true
+    },
+    "test/databaseTabRenderReentry.test.ts": {
+      "sha256": "d96f2d6f1eda051e9eaf89ef54204c54852a4a673dc76dd9f33edaaf8074b889",
+      "bytes": 6181,
+      "match": true
+    },
+    "player.html": {
+      "sha256": "091a9f5b8c7d9deb946558c61103f28a0f5f7e46ec81c2fe6921e5c4ba39f45c",
+      "bytes": 310,
+      "match": true
+    },
+    "vite.player-qa.config.ts": {
+      "sha256": "a55411fe3f15e2d3051119c4bb703820404744be6a1177e362ff3a588a5f84e3",
+      "bytes": 4395,
+      "match": true
+    },
+    "vite.player.config.ts": {
+      "sha256": "352a2aef3d1f1b4c429e0b0f882f14befbcb69888337f20dabea8895b82390bb",
+      "bytes": 995,
+      "match": true
+    },
+    "test/animalHousingSummaryMetrics.test.ts": {
+      "sha256": "d53750677dcaf76eadb755721b4384688aee09b3ebb808642556c56f1b207527",
+      "bytes": 10960,
+      "match": true
+    }
+  },
+  "launcher": {
+    "original": {
+      "path": "/home/main/.herdr/worktrees/rpg-zzu/.omo/recovery/life-full-20260908/player-final/attempts/attempt-1/parent-launcher-receipt.json",
+      "sha256": "d04fdb62703354c9d947c31de4344d0a635ac2a223c56cbfdade7cdbdb19ff50",
+      "bytes": 1545
+    },
+    "childExit": 0,
+    "namespaceCleanup": {
+      "pid": 905142,
+      "exit": 0,
+      "procAbsent": true
+    },
+    "slirpCleanup": {
+      "pid": 905166,
+      "exit": 0,
+      "procAbsent": true
+    },
+    "exit": 0,
+    "controlDescriptorsClosed": true
+  },
+  "screenshots": [
+    {
+      "path": "title-1024x768.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 459314,
+      "sha256": "5f1ccd96563d67cb0c05a3faf124ff72521f433e95ab9ca09848c094a26fabd2",
+      "phase": "title",
+      "viewport": "1024x768"
+    },
+    {
+      "path": "field-before-load-1024x768.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 41333,
+      "sha256": "e285316ebc4d559c8055a5516ba04b4bb7ef7475f154bbc4b2d39345e53d5a7b",
+      "phase": "field-before-load"
+    },
+    {
+      "path": "ledger-animals-after-load-1024x768.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 130647,
+      "sha256": "84cc20e5ae07430c6292c03898caa03695b116da1a2ac275cd97f325d38991d9",
+      "phase": "animals-after-load",
+      "viewport": "1024x768"
+    },
+    {
+      "path": "ledger-after-assign-b-1024x768.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 152539,
+      "sha256": "d6d75bc54527e0a8eaa53169ec1b9f38fb4436f4d76f41dac8c5d5ff9fd45d8b",
+      "phase": "after-assign-b"
+    },
+    {
+      "path": "ledger-after-care-1024x768.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 153995,
+      "sha256": "54738d6200993e4c6cb7c3bbe8160bab2aae237aab1610d29b05b67652bfd802",
+      "phase": "after-care-a4"
+    },
+    {
+      "path": "ledger-spaces-1024x768.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 145755,
+      "sha256": "dac511411a5d7cc14466c0f50482291ae9d368118b10cd5cca1b6f4c5d9eddf4",
+      "phase": "spaces-before-demolish"
+    },
+    {
+      "path": "owner-care-state-1024x768.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 132975,
+      "sha256": "38c7548db5ad75dd3c4a6ec3528515dc914138802cdc9f246cfff54a6c3a7513",
+      "phase": "post-lifecycle-1024",
+      "viewport": "1024x768"
+    },
+    {
+      "path": "owner-care-state-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 138401,
+      "sha256": "d2d9550b830c80ec5a05534ca8b7b45d91b608f29ed18b18f4c37ea30ed2a8b9",
+      "phase": "post-lifecycle-1440",
+      "viewport": "1440x900"
+    },
+    {
+      "path": "after-persistence-1024x768.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 129731,
+      "sha256": "9e916666a7a3c1c7b104a9722289c4f2e5b23f2e92667165b85dc99c2e87cf60",
+      "phase": "after-persistence"
+    }
+  ],
+  "inputs": {
+    "label": "INPUT - not newly produced gameplay",
+    "projectId": "task13-housing-9bdb8166-ace2-474f-acf0-3e42a6269c5e",
+    "wireSha256": "3bfc6ec04bcf019cb1eaf2ccf3363fe16e902efdedda9ca247b825ca338b2d24",
+    "save5Sha256": "231b5bb5b6291c1b84cd75c6206e6edd7576c670718e2d14dbc6986edd7139f9",
+    "contentsExcluded": true
+  },
+  "parentWholeParsedSessionEquality": {
+    "reported": true,
+    "comparison": "slot1.session and slot3.session deep parsed equality",
+    "authority": "canonical ledger: task76-current-player-parent-verified; not rerun by preparer"
+  },
+  "projectionFieldMapping": {
+    "criteria.PERSIST-diverge-both-exclusive-refs.savedRefs": {
+      "originalField": "criteria.PERSIST-diverge-both-exclusive-refs.savedRefs",
+      "mode": "exact-field-copy; synthetic QA home references"
+    },
+    "criteria.PERSIST-diverge-both-exclusive-refs.liveRefs": {
+      "originalField": "criteria.PERSIST-diverge-both-exclusive-refs.liveRefs",
+      "mode": "exact-field-copy; synthetic QA home references"
+    },
+    "criteria.PERSIST-load-slot1-deep-equality.loadedRefs": {
+      "originalField": "criteria.PERSIST-load-slot1-deep-equality.loadedA4",
+      "retainedFields": [
+        "housingPlacementId",
+        "buildingId"
+      ],
+      "animalInstanceId": "a4"
+    }
+  }
+}

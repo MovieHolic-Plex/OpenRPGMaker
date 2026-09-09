@@ -878,6 +878,8 @@ export interface FarmBuildingLevelDefinition {
   readonly footprint: SpatialFootprint;
   /** Generic facility slots, never P1 farm-animal housing capacity. */
   readonly capacity: number;
+  /** Explicit per-instance animal slots when animalHousing is enabled; 0..9999. */
+  readonly animalCapacity?: number;
   /** Level 1 builds the structure; later levels upgrade into that level. */
   readonly cost?: SpatialPlacementCost;
   readonly graphicResourceId: string;
@@ -889,6 +891,7 @@ export interface FarmBuildingTypeRecord {
   readonly id: string;
   readonly name: string;
   readonly levels: FarmBuildingLevelDefinition[];
+  readonly animalHousing?: { readonly allowedSpeciesIds: string[] };
   /** Omitted/empty permits every map. */
   readonly allowedMapIds?: MapId[];
 }

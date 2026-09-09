@@ -1,0 +1,13 @@
+b87c9822f431ece4674e97a9d9cd15d1956be327
+b87c9822f fix(life): preserve unpaid spatial recovery rights and paid decoration proof
+ openwiki/INDEX.md                           |  66 ++++---
+ openwiki/runtime-sessions.md                |   4 +
+ src/player/saveSlotSpatialValidation.ts     |  12 +-
+ src/project/lifeRecovery.ts                 |  34 +++-
+ src/project/lifeStateReconciliation.ts      |   7 +-
+ src/project/spatialPlacementTransactions.ts |  16 +-
+ test/lifePlacementSafety.test.ts            |   6 +-
+ test/linkedAnimalHousing.test.ts            |   7 +-
+ test/spatialPaymentReceipts.test.ts         |  10 +-
+ test/spatialRecoveryRights.test.ts          | 290 ++++++++++++++++++++++++++++
+ 10 files changed, 397 insertions(+), 55 deletions(-)

@@ -1,0 +1,373 @@
+{
+  "status": "EVIDENCE_PREPARED_REMOVAL_BLOCKED",
+  "parent_commit": "f12c7a7909e48e0947f883b2254a883df254008a",
+  "original_commit": "462a7f3425079abc94fefafe2142dfcd5b42b034",
+  "both_source_trees_intact": true,
+  "source_populated_files_rechecked": 14065,
+  "all_hashed_source_bytes_modes_mtimes_unchanged": true,
+  "evidence_rows": 69,
+  "manifest_rows": 23597,
+  "new_unique_gzip_payloads": 17,
+  "new_payload_original_bytes": 88924,
+  "new_payload_archive_bytes": 20819,
+  "coverage_manifest_sha256": "c6d50b0a3b070793ef4d8f5ff97e025f309bcf2b86172dd51a40894530313550",
+  "coverage_manifest_decoded_sha256": "6be82ebd269ce85d98173fd1eb63e05a493684ac16e7f9535f513383ce70cfd9",
+  "owned_source_input_checks": [
+    {
+      "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core/src/project/spatialOccupancy.ts",
+      "sha256": "67272f09c571fbca298ce0994a16160d357130a43b60ba07a32b10219507e9f4",
+      "parent_commit": "f12c7a7909e48e0947f883b2254a883df254008a",
+      "parent_path": "src/project/spatialOccupancy.ts",
+      "parent_git_blob": "0be27a8ca86724c10f1d5323f66aa85b0ee69324",
+      "byte_equal": true
+    },
+    {
+      "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core/src/project/spatialPlacementTransactions.ts",
+      "sha256": "fa7de88b6bc8e563b4b13db1aefe37d1699831a87902098cd7e21ec0d649330a",
+      "parent_commit": "f12c7a7909e48e0947f883b2254a883df254008a",
+      "parent_path": "src/project/spatialPlacementTransactions.ts",
+      "parent_git_blob": "679fa19ff9127e461e5432b55dc3148a031f0f61",
+      "byte_equal": true
+    },
+    {
+      "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core/src/project/spatialPlacementRestore.ts",
+      "sha256": "749e14775b33f055708c73da46a982402b1cf90136add469bc4a6accf26fc747",
+      "parent_commit": "f12c7a7909e48e0947f883b2254a883df254008a",
+      "parent_path": "src/project/spatialPlacementRestore.ts",
+      "parent_git_blob": "e05c2963e49d38e2bbab7593d3199c3fb7cde374",
+      "byte_equal": true
+    },
+    {
+      "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core/src/player/farming.ts",
+      "sha256": "4cecee9f2cc11a80f9129d492145595b28717993be44dbd0a3fb4fc8e51306de",
+      "parent_commit": "f12c7a7909e48e0947f883b2254a883df254008a",
+      "parent_path": "src/player/farming.ts",
+      "parent_git_blob": "6ca9b5ddd89ba5e9a609af922aa1f5f8033682a0",
+      "byte_equal": true
+    },
+    {
+      "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core/test/lifePlacementSafety.test.ts",
+      "sha256": "f428153ef77aea8efc70a6b9441fa541647bba39b86ba80042481ff4f8393459",
+      "parent_commit": "f12c7a7909e48e0947f883b2254a883df254008a",
+      "parent_path": "test/lifePlacementSafety.test.ts",
+      "parent_git_blob": "8aecdf40a91a497e36bb6822d9f19e8af3894c17",
+      "byte_equal": true
+    },
+    {
+      "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core/openwiki/runtime-project-schema.md",
+      "sha256": "b0761595a9aa56c69573182d61803afc6aa3a5fe2502994adb05ca2433b4c2c7",
+      "parent_commit": "f12c7a7909e48e0947f883b2254a883df254008a",
+      "parent_path": "openwiki/runtime-project-schema.md",
+      "parent_git_blob": "76bf7d217e68431cbc3ee90985df7e2a26d01750",
+      "byte_equal": true
+    },
+    {
+      "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core/.omo/evidence/life-full-20260906/12/core/public-probe.mts",
+      "sha256": "f0f398a71307291039f909ceb4f995e9aab07383839bab5779833f71e5ba82c0",
+      "parent_commit": "f12c7a7909e48e0947f883b2254a883df254008a",
+      "parent_path": ".omo/evidence/life-full-20260906/12/core/public-probe.mts",
+      "parent_git_blob": "cceaf9d14b02e9965ee5665c9c4c6f9e50917428",
+      "byte_equal": true
+    },
+    {
+      "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify/src/project/spatialOccupancy.ts",
+      "sha256": "67272f09c571fbca298ce0994a16160d357130a43b60ba07a32b10219507e9f4",
+      "parent_commit": "f12c7a7909e48e0947f883b2254a883df254008a",
+      "parent_path": "src/project/spatialOccupancy.ts",
+      "parent_git_blob": "0be27a8ca86724c10f1d5323f66aa85b0ee69324",
+      "byte_equal": true
+    },
+    {
+      "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify/src/project/spatialPlacementTransactions.ts",
+      "sha256": "fa7de88b6bc8e563b4b13db1aefe37d1699831a87902098cd7e21ec0d649330a",
+      "parent_commit": "f12c7a7909e48e0947f883b2254a883df254008a",
+      "parent_path": "src/project/spatialPlacementTransactions.ts",
+      "parent_git_blob": "679fa19ff9127e461e5432b55dc3148a031f0f61",
+      "byte_equal": true
+    },
+    {
+      "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify/src/project/spatialPlacementRestore.ts",
+      "sha256": "749e14775b33f055708c73da46a982402b1cf90136add469bc4a6accf26fc747",
+      "parent_commit": "f12c7a7909e48e0947f883b2254a883df254008a",
+      "parent_path": "src/project/spatialPlacementRestore.ts",
+      "parent_git_blob": "e05c2963e49d38e2bbab7593d3199c3fb7cde374",
+      "byte_equal": true
+    },
+    {
+      "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify/src/player/farming.ts",
+      "sha256": "4cecee9f2cc11a80f9129d492145595b28717993be44dbd0a3fb4fc8e51306de",
+      "parent_commit": "f12c7a7909e48e0947f883b2254a883df254008a",
+      "parent_path": "src/player/farming.ts",
+      "parent_git_blob": "6ca9b5ddd89ba5e9a609af922aa1f5f8033682a0",
+      "byte_equal": true
+    },
+    {
+      "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify/test/lifePlacementSafety.test.ts",
+      "sha256": "f428153ef77aea8efc70a6b9441fa541647bba39b86ba80042481ff4f8393459",
+      "parent_commit": "f12c7a7909e48e0947f883b2254a883df254008a",
+      "parent_path": "test/lifePlacementSafety.test.ts",
+      "parent_git_blob": "8aecdf40a91a497e36bb6822d9f19e8af3894c17",
+      "byte_equal": true
+    },
+    {
+      "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify/openwiki/runtime-project-schema.md",
+      "sha256": "b0761595a9aa56c69573182d61803afc6aa3a5fe2502994adb05ca2433b4c2c7",
+      "parent_commit": "f12c7a7909e48e0947f883b2254a883df254008a",
+      "parent_path": "openwiki/runtime-project-schema.md",
+      "parent_git_blob": "76bf7d217e68431cbc3ee90985df7e2a26d01750",
+      "byte_equal": true
+    }
+  ],
+  "trees": [
+    {
+      "root": "/home/main/z-project/rpg-zzu-life-full-placement-core",
+      "head": "462a7f3425079abc94fefafe2142dfcd5b42b034",
+      "branch": "agent/life-full-placement-core",
+      "detached": false,
+      "tracked_status_porcelain": "",
+      "ordinary_untracked": [],
+      "ignored_untracked": [
+        ".env.local",
+        ".omo/evidence/life-full-20260906/12/core/build.log",
+        ".omo/evidence/life-full-20260906/12/core/cache-isolated-green.log",
+        ".omo/evidence/life-full-20260906/12/core/final-green.log",
+        ".omo/evidence/life-full-20260906/12/core/green.log",
+        ".omo/evidence/life-full-20260906/12/core/legacy.log",
+        ".omo/evidence/life-full-20260906/12/core/public-probe-fixture-failure.log",
+        ".omo/evidence/life-full-20260906/12/core/public-probe.log",
+        ".omo/evidence/life-full-20260906/12/core/red-behavior.log",
+        ".omo/evidence/life-full-20260906/12/core/red.log",
+        ".omo/evidence/life-full-20260906/12/core/typecheck.log",
+        "node_modules"
+      ],
+      "lock_indicators": [],
+      "git_admin_directory": "/home/main/z-project/rpg-zzu/.git/worktrees/rpg-zzu-life-full-placement-core",
+      "excluded_metadata": [
+        {
+          "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core/.env.local",
+          "path": ".env.local",
+          "kind": "regular",
+          "size": 1099,
+          "mode": "0o664",
+          "contents_read": false,
+          "classification": "secret configuration; owner disposition unverified; not read, hashed or archived"
+        },
+        {
+          "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core/.env.example",
+          "path": ".env.example",
+          "kind": "regular",
+          "size": 4382,
+          "mode": "0o644",
+          "contents_read": false,
+          "classification": "tracked environment template; recoverable from reachable Git commit; contents not inspected",
+          "recovery": {
+            "kind": "reachable-git-blob",
+            "commit": "462a7f3425079abc94fefafe2142dfcd5b42b034",
+            "path": ".env.example",
+            "git_blob": "d9581e22a742a9dacaa0b53a6469c4611a1de216",
+            "reachable_from_parent": "f12c7a7909e48e0947f883b2254a883df254008a",
+            "encoding": "identity"
+          }
+        },
+        {
+          "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core/.git",
+          "path": ".git",
+          "kind": "regular",
+          "size": 85,
+          "mode": "0o644",
+          "contents_read": false,
+          "classification": "Git administrative pointer"
+        },
+        {
+          "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core/infra/notion-mcp-proxy/.env.example",
+          "path": "infra/notion-mcp-proxy/.env.example",
+          "kind": "regular",
+          "size": 617,
+          "mode": "0o644",
+          "contents_read": false,
+          "classification": "tracked environment template; recoverable from reachable Git commit; contents not inspected",
+          "recovery": {
+            "kind": "reachable-git-blob",
+            "commit": "462a7f3425079abc94fefafe2142dfcd5b42b034",
+            "path": "infra/notion-mcp-proxy/.env.example",
+            "git_blob": "785cc08c17f03a2a6a747c4123ea84408bcc48d1",
+            "reachable_from_parent": "f12c7a7909e48e0947f883b2254a883df254008a",
+            "encoding": "identity"
+          }
+        },
+        {
+          "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core/infra/ai-authority-control-plane/.env.example",
+          "path": "infra/ai-authority-control-plane/.env.example",
+          "kind": "regular",
+          "size": 289,
+          "mode": "0o644",
+          "contents_read": false,
+          "classification": "tracked environment template; recoverable from reachable Git commit; contents not inspected",
+          "recovery": {
+            "kind": "reachable-git-blob",
+            "commit": "462a7f3425079abc94fefafe2142dfcd5b42b034",
+            "path": "infra/ai-authority-control-plane/.env.example",
+            "git_blob": "963442146cc2323550fe704b051bcfc09be0b35b",
+            "reachable_from_parent": "f12c7a7909e48e0947f883b2254a883df254008a",
+            "encoding": "identity"
+          }
+        }
+      ],
+      "unknown_files": [],
+      "allocated_bytes_no_symlink_follow": 342151168,
+      "reachable_from_parent": true
+    },
+    {
+      "root": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify",
+      "head": "462a7f3425079abc94fefafe2142dfcd5b42b034",
+      "branch": null,
+      "detached": true,
+      "tracked_status_porcelain": "",
+      "ordinary_untracked": [],
+      "ignored_untracked": [
+        ".env.local",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/VERIFY.md",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/adoption.log",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/cleanup.json",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/commands.txt",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/diagnostics.exit",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/diagnostics.log",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/diagnostics.mjs",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/evidence.sha256",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/identity-after.txt",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/identity-before.txt",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/independent-seams-diagnosis.exit",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/independent-seams-diagnosis.log",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/independent-seams-fixture-error.exit",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/independent-seams-fixture-error.log",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/independent-seams-fixture-error.mts",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/independent-seams-state.json",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/independent-seams.exit",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/independent-seams.log",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/independent-seams.mts",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/public-probe-path-error.exit",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/public-probe-path-error.log",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/public-probe-path-error.mts",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/public-probe.exit",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/public-probe.log",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/public-probe.mts",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/public-state-save.json",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/run-checks.sh",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/tests.exit",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/tests.log",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/typecheck.exit",
+        ".omo/evidence/life-full-20260906/phase4-placement-core-verification/st_01a0792c-new-core/typecheck.log",
+        "node_modules"
+      ],
+      "lock_indicators": [
+        {
+          "path": "/home/main/z-project/rpg-zzu/.git/worktrees/rpg-zzu-life-full-placement-core-verify/locked",
+          "bytes": 40
+        }
+      ],
+      "git_admin_directory": "/home/main/z-project/rpg-zzu/.git/worktrees/rpg-zzu-life-full-placement-core-verify",
+      "excluded_metadata": [
+        {
+          "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify/.env.local",
+          "path": ".env.local",
+          "kind": "regular",
+          "size": 1099,
+          "mode": "0o664",
+          "contents_read": false,
+          "classification": "secret configuration; owner disposition unverified; not read, hashed or archived"
+        },
+        {
+          "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify/.env.example",
+          "path": ".env.example",
+          "kind": "regular",
+          "size": 4382,
+          "mode": "0o644",
+          "contents_read": false,
+          "classification": "tracked environment template; recoverable from reachable Git commit; contents not inspected",
+          "recovery": {
+            "kind": "reachable-git-blob",
+            "commit": "462a7f3425079abc94fefafe2142dfcd5b42b034",
+            "path": ".env.example",
+            "git_blob": "d9581e22a742a9dacaa0b53a6469c4611a1de216",
+            "reachable_from_parent": "f12c7a7909e48e0947f883b2254a883df254008a",
+            "encoding": "identity"
+          }
+        },
+        {
+          "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify/.git",
+          "path": ".git",
+          "kind": "regular",
+          "size": 92,
+          "mode": "0o644",
+          "contents_read": false,
+          "classification": "Git administrative pointer"
+        },
+        {
+          "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify/infra/notion-mcp-proxy/.env.example",
+          "path": "infra/notion-mcp-proxy/.env.example",
+          "kind": "regular",
+          "size": 617,
+          "mode": "0o644",
+          "contents_read": false,
+          "classification": "tracked environment template; recoverable from reachable Git commit; contents not inspected",
+          "recovery": {
+            "kind": "reachable-git-blob",
+            "commit": "462a7f3425079abc94fefafe2142dfcd5b42b034",
+            "path": "infra/notion-mcp-proxy/.env.example",
+            "git_blob": "785cc08c17f03a2a6a747c4123ea84408bcc48d1",
+            "reachable_from_parent": "f12c7a7909e48e0947f883b2254a883df254008a",
+            "encoding": "identity"
+          }
+        },
+        {
+          "old_absolute_path": "/home/main/z-project/rpg-zzu-life-full-placement-core-verify/infra/ai-authority-control-plane/.env.example",
+          "path": "infra/ai-authority-control-plane/.env.example",
+          "kind": "regular",
+          "size": 289,
+          "mode": "0o644",
+          "contents_read": false,
+          "classification": "tracked environment template; recoverable from reachable Git commit; contents not inspected",
+          "recovery": {
+            "kind": "reachable-git-blob",
+            "commit": "462a7f3425079abc94fefafe2142dfcd5b42b034",
+            "path": "infra/ai-authority-control-plane/.env.example",
+            "git_blob": "963442146cc2323550fe704b051bcfc09be0b35b",
+            "reachable_from_parent": "f12c7a7909e48e0947f883b2254a883df254008a",
+            "encoding": "identity"
+          }
+        }
+      ],
+      "unknown_files": [],
+      "allocated_bytes_no_symlink_follow": 342233088,
+      "reachable_from_parent": true
+    }
+  ],
+  "active_use": {
+    "method": "/proc PID cwd, exe and open fd link targets only; no cmdline/environ read",
+    "matches": [],
+    "permission_denied_processes": 697,
+    "vanished_processes": 1,
+    "limitation": "point-in-time indicators, not proof against future access or idle owner sessions; coordinator must confirm owners finished"
+  },
+  "resources": {
+    "filesystem_free_bytes_before_archive": 584724480,
+    "old_tree_allocated_bytes": 684384256,
+    "reclaimed_bytes": 0,
+    "shared_dependency_targets_not_traversed": true
+  },
+  "removal_blockers": [
+    "/home/main/z-project/rpg-zzu-life-full-placement-core/.env.local: regular secret configuration has no verified recoverability/disposal authorization",
+    "/home/main/z-project/rpg-zzu-life-full-placement-core-verify/.env.local: regular secret configuration has no verified recoverability/disposal authorization"
+  ],
+  "prerequisites": [
+    "Coordinator reviews exact coverage and commits every path in archive.stage-list.txt, then verifies archive decoding from that commit.",
+    "Coordinator explicitly resolves both unarchived .env.local secret configurations without exposing their contents in evidence; no assumption that they are disposable copies.",
+    "Coordinator confirms old owners idle, resolves any observed process users and reruns scoped status/ordinary+ignored inventory/HEAD/lock checks immediately before removal.",
+    "Keep source commit reachable and producer branch; preserve shared dependency targets and all active spatial-rights trees.",
+    "Only after prerequisites and separate teardown authorization, unlock only locked old verifier if necessary and remove only the two exact old roots without force; stop on refusal."
+  ],
+  "no_qa_or_teardown_performed": true,
+  "stage_list_sha256": "f2b9ed9ca9e59a1cc960c3dad4ae479b66b9460affed21b1948028e5c84f7f30",
+  "stage_list_count": 21,
+  "metadata_classification_correction": "Tracked .env.example templates are reachable Git inputs, not secret-disposal blockers; their contents were not inspected."
+}

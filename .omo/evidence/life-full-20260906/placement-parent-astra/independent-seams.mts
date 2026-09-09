@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import { writeFileSync } from 'node:fs';
+import { createBlankProject, createFarmingDemoProject } from '../../../../src/project/defaults';
+import { startSession } from '../../../../src/project/session';
+import { placeFarmBuilding, moveFarmBuilding } from '../../../../src/project/spatialPlacementTransactions';
+import { interactWithFarmPlot } from '../../../../src/player/farming';
+const project = createBlankProject();
+project.database.farmBuildingTypes = [{id:'b',name:'B',levels:[{level:1,capacity:1,footprint:{width:1,height:1},graphicResourceId:'easyrpg-picture-cloud',cost:{gold:1}}]}];
+const session = startSession(project, 1292); session.gold=100;
+const mapId=project.startMapId;
+const live=()=>({player:{mapId,x:5,y:5,footprint:{width:1,height:1}},npcs:[]});
+for(const [id,x,y] of [['left',4,5],['up',5,4],['down',5,6]] as const) assert.equal(placeFarmBuilding(project,session,{instanceId:id,typeId:'b',mapId,x,y,orientation:'down'}).ok,true);
+const before=structuredClone(session);
+assert.deepEqual(placeFarmBuilding(project,session,{instanceId:'right',typeId:'b',mapId,x:6,y:5,orientation:'down'},live),{ok:false,reason:'blocked'});
+assert.deepEqual(session,before);
+const rejected=structuredClone(session);
+// Moving an existing wall to the last old exit opens its former neighbor.
+assert.equal(moveFarmBuilding(project,session,'left',mapId,6,5,live).ok,true);
+assert.equal(session.gold,before.gold);
+const farmProject=createFarmingDemoProject();
+farmProject.database.farmBuildingTypes=[...(farmProject.database.farmBuildingTypes ?? []), ...project.database.farmBuildingTypes!];
+const farm=startSession(farmProject,1293);const map=farmProject.maps[farmProject.startMapId]!;
+const till = interactWithFarmPlot(farmProject,farm,map,4,5);
+console.log(JSON.stringify({till, farmPlots:farm.farmPlots, placements:farm.farmBuildingPlacements, placeables:farm.placeables, chests:farm.chests}));
+assert.equal(till.kind,'tilled');
+// Boundary fixture models a persisted asset overlapping a plot; only the plot may be exempted.
+farm.farmBuildingPlacements={occupied:{instanceId:'occupied',typeId:'b',mapId:map.id,x:4,y:5,orientation:'down',level:1}};
+const beforeFarm=structuredClone(farm);
+assert.equal(interactWithFarmPlot(farmProject,farm,map,4,5).kind,'ignored');
+assert.deepEqual(farm,beforeFarm);
+writeFileSync(new URL('./independent-seams-state.json',import.meta.url),JSON.stringify({before,rejected,afterExitSwap:session,beforeFarm,afterFarm: farm},null,2));
+console.log(JSON.stringify({lastExitRefusalWholeSessionEqual:true,moveOpensAlternateExit:true,moveCostUnchanged:true,selfPlotExemptionDoesNotExemptOverlappingBuilding:true}));

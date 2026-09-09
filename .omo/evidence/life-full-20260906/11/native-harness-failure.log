@@ -1,0 +1,16 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.evaluate: can't access property "find", window.Phaser.GAMES is undefined
+@debugger eval code line 303 > eval:7:19
+async*evaluate@debugger eval code:305:16
+@debugger eval code:1:44
+@debugger eval code:1:62
+
+    at /home/main/z-project/rpg-zzu-life-full-housing/.omo/evidence/life-full-20260906/11/public-player.mjs:78:35 {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v24.11.1

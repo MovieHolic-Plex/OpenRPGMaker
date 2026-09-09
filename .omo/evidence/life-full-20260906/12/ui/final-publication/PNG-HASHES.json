@@ -1,0 +1,698 @@
+{
+  "interpretation": "Mechanical PNG signature, dimensions and SHA256 only; visual verdict reused from verify-r6/png-read.json.",
+  "files": [
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-after-move-1024.png",
+      "sha256": "4b38a6e4067432c2e3ec1baa1605947bc635a7c9af6c35b19e3e5c7bf5939bc8",
+      "bytes": 122559,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-after-move-1440.png",
+      "sha256": "a23651e409f964792c863b1a1250b584c64725c9e847b27a1cdef2716d2b6eb2",
+      "bytes": 126516,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-after-place-1024.png",
+      "sha256": "f3925a837b8a5c75221a66f3fd3cd315ea3442491572c2f03253f14326754f9b",
+      "bytes": 123766,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-after-place-1440.png",
+      "sha256": "b0ce98f67df9a173cb9b9bf98fa5e4f9937548e7ba35cfd1b708d1283de97097",
+      "bytes": 127478,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-after-rotate-1024.png",
+      "sha256": "db5a21558945cf6e303018c7c68f80652b1c348a9b6104d845872bd418b7eae9",
+      "bytes": 119637,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-after-rotate-1440.png",
+      "sha256": "4be17178f25f06c543abc43650c8d9ed508ca5f80a52d3c03e22b6d025bc7ff0",
+      "bytes": 123084,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-before-place-1024.png",
+      "sha256": "d098d350f7e3405c30b6e628e88ba8e44f189f8170d616d7ea4fcb19f8021802",
+      "bytes": 263510,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-before-place-1440.png",
+      "sha256": "923e15ecddc938c52ce4da8ee66ced0c85bf3278bfc3042721ebd82579beb69a",
+      "bytes": 269712,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/last-exit-after-refuse-1024.png",
+      "sha256": "d85f8d5729fd9dcab1c5b71a6eed119d34e3b0aa001384ac3d7c5c2ccc3332b0",
+      "bytes": 124418,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/last-exit-after-refuse-1440.png",
+      "sha256": "e5cc57484ec532e1390f86b3cd49f2fd8643028238fb66aa2edd1665dd0c6944",
+      "bytes": 128806,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/last-exit-before-place-1024.png",
+      "sha256": "86c318d8777a950214457a7a7b65948a041009e7a7a2887603f23fc062359188",
+      "bytes": 127427,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/last-exit-before-place-1440.png",
+      "sha256": "e9cb22f1583a05ed198a41636120a6271b185174d1483f0ad1bec02671af0021",
+      "bytes": 131874,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general-replay/after-place-1024.png",
+      "sha256": "3259d0581149d98e00b06c80ad2d9d41e0b7a5529e390d0848debb5c4217fe5d",
+      "bytes": 126148,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general-replay/field-after-load-1024.png",
+      "sha256": "7623920d99a25bbc14c8c32b442961b5bfc99d85d475508c4b3a2782494022ad",
+      "bytes": 35176,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general-replay/field-after-load-1440.png",
+      "sha256": "b7077712343bb0d4f21f118d54b6a27b4a00e4ea38ada099f755de44092250e2",
+      "bytes": 37618,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general-replay/npc-overlap-menu-1024.png",
+      "sha256": "0be42bdfdbaedd358bfa2381c19f8c9d7b3815709e8640091063ec4e614807c6",
+      "bytes": 129764,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general-replay/npc-overlap-menu-1440.png",
+      "sha256": "a567983749eaff6b587e3e1577cb4a40e15739ddf564ad1dac8f73ce630b3152",
+      "bytes": 132877,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general-replay/spaces-before-place-1024.png",
+      "sha256": "7aff98167bc9d0adb56c1902fa1542e1fd1f02a5772a9012c7d3adc7ae73faff",
+      "bytes": 193836,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general-replay/spaces-before-place-1440.png",
+      "sha256": "b2c2443dfcbac8b75b29c03b2779f4d440e955b15575a3f0194b460bf336ead0",
+      "bytes": 198328,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/rug-after-divergent-move-1024.png",
+      "sha256": "c2ee164ebf3d215b5610173464a827b087910fb08a3cc4f9281365a37d7e273e",
+      "bytes": 120588,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/rug-after-divergent-move-1440.png",
+      "sha256": "beaf21b0455f39c2b46b5e98e1dc83ad036f28ee7b271f3588f86583fc14b956",
+      "bytes": 124269,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/rug-after-load-1024.png",
+      "sha256": "278171e6d39461003c1660ff9f035003fb4fcb39deebc35d317528898f3fb9a1",
+      "bytes": 128784,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/rug-after-load-1440.png",
+      "sha256": "e20f86dc833f0fc2c068b98f4ce74f0ff82a902ceb625eeb958838517732ef82",
+      "bytes": 133227,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/rug-after-place-1024.png",
+      "sha256": "3b38f01141ace656d8f1dee4bc8488779cfe57b85bc365c634fe37a5b923949f",
+      "bytes": 122956,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/rug-after-place-1440.png",
+      "sha256": "6ac785994e84e433f3e66add01078a57b7717a18b79dd7d23ea7c1cddca17407",
+      "bytes": 126911,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/rug-after-save-slot1-1024.png",
+      "sha256": "f918c748583da26ed5ba0b39802f88e8889bd63cc6bf60512f188a91bd7b250b",
+      "bytes": 110211,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/rug-after-save-slot1-1440.png",
+      "sha256": "74c56b405b6102a53031855e996d26f44ef0115e7e36f4701294be3c5df240c5",
+      "bytes": 113819,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/rug-after-save-slot2-1024.png",
+      "sha256": "520511a5a84e17f0e2225a5f6be8b1b797fde930e9a10b932e78cfabd45ad83b",
+      "bytes": 110974,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/rug-after-save-slot2-1440.png",
+      "sha256": "014bcf39f347151040185d8f987486f2d63749d91171bc58eb0f1b0de3b3d256",
+      "bytes": 114789,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/rug-before-place-1024.png",
+      "sha256": "31682f296482b22ea675b3d698eb3fee4061298620f52f583c3becb674a55eec",
+      "bytes": 125142,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/rug-before-place-1440.png",
+      "sha256": "e060b6e6989bccfaf4b1a1d0b7f8e1d765e5fe4c9c366766ee1e4235603c090d",
+      "bytes": 128946,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/rug-standing-on-1024.png",
+      "sha256": "c009900dde1a5126936cf76d55fb0859b1f11e81e889034d46bc8daa552d57cc",
+      "bytes": 28418,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/rug-standing-on-1440.png",
+      "sha256": "4ca4007652bbc5189bfb63a804276cdbf204ea19661a1c48f2b905b2d949d18e",
+      "bytes": 30790,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/arena-lastexit/arena-after-move-1024.png",
+      "sha256": "4b38a6e4067432c2e3ec1baa1605947bc635a7c9af6c35b19e3e5c7bf5939bc8",
+      "bytes": 122559,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/arena-lastexit/arena-after-move-1440.png",
+      "sha256": "a23651e409f964792c863b1a1250b584c64725c9e847b27a1cdef2716d2b6eb2",
+      "bytes": 126516,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/arena-lastexit/arena-after-place-1024.png",
+      "sha256": "f3925a837b8a5c75221a66f3fd3cd315ea3442491572c2f03253f14326754f9b",
+      "bytes": 123766,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/arena-lastexit/arena-after-place-1440.png",
+      "sha256": "b0ce98f67df9a173cb9b9bf98fa5e4f9937548e7ba35cfd1b708d1283de97097",
+      "bytes": 127478,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/arena-lastexit/arena-after-rotate-1024.png",
+      "sha256": "db5a21558945cf6e303018c7c68f80652b1c348a9b6104d845872bd418b7eae9",
+      "bytes": 119637,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/arena-lastexit/arena-after-rotate-1440.png",
+      "sha256": "4be17178f25f06c543abc43650c8d9ed508ca5f80a52d3c03e22b6d025bc7ff0",
+      "bytes": 123084,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/arena-lastexit/arena-before-place-1024.png",
+      "sha256": "934a5cfded74f2f28b9ade7c7ce3b85637a10bb011cea4211f187ee0436c568d",
+      "bytes": 263136,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/arena-lastexit/arena-before-place-1440.png",
+      "sha256": "923e15ecddc938c52ce4da8ee66ced0c85bf3278bfc3042721ebd82579beb69a",
+      "bytes": 269712,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/arena-lastexit/last-exit-after-refuse-1024.png",
+      "sha256": "6d80cd2af86a05c0703048f65c1e1a0d1f6f024acdc432f8b475fb0afaba0713",
+      "bytes": 124419,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/arena-lastexit/last-exit-after-refuse-1440.png",
+      "sha256": "e5cc57484ec532e1390f86b3cd49f2fd8643028238fb66aa2edd1665dd0c6944",
+      "bytes": 128806,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/arena-lastexit/last-exit-before-place-1024.png",
+      "sha256": "86c318d8777a950214457a7a7b65948a041009e7a7a2887603f23fc062359188",
+      "bytes": 127427,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/arena-lastexit/last-exit-before-place-1440.png",
+      "sha256": "e9cb22f1583a05ed198a41636120a6271b185174d1483f0ad1bec02671af0021",
+      "bytes": 131874,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/after-place-1024.png",
+      "sha256": "3259d0581149d98e00b06c80ad2d9d41e0b7a5529e390d0848debb5c4217fe5d",
+      "bytes": 126148,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/field-after-load-1024.png",
+      "sha256": "d88859c1ab1735484d53a91db39e63245f0581b96c7b33e0f963de6d60643227",
+      "bytes": 35169,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/field-after-load-1440.png",
+      "sha256": "a114a2968c22e91e61d81f4aa79b934aa49555130839a6f447b0ee240eee2dda",
+      "bytes": 37624,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/npc-overlap-menu-1024.png",
+      "sha256": "99a40f60233fa749e3869f0d0bda9a2e2a7e5c5b41a796ff31c42b2de9e85710",
+      "bytes": 129452,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/npc-overlap-menu-1440.png",
+      "sha256": "64c91dbc80098e9e214dea5f96bd613ff93f0ecff01287c059774c69df382644",
+      "bytes": 132850,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/spaces-before-place-1024.png",
+      "sha256": "bfdfdb381130af86f7a08e5f3d9f3c91d516dec16b51c7a446413a1652a76bea",
+      "bytes": 193029,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/spaces-before-place-1440.png",
+      "sha256": "b2c2443dfcbac8b75b29c03b2779f4d440e955b15575a3f0194b460bf336ead0",
+      "bytes": 198328,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/rug-after-divergent-move-1024.png",
+      "sha256": "c2ee164ebf3d215b5610173464a827b087910fb08a3cc4f9281365a37d7e273e",
+      "bytes": 120588,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/rug-after-divergent-move-1440.png",
+      "sha256": "beaf21b0455f39c2b46b5e98e1dc83ad036f28ee7b271f3588f86583fc14b956",
+      "bytes": 124269,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/rug-after-load-1024.png",
+      "sha256": "2461852e492c257f8a615060896458eeece4e98fe97d52ef540954f949171db1",
+      "bytes": 128810,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/rug-after-load-1440.png",
+      "sha256": "e20f86dc833f0fc2c068b98f4ce74f0ff82a902ceb625eeb958838517732ef82",
+      "bytes": 133227,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/rug-after-place-1024.png",
+      "sha256": "de92fe6e6b7a5962fcb0c7e4ed013e3814091260d9b9b7ffd19d3922d899642a",
+      "bytes": 122888,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/rug-after-place-1440.png",
+      "sha256": "6ac785994e84e433f3e66add01078a57b7717a18b79dd7d23ea7c1cddca17407",
+      "bytes": 126911,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/rug-after-save-slot1-1024.png",
+      "sha256": "ae3a12871f79ce89df67f6526ae9382fac9339a51ddb5a5dbb3ce32a1f3f0e7f",
+      "bytes": 109795,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/rug-after-save-slot1-1440.png",
+      "sha256": "74c56b405b6102a53031855e996d26f44ef0115e7e36f4701294be3c5df240c5",
+      "bytes": 113819,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/rug-after-save-slot2-1024.png",
+      "sha256": "7caaacae33c216b40c013a4d59f4717066f5ca2d62e1cda91e0063b78328d6e0",
+      "bytes": 111012,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/rug-after-save-slot2-1440.png",
+      "sha256": "014bcf39f347151040185d8f987486f2d63749d91171bc58eb0f1b0de3b3d256",
+      "bytes": 114789,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/rug-before-place-1024.png",
+      "sha256": "0c48c0b7c7545c4e8f9a4e89fa6aae877731b715bff038b01a3c9da36a6fe170",
+      "bytes": 124424,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/rug-before-place-1440.png",
+      "sha256": "e060b6e6989bccfaf4b1a1d0b7f8e1d765e5fe4c9c366766ee1e4235603c090d",
+      "bytes": 128946,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/rug-standing-on-1024.png",
+      "sha256": "c009900dde1a5126936cf76d55fb0859b1f11e81e889034d46bc8daa552d57cc",
+      "bytes": 28418,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/rug-standing-on-1440.png",
+      "sha256": "4ca4007652bbc5189bfb63a804276cdbf204ea19661a1c48f2b905b2d949d18e",
+      "bytes": 30790,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/arena-lastexit/arena-after-move-1024.png",
+      "sha256": "4b38a6e4067432c2e3ec1baa1605947bc635a7c9af6c35b19e3e5c7bf5939bc8",
+      "bytes": 122559,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/arena-lastexit/arena-after-move-1440.png",
+      "sha256": "a23651e409f964792c863b1a1250b584c64725c9e847b27a1cdef2716d2b6eb2",
+      "bytes": 126516,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/arena-lastexit/arena-after-place-1024.png",
+      "sha256": "f3925a837b8a5c75221a66f3fd3cd315ea3442491572c2f03253f14326754f9b",
+      "bytes": 123766,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/arena-lastexit/arena-after-place-1440.png",
+      "sha256": "b0ce98f67df9a173cb9b9bf98fa5e4f9937548e7ba35cfd1b708d1283de97097",
+      "bytes": 127478,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/arena-lastexit/arena-after-rotate-1024.png",
+      "sha256": "ebc8b70eb2add06369ef1e43505f07cc8017881b8274012387a01ef2a081bf86",
+      "bytes": 119454,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/arena-lastexit/arena-after-rotate-1440.png",
+      "sha256": "4be17178f25f06c543abc43650c8d9ed508ca5f80a52d3c03e22b6d025bc7ff0",
+      "bytes": 123084,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/arena-lastexit/arena-before-place-1024.png",
+      "sha256": "934a5cfded74f2f28b9ade7c7ce3b85637a10bb011cea4211f187ee0436c568d",
+      "bytes": 263136,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/arena-lastexit/arena-before-place-1440.png",
+      "sha256": "923e15ecddc938c52ce4da8ee66ced0c85bf3278bfc3042721ebd82579beb69a",
+      "bytes": 269712,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/arena-lastexit/last-exit-after-refuse-1024.png",
+      "sha256": "6d80cd2af86a05c0703048f65c1e1a0d1f6f024acdc432f8b475fb0afaba0713",
+      "bytes": 124419,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/arena-lastexit/last-exit-after-refuse-1440.png",
+      "sha256": "e5cc57484ec532e1390f86b3cd49f2fd8643028238fb66aa2edd1665dd0c6944",
+      "bytes": 128806,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/arena-lastexit/last-exit-before-place-1024.png",
+      "sha256": "86c318d8777a950214457a7a7b65948a041009e7a7a2887603f23fc062359188",
+      "bytes": 127427,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/arena-lastexit/last-exit-before-place-1440.png",
+      "sha256": "e9cb22f1583a05ed198a41636120a6271b185174d1483f0ad1bec02671af0021",
+      "bytes": 131874,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/general/after-place-1024.png",
+      "sha256": "aede99f4e04a3b9d039962f16fd5bfc2df487f521139cb0ccd8efbefa7322aab",
+      "bytes": 126108,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/general/field-after-load-1024.png",
+      "sha256": "7623920d99a25bbc14c8c32b442961b5bfc99d85d475508c4b3a2782494022ad",
+      "bytes": 35176,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/general/field-after-load-1440.png",
+      "sha256": "b7077712343bb0d4f21f118d54b6a27b4a00e4ea38ada099f755de44092250e2",
+      "bytes": 37618,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/general/npc-overlap-menu-1024.png",
+      "sha256": "95d8f974eeb7589312daf63b83fa8f78e2a385adabdbb715dae46c2a3f79d5bd",
+      "bytes": 130828,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/general/npc-overlap-menu-1440.png",
+      "sha256": "43f4a91a63c91c0671bfbd84ef7220cd5f43fdb816b89dab62be25007cec72c6",
+      "bytes": 132838,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/general/spaces-before-place-1024.png",
+      "sha256": "ee74b18d55ae878b23e3870992d8a2254df45f466a5e3ec606b919f46f577edf",
+      "bytes": 194091,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/general/spaces-before-place-1440.png",
+      "sha256": "b2c2443dfcbac8b75b29c03b2779f4d440e955b15575a3f0194b460bf336ead0",
+      "bytes": 198328,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-divergent-move-1024.png",
+      "sha256": "7a2511d23f14278f8c2d0d2cbdbd086750122207a1b15d4ea9ed0e30505b1593",
+      "bytes": 120577,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-divergent-move-1440.png",
+      "sha256": "beaf21b0455f39c2b46b5e98e1dc83ad036f28ee7b271f3588f86583fc14b956",
+      "bytes": 124269,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-load-1024.png",
+      "sha256": "f9e6f82da828ff71156ef437054e30b4c1986031b42fc430e0493809ec2743a4",
+      "bytes": 128755,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-load-1440.png",
+      "sha256": "e20f86dc833f0fc2c068b98f4ce74f0ff82a902ceb625eeb958838517732ef82",
+      "bytes": 133227,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-place-1024.png",
+      "sha256": "3b38f01141ace656d8f1dee4bc8488779cfe57b85bc365c634fe37a5b923949f",
+      "bytes": 122956,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-place-1440.png",
+      "sha256": "6ac785994e84e433f3e66add01078a57b7717a18b79dd7d23ea7c1cddca17407",
+      "bytes": 126911,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-save-slot1-1024.png",
+      "sha256": "f918c748583da26ed5ba0b39802f88e8889bd63cc6bf60512f188a91bd7b250b",
+      "bytes": 110211,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-save-slot1-1440.png",
+      "sha256": "74c56b405b6102a53031855e996d26f44ef0115e7e36f4701294be3c5df240c5",
+      "bytes": 113819,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-save-slot2-1024.png",
+      "sha256": "520511a5a84e17f0e2225a5f6be8b1b797fde930e9a10b932e78cfabd45ad83b",
+      "bytes": 110974,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-save-slot2-1440.png",
+      "sha256": "014bcf39f347151040185d8f987486f2d63749d91171bc58eb0f1b0de3b3d256",
+      "bytes": 114789,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-before-place-1024.png",
+      "sha256": "31682f296482b22ea675b3d698eb3fee4061298620f52f583c3becb674a55eec",
+      "bytes": 125142,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-before-place-1440.png",
+      "sha256": "e060b6e6989bccfaf4b1a1d0b7f8e1d765e5fe4c9c366766ee1e4235603c090d",
+      "bytes": 128946,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-standing-on-1024.png",
+      "sha256": "c009900dde1a5126936cf76d55fb0859b1f11e81e889034d46bc8daa552d57cc",
+      "bytes": 28418,
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-standing-on-1440.png",
+      "sha256": "4ca4007652bbc5189bfb63a804276cdbf204ea19661a1c48f2b905b2d949d18e",
+      "bytes": 30790,
+      "width": 1440,
+      "height": 900
+    }
+  ]
+}

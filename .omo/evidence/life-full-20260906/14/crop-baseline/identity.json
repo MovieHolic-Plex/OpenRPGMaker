@@ -1,0 +1,66 @@
+{
+  "base": "966f414c07729e7d9474c568cbaf19a94d2bc740",
+  "baseTree": "6ff79d95e11ba95ae47a9db97e106936728088fa",
+  "currentHead": "be63008fa143fef11f7843cac3e01a81dd05cfbe",
+  "correctedTest": {
+    "path": "test/lifeAuthoringBounds.test.ts",
+    "gitBlob": "7a960dfcfa64ca16bb5f45a51f086adde191857f",
+    "sha256": "1133a8c47e56606ee67fb994db00d96ae1e8eaa3d303d248febd233987cc7c86"
+  },
+  "sourceOverrides": [
+    {
+      "path": "src/editor/panels/databaseCharacterView.ts",
+      "baselineGitBlob": "690a8fd80bf43493a51e63d5a2a0ea28fe08002a",
+      "baselineSha256": "552a068b6eedd5cc7272c27b1f4a94d775aef0f780059192e6ecfd1945eb231d",
+      "currentSha256": "c84a69a34f52c02cf1d45cdd3150be49aeec74d5f4024038ba8c145cdedc6823"
+    },
+    {
+      "path": "src/editor/panels/databaseCropView.ts",
+      "baselineGitBlob": "d1f05075ced0e5fdd5748b0eb63ae8a3187c2d77",
+      "baselineSha256": "5a36bd6137560592fd2314b7eb5158e9654580e46639293366e4842eab20e1c9",
+      "currentSha256": "05d46492af06d139d2130728816f8e4bacb7b4ebec5bbad3836cdff3ba5005df"
+    },
+    {
+      "path": "src/editor/panels/databaseDailyWeatherView.ts",
+      "baselineGitBlob": "c1f979049f2d4f036b925ea5204369ee35e09c99",
+      "baselineSha256": "72abe512a61a63b48416d3907d79932919bd8e79961711227b8c89aa8d8a7f27",
+      "currentSha256": "ff1a98cb8e21238bb2edd45a03ca5757b85a36436d5989e84bbd123dfbf1d074"
+    },
+    {
+      "path": "src/editor/panels/databaseLifeCraftingView.ts",
+      "baselineGitBlob": "70bb209e28458edd9cdee0bbc971c999ecd77e9d",
+      "baselineSha256": "6f6704a0876f3f8232ce9d4acaaf47a85dfb3795252a14ec19c8f05b93a869a8",
+      "currentSha256": "86d80f2362090d3def89a22edf574c77ae95e09b483fb2a7f6431a91f959e53d"
+    },
+    {
+      "path": "src/player/playSceneGift.ts",
+      "baselineGitBlob": "157cc3fa74ca5108b2539f4ed6961602d5d5d124",
+      "baselineSha256": "eb588bdd2a9e590e6d901dd4cb5e5f76a2dbd3fe7dab9a9fefc95d24d2c04dba",
+      "currentSha256": "282e0a3c6c33aca06fff14deae821e151e2c4a9bc5e80383db095a266e00ff5e"
+    },
+    {
+      "path": "src/player/playSceneInterpreter.ts",
+      "baselineGitBlob": "7b68253afd1c84421542435a5132c940ec3f9ce7",
+      "baselineSha256": "22ae0d038105f10c39f3962ac72046c06110c50242a6faf9d12f89dc7c4d4bf2",
+      "currentSha256": "a32e7416cba8898aeba6eca737c902e470b539263f728024e488bbac0c47448f"
+    },
+    {
+      "path": "src/project/characterProfiles.ts",
+      "baselineGitBlob": "20ebd58fe9ba345ac4276bf3aeb1c861216c59a1",
+      "baselineSha256": "016710e4a8a44db5536a1687590ee733ad9e0070d8c355f4a19ba30d49f1b961",
+      "currentSha256": "45f1a04611f2524d0bb8c6ea6700c43f6967c10b2cc9a9909f47f7e5376b9c2c"
+    },
+    {
+      "path": "src/project/dailyWeather.ts",
+      "baselineGitBlob": "4737c04088f7e1b4e9a79f9add142ca842324ef0",
+      "baselineSha256": "036bf5e9c7f8178239989fd508c98da7dccb6712a28a5be6c75aa7422d31b80f",
+      "currentSha256": "c0d823d8534eb21f2772d6619e53a952e1c738d1ba125b7517700b35e1d9206a"
+    }
+  ],
+  "allOtherTrackedSrcUnchanged": true,
+  "untrackedSrc": [],
+  "method": "Vite pre-load overlay of every changed production source with verbatim baseline bytes; original module ids/import resolution; no product or test edits",
+  "testTimeoutMs": 15000,
+  "hookTimeoutMs": 90000,
+  "baselineVitestConfigMatchesCurrent": true
+}

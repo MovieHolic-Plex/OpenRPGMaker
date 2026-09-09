@@ -1,0 +1,16 @@
+{
+  "scope": "life-full-20260906",
+  "tier": "LIGHT control-plane routing change; existing implementation remains HEAVY",
+  "ui": {
+    "subagent_type": "Sisyphus-Junior",
+    "model": "xai/grok-4.6"
+  },
+  "nonvisual": {
+    "subagent_type": "Sisyphus-Junior",
+    "model": "opencodex/gpt-6-astra"
+  },
+  "mixed": "Split at explicit file/API boundaries; every image/UI/render/browser portion belongs to Grok.",
+  "fallback": "Do not silently change model family. Verify actual resolved model and report unavailability.",
+  "globalConfigurationChanged": false,
+  "completedWork": "Preserve completed nodes and evidence; this change is prospective and does not restart the approved plan."
+}

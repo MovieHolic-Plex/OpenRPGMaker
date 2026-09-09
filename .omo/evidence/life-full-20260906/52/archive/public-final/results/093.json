@@ -1,0 +1,21 @@
+{
+  "archive_path": "archive/payload/producer/typecheck-app.after.json.gz",
+  "archive_sha256": "0f6f35a0bcf897164e2bbea0007a5c90473deae292fdf0c3f9ebf62e78adbdac",
+  "archive_bytes": 229718,
+  "original_sha256": "68a189f9ad5e9e30266ce9327f2c9acaa046b8bb4c5dc83ab78f46d34363e93f",
+  "original_bytes": 519113,
+  "record_path": "archive/records/093.json",
+  "integrity": "encoded and decoded hash/size match immutable record",
+  "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits",
+  "finding_reasons": [],
+  "inspection": {
+    "utf8": true,
+    "entire_utf8_text_marker_scan": true,
+    "structured_json": true,
+    "structured_nodes": 4646,
+    "structured_strings": 4644,
+    "opaque_asset_or_base64_strings_not_decoded": 0,
+    "notes": []
+  },
+  "limitation": "Automated bounded inspection does not establish absence of opaque/encoded secrets or unmarked sensitive prose. No embedded assets decoded or interpreted; no candidate values emitted."
+}

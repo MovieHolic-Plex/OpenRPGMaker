@@ -1,0 +1,24 @@
+{
+  "buildings": {},
+  "decorations": {
+    "ledger:decoration:table:1": {
+      "instanceId": "ledger:decoration:table:1",
+      "typeId": "table",
+      "mapId": "map_blank_start",
+      "x": 7,
+      "y": 9,
+      "orientation": "left",
+      "recoveryItem": {
+        "itemId": "item_potion",
+        "count": 1
+      }
+    }
+  },
+  "x": 8,
+  "y": 8,
+  "gold": 500,
+  "inventory": {
+    "item_hoe": 1,
+    "item_potion": 7
+  }
+}

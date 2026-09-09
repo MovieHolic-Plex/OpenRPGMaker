@@ -1,0 +1,29 @@
+{
+  "status": "needs-fix",
+  "task": "Task12+Task52 combined delivery",
+  "commitCreated": false,
+  "sourceCommit": null,
+  "head": "ea6b2b358088cb6061783f6ffd162169764a07e9",
+  "branch": "agent/life-full-p4",
+  "indexChanged": false,
+  "compiledInputsEqualToBuildR3": 6655,
+  "declaredCodeTestPathsEqual": 14,
+  "blockingCriteria": [
+    {
+      "id": "native-nonblocking-rug-traversal",
+      "requirement": "Original DAG: walk onto a nonblocking rug then save/resume",
+      "receipt": "rug-traversal-audit.json",
+      "observed": "Rug occupies (3,1),(4,1); labelled walk (2,2)->(2,3) has passRows1 passage x1..3/y3 and does not traverse it. All logged post-place/pre-save passage destinations also miss the rug.",
+      "needed": "Source-bound native keyboard movement whose actual passage crosses a known nonblocking rug, followed by menu Save/raw owners/Load retention, with state-driven waits and cleanup. No code change is requested or authorized here."
+    }
+  ],
+  "closedR4Criteria": [
+    "decoration down-to-left rotation at (7,9)",
+    "decoration movement to (5,6)",
+    "stationary last-exit atomic refusal"
+  ],
+  "cliPassed": true,
+  "oldR3FailuresRemainHistory": true,
+  "publicationStaged": false,
+  "remoteActions": false
+}

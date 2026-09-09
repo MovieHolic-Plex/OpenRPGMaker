@@ -1,0 +1,21 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "argv": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--kill-after=10s",
+    "600s",
+    "node",
+    ".omo/evidence/life-full-20260906/52/producer/diagnostics.mjs"
+  ],
+  "scratch": "/dev/shm/task52-diagnostics-ga_sv73_",
+  "env": {
+    "TMPDIR": "/dev/shm/task52-diagnostics-ga_sv73_",
+    "XDG_CACHE_HOME": "/dev/shm/task52-diagnostics-ga_sv73_/xdg",
+    "VITE_CACHE_DIR": "/dev/shm/task52-diagnostics-ga_sv73_/vite",
+    "npm_config_cache": "/dev/shm/task52-diagnostics-ga_sv73_/npm"
+  }
+}

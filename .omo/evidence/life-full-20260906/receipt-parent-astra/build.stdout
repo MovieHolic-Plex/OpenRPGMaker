@@ -1,0 +1,80 @@
+
+> rpg-zzu@0.1.0 build
+> tsc --noEmit -p tsconfig.app.json && vite build --configLoader runner && npm run build:player && npm run build:standalone:bundle
+
+vite v6.4.3 building for production...
+transforming...
+✓ 1364 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/benchmark.html                                         0.77 kB │ gzip:     0.47 kB
+dist/index.html                                             0.82 kB │ gzip:     0.49 kB
+dist/assets/phaser.min-CwlHMuXa.js                      1,196.12 kB
+dist/assets/benchmark-CNDwkXV0.css                          6.54 kB │ gzip:     2.15 kB
+dist/assets/databaseModal-CAv7eU_F.css                    112.10 kB │ gzip:    13.00 kB
+dist/assets/main-_0IGa_4K.css                           1,880.23 kB │ gzip:   269.12 kB
+dist/assets/pwa-CRridmjp.js                                 0.25 kB │ gzip:     0.20 kB
+dist/assets/welcomeGenreSystemPresetAction-DceJsjp-.js      0.45 kB │ gzip:     0.30 kB
+dist/assets/mapSelection-Cn_zMlHU.js                        0.62 kB │ gzip:     0.38 kB
+dist/assets/modulepreload-polyfill-B5Qt9EMX.js              0.71 kB │ gzip:     0.40 kB
+dist/assets/welcomeGenrePresetApply-cOMIxwtw.js             0.75 kB │ gzip:     0.49 kB
+dist/assets/aiBootIntent-C515MLT1.js                        0.93 kB │ gzip:     0.45 kB
+dist/assets/mapUrlSync-DXgNBqr5.js                          1.22 kB │ gzip:     0.64 kB
+dist/assets/eventSpriteResources-IlWDyc8M.js                1.39 kB │ gzip:     0.66 kB
+dist/assets/mapTileDraw-CbMKHWe1.js                         1.75 kB │ gzip:     0.78 kB
+dist/assets/worldEntries-BD-CRFLr.js                        1.83 kB │ gzip:     0.95 kB
+dist/assets/editorCameraFocus-DnvAy7HO.js                   1.94 kB │ gzip:     0.85 kB
+dist/assets/tileShapeTools-D6U9eS5-.js                      3.19 kB │ gzip:     1.27 kB
+dist/assets/workspaceStore-B3uGf-Fv.js                      3.53 kB │ gzip:     1.56 kB
+dist/assets/defaults-BbbqpENf.js                            4.60 kB │ gzip:     2.08 kB
+dist/assets/playSceneBattle-DRsxnimu.js                     5.02 kB │ gzip:     1.95 kB
+dist/assets/coachMarks-_13LGYqD.js                          5.33 kB │ gzip:     2.39 kB
+dist/assets/applyChangesetToStore-52rp2d0p.js               6.30 kB │ gzip:     2.69 kB
+dist/assets/benchmark-BdOMv0KF.js                           7.03 kB │ gzip:     2.47 kB
+dist/assets/teamWorkflowUi-BUwE1aEh.js                      9.51 kB │ gzip:     3.44 kB
+dist/assets/transientEditorChrome-DvJNpmDJ.js              11.79 kB │ gzip:     4.30 kB
+dist/assets/dbConnectionSettings-BnIoESWz.js               13.35 kB │ gzip:     5.01 kB
+dist/assets/helpModal-B7nVDX5Q.js                          14.36 kB │ gzip:     5.68 kB
+dist/assets/databaseAiGenerateDialog-B9PNmpr6.js           16.35 kB │ gzip:     7.21 kB
+dist/assets/downloadBlob-K2tzLzy4.js                       19.17 kB │ gzip:     7.45 kB
+dist/assets/menu-YqyxHsJE.js                               34.61 kB │ gzip:    11.83 kB
+dist/assets/structureKitEditorDialog--xaQHFqB.js           41.91 kB │ gzip:    14.35 kB
+dist/assets/aiStudioMode-DSIKfPdW.js                       53.93 kB │ gzip:    18.32 kB
+dist/assets/EditScene-DuR5YRoO.js                         101.81 kB │ gzip:    30.81 kB
+dist/assets/tilePalette-FZ3k2uq0.js                       141.42 kB │ gzip:    44.38 kB
+dist/assets/editor-DDI6Bpuf.js                            217.96 kB │ gzip:    73.07 kB
+dist/assets/PlayScene-B0ZIME-h.js                         220.50 kB │ gzip:    69.45 kB
+dist/assets/saveActions-DzSDFuBc.js                       322.48 kB │ gzip:   113.99 kB
+dist/assets/databaseModal-DXY_3Lmq.js                   1,073.58 kB │ gzip:   321.11 kB
+dist/assets/main-Bo7fPf58.js                            7,000.21 kB │ gzip: 1,553.77 kB
+✓ built in 33.21s
+
+> rpg-zzu@0.1.0 build:player
+> vite build --config vite.player.config.ts --configLoader runner && node scripts/build-player-sdk.mjs
+
+vite v6.4.3 building for production...
+transforming...
+✓ 529 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/export-player/player.html                             0.38 kB │ gzip:   0.26 kB
+dist/export-player/player-manifest.json                    0.98 kB │ gzip:   0.31 kB
+dist/export-player/assets/phaser.min-CwlHMuXa.js       1,196.12 kB
+dist/export-player/assets/player-Bd6CwQlZ.css            289.80 kB │ gzip:  46.04 kB
+dist/export-player/assets/playSceneBattle-CAFu7Jy_.js      4.93 kB │ gzip:   1.90 kB
+dist/export-player/assets/PlayScene-DywxioKw.js          413.51 kB │ gzip: 126.51 kB
+dist/export-player/player.js                           1,597.37 kB │ gzip: 395.66 kB
+✓ built in 11.92s
+sdk-manifest: 7 files + 45 runtime assets, artifact dcec28eef788682e, source 25cf124f70d997b5, schema v4
+
+> rpg-zzu@0.1.0 build:standalone:bundle
+> vite build --config vite.standalone.config.ts --configLoader runner
+
+vite v6.4.3 building for production...
+transforming...
+✓ 531 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/standalone-player/standalone.css    289.80 kB │ gzip:  46.04 kB
+dist/standalone-player/standalone.js   3,497.99 kB │ gzip: 861.43 kB
+✓ built in 22.14s

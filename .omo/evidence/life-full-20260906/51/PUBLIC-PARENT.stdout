@@ -1,0 +1,17 @@
+{
+  "verification": "portable public-subset hash/decoding/safety check only; not full forensic or product QA",
+  "public_files_verified": 388,
+  "stage_paths_verified": 389,
+  "private_originals_excluded": 30,
+  "private_or_live_sources_opened": false,
+  "payload_reasoning_findings": 0,
+  "recognized_credential_candidates": 0,
+  "manifest_sha256": "e0211242df59418f32b1bbbe7f6c00ebae2f7b48410f14f52f3152bb54e0f8b8",
+  "stage_list_sha256": "ef6dcf74c213320bf7e0d651db1b70b7cf0fdf8befb85f0a7a7296ef51a50be7",
+  "limits": [
+    "Trust the manifest hash via an independent receipt; a manifest cannot authenticate itself.",
+    "Credential recognition is bounded pattern/structure inspection, not proof against arbitrary encoded secrets.",
+    "Full forensic provenance requires the privately retained original records and authorized live source records.",
+    "Original partial-evidence gaps and no-product-approval verdict remain unchanged."
+  ]
+}

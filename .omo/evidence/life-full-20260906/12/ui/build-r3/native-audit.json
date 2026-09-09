@@ -1,0 +1,737 @@
+{
+  "steps": [
+    {
+      "step": "server",
+      "at": "2026-09-07T10:21:49.737Z",
+      "url": "http://127.0.0.1:42275",
+      "port": 42275
+    },
+    {
+      "step": "browser",
+      "at": "2026-09-07T10:21:49.894Z",
+      "scratch": "/dev/shm/st_01a07b22"
+    },
+    {
+      "step": "goto",
+      "at": "2026-09-07T10:21:49.902Z",
+      "url": "http://127.0.0.1:42275/player.html"
+    },
+    {
+      "step": "title",
+      "at": "2026-09-07T10:21:51.965Z",
+      "url": "http://127.0.0.1:42275/player.html"
+    },
+    {
+      "step": "runtime",
+      "at": "2026-09-07T10:21:54.345Z",
+      "mapId": "map_blank_start",
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "gold": 500,
+      "farmPlots": {}
+    },
+    {
+      "step": "npc-interpolation",
+      "at": "2026-09-07T10:21:54.384Z",
+      "move": {
+        "fromX": 16,
+        "fromY": 5,
+        "toX": 16,
+        "toY": 6,
+        "dir": "down"
+      },
+      "sprite": {
+        "x": 264,
+        "y": 96
+      },
+      "fractional": false,
+      "eventLocations": null,
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "logical": {
+        "x": 16,
+        "y": 6,
+        "pageId": "walk",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 3,
+          "height": 3
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 15,
+          "right": 17,
+          "top": 4,
+          "bottom": 6
+        },
+        "passRect": {
+          "left": 15,
+          "right": 17,
+          "top": 6,
+          "bottom": 6
+        }
+      }
+    },
+    {
+      "step": "spaces",
+      "at": "2026-09-07T10:21:55.150Z",
+      "placeLabel": "Shed 배치map_blank_start (7, 9)",
+      "selected": "life-ledger-space-building-place-shed"
+    },
+    {
+      "step": "place-building",
+      "at": "2026-09-07T10:21:55.451Z",
+      "placedMsg": {
+        "text": "Shed을(를) 배치했습니다"
+      },
+      "placed": {
+        "id": "ledger:building:shed:1",
+        "instanceId": "ledger:building:shed:1",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 7,
+        "y": 9,
+        "orientation": "down",
+        "level": 1,
+        "paymentReceipt": {
+          "gold": 10,
+          "items": []
+        }
+      },
+      "gold": 490,
+      "player": {
+        "x": 8,
+        "y": 8
+      }
+    },
+    {
+      "step": "overlap-refuse",
+      "at": "2026-09-07T10:21:55.589Z",
+      "overlapMsg": {
+        "text": "처리할 수 없습니다: blocked"
+      },
+      "gold": 490,
+      "count": 1
+    },
+    {
+      "step": "upgrade",
+      "at": "2026-09-07T10:21:55.730Z",
+      "upgradeMsg": {
+        "text": "Shed을(를) 업그레이드했습니다"
+      },
+      "gold": 470,
+      "placement": {
+        "instanceId": "ledger:building:shed:1",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 7,
+        "y": 9,
+        "orientation": "down",
+        "level": 2,
+        "paymentReceipt": {
+          "gold": 30,
+          "items": []
+        }
+      }
+    },
+    {
+      "step": "walk-right-before-move",
+      "at": "2026-09-07T10:21:56.132Z",
+      "from": {
+        "x": 8,
+        "y": 8
+      },
+      "to": {
+        "x": 9,
+        "y": 8
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "move-building",
+      "at": "2026-09-07T10:21:56.521Z",
+      "moveMsg": {
+        "text": "Shed을(를) 이동했습니다"
+      },
+      "placement": {
+        "instanceId": "ledger:building:shed:1",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 11,
+        "y": 6,
+        "orientation": "down",
+        "level": 2,
+        "paymentReceipt": {
+          "gold": 30,
+          "items": []
+        }
+      },
+      "player": {
+        "x": 9,
+        "y": 8
+      }
+    },
+    {
+      "step": "place-rug",
+      "at": "2026-09-07T10:21:58.962Z",
+      "rugPlace": {
+        "text": "Rug을(를) 배치했습니다"
+      },
+      "gold": 470,
+      "decorationTestids": [
+        "life-ledger-space-decoration-place-rug",
+        "life-ledger-space-decoration-place-table",
+        "life-ledger-space-decoration-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-rotate-ledger:decoration:rug:1"
+      ]
+    },
+    {
+      "step": "move-rug",
+      "at": "2026-09-07T10:22:00.469Z",
+      "rugMove": {
+        "text": "처리할 수 없습니다: blocked"
+      },
+      "testids": [
+        "life-ledger-space-decoration-place-rug",
+        "life-ledger-space-decoration-place-table",
+        "life-ledger-space-decoration-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-rotate-ledger:decoration:rug:1"
+      ]
+    },
+    {
+      "step": "rotate-rug",
+      "at": "2026-09-07T10:22:00.586Z",
+      "rugRotate": {
+        "text": "처리할 수 없습니다: blocked"
+      }
+    },
+    {
+      "step": "decorations-before-rug-walk",
+      "at": "2026-09-07T10:22:00.827Z",
+      "rawBeforeWalk": []
+    },
+    {
+      "step": "walk-onto-rug",
+      "at": "2026-09-07T10:22:00.996Z",
+      "from": {
+        "x": 2,
+        "y": 2
+      },
+      "to": {
+        "x": 2,
+        "y": 3
+      },
+      "gold": 470,
+      "farmPlots": {}
+    },
+    {
+      "step": "hand-slot",
+      "at": "2026-09-07T10:22:02.822Z",
+      "digit": "1",
+      "text": "괭이 ×1"
+    },
+    {
+      "step": "till",
+      "at": "2026-09-07T10:22:02.860Z",
+      "before": {
+        "x": 7,
+        "y": 8
+      },
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      },
+      "player": {
+        "x": 7,
+        "y": 8
+      },
+      "actionReceipt": {
+        "kind": "action",
+        "mapId": "map_blank_start",
+        "handled": true,
+        "farmAttempts": [
+          {
+            "kind": "tilled",
+            "x": 7,
+            "y": 9,
+            "itemId": "item_hoe",
+            "energySpent": 0,
+            "xpAwarded": {},
+            "affectedTiles": [
+              {
+                "x": 7,
+                "y": 9,
+                "kind": "tilled"
+              }
+            ]
+          }
+        ],
+        "sequence": 1
+      }
+    },
+    {
+      "step": "tilled-keys",
+      "at": "2026-09-07T10:22:02.865Z",
+      "plotKeys": [
+        "7,9"
+      ],
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "plot-refuse",
+      "at": "2026-09-07T10:22:03.820Z",
+      "plotMsg": {
+        "text": "처리할 수 없습니다: blocked"
+      },
+      "gold": 470,
+      "buildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        }
+      },
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "edge-refuse",
+      "at": "2026-09-07T10:22:05.465Z",
+      "edgeMsg": {
+        "text": "처리할 수 없습니다: blocked"
+      },
+      "gold": 470,
+      "player": {
+        "x": 1,
+        "y": 8
+      },
+      "buildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        }
+      }
+    },
+    {
+      "step": "last-exit-setup-place",
+      "at": "2026-09-07T10:22:07.336Z",
+      "lastExitPlace": {
+        "text": "Shed을(를) 배치했습니다"
+      },
+      "buildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        },
+        "ledger:building:shed:2": {
+          "instanceId": "ledger:building:shed:2",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 0,
+          "y": 3,
+          "orientation": "down",
+          "level": 1,
+          "paymentReceipt": {
+            "gold": 10,
+            "items": []
+          }
+        }
+      }
+    },
+    {
+      "step": "last-exit-moved",
+      "at": "2026-09-07T10:22:07.712Z",
+      "from": {
+        "x": 1,
+        "y": 2
+      },
+      "to": {
+        "x": 2,
+        "y": 2
+      },
+      "gold": 460,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    },
+    {
+      "step": "last-exit-refuse",
+      "at": "2026-09-07T10:22:07.900Z",
+      "lastExitMsg": {
+        "text": "Shed을(를) 배치했습니다"
+      },
+      "gold": 450,
+      "buildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        },
+        "ledger:building:shed:2": {
+          "instanceId": "ledger:building:shed:2",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 0,
+          "y": 3,
+          "orientation": "down",
+          "level": 1,
+          "paymentReceipt": {
+            "gold": 10,
+            "items": []
+          }
+        },
+        "ledger:building:shed:3": {
+          "instanceId": "ledger:building:shed:3",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 4,
+          "y": 0,
+          "orientation": "down",
+          "level": 1,
+          "paymentReceipt": {
+            "gold": 10,
+            "items": []
+          }
+        }
+      }
+    },
+    {
+      "step": "last-exit-verdict",
+      "at": "2026-09-07T10:22:07.900Z",
+      "lastExitBlocked": false,
+      "goldBeforeExit": 460,
+      "gold": 450,
+      "buildingsBeforeExit": 2
+    },
+    {
+      "step": "npc-overlap-candidate",
+      "at": "2026-09-07T10:22:11.545Z",
+      "move": {
+        "fromX": 16,
+        "fromY": 5,
+        "toX": 16,
+        "toY": 6,
+        "dir": "down"
+      },
+      "logical": {
+        "x": 16,
+        "y": 6,
+        "bodyRect": {
+          "left": 15,
+          "right": 17,
+          "top": 4,
+          "bottom": 6
+        },
+        "passRect": {
+          "left": 15,
+          "right": 17,
+          "top": 6,
+          "bottom": 6
+        }
+      },
+      "sprite": {
+        "x": 264,
+        "y": 96
+      },
+      "fractional": false,
+      "player": {
+        "x": 16,
+        "y": 2
+      },
+      "eventLocations": null
+    },
+    {
+      "step": "npc-overlap-refuse",
+      "at": "2026-09-07T10:22:11.751Z",
+      "npcPlace": {
+        "text": "처리할 수 없습니다: blocked"
+      },
+      "gold": 450,
+      "player": {
+        "x": 16,
+        "y": 2
+      },
+      "buildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        },
+        "ledger:building:shed:2": {
+          "instanceId": "ledger:building:shed:2",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 0,
+          "y": 3,
+          "orientation": "down",
+          "level": 1,
+          "paymentReceipt": {
+            "gold": 10,
+            "items": []
+          }
+        },
+        "ledger:building:shed:3": {
+          "instanceId": "ledger:building:shed:3",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 4,
+          "y": 0,
+          "orientation": "down",
+          "level": 1,
+          "paymentReceipt": {
+            "gold": 10,
+            "items": []
+          }
+        }
+      },
+      "logical": {
+        "x": 16,
+        "y": 6,
+        "bodyRect": {
+          "left": 15,
+          "right": 17,
+          "top": 4,
+          "bottom": 6
+        },
+        "passRect": {
+          "left": 15,
+          "right": 17,
+          "top": 6,
+          "bottom": 6
+        }
+      },
+      "move": {
+        "fromX": 16,
+        "fromY": 5,
+        "toX": 16,
+        "toY": 6,
+        "dir": "down"
+      }
+    },
+    {
+      "step": "save-slot",
+      "at": "2026-09-07T10:22:12.337Z",
+      "saveMsg": {
+        "text": "1번 저장 칸에 저장했습니다"
+      }
+    },
+    {
+      "step": "raw-slot",
+      "at": "2026-09-07T10:22:12.341Z",
+      "key": "task12-ui-native-r3:save-slot:v5:1",
+      "bytes": 4274
+    },
+    {
+      "step": "load-slot",
+      "at": "2026-09-07T10:22:12.721Z",
+      "loadMsg": {
+        "text": ""
+      },
+      "player": {
+        "x": 16,
+        "y": 2
+      }
+    },
+    {
+      "step": "load-restored",
+      "at": "2026-09-07T10:22:12.922Z",
+      "loadedTestids": [
+        "life-ledger-space-decoration-place-rug",
+        "life-ledger-space-decoration-place-table",
+        "life-ledger-space-decoration-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+        "life-ledger-space-decoration-rotate-ledger:decoration:rug:1"
+      ],
+      "loadedBuildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        },
+        "ledger:building:shed:2": {
+          "instanceId": "ledger:building:shed:2",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 0,
+          "y": 3,
+          "orientation": "down",
+          "level": 1,
+          "paymentReceipt": {
+            "gold": 10,
+            "items": []
+          }
+        },
+        "ledger:building:shed:3": {
+          "instanceId": "ledger:building:shed:3",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 4,
+          "y": 0,
+          "orientation": "down",
+          "level": 1,
+          "paymentReceipt": {
+            "gold": 10,
+            "items": []
+          }
+        }
+      },
+      "gold": 450
+    },
+    {
+      "step": "ok",
+      "at": "2026-09-07T10:22:13.326Z",
+      "scratch": "/dev/shm/st_01a07b22"
+    }
+  ],
+  "terminal": {
+    "errors": [],
+    "pageErrors": [],
+    "requestFailures": [
+      {
+        "url": "http://127.0.0.1:42275/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+        "failure": "net::ERR_ABORTED"
+      }
+    ],
+    "scenarioErrors": []
+  },
+  "rawBuildingsEqualParsed": true,
+  "rawDecorationsEqualParsed": true,
+  "rawBuildingsEqualLoaded": true,
+  "rawPlotsEqualParsed": true,
+  "fixtureSha256": "e48e935a33b8f6ed42e987ea7231ca508d1ae05abfc4862e11364e0357c54ff2",
+  "remoteSha256": "350f3b2d133b555976eadf60dbbfdce9121e4b4146922f13fca6abd4fc99df27",
+  "fixtureBody": {
+    "width": 3,
+    "height": 3
+  },
+  "fixturePassRows": 1,
+  "screenshots": [
+    {
+      "path": "native/after-place-1024.png",
+      "sha256": "3259d0581149d98e00b06c80ad2d9d41e0b7a5529e390d0848debb5c4217fe5d",
+      "bytes": 126148
+    },
+    {
+      "path": "native/field-after-load-1024.png",
+      "sha256": "e523bb36ccf01a8757ad2790de6da3aba6ea36d54c9d670b73ad22554c5856a7",
+      "bytes": 35856
+    },
+    {
+      "path": "native/field-after-load-1440.png",
+      "sha256": "6904b28ee240d25cc7d9997f9e2bd77ec050eb4b0a8f423fd67b745bb56de9c4",
+      "bytes": 38402
+    },
+    {
+      "path": "native/npc-overlap-menu-1024.png",
+      "sha256": "f953145a333454697c2c4b598b1242d1617decd5737cb9e9bdda38baac6d4a6f",
+      "bytes": 130312
+    },
+    {
+      "path": "native/npc-overlap-menu-1440.png",
+      "sha256": "376dfa594ccc18db7858812fb24f9e75624d2335c96942f2465ddb8a12a51b89",
+      "bytes": 133775
+    },
+    {
+      "path": "native/spaces-before-place-1024.png",
+      "sha256": "7aff98167bc9d0adb56c1902fa1542e1fd1f02a5772a9012c7d3adc7ae73faff",
+      "bytes": 193836
+    },
+    {
+      "path": "native/spaces-before-place-1440.png",
+      "sha256": "b2c2443dfcbac8b75b29c03b2779f4d440e955b15575a3f0194b460bf336ead0",
+      "bytes": 198328
+    }
+  ],
+  "finalAliasesEqual": {
+    "log": true,
+    "stderr": true,
+    "exit": true
+  },
+  "finalEvidenceAliasEqual": true,
+  "unexpectedTimeoutFallbackObserved": false,
+  "scriptCaveat": "equipHoe catches message timeout; walk-onto-rug and last-exit movement have failure fallbacks. Final log shows digit1 equipped in under 4s and no movement failure branch; no actual swallowed timeout established. Last-exit false is only noted, not asserted."
+}

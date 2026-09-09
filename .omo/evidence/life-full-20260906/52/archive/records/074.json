@@ -1,0 +1,24 @@
+{
+  "original_relative_to_task52": "producer/red-contract.command.json",
+  "original_absolute": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/producer/red-contract.command.json",
+  "original_bytes": 743,
+  "original_sha256": "a3e769d5faef444b04414c81a8b12ba3d2a1dab31bc558be6e0de8c0c84793d2",
+  "original_mode_octal": "0o644",
+  "original_mtime_ns": 1788769422040235179,
+  "original_allocated_bytes": 4096,
+  "archive_relative_to_task52": "archive/payload/producer/red-contract.command.json.gz",
+  "archive_bytes": 361,
+  "archive_sha256": "37241f455d711d25f28ab12cddd7f144e1b458f8c17f1eff24908912c4aec6ad",
+  "archive_mode_octal": "0o600",
+  "archive_allocated_bytes": 4096,
+  "encoding": "gzip (no filename, mtime=0); raw bytes unchanged",
+  "verification": {
+    "original_manifest_match": null,
+    "independent_decoder": "system gzip -cd",
+    "decoded_bytes": 743,
+    "decoded_sha256": "a3e769d5faef444b04414c81a8b12ba3d2a1dab31bc558be6e0de8c0c84793d2",
+    "byte_equal": true
+  },
+  "original_disposition": "retained_unchanged",
+  "publication": "withheld: restricted payload, not privacy-cleared"
+}

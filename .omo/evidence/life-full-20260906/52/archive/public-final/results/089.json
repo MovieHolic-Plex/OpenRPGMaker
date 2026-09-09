@@ -1,0 +1,21 @@
+{
+  "archive_path": "archive/payload/producer/test-diff.command.json.gz",
+  "archive_sha256": "958497eb8316a320ef490174ccc957928c5bc15eb6a0b60e44cc6bb8563cc217",
+  "archive_bytes": 153,
+  "original_sha256": "fa97b166d97431d05a7e68b6099b21ed38df68fa7068e7eb4904fc3f0395f50f",
+  "original_bytes": 180,
+  "record_path": "archive/records/089.json",
+  "integrity": "encoded and decoded hash/size match immutable record",
+  "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits",
+  "finding_reasons": [],
+  "inspection": {
+    "utf8": true,
+    "entire_utf8_text_marker_scan": true,
+    "structured_json": true,
+    "structured_nodes": 8,
+    "structured_strings": 6,
+    "opaque_asset_or_base64_strings_not_decoded": 0,
+    "notes": []
+  },
+  "limitation": "Automated bounded inspection does not establish absence of opaque/encoded secrets or unmarked sensitive prose. No embedded assets decoded or interpreted; no candidate values emitted."
+}

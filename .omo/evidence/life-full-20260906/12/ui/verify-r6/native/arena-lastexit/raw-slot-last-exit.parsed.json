@@ -1,0 +1,30 @@
+{
+  "buildings": {
+    "r4-block-up": {
+      "instanceId": "r4-block-up",
+      "typeId": "shed",
+      "mapId": "map_blank_start",
+      "x": 1,
+      "y": 1,
+      "orientation": "down",
+      "level": 1
+    },
+    "r4-block-right": {
+      "instanceId": "r4-block-right",
+      "typeId": "shed",
+      "mapId": "map_blank_start",
+      "x": 3,
+      "y": 2,
+      "orientation": "down",
+      "level": 1
+    }
+  },
+  "decorations": {},
+  "x": 1,
+  "y": 2,
+  "gold": 500,
+  "inventory": {
+    "item_hoe": 1,
+    "item_potion": 8
+  }
+}

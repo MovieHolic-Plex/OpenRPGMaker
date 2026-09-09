@@ -1,0 +1,145 @@
+{
+  "classification": "Metadata-only exact source checkpoint; unfinished Task13 product dirt is not staged",
+  "parent": "afc91b088a68655a2faac2dfd2a7b65569b1c65e",
+  "createdAt": "2026-09-07T17:32:30.859103+00:00",
+  "restoredOnly": [
+    "src/editor/panels/databaseFarmSpatialView.ts",
+    "src/player/lifeLedger.ts",
+    "test/animalHousingAuthoringUi.test.ts"
+  ],
+  "beforeSix": {
+    "src/editor/panels/databaseFarmSpatialView.ts": {
+      "sha256": "3b4c21d3ceb82ddfb3fd98914e3e5a3f8689b04ab58205a0c403ceb67841ac34",
+      "bytes": 80704,
+      "gitBlob": "fd41d9f14804c1c93300cbb2f516895b95ef8112"
+    },
+    "src/editor/panels/databaseFarmAnimalsView.ts": {
+      "sha256": "388b4aefd015c7667d569ba480378b2e7691bfb01f0a12098529d860a5b5978a",
+      "bytes": 47741,
+      "gitBlob": "38c09c4640590ce1e1ae47f769d4e8b497dff385"
+    },
+    "src/player/lifeLedger.ts": {
+      "sha256": "cb3d60e6b22a1711a0442627a45f2c95d6b33c29b89554bbc755d7adb4d2dbb5",
+      "bytes": 38437,
+      "gitBlob": "e70b7773cf087f8737e5d38c5e10a434c690d6f7"
+    },
+    "src/player/playerStatusMenuDetailRenderer.ts": {
+      "sha256": "a8d70df065f7e9a253c2ff7a2a4cc3b260c0e76e66ed0d3e06458e76e22da152",
+      "bytes": 15055,
+      "gitBlob": "c18e579a2bf55e90ffa30764d456b678ee6d9d1b"
+    },
+    "src/editor/databaseReferences.ts": {
+      "sha256": "2cdfe84ee1baf30c03918b3c59a0a864210b0062a803346231d9dbddff7700b1",
+      "bytes": 23564,
+      "gitBlob": "617ec70159ae95385efa31b448f6d13c5f73b899"
+    },
+    "test/animalHousingAuthoringUi.test.ts": {
+      "sha256": "0cd53c3d17b8d1c8a84fb30442e70bb9e3dc46e3e2b29feec5a26c52dfc49b78",
+      "bytes": 36257,
+      "gitBlob": "cbd264199a99d89e79ada71616d66943baf95b0d"
+    }
+  },
+  "afterSix": {
+    "src/editor/panels/databaseFarmSpatialView.ts": {
+      "sha256": "4d4eadf4a013ba482c8cf998f8bed9a8aed866cf522cc5697ebc7129f25b512b",
+      "bytes": 74832,
+      "gitBlob": "1889dfa064aa3b8216f1f22fbfd10aabdf19ccc1"
+    },
+    "src/editor/panels/databaseFarmAnimalsView.ts": {
+      "sha256": "388b4aefd015c7667d569ba480378b2e7691bfb01f0a12098529d860a5b5978a",
+      "bytes": 47741,
+      "gitBlob": "38c09c4640590ce1e1ae47f769d4e8b497dff385"
+    },
+    "src/player/lifeLedger.ts": {
+      "sha256": "a03f5b685a3c73c8dc36564ed8931e787ef70d7684bf4a5a96b3cc3a80d6ae63",
+      "bytes": 37882,
+      "gitBlob": "84b1924770fe5148f46a3d0878d97365b8c2f9dc"
+    },
+    "src/player/playerStatusMenuDetailRenderer.ts": {
+      "sha256": "a8d70df065f7e9a253c2ff7a2a4cc3b260c0e76e66ed0d3e06458e76e22da152",
+      "bytes": 15055,
+      "gitBlob": "c18e579a2bf55e90ffa30764d456b678ee6d9d1b"
+    },
+    "src/editor/databaseReferences.ts": {
+      "sha256": "2cdfe84ee1baf30c03918b3c59a0a864210b0062a803346231d9dbddff7700b1",
+      "bytes": 23564,
+      "gitBlob": "617ec70159ae95385efa31b448f6d13c5f73b899"
+    },
+    "test/animalHousingAuthoringUi.test.ts": {
+      "sha256": "7e04a73086d13d846836622d31813f92b0d773e3e7e743aa278d1cf3a7ecacc1",
+      "bytes": 23315,
+      "gitBlob": "54c144bab5f143a9e41038d5bdf8c722ba9a2107"
+    }
+  },
+  "nonTargetFilesVerifiedUnchanged": 9383,
+  "nonTargetManifestSha256": "700e3a4c45c6701232e8111e662cbd047d3614693e32b88086b245bdeb44e62c",
+  "indexBeforeRestoration": {
+    "sha256": "7327e12be882b9de137748b827da242271521a2a7ca671abeb65c395b8b51722",
+    "bytes": 1869929,
+    "gitBlob": "788f7a42cb3814c609b4c09d554dfe4e6e276864"
+  },
+  "indexUnchangedUntilExplicitEvidenceStaging": true,
+  "characterization": {
+    "classification": "RESTORED-V1 CHARACTERIZATION ONLY; not Task13 GREEN",
+    "command": [
+      "node",
+      "scripts/run-vitest.mjs",
+      "run",
+      "--configLoader",
+      "runner",
+      "--cache=false",
+      "--maxWorkers=2",
+      "--minWorkers=1",
+      "test/animalHousingAuthoringUi.test.ts",
+      "test/linkedAnimalHousing.test.ts",
+      "test/p2SpatialEditorAuthoring.test.ts",
+      "test/p1LifeEditorAuthoring.test.ts",
+      "test/p0LifeLedgerUi.test.ts",
+      "test/p2LifeLedgerUi.test.ts",
+      "test/p1ReferenceIntegrity.test.ts",
+      "test/p2SpatialReferenceIntegrity.test.ts"
+    ],
+    "wrapper": [
+      "flock",
+      "--timeout",
+      "900",
+      "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+      "timeout",
+      "--kill-after=30s",
+      "600s",
+      "node",
+      "scripts/run-vitest.mjs",
+      "run",
+      "--configLoader",
+      "runner",
+      "--cache=false",
+      "--maxWorkers=2",
+      "--minWorkers=1",
+      "test/animalHousingAuthoringUi.test.ts",
+      "test/linkedAnimalHousing.test.ts",
+      "test/p2SpatialEditorAuthoring.test.ts",
+      "test/p1LifeEditorAuthoring.test.ts",
+      "test/p0LifeLedgerUi.test.ts",
+      "test/p2LifeLedgerUi.test.ts",
+      "test/p1ReferenceIntegrity.test.ts",
+      "test/p2SpatialReferenceIntegrity.test.ts"
+    ],
+    "startedAt": "2026-09-07T17:30:06.173051+00:00",
+    "finishedAt": "2026-09-07T17:30:50.153745+00:00",
+    "exit": 0,
+    "scratch": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/54/restoration/scratch",
+    "diagnostics": "No diagnostics found on all three restored paths",
+    "pendingRequirements": "C1..C7 unchanged; source fixes/native QA remain on hold"
+  },
+  "cleanup": {
+    "testProcessExited": true,
+    "sharedLockReleasedByWrapperExit": true,
+    "privateScratchRetainedExcludedFromCommit": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/54/restoration/scratch",
+    "allCurrentV2BackupsAndOldFailuresPreserved": true
+  },
+  "exclusions": [
+    "RESTORED.json and SUMMARY.md are post-commit receipts and cannot be in their own referenced checkpoint",
+    "Raw sessions, finder event data, tool reasoning, full operation payloads, scratch, restoration patches/scripts and broad file manifests excluded"
+  ],
+  "pending": "Task13 C1..C7 fixes and native QA remain on hold; characterization is not Task13 GREEN"
+}

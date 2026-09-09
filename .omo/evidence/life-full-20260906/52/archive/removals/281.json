@@ -1,0 +1,11 @@
+{
+  "original_relative_to_task52": "verify/captures/invalid6-input.wire.json",
+  "durable_mapping": "archive/records/281.json",
+  "archive_relative_to_task52": "archive/payload/verify/captures/invalid6-input.wire.json.gz",
+  "raw_bytes_removed": 2291879,
+  "original_allocated_bytes_removed": 2293760,
+  "archive_bytes": 160893,
+  "archive_allocated_bytes": 163840,
+  "original_absent_after_unlink": true,
+  "verified_before_unlink": true
+}

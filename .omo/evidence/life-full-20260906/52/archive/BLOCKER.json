@@ -1,0 +1,8 @@
+{
+  "status": "stopped",
+  "error_type": "OSError",
+  "completed_archive_records": 328,
+  "completed_removal_receipts": 133,
+  "remaining_originals": "No further originals removed; inspect durable records/removals for exact state.",
+  "privacy": "No exception content printed to avoid disclosing source bytes."
+}

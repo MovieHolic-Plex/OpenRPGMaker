@@ -1,0 +1,24 @@
+{
+  "original_relative_to_task52": "verify/captures/8x8-pass7-input.wire.json",
+  "original_absolute": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/captures/8x8-pass7-input.wire.json",
+  "original_bytes": 2291873,
+  "original_sha256": "7ce1e69ab14c30a8a611d64f7037cd6d2f78da8014bff426acf07f41220d9b37",
+  "original_mode_octal": "0o644",
+  "original_mtime_ns": 1788770275856961053,
+  "original_allocated_bytes": 2293760,
+  "archive_relative_to_task52": "archive/payload/verify/captures/8x8-pass7-input.wire.json.gz",
+  "archive_bytes": 160889,
+  "archive_sha256": "c42986f2a2852db21992d678cc2012c390927f84ee963a72f4efcf652b4b5b54",
+  "archive_mode_octal": "0o600",
+  "archive_allocated_bytes": 163840,
+  "encoding": "gzip (no filename, mtime=0); raw bytes unchanged",
+  "verification": {
+    "original_manifest_match": true,
+    "independent_decoder": "system gzip -cd",
+    "decoded_bytes": 2291873,
+    "decoded_sha256": "7ce1e69ab14c30a8a611d64f7037cd6d2f78da8014bff426acf07f41220d9b37",
+    "byte_equal": true
+  },
+  "original_disposition": "authorized_removal_after_durable_mapping",
+  "publication": "withheld: restricted payload, not privacy-cleared"
+}

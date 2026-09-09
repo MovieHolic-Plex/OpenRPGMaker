@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "600s",
+    "node",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r5/native/native-qa.mjs"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "attempt": 2,
+  "environment": {
+    "TMPDIR": "/dev/shm/st_01a07bf9",
+    "XDG_CACHE_HOME": "/dev/shm/st_01a07bf9/xdg",
+    "XDG_CONFIG_HOME": "/dev/shm/st_01a07bf9/xdg-config",
+    "XDG_DATA_HOME": "/dev/shm/st_01a07bf9/xdg-data",
+    "VITE_CACHE_DIR": "/dev/shm/st_01a07bf9/vite",
+    "PLAYWRIGHT_BROWSERS_PATH": "/home/main/.cache/ms-playwright",
+    "TASK12_R5_SCRATCH": "/dev/shm/st_01a07bf9",
+    "TASK12_R5_RUG": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/fixtures-r5/rug.reloaded.json"
+  },
+  "started": 1788787121.3669913,
+  "fixtureSha256": {
+    "rug.reloaded.json": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b"
+  },
+  "scriptSha256": "f68db593f52bcdcb682b292764532bea83b747f2fa9eaafb4228576e3c824e99",
+  "exit": 1,
+  "finished": 1788787151.342733,
+  "stdoutSha256": "835bac974010746af083592b471811b5eb3354da881be35dec0e9ff9c29bd587",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "protectedIdentityUnchanged": true,
+  "r3SourceIdentity": true
+}

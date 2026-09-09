@@ -1,0 +1,12 @@
+{
+  "when": "2026-09-07T14:39:01.201145+00:00",
+  "scenario": "general-replay",
+  "scriptSha256": "73cc3433ad046736595907fe45fbfe996fb9a430d7b4130776aecd79af752b52",
+  "env": {
+    "TASK12_V5_SCRATCH": "/dev/shm/life-t12-parent-01a0727b/native-general-replay"
+  },
+  "fixtureHashes": {},
+  "head": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "verify": "r6",
+  "scratchRoot": "/dev/shm/life-t12-parent-01a0727b"
+}

@@ -1,0 +1,15 @@
+{
+  "when": "2026-09-07T14:33:58.866108+00:00",
+  "scenario": "rug",
+  "scriptSha256": "5ef0e08728b281fab931a8f4e968ca639638319dbd899f34e0a859eb8858e099",
+  "env": {
+    "TASK12_V5_SCRATCH": "/dev/shm/life-t12-parent-01a0727b/native-rug",
+    "TASK12_V5_RUG": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/fixtures-r5/rug.reloaded.json"
+  },
+  "fixtureHashes": {
+    "TASK12_V5_RUG": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b"
+  },
+  "head": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "verify": "r6",
+  "scratchRoot": "/dev/shm/life-t12-parent-01a0727b"
+}

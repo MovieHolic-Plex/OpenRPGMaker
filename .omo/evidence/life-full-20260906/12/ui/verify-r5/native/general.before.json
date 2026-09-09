@@ -1,0 +1,10 @@
+{
+  "when": "2026-09-07T13:50:39.737656+00:00",
+  "scenario": "general",
+  "scriptSha256": "8bab8536afe7098aa793e7c9fc34a8fdf4447f809e16140c6881e29c775213c7",
+  "env": {
+    "TASK12_V5_SCRATCH": "/dev/shm/st_01a07c17/native-general"
+  },
+  "fixtureHashes": {},
+  "head": "2c136343eae7e39700fe4b0752d96b6e9c89e70d"
+}

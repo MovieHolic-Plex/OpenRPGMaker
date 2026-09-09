@@ -1,4 +1,4 @@
-import { changeItemsAtomically, type LifeRecoveryClaim, type LifeRecoveryJson, type LifeRecoveryState, type PlaySession } from "./session";
+import { changeItemsAtomically, type LifeRecoveryClaim, type LifeRecoveryJson, type LifeRecoveryState, type PlaySession, type SpatialPaymentReceipt } from "./session";
 import { isPositiveItemQuantity, ITEM_QUANTITY_MAX } from "./itemQuantities";
 import { isMakerContract } from "./makers";
 import type { ItemAmount, Project } from "./types";
@@ -74,6 +74,22 @@ export function isRecoveryItems(value: unknown): value is readonly ItemAmount[] 
   });
 }
 
+/** Public decoration placement consumes exactly one required item. */
+export function isDecorationRecoveryItem(value: unknown): value is ItemAmount {
+  return record(value) && text(value.itemId) && value.count === 1;
+}
+
+/** Cumulative paid history, not one wallet, inventory stack, cost input or recovery claim. */
+export function isSpatialPaymentReceipt(value: unknown): value is SpatialPaymentReceipt {
+  if (!record(value) || !Number.isSafeInteger(value.gold) || (value.gold as number) < 0 || !Array.isArray(value.items)) return false;
+  const ids = new Set<string>();
+  for (const entry of value.items) {
+    if (!record(entry) || !text(entry.itemId) || !positiveSafe(entry.count) || ids.has(entry.itemId)) return false;
+    ids.add(entry.itemId);
+  }
+  return true;
+}
+
 /** Boundary predicate: unknown item/source IDs are valid evidence, invalid quantities are not. */
 export function isLifeRecoveryState(value: unknown): value is LifeRecoveryState {
   if (!record(value) || !positiveSafe(value.nextSequence) || !record(value.claims)) return false;
@@ -121,8 +137,19 @@ export function moveLifeRecoverySource(project: Project, session: PlaySession, s
       }
       break;
     }
-    // Spatial/animal recovery policy and receipt consumption are downstream. Preserve raw evidence, never guess a cost.
-    case "farmBuildingPlacements": case "homeDecorationPlacements": case "farmAnimals": case "placeables": break;
+    case "farmBuildingPlacements": {
+      const receipt = session.farmBuildingPlacements?.[source.sourceId]?.paymentReceipt;
+      if (receipt !== undefined && !isSpatialPaymentReceipt(receipt)) return { ok: false, reason: "invalid-source" };
+      items = receipt?.items ?? [];
+      break;
+    }
+    case "homeDecorationPlacements": {
+      const item = session.homeDecorationPlacements?.[source.sourceId]?.recoveryItem;
+      if (item !== undefined && !isDecorationRecoveryItem(item)) return { ok: false, reason: "invalid-source" };
+      items = item ? [item] : [];
+      break;
+    }
+    case "farmAnimals": case "placeables": break;
     default: { const exhaustive: never = source.sourceKind; return exhaustive; }
   }
   const totals = new Map<string, number>();
@@ -133,7 +160,10 @@ export function moveLifeRecoverySource(project: Project, session: PlaySession, s
     totals.set(item.itemId, total);
   }
   const known = new Set(project.database.items.map((item) => item.id));
-  const unresolved = items.length === 0 || items.some((item) => !known.has(item.itemId))
+  // One unpaid owner per new conversion, never one gold right per item batch.
+  const unpaidGold = source.sourceKind === "farmBuildingPlacements"
+    && (session.farmBuildingPlacements?.[source.sourceId]?.paymentReceipt?.gold ?? 0) > 0;
+  const unresolved = source.sourceKind === "farmBuildingPlacements" || items.length === 0 || items.some((item) => !known.has(item.itemId))
     ? { record: structuredClone(original), detail: source.reason } : undefined;
   if (unresolved && jsonBytes(original) > LIFE_RECOVERY_RAW_BYTES_MAX) return { ok: false, reason: "capacity" };
   const batches: ItemAmount[][] = [[]];
@@ -152,12 +182,14 @@ export function moveLifeRecoverySource(project: Project, session: PlaySession, s
       remaining -= count;
     }
   }
+  if (unpaidGold && items.length > 0) batches.push([]);
   const nextSequence = recovery.nextSequence + batches.length;
   if (!Number.isSafeInteger(nextSequence) || Object.keys(recovery.claims).length + batches.length > LIFE_RECOVERY_CLAIM_MAX) return { ok: false, reason: "capacity" };
   const claims: Record<string, LifeRecoveryClaim> = { ...recovery.claims };
   const claimIds = batches.map((batch, index) => {
     const id = `recovery:${recovery.nextSequence + index}`;
-    claims[id] = { id, sourceKind: source.sourceKind, sourceId: source.sourceId, reason: source.reason, items: batch, ...(unresolved ? { unresolved: structuredClone(unresolved) } : {}) };
+    claims[id] = { id, sourceKind: source.sourceKind, sourceId: source.sourceId, reason: source.reason, items: batch,
+      ...(unresolved && (!unpaidGold || batch.length === 0) ? { unresolved: structuredClone(unresolved) } : {}) };
     return id;
   });
   const next = { nextSequence, claims };
@@ -184,7 +216,19 @@ export function collectLifeRecoveryClaim(project: Project, session: PlaySession,
   if (!changeItemsAtomically(draft, claim.items.map((item) => ({ itemId: item.itemId, op: "+=", amount: item.count })))) return { ok: false, reason: "inventory-overflow" };
   const claims = { ...recovery.claims };
   delete claims[claimId];
-  draft.lifeRecovery = { nextSequence: recovery.nextSequence, claims };
+  let nextSequence = recovery.nextSequence;
+  // Legacy mixed building claims may duplicate history across old split batches.
+  // Preserve each record without deducing which other claim owns its unpaid rights.
+  const original = claim.unresolved?.record;
+  const receipt = record(original) ? original.paymentReceipt : undefined;
+  if (claim.sourceKind === "farmBuildingPlacements" && claim.unresolved
+    && (!isSpatialPaymentReceipt(receipt) || receipt.gold > 0)) {
+    const id = `recovery:${nextSequence++}`;
+    claims[id] = { ...claim, id, items: [] };
+  }
+  const next = { nextSequence, claims };
+  if (!isLifeRecoveryState(next)) return { ok: false, reason: "capacity" };
+  draft.lifeRecovery = next;
   Object.assign(session, draft);
   return { ok: true, claimIds: [claimId] };
 }

@@ -1,0 +1,100 @@
+{
+  "status": "PREPARED_FOR_PARENT_EXACT_PATH_PUBLICATION",
+  "verified_utc": "2026-09-07T03:13:22.438236+00:00",
+  "commit_identity": "b87c9822f431ece4674e97a9d9cd15d1956be327",
+  "independent_product_approval": "PENDING",
+  "coverage": {
+    "original_files": 277,
+    "original_bytes": 56905233,
+    "gzip_decodes_byte_equal": 277,
+    "readable_byte_equal": 114,
+    "original_file_sha256_mode_mtime_size_unchanged": true,
+    "original_directory_metadata_unchanged": true,
+    "original_path_set_unchanged": true,
+    "special_entries": 0
+  },
+  "privacy": {
+    "candidate_count": 0,
+    "file_count": 277,
+    "existing_gzip_payloads_decoded": 2,
+    "json_documents_parsed": 195,
+    "views": [
+      "raw files decoded as UTF-8 with replacement for binary scanning",
+      "existing gzip decompressed text",
+      "JSON string values and keyed string pairs, unescaped"
+    ],
+    "rules": {
+      "private-key": "-----BEGIN (?:[A-Z0-9 ]{1,40} )?PRIVATE KEY-----",
+      "provider-token": "\\b(?:sk-(?:proj-|ant-)?[A-Za-z0-9_-]{24,}|gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|AKIA[A-Z0-9]{16}|xox[baprs]-[A-Za-z0-9-]{20,})",
+      "authorization-value": "(?i)\\b(?:Bearer|Basic)\\s+[A-Za-z0-9+/_.=-]{20,}",
+      "private-reasoning-marker": "(?i)<(?:analysis|thinking|think|private_reasoning)>|\"channel\"\\s*:\\s*\"analysis\"",
+      "credential-url": "(?i)https?://[^\\s/:\"\\']{1,100}:[^\\s/@\"\\']{1,200}@",
+      "credential-assignment": "(?ix)\\b(?:[a-z0-9_]{0,64}(?:api[_-]?key|access[_-]?token|auth[_-]?token|client[_-]?secret|password|passwd|secret[_-]?key))[\"']?\\s*[:=]\\s*[\"']([^\"'\\n]{8,200})[\"']"
+    },
+    "limits": "Bounded signature inspection, not a proof of absence. No arbitrary encoded/encrypted/obfuscated secret detection; no semantic guarantee for unmarked private reasoning, unknown credential formats, binary internals, nested serialized JSON or personal data. Local paths, task IDs and producer operational descriptions remain unchanged. Gzip is not redaction.",
+    "sensitive_retention": "No configured signature matches; no sensitive artifacts identified and no private copies created. A candidate would block publication pending authorized private Git-metadata retention with 0700/0600; only archive-producer writes are authorized.",
+    "initial_scan_attempt": "An initial unbounded-pattern scan timed out at 60 seconds without results; replaced with bounded patterns. A complete preliminary scan and this hash-linked final scan each covered all 277 files. No partial scan is treated as a pass."
+  },
+  "scope": {
+    "read_only_input": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/47-48/r3/producer",
+    "only_write_root": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/47-48/r3/archive-producer",
+    "product_tests_builds_probes_run": false,
+    "product_or_source_review": false,
+    "git_staging_commit_worktree_remote_operations": false,
+    "other_evidence_or_source_writes": false,
+    "original_cleanup": false
+  },
+  "byte_preservation": {
+    "compression": "Every original has a lossless gzip wrapper, including existing gzip and pyc. Decode exactly one wrapper to recover original bytes. Deterministic gzip header mtime=0, no filename. Filesystem mode/mtime_ns equal each original.",
+    "readable_selection": "Additional unchanged UTF-8 copies <=65536 bytes, no control characters except LF/tab, no trailing horizontal whitespace, with terminal LF for nonempty files and no terminal blank lines. Nonqualifying originals remain complete in gzip.",
+    "git_metadata_limit": "Git retains bytes and executable bit, not full POSIX modes or nanosecond mtimes. Restore mode_octal and mtime_ns from ORIGINAL-ARCHIVE-MANIFEST.json after decoding. Archive filesystem copies currently retain them. Original atime is not certified; read access may update it.",
+    "no_trimming_rewriting_redaction": true
+  },
+  "direct_exits": {
+    "adapt.exit": "0",
+    "adopt.exit": "0",
+    "apply-final.exit": "0",
+    "apply-red.exit": "0",
+    "assert-inputs.exit": "0",
+    "build.exit": "0",
+    "certification.exit": "0",
+    "characterization.exit": "0",
+    "commit.exit": "0",
+    "committed-identity.exit": "0",
+    "create-tree.exit": "0",
+    "diagnostics-final.exit": "0",
+    "diagnostics-probe-final.exit": "0",
+    "diagnostics.exit": "1",
+    "diff-check.exit": "0",
+    "final-identity.exit": "0",
+    "handoff.exit": "0",
+    "initial-populate.exit": "0",
+    "initial-sparse.exit": "0",
+    "public-rights-external-config.exit": "1",
+    "public-rights-final.exit": "0",
+    "public-rights.exit": "1",
+    "red.exit": "1",
+    "setup-frozen.exit": "0",
+    "setup-preflight.exit": "0",
+    "stage.exit": "0",
+    "tests.exit": "0",
+    "typecheck.exit": "0",
+    "wiki-check.exit": "0",
+    "wiki-generate.exit": "0",
+    "wrapper-adversarial.exit": "0",
+    "wrapper-failure.exit": "7",
+    "wrapper-interrupted.exit": "-15",
+    "wrapper-interruption.exit": "241",
+    "wrapper-lock-release.exit": "0"
+  },
+  "command_environment_override_names": [
+    "TMPDIR",
+    "VITE_CACHE_DIR",
+    "npm_config_cache"
+  ],
+  "producer_manifest_comparison": {
+    "entries_checked": 268,
+    "mismatches": []
+  },
+  "publication": "Only paths in PUBLIC-stage-list.txt are allowed, relative to /home/main/z-project/rpg-zzu-life-full-p4. No recursive staging and no producer originals in allowlist. ARCHIVE-FILES.sha256 hashes every public file except itself to avoid a self-reference."
+}

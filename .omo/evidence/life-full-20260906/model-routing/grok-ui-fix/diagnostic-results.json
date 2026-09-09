@@ -1,0 +1,10 @@
+{
+  "files": [
+    "src/assets/bundled.ts",
+    "src/player/eventSpriteResources.ts",
+    "src/player/playScenePlaceables.ts",
+    "test/spatialCatalogPictureRender.test.ts"
+  ],
+  "count": 0,
+  "diagnostics": ""
+}

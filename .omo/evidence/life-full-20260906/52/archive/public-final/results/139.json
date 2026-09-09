@@ -1,0 +1,21 @@
+{
+  "archive_path": "archive/payload/verify/diagnostics.lock-command.json.gz",
+  "archive_sha256": "dddc85f5e0485212a5898d5abf380e516b66af0bd874e7e56d3596cd806ab579",
+  "archive_bytes": 208,
+  "original_sha256": "1314ad791c0d8735f5a9f992d338ab5b9098c4ec0e28ab8e18adce147bc128f8",
+  "original_bytes": 388,
+  "record_path": "archive/records/139.json",
+  "integrity": "encoded and decoded hash/size match immutable record",
+  "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits",
+  "finding_reasons": [],
+  "inspection": {
+    "utf8": true,
+    "entire_utf8_text_marker_scan": true,
+    "structured_json": true,
+    "structured_nodes": 13,
+    "structured_strings": 11,
+    "opaque_asset_or_base64_strings_not_decoded": 0,
+    "notes": []
+  },
+  "limitation": "Automated bounded inspection does not establish absence of opaque/encoded secrets or unmarked sensitive prose. No embedded assets decoded or interpreted; no candidate values emitted."
+}

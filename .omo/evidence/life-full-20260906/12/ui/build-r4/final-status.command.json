@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "git",
+    "status",
+    "--porcelain=v1",
+    "-uall"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "exit": 0,
+  "at": "2026-09-07T12:31:19.651429+00:00"
+}

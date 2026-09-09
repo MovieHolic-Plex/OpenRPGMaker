@@ -1,0 +1,30 @@
+{
+  "when": "2026-09-07T14:33:58.812224+00:00",
+  "scenario": "arena-lastexit",
+  "exit": 0,
+  "elapsedSec": 14.698,
+  "stdoutBytes": 19460,
+  "stderrBytes": 0,
+  "scratchExists": true,
+  "archived": [
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/native-evidence.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/raw-slot-arena-moved.parsed.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/raw-slot-arena-rotated.parsed.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/raw-slot-arena-rotated.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/raw-slot-last-exit.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/raw-slot-last-exit.parsed.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/raw-slot-arena-moved.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/last-exit-before-place-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-before-place-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-after-rotate-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-after-move-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/last-exit-after-refuse-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-before-place-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/last-exit-after-refuse-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-after-place-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-after-place-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-after-move-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/arena-after-rotate-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/last-exit-before-place-1440.png"
+  ]
+}

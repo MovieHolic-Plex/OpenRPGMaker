@@ -1,0 +1,63 @@
+{
+  "status": "passed",
+  "protectedFilesCompared": 12938,
+  "protectedBeforeAfterAndCurrentEqual": true,
+  "head": "ea6b2b358088cb6061783f6ffd162169764a07e9",
+  "branch": "agent/life-full-p4",
+  "indexAndDirtyStatusUnchanged": true,
+  "coreBeforeAfterSha256": {
+    "src/project/spatialOccupancy.ts": {
+      "before": "67272f09c571fbca298ce0994a16160d357130a43b60ba07a32b10219507e9f4",
+      "after": "67272f09c571fbca298ce0994a16160d357130a43b60ba07a32b10219507e9f4"
+    },
+    "src/project/spatialPlacementTransactions.ts": {
+      "before": "246ea4a90c3235fe87f451e10b8463f75a54adfd52ca8100093804a84082e981",
+      "after": "246ea4a90c3235fe87f451e10b8463f75a54adfd52ca8100093804a84082e981"
+    },
+    "src/project/spatialPlacements.ts": {
+      "before": "430dfd41f8b9f06cf1c0ca2620d45b1dec2c76f584b4b49dfb86401f68ba9e36",
+      "after": "430dfd41f8b9f06cf1c0ca2620d45b1dec2c76f584b4b49dfb86401f68ba9e36"
+    },
+    "src/project/session.ts": {
+      "before": "d57f6ee87c19d14f47f057458502451fbb8c2d78f802beb2a84d99f548fabc32",
+      "after": "d57f6ee87c19d14f47f057458502451fbb8c2d78f802beb2a84d99f548fabc32"
+    },
+    "src/project/playerFootprint.ts": {
+      "before": "2aca24300db9ad43aa3b56e1afaf1df40f390fcfe489e87ecc0dfe73b39fbab5",
+      "after": "2aca24300db9ad43aa3b56e1afaf1df40f390fcfe489e87ecc0dfe73b39fbab5"
+    },
+    "src/project/footprint.ts": {
+      "before": "2975c0a87d5ac5c080736b23d12a82a341e06edcb1c551fd844f20f73f17ad76",
+      "after": "2975c0a87d5ac5c080736b23d12a82a341e06edcb1c551fd844f20f73f17ad76"
+    },
+    "src/project/collision.ts": {
+      "before": "0c70766e624631fab1d4aad1a5b7b5f95353982071ed2b0d4441949ce3125186",
+      "after": "0c70766e624631fab1d4aad1a5b7b5f95353982071ed2b0d4441949ce3125186"
+    },
+    "src/project/databaseRecordModel.ts": {
+      "before": "c27eb4c534e39a6b0c68c2d3650aadb905c8f42e0d053d10f79c8092aa6cbdfd",
+      "after": "c27eb4c534e39a6b0c68c2d3650aadb905c8f42e0d053d10f79c8092aa6cbdfd"
+    },
+    "src/project/supabaseProjectSync.ts": {
+      "before": "7e6c4d4b954353ce4836183fe7d1488def2f417dc1134a760a74a224573f56f2",
+      "after": "7e6c4d4b954353ce4836183fe7d1488def2f417dc1134a760a74a224573f56f2"
+    },
+    "src/player/lifeLedger.ts": {
+      "before": "9e7ffb6f6e3bdd24f22d723556513570be03a5cb0394640ea718d918e5cfebcb",
+      "after": "9e7ffb6f6e3bdd24f22d723556513570be03a5cb0394640ea718d918e5cfebcb"
+    }
+  },
+  "probeFinalInputsUnchanged": true,
+  "scratchAbsent": true,
+  "remoteProjectsIntentionallyRetainedForGrok": true,
+  "remoteDeletionPerformed": false,
+  "browserNativeVisualProof": false,
+  "fullBuildOrUiSuiteRerun": false,
+  "diagnostics": {
+    "configuredTypeScript": "diagnostics-final.stdout",
+    "exit": 0,
+    "pythonLsp": "No diagnostics found",
+    "diagnosticsMjsLsp": "No diagnostics found",
+    "initialLspAliasErrors": "Owned .omo file was outside inferred tsconfig; configured checker resolves @ aliases. Initial configured unused import/name-field errors corrected in evidence only."
+  }
+}

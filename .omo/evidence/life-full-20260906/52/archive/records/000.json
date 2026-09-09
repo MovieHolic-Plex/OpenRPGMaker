@@ -1,0 +1,24 @@
+{
+  "original_relative_to_task52": "producer/HANDOFF.md",
+  "original_absolute": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/producer/HANDOFF.md",
+  "original_bytes": 7900,
+  "original_sha256": "c7a406757837b3f1039c6348873c33b1a00c1386e220ecdf7cbd5b368fb6fbab",
+  "original_mode_octal": "0o644",
+  "original_mtime_ns": 1788769881786716910,
+  "original_allocated_bytes": 8192,
+  "archive_relative_to_task52": "archive/payload/producer/HANDOFF.md.gz",
+  "archive_bytes": 3628,
+  "archive_sha256": "7ed26bb5cef4696ff101129243033ea45f810e3211ab099776b32a8b1171d8c6",
+  "archive_mode_octal": "0o600",
+  "archive_allocated_bytes": 4096,
+  "encoding": "gzip (no filename, mtime=0); raw bytes unchanged",
+  "verification": {
+    "original_manifest_match": null,
+    "independent_decoder": "system gzip -cd",
+    "decoded_bytes": 7900,
+    "decoded_sha256": "c7a406757837b3f1039c6348873c33b1a00c1386e220ecdf7cbd5b368fb6fbab",
+    "byte_equal": true
+  },
+  "original_disposition": "retained_unchanged",
+  "publication": "withheld: restricted payload, not privacy-cleared"
+}

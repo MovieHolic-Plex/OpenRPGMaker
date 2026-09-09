@@ -109,6 +109,10 @@ export type StatusMenuDetailOptions = {
   readonly lifeLedgerTab?: import("@/player/lifeLedger").LifeLedgerTabId;
   readonly onSelectLifeLedgerTab?: (tab: import("@/player/lifeLedger").LifeLedgerTabId) => void;
   readonly onLifeLedgerMutation?: (ok: boolean, message: string) => void;
+  readonly readLive?: import("@/project/spatialOccupancy").SpatialLiveContextReader;
+  readonly placementDirection?: import("@/project/types").Dir;
+  readonly getPlacementDirection?: () => import("@/project/types").Dir | undefined;
+  readonly getScene?: () => import("@/player/lifePlacementScene").LifePlacementSceneSource | undefined;
   /** 접힌 그룹 목록에서 실제 명령으로 들어갈 때 쓴다. */
   readonly onCommand?: (commandId: StatusMenuCommandId) => void;
 };

@@ -1,0 +1,14 @@
+[
+  {
+    "method": "GET",
+    "path": "/rest/v1/projects",
+    "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.rpg-zzu-life-full-p4-t12-rug-st-01a07be4",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "path": "/rest/v1/maps",
+    "query": "?project_id=eq.rpg-zzu-life-full-p4-t12-rug-st-01a07be4&select=map_id%2Cmap_json",
+    "status": 200
+  }
+]

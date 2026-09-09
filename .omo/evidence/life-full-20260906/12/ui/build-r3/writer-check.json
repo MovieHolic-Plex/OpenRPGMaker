@@ -1,0 +1,15 @@
+{
+  "processes": [
+    {
+      "pid": 1159643,
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+      "argv": "/bin/bash -c cd /home/main/z-project/rpg-zzu-life-full-p4 && python3 .omo/evidence/life-full-20260906/12/ui/build-r3/audit.py && python3 - <<'PY'\nimport json,pathlib\np=pathlib.Path('.omo/evidence/life-full-20260906/12/ui/build-r3')\nfor f in ['writer-check.json','task52-source-comparison.json','core355-source-comparison.json']:\n d=json.loads((p/f).read_text());print(f, d if f.startswith('writer') else {k:v for k,v in d.items() if k not in ['comparisons']})\nPY "
+    },
+    {
+      "pid": 1159644,
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+      "argv": "python3 .omo/evidence/life-full-20260906/12/ui/build-r3/audit.py "
+    }
+  ],
+  "inspection": "No producer/native source writer observed; child execution and inspection processes are retained. Parent handoff declares serial source freeze."
+}

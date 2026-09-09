@@ -1,0 +1,19 @@
+{
+  "status": "verified-publication-prepared-not-staged",
+  "source": "archive/public-final/PUBLICATION-FINAL.json",
+  "verifiedPayloadResults": 328,
+  "payloadHashesUnchanged": true,
+  "exactPublicFiles": 1152,
+  "allPayloadsIncluded": true,
+  "allowlistChunksEqualCompleteList": true,
+  "pathBase": "Task52 evidence root, NOT repository root",
+  "allowlist": "archive/public-final/PUBLIC-PATHS.txt",
+  "futureAuthorizedStagingExample": "git -C /home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52 add --sparse --force --pathspec-from-file=archive/public-final/PUBLIC-PATHS.txt",
+  "stagingExecuted": false,
+  "limits": [
+    "Per-file bounded privacy results report no findings; no universal opaque-secret or visual privacy claim.",
+    "Prior publication holds and original manifests remain historical records; public-final explicitly supersedes the holds.",
+    "This supplemental parent receipt is not silently inserted into the frozen 1152-file allowlist.",
+    "No current UI/source/Git-index change or product approval follows from archival verification."
+  ]
+}

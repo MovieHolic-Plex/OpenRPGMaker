@@ -1,0 +1,11 @@
+{
+  "original_relative_to_task52": "verify/captures/absent-cycle0.wire.json",
+  "durable_mapping": "archive/records/240.json",
+  "archive_relative_to_task52": "archive/payload/verify/captures/absent-cycle0.wire.json.gz",
+  "raw_bytes_removed": 2291813,
+  "original_allocated_bytes_removed": 2293760,
+  "archive_bytes": 160862,
+  "archive_allocated_bytes": 163840,
+  "original_absent_after_unlink": true,
+  "verified_before_unlink": true
+}

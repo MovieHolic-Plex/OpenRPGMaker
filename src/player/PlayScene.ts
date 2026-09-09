@@ -8,6 +8,7 @@ import {
 import type { BattleResult } from "@/battle/runtime";
 import { store } from "@/project/store";
 import { resolvePlayerBody } from "@/project/playerFootprint";
+import { readLifePlacementLiveContext } from "@/player/lifePlacementScene";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { startSession, type PlaySession } from "@/project/session";
 import { Input } from "@/player/input";
@@ -545,6 +546,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   getSession(): PlaySession {
     return this.session;
+  }
+
+  readLivePlacementContext() {
+    return readLifePlacementLiveContext(store.getCurrent(), this);
   }
 
   applySession(session: PlaySession): void {

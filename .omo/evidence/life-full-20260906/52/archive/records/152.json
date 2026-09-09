@@ -1,0 +1,24 @@
+{
+  "original_relative_to_task52": "verify/focused.command.json",
+  "original_absolute": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/focused.command.json",
+  "original_bytes": 1814,
+  "original_sha256": "6b4f957861410c0d3ee24caeb0b24809a8768ae266f65123b7587145f79f8001",
+  "original_mode_octal": "0o644",
+  "original_mtime_ns": 1788770169219750518,
+  "original_allocated_bytes": 4096,
+  "archive_relative_to_task52": "archive/payload/verify/focused.command.json.gz",
+  "archive_bytes": 476,
+  "archive_sha256": "6b1c8f40195912f334cd6a6b17c3e339fb1c046170371015355fc67c963ff075",
+  "archive_mode_octal": "0o600",
+  "archive_allocated_bytes": 4096,
+  "encoding": "gzip (no filename, mtime=0); raw bytes unchanged",
+  "verification": {
+    "original_manifest_match": null,
+    "independent_decoder": "system gzip -cd",
+    "decoded_bytes": 1814,
+    "decoded_sha256": "6b4f957861410c0d3ee24caeb0b24809a8768ae266f65123b7587145f79f8001",
+    "byte_equal": true
+  },
+  "original_disposition": "retained_unchanged",
+  "publication": "withheld: restricted payload, not privacy-cleared"
+}

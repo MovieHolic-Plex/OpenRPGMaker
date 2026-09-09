@@ -1,0 +1,9 @@
+{
+  "status": "confirmed",
+  "requiredFixes": 0,
+  "model": "gpt-6-astra",
+  "carryoverFilesUnchanged": 14,
+  "captures": 133,
+  "captureBytes": 436989272,
+  "producerOriginalsHashed": 112
+}

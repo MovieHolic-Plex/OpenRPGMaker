@@ -176,7 +176,10 @@ function renderDetailEntry(options: {
     : el("div", {
         class: rowClasses,
         attrs: informationalList ? { role: "listitem" } : undefined,
-        ...(entry.testId ? { dataset: { testid: entry.testId } } : {}),
+        dataset: {
+          ...(entry.testId ? { testid: entry.testId } : {}),
+          ...(entry.unavailableReason ? { unavailableReason: entry.unavailableReason } : {}),
+        },
       });
   if (selected) row.classList.add("selected");
   if (entry.vitals) {

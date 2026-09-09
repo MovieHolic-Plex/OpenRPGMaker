@@ -1,0 +1,53 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "argv": [
+    "timeout",
+    "--kill-after=10s",
+    "600s",
+    "node",
+    "scripts/run-vitest.mjs",
+    "run",
+    "--configLoader",
+    "runner",
+    "--cache=false",
+    "--maxWorkers=2",
+    "--minWorkers=1",
+    "test/playerBodyProjectPersistence.test.ts",
+    "test/playerFootprint.test.ts",
+    "test/characterFootprint.test.ts",
+    "test/ioFootprintValidation.test.ts",
+    "test/lifeSaveVersion.test.ts",
+    "test/p0ProjectSchema.test.ts",
+    "test/p1FoundationSchema.test.ts",
+    "test/p2ProjectSchema.test.ts",
+    "test/p2SpatialSchema.test.ts"
+  ],
+  "directArgv": [
+    "node",
+    "scripts/run-vitest.mjs",
+    "run",
+    "--configLoader",
+    "runner",
+    "--cache=false",
+    "--maxWorkers=2",
+    "--minWorkers=1",
+    "test/playerBodyProjectPersistence.test.ts",
+    "test/playerFootprint.test.ts",
+    "test/characterFootprint.test.ts",
+    "test/ioFootprintValidation.test.ts",
+    "test/lifeSaveVersion.test.ts",
+    "test/p0ProjectSchema.test.ts",
+    "test/p1FoundationSchema.test.ts",
+    "test/p2ProjectSchema.test.ts",
+    "test/p2SpatialSchema.test.ts"
+  ],
+  "env": {
+    "TMPDIR": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/cache-focused-vlyl4ktp",
+    "XDG_CACHE_HOME": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/cache-focused-vlyl4ktp/xdg",
+    "VITE_CACHE_DIR": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/cache-focused-vlyl4ktp/vite",
+    "npm_config_cache": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/cache-focused-vlyl4ktp/npm",
+    "npm_config_update_notifier": "false",
+    "npm_config_offline": "true",
+    "GIT_OPTIONAL_LOCKS": "0"
+  }
+}

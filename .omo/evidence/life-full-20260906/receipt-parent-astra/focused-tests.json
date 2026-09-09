@@ -1,0 +1,68 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "360s",
+    "npm",
+    "test",
+    "--",
+    "test/spatialPaymentReceipts.test.ts",
+    "test/linkedAnimalHousing.test.ts",
+    "test/p1FarmAnimals.test.ts",
+    "test/p1FoundationSchema.test.ts",
+    "test/p2SpatialSchema.test.ts",
+    "test/p2SpatialTransactions.test.ts",
+    "test/p2SpatialPersistence.test.ts",
+    "test/p2SpatialReferenceIntegrity.test.ts",
+    "test/lifeRecovery.test.ts",
+    "test/lifeRecoveryPersistence.test.ts",
+    "test/lifeSaveVersion.test.ts",
+    "test/p0SessionPersistence.test.ts",
+    "test/p1ReferenceIntegrity.test.ts",
+    "test/lifeRecoveryRecordKeys.test.ts",
+    "--config",
+    "/home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/.omo/evidence/life-full-20260906/receipt-parent-astra/vitest.config.ts",
+    "--configLoader",
+    "runner"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-receipts-parent-astra",
+  "environmentOverrides": {
+    "TMPDIR": "/dev/shm/st_01a078c8-receipt-parent-astra/tmp",
+    "VITE_CACHE_DIR": "/dev/shm/st_01a078c8-receipt-parent-astra/vite-cache",
+    "npm_config_cache": "/dev/shm/st_01a078c8-receipt-parent-astra/npm-cache"
+  },
+  "startedEpoch": 1788733765.6316214,
+  "endedEpoch": 1788733766.2579784,
+  "exit": 1,
+  "before": {
+    "head": "0e2af2591f33bab3e1f56f1847e499a1cce0681f",
+    "tree": "58448aecee609fbf041a5949f8c222bc016b9bc5",
+    "sourceHashes": {
+      "src/project/lifeRecovery.ts": "1c1a8e26ab196755601793b52d97f4cf79581ada83732216e1fe3118d035c601",
+      "src/project/spatialPlacementTransactions.ts": "f7fb8f6793aa1350bccae6f78b71aad79f14cd8bb4c642568a4add71db95f86d",
+      "test/spatialPaymentReceipts.test.ts": "f90b5dbdc6839fbdea93e17e6709d184d003de3ee2dbaa706c7eaaba0c70fc15",
+      "openwiki/runtime-project-schema.md": "164f05202396075c6eac8a69af746d5634b5db7cc3a3d421878571abc08e6e3c"
+    },
+    "probeHash": "b9dfedbbedebb3da0d836ace827f45cc6ae30162f3aec8e3e7970e6ef394b599",
+    "trackedStatus": ""
+  },
+  "after": {
+    "head": "0e2af2591f33bab3e1f56f1847e499a1cce0681f",
+    "tree": "58448aecee609fbf041a5949f8c222bc016b9bc5",
+    "sourceHashes": {
+      "src/project/lifeRecovery.ts": "1c1a8e26ab196755601793b52d97f4cf79581ada83732216e1fe3118d035c601",
+      "src/project/spatialPlacementTransactions.ts": "f7fb8f6793aa1350bccae6f78b71aad79f14cd8bb4c642568a4add71db95f86d",
+      "test/spatialPaymentReceipts.test.ts": "f90b5dbdc6839fbdea93e17e6709d184d003de3ee2dbaa706c7eaaba0c70fc15",
+      "openwiki/runtime-project-schema.md": "164f05202396075c6eac8a69af746d5634b5db7cc3a3d421878571abc08e6e3c"
+    },
+    "probeHash": "b9dfedbbedebb3da0d836ace827f45cc6ae30162f3aec8e3e7970e6ef394b599",
+    "trackedStatus": ""
+  },
+  "stdout": "focused-tests.stdout",
+  "stderr": "focused-tests.stderr"
+}

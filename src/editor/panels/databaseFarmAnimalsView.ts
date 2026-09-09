@@ -297,7 +297,7 @@ function configuredWorkspace(
       selectedKind === "building" && record.id === selectedId,
     )),
     ...animals.map((record, index) => hideUnless(
-      animalEditor(record, index, species, buildings, rerender),
+      animalEditor(project, record, index, species, buildings, animals, rerender),
       selectedKind === "animal" && record.instanceId === selectedId,
     )),
   ];
@@ -315,11 +315,11 @@ function configuredWorkspace(
   // 국소 갱신해 포커스/캐럿을 지킨다(용어 탭 미리보기와 같은 패턴).
   bindLiveNames(detail, nameTargets);
 
-  const occupancy = occupancySummary(buildings, animals);
+  const occupancy = occupancySummary(project, buildings, animals);
   return workspaceShell({
     header: statStrip([
       { label: "동물 종", value: String(species.length), hint: species.length === 0 ? "먼저 종을 만드세요" : "먹이·생산물 정의" },
-      { label: "축사", value: String(buildings.length), hint: buildings.length === 0 ? "축사가 없으면 배정할 수 없습니다" : "맵 위 배치" },
+      { label: "축사", value: String(occupancy.homes), hint: occupancy.homes === 0 ? "축사가 없으면 배정할 수 없습니다" : "맵 위 배치" },
       { label: "시작 개체", value: String(animals.length), hint: "새 게임 시작 시 생성" },
       {
         label: "수용 여유",
@@ -598,14 +598,17 @@ function speciesToggles(
 // ---------------------------------------------------------------------------
 
 function animalEditor(
+  project: Project,
   record: FarmAnimalStartInstance,
   index: number,
   species: readonly FarmAnimalSpeciesRecord[],
   buildings: readonly FarmAnimalBuildingDefinition[],
+  animals: readonly FarmAnimalStartInstance[],
   rerender: () => void,
 ): HTMLElement {
   const kind = species.find((entry) => entry.id === record.speciesId);
-  const home = buildings.find((entry) => entry.id === record.buildingId);
+  const homeOptions = animalHomeOptions(project, record, buildings, animals);
+  const selectedHome = encodeAnimalHome(record);
 
   return recordShell(`db-farm-animal-${record.instanceId}`, [
     sectionCard({
@@ -617,19 +620,19 @@ function animalEditor(
     }),
     sectionCard({
       title: "배정",
-      hint: home && !home.allowedSpeciesIds.includes(record.speciesId) ? "이 축사는 이 종을 허용하지 않습니다." : undefined,
+      hint: homeOptions.invalidCurrent ? "현재 집은 종·정원 조건과 맞지 않습니다." : undefined,
       children: [
         pickerRow(
           "동물 종",
           record.speciesId,
           species.map((entry) => ({ value: entry.id, label: entry.name })),
-          (value) => patchAnimalAndRerender(index, { speciesId: value }, rerender),
+          (value) => patchAnimalAndRerender(index, exclusiveHomePatch(record, { speciesId: value }), rerender),
         ),
-        pickerRow(
-          "축사",
-          record.buildingId ?? "",
-          [{ value: "", label: "배정 안 함" }, ...buildings.map((entry) => ({ value: entry.id, label: entry.name }))],
-          (value) => patchAnimalAndRerender(index, { buildingId: value || undefined }, rerender),
+        homePickerRow(
+          record.instanceId,
+          selectedHome,
+          homeOptions.options,
+          (value) => patchAnimalAndRerender(index, decodeAnimalHomePatch(value), rerender),
         ),
         textRow("표시 이벤트 ID", record.eventId ?? "", (value) => patchAnimal(index, { eventId: value || undefined })),
       ],
@@ -848,13 +851,41 @@ function countOf(
   return animals.length;
 }
 
+/** Relevant animal homes = legacy barns + placements whose type opts into animalHousing. */
 function occupancySummary(
+  project: Project,
   buildings: readonly FarmAnimalBuildingDefinition[],
   animals: readonly FarmAnimalStartInstance[],
-): { readonly capacity: number; readonly used: number; readonly free: number } {
-  const capacity = buildings.reduce((sum, entry) => sum + entry.capacity, 0);
-  const used = animals.filter((entry) => entry.buildingId && buildings.some((house) => house.id === entry.buildingId)).length;
-  return { capacity, used, free: capacity - used };
+): { readonly homes: number; readonly capacity: number; readonly used: number; readonly free: number } {
+  const legacyIds = new Set<string>();
+  const placementIds = new Set<string>();
+  let capacity = 0;
+
+  for (const building of buildings) {
+    legacyIds.add(building.id);
+    capacity += building.capacity;
+  }
+
+  for (const placement of project.session.farmBuildingPlacements ?? []) {
+    const type = project.database.farmBuildingTypes?.find((entry) => entry.id === placement.typeId);
+    const level = type?.levels.find((entry) => entry.level === placement.level);
+    // Match animalHomeOptions: housing opt-in + explicit per-level animalCapacity only.
+    if (!type?.animalHousing || level?.animalCapacity === undefined) continue;
+    placementIds.add(placement.instanceId);
+    capacity += level.animalCapacity;
+  }
+
+  const used = animals.filter((animal) => {
+    if (animal.housingPlacementId !== undefined) {
+      // Dual refs are invalid in the model; neither home counts them as occupied.
+      if (animal.buildingId !== undefined) return false;
+      return placementIds.has(animal.housingPlacementId);
+    }
+    return animal.buildingId !== undefined && legacyIds.has(animal.buildingId);
+  }).length;
+
+  const homes = legacyIds.size + placementIds.size;
+  return { homes, capacity, used, free: capacity - used };
 }
 
 // ---------------------------------------------------------------------------
@@ -973,12 +1004,137 @@ function patchBuildingAndRerender(index: number, patch: Partial<FarmAnimalBuildi
 
 function patchAnimal(index: number, patch: Partial<FarmAnimalStartInstance>): void {
   recordCoalescedSnapshot(`db-farm-animal:${index}`);
-  store.update((project) => { const row = project.session.farmAnimals?.[index]; if (row) project.session.farmAnimals![index] = { ...row, ...patch }; });
+  store.update((project) => {
+    const row = project.session.farmAnimals?.[index];
+    if (!row) return;
+    project.session.farmAnimals![index] = applyAnimalPatch(row, patch);
+  });
 }
 
 function patchAnimalAndRerender(index: number, patch: Partial<FarmAnimalStartInstance>, rerender: () => void): void {
   patchAnimal(index, patch);
   rerender();
+}
+
+function applyAnimalPatch(row: FarmAnimalStartInstance, patch: Partial<FarmAnimalStartInstance>): FarmAnimalStartInstance {
+  const clearingHome = ("buildingId" in patch || "housingPlacementId" in patch)
+    && patch.buildingId === undefined
+    && patch.housingPlacementId === undefined;
+  if (clearingHome) {
+    const { buildingId: _b, housingPlacementId: _h, ...base } = { ...row, ...patch };
+    return base;
+  }
+  if (patch.housingPlacementId !== undefined) {
+    const { buildingId: _legacy, ...base } = { ...row, ...patch };
+    return { ...base, housingPlacementId: patch.housingPlacementId };
+  }
+  if (patch.buildingId !== undefined) {
+    const { housingPlacementId: _placement, ...base } = { ...row, ...patch };
+    return { ...base, buildingId: patch.buildingId };
+  }
+  if ("housingPlacementId" in patch && patch.housingPlacementId === undefined) {
+    const { housingPlacementId: _h, ...base } = { ...row, ...patch };
+    return base;
+  }
+  if ("buildingId" in patch && patch.buildingId === undefined) {
+    const { buildingId: _b, ...base } = { ...row, ...patch };
+    return base;
+  }
+  return { ...row, ...patch };
+}
+
+function exclusiveHomePatch(
+  _row: FarmAnimalStartInstance,
+  patch: Partial<FarmAnimalStartInstance>,
+): Partial<FarmAnimalStartInstance> {
+  return patch;
+}
+
+function encodeAnimalHome(record: Pick<FarmAnimalStartInstance, "buildingId" | "housingPlacementId">): string {
+  if (record.housingPlacementId !== undefined) return `placement:${record.housingPlacementId}`;
+  if (record.buildingId !== undefined) return `legacy:${record.buildingId}`;
+  return "";
+}
+
+function decodeAnimalHomePatch(value: string): Partial<FarmAnimalStartInstance> {
+  if (!value) return { buildingId: undefined, housingPlacementId: undefined };
+  if (value.startsWith("placement:")) {
+    return { housingPlacementId: value.slice("placement:".length), buildingId: undefined };
+  }
+  if (value.startsWith("legacy:")) {
+    return { buildingId: value.slice("legacy:".length), housingPlacementId: undefined };
+  }
+  return { buildingId: undefined, housingPlacementId: undefined };
+}
+
+function homePickerRow(
+  instanceId: string,
+  value: string,
+  options: readonly { readonly value: string; readonly label: string }[],
+  onChange: (value: string) => void,
+): HTMLElement {
+  const select = el("select", {
+    dataset: { testid: `db-farm-animal-home-${instanceId}` },
+    on: { change: (event) => onChange((event.currentTarget as HTMLSelectElement).value) },
+    children: options.map((entry) => el("option", {
+      text: entry.label,
+      attrs: { value: entry.value, ...(entry.value === value ? { selected: "" } : {}) },
+    })),
+  });
+  return field("집", select);
+}
+
+function animalHomeOptions(
+  project: Project,
+  record: FarmAnimalStartInstance,
+  buildings: readonly FarmAnimalBuildingDefinition[],
+  animals: readonly FarmAnimalStartInstance[],
+): { readonly options: { value: string; label: string }[]; readonly invalidCurrent: boolean } {
+  const options: { value: string; label: string }[] = [{ value: "", label: "배정 안 함" }];
+  const current = encodeAnimalHome(record);
+  let invalidCurrent = false;
+
+  for (const building of buildings) {
+    const value = `legacy:${building.id}`;
+    const occupants = animals.filter((animal) => animal.instanceId !== record.instanceId && animal.buildingId === building.id).length;
+    const allowed = building.allowedSpeciesIds.includes(record.speciesId);
+    const full = occupants >= building.capacity;
+    const isCurrent = current === value;
+    if ((!allowed || full) && !isCurrent) continue;
+    if (isCurrent && (!allowed || full)) invalidCurrent = !allowed;
+    options.push({
+      value,
+      label: full && isCurrent
+        ? `축사 · ${building.name} (현재 · 정원 참)`
+        : `축사 · ${building.name}`,
+    });
+  }
+
+  for (const placement of project.session.farmBuildingPlacements ?? []) {
+    const type = project.database.farmBuildingTypes?.find((entry) => entry.id === placement.typeId);
+    const level = type?.levels.find((entry) => entry.level === placement.level);
+    if (!type?.animalHousing || level?.animalCapacity === undefined) continue;
+    const value = `placement:${placement.instanceId}`;
+    const allowed = type.animalHousing.allowedSpeciesIds.includes(record.speciesId);
+    const occupants = animals.filter((animal) => animal.instanceId !== record.instanceId && animal.housingPlacementId === placement.instanceId).length;
+    const full = occupants >= level.animalCapacity;
+    const isCurrent = current === value;
+    if ((!allowed || full) && !isCurrent) continue;
+    if (isCurrent && !allowed) invalidCurrent = true;
+    const typeName = type.name;
+    options.push({
+      value,
+      label: full && isCurrent
+        ? `배치 · ${typeName} · ${placement.instanceId} (현재 · 정원 참)`
+        : `배치 · ${typeName} · ${placement.instanceId}`,
+    });
+  }
+
+  if (current && !options.some((entry) => entry.value === current)) {
+    invalidCurrent = true;
+    options.push({ value: current, label: `${current} (유효하지 않음)` });
+  }
+  return { options, invalidCurrent };
 }
 
 function clampInt(value: string, min: number, max: number): number {

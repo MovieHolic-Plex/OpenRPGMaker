@@ -1,0 +1,38 @@
+{
+  "task": 54,
+  "reference": "13/producer/SOURCE-HANDOFF.json",
+  "base": "afc91b088a68655a2faac2dfd2a7b65569b1c65e",
+  "targets": {
+    "src/editor/panels/databaseFarmSpatialView.ts": {
+      "sha256": "4d4eadf4a013ba482c8cf998f8bed9a8aed866cf522cc5697ebc7129f25b512b",
+      "gitBlob": "1889dfa064aa3b8216f1f22fbfd10aabdf19ccc1",
+      "bytes": 74832
+    },
+    "src/editor/panels/databaseFarmAnimalsView.ts": {
+      "sha256": "388b4aefd015c7667d569ba480378b2e7691bfb01f0a12098529d860a5b5978a",
+      "gitBlob": "38c09c4640590ce1e1ae47f769d4e8b497dff385",
+      "bytes": 47741
+    },
+    "src/player/lifeLedger.ts": {
+      "sha256": "a03f5b685a3c73c8dc36564ed8931e787ef70d7684bf4a5a96b3cc3a80d6ae63",
+      "gitBlob": "84b1924770fe5148f46a3d0878d97365b8c2f9dc",
+      "bytes": 37882
+    },
+    "src/player/playerStatusMenuDetailRenderer.ts": {
+      "sha256": "a8d70df065f7e9a253c2ff7a2a4cc3b260c0e76e66ed0d3e06458e76e22da152",
+      "gitBlob": "c18e579a2bf55e90ffa30764d456b678ee6d9d1b",
+      "bytes": 15055
+    },
+    "src/editor/databaseReferences.ts": {
+      "sha256": "2cdfe84ee1baf30c03918b3c59a0a864210b0062a803346231d9dbddff7700b1",
+      "gitBlob": "617ec70159ae95385efa31b448f6d13c5f73b899",
+      "bytes": 23564
+    },
+    "test/animalHousingAuthoringUi.test.ts": {
+      "sha256": "7e04a73086d13d846836622d31813f92b0d773e3e7e743aa278d1cf3a7ecacc1",
+      "gitBlob": "54c144bab5f143a9e41038d5bdf8c722ba9a2107",
+      "bytes": 23315
+    }
+  },
+  "scope": "Exact bytes only; no product/UI redesign or memory-based reconstruction"
+}

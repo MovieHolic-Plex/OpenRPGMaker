@@ -1,0 +1,2456 @@
+{
+  "schema": 1,
+  "producer_commit": "b87c9822f431ece4674e97a9d9cd15d1956be327",
+  "hash_algorithm": "sha256",
+  "source_root": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2",
+  "archive_root": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2",
+  "original_directory_metadata": {
+    ".": {
+      "mode_octal": "0755",
+      "mtime_ns": 1788751098374084044,
+      "bytes": 4096
+    }
+  },
+  "file_count": 98,
+  "original_bytes": 20874627,
+  "gzip_copies": 98,
+  "readable_copies": 42,
+  "files": [
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/MANIFEST.json",
+      "original_relative_path": "MANIFEST.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788751098375722469,
+        "bytes": 13003,
+        "sha256": "c02975687b94a0518fb45066ef69054ffefc45579c7e17893bff719846269039"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/MANIFEST.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788751098375722469,
+          "bytes": 3466,
+          "sha256": "586d25463c5c3528d4b7313e080f5872d358c5a05949dafb3328a08cc3258393",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/VERIFY.md",
+      "original_relative_path": "VERIFY.md",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788751097504066255,
+        "bytes": 14869,
+        "sha256": "cdbd8ca4abfeb4d04539c4a8acee4e6d977a4c6351462fd3086349fa644c8855"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/VERIFY.md.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788751097504066255,
+          "bytes": 6384,
+          "sha256": "f82bf3c5617b65b552a7cdc88e9a83a2d347f3a6f810dfc51146ad933cdc0994",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/VERIFY.md",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788751097504066255,
+          "bytes": 14869,
+          "sha256": "cdbd8ca4abfeb4d04539c4a8acee4e6d977a4c6351462fd3086349fa644c8855",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/adversarial-results.json",
+      "original_relative_path": "adversarial-results.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750849017234640,
+        "bytes": 156,
+        "sha256": "4d0b980a1ce7d8082ec5bb0cd090900df6c1fb58f900b6d50b077e816ede9ee9"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/adversarial-results.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750849017234640,
+          "bytes": 111,
+          "sha256": "9bc56040cd6147972bb54ddba28e05ae941a45194731818bb277718ac4ef07a0",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/adversarial.py",
+      "original_relative_path": "adversarial.py",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750784712659442,
+        "bytes": 2406,
+        "sha256": "e6c94498649fbb5941dbe56658bafb6863944a1e6376568fa04abf541399b381"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/adversarial.py.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750784712659442,
+          "bytes": 1129,
+          "sha256": "e7729bac1d19223e01ce09fb757720d06d35983c4cc213d3b07d8027c247f607",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/adversarial.py",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750784712659442,
+          "bytes": 2406,
+          "sha256": "e6c94498649fbb5941dbe56658bafb6863944a1e6376568fa04abf541399b381",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/audit.json",
+      "original_relative_path": "audit.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750900054984468,
+        "bytes": 21548,
+        "sha256": "c1aa9421c88f514a0d5cb9cf2a5773642283023865a5d5ac38b3efd175ab586e"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/audit.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750900054984468,
+          "bytes": 3649,
+          "sha256": "f2b8b4282a1049f4ea89f5de681558310cfc57e5985fb8a0625ba6b592252c62",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/audit.py",
+      "original_relative_path": "audit.py",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750894812917490,
+        "bytes": 3789,
+        "sha256": "1a3710753602dc46cfa563a8435c33cf20446dac38862b86f55f594158685826"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/audit.py.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750894812917490,
+          "bytes": 1542,
+          "sha256": "365484ca519df2b6aea80ad4abd848c6013642f0859d0410d773548b396b7c16",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/audit.py",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750894812917490,
+          "bytes": 3789,
+          "sha256": "1a3710753602dc46cfa563a8435c33cf20446dac38862b86f55f594158685826",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/certification.after.json",
+      "original_relative_path": "certification.after.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750983247728758,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/certification.after.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750983247728758,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/certification.before.json",
+      "original_relative_path": "certification.before.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750975992430015,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/certification.before.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750975992430015,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/certification.cleanup.json",
+      "original_relative_path": "certification.cleanup.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750983249612681,
+        "bytes": 196,
+        "sha256": "4c8cfd217bf76c754697c34b1411089ab2a3544cfa373c2b5513624a918cd84c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/certification.cleanup.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750983249612681,
+          "bytes": 164,
+          "sha256": "a53734a033a058bb84615d07180604721c2fc1c7ecf3213ab4142a1dbfb23107",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/certification.command.json",
+      "original_relative_path": "certification.command.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750975993523939,
+        "bytes": 861,
+        "sha256": "a8628045b83fd731ab149895a6018768079bb734f292dac1a442171562cfc82e"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/certification.command.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750975993523939,
+          "bytes": 343,
+          "sha256": "9bedaa3e9bb4a8602039ca71394e584ecca6abb7cbeada40946dda2340cccc7e",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/certification.exit",
+      "original_relative_path": "certification.exit",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750982491494841,
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/certification.exit.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750982491494841,
+          "bytes": 22,
+          "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/certification.exit",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750982491494841,
+          "bytes": 2,
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/certification.stderr",
+      "original_relative_path": "certification.stderr",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750975993523939,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/certification.stderr.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750975993523939,
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/certification.stderr",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750975993523939,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/certification.stdout",
+      "original_relative_path": "certification.stdout",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750981956702329,
+        "bytes": 2124,
+        "sha256": "6c9b939c257180d78e1014bd402b38c6aedae2f3f2d36c801d22510b1c219b5a"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/certification.stdout.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750981956702329,
+          "bytes": 651,
+          "sha256": "67495e708dff1f96e569e498596b7efd0b10c151d79bbc14411e29373972e414",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/certification.stdout",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750981956702329,
+          "bytes": 2124,
+          "sha256": "6c9b939c257180d78e1014bd402b38c6aedae2f3f2d36c801d22510b1c219b5a",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/certify.py",
+      "original_relative_path": "certify.py",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750975224564511,
+        "bytes": 1805,
+        "sha256": "ad80c8df2d6f8e56ea7f10314240f2a8e7a8071449f14a49993f05fe46805cb3"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/certify.py.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750975224564511,
+          "bytes": 896,
+          "sha256": "09ca731920ce1cc81dd2baadfade2957125748e57b02b97900580855883946e8",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/certify.py",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750975224564511,
+          "bytes": 1805,
+          "sha256": "ad80c8df2d6f8e56ea7f10314240f2a8e7a8071449f14a49993f05fe46805cb3",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/cleanup.json",
+      "original_relative_path": "cleanup.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788751098348114984,
+        "bytes": 265,
+        "sha256": "a290fbd5abc77d354380bf598837964afcbb2f94d7a587f7b44c9dae1c84ecbf"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/cleanup.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788751098348114984,
+          "bytes": 190,
+          "sha256": "0e54e2873ef524a3c3883f4d8d69cf5ff7b8337df62e82c8484a5766695555c5",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/committed.diff",
+      "original_relative_path": "committed.diff",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750895544445548,
+        "bytes": 52853,
+        "sha256": "496fa4722a66ab41511f3400401234948517659cc9f97e3069517f8655967cc6"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/committed.diff.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750895544445548,
+          "bytes": 12839,
+          "sha256": "7332e7706b72850ba53383552e47bb03e3fe4b87a8729bf46a4e340ae34d47f7",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics-final.after.json",
+      "original_relative_path": "diagnostics-final.after.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750727361432378,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics-final.after.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750727361432378,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics-final.before.json",
+      "original_relative_path": "diagnostics-final.before.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750710911179960,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics-final.before.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750710911179960,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics-final.cleanup.json",
+      "original_relative_path": "diagnostics-final.cleanup.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750727363048981,
+        "bytes": 200,
+        "sha256": "c932b234f611b2e66f1c107fe9745d538493b8aac970e9c94d2c03bff70795b0"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics-final.cleanup.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750727363048981,
+          "bytes": 167,
+          "sha256": "60d2debfce48e4170dba688ea6fc5d583b891d0490f7c14c2f198fa01b5974c0",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics-final.command.json",
+      "original_relative_path": "diagnostics-final.command.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750710914271435,
+        "bytes": 876,
+        "sha256": "a262fe76e9adb726c62110d1be3b5d8149fe741410d95e0991fa766b89b716af"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics-final.command.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750710914271435,
+          "bytes": 346,
+          "sha256": "b143e9327b220899893f471006aa29e13e3f19d3d18991a3ff3bfe9b9cf73814",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics-final.exit",
+      "original_relative_path": "diagnostics-final.exit",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750726657262137,
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics-final.exit.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750726657262137,
+          "bytes": 22,
+          "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/diagnostics-final.exit",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750726657262137,
+          "bytes": 2,
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics-final.stderr",
+      "original_relative_path": "diagnostics-final.stderr",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750710914271435,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics-final.stderr.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750710914271435,
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/diagnostics-final.stderr",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750710914271435,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics-final.stdout",
+      "original_relative_path": "diagnostics-final.stdout",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750726225498542,
+        "bytes": 822,
+        "sha256": "5f7ef2de92505021045e8c421c6c8e8ee5166fd6f1a55b1941602413bf1180de"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics-final.stdout.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750726225498542,
+          "bytes": 285,
+          "sha256": "9be9421239f1760ec7839bd369f266fed3bbe7a7faa739f5fcfe3fd04a779ed4",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/diagnostics-final.stdout",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750726225498542,
+          "bytes": 822,
+          "sha256": "5f7ef2de92505021045e8c421c6c8e8ee5166fd6f1a55b1941602413bf1180de",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics.after.json",
+      "original_relative_path": "diagnostics.after.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750654487487226,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics.after.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750654487487226,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics.before.json",
+      "original_relative_path": "diagnostics.before.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750638352416981,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics.before.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750638352416981,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics.cleanup.json",
+      "original_relative_path": "diagnostics.cleanup.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750654488972548,
+        "bytes": 194,
+        "sha256": "def55152d4634b1e5018bdec560ac62a8a4526ed0cfc29cb71dd27f91845729f"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics.cleanup.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750654488972548,
+          "bytes": 164,
+          "sha256": "fefb8b6eecd5a0d2f3cfd98454264ff70f7d26f62761bdc3fa5518bad41c3e43",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics.command.json",
+      "original_relative_path": "diagnostics.command.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750638353114837,
+        "bytes": 858,
+        "sha256": "498f053ff81ec0139968fd1bf350d4f43897dadcf18861443e47bebd7749e827"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics.command.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750638353114837,
+          "bytes": 341,
+          "sha256": "31e7f2772c4a0e73a4ef3d1b0f354a4fa7277b355bb8dec8234b52d33970913c",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics.exit",
+      "original_relative_path": "diagnostics.exit",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750653769425175,
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics.exit.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750653769425175,
+          "bytes": 22,
+          "sha256": "d381e5a9b7c1c71b5fb3fef202103bf4b6098ce288f148735de1ecf61d4e3b75",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/diagnostics.exit",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750653769425175,
+          "bytes": 2,
+          "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics.mjs",
+      "original_relative_path": "diagnostics.mjs",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750374208195207,
+        "bytes": 1516,
+        "sha256": "bb8f2f740057325461431035a70b376cb2b2d7e7c8bb262277a32b8b46a423c2"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics.mjs.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750374208195207,
+          "bytes": 717,
+          "sha256": "51e914d57de8ebdec67aec4da789fbf76d3dd7388da340c6cfb807de9ce302c9",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/diagnostics.mjs",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750374208195207,
+          "bytes": 1516,
+          "sha256": "bb8f2f740057325461431035a70b376cb2b2d7e7c8bb262277a32b8b46a423c2",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics.stderr",
+      "original_relative_path": "diagnostics.stderr",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750638353114837,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics.stderr.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750638353114837,
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/diagnostics.stderr",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750638353114837,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/diagnostics.stdout",
+      "original_relative_path": "diagnostics.stdout",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750653291958649,
+        "bytes": 940,
+        "sha256": "fe6399625381e1135f6e8cd53344412503abf9b00f3b3dfff7925f5c1c8954f9"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/diagnostics.stdout.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750653291958649,
+          "bytes": 329,
+          "sha256": "b59e079c2c447d53cc1b8b399e9e7805934c3c6c6f3132133b0d24faa68c5f72",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/diagnostics.stdout",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750653291958649,
+          "bytes": 940,
+          "sha256": "fe6399625381e1135f6e8cd53344412503abf9b00f3b3dfff7925f5c1c8954f9",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/first-state-archive.json",
+      "original_relative_path": "first-state-archive.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750710105150236,
+        "bytes": 233,
+        "sha256": "a71a83f151e855b0e3de4881058220d4cea3975702a5b9dea5b1cb79cc3b9f89"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/first-state-archive.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750710105150236,
+          "bytes": 199,
+          "sha256": "9b24af3f58f57c7739951581d67665035445708d4f748c38b5a9ff080c6eb03e",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/import-resolution.json",
+      "original_relative_path": "import-resolution.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750976042013958,
+        "bytes": 2017,
+        "sha256": "b8bdae8af46ddb1738bfb112cb3416914a2bcc61dbbe8f71680c5c6764048747"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/import-resolution.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750976042013958,
+          "bytes": 538,
+          "sha256": "49ba06efcb1ff0dbc6e507c47e84174c16d9c7de98ad74f4d560f8ab28221996",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/independent-rights.mts",
+      "original_relative_path": "independent-rights.mts",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750707566074836,
+        "bytes": 20841,
+        "sha256": "3f415bc6f6302ad0c1a2451c673661be7459ed47e63e5f75c1c36c30bca551b8"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/independent-rights.mts.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750707566074836,
+          "bytes": 4722,
+          "sha256": "791bcb3c73fdf5e58af5d870c841a4bdc89a817c4619359d35b53c5d45e37333",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/independent-rights.mts",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750707566074836,
+          "bytes": 20841,
+          "sha256": "3f415bc6f6302ad0c1a2451c673661be7459ed47e63e5f75c1c36c30bca551b8",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/independent-rights.pre-diagnostics.mts",
+      "original_relative_path": "independent-rights.pre-diagnostics.mts",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750707565074816,
+        "bytes": 18974,
+        "sha256": "70322a029ee0bcefa98a7683aa1505dc1cb0d8058a643617dcd3c1ca94577cdd"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/independent-rights.pre-diagnostics.mts.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750707565074816,
+          "bytes": 4444,
+          "sha256": "6c691e028d07529bdf35c5e078982d8dcd4096cd58a7f6f6cfcbc30581f55448",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/independent-rights.pre-diagnostics.mts",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750707565074816,
+          "bytes": 18974,
+          "sha256": "70322a029ee0bcefa98a7683aa1505dc1cb0d8058a643617dcd3c1ca94577cdd",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/input-dirty.before.json",
+      "original_relative_path": "input-dirty.before.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750848297350391,
+        "bytes": 780707,
+        "sha256": "6fdaa65a89273d3c2d4490e9b11a20e518e80af5b455aa44a92784b2939c6f7f"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/input-dirty.before.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750848297350391,
+          "bytes": 327652,
+          "sha256": "2a7870d664e1eae8f8a71aaee49bfd291d08b20037dacab045755ecc571b888a",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/input-stale.before.json",
+      "original_relative_path": "input-stale.before.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750849016588187,
+        "bytes": 780667,
+        "sha256": "2c7282f4c204718d825e4689dad381ab1d93375eaab7b410017cf4cabd381f89"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/input-stale.before.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750849016588187,
+          "bytes": 327625,
+          "sha256": "1ff2650e72fa8c817504e8956ac4295ab945b9e1e66d13dd3e1ab5953b857376",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/interrupted.after.json",
+      "original_relative_path": "interrupted.after.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750786253680376,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/interrupted.after.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750786253680376,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/interrupted.before.json",
+      "original_relative_path": "interrupted.before.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750785488334844,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/interrupted.before.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750785488334844,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/interrupted.cleanup.json",
+      "original_relative_path": "interrupted.cleanup.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750786255691115,
+        "bytes": 196,
+        "sha256": "59740539469ec27e0432fea2ee2a3b02d5e7b6522853d0856ad4c60baebc44c1"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/interrupted.cleanup.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750786255691115,
+          "bytes": 164,
+          "sha256": "7b35acb34002ad0bf09d5581027e26a4daf7b2053acbec7596e5feac4eb0eee0",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/interrupted.command.json",
+      "original_relative_path": "interrupted.command.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750785489167421,
+        "bytes": 987,
+        "sha256": "4e5d9d75201f1d740ecbe76143c3a929446b6f153e7098261482f0b84e1123ce"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/interrupted.command.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750785489167421,
+          "bytes": 444,
+          "sha256": "50c9b06fe0c3b3e310b06074b556b96f5fedc8419abfc7c86b260a1900c618d0",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/interrupted.exit",
+      "original_relative_path": "interrupted.exit",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750785526555242,
+        "bytes": 4,
+        "sha256": "0e55cbbc9d11449b186092d82905aa6974858df7a0b7d706ae51c4716c9461ef"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/interrupted.exit.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750785526555242,
+          "bytes": 24,
+          "sha256": "de6d9b4e4fd868fa8c7365cb449c33bef36a8e3a84d7ded50777b39327f50c56",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/interrupted.exit",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750785526555242,
+          "bytes": 4,
+          "sha256": "0e55cbbc9d11449b186092d82905aa6974858df7a0b7d706ae51c4716c9461ef",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/interrupted.stderr",
+      "original_relative_path": "interrupted.stderr",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750785489167421,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/interrupted.stderr.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750785489167421,
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/interrupted.stderr",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750785489167421,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/interrupted.stdout",
+      "original_relative_path": "interrupted.stdout",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750785489167421,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/interrupted.stdout.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750785489167421,
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/interrupted.stdout",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750785489167421,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/interruption.cleanup.json",
+      "original_relative_path": "interruption.cleanup.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750849017401664,
+        "bytes": 55,
+        "sha256": "c95d1131f63c6b608b6e4d31b3db2026cca8195ab958a7db7aba044cf44bcd51"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/interruption.cleanup.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750849017401664,
+          "bytes": 72,
+          "sha256": "971f04d62bd273f3f9443a5d55e3c252d21d6fd16f4b902a8e7324de942c5234",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/interruption.command.json",
+      "original_relative_path": "interruption.command.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750784766296705,
+        "bytes": 514,
+        "sha256": "7a912ea78c192cb7c83c322d4cea7860f04920fe48e1dac0a8303ac0afa16c8c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/interruption.command.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750784766296705,
+          "bytes": 336,
+          "sha256": "10eb7e952e12fdc3c8ad0a89a7ab8c9877ae9ef7f0397859f0120ba764f04684",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/interruption.exit",
+      "original_relative_path": "interruption.exit",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750786292203251,
+        "bytes": 4,
+        "sha256": "c09c0aa0731b23f045e0827cb16485596f8b2841e5036de00198758f968dcec7"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/interruption.exit.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750786292203251,
+          "bytes": 24,
+          "sha256": "013e60003b956b7b9c1a13e0e754533dee87b8ec4957a8bd0eb4238a48d280e4",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/interruption.exit",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750786292203251,
+          "bytes": 4,
+          "sha256": "c09c0aa0731b23f045e0827cb16485596f8b2841e5036de00198758f968dcec7",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/interruption.stderr",
+      "original_relative_path": "interruption.stderr",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750784766296705,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/interruption.stderr.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750784766296705,
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/interruption.stderr",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750784766296705,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/interruption.stdout",
+      "original_relative_path": "interruption.stdout",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750786255691115,
+        "bytes": 16,
+        "sha256": "4c0febc092a4a362a87b55b3abbe9976bfb2bc184f6e2e944d7cb46cf21b22aa"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/interruption.stdout.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750786255691115,
+          "bytes": 36,
+          "sha256": "b5a8279edced5f4fe33b71c69b5bfc5e5b8874114ef3602be2987b9bd11ca09a",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/interruption.stdout",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750786255691115,
+          "bytes": 16,
+          "sha256": "4c0febc092a4a362a87b55b3abbe9976bfb2bc184f6e2e944d7cb46cf21b22aa",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/lock-released.after.json",
+      "original_relative_path": "lock-released.after.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750847597873608,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/lock-released.after.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750847597873608,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/lock-released.before.json",
+      "original_relative_path": "lock-released.before.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750846894108005,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/lock-released.before.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750846894108005,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/lock-released.cleanup.json",
+      "original_relative_path": "lock-released.cleanup.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750847599151885,
+        "bytes": 196,
+        "sha256": "53a8244336fc51758fc5e42fe42eab272855505b873dc5db9c97c0e804514fa2"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/lock-released.cleanup.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750847599151885,
+          "bytes": 164,
+          "sha256": "795162b2824d8fdf137556e8b9a1947e7cb12876b6af03ffcb3f76013764435a",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/lock-released.command.json",
+      "original_relative_path": "lock-released.command.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750846894862661,
+        "bytes": 746,
+        "sha256": "14134e5a0117619bde153e9b8db9ca477f2260d0968e7ce79f89803f2a17c527"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/lock-released.command.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750846894862661,
+          "bytes": 328,
+          "sha256": "dd32585c3b4197b8b958bb249000a46593e54eeb0bb08cb403b5103ccad45ffa",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/lock-released.exit",
+      "original_relative_path": "lock-released.exit",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750846901055651,
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/lock-released.exit.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750846901055651,
+          "bytes": 22,
+          "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/lock-released.exit",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750846901055651,
+          "bytes": 2,
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/lock-released.stderr",
+      "original_relative_path": "lock-released.stderr",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750846894862661,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/lock-released.stderr.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750846894862661,
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/lock-released.stderr",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750846894862661,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/lock-released.stdout",
+      "original_relative_path": "lock-released.stdout",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750846894862661,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/lock-released.stdout.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750846894862661,
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/lock-released.stdout",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750846894862661,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/misleading-failure.after.json",
+      "original_relative_path": "misleading-failure.after.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750846205921063,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/misleading-failure.after.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750846205921063,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/misleading-failure.before.json",
+      "original_relative_path": "misleading-failure.before.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750787074191421,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/misleading-failure.before.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750787074191421,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/misleading-failure.cleanup.json",
+      "original_relative_path": "misleading-failure.cleanup.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750846208714445,
+        "bytes": 201,
+        "sha256": "19d5e038e5d8e94258e9bb3640f0f9e8556de1a994dc36df314417b710dfeefa"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/misleading-failure.cleanup.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750846208714445,
+          "bytes": 167,
+          "sha256": "40be1e5393296a073fc677ee056c6eef443b5410955db8c9e1e90fedb9cb5db5",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/misleading-failure.command.json",
+      "original_relative_path": "misleading-failure.command.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750787075014439,
+        "bytes": 927,
+        "sha256": "8eacab900a5e723935e376b7fa22bc9e44df4a3d76f67fdee47443276d078bf7"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/misleading-failure.command.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750787075014439,
+          "bytes": 439,
+          "sha256": "5f882c1142c24db9bf1907e54c771245e9359b6dfb7430ae8656311f9b0fc241",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/misleading-failure.exit",
+      "original_relative_path": "misleading-failure.exit",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750845530324991,
+        "bytes": 2,
+        "sha256": "10159baf262b43a92d95db59dae1f72c645127301661e0a3ce4e38b295a97c58"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/misleading-failure.exit.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750845530324991,
+          "bytes": 22,
+          "sha256": "d5ff32d0470bfac3fb2bbd6c13d55441cef03086cf977258d8699c54a7c7f1f2",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/misleading-failure.exit",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750845530324991,
+          "bytes": 2,
+          "sha256": "10159baf262b43a92d95db59dae1f72c645127301661e0a3ce4e38b295a97c58",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/misleading-failure.stderr",
+      "original_relative_path": "misleading-failure.stderr",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750845522907056,
+        "bytes": 29,
+        "sha256": "9911679747d94e93fe339122064cc8bd3cdd05a3d3c0006f68dd545ff28f0e93"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/misleading-failure.stderr.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750845522907056,
+          "bytes": 47,
+          "sha256": "600731eb1e304c8be0ed8ad1cfbd79de496deba1f470d8e179f6de2c0b0db359",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/misleading-failure.stderr",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750845522907056,
+          "bytes": 29,
+          "sha256": "9911679747d94e93fe339122064cc8bd3cdd05a3d3c0006f68dd545ff28f0e93",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/misleading-failure.stdout",
+      "original_relative_path": "misleading-failure.stdout",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750845522907056,
+        "bytes": 47,
+        "sha256": "3d94c509c45309dcc2dbbfb4b9749aafd668721cc050b1fc475251fc3e29dd1e"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/misleading-failure.stdout.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750845522907056,
+          "bytes": 67,
+          "sha256": "074c2c4ecf598defa153dde591a3d9b3031b50520d19c5e67ed9893cbfef5f77",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/misleading-failure.stdout",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750845522907056,
+          "bytes": 47,
+          "sha256": "3d94c509c45309dcc2dbbfb4b9749aafd668721cc050b1fc475251fc3e29dd1e",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/probe.config.mjs",
+      "original_relative_path": "probe.config.mjs",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750374208195207,
+        "bytes": 597,
+        "sha256": "3fa7c36f6ca01dcd644d9210f510d73d9cf5474678408d5d0ef59a56abec1d4c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/probe.config.mjs.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750374208195207,
+          "bytes": 404,
+          "sha256": "7724ee6f80a91407e01d5e249a5be9d3749a1d27c2515a3c93ab7ab5cc19d356",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/probe.config.mjs",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750374208195207,
+          "bytes": 597,
+          "sha256": "3fa7c36f6ca01dcd644d9210f510d73d9cf5474678408d5d0ef59a56abec1d4c",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/producer-stream-review.txt",
+      "original_relative_path": "producer-stream-review.txt",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750900053763732,
+        "bytes": 9406,
+        "sha256": "8b3678ad6a3c708413dc77c4becfa2e230d44adf3ce6954c08b943778f21d01f"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/producer-stream-review.txt.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750900053763732,
+          "bytes": 2237,
+          "sha256": "42fe9556a7cd96ca5dabd5c614be473ea3ab3f06720898475faaceee77c2f2dd",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/producer-stream-review.txt",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750900053763732,
+          "bytes": 9406,
+          "sha256": "8b3678ad6a3c708413dc77c4becfa2e230d44adf3ce6954c08b943778f21d01f",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-rights-final.after.json",
+      "original_relative_path": "public-rights-final.after.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750744582608873,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-rights-final.after.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750744582608873,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-rights-final.before.json",
+      "original_relative_path": "public-rights-final.before.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750728125531570,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-rights-final.before.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750728125531570,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-rights-final.cleanup.json",
+      "original_relative_path": "public-rights-final.cleanup.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750744584315789,
+        "bytes": 202,
+        "sha256": "a980c95c7fa44da212e9d871c2e4d72f293b0cc8f84070ad5b544efd74504f2f"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-rights-final.cleanup.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750744584315789,
+          "bytes": 168,
+          "sha256": "1fbf989da5d28118e5749fdf853d56b61b0be720cfe4f145adaad9f867effcad",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-rights-final.command.json",
+      "original_relative_path": "public-rights-final.command.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750728126607173,
+        "bytes": 1067,
+        "sha256": "eae8227bbc95a6dc63cb63aaa03ac72ff12157175fd804448951c3829a8c6fa4"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-rights-final.command.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750728126607173,
+          "bytes": 384,
+          "sha256": "757c28bc758326a67e4c1708bc86200e2b6dffb0a1d9892bed3394115239acc3",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-rights-final.exit",
+      "original_relative_path": "public-rights-final.exit",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750743867100571,
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-rights-final.exit.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750743867100571,
+          "bytes": 22,
+          "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/public-rights-final.exit",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750743867100571,
+          "bytes": 2,
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-rights-final.stderr",
+      "original_relative_path": "public-rights-final.stderr",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750741829778889,
+        "bytes": 1127,
+        "sha256": "5e3d9fbc05b220ea54930d6f13ffe81fd358da6a8376919466dc2d698b811de9"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-rights-final.stderr.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750741829778889,
+          "bytes": 425,
+          "sha256": "992318f6e291d4c57c6eb22659ec8b8eb6705adb07fcd5f6a0ec5d82e86a5df7",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/public-rights-final.stderr",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750741829778889,
+          "bytes": 1127,
+          "sha256": "5e3d9fbc05b220ea54930d6f13ffe81fd358da6a8376919466dc2d698b811de9",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-rights-final.stdout",
+      "original_relative_path": "public-rights-final.stdout",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750741830778910,
+        "bytes": 96,
+        "sha256": "a25914365adfeb36142f64bfaf4691558f6374f272deb538bd3902d233ef6eff"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-rights-final.stdout.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750741830778910,
+          "bytes": 102,
+          "sha256": "3cfead38a9f049e7f42a542b35414994e6e0e26da09984d07ee572793871c83e",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/public-rights-final.stdout",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750741830778910,
+          "bytes": 96,
+          "sha256": "a25914365adfeb36142f64bfaf4691558f6374f272deb538bd3902d233ef6eff",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-rights.after.json",
+      "original_relative_path": "public-rights.after.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750618624599975,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-rights.after.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750618624599975,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-rights.before.json",
+      "original_relative_path": "public-rights.before.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750604774199854,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-rights.before.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750604774199854,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-rights.cleanup.json",
+      "original_relative_path": "public-rights.cleanup.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750618626345332,
+        "bytes": 196,
+        "sha256": "1331655eff42992ce03a8bde6e55bfd90bb4530955e989d8cdeee16552f7ddbf"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-rights.cleanup.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750618626345332,
+          "bytes": 165,
+          "sha256": "d6877b7d18f1ef2841e45b3f4643020417a325fba660a71dbd12cd442adce196",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-rights.command.json",
+      "original_relative_path": "public-rights.command.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750604775028471,
+        "bytes": 1049,
+        "sha256": "d99bc20b4d4c9693691e653de73358b29f274ea00d234e25538b872bb034bf64"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-rights.command.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750604775028471,
+          "bytes": 379,
+          "sha256": "f5d989b9e12fcf388efde690fe8631dc226fabf4789c04f6c183f7fdcace836a",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-rights.exit",
+      "original_relative_path": "public-rights.exit",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750617923726472,
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-rights.exit.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750617923726472,
+          "bytes": 22,
+          "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/public-rights.exit",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750617923726472,
+          "bytes": 2,
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-rights.stderr",
+      "original_relative_path": "public-rights.stderr",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750604775028471,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-rights.stderr.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750604775028471,
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/public-rights.stderr",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750604775028471,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-rights.stdout",
+      "original_relative_path": "public-rights.stdout",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750616114193322,
+        "bytes": 96,
+        "sha256": "3c53d1e7b0cb94dffc4cf39fdb09586ca49bb00f10b512d69341793aeaf76482"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-rights.stdout.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750616114193322,
+          "bytes": 102,
+          "sha256": "2cf7edeedc3de2af29a13c7e72740576252b7c2ce9787d0546f7310620a6aa6a",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/public-rights.stdout",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750616114193322,
+          "bytes": 96,
+          "sha256": "3c53d1e7b0cb94dffc4cf39fdb09586ca49bb00f10b512d69341793aeaf76482",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-state.final.json.gz",
+      "original_relative_path": "public-state.final.json.gz",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750899693221036,
+        "bytes": 1888339,
+        "sha256": "86dd60d5838eeffbfe1c877890d0a7bede44f28b2bf3402152dc613c939fb014"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-state.final.json.gz.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750899693221036,
+          "bytes": 326812,
+          "sha256": "0f7af028db359c5ba306bc82259b77b8ebe88af4bba18ef6f89ce331114428a9",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/public-state.first.json.gz",
+      "original_relative_path": "public-state.first.json.gz",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750709790415464,
+        "bytes": 1607222,
+        "sha256": "dec3d0cbcc74e7a77210ab79ab90242a90561ec0f4c6bafd443cdc6959c12bdc"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/public-state.first.json.gz.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750709790415464,
+          "bytes": 274884,
+          "sha256": "43acba2f764ae1d0dc6bbf6fb1aa68d5ab389bc0a1bfff0e5dd9584b4cfd5417",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/ready-signal.txt",
+      "original_relative_path": "ready-signal.txt",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750785525859548,
+        "bytes": 18,
+        "sha256": "59b609f0edc065f0e3b49d8ba159018bca5c621e3ef138a5e47c6473b11d7b56"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/ready-signal.txt.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750785525859548,
+          "bytes": 36,
+          "sha256": "ca37cc64ca57f12e7f2dfd8304e22c5d80795eb920042cab1a4ae1b335c8d100",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/ready-signal.txt",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750785525859548,
+          "bytes": 18,
+          "sha256": "59b609f0edc065f0e3b49d8ba159018bca5c621e3ef138a5e47c6473b11d7b56",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/run.py",
+      "original_relative_path": "run.py",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750374208195207,
+        "bytes": 2770,
+        "sha256": "dfc88cd940905172f6c70d3ebdaf940f1b08554447c127e82b59ec40703f6796"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/run.py.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750374208195207,
+          "bytes": 1323,
+          "sha256": "bb9b826e65668b634271c912bccc1d8cc841465353bee2976c618e91e349ef4b",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/run.py",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750374208195207,
+          "bytes": 2770,
+          "sha256": "dfc88cd940905172f6c70d3ebdaf940f1b08554447c127e82b59ec40703f6796",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/state-index.json",
+      "original_relative_path": "state-index.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750900053606259,
+        "bytes": 16920,
+        "sha256": "f7d475c02b3705c1ab52d572c7650a6803d05b44440badfcdc2b77053f68129f"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/state-index.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750900053606259,
+          "bytes": 3155,
+          "sha256": "25a8cdae31a40739e29f57ec94543c1b91a5b020bcf4bf90db2219d86abc03ba",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/tests.after.json",
+      "original_relative_path": "tests.after.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750400065233661,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/tests.after.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750400065233661,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/tests.before.json",
+      "original_relative_path": "tests.before.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750375034792041,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/tests.before.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750375034792041,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/tests.cleanup.json",
+      "original_relative_path": "tests.cleanup.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750400066511998,
+        "bytes": 188,
+        "sha256": "648b12d5b92a668d251478e580ee40d4b3df1338011a704303c1c6c68fdb4327"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/tests.cleanup.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750400066511998,
+          "bytes": 158,
+          "sha256": "3e80428441620bc8ca9fb7c9f4811dc062aacc468f14058dee7e161f07bf15b6",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/tests.command.json",
+      "original_relative_path": "tests.command.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750375035603538,
+        "bytes": 1589,
+        "sha256": "e983cde4f37437ec42d342e2b1b833896c39549067a903eaf1487ae19f668faf"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/tests.command.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750375035603538,
+          "bytes": 585,
+          "sha256": "b487729f52baf02b8e3cf20cc4493e5ce07a80cd05f9dd6c4b7accb0a83242c9",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/tests.exit",
+      "original_relative_path": "tests.exit",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750399360122649,
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/tests.exit.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750399360122649,
+          "bytes": 22,
+          "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/tests.exit",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750399360122649,
+          "bytes": 2,
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/tests.stderr",
+      "original_relative_path": "tests.stderr",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750375035603538,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/tests.stderr.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750375035603538,
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/tests.stderr",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750375035603538,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/tests.stdout",
+      "original_relative_path": "tests.stdout",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750399163712554,
+        "bytes": 2168,
+        "sha256": "c90f7601b96c9ebb621ea48237edc95156859c002ffc71c6d42b76a713b16ee6"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/tests.stdout.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750399163712554,
+          "bytes": 979,
+          "sha256": "5567e3aa95ce6baa80a9680378e4bc8a709e08296d3be42aadeb319294fbba11",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/typecheck.after.json",
+      "original_relative_path": "typecheck.after.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750452895711630,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/typecheck.after.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750452895711630,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/typecheck.before.json",
+      "original_relative_path": "typecheck.before.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750416490098367,
+        "bytes": 780684,
+        "sha256": "c1cb29b30212c9c4d1017d5bef3f475f60ee3439338d64cfc5f50c61fba4927c"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/typecheck.before.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750416490098367,
+          "bytes": 327623,
+          "sha256": "d35ead42934369ed16cfde7ed23528e13dddb2dd406c6485d233967bc1ab5c05",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/typecheck.cleanup.json",
+      "original_relative_path": "typecheck.cleanup.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750452897306324,
+        "bytes": 192,
+        "sha256": "17bc6c00825d0fbf55a8c924a02e0b0a344c12ac26a2fbb0f242788cf54c4ff2"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/typecheck.cleanup.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750452897306324,
+          "bytes": 161,
+          "sha256": "e52a54a7a9022e5073bcd39129e30fff76317c4e798992354265f3e44dba14c6",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/typecheck.command.json",
+      "original_relative_path": "typecheck.command.json",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750416491375915,
+        "bytes": 766,
+        "sha256": "d3c47b7c36bc4048f6bb183f39922c7701e06a5ce45521ae70b015d72db38614"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/typecheck.command.json.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750416491375915,
+          "bytes": 335,
+          "sha256": "76c94bda91d36088a2ebf6fec92956c7b5fb3cfa84d522c0afce966f70cff32d",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/typecheck.exit",
+      "original_relative_path": "typecheck.exit",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750452170253655,
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/typecheck.exit.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750452170253655,
+          "bytes": 22,
+          "sha256": "cabc3a30b39528db601f65ca3ced008dd775595c901102d08ac8ae8976b29bcf",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/typecheck.exit",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750452170253655,
+          "bytes": 2,
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/typecheck.stderr",
+      "original_relative_path": "typecheck.stderr",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750452149809536,
+        "bytes": 211,
+        "sha256": "a7c465bd7725ac7b7c6cb87429d55f6dc0500b449fa7617d46e3f3237dcb32c7"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/typecheck.stderr.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750452149809536,
+          "bytes": 158,
+          "sha256": "e453b95b44cad77b350ae2e0b270d612cd339127ea152b90c6ea30522199c52e",
+          "public": true
+        },
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/readable/typecheck.stderr",
+          "encoding": "identity",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750452149809536,
+          "bytes": 211,
+          "sha256": "a7c465bd7725ac7b7c6cb87429d55f6dc0500b449fa7617d46e3f3237dcb32c7",
+          "public": true
+        }
+      ]
+    },
+    {
+      "original_path": ".omo/evidence/life-full-20260906/47-48/r3/verify-r2/typecheck.stdout",
+      "original_relative_path": "typecheck.stdout",
+      "original": {
+        "mode_octal": "0644",
+        "mtime_ns": 1788750416770427594,
+        "bytes": 68,
+        "sha256": "9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe"
+      },
+      "copies": [
+        {
+          "path": ".omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2/payload-gzip/typecheck.stdout.gz",
+          "encoding": "gzip",
+          "mode_octal": "0644",
+          "mtime_ns": 1788750416770427594,
+          "bytes": 84,
+          "sha256": "f46499fd5efb95c6c7a3a8aef7931236e5f12466c1aa517effc8031265f84a51",
+          "public": true
+        }
+      ]
+    }
+  ]
+}
