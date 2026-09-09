@@ -48,7 +48,7 @@ export function renderSpatialTilesCanvas(
   editor.classList.add("spatial-tiles-editor");
   editor.dataset.testid = "spatial-tiles-editor";
   return el("div", {
-    class: "spatial-canvas spatial-tiles-canvas",
+    class: "spatial-canvas spatial-tiles-canvas tileset-db-workspace db-ws-tilesets",
     attrs: { tabindex: "0", "aria-label": "타일 캔버스" },
     dataset: { testid: "spatial-canvas" },
     children: [editor],

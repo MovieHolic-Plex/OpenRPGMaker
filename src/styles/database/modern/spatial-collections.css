@@ -382,3 +382,197 @@
     flex-direction: column;
   }
 }
+
+/* ============================================================================
+   맵 → 타일셋 (spatialTiles) — 컴팩트 갤러리 + 2열 모던 워크벤치 + 전폭 시트
+   ========================================================================= */
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-action:disabled,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-save-state,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-source-chips,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-thumb,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-sub,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-inspector {
+  display: none !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-body {
+  grid-template-columns: 200px minmax(0, 1fr) !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-gallery {
+  padding: 6px !important;
+  border-right: 1px solid var(--db-studio-border-subtle) !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card .spatial-card-badge:not(.is-count) {
+  display: none !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-gallery-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  padding: 2px !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card {
+  display: flex !important;
+  align-items: center !important;
+  min-height: 36px !important;
+  padding: 6px 10px !important;
+  border-radius: 6px !important;
+  grid-template-rows: none !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-caption {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-name {
+  font: 600 13px/1.3 inherit !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-badges {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex: 0 0 auto !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-stage {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-tiles-canvas {
+  padding: 8px !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-editor {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-properties {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  padding: 6px 12px !important;
+  gap: 12px !important;
+  margin-bottom: 6px !important;
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 8px !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-main {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area.passage-paint {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 200px !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 8px !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: 100% !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-tools {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 4px 8px !important;
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 6px !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-tools::before {
+  content: none !important;
+  display: none !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-tools > button,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-rule-buttons > button {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 26px !important;
+  padding: 4px 12px !important;
+  font: 600 12px/1.2 inherit !important;
+  border-radius: 4px !important;
+  white-space: nowrap !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-rule-passage {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 4px 0 10px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-left: 1px solid var(--db-studio-border-default) !important;
+  background: transparent !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-rule-passage legend,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-passage-paint-hint {
+  display: none !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-rule-buttons {
+  display: inline-flex !important;
+  gap: 4px !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-preview-wrap {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-preview {
+  flex: 1 1 auto !important;
+  min-height: 480px !important;
+  height: 100% !important;
+  background: #fff !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 8px !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-sidebar {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+  padding: 8px !important;
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 8px !important;
+}
