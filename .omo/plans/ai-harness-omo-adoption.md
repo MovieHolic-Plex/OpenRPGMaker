@@ -475,7 +475,11 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - 증거: `output/evidence/ai-harness/recovery/`. No exactly-once claim.
   - Commit: `fix(ai): reconcile interrupted runs before resuming authoring`.
 
-- [ ] 14. P4를 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
+- [x] 14. P4를 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
+  - 병합 완료: PR #724 → main `1ee10fc716d5decbfd7428389d779845281422da`
+    (병합된 HEAD `dd7729ea004c1dedad54b495e8fa97232be6706d`, 당시 main 조합 포함).
+    감독자 게이트 통과와 승인 근거는 P4 트리의 같은 항목 기록 및
+    `resume-01a08291/p4/` 증거에 있다. 이 트리는 그 병합 위에서 시작했다.
   - Recommended task executor category: ultrabrain
   - P3 병합 기반 새 worktree/mass-ulw에서 실제 IndexedDB 이관·새로고침·
     미확정 쓰기 조정과 회귀를 증명하고 감독자 gates 및 Draft PR을 준비한다.
