@@ -50,6 +50,8 @@ export interface OhMyPiAdapters {
   logout(provider: string): Promise<OhMyPiAuthStatus>;
   seedOAuth(provider: string, creds: OhMyPiOAuthSeed): Promise<OhMyPiAuthStatus>;
   complete(provider: string, body: Record<string, unknown>): Promise<OhMyPiCompletionResult>;
+  /** Pi 에이전트 실행. `ndjson` 은 워커의 진행 스트림(줄 = 이벤트)이다. */
+  runAgent(provider: string, body: Record<string, unknown>, options?: { signal?: AbortSignal }): Promise<{ stream: true; ndjson: ReadableStream<Uint8Array> | null }>;
 }
 
 export function createOhMyPiAdapters(): Promise<OhMyPiAdapters>;
