@@ -68,6 +68,7 @@ it.each([
   { edit: "name", compiled: false, expectedSelectedX: 6 },
   { edit: "terrain", compiled: false, expectedSelectedX: 6 },
   { edit: "selected-move", compiled: false, expectedSelectedX: 8 },
+  { edit: "selected-move", compiled: true, expectedSelectedX: 8 },
   { edit: "name", compiled: true, expectedSelectedX: 6 },
   { edit: "terrain", compiled: true, expectedSelectedX: 6 },
 ] as const)("preserves an actual sibling override when a placed parent receives a $edit edit (compiled=$compiled)", ({ edit, compiled, expectedSelectedX }) => {

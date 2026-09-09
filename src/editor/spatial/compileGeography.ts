@@ -59,7 +59,8 @@ export function compileGeography(context: SpatialCompileContext, compileChild: (
     paintGeographyRoute(context.project, raster, { id: local.id, points });
   }
   let project = context.project;
-  let document = releaseGeographyEntries(project, context.document, members);
+  const released = releaseGeographyEntries(project, context.document, { ownerId: occurrence.id });
+  let document = released.document;
   project.spatialAuthoring = document;
   const previous = project.maps[id];
   if (previous && (!binding || binding.mapId !== id || binding.rect.x !== 0 || binding.rect.y !== 0 ||
@@ -76,7 +77,7 @@ export function compileGeography(context: SpatialCompileContext, compileChild: (
   const map = { ...retained, tilesetId: raster.tilesetId, lowerTiles: raster.lowerTiles, upperTiles: raster.upperTiles, events: [...retained.events] };
   project.maps[id] = map;
   if (!containsMap(project.mapTree, id)) appendToTree(project.mapTree, id);
-  const compiled = compileGeographyEntries(project, document, { ownerId: occurrence.id, map, targets });
+  const compiled = compileGeographyEntries(project, document, { ownerId: occurrence.id, map, targets, previous: released.previous });
   const extent = { mapId: id, rect: { x: 0, y: 0, width: map.width, height: map.height },
     ports: occurrence.snapshot.ports.map(port => ({ portId: port.id, x: port.x, y: port.y })),
     eventIds: compiled.entries.map(entry => entry.eventId), connectionIds: links.map(link => link.id),

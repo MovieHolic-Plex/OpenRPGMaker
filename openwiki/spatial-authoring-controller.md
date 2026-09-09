@@ -78,6 +78,36 @@ rejects stale owned raster; this controller does not implement an implicit force
 replace. A compiled projected child must be recompiled through its actual owning
 composition when its rendered output needs to change.
 
+## Compiled geography member motion (2026-09-09)
+
+An actual region/world child move needs paired-output preparation before ordinary
+project IO: its old overview marker cannot validate against its new coordinates.
+`authoringGeographyMove.ts` handles this inside the shared preview boundary, not in
+UI state or the project validators. Source-only and frozen-template-only edits
+with unchanged actual coordinates do not activate movement preparation.
+
+The full immutable controller checkpoint supplies old associations, event pairs
+and owned digests. Draft maps/mapConnections/mapTree and every binding must still
+match that checkpoint before preparation. Motion requires stable occurrence,
+parent-slot, source, concrete-port and graph identities plus an explicit geography
+compile root containing both old and proposed members and all affected pair
+owners. Missing/partial scope, forged output, invalid old pairs/digests, occupied
+markers and clipped placements reject without changing the draft or live store.
+
+Only proven selected pairs are retired and regenerated on a private staging copy.
+Saved opaque event/projection IDs survive; changed navigation commands are rebuilt,
+not copied from the old destination. Unaffected pair payloads and sibling occurrence
+overrides remain exact through preparation and normal compilation. The staging
+copy never becomes a checkpoint or a public validation bypass. Existing canonical
+IO, compile-root ownership, frozen-preview issuance and full-project undo/redo
+remain the acceptance path.
+
+Regression seams: `spatialGeographyControllerOverrides.test.ts`,
+`spatialGeographyControllerMotion.test.ts` and
+`spatialGeographyControllerMoveSafety.test.ts`. These use canonical compiled/reloaded
+projects, actual controller continuations and production interpreter transfers;
+they are not UI gesture or visual acceptance.
+
 ## Selective standalone-object graphic replacement
 
 `compileSpatialOccurrence(project, request, previousOccurrence?)` accepts the prior
