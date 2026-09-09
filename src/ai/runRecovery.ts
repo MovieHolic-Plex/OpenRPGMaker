@@ -21,7 +21,11 @@ export interface RunRuntimeState {
   readonly composerMode: ComposerMode;
   readonly autonomous: boolean;
   readonly execution: RunOutcome["execution"];
-  readonly requestBaseline: Project;
+  /**
+   * 이 요청의 원본 기준선. 수락 원장이 있으면 같은 프로젝트를 원장이 이미 보관하므로
+   * 생략하고 그쪽을 쓴다 — 한 행에 같은 프로젝트를 두 벌 실으면 쓰기마다 그만큼 복제·검증한다.
+   */
+  readonly requestBaseline?: Project;
   readonly acceptance: AcceptanceRecoveryState | null;
   readonly verification: VerificationRecoveryState;
   readonly verificationOwnerSequence: number;
@@ -78,7 +82,8 @@ export function isRunRuntimeState(value: unknown): value is RunRuntimeState {
   if (!acceptanceRecord(value) || value.schemaVersion !== 1 || !text(value.instruction) || !text(value.requestText)
     || !["do", "ask", "plan"].includes(String(value.composerMode)) || typeof value.autonomous !== "boolean"
     || !["response-final", "awaiting-user", "blocked", "cancelled", "budget-exhausted", "failed"].includes(String(value.execution))
-    || !project(value.requestBaseline) || typeof value.statefulNpcRequirement !== "boolean"
+    || !(value.requestBaseline === undefined ? value.acceptance !== null : project(value.requestBaseline))
+    || typeof value.statefulNpcRequirement !== "boolean"
     || ![value.verificationOwnerSequence, value.currentTurnIndex, value.volumeContinueUsed, value.acceptanceRepairAttempts, value.reviewAttempts, value.roundLimit, value.outputLimit].every(count)
     || !pairs(value.npcRewardItemBaselines) || !pairs(value.lastBlockReasons)) return false;
   if (!Array.isArray(value.verificationOwners) || !value.verificationOwners.every(entry => Array.isArray(entry)

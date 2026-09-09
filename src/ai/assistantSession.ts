@@ -987,7 +987,9 @@ export class AssistantSession {
     // captureCheckpoint clones the whole row synchronously, including this runtime.
     return { schemaVersion: 1, instruction: this.currentTurnInstruction,
       requestText: this.currentTurnRequestText, composerMode: this.turnComposerMode, autonomous: this.milestoneAutoApply,
-      execution: this.runExecution, requestBaseline: this.acceptanceRequestBaseline,
+      execution: this.runExecution,
+      // 원장이 같은 기준선을 이미 보관한다 — 두 벌 실으면 쓰기마다 복제·검증이 두 배가 된다.
+      ...(this.acceptance ? {} : { requestBaseline: this.acceptanceRequestBaseline }),
       acceptance: this.acceptance?.exportRecovery() ?? null, verification: this.verificationEvidence.exportRecovery(),
       verificationOwnerSequence: this.verificationOwnerSequence,
       verificationOwners: this.workPlan?.layers.flatMap(layer => layer.items.flatMap(item => {
@@ -1147,7 +1149,7 @@ export class AssistantSession {
       const owner = state.verificationOwners.find(([id]) => id === item.id);
       if (owner) this.verificationOwners.set(item, { ownerId: owner[1], checkIds: [...owner[2]] });
     }
-    this.acceptanceRequestBaseline = structuredClone(state.requestBaseline);
+    this.acceptanceRequestBaseline = structuredClone(state.requestBaseline ?? state.acceptance!.baseline);
     this.acceptanceRequestSource = structuredClone(checkpoint.request);
     this.verificationEvidence.restoreRecovery(state.verification);
     this.acceptance = state.acceptance ? AssistantAcceptanceLedger.restoreRecovery(state.acceptance, this.imageEvidence,
