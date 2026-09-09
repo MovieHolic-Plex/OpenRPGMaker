@@ -47,7 +47,11 @@ const globs = new Set();
  * exemptArtifacts with a reason. */
 const exempt = new Set(Object.keys(rows.exemptArtifacts ?? {}));
 for (const [id, row] of [...Object.entries(rows.rows), ...Object.entries(rows.findings)]) {
-  if (row.artifacts === undefined) { failures.push(`${id} has no artifacts field`); continue; }
+  // Reviewer: "" is neither undefined nor null, so it used to verify nothing silently.
+  if (row.artifacts !== null && (typeof row.artifacts !== "string" || !row.artifacts.trim())) {
+    failures.push(`${id} has a missing or blank artifacts field`);
+    continue;
+  }
   if (row.artifacts === null) {
     if (!exempt.has(id)) failures.push(`${id} has null artifacts but is not listed in exemptArtifacts`);
     continue;
@@ -83,7 +87,7 @@ const referencedSpecs = new Set();
 for (const row of [...Object.values(rows.rows), ...Object.values(rows.findings)]) {
   for (const text of [row.liveEvidence, row.failurePathModuleTests]) {
     if (typeof text !== "string") continue;
-    for (const m of text.matchAll(/\b(test\/[\w./-]+\.(?:test|spec)\.[tj]sx?)/g)) referencedSpecs.add(m[1]);
+    for (const m of text.matchAll(/\b(test\/[\w./-]+\.(?:test|spec)\.[cm]?[tj]sx?)/g)) referencedSpecs.add(m[1]);
   }
 }
 for (const spec of referencedSpecs) {
