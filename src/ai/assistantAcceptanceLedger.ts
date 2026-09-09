@@ -24,16 +24,30 @@ export interface AcceptanceToolResult {
 /** Content checks replayed by the existing accepted-revision validation callback. */
 const isReloadCriterionKind = (kind: string): boolean => kind === "gameTitle" || isFunctionalCriterionKind(kind);
 
-/** Session-owned ledger. Plans never own or replace its promises/baselines. */
-export class AssistantAcceptanceLedger {
-  private readonly baseline: Project;
-  private readonly promises = new Map<string, AcceptancePromise & {
+type AcceptanceRecoveryPromise = AcceptancePromise & {
     readonly baseline: Project;
     readonly source: AcceptanceSource;
     readonly refinements?: readonly AcceptanceSource[];
     readonly functionalSceneIndices?: readonly number[];
     readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
-  }>();
+  };
+
+/** Canonical contracts and original baselines only; no image, review or proof capabilities. */
+export interface AcceptanceRecoveryState {
+  readonly schemaVersion: 1;
+  readonly id: string;
+  readonly goal: string;
+  readonly baseline: Project;
+  readonly promises: readonly AcceptanceRecoveryPromise[];
+  readonly actionRequirements: readonly (AcceptancePromise & { readonly baseline: Project })[];
+  readonly bindings: readonly (readonly [string, string])[];
+  readonly stopped: boolean;
+}
+
+/** Session-owned ledger. Plans never own or replace its promises/baselines. */
+export class AssistantAcceptanceLedger {
+  private readonly baseline: Project;
+  private readonly promises = new Map<string, AcceptanceRecoveryPromise>();
   private readonly actionRequirements = new Map<string, AcceptancePromise & { readonly baseline: Project }>();
   private readonly actionProofs = new Map<string, ActionCombatProofReceipt>();
   private readonly bindings = new Map<string, string>();
@@ -49,6 +63,24 @@ export class AssistantAcceptanceLedger {
     private readonly npcRewardProof?: AcceptanceEvaluation["npcRewardProof"]) {
     this.baseline = structuredClone(baseline);
     this.snapshot = Object.freeze({ id, goal, status: "pending", items: Object.freeze([]) });
+  }
+
+  exportRecovery(): AcceptanceRecoveryState {
+    return structuredClone({ schemaVersion: 1, id: this.id, goal: this.goal, baseline: this.baseline,
+      promises: [...this.promises.values()], actionRequirements: [...this.actionRequirements.values()],
+      bindings: [...this.bindings], stopped: this.stopped });
+  }
+
+  /** Caller validates the versioned checkpoint first. Assessments are recomputed, never imported. */
+  static restoreRecovery(state: AcceptanceRecoveryState, images = new AssistantImageEvidence(),
+    npcRewardProof?: AcceptanceEvaluation["npcRewardProof"]): AssistantAcceptanceLedger {
+    const saved = structuredClone(state);
+    const ledger = new AssistantAcceptanceLedger(saved.id, saved.goal, saved.baseline, images, npcRewardProof);
+    for (const promise of saved.promises) ledger.promises.set(promise.id, promise);
+    for (const promise of saved.actionRequirements) ledger.actionRequirements.set(promise.id, promise);
+    for (const [name, id] of saved.bindings) ledger.bindings.set(name, id);
+    ledger.stopped = saved.stopped;
+    return ledger;
   }
 
   /** requestBaseline must precede this request's writes, even for late adoption. */
