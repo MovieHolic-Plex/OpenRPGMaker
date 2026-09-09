@@ -6,6 +6,8 @@ import type { WorkPlan } from "./workPlan";
 import type { ProjectPersistenceReceipt } from "@/project/store";
 import type { Project } from "@/project/types";
 
+import { isRunRuntimeState, type RunRuntimeState } from "./runRecovery";
+
 export const RUN_CHECKPOINT_SCHEMA_VERSION = 1;
 const STORE = AI_RECORD_STORES.runCheckpoints;
 
@@ -21,6 +23,8 @@ export interface RunCheckpointKey {
 export interface RunCheckpoint extends RunCheckpointKey {
   readonly schemaVersion: typeof RUN_CHECKPOINT_SCHEMA_VERSION;
   readonly savedAt: number;
+  /** Absent in storage-only v1 rows: those remain transcript-only. */
+  readonly runtime?: RunRuntimeState;
   readonly status: "active" | "awaiting-user" | "terminal";
   readonly request: AcceptanceSource;
   readonly baseContentIdentity: string;
@@ -137,6 +141,7 @@ function receipt(value: unknown, projectId: string): boolean {
 function validPayload(value: Record<string, unknown>): boolean {
   if (!validKey(value) || !count(value.savedAt) || !oneOf(value.status, ["active", "awaiting-user", "terminal"])
     || !source(value.request) || !text(value.baseContentIdentity) || !text(value.currentContentIdentity) || !workPlan(value.workPlan)) return false;
+  if (value.runtime !== undefined && !isRunRuntimeState(value.runtime)) return false;
   const budget = value.budget;
   if (!record(budget) || ![budget.remainingToolCalls, budget.remainingOutputTokens, budget.remainingAutoRunSteps, budget.remainingWorkPlanSteps].every(count)
     || !Array.isArray(budget.ralphAttemptsByItemId) || !budget.ralphAttemptsByItemId.every(entry => Array.isArray(entry) && entry.length === 2 && text(entry[0]) && count(entry[1]))
@@ -178,7 +183,7 @@ function invalid(value: unknown, key: RunCheckpointKey): RunCheckpointUnsupporte
     && value.schemaVersion !== RUN_CHECKPOINT_SCHEMA_VERSION) return "schema-version";
   if (value.schemaVersion !== RUN_CHECKPOINT_SCHEMA_VERSION || !dataOnly(value)
     || Object.keys(value).some(field => !["id", "schemaVersion", "conversationId", "runId", "epoch", "projectId", "projectContextKey", "savedAt", "status",
-      "request", "baseContentIdentity", "currentContentIdentity", "workPlan", "budget", "verification", "acceptance", "applied", "save", "proof", "pending"].includes(field))
+      "request", "baseContentIdentity", "currentContentIdentity", "workPlan", "budget", "verification", "acceptance", "applied", "save", "proof", "pending", "runtime"].includes(field))
     || !validPayload(value)) return "malformed";
   if (value.id !== runCheckpointId(key) || value.conversationId !== key.conversationId || value.runId !== key.runId || value.epoch !== key.epoch
     || value.projectId !== key.projectId || value.projectContextKey !== key.projectContextKey) return "identity-mismatch";
@@ -239,4 +244,18 @@ export async function deleteTerminalRunCheckpointsForConversation(
     if (result.written) deleted++;
   }
   return { durable: await aiRecordBackendKind() === "indexeddb", deleted };
+}
+
+/** Select host epoch, never last-completion time. Foreign/ambiguous newest rows block admission. */
+export async function readLatestRunCheckpoint(conversationId: string, projectId: string, projectContextKey: string): Promise<RunCheckpointRead> {
+  const rows = (await readAllAiRecords<RunCheckpoint & { readonly id: string }>(STORE))
+    .filter(row => record(row) && row.conversationId === conversationId);
+  const durable = await aiRecordBackendKind() === "indexeddb";
+  if (!rows.length) return { kind: "missing", durable };
+  if (rows.some(row => !count(row.epoch))) return { kind: "unsupported", reason: "malformed", durable };
+  const epoch = Math.max(...rows.map(row => row.epoch));
+  const newest = rows.filter(row => row.epoch === epoch);
+  const selected = newest[0];
+  if (newest.length !== 1 || !selected || !text(selected.runId)) return { kind: "unsupported", reason: "malformed", durable };
+  return readRunCheckpoint({ conversationId, projectId, projectContextKey, runId: selected.runId, epoch });
 }
