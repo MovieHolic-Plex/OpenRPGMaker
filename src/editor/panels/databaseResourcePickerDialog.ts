@@ -26,6 +26,7 @@ import {
   SCARLOXY_UI_ICON_ASSETS,
 } from "@/assets/scarloxyPack";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { transparentColorKeyDataUrl } from "@/assets/transparentColorKeyBackground";
 import { GENERATED_EFFECT_SHEET_ASSETS } from "@/assets/generatedEffectSheets";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
@@ -607,6 +608,9 @@ function resourceVisual(
       sheetHeight: CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT,
       scale: 1.5,
       hue: crop.hue,
+      // 캐릭셋 원본은 배경이 단색(RTP 는 청록)이고 알파가 없다 — 키아웃하지 않으면
+      // 목록 썸네일마다 스프라이트 뒤에 배경 사각형이 그대로 보인다.
+      colorKey: true,
     });
   }
   if (kind === "battleCharset" && (resourceId === "hero" || isGeneratedBattleActorResource(resourceId))) {
@@ -660,6 +664,8 @@ function cropVisual(
     readonly sheetHeight: number;
     readonly scale: number;
     readonly hue?: number;
+    /** 단색 배경 시트(캐릭셋)는 색상 키를 뺀 데이터 URL 로 바꿔 끼운다. */
+    readonly colorKey?: boolean;
   }
 ): HTMLElement {
   const style = [
@@ -688,7 +694,20 @@ function cropVisual(
   });
   probe.addEventListener("error", () => markDatabaseImageFailed(visual, label), { once: true });
   visual.append(probe);
+  if (source.colorKey) applyCropColorKey(visual, url);
   return visual;
+}
+
+/**
+ * 원본 URL 로 먼저 그리고, 색상 키를 뺀 데이터 URL 이 준비되면 CSS 변수만 갈아 끼운다.
+ * 변환 결과는 `transparentColorKeyDataUrl` 이 경로별로 캐시하므로 시트당 한 번만 돈다.
+ */
+function applyCropColorKey(visual: HTMLElement, url: string): void {
+  void transparentColorKeyDataUrl(url)
+    .then((dataUrl) => visual.style.setProperty("--db-resource-url", `url("${dataUrl}")`))
+    .catch(() => {
+      /* 변환 실패는 원본 표시 그대로 둔다 — 미리보기가 사라지는 쪽이 더 나쁘다. */
+    });
 }
 
 function resourceFailureVisual(className: string, label: string): HTMLElement {

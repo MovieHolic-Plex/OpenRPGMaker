@@ -5,6 +5,7 @@
 import type Phaser from "phaser";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
 import {
+  ensureUploadedCharsetTextures,
   loadBundledAssets,
   registerBundledFrames,
   TILE_SIZE,
@@ -608,6 +609,12 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private redrawForStoreChange(change: ProjectChangeDescriptor): void {
+    // 자료 보관함에서 방금 가져온 캐릭셋은 preload 가 끝난 뒤에 생긴다 — 텍스처를 뒤늦게
+    // 실어 주지 않으면 그 캐릭셋을 쓴 이벤트가 새로고침 전까지 빈 칸으로 보인다.
+    // 타일 칠하기(scope: "map")마다 업로드 목록을 훑지 않도록 자산/프로젝트 변경에서만 돈다.
+    if (change.scope !== "map") {
+      ensureUploadedCharsetTextures(this, store.getCurrent(), () => this.redraw());
+    }
     const mapId = this.mapId();
     const nextFeedback = retainEventLayerClickFeedback({
       feedback: this.eventLayerClickFeedback,

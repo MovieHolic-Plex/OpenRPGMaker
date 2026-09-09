@@ -119,7 +119,8 @@ export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.Loa
     scene.load.image(rawCharsetTextureKey(asset.textureKey), withInlineAsset(asset.path));
   }
   for (const asset of Object.values(project?.assets.uploaded ?? {})) {
-    if (asset.kind === "charset") scene.load.image(asset.id, asset.dataUrl);
+    // 번들 캐릭셋과 같은 규약 — 원본은 raw 키로 싣고, asset.id 는 색상 키를 뺀 캔버스가 가진다.
+    if (asset.kind === "charset") scene.load.image(rawCharsetTextureKey(asset.id), asset.dataUrl);
   }
   for (const asset of FARMING_CROP_SPRITE_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.id)) continue;
@@ -178,17 +179,7 @@ export function registerBundledFrames(scene: Phaser.Scene, project?: Project): v
       .map((asset) => asset.textureKey),
   ]);
   registerEasyRpgCharsetTextures(scene, usedTextures);
-  for (const asset of Object.values(project?.assets.uploaded ?? {})) {
-    if (asset.kind !== "charset" || !scene.textures.exists(asset.id)) continue;
-    const texture = scene.textures.get(asset.id);
-    const source = texture.getSourceImage();
-    if (!isTransparentColorKeySourceImage(source)) continue;
-    if (source.width !== RESOURCE_SLICING.charset.sheetWidth || source.height !== RESOURCE_SLICING.charset.sheetHeight) {
-      console.error(`[assets] Unsupported charset dimensions: ${asset.id} (${source.width}x${source.height})`);
-      continue;
-    }
-    registerCharsetTextureFrames(texture);
-  }
+  registerUploadedCharsetTextures(scene, project);
   registerFarmingCropFrames(scene, usedTextures);
   registerEmoteFrames(scene);
 }
@@ -285,6 +276,90 @@ function registerEasyRpgCharsetTextures(scene: Phaser.Scene, usedTextures: Reado
   }
 }
 
+/**
+ * 자료 보관함에 올린 캐릭터셋을 번들 캐릭셋과 **같은 파이프라인**으로 등록한다.
+ *
+ * 원본 RM2000 캐릭셋은 배경이 단색(청록·마젠타)이고 알파가 없다. raw 키로 실은 원본에서
+ * 색상 키를 뺀 캔버스를 만들어 `asset.id` 로 올려야 편집 맵·인게임 어디서도 스프라이트
+ * 주위에 배경 사각형이 남지 않는다. 에디터 DOM 미리보기는 이미
+ * `applyCharsetFrameCrop` 이 같은 처리를 하므로, 이 함수로 Phaser 쪽 규약이 맞춰진다.
+ */
+export function registerUploadedCharsetTextures(scene: Phaser.Scene, project?: Project): void {
+  for (const asset of Object.values(project?.assets.uploaded ?? {})) {
+    if (asset.kind !== "charset") continue;
+    if (scene.textures.exists(asset.id)) continue;
+    const rawKey = rawCharsetTextureKey(asset.id);
+    if (!scene.textures.exists(rawKey)) continue;
+    const source = scene.textures.get(rawKey).getSourceImage();
+    if (!isTransparentColorKeySourceImage(source)) {
+      console.error(`[assets] ${rawKey} 원본 이미지를 캔버스로 변환할 수 없습니다.`);
+      continue;
+    }
+    const width = uploadedSourceWidth(source);
+    const height = uploadedSourceHeight(source);
+    if (width !== RESOURCE_SLICING.charset.sheetWidth || height !== RESOURCE_SLICING.charset.sheetHeight) {
+      console.error(`[assets] Unsupported charset dimensions: ${asset.id} (${width}x${height})`);
+      continue;
+    }
+    const canvas = createTransparentColorKeyCanvas(asset.id, source);
+    if (!canvas) {
+      console.error(`[assets] ${rawKey} 투명색 캔버스를 만들 수 없습니다.`);
+      continue;
+    }
+    const texture = scene.textures.addCanvas(asset.id, canvas);
+    if (!texture) {
+      console.error(`[assets] ${asset.id} 텍스처 등록에 실패했습니다.`);
+      continue;
+    }
+    registerCharsetTextureFrames(texture);
+  }
+}
+
+/** 씬별 진행 중인 업로드 캐릭셋 로드 키. 같은 자산을 매 store 변경마다 다시 싣지 않기 위한 것. */
+const uploadedCharsetLoadsInFlight = new WeakMap<Phaser.Scene, Set<string>>();
+
+/**
+ * 실행 중인 씬에 **부팅 이후 들어온** 업로드 캐릭터셋을 뒤늦게 실어 준다.
+ *
+ * `loadBundledAssets` 는 preload 한 번뿐이라, 자료 보관함에서 방금 가져온 캐릭셋은
+ * 텍스처가 없어 이벤트 마커가 Phaser 의 "빠진 텍스처" 사각형으로 그려졌다. 새로고침해야
+ * 보이던 것이 이 함수로 그 자리에서 보인다.
+ */
+export function ensureUploadedCharsetTextures(
+  scene: Phaser.Scene,
+  project: Project,
+  onRegistered?: () => void
+): void {
+  registerUploadedCharsetTextures(scene, project);
+  const inFlight = uploadedCharsetLoadsInFlight.get(scene) ?? new Set<string>();
+  uploadedCharsetLoadsInFlight.set(scene, inFlight);
+  const queued: string[] = [];
+  for (const asset of Object.values(project.assets.uploaded)) {
+    if (asset.kind !== "charset") continue;
+    if (scene.textures.exists(asset.id)) continue;
+    const rawKey = rawCharsetTextureKey(asset.id);
+    if (scene.textures.exists(rawKey) || inFlight.has(rawKey)) continue;
+    inFlight.add(rawKey);
+    queued.push(rawKey);
+    scene.load.image(rawKey, asset.dataUrl);
+  }
+  if (queued.length === 0) return;
+  scene.load.once("complete", () => {
+    for (const rawKey of queued) inFlight.delete(rawKey);
+    registerUploadedCharsetTextures(scene, project);
+    onRegistered?.();
+  });
+  scene.load.start();
+}
+
+function uploadedSourceWidth(source: HTMLImageElement | HTMLCanvasElement): number {
+  return source instanceof HTMLImageElement ? source.naturalWidth || source.width : source.width;
+}
+
+function uploadedSourceHeight(source: HTMLImageElement | HTMLCanvasElement): number {
+  return source instanceof HTMLImageElement ? source.naturalHeight || source.height : source.height;
+}
+
 function projectBundledTextureKeys(project: Project): Set<string> {
   const strings = new Set<string>();
   collectProjectStrings(project, strings);
@@ -366,7 +441,7 @@ function registerCharsetTextureFrames(texture: Phaser.Textures.Texture): void {
   }
 }
 
-function rawCharsetTextureKey(textureKey: string): string {
+export function rawCharsetTextureKey(textureKey: string): string {
   return `${textureKey}${RAW_CHARSET_TEXTURE_SUFFIX}`;
 }
 

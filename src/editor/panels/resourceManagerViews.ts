@@ -30,6 +30,8 @@ export type ResourceWorkbenchOptions = {
   };
   readonly onSelectKind: (kind: ResourceProfile["kind"]) => void;
   readonly onImport: () => void;
+  /** 방금 가져온 자산 id. 그 줄을 짚어 주고 화면 안으로 끌어온다. */
+  readonly recentAssetId?: string;
 };
 
 export function renderResourceWorkbench(container: HTMLElement, options: ResourceWorkbenchOptions): void {
@@ -40,13 +42,25 @@ export function renderResourceWorkbench(container: HTMLElement, options: Resourc
       class: "rm-classic-shell",
       children: [
         resourceCategoryList(options),
-        options.audioPanes?.entries ?? resourceEntryList(selectedProfiles, selectedUploaded, options.actions),
+        options.audioPanes?.entries
+          ?? resourceEntryList(selectedProfiles, selectedUploaded, options.actions, options.recentAssetId),
         options.audioPanes?.commands ?? resourceCommandPanel(options),
       ],
     }),
     options.kindSelect,
     options.fileInput
   );
+  if (options.recentAssetId !== undefined) revealRecentUploadRow(container, options.recentAssetId);
+}
+
+/**
+ * 가져오기 직후 새 줄은 기본 포함 리소스 수십 줄 **아래**에 붙고 목록 스크롤은 맨 위로
+ * 돌아간다. 끌어와 주지 않으면 토스트만 뜨고 아무 일도 없었던 것처럼 보인다.
+ */
+function revealRecentUploadRow(container: HTMLElement, assetId: string): void {
+  const row = container.querySelector(`[data-testid="resource-upload-${assetId}"]`);
+  if (!(row instanceof HTMLElement)) return;
+  if (typeof row.scrollIntoView === "function") row.scrollIntoView({ block: "nearest" });
 }
 
 export function renderResourceProfiles(container: HTMLElement, profiles: readonly ResourceProfile[]): void {
@@ -61,7 +75,8 @@ export function renderResourceProfiles(container: HTMLElement, profiles: readonl
 export function renderUploadedAssets(
   container: HTMLElement,
   uploaded: readonly UploadedAsset[],
-  actions: UploadedAssetActions
+  actions: UploadedAssetActions,
+  recentAssetId?: string
 ): void {
   container.append(el("h3", { text: `업로드 (${uploaded.length})` }));
   const list = el("div", { class: "rm-upload-list", dataset: { testid: "resource-upload-list" } });
@@ -69,7 +84,7 @@ export function renderUploadedAssets(
     list.append(el("div", { class: "empty-hint", text: "아직 업로드한 리소스가 없습니다." }));
   }
   for (const asset of uploaded) {
-    list.append(uploadedAssetRow(asset, actions));
+    list.append(uploadedAssetRow(asset, actions, asset.id === recentAssetId));
   }
   container.append(list);
 }
@@ -128,7 +143,8 @@ function resourceCategoryList(options: ResourceWorkbenchOptions): HTMLElement {
 function resourceEntryList(
   profiles: readonly ResourceProfile[],
   uploaded: readonly UploadedAsset[],
-  actions: UploadedAssetActions
+  actions: UploadedAssetActions,
+  recentAssetId?: string
 ): HTMLElement {
   const list = el("div", { class: "rm-entry-list", dataset: { testid: "resource-entry-list" } });
   if (profiles.length === 0 && uploaded.length === 0) {
@@ -138,7 +154,7 @@ function resourceEntryList(
   for (const profile of profiles) {
     list.append(resourceProfileRow(profile));
   }
-  renderUploadedAssets(list, uploaded, actions);
+  renderUploadedAssets(list, uploaded, actions, recentAssetId);
   return list;
 }
 
@@ -174,8 +190,11 @@ function importFormatNote(): HTMLElement {
   });
 }
 
-function uploadedAssetRow(asset: UploadedAsset, actions: UploadedAssetActions): HTMLElement {
-  const row = el("div", { class: "rm-asset-row", dataset: { testid: `resource-upload-${asset.id}` } });
+function uploadedAssetRow(asset: UploadedAsset, actions: UploadedAssetActions, recent = false): HTMLElement {
+  const row = el("div", {
+    class: recent ? "rm-asset-row is-recent" : "rm-asset-row",
+    dataset: recent ? { testid: `resource-upload-${asset.id}`, recent: "true" } : { testid: `resource-upload-${asset.id}` },
+  });
   const preview = el("img", { attrs: { src: asset.dataUrl, alt: `${asset.name} 미리보기` } }) as HTMLImageElement;
   preview.className = "rm-preview";
   const dims = asset.meta.width && asset.meta.height ? `${asset.meta.width}x${asset.meta.height}px` : "크기 미확인";

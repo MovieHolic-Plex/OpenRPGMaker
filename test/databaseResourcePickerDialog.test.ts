@@ -1,4 +1,13 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+const colorKeyRequests: string[] = [];
+vi.mock("@/assets/transparentColorKeyBackground", () => ({
+  transparentColorKeyDataUrl: async (path: string) => {
+    colorKeyRequests.push(path);
+    return "data:image/png;base64,KEYED";
+  },
+}));
+
 import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import {
   listDatabaseResourceOptionsForTest,
@@ -7,11 +16,12 @@ import {
 } from "@/editor/panels/databaseResourcePickerDialog";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { findByTestId, installFakeDom, type FakeNode } from "./fakeDom";
+import { findByTestId, installFakeDom, FakeElement, type FakeNode } from "./fakeDom";
 
 let restoreDom: (() => void) | undefined;
 
 beforeEach(() => {
+  colorKeyRequests.length = 0;
   restoreDom = installFakeDom();
 });
 
@@ -95,6 +105,27 @@ describe("faceset picker dialog", () => {
       rerender: () => {},
     }) as unknown as FakeNode;
     expect(findByTestId(row, "charset-pick-ai-prompt")).toBeNull();
+  });
+
+  // 캐릭셋 원본(RTP·업로드 모두)은 배경이 단색이고 알파가 없다. 키아웃하지 않으면
+  // 캐릭터 그래픽을 고르는 목록 전체가 스프라이트 뒤에 청록 사각형을 달고 나온다.
+  it("swaps charset thumbnails to a color-keyed image", async () => {
+    store.replace(createBlankProject());
+    const row = resourcePickerControl({
+      label: "캐릭터셋",
+      resourceId: "easyrpg-charset-actor1",
+      kind: "charset",
+      testid: "charset-key",
+      onChange: () => {},
+      rerender: () => {},
+    }) as unknown as FakeNode;
+
+    const crop = (row as unknown as FakeElement).querySelector(".db-resource-picker-crop");
+    expect(crop).not.toBeNull();
+    expect(colorKeyRequests).toHaveLength(1);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(crop?.style.getPropertyValue("--db-resource-url")).toBe('url("data:image/png;base64,KEYED")');
   });
 
   it("confirms the picked face id alone", () => {
