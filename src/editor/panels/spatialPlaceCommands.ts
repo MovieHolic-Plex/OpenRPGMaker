@@ -1,4 +1,5 @@
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
+import type { SpatialDomainChrome } from "@/editor/panels/spatialTilesTab";
 import {
   applyAuthoringPreview,
   clearAuthoringSession,
@@ -12,6 +13,14 @@ import {
 import { selectSpatialDesign, selectSpatialOccurrence, spatialSession } from "@/editor/panels/spatialAuthoringSession";
 import { assertNever } from "@/project/spatial/domain";
 import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
+import {
+  BUILD_SEED_INTEGER_REQUIRED,
+  bindSpatialBuildInputs,
+  parseSpatialBuildSeed,
+  discloseSpatialBuildInput,
+  runSpatialSourceBuild,
+  spatialBuildDisabledReason,
+} from "@/editor/panels/spatialBuildChrome";
 import {
   blankPlaceDesign,
   commitPlaceEdit,
@@ -28,21 +37,7 @@ import type { PlaceDesign, SpatialId } from "@/project/spatial/types";
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
 import type { Project } from "@/project/types";
 
-export type SpatialPlaceChrome = {
-  readonly add?: () => void;
-  readonly duplicate?: () => void;
-  readonly delete?: () => void;
-  readonly preview?: () => void;
-  readonly apply?: () => void;
-  readonly refresh?: () => void;
-  readonly detach?: () => void;
-  readonly undo?: () => void;
-  readonly redo?: () => void;
-  readonly saveState: string;
-  readonly previewError: string | null;
-  readonly deleteOpen?: boolean;
-  readonly onDeleteConfirm?: () => void;
-};
+export type SpatialPlaceChrome = SpatialDomainChrome;
 
 export function workingProject(): Project {
   return visibleAuthoringProject();
@@ -104,6 +99,7 @@ export function visiblePlaceSelection(card: SpatialGalleryCard | undefined): Spa
 }
 
 export function spatialPlacesChrome(card: SpatialGalleryCard | undefined, rerender: () => void): SpatialPlaceChrome {
+  bindSpatialBuildInputs();
   const controller = spatialAuthoringController();
   const target = card ? placeDraftTarget(card) : undefined;
   const builtinLocked = card?.source === "default";
@@ -118,6 +114,21 @@ export function spatialPlacesChrome(card: SpatialGalleryCard | undefined, rerend
     delete: target && !builtinLocked ? () => { placeChromeState.deleteOpen = true; rerender(); } : undefined,
     onDeleteConfirm: target && placeChromeState.deleteOpen ? () => confirmDelete(target, rerender) : undefined,
     preview: controller ? () => previewPlace(rerender) : undefined,
+    build: controller && !spatialBuildDisabledReason(card) ? () => {
+      const seed = placeChromeState.buildSeed;
+      if (seed === null) {
+        note(BUILD_SEED_INTEGER_REQUIRED);
+        rerender();
+        return;
+      }
+      const result = runSpatialSourceBuild(card, seed, { kind: "new-maps" });
+      note(spatialAuthoringErrorText(result), result.kind === "ok" ? "미리보기" : placeChromeState.saveState);
+      rerender();
+    } : undefined,
+    buildSeed: placeChromeState.buildSeed,
+    buildSeedText: placeChromeState.buildSeedText ?? undefined,
+    onBuildSeed: (raw) => { placeChromeState.buildSeedText = raw; placeChromeState.buildSeed = parseSpatialBuildSeed(raw); },
+    buildInputText: discloseSpatialBuildInput(),
     apply: controller && hasAuthoringPreview() ? () => applyPlace(rerender) : undefined,
     undo: controller ? () => { controller.undo(); rerender(); } : undefined,
     redo: controller ? () => { controller.redo(); rerender(); } : undefined,

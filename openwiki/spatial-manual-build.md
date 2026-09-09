@@ -1,9 +1,12 @@
 # Manual spatial source-build core
 
-This is the shared controller adapter, not completed visual-control acceptance.
-Concrete Build/seed/target controls and browser acceptance remain parent-owned.
-No persistence, schema, controller operation, compiler or history implementation
-is replaced by this adapter.
+This is the shared controller adapter plus the Build controls that sit on top of
+it. The 시공/seed/target controls described under "Source Build UI controls" are
+implemented in source and covered by real-controller tests. What's still pending:
+placed-member Build entry points, instance refresh after a source edit, and
+browser/integrated acceptance of the whole plan. No persistence, schema,
+controller operation, compiler or history implementation is replaced by this
+adapter.
 
 ## Public entry points
 
@@ -25,25 +28,30 @@ is replaced by this adapter.
 ## Inputs and display obligations
 
 Allocate a fresh opaque `SpatialId` once for `rootId`. Supply an integer seed;
-the adapter has no hidden default. Tests exercise seed 19 independently of the
-fixture's seed 7. Root x/y/level are zero; space/place compilation creates new
-maps rather than stamping the selected map.
+the adapter has no hidden default. The chrome prefills the visible seed field
+with `DEFAULT_SPATIAL_BUILD_SEED` (7), which the caller can overwrite. Tests
+exercise seed 19 independently of the fixture's seed 7. Root x/y/level are zero;
+space/place compilation creates new maps rather than stamping the selected map.
 
 For a space/place source pass `destination: { kind: "new-maps" }`.
 For a standalone object pass `destination: { kind: "map", currentMapId,
-selection, entry }`, where currentMapId and selection come from the current
-editor state. `selection` is the real `TileSelection`; its mapId must match.
-The entry coordinate must be explicit. Null/missing selection or entry is not
-replaced with (0,0), a guessed passable tile or a fixture fallback. The canonical
-compiler validates rectangle bounds, atlas, occupancy and reachability.
+selection, entry }`. The destination is explicit input, not a read of
+`editorState`: it may name a map and rectangle that differ from the editor's
+current map and live selection. `selection` is the real `TileSelection`; its
+mapId must match `currentMapId`. The entry coordinate must be explicit.
+Null/missing selection or entry is not replaced with (0,0), a guessed passable
+tile or a fixture fallback. The canonical compiler validates rectangle bounds,
+atlas, occupancy and reachability.
 
 Keep `spatialBuildProposal().input` visible with the displayed proposal. Changing
 the selected source, map target, entry or seed does NOT silently retarget that
 proposal. A different Build input returns `build-proposal-pending` while retaining
-the original disclosed proposal. The UI can explicitly cancel the entire shared
-draft with `clearAuthoringSession()` before starting another proposal; it must not
-silently discard unsaved source edits. Input/request copies are frozen, so callers
-cannot mutate queued compilation through their original entry/source objects.
+the original disclosed proposal. `clearAuthoringSession()` from shared access
+drops the entire shared draft, and the spaces tab already calls it on teardown;
+no mounted Build cancel control exposes it yet. Whatever calls it must not
+silently discard unsaved source edits. Input/request copies are frozen, so
+callers cannot mutate queued compilation through their original entry/source
+objects.
 
 ## Preview and Apply
 
@@ -85,10 +93,14 @@ clears redo. The build metadata has the same project-scoped lifetime as the issu
 shared access session and is cleared on successful Apply/cancel/project switch.
 
 Controls must not let a local created-design fallback override the resulting
-explicit occurrence selection (in particular `visiblePlaceSelection` still needs
-the parent UI lane's instances-mode guard). Build availability/error text and the
-frozen-input disclosure must be rendered by that lane; this core does not claim
-that those controls or their browser acceptance are complete.
+explicit occurrence selection. `visiblePlaceSelection` already returns the card
+unchanged once the session holds an `occurrenceId`, so an explicit occurrence
+survives the created-design fallback; that guard doesn't settle every
+empty-instances selection case. Build availability/error text and the
+frozen-input disclosure are rendered by the shared chrome. Source Build layout,
+keyboard input and explicit acceptance have browser evidence under
+`output/evidence/tile-to-world/source-build-ui/independent/`; instance refresh and
+whole-plan browser acceptance remain pending.
 
 ## Compile owner for placed adapters
 
@@ -111,6 +123,37 @@ unchanged. Connections beyond the containing root remain unsupported; do not
 follow a connection to a second root or use projection metadata as erasure rights.
 Connection creation/replacement/removal must use the separately delivered typed
 controller operation, never direct graph or binding mutation by a panel.
+
+
+## Source Build UI controls
+
+Landed on the shared Database spatial chrome (`spatialStage` / domain chrome
+state). Not a second controller.
+
+- `[data-testid=spatial-build]` 시공 — `resolveSpatialBuildSource(card)` then
+  `previewSpatialSourceBuild`. Disabled when the card is compatibility/default/
+  placed or lacks `canonicalSource`. Objects also need explicit map + rect + entry.
+- `[data-testid=spatial-build-seed]` integer seed. Tests and QA use 19.
+- `[data-testid=spatial-build-input]` compact frozen summary (`data-seed`,
+  `data-source-kind`, `data-source-id`, `data-dest-kind`, map/rect/entry attrs).
+  Not raw JSON in the action row. A different seed/source/destination click
+  returns `build-proposal-pending` and keeps that disclosure plus any source draft.
+- Object chrome `[data-testid=spatial-build-map]`, `spatial-build-rect-*`,
+  `spatial-build-entry-*` stay in the dedicated build panel, not the stretching
+  toolbar. No fallback entry and no palette stamp arming.
+- Seed/target fields handle both `input` and `change` the same way: each event
+  writes chrome state and re-syncs the 시공 button's enablement in place. Neither
+  remounts the field, so focus and caret survive typing. Seed/target fields bind
+  to `spatialProjectKey()` and reset on `store.replaceProject`. Empty or
+  non-integer seed is rejected without becoming 0; explicit 0 is valid. Invalid
+  object coordinates are rejected before pinning a proposal so the fields can be
+  corrected.
+- `[data-testid=spatial-preview]` remains source-save `previewAuthoringDraft`
+  (edit-only, zero instances). `[data-testid=spatial-apply]` adopts the issued
+  Build preview, one history step, instances + that root.
+
+Flow: design mode → canonical card → seed 19 → (object: map/rect/entry) → 시공
+→ inspect frozen input → 적용. Same input re-preview reuses the opaque root.
 
 ## Verification
 

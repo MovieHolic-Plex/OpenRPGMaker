@@ -11,6 +11,16 @@ import {
   spatialAuthoringErrorText,
   visibleAuthoringProject,
 } from "@/editor/panels/spatialAuthoringAccess";
+import {
+  BUILD_SEED_INTEGER_REQUIRED,
+  bindSpatialBuildInputs,
+  parseSpatialBuildSeed,
+  discloseSpatialBuildInput,
+  objectBuildDestinationError,
+  runSpatialSourceBuild,
+  spatialBuildDisabledReason,
+} from "@/editor/panels/spatialBuildChrome";
+import type { SpatialSourceBuildInput } from "@/editor/panels/spatialBuildActions";
 import { objectChromeState } from "@/editor/panels/spatialObjectChromeState";
 import {
   atlasMismatch,
@@ -50,11 +60,33 @@ export function objectDraftTarget(card: SpatialGalleryCard): ObjectDraftTarget |
   };
 }
 
+export function objectBuildDestination(): Extract<SpatialSourceBuildInput["destination"], { kind: "map" }> {
+  bindSpatialBuildInputs();
+  const mapId = objectChromeState.buildMapId;
+  const x = objectChromeState.buildRectX;
+  const y = objectChromeState.buildRectY;
+  const width = objectChromeState.buildRectWidth;
+  const height = objectChromeState.buildRectHeight;
+  const entryX = objectChromeState.buildEntryX;
+  const entryY = objectChromeState.buildEntryY;
+  return {
+    kind: "map",
+    currentMapId: mapId,
+    selection: mapId !== null && x !== null && y !== null && width !== null && height !== null
+      ? { mapId, x, y, width, height }
+      : null,
+    entry: entryX !== null && entryY !== null ? { x: entryX, y: entryY } : null,
+  };
+}
+
 export function spatialObjectsChrome(card: SpatialGalleryCard | undefined, rerender: () => void): SpatialDomainChrome {
+  bindSpatialBuildInputs();
   const controller = spatialAuthoringController();
   const history = getMapEditHistoryState();
   const target = card ? objectDraftTarget(card) : undefined;
   const builtinLocked = card?.source === "default";
+  const blocked = spatialBuildDisabledReason(card);
+  const canBuild = Boolean(controller && !blocked);
   return {
     saveState: objectChromeState.saveState,
     previewError: objectChromeState.previewError,
@@ -69,6 +101,31 @@ export function spatialObjectsChrome(card: SpatialGalleryCard | undefined, reren
       objectChromeState.saveState = objectChromeState.previewError ? "오류" : "미리보기";
       rerender();
     } : undefined,
+    build: canBuild ? () => {
+      const seed = objectChromeState.buildSeed;
+      if (seed === null) {
+        objectChromeState.previewError = BUILD_SEED_INTEGER_REQUIRED;
+        objectChromeState.saveState = "오류";
+        rerender();
+        return;
+      }
+      const destination = objectBuildDestination();
+      const destError = objectBuildDestinationError(destination);
+      if (destError) {
+        objectChromeState.previewError = destError;
+        objectChromeState.saveState = "오류";
+        rerender();
+        return;
+      }
+      const result = runSpatialSourceBuild(card, seed, destination);
+      objectChromeState.previewError = spatialAuthoringErrorText(result);
+      objectChromeState.saveState = result.kind === "ok" ? "미리보기" : "오류";
+      rerender();
+    } : undefined,
+    buildSeed: objectChromeState.buildSeed,
+    buildSeedText: objectChromeState.buildSeedText ?? undefined,
+    onBuildSeed: (raw) => { objectChromeState.buildSeedText = raw; objectChromeState.buildSeed = parseSpatialBuildSeed(raw); },
+    buildInputText: discloseSpatialBuildInput(),
     apply: controller && hasAuthoringPreview() ? () => {
       const result = applyAuthoringPreview();
       objectChromeState.previewError = spatialAuthoringErrorText(result);
@@ -88,6 +145,7 @@ export function objectInspectorHandlers(
   const builtinLocked = target.source === "default";
   return {
     builtinLocked,
+    onBuildTarget: rerender,
     onName: (name: string) => commitLiveOrDraft(rerender, (project) => {
       let next = renameOwnedKit(project, target.tilesetId, target.kitId, name);
       if (target.libraryId) next = patchObjectDesign(next, target.libraryId, { name });

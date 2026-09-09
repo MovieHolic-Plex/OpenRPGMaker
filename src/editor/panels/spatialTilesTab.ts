@@ -17,6 +17,11 @@ export type SpatialDomainChrome = {
   readonly detach?: () => void;
   readonly undo?: () => void;
   readonly redo?: () => void;
+  readonly build?: () => void;
+  readonly buildSeed?: number | null;
+  readonly buildSeedText?: string;
+  readonly onBuildSeed?: (raw: string) => void;
+  readonly buildInputText?: string;
   readonly saveState: string;
   readonly previewError: string | null;
   readonly deleteOpen?: boolean;

@@ -10,6 +10,8 @@ export const placeChromeState: {
   selectedConnectionId: SpatialId | null;
   selectedFloor: PlaceFloorFilter;
   createdDesignId: SpatialId | null;
+  buildSeed: number | null;
+  buildSeedText: string | null;
 } = {
   saveState: "읽기",
   previewError: null,
@@ -18,6 +20,8 @@ export const placeChromeState: {
   selectedConnectionId: null,
   selectedFloor: null,
   createdDesignId: null,
+  buildSeed: 7,
+  buildSeedText: null,
 };
 
 export function resetSpatialPlacesTabChrome(): void {
@@ -28,4 +32,6 @@ export function resetSpatialPlacesTabChrome(): void {
   placeChromeState.selectedConnectionId = null;
   placeChromeState.selectedFloor = null;
   placeChromeState.createdDesignId = null;
+  placeChromeState.buildSeed = 7;
+  placeChromeState.buildSeedText = null;
 }

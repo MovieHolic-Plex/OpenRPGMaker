@@ -16,6 +16,8 @@ export const spaceChromeState: {
   selectedPortId: SpatialId | null;
   environment: SpaceEnvironmentFilter;
   gesture: SpaceGesture | null;
+  buildSeed: number | null;
+  buildSeedText: string | null;
 } = {
   saveState: "읽기",
   previewError: null,
@@ -24,6 +26,8 @@ export const spaceChromeState: {
   selectedPortId: null,
   environment: "all",
   gesture: null,
+  buildSeed: 7,
+  buildSeedText: null,
 };
 
 export function resetSpatialSpacesTabChrome(): void {
@@ -34,4 +38,6 @@ export function resetSpatialSpacesTabChrome(): void {
   spaceChromeState.selectedPortId = null;
   spaceChromeState.environment = "all";
   spaceChromeState.gesture = null;
+  spaceChromeState.buildSeed = 7;
+  spaceChromeState.buildSeedText = null;
 }

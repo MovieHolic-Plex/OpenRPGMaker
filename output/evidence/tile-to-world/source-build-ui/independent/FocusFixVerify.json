@@ -1,0 +1,215 @@
+{
+  "task": "source-build-ui",
+  "scope": "independent-focus-fix-recheck",
+  "verdict": "confirmed",
+  "confidence": "HIGH",
+  "model": "xai/grok-4.6",
+  "actualModel": "grok-4.6",
+  "provider": "xai",
+  "sourceSHA": "2961dbe3b0878ecb06f1412183dbd1440dd63e29",
+  "boundSHA": "2961dbe3b0878ecb06f1412183dbd1440dd63e29",
+  "notWholeTaskApproval": true,
+  "finalSourceApproval": false,
+  "reasonNotFinal": "Narrow keyboard/focus/eligibility recheck of WIP 2961 only. Original V-* layout defects remain independently fixed. This file is not approval of tasks 11-15 or the whole source UI.",
+  "taskId": "st_01a083dc",
+  "replacedReviewer": "st_01a083b5",
+  "capturedAt": "2026-09-09T01:57:39.401Z",
+  "origin": "http://127.0.0.1:43903",
+  "cacheDir": "/home/main/z-project/rpg-zzu-tile-to-world/.vite-cache/source-build-focusverify-okIMx8",
+  "ns_net": "net:[4026531833]",
+  "ns_user": "user:[4026531837]",
+  "strictPort": true,
+  "shared9888": "untouched foreign MainThread pid=3844652",
+  "gotoCount": 4,
+  "errNetworkChanged": false,
+  "syntheticDivs": false,
+  "remoteCalls": 0,
+  "databaseResourcesCreated": 0,
+  "evaluateClick": false,
+  "fillFallback": false,
+  "keyboardTypingRequired": true,
+  "blankProjectOfflineWarning": {
+    "preserved": true,
+    "silentBypass": false,
+    "count": 8
+  },
+  "pageErrors": [],
+  "httpFailures": [],
+  "requestFailures": [
+    { "url": "/__oprn/edit-activity", "error": "net::ERR_ABORTED", "count": 11 }
+  ],
+  "enumeratedStates": [
+    "objects-keyboard-map-seed-numeric-tab-build-apply@1024x768,1280x800,1440x900",
+    "mid-string-caret-insert-delete@1280x800",
+    "invalid-empty-seed-then-explicit-0-then-19@1280x800",
+    "compat-coincident-id-seed-19-disabled@1280x800"
+  ],
+  "pageCount": 4,
+  "newCaptureCount": 15,
+  "invocation": {
+    "surface": "Chromium Database spatial Objects/Spaces against frozen worktree /home/main/z-project/rpg-zzu-tile-to-world",
+    "command": "cd /home/main/z-project/rpg-zzu-tile-to-world && flock -w 20 /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock timeout 360s ./node_modules/.bin/vite-node output/evidence/tile-to-world/source-build-ui/independent/focus-fix-recheck/probe.mts",
+    "url": "http://127.0.0.1:43903/?blankProject=1&aiBridge=0",
+    "vite": "--host 127.0.0.1 --port 43903 --strictPort",
+    "clicks": "Playwright locator.click hit-testing, not node.click evaluate; one Build click then one Apply click after Tab",
+    "typing": "locator.click then page.keyboard.type per character for map stamp-target, seed 19/0, and numeric rect/entry fields. No fill. No evaluate-click."
+  },
+  "sourceHashesAtCapture": {
+    "src/editor/panels/spatialBuildChrome.ts": "91767b56d05fd3514375a83ae24b45899dd8bbf4a2f9b18c0176cfcc97c4c230",
+    "src/editor/panels/spatialStage.ts": "44ee6563cacf83bb5b5f5996bf0d7f1b22e64cb5e3cadfb0c739421891f174cd",
+    "src/editor/panels/spatialObjectCommands.ts": "1d8e8239c680e55a6352357cfbbaa5797f1971288999ddb10d52cc44dba3756c",
+    "src/editor/panels/spatialSpaceCommands.ts": "60e2b034d32bf58860b1146db95e0e2aa54015cee2b559767d2556a76e951b16",
+    "src/editor/panels/spatialPlaceCommands.ts": "6d8f9daea55bd057f37156280887ccfc28f57ccf734b0e2a9008b2f5208cc06f",
+    "src/editor/panels/spatialObjectInspector.ts": "b9e3d73064a509c4a3f326cfd9c54fe0e86674518ff3d826a6dc53af7c7d81fd",
+    "src/editor/panels/spatialTilesTab.ts": "554fcf96940451db42f430a5c9ad98f80992b8ae7dd7c6a1c157104ddfe7e331",
+    "src/editor/panels/spatialObjectChromeState.ts": "3d949e2192ba5fca134ac26ad3e47f3acdc214c1f42a486417f91fbe0102ee6b",
+    "src/editor/panels/spatialSpaceChromeState.ts": "68e9d905cfac5e786ee3f20e54c3ea7ff78094a457a16596a6fe6d031f7044e5",
+    "src/editor/panels/spatialPlaceChromeState.ts": "04a9d0db7a13e709ff512dcd12538efe136ca8e7306e7799b6616a1e56ac100e",
+    "src/styles/database/spatial-shell.css": "e7532cd9d6d60d00112ca68538255d92e4d5c5afeab8bc56571674c12a9e5e4d",
+    "test/spatialSourceBuildUiFocus.test.ts": "2884b01e8b3215fa86397bb592d2c66dd1d80812b369a923e9d9d6042454af62"
+  },
+  "hashDeltaVsPrior": {
+    "visualFixRecheckCss": "unchanged e7532cd9; layout PNGs reused",
+    "visualFixRecheckInspectorTilesTabChromeState": "unchanged",
+    "focusFixReceiptStageCommandsFocusTest": "unchanged 44ee6563 / 1d8e8239 / 60e2b034 / 6d8f9dae / 2884b01e",
+    "spatialBuildChromeVsFocusFixReceipt": "changed d030890b -> 91767b56; physical keyboard rechecked on current hash"
+  },
+  "reusedLayoutCaptures": [
+    "independent/visual-fix-recheck/1024x768-objects-inspector-closed.png",
+    "independent/visual-fix-recheck/1024x768-objects-inspector-open.png",
+    "independent/visual-fix-recheck/1024x768-objects-targets.png",
+    "independent/visual-fix-recheck/1280x800-objects-inspector-closed.png",
+    "independent/visual-fix-recheck/1280x800-objects-inspector-open.png",
+    "independent/visual-fix-recheck/1440x900-objects-inspector-closed.png",
+    "independent/visual-fix-recheck/1440x900-objects-inspector-open.png"
+  ],
+  "newCaptures": [
+    "1024x768-keyboard-map.png",
+    "1024x768-keyboard-seed.png",
+    "1024x768-keyboard-built.png",
+    "1024x768-keyboard-applied.png",
+    "1280x800-keyboard-map.png",
+    "1280x800-keyboard-caret.png",
+    "1280x800-keyboard-seed-zero.png",
+    "1280x800-keyboard-seed.png",
+    "1280x800-keyboard-built.png",
+    "1280x800-keyboard-applied.png",
+    "1440x900-keyboard-map.png",
+    "1440x900-keyboard-seed.png",
+    "1440x900-keyboard-built.png",
+    "1440x900-keyboard-applied.png",
+    "1280x800-compat-disabled.png"
+  ],
+  "pngHygiene": {
+    "allPngSignatureValid": true,
+    "actualBrowser": true,
+    "signature": "89504e47",
+    "newCaptureCount": 15
+  },
+  "priorRedPreserved": {
+    "VisualFixVerify.json": true,
+    "visual-fix-recheck-25pngs": true,
+    "focus-fix/red.log": true,
+    "independent/boundary-red.log": true
+  },
+  "originalFindingsDisposition": {
+    "V-1024-CANVAS-COLLAPSE": "fixed-prior",
+    "V-1024-TARGET-OFFSCREEN": "fixed-prior",
+    "V-JSON-TOOLBAR": "fixed-prior",
+    "V-CJK-FIELD-WRAP": "fixed-prior",
+    "V-SELECTOR-GROUP": "fixed-prior",
+    "V-INPUT-RERENDER-FOCUS": "confirmed-fixed"
+  },
+  "geometry": {
+    "1024x768": {
+      "map": { "x": 280, "y": 216.4375, "width": 117.59375, "height": 32 },
+      "build": { "x": 477, "y": 122, "width": 46, "height": 32 },
+      "matchesVisualFixTargetMap": true,
+      "matchesVisualFixBuildButton": true
+    },
+    "1280x800": {
+      "map": { "x": 280, "y": 191.546875, "width": 112.28125, "height": 32 },
+      "build": { "x": 477, "y": 122, "width": 46, "height": 32 }
+    },
+    "1440x900": {
+      "map": { "x": 280, "y": 151.546875, "width": 114.625, "height": 32 },
+      "build": { "x": 754.515625, "y": 82, "width": 46, "height": 32 },
+      "matchesVisualFixBuildButton": true
+    }
+  },
+  "typing": {
+    "1024x768": {
+      "map": { "expected": "stamp-target", "finalValue": "stamp-target", "focusSurvived": true, "sameNode": true, "ok": true },
+      "seed": { "expected": "19", "finalValue": "19", "focusSurvived": true, "sameNode": true, "ok": true },
+      "numeric": { "ok": true },
+      "proposalReachedHow": "sequential-keyboard-then-one-click-build"
+    },
+    "1280x800": {
+      "map": { "expected": "stamp-target", "finalValue": "stamp-target", "focusSurvived": true, "sameNode": true, "ok": true },
+      "seed": { "expected": "19", "finalValue": "19", "focusSurvived": true, "sameNode": true, "ok": true },
+      "numeric": { "ok": true },
+      "caretInsertDelete": { "inserted": "stampX-target", "caret": 6, "deleted": "stamp-target", "sameNode": true, "ok": true },
+      "invalidEmptySeedDisablesBuild": true,
+      "explicitZeroEnablesBuild": true,
+      "explicitZeroEligible": "1",
+      "proposalReachedHow": "sequential-keyboard-then-one-click-build"
+    },
+    "1440x900": {
+      "map": { "expected": "stamp-target", "finalValue": "stamp-target", "focusSurvived": true, "sameNode": true, "ok": true },
+      "seed": { "expected": "19", "finalValue": "19", "focusSurvived": true, "sameNode": true, "ok": true },
+      "numeric": { "ok": true },
+      "proposalReachedHow": "sequential-keyboard-then-one-click-build"
+    }
+  },
+  "functional": {
+    "objectBuildApplyAllViewportsViaKeyboardOnly": true,
+    "inputNodesStayMounted": true,
+    "stateAndButtonOnlyOnInput": true,
+    "canonicalEligibilityDataBuildEligible": true,
+    "compatCoincidentIdStaysDisabledAfterSeed19": true,
+    "compatNoLiveNoProposal": true,
+    "invalidThenCorrectionEnables": true,
+    "explicitZeroValidSeed": true,
+    "objectBuildDoesNotArmPalette": true,
+    "objectBuildDoesNotMutateLiveOccurrences": true,
+    "tabThenOneClickBuildApply": true
+  },
+  "compat": {
+    "card": "spatial-card-tileset-room/easyrpg_chipset_interior/room-design",
+    "seed": "19",
+    "buildDisabledBefore": true,
+    "buildDisabledAfter": true,
+    "buildEligible": "0",
+    "proposal": null,
+    "liveOccurrenceCount": 0,
+    "hasPreview": false
+  },
+  "blocking": [],
+  "findings": [],
+  "goodKeep": [
+    "Seed/map/rect/entry input events keep the same mounted node (dataset.qaKeep) and caret; chrome state and spatial-build.disabled update without remount.",
+    "Canonical eligibility stays on data-build-eligible; a coincident-id compatibility room card remains eligible=0 and disabled after typing seed 19, with no proposal and live 0.",
+    "Empty seed disables 시공; explicit 0 re-enables without dropping eligibility; correction to 19 then Tab + one Build + one Apply freezes 19 object hearth-design stamp-target 3,3 3x3 1,1 detached then Apply adopts 1 occurrence at 1024/1280/1440.",
+    "spatial-shell.css hash still e7532cd9; 1024 map/build rects match VisualFixVerify; layout 25-state matrix not recaptured."
+  ],
+  "notes": [
+    "Producer focus-fix/keyboard-qa.json PASS used port 44207 against chrome hash d030890b. Current chrome is 91767b56; this pass recaptured keyboard on the current hash with no fill.",
+    "Unit suites were not re-run. Parent 27-ish tests/types were not owned by this child.",
+    "Dual-oracle subagents were not dispatched: this child has no task tool and is the QA executor."
+  ],
+  "artifactDir": "/home/main/z-project/rpg-zzu-tile-to-world/output/evidence/tile-to-world/source-build-ui/independent/focus-fix-recheck",
+  "rawQa": "output/evidence/tile-to-world/source-build-ui/independent/focus-fix-recheck/qa.json",
+  "cleanup": {
+    "sourceSHA": "2961dbe3b0878ecb06f1412183dbd1440dd63e29",
+    "serversClosed": ["http://127.0.0.1:43903"],
+    "browserClosed": true,
+    "portsReleased": true,
+    "cacheRemoved": true,
+    "cacheDir": "/home/main/z-project/rpg-zzu-tile-to-world/.vite-cache/source-build-focusverify-okIMx8",
+    "remoteCalls": 0,
+    "databaseResourcesCreated": 0,
+    "priorEvidencePreserved": true,
+    "shared9888Untouched": true,
+    "lockReleased": true
+  }
+}

@@ -1,4 +1,5 @@
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
+import type { SpatialDomainChrome } from "@/editor/panels/spatialTilesTab";
 import {
   applyAuthoringPreview,
   clearAuthoringSession,
@@ -11,6 +12,14 @@ import {
 } from "@/editor/panels/spatialAuthoringAccess";
 import { selectSpatialDesign } from "@/editor/panels/spatialAuthoringSession";
 import { spaceChromeState } from "@/editor/panels/spatialSpaceChromeState";
+import {
+  BUILD_SEED_INTEGER_REQUIRED,
+  bindSpatialBuildInputs,
+  parseSpatialBuildSeed,
+  discloseSpatialBuildInput,
+  runSpatialSourceBuild,
+  spatialBuildDisabledReason,
+} from "@/editor/panels/spatialBuildChrome";
 import {
   editSpace,
   previewSpaceDelete,
@@ -29,21 +38,7 @@ import type { SpaceDesign } from "@/project/spatial/types";
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
 import type { Project } from "@/project/types";
 
-export type SpatialSpaceChrome = {
-  readonly add?: () => void;
-  readonly duplicate?: () => void;
-  readonly delete?: () => void;
-  readonly preview?: () => void;
-  readonly apply?: () => void;
-  readonly refresh?: () => void;
-  readonly detach?: () => void;
-  readonly undo?: () => void;
-  readonly redo?: () => void;
-  readonly saveState: string;
-  readonly previewError: string | null;
-  readonly deleteOpen?: boolean;
-  readonly onDeleteConfirm?: () => void;
-};
+export type SpatialSpaceChrome = SpatialDomainChrome;
 
 export function workingProject(): Project {
   return visibleAuthoringProject();
@@ -71,6 +66,7 @@ export function mutateWorkingSpace(target: SpaceDraftTarget, patch: (space: Spac
 }
 
 export function spatialSpacesChrome(card: SpatialGalleryCard | undefined, rerender: () => void): SpatialSpaceChrome {
+  bindSpatialBuildInputs();
   const controller = spatialAuthoringController();
   const target = card ? spaceDraftTarget(card) : undefined;
   const builtinLocked = card?.source === "default";
@@ -85,6 +81,22 @@ export function spatialSpacesChrome(card: SpatialGalleryCard | undefined, rerend
     delete: controller && target && !builtinLocked ? () => { spaceChromeState.deleteOpen = true; rerender(); } : undefined,
     onDeleteConfirm: controller && target && spaceChromeState.deleteOpen ? () => queueDelete(target, rerender) : undefined,
     preview: controller ? () => previewSpace(rerender) : undefined,
+    build: controller && !spatialBuildDisabledReason(card) ? () => {
+      const seed = spaceChromeState.buildSeed;
+      if (seed === null) {
+        spaceChromeState.previewError = BUILD_SEED_INTEGER_REQUIRED;
+        rerender();
+        return;
+      }
+      const result = runSpatialSourceBuild(card, seed, { kind: "new-maps" });
+      spaceChromeState.previewError = spatialAuthoringErrorText(result);
+      if (result.kind === "ok") spaceChromeState.saveState = "미리보기";
+      rerender();
+    } : undefined,
+    buildSeed: spaceChromeState.buildSeed,
+    buildSeedText: spaceChromeState.buildSeedText ?? undefined,
+    onBuildSeed: (raw) => { spaceChromeState.buildSeedText = raw; spaceChromeState.buildSeed = parseSpatialBuildSeed(raw); },
+    buildInputText: discloseSpatialBuildInput(),
     apply: controller && hasAuthoringPreview() ? () => applySpace(rerender) : undefined,
     undo: controller ? () => { controller.undo(); rerender(); } : undefined,
     redo: controller ? () => { controller.redo(); rerender(); } : undefined,

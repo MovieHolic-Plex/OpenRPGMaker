@@ -26,6 +26,7 @@ import {
   spatialSpacesChrome,
 } from "@/editor/panels/spatialSpacesTab";
 import { renderSpatialTilesCanvas, spatialTilesChrome, type SpatialDomainChrome } from "@/editor/panels/spatialTilesTab";
+import { renderSpatialBuildChrome, renderSpatialBuildPanel } from "@/editor/panels/spatialBuildChrome";
 import { el } from "@/util/dom";
 
 const TAB_LABEL = {
@@ -79,6 +80,7 @@ export function renderSpatialChrome(
   const crumbLabel = selected?.name ?? TAB_LABEL[session.tab];
   const chrome = domainChrome(session, onChange);
   const previewError = chrome?.previewError ?? null;
+  const buildPanel = renderSpatialBuildPanel(session.tab);
   return el("div", {
     class: "spatial-chrome",
     children: [
@@ -142,6 +144,7 @@ export function renderSpatialChrome(
           actionButton("spatial-duplicate", "복제", Boolean(chrome?.duplicate), chrome?.duplicate),
           actionButton("spatial-delete", "삭제", Boolean(chrome?.delete), chrome?.delete),
           actionButton("spatial-preview", "미리보기", Boolean(chrome?.preview), chrome?.preview),
+          ...renderSpatialBuildChrome(session.tab, chrome),
           actionButton("spatial-apply", "적용", Boolean(chrome?.apply), chrome?.apply),
           actionButton("spatial-refresh", "새로고침", Boolean(chrome?.refresh), chrome?.refresh),
           actionButton("spatial-detach", "분리", Boolean(chrome?.detach), chrome?.detach),
@@ -163,6 +166,7 @@ export function renderSpatialChrome(
           }),
         ],
       }),
+      ...(buildPanel ? [buildPanel] : []),
     ],
   });
 }

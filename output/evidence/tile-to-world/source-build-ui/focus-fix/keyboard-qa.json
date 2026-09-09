@@ -1,0 +1,62 @@
+{
+  "base": "http://127.0.0.1:44207",
+  "port": 44207,
+  "viewports": [
+    {
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "interactions": [
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "mapValue": "stamp-target",
+      "seedValue": "19",
+      "proposalSeed": "19",
+      "proposalMap": "stamp-target"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mapValue": "stamp-target",
+      "seedValue": "19",
+      "proposalSeed": "19",
+      "proposalMap": "stamp-target"
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mapValue": "stamp-target",
+      "seedValue": "19",
+      "proposalSeed": "19",
+      "proposalMap": "stamp-target"
+    }
+  ],
+  "errors": [],
+  "outcome": "PASS",
+  "cleanup": {
+    "serverStarted": true,
+    "browserStarted": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true,
+    "cacheDir": "/home/main/z-project/rpg-zzu-tile-to-world/.vite-cache/source-build-focus-wg4dkJ",
+    "serverPid": 1821991,
+    "port": 44207
+  }
+}

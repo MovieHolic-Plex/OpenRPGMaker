@@ -6,6 +6,7 @@ import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess"
 import { el } from "@/util/dom";
 
 export type SpatialObjectInspectorHandlers = {
+  readonly onBuildTarget: () => void;
   readonly onName: (name: string) => void;
   readonly onGraphic: (tilesetId: string, kitId: string) => void;
   readonly onAnchor: (index: number, patch: Partial<SpatialPort>) => void;
@@ -90,6 +91,7 @@ export function renderSpatialObjectInspector(input: {
     ],
   });
 }
+
 
 function nameField(name: string, locked: boolean, onName: (name: string) => void): HTMLElement {
   const input = el("input", {

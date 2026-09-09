@@ -38,6 +38,7 @@
 .database-modal-body .spatial-card-badges {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 6px;
 }
 
@@ -54,6 +55,69 @@
   background: var(--db-studio-surface, #fff);
   color: var(--db-studio-text-2, #475569);
   font: 600 12px/1.2 inherit;
+}
+
+.database-modal-body .spatial-build-panel {
+  flex: 1 1 100%;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.database-modal-body .spatial-build-seed-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  max-height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-2);
+  font: 600 12px/1.2 inherit;
+}
+
+.database-modal-body .spatial-build-seed {
+  width: 4.5rem;
+  min-height: 28px;
+  max-height: 28px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.database-modal-body .spatial-build-disclosure {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-height: 24px;
+  max-height: 24px;
+  padding: 0 8px;
+  border-radius: 8px;
+  background: var(--db-studio-well);
+  color: var(--db-studio-text-3);
+  font: 500 11px/24px var(--font-mono);
+}
+
+.database-modal-body .spatial-object-build {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  background: var(--db-studio-surface);
+}
+
+.database-modal-body .spatial-object-entry {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 8px;
 }
 
 .database-modal-body .spatial-mode.is-active,
@@ -245,7 +309,7 @@
   }
   .database-modal-body .spatial-body {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 42%) minmax(0, 1fr);
+    grid-template-rows: minmax(96px, 28%) minmax(0, 1fr);
   }
   .database-modal-body .spatial-gallery {
     min-height: 0;
@@ -253,15 +317,18 @@
   .database-modal-body .spatial-stage {
     position: relative;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(160px, 1fr) auto;
     overflow: hidden;
+  }
+  .database-modal-body .spatial-canvas {
+    min-height: 160px;
   }
   .database-modal-body .spatial-inspector {
     display: none;
     position: relative;
     inset: auto;
     width: auto;
-    max-height: min(48%, 280px);
+    max-height: min(36%, 200px);
     margin: 8px;
     border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
     border-radius: 12px;
@@ -323,6 +390,10 @@
   min-width: 4.5rem;
   font: 600 12px/1.2 inherit;
   color: var(--db-studio-text-2, #475569);
+}
+
+.database-modal-body .spatial-object-field > span {
+  white-space: nowrap;
 }
 
 .database-modal-body .spatial-object-field input,
