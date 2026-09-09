@@ -1,0 +1,66 @@
+{
+  "task": 18,
+  "scenario": "life-full",
+  "command": "npm run qa:runtime -- --scenario life-full",
+  "gate": "통과",
+  "errors": [],
+  "fixtureProvenance": "test/fixtures/life-full.project.json baked by scripts/qa/runtime/life-full-fixture.mts from the task17 authorable fixture (createLifeFullFixture), reference-validated before writing.",
+  "journey": [
+    {
+      "beat": "field-start",
+      "proof": "start (4,4), energy 100, seeds 3, potato 0"
+    },
+    {
+      "beat": "till-plot",
+      "receipt": "tilled (4,6)",
+      "proof": "energy 100->99"
+    },
+    {
+      "beat": "sow-seed",
+      "receipt": "planted (4,6) item_potato_seed",
+      "proof": "seeds 3->2, crop_potato stage 0"
+    },
+    {
+      "beat": "water-plot",
+      "receipt": "watered (4,6)",
+      "proof": "energy ->97, watered true"
+    },
+    {
+      "beat": "sleep-day1",
+      "proof": "REAL day transition: energy 97->100, growthDays 0->1, stage 0->1, watered consumed"
+    },
+    {
+      "beat": "water-day2",
+      "receipt": "watered (4,6)",
+      "proof": "energy 100->99"
+    },
+    {
+      "beat": "sleep-day2",
+      "proof": "growthDays 1->2 (harvest-ready)"
+    },
+    {
+      "beat": "harvest-potato",
+      "receipt": "harvested source crop item_potato x1 (4,6)",
+      "proof": "potato 0->1, plot cleared, energy ->99"
+    }
+  ],
+  "receiptSequence": "1..7 strictly increasing — every action produced its own new receipt, so no beat passed on a stale one",
+  "rootCauseFound": {
+    "symptom": "After sleeping, the next farm action produced NO receipt at all (sequence frozen at the bed action value), so beats failed with empty farmAttempts.",
+    "cause": "src/player/input.ts injectActionEdge() synthesizes an Enter keydown/keyup. The sleep beat closes the bed dialogue with Enter (pressUntil), and the engine deliberately clears any unconsumed action edge on interpreter enter/exit to avoid double-triggering. The immediately following farm action edge was flushed with it.",
+    "verdict": "Correct engine behavior, NOT a product defect. The scenario had to let the interpreter fully exit before injecting the next action edge.",
+    "fix": "pauseFrames -> stepFrames(30) to drain the interpreter -> action -> stepFrames(16) -> resumeFrames."
+  },
+  "refutedHypotheses": [
+    "forage placeable intercepting the tile — refuted: placeablesAt (4,6) was null",
+    "stale receipt misread as a new result — confirmed as a reading error via sequence numbers",
+    "post-sleep input gating — refuted: the bed action right after DID register (seq incremented)",
+    "pauseFrames incompatibility — refuted: reordering action outside the pause reproduced identically",
+    "observe:true observed action — reverted: performObservedAction waits on a wall-clock deadline without stepping frames, so it deadlocks with pauseFrames and broke three previously passing beats"
+  ],
+  "harnessAdditions": [
+    "expect.cropGrowthDays asserts a real day transition instead of position-only (a mapId-only assertion had passed while nothing happened)",
+    "expect.placeablesAt observes named tiles so occupancy hypotheses are measurable"
+  ],
+  "at": "2026-09-09T07:22:06.003Z"
+}

@@ -1,0 +1,22 @@
+{
+  "task": 19,
+  "projectId": "rpg-zzu-life-full-01a08046-verify",
+  "host": "http://dbserver:8100",
+  "ok": true,
+  "writes": 1,
+  "savedSha256": "fece81eefcdd23d3948335ad7432dc59316fc50495acc64ed1d1a8161df614cb",
+  "localSerializedSha256": "fece81eefcdd23d3948335ad7432dc59316fc50495acc64ed1d1a8161df614cb",
+  "reloadValidated": true,
+  "definitionsMatch": true,
+  "placementMatch": true,
+  "isolation": "explicit rpg-zzu-life-full-* id; no other project row is read or written by this script",
+  "at": "2026-09-09T08:08:20.239Z",
+  "reloadedDataPlayed": {
+    "command": "npm run qa:runtime -- --scenario life-full --project test/fixtures/life-full.reloaded.project.json",
+    "fixture": "test/fixtures/life-full.reloaded.project.json (written by --write-reloaded from the ACTUAL Supabase reload, not the local fixture)",
+    "gate": "통과",
+    "errors": [],
+    "beats": "10/10 pass",
+    "proof": "The remotely stored project actually plays: till, sow, water, sleep, regrow, water, sleep, harvest — potato 0->1 on the shipped player.html. A save-success response alone could not show this."
+  }
+}
