@@ -15,10 +15,13 @@ import {
   createTeamBoardState,
   markTeamBoardAborted,
   markTeamBoardApplied,
+  markTeamBoardDiscarded,
   markTeamBoardFailed,
+  markTeamBoardReview,
   reduceTeamBoard,
   type TeamBoardState,
 } from "@/ai/piAgent/teamBoardState";
+import { changePreviewChips } from "./aiChangePreview";
 import { loadAiConfig } from "@/ai/llmClient";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { summarizeChanges } from "@/editor/tools/changeset";
@@ -150,7 +153,15 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
   }
   const changed = summarizeChanges(base, merged.project);
   const toolCalls = results.reduce((sum, done) => sum + done.stats.toolCalls, 0);
-  const applied = await applyProposedProject(merged.project, {
+  const changedCount = changedProjectKeys(base, merged.project).length;
+  if (changedCount === 0) {
+    boardState = markTeamBoardApplied(boardState, "바뀐 것이 없습니다."); sync();
+    surface.setStatus("대기");
+    surface.appendBubble("system", "Pi 에이전트가 끝났지만 프로젝트에 바뀐 것이 없습니다.");
+    return true;
+  }
+  const apply = async (): Promise<boolean> => {
+    const applied = await applyProposedProject(merged.project, {
     base: proposalBase,
     baseline,
     source: "agent",
@@ -162,16 +173,32 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
     snapshotMapId: command.mapIds[0] ?? surface.getCurrentMapId(),
     reason: `Pi ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회`,
   });
-  if (!applied.ok) {
-    boardState = markTeamBoardFailed(boardState, `적용 실패(${applied.reason}): ${applied.issue ?? "무결성 오류"}`); sync();
-    surface.setStatus("적용 실패");
-    surface.appendBubble("system", `적용 실패(${applied.reason}): ${applied.issue ?? "무결성 오류"}`);
-    return false;
-  }
-  const appliedText = `적용했습니다 — ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedProjectKeys(base, merged.project).length}개.`;
-  boardState = markTeamBoardApplied(boardState, appliedText); sync();
-  surface.setStatus(team ? "Pi 팀 적용 완료" : "Pi 에이전트 적용 완료");
-  surface.appendBubble("system", appliedText);
+    if (!applied.ok) {
+      boardState = markTeamBoardFailed(boardState, `적용 실패(${applied.reason}): ${applied.issue ?? "무결성 오류"}`); sync();
+      surface.setStatus("적용 실패");
+      surface.appendBubble("system", `적용 실패(${applied.reason}): ${applied.issue ?? "무결성 오류"}`);
+      return false;
+    }
+    const appliedText = `적용했습니다 — ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개.`;
+    boardState = markTeamBoardApplied(boardState, appliedText); sync();
+    surface.setStatus(team ? "Pi 팀 적용 완료" : "Pi 에이전트 적용 완료");
+    surface.appendBubble("system", appliedText);
+    return true;
+  };
+  // 기본은 검토 후 적용: 보드 발의 검토 카드에서 사용자가 승인해야 프로젝트가 바뀐다.
+  // 기준(base)이 그 사이 바뀌면 applyProposedProject 가 stale-base 로 거절한다.
+  if ((config.piApply ?? "review") === "auto") return apply();
+  boardState = markTeamBoardReview(boardState, changePreviewChips(changed)); sync();
+  board.setReview({
+    onApply: () => { board.setReview(null); void apply(); },
+    onDiscard: () => {
+      board.setReview(null);
+      boardState = markTeamBoardDiscarded(boardState); sync();
+      surface.setStatus("대기");
+      surface.appendBubble("system", "Pi 결과를 버렸습니다. 프로젝트는 그대로입니다.");
+    },
+  });
+  surface.setStatus("검토 대기 — 보드에서 적용 또는 버리기");
   return true;
 }
 

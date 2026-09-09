@@ -25,11 +25,12 @@ function agentsOf(state: TeamBoardState | null, memberId: string): TeamBoardAgen
 }
 
 function liveSummary(spec: PiTeamSpec, state: TeamBoardState | null): string {
-  if (!state || state.phase === "적용됨" || state.phase === "중단" || state.phase === "실패") {
+  if (!state || state.phase === "적용됨" || state.phase === "버림" || state.phase === "중단" || state.phase === "실패") {
     const enabled = spec.members.filter((member) => member.enabled);
-    const tail = state?.phase === "적용됨" ? " · 마지막 작업 적용됨" : state?.phase === "중단" ? " · 마지막 작업 중단" : state?.phase === "실패" ? " · 마지막 작업 실패" : "";
+    const tail = state?.phase === "적용됨" ? " · 마지막 작업 적용됨" : state?.phase === "버림" ? " · 마지막 작업 버림" : state?.phase === "중단" ? " · 마지막 작업 중단" : state?.phase === "실패" ? " · 마지막 작업 실패" : "";
     return `${enabled.map((member) => member.label).join(" · ") || "팀원 없음"} · 대기${tail}`;
   }
+  if (state.phase === "검토 대기") return "검토 대기 — 보드에서 적용 또는 버리기";
   const parts: string[] = [];
   const orchestrator = state.agents.find((agent) => agent.role === "orchestrator");
   if (orchestrator) parts.push(`팀장 ${orchestrator.state === "실행 중" ? "지휘 중" : orchestrator.state}`);
