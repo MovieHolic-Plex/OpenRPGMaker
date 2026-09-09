@@ -55,8 +55,15 @@ async function boot(page: Page) {
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
   await page.setViewportSize({ width: 1280, height: 960 });
+  /* addInitScript 는 모든 내비게이션에서 실행된다. 여기서 무조건 지우면 page.reload()
+   * 때도 저장이 날아가 "저장이 재로딩을 못 넘긴다"는 거짓 실패가 난다(실측).
+   * 첫 부팅에서만 비우고 이후에는 보존한다. */
   await page.addInitScript((namespace) => {
-    localStorage.clear();
+    const marker = `${namespace}:qa-booted`;
+    if (!sessionStorage.getItem(marker)) {
+      localStorage.clear();
+      sessionStorage.setItem(marker, "1");
+    }
     (window as QaWindow).__OPENRPG_BOOT__ = { projectUrl: "/__life-qa/project.json", saveNamespace: namespace, qaInstrumentation: true };
   }, `${NAMESPACE}-${bootSeq}`);
   await page.route("**/__life-qa/project.json", (route) =>
@@ -227,12 +234,19 @@ test("출하 투입 -> 수면 정산 -> 저장 -> 로드 재개를 실제 메뉴
   const beforeSave = await page.evaluate(() => {
     const s = (window as QaWindow).__oprnDebug?.readState() as
       { gold?: number; gameTime?: { day?: number }; inventory?: Record<string, number> } | undefined;
-    return { gold: s?.gold, day: s?.gameTime?.day, seeds: (s?.inventory ?? {}).item_potato_seed ?? 0 };
+    return { gold: s?.gold, day: s?.gameTime?.day, inventory: s?.inventory ?? {} };
   });
   await choose(page, "save-slot-1");
   await shot(page, "13-saved");
 
-  // 5) 같은 세션에서 로드로 재개한다. 슬롯이 present 여야 활성화된다.
+  // 5) 페이지를 새로 띄워 로드한다 — 같은 세션 로드는 직렬화를 거치지 않으므로
+  // 저장이 실제로 저장소를 왕복했는지 증명하지 못한다(독립 검토 지적).
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.getByTestId("title-screen")).toBeVisible({ timeout: 150_000 });
+  await page.keyboard.press("Enter");
+  await page.waitForFunction(() => Boolean((window as QaWindow).__oprnDebug?.readState().currentMapId), null, { timeout: 120_000 });
+  await expect(page.getByTestId("play-loading-overlay")).toHaveCount(0, { timeout: 120_000 });
+
   await page.keyboard.press("x");
   await rail(page, "system-menu");
   await choose(page, "status-menu-group-command-load");
@@ -246,8 +260,9 @@ test("출하 투입 -> 수면 정산 -> 저장 -> 로드 재개를 실제 메뉴
   const afterLoad = await page.evaluate(() => {
     const s = (window as QaWindow).__oprnDebug?.readState() as
       { gold?: number; gameTime?: { day?: number }; inventory?: Record<string, number> } | undefined;
-    return { gold: s?.gold, day: s?.gameTime?.day, seeds: (s?.inventory ?? {}).item_potato_seed ?? 0 };
+    return { gold: s?.gold, day: s?.gameTime?.day, inventory: s?.inventory ?? {} };
   });
+  // 인벤토리 전체를 비교한다 — 한 키만 보면 나머지 손실을 놓친다(독립 검토 지적).
   expect(afterLoad, "로드 후 상태가 저장 시점과 다르다").toEqual(beforeSave);
   await shot(page, "14-resumed");
 
@@ -396,19 +411,38 @@ test("박물관 기부는 한 번만 되고 중복 기부는 거부된다", asyn
   // 바뀌고 다시 기부할 수 없게 되며, "야생 부추을(를) 박물관에 기부했습니다" 를 알린다.
   // 기부된 줄은 더 이상 선택 대상이 아니다(실측: 커서가 올라가지 않아 choose 가 실패한다).
   // 그것 자체가 중복 기부 차단이다. 확인 키를 한 번 더 눌러 부수 효과가 없음을 본다.
-  // 기부 직후 전체 상태를 찍어두고, 확인 키를 더 눌러도 무엇도 변하지 않아야 한다.
-  // 재고 한 키만 보면 골드·박물관 진행도 같은 부수 효과를 놓친다(독립 검토 지적).
-  const snap = () => page.evaluate(() => {
-    const s = (window as QaWindow).__oprnDebug?.readState() as
-      { gold?: number; inventory?: Record<string, number>; switches?: Record<string, boolean> } | undefined;
-    return JSON.stringify({ gold: s?.gold, inventory: s?.inventory, switches: s?.switches });
-  });
+  /* 중복 기부 거부를 두 축으로 증명한다.
+   * readState 는 박물관 진행도를 노출하지 않으므로(runtimeDom.ts:93 의 스냅샷 필드),
+   * 제품이 보여주는 박물관 탭 내용 전체를 비교 대상으로 쓴다 — 진행도가 오염되면
+   * "기부 완료" 표시나 목록이 달라진다(독립 검토 지적). */
+  const snap = async () => {
+    const state = await page.evaluate(() => {
+      const s = (window as QaWindow).__oprnDebug?.readState() as
+        { gold?: number; inventory?: Record<string, number>; switches?: Record<string, boolean> } | undefined;
+      return JSON.stringify({ gold: s?.gold, inventory: s?.inventory, switches: s?.switches });
+    });
+    const museum = ((await page.locator("#life-ledger-tab-panel").innerText()) ?? "").replace(/\s+/g, " ").trim();
+    return JSON.stringify({ state, museum });
+  };
   const afterDonate = await snap();
+
+  // 축 1: 기부된 줄은 더 이상 커서로 도달할 수 없어야 한다 = 활성화 경로 회수.
+  let reachedDonatedRow = false;
+  for (let i = 0; i < 24; i++) {
+    if (await page.locator(`[data-testid='life-ledger-museum-donate-item_wild_leek'].selected`).count()) {
+      reachedDonatedRow = true;
+      break;
+    }
+    await page.keyboard.press("ArrowDown");
+  }
+  expect(reachedDonatedRow, "기부된 항목이 여전히 선택 가능하다").toBe(false);
+
+  // 축 2: 그 상태에서 확인 키를 눌러도 상태와 박물관 화면이 모두 그대로여야 한다.
   await page.keyboard.press("z");
   await page.keyboard.press("z");
   const afterRetry = await snap();
-  expect(afterRetry, "중복 시도가 상태를 바꿨다").toBe(afterDonate);
-  expect(held(JSON.parse(afterRetry)), "재고가 0 이 아니다").toBe(0);
+  expect(afterRetry, "중복 시도가 상태나 박물관 진행도를 바꿨다").toBe(afterDonate);
+  expect(held(JSON.parse(JSON.parse(afterRetry).state)), "재고가 0 이 아니다").toBe(0);
   await expect(page.getByTestId("status-menu-detail")).toContainText("기부 완료", { timeout: 20_000 });
   await shot(page, "41-duplicate-refused");
 
