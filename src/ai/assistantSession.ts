@@ -952,6 +952,22 @@ export class AssistantSession {
    */
   whenCheckpointed(): Promise<void> { return this.checkpointQueue; }
 
+  /**
+   * 저장·증명 경로에서 쓰는 대기. 체크포인트 쓰기가 실패해도 **삼키고 진행**한다.
+   *
+   * 왜: 이 대기를 그대로 throw 하면 `proveAppliedRevision` 의 catch 가 잡아 저장 증명을
+   * `failed` 로 끝내고 원격 읽기조차 시도하지 않는다. 실측(2026-09-09, proof-failure
+   * 실표면 시나리오): 체크포인트 한 건이 거부되자 `store.flush()` 에 도달하지 못해
+   * **저장 자체가 사라졌다**. 복구 장치가 정본 저장을 죽이는 것은 순서가 뒤집힌 것이다.
+   * 실패하면 복구 가능성만 잃고, 저장·증명은 그대로 간다.
+   */
+  private async checkpointBestEffort(): Promise<void> {
+    try { await this.whenCheckpointed(); }
+    catch (cause) {
+      this.pushAudit({ kind: "status", text: `agent_run:checkpoint-write-failed — ${cause instanceof Error ? cause.message : String(cause)} (저장·증명은 계속합니다)` });
+    }
+  }
+
   private exportRuntime(): RunRuntimeState {
     // captureCheckpoint clones the whole row synchronously, including this runtime.
     return { schemaVersion: 1, instruction: this.currentTurnInstruction,
@@ -1038,7 +1054,8 @@ export class AssistantSession {
       }
     }
     this.captureCheckpoint();
-    await operation.wait(this.whenCheckpointed());
+    // 시작 체크포인트 실패로 사용자의 턴 자체를 막지 않는다 — 복구 가능성만 잃는다.
+    await operation.wait(this.checkpointBestEffort());
   }
 
   /** Durably prepare the one candidate BEFORE the real store mutation; this grants no review authority. */
@@ -1060,7 +1077,8 @@ export class AssistantSession {
     this.checkpointTerminal = this.runExecution === "response-final" && this.turnProposals.size === 0
       && (!this.workPlan || isWorkPlanComplete(this.workPlan));
     this.captureCheckpoint();
-    await this.whenCheckpointed();
+    // 정산도 마찬가지다 — 기록 실패가 턴 종료를 실패로 바꾸지 않는다.
+    await this.checkpointBestEffort();
   }
 
   /** No writes or capability import. Recheck the live project immediately before installing canonical state. */
@@ -4153,7 +4171,9 @@ export class AssistantSession {
       if (this.checkpointKey) {
         this.checkpointPending = { operationId: `${this.checkpointKey.runId}:save`, stage: "saving", proposal: null };
         this.captureCheckpoint();
-        await this.whenCheckpointed();
+        // 체크포인트는 복구 편의이고, 저장·증명은 사용자 작업물의 정본이다. 기록 실패로 저장을
+        // 건너뛰면 회복 장치가 원래 기능을 죽인다 — 실패는 경고로 남기고 저장은 진행한다.
+        await this.checkpointBestEffort();
         if (outcomeOwner !== this.runResult || signal?.aborted) return retired();
       }
       const flushResult = await store.flush();
@@ -4180,7 +4200,8 @@ export class AssistantSession {
       if (this.checkpointKey) {
         this.checkpointPending = { operationId: `${this.checkpointKey.runId}:proof`, stage: "proving", proposal: null };
         this.captureCheckpoint();
-        await this.whenCheckpointed();
+        // 같은 이유로 증명도 체크포인트 실패에 볼모로 잡히지 않는다(저장 증명이 곧 사용자 증거다).
+        await this.checkpointBestEffort();
         if (outcomeOwner !== this.runResult || signal?.aborted) return retired();
       }
       const proof = await store.verifyPersistedRevision(receipt, { signal, validate: project => {
@@ -5308,7 +5329,8 @@ export class AssistantSession {
     for (let round = 0; round < roundCap; round += 1) {
       this.checkpointRoundsUsed = round + 1;
       this.captureCheckpoint();
-      await operation.wait(this.whenCheckpointed());
+      // 라운드 진행은 체크포인트 성공에 의존하지 않는다(복구 편의 < 사용자 작업 진행).
+      await operation.wait(this.checkpointBestEffort());
       if (signal?.aborted) {
         this.runExecution = "cancelled";
         this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
@@ -5551,7 +5573,7 @@ export class AssistantSession {
           this.checkpointRoundsUsed = round + 1;
           this.adoptAcceptance(undefined, onEvent);
           this.captureCheckpoint();
-          await operation.wait(this.whenCheckpointed());
+          await operation.wait(this.checkpointBestEffort());
           const review = await operation.wait(this.reviewCurrentDraft(onEvent, signal, outputLimit - spentOutputTokens));
           spentOutputTokens = this.estimatedOutputTotal - outputAtStart;
           if (signal?.aborted) return { assistantText: "사용자가 중단했습니다", proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted" };

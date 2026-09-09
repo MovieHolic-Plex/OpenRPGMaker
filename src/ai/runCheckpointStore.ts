@@ -212,7 +212,18 @@ export async function saveRunCheckpoint(checkpoint: RunCheckpoint): Promise<{ re
   const id = runCheckpointId(checkpoint);
   const row = { ...checkpoint, id };
   const reason = invalid(row, checkpoint);
-  if (reason) throw new TypeError(`Invalid checkpoint: ${reason}`);
+  if (reason) {
+    // 사유만 던지면 어느 필드가 깨졌는지 알 수 없어 다음 실행이 같은 자리를 다시 헤맨다.
+    // 실측(2026-09-09): 실표면에서 malformed 만 남아 원인 추적에 여러 번의 재현이 필요했다.
+    const field = reason === "malformed"
+      ? [["key", validKey(row)], ["savedAt", count(row.savedAt)], ["status", oneOf(row.status, ["active", "awaiting-user", "terminal"])],
+        ["request", source(row.request)], ["baseContentIdentity", text(row.baseContentIdentity)],
+        ["currentContentIdentity", text(row.currentContentIdentity)], ["workPlan", workPlan(row.workPlan)],
+        ["runtime", row.runtime === undefined || isRunRuntimeState(row.runtime)], ["dataOnly", dataOnly(row)],
+      ].filter(([, ok]) => !ok).map(([name]) => name).join(",") || "payload"
+      : "";
+    throw new TypeError(`Invalid checkpoint: ${reason}${field ? ` (${field})` : ""}`);
+  }
   // Capture before any await; caller mutation cannot alter this write on either backend.
   const snapshot = structuredClone(row);
   const result = await mutateAiRecord(STORE, id, current => {

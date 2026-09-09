@@ -222,6 +222,29 @@ it("reassesses completed recovered scheduling with real ending-quality checks an
   expect(result.proposedCalls).toEqual([]); expect(store.getCurrent()).toEqual(before);
 });
 
+it("still saves and proves the applied revision when a checkpoint write fails", async () => {
+  // 실측 회귀(2026-09-09): 증명 직전 체크포인트가 거부되면 store.flush() 에 도달하지 못해
+  // 저장·증명이 통째로 사라졌다. 복구 장치는 정본 저장을 죽여서는 안 된다.
+  const save = vi.spyOn(checkpoints, "saveRunCheckpoint");
+  // 증명 경로는 원격 저장이 켜져 있어야 들어간다 — 이 픽스처의 기본은 꺼짐이다.
+  store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
+  const flush = vi.spyOn(store, "flush").mockResolvedValue({ kind: "saved" });
+  const session = new AssistantSession(store.getCurrent(), { config, checkpoint: checkpointHost,
+    declareIntent: fixedDeclarer({ mode: "other" }), chat: reviewingChat(async () => final) });
+  await bounded(session.sendUserMessage("Prepare the run"));
+  await bounded(session.whenCheckpointed());
+  const flushesBefore = flush.mock.calls.length;
+  // 이 시점 이후의 모든 체크포인트 쓰기를 거부한다.
+  save.mockImplementation(async () => { throw new TypeError("Invalid checkpoint: malformed"); });
+  const proof = await bounded(session.proveAppliedRevision());
+  // Then: 저장은 실제로 시도됐고, 증명은 체크포인트 실패로 조기 종료되지 않았다.
+  expect(flush.mock.calls.length).toBeGreaterThan(flushesBefore);
+  expect(session.getAuditEntries().some(entry => entry.kind === "status"
+    && entry.text.startsWith("agent_run:checkpoint-write-failed"))).toBe(true);
+  expect(proof.status).not.toBe("attempted");
+  session.retireRun();
+});
+
 it("keeps checkpointing on the same session after one failed write instead of skipping later captures", async () => {
   // A real failure mode: saveRunCheckpoint throws on an unsupported existing row or an aborted
   // transaction. The awaited boundary must still reject, but the session must not go silent afterwards.
