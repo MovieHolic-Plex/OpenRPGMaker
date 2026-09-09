@@ -6,6 +6,7 @@
 // 프로젝트가 실린다. 적용은 브라우저의 커밋 게이트가 그대로 맡는다.
 
 import type { Project } from "@/project/types";
+import type { PiTeamSpec } from "./teamSpec";
 
 export type PiAgentThinkingLevel = "off" | "low" | "medium" | "high";
 
@@ -27,6 +28,8 @@ export interface PiAgentRequest {
   readonly thinkingLevel?: PiAgentThinkingLevel;
   /** 노출할 툴 도메인. 비우면 살아 있는 레지스트리 전부. */
   readonly toolDomains?: readonly string[];
+  /** 팀 모드의 팀원 명세. 비우면 기본 팀. */
+  readonly team?: PiTeamSpec;
 }
 
 export interface PiAgentStats {
@@ -45,7 +48,7 @@ export type PiAgentEvent =
   | { readonly type: "start"; readonly provider: string; readonly model: string; readonly toolCount: number }
   // ── 팀 이벤트. 하위 에이전트의 진행은 agent_event 로 감싸서 흘린다(보드가 행 단위로 그린다). ──
   | { readonly type: "team_start"; readonly task: string; readonly roles: readonly { id: PiTeamRoleId; label: string }[] }
-  | { readonly type: "agent_spawn"; readonly agentId: string; readonly role: PiTeamRoleId; readonly mapId: string | null; readonly mapName: string | null; readonly task: string }
+  | { readonly type: "agent_spawn"; readonly agentId: string; readonly role: PiTeamRoleId; readonly mapId: string | null; readonly mapName: string | null; readonly task: string; readonly memberId?: string; readonly label?: string }
   | { readonly type: "agent_event"; readonly agentId: string; readonly event: PiAgentEvent }
   | { readonly type: "agent_done"; readonly agentId: string; readonly ok: boolean; readonly summary: string; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spills: readonly string[]; readonly conflicts: readonly string[] }
   | { readonly type: "review"; readonly agentId: string; readonly mapId: string | null; readonly ok: boolean; readonly findings: readonly string[] }
