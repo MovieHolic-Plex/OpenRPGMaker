@@ -2461,6 +2461,9 @@ export class AssistantSession {
                 userText: text,
                 activePlan: this.workPlan,
                 projectSummary,
+                // 선언이 이미 정한 신축/수정·다단계 여부를 플래너도 봐야 한다 — 안 실으면 플래너는
+                // 짧은 신축 요청("마을을 만들어")을 파사드 한 호출로 읽고 1항목을 낸다(2026-09-09 진단).
+                intent: this.turnIntent,
               }),
             },
           ], [], this.config, this.originalContext!).messages,
