@@ -243,3 +243,62 @@ test("생활 장부 9탭이 실제 플레이 화면에서 내용을 렌더한다
   await writeFile(`${OUT}/ledger-tabs.json`, JSON.stringify(seen, null, 2));
   expect(errors, "player console/page errors").toEqual([]);
 });
+
+/* R 계열(주민/관계) 행은 기록 그룹의 관계 화면이 실제 표면이다. 픽스처에는 촌장·광부·
+ * 목수·약초사가 있고 friendship 이 세션에 들어간다. */
+test("주민 관계 화면이 실제 플레이에서 인물과 친밀도를 렌더한다", async ({ page }) => {
+  const errors = await boot(page);
+  await page.keyboard.press("x");
+  await rail(page, "record-menu");
+  await choose(page, "status-menu-group-command-relationships");
+
+  const panel = page.getByTestId("status-menu-detail");
+  await expect(panel).toBeVisible({ timeout: 20_000 });
+  // 실측: 시작 세션은 "알려진 관계가 없습니다 / 호감이 기록된 관계만 표시됩니다".
+  // 제품이 옳다 — 빈 상태를 정직하게 보여준다. 그러니 먼저 실제로 관계를 만든다.
+  const empty = ((await panel.innerText()) ?? "").replace(/\s+/g, " ").trim();
+  expect(empty, "빈 상태 문구가 아니다").toContain("관계");
+  await shot(page, "30-relationships-empty");
+
+  // 촌장에게 말을 건다(ev_npc_mayor @14,5 → changeFriendship).
+  await closeMenu(page);
+  await page.evaluate(() => {
+    const w = window as unknown as { __oprnDebug?: { teleport?: (m: string, x: number, y: number) => void } };
+    w.__oprnDebug?.teleport?.("map_farming_demo", 14, 6);
+  });
+  await page.keyboard.press("ArrowUp");
+  await page.keyboard.press("z");
+  // 실측: 촌장 대사가 실제로 열린다("밭은 잘 돌아가나?"). 대사창이 남아 있으면 메뉴 키가
+  // 대사로 먹히므로, 눌린 횟수가 아니라 대사창이 사라진 것을 조건으로 삼는다.
+  // 실측: 촌장 상호작용은 단순 대사가 아니라 선택지 메뉴다 — 대화하기 / 선물하기 / 취소.
+  // 앞선 z 연타는 이 메뉴를 지나쳐 다른 분기를 탔다. 첫 항목이 이미 선택돼 있으므로
+  // 확인 키 한 번으로 "대화하기"를 고른다.
+  await expect(page.getByText("대화하기")).toBeVisible({ timeout: 20_000 });
+  await page.keyboard.press("z");
+  // 이어지는 대사를 끝까지 넘긴다 — 남은 대사창이 있으면 메뉴 키가 대사로 먹힌다.
+  for (let i = 0; i < 12; i++) {
+    if (!(await page.getByTestId("dialogue-speaker").count())) break;
+    await page.keyboard.press("z");
+    await page.getByTestId("dialogue-speaker").waitFor({ state: "detached", timeout: 1_500 }).catch(() => {});
+  }
+  await expect(page.getByTestId("dialogue-speaker")).toHaveCount(0);
+
+  await page.keyboard.press("x");
+  await rail(page, "record-menu");
+  await choose(page, "status-menu-group-command-relationships");
+  const text = ((await page.getByTestId("status-menu-detail").innerText()) ?? "").replace(/\s+/g, " ").trim();
+  // 대화 뒤에는 그 주민이 실제로 목록에 올라와야 한다.
+  expect(text, "대화 후에도 촌장이 관계 목록에 없다").toContain("촌장");
+  await shot(page, "30-relationships");
+  await writeFile(`${OUT}/relationships.txt`, text);
+
+  // 퀘스트도 같은 그룹이다(L0/기록 계열).
+  await page.keyboard.press("x");
+  await rail(page, "record-menu");
+  await choose(page, "status-menu-group-command-quests");
+  await expect(page.getByTestId("status-menu-detail")).toBeVisible({ timeout: 20_000 });
+  await shot(page, "31-quests");
+
+  expect(errors, "player console/page errors").toEqual([]);
+  await appendFile(`${OUT}/SUMMARY.md`, `\n- 관계 화면: ${text.slice(0, 90)}\n`);
+});

@@ -97,5 +97,15 @@
     },
     "recoveryTab": "Absent, recorded as measured: availableLifeLedgerTabs omits it when the session has no recovery claims. Not asserted as present.",
     "falseGreenCaught": "A force-click version of this test PASSED while every tab returned identical 출하 text, because the assertion was reading the tab strip. Tightened to require aria-selected and to read only the panel; it then failed with \"꾸러미 미선택\", proving force click never switched tabs. Tabs are actionIndex entries driven by cursor+confirm."
+  },
+  "residentsProven": {
+    "test": "test/runtime/life-full.spec.ts — \"주민 관계 화면이 실제 플레이에서 인물과 친밀도를 렌더한다\"",
+    "causalProof": "Before talking: 알려진 관계가 없습니다. After talking to 촌장: \"촌장 ☆☆☆☆☆ (0/10) · 10 무관심\". The relationship appears only because the conversation happened.",
+    "interactionShape": "Talking to a resident opens a choice menu — 대화하기 / 선물하기 / 취소 — not a plain dialogue. 대화하기 is selected explicitly; the 선물하기 option is captured in 30-relationships.png as evidence that the gift path exists.",
+    "emptyStateIsCorrect": "The initial empty list is the product behaving correctly: it states 호감이 기록된 관계만 표시됩니다. Recorded rather than reported as a defect.",
+    "coversRowGroups": {
+      "R (주민/관계/선물/생일)": "relationships screen + choice menu",
+      "quests": "31-quests.png"
+    }
   }
 }
