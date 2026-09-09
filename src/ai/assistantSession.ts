@@ -1014,9 +1014,14 @@ export class AssistantSession {
         identity: this.identityOf(this.acceptanceRequestBaseline) };
     }
     let pending = this.checkpointPending;
+    // 라운드마다 도는 캡처는 초안 신원을 **다시 계산하지 않는다**. 실측(2026-09-09, late-cancel):
+    // 신원 1회가 200ms대라 미스 23회가 4.8초였고, 그 누적이 하네스의 60초 신호 창을 넘겨
+    // 늦은 적용 검증이 통째로 실패했다(병합 이전 main 은 같은 지점을 27.8초에 통과).
+    // 적용 직전(prepareCheckpointApply)에는 그대로 정확히 계산한다 — 거기가 진짜 경계다.
     if (!pending && this.turnProposals.size && !this.checkpointTerminal) pending = {
       operationId: `${key.runId}:${key.epoch}:apply`, stage: "proposal-ready", proposal: {
-        baseContentIdentity: this.identityOf(this.baselineProject), contentIdentity: this.identityOf(this.ctx.project),
+        baseContentIdentity: this.identityOf(this.baselineProject),
+        contentIdentity: this.checkpointIdentityCache.get(this.ctx.project) ?? this.checkpointCurrentIdentity,
         project: this.ctx.project, calls: this.finalizeProposals(this.turnProposals),
       },
     };
