@@ -938,14 +938,10 @@ export class AssistantSession {
    * 실표면에서는 그 누적이 60초 정착 예산을 넘겨 UI 가 굳었다. 객체가 바뀌면 자동으로
    * 무효화된다 — 내용이 바뀌면 저장소가 새 객체를 만들기 때문이다.
    */
-  private checkpointIdentityCache = new WeakMap<Project, string>();
-
   private identityOf(project: Project): string {
-    const cached = this.checkpointIdentityCache.get(project);
-    if (cached !== undefined) return cached;
-    const identity = checkpointContentIdentity(project);
-    this.checkpointIdentityCache.set(project, identity);
-    return identity;
+    // 캐시하지 않는다. 독립 검토(2026-09-09)가 잡은 결함: 세션은 위키 준비 뒤 baselineProject·
+    // ctx.project 의 world 를 제자리에서 바꾸므로, 객체 신원을 키로 캐시하면 낡은 신원을 찍는다.
+    return checkpointContentIdentity(project);
   }
   private checkpointQueue: Promise<void> = Promise.resolve();
   private checkpointPending: RunCheckpoint["pending"] = null;
@@ -1023,7 +1019,7 @@ export class AssistantSession {
     if (!pending && this.turnProposals.size && !this.checkpointTerminal) pending = {
       operationId: `${key.runId}:${key.epoch}:apply`, stage: "proposal-ready", proposal: {
         baseContentIdentity: this.identityOf(this.baselineProject),
-        contentIdentity: this.checkpointIdentityCache.get(this.ctx.project) ?? this.checkpointCurrentIdentity,
+        contentIdentity: this.identityOf(this.ctx.project),
         // 초안 바이트는 적용 대기에서만 싣는다(prepareCheckpointApply). 여기서 실으면 쓰기마다
         // 프로젝트를 한 벌 더 복제하는데, 재개는 이 단계에서 그 바이트를 쓰지 않는다.
         calls: this.finalizeProposals(this.turnProposals),
@@ -1033,12 +1029,10 @@ export class AssistantSession {
     if (paused && pending?.stage === "proposal-ready") pending = null;
     const status: RunCheckpoint["status"] = paused ? pending ? "awaiting-user" : "terminal"
       : this.checkpointTerminal && !pending ? "terminal" : "active";
-    // exportRuntime()/snapshot()/getAcceptanceSnapshot() 는 이미 자기 몫을 복제해 돌려준다.
-    // 여기서 행 전체를 한 번 더 structuredClone 하면 프로젝트 여러 벌을 라운드마다 다시 복제한다 —
-    // 실측(2026-09-09): 원장 복원본 생성 약 96ms + 재복제 약 110ms 로 라운드마다 0.2초가
-    // 사라졌고, 실표면 required-skip 은 그 누적으로 정착 예산을 넘겼다.
-    // saveRunCheckpoint 가 쓰기 직전 자기 스냅샷을 다시 뜨므로 호출자 변형도 막힌다.
-    const checkpoint: RunCheckpoint = ({ ...key, schemaVersion: 1,
+    // 캡처는 **그 순간을 동결**해야 한다. 독립 검토(2026-09-09)가 잡은 결함: workPlan 은 살아 있는
+    // 참조이고 항목 상태가 제자리에서 바뀌므로, 동결하지 않으면 저장된 행이 나중의 계획 진행과
+    // 이전 런타임·예산을 섞어 담는다(찢어진 복구 상태). 비용보다 무결성이 먼저다.
+    const checkpoint: RunCheckpoint = structuredClone({ ...key, schemaVersion: 1,
       savedAt: this.checkpointSavedAt = Math.max(Date.now(), this.checkpointSavedAt + 1), status,
       request: this.acceptanceRequestSource, baseContentIdentity: this.checkpointRequestBaseline.identity,
       currentContentIdentity: this.checkpointCurrentIdentity, workPlan: this.workPlan,
@@ -1058,7 +1052,7 @@ export class AssistantSession {
       save: this.runReceipt?.projectId === key.projectId ? this.runReceipt : null,
       proof: (() => { const proof = this.getRunEndProof();
         return proof?.receipt && proof.receipt.projectId !== key.projectId ? null : proof; })(),
-      pending }) as RunCheckpoint;
+      pending });
     // Order is preserved, but a rejected predecessor must not skip this write: `.then` alone would
     // silently drop every later capture in this session after one failed row (unsupported existing row,
     // aborted transaction). Each capture waits for the previous attempt to settle and then writes itself.
@@ -1111,11 +1105,10 @@ export class AssistantSession {
       project, calls: this.finalizeProposals(this.turnProposals),
     } };
     this.captureCheckpoint();
-    // 적용 직전 내구성은 **되도록** 확보한다. 다만 기록이 거부되면 사용자의 적용까지 실패하는
-    // 것은 순서가 뒤집힌 것이다 — 실측(2026-09-09, late-cancel): 이 대기가 던져 적용이 아예
-    // 일어나지 않았고 제안 완료 콜백도 오지 않았다. 실패는 감사에 남기고 적용은 진행한다.
-    // (거부 자체는 별개 결함으로 고쳤다: 프로젝트 신원·영수증 소유 불일치.)
-    await operation.wait(this.checkpointBestEffort());
+    // 적용 직전은 **진짜 내구성 경계**다 — 여기서 기다린 기록이 있어야 적용 직후 중단에서
+    // "이미 적용됨"을 알아볼 수 있다. 그래서 실패를 삼키지 않는다. 호출자(aiProposalCard)는
+    // 중단으로 인한 거부를 소유권 상실로 처리하고, 그 외 실패는 그대로 드러난다.
+    await operation.wait(this.whenCheckpointed());
   }
 
   /**

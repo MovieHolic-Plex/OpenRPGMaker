@@ -307,7 +307,12 @@ export function createProposalHost(options: {
     // "거부"인지 "실패"인지도 사라졌다. 중단은 예외가 아니라 소유권 상실이므로 아래
     // ownsApply() 가 판정하게 넘긴다.
     try { await session.prepareCheckpointApply(); }
-    catch { if (!ownsApply()) return "rejected"; }
+    catch (cause) {
+      // 중단·교체는 예외가 아니라 소유권 상실이다. 그 외 실패는 적용 전 내구성이 없다는 뜻이라
+      // 그대로 올린다 — 삼키면 "적용됐는지 모르는" 상태를 만든다.
+      if (!ownsApply()) return "rejected";
+      throw cause;
+    }
     if (!ownsApply()) return "rejected";
     const applied = await applyProposedProject(applyProject, {
       base,
