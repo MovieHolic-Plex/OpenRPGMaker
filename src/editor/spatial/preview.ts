@@ -1,6 +1,7 @@
 import { deserialize } from "@/project/io";
 import { assertNever, checkedDocument, freezeSpatial, own, spatialId } from "@/project/spatial/domain";
 import { occurrenceSubtree } from "@/project/spatial/ownership";
+import { validateSpatialAuthoring } from "@/project/spatial/guards";
 import type { SpatialConnection } from "@/project/spatial/types";
 import type { Project } from "@/project/types";
 import type { SpatialAuthoringPreview, SpatialAuthoringRequest } from "./authoringTypes";
@@ -9,6 +10,7 @@ import { compileSpatialOccurrence } from "./compileSpatialOccurrence";
 import { SpatialCompileError } from "./compilerTypes";
 import { releaseAuthoringOverviewEntries } from "./authoringOverview";
 import { releasePlaceOwnership } from "./placeOwnership";
+import { prepareGeographyMotion } from "./authoringGeographyMove";
 
 /** Protected output comes from the controller checkpoint; impact covers the original live proposal. */
 export function previewSpatialAuthoring(input: Project, request: SpatialAuthoringRequest,
@@ -17,14 +19,16 @@ export function previewSpatialAuthoring(input: Project, request: SpatialAuthorin
   if (JSON.stringify([input.maps, input.mapConnections, input.mapTree]) !== JSON.stringify([checkpoint.maps, checkpoint.mapConnections, checkpoint.mapTree])) {
     throw new SpatialCompileError("ownership", "Raster edits require the map editor, not a spatial draft");
   }
-  const project = deserialize(JSON.stringify(input));
   const protectedDocument = checkedDocument(checkpoint.spatialAuthoring, checkpoint);
-  const document = checkedDocument(project.spatialAuthoring, project);
-  for (const id of new Set([...Object.keys(protectedDocument.occurrences), ...Object.keys(document.occurrences)])) {
-    if (JSON.stringify(protectedDocument.occurrences[id]?.bindings ?? []) !== JSON.stringify(document.occurrences[id]?.bindings ?? [])) {
+  const authored = validateSpatialAuthoring(input.spatialAuthoring);
+  for (const id of new Set([...Object.keys(protectedDocument.occurrences), ...Object.keys(authored.occurrences)])) {
+    if (JSON.stringify(protectedDocument.occurrences[id]?.bindings ?? []) !== JSON.stringify(authored.occurrences[id]?.bindings ?? [])) {
       throw new SpatialCompileError("ownership", `${id}: use the explicit ownership operation`);
     }
   }
+  const prepared = prepareGeographyMotion({ ...input, spatialAuthoring: authored }, request, { project: checkpoint, document: protectedDocument });
+  const project = deserialize(JSON.stringify(prepared));
+  const document = checkedDocument(project.spatialAuthoring, project);
   switch (request.operation.kind) {
     case "edit-connection": {
       if (!request.compile) throw new SpatialCompileError("target", "Connection edits require explicit containing compilation");

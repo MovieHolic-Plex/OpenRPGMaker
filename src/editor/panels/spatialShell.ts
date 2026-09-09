@@ -20,6 +20,7 @@ import {
   type SpatialSourceFilter,
 } from "@/editor/panels/spatialAuthoringSession";
 import { setSelectedTileset } from "@/editor/panels/tilesetSettingsPanel";
+import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
 import { el } from "@/util/dom";
 
 export function renderSpatialAuthoringShell(
@@ -106,6 +107,14 @@ function handleShellKey(event: KeyboardEvent, selected: SpatialGalleryCard | und
   }
   const session = spatialSession();
   if (event.key === "Escape") {
+    if (geographyChromeState.gesture || geographyChromeState.routeDraft.length > 0) {
+      event.preventDefault();
+      geographyChromeState.gesture = null;
+      geographyChromeState.routeDraft = [];
+      geographyChromeState.previewError = null;
+      refresh();
+      return;
+    }
     if (session.inspectorOpen) {
       event.preventDefault();
       patchSpatialSession({ inspectorOpen: false });

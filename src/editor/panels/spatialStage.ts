@@ -27,6 +27,17 @@ import {
 } from "@/editor/panels/spatialSpacesTab";
 import { renderSpatialTilesCanvas, spatialTilesChrome, type SpatialDomainChrome } from "@/editor/panels/spatialTilesTab";
 import { renderSpatialBuildChrome, renderSpatialBuildPanel } from "@/editor/panels/spatialBuildChrome";
+import {
+  renderSpatialRegionsCanvas,
+  renderSpatialRegionsInspector,
+  spatialRegionsChrome,
+} from "@/editor/panels/spatialRegionsTab";
+import {
+  renderSpatialWorldsCanvas,
+  renderSpatialWorldsInspector,
+  spatialWorldsChrome,
+} from "@/editor/panels/spatialWorldsTab";
+import { restoreGeographyParent } from "@/editor/panels/spatialGeographyNavigate";
 import { el } from "@/util/dom";
 
 const TAB_LABEL = {
@@ -69,6 +80,8 @@ function domainChrome(session: SpatialAuthoringSession, onChange: () => void): S
   if (session.tab === "objects") return spatialObjectsChrome(selected, onChange);
   if (session.tab === "spaces") return spatialSpacesChrome(selected, onChange);
   if (session.tab === "places") return spatialPlacesChrome(visiblePlaceSelection(selected), onChange);
+  if (session.tab === "regions") return spatialRegionsChrome(selected, onChange);
+  if (session.tab === "worlds") return spatialWorldsChrome(selected, onChange);
   return undefined;
 }
 
@@ -132,7 +145,16 @@ export function renderSpatialChrome(
               ...(session.breadcrumb.length === 0 ? { disabled: "" } : {}),
             },
             dataset: { testid: "spatial-back" },
-            on: { click: () => { popSpatialBreadcrumb(); onChange(); } },
+            on: {
+              click: () => {
+                if (session.tab === "regions" || session.tab === "worlds" || session.breadcrumb.length > 0) {
+                  restoreGeographyParent(onChange);
+                  return;
+                }
+                popSpatialBreadcrumb();
+                onChange();
+              },
+            },
           }),
           el("span", { class: "spatial-crumb-label", text: crumbLabel, dataset: { testid: "spatial-name" } }),
         ],
@@ -197,6 +219,8 @@ export function renderSpatialCanvas(
   if (session.tab === "objects") return renderSpatialObjectsCanvas(session, card);
   if (session.tab === "spaces") return renderSpatialSpacesCanvas(session, card, rerender);
   if (session.tab === "places") return renderSpatialPlacesCanvas(session, visiblePlaceSelection(card), rerender);
+  if (session.tab === "regions") return renderSpatialRegionsCanvas(session, card, rerender);
+  if (session.tab === "worlds") return renderSpatialWorldsCanvas(session, card, rerender);
   const legacy = renderLegacyStage(session, rerender);
   const art = card ? renderSpatialCardThumb(card) : el("div", { class: "spatial-canvas-empty" });
   art.classList.add("spatial-canvas-art");
@@ -226,6 +250,12 @@ export function renderSpatialInspector(
   if (spatialSession().tab === "spaces") return renderSpatialSpacesInspector(card, open, onChange);
   if (spatialSession().tab === "places") {
     return renderSpatialPlacesInspector(visiblePlaceSelection(card), open, onChange);
+  }
+  if (spatialSession().tab === "regions") {
+    return renderSpatialRegionsInspector(spatialSession(), card, onChange);
+  }
+  if (spatialSession().tab === "worlds") {
+    return renderSpatialWorldsInspector(spatialSession(), card, onChange);
   }
   const body: HTMLElement[] = [];
   if (card) {

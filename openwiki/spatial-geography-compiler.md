@@ -72,6 +72,15 @@ old ownership. Manual edits of owned raster/events reject; there is no automatic
 merge. Stable event/connection order is restored before owned digests are finalized,
 so serializer reload and repeat compilation retain exact project values.
 
+Each geography owner now retires only its own entry pairs, retaining descendant
+metadata until that child's compiler can capture its saved identities. Release
+first validates full old pair/event/projection contracts and subtree-owned digests,
+then returns a private proven-pair value to the emitter. Existing opaque saved
+enter/return IDs are retained instead of being derived again. Unchanged pair
+payloads are preserved exactly; changed endpoints receive freshly built transfer
+commands. This also applies after the shared controller's protected compiled-motion
+preparation; see [the controller contract](spatial-authoring-controller.md).
+
 ## Contract fixtures and proof
 
 `test/support/spatialGeographyRecipes.ts` defines six differentiated 128x96 region
