@@ -3,7 +3,8 @@ import { IDBFactory } from "fake-indexeddb";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { resetAiRecordDbForTest, writeAiRecords } from "@/ai/aiRecordDb";
 import { readLatestRunCheckpoint, saveRunCheckpoint, runCheckpointId, type RunCheckpoint } from "@/ai/runCheckpointStore";
-import { checkpointContentIdentity, reconcileRunCheckpoint, type RunRuntimeState } from "@/ai/runRecovery";
+import { checkpointContentIdentity, isRunRuntimeState, reconcileRunCheckpoint, type RunRuntimeState } from "@/ai/runRecovery";
+import { AssistantAcceptanceLedger } from "@/ai/assistantAcceptanceLedger";
 import { ToolVerificationEvidence } from "@/ai/toolVerificationEvidence";
 import { createBlankProject } from "@/project/defaults";
 
@@ -70,6 +71,21 @@ it("keeps legacy and memory-backed rows transcript-only", async () => {
   vi.stubGlobal("indexedDB", undefined); resetAiRecordDbForTest();
   await saveRunCheckpoint(checkpoint);
   expect(reconcileRunCheckpoint(await read(), checkpoint.runtime.requestBaseline)).toMatchObject({ kind: "unsupported", reason: "not-durable" });
+});
+it.each(["request", "ledger", "promise"] as const)("revalidates the %s baseline after an earlier successful runtime validation", kind => {
+  const checkpoint = fixture();
+  const ledger = new AssistantAcceptanceLedger("acceptance", "Original goal", checkpoint.runtime.requestBaseline);
+  ledger.adopt([{ id: "title", title: "Title", criteria: [{ kind: "gameTitle", title: "Expected" }] }],
+    checkpoint.runtime.requestBaseline, checkpoint.request);
+  const runtime = { ...checkpoint.runtime, acceptance: ledger.exportRecovery() };
+  expect(isRunRuntimeState(runtime)).toBe(true);
+  const baseline = kind === "request" ? runtime.requestBaseline
+    : kind === "ledger" ? runtime.acceptance.baseline : runtime.acceptance.promises[0]?.baseline;
+  if (!baseline) throw new Error("Missing canonical baseline");
+  baseline.meta.title = "Different valid baseline";
+  expect(isRunRuntimeState(runtime)).toBe(true);
+  Reflect.set(baseline.meta, "title", 123);
+  expect(isRunRuntimeState(runtime)).toBe(false);
 });
 it("persists host runtime recovery state through the actual checkpoint boundary", async () => {
   await expect(saveRunCheckpoint(fixture())).resolves.toEqual({ durable: true, written: true });

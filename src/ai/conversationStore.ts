@@ -1,3 +1,4 @@
+import { deleteTerminalRunCheckpointsForConversation } from "./runCheckpointStore";
 import type { AuditEntry } from "@/ai/assistantSession";
 import {
   AI_RECORD_STORES,
@@ -465,7 +466,11 @@ export async function clearConversations(): Promise<void> {
     await ensureLegacyMigrated();
     getLegacyStorage()?.removeItem(LEGACY_CONVERSATION_STORAGE_KEY);
     legacyMigration = Promise.resolve();
+    const conversations = await readAll();
     await clearAiRecords(STORE);
+    for (const record of conversations) if (record.projectContextKey) {
+      await deleteTerminalRunCheckpointsForConversation(record.id, record.projectContextKey);
+    }
   } catch (error) {
     console.warn("[ai-conversation] 대화 기록을 비우지 못했습니다:", error);
   }
@@ -514,6 +519,7 @@ export async function loadConversationForScope(id: string, projectContextKey: st
 export async function deleteConversationForScope(id: string, projectContextKey: string | null): Promise<{ readonly durable: boolean }> {
   await ensureLegacyMigrated();
   const result = await mutateScopedAiRecord<ConversationRecord>({ store: STORE, id, scope: projectContextKey }, null);
+  if (result.written && projectContextKey) await deleteTerminalRunCheckpointsForConversation(id, projectContextKey);
   return { durable: result.backend === "indexeddb" };
 }
 

@@ -1,3 +1,5 @@
+import { readLatestRunCheckpoint } from "@/ai/runCheckpointStore";
+import { reconcileRunCheckpoint, type RunRecovery } from "@/ai/runRecovery";
 // editor/panels/aiChatPanel.ts
 // LLM 어시스턴트 채팅 dock. 대화 히스토리 + 입력 + 스트리밍 표시 + 제안(changeset) 카드 + 설정 폼.
 // - 이 파일은 패널 조립/배선(orchestration)을 소유한다. 순수 헬퍼·카드·설정·로그 렌더는 형제 모듈로 분리.
@@ -714,6 +716,64 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    */
   let pendingPriorTranscript: string | null = null;
 
+  let recoveryGeneration = 0;
+  let recoveryNotice: HTMLElement | null = null;
+  const clearRecovery = (): void => { recoveryGeneration++; recoveryNotice?.remove(); recoveryNotice = null; };
+
+  const loadConversationCheckpoint = async (): Promise<void> => {
+    const generation = ++recoveryGeneration;
+    const id = conversationId, scope = conversationScope, identity = store.getProjectIdentity().id;
+    const current = (): boolean => !disposed && generation === recoveryGeneration && conversationId === id
+      && conversationScope === scope && store.getProjectIdentity().id === identity;
+    const paint = (recovery: RunRecovery): void => {
+      if (!current()) return;
+      recoveryNotice?.remove();
+      const labels = { resumable: "중단된 실행 기록이 있습니다. 남은 작업만 계속할 수 있습니다.",
+        "needs-reconciliation": "적용 또는 저장 상태를 확인해야 합니다. 현재 프로젝트를 확인하세요.",
+        terminal: "이 실행은 종료되었거나 사용자 입력을 기다립니다. 새 요청을 입력하세요.",
+        unsupported: "대화 기록만 복원했습니다. 안전한 실행 복구 기록은 없습니다." };
+      const notice = el("div", { class: "ai-retry-row", dataset: { testid: "ai-run-recovery", state: recovery.kind, next: recovery.next },
+        children: [el("span", { text: labels[recovery.kind] })] });
+      recoveryNotice = notice;
+      if (recovery.kind === "resumable") notice.append(el("button", {
+        text: "남은 작업 계속", attrs: { type: "button" }, dataset: { testid: "ai-run-continue" },
+        on: { click: () => {
+          void panelPendingWork.track((async () => {
+            if (!current() || turnBusy || !ensureConfigReadyForSend()) return;
+            const latest = await readLatestRunCheckpoint(id, identity, scope);
+            if (!current() || turnBusy || controller.session !== null) return;
+            if (latest.kind !== "found") { paint(reconcileRunCheckpoint(latest, store.getCurrent())); return; }
+            const decision = reconcileRunCheckpoint(latest, store.getCurrent());
+            if (decision.kind !== "resumable") { paint(decision); return; }
+            const session = ensureSession();
+            const admitted = session.restoreCheckpoint(latest.checkpoint, latest.durable);
+            if (admitted.kind !== "resumable") { paint(admitted); return; }
+            const runtime = latest.checkpoint.runtime;
+            if (!runtime) return;
+            clearRecovery();
+            composerMode = runtime.composerMode; composerShell.setMode(composerMode);
+            const plan = session.getWorkPlan();
+            if (plan) showWorkPlan(plan);
+            stickyChecklist.update(session.getAcceptanceSnapshot());
+            await executeTurn(session, runtime.instruction, (onEvent, signal) => session.resumeRecoveredRun(onEvent, signal),
+              { composerMode: runtime.composerMode, autonomous: runtime.autonomous });
+          })().catch(cause => {
+            if (current()) setStatus(`실행 복구 실패: ${cause instanceof Error ? cause.message : String(cause)}`);
+            else console.warn("[aiRunRecovery] Retired recovery failed", cause);
+          }));
+        } },
+      }));
+      else notice.append(el("button", { text: recovery.kind === "needs-reconciliation" ? "현재 프로젝트 확인" : "새 요청 입력",
+        attrs: { type: "button" }, dataset: { testid: "ai-run-recovery-choice" }, on: { click: () => { clearRecovery(); input.focus(); } } }));
+      log.append(notice);
+    };
+    const read = await readLatestRunCheckpoint(id, identity, scope);
+    if (!current() || turnBusy || controller.session !== null) return;
+    paint(reconcileRunCheckpoint(read, store.getCurrent()));
+  };
+
+
+
   // 맥락 게이지는 컴포저가 만들어질 때(파일 아래쪽) 붙는다. 복원·턴 종료 같은 이른 경로도
   // 갱신을 호출하므로 홀더 + 널 가드 한 겹을 둔다(선언 순서에 걸려 TDZ 로 죽지 않게).
   let contextMeter: AiContextMeterHandle | null = null;
@@ -730,6 +790,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const priorTranscript = pendingPriorTranscript;
       pendingPriorTranscript = null;
       controller.session = new AssistantSession(store.getCurrent(), {
+        checkpoint: { conversationId, projectId: store.getProjectIdentity().id, projectContextKey: conversationScope },
         config: resolveSurfaceAiConfig("chat"),
         prepareProjectWiki: input => createProjectWikiCoordinator({
           getConfig: () => resolveSurfaceAiConfig("chat"),
@@ -849,6 +910,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshExportButton();
     syncConversationState();
     if (source === "manual") appendBubble("system", "이전 대화를 열었습니다.");
+    void panelPendingWork.track(loadConversationCheckpoint());
     refreshContextMeter();
   };
 
@@ -871,6 +933,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     resumeTarget: ConversationRecord | null = null,
   ): boolean => {
     closeAiConversationHistoryModal();
+    clearRecovery();
     // 버릴 것이 있었는지를 보관 전에 재다 — 부팅 지연 로드도 프로젝트 전환으로 보이므로,
     // 할 이야기가 없는 전환은 조용하게 재스코프만 한다.
     const discardedEntries = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length;
@@ -1580,6 +1643,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const trimmed = text.trim();
     if (!trimmed) return;
     if (!ensureConfigReadyForSend()) return;
+    clearRecovery();
     if (activeAbortController?.signal.aborted && activeAbortController !== activeSelectionRegionController) turnRunner.abortTurn();
     if (turnBusy) {
       pendingSends.push({

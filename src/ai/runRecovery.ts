@@ -51,9 +51,6 @@ const count = (value: unknown): value is number => typeof value === "number" && 
 const text = (value: unknown): value is string => typeof value === "string" && value.length > 0;
 const pairs = (value: unknown): boolean => Array.isArray(value) && value.every(entry => Array.isArray(entry)
   && entry.length === 2 && typeof entry[0] === "string" && typeof entry[1] === "string");
-function project(value: unknown): boolean {
-  try { deserialize(JSON.stringify(value)); return true; } catch { return false; }
-}
 function source(value: unknown): boolean {
   if (!acceptanceRecord(value) || !text(value.requestId) || typeof value.text !== "string") return false;
   if (value.scope === null) return true;
@@ -61,14 +58,23 @@ function source(value: unknown): boolean {
   const region = value.scope.region;
   return [region.x, region.y, region.width, region.height].every(count) && Number(region.width) > 0 && Number(region.height) > 0;
 }
-function promise(value: unknown): boolean {
-  return acceptanceRecord(value) && text(value.id) && typeof value.title === "string" && project(value.baseline)
-    && (value.criteria === null || parseAcceptanceCriteriaResult(value.criteria).criteria !== null)
-    && (value.required === undefined || typeof value.required === "boolean");
-}
-
 /** JSON is a system boundary; malformed contracts never reach a live session. */
 export function isRunRuntimeState(value: unknown): value is RunRuntimeState {
+  // Different ledger owners can retain byte-identical original projects. Validate each
+  // distinct payload once in this call only; a later read or mutation is always revalidated.
+  const projects = new Set<string>();
+  function project(value: unknown): boolean {
+    try {
+      const raw = JSON.stringify(value);
+      if (!projects.has(raw)) { deserialize(raw); projects.add(raw); }
+      return true;
+    } catch { return false; }
+  }
+  function promise(value: unknown): boolean {
+    return acceptanceRecord(value) && text(value.id) && typeof value.title === "string" && project(value.baseline)
+      && (value.criteria === null || parseAcceptanceCriteriaResult(value.criteria).criteria !== null)
+      && (value.required === undefined || typeof value.required === "boolean");
+  }
   if (!acceptanceRecord(value) || value.schemaVersion !== 1 || !text(value.instruction) || !text(value.requestText)
     || !["do", "ask", "plan"].includes(String(value.composerMode)) || typeof value.autonomous !== "boolean"
     || !["response-final", "awaiting-user", "blocked", "cancelled", "budget-exhausted", "failed"].includes(String(value.execution))

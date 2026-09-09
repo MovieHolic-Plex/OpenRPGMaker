@@ -842,7 +842,18 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         });
         errorBubble.append(el("div", { class: "ai-retry-row", children: [settingsBtn] }));
       }
-    } finally { finishTurn(); }
+    } finally {
+      if (ownsTurn(true) && !abortController.signal.aborted) {
+        try { await operation.wait(session.settleCheckpoint()); }
+        catch (cause) {
+          if (ownsTurn(true) && !abortController.signal.aborted) {
+            turnFailed = true;
+            deps.surface.appendBubble("system", `실행 복구 기록 저장 실패: ${cause instanceof Error ? cause.message : String(cause)}`);
+          }
+        }
+      }
+      finishTurn();
+    }
   };
 
 

@@ -301,6 +301,8 @@ export function createProposalHost(options: {
       ?? applyProject.startMapId;
     const completionInstruction = instruction.trim();
     clearAgentGhostPreview();
+    await session.prepareCheckpointApply();
+    if (!ownsApply()) return "rejected";
     const applied = await applyProposedProject(applyProject, {
       base,
       operation,
