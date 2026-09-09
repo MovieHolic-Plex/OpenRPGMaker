@@ -50,6 +50,7 @@ import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/auton
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
 import { store } from "@/project/store";
 import { parsePiCommand, runPiCommand } from "./aiPiAgentCommand";
+import { createTeamPanel } from "./aiTeamPanel";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
@@ -2561,10 +2562,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // ⋯ 메뉴·성향·맥락 팝오버는 토글이 있는 레일 아래 오른쪽에 붙는다 — 열림/닫힘 기계는 컴포저 것 그대로.
   // 컴포저 위로 띄우면 기록과 레일을 덮어 토글 자신이 가려진다(실측 2026-09-03).
   rail.root.append(commandMenu, composerShell.preferencePopover, contextMeter.popover);
+  // 팀 패널: 레일 아래 접힌 막대. 유휴 상태(본문 숨김)에서도 「누가 무엇을 하는지」 한 줄이 보인다.
+  const teamPanel = createTeamPanel();
   const deck = el("div", {
     class: "ai-deck",
     dataset: { testid: "ai-deck" },
-    children: [rail.root, body, outcomeSlot, commandBar],
+    children: [rail.root, teamPanel.root, body, outcomeSlot, commandBar],
   });
   deckRoot = deck;
 
@@ -2580,6 +2583,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     },
     children: [toolbar, deck, collapsedRestore, collapsedUndo, stickyProposalZone],
   });
+  teamPanel.onToggle((open) => panel.classList.toggle("is-team-open", open));
   panelRoot = panel;
   // 오버레이가 컴포저를 덮지 않도록 "바 + 열린 팝오버"의 최상단까지를 실측해 CSS 변수로 흘린다.
   // (bottom 76px 고정은 칩 행 + 여러 줄 입력으로 커진 바를 덮었다 — H01 실측.)
