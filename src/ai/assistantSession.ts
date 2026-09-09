@@ -5376,9 +5376,12 @@ export class AssistantSession {
 
     for (let round = 0; round < roundCap; round += 1) {
       this.checkpointRoundsUsed = round + 1;
+      // 라운드 예산만 갱신하고 캡처는 **의미 있는 사건**(tool_call/work_plan/acceptance)과
+      // 적용·저장·증명 경계가 이미 담당한다. 라운드마다 캡처하고 그 완료를 기다리면 왕복이
+      // 통째로 느려진다 — 실측(2026-09-09, late-cancel A/B): 라운드 간격 중앙값이
+      // 926ms(병합 이전) → 3443ms 로 3.7배가 됐고, 그 누적이 늦은 적용 검증을 실패시켰다.
+      // 재개 정확도는 사건 기반 캡처가 유지한다(라운드 예산은 다음 캡처에 함께 실린다).
       this.captureCheckpoint();
-      // 라운드 진행은 체크포인트 성공에 의존하지 않는다(복구 편의 < 사용자 작업 진행).
-      await operation.wait(this.checkpointBestEffort());
       if (signal?.aborted) {
         this.runExecution = "cancelled";
         this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
