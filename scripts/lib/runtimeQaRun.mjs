@@ -321,6 +321,30 @@ async function applyOp(page, op, runState) {
     case "waitForVisible":
       await waitForVisibleTestid(page, op);
       return;
+    case "pointerClick": {
+      const info = await page.evaluate((testid) => {
+        const nodes = document.querySelectorAll(`[data-testid="${testid}"]`);
+        if (nodes.length !== 1) throw new Error(`expected one pointer target ${testid}, got ${nodes.length}`);
+        const node = nodes[0];
+        const style = getComputedStyle(node);
+        const rect = node.getBoundingClientRect();
+        const top = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        return {
+          disabled: node.hasAttribute("disabled") || node.getAttribute("aria-disabled") === "true",
+          hidden: style.visibility === "hidden" || style.display === "none",
+          hit: Boolean(top) && node.contains(top),
+          topTestid: top && top.dataset ? (top.dataset.testid ?? null) : null,
+          box: { w: rect.width, h: rect.height, left: rect.left, top: rect.top },
+        };
+      }, op.testid);
+      if (info.disabled) throw new Error(`pointer target disabled: ${op.testid}`);
+      if (info.hidden) throw new Error(`pointer target hidden: ${op.testid}`);
+      if (info.box.w < 1 || info.box.h < 1) throw new Error(`pointer target zero box: ${op.testid}`);
+      // 가려짐을 그냥 넘기면 오버레이를 눌러도 성공으로 보고된다. 덮은 대상까지 적는다.
+      if (!info.hit) throw new Error(`pointer target occluded: ${op.testid} (top=${info.topTestid ?? "unknown"})`);
+      await page.mouse.click(info.box.left + info.box.w / 2, info.box.top + info.box.h / 2, { button: "left" });
+      return;
+    }
     case "waitForAttr":
       await page.waitForFunction(
         ([testid, attr, value]) => {

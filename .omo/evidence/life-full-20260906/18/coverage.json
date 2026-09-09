@@ -55,6 +55,12 @@
       "conclusion": "Both input channels fail: injected keyboard edges do not expand a selected group entry, and a physical click cannot reach the rail because it is occluded. This is a harness/environment limitation, not a product defect.",
       "valueOfTheGuard": "Without the elementFromPoint hit test the click would have landed on the overlay and reported success, hiding the reason load never opened.",
       "selfInflictedBreakage": "My diagnostic probe was inserted in the wrong scope and broke the shared runner (title-screen never rendered, OCC=undefined was runner death, not a measurement). Reverted to the committed state with git checkout and re-verified the scenario passes; the shared harness is used by other scenarios and must not be left broken."
+    },
+    "titleResumePathTried": {
+      "path": "titleScreen.ts exposes the canonical resume as continueGame -> testId title-load-game, and it renders whenever visibility.continueGame !== false, i.e. OUTSIDE the collapsed rail groups. That is how a real player resumes.",
+      "result": "Could not verify: returning to the title mid-run made the runner fail its initial title-screen wait (runtimeQaRun.mjs:695) on the next execution, so the resume beat never produced a measurement.",
+      "falseConclusionCorrected": "I first concluded my authored save-point event broke the boot, because removing it made a run pass. Then I ran the SAME fixture (save point included) under life-tree-chop and it passed — so the event is innocent and my one-sided comparison was wrong. Recorded because stopping at the first comparison would have blamed a healthy authored event.",
+      "verdict": "Resume stays UNPROVEN as a harness limitation. No evidence of a product defect."
     }
   }
 }
