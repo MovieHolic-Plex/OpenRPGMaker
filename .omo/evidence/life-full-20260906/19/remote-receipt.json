@@ -4,19 +4,22 @@
   "host": "http://dbserver:8100",
   "ok": true,
   "writes": 1,
-  "savedSha256": "fece81eefcdd23d3948335ad7432dc59316fc50495acc64ed1d1a8161df614cb",
-  "localSerializedSha256": "fece81eefcdd23d3948335ad7432dc59316fc50495acc64ed1d1a8161df614cb",
+  "savedSha256": "f793ee07d6a1b5856d65bdc073bfb9cd510f0354513f9190d566200289d20517",
+  "localSerializedSha256": "f793ee07d6a1b5856d65bdc073bfb9cd510f0354513f9190d566200289d20517",
   "reloadValidated": true,
   "definitionsMatch": true,
   "placementMatch": true,
   "isolation": "explicit rpg-zzu-life-full-* id; no other project row is read or written by this script",
-  "at": "2026-09-09T08:08:20.239Z",
-  "reloadedDataPlayed": {
-    "command": "npm run qa:runtime -- --scenario life-full --project test/fixtures/life-full.reloaded.project.json",
-    "fixture": "test/fixtures/life-full.reloaded.project.json (written by --write-reloaded from the ACTUAL Supabase reload, not the local fixture)",
-    "gate": "통과",
-    "errors": [],
-    "beats": "10/10 pass",
-    "proof": "The remotely stored project actually plays: till, sow, water, sleep, regrow, water, sleep, harvest — potato 0->1 on the shipped player.html. A save-success response alone could not show this."
+  "at": "2026-09-09T11:09:12.763Z",
+  "rowLifetimeCorrection": {
+    "observed": "Later in the session both rpg-zzu-life-full-* rows had disappeared (query returned []), while unrelated rows persisted including one written the same day at 11:08. An external cleanup removes these rows; the save was real but is NOT durable on this instance.",
+    "impact": "The editor e2e that loads ?project=rpg-zzu-life-full-01a08046-verify could not boot because the row was gone — that was the real cause of edit-canvas never rendering, not a spec defect.",
+    "reSaved": "Re-ran the script: ok true, writes 1, reload validated.",
+    "shaChanged": {
+      "from": "fece81eefcdd23d3948335ad7432dc59316fc50495acc64ed1d1a8161df614cb",
+      "to": "f793ee07d6a1b5856d65bdc073bfb9cd510f0354513f9190d566200289d20517",
+      "reason": "The fixture now authors the save-point event (openSaveMenu) added for the task18 save proof, so the serialized project legitimately differs."
+    },
+    "honestLimit": "Task 19 remains proven as a real save+reload round trip, but the remote row must be treated as ephemeral: any later consumer has to re-save first. The earlier receipt implied a persistent row and is corrected here."
   }
 }

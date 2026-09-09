@@ -20,7 +20,6 @@
   "receiptSequence": "1..7 strictly increasing — no beat passed on a stale receipt",
   "notYetProven": {
     "shippingAndSettlement": "BLOCKED on scenario-side menu activation, NOT on the product. Seven attempts. Narrowed by measurement: (1) the rail renders collapsed group entries — items, skills, equipment, party-menu, record-menu, system-menu — dumped from the live DOM; (2) counted ArrowDown x4 DOES move the cursor, proven because waitForAttr aria-current=true on status-menu-command-record-menu passed; (3) Enter on the selected group entry does not expand it under __oprnInput edge injection, so status-menu-command-life-ledger never appears. pressUntil is structurally unusable for multi-step cursor movement because it waits for its condition after each single press. hasLifeLedgerData(project, session) measures true, so the ledger is reachable for a human player. Left unproven rather than asserted.",
-    "editorSevenTabE2E": "not attempted (test/e2e/life-full-authoring.spec.ts not created)",
     "fullMatrix": "the 51-row happy+failure matrix and F01..F13 are NOT covered by this scenario; only the farming/day-cycle happy path above is.",
     "resumeAfterLoad": "Save is proven; LOAD is not. Measured by dumping the live DOM after saving: save-slot-1..3 are present but no load-slot-* exists, because the 로드 command sits inside the collapsed system-menu rail group (playerStatusMenuModel.ts:43). That is the same rail-activation wall that blocked shipping across seven attempts — injected Enter does not expand a selected group entry. Not a product defect: a human player expands the group normally. Left unproven rather than asserted."
   },
@@ -62,5 +61,16 @@
       "falseConclusionCorrected": "I first concluded my authored save-point event broke the boot, because removing it made a run pass. Then I ran the SAME fixture (save point included) under life-tree-chop and it passed — so the event is innocent and my one-sided comparison was wrong. Recorded because stopping at the first comparison would have blamed a healthy authored event.",
       "verdict": "Resume stays UNPROVEN as a harness limitation. No evidence of a product defect."
     }
+  },
+  "editorSevenTabProven": {
+    "command": "DEV_SERVER_PORT=9219 npx playwright test test/e2e/life-full-authoring.spec.ts",
+    "result": "1 passed (26.7s), E2E_EXIT=0",
+    "covers": "All seven 생활 tabs (crops, characters, lifeCrafting, dailyWeather, farmAnimals, farmSpatial, lifeCollections) at 1024x768 and 1440x900 on the real editor, each asserted to render a non-empty authoring surface; 14 screenshots captured.",
+    "project": "rpg-zzu-life-full-01a08046-verify (the isolated remote row from task 19) — never the shared demo row.",
+    "whyThisSurfaceWorked": "The e2e helper switchDatabaseTab already expands a collapsed sidebar group (revealCollapsedSidebarTab), which is exactly the activation the runtime harness could not perform.",
+    "diagnosisNotes": [
+      "First failure was the dev server: playwright webServer timeout is 30s and a cold Vite start exceeds it, so nothing was served. Started the server first and polled it to HTTP 200.",
+      "Second failure was the remote row being pruned mid-session, so the editor had no project to load. Re-saved and re-ran. Neither was a spec defect."
+    ]
   }
 }
