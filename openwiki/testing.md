@@ -1,5 +1,31 @@
 ## P5 delivery gates and the P4 regressions they caught (2026-09-09)
 
+### Open: checkpoint writes still slow the authoring loop
+
+`--scenario late-cancel` still fails on this branch, and the reason is measured, not guessed.
+Same-load A/B (pre-merge main `9689f74e` vs this branch, alternating runs):
+
+| | pre-merge | this branch |
+|---|---|---|
+| whole scenario | 76.7s | 117.0s (was 144.6s before the fixes below) |
+| median gap between model rounds | 926ms | ~2.5s |
+| A's apply entered at | 23.3s | ~50s |
+
+The harness arms a 60s signal window when it installs the proposal observer, so a run this much
+slower trips it before the late apply is released. The window is a real budget: do not widen it.
+
+Root cause: every checkpoint write deep-clones the whole row, and the row embeds full project
+copies (`runtime.requestBaseline`, each acceptance promise baseline, and — until now — the draft
+project). Landed mitigations: capture only on `tool_call` rather than every session event, drop
+the per-round wait, cache content identity and the acceptance recovery copy, and keep draft bytes
+only in the apply-stage row. Together they removed ~28s.
+
+The remaining gap needs the structural fix: write the immutable per-request baselines **once per
+run** into a companion record and reference them from each checkpoint row, so a row write stops
+copying whole projects. That is a schema change (another additive IndexedDB version plus restore
+wiring) and is deliberately not attempted as a late patch.
+
+
 `node scripts/qa/ai-harness-all.mjs --scenario all --report <path>` runs every deterministic
 editor scenario, one owned process each (own Vite port, Firefox, isolated remote project,
 cleanup receipt), and stops at the first failure so a later pass cannot mask an earlier one.
