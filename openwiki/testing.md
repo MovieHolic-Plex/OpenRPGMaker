@@ -15,6 +15,22 @@ a new output directory. Exclusive output files retain earlier failures.
 This local storage API check does not require or access a Supabase project and
 is not proof of crash-after-apply execution recovery.
 
+`aiRunRecoveryLedgers.test.ts` and `aiRunReconciliation.test.ts` cover original
+contracts/baselines, stale historical verification, latest-epoch selection and
+revalidation after baseline mutation. `aiRunRecoveryRuntime.test.ts` forks actual
+durable IDB bytes after a native event apply, recreates the session/panel and
+clicks Continue: create/apply counts must not increase. Its other controls keep
+remaining WorkPlan/requirements and reviewer budgets, and run actual ending
+quality assessment without reauthoring. `aiRunRecoveryAdmission.test.ts` checks
+ten nonresumable classes through the real panel admission boundary.
+
+The runtime fixture keeps the actual start map and its referenced tileset rather
+than twelve unused bundled tilesets. Image delivery for the authored marker is
+still required; a transparent event is a visual map change. Do not replace
+review approval, fake checkpoint durability, extend deadlines or rely on a
+sleep to reach the commit boundary. Independent real page-reload QA is a
+separate final gate; unit IDB recreation alone is not browser reload evidence.
+
 ## P3 request-bound fixture alignment (2026-09-08)
 
 `test/assistantAcceptanceProject.test.ts` exercises exact title/item values,
