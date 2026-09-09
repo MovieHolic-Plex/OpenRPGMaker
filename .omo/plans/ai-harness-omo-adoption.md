@@ -444,7 +444,20 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - 증거: `output/evidence/ai-harness/checkpoints/`.
   - Commit: `feat(ai): persist versioned run checkpoints beside conversations`.
 
-- [ ] 8. 부팅 재전송을 상태 조정 기반 복원으로 교체한다
+- [x] 8. 부팅 재전송을 상태 조정 기반 복원으로 교체한다
+  - 구현: `524cb8a44`(부팅 자동 재전송 제거, RED 2건 선행), `d78e229bc`(정본 원장
+    export/restore, 과거 증명 권한 무효화), `f57819e2a`(런타임 조정), `ffac328cf`.
+    검사: 부팅·기록 38건, 원장 복구 32건, 조정·저장 39건, 부정 인수 10건,
+    정상 복구·재검증 19건, 인접 적용/취소/계속/기록 63건, `npm run build` exit0,
+    앱 타입 게이트 exit0(`p4/typecheck-gate.json`).
+  - 실표면(실제 브라우저·실제 Supabase): `--scenario recovery`가 적용 직후 중단 →
+    `page.reload()` → 실제 「계속」까지 통과했다. 모델 호출 14→14, 중복 생성·적용·
+    undo 0, 원 요청과 적용 기록 보존, 새 run/상위 epoch, 최종 대화 저장 1회,
+    중단 시점 IDB 행 불변. 부정 3종(필수 이미지 누락 거부, 내용 변경
+    needs-reconciliation, 스키마 버전 unsupported)은 쓰기 0으로 거부됐다.
+    소유 원격 프로젝트 삭제·부재까지 정리 전부 true, 소스 해시 불변, 종료코드 0.
+    근거: `resume-01a08291/p4/native-recovery/run-3/actions.json`(단계별 PNG 동봉).
+    실패 보존: run-1·run-2는 관측 부족·보고서 직렬화 초과로 exit 1이며 소급 통과시키지 않았다.
   - Recommended task executor category: deep
   - 선행: 5·6·7. 소유: `aiChatPanel.ts:restoreLatestForBoot`,
     `conversationReplay.ts`, session 복원 진입점, checkpoint store.

@@ -31,6 +31,27 @@ review approval, fake checkpoint durability, extend deadlines or rely on a
 sleep to reach the commit boundary. Independent real page-reload QA is a
 separate final gate; unit IDB recreation alone is not browser reload evidence.
 
+`xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario recovery` is that
+final gate. Only model HTTP is scripted: the checkpoint bytes are the ones the
+runtime wrote. It saves and reads a fresh owned remote project, refuses an
+`upsert_event` without `show_map_region` through the real independent review,
+then authors the marker with real map render acknowledgment. A QA-only Vite
+observer awaits `__qaRecoveryCommit` after the actual remote commit returns and
+before the final conversation save, so `page.reload()` lands exactly on the
+crash-after-apply image. After reload it asserts the same IDB rows and event
+count, an available Continue, and after clicking Continue zero new model calls,
+creates, applies or undo entries, the retained original request/applied history,
+a new run id with a greater epoch, exactly one final save and an unchanged
+retired row. Click-time project-description drift must report
+`needs-reconciliation` and a faulted `schemaVersion` must report
+`unsupported`, both with zero writes; each injected fault is reverted through
+the actual store or `mutateAiRecord`, never by seeding a success row.
+`EXPECTED_HEAD` pins the source, and the run rehashes an explicit 29-file
+recovery/harness scope before and after execution. Large per-step state lives in
+`<EVIDENCE_DIR>/<label>.json` with its PNG; `actions.json` keeps paths and
+byte counts, because re-embedding those snapshots overflowed `JSON.stringify`
+after a passing run. Cleanup deletes the owned project and verifies absence.
+
 ## P3 request-bound fixture alignment (2026-09-08)
 
 `test/assistantAcceptanceProject.test.ts` exercises exact title/item values,
