@@ -1,0 +1,81 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecoveryLedgerUi.test.ts test/lifeRecovery.test.ts test/lifeRecoveryPersistence.test.ts test/lifeRecoveryRecordKeys.test.ts test/p0DayTransitionSceneFailure.test.ts test/p1DayTransitionIntegration.test.ts test/p1WeatherDayTransition.test.ts test/p2DayTransition.test.ts test/p0LifeLedgerUi.test.ts test/p2LifeLedgerUi.test.ts test/playerStatusMenu.test.ts test/playerStatusMenuClosingGuard.test.ts test/playerStatusMenuEdgeDock.test.ts test/playerStatusMenuEntryIcons.test.ts test/playerStatusMenuMotion.test.ts test/playerStatusMenuPortrait.test.ts test/runtimeCursorMenu.test.ts test/runtimeDomTitleGuard.test.ts test/playerInputCss.test.ts test/animalHousingConfirmationLifecycle.test.ts test/spatialRecoveryRights.test.ts test/scheduledTimeDiagnostics.test.ts test/p0TransitionControlFlow.test.ts test/timeSystem.test.ts test/lifeEconomyConsumerParity.test.ts test/shopPrice.test.ts test/shopMerchantGold.test.ts test/shopHaggleRuntime.test.ts test/p0Bundles.test.ts test/p0Shipping.test.ts test/p0EconomySafetyFollowup.test.ts test/p0SafetyHardening.test.ts test/p0ProjectSchema.test.ts test/lifeAuthoringReferences.test.ts test/databaseReferenceGuards.test.ts test/eventDraftValidator.test.ts test/previewSimulation.test.ts test/sceneTestRunner.test.ts test/p0ToolCapability.test.ts test/p0SessionPersistence.test.ts test/runtimeQaFrames.test.ts test/makerClockIntegration.test.ts test/lifeQaObservability.test.ts test/runtimeQaInstrumentationBoundary.test.ts test/runtimeQaReport.test.ts --maxWorkers=4
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p5
+
+ ✓ test/eventDraftValidator.test.ts (20 tests) 723ms
+ ✓ test/lifeRecoveryLedgerUi.test.ts (6 tests) 369ms
+ ✓ test/lifeRecovery.test.ts (54 tests) 1910ms
+ ✓ test/lifeRecoveryPersistence.test.ts (40 tests) 2586ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  437ms
+   ✓ bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix  521ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 477ms
+ ✓ test/playerStatusMenu.test.ts (17 tests) 794ms
+ ✓ test/spatialRecoveryRights.test.ts (22 tests) 1040ms
+ ✓ test/scheduledTimeDiagnostics.test.ts (15 tests) 930ms
+ ✓ test/lifeEconomyConsumerParity.test.ts (51 tests) 2872ms
+ ✓ test/lifeRecoveryRecordKeys.test.ts (37 tests) 3036ms
+ ✓ test/timeSystem.test.ts (15 tests) 1302ms
+   ✓ GameTime tools and scene integration > configure_time_system writes enabled settings and can remove them  573ms
+ ✓ test/databaseReferenceGuards.test.ts (12 tests) 4547ms
+   ✓ database reference guards for command-bearing records > blocks deleting records referenced by map event command branches  688ms
+   ✓ database reference guards for command-bearing records > blocks deleting records referenced by common event commands and nested shop branches  323ms
+   ✓ database reference guards for command-bearing records > names the referencing map and event in the deletion-block message  385ms
+   ✓ database reference guards for command-bearing records > names the first referencing record for direct field references (e.g. a class learning a skill)  344ms
+   ✓ database reference guards for command-bearing records > appends an '외 N-1건' summary when more than one location references the record  507ms
+   ✓ database reference guards for command-bearing records > blocks deleting records referenced by battle event page commands and conditions  634ms
+   ✓ database reference guards for command-bearing records > deletes unreferenced records while keeping referenced records blocked  660ms
+ ✓ test/p0ProjectSchema.test.ts (11 tests) 3363ms
+   ✓ P0 authored system records > keeps old projects free of newly invented optional fields and byte-stable  392ms
+   ✓ P0 authored system records > omits only the redundant text-only title seed on the first load  561ms
+   ✓ P0 authored system records > preserves authored text title graphics across repeated loads  363ms
+   ✓ P0 authored system records > preserves authored graphic title graphics across repeated loads  342ms
+   ✓ P0 authored system records > preserves authored both title graphics across repeated loads  343ms
+   ✓ P0 authored system records > rejects duplicate P0 definition ids at the wire boundary and reference lint boundary  589ms
+ ✓ test/playerStatusMenuEdgeDock.test.ts (6 tests) 292ms
+ ✓ test/p0TransitionControlFlow.test.ts (9 tests) 1059ms
+ ✓ test/p0EconomySafetyFollowup.test.ts (18 tests) 655ms
+ ✓ test/lifeAuthoringReferences.test.ts (6 tests) 944ms
+ ✓ test/previewSimulation.test.ts (11 tests) 933ms
+ ✓ test/p0LifeLedgerUi.test.ts (5 tests) 272ms
+ ✓ test/p0Bundles.test.ts (9 tests) 400ms
+ ✓ test/p0DayTransitionSceneFailure.test.ts (4 tests) 305ms
+ ✓ test/lifeQaObservability.test.ts (7 tests) 348ms
+ ✓ test/runtimeQaReport.test.ts (18 tests) 15ms
+ ✓ test/p0Shipping.test.ts (9 tests) 377ms
+ ✓ test/p0SafetyHardening.test.ts (8 tests) 431ms
+ ✓ test/p1DayTransitionIntegration.test.ts (5 tests) 306ms
+ ✓ test/playerStatusMenuEntryIcons.test.ts (4 tests) 248ms
+ ✓ test/p2LifeLedgerUi.test.ts (3 tests) 190ms
+ ✓ test/playerStatusMenuPortrait.test.ts (5 tests) 225ms
+ ✓ test/runtimeQaInstrumentationBoundary.test.ts (3 tests) 13ms
+ ✓ test/runtimeCursorMenu.test.ts (6 tests) 13ms
+ ✓ test/p1WeatherDayTransition.test.ts (4 tests) 251ms
+ ✓ test/animalHousingConfirmationLifecycle.test.ts (7 tests) 7854ms
+   ✓ animal housing confirmation lifecycle (expected-correct) > editor modal close/reopen cancels a pending capacity proposal  1259ms
+   ✓ animal housing confirmation lifecycle (expected-correct) > same-ID Project replacement cancels a pending capacity proposal  1207ms
+   ✓ animal housing confirmation lifecycle (expected-correct) > explicit cancel clears pending so reopen shows no confirm  1119ms
+   ✓ animal housing confirmation lifecycle (expected-correct) > menu close + new session with SAME placement id requires a fresh arm and preserves on first action  1048ms
+   ✓ animal housing confirmation lifecycle (expected-correct) > ordinary same-context rerender can still confirm a demolish arm  1063ms
+   ✓ animal housing confirmation lifecycle (expected-correct) > TTL expiry after arm requires a fresh propose without demolishing  1026ms
+   ✓ animal housing confirmation lifecycle (expected-correct) > intervening allowed-species change invalidates pending shrink so stale confirm cannot apply new impact under old consent  1129ms
+ ✓ test/shopMerchantGold.test.ts (4 tests) 163ms
+ ✓ test/p0ToolCapability.test.ts (2 tests) 165ms
+ ✓ test/shopHaggleRuntime.test.ts (3 tests) 164ms
+ ✓ test/runtimeDomTitleGuard.test.ts (4 tests) 154ms
+ ✓ test/sceneTestRunner.test.ts (2 tests) 112ms
+ ✓ test/shopPrice.test.ts (2 tests) 80ms
+ ✓ test/playerStatusMenuClosingGuard.test.ts (2 tests) 6ms
+ ✓ test/p2DayTransition.test.ts (2 tests) 144ms
+ ✓ test/playerInputCss.test.ts (2 tests) 72ms
+ ✓ test/playerStatusMenuMotion.test.ts (1 test) 6ms
+ ✓ test/runtimeQaFrames.test.ts (13 tests) 689ms
+ ✓ test/makerClockIntegration.test.ts (28 tests) 1891ms
+
+ Test Files  45 passed (45)
+      Tests  521 passed (521)
+   Start at  11:04:49
+   Duration  36.85s (transform 20.49s, setup 0ms, collect 73.54s, tests 42.73s, environment 506ms, prepare 3.30s)
+

@@ -1,0 +1,17 @@
+M  src/player/PlayScene.ts
+M  src/player/dayTransition.ts
+M  src/player/lifeLedger.ts
+M  src/player/playSceneOverlays.ts
+M  src/player/playSceneSchedulers.ts
+M  src/player/playSceneTime.ts
+M  src/player/playSceneTypes.ts
+M  src/player/player.ts
+M  src/player/playerStatusMenuController.ts
+M  src/player/playerStatusMenuControllerTypes.ts
+M  src/player/playerStatusMenuDetailRenderer.ts
+M  src/player/playerStatusMenuDetailTypes.ts
+M  src/player/playerStatusMenuModel.ts
+M  test/fakeDom.ts
+A  test/lifeRecoveryLedgerUi.test.ts
+M  test/p0DayTransitionSceneFailure.test.ts
+A  test/scheduledTimeDiagnostics.test.ts

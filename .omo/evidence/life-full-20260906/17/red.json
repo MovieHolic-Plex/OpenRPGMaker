@@ -1,0 +1,13 @@
+{
+  "task": 17,
+  "phase": "RED",
+  "command": "npx vitest run test/lifeFullFixture.test.ts",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p5",
+  "exitCode": 0,
+  "result": "Test Files 1 failed (1) | Tests 1 failed | 8 passed (9)",
+  "failing": "life-full deterministic fixture > is a valid project that round-trips through the real serializer",
+  "failureOutput": "AssertionError: expected '{\"version\":4,\"meta\":{\"title\":\"생활 시스템 …' to be '{\"version\":4,\"meta\":{\"title\":\"생활 시스템 …' // Object.is equality",
+  "diagnosis": "Measured, not assumed. deserialize() normalizes: it fills record defaults (lenA 2141778 -> lenB 2141903) and reorders optional keys (farmBuildingTypes[].allowedMapIds moves after levels). Data is NOT lost — allowedMapIds survives on buildings and decorations — and the second pass is byte-stable (stableSecondPass true). The defect was the test asserting first-pass byte equality, not the product serializer.",
+  "correction": "Replaced byte equality with the real contract: normalization idempotence plus explicit lossless assertions on the fields the scenarios depend on.",
+  "at": "2026-09-09T05:29:45.223Z"
+}

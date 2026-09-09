@@ -119,6 +119,9 @@ test("생활 원장을 실제 메뉴로 열고 저장 슬롯까지 도달한다"
 
   await choose(page, "status-menu-group-command-life-ledger");
   await expect(page.getByTestId("life-ledger-tab-shipping")).toBeVisible({ timeout: 20_000 });
+  // 가시성만 보면 빈 껍데기도 통과한다. 장부가 실제 저작 데이터를 그리는지 내용으로 확인한다.
+  await expect(page.locator("#life-ledger-tab-panel"), "출하 탭에 실제 품목이 없다")
+    .toContainText("야생 부추", { timeout: 20_000 });
   await shot(page, "03-life-ledger-shipping");
 
   // 시스템 그룹 -> 저장. 로드도 같은 그룹에 있다.
@@ -129,6 +132,9 @@ test("생활 원장을 실제 메뉴로 열고 저장 슬롯까지 도달한다"
 
   await choose(page, "status-menu-group-command-save");
   await expect(page.getByTestId("save-slot-1")).toBeVisible({ timeout: 20_000 });
+  // 슬롯도 상태 문자열까지 본다 — 새 namespace 라 아직 비어 있어야 한다.
+  await expect(page.getByTestId("save-slot-1"), "새 세션인데 슬롯이 비어 있지 않다")
+    .toContainText("비어 있음", { timeout: 20_000 });
   await shot(page, "05-save-slots");
 
   expect(errors, "player console/page errors").toEqual([]);

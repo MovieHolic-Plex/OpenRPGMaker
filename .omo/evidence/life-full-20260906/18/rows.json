@@ -383,5 +383,8 @@
       "liveEvidence": "test/e2e/life-full-authoring.spec.ts — seven 생활 editor tabs at 1024x768 and 1440x900, 14 screenshots",
       "artifacts": "18/editor-e2e/*.png"
     }
+  },
+  "exemptArtifacts": {
+    "F03": "craftingFailure was never executed on the live surface in this run, so there is no artifact to point at. Its contract is covered by module tests only. Recorded as an explicit exemption instead of a silent null, per independent review."
   }
 }
