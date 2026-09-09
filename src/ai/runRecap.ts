@@ -234,7 +234,16 @@ function parseStoredRunOutcome(value: unknown): RunOutcome | null {
   if (goal !== "unassessed" && goal !== "incomplete" && goal !== "satisfied") return null;
   if (delivery !== "no-change" && delivery !== "draft" && delivery !== "applied"
     && delivery !== "persisted" && delivery !== "persisted-verified") return null;
-  return Object.freeze({ execution, goal, delivery });
+  // 전달 사실은 기록된 것만 복원한다. 없거나 형태가 다르면 "모름"으로 두고 첨부를 주장하지 않는다.
+  const stored = isRecord(value.visualDelivery) ? value.visualDelivery : null;
+  const attempted = stored && typeof stored.attempted === "number" && Number.isSafeInteger(stored.attempted) && stored.attempted >= 0
+    ? stored.attempted : null;
+  const attached = stored && typeof stored.attached === "number" && Number.isSafeInteger(stored.attached) && stored.attached >= 0
+    ? stored.attached : null;
+  const visualDelivery = attempted !== null && attached !== null && attached <= attempted
+    ? Object.freeze({ attempted, attached }) : null;
+  return Object.freeze({ execution, goal, delivery, imageAttached: (visualDelivery?.attached ?? 0) > 0,
+    ...(visualDelivery ? { visualDelivery } : {}) });
 }
 
 function asInt(value: unknown): number {

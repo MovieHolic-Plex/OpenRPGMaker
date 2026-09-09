@@ -1,3 +1,57 @@
+## P5 delivery gates and the P4 regressions they caught (2026-09-09)
+
+### Open: checkpoint writes still slow the authoring loop
+
+`--scenario late-cancel` still fails on this branch, and the reason is measured, not guessed.
+Same-load A/B (pre-merge main `9689f74e` vs this branch, alternating runs):
+
+| | pre-merge | this branch |
+|---|---|---|
+| whole scenario | 76.7s | 101-109s (was 144.6s before the fixes below; run-to-run spread is ~10s) |
+| median gap between model rounds | 926ms | ~2s |
+| A's apply entered at | 23.3s | ~50s |
+
+The harness arms a 60s signal window when it installs the proposal observer, so a run this much
+slower trips it before the late apply is released. The window is a real budget: do not widen it.
+
+Root cause: every checkpoint write deep-clones the whole row, and the row embeds full project
+copies (`runtime.requestBaseline`, each acceptance promise baseline, and — until now — the draft
+project). Landed mitigations: capture only on `tool_call` rather than every session event, drop
+the per-round wait, cache content identity and the acceptance recovery copy, and keep draft bytes
+only in the apply-stage row. Together they removed ~40s: 144.6s → 122.1s → 117.0s → 101.4s, and dropping the duplicated
+request baseline landed inside the run-to-run spread rather than clearly below it.
+
+The remaining gap needs the structural fix: write the immutable per-request baselines **once per
+run** into a companion record and reference them from each checkpoint row, so a row write stops
+copying whole projects. That is a schema change (another additive IndexedDB version plus restore
+wiring) and is deliberately not attempted as a late patch.
+
+
+`node scripts/qa/ai-harness-all.mjs --scenario all --report <path>` runs every deterministic
+editor scenario, one owned process each (own Vite port, Firefox, isolated remote project,
+cleanup receipt), and stops at the first failure so a later pass cannot mask an earlier one.
+Membership: proof-failure, required-skip, outcome-matrix, retained-draft-ask, wiki-delivery,
+new-goal-draft, late-cancel, human-edit-race, checkpoint-upgrade (its own script) and
+crash-after-apply (the `recovery` scenario). Real remote save proof stays separate:
+`node scripts/qa/ai-harness-remote-proof.mjs --create-isolated-project --scenario all --report <path>`.
+
+That gate found four P4 regressions that unit tests and the recovery scenario had all missed;
+pre-merge main passed the same scenarios, which is how each was attributed:
+
+1. A rejected checkpoint row aborted `proveAppliedRevision` before `store.flush()`, so the
+   save and its proof disappeared entirely. Checkpoint writes are recovery convenience; the save
+   is the user's canonical work. Failures are now audit warnings (`agent_run:checkpoint-write-failed`)
+   and save/proof/turn progress continue. Only `prepareCheckpointApply` still demands durability.
+2. The same rejection killed the retry turn through `turn-boundary-error`.
+3. Content identity was recomputed twice per round at ~160ms each on the default project.
+4. `AssistantAcceptanceLedger.exportRecovery()` deep-cloned every promise baseline on every
+   capture, and the row was cloned again on top of that: 92 captures burned 13.3s, which pushed
+   the harness past its 60s settle budget and left the editor's send button disabled forever.
+
+Measure before optimizing here: the numbers above came from timing the real browser run
+(`report.checkpointCost`), not from reading the code. After the fixes required-skip is back to
+the pre-merge shape — 58 rounds, 112 contract checks, zero violations.
+
 ## P4 checkpoint storage and boot admission (2026-09-09)
 
 `test/aiRunCheckpointStore.test.ts` covers additive v1/v2 to v3 IndexedDB

@@ -222,6 +222,47 @@ it("reassesses completed recovered scheduling with real ending-quality checks an
   expect(result.proposedCalls).toEqual([]); expect(store.getCurrent()).toEqual(before);
 });
 
+it("still saves and proves the applied revision when a checkpoint write fails", async () => {
+  // 실측 회귀(2026-09-09): 증명 직전 체크포인트가 거부되면 store.flush() 에 도달하지 못해
+  // 저장·증명이 통째로 사라졌다. 복구 장치는 정본 저장을 죽여서는 안 된다.
+  const save = vi.spyOn(checkpoints, "saveRunCheckpoint");
+  // 증명 경로는 원격 저장이 켜져 있어야 들어간다 — 이 픽스처의 기본은 꺼짐이다.
+  store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
+  const flush = vi.spyOn(store, "flush").mockResolvedValue({ kind: "saved" });
+  const session = new AssistantSession(store.getCurrent(), { config, checkpoint: checkpointHost,
+    declareIntent: fixedDeclarer({ mode: "other" }), chat: reviewingChat(async () => final) });
+  await bounded(session.sendUserMessage("Prepare the run"));
+  await bounded(session.whenCheckpointed());
+  const flushesBefore = flush.mock.calls.length;
+  // 이 시점 이후의 모든 체크포인트 쓰기를 거부한다.
+  save.mockImplementation(async () => { throw new TypeError("Invalid checkpoint: malformed"); });
+  const proof = await bounded(session.proveAppliedRevision());
+  // Then: 저장은 실제로 시도됐고, 증명은 체크포인트 실패로 조기 종료되지 않았다.
+  expect(flush.mock.calls.length).toBeGreaterThan(flushesBefore);
+  expect(session.getAuditEntries().some(entry => entry.kind === "status"
+    && entry.text.startsWith("agent_run:checkpoint-write-failed"))).toBe(true);
+  expect(proof.status).not.toBe("attempted");
+  session.retireRun();
+});
+
+it("binds the checkpoint to the project identity current at turn start, not session construction", async () => {
+  // 실측 회귀(2026-09-09, outcome-matrix): 패널이 원격 로드 전에 세션을 만들면 키에 local-session
+  // id 가 굳어, 이후 저장 영수증(원격 id)과 어긋나 모든 체크포인트가 malformed 로 거부됐다.
+  const identity = vi.mocked(store.getProjectIdentity);
+  identity.mockReturnValue({ kind: "local-session", id: "local-before-load" });
+  const session = new AssistantSession(store.getCurrent(), { config, checkpoint: { ...checkpointHost, projectId: "local-before-load" },
+    declareIntent: fixedDeclarer({ mode: "other" }), chat: reviewingChat(async () => final) });
+  // 원격 프로젝트가 뒤늦게 로드된다.
+  identity.mockReturnValue({ kind: "remote", id: checkpointHost.projectId });
+  await bounded(session.sendUserMessage("After the remote project loaded"));
+  await bounded(session.whenCheckpointed());
+  const saved = await checkpoint();
+  expect(saved.projectId).toBe(checkpointHost.projectId);
+  expect(session.getAuditEntries().some(entry => entry.kind === "status"
+    && entry.text.startsWith("agent_run:checkpoint-write-failed"))).toBe(false);
+  session.retireRun(); await bounded(session.whenCheckpointed());
+});
+
 it("keeps checkpointing on the same session after one failed write instead of skipping later captures", async () => {
   // A real failure mode: saveRunCheckpoint throws on an unsupported existing row or an aborted
   // transaction. The awaited boundary must still reject, but the session must not go silent afterwards.
@@ -229,8 +270,10 @@ it("keeps checkpointing on the same session after one failed write instead of sk
   save.mockImplementationOnce(async () => { throw new TypeError("Injected checkpoint write failure"); });
   const session = new AssistantSession(store.getCurrent(), { config, checkpoint: checkpointHost,
     declareIntent: fixedDeclarer({ mode: "other" }), chat: reviewingChat(async () => final) });
-  const first = await bounded(session.sendUserMessage("First request"));
-  expect(first.error).toContain("Injected checkpoint write failure");
+  // 기록 실패는 턴을 죽이지 않는다(정본 저장·진행 우선). 감사에 남는 것이 계약이다.
+  await bounded(session.sendUserMessage("First request"));
+  expect(session.getAuditEntries().some(entry => entry.kind === "status"
+    && entry.text.startsWith("agent_run:checkpoint-write-failed"))).toBe(true);
   await bounded(session.sendUserMessage("Second request"));
   await bounded(session.whenCheckpointed());
   const saved = await checkpoint();

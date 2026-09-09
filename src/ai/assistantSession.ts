@@ -360,11 +360,22 @@ export { SPEC_REMEDY_FIELDS } from "./session/buildSpecGate";
 export { writeDedupeKey } from "./session/eventTargets";
 
 export class AssistantSession {
-  private readonly checkpointHost: AssistantSessionOptions["checkpoint"];
+  private checkpointHost: AssistantSessionOptions["checkpoint"];
   private checkpointKey: RunCheckpointKey | null = null;
   private checkpointSavedAt = 0;
   private checkpointCurrentIdentity = "";
   private checkpointRequestBaseline: { readonly project: Project; readonly identity: string } | null = null;
+  /**
+   * 같은 프로젝트 객체의 신원 재계산을 막는다. 실측(2026-09-09, 기본 프로젝트): 신원 1회가
+   * **약 160ms** 인데 라운드마다 두 번 계산해 20라운드짜리 턴이 6초 이상을 여기에만 썼다.
+   * 실표면에서는 그 누적이 60초 정착 예산을 넘겨 UI 가 굳었다. 객체가 바뀌면 자동으로
+   * 무효화된다 — 내용이 바뀌면 저장소가 새 객체를 만들기 때문이다.
+   */
+  private identityOf(project: Project): string {
+    // 캐시하지 않는다. 독립 검토(2026-09-09)가 잡은 결함: 세션은 위키 준비 뒤 baselineProject·
+    // ctx.project 의 world 를 제자리에서 바꾸므로, 객체 신원을 키로 캐시하면 낡은 신원을 찍는다.
+    return checkpointContentIdentity(project);
+  }
   private checkpointQueue: Promise<void> = Promise.resolve();
   private checkpointPending: RunCheckpoint["pending"] = null;
   private checkpointApplied: RunCheckpoint["applied"] = null;
@@ -385,11 +396,29 @@ export class AssistantSession {
    */
   whenCheckpointed(): Promise<void> { return this.checkpointQueue; }
 
+  /**
+   * 저장·증명 경로에서 쓰는 대기. 체크포인트 쓰기가 실패해도 **삼키고 진행**한다.
+   *
+   * 왜: 이 대기를 그대로 throw 하면 `proveAppliedRevision` 의 catch 가 잡아 저장 증명을
+   * `failed` 로 끝내고 원격 읽기조차 시도하지 않는다. 실측(2026-09-09, proof-failure
+   * 실표면 시나리오): 체크포인트 한 건이 거부되자 `store.flush()` 에 도달하지 못해
+   * **저장 자체가 사라졌다**. 복구 장치가 정본 저장을 죽이는 것은 순서가 뒤집힌 것이다.
+   * 실패하면 복구 가능성만 잃고, 저장·증명은 그대로 간다.
+   */
+  private async checkpointBestEffort(): Promise<void> {
+    try { await this.whenCheckpointed(); }
+    catch (cause) {
+      this.pushAudit({ kind: "status", text: `agent_run:checkpoint-write-failed — ${cause instanceof Error ? cause.message : String(cause)} (저장·증명은 계속합니다)` });
+    }
+  }
+
   private exportRuntime(): RunRuntimeState {
     // captureCheckpoint clones the whole row synchronously, including this runtime.
     return { schemaVersion: 1, instruction: this.currentTurnInstruction,
       requestText: this.currentTurnRequestText, composerMode: this.turnComposerMode, autonomous: this.milestoneAutoApply,
-      execution: this.runExecution, requestBaseline: this.acceptanceRequestBaseline,
+      execution: this.runExecution,
+      // 원장이 같은 기준선을 이미 보관한다 — 두 벌 실으면 쓰기마다 복제·검증이 두 배가 된다.
+      ...(this.acceptance ? {} : { requestBaseline: this.acceptanceRequestBaseline }),
       acceptance: this.acceptance?.exportRecovery() ?? null, verification: this.verificationEvidence.exportRecovery(),
       verificationOwnerSequence: this.verificationOwnerSequence,
       verificationOwners: this.workPlan?.layers.flatMap(layer => layer.items.flatMap(item => {
@@ -413,19 +442,29 @@ export class AssistantSession {
     // This original-request baseline is replaced, never mutated; live draft identities are not cached.
     if (this.checkpointRequestBaseline?.project !== this.acceptanceRequestBaseline) {
       this.checkpointRequestBaseline = { project: this.acceptanceRequestBaseline,
-        identity: checkpointContentIdentity(this.acceptanceRequestBaseline) };
+        identity: this.identityOf(this.acceptanceRequestBaseline) };
     }
     let pending = this.checkpointPending;
+    // 라운드마다 도는 캡처는 초안 신원을 **다시 계산하지 않는다**. 실측(2026-09-09, late-cancel):
+    // 신원 1회가 200ms대라 미스 23회가 4.8초였고, 그 누적이 하네스의 60초 신호 창을 넘겨
+    // 늦은 적용 검증이 통째로 실패했다(병합 이전 main 은 같은 지점을 27.8초에 통과).
+    // 적용 직전(prepareCheckpointApply)에는 그대로 정확히 계산한다 — 거기가 진짜 경계다.
     if (!pending && this.turnProposals.size && !this.checkpointTerminal) pending = {
       operationId: `${key.runId}:${key.epoch}:apply`, stage: "proposal-ready", proposal: {
-        baseContentIdentity: checkpointContentIdentity(this.baselineProject), contentIdentity: checkpointContentIdentity(this.ctx.project),
-        project: this.ctx.project, calls: this.finalizeProposals(this.turnProposals),
+        baseContentIdentity: this.identityOf(this.baselineProject),
+        contentIdentity: this.identityOf(this.ctx.project),
+        // 초안 바이트는 적용 대기에서만 싣는다(prepareCheckpointApply). 여기서 실으면 쓰기마다
+        // 프로젝트를 한 벌 더 복제하는데, 재개는 이 단계에서 그 바이트를 쓰지 않는다.
+        calls: this.finalizeProposals(this.turnProposals),
       },
     };
     const paused = this.runExecution === "cancelled" || this.runExecution === "awaiting-user";
     if (paused && pending?.stage === "proposal-ready") pending = null;
     const status: RunCheckpoint["status"] = paused ? pending ? "awaiting-user" : "terminal"
       : this.checkpointTerminal && !pending ? "terminal" : "active";
+    // 캡처는 **그 순간을 동결**해야 한다. 독립 검토(2026-09-09)가 잡은 결함: workPlan 은 살아 있는
+    // 참조이고 항목 상태가 제자리에서 바뀌므로, 동결하지 않으면 저장된 행이 나중의 계획 진행과
+    // 이전 런타임·예산을 섞어 담는다(찢어진 복구 상태). 비용보다 무결성이 먼저다.
     const checkpoint: RunCheckpoint = structuredClone({ ...key, schemaVersion: 1,
       savedAt: this.checkpointSavedAt = Math.max(Date.now(), this.checkpointSavedAt + 1), status,
       request: this.acceptanceRequestSource, baseContentIdentity: this.checkpointRequestBaseline.identity,
@@ -438,7 +477,15 @@ export class AssistantSession {
         ralphAttemptsByItemId: [...this.ralphAttemptsByItemId],
         repeatedToolFailures: [...this.repeatedToolFailures].map(([id, failures]) => [id, [...failures]] as const),
       }, verification: this.verificationEvidence.snapshot(), acceptance: this.getAcceptanceSnapshot(),
-      applied: this.checkpointApplied, save: this.runReceipt, proof: this.getRunEndProof(), pending });
+      applied: this.checkpointApplied,
+      // 영수증은 이 체크포인트가 가리키는 프로젝트의 것만 담는다. 다른 프로젝트(전환·다중 세션)의
+      // 영수증을 넣으면 행 전체가 malformed 로 거부되어 **복구 기록이 통째로 사라진다** —
+      // 실측(2026-09-09, late-cancel): save/proof 필드가 계속 거부됐다. 소유가 다르면
+      // 기록하지 않는 편이 정확하다(없는 것은 "모름"이고, 거짓 증거가 아니다).
+      save: this.runReceipt?.projectId === key.projectId ? this.runReceipt : null,
+      proof: (() => { const proof = this.getRunEndProof();
+        return proof?.receipt && proof.receipt.projectId !== key.projectId ? null : proof; })(),
+      pending });
     // Order is preserved, but a rejected predecessor must not skip this write: `.then` alone would
     // silently drop every later capture in this session after one failed row (unsupported existing row,
     // aborted transaction). Each capture waits for the previous attempt to settle and then writes itself.
@@ -451,11 +498,16 @@ export class AssistantSession {
   private async beginCheckpoint(instruction: string, text: string, options: SessionTurnOptions): Promise<void> {
     const operation = this.runOperation;
     if (!this.checkpointHost || !this.storeBacked) return;
-    const host = this.checkpointHost;
+    // 프로젝트 신원은 세션 생성 뒤에도 바뀐다 — 패널은 원격 로드 전에 세션을 만들 수 있고, 그때
+    // 굳은 local-session id 로 키를 잡으면 이후 저장 영수증(원격 id)과 어긋나 **모든 체크포인트가
+    // 거부된다**(실측 2026-09-09: outcome-matrix 에서 save/proof 필드가 통째로 malformed).
+    // 턴 시작 시점의 실제 신원을 쓰고, 그 이후로는 이 런의 키를 고정한다.
+    const host = { ...this.checkpointHost, projectId: store.getProjectIdentity().id };
+    this.checkpointHost = host;
     const latest = await operation.wait(readLatestRunCheckpoint(host.conversationId, host.projectId, host.projectContextKey));
     this.checkpointKey = { ...host, runId: newCheckpointRunId(), epoch: Math.max(Date.now(), (this.checkpointKey?.epoch ?? 0) + 1, latest.kind === "found" ? latest.checkpoint.epoch + 1 : 0) };
     this.checkpointPending = null;
-    this.checkpointCurrentIdentity = checkpointContentIdentity(store.getCurrent());
+    this.checkpointCurrentIdentity = this.identityOf(store.getCurrent());
     this.checkpointTerminal = false;
     this.checkpointRoundLimit = this.recoveryBudget?.remainingToolCalls ?? this.config.maxToolCalls;
     this.checkpointRoundsUsed = 0;
@@ -471,7 +523,8 @@ export class AssistantSession {
       }
     }
     this.captureCheckpoint();
-    await operation.wait(this.whenCheckpointed());
+    // 시작 체크포인트 실패로 사용자의 턴 자체를 막지 않는다 — 복구 가능성만 잃는다.
+    await operation.wait(this.checkpointBestEffort());
   }
 
   /** Durably prepare the one candidate BEFORE the real store mutation; this grants no review authority. */
@@ -481,19 +534,29 @@ export class AssistantSession {
     operation.assertCurrent();
     const project = this.getProposedProject();
     this.checkpointPending = { operationId: `${this.checkpointKey.runId}:${this.checkpointKey.epoch}:apply`, stage: "applying", proposal: {
-      baseContentIdentity: checkpointContentIdentity(this.baselineProject), contentIdentity: checkpointContentIdentity(project),
+      baseContentIdentity: this.identityOf(this.baselineProject), contentIdentity: this.identityOf(project),
       project, calls: this.finalizeProposals(this.turnProposals),
     } };
     this.captureCheckpoint();
+    // 적용 직전은 **진짜 내구성 경계**다 — 여기서 기다린 기록이 있어야 적용 직후 중단에서
+    // "이미 적용됨"을 알아볼 수 있다. 그래서 실패를 삼키지 않는다. 호출자(aiProposalCard)는
+    // 중단으로 인한 거부를 소유권 상실로 처리하고, 그 외 실패는 그대로 드러난다.
     await operation.wait(this.whenCheckpointed());
   }
 
-  /** The runner, not the model-final event, settles delivery. Pending uncertainty stays active. */
+  /**
+   * The runner, not the model-final event, settles delivery. Pending uncertainty stays active.
+   *
+   * 이 대기는 **UI 잠금 해제 앞**에 있다. 기록이 끝나지 않으면 전송 버튼이 영원히 비활성으로
+   * 남아 사용자가 조수를 못 쓴다 — 실측(2026-09-09, required-skip 실표면)에서 정확히 그렇게
+   * 굳었다. 그래서 실패는 삼키고 진행한다(복구 가능성만 잃는다).
+   */
   async settleCheckpoint(): Promise<void> {
     this.checkpointTerminal = this.runExecution === "response-final" && this.turnProposals.size === 0
       && (!this.workPlan || isWorkPlanComplete(this.workPlan));
     this.captureCheckpoint();
-    await this.whenCheckpointed();
+    // 정산도 마찬가지다 — 기록 실패가 턴 종료를 실패로 바꾸지 않는다.
+    await this.checkpointBestEffort();
   }
 
   /** No writes or capability import. Recheck the live project immediately before installing canonical state. */
@@ -512,7 +575,7 @@ export class AssistantSession {
       const owner = state.verificationOwners.find(([id]) => id === item.id);
       if (owner) this.verificationOwners.set(item, { ownerId: owner[1], checkIds: [...owner[2]] });
     }
-    this.acceptanceRequestBaseline = structuredClone(state.requestBaseline);
+    this.acceptanceRequestBaseline = structuredClone(state.requestBaseline ?? state.acceptance!.baseline);
     this.acceptanceRequestSource = structuredClone(checkpoint.request);
     this.verificationEvidence.restoreRecovery(state.verification);
     this.acceptance = state.acceptance ? AssistantAcceptanceLedger.restoreRecovery(state.acceptance, this.imageEvidence,
@@ -1732,7 +1795,11 @@ export class AssistantSession {
     let authoring = true;
     onEvent = event => {
       if (!authoring || operation.signal.aborted || owner.settled) return;
-      if (event.type === "tool_call" || event.type === "work_plan" || event.type === "acceptance") this.captureCheckpoint();
+      // 사건마다 캡처하면 쓰기마다 프로젝트 여러 벌이 복제된다 — 실측(2026-09-09,
+      // late-cancel A/B): 이 한 줄이 실행 시간의 30초를 썼다(144.6초 → 112.8초).
+      // 저작 결과가 실제로 바뀌는 사건(tool_call)만 남긴다. work_plan·acceptance 변화는
+      // 다음 tool_call 이나 적용·저장·증명 경계의 캡처에 그대로 실린다.
+      if (event.type === "tool_call") this.captureCheckpoint();
       subscriber(event);
       operation.assertCurrent();
     };
@@ -2025,7 +2092,7 @@ export class AssistantSession {
             if (owner !== this.runResult) return;
             if (milestone.kind === "applied") {
               this.wikiDelivery = { owner, project: milestone.project, receipt: null };
-              if (milestone.project) this.checkpointCurrentIdentity = checkpointContentIdentity(milestone.project);
+              if (milestone.project) this.checkpointCurrentIdentity = this.identityOf(milestone.project);
               this.lastAppliedProject = null;
               this.runReceipt = null;
             } else if (this.wikiDelivery?.owner === owner && this.wikiDelivery.project === milestone.project
@@ -3443,12 +3510,12 @@ export class AssistantSession {
     this.turnAppliedMilestoneCalls.push(...this.finalizeProposals(this.turnProposals));
     this.turnProposals.clear();
     if (mutation && this.checkpointKey) {
-      this.checkpointCurrentIdentity = checkpointContentIdentity(applied.applied);
+      this.checkpointCurrentIdentity = this.identityOf(applied.applied);
       this.checkpointApplied = { operationId: `${this.checkpointKey.runId}:${this.checkpointKey.epoch}:apply`,
-        contentIdentity: checkpointContentIdentity(applied.applied), commitId: null, calls: [...this.turnAppliedMilestoneCalls] };
+        contentIdentity: this.identityOf(applied.applied), commitId: null, calls: [...this.turnAppliedMilestoneCalls] };
       this.checkpointPending = null;
     } else if (this.checkpointApplied) {
-      if (applied.wikiDelivery?.project) this.checkpointCurrentIdentity = checkpointContentIdentity(applied.wikiDelivery.project);
+      if (applied.wikiDelivery?.project) this.checkpointCurrentIdentity = this.identityOf(applied.wikiDelivery.project);
       this.checkpointApplied = { ...this.checkpointApplied, commitId: applied.commit.commitId };
     }
     this.captureCheckpoint(); // Before publish can synchronously cancel or replace this owner.
@@ -3489,6 +3556,9 @@ export class AssistantSession {
       hasApplied: this.turnAppliedMilestoneCalls.length > 0 || this.wikiDelivery !== null,
       persistence: receipt === null ? "none"
         : proof?.receipt === receipt && proof.verified ? "verified-current" : "accepted",
+      // 전달 사실은 이 실행의 이미지 원장이 소유한다. 조회했다/품질을 봤다와 다른 축이고,
+      // 여기서 새로 만들어내지 않는다 — 원장이 이미 아는 것을 그대로 투영한다.
+      visualDelivery: this.imageEvidence.deliveryFacts(),
     });
   }
 
@@ -3586,7 +3656,9 @@ export class AssistantSession {
       if (this.checkpointKey) {
         this.checkpointPending = { operationId: `${this.checkpointKey.runId}:save`, stage: "saving", proposal: null };
         this.captureCheckpoint();
-        await this.whenCheckpointed();
+        // 체크포인트는 복구 편의이고, 저장·증명은 사용자 작업물의 정본이다. 기록 실패로 저장을
+        // 건너뛰면 회복 장치가 원래 기능을 죽인다 — 실패는 경고로 남기고 저장은 진행한다.
+        await this.checkpointBestEffort();
         if (outcomeOwner !== this.runResult || signal?.aborted) return retired();
       }
       const flushResult = await store.flush();
@@ -3602,7 +3674,7 @@ export class AssistantSession {
         commitId = applied.commitId;
         if (outcomeOwner === this.runResult) {
           this.runReceipt = receipt;
-          if (store.isPersistenceReceiptCurrent(receipt)) this.checkpointCurrentIdentity = checkpointContentIdentity(store.getCurrent());
+          if (store.isPersistenceReceiptCurrent(receipt)) this.checkpointCurrentIdentity = this.identityOf(store.getCurrent());
         }
       }
       state = { status: "attempted", verified: false, receipt, commitId };
@@ -3613,7 +3685,8 @@ export class AssistantSession {
       if (this.checkpointKey) {
         this.checkpointPending = { operationId: `${this.checkpointKey.runId}:proof`, stage: "proving", proposal: null };
         this.captureCheckpoint();
-        await this.whenCheckpointed();
+        // 같은 이유로 증명도 체크포인트 실패에 볼모로 잡히지 않는다(저장 증명이 곧 사용자 증거다).
+        await this.checkpointBestEffort();
         if (outcomeOwner !== this.runResult || signal?.aborted) return retired();
       }
       const proof = await store.verifyPersistedRevision(receipt, { signal, validate: project => {
@@ -4777,9 +4850,11 @@ export class AssistantSession {
     const outputAtStart = this.estimatedOutputTotal;
 
     for (let round = 0; round < roundCap; round += 1) {
+      // 라운드 예산만 갱신한다. 쓰기는 저작 결과가 바뀌는 tool_call 과 적용·저장·증명 경계가
+      // 담당하고, 갱신된 예산은 그 다음 쓰기에 함께 실린다. 라운드마다 또 쓰면 같은 라운드에
+      // 두 번 쓰는 셈이고, 한 번의 쓰기가 프로젝트 여러 벌을 복제·재검증한다 —
+      // 실측(2026-09-09): 검증만 1회 약 120ms, 사건 캡처 한 줄이 30초였다.
       this.checkpointRoundsUsed = round + 1;
-      this.captureCheckpoint();
-      await operation.wait(this.whenCheckpointed());
       if (signal?.aborted) {
         this.runExecution = "cancelled";
         this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
@@ -5022,7 +5097,7 @@ export class AssistantSession {
           this.checkpointRoundsUsed = round + 1;
           this.adoptAcceptance(undefined, onEvent);
           this.captureCheckpoint();
-          await operation.wait(this.whenCheckpointed());
+          await operation.wait(this.checkpointBestEffort());
           const review = await operation.wait(this.reviewCurrentDraft(onEvent, signal, outputLimit - spentOutputTokens));
           spentOutputTokens = this.estimatedOutputTotal - outputAtStart;
           if (signal?.aborted) return { assistantText: "사용자가 중단했습니다", proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted" };

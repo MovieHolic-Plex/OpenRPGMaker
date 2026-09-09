@@ -99,8 +99,9 @@ export function createEpochContracts(harness) {
       config.saveAiConfig({ ...previous, liteModel: previous.model, agentMode: 'chat', autonomyLevel: 'balanced', maxToolCalls: 24 });
       const state = qa.epochs = { sessions: new Map(), observations: [], activities: {}, signals: new Map(),
         completions: new Map(), completionEvents: [], phase: 'setup' };
+      const started = Date.now();
       const completionEvent = (type, data) => state.completionEvents.push({
-        sequence: state.completionEvents.length + 1, type, phase: state.phase, ...data,
+        sequence: state.completionEvents.length + 1, type, phase: state.phase, atMs: Date.now() - started, ...data,
       });
       const signal = label => {
         const gate = Promise.withResolvers();

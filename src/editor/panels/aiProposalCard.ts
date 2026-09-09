@@ -301,7 +301,18 @@ export function createProposalHost(options: {
       ?? applyProject.startMapId;
     const completionInstruction = instruction.trim();
     clearAgentGhostPreview();
-    await session.prepareCheckpointApply();
+    // 적용 전 내구성은 기다려서 확보한다(크래시 복구의 전제). 다만 이 대기는 중단·교체된
+    // 실행에서 **거부로 터진다** — 실측(2026-09-09, late-cancel, 병합 이전 main 은 통과):
+    // 그 예외가 applyProposal 밖으로 나가 호출자의 완료 콜백조차 오지 않았고, 적용 결과가
+    // "거부"인지 "실패"인지도 사라졌다. 중단은 예외가 아니라 소유권 상실이므로 아래
+    // ownsApply() 가 판정하게 넘긴다.
+    try { await session.prepareCheckpointApply(); }
+    catch (cause) {
+      // 중단·교체는 예외가 아니라 소유권 상실이다. 그 외 실패는 적용 전 내구성이 없다는 뜻이라
+      // 그대로 올린다 — 삼키면 "적용됐는지 모르는" 상태를 만든다.
+      if (!ownsApply()) return "rejected";
+      throw cause;
+    }
     if (!ownsApply()) return "rejected";
     const applied = await applyProposedProject(applyProject, {
       base,

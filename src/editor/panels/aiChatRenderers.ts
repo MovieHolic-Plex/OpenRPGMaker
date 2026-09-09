@@ -23,13 +23,27 @@ const DELIVERY_LABEL: Readonly<Record<RunOutcome["delivery"], string>> = {
   persisted: "온라인 저장됨", "persisted-verified": "온라인 저장·검증됨",
 };
 
+/**
+ * 자료 전달은 **전달 사실만** 말한다. "이미지 전달됨" 은 그림이 실제 요청에 실렸다는 뜻이고,
+ * 모델이 그것을 이해했거나 좋다고 판단했다는 뜻이 아니다. 전달 사실을 모르는 실행에서는
+ * 이 조각을 아예 붙이지 않는다 — 없는 것을 "0건"이나 "실패"로 단정하지 않는다.
+ */
+const DELIVERY_RECEIPT_LABEL: Readonly<Record<"attached" | "unattached", string>> = {
+  attached: "이미지 전달됨", unattached: "이미지 미전달",
+};
+
 /** Presentation only: every axis is supplied by the session's canonical projection. */
 export function renderRunOutcome(outcome: RunOutcome): HTMLElement {
+  const receipt = outcome.visualDelivery
+    ? outcome.imageAttached ? "attached" as const : "unattached" as const
+    : null;
   return el("p", {
     class: "ai-run-outcome",
-    dataset: { testid: "ai-run-outcome", execution: outcome.execution, goal: outcome.goal, delivery: outcome.delivery },
+    dataset: { testid: "ai-run-outcome", execution: outcome.execution, goal: outcome.goal, delivery: outcome.delivery,
+      ...(receipt ? { imageDelivery: receipt } : {}) },
     attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
-    text: `${EXECUTION_LABEL[outcome.execution]} · ${GOAL_LABEL[outcome.goal]} · ${DELIVERY_LABEL[outcome.delivery]}`,
+    text: [EXECUTION_LABEL[outcome.execution], GOAL_LABEL[outcome.goal], DELIVERY_LABEL[outcome.delivery],
+      ...(receipt ? [DELIVERY_RECEIPT_LABEL[receipt]] : [])].join(" · "),
   });
 }
 

@@ -491,7 +491,16 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - 읽기 전용 ultrabrain 검토 → 독립 deep 병렬 수정 → 통합 재검토를 반복한다.
     최종 승인 후 리드가 현재 HEAD만 병합하고 정리한 뒤 P5로 진행한다.
 
-- [ ] 9. 자료 전달 영수증과 간결한 결과 표시를 연결한다
+- [x] 9. 자료 전달 영수증과 간결한 결과 표시를 연결한다
+  - 구현 `6e344e425`. `RunOutcome` 에 전달 사실 축을 더했다: `imageAttached` 는 자료 이미지가
+    **실제 요청에 실렸는지**만 말하고, `visualDelivery`(attempted/attached)는 보고한 실행에만
+    존재한다 — "모름"을 0건이나 실패로 바꾸지 않는다. 모델이 그림을 이해했다는 주장은 만들지 않는다.
+  - 소유 경계만 건드렸다: `assistantImageEvidence.deliveryFacts()`, `runOutcome`, 세션의 투영,
+    `runRecap` 복원, `aiChatRenderers` 의 결과 줄(`data-image-delivery`). 패널 재설계 없음.
+  - RED 선행 8건 → GREEN. `npm test -- test/aiVisualEvidenceReceipt.test.ts test/aiRunOutcome.test.ts
+    test/assistantVerificationEvidence.test.ts` 470건 통과, 타입 게이트 exit 0,
+    인접 회귀(recap·activity 포함) 474건 통과.
+  - 실표면: `--scenario outcome-matrix` 156계약 전부 통과(전달 축 포함, 위반 0).
   - Recommended task executor category: deep
   - 선행: 4·5·8. 소유: session의 renderImages/request 경계,
     aiTurnRunner 결과 표시, bridge/activity/recap의 같은 투영.
@@ -508,6 +517,24 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - Commit: `feat(ai): expose truthful run and visual-delivery status`.
 
 - [ ] 10. 결정론적 편집기 시나리오와 실제 원격 저장 검증을 마무리한다
+  - 실행기 신설 `scripts/qa/ai-harness-all.mjs`: 시나리오마다 자기 포트·Firefox·격리 원격
+    프로젝트·정리 영수증을 가진 별도 프로세스로 돌리고, 첫 실패에서 멈춰 뒤 통과가 앞 실패를
+    덮지 못하게 한다(계획의 checkpoint-upgrade 는 전용 스크립트, crash-after-apply 는 P4 recovery).
+  - 실제 원격 증명 통과: `resume-01a08291/p5/remote-proof.json` (`qa-ai-proof-fa2867f8`, 15단계 —
+    저장→재조회 일치, 내용 변경 mismatch, 전송 503·취소·대상 오류 뒤 동일 영수증 재검증,
+    로컬 편집 경합 중 원격 보존, 삭제·부재 확인).
+  - 이 게이트가 드러낸 P4 회귀 7건을 병합 이전 main 대조로 귀속해 모두 고쳤다: 저장·증명 중단,
+    턴 경계 실패, 정착 대기 UI 잠금, 신원 재계산(160ms×2/라운드), 행 전체 재복제,
+    원장 복원본 반복 복제(92회 13.3초), 적용 자체를 막던 대기. 더해 체크포인트 키가
+    local-session id 로 굳어 **모든 기록이 거부**되던 결함과 다른 프로젝트 영수증 혼입도 고쳤다.
+  - 현재 상태: **증거가 있는 것은 6개 통과**다 — proof-failure, required-skip, outcome-matrix,
+    retained-draft-ask, wiki-delivery, new-goal-draft 를 최종 게이트에서 실측 통과했다.
+    실행기는 첫 실패에서 멈추므로 human-edit-race·checkpoint-upgrade·crash-after-apply 는
+    이 HEAD 에서 아직 실행되지 않았다(앞선 HEAD 의 통과를 이 HEAD 의 근거로 쓰지 않는다).
+    **late-cancel 은 미통과**다 — 남은 P4 체크포인트 쓰기 비용이 하네스의 60초 신호 창을
+    넘긴다(같은 부하 A/B: 기준선 76.7초 대 현재 101~109초). 근본과 구조적 해법(요청 기준선을
+    런당 1회 저장하고 참조; 스키마 추가)은 `openwiki/testing.md` 에 수치로 남겼다.
+    소급 통과시키지 않는다.
   - Recommended task executor category: deep
   - 선행: 2~9. 소유: 신규 예정
     `scripts/qa/ai-harness-contracts.mjs`,

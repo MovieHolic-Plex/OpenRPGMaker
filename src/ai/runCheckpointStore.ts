@@ -58,7 +58,8 @@ export interface RunCheckpoint extends RunCheckpointKey {
     readonly proposal: {
       readonly baseContentIdentity: string;
       readonly contentIdentity: string;
-      readonly project: Project;
+      /** 적용 대기(applying)에서만 싣는다 — 재개가 실제로 그 내용을 쓰는 유일한 단계다. */
+    readonly project?: Project;
       readonly calls: readonly ProposedCall[];
     } | null;
   } | null;
@@ -172,7 +173,15 @@ function validPayload(value: Record<string, unknown>): boolean {
     if (pending.proposal === null) return pending.stage === "saving" || pending.stage === "proving";
     const proposal = pending.proposal;
     if (!record(proposal) || !text(proposal.baseContentIdentity) || !text(proposal.contentIdentity)
-      || !record(proposal.project) || !record(proposal.project.meta) || !record(proposal.project.maps) || !calls(proposal.calls)) return false;
+      || !calls(proposal.calls)) return false;
+    // 초안 바이트는 **적용 대기(applying)** 에서만 필요하다 — 거기서만 재개가 그 내용을 쓴다.
+    // proposal-ready 는 항상 재조정으로 가므로 바이트를 싣지 않는다. 쓰지 못할 것을 쓰기마다
+    // 복제하면 저작 왕복이 느려진다(2026-09-09 실측: 사건 캡처 한 줄이 30초).
+    if (pending.stage === "applying") {
+      if (!record(proposal.project) || !record(proposal.project.meta) || !record(proposal.project.maps)) return false;
+    } else if (proposal.project !== undefined) {
+      if (!record(proposal.project) || !record(proposal.project.meta) || !record(proposal.project.maps)) return false;
+    }
   }
   return true;
 }
@@ -212,7 +221,35 @@ export async function saveRunCheckpoint(checkpoint: RunCheckpoint): Promise<{ re
   const id = runCheckpointId(checkpoint);
   const row = { ...checkpoint, id };
   const reason = invalid(row, checkpoint);
-  if (reason) throw new TypeError(`Invalid checkpoint: ${reason}`);
+  if (reason) {
+    // 사유만 던지면 어느 필드가 깨졌는지 알 수 없어 다음 실행이 같은 자리를 다시 헤맨다.
+    // 실측(2026-09-09): 실표면에서 malformed 만 남아 원인 추적에 여러 번의 재현이 필요했다.
+    const probe: Record<string, unknown> = row;
+    const named: readonly (readonly [string, boolean])[] = reason !== "malformed" ? [] : [
+      ["key", validKey(probe)], ["savedAt", count(probe.savedAt)],
+      ["status", oneOf(probe.status, ["active", "awaiting-user", "terminal"])],
+      ["request", source(probe.request)], ["baseContentIdentity", text(probe.baseContentIdentity)],
+      ["currentContentIdentity", text(probe.currentContentIdentity)], ["workPlan", workPlan(probe.workPlan)],
+      ["runtime", probe.runtime === undefined || isRunRuntimeState(probe.runtime)],
+      ["dataOnly", dataOnly(probe)],
+      ["acceptance", probe.acceptance === null || (record(probe.acceptance) && text(probe.acceptance.id)
+        && typeof probe.acceptance.goal === "string"
+        && oneOf(probe.acceptance.status, ["pending", "working", "verifying", "verified", "blocked"])
+        && Array.isArray(probe.acceptance.items))],
+      ["applied", probe.applied === null || (record(probe.applied) && text(probe.applied.operationId)
+        && text(probe.applied.contentIdentity) && (probe.applied.commitId === null || text(probe.applied.commitId))
+        && calls(probe.applied.calls))],
+      ["save", probe.save === null || receipt(probe.save, String(probe.projectId))],
+      ["proof", probe.proof === null || (record(probe.proof)
+        && oneOf(probe.proof.status, ["attempted", "failed", "succeeded"]) && typeof probe.proof.verified === "boolean"
+        && (probe.proof.receipt === undefined || receipt(probe.proof.receipt, String(probe.projectId))))],
+      ["pending", probe.pending === null || (record(probe.pending) && probe.status !== "terminal"
+        && text(probe.pending.operationId)
+        && oneOf(probe.pending.stage, ["proposal-ready", "applying", "saving", "proving"]))],
+    ];
+    const field = named.filter(([, ok]) => !ok).map(([name]) => name).join(",");
+    throw new TypeError(`Invalid checkpoint: ${reason}${field ? ` (${field})` : ""}`);
+  }
   // Capture before any await; caller mutation cannot alter this write on either backend.
   const snapshot = structuredClone(row);
   const result = await mutateAiRecord(STORE, id, current => {

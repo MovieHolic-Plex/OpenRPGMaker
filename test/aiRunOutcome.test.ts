@@ -56,8 +56,9 @@ describe("deriveRunOutcome", () => {
       readonly hasPendingDraft: boolean;
       readonly hasApplied: boolean;
       readonly persistence: "none" | "accepted" | "verified-current";
+      readonly visualDelivery?: { readonly attempted: number; readonly attached: number };
     }>();
-    expect(outcome).toEqual({ execution: "response-final", goal: "unassessed", delivery: "no-change" });
+    expect(outcome).toEqual({ execution: "response-final", goal: "unassessed", delivery: "no-change", imageAttached: false });
   });
 
   for (const execution of executions) {
@@ -71,7 +72,7 @@ describe("deriveRunOutcome", () => {
             // When
             const outcome = deriveRunOutcome(facts);
             // Then
-            expect(outcome).toEqual({ execution, goal, delivery });
+            expect(outcome).toEqual({ execution, goal, delivery, imageAttached: false });
           },
         );
       });
@@ -84,7 +85,7 @@ describe("deriveRunOutcome", () => {
     // When
     const outcome = deriveRunOutcome(facts);
     // Then
-    expect(outcome).toEqual({ execution: "response-final", goal: "incomplete", delivery: "persisted" });
+    expect(outcome).toEqual({ execution: "response-final", goal: "incomplete", delivery: "persisted", imageAttached: false });
   });
 
   it("leaves caller facts unchanged when a pending draft wins over applied work", () => {
@@ -115,6 +116,6 @@ describe("deriveRunOutcome", () => {
     // When
     const outcome = deriveRunOutcome(queryFacts);
     // Then
-    expect(outcome).toEqual({ execution: "response-final", goal: "unassessed", delivery: "no-change" });
+    expect(outcome).toEqual({ execution: "response-final", goal: "unassessed", delivery: "no-change", imageAttached: false });
   });
 });

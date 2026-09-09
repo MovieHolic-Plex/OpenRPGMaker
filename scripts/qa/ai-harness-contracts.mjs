@@ -46,7 +46,9 @@ const p1Response = proofFailureResponse(titleToken);
 const ownsTitle = title => title === ownerTitle || p2?.ownsTitle(title) === true;
 const commits = new Set();
 const routes = new Set();
-const record = (type, data = {}) => { const entry = { sequence: report.actions.length + 1, type, ...data }; report.actions.push(entry); console.log(JSON.stringify(entry)); };
+const qaStartedAt = Date.now();
+// 실행 시각을 남긴다 — 성능 회귀를 추측이 아니라 구간 측정으로 판별하기 위해서다.
+const record = (type, data = {}) => { const entry = { sequence: report.actions.length + 1, atMs: Date.now() - qaStartedAt, type, ...data }; report.actions.push(entry); console.log(JSON.stringify(entry)); };
 const safeError = error => String(error?.stack ?? error).replaceAll(config?.anonKey || '\0', '[REDACTED]');
 function deferred() { const d = Promise.withResolvers(); void d.promise.catch(() => {}); return d; }
 async function bounded(promise, label) {
@@ -215,6 +217,8 @@ try {
   });
   page = await context.newPage();
   page.on('pageerror', error => report.errors.push(safeError(error)));
+  page.on('console', message => { const text = message.text();
+    if (text.startsWith('[aiRunCheckpoint] QA diagnose') || text.startsWith('[aiRunRecovery] QA diagnose')) record('qa-diagnose', { text: text.slice(0, 900) }); });
   await context.route('**/*', route => {
     const task = runRoute(route).catch(async error => { report.errors.push(safeError(error)); gate?.arrived.reject(error); gate?.completed.reject(error); await route.abort('failed'); });
     routes.add(task); task.then(() => routes.delete(task), () => routes.delete(task)); return task;
@@ -241,7 +245,10 @@ try {
   if (values.scenario === 'late-cancel' && !report.behaviorVerdict) report.behaviorVerdict = 'SETUP-FAILURE';
   report.failure = safeError(error); process.exitCode = 1; record('FAIL', { error: report.failure });
   if (page && !page.isClosed()) {
-    try { await page.screenshot({ path: `${out}/failure.png` }); report.failureEvents = await page.evaluate(() => window.qa?.events ?? []); }
+    try { await page.screenshot({ path: `${out}/failure.png` }); report.failureEvents = await page.evaluate(() => window.qa?.events ?? []);
+      // 실패 사유는 세션 감사 문자열에만 남는 경우가 있다(예: agent_run:save-failed). 이벤트만 담으면
+      // "왜 실패했는지 모르는 실패"가 되어 다음 실행이 같은 자리를 다시 헤맨다.
+      report.failureAudit = await page.evaluate(() => window.qa?.session?.getAuditEntries?.() ?? []); }
     catch (error) { report.errors.push(safeError(error)); }
   }
 } finally {
