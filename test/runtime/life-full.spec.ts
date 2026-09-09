@@ -204,3 +204,42 @@ test("출하 투입 -> 수면 정산 -> 저장 -> 로드 재개를 실제 메뉴
   expect(errors, "player console/page errors").toEqual([]);
   await appendFile(`${OUT}/SUMMARY.md`, `\n- 출하 투입 -> 정산(${goldBefore} -> ${goldAfter}) -> 저장 -> 로드 재개\n`);
 });
+
+/* 51행 커버리지: 생활 장부 9탭은 K(출하)·L(기술/제작/꾸러미)·A(동물)·S(건물)·수집·박물관·복구
+ * 행들이 실제로 렌더되는 표면이다. 탭마다 내용이 실제로 그려지는지 확인하고 증거를 남긴다.
+ * recovery 탭은 세션 클레임이 없으면 나타나지 않을 수 있어 존재 여부를 실측해 기록한다. */
+const LEDGER_TABS = [
+  ["shipping", "출하"], ["bundles", "꾸러미"], ["skills", "기술"], ["makers", "가공 설비"],
+  ["animals", "동물 돌봄"], ["spaces", "건물·꾸미기"], ["collections", "수집 도감"],
+  ["museum", "박물관"], ["recovery", "복구"],
+] as const;
+
+test("생활 장부 9탭이 실제 플레이 화면에서 내용을 렌더한다", async ({ page }) => {
+  const errors = await boot(page);
+  await page.keyboard.press("x");
+  await rail(page, "record-menu");
+  await choose(page, "status-menu-group-command-life-ledger");
+  await expect(page.getByTestId("life-ledger-tab-shipping")).toBeVisible({ timeout: 20_000 });
+
+  const seen: Record<string, string> = {};
+  for (const [id, label] of LEDGER_TABS) {
+    const tab = page.getByTestId(`life-ledger-tab-${id}`);
+    if (!(await tab.count())) { seen[id] = "탭 없음(해당 데이터 없음)"; continue; }
+    // force 클릭은 탭을 바꾸지 못한다(실측: 8개 탭이 전부 출하 내용으로 남았고, 강화한
+    // aria-selected 단정이 "꾸러미 미선택"으로 잡아냈다). 탭은 actionIndex 를 가진
+    // status-menu-detail-action 이므로 커서 이동 + 확인 키로 고른다.
+    await choose(page, `life-ledger-tab-${id}`);
+    await expect(tab, `${label} 미선택`).toHaveAttribute("aria-selected", "true", { timeout: 15_000 });
+    // 패널은 testid 가 아니라 id 로 식별된다(playerStatusMenuDetailRenderer.ts:92,101).
+    const panel = page.locator("#life-ledger-tab-panel");
+    const text = ((await panel.innerText()) ?? "").replace(/\s+/g, " ").trim();
+    // 탭 목록은 패널 밖이므로 여기 텍스트는 그 탭의 실제 내용이다.
+    expect(text.length, `${label} 내용 없음`).toBeGreaterThan(0);
+    seen[id] = text.slice(0, 80);
+    await shot(page, `20-ledger-${id}`);
+  }
+
+  await appendFile(`${OUT}/SUMMARY.md`, `\n## 생활 장부 탭 실측\n${LEDGER_TABS.map(([id, l]) => `- ${l}(${id}): ${seen[id] ?? "미확인"}`).join("\n")}\n`);
+  await writeFile(`${OUT}/ledger-tabs.json`, JSON.stringify(seen, null, 2));
+  expect(errors, "player console/page errors").toEqual([]);
+});

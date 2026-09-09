@@ -19,8 +19,7 @@
   },
   "receiptSequence": "1..7 strictly increasing — no beat passed on a stale receipt",
   "notYetProven": {
-    "shippingAndSettlement": "BLOCKED on scenario-side menu activation, NOT on the product. Seven attempts. Narrowed by measurement: (1) the rail renders collapsed group entries — items, skills, equipment, party-menu, record-menu, system-menu — dumped from the live DOM; (2) counted ArrowDown x4 DOES move the cursor, proven because waitForAttr aria-current=true on status-menu-command-record-menu passed; (3) Enter on the selected group entry does not expand it under __oprnInput edge injection, so status-menu-command-life-ledger never appears. pressUntil is structurally unusable for multi-step cursor movement because it waits for its condition after each single press. hasLifeLedgerData(project, session) measures true, so the ledger is reachable for a human player. Left unproven rather than asserted.",
-    "fullMatrix": "the 51-row happy+failure matrix and F01..F13 are NOT covered by this scenario; only the farming/day-cycle happy path above is."
+    "fullMatrix": "The 51-row happy+failure matrix and F01..F13 are not fully executed on the live surface. Proven end-to-end so far: authoring across the seven 생활 editor tabs, farming day cycle, tree chop, shipping deposit -> day rollover -> settlement, manual save, and load/resume."
   },
   "harnessAdditions": [
     "expect.cropGrowthDays — asserts a real day transition (a mapId-only assertion had passed while nothing happened)",
@@ -66,5 +65,37 @@
       "the bed is ev_bed at map_farming_demo (3,3) — my map_farm/(5,3) teleport failed silently and minute 0->1 was mistaken for a day change",
       "entry.disabled never reaches the DOM (playerStatusMenu.ts:380), so toBeDisabled() was unprovable"
     ]
+  },
+  "retractedClaims": [
+    {
+      "claim": "notYetProven.shippingAndSettlement said shipping was BLOCKED on menu activation after seven attempts.",
+      "status": "RETRACTED — false. Shipping deposit and settlement are now proven (day 1 gold 0 -> day 2 gold 28, matching the ledger 예상 단가 28G).",
+      "cause": "I was using scripts/qa/runtime, which injects edges into the Phaser key manager, while the status menu is DOM and listens for window keydown. The prescribed harness (playwright.runtime.config.ts) opens the rail immediately.",
+      "lesson": "I recorded an environment limitation before exhausting the tooling the plan itself specified."
+    }
+  ],
+  "ledgerTabsProven": {
+    "test": "test/runtime/life-full.spec.ts — \"생활 장부 9탭이 실제 플레이 화면에서 내용을 렌더한다\"",
+    "method": "Each tab is selected with the cursor+confirm path, asserted via aria-selected=\"true\", and its content read from #life-ledger-tab-panel only (never the tab strip).",
+    "tabContent": {
+      "shipping": "야생 부추 보유 1 · 1개 출하",
+      "bundles": "봄 수확 꾸러미 · 감자 0/1 봄 수확 꾸러미 · 딸기 0/1 봄 수확 꾸러미 · 토마토 0/1 광산 입문 꾸러미 · 돌 0/5 광산 입문 꾸",
+      "skills": "농사 Lv.1 경험치 0 채광 Lv.1 경험치 0 채집 Lv.1 경험치 0 낚시 Lv.1 경험치 0 전투 Lv.1 경험치 0",
+      "makers": "절임통 가공 시작 용광로 가공 시작",
+      "animals": "보리 닭 · 햇살 축사 친밀도 0/1000 · 생산 0/1 · 받을 물품 0 보리 먹이 주기 건초 1개 보리 쓰다듬기 친밀도 +15 보리 생산물",
+      "spaces": "농장 작업실 배치 map_farming_demo (4, 5) 농장 작업실 Lv.1 · 수용량 2 봄 밭 (14, 11) · 아래 농장 작업실 이",
+      "collections": "도끼 발견 출하 0 · 낚시 0 · 기부 미완료 동굴 버섯 미발견 출하 0 · 낚시 0 · 기부 미완료 옥수수 씨앗 발견 출하 0 · 낚시 0 ",
+      "museum": "강 잉어 보유 0 · 1개 기부 달빛 송어 보유 0 · 1개 기부 야생 부추 보유 1 · 1개 기부 여름 산딸기 보유 0 · 1개 기부 가을 버",
+      "recovery": "탭 없음(해당 데이터 없음)"
+    },
+    "coversRowGroups": {
+      "K (출하/정산)": "shipping",
+      "L (기술·제작·꾸러미)": "skills, makers, bundles",
+      "A (동물)": "animals",
+      "S (건물·배치)": "spaces",
+      "수집/박물관": "collections, museum"
+    },
+    "recoveryTab": "Absent, recorded as measured: availableLifeLedgerTabs omits it when the session has no recovery claims. Not asserted as present.",
+    "falseGreenCaught": "A force-click version of this test PASSED while every tab returned identical 출하 text, because the assertion was reading the tab strip. Tightened to require aria-selected and to read only the panel; it then failed with \"꾸러미 미선택\", proving force click never switched tabs. Tabs are actionIndex entries driven by cursor+confirm."
   }
 }
