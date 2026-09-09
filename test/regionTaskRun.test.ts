@@ -166,10 +166,9 @@ describe("runRegionTask", () => {
     });
 
     try {
-      const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "여기 채워" });
-      expect(result.ok).toBe(true);
-      expect(result.applied).toBe(false);
-      expect(JSON.parse(bodies[0]).model).toBe("gemini-2.5-flash-lite");
+      await expect(runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "여기 채워" }))
+        .rejects.toThrow("영역 작업은 작업함으로 맡깁니다.");
+      expect(bodies).toEqual([]);
     } finally {
       if (fetchDescriptor) Object.defineProperty(globalThis, "fetch", fetchDescriptor);
       else Reflect.deleteProperty(globalThis, "fetch");

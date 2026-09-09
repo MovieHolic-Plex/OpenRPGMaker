@@ -78,6 +78,7 @@ describe("faceset picker dialog", () => {
         testid: prefix,
         onChange: () => {},
         rerender: () => {},
+        imageDestination: { kind: "system", field: "titleResourceId" },
       }) as unknown as FakeNode;
       expect(findByTestId(row, `${prefix}-ai-prompt`), `${kind} AI 프롬프트 칸`).not.toBeNull();
       expect(findByTestId(row, `${prefix}-ai-generate`), `${kind} AI 생성 버튼`).not.toBeNull();

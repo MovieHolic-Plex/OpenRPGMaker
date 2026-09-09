@@ -11,6 +11,7 @@ import { setViewModeForCollection } from "@/editor/panels/databaseRecordViewSess
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
+import { installAdmitClient } from "./aiJobAdmitSupport";
 
 // DB 3파 M7 — DB 모달 안 AI 연결.
 // ① AI 바 실행 시 채팅 파이프라인 전송 함수가 컨텍스트 풋터 포함 메시지로 호출된다.
@@ -139,17 +140,12 @@ describe("database modal AI bar (M7-①)", () => {
   });
 
   it("sends the request through the chat pipeline with the DB context footer and shows the turn in place", async () => {
-    const sent: string[] = [];
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: "load-failed" });
+    await store.loadFallbackProject(createBlankProject());
+    const jobs = installAdmitClient();
     const openPanel = vi.fn();
     registerAiAssistantBridge({
-      send: (text: string) => {
-        sent.push(text);
-        return Promise.resolve({
-          ...turnResultStub(),
-          audit: [{ kind: "tool", name: "tune_enemy", summary: "적 '슬라임' 튜닝: maxHp 18→40" }],
-          lastAssistantText: "슬라임을 다듬었습니다.",
-        });
-      },
+      send: () => Promise.resolve(turnResultStub()),
       getStatus: () => turnResultStub().status,
       getAudit: () => [],
       getHarness: () => null,
@@ -174,10 +170,10 @@ describe("database modal AI bar (M7-①)", () => {
     const input = findByTestId(modal, "database-ai-input");
     if (!input) throw new Error("missing ai input");
     input.value = "이 몬스터 스탯을 중반 밸런스로";
+    const pending = jobs.nextAdmitted();
     findByTestId(modal, "database-ai-run")?.click();
-
-    expect(sent).toHaveLength(1);
-    const message = sent[0] ?? "";
+    const admitted = await pending;
+    const message = String(admitted.input.payload.instruction ?? "");
     expect(message.startsWith("이 몬스터 스탯을 중반 밸런스로")).toBe(true);
     // 컨텍스트 풋터: 탭 라벨 + 선택 레코드(세션 무선택이면 첫 레코드) — buildSpec 호환 한 줄.
     expect(message).toContain("[컨텍스트] 에디터 전체 요청");
@@ -197,13 +193,17 @@ describe("database modal AI bar (M7-①)", () => {
 
     // 브리지 runSend 는 async 래퍼라 마이크로태스크가 몇 번 더 돈다 — 기다린다.
     const status = findByTestId(modal, "database-ai-turn-status");
+    await jobs.complete({
+      assistantText: "슬라임을 다듬었습니다.",
+      audit: [{ kind: "tool", name: "tune_enemy", summary: "적 '슬라임' 튜닝: maxHp 18→40" }],
+    });
     await vi.waitFor(() => expect(status?.dataset.phase).toBe("done"));
     expect(findByTestId(modal, "database-ai-turn-tools")?.textContent).toContain("maxHp 18→40");
     expect(findByTestId(modal, "database-ai-turn-answer")?.textContent).toContain("슬라임을 다듬었습니다.");
 
     // 빈 입력은 전송하지 않는다.
     findByTestId(modal, "database-ai-run")?.click();
-    expect(sent).toHaveLength(1);
+    expect(jobs.admits).toHaveLength(1);
 
     // 닫기 버튼으로 바가 접힌다.
     findByTestId(modal, "database-ai-close")?.click();

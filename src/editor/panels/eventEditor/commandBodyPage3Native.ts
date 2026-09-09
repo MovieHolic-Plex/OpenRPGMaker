@@ -25,6 +25,7 @@ import {
 } from "./playMoviePreview";
 import { LAYER_OPTIONS, pictureSlotCaption } from "./options";
 import { showPictureAiField } from "./showPictureAiField";
+import { eventDraftImageDestination } from "@/editor/aiJobs/eventImageDestination";
 import type { CommandEditContext } from "./types";
 
 import {
@@ -1292,11 +1293,7 @@ export function showPictureBody(
               "AI로 그림 만들기",
               showPictureAiField({
                 queueKey: `show-picture:${context.path.join(".")}`,
-                onInserted: (id) => {
-                  resourceId.value = id;
-                  syncResourceName();
-                  commit();
-                },
+                destination: () => eventDraftImageDestination(context, "show-picture", context.getCurrentCommand?.() ?? cmd),
               }),
             ),
             fieldBlock(

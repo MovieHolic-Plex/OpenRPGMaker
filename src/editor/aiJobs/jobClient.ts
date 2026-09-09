@@ -77,10 +77,16 @@ export class JobClient {
     };
     this.availability = store.subscribeApplicationAvailability(changed);
     this.projectSubscription = store.subscribe(changed);
-    this.connectivityTarget = window;
-    this.connectivityTarget.addEventListener("offline", this.onOffline);
-    this.connectivityTarget.addEventListener("online", this.onOnline);
-    void this.connect();
+    if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+      this.connectivityTarget = window;
+      this.connectivityTarget.addEventListener("offline", this.onOffline);
+      this.connectivityTarget.addEventListener("online", this.onOnline);
+      void this.connect();
+    } else {
+      this.connection = "unavailable";
+      this.error = "브라우저 창이 없어 작업 서버에 연결하지 않습니다.";
+      this.emit();
+    }
   }
   private loadedKey(): string {
     const identity = store.getLoadedProjectIdentity();

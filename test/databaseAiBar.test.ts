@@ -19,6 +19,9 @@ import {
   type DatabaseAiBarHandle,
 } from "@/editor/panels/databaseAiBar";
 import { databaseTabLabel } from "@/editor/panels/database";
+import { createBlankProject } from "@/project/defaults";
+import { store } from "@/project/store";
+import { installAdmitClient } from "./aiJobAdmitSupport";
 
 type Scheduled = { fn: () => void; ms: number; cancelled: boolean };
 
@@ -309,11 +312,139 @@ describe("createDatabaseAiBar — DOM 계약", () => {
     const input = handle.element.querySelector<HTMLInputElement>("[data-testid='database-ai-input']")!;
     input.value = "x";
     handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-run']")?.click();
-    expect(scheduler.pending()).toBe(1);
+    expect(scheduler.pending()).toBe(0);
     handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-close']")?.click();
     expect(handle.element.hidden).toBe(true);
     expect(handle.toggle.getAttribute("aria-expanded")).toBe("false");
     handle.dispose();
     expect(scheduler.pending()).toBe(0);
+  });
+});
+
+describe("createDatabaseAiBar — durable job ownership", () => {
+  it("dispose ignores a delayed prior job result", async () => {
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: "load-failed" });
+    await store.loadFallbackProject(createBlankProject());
+    const harness = installAdmitClient();
+    const handle = createDatabaseAiBar({ context: () => ({ tab: "enemies", record: { name: "슬라임", id: "enemy_slime" } }) });
+    handles.push(handle);
+    document.body.append(handle.toggle, handle.element);
+    handle.setOpen(true);
+    const input = handle.element.querySelector<HTMLInputElement>("[data-testid='database-ai-input']")!;
+    input.value = "첫번째";
+    const pending = harness.nextAdmitted();
+    handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-run']")?.click();
+    await pending;
+    const gate = harness.holdNextArtifact();
+    await harness.complete({ assistantText: "이전 답", audit: [] });
+    await gate.started;
+    handle.dispose();
+    gate.release();
+    await gate.idle;
+    expect(handle.element.querySelector("[data-testid='database-ai-turn-answer']")?.textContent ?? "").not.toContain("이전 답");
+  });
+
+  it("a later turn ignores a delayed earlier completion", async () => {
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: "load-failed" });
+    await store.loadFallbackProject(createBlankProject());
+    const harness = installAdmitClient();
+    const handle = createDatabaseAiBar({ context: () => ({ tab: "enemies", record: { name: "슬라임", id: "enemy_slime" } }) });
+    handles.push(handle);
+    document.body.append(handle.toggle, handle.element);
+    handle.setOpen(true);
+    const input = handle.element.querySelector<HTMLInputElement>("[data-testid='database-ai-input']")!;
+    input.value = "첫번째";
+    const first = harness.nextAdmitted();
+    handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-run']")?.click();
+    await first;
+    const gate = harness.holdNextArtifact();
+    const firstJob = harness.lastJob();
+    await harness.complete({ assistantText: "이전 답", audit: [] }, firstJob.id);
+    await gate.started;
+    input.value = "두번째";
+    const second = harness.nextAdmitted();
+    handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-run']")?.click();
+    await second;
+    gate.release();
+    await gate.idle;
+    expect(handle.element.querySelector("[data-testid='database-ai-turn-request']")?.textContent).toBe("두번째");
+    expect(handle.element.querySelector("[data-testid='database-ai-turn-answer']")?.textContent ?? "").not.toContain("이전 답");
+  });
+
+  it("abort cancels the owned durable job", async () => {
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: "load-failed" });
+    await store.loadFallbackProject(createBlankProject());
+    const harness = installAdmitClient();
+    const handle = createDatabaseAiBar({ context: () => ({ tab: "enemies", record: { name: "슬라임", id: "enemy_slime" } }) });
+    handles.push(handle);
+    document.body.append(handle.toggle, handle.element);
+    handle.setOpen(true);
+    const input = handle.element.querySelector<HTMLInputElement>("[data-testid='database-ai-input']")!;
+    input.value = "멈춰";
+    const pending = harness.nextAdmitted();
+    handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-run']")?.click();
+    await pending;
+    const id = harness.lastJob().id;
+    const cancelled = new Promise<void>((resolve, reject) => {
+      const off = harness.client.subscribe(() => {
+        if (harness.client.jobs.get(id)?.generation === "cancelled") { off(); resolve(); }
+      });
+      setTimeout(() => { off(); reject(new Error("owned job was not cancelled")); }, 5000);
+    });
+    handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-turn-abort']")?.click();
+    await cancelled;
+  });
+
+  it("rejected admission after dispose does not paint or clear busy", async () => {
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: "load-failed" });
+    await store.loadFallbackProject(createBlankProject());
+    const harness = installAdmitClient();
+    const handle = createDatabaseAiBar({ context: () => ({ tab: "enemies", record: { name: "슬라임", id: "enemy_slime" } }) });
+    handles.push(handle);
+    document.body.append(handle.toggle, handle.element);
+    handle.setOpen(true);
+    const input = handle.element.querySelector<HTMLInputElement>("[data-testid='database-ai-input']")!;
+    input.value = "첫번째";
+    const pending = harness.nextAdmitted();
+    void pending.catch(() => undefined);
+    const gate = harness.holdNextAdmission();
+    handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-run']")?.click();
+    await gate.started;
+    harness.failNext("접수 거부");
+    handle.dispose();
+    gate.release();
+    await gate.idle;
+    await Promise.resolve();
+    await Promise.resolve();
+    const status = handle.element.querySelector("[data-testid='database-ai-turn-status']")?.textContent ?? "";
+    expect(status).not.toContain("접수 거부");
+    expect(handle.element.classList.contains("is-busy")).toBe(true);
+  });
+
+  it("rejected result read after dispose does not paint", async () => {
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: "load-failed" });
+    await store.loadFallbackProject(createBlankProject());
+    const harness = installAdmitClient();
+    const handle = createDatabaseAiBar({ context: () => ({ tab: "enemies", record: { name: "슬라임", id: "enemy_slime" } }) });
+    handles.push(handle);
+    document.body.append(handle.toggle, handle.element);
+    handle.setOpen(true);
+    const input = handle.element.querySelector<HTMLInputElement>("[data-testid='database-ai-input']")!;
+    input.value = "첫번째";
+    const pending = harness.nextAdmitted();
+    handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-run']")?.click();
+    await pending;
+    const gate = harness.holdNextArtifact();
+    await harness.complete({ assistantText: "이전 답", audit: [] });
+    await gate.started;
+    harness.failHeldArtifact("결과 읽기 실패");
+    handle.dispose();
+    gate.release();
+    await gate.idle;
+    await Promise.resolve();
+    await Promise.resolve();
+    const status = handle.element.querySelector("[data-testid='database-ai-turn-status']")?.textContent ?? "";
+    expect(status).not.toContain("Job artifact HTTP 500");
+    expect(status).not.toContain("결과 읽기 실패");
   });
 });

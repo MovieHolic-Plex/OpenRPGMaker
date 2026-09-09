@@ -1,4 +1,5 @@
 ﻿import type { Layer } from "@/editor/editorState";
+import { openClusterAiModal } from "@/editor/panels/clusterAiModal";
 import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { CHIPSET_TILE_GROUPS, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
@@ -14,7 +15,7 @@ import { el } from "@/util/dom";
 
 export const GRID_PALETTE_COLUMNS = 6;
 export const CUSTOM_PALETTE_MIN_CELL_SIZE = 16;
-
+const RANGE_DRAG_THRESHOLD_PX = 4;
 
 export type GridAutotileEntry = {
   readonly id: string;
@@ -28,6 +29,13 @@ export type GridPaletteModel = {
   readonly autotiles: readonly GridAutotileEntry[];
   /** 대표/변형 축약 이후 일반 나열되는 타일 인덱스(오름차순). */
   readonly tileIds: readonly number[];
+};
+
+export type PaletteRangeRect = {
+  readonly h: number;
+  readonly w: number;
+  readonly x: number;
+  readonly y: number;
 };
 
 type MakeGridPaletteArgs = {
@@ -47,6 +55,20 @@ type MakeGridPaletteArgs = {
 };
 
 type MakeCustomPaletteArgs = MakeGridPaletteArgs;
+
+type PaletteRangeDrag = {
+  readonly active: boolean;
+  readonly currentTile: number;
+  readonly startClientX: number;
+  readonly startClientY: number;
+  readonly startTile: number;
+};
+
+type FrozenRangeClassify = {
+  readonly rect: PaletteRangeRect;
+  readonly tileIds: readonly number[];
+  readonly tilesetId: string;
+};
 
 /** 선택 타일은 필터에 안 걸려도 항상 보여야 한다 — 안 그러면 "선택 중"인 칸이 사라진다. */
 function passesFilter(args: MakeGridPaletteArgs, tileId: number): boolean {
@@ -151,6 +173,45 @@ export function gridPaletteDisplayTile(tileset: TilesetDef, tile: number): numbe
   return tile;
 }
 
+/** Visible 6-col grid rect — not the unmounted 30-col chipset sheet. */
+export function visualPaletteRange(
+  displayedTileIds: readonly number[],
+  startTile: number,
+  endTile: number,
+  columns: number,
+  tilesPerRow: number,
+): { readonly rect: PaletteRangeRect; readonly tileIds: readonly number[] } {
+  const stride = Math.max(1, columns);
+  const atlas = Math.max(1, tilesPerRow);
+  const start = displayedTileIds.indexOf(startTile);
+  const end = displayedTileIds.indexOf(endTile);
+  if (start < 0 || end < 0) return { rect: { h: 0, w: 0, x: 0, y: 0 }, tileIds: [] };
+  const ax = start % stride;
+  const ay = Math.floor(start / stride);
+  const bx = end % stride;
+  const by = Math.floor(end / stride);
+  const visual = {
+    h: Math.abs(ay - by) + 1,
+    w: Math.abs(ax - bx) + 1,
+    x: Math.min(ax, bx),
+    y: Math.min(ay, by),
+  };
+  const tileIds = displayedTileIds.filter((_, index) => {
+    const x = index % stride;
+    const y = Math.floor(index / stride);
+    return x >= visual.x && x < visual.x + visual.w && y >= visual.y && y < visual.y + visual.h;
+  });
+  if (tileIds.length === 0) return { rect: { h: 0, w: 0, x: 0, y: 0 }, tileIds };
+  const xs = tileIds.map((tile) => tile % atlas);
+  const ys = tileIds.map((tile) => Math.floor(tile / atlas));
+  const x = Math.min(...xs);
+  const y = Math.min(...ys);
+  return {
+    rect: { h: Math.max(...ys) - y + 1, w: Math.max(...xs) - x + 1, x, y },
+    tileIds,
+  };
+}
+
 export function makeGridPalette(args: MakeGridPaletteArgs): HTMLElement {
   const model = buildGridPaletteModel(args.tileset, args.layer);
   const sheet = el("div", {
@@ -184,6 +245,7 @@ export function makeGridPalette(args: MakeGridPaletteArgs): HTMLElement {
   }
   installGridRoving(grid, GRID_PALETTE_COLUMNS);
   sheet.append(grid);
+  installPaletteRangeClassify({ columns: GRID_PALETTE_COLUMNS, grid, sheet, tilesetId: args.tileset.id, tilesPerRow: args.tileset.tilesPerRow });
   if (shown === 0) {
     sheet.append(el("div", { class: "empty-hint palette-filter-empty", text: "조건에 맞는 타일이 없습니다.", dataset: { testid: "palette-filter-empty" } }));
   }
@@ -325,6 +387,7 @@ function makePaletteCell(
     on: {
       pointerdown: (event) => {
         if ("button" in event && typeof event.button === "number" && event.button !== 0) return;
+        if ("shiftKey" in event && event.shiftKey === true) return;
         event.preventDefault();
         args.onSelectTile(tileId);
       },
@@ -354,6 +417,138 @@ function makePaletteCell(
   return cell;
 }
 
+function installPaletteRangeClassify(input: {
+  readonly columns: number;
+  readonly grid: HTMLElement;
+  readonly sheet: HTMLElement;
+  readonly tilesetId: string;
+  readonly tilesPerRow: number;
+}): void {
+  let drag: PaletteRangeDrag | null = null;
+  let frozen: FrozenRangeClassify | null = null;
+
+  const displayedTileIds = (): number[] =>
+    Array.from(input.grid.querySelectorAll<HTMLElement>(".chipset-tile")).flatMap((cell) => {
+      const tileId = Number(cell.dataset.tileIndex);
+      return Number.isInteger(tileId) ? [tileId] : [];
+    });
+
+  const tileFromEvent = (event: Event): number | null => {
+    let node = event.target instanceof HTMLElement ? event.target : null;
+    while (node) {
+      if (node.classList.contains("chipset-tile") && input.grid.contains(node)) {
+        const tileId = Number(node.dataset.tileIndex);
+        return Number.isInteger(tileId) ? tileId : null;
+      }
+      if (node === input.grid) return null;
+      node = node.parentElement;
+    }
+    return null;
+  };
+
+  const abortDrag = (): void => {
+    drag = null;
+    document.removeEventListener("pointerup", onLostPointer);
+    document.removeEventListener("pointercancel", onLostPointer);
+  };
+
+  const onLostPointer = (event: Event): void => {
+    if (!drag) return;
+    if (event.type === "pointerup") {
+      const node = event.target instanceof HTMLElement ? event.target : null;
+      if (node && input.grid.contains(node)) return;
+    }
+    abortDrag();
+  };
+
+  const clearAction = (): void => {
+    input.sheet.querySelector("[data-testid='palette-range-classify']")?.remove();
+  };
+
+  const showAction = (): void => {
+    if (!frozen || frozen.tileIds.length === 0) return;
+    clearAction();
+    const snapshot = frozen;
+    input.sheet.prepend(el("button", {
+      class: "palette-range-classify",
+      text: `범위 분류 (${snapshot.tileIds.length})`,
+      attrs: { type: "button" },
+      dataset: { testid: "palette-range-classify" },
+      on: {
+        click: (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          openClusterAiModal({
+            kind: "range-classify",
+            rect: snapshot.rect,
+            tileIds: snapshot.tileIds,
+            tilesetId: snapshot.tilesetId,
+          });
+        },
+      },
+    }));
+  };
+
+  const crossedThreshold = (event: Event, start: PaletteRangeDrag): boolean => {
+    const x = Number(Reflect.get(event, "clientX") ?? 0);
+    const y = Number(Reflect.get(event, "clientY") ?? 0);
+    const dx = x - start.startClientX;
+    const dy = y - start.startClientY;
+    return dx * dx + dy * dy >= RANGE_DRAG_THRESHOLD_PX * RANGE_DRAG_THRESHOLD_PX;
+  };
+
+  input.grid.addEventListener("pointerdown", (event) => {
+    if (!("shiftKey" in event) || event.shiftKey !== true) {
+      abortDrag();
+      return;
+    }
+    if ("button" in event && typeof event.button === "number" && event.button !== 0) return;
+    const tile = tileFromEvent(event);
+    if (tile == null) return;
+    event.preventDefault();
+    drag = {
+      active: false,
+      currentTile: tile,
+      startClientX: Number(Reflect.get(event, "clientX") ?? 0),
+      startClientY: Number(Reflect.get(event, "clientY") ?? 0),
+      startTile: tile,
+    };
+    document.addEventListener("pointerup", onLostPointer);
+    document.addEventListener("pointercancel", onLostPointer);
+  });
+
+  input.grid.addEventListener("pointermove", (event) => {
+    if (!drag) return;
+    const tile = tileFromEvent(event) ?? drag.currentTile;
+    if (!drag.active && !crossedThreshold(event, drag)) return;
+    drag = { ...drag, active: true, currentTile: tile };
+  });
+
+  input.grid.addEventListener("pointerup", (event) => {
+    if (!drag) return;
+    const tile = tileFromEvent(event) ?? drag.currentTile;
+    const active = drag.active || crossedThreshold(event, drag);
+    const startTile = drag.startTile;
+    abortDrag();
+    if (!active) {
+      frozen = null;
+      clearAction();
+      return;
+    }
+    const selection = visualPaletteRange(displayedTileIds(), startTile, tile, input.columns, input.tilesPerRow);
+    if (selection.tileIds.length === 0) {
+      frozen = null;
+      clearAction();
+      return;
+    }
+    frozen = { rect: selection.rect, tileIds: selection.tileIds, tilesetId: input.tilesetId };
+    showAction();
+  });
+
+  input.grid.addEventListener("pointercancel", () => {
+    abortDrag();
+  });
+}
 
 function bannedTileReason(tileId: number): string | null {
   if (tileId >= 411 && tileId <= 413) return "천막 타일은 하네스 전용 — 일반 배치 시 시장과 불일치";

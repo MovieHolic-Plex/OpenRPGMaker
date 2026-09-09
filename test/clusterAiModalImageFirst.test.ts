@@ -1,99 +1,19 @@
+// @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { SessionEvent, TurnResult } from "@/ai/assistantSession";
-import type { RenderedToolImage } from "@/ai/toolImageRenderer";
 import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { openClusterAiModal } from "@/editor/panels/clusterAiModal";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
-import type { Project, TileGroupMetadata } from "@/project/types";
-import { installFakeDom } from "./fakeDom";
+import type { TileGroupMetadata } from "@/project/types";
+import { installAdmitClient, PNG_1x1, whenDom } from "./aiJobAdmitSupport";
 
-type MockSession = {
-  readonly sendUserMessage: ReturnType<typeof vi.fn<(text: string, onEvent: (event: SessionEvent) => void) => Promise<TurnResult>>>;
-  readonly getProposedProject: ReturnType<typeof vi.fn<() => Project>>;
-  readonly rebaseProject: ReturnType<typeof vi.fn<(project: Project) => void>>;
-};
+let jobs: ReturnType<typeof installAdmitClient>;
 
-type TurnScript = (onEvent: (event: SessionEvent) => void) => TurnResult | Promise<TurnResult>;
-
-const emptyTurn: TurnResult = { assistantText: "", proposedCalls: [], stoppedReason: "final" };
-
-const mocks = vi.hoisted<{
-  instances: MockSession[];
-  renderToolImages: ReturnType<typeof vi.fn<(project: Project, toolName: string, data: unknown) => Promise<RenderedToolImage[]>>>;
-  turns: TurnScript[];
-}>(() => ({
-  instances: [],
-  renderToolImages: vi.fn(),
-  turns: [],
-}));
-
-vi.mock("@/ai/assistantSession", () => ({
-  AssistantSession: vi.fn().mockImplementation(function MockAssistantSession() {
-    const session: MockSession = {
-      sendUserMessage: vi.fn(async (_text: string, onEvent: (event: SessionEvent) => void) => {
-        const nextTurn = mocks.turns.shift();
-        return nextTurn ? nextTurn(onEvent) : emptyTurn;
-      }),
-      getProposedProject: vi.fn(() => store.getCurrent()),
-      rebaseProject: vi.fn(),
-    };
-    mocks.instances.push(session);
-    return session;
-  }),
-  AGENT_RUN_MAX_TOTAL_STEPS: 48,
-  METADATA_ONLY_TOOLS: new Set<string>(),
-  proposalApprovalWarnings: (calls: readonly { readonly approvalWarning?: string }[]) => [
-    ...new Set(calls.map((call) => call.approvalWarning).filter((warning): warning is string => typeof warning === "string" && warning.length > 0)),
-  ],
-  ruleToolRejectionText: () => null,
-}));
-
-vi.mock("@/ai/toolImageRenderer", () => ({
-  renderToolImages: mocks.renderToolImages,
-}));
-
-class MemoryStorage implements Storage {
-  private readonly values = new Map<string, string>();
-
-  get length(): number {
-    return this.values.size;
-  }
-
-  clear(): void {
-    this.values.clear();
-  }
-
-  getItem(key: string): string | null {
-    return this.values.get(key) ?? null;
-  }
-
-  key(index: number): string | null {
-    return Array.from(this.values.keys())[index] ?? null;
-  }
-
-  removeItem(key: string): void {
-    this.values.delete(key);
-  }
-
-  setItem(key: string, value: string): void {
-    this.values.set(key, value);
-  }
-}
-
-let restoreDom: (() => void) | null = null;
-let previousWindow: (Window & typeof globalThis) | undefined;
-let previousLocalStorage: Storage | undefined;
-let storage: MemoryStorage;
-
-beforeEach(() => {
-  restoreDom = installFakeDom();
-  previousWindow = globalThis.window;
-  previousLocalStorage = globalThis.localStorage;
-  storage = new MemoryStorage();
-  storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+beforeEach(async () => {
+  const storage = new Map<string, string>();
+  storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
     authMode: "apiKey",
     apiKey: "test-key",
     baseUrl: "https://example.test",
@@ -103,132 +23,219 @@ beforeEach(() => {
   }));
   Object.defineProperty(globalThis, "localStorage", {
     configurable: true,
-    writable: true,
-    value: storage,
-  });
-  Object.defineProperty(globalThis, "window", {
-    configurable: true,
-    writable: true,
     value: {
-      confirm: () => true,
-      localStorage: storage,
-      setTimeout: (handler: TimerHandler): number => {
-        if (typeof handler === "function") handler();
-        return 0;
-      },
+      getItem: (key: string) => storage.get(key) ?? null,
+      setItem: (key: string, value: string) => void storage.set(key, String(value)),
+      removeItem: (key: string) => void storage.delete(key),
+      clear: () => storage.clear(),
     },
   });
+  store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: "load-failed" });
   const project = createBlankProject();
-  const tileset = project.tilesets[DEFAULT_TILESET_ID];
-  tileset.tileGroups = [makeFenceGroup()];
-  store.replace(project);
-  editorState.set({ currentMapId: project.startMapId, selection: null });
-  mocks.instances.length = 0;
-  mocks.turns.length = 0;
-  mocks.renderToolImages.mockReset();
+  project.tilesets[DEFAULT_TILESET_ID].tileGroups = [makeFenceGroup()];
+  await store.loadFallbackProject(project);
+  editorState.set({ currentMapId: store.getCurrent().startMapId, selection: null });
+  jobs = installAdmitClient();
 });
 
 afterEach(() => {
-  restoreDom?.();
-  restoreDom = null;
-  restoreWindow(previousWindow);
-  restoreStorage(previousLocalStorage);
+  document.querySelector<HTMLButtonElement>('[data-testid="cluster-ai-modal-close"]')?.click();
+  document.body.replaceChildren();
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 describe("cluster AI image-first modal", () => {
-  it("renders two render_group_sample images as before-after stage cards", async () => {
-    const data = {
-      tilesetId: DEFAULT_TILESET_ID,
-      samples: [
-        { label: "수정 전", w: 1, h: 1, lower: [1], upper: [-1] },
-        { label: "수정 후", w: 1, h: 1, lower: [2], upper: [-1] },
-      ],
-    };
-    mocks.renderToolImages.mockResolvedValue([
-      { dataUrl: "data:image/png;base64,before", label: "수정 전" },
-      { dataUrl: "data:image/png;base64,after", label: "수정 후" },
-    ]);
-    mocks.turns.push((onEvent: (event: SessionEvent) => void) => {
-      onEvent({ type: "tool_call", name: "render_group_sample", args: {}, result: { ok: true, summary: "비교 미리보기", data } });
-      return emptyTurn;
-    });
-
+  it("renders two captured preview refs as before-after stage cards", async () => {
+    const pending = jobs.nextAdmitted();
     openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
-    await flushAsync();
-
+    await pending;
+    const ref = await jobs.putBytes(PNG_1x1, "image/png");
     const stage = requireTestId(document, "cluster-ai-stage");
+    const shown = whenDom(stage, () => Boolean(stage.querySelector("[data-testid='cluster-ai-beforeafter']")));
+    await jobs.complete({
+      assistantText: "비교 미리보기",
+      proposedCalls: [],
+      previews: [{
+        index: 0,
+        status: "ready",
+        images: [
+          { ref, label: "수정 전" },
+          { ref, label: "수정 후" },
+        ],
+      }],
+    });
+    await shown;
     const beforeAfter = requireTestId(stage, "cluster-ai-beforeafter");
     expect(beforeAfter.querySelectorAll("img")).toHaveLength(2);
     expect(beforeAfter.textContent).toContain("수정 전");
     expect(beforeAfter.textContent).toContain("수정 후");
-    const log = requireTestId(document, "cluster-ai-log");
-    expect(log.textContent).toContain("완료 · 조립 미리보기 — 비교 미리보기");
-    expect(log.textContent).not.toContain("render_group_sample");
-    expect(mocks.renderToolImages).toHaveBeenCalledWith(store.getCurrent(), "render_group_sample", data);
   });
 
-  it("maps internal tool image labels to user-facing captions", async () => {
-    mocks.renderToolImages.mockResolvedValue([{ dataUrl: "data:image/png;base64,sample", label: "render_group_sample" }]);
-    mocks.turns.push((onEvent: (event: SessionEvent) => void) => {
-      onEvent({ type: "tool_call", name: "render_group_sample", args: {}, result: { ok: true, summary: "샘플 렌더" } });
-      return emptyTurn;
-    });
-
+  it("maps internal preview labels to user-facing captions", async () => {
+    const pending = jobs.nextAdmitted();
     openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
-    await flushAsync();
-
+    await pending;
+    const ref = await jobs.putBytes(PNG_1x1, "image/png");
     const stage = requireTestId(document, "cluster-ai-stage");
+    const shown = whenDom(stage, () => (stage.textContent ?? "").includes("현재 모습"));
+    await jobs.complete({
+      assistantText: "샘플 렌더",
+      proposedCalls: [],
+      previews: [{ index: 0, status: "ready", images: [{ ref, label: "render_group_sample" }] }],
+    });
+    await shown;
     expect(stage.textContent).toContain("현재 모습");
     expect(stage.textContent).not.toContain("render_group_sample");
   });
 
-  it("renders one tool image as a single large stage image", async () => {
-    mocks.renderToolImages.mockResolvedValue([{ dataUrl: "data:image/png;base64,one", label: "타일 보기" }]);
-    mocks.turns.push((onEvent: (event: SessionEvent) => void) => {
-      onEvent({ type: "tool_call", name: "show_tiles", args: { tilesetId: DEFAULT_TILESET_ID, tiles: [1] }, result: { ok: true, summary: "타일 보기" } });
-      return emptyTurn;
-    });
-
+  it("renders one captured preview as a single large stage image", async () => {
+    const pending = jobs.nextAdmitted();
     openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
-    await flushAsync();
-
+    await pending;
+    const ref = await jobs.putBytes(PNG_1x1, "image/png");
     const stage = requireTestId(document, "cluster-ai-stage");
+    const shown = whenDom(stage, () => stage.querySelectorAll("img").length === 1);
+    await jobs.complete({
+      assistantText: "타일 보기",
+      proposedCalls: [],
+      previews: [{ index: 0, status: "ready", images: [{ ref, label: "타일 보기" }] }],
+    });
+    await shown;
     expect(stage.querySelectorAll("img")).toHaveLength(1);
     expect(stage.querySelector("[data-testid='cluster-ai-beforeafter']")).toBeNull();
     expect(stage.textContent).toContain("타일 보기");
   });
 
   it("renders assistant choices and sends a clicked one as the next message", async () => {
-    mocks.turns.push((onEvent: (event: SessionEvent) => void) => {
-      onEvent({ type: "assistant_message", content: "어떻게 할까요? [선택지] 적용 | 다시 보기" });
-      return { ...emptyTurn, assistantText: "어떻게 할까요? [선택지] 적용 | 다시 보기" };
-    });
-    mocks.turns.push(() => ({ ...emptyTurn, assistantText: "완료" }));
-
+    const pending = jobs.nextAdmitted();
     openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
-    await flushAsync();
+    await pending;
+    const shown = whenDom(document.body, () => testIdElements(document, "cluster-ai-choice").length === 2);
+    await jobs.complete({
+      assistantText: "어떻게 할까요? [선택지] 적용 | 다시 보기",
+      proposedCalls: [],
+    });
+    await shown;
     const choices = testIdElements(document, "cluster-ai-choice");
     expect(choices).toHaveLength(2);
+    const follow = jobs.nextAdmitted();
     choices[0]?.click();
-    await flushAsync();
-
-    expect(mocks.instances[0].sendUserMessage).toHaveBeenLastCalledWith("적용", expect.any(Function));
+    const next = await follow;
+    expect(String(next.input.payload.instruction)).toContain("적용");
   });
 
   it("keeps long assistant prose as a single caption line", async () => {
     const longText = `첫 줄입니다.\n${"아주 긴 설명 ".repeat(40)}끝`;
-    mocks.turns.push((onEvent: (event: SessionEvent) => void) => {
-      onEvent({ type: "assistant_message", content: longText });
-      return { ...emptyTurn, assistantText: longText };
-    });
-
+    const pending = jobs.nextAdmitted();
     openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
-    await flushAsync();
-
+    await pending;
+    const shown = whenDom(document.body, () => assistantBubbles().length > 0);
+    await jobs.complete({ assistantText: longText, proposedCalls: [] });
+    await shown;
     const assistantBubble = assistantBubbles()[0];
     expect(assistantBubble?.textContent).not.toContain("\n");
     expect((assistantBubble?.textContent ?? "").length).toBeLessThan(longText.length);
     expect(assistantBubble?.textContent).toContain("...");
+  });
+
+  it("delayed preview bytes after close do not allocate stage URLs", async () => {
+    const pending = jobs.nextAdmitted();
+    openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+    await pending;
+    const ref = await jobs.putBytes(PNG_1x1, "image/png");
+    const gate = jobs.holdArtifact(ref.sha256);
+    const created: string[] = [];
+    const original = URL.createObjectURL.bind(URL);
+    vi.spyOn(URL, "createObjectURL").mockImplementation((blob) => {
+      const url = original(blob);
+      created.push(url);
+      return url;
+    });
+    await jobs.complete({
+      assistantText: "A",
+      proposedCalls: [],
+      previews: [{ index: 0, status: "ready", images: [{ ref, label: "A 미리보기" }] }],
+    });
+    await gate.started;
+    document.querySelector<HTMLButtonElement>('[data-testid="cluster-ai-modal-close"]')?.click();
+    expect(document.querySelector('[data-testid="cluster-ai-modal"]')).toBeNull();
+    gate.release();
+    await gate.idle;
+    expect(created).toEqual([]);
+    expect(document.querySelector('[data-testid="cluster-ai-stage"]')).toBeNull();
+  });
+
+  it("delayed A preview does not replace B stage after B is current", async () => {
+    const first = jobs.nextAdmitted();
+    openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+    await first;
+    const refA = await jobs.putBytes(PNG_1x1, "image/png");
+    const gateA = jobs.holdArtifact(refA.sha256);
+    await jobs.complete({
+      assistantText: "A",
+      proposedCalls: [],
+      previews: [{ index: 0, status: "ready", images: [{ ref: refA, label: "A 미리보기" }] }],
+    });
+    await gateA.started;
+    const input = requireTestId(document, "cluster-ai-input");
+    const send = requireTestId(document, "cluster-ai-send");
+    input.value = "다시";
+    const second = jobs.nextAdmitted();
+    send.click();
+    await second;
+    const refB = await jobs.putBytes(Uint8Array.from([...PNG_1x1, 1]), "image/png");
+    const stage = requireTestId(document, "cluster-ai-stage");
+    const shownB = whenDom(stage, () => (stage.textContent ?? "").includes("B 미리보기"));
+    await jobs.complete({
+      assistantText: "B",
+      proposedCalls: [],
+      previews: [{ index: 0, status: "ready", images: [{ ref: refB, label: "B 미리보기" }] }],
+    });
+    await shownB;
+    gateA.release();
+    await gateA.idle;
+    expect(stage.textContent).toContain("B 미리보기");
+    expect(stage.textContent).not.toContain("A 미리보기");
+  });
+
+  it("revokes the first preview URL if a later verifiedArtifact read fails", async () => {
+    const pending = jobs.nextAdmitted();
+    openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+    await pending;
+    const refA = await jobs.putBytes(PNG_1x1, "image/png");
+    const refB = await jobs.putBytes(Uint8Array.from([...PNG_1x1, 2]), "image/png");
+    jobs.failArtifact(refB.sha256);
+    const created: string[] = [];
+    const revoked: string[] = [];
+    const originalCreate = URL.createObjectURL.bind(URL);
+    const originalRevoke = URL.revokeObjectURL.bind(URL);
+    vi.spyOn(URL, "createObjectURL").mockImplementation((blob) => {
+      const url = originalCreate(blob);
+      created.push(url);
+      return url;
+    });
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation((url) => {
+      revoked.push(String(url));
+      originalRevoke(url);
+    });
+    const failed = whenDom(document.body, () => (document.querySelector('[data-testid="cluster-ai-status"]')?.textContent ?? "") === "실패");
+    await jobs.complete({
+      assistantText: "A",
+      proposedCalls: [],
+      previews: [{
+        index: 0,
+        status: "ready",
+        images: [
+          { ref: refA, label: "A 미리보기" },
+          { ref: refB, label: "B 미리보기" },
+        ],
+      }],
+    });
+    await failed;
+    expect(created.length).toBeGreaterThan(0);
+    expect(revoked).toEqual(created);
+    expect(requireTestId(document, "cluster-ai-stage").textContent ?? "").not.toContain("A 미리보기");
   });
 });
 
@@ -242,11 +249,6 @@ function makeFenceGroup(): TileGroupMetadata {
     role: "fence",
     tileIds: [1, 2, 3],
   };
-}
-
-async function flushAsync(): Promise<void> {
-  await Promise.resolve();
-  await Promise.resolve();
 }
 
 function assistantBubbles(): HTMLElement[] {
@@ -263,20 +265,4 @@ function requireTestId(root: ParentNode, testId: string): HTMLElement {
 function testIdElements(root: ParentNode, testId: string): HTMLElement[] {
   return Array.from(root.querySelectorAll(`[data-testid="${testId}"]`))
     .filter((node): node is HTMLElement => node instanceof HTMLElement);
-}
-
-function restoreWindow(previous: (Window & typeof globalThis) | undefined): void {
-  if (previous) {
-    Object.defineProperty(globalThis, "window", { configurable: true, writable: true, value: previous });
-    return;
-  }
-  Reflect.deleteProperty(globalThis, "window");
-}
-
-function restoreStorage(previous: Storage | undefined): void {
-  if (previous) {
-    Object.defineProperty(globalThis, "localStorage", { configurable: true, writable: true, value: previous });
-    return;
-  }
-  Reflect.deleteProperty(globalThis, "localStorage");
 }

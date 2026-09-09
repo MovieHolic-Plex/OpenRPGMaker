@@ -4,6 +4,10 @@
 // - MCP(scripts/rpgzzu-assistant-mcp.mjs)가 send/status/audit/harness 를 호출하면
 //   브라우저에서 실제 채팅 패널이 돌고, 사용자는 UI를 그대로 본다.
 
+import { submitAssistantJob } from "@/editor/aiJobs/submitAssistantJob";
+import { jobSubmitMessage } from "@/editor/aiJobs/jobSubmitError";
+import { randomUuid } from "@/util/id";
+
 export const AI_ASSISTANT_BRIDGE_DEFAULT_PORT = 17831;
 export const AI_ASSISTANT_BRIDGE_DEFAULT_HOST = "127.0.0.1";
 
@@ -35,6 +39,7 @@ export type AiBridgeTurnResult = {
   readonly audit: readonly AiBridgeAuditEntry[];
   readonly harness: unknown;
   readonly lastAssistantText?: string;
+  readonly jobId?: string;
 };
 
 export type AiAssistantBridgeHandlers = {
@@ -59,6 +64,7 @@ let pollTimer: number | null = null;
 let pollAbort: AbortController | null = null;
 let bridgeConnected = false;
 let lastStatusText = "대기";
+let pendingBridgeAdmission: { readonly instruction: string; readonly key: string } | null = null;
 
 export function setAiBridgeLastStatus(text: string): void {
   lastStatusText = text;
@@ -76,7 +82,7 @@ export function registerAiAssistantBridge(next: AiAssistantBridgeHandlers): void
   handlers = next;
   if (typeof window !== "undefined") {
     window.__oprnAiBridge = {
-      send: (text: string) => runSend(text),
+      send: (text: string) => handlers ? handlers.send(text) : runSend(text),
       status: () => getStatusSnapshot(),
       audit: () => handlers?.getAudit() ?? [],
       harness: () => handlers?.getHarness() ?? null,
@@ -145,16 +151,34 @@ function getStatusSnapshot(): AiBridgeStatus {
 }
 
 async function runSend(text: string): Promise<AiBridgeTurnResult> {
-  if (!handlers) {
+  const instruction = text.trim();
+  if (!instruction) {
+    return { ok: false, error: "보낼 내용이 없습니다.", status: getStatusSnapshot(), audit: handlers?.getAudit() ?? [], harness: handlers?.getHarness() ?? null };
+  }
+  try {
+    const reuse = pendingBridgeAdmission?.instruction === instruction;
+    const key = reuse && pendingBridgeAdmission ? pendingBridgeAdmission.key : randomUuid();
+    pendingBridgeAdmission = { instruction, key };
+    const receipt = await submitAssistantJob({ instruction }, { idempotencyKey: key });
+    pendingBridgeAdmission = null;
+    setAiBridgeLastStatus(`작업함에 맡겼습니다 · ${receipt.job.id}`);
+    return {
+      ok: true,
+      status: getStatusSnapshot(),
+      audit: handlers?.getAudit() ?? [],
+      harness: handlers?.getHarness() ?? null,
+      lastAssistantText: `작업함 ${receipt.job.id}`,
+      jobId: receipt.job.id,
+    };
+  } catch (error) {
     return {
       ok: false,
-      error: "AI 패널이 아직 마운트되지 않았습니다.",
+      error: jobSubmitMessage(error),
       status: getStatusSnapshot(),
-      audit: [],
-      harness: null,
+      audit: handlers?.getAudit() ?? [],
+      harness: handlers?.getHarness() ?? null,
     };
   }
-  return handlers.send(text);
 }
 
 function bridgeBaseUrl(): string {
@@ -265,21 +289,19 @@ async function pollLoop(): Promise<void> {
   }
 }
 
-async function executeBridgeCommand(command: BridgeCommand): Promise<unknown> {
-  if (!handlers) {
-    return { ok: false, error: "AI 패널 미연결", status: getStatusSnapshot() };
-  }
+export async function executeBridgeCommand(command: BridgeCommand): Promise<unknown> {
   switch (command.type) {
     case "send":
+      if (handlers) return handlers.send(command.text);
       return runSend(command.text);
     case "status":
       return getStatusSnapshot();
     case "audit":
-      return { ok: true, audit: handlers.getAudit(), status: getStatusSnapshot() };
+      return { ok: true, audit: handlers?.getAudit() ?? [], status: getStatusSnapshot() };
     case "harness":
-      return { ok: true, harness: handlers.getHarness(), status: getStatusSnapshot() };
+      return { ok: true, harness: handlers?.getHarness() ?? null, status: getStatusSnapshot() };
     case "abort":
-      handlers.abort();
+      handlers?.abort();
       return { ok: true, status: getStatusSnapshot() };
     default:
       return { ok: false, error: "unknown command" };

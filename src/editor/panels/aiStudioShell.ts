@@ -856,7 +856,7 @@ function monitorEmpty(): HTMLElement {
 }
 
 function requestCanvasFit(): void {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || typeof window.dispatchEvent !== "function") return;
   const fire = (): void => {
     window.dispatchEvent(new Event("resize"));
   };

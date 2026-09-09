@@ -5,9 +5,11 @@ import { refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/edito
 import { importStructureKits, registerStructureKit, replaceStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { buildAiMetaDraftPrompt, collectUsedTiles, openStructureKitEditor, parseAiMetaDraft } from "@/editor/panels/structureKitEditorDialog";
 import { store } from "@/project/store";
+import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import type { SectionStructureKitDef } from "@/project/types";
 import { FakeElement, installFakeDom } from "./fakeDom";
+import { installAdmitClient } from "./aiJobAdmitSupport";
 
 let restoreDom: (() => void) | undefined;
 
@@ -399,7 +401,8 @@ describe("AI 메타 탭", () => {
 
     await refreshAiConnectionStatus();
     draftButton.click();
-    expect(fetchMock.mock.calls.filter(([input]) => String(input).includes("/v1/chat/completions"))).toHaveLength(1);
+    await Promise.resolve();
+    expect(fetchMock.mock.calls.filter(([input]) => String(input).includes("/v1/chat/completions"))).toHaveLength(0);
   });
 
   it("수락하면 폼 값이 저장되고 origin 이 user 가 된다", () => {
@@ -417,6 +420,25 @@ describe("AI 메타 탭", () => {
       .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
     expect(stored.ai?.description).toBe("돌담을 두른 두레우물");
     expect(stored.ai?.origin).toBe("user");
+  });
+
+  it("AI 초안 버튼은 structure-kit-metadata 작업을 맡긴다", async () => {
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: "load-failed" });
+    await store.loadFallbackProject(createBlankProject());
+    seedKit();
+    const harness = installAdmitClient();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    const tab = document.querySelector("[data-testid='structure-kit-editor-tab-ai']");
+    if (!tab) throw new Error("missing kit AI tab");
+    (tab as unknown as FakeElement).click();
+    const draftButton = document.querySelector("[data-testid='structure-kit-editor-ai-draft']");
+    if (!draftButton) throw new Error("missing kit AI draft");
+    const pending = harness.nextAdmitted();
+    (draftButton as unknown as FakeElement).click();
+    const admitted = await pending;
+    expect(admitted.input.family).toBe("tileset");
+    expect(admitted.input.payload.operation).toBe("structure-kit-metadata");
+    expect(admitted.input.payload.kitId).toBe("kit_edit");
   });
 });
 

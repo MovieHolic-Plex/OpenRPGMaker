@@ -259,6 +259,7 @@ function terrainSceneCard(terrain: DatabaseTerrainRecord, index: number, rerende
         testid: `db-field-terrain-backdrop-${index}`,
         allowClear: true,
         dialogTitle: "전투 배경",
+        imageDestination: { kind: "database", table: "terrains", recordId: terrain.id, field: "battleBackgroundResourceId" },
         onChange: (result) => {
           selectUtilityRecord("terrain", index);
           recordCoalescedSnapshot(`db-utility:terrain:${index}:backdrop`);

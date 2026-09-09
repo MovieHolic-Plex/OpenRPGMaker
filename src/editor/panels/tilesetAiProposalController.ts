@@ -1,6 +1,9 @@
-import { buildTilesetProposalPrompt, normalizeTilesetProposal, tilesetProposalMapContext } from "@/editor/tilesetAiProposalDraft";
+import { tilesetProposalMapContext } from "@/editor/tilesetAiProposalDraft";
 import { editorState } from "@/editor/editorState";
-import { requestCpenTilesetMapping } from "@/editor/panels/tilesetAiCpenClient";
+import { submitTilesetJob } from "@/editor/aiJobs/submitTilesetJob";
+import { JobSubmitError } from "@/editor/aiJobs/jobSubmitError";
+import { readJobResult, whenJobGeneration } from "@/editor/aiJobs/jobViewBinding";
+import { parseAiMappingResult } from "@/editor/panels/tilesetAiProposalParsing";
 import { analyzeTilesetSelection } from "@/editor/panels/tilesetAiMappingRules";
 import type { TempMapSnapshot } from "@/editor/panels/tilesetAiTerrainExample";
 import type { AiSetupChoice } from "@/editor/panels/tilesetAiSetupMapping";
@@ -26,24 +29,45 @@ export type TilesetAiProposalController = {
 };
 
 export function createTilesetAiProposalController(options: TilesetAiProposalControllerOptions): TilesetAiProposalController {
-  const mapContext = currentMapContext(options.tileset.id, options.selectedTiles);
-
   return {
     analyze: async (lockedAnswer) => {
-      await waitForSnapshot(options.readSnapshot);
       const snapshot = options.readSnapshot();
-      const prompt = buildTilesetProposalPrompt(options, mapContext, snapshot.summary, lockedAnswer);
-      const result = await requestCpenTilesetMapping({
-        imageDataUrl: snapshot.imageDataUrl,
-        prompt,
-      });
+      if (!snapshot.summary || !snapshot.imageDataUrl) {
+        throw new JobSubmitError("not-ready", "스냅샷이 아직 준비되지 않았습니다.");
+      }
+      const receipt = await submitTilesetJob({
+        operation: "proposal-draft",
+        tilesetId: options.tileset.id,
+        selectedTiles: options.selectedTiles,
+        setupChoice: options.setupChoice,
+        snapshotSummary: snapshot.summary,
+        snapshotDataUrl: snapshot.imageDataUrl,
+        lockedAnswer,
+      }, { owner: options });
+      const job = await whenJobGeneration(receipt.job.id, ["succeeded", "failed", "cancelled"]);
+      if (job.generation !== "succeeded") {
+        await recordAiAnalysisRun({
+          tilesetId: options.tileset.id,
+          selectedTiles: options.selectedTiles,
+          promptContext: { jobId: receipt.job.id },
+          result: "",
+        });
+        return { answer: "", failed: true, invalidJson: false };
+      }
+      const result = await readJobResult(job);
+      const answer = typeof result?.payload.answer === "string"
+        ? result.payload.answer
+        : result?.payload.mapping && typeof result.payload.mapping === "object"
+          ? JSON.stringify(result.payload.mapping)
+          : "";
+      const mapping = parseAiMappingResult(answer);
       await recordAiAnalysisRun({
         tilesetId: options.tileset.id,
         selectedTiles: options.selectedTiles,
-        promptContext: JSON.parse(prompt),
-        result,
+        promptContext: { jobId: receipt.job.id },
+        result: answer,
       });
-      return normalizeTilesetProposal(result, lockedAnswer);
+      return { answer, failed: answer.length === 0, invalidJson: mapping === null };
     },
   };
 }
@@ -52,14 +76,6 @@ export function buildTilesetAiProposalQuestion(tilesetId: string, tiles: readonl
   const analysis = analyzeTilesetSelection({ selectedTiles: tiles, tilesPerRow: 30 });
   const question = analysis.minimumQuestions[0] ? ` 최소 확인: ${analysis.minimumQuestions[0]}` : "";
   return `${currentMapContext(tilesetId, tiles)} 선택 타일 ${tiles.length}개를 AI가 블록/레이어/배치 규칙으로 매핑합니다.${question}`;
-}
-
-async function waitForSnapshot(readSnapshot: () => TempMapSnapshot): Promise<void> {
-  for (let count = 0; count < 20; count += 1) {
-    const snapshot = readSnapshot();
-    if (snapshot.summary && snapshot.imageDataUrl) return;
-    await new Promise((resolve) => window.setTimeout(resolve, 50));
-  }
 }
 
 function currentMapContext(tilesetId: string, tiles: readonly number[]): string {

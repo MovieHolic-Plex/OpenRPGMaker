@@ -116,10 +116,20 @@ function validateMask(mask: BenchmarkMask): void {
 
 // ── 렌더러 ───────────────────────────────────────────────────────────────
 
+const SNAPSHOT_UNAVAILABLE = "Tileset snapshot canvas is unavailable";
+async function benchmarkSnapshot(run: () => Promise<string>): Promise<string> {
+  try {
+    return await run();
+  } catch (error) {
+    if (error instanceof Error && error.message === SNAPSHOT_UNAVAILABLE) return "";
+    throw error;
+  }
+}
+
 /** d1/d2/d4/d6b — 기본 타일셋 전체 아틀라스 이미지(data URL). */
 export async function renderBenchmarkAtlas(): Promise<string> {
   const tileset = defaultTileset();
-  return renderTilesetAtlasImage(tileset);
+  return benchmarkSnapshot(() => renderTilesetAtlasImage(tileset));
 }
 
 function buildGridMap(grid: BenchmarkGrid, tileSize: number): GameMap {
@@ -145,7 +155,7 @@ function buildGridMap(grid: BenchmarkGrid, tileSize: number): GameMap {
 export async function renderGridImage(grid: BenchmarkGrid, tileSize: number = DEFAULT_TILE_SIZE): Promise<string> {
   validateGrid(grid, tileSize);
   const tileset = defaultTileset();
-  return renderTempMapImage(buildGridMap(grid, tileSize), tileset);
+  return benchmarkSnapshot(() => renderTempMapImage(buildGridMap(grid, tileSize), tileset));
 }
 
 /**

@@ -8,7 +8,6 @@ export { buildRegionTaskMessage, countAddedMaps, countInRegionChangedCells, coun
 // store/세션 싱글턴 의존을 deps로 분리해 단위 테스트가 가능하다.
 // 개발 편의: 감사 로그·하네스·UI 이벤트 스트림을 RegionTaskLogExport 로 묶어 export 한다.
 import {
-  AssistantSession,
   type AuditEntry,
   type HarnessSnapshot,
   type SessionEvent,
@@ -16,10 +15,9 @@ import {
   type SessionTurnOptions,
 } from "@/ai/assistantSession";
 import { recordAiActivityFromRegionLog } from "@/ai/activityLog";
-import { conversationScopeKey } from "@/ai/conversationStore";
 import { distillPreferences } from "@/ai/preferenceDistiller";
 import { observeTurn, shouldDistillPreferences } from "@/ai/preferenceSignals";
-import { REGION_SURFACE_MAX_TOOL_CALLS, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
+import { REGION_SURFACE_MAX_TOOL_CALLS } from "@/ai/assistantEndpoint";
 import { loadAiConfig } from "@/ai/llmClient";
 import {
   activityToolCallsFromAudit,
@@ -41,7 +39,6 @@ import {
   recordProjectSnapshot,
   truncateMapEditHistoryFromMarker,
 } from "@/editor/mapEditHistory";
-import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import { ensureBuildPaletteTileGroups } from "./buildPaletteTileGroups";
 import { getTool } from "@/editor/tools";
 import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots } from "@/editor/tools/houseProtection";
@@ -55,8 +52,6 @@ import { analyzeRegionSurroundings } from "./regionSurroundings";
 // 재료 라벨 힌트(현재 맵 타일셋의 사실)의 정본은 turnGuide 다. 기존 수입자(test/materialPolicy.test.ts,
 // regionPolish)를 깨지 않도록 여기서 재수출한다. 도구 규칙 가이드는 없다 — 규칙은 툴 설명에 있다.
 import { formatMaterialLabelHint } from "@/ai/turnGuide";
-import { createLlmIntentDeclarer } from "@/ai/intentDeclarationClient";
-
 export { formatMaterialLabelHint };
 import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
 import { projectApprovalFingerprint, type HarnessReviewReport } from "./harnessReview";
@@ -287,20 +282,8 @@ export function applyRegionProjectWithHistory(project: Project, label: string, m
 const defaultDeps: RegionTaskDeps = {
   getProject: () => store.getCurrent(),
   applyProject: applyRegionProjectWithHistory,
-  createSession: (project, mapId) => {
-    return new AssistantSession(project, {
-      config: resolveSurfaceAiConfig("region"),
-      declareIntent: createLlmIntentDeclarer(),
-      contextOptions: {
-        currentMapId: mapId,
-        // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
-        projectScopeKey: conversationScopeKey(store.getProjectIdentity(), store.getCurrent()),
-        getViewport: () => {
-          const snap = getEditorMapViewport();
-          return snap?.mapId === mapId ? snap : null;
-        },
-      },
-    });
+  createSession: () => {
+    throw new Error("영역 작업은 작업함으로 맡깁니다.");
   },
 };
 

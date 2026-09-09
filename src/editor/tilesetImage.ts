@@ -77,7 +77,7 @@ export function tilesetImageSourceUrl(image: TilesetDef["image"]): string {
   return bundledTilesetImageUrl(image.id) ?? DEFAULT_TILESET_IMAGE_URL;
 }
 
-function bundledTilesetImageUrl(textureKey: string): string | null {
+export function bundledTilesetImageUrl(textureKey: string): string | null {
   if (textureKey === TEX_TILESET) return DEFAULT_TILESET_IMAGE_URL;
   const asset = BUNDLED_EASYRPG_CHIPSET_ASSETS.find((candidate) => candidate.textureKey === textureKey);
   return asset ? `/${asset.path}` : null;

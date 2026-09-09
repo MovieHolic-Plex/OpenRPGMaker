@@ -284,6 +284,7 @@ function systemSectionNodes(
           testid: "db-field-title-resource",
           allowClear: true,
           dialogTitle: "타이틀 그래픽",
+          imageDestination: { kind: "system", field: "titleResourceId" },
           onChange: (result) => {
             const resourceId = emptyToUndefined(result.resourceId);
             updateSystem((draft) => {
@@ -1481,6 +1482,7 @@ function titleScreenDisplayFieldset(
         testid: "db-field-title-screen-logo",
         allowClear: true,
         dialogTitle: "타이틀 로고",
+        imageDestination: { kind: "system", field: "titleScreen.titleGraphic.resourceId" },
         onChange: (result) => {
           updateTitleScreen((settings) => {
             patchTitleGraphic(settings, { resourceId: emptyToUndefined(result.resourceId) });
@@ -1511,6 +1513,7 @@ function titleScreenDisplayFieldset(
       testid: "db-field-title-screen-background",
       allowClear: true,
       dialogTitle: "타이틀 배경",
+      imageDestination: { kind: "system", field: "titleScreen.backgroundResourceId" },
       onChange: (result) => {
         // Background writes only touch titleScreen.backgroundResourceId — never clear system.titleResourceId.
         updateTitleScreen((settings) => {
@@ -1909,6 +1912,7 @@ function titleLayerRow(layer: TitleBackgroundLayer, index: number, rerender: Sys
         kind: "title",
         testid: `db-field-title-screen-layer-${index}`,
         dialogTitle: "배경 레이어",
+        imageDestination: { kind: "title-layer", index },
         onChange: (result) => {
           updateTitleScreen((settings) => {
             patchTitleLayer(settings, index, { resourceId: result.resourceId });

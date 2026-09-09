@@ -1,17 +1,28 @@
-// 패널 배선: 컴포저 모드 칩이 세션 sendUserMessage 옵션(composerMode)으로 실린다.
+// 패널 배선: 컴포저 모드 칩이 작업 접수 payload.turn.composerMode 로 실린다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
-import { clearConversations } from "@/ai/conversationStore";
+import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
+import { clearConversations, loadConversation } from "@/ai/conversationStore";
 import { editorState } from "@/editor/editorState";
-import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { installAdmitClient, whenDom } from "./aiJobAdmitSupport";
 
 let restoreDom: (() => void) | null = null;
+let harness: ReturnType<typeof installAdmitClient>;
 
 function installFakeLocalStorage(): void {
   const storage = new Map<string, string>();
+  storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+    ...defaultAiConfig(),
+    authMode: "apiKey",
+    apiKey: "sk-test",
+    baseUrl: "https://example.test/v1",
+    model: "gemini-3.1-pro",
+    liteModel: "gemini-2.5-flash-lite",
+    agentMode: "chat",
+  }));
   Object.defineProperty(globalThis, "localStorage", {
     configurable: true,
     writable: true,
@@ -24,13 +35,15 @@ function installFakeLocalStorage(): void {
   });
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.stubEnv("VITE_LLM_API_URL", "");
   vi.stubEnv("VITE_LLM_API_KEY", "");
-  store.replace(createBlankProject());
+  store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: "load-failed" });
+  await store.loadFallbackProject(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
   installFakeLocalStorage();
+  harness = installAdmitClient();
 });
 
 afterEach(async () => {
@@ -41,65 +54,212 @@ afterEach(async () => {
   Reflect.deleteProperty(globalThis, "localStorage");
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
+  vi.unstubAllGlobals();
 });
 
 describe("컴포저 모드 → 세션 옵션", () => {
   it.each([
     ["ask", "ai-composer-mode-ask"],
     ["plan", "ai-composer-mode-plan"],
-  ] as const)("%s 칩을 고르고 전송하면 sendUserMessage 옵션에 composerMode 가 실린다", async (mode, testid) => {
-    // Break: 옵션에 모드가 없으면 세션은 모드를 모른다 — 예전엔 [컨텍스트] 꼬리 한 줄이 전부였다.
-    const spy = vi
-      .spyOn(AssistantSession.prototype, "sendUserMessage")
-      .mockResolvedValue({ assistantText: "", proposedCalls: [], stoppedReason: "final" });
+  ] as const)("%s 칩을 고르고 전송하면 접수 payload 에 composerMode 가 실린다", async (mode, testid) => {
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
-
     (findByTestId(panel, testid) as unknown as FakeElement | null)?.click();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "이 맵 크기가 얼마야?";
+    const pending = harness.nextAdmitted();
     findByTestId(panel, "ai-send")?.click();
-
-    await vi.waitFor(() => expect(spy).toHaveBeenCalled(), { timeout: 2_000, interval: 5 });
-    const options = spy.mock.calls[0]?.[3];
-    expect(options?.composerMode).toBe(mode);
+    const admitted = await pending;
+    expect(admitted.input.family).toBe("assistant");
+    expect((admitted.input.payload.turn as { composerMode?: string } | undefined)?.composerMode).toBe(mode);
   });
 
   it("기본(지시) 모드는 composerMode:\"do\" 로 실린다", async () => {
-    const spy = vi
-      .spyOn(AssistantSession.prototype, "sendUserMessage")
-      .mockResolvedValue({ assistantText: "", proposedCalls: [], stoppedReason: "final" });
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
-
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "타이틀 바꿔줘";
+    const pending = harness.nextAdmitted();
     findByTestId(panel, "ai-send")?.click();
-
-    await vi.waitFor(() => expect(spy).toHaveBeenCalled(), { timeout: 2_000, interval: 5 });
-    expect(spy.mock.calls[0]?.[3]?.composerMode).toBe("do");
+    const admitted = await pending;
+    expect((admitted.input.payload.turn as { composerMode?: string } | undefined)?.composerMode).toBe("do");
   });
-  it("계획 모드는 agentMode 가 chat 이어도 work_plan 이벤트로 계획 체크리스트를 그린다", async () => {
-    // Break: 체크리스트가 자율 런(agentMode auto)에서만 열리면 계획 모드의 계획 카드가 아예 안 보인다(e2e 실측).
+
+  it("계획 모드는 작업 결과의 계획으로 체크리스트를 그린다", async () => {
     const plan = {
+      id: "plan-1",
       goal: "타이틀 2단계",
       createdAt: new Date().toISOString(),
+      currentLayerIndex: 0,
       currentItemId: "i1",
       layers: [{ id: "l1", title: "타이틀", items: [
         { id: "i1", title: "1차", instruction: "set_title_screen", status: "pending" },
         { id: "i2", title: "2차", instruction: "set_title_screen", status: "pending" },
       ] }],
     };
-    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockImplementation(async (_text, onEvent) => {
-      onEvent?.({ type: "work_plan", plan } as unknown as SessionEvent);
-      return { assistantText: "계획을 세워두었습니다.", proposedCalls: [], stoppedReason: "final" };
-    });
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
-
     (findByTestId(panel, "ai-composer-mode-plan") as unknown as FakeElement | null)?.click();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "타이틀을 두 단계로";
+    const pending = harness.nextAdmitted();
     findByTestId(panel, "ai-send")?.click();
-
-    await vi.waitFor(() => expect(findByTestId(panel, "ai-work-plan-checklist")).toBeTruthy(), { timeout: 2_000, interval: 5 });
+    await pending;
+    const shown = whenDom(document.body, () => Boolean(document.querySelector('[data-testid="ai-work-plan-checklist"]')));
+    await harness.complete({
+      assistantText: "계획을 세워두었습니다.",
+      workPlan: plan,
+      proposedCalls: [],
+      stoppedReason: "final",
+    });
+    await shown;
+    expect(findByTestId(panel, "ai-work-plan-checklist")).toBeTruthy();
     expect(findByTestId(panel, "ai-autonomous-budget")).toBeNull();
+  });
+
+  it("keeps A's transcript when B is the live job", async () => {
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    input.value = "첫번째";
+    const first = harness.nextAdmitted();
+    findByTestId(panel, "ai-send")?.click();
+    await first;
+    const gate = harness.holdNextArtifact();
+    await harness.complete({ assistantText: "A 답변", proposedCalls: [], stoppedReason: "final" });
+    await gate.started;
+    input.value = "두번째";
+    const second = harness.nextAdmitted();
+    findByTestId(panel, "ai-send")?.click();
+    await second;
+    const status = findByTestId(panel, "ai-status");
+    const bStatus = status?.textContent ?? "";
+    gate.release();
+    await gate.idle;
+    const log = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
+    expect(log).toContain("A 답변");
+    expect(status?.textContent).toBe(bStatus);
+    expect(status?.textContent).not.toBe("응답 완료");
+  });
+
+  it("keeps A's result in the captured conversation after a new conversation", async () => {
+    const surface = renderAiChatPanel({ clock: () => 37_000 });
+    const panel = surface as unknown as FakeElement;
+    const firstId = surface.conversationId;
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    input.value = "첫번째";
+    const first = harness.nextAdmitted();
+    findByTestId(panel, "ai-send")?.click();
+    await first;
+    const gate = harness.holdNextArtifact();
+    await harness.complete({ assistantText: "A 답변", proposedCalls: [], stoppedReason: "final" });
+    await gate.started;
+    findByTestId(panel, "ai-new-session")?.click();
+    await whenAiChatPanelSettled();
+    gate.release();
+    await gate.idle;
+    await whenAiChatPanelSettled();
+    const log = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
+    expect(log).not.toContain("A 답변");
+    expect(surface.conversationId).not.toBe(firstId);
+    expect(findByTestId(panel, "ai-status")?.textContent).not.toBe("응답 완료");
+    const record = await loadConversation(firstId);
+    expect(record?.entries.some((entry) => entry.kind === "assistant" && entry.text === "A 답변")).toBe(true);
+  });
+
+  it("rejected admission after a conversation switch does not paint the new log", async () => {
+    const surface = renderAiChatPanel({ clock: () => 37_000 });
+    const panel = surface as unknown as FakeElement;
+    const firstId = surface.conversationId;
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    input.value = "첫번째";
+    const pending = harness.nextAdmitted();
+    void pending.catch(() => undefined);
+    const gate = harness.holdNextAdmission();
+    findByTestId(panel, "ai-send")?.click();
+    await gate.started;
+    harness.failNext("접수 거부");
+    findByTestId(panel, "ai-new-session")?.click();
+    await whenAiChatPanelSettled();
+    gate.release();
+    await gate.idle;
+    await Promise.resolve();
+    await Promise.resolve();
+    await whenAiChatPanelSettled();
+    const log = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
+    expect(log).not.toContain("접수 거부");
+    expect(log).not.toContain("AI jobs HTTP 500");
+    expect(surface.conversationId).not.toBe(firstId);
+    const record = await loadConversation(firstId);
+    expect(record?.entries.some((entry) => entry.kind === "status" && entry.text.includes("AI jobs HTTP 500"))).toBe(true);
+  });
+
+  it("late A after B in the same conversation then switch keeps both turns", async () => {
+    const surface = renderAiChatPanel({ clock: () => 37_000 });
+    const panel = surface as unknown as FakeElement;
+    const firstId = surface.conversationId;
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    input.value = "첫번째";
+    const first = harness.nextAdmitted();
+    findByTestId(panel, "ai-send")?.click();
+    await first;
+    const jobA = harness.lastJob().id;
+    input.value = "두번째";
+    const second = harness.nextAdmitted();
+    findByTestId(panel, "ai-send")?.click();
+    await second;
+    const jobB = harness.lastJob().id;
+    const shownB = whenDom(document.body, () => (findByTestId(panel, "ai-chat-log")?.textContent ?? "").includes("B 답변"));
+    await harness.complete({ assistantText: "B 답변", proposedCalls: [], stoppedReason: "final" }, jobB);
+    await shownB;
+    await whenAiChatPanelSettled();
+    const gate = harness.holdNextArtifact();
+    await harness.complete({ assistantText: "A 답변", proposedCalls: [], stoppedReason: "final" }, jobA);
+    await gate.started;
+    findByTestId(panel, "ai-new-session")?.click();
+    await whenAiChatPanelSettled();
+    gate.release();
+    await gate.idle;
+    await whenAiChatPanelSettled();
+    const log = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
+    expect(log).not.toContain("A 답변");
+    expect(log).not.toContain("B 답변");
+    expect(surface.conversationId).not.toBe(firstId);
+    const record = await loadConversation(firstId);
+    const entries = record?.entries ?? [];
+    expect(entries.filter((entry) => entry.kind === "user" && entry.text === "첫번째")).toHaveLength(1);
+    expect(entries.some((entry) => entry.kind === "user" && entry.text === "두번째")).toBe(true);
+    expect(entries.some((entry) => entry.kind === "assistant" && entry.text === "A 답변")).toBe(true);
+    expect(entries.some((entry) => entry.kind === "assistant" && entry.text === "B 답변")).toBe(true);
+  });
+
+  it("releases offscreen A and B together and keeps both identical replies once per job", async () => {
+    const surface = renderAiChatPanel({ clock: () => 37_000 });
+    const panel = surface as unknown as FakeElement;
+    const firstId = surface.conversationId;
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    input.value = "첫번째";
+    const first = harness.nextAdmitted();
+    findByTestId(panel, "ai-send")?.click();
+    await first;
+    const jobA = harness.lastJob().id;
+    input.value = "두번째";
+    const second = harness.nextAdmitted();
+    findByTestId(panel, "ai-send")?.click();
+    await second;
+    const jobB = harness.lastJob().id;
+    findByTestId(panel, "ai-new-session")?.click();
+    await whenAiChatPanelSettled();
+    const barrier = harness.holdArtifactReads(2);
+    await harness.complete({ assistantText: "같은 답", proposedCalls: [], stoppedReason: "final" }, jobA);
+    await harness.complete({ assistantText: "같은 답", proposedCalls: [], stoppedReason: "final" }, jobB);
+    await barrier.started;
+    barrier.release();
+    await barrier.idle;
+    await whenAiChatPanelSettled();
+    await harness.complete({ assistantText: "같은 답", proposedCalls: [], stoppedReason: "final" }, jobA);
+    await whenAiChatPanelSettled();
+    const log = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
+    expect(log).not.toContain("같은 답");
+    const entries = (await loadConversation(firstId))?.entries ?? [];
+    expect(entries.filter((entry) => entry.kind === "user" && entry.text === "첫번째")).toHaveLength(1);
+    expect(entries.filter((entry) => entry.kind === "user" && entry.text === "두번째")).toHaveLength(1);
+    expect(entries.filter((entry) => entry.kind === "assistant" && entry.text === "같은 답")).toHaveLength(2);
   });
 });

@@ -1,7 +1,8 @@
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
+import type { ImageJobDestination } from "@/ai/jobs/imagePayload";
 
 export type ShowPictureAiFieldOptions = {
-  readonly onInserted: (resourceId: string) => void;
+  readonly destination: ImageJobDestination | (() => ImageJobDestination | Promise<ImageJobDestination>);
   readonly queueKey?: string;
 };
 
@@ -10,6 +11,6 @@ export function showPictureAiField(options: ShowPictureAiFieldOptions): HTMLElem
     kind: "picture",
     testidPrefix: "show-picture-ai",
     ...(options.queueKey ? { queueKey: options.queueKey } : {}),
-    onInserted: options.onInserted,
+    destination: options.destination,
   });
 }

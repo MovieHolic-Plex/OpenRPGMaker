@@ -23,9 +23,12 @@
 //        일부가 사라진다 — 구조물은 지붕 변형 같은 세부 타일이 필요하다.
 //   대신 검색·분류 계산은 맵 팔레트와 같은 출처(panels/tilePaletteFilter.ts)를 쓴다.
 
-import { isAssistantEndpointReady, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
-import { chatCompletion, loadAiConfig } from "@/ai/llmClient";
-import { buildStructureKitAiRequest, parseAiMetaDraft, collectUsedTiles } from "@/editor/structureKitAiDraft";
+import { isAssistantEndpointReady } from "@/ai/assistantEndpoint";
+import { loadAiConfig } from "@/ai/llmClient";
+import { collectUsedTiles, parseAiMetaDraft } from "@/editor/structureKitAiDraft";
+import { submitTilesetJob } from "@/editor/aiJobs/submitTilesetJob";
+import { jobSubmitMessage } from "@/editor/aiJobs/jobSubmitError";
+import { bindJobView, readJobResult } from "@/editor/aiJobs/jobViewBinding";
 export { buildAiMetaDraftPrompt, parseAiMetaDraft, collectUsedTiles } from "@/editor/structureKitAiDraft";
 import { TILE_SIZE } from "@/assets/bundled";
 import { renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
@@ -2178,13 +2181,10 @@ function renderPlacementConditionEditor(draft: StructureKitAiMeta, redraw: () =>
 
 async function requestAiMetaDraft(
   kit: SectionStructureKitDef,
-  tileset: TilesetDef,
+  _tileset: TilesetDef,
   session: EditorSession,
   redraw: () => void,
 ): Promise<void> {
-  const existingNames = (store.getCurrent().tilesets[session.tilesetId]?.structureKits ?? [])
-    .filter((candidate) => candidate.id !== kit.id)
-    .map((candidate) => candidate.name ?? "구조물");
 
   // 브라우저 저장 설정은 OAuth·모델이 항상 백필되므로 모양만 보면 언제나 준비됨이다. 캐시가
   // 차가운 checking은 첫 사용을 잠그지 않지만, 조회로 확인된 미연결·오프라인·오류는 401 호출 전에 막는다.
@@ -2194,24 +2194,47 @@ async function requestAiMetaDraft(
     return;
   }
 
-  toast("AI 초안을 요청하는 중...", "info");
+  toast("AI 초안을 작업함에 맡기는 중...", "info");
+  const kitId = kit.id;
+  const tilesetId = session.tilesetId;
+  const fingerprint = JSON.stringify({
+    description: session.draft?.description ?? "",
+    placementRules: session.draft?.placementRules ?? "",
+  });
   try {
-    const result = await chatCompletion(resolveSurfaceAiConfig("structure-kit", config), buildStructureKitAiRequest(kit, tileset, existingNames));
-    const text = typeof result.message.content === "string"
-      ? result.message.content
-      : (result.message.content ?? [])
-          .map((part) => (part.type === "text" ? part.text : ""))
-          .join("");
-    const draft = parseAiMetaDraft(text);
-    if (!draft) {
-      // 폼을 비우지 않는다 — 사람이 쓰던 내용을 모델 실패로 날리지 않는다.
-      toast("초안을 읽지 못했습니다. 직접 적어 주세요.", "error");
-      return;
-    }
-    session.draft = draft;
-    redraw();
+    const receipt = await submitTilesetJob({
+      operation: "structure-kit-metadata",
+      tilesetId,
+      kitId,
+    }, { owner: session, fingerprint });
+    toast(`작업함에 맡겼습니다 · ${receipt.job.id}`, "info");
+    const unbind = bindJobView(receipt.job.id, job => {
+      if (job.generation === "succeeded") {
+        unbind();
+        void readJobResult(job).then(result => {
+          if (!result) return;
+          if (!isStructureKitEditorOpen()) return;
+          if (session.kitId !== kitId || session.tilesetId !== tilesetId) return;
+          const current = JSON.stringify({
+            description: session.draft?.description ?? "",
+            placementRules: session.draft?.placementRules ?? "",
+          });
+          if (current !== fingerprint) {
+            toast("사람이 고친 초안을 덮지 않았습니다. 작업함에서 결과를 보세요.", "info");
+            return;
+          }
+          const raw = result.payload.metadata;
+          const parsed = parseAiMetaDraft(JSON.stringify(raw ?? {}));
+          if (!parsed) return;
+          session.draft = parsed;
+          redraw();
+        });
+      } else if (job.generation === "failed" || job.generation === "cancelled") {
+        unbind();
+        toast(job.generation === "cancelled" ? "초안 요청이 취소됐습니다." : "초안 요청이 실패했습니다.", "error");
+      }
+    });
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    toast(`초안 요청 실패: ${message}`, "error");
+    toast(`초안 요청 실패: ${jobSubmitMessage(error)}`, "error");
   }
 }

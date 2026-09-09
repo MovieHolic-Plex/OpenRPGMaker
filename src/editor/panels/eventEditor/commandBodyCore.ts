@@ -12,6 +12,7 @@ import { loopBody } from "./commandBodyLoop";
 import { setVariableBody } from "./commandBodyVariable";
 import { conditionForm, databasePicker, selfSwitchControl } from "./conditionForm";
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
+import { eventDraftImageDestination } from "@/editor/aiJobs/eventImageDestination";
 import { faceDisplayModeOf, renderFaceGallery, renderFacesetPreview } from "./facesetPreview";
 import { renderConditionEvalPreview } from "./conditionEvalPreview";
 import { renderCommandPreview } from "./commandPreview";
@@ -669,10 +670,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
       kind: "faceset",
       testidPrefix: "event-command-face-ai",
       queueKey: `event-command-face:${context.path.join(".")}`,
-      onInserted: (id) => {
-        resource.value = id;
-        apply();
-      },
+      destination: () => eventDraftImageDestination(context, "change-face", context.getCurrentCommand?.() ?? cmd),
     }),
     optionsRow,
     el("p", {

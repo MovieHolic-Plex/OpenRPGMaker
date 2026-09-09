@@ -27,6 +27,7 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Command, EventPage, Project } from "@/project/types";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
+import { installAdmitClient } from "./aiJobAdmitSupport";
 
 const CONFIG: AiConfig = {
   authMode: "apiKey",
@@ -533,15 +534,20 @@ describe("runEventCommandAssist 자가수정 루프", () => {
 
 describe("AI Assist 패널 UI (fakeDom)", () => {
   let restoreFakeDom: () => void = () => undefined;
+  let jobs: ReturnType<typeof installAdmitClient>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     restoreFakeDom = installFakeDom();
     resetEventAiStagedForTest();
-    store.replace(testProject());
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: "load-failed" });
+    await store.loadFallbackProject(testProject());
+    jobs = installAdmitClient();
   });
 
   afterEach(() => {
     restoreFakeDom();
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   type Harness = {
@@ -589,9 +595,18 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     return { panel, stagedHost, commandCount, replaced, page, eventId };
   }
 
-  async function generate(harness: Harness, prompt: string): Promise<void> {
+  async function generate(harness: Harness, prompt: string, finalCommands: Command[] = CHEST_COMMANDS): Promise<void> {
     findByTestId(harness.panel, "ai-event-input")!.value = prompt;
+    const pending = jobs.nextAdmitted();
     findByTestId(harness.panel, "ai-event-generate")!.click();
+    await pending;
+    const proposalRef = await jobs.putJson({
+      baseCommands: harness.page.commands,
+      finalCommands,
+      scope: "page",
+      review: { excludedRowIds: [] },
+    });
+    await jobs.complete({ proposalRef });
     await vi.waitFor(() => expect(findByTestId(harness.panel, "ai-event-result")!.hidden).toBe(false));
   }
 

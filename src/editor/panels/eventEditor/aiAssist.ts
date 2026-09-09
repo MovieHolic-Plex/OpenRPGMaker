@@ -20,11 +20,17 @@
 // 모듈 레벨 캐시(이벤트+페이지 키)로 보존해 재렌더 후 복원한다.
 
 import { eventCommandGateNotice } from "@/ai/aiGateNotice";
-import { conversationScopeKey } from "@/ai/conversationStore";
-import { runEventCommandAssist, resolveAssistScope, type AssistScope } from "@/ai/eventCommandAssist";
+import { resolveAssistScope, type AssistScope } from "@/ai/eventCommandAssist";
+import { submitEventCommandsJob } from "@/editor/aiJobs/submitEventCommandsJob";
+import { jobSubmitMessage } from "@/editor/aiJobs/jobSubmitError";
+import { jobOriginLink } from "@/editor/aiJobs/jobOriginLink";
+import { bindJobView, readJobResult } from "@/editor/aiJobs/jobViewBinding";
+import { getJobClient } from "@/editor/aiJobs/jobClient";
+import type { EventCommandsJobProposal } from "@/ai/jobs/executors/eventCommandsJob";
+import type { BlobRef } from "@/ai/jobs/contracts";
 import { showAiGateNotice } from "@/editor/ui/aiGateModal";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
-import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
+import { resolveCommandAtPath } from "@/editor/eventCommandPaths";
 import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
 import { modalStackDepthForTest, modalStackEntryCountForTest, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
@@ -371,59 +377,62 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     setGenerating(true);
     state.applied = false;
     setStatus("명령 초안을 만들고 있어요…", "busy");
-    const beforeCommands = JSON.stringify(page.commands);
     try {
       const project = store.getCurrent();
       const event = project.maps[mapId]?.events.find((entry) => entry.id === eventId);
       const selection = selectedCommandPath(cmdList);
-      const result = await runEventCommandAssist({
-        config,
+      const receipt = await submitEventCommandsJob({
+        target: { kind: "map-event-page", mapId, eventId, pageId: page.id },
         prompt,
-        context: {
-          project,
-          mapId,
-          event,
-          page,
-          selection,
-          selectionLabel: selectedCommandName(cmdList, page.commands) ?? undefined,
-        },
-        // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
-        projectScopeKey: conversationScopeKey(store.getProjectIdentity(), project),
-      });
-      const livePage = store.getCurrent().maps[mapId]?.events
-        .find((entry) => entry.id === eventId)
-        ?.pages?.find((entry) => entry.id === page.id);
-      if (!livePage || JSON.stringify(livePage.commands) !== beforeCommands) {
-        state.staged = null;
-        state.status = "명령 목록이 생성 중에 바뀌었어요. 현재 목록으로 다시 만들어 주세요.";
-        state.statusKind = "error";
-        const activeDock = liveDock && liveDock.key === key ? liveDock : null;
-        activeDock?.setStatus(state.status, "error");
-        activeDock?.renderStaged();
-        return;
-      }
-      const liveBefore = livePage.commands;
-      // 모델 출력이 "page" 면 그게 곧 최종 목록이고, "append" 면 기존 목록에 끼워 최종 목록을 만든다.
-      // 어느 쪽이든 아래 diff 는 같은 일을 한다 — 무엇이 달라지는지 목록 위에 그린다.
-      const after = result.scope === "page"
-        ? result.commands
-        : withAppended(liveBefore, selection, result.commands);
-      const rows = diffCommandLists(liveBefore, after);
-      state.staged = { rows, excluded: new Set<string>(), scope: result.scope };
-      const fixedNote = result.attempts > 1 ? ` (스스로 ${result.attempts - 1}번 고쳤습니다)` : "";
-      // 숫자는 칩과 결과 줄이 말한다 — 상태줄은 다음 행동만.
-      state.status = hasCommandDiffChanges(rows)
-        ? `초안을 만들었어요. 위 목록에서 확인하고 「이대로 하기」를 누르세요.${fixedNote}`
-        : `바뀌는 것이 없었어요. 요청을 더 구체적으로 적어 보세요.${fixedNote}`;
+        baseCommands: page.commands,
+        selection,
+        selectionLabel: selectedCommandName(cmdList, page.commands) ?? undefined,
+        draftId: event?.draft?.id,
+      }, { owner: input });
+      state.status = `작업함에 맡겼습니다 · ${receipt.job.id}`;
       state.statusKind = "";
       const settled = liveDock && liveDock.key === key ? liveDock : null;
-      // 페이지 전환·에디터 닫기 뒤에는 맞는 도크가 없다. 상태만 보존하고 분리된 DOM 은 그리지 않는다.
       settled?.setStatus(state.status);
-      settled?.renderStaged();
+      status.append(jobOriginLink(receipt.job.id, generateBtn));
+      const unbind = bindJobView(receipt.job.id, job => {
+        if (!status.isConnected) {
+          unbind();
+          return;
+        }
+        if (job.generation === "succeeded") {
+          unbind();
+          void readJobResult(job).then(async result => {
+            const live = liveDock && liveDock.key === key ? liveDock : null;
+            const ref = result?.payload.proposalRef as BlobRef | undefined;
+            if (!ref) {
+              state.status = `완료 · 작업함에서 검토하세요 · ${receipt.job.id}`;
+              state.statusKind = "";
+              live?.setStatus(state.status);
+              status.append(jobOriginLink(receipt.job.id, generateBtn));
+              return;
+            }
+            const proposal = await getJobClient().artifacts.json<EventCommandsJobProposal>(job.id, ref);
+            state.staged = {
+              rows: diffCommandLists(proposal.baseCommands, proposal.finalCommands),
+              excluded: new Set(proposal.review?.excludedRowIds ?? []),
+              scope: proposal.scope,
+            };
+            state.status = `초안 준비됨 · ${receipt.job.id}`;
+            state.statusKind = "";
+            live?.setStatus(state.status);
+            status.append(jobOriginLink(receipt.job.id, generateBtn));
+            renderStaged();
+          });
+        } else if (job.generation === "failed" || job.generation === "cancelled") {
+          unbind();
+          state.status = job.generation === "cancelled" ? "취소됨" : "생성 실패";
+          state.statusKind = "error";
+          const active = liveDock && liveDock.key === key ? liveDock : null;
+          active?.setStatus(state.status, "error");
+        }
+      });
     } catch (cause) {
-      // 검증기 원문(kind/필드 이름)은 원인 추적에 필요하니 버리지 않고, 사용자가 다음에
-      // 무엇을 할지 아는 한 줄을 앞에 붙인다.
-      const detail = cause instanceof Error ? cause.message : String(cause);
+      const detail = jobSubmitMessage(cause);
       state.status = `명령을 만들지 못했어요. 문장을 조금 더 구체적으로 적고 다시 시도해 보세요. — ${detail}`;
       state.statusKind = "error";
       const activeDock = liveDock && liveDock.key === key ? liveDock : null;
@@ -655,23 +664,6 @@ function commandNameAtPath(commands: Command[], path: readonly number[]): string
   return name.length > TARGET_NAME_MAX ? `${name.slice(0, TARGET_NAME_MAX)}…` : name;
 }
 
-/**
- * "append" scope(너무 긴 페이지)에서 새 명령을 선택 위치 뒤에 끼운 최종 목록을 만든다.
- * 삽입도 결국 "최종 목록"으로 환산해 diff 를 태운다 — 표시·적용·되돌리기 경로가 하나로 유지된다.
- */
-function withAppended(
-  before: readonly Command[],
-  selection: readonly number[] | null,
-  added: readonly Command[],
-): Command[] {
-  const next = structuredClone(before as Command[]);
-  const fresh = added.map((command) => structuredClone(command));
-  if (!selection || selection.length === 0) return [...next, ...fresh];
-  const list = resolveCommandListAtPath(next, selection);
-  if (!list) return [...next, ...fresh];
-  list.splice(selection[selection.length - 1] + 1, 0, ...fresh);
-  return next;
-}
 
 function button(text: string, testid: string, variant?: "primary"): HTMLButtonElement {
   return el("button", {

@@ -12,6 +12,10 @@ import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { CommandEditContext } from "@/editor/panels/eventEditor/types";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
+import { installAdmitClient, PNG_1x1 } from "./aiJobAdmitSupport";
+import { registerDraftOwner } from "@/editor/aiJobs/draftOwners";
+import { IDBFactory } from "fake-indexeddb";
+import { locks } from "node:worker_threads";
 
 type ShowPicture = Extract<Command, { kind: "showPicture" }>;
 
@@ -166,33 +170,60 @@ describe("그림 표시 폼", () => {
     expect(findByTestId(body, "show-picture-ai-generate"), "생성 버튼").not.toBeNull();
   });
 
-  it("프롬프트로 그림을 만들면 업로드 리소스가 커맨드에 실린다", async () => {
-    const png =
-      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFHAP/q842iQAAAABJRU5ErkJggg==";
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () =>
-        new Response(
-          JSON.stringify({
-            image: { dataUrl: png, mimeType: "image/png", model: "gemini-3.8-flash", provider: "google-antigravity" },
-          }),
-          { status: 200, headers: { "Content-Type": "application/json" } },
-        ),
-      ),
-    );
-    const { context, current } = stagedContext(BASE);
-    const body = renderWithFakeDom(() => showPictureBody(context, BASE));
-    const prompt = findByTestId(body, "show-picture-ai-prompt");
-    expect(prompt).not.toBeNull();
-    if (prompt) prompt.value = "달빛 창가";
-    findByTestId(body, "show-picture-ai-generate")?.click();
-    await vi.waitFor(() => {
-      expect(current().resourceId.length).toBeGreaterThan(0);
-    });
-    const resourceId = current().resourceId;
-    expect(store.getCurrent().assets.uploaded[resourceId]?.kind).toBe("picture");
-    expect(store.getCurrent().assets.uploaded[resourceId]?.dataUrl).toBe(png);
-    vi.unstubAllGlobals();
+  it("프롬프트로 그림을 만들면 작업함에 맡기고 커맨드 리소스는 검토 반영 후에만 실린다", async () => {
+    vi.stubGlobal("indexedDB", new IDBFactory());
+    vi.stubGlobal("navigator", { locks });
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: "load-failed" });
+    await store.loadFallbackProject(createBlankProject());
+    const commands: Command[] = [structuredClone(BASE)];
+    const owner = {
+      draftId: "draft-show-picture",
+      project: store.getLoadedProjectIdentity(),
+      epoch: store.getProjectEpoch(),
+      owner: { kind: "map-event" as const, mapId: store.getCurrent().startMapId, eventId: "ev-picture", pageId: "page-1" },
+      isOpen: () => true,
+      readCommands: () => commands,
+      replaceAll: (next: readonly Command[]) => { commands.splice(0, commands.length, ...next); },
+    };
+    const stop = registerDraftOwner(owner);
+    try {
+      const harness = installAdmitClient();
+      const { context, current } = stagedContext(BASE);
+      (context as { jobDraft?: typeof owner }).jobDraft = owner;
+      const body = renderWithFakeDom(() => showPictureBody(context, BASE));
+      const prompt = findByTestId(body, "show-picture-ai-prompt");
+      expect(prompt).not.toBeNull();
+      if (prompt) prompt.value = "달빛 창가";
+      const pending = harness.nextAdmitted();
+      findByTestId(body, "show-picture-ai-generate")?.click();
+      const admitted = await pending;
+      expect(admitted.input.family).toBe("image");
+      expect(current().resourceId).toBe("");
+      expect(Object.keys(store.getCurrent().assets.uploaded)).toHaveLength(0);
+      const status = findByTestId(body, "show-picture-ai-queue-status");
+      expect(status?.textContent).toContain("작업함에 맡겼습니다");
+      const job = harness.lastJob();
+      expect(status?.dataset.jobId).toBe(job.id);
+      const resourceId = String(admitted.input.payload.resourceId);
+      const artifact = await harness.putBytes(PNG_1x1, "image/png");
+      const command = { ...BASE, resourceId };
+      await harness.complete({
+        proposal: {
+          version: 1,
+          kind: "create-image-and-link",
+          resource: { id: resourceId, name: "달빛 창가", kind: "picture", artifact, width: 1, height: 1 },
+          destination: admitted.input.target,
+          command,
+        },
+      });
+      const outcome = await harness.client.apply(job.id, { approved: true });
+      expect(outcome.application, outcome.reason).toBe("applied");
+      expect(commands[0]).toMatchObject({ kind: "showPicture", resourceId });
+      expect(store.getCurrent().assets.uploaded[resourceId]?.kind).toBe("picture");
+    } finally {
+      stop();
+      vi.unstubAllGlobals();
+    }
   });
 
   it("빈 프롬프트는 요청하지 않는다", async () => {

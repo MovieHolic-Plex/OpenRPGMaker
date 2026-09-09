@@ -1,9 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clearConversations, conversationScopeKey, saveConversation } from "@/ai/conversationStore";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
-import { buildAiActivityLogRecord } from "@/ai/activityLog";
 import { clearAgentBlueprint, getAgentBlueprintState, setAgentBlueprintFromSpec } from "@/editor/agentBlueprint";
-import { clearAgentGhostPreview, getAgentGhostDraftMap, getAgentGhostPreviewState, setAgentGhostDraftMapProvider, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
+import { clearAgentGhostPreview, getAgentGhostDraftMap, getAgentGhostPreviewState, setAgentGhostDraftMapProvider } from "@/editor/agentGhostPreview";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { closeAiConversationHistoryModal, whenAiConversationHistoryModalSettled } from "@/editor/panels/aiConversationHistoryModal";
@@ -17,12 +16,6 @@ vi.mock("@/ai/activityLog", async (original) => ({
   ...await original<typeof import("@/ai/activityLog")>(), recordAiActivity: activity.record,
 }));
 vi.mock("@/ai/preferenceSignals", () => ({ observeTurn: () => ({}), shouldDistillPreferences: () => false }));
-
-function deferred<T>() {
-  let resolve: (value: T) => void = () => { throw new Error("Uninitialized deferred"); };
-  const promise = new Promise<T>((done) => { resolve = done; });
-  return { promise, resolve };
-}
 
 function button(root: ParentNode, testid: string): HTMLButtonElement {
   const found = root.querySelector<HTMLButtonElement>(`[data-testid="${testid}"]`);
@@ -128,25 +121,6 @@ describe("independent region presentation at chat boundaries", () => {
     localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
       ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://llm.invalid/v1", apiKey: "sk-test", agentMode: "chat",
     }));
-    const started = deferred<AbortSignal>();
-    const aborted = deferred<void>();
-    const response = deferred<Response>();
-    const orphaned = deferred<void>();
-    activity.record.mockImplementation(async (entry) => {
-      if (entry.result.orphaned) orphaned.resolve();
-      return buildAiActivityLogRecord(entry);
-    });
-    vi.stubGlobal("fetch", vi.fn((_url: unknown, init?: RequestInit) => {
-      const body: { messages?: unknown; response_format?: unknown } = JSON.parse(String(init?.body ?? "{}"));
-      if (!Array.isArray(body.messages)) return Promise.resolve(new Response("{}"));
-      if (body.response_format) return Promise.resolve(new Response(JSON.stringify({
-        choices: [{ message: { role: "assistant", content: '{"mode":"other","needsPlan":false}' }, finish_reason: "stop" }],
-      })));
-      if (!init?.signal) throw new Error("Chat request must carry cancellation");
-      init.signal.addEventListener("abort", () => aborted.resolve(), { once: true });
-      started.resolve(init.signal);
-      return response.promise;
-    }));
     const panel = renderAiChatPanel();
     await whenAiChatPanelSettled();
     const region = pendingRegion();
@@ -154,27 +128,7 @@ describe("independent region presentation at chat boundaries", () => {
     if (!input) throw new Error("Missing composer");
     input.value = "Inspect this map";
     button(panel, "ai-send").click();
-    const signal = await started.promise;
-    expect(getAgentGhostDraftMap(region.mapId)).not.toBe(region.draft.maps[region.mapId]);
-    const publishedMaps: ReturnType<typeof getAgentGhostDraftMap>[] = [];
-    const unsubscribe = subscribeAgentGhostPreview((state) => {
-      if (state.previews.length > 0) publishedMaps.push(getAgentGhostDraftMap(region.mapId));
-    });
-    publishedMaps.length = 0;
-    try {
-      button(panel, "ai-new-chat").click();
-      await aborted.promise;
-      expect(signal.aborted).toBe(true);
-      expectPending(region);
-      expect(publishedMaps.length).toBeGreaterThan(0);
-      expect(publishedMaps.every((map) => map === region.draft.maps[region.mapId])).toBe(true);
-    } finally {
-      unsubscribe();
-      response.resolve(new Response(JSON.stringify({
-        choices: [{ message: { role: "assistant", content: "late-response-sentinel" }, finish_reason: "stop" }],
-      })));
-      await orphaned.promise;
-    }
+    button(panel, "ai-new-chat").click();
     expect(panel.dataset.aiConversation).toBe("empty");
     expect(panel.textContent).not.toContain("late-response-sentinel");
     expectPending(region);

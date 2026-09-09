@@ -706,10 +706,7 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
       kind: "monster",
       testidPrefix: "db-enemy-graphic-ai",
       queueKey: `enemy-graphic:${record.id}`,
-      onInserted: (resourceId) => {
-        updateDatabaseRecord("enemies", record.id, { monsterResourceId: resourceId });
-        rerender();
-      },
+      destination: { kind: "database", table: "enemies", recordId: record.id, field: "monsterResourceId" },
     }),
     databaseFieldSupportNotice("transparent", "flying", "graphicHue"),
   ];

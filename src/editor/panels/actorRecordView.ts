@@ -544,10 +544,7 @@ function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
       kind: "faceset",
       testidPrefix: "db-actor-face-ai",
       queueKey: `actor-face:${actor.id}`,
-      onInserted: (resourceId) => {
-        updateDatabaseRecord("actors", actor.id, { faceResourceId: resourceId });
-        rerender();
-      },
+      destination: { kind: "database", table: "actors", recordId: actor.id, field: "faceResourceId" },
     }),
     graphicPreview("캐릭터셋", actor.characterResourceId ?? "(없음)", "charset", actor.characterIndex ?? 0),
     resourceControl("캐릭터셋", "db-field-character-resource", actor.characterResourceId ?? "", (characterResourceId) =>

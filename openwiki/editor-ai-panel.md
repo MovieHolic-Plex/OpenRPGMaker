@@ -59,6 +59,60 @@
   project saves. Configured models cannot inspect image attachments, so aesthetic
   approval remains unverified even when pixel/layout/keyboard assertions pass.
 
+## Durable AI job UI migration (2026-09-08, Task8)
+
+User-facing paid/session ownership is gone from editor controls. Chat, region,
+database, event, image, cluster, tileset analysis/follow-up/proposal, and
+structure-kit admit through `src/editor/aiJobs/submit*Job.ts` and
+`getJobClient().admit`. Capture freezes identity/snapshot/config, then pins
+bundled tileset bytes into optional `payload.reportAssets` plus matching HTTP
+`artwork` before any job await (`captureSubmission.ts`). Closing a modal or tab
+does not cancel an accepted job.
+
+Job application mode is review unless the turn is autonomous. Guarded Apply and
+save-only retry live on the immutable report (`ai-job-apply`, `ai-job-save`),
+not in originating dialogs. Database generate hydrates facts from the durable
+result and does not select the new record. Event exclusions and tileset proposal
+selection stay in `jobReviewControls.ts`. Cluster/kit/tileset fingerprints keep
+one key for uncertain retry and a new key for changed instructions.
+
+Chat/region/event/image/cluster originating surfaces admit through `JobClient`
+and bind `job.generation` / result payload rather than a browser `AssistantSession`.
+Composer `ask|plan|do` and selection scope travel on `payload.turn`. Admission
+failure paints `ai-error-open-settings`. Event-command docks rebuild numbered
+staged diffs from the job proposal (exclude/one-apply still in the list). Cluster
+modals replay `payload.toolCalls` / `previews` for before/after and choices.
+The database AI bar keeps the context footer on the admitted instruction and
+paints the answer from the job result even when no chat panel handlers are
+mounted. Image fields only queue; the command/resource updates after reviewed
+apply. `jobQueuePanel` is a `modalStack` layer (Escape/stack owned there, nested
+confirm on top). `JobClient.start` does not attach window listeners or open the
+job HTTP stream when `window` is absent.
+
+A created map still has a missing before preview (`Created map: no before image`)
+and the report is `partial`. Modify an existing map (for example `paint_tiles`)
+so before and generated map previews can both be `ready`. Do not treat `partial`
+as the healthy assistant terminal state. Owned family proof is
+`test/e2e/ai-job-families.spec.ts` on `grok-family.config.mjs`, never ports
+9841/19841.
+
+Only **changed** `*ResourceId` bindings on a database record are report preview
+obligations (`renderJobReport.ts`). Untouched sibling bindings (actor charset /
+battle graphic when only the face changed) must not be treated as missing
+artwork or turn an otherwise valid image report `partial`. Regression:
+`test/aiJobReports.test.ts` unchanged-sibling actor ResourceId case. Focused
+owned image E2E still asserts `report: ready` and artwork `data-status=ready`.
+
+Live palette range-classify (2026-09-08) uses the mounted 6-col `makeGridPalette`
+(beginner rail and expert paint pane). Shift-drag a visual range, then
+`palette-range-classify` opens the existing cluster modal with
+`kind: "range-classify"` and tile ids frozen at click. Do not resurrect
+unmounted `makeChipsetSheet` / `sheet-range-classify`. Regression:
+`test/livePaletteRangeClassify.test.ts`. Family E2E still named
+"sheet range classify admits a cluster tileset job" drives the live control.
+Cancelled or outside-ended Shift-drags abort; a following ordinary paint click
+must not open classify.
+
 
 ## 브라우저 포커스와 도구 실행 대기 (2026-09-05)
 

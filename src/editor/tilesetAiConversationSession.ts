@@ -2,10 +2,15 @@ import {
   applyStagedReviewProposals,
   runTilesetAiReview,
   skipOneReviewProposal,
+  hydrateTilesetAiReview,
   stageOneReviewProposal,
   tilesetAiReviewState,
+  tilesetSourceJobId,
   updateReviewProposalFeedback,
 } from "@/editor/tilesetAiNativeReviewSession";
+import { JobSubmitError } from "@/editor/aiJobs/jobSubmitError";
+import { bindJobView, readJobResult } from "@/editor/aiJobs/jobViewBinding";
+import { parseTilesetReview } from "@/ai/jobs/tilesetPayload";
 import {
   aiReviewBuckets,
   findRefreshedAiReviewProposal,
@@ -14,6 +19,8 @@ import {
   type TilesetAiReviewState,
 } from "@/editor/tilesetAiNativeReviewModel";
 import type { TilesetDef } from "@/project/types";
+import { renderTilesetAtlasImage } from "@/editor/panels/tilesetAiTempMapImage";
+import { submitTilesetJob } from "@/editor/aiJobs/submitTilesetJob";
 
 export type TilesetAiConversationTurn = {
   readonly role: "assistant" | "user";
@@ -85,17 +92,61 @@ export async function answerTilesetAiQuestion(
     { role: "user", text: trimmed, tone: "answer" },
   ];
   updateReviewProposalFeedback(tileset, previous.id, trimmed);
-  await runTilesetAiReview(tileset, rerender);
-  const refreshed = findRefreshedAiReviewProposal(tilesetAiReviewState(tileset), previous);
-  if (refreshed) {
-    stageOneReviewProposal(tileset, refreshed.id);
-    session.turns = [
-      ...session.turns,
-      { role: "assistant", text: `확인했어요. ${refreshed.name}로 기록할게요.`, tone: "confirmation" },
-    ];
+  const review = tilesetAiReviewState(tileset);
+  const sourceJobId = tilesetSourceJobId(tileset.id);
+  if (sourceJobId && (review.status === "ready" || review.status === "stale" || review.status === "partial")) {
+    const atlasDataUrl = await renderTilesetAtlasImage(tileset);
+    const receipt = await submitTilesetJob({
+      operation: "question-followup",
+      tilesetId: tileset.id,
+      atlasDataUrl,
+      review,
+      proposalId: previous.id,
+      answer: trimmed,
+      turns: session.turns,
+      sourceJobId,
+    }, { owner: session });
+    const unbind = bindJobView(receipt.job.id, job => {
+      if (job.generation === "succeeded") {
+        unbind();
+        void readJobResult(job).then(result => {
+          if (!result) return;
+          const nextReview = parseTilesetReview(result.payload.review ?? result.payload);
+          hydrateTilesetAiReview(tileset, nextReview);
+          const refreshed = findRefreshedAiReviewProposal(nextReview, previous);
+          if (refreshed) {
+            stageOneReviewProposal(tileset, refreshed.id);
+            session.turns = [
+              ...session.turns,
+              { role: "assistant", text: `확인했어요. ${refreshed.name}로 기록할게요.`, tone: "confirmation" },
+            ];
+          }
+          session.activeProposalId = null;
+          rerender();
+        });
+      } else if (job.generation === "failed" || job.generation === "cancelled") {
+        unbind();
+        session.activeProposalId = null;
+        rerender();
+      }
+    });
+  } else {
+    if (!sourceJobId && (review.status === "ready" || review.status === "stale" || review.status === "partial")) {
+      await runTilesetAiReview(tileset, rerender);
+      const refreshed = findRefreshedAiReviewProposal(tilesetAiReviewState(tileset), previous);
+      if (refreshed) {
+        stageOneReviewProposal(tileset, refreshed.id);
+        session.turns = [
+          ...session.turns,
+          { role: "assistant", text: `확인했어요. ${refreshed.name}로 기록할게요.`, tone: "confirmation" },
+        ];
+      }
+    } else {
+      throw new JobSubmitError("not-ready", "분석 작업이 없습니다.");
+    }
+    session.activeProposalId = null;
+    rerender();
   }
-  session.activeProposalId = null;
-  rerender();
 }
 
 export function applyConfirmedTilesetAiKnowledge(tileset: TilesetDef): number {

@@ -127,13 +127,23 @@ it("requires explicit retry consent and nested Escape only closes that confirmat
   const observer = new MutationObserver(() => { if (!retryButton.disabled) enabled.resolve(); });
   observer.observe(retryButton, { attributes: true, attributeFilter: ["disabled"] });
   const deadline = setTimeout(() => enabled.reject(new Error("Retry did not settle after cancelled consent")), 5000);
-  expect(modalStackDepthForTest()).toBe(1); document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  expect(modalStackDepthForTest()).toBe(2); document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
   try { await enabled.promise; } finally { observer.disconnect(); clearTimeout(deadline); }
-  expect(modalStackDepthForTest()).toBe(0); expect(panel.isConnected).toBe(true); expect(f.writes).toHaveLength(0);
+  expect(modalStackDepthForTest()).toBe(1); expect(panel.isConnected).toBe(true); expect(f.writes).toHaveLength(0);
   panel.querySelector<HTMLButtonElement>('[data-testid="ai-job-retry"]')!.click();
   const done = signal(f.client, () => f.writes.length === 1);
   document.querySelector<HTMLButtonElement>('[data-testid="app-modal-confirm"]')!.click(); await done;
   expect(f.writes[0]).toEqual({ path: "/job-one/retry", body: { stage: "generation", acknowledgeDuplicateSpend: true } });
+});
+it("queue Escape is owned by modalStack and closes the popover", async () => {
+  const f = fixture(); await f.client.connect();
+  const opener = document.createElement("button"); document.body.append(opener);
+  const panel = openJobQueue(opener, f.client)!;
+  expect(panel.isConnected).toBe(true);
+  expect(modalStackDepthForTest()).toBe(1);
+  document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  expect(panel.isConnected).toBe(false);
+  expect(modalStackDepthForTest()).toBe(0);
 });
 it("opens immutable media without application/provider writes, retains revision on update and revokes owned URLs", async () => {
   const f = fixture(), image = await f.image();

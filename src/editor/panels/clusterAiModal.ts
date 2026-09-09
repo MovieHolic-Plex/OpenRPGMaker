@@ -1,14 +1,10 @@
 import {
-  AssistantSession,
   proposalApprovalWarnings,
-  ruleToolRejectionText,
   type ProposedCall,
   type SessionEvent,
   type TurnResult,
 } from "@/ai/assistantSession";
 import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
-import { conversationScopeKey } from "@/ai/conversationStore";
-import { resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { loadAiConfig } from "@/ai/llmClient";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
@@ -19,13 +15,18 @@ import {
   type ClusterGroupSnapshot,
 } from "@/ai/clusterAssistPrompt";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
-import { editorState } from "@/editor/editorState";
-import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { store } from "@/project/store";
+import type { BlobRef, JsonObject, JsonValue } from "@/ai/jobs/contracts";
+import { requireNumber, requireRecord, requireString } from "@/project/io/guards";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { submitTilesetJob, type TilesetSubmitRequest } from "@/editor/aiJobs/submitTilesetJob";
+import { getJobClient, verifiedArtifact } from "@/editor/aiJobs/jobClient";
+import { bindJobView, readJobResult } from "@/editor/aiJobs/jobViewBinding";
+import { jobOriginLink } from "@/editor/aiJobs/jobOriginLink";
+import { jobSubmitMessage } from "@/editor/aiJobs/jobSubmitError";
 
 export type ClusterAiModalDetail =
   | { readonly kind: "cluster-edit"; readonly tilesetId: string; readonly groupId: string }
@@ -39,6 +40,52 @@ type RangeClassifyRect = {
   readonly y: number;
 };
 
+function clusterSubmitRequest(detail: ClusterAiModalDetail, instruction: string, priorTranscript?: string): TilesetSubmitRequest {
+  switch (detail.kind) {
+    case "cluster-edit":
+      return { operation: "cluster-edit", tilesetId: detail.tilesetId, groupId: detail.groupId, instruction, priorTranscript };
+    case "range-classify":
+      return { operation: "range-classify", tilesetId: detail.tilesetId, rect: detail.rect, tileIds: detail.tileIds, instruction, priorTranscript };
+    case "unclassified-analysis":
+      return { operation: "unclassified-analysis", tilesetId: detail.tilesetId, sampleTiles: detail.sampleTiles, total: detail.total, instruction, priorTranscript };
+  }
+}
+
+function priorTranscriptFromLog(log: HTMLElement): string {
+  return [...log.querySelectorAll(".cluster-ai-bubble")].flatMap(node => {
+    const text = node.textContent?.trim() ?? "";
+    if (!text) return [];
+    if (node.classList.contains("user")) return [`[사용자] ${text}`];
+    if (node.classList.contains("assistant")) return [`[조수] ${text}`];
+    return [];
+  }).join("\n");
+}
+
+function isJsonObject(value: unknown): value is JsonObject {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function turnFromPayload(payload: JsonObject): TurnResult {
+  const assistantText = typeof payload.assistantText === "string" ? payload.assistantText : "";
+  const raw = payload.proposedCalls;
+  const proposedCalls: ProposedCall[] = Array.isArray(raw) ? raw.flatMap(value => {
+    if (!isJsonObject(value) || typeof value.name !== "string" || typeof value.summary !== "string") return [];
+    const result = isJsonObject(value.result) ? value.result : null;
+    const args: Record<string, unknown> = {};
+    if (isJsonObject(value.args)) {
+      for (const [key, item] of Object.entries(value.args)) args[key] = item;
+    }
+    return [{
+      name: value.name,
+      args,
+      summary: value.summary,
+      destructive: value.destructive === true,
+      result: { ok: result?.ok === true, summary: typeof result?.summary === "string" ? result.summary : "" },
+    }];
+  }) : [];
+  return { assistantText, proposedCalls, stoppedReason: "final" };
+}
+
 type ModalModel = {
   readonly detail: ClusterAiModalDetail;
   readonly group: TileGroupMetadata | null;
@@ -50,7 +97,7 @@ type ModalModel = {
 
 type ModalState = {
   busy: boolean;
-  session: AssistantSession | null;
+  jobId: string | null;
 };
 
 const STAGE_IMAGE_TOOLS = new Set(["render_group_sample", "show_tiles", "show_tile_grid", "preview_house", "get_map_region"]);
@@ -76,7 +123,7 @@ let activeModal: { close: () => void; focus: () => void } | null = null;
 export function openClusterAiModal(detail: ClusterAiModalDetail): void {
   activeModal?.close();
   const model = modalModel(detail);
-  const state: ModalState = { busy: false, session: null };
+  const state: ModalState = { busy: false, jobId: null };
   const root = el("div", {
     class: "cluster-ai-modal-backdrop",
     attrs: { role: "presentation" },
@@ -156,8 +203,12 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       }),
     ],
   });
+  const previewUrls = new Set<string>();
+  let previewEpoch = 0;
   const close = (): void => {
     clearAgentGhostPreview();
+    for (const url of previewUrls) URL.revokeObjectURL(url);
+    previewUrls.clear();
     root.remove();
     document.removeEventListener?.("keydown", onKeyDown);
     if (activeModal?.close === close) activeModal = null;
@@ -165,6 +216,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
   const focus = (): void => closeButton.focus();
   const appendBubble = (kind: "assistant" | "system" | "tool" | "user", text: string): HTMLElement => {
     const bubble = el("div", { class: `cluster-ai-bubble ${kind}`, text: kind === "assistant" ? captionLine(text) : text });
+    bubble.dataset.role = kind;
     if (kind === "assistant") bubble.setAttribute("title", text);
     log.append(bubble);
     log.scrollTop = log.scrollHeight;
@@ -179,20 +231,6 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       stage.replaceChildren(stagePlaceholder(EMPTY_STAGE_TEXT, "empty"));
     }
   };
-  const ensureSession = (): AssistantSession => {
-    if (!state.session) {
-      state.session = new AssistantSession(store.getCurrent(), {
-        config: resolveSurfaceAiConfig("cluster"),
-        contextOptions: {
-          currentMapId: currentMapId() ?? undefined,
-          // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
-          projectScopeKey: conversationScopeKey(store.getProjectIdentity(), store.getCurrent()),
-        },
-        renderImages: renderToolImages,
-      });
-    }
-    return state.session;
-  };
   const renderQuickReplies = (text: string): void => {
     quickReplies.replaceChildren(...choiceOptions(text).map((choice) =>
       el("button", {
@@ -204,7 +242,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       })
     ));
   };
-  const renderProposal = (result: TurnResult): void => {
+  const renderProposal = (result: TurnResult, jobId?: string, resultSha?: string): void => {
     proposals.replaceChildren();
     if (result.proposedCalls.length === 0) return;
     const destructive = result.proposedCalls.some((call) => call.destructive);
@@ -231,7 +269,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
               text: "수락해서 적용",
               attrs: { title: "변경안을 바로 적용", type: "button" },
               dataset: { testid: "cluster-ai-accept" },
-              on: { click: () => void acceptProposal(result.proposedCalls) },
+              on: { click: () => void acceptProposal(result.proposedCalls, jobId, resultSha) },
             }),
             el("button", {
               class: "cluster-ai-reject",
@@ -255,87 +293,93 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     setBusy(true);
     status.textContent = "생각 중…";
     quickReplies.replaceChildren();
+    const priorTranscript = priorTranscriptFromLog(log) || undefined;
     appendBubble("user", displayText);
-    let assistantBubble: HTMLElement | null = null;
-    let assistantText = "";
-    const onEvent = (event: SessionEvent): void => {
-      if (event.type === "assistant_token") {
-        assistantText += event.delta;
-        assistantBubble ??= appendBubble("assistant", "");
-        assistantBubble.textContent = captionLine(assistantText);
-        assistantBubble.setAttribute("title", assistantText);
-      } else if (event.type === "assistant_message") {
-        assistantText = event.content;
-        if (event.content) {
-          assistantBubble ??= appendBubble("assistant", "");
-          assistantBubble.textContent = captionLine(event.content);
-          assistantBubble.setAttribute("title", event.content);
-        }
-        renderQuickReplies(event.content);
-      } else if (event.type === "tool_call") {
-        appendBubble("tool", ruleToolRejectionText(event.name, event.result) ?? `${event.result.ok ? "완료" : "실패"} · ${toolDisplayName(event.name)} — ${event.result.summary}`);
-        void renderStageToolCall(stage, event);
-      } else if (event.type === "status") {
-        appendBubble("system", event.text);
-      } else if (event.type === "assistant_stream_reset") {
-        assistantText = "";
-        assistantBubble?.remove();
-        assistantBubble = null;
-      } else {
-        status.textContent = "추론 중…";
-      }
-      log.scrollTop = log.scrollHeight;
-    };
     try {
-      const result = await ensureSession().sendUserMessage(trimmed, onEvent);
-      if (result.assistantText) assistantText = result.assistantText;
-      if (result.assistantText && !assistantBubble) appendBubble("assistant", result.assistantText);
-      renderQuickReplies(assistantText);
-      renderProposal(result);
-      status.textContent = result.stoppedReason === "error" ? "오류" : result.proposedCalls.length > 0 ? "검토 대기" : "완료";
-      if (result.error) appendBubble("system", `오류: ${result.error}`);
-    } catch (cause) {
-      status.textContent = "오류";
-      appendBubble("system", `오류: ${cause instanceof Error ? cause.message : String(cause)}`);
-    } finally {
+      const receipt = await submitTilesetJob(clusterSubmitRequest(detail, trimmed, priorTranscript), { owner: root });
+      state.jobId = receipt.job.id;
+      previewEpoch += 1;
+      const epoch = previewEpoch;
+      if (!root.isConnected) return;
       setBusy(false);
+      status.textContent = `작업함에 맡겼습니다 · ${receipt.job.id}`;
+      const note = appendBubble("system", `작업함에 맡겼습니다 · ${receipt.job.id}`);
+      note.append(jobOriginLink(receipt.job.id, sendButton));
+      const unbind = bindJobView(receipt.job.id, job => {
+        if (!root.isConnected) {
+          unbind();
+          return;
+        }
+        if (job.generation === "succeeded") {
+          unbind();
+          const ownedId = job.id;
+          const resultSha = job.resultRef?.sha256;
+          const owner = (): boolean =>
+            root.isConnected && state.jobId === ownedId && epoch === previewEpoch
+            && Boolean(resultSha) && getJobClient().jobs.get(ownedId)?.resultRef?.sha256 === resultSha;
+          void (async () => {
+            const result = await readJobResult(job);
+            if (!owner() || !result) return;
+            const liveSha = getJobClient().jobs.get(ownedId)?.resultRef?.sha256;
+            if (liveSha !== resultSha) return;
+            const turn = turnFromPayload(result.payload);
+            appendBubble("assistant", turn.assistantText);
+            renderQuickReplies(turn.assistantText);
+            renderProposal(turn, ownedId, resultSha);
+            await renderCapturedPreviews(stage, ownedId, resultSha, result.payload, previewUrls, owner);
+            if (!owner()) return;
+            status.textContent = "응답 완료";
+          })().catch((cause: unknown) => {
+            if (!owner()) return;
+            status.textContent = "실패";
+            appendBubble("system", `오류: ${jobSubmitMessage(cause)}`);
+          });
+        } else if (job.generation === "failed" || job.generation === "cancelled" || job.generation === "interrupted") {
+          unbind();
+          if (state.jobId === job.id) {
+            status.textContent = job.generation === "cancelled" ? "취소됨" : job.generation === "interrupted" ? "중단됨" : "실패";
+            setBusy(false);
+          }
+        }
+      });
+    } catch (cause) {
+      if (!root.isConnected) return;
+      setBusy(false);
+      status.textContent = "오류";
+      appendBubble("system", `오류: ${jobSubmitMessage(cause)}`);
+    } finally {
+      if (root.isConnected) setBusy(false);
     }
   };
-  const acceptProposal = async (calls: readonly ProposedCall[]): Promise<void> => {
-    const session = state.session;
-    if (!session) return;
+  const acceptProposal = async (calls: readonly ProposedCall[], jobId?: string, resultSha?: string): Promise<void> => {
+    const applyId = jobId ?? state.jobId;
+    if (!applyId) return;
     if (calls.some((call) => call.destructive) && !(await confirmDestructive())) return;
     const warnings = proposalApprovalWarnings(calls);
     if (warnings.length > 0 && !(await confirmRuleApproval(warnings))) return;
-    const proposed = session.getProposedProject();
-    const label = `클러스터 수정: ${model.group?.name ?? model.title}`;
+    const live = getJobClient().jobs.get(applyId);
+    if (resultSha && live?.resultRef?.sha256 !== resultSha) {
+      toast("검토 중 결과가 바뀌었습니다. 새 보고서를 여세요.", "error");
+      return;
+    }
     clearAgentGhostPreview();
-    const applied = await applyProposedProject(proposed, {
-      source: "agent",
-      agentName: resolveSurfaceAiConfig("cluster").model,
-      summary: label,
-      toolNames: calls.map((call) => call.name),
-      snapshotLabel: label,
-      snapshotMapId: currentMapId(),
-    });
-    if (!applied.ok) {
-      const message = `적용 실패: ${applied.issue ?? "무결성 오류"}`;
+    try {
+      await getJobClient().apply(applyId, { approved: true, excludedRowIds: [] });
+      proposals.replaceChildren();
+      appendBubble("system", `변경 ${calls.length}건을 작업함에서 적용했습니다.`);
+      status.textContent = "적용됨";
+      toast("AI 변경안을 적용했습니다.", "ok");
+    } catch (error) {
+      const message = `적용 실패: ${jobSubmitMessage(error)}`;
       status.textContent = "적용 실패";
       appendBubble("system", message);
       toast(message, "error");
-      return;
     }
-    session.rebaseProject(store.getCurrent());
-    proposals.replaceChildren();
-    appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다.`);
-    status.textContent = "적용됨";
-    toast("AI 변경안을 적용했습니다.", "ok");
   };
   const rejectProposal = (): void => {
     proposals.replaceChildren();
     clearAgentGhostPreview();
-    state.session?.rebaseProject(store.getCurrent());
-    appendBubble("system", "제안을 거부하고 초안을 폐기했습니다.");
+    appendBubble("system", "제안을 거부하고 초안을 폐기했습니다. 결과는 작업함에 남아 있습니다.");
     status.textContent = "제안 거부됨";
   };
   const onKeyDown = (event: KeyboardEvent): void => {
@@ -418,6 +462,90 @@ function startKickoff(
   void sendText(kickoff.prompt, kickoff.displayAs ?? model.title);
 }
 
+function parsePreviewBlobRef(value: JsonValue): BlobRef | null {
+  try {
+    const record = requireRecord("preview blob ref", value);
+    const sha256 = requireString("sha256", record.sha256);
+    const byteLength = requireNumber("byteLength", record.byteLength);
+    const mediaType = requireString("mediaType", record.mediaType);
+    if (!/^[a-f0-9]{64}$/u.test(sha256) || !Number.isSafeInteger(byteLength) || byteLength < 0 || mediaType.length === 0) return null;
+    return { sha256, byteLength, mediaType };
+  } catch {
+    return null;
+  }
+}
+
+async function renderCapturedPreviews(
+  stage: HTMLElement,
+  jobId: string,
+  resultSha: string | undefined,
+  payload: JsonObject,
+  urls: Set<string>,
+  owner: () => boolean,
+): Promise<void> {
+  const created: string[] = [];
+  const drop = (): void => {
+    for (const url of created) {
+      URL.revokeObjectURL(url);
+      urls.delete(url);
+    }
+    created.length = 0;
+  };
+  try {
+    const previews = payload.previews;
+    if (!Array.isArray(previews) || !resultSha || !owner()) return;
+    const client = getJobClient();
+    const { job, manifest } = await client.artifacts.detail(jobId);
+    if (!owner() || job.resultRef?.sha256 !== resultSha) return;
+    const groups: HTMLElement[] = [];
+    for (const preview of previews) {
+      if (!isJsonObject(preview) || !Array.isArray(preview.images)) continue;
+      const images: RenderedToolImage[] = [];
+      for (const image of preview.images) {
+        if (!isJsonObject(image)) continue;
+        const ref = parsePreviewBlobRef(image.ref);
+        if (!ref) continue;
+        const bytes = await verifiedArtifact(client, jobId, ref, manifest);
+        if (!owner()) {
+          drop();
+          return;
+        }
+        const url = displayBytesUrl(bytes, ref.mediaType);
+        if (url.startsWith("blob:")) {
+          created.push(url);
+          urls.add(url);
+        }
+        images.push({ dataUrl: url, label: typeof image.label === "string" ? image.label : "" });
+      }
+      if (preview.status === "missing" && images.length === 0) {
+        groups.push(stagePlaceholder("미리보기를 표시할 수 없습니다.", "empty"));
+        continue;
+      }
+      if (images.length) groups.push(stageImageGroup(images));
+    }
+    if (!owner()) {
+      drop();
+      return;
+    }
+    if (!groups.length) return;
+    stage.replaceChildren(...groups);
+  } catch (error) {
+    drop();
+    if (owner()) throw error;
+  }
+}
+
+function displayBytesUrl(bytes: Uint8Array, mediaType: string): string {
+  if (typeof URL !== "undefined" && typeof URL.createObjectURL === "function") {
+    const copy = new Uint8Array(bytes.byteLength);
+    copy.set(bytes);
+    return URL.createObjectURL(new Blob([copy], { type: mediaType }));
+  }
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return `data:${mediaType};base64,${btoa(binary)}`;
+}
+
 function renderTilePreview(model: ModalModel): HTMLElement {
   const tileset = model.tileset;
   if (!tileset) return el("div", { class: "cluster-ai-empty", text: "타일셋을 찾을 수 없습니다." });
@@ -436,7 +564,7 @@ function renderTilePreview(model: ModalModel): HTMLElement {
   });
 }
 
-async function renderStageToolCall(stage: HTMLElement, event: Extract<SessionEvent, { type: "tool_call" }>): Promise<void> {
+export async function renderStageToolCall(stage: HTMLElement, event: Extract<SessionEvent, { type: "tool_call" }>): Promise<void> {
   if (!event.result.ok || !STAGE_IMAGE_TOOLS.has(event.name)) return;
   if (!hasStageImages(stage)) stage.replaceChildren(stagePlaceholder("미리보기 렌더링 중...", "loading"));
   try {
@@ -487,7 +615,7 @@ function stageImageCard(image: RenderedToolImage): HTMLElement {
   });
 }
 
-function toolDisplayName(name: string): string {
+export function toolDisplayName(name: string): string {
   return TOOL_DISPLAY_NAMES[name] ?? "도구 실행";
 }
 
@@ -507,7 +635,7 @@ function hasStageImages(stage: HTMLElement): boolean {
 
 function stageHasLoadingPlaceholder(stage: HTMLElement): boolean {
   const placeholder = stage.querySelector(".cluster-ai-stage-placeholder");
-  return placeholder instanceof HTMLElement && placeholder.className.includes("loading");
+  return Boolean(placeholder?.className.includes("loading"));
 }
 
 function captionLine(text: string): string {
@@ -565,13 +693,6 @@ function clusterGroupSnapshot(tilesetId: string, groupId: string): ClusterGroupS
     placementRules: group.placementRules,
     patternGrammar: group.patternGrammar ? { kind: group.patternGrammar.kind } : null,
   };
-}
-
-/** 현재 편집 중인 맵 id — 세션 컨텍스트/스냅샷 라벨용. */
-function currentMapId(): string | null {
-  const state = editorState.get();
-  const project = store.getCurrent();
-  return state.currentMapId ?? project.startMapId ?? null;
 }
 
 function choiceOptions(text: string): readonly string[] {

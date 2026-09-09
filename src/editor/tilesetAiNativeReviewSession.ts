@@ -1,8 +1,8 @@
 import { renderTilesetAtlasImage } from "@/editor/panels/tilesetAiTempMapImage";
-import { hasCpenTilesetApiKey, requestCpenTilesetMapping } from "@/editor/panels/tilesetAiCpenClient";
+import { hasCpenTilesetApiKey } from "@/editor/panels/tilesetAiCpenClient";
 import { loadKnowledgeProposal } from "@/editor/panels/tilesetKnowledgeWorkspaceState";
 import { applyAiReviewProposals } from "@/editor/tilesetAiNativeReviewApply";
-import { analyzeTilesetKnowledge, tilesetKnowledgeFingerprint, type TilesetAiKnowledgeAnalysis } from "@/editor/tilesetAiNativeAnalysis";
+import { tilesetKnowledgeFingerprint, type TilesetAiKnowledgeAnalysis } from "@/editor/tilesetAiNativeAnalysis";
 import {
   acceptAiReviewProposalIds,
   completeAiReview,
@@ -21,6 +21,10 @@ import {
 } from "@/editor/tilesetAiNativeReviewModel";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
+import { submitTilesetJob } from "@/editor/aiJobs/submitTilesetJob";
+import { jobSubmitMessage } from "@/editor/aiJobs/jobSubmitError";
+import { bindJobView, readJobResult } from "@/editor/aiJobs/jobViewBinding";
+import { parseTilesetReview } from "@/ai/jobs/tilesetPayload";
 
 export type TilesetAiReviewAnalyzer = (
   tileset: TilesetDef,
@@ -34,8 +38,17 @@ type ReviewSession = {
 };
 
 const sessions = new Map<string, ReviewSession>();
+const sourceJobs = new Map<string, string>();
 let analyzer: TilesetAiReviewAnalyzer | null = null;
 let requestSequence = 0;
+
+export function tilesetSourceJobId(tilesetId: string): string | undefined {
+  return sourceJobs.get(tilesetId);
+}
+
+export function rememberTilesetSourceJob(tilesetId: string, jobId: string): void {
+  sourceJobs.set(tilesetId, jobId);
+}
 
 export function setTilesetAiReviewAnalyzer(next: TilesetAiReviewAnalyzer | null): void {
   analyzer = next;
@@ -43,6 +56,7 @@ export function setTilesetAiReviewAnalyzer(next: TilesetAiReviewAnalyzer | null)
 
 export function resetTilesetAiReviewSessions(): void {
   sessions.clear();
+  sourceJobs.clear();
   requestSequence = 0;
 }
 
@@ -74,14 +88,51 @@ export async function runTilesetAiReview(tileset: TilesetDef, rerender: () => vo
     .filter((proposal) => proposal.feedback.trim())
     .map((proposal) => `${proposal.name}: ${proposal.feedback.trim()}`);
   try {
-    const result = await (analyzer ?? defaultAnalyzer)(tileset, feedback);
-    if (session.state.status !== "analyzing" || session.state.requestId !== requestId) return;
-    session.state = result.kind === "success"
-      ? stageHighConfidence(completeAiReview(session.state, result.review))
-      : failAiReview(session.state, result.message);
+    if (analyzer) {
+      const result = await analyzer(tileset, feedback);
+      if (session.state.status !== "analyzing" || session.state.requestId !== requestId) return;
+      session.state = result.kind === "success"
+        ? stageHighConfidence(completeAiReview(session.state, result.review))
+        : failAiReview(session.state, result.message);
+    } else {
+      const atlasDataUrl = await renderTilesetAtlasImage(tileset);
+      const ready = asReady(session.state);
+      const receipt = await submitTilesetJob({
+        operation: "knowledge-analysis",
+        tilesetId: tileset.id,
+        atlasDataUrl,
+        feedback,
+        review: ready ?? undefined,
+      }, { owner: session });
+      if (session.state.status !== "analyzing" || session.state.requestId !== requestId) return;
+      rememberTilesetSourceJob(tileset.id, receipt.job.id);
+      const unbind = bindJobView(receipt.job.id, job => {
+        if (session.state.status !== "analyzing" || session.state.requestId !== requestId) {
+          unbind();
+          return;
+        }
+        if (job.generation === "succeeded") {
+          unbind();
+          void readJobResult(job).then(result => {
+            if (!result || session.state.status !== "analyzing" || session.state.requestId !== requestId) return;
+            const reviewValue = result.payload.review ?? result.payload;
+            session.state = stageHighConfidence(completeAiReview(session.state, parseTilesetReview(reviewValue)));
+            rerender();
+          }).catch(error => {
+            if (session.state.status !== "analyzing" || session.state.requestId !== requestId) return;
+            session.state = failAiReview(session.state, jobSubmitMessage(error));
+            rerender();
+          });
+        } else if (job.generation === "failed" || job.generation === "cancelled") {
+          unbind();
+          session.state = failAiReview(session.state, job.generation === "cancelled" ? "취소됨" : "분석 실패");
+          rerender();
+        }
+      });
+    }
   } catch (error) {
     if (session.state.status !== "analyzing" || session.state.requestId !== requestId) return;
-    session.state = failAiReview(session.state, error instanceof Error ? error.message : "AI 분석에 실패했습니다.");
+    session.state = failAiReview(session.state, jobSubmitMessage(error));
   }
   rerender();
 }
@@ -96,6 +147,10 @@ export function acceptOneReviewProposal(tileset: TilesetDef, proposalId: string)
 
 export function tilesetAiReviewState(tileset: TilesetDef): TilesetAiReviewState {
   return activateTilesetAiReview(tileset);
+}
+
+export function hydrateTilesetAiReview(tileset: TilesetDef, ready: TilesetAiReviewReady): void {
+  sessionFor(tileset).state = ready;
 }
 
 export function stageOneReviewProposal(tileset: TilesetDef, proposalId: string): void {
@@ -212,6 +267,3 @@ function stageHighConfidence(state: TilesetAiReviewReady): TilesetAiReviewReady 
   return acceptAiReviewProposalIds(state, ids);
 }
 
-function defaultAnalyzer(tileset: TilesetDef, feedback: readonly string[]): Promise<TilesetAiKnowledgeAnalysis> {
-  return analyzeTilesetKnowledge(tileset, { feedback, renderImage: renderTilesetAtlasImage, request: requestCpenTilesetMapping });
-}

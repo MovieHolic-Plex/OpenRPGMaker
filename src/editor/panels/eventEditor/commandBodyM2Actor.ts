@@ -1,4 +1,5 @@
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
+import { eventDraftImageDestination } from "@/editor/aiJobs/eventImageDestination";
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { store } from "@/project/store";
@@ -859,11 +860,7 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
                 kind: "faceset",
                 testidPrefix: "change-actor-faceset-ai",
                 queueKey: `change-actor-faceset:${context.path.join(".")}`,
-                onInserted: (id) => {
-                  resourceId = id;
-                  resourceSelect.value = id;
-                  commit();
-                },
+                destination: () => eventDraftImageDestination(context, "actor-faceset", context.getCurrentCommand?.() ?? cmd),
               })
             ),
             facePreview,

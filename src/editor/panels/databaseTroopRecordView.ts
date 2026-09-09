@@ -451,6 +451,7 @@ function memberEditor(
             queueKey: `troop-backdrop:${record.id}`,
             dialogTitle: "전투 배경",
             allowClear: true,
+            imageDestination: { kind: "database", table: "troops", recordId: record.id, field: "previewBackgroundResourceId" },
             onChange: (result) => {
               updateDatabaseRecord("troops", record.id, { previewBackgroundResourceId: emptyToUndefined(result.resourceId) });
             },

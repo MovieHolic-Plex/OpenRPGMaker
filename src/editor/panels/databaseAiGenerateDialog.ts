@@ -16,19 +16,16 @@
 
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { IMAGE_GENERATION_PROVIDER_ID, imageGenerationUsesOtherProvider } from "@/ai/imageGenerationClient";
-import { flattenGeneratedArtwork } from "@/editor/aiArtworkCanvas";
 import {
-  generateDatabaseRecordWithAi,
-  type AiDatabaseGenerationDeps,
-  type AiDatabaseGenerationInput,
-  type AiDatabaseGenerationOutcome,
   type AiDatabaseGenerationPhase,
   type AiDatabaseKind,
 } from "@/editor/aiDatabaseGeneration";
+import { submitDatabaseJob } from "@/editor/aiJobs/submitDatabaseJob";
+import { jobSubmitMessage } from "@/editor/aiJobs/jobSubmitError";
+import { jobOriginLink } from "@/editor/aiJobs/jobOriginLink";
+import { bindJobView, readJobResult } from "@/editor/aiJobs/jobViewBinding";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
-import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { buildSvgIcon, type SvgNodeSpec } from "@/editor/panels/tileToolbarIcons";
-import { store } from "@/project/store";
 import type { EnemyRecord, ItemRecord } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -84,7 +81,6 @@ function icon(name: keyof typeof ICONS): SVGSVGElement {
 }
 
 export interface OpenAiGenerateDialogDeps {
-  readonly generate?: (input: AiDatabaseGenerationInput, deps?: AiDatabaseGenerationDeps) => Promise<AiDatabaseGenerationOutcome>;
   readonly loadConfig?: () => AiConfig;
   /** 완료 카드가 읽는 레코드. 기본은 store 의 현재 프로젝트. */
   readonly readRecord?: (kind: AiDatabaseKind, id: string) => EnemyRecord | ItemRecord | undefined;
@@ -94,13 +90,6 @@ export interface OpenAiGenerateDialogOptions {
   readonly kind: AiDatabaseKind;
   readonly rerender: () => void;
   readonly deps?: OpenAiGenerateDialogDeps;
-}
-
-function defaultReadRecord(kind: AiDatabaseKind, id: string): EnemyRecord | ItemRecord | undefined {
-  const database = store.getCurrent().database;
-  return kind === "item"
-    ? database.items.find((entry) => entry.id === id)
-    : database.enemies.find((entry) => entry.id === id);
 }
 
 const ITEM_TYPE_LABEL: Record<string, string> = {
@@ -144,11 +133,41 @@ export function recordFacts(kind: AiDatabaseKind, record: EnemyRecord | ItemReco
   ];
 }
 
+function isFieldRecord(value: unknown): value is { readonly [key: string]: unknown } {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function jsonField(record: { readonly [key: string]: unknown } | undefined, key: string): string {
+  const value = record?.[key];
+  return value === undefined || value === null ? "—" : String(value);
+}
+
+function recordFactsFromPayload(kind: AiDatabaseKind, record: unknown): readonly { readonly label: string; readonly value: string }[] {
+  if (!isFieldRecord(record)) return [];
+  if (kind === "item") {
+    const type = jsonField(record, "type");
+    const occasion = jsonField(record, "occasion");
+    return [
+      { label: "가격", value: `${jsonField(record, "price")}G` },
+      { label: "종류", value: ITEM_TYPE_LABEL[type] ?? type },
+      { label: "사용", value: OCCASION_LABEL[occasion] ?? occasion },
+    ];
+  }
+  const stats = isFieldRecord(record.stats) ? record.stats : undefined;
+  const rewards = isFieldRecord(record.rewards) ? record.rewards : undefined;
+  return [
+    { label: "HP", value: jsonField(stats, "maxHp") },
+    { label: "공격", value: jsonField(stats, "attack") },
+    { label: "방어", value: jsonField(stats, "defense") },
+    { label: "민첩", value: jsonField(stats, "agility") },
+    { label: "경험치", value: jsonField(rewards, "exp") },
+    { label: "골드", value: jsonField(rewards, "gold") },
+  ];
+}
+
 export function openDatabaseAiGenerateDialog(options: OpenAiGenerateDialogOptions): HTMLElement {
-  const { kind, rerender } = options;
+  const { kind } = options;
   const deps = options.deps ?? {};
-  const generate = deps.generate ?? generateDatabaseRecordWithAi;
-  const readRecord = deps.readRecord ?? defaultReadRecord;
   const label = KIND_LABEL[kind];
   const config = (deps.loadConfig ?? loadAiConfig)();
   const opener = typeof document !== "undefined" && document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -265,7 +284,6 @@ export function openDatabaseAiGenerateDialog(options: OpenAiGenerateDialogOption
     children: [icon("close")],
   }) as HTMLButtonElement;
 
-  let controller: AbortController | null = null;
   let phase: DialogPhase = "idle";
   let finished = false;
 
@@ -287,13 +305,10 @@ export function openDatabaseAiGenerateDialog(options: OpenAiGenerateDialogOption
     brief.disabled = running;
     artworkToggle.disabled = running;
     for (const chip of examples.querySelectorAll<HTMLButtonElement>("button")) chip.disabled = running;
-    closeButton.textContent = running ? "취소" : "닫기";
     overlay.classList.toggle("is-running", running);
   };
 
   const dismiss = (): void => {
-    controller?.abort();
-    controller = null;
     unregisterModal(overlay);
     overlay.remove();
     // 열었던 「AI로 생성」 단추로 포커스를 돌려준다. rerender 가 그 노드를 갈아 끼웠으면 testid 로 다시 찾는다.
@@ -318,28 +333,6 @@ export function openDatabaseAiGenerateDialog(options: OpenAiGenerateDialogOption
     brief.focus();
   };
 
-  const showOutcome = (outcome: AiDatabaseGenerationOutcome): void => {
-    const record = readRecord(kind, outcome.recordId);
-    resultName.textContent = outcome.name;
-    resultId.textContent = outcome.recordId;
-    resultFacts.replaceChildren(
-      ...recordFacts(kind, record).flatMap((fact) => [
-        el("dt", { text: fact.label }),
-        el("dd", { text: fact.value }),
-      ]),
-    );
-    if (outcome.artworkDataUrl) {
-      preview.src = outcome.artworkDataUrl;
-      preview.hidden = false;
-    } else {
-      preview.hidden = true;
-    }
-    result.classList.toggle("has-art", Boolean(outcome.artworkDataUrl));
-    result.hidden = false;
-    finished = true;
-    runButton.querySelector(".db-ai-generate-btn-label")!.textContent = "하나 더 만들기";
-  };
-
   const run = (): void => {
     if (runButton.disabled) return;
     if (finished) {
@@ -352,37 +345,55 @@ export function openDatabaseAiGenerateDialog(options: OpenAiGenerateDialogOption
       brief.focus();
       return;
     }
-    controller = new AbortController();
-    const signal = controller.signal;
     setRunning(true);
     result.hidden = true;
     setPhase("text", PHASE_TEXT[kind].text);
-    void generate(
-      { kind, brief: text, config, withArtwork: artworkToggle.checked, signal },
-      {
-        flattenArtwork: flattenGeneratedArtwork,
-        onPhase: (next) => {
-          if (signal.aborted) return;
-          setPhase(next, PHASE_TEXT[kind][next]);
-        },
-      },
-    )
-      .then((outcome) => {
-        if (signal.aborted) return;
-        setSelectedRecordId(kind === "item" ? "items" : "enemies", outcome.recordId);
-        rerender();
-        showOutcome(outcome);
-        setPhase("done", `완료 · 「${outcome.name}」을 만들었어요`);
+    const finish = (): void => { setRunning(false); };
+    void submitDatabaseJob({ kind, brief: text, withArtwork: artworkToggle.checked })
+      .then((receipt) => {
+        setPhase("text", `작업함에 맡겼습니다 · ${receipt.job.id}`);
+        resultName.textContent = `작업함 ${receipt.job.id}`;
+        resultId.textContent = receipt.job.id;
+        resultFacts.replaceChildren(jobOriginLink(receipt.job.id, runButton));
+        result.hidden = false;
+        const unbind = bindJobView(receipt.job.id, job => {
+          if (!overlay.isConnected) {
+            unbind();
+            return;
+          }
+          if (job.generation === "succeeded") {
+            unbind();
+            void readJobResult(job).then(outcome => {
+              if (!overlay.isConnected || !outcome) return;
+              const name = typeof outcome.payload.name === "string" ? outcome.payload.name : "";
+              const recordId = typeof outcome.payload.recordId === "string" ? outcome.payload.recordId : receipt.job.id;
+              const raw = outcome.payload.record;
+              const record = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : undefined;
+              const facts = recordFactsFromPayload(kind, record);
+              resultName.textContent = name || recordId;
+              resultId.textContent = recordId;
+              resultFacts.replaceChildren(
+                ...facts.flatMap((fact) => [
+                  el("dt", { text: fact.label }),
+                  el("dd", { text: fact.value }),
+                ]),
+                jobOriginLink(receipt.job.id, runButton),
+              );
+              result.hidden = false;
+              finished = true;
+              runButton.querySelector(".db-ai-generate-btn-label")!.textContent = "하나 더 만들기";
+              setPhase("done", name ? `완료 · 「${name}」· 작업함에서 적용하세요` : `완료 · 작업함에서 적용하세요 · ${receipt.job.id}`);
+            });
+          } else if (job.generation === "failed" || job.generation === "cancelled") {
+            unbind();
+            setPhase("error", job.generation === "cancelled" ? "취소됨" : "생성 실패");
+          }
+        });
       })
       .catch((error: unknown) => {
-        if (signal.aborted) return;
-        const detail = error instanceof Error ? error.message : String(error);
-        setPhase("error", `실패 — ${detail}`);
+        setPhase("error", `실패 · ${jobSubmitMessage(error)}`);
       })
-      .finally(() => {
-        if (controller?.signal === signal) controller = null;
-        setRunning(false);
-      });
+      .finally(finish);
   };
 
   runButton.addEventListener("click", run);

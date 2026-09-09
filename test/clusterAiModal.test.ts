@@ -2,15 +2,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { SessionEvent, TurnResult } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
-import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
 import { openClusterAiModal } from "@/editor/panels/clusterAiModal";
-import type { ChangeSummary } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
+import { installAdmitClient } from "./aiJobAdmitSupport";
 
 type MockSession = {
   readonly sendUserMessage: ReturnType<typeof vi.fn<(text: string, onEvent: (event: SessionEvent) => void) => Promise<TurnResult>>>;
@@ -128,6 +127,7 @@ beforeEach(() => {
   const project = createBlankProject();
   const tileset = project.tilesets[DEFAULT_TILESET_ID];
   tileset.tileGroups = [makeFenceGroup()];
+  store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: "load-failed" });
   store.replace(project);
   editorState.set({ currentMapId: project.startMapId, selection: null });
   mocks.instances.length = 0;
@@ -146,24 +146,25 @@ afterEach(() => {
   restoreStorage(previousLocalStorage);
   replaceSpy?.mockRestore();
   replaceSpy = null;
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 describe("cluster AI modal", () => {
   it("opens a focused cluster dialog and sends the cluster-edit kickoff", async () => {
+    const harness = installAdmitClient();
+    const pending = harness.nextAdmitted();
     openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
-    await Promise.resolve();
+    const admitted = await pending;
 
     const modal = requireTestId(document, "cluster-ai-modal");
     expect(requireTestId(modal, "cluster-ai-dialog").getAttribute("role")).toBe("dialog");
     expect(modal.textContent).toContain("울타리");
     expect(modal.textContent).toContain("타일 3개");
     expect(requireTestId(modal, "cluster-ai-tile-1")).toBeTruthy();
-    expect(mocks.instances).toHaveLength(1);
-    expect(mocks.instances[0].sendUserMessage).toHaveBeenCalledWith(
-      expect.stringContaining("클러스터 수정"),
-      expect.any(Function)
-    );
-    expect((mocks.constructorOptions[0] as { config?: { model?: string } }).config?.model).toBe("gemini-3.7-flash");
+    expect(admitted.input.family).toBe("tileset");
+    expect(admitted.input.payload.operation).toBe("cluster-edit");
+    expect(String(admitted.input.payload.instruction)).toContain("클러스터");
   });
 
   it("blocks kickoff when the stored config's live connection is confirmed disconnected", async () => {
@@ -188,39 +189,6 @@ describe("cluster AI modal", () => {
     }
   });
 
-  it("accepts proposed changes into the store and rebases the session", async () => {
-    const proposed = createBlankProject();
-    proposed.meta.title = "AI Proposed";
-    mocks.proposedProject = proposed;
-    mocks.nextResult = {
-      assistantText: "변경안을 만들었습니다. [선택지] 적용 | 더 다듬기",
-      proposedCalls: [{
-        args: { groupId: "fence-main" },
-        destructive: false,
-        name: "upsert_tile_group",
-        result: { ok: true, summary: "울타리 묶음 수정", diff: changeSummary() },
-        summary: "울타리 묶음 수정",
-      }],
-      stoppedReason: "final",
-    };
-    replaceSpy = vi.spyOn(store, "replace");
-
-    openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
-    await Promise.resolve();
-    const rebased = new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error("Cluster session did not rebase")), 5000);
-      mocks.instances[0].rebaseProject.mockImplementationOnce(() => {
-        clearTimeout(timeout);
-        resolve();
-      });
-    });
-    requireTestId(document, "cluster-ai-accept").click();
-    await rebased;
-
-    expect(recordProjectSnapshot).toHaveBeenCalledWith("클러스터 수정: 울타리", store.getCurrent().startMapId);
-    expect(replaceSpy).toHaveBeenCalledExactlyOnceWith(proposed, { change: expect.objectContaining({ origin: "ai" }) });
-    expect(mocks.instances[0].rebaseProject).toHaveBeenCalledWith(store.getCurrent());
-  });
 
   it("closes from Escape, backdrop, and close button", async () => {
     openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
@@ -237,17 +205,17 @@ describe("cluster AI modal", () => {
   });
 
   it("opens unclassified analysis mode and sends that kickoff", async () => {
+    const harness = installAdmitClient();
+    const pending = harness.nextAdmitted();
     openClusterAiModal({ kind: "unclassified-analysis", tilesetId: DEFAULT_TILESET_ID, sampleTiles: [4, 5, 6], total: 14 });
-    await Promise.resolve();
+    const admitted = await pending;
 
     const modal = requireTestId(document, "cluster-ai-modal");
     expect(modal.textContent).toContain("미분류 타일 분석");
     expect(modal.textContent).toContain("14개");
     expect(requireTestId(modal, "cluster-ai-tile-4")).toBeTruthy();
-    expect(mocks.instances[0].sendUserMessage).toHaveBeenCalledWith(
-      expect.stringContaining("미분류 분석"),
-      expect.any(Function)
-    );
+    expect(admitted.input.payload.operation).toBe("unclassified-analysis");
+    expect(String(admitted.input.payload.instruction)).toContain("미분류");
   });
 });
 
@@ -260,29 +228,6 @@ function makeFenceGroup(): TileGroupMetadata {
     placementRules: "경계선에 배치",
     role: "fence",
     tileIds: [1, 2, 3],
-  };
-}
-
-function changeSummary(): ChangeSummary {
-  return {
-    dbRecordsChanged: 0,
-    eventsAdded: 0,
-    eventsModified: 0,
-    eventsRemoved: 0,
-    mapsAdded: 0,
-    mapsRemoved: 0,
-    sessionChanged: false,
-    switchesAdded: 0,
-    systemChanged: false,
-    tilesChanged: 0,
-    tilesetsChanged: 1,
-    variablesAdded: 0,
-    worldEntitiesAdded: 0,
-    worldEntitiesModified: 0,
-    palettePresetsAdded: 0,
-    palettePresetsModified: 0,
-    endingsChanged: 0,
-    warnings: [],
   };
 }
 

@@ -527,6 +527,7 @@ function graphicChildren(record: MonsterSpeciesRecord, rerender: () => void): HT
       allowHue: true,
       currentHue: record.graphic.graphicHue,
       dialogTitle: "종족 몬스터 그래픽",
+      imageDestination: { kind: "database", table: "monsterSpecies", recordId: record.id, field: "graphic.monsterResourceId" },
       onChange: (result) => {
         const current = currentSpecies(record.id, record);
         updateSpecies(record.id, {

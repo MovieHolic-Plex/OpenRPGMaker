@@ -16,6 +16,10 @@ import {
 import { isRegionPolishRequest } from "@/editor/regionTask/regionPolish";
 import { expandRegion } from "@/editor/regionTask/regionBlend";
 import { dismissCoachMarks } from "@/editor/coachMarks";
+import { submitRegionJob } from "@/editor/aiJobs/submitRegionJob";
+import { jobSubmitMessage } from "@/editor/aiJobs/jobSubmitError";
+import { jobOriginLink } from "@/editor/aiJobs/jobOriginLink";
+import { bindJobView } from "@/editor/aiJobs/jobViewBinding";
 import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
 import { resolveRegionClientRect } from "@/editor/regionClientRect";
 import { suggestRegionCommandsByContext } from "@/editor/regionTask/regionContextSuggestions";
@@ -1742,6 +1746,40 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     // 자유 입력도 어휘로 라우팅한다 — "주변과 어울리게 해줘" 를 직접 쓴 사람이 일반 경로로
     // 가면 주변 브리핑 없이 영역 안만 보고 채운다(요청을 이행할 근거 자체가 없다).
     const mode: RegionTaskMode = overrides?.mode ?? (isRegionPolishRequest(instruction) ? "polish" : "task");
+    if (run === runRegionTask) {
+      running = true;
+      setStage("running");
+      try {
+        const receipt = await submitRegionJob({
+          mapId: options.mapId,
+          region,
+          instruction,
+          mode: mode === "polish" ? "polish" : "task",
+        }, { owner: modalRoot ?? options });
+        setSummary(`작업함에 맡겼습니다 · ${receipt.job.id}`);
+        summary.append(jobOriginLink(receipt.job.id, runButton));
+        const unbind = bindJobView(receipt.job.id, job => {
+          if (!summary.isConnected) {
+            unbind();
+            return;
+          }
+          if (job.generation === "succeeded") {
+            unbind();
+            setSummary(`완료 · 작업함에서 적용하세요 · ${receipt.job.id}`);
+            summary.append(jobOriginLink(receipt.job.id, runButton));
+          } else if (job.generation === "failed" || job.generation === "cancelled") {
+            unbind();
+            setSummary(job.generation === "cancelled" ? "취소됨" : "실패");
+          }
+        });
+      } catch (error) {
+        setSummary(jobSubmitMessage(error));
+      } finally {
+        running = false;
+        setStage("compose");
+      }
+      return;
+    }
     // 검토 중 단축키로 다시 실행하는 기존 흐름도 한 소유자만 남도록 먼저 해소한다.
     if (activePending && !activePending.settled) activePending.discard();
     if (activeExecution) invalidateExecution(true);
