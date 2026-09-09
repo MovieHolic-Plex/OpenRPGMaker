@@ -449,3 +449,58 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
     expect(statuses(session).some((text) => text.startsWith("intent:continuation"))).toBe(true);
   }, 30000);
 });
+
+// 플래너 페이로드에 선언 자세가 실리는지 — 유닛(workPlan.test.ts)이 통과해도 세션이 intent 를
+// 넘기지 않으면 프로덕션에서는 배선이 죽어 있다(2026-09-09 진단: "마을을 만들어" 1항목).
+describe("planner payload carries the declared scope posture", () => {
+  function plannerUserPayload(seen: readonly ChatRequest[]): string {
+    const planner = seen.find((request) => request.tools === undefined);
+    if (!planner) throw new Error("planner request (tools=undefined) not found");
+    const user = [...planner.messages].reverse().find(
+      (message) => message.role === "user" && typeof message.content === "string" && message.content.includes("## User request"),
+    );
+    if (!user || typeof user.content !== "string") throw new Error("planner user payload not found");
+    return user.content;
+  }
+
+  it("신축 다단계 요청은 분해 자세를 싣는다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const seen: ChatRequest[] = [];
+    const session = new AssistantSession(createBlankProject(), {
+      config: AUTO_CONFIG,
+      chat: scriptedChat([
+        finalResult(JSON.stringify({
+          action: "new_plan",
+          goal: "마을 시공",
+          layers: [{ title: "마을", items: [{ title: "외곽", instruction: "author_village", doneWhen: "마을", successTools: ["author_village"] }] }],
+        })),
+        finalResult("완료"),
+        finalResult("완료"),
+      ], seen),
+      declareIntent: fixedDeclarer({ mode: "create", needsPlan: true, tools: ["author_village"] }),
+    });
+    await session.sendUserMessage("마을을 만들어", () => {});
+    expect(plannerUserPayload(seen)).toContain("posture=decompose-greenfield");
+  }, 30000);
+
+  // 2026-09-03 폭주 회귀 방지: 「이 마을에 상인 하나 추가」는 수정이고, 분해 자세가 실리면 안 된다.
+  it("수정 요청은 보존 자세를 싣고 direct 를 그대로 존중한다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const project = createBlankProject();
+    installHermetic(project);
+    const seen: ChatRequest[] = [];
+    const session = new AssistantSession(project, {
+      config: AUTO_CONFIG,
+      chat: scriptedChat([
+        finalResult(JSON.stringify({ action: "direct", reason: "단일 상인 NPC 배치" })),
+        finalResult("상인을 배치했습니다."),
+      ], seen),
+      declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true, tools: ["place_npc"] }),
+    });
+    await session.sendUserMessage("이 마을에 상인 하나 추가해줘", () => {});
+    const payload = plannerUserPayload(seen);
+    expect(payload).toContain("posture=respect-existing");
+    expect(payload).not.toContain("posture=decompose-greenfield");
+    expect(session.getWorkPlan()).toBeNull();
+  }, 30000);
+});

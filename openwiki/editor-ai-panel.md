@@ -1166,6 +1166,16 @@ Nonspatial and map-metadata-only plans keep their existing behavior. Regression:
 
 미등록 successTools 이름은 삭제하지 않는다. 남은 필수 조건과 잘못된 이름을 실행 문맥에 표시하고 find_tools/set_work_plan으로 계획을 수리하도록 안내한다. 플래너는 레지스트리 실제 이름 목록을 받으며 장르명만으로 퀘스트 그래프·보스를 필수화하지 않는다. 명시 조회 계약의 도구는 노출 상한에서도 유지된다.
 
+## 계획 규모와 선언 자세 (2026-09-09)
+
+「마을을 만들어」처럼 짧은 신축 요청이 1항목 계획으로 끝났다. 원인은 세 겹이다. (1) 플래너 페이로드에 이것이 **신축 다단계**라는 사실이 없었다 — 선언 계층은 `mode`/`needsPlan`을 이미 계산하는데 플래너는 그것을 못 봤다. (2) 스키마 예시가 레이어 1개·항목 1개·`successTools:["author_village"]` 하나뿐이어서, 플래너가 보는 유일한 구체 예시가 「마을 = 1항목」이었다. (3) `author_village`는 대상 전체를 한 호출로 짓는 파사드라 rule 2의 "single tool turn"에 맞아 보였다.
+
+`buildOrchestratorUserPayload`는 이제 `intent`를 받아 `plannerScopePosture`로 환산한 자세를 `## Scope declaration`에 싣는다. `mode=create`+`needsPlan` → `decompose-greenfield`, `mode=modify` → `respect-existing`(다단계 여부 무관), 질문·판단 불가·단일 단계 신축·선언 없음 → 자세 없음. 코드는 여전히 규모를 강제하지 않는다 — 플래너의 `direct`는 그대로 존중한다(2026-09-03 「이 마을에 상인 하나 추가」 폭주 회귀 방지가 `respect-existing`의 존재 이유다).
+
+파사드가 항목 1개가 아닌 이유를 rule 6에 실측으로 적었다: `author_village`의 필수 인자는 `target`·`countPolicy`뿐이고 결과를 살아있게 만드는 인자는 전부 선택이다(`residents.lines`, `housePlans.ownerName/program`, `npcCount`, `interior`, `settlementLayout`, `theme`, `forestDensity`). 사후 검사(`assertVillagePostconditions`)는 집 수와 NPC 수만 센다 — 대사·상점·실내·연결은 검사하지 않는다. 상점 재고·퀘스트·맵 간 이동·시작 위치·인카운터·보물과 마지막 `show_map_region` 전수 점검은 그 호출 밖에 남으므로 별도 항목이어야 한다. 스키마 예시도 2레이어·3항목으로 바꾸고 "이 예시는 모양이다"를 명시해 상한으로 읽히지 않게 했다.
+
+Tests: `workPlan`(자세 표 6종 + 선언 없음 + 페이로드 전달), `assistantSessionIntent`(세션이 실제로 intent를 넘기는지, 수정 요청이 `respect-existing`을 받고 `direct`가 유지되는지).
+
 ## 조회 선행·계획 완료와 실행 종료 (2026-09-05)
 
 사용자가 명시한 읽기 선행은 `intentDeclaration.readBeforeWrite`로 구조화한다. `ToolReadEvidence`는 성공한 get_project_summary/get_map_region/find_events/get_database_records 결과를 기록하고, 결과를 모델이 읽을 수 있는 다음 응답부터 쓰기를 허용한다. DB ID 목록은 참조 근거이며 기존 레코드 갱신은 `include:full`의 현재 값 일치가 필요하다. 실패한 조회와 같은 응답의 후속 쓰기·complete/skip은 계약 선언 여부와 무관하게 보류한다. 직접 NPC 시공·캐스트 라이터도 같은 읽기 게이트를 통과한다. 자동 계속과 수동 continuation은 계약을 보존하고 새 요청은 초기화한다. 이 경계는 사용자 자연어를 정규식으로 재분류하지 않는다.

@@ -16,6 +16,7 @@ import {
   workPlanFromOrchestratorDecision,
   workPlanFromSetToolArgs,
   buildOrchestratorUserPayload,
+  plannerScopePosture,
   summarizeWorkPlan,
   MAX_WORK_PLAN_AUTO_STEPS_PER_TURN,
   ORCHESTRATOR_SYSTEM_PROMPT,
@@ -563,5 +564,48 @@ describe("플래너 volume 선언과 폴백 계획", () => {
     const repair = buildDefaultWorkPlan("이 마을 담장이 엉망으로 깔렸어. 새로 만들지는 말고 지금 있는 것만 손봐줘.", new Date(), { modifies: true });
     expect(repair.layers[0]!.items[0]!.instruction).toContain("[대상 규칙]");
     expect(repair.layers[0]!.items[0]!.successTools).toBeUndefined();
+  });
+});
+
+// 계획 규모 신호(2026-09-09). 짧은 신축 요청("마을을 만들어")이 1항목 계획으로 끝난 원인은
+// 플래너가 "신축 다단계"라는 사실을 페이로드에서 못 봤기 때문이다. 규모를 코드가 강제하지는
+// 않되(2026-09-03 폭주), 선언이 이미 계산한 mode/needsPlan 을 플래너에게 전달한다.
+describe("planner scope posture (declaration-driven, not regex)", () => {
+  // 깨지는 지점: mode=modify 가 decompose 로 새면 「이 마을에 상인 하나 추가」가 다시 마을을
+  // 통째로 짓는다(2026-09-03 실측 93초·맵 3장). create+needsPlan 이 none 으로 새면 플래너는
+  // 규모 근거를 못 받아 1항목을 계속 낸다.
+  it.each([
+    { name: "신축 다단계 — 분해해야 한다", intent: { mode: "create" as const, needsPlan: true }, want: "decompose-greenfield" },
+    { name: "신축 단일 단계 — 신호 없음", intent: { mode: "create" as const, needsPlan: false }, want: "none" },
+    { name: "수정 다단계 — 기존 산출물 보존", intent: { mode: "modify" as const, needsPlan: true }, want: "respect-existing" },
+    { name: "수정 단일 단계 — 기존 산출물 보존", intent: { mode: "modify" as const, needsPlan: false }, want: "respect-existing" },
+    { name: "질문 — 신호 없음", intent: { mode: "question" as const, needsPlan: true }, want: "none" },
+    { name: "판단 불가 — 신호 없음", intent: { mode: "other" as const, needsPlan: true }, want: "none" },
+  ])("$name", ({ intent, want }) => {
+    expect(plannerScopePosture(intent)).toBe(want);
+  });
+
+  it("선언이 없으면 신호가 없다 — 폴백 선언으로 규모를 추측하지 않는다", () => {
+    expect(plannerScopePosture(null)).toBe("none");
+    expect(plannerScopePosture(undefined)).toBe("none");
+  });
+
+  // 깨지는 지점: buildOrchestratorUserPayload 가 intent 인자를 무시하면 유닛은 통과해도
+  // 플래너는 끝까지 규모를 모른다.
+  it("페이로드가 선언 자세를 플래너에게 전달한다", () => {
+    const greenfield = buildOrchestratorUserPayload({
+      userText: "마을을 만들어", activePlan: null, intent: { mode: "create", needsPlan: true },
+    });
+    expect(greenfield).toContain("posture=decompose-greenfield");
+    expect(greenfield).not.toContain("posture=respect-existing");
+
+    const repair = buildOrchestratorUserPayload({
+      userText: "이 마을에 상인 하나 추가해줘", activePlan: null, intent: { mode: "modify", needsPlan: true },
+    });
+    expect(repair).toContain("posture=respect-existing");
+    expect(repair).not.toContain("posture=decompose-greenfield");
+
+    const unknown = buildOrchestratorUserPayload({ userText: "마을을 만들어", activePlan: null });
+    expect(unknown).not.toContain("posture=");
   });
 });

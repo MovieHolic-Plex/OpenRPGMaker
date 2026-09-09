@@ -148,7 +148,9 @@ Harness contract:
 3. action=resume — incomplete WorkPlan already matches the user goal; keep it.
 4. action=new_plan — first multi-step hard request; author goal + layers + items.
 5. action=replan — active plan is wrong/stale or user wants restart/wipe/new goal.
-6. Plan at the scale the requested work requires. There is no layer or todo-count quota. Separate work that can be executed, retried or verified independently: individual regions, landmarks, connections, authoring passes and verification steps. A bulk tool does not make an entire village or world map an atomic task. Use direct only for genuinely atomic work. Do not invent extra scope or filler tasks merely to make the list longer.
+6. Plan at the scale the requested work requires. There is no layer or todo-count quota. Separate work that can be executed, retried or verified independently: individual regions, landmarks, connections, authoring passes and verification steps. Use direct only for genuinely atomic work, and do not invent extra scope or filler tasks merely to make the list longer.
+   **대상 전체를 짓는 파사드는 항목 1개가 아니다.** author_village / author_house / run_dungeon_room_pipeline 은 한 호출로 대상을 세우지만, 결과를 살아있게 만드는 인자는 전부 **선택**이라 비우면 법적 최소치만 나온다 — 주민은 대사 없이 놓이고(residents.lines), 집은 주인·용도가 없고(housePlans.ownerName/program), 인구(npcCount)·실내(interior)·배치(settlementLayout)·테마(theme)·숲(forestDensity)은 기본값이 된다. 사후 검사는 **집 수와 NPC 수만** 센다 — 대사·상점·실내·연결은 아무도 대신 확인해 주지 않는다. 그러니 채울 인자와 채울 대상을 항목으로 나눠라.
+   그 호출 **밖에 남는 것**은 반드시 별도 항목이다: 실내 가구·연결(furnish_interior_space, create_transfer_pair), 상점 재고(set_shop_stock), 퀘스트, 시작 위치(set_start_position), 인카운터·적, 보물·아이템, 그리고 마지막 show_map_region 전수 점검.
 7. Every item needs:
    - title (identifies the independent result)
    - instruction (concrete tools/numbers: 신축=author_house, author_village, create_map, place_npc, create_transfer_pair, upsert_event, fill_region, paint_road, script_cutscene_preset, make_horror_loop, make_gallery_room / **수정=paint_tiles, tile_erase, fill_region, move_event, remove_event, set_map_properties, resize_map, furnish_interior_space, author_village(target:{kind:"existing",mapId,bounds})** … — 건설 지시는 목표 맵과 정확한 수량을, **수정 지시는 대상 맵 id 와 바꿀 대상을 반드시 명시**)
@@ -188,13 +190,37 @@ JSON schema:
           "title": "todo",
           "instruction": "tools + numbers + placement",
           "doneWhen": "observable acceptance criteria",
-          "successTools": ["author_village"],
+          "successTools": ["create_map", "author_village"],
+          "mapTargets": ["map_hub"]
+        },
+        {
+          "id": "L1-b",
+          "title": "앞 항목이 만들지 않는 다음 독립 결과",
+          "instruction": "주민 대사 · 상점 재고 · 실내 연결처럼 파사드 호출 밖에 남는 것",
+          "doneWhen": "이 항목만으로 검증되는 조건",
+          "successTools": ["author_npc_cast", "set_shop_stock"],
+          "mapTargets": ["map_hub"]
+        }
+      ]
+    },
+    {
+      "id": "L2",
+      "title": "검증",
+      "items": [
+        {
+          "id": "L2-a",
+          "title": "전수 점검",
+          "instruction": "영향받은 맵을 전부 show_map_region 으로 확인",
+          "doneWhen": "대상 맵 전부를 실제로 확인함",
+          "successTools": ["show_map_region"],
           "mapTargets": ["map_hub"]
         }
       ]
     }
   ]
-}`;
+}
+
+이 예시는 **모양**이다. 레이어·항목 수는 요청이 정한다 — 위 두 레이어를 상한으로 읽지 마라.`;
 
 /**
  * Max Ralph auto-continuations inside one user message after the first item.
@@ -217,14 +243,60 @@ export const MAX_RALPH_ATTEMPTS_PER_ITEM = 3;
 /** Soft cap: do not Ralph-continue past this many remaining steps in one burst. */
 export const MAX_WORK_PLAN_ITEMS_PER_BURST = 256;
 
+/**
+ * 계획 규모에 대한 **선언 사실**. 코드가 규모를 강제하지 않되(2026-09-03 폭주), 선언 계층이 이미
+ * 계산한 mode/needsPlan 을 플래너가 볼 수 있게 자세로 환산한다.
+ *
+ * 2026-09-09 진단: "마을을 만들어" 가 1항목 계획으로 끝났다. 플래너 프롬프트는 마을이면
+ * new_plan 을 쓰라고 말하지만, 페이로드에는 이것이 **신축 다단계** 라는 사실이 한 글자도 없었고
+ * `author_village` 는 대상 전체를 한 호출로 짓는 파사드라 rule 2 의 "single tool turn" 에 맞아
+ * 보였다. 반대로 `mode=modify` 를 분해로 밀면 「이 마을에 상인 하나 추가」가 다시 마을을 통째로
+ * 짓는다 — 그래서 수정은 명시적으로 보존 자세를 받는다.
+ */
+export type PlannerScopePosture = "decompose-greenfield" | "respect-existing" | "none";
+
+/** 자세 판정에 쓰는 선언 필드만 받는다 — 문장을 읽지 않는다. */
+export interface PlannerScopeIntent {
+  readonly mode: "create" | "modify" | "question" | "other";
+  readonly needsPlan: boolean;
+}
+
+export function plannerScopePosture(intent: PlannerScopeIntent | null | undefined): PlannerScopePosture {
+  if (!intent) return "none";
+  if (intent.mode === "modify") return "respect-existing";
+  if (intent.mode === "create") return intent.needsPlan ? "decompose-greenfield" : "none";
+  return "none";
+}
+
+const PLANNER_SCOPE_GUIDANCE: Record<Exclude<PlannerScopePosture, "none">, string> = {
+  "decompose-greenfield": [
+    "- 선언 계층이 이 요청을 **신축(create) + 다단계(needsPlan)** 로 확정했다. action=direct 는 여기서 오답이다.",
+    "- 대상 전체를 한 호출로 짓는 파사드(author_village 등)가 있어도 그것은 항목 1개가 아니다. 그 호출의"
+      + " **선택 인자를 비우면 최소치만 나온다** — 주민 대사(residents.lines), 집주인·용도(housePlans.ownerName/program),"
+      + " 인구(npcCount), 실내(interior), 배치·테마(settlementLayout/theme/forestDensity) 는 각각 채워야 생긴다.",
+    "- 그 호출 **밖에 남는 것**도 항목으로 세워라: 실내 가구·연결, 상점 재고, 퀘스트, 맵 간 이동, 시작 위치,"
+      + " 인카운터·적, 보물·아이템, 그리고 마지막 show_map_region 전수 점검.",
+    "- 각 항목은 독립적으로 실행·재시도·검증되는 결과여야 한다. 요청에 없는 범위를 새로 만들지는 마라.",
+  ].join("\n"),
+  "respect-existing": [
+    "- 선언 계층이 이 요청을 **수정(modify)** 으로 확정했다. 기존 산출물을 대상으로 삼고 신축 툴을 계획에 넣지 마라.",
+    "- 한 턴으로 끝나는 일이면 action=direct 가 맞다. 규모를 부풀리지 마라.",
+  ].join("\n"),
+};
+
 export function buildOrchestratorUserPayload(input: {
   readonly userText: string;
   readonly activePlan: WorkPlan | null;
   readonly projectSummary?: string;
+  readonly intent?: PlannerScopeIntent | null;
 }): string {
   const parts = [`## User request\n${input.userText.trim()}`];
   if (input.projectSummary?.trim()) {
     parts.push(`## Project snapshot\n${input.projectSummary.trim()}`);
+  }
+  const posture = plannerScopePosture(input.intent);
+  if (posture !== "none") {
+    parts.push(`## Scope declaration (코드가 아는 사실 — 추측 아님)\nposture=${posture}\n${PLANNER_SCOPE_GUIDANCE[posture]}`);
   }
   if (input.activePlan && !isWorkPlanComplete(input.activePlan)) {
     parts.push(`## Active WorkPlan (incomplete)\n${formatWorkPlanUserVisible(input.activePlan)}`);
