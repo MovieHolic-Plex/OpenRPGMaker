@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { loadBundledAssets } from "@/assets/bundled";
+import { loadBundledAssets, rawCharsetTextureKey } from "@/assets/bundled";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { createInterpreter } from "@/player/interpreter";
 import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
@@ -16,8 +16,12 @@ describe("character appearance runtime", () => {
     const image = vi.fn();
     // When assets are queued.
     loadBundledAssets({ load: { image, on: vi.fn() } }, project);
-    // Then the uploaded bytes, not a bundled substitute, reach the loader.
-    expect(image).toHaveBeenCalledWith("uploaded-walk", project.assets.uploaded["uploaded-walk"].dataUrl);
+    // Then the uploaded bytes, not a bundled substitute, reach the loader. 번들 캐릭셋과 같이
+    // raw 키로 들어간다 — 최종 텍스처(uploaded-walk)는 색상 키를 뺀 캔버스가 차지한다.
+    expect(image).toHaveBeenCalledWith(
+      rawCharsetTextureKey("uploaded-walk"),
+      project.assets.uploaded["uploaded-walk"].dataUrl
+    );
   });
 
   it("keeps the uploaded NPC slot when runtime direction changes", () => {
