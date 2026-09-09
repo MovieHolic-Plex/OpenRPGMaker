@@ -1,0 +1,25 @@
+{
+  "task": 20,
+  "kind": "coverage-audit",
+  "generatedBy": "supervisor (parent) — commands run directly, not delegated",
+  "planRows": {
+    "features": 51,
+    "findings": 13
+  },
+  "mappingSource": "test/fixtures/life-full/lifeFullCoverageMap.ts — asserted total by test/lifeFullFixture.test.ts (every audited row mapped, no unknown ids, no unused scenarios)",
+  "realSurfaceProven": {
+    "editor": "Task15 native editor QA: 18/18 matrix on real Chromium including real .oprn download and re-import equality; zero page/guard/cleanup errors; 9 screenshots. Evidence .omo/recovery/life-full-20260908/phase5/task15-editor-native-reviewed/attempts/parent-editor-reviewed-v17-001/.",
+    "playerTree": "Task81 life-tree-chop: gate pass with receipt harvested/tree/item_wood x1/legacy-axe-chop, energy 100->99, repeat conserved.",
+    "playerFarmCycle": "Task18 life-full: 10/10 beats, receipts 1..7 strictly increasing, till/sow/water/sleep/regrow/water/sleep/harvest, potato 0->1, errors [].",
+    "remote": "Task19 isolated save+reload to rpg-zzu-life-full-01a08046-verify (sha fece81ee...), then the RELOADED data replayed the full farm cycle (10/10, potato 0->1). Demo row rpg-zzu-stardew-demo unchanged (updated_at 2026-08-24)."
+  },
+  "honestGaps": {
+    "shippingSettlement": "BLOCKED on scenario-side menu activation, NOT on the product. Seven attempts. Narrowed by measurement: (1) the rail renders collapsed group entries — items, skills, equipment, party-menu, record-menu, system-menu — dumped from the live DOM; (2) counted ArrowDown x4 DOES move the cursor, proven because waitForAttr aria-current=true on status-menu-command-record-menu passed; (3) Enter on the selected group entry does not expand it under __oprnInput edge injection, so status-menu-command-life-ledger never appears. pressUntil is structurally unusable for multi-step cursor movement because it waits for its condition after each single press. hasLifeLedgerData(project, session) measures true, so the ledger is reachable for a human player. Left unproven rather than asserted.",
+    "saveResume": "not attempted on the real surface",
+    "editorSevenTabE2E": "test/e2e/life-full-authoring.spec.ts was never created",
+    "fullMatrix": "The 51 rows and F01..F13 are MAPPED to scenarios and asserted total at the fixture level, but only the farming/day-cycle and tree-chop rows are demonstrated end-to-end on the real surface. The remaining rows are NOT claimed as executed.",
+    "verdict": "Task 20 acceptance requires every one of F01..F13 and all 51 ids to carry measured or regression evidence. That bar is NOT met, so this audit records the gap instead of asserting completion."
+  },
+  "baselineDiscipline": "Full-suite failures are compared against a measured baseline (clean tree with no product edits: 176 failed / 94 files). Changed trees measured 171 and 169 — fewer than baseline, so zero new failures. Failures are never absorbed silently.",
+  "at": "2026-09-09T08:21:23.618Z"
+}

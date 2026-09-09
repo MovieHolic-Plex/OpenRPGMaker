@@ -1,0 +1,1183 @@
+{
+  "scenarioId": "life-full",
+  "projectPath": "test/fixtures/life-full.project.json",
+  "seed": 18,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "field-start",
+      "note": "새 게임 → 농장 시작. 기력 100, 씨앗 3, 수확물 없음",
+      "shot": "01-field-start.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_farming_demo",
+        "x": 4,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "energy": 100,
+        "makerInstances": {},
+        "farmAnimals": {
+          "farm_animal_bori": {
+            "instanceId": "farm_animal_bori",
+            "speciesId": "animal_chicken",
+            "name": "보리",
+            "eventId": "ev_farm_chicken",
+            "buildingId": "building_sunrise_barn",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0
+          },
+          "farm_animal_dubu": {
+            "instanceId": "farm_animal_dubu",
+            "speciesId": "animal_cow",
+            "name": "두부",
+            "eventId": "ev_farm_cow",
+            "buildingId": "building_sunrise_barn",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0
+          }
+        },
+        "farmBuildingPlacements": {
+          "farm_building_workshop_1": {
+            "instanceId": "farm_building_workshop_1",
+            "typeId": "farm_building_workshop",
+            "mapId": "map_farming_demo",
+            "x": 14,
+            "y": 11,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "placeablesAt": {
+          "map_farming_demo:4,6": null
+        },
+        "inventory": {
+          "item_potato_seed": 3,
+          "item_potato": 0
+        }
+      }
+    },
+    {
+      "index": 1,
+      "id": "till-plot",
+      "note": "밭(4,5)로 내려가 괭이(손 슬롯 1)로 실제 경작",
+      "shot": "02-till-plot.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_farming_demo",
+        "x": 4,
+        "y": 5,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_farming_demo": {
+            "4,6": {
+              "tilled": true,
+              "watered": false
+            }
+          }
+        },
+        "energy": 99,
+        "makerInstances": {},
+        "farmAnimals": {
+          "farm_animal_bori": {
+            "instanceId": "farm_animal_bori",
+            "speciesId": "animal_chicken",
+            "name": "보리",
+            "eventId": "ev_farm_chicken",
+            "buildingId": "building_sunrise_barn",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0
+          },
+          "farm_animal_dubu": {
+            "instanceId": "farm_animal_dubu",
+            "speciesId": "animal_cow",
+            "name": "두부",
+            "eventId": "ev_farm_cow",
+            "buildingId": "building_sunrise_barn",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0
+          }
+        },
+        "farmBuildingPlacements": {
+          "farm_building_workshop_1": {
+            "instanceId": "farm_building_workshop_1",
+            "typeId": "farm_building_workshop",
+            "mapId": "map_farming_demo",
+            "x": 14,
+            "y": 11,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_farming_demo",
+          "handled": true,
+          "farmAttempts": [
+            {
+              "kind": "tilled",
+              "x": 4,
+              "y": 6,
+              "itemId": "item_hoe",
+              "energySpent": 1,
+              "xpAwarded": {},
+              "affectedTiles": [
+                {
+                  "x": 4,
+                  "y": 6,
+                  "kind": "tilled"
+                }
+              ]
+            }
+          ],
+          "sequence": 1
+        },
+        "placeablesAt": {
+          "map_farming_demo:4,6": null
+        },
+        "inventory": {
+          "item_potato_seed": 3,
+          "item_potato": 0
+        }
+      },
+      "frameReceipts": [
+        {
+          "sequence": 1,
+          "frames": 12,
+          "deltaMs": 16,
+          "startFrame": 42,
+          "endFrame": 54
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "sow-seed",
+      "note": "감자 씨앗(손 슬롯 5)으로 실제 파종 — 씨앗이 하나 줄어야 한다",
+      "shot": "03-sow-seed.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_farming_demo",
+        "x": 4,
+        "y": 5,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_farming_demo": {
+            "4,6": {
+              "tilled": true,
+              "watered": false,
+              "cropId": "crop_potato",
+              "plantedDay": {
+                "day": 1,
+                "season": "spring",
+                "year": 1
+              },
+              "stage": 0,
+              "dead": false,
+              "growthDays": 0
+            }
+          }
+        },
+        "energy": 98,
+        "makerInstances": {},
+        "farmAnimals": {
+          "farm_animal_bori": {
+            "instanceId": "farm_animal_bori",
+            "speciesId": "animal_chicken",
+            "name": "보리",
+            "eventId": "ev_farm_chicken",
+            "buildingId": "building_sunrise_barn",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0
+          },
+          "farm_animal_dubu": {
+            "instanceId": "farm_animal_dubu",
+            "speciesId": "animal_cow",
+            "name": "두부",
+            "eventId": "ev_farm_cow",
+            "buildingId": "building_sunrise_barn",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0
+          }
+        },
+        "farmBuildingPlacements": {
+          "farm_building_workshop_1": {
+            "instanceId": "farm_building_workshop_1",
+            "typeId": "farm_building_workshop",
+            "mapId": "map_farming_demo",
+            "x": 14,
+            "y": 11,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_farming_demo",
+          "handled": true,
+          "farmAttempts": [
+            {
+              "kind": "planted",
+              "x": 4,
+              "y": 6,
+              "cropId": "crop_potato",
+              "itemId": "item_potato_seed",
+              "count": 1,
+              "energySpent": 1,
+              "xpAwarded": {},
+              "affectedTiles": [
+                {
+                  "x": 4,
+                  "y": 6,
+                  "kind": "planted"
+                }
+              ]
+            }
+          ],
+          "sequence": 2
+        },
+        "placeablesAt": {
+          "map_farming_demo:4,6": null
+        },
+        "inventory": {
+          "item_potato_seed": 2,
+          "item_potato": 0
+        }
+      },
+      "frameReceipts": [
+        {
+          "sequence": 2,
+          "frames": 12,
+          "deltaMs": 16,
+          "startFrame": 61,
+          "endFrame": 73
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "water-plot",
+      "note": "물뿌리개(손 슬롯 3)로 실제 급수",
+      "shot": "04-water-plot.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_farming_demo",
+        "x": 4,
+        "y": 5,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_farming_demo": {
+            "4,6": {
+              "tilled": true,
+              "watered": true,
+              "cropId": "crop_potato",
+              "plantedDay": {
+                "day": 1,
+                "season": "spring",
+                "year": 1
+              },
+              "stage": 0,
+              "dead": false,
+              "growthDays": 0
+            }
+          }
+        },
+        "energy": 97,
+        "makerInstances": {},
+        "farmAnimals": {
+          "farm_animal_bori": {
+            "instanceId": "farm_animal_bori",
+            "speciesId": "animal_chicken",
+            "name": "보리",
+            "eventId": "ev_farm_chicken",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "buildingId": "building_sunrise_barn"
+          },
+          "farm_animal_dubu": {
+            "instanceId": "farm_animal_dubu",
+            "speciesId": "animal_cow",
+            "name": "두부",
+            "eventId": "ev_farm_cow",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "buildingId": "building_sunrise_barn"
+          }
+        },
+        "farmBuildingPlacements": {
+          "farm_building_workshop_1": {
+            "instanceId": "farm_building_workshop_1",
+            "typeId": "farm_building_workshop",
+            "mapId": "map_farming_demo",
+            "x": 14,
+            "y": 11,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_farming_demo",
+          "handled": true,
+          "farmAttempts": [
+            {
+              "kind": "watered",
+              "x": 4,
+              "y": 6,
+              "cropId": "crop_potato",
+              "itemId": "item_watering_can",
+              "energySpent": 1,
+              "xpAwarded": {},
+              "affectedTiles": [
+                {
+                  "x": 4,
+                  "y": 6,
+                  "kind": "watered"
+                }
+              ]
+            }
+          ],
+          "sequence": 3
+        },
+        "placeablesAt": {
+          "map_farming_demo:4,6": null
+        },
+        "inventory": {
+          "item_potato_seed": 2,
+          "item_potato": 0
+        }
+      },
+      "frameReceipts": [
+        {
+          "sequence": 3,
+          "frames": 12,
+          "deltaMs": 16,
+          "startFrame": 81,
+          "endFrame": 93
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "sleep-day1",
+      "note": "침대(3,3) 조사 → 안내문 → 확인 → sleepUntilMorning. 하루가 실제로 넘어가고 물 준 작물이 자란다. 앞 판에서 mapId 만 단정했더니 잠들지 않았는데도 통과했다 — 여기서는 작물 growthDays 로 하루 전환 자체를 단정한다",
+      "shot": "05-sleep-day1.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_farming_demo",
+        "x": 3,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_farming_demo": {
+            "4,6": {
+              "tilled": true,
+              "watered": false,
+              "cropId": "crop_potato",
+              "plantedDay": {
+                "day": 1,
+                "season": "spring",
+                "year": 1
+              },
+              "stage": 1,
+              "dead": false,
+              "growthDays": 1
+            }
+          }
+        },
+        "energy": 100,
+        "makerInstances": {},
+        "farmAnimals": {
+          "farm_animal_bori": {
+            "instanceId": "farm_animal_bori",
+            "speciesId": "animal_chicken",
+            "name": "보리",
+            "eventId": "ev_farm_chicken",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "buildingId": "building_sunrise_barn",
+            "lastAdvancedDayKey": "1:spring:1"
+          },
+          "farm_animal_dubu": {
+            "instanceId": "farm_animal_dubu",
+            "speciesId": "animal_cow",
+            "name": "두부",
+            "eventId": "ev_farm_cow",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "buildingId": "building_sunrise_barn",
+            "lastAdvancedDayKey": "1:spring:1"
+          }
+        },
+        "farmBuildingPlacements": {
+          "farm_building_workshop_1": {
+            "instanceId": "farm_building_workshop_1",
+            "typeId": "farm_building_workshop",
+            "mapId": "map_farming_demo",
+            "x": 14,
+            "y": 11,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_farming_demo",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 4
+        },
+        "placeablesAt": {
+          "map_farming_demo:4,6": null
+        },
+        "inventory": {
+          "item_potato_seed": 2,
+          "item_potato": 0
+        }
+      },
+      "frameReceipts": [
+        {
+          "sequence": 4,
+          "frames": 120,
+          "deltaMs": 16,
+          "startFrame": 1660,
+          "endFrame": 1780
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "water-day2",
+      "note": "이틀째 급수 — 감자는 stages [1일,1일] 이라 하루 더 자라야 수확기가 된다",
+      "shot": "06-water-day2.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_farming_demo",
+        "x": 4,
+        "y": 5,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_farming_demo": {
+            "4,6": {
+              "tilled": true,
+              "watered": true,
+              "cropId": "crop_potato",
+              "plantedDay": {
+                "day": 1,
+                "season": "spring",
+                "year": 1
+              },
+              "stage": 1,
+              "dead": false,
+              "growthDays": 1
+            }
+          }
+        },
+        "energy": 99,
+        "makerInstances": {},
+        "farmAnimals": {
+          "farm_animal_bori": {
+            "instanceId": "farm_animal_bori",
+            "speciesId": "animal_chicken",
+            "name": "보리",
+            "eventId": "ev_farm_chicken",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "buildingId": "building_sunrise_barn",
+            "lastAdvancedDayKey": "1:spring:1"
+          },
+          "farm_animal_dubu": {
+            "instanceId": "farm_animal_dubu",
+            "speciesId": "animal_cow",
+            "name": "두부",
+            "eventId": "ev_farm_cow",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "buildingId": "building_sunrise_barn",
+            "lastAdvancedDayKey": "1:spring:1"
+          }
+        },
+        "farmBuildingPlacements": {
+          "farm_building_workshop_1": {
+            "instanceId": "farm_building_workshop_1",
+            "typeId": "farm_building_workshop",
+            "mapId": "map_farming_demo",
+            "x": 14,
+            "y": 11,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_farming_demo",
+          "handled": true,
+          "farmAttempts": [
+            {
+              "kind": "watered",
+              "x": 4,
+              "y": 6,
+              "cropId": "crop_potato",
+              "itemId": "item_watering_can",
+              "energySpent": 1,
+              "xpAwarded": {},
+              "affectedTiles": [
+                {
+                  "x": 4,
+                  "y": 6,
+                  "kind": "watered"
+                }
+              ]
+            }
+          ],
+          "sequence": 5
+        },
+        "placeablesAt": {
+          "map_farming_demo:4,6": null
+        },
+        "inventory": {
+          "item_potato_seed": 2,
+          "item_potato": 0
+        }
+      },
+      "frameReceipts": [
+        {
+          "sequence": 5,
+          "frames": 30,
+          "deltaMs": 16,
+          "startFrame": 1810,
+          "endFrame": 1840
+        },
+        {
+          "sequence": 6,
+          "frames": 16,
+          "deltaMs": 16,
+          "startFrame": 1840,
+          "endFrame": 1856
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "sleep-day2",
+      "note": "다시 수면 → 이틀째 전환. 작물이 수확기(growthDays 2)가 된다",
+      "shot": "07-sleep-day2.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_farming_demo",
+        "x": 3,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_farming_demo": {
+            "4,6": {
+              "tilled": true,
+              "watered": false,
+              "cropId": "crop_potato",
+              "plantedDay": {
+                "day": 1,
+                "season": "spring",
+                "year": 1
+              },
+              "stage": 2,
+              "dead": false,
+              "growthDays": 2
+            }
+          }
+        },
+        "energy": 100,
+        "makerInstances": {},
+        "farmAnimals": {
+          "farm_animal_bori": {
+            "instanceId": "farm_animal_bori",
+            "speciesId": "animal_chicken",
+            "name": "보리",
+            "eventId": "ev_farm_chicken",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          },
+          "farm_animal_dubu": {
+            "instanceId": "farm_animal_dubu",
+            "speciesId": "animal_cow",
+            "name": "두부",
+            "eventId": "ev_farm_cow",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          }
+        },
+        "farmBuildingPlacements": {
+          "farm_building_workshop_1": {
+            "instanceId": "farm_building_workshop_1",
+            "typeId": "farm_building_workshop",
+            "mapId": "map_farming_demo",
+            "x": 14,
+            "y": 11,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_farming_demo",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 6
+        },
+        "placeablesAt": {
+          "map_farming_demo:4,6": null
+        },
+        "inventory": {
+          "item_potato_seed": 2,
+          "item_potato": 0
+        }
+      },
+      "frameReceipts": [
+        {
+          "sequence": 7,
+          "frames": 120,
+          "deltaMs": 16,
+          "startFrame": 3391,
+          "endFrame": 3511
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "id": "harvest-potato",
+      "note": "수확기 작물을 실제로 수확 → 감자 1개, 밭이 비고 농사 XP",
+      "shot": "08-harvest-potato.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_farming_demo",
+        "x": 4,
+        "y": 5,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_farming_demo": {
+            "4,6": {
+              "tilled": true,
+              "watered": false
+            }
+          }
+        },
+        "energy": 99,
+        "makerInstances": {},
+        "farmAnimals": {
+          "farm_animal_bori": {
+            "instanceId": "farm_animal_bori",
+            "speciesId": "animal_chicken",
+            "name": "보리",
+            "eventId": "ev_farm_chicken",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          },
+          "farm_animal_dubu": {
+            "instanceId": "farm_animal_dubu",
+            "speciesId": "animal_cow",
+            "name": "두부",
+            "eventId": "ev_farm_cow",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          }
+        },
+        "farmBuildingPlacements": {
+          "farm_building_workshop_1": {
+            "instanceId": "farm_building_workshop_1",
+            "typeId": "farm_building_workshop",
+            "mapId": "map_farming_demo",
+            "x": 14,
+            "y": 11,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_farming_demo",
+          "handled": true,
+          "farmAttempts": [
+            {
+              "kind": "harvested",
+              "x": 4,
+              "y": 6,
+              "cropId": "crop_potato",
+              "itemId": "item_potato",
+              "count": 1,
+              "source": "crop",
+              "energySpent": 1,
+              "xpAwarded": {
+                "farming": 10
+              },
+              "affectedTiles": [
+                {
+                  "x": 4,
+                  "y": 6,
+                  "kind": "harvested"
+                }
+              ]
+            }
+          ],
+          "sequence": 7
+        },
+        "placeablesAt": {
+          "map_farming_demo:4,6": null
+        },
+        "inventory": {
+          "item_potato_seed": 2,
+          "item_potato": 1
+        }
+      },
+      "frameReceipts": [
+        {
+          "sequence": 8,
+          "frames": 30,
+          "deltaMs": 16,
+          "startFrame": 3539,
+          "endFrame": 3569
+        },
+        {
+          "sequence": 9,
+          "frames": 16,
+          "deltaMs": 16,
+          "startFrame": 3569,
+          "endFrame": 3585
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "id": "ship-potato",
+      "note": "상태 메뉴(Escape) → 생활 원장 출하 탭에서 수확한 감자를 실제로 출하함에 넣는다. 출하 투입은 월드 오브젝트가 아니라 원장 메뉴가 소유한다(lifeLedger.ts:depositShipping)",
+      "shot": "09-ship-potato.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_farming_demo",
+        "x": 4,
+        "y": 5,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_farming_demo": {
+            "4,6": {
+              "tilled": true,
+              "watered": false
+            }
+          }
+        },
+        "energy": 99,
+        "makerInstances": {},
+        "farmAnimals": {
+          "farm_animal_bori": {
+            "instanceId": "farm_animal_bori",
+            "speciesId": "animal_chicken",
+            "name": "보리",
+            "eventId": "ev_farm_chicken",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          },
+          "farm_animal_dubu": {
+            "instanceId": "farm_animal_dubu",
+            "speciesId": "animal_cow",
+            "name": "두부",
+            "eventId": "ev_farm_cow",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          }
+        },
+        "farmBuildingPlacements": {
+          "farm_building_workshop_1": {
+            "instanceId": "farm_building_workshop_1",
+            "typeId": "farm_building_workshop",
+            "mapId": "map_farming_demo",
+            "x": 14,
+            "y": 11,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_farming_demo",
+          "handled": true,
+          "farmAttempts": [
+            {
+              "kind": "harvested",
+              "x": 4,
+              "y": 6,
+              "cropId": "crop_potato",
+              "itemId": "item_potato",
+              "count": 1,
+              "source": "crop",
+              "energySpent": 1,
+              "xpAwarded": {
+                "farming": 10
+              },
+              "affectedTiles": [
+                {
+                  "x": 4,
+                  "y": 6,
+                  "kind": "harvested"
+                }
+              ]
+            }
+          ],
+          "sequence": 7
+        },
+        "placeablesAt": {
+          "map_farming_demo:4,6": null
+        },
+        "inventory": {
+          "item_potato_seed": 2,
+          "item_potato": 1
+        }
+      },
+      "domTestids": [
+        "status-menu-command-rail",
+        "status-menu-command-group-action",
+        "status-menu-command-items",
+        "status-menu-command-icon-items",
+        "status-menu-command-skills",
+        "status-menu-command-icon-skills",
+        "status-menu-command-equipment",
+        "status-menu-command-icon-equipment",
+        "status-menu-command-party-menu",
+        "status-menu-command-icon-party-menu",
+        "status-menu-command-record-menu",
+        "status-menu-command-icon-record-menu",
+        "status-menu-command-system-menu",
+        "status-menu-command-icon-system-menu"
+      ]
+    },
+    {
+      "index": 9,
+      "id": "open-record-group",
+      "note": "레일은 접힌 그룹으로 렌더된다(실측 덤프: record-menu 가 관문이고 life-ledger 는 그룹을 연 뒤에 나타난다). 실제 그룹 항목을 눌러 펼친다",
+      "shot": "10-open-record-group.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_farming_demo",
+        "x": 4,
+        "y": 5,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_farming_demo": {
+            "4,6": {
+              "tilled": true,
+              "watered": false
+            }
+          }
+        },
+        "energy": 99,
+        "makerInstances": {},
+        "farmAnimals": {
+          "farm_animal_bori": {
+            "instanceId": "farm_animal_bori",
+            "speciesId": "animal_chicken",
+            "name": "보리",
+            "eventId": "ev_farm_chicken",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          },
+          "farm_animal_dubu": {
+            "instanceId": "farm_animal_dubu",
+            "speciesId": "animal_cow",
+            "name": "두부",
+            "eventId": "ev_farm_cow",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          }
+        },
+        "farmBuildingPlacements": {
+          "farm_building_workshop_1": {
+            "instanceId": "farm_building_workshop_1",
+            "typeId": "farm_building_workshop",
+            "mapId": "map_farming_demo",
+            "x": 14,
+            "y": 11,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_farming_demo",
+          "handled": true,
+          "farmAttempts": [
+            {
+              "kind": "harvested",
+              "x": 4,
+              "y": 6,
+              "cropId": "crop_potato",
+              "itemId": "item_potato",
+              "count": 1,
+              "source": "crop",
+              "energySpent": 1,
+              "xpAwarded": {
+                "farming": 10
+              },
+              "affectedTiles": [
+                {
+                  "x": 4,
+                  "y": 6,
+                  "kind": "harvested"
+                }
+              ]
+            }
+          ],
+          "sequence": 7
+        },
+        "placeablesAt": {
+          "map_farming_demo:4,6": null
+        },
+        "inventory": {
+          "item_potato_seed": 2,
+          "item_potato": 1
+        }
+      },
+      "domTestids": [
+        "status-menu-command-rail",
+        "status-menu-command-group-action",
+        "status-menu-command-items",
+        "status-menu-command-icon-items",
+        "status-menu-command-skills",
+        "status-menu-command-icon-skills",
+        "status-menu-command-equipment",
+        "status-menu-command-icon-equipment",
+        "status-menu-command-party-menu",
+        "status-menu-command-icon-party-menu",
+        "status-menu-command-record-menu",
+        "status-menu-command-icon-record-menu",
+        "status-menu-command-system-menu",
+        "status-menu-command-icon-system-menu"
+      ]
+    },
+    {
+      "index": 10,
+      "id": "open-save-point",
+      "note": "저작된 기록판(5,4)을 조사하면 openSaveMenu 명령이 실제 저장 메뉴를 연다. 메뉴 레일 탐색이 아니라 제작자가 실제로 쓰는 이벤트 명령 경로다",
+      "shot": "11-open-save-point.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_farming_demo",
+        "x": 4,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_farming_demo": {
+            "4,6": {
+              "tilled": true,
+              "watered": false
+            }
+          }
+        },
+        "energy": 99,
+        "makerInstances": {},
+        "farmAnimals": {
+          "farm_animal_bori": {
+            "instanceId": "farm_animal_bori",
+            "speciesId": "animal_chicken",
+            "name": "보리",
+            "eventId": "ev_farm_chicken",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          },
+          "farm_animal_dubu": {
+            "instanceId": "farm_animal_dubu",
+            "speciesId": "animal_cow",
+            "name": "두부",
+            "eventId": "ev_farm_cow",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          }
+        },
+        "farmBuildingPlacements": {
+          "farm_building_workshop_1": {
+            "instanceId": "farm_building_workshop_1",
+            "typeId": "farm_building_workshop",
+            "mapId": "map_farming_demo",
+            "x": 14,
+            "y": 11,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_farming_demo",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 8
+        },
+        "placeablesAt": {
+          "map_farming_demo:4,6": null
+        },
+        "inventory": {
+          "item_potato_seed": 2,
+          "item_potato": 1
+        }
+      },
+      "domTestids": [
+        "status-menu-command-rail",
+        "status-menu-command-group-action",
+        "status-menu-command-items",
+        "status-menu-command-icon-items",
+        "status-menu-command-skills",
+        "status-menu-command-icon-skills",
+        "status-menu-command-equipment",
+        "status-menu-command-icon-equipment",
+        "status-menu-command-party-menu",
+        "status-menu-command-icon-party-menu",
+        "status-menu-command-record-menu",
+        "status-menu-command-icon-record-menu",
+        "status-menu-command-system-menu",
+        "status-menu-command-icon-system-menu"
+      ]
+    },
+    {
+      "index": 11,
+      "id": "save-slot-1",
+      "note": "실제 저장 슬롯을 활성화한다. 커서가 1번 슬롯에 있으므로 Enter 가 onSaveSlot(1) 을 부른다(playerStatusMenuDetails.ts:saveDetail). 저장 후에도 상태는 그대로여야 한다",
+      "shot": "12-save-slot-1.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_farming_demo",
+        "x": 4,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_farming_demo": {
+            "4,6": {
+              "tilled": true,
+              "watered": false
+            }
+          }
+        },
+        "energy": 99,
+        "makerInstances": {},
+        "farmAnimals": {
+          "farm_animal_bori": {
+            "instanceId": "farm_animal_bori",
+            "speciesId": "animal_chicken",
+            "name": "보리",
+            "eventId": "ev_farm_chicken",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          },
+          "farm_animal_dubu": {
+            "instanceId": "farm_animal_dubu",
+            "speciesId": "animal_cow",
+            "name": "두부",
+            "eventId": "ev_farm_cow",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          }
+        },
+        "farmBuildingPlacements": {
+          "farm_building_workshop_1": {
+            "instanceId": "farm_building_workshop_1",
+            "typeId": "farm_building_workshop",
+            "mapId": "map_farming_demo",
+            "x": 14,
+            "y": 11,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_farming_demo",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 8
+        },
+        "placeablesAt": {
+          "map_farming_demo:4,6": null
+        },
+        "inventory": {
+          "item_potato_seed": 2,
+          "item_potato": 1
+        }
+      },
+      "domTestids": [
+        "status-menu-command-rail",
+        "status-menu-command-group-action",
+        "status-menu-command-items",
+        "status-menu-command-icon-items",
+        "status-menu-command-skills",
+        "status-menu-command-icon-skills",
+        "status-menu-command-equipment",
+        "status-menu-command-icon-equipment",
+        "status-menu-command-party-menu",
+        "status-menu-command-icon-party-menu",
+        "status-menu-command-record-menu",
+        "status-menu-command-icon-record-menu",
+        "status-menu-command-system-menu",
+        "status-menu-command-icon-system-menu"
+      ]
+    }
+  ]
+}

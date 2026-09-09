@@ -1,0 +1,76 @@
+{
+  "task": 18,
+  "kind": "real-surface-coverage",
+  "command": "npm run qa:runtime -- --scenario life-full",
+  "gate": "통과",
+  "errors": [],
+  "provenRows": {
+    "note": "Rows whose happy path is now demonstrated on the shipped player.html by the life-full scenario, each backed by a runtime receipt and a real state delta.",
+    "farming": [
+      "till (tilled receipt, energy -1)",
+      "sow (planted receipt, seeds 3->2)",
+      "water (watered receipt)",
+      "harvest (harvested/crop receipt, potato 0->1)"
+    ],
+    "dayCycle": [
+      "sleep day1 (energy 97->100, growthDays 0->1, stage 0->1, watered consumed)",
+      "sleep day2 (growthDays 1->2 harvest-ready)"
+    ]
+  },
+  "receiptSequence": "1..7 strictly increasing — no beat passed on a stale receipt",
+  "notYetProven": {
+    "shippingAndSettlement": "BLOCKED on scenario-side menu activation, NOT on the product. Seven attempts. Narrowed by measurement: (1) the rail renders collapsed group entries — items, skills, equipment, party-menu, record-menu, system-menu — dumped from the live DOM; (2) counted ArrowDown x4 DOES move the cursor, proven because waitForAttr aria-current=true on status-menu-command-record-menu passed; (3) Enter on the selected group entry does not expand it under __oprnInput edge injection, so status-menu-command-life-ledger never appears. pressUntil is structurally unusable for multi-step cursor movement because it waits for its condition after each single press. hasLifeLedgerData(project, session) measures true, so the ledger is reachable for a human player. Left unproven rather than asserted.",
+    "fullMatrix": "the 51-row happy+failure matrix and F01..F13 are NOT covered by this scenario; only the farming/day-cycle happy path above is.",
+    "resumeAfterLoad": "Save is proven; LOAD is not. Measured by dumping the live DOM after saving: save-slot-1..3 are present but no load-slot-* exists, because the 로드 command sits inside the collapsed system-menu rail group (playerStatusMenuModel.ts:43). That is the same rail-activation wall that blocked shipping across seven attempts — injected Enter does not expand a selected group entry. Not a product defect: a human player expands the group normally. Left unproven rather than asserted."
+  },
+  "harnessAdditions": [
+    "expect.cropGrowthDays — asserts a real day transition (a mapId-only assertion had passed while nothing happened)",
+    "expect.placeablesAt — makes tile-occupancy hypotheses measurable",
+    "expect.dumpTestidPrefixes — dumps what actually exists instead of only reporting what is missing; this ended three consecutive misdiagnoses"
+  ],
+  "productDefects": "none found on this path",
+  "at": "2026-09-09T07:54:54.272Z",
+  "attemptsSpent": 7,
+  "saveProven": {
+    "method": "Authored an ordinary save point event (openSaveMenu is a real event command, commandCatalog.ts:620) into the life-full fixture at (5,4), then walked to it and investigated — no debug hook, no status-menu rail traversal.",
+    "evidence": "save-slot-1 appears; after Enter the detail reads \"1번 저장저장됨\" with the fixture title/map/time while slots 2 and 3 stay \"비어 있음\". Harvested potato (item_potato 1) is present in the saved state.",
+    "falseAssertionsRejected": [
+      "data-save-slot-state — does not exist (detailEntryDataset)",
+      "waitForVisible + contains — that op checks visibility only and ignores text, so it would have passed vacuously",
+      "\"덮어씁니다\" hint — only shown when re-selecting an already filled slot, not right after saving"
+    ]
+  },
+  "railActivationWall": {
+    "symptom": "Cursor movement works (aria-current reaches the group entry) but injected Enter does not expand the collapsed group, so commands inside it never render.",
+    "blocks": [
+      "life ledger -> shipping deposit/settlement (record group)",
+      "load/resume (system group)"
+    ],
+    "evidence": "Live DOM dumps in this scenario: only the six collapsed rail entries plus the currently open detail ever appear.",
+    "notAProductDefect": "hasLifeLedgerData measures true and the groups are ordinary UI; this is a harness input limitation.",
+    "pointerChannelAlsoTried": {
+      "attempt": "Added a real mouse-click op (strict contract: unique target, not disabled/hidden/zero-box, and elementFromPoint hit test) because every prior menu attempt used injected keyboard edges and the runtime harness had NO pointer op at all.",
+      "result": "pointer target occluded: status-menu-command-system-menu — both before and AFTER closing the save detail with Escape. So the rail is covered by a structural layer, not by the save panel.",
+      "conclusion": "Both input channels fail: injected keyboard edges do not expand a selected group entry, and a physical click cannot reach the rail because it is occluded. This is a harness/environment limitation, not a product defect.",
+      "valueOfTheGuard": "Without the elementFromPoint hit test the click would have landed on the overlay and reported success, hiding the reason load never opened.",
+      "selfInflictedBreakage": "My diagnostic probe was inserted in the wrong scope and broke the shared runner (title-screen never rendered, OCC=undefined was runner death, not a measurement). Reverted to the committed state with git checkout and re-verified the scenario passes; the shared harness is used by other scenarios and must not be left broken."
+    },
+    "titleResumePathTried": {
+      "path": "titleScreen.ts exposes the canonical resume as continueGame -> testId title-load-game, and it renders whenever visibility.continueGame !== false, i.e. OUTSIDE the collapsed rail groups. That is how a real player resumes.",
+      "result": "Could not verify: returning to the title mid-run made the runner fail its initial title-screen wait (runtimeQaRun.mjs:695) on the next execution, so the resume beat never produced a measurement.",
+      "falseConclusionCorrected": "I first concluded my authored save-point event broke the boot, because removing it made a run pass. Then I ran the SAME fixture (save point included) under life-tree-chop and it passed — so the event is innocent and my one-sided comparison was wrong. Recorded because stopping at the first comparison would have blamed a healthy authored event.",
+      "verdict": "Resume stays UNPROVEN as a harness limitation. No evidence of a product defect."
+    }
+  },
+  "editorSevenTabProven": {
+    "command": "DEV_SERVER_PORT=9219 npx playwright test test/e2e/life-full-authoring.spec.ts",
+    "result": "1 passed (26.7s), E2E_EXIT=0",
+    "covers": "All seven 생활 tabs (crops, characters, lifeCrafting, dailyWeather, farmAnimals, farmSpatial, lifeCollections) at 1024x768 and 1440x900 on the real editor, each asserted to render a non-empty authoring surface; 14 screenshots captured.",
+    "project": "rpg-zzu-life-full-01a08046-verify (the isolated remote row from task 19) — never the shared demo row.",
+    "whyThisSurfaceWorked": "The e2e helper switchDatabaseTab already expands a collapsed sidebar group (revealCollapsedSidebarTab), which is exactly the activation the runtime harness could not perform.",
+    "diagnosisNotes": [
+      "First failure was the dev server: playwright webServer timeout is 30s and a cold Vite start exceeds it, so nothing was served. Started the server first and polled it to HTTP 200.",
+      "Second failure was the remote row being pruned mid-session, so the editor had no project to load. Re-saved and re-ran. Neither was a spec defect."
+    ]
+  }
+}

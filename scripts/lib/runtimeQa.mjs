@@ -46,6 +46,10 @@ export const OP_KINDS = [
   // 속성값 대기. 전투 씬은 인트로·연출 중 `data-battle-sequence-busy="true"` 로 입력을 버린다 —
   // 그 사이에 누른 방향키는 조용히 사라져 다음 결정키가 엉뚱한 명령을 확정한다(실측: ↓ 가
   // 버려지고 z 가 공격을 확정). testid 존재만으로는 이 상태를 표현할 수 없어 속성 축을 둔다.
+  // 실제 마우스 클릭. 주입 키보드 엣지로는 접힌 레일 그룹이 펼쳐지지 않았고(실측 7회),
+  // 타이틀 이어하기처럼 클릭이 자연스러운 표면도 있다. 레일/타이틀 항목은 진짜
+  // 클릭 대상이므로 가려짐·비활성·0 크기를 검사한 뒤 보이는 상자 중심을 누른다.
+  "pointerClick",
   "waitForAttr",
   "pressUntil",
   // 체공(jump/dropIn). 이동 경로를 주인공에게 직접 물리고 리프트를 조건으로 기다린다 —
@@ -437,6 +441,20 @@ export function evaluateExpect(expected, observed) {
         Object.entries(expected.farmAttempt).every(([field, want]) => sameShape(attempt?.[field], want)));
       if (!matched) {
         failures.push(`farmAttempt: 기대 ${JSON.stringify(expected.farmAttempt)} 와 일치하는 시도가 없다 — 실제 ${JSON.stringify(attempts)}`);
+      }
+    }
+  }
+
+  // 하루 전환 단정 — 위치·맵만 보면 "잠들지 않았는데 통과"가 된다(실측 2026-09-09).
+  // 런타임이 스스로 관리하는 작물 성장일로 하루가 실제 넘어갔는지 본다.
+  if (expected.cropGrowthDays !== undefined) {
+    const want = expected.cropGrowthDays;
+    if (state === null) failures.push("런타임 훅 없음 — 상태를 읽을 수 없다(cropGrowthDays 확인 불가)");
+    else {
+      const plot = state.farmPlots?.[want.mapId]?.[want.key];
+      if (!plot) failures.push(`cropGrowthDays: ${want.mapId}/${want.key} 밭이 없다`);
+      else if ((plot.growthDays ?? 0) !== want.growthDays) {
+        failures.push(`cropGrowthDays.${want.key}: 기대 ${want.growthDays}, 실제 ${plot.growthDays ?? 0}`);
       }
     }
   }

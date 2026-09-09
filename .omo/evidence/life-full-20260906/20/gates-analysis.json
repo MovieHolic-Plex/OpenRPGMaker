@@ -1,0 +1,72 @@
+{
+  "task": 20,
+  "kind": "gate-triage",
+  "gatesExit": 1,
+  "typecheck": {
+    "command": "npm run -s typecheck:app",
+    "exit": 0
+  },
+  "build": {
+    "command": "npm run -s build",
+    "exit": 0
+  },
+  "gates": {
+    "command": "npm run -s gates",
+    "exit": 1,
+    "reportedNewFailures": 29,
+    "axis": "tests + surface snapshot"
+  },
+  "staleBaselineFinding": {
+    "baselineFile": ".omo/gates-baseline.json (committed as c107bab43, recorded against origin/main)",
+    "baselineRanAt": "2026-09-02T16:39:34.500Z",
+    "baselineTotals": {
+      "tests": 12277,
+      "failed": 185
+    },
+    "currentTotals": {
+      "tests": "~14150"
+    },
+    "interpretation": "About 1,900 tests were added after the baseline was taken, so any test FILE absent from the baseline is reported as 새로 실패 even when it never passed. 0 of the 29 reported files appear in the baseline failedFiles list.",
+    "myTouchedFilesAmongReported": "none — the 29 are AI panel, database and editor-surface tests; lifeFullFixture / farmingStarterTree / databaseLifeCraftingView are absent"
+  },
+  "independentBaselineMeasurement": "A clean tree with NO product edits measured 176 failed / 94 files, while the changed trees measured 171 and 169 — fewer than baseline, i.e. no new failures introduced.",
+  "refusedShortcut": "Did NOT run --save-baseline. Re-recording the baseline would absorb these failures and mask any genuine regression, which the objective forbids.",
+  "at": "2026-09-09T08:33:32.688Z",
+  "verdict": {
+    "method": "Ran the three sampled files at HEAD and at the Phase 4 base commit aac023090 in an isolated worktree, comparing FILE BY FILE rather than trusting totals.",
+    "atBase": "2 files failed / 4 tests — handSlot.test.ts passed 12/12",
+    "atHead": "3 files failed / 5 tests — handSlot.test.ts FAILED",
+    "realRegressionFound": {
+      "file": "test/handSlot.test.ts",
+      "test": "lists only held farm tools and seeds, tools first",
+      "cause": "The test enumerates the exact starter hand-slot list. Task 81 authored item_axe as starter equipment, so reality now has 8 entries where the assertion pinned 7.",
+      "classification": "Test needed to reflect intended new behavior, NOT a product bug — the axe is an approved Task 81 requirement and its chop is proven on the real player.",
+      "fix": "Added item_axe to the expected list with a reason comment. Ordering (tools first) and every other assertion left intact; nothing deleted or skipped.",
+      "result": "12/12 pass"
+    },
+    "preExistingUnchanged": [
+      "test/aiActivityLiveRow.test.ts (2 failures, identical at base)",
+      "test/forestDensity.test.ts (2 failures, identical at base)"
+    ],
+    "lessonRecorded": "An earlier turn reasoned \"changed-tree totals (171/169) are below the clean baseline (176), therefore zero new failures\". That inference is valid for TOTALS but unsound per FILE: one file improving can mask another regressing. File-by-file comparison caught what the total hid.",
+    "baselineNotRewritten": "Still refused --save-baseline; rewriting it would have buried this regression permanently."
+  },
+  "confirmationRerun": {
+    "gatesExit": 1,
+    "newFailureCount": 25,
+    "handSlotPresent": false,
+    "verdict": "The handSlot regression is CLEARED (HANDSLOT=0); the count fell 29 -> 25. None of the 25 remaining files are ones this work touched — they are AI panel, database and editor-surface tests absent from the 2026-09-02 baseline (12,277 tests vs ~14,150 now).",
+    "gatesStillExit1": "Yes, because the repository baseline is red and the surface-snapshot axis fails. That is pre-existing and NOT claimed as green.",
+    "mineChecked": [
+      "lifeFullFixture",
+      "farmingStarterTree",
+      "databaseLifeCraftingView",
+      "handSlot",
+      "placeableOverlayLoader",
+      "playScenePlaceableOverlay",
+      "lifeEconomyUiParity",
+      "lifeEconomyConsumerParity"
+    ],
+    "minePresentInNewFailures": []
+  }
+}
