@@ -579,7 +579,7 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - 전체 typecheck의 기존 test 타입 오류나 timeout을 숨기지 않는다.
     출력 파이프 끝의 exit code를 실제 명령 성공으로 사용하지 않는다.
 
-- [ ] F2. 목표·복구·저장 조건을 실표면 증거와 대조한다
+- [x] F2. 목표·복구·저장 조건을 실표면 증거와 대조한다
   - Recommended task executor category: deep
   - 10의 editor all + isolated remote all 결과가 모두 PASS인지 검토.
     변경된 코드/fixture 이후 fresh evidence인지 확인.
@@ -587,7 +587,7 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
     `npm run qa:runtime:gate`를 추가하고 SUMMARY.md 우선 확인.
     이 하네스 개선만으로 모든 생성 게임의 플레이 완성을 주장하지 않는다.
 
-- [ ] F3. 정리·변경 설명·원자적 커밋을 확인한다
+- [x] F3. 정리·변경 설명·원자적 커밋을 확인한다
   - Recommended task executor category: deep
   - spawned browser/context/server/대기 promise를 종료하고 소유 포트 해제 확인.
   - 사용자 데이터와 다른 작성자 변경을 보존. 모든 커밋은 buildable/관련 GREEN.
@@ -637,3 +637,10 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   정확성을 팔았던 셋(원장 복원본 캐시, 캡처 시 행 동결 제거, 신원 WeakMap)을 되돌리고,
   `prepareCheckpointApply` 를 다시 진짜 내구성 경계로 복원했으며, 문서의 거짓 보증과
   증거 없는 "9/10" 주장을 정정했다.
+
+- F2 대조: 격리 원격 증명 `p5/remote-proof.json` pass, 체크포인트 스토어와 전달 영수증이
+  공유 `main` 코드에 반영됨(`src/ai/runOutcome.ts`, `src/ai/aiRecordDb.ts`), 실표면 6개 통과와
+  `late-cancel` 미통과를 `p5/editor-all-head/all.json` 그대로 근거로 둔다.
+- F3 정리: P4·P5 소유 worktree에 미커밋 변경 없음, 측정용 임시 변경만 있던 upgrade 트리를
+  원복. 커밋은 결함·성능·문서로 분리했고 각 메시지에 실측 수치를 남겼다. 사용자의 미커밋
+  PDF·reports·verify-shots 는 공유 트리에 그대로 보존했다.
