@@ -6,7 +6,6 @@ import { resourceReferenceMessage } from "@/editor/databaseReferences";
 import { store } from "@/project/store";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
-import { DEFAULT_TILESET_ID } from "@/project/defaults";
 import {
   getResourceProfileSpec,
   RESOURCE_PROFILE_SPECS,
@@ -141,8 +140,33 @@ export function renderResourceManager(container: HTMLElement, initialKind?: Reso
     }
     fileInput.value = "";
   });
-
   const onImport = (): void => editor.request(() => fileInput.click());
+  const onDropFile = (file: File): void => {
+    if (mediaRule !== null) {
+      editor.request(() => importMediaResource(file, mediaRule, asset => editor.imported(asset)));
+    } else {
+      importImageResource(file, selectedResourceKind, container);
+    }
+  };
+
+  const onImportUrl = async (url: string): Promise<void> => {
+    try {
+      const trimmed = url.trim();
+      if (!trimmed) return;
+      toast("URL에서 리소스를 다운로드하는 중...", "ok");
+      const res = await fetch(trimmed);
+      if (!res.ok) {
+        toast(`다운로드 실패: HTTP ${res.status}`, "error");
+        return;
+      }
+      const blob = await res.blob();
+      const fileName = trimmed.split("/").pop()?.split("?")[0] || `imported_${Date.now()}`;
+      const file = new File([blob], fileName, { type: blob.type });
+      onDropFile(file);
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "URL 가져오기 실패", "error");
+    }
+  };
   renderResourceWorkbench(container, {
     categories: RESOURCE_MANAGER_CATEGORIES,
     selectedKind: selectedResourceKind,
@@ -160,13 +184,9 @@ export function renderResourceManager(container: HTMLElement, initialKind?: Reso
       : {}),
     onSelectKind: kind => editor.selectKind(kind),
     onImport,
+    onDropFile,
+    onImportUrl,
   });
-  container.append(
-    el("div", {
-      class: "empty-hint",
-      text: `기본 포함 리소스: ${DEFAULT_TILESET_ID}, EasyRPG 타일 그림판·캐릭터 그림.`,
-    })
-  );
   if (focused instanceof HTMLElement && container.contains(focused)) {
     focused.focus({ preventScroll: true });
   }

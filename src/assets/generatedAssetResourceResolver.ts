@@ -361,8 +361,15 @@ export function resolveEasyRpgRuntimeAssetUrl(resourceId: string): string | null
   const entry = EASYRPG_RTP_ASSETS.find(
     (asset) => asset.id === resourceId || ("textureKey" in asset && asset.textureKey === resourceId)
   );
-  if (entry === undefined) return null;
-  return `/${entry.path}`;
+  if (entry !== undefined) return `/${entry.path}`;
+  if (resourceId.startsWith("tex_easyrpg_chipset_")) {
+    const suffix = resourceId.replace("tex_easyrpg_chipset_", "");
+    return `/assets/easyrpg-chipset-${suffix.replace(/_/g, "-")}-transparent.png`;
+  }
+  if (resourceId === "tex_tiles_default") {
+    return "/assets/easyrpg-chipset-exterior.png";
+  }
+  return null;
 }
 
 function hasResourceId(resourceId: string | undefined): resourceId is string {
