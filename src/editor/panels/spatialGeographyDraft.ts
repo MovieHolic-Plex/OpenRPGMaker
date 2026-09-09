@@ -107,11 +107,15 @@ function bump<T extends GeographyDesign>(current: T, next: T): T {
 function syncPlacedChildren(
   document: SpatialAuthoringDocument,
   parentId: SpatialId,
-  design: GeographyDesign,
+  change: { readonly before: GeographyDesign; readonly after: GeographyDesign },
 ): SpatialAuthoringDocument["occurrences"] {
-  const slots = "places" in design ? design.places : design.regions;
+  const before = "places" in change.before ? change.before.places : change.before.regions;
+  const after = "places" in change.after ? change.after.places : change.after.regions;
   const next: Record<string, SpatialOccurrence> = { ...document.occurrences };
-  for (const slot of slots) {
+  for (const slot of after) {
+    const previous = before.find(entry => entry.id === slot.id);
+    // Unchanged frozen slots are not instructions to reset actual occurrence overrides.
+    if (!previous || previous.x === slot.x && previous.y === slot.y && previous.level === slot.level) continue;
     const id = findOccurrenceChildId(document, parentId, { slotId: slot.id, index: 0 });
     if (!id) continue;
     const child = next[id];
@@ -142,7 +146,7 @@ export function editGeography(
         ? { ...library, worlds: { ...library.worlds, [occurrence.source.id]: next } }
         : library;
     const occurrences = {
-      ...syncPlacedChildren(document, target.occurrenceId, next),
+      ...syncPlacedChildren(document, target.occurrenceId, { before: current, after: next }),
       // Narrow before spreading so parentSlot retains its snapshot-port correlation.
       [target.occurrenceId]: occurrence.parentSlot === undefined
         ? { ...occurrence, snapshot: { ...occurrence.snapshot, library: snapshotLibrary } }
