@@ -1,0 +1,8 @@
+baselineRanAt=2026-09-02T16:39:34.500Z
+baselineFailedFiles=98
+currentFailedFiles=5
+newlyFailingFiles=2
+  NEW  test/eventEditorM2Surface.baseline.test.ts
+  NEW  test/eventEditorPortalSurface.baseline.test.ts
+noLongerFailing=95
+newlyFailingAndTouchedByThisBranch=0
