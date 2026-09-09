@@ -2,9 +2,13 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import appConfig from '../../vite.config.ts';
+import { recoveryTransform } from './ai-harness-recovery.mjs';
 
 export default async (env) => {
   const config = await appConfig(env);
+  if (process.env.QA_SCENARIO === 'recovery') config.plugins.push({
+    name: 'qa-p4-native-recovery-boundaries', enforce: 'pre', transform: recoveryTransform,
+  });
   // Installed only by the late-cancel runner. Bind the served observation wrapper
   // to both original and transformed bytes; never change a product file on disk.
   if (process.env.QA_SCENARIO === 'late-cancel') config.plugins.push({

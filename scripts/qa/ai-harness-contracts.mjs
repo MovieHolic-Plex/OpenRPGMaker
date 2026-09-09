@@ -19,12 +19,13 @@ import { createNewGoalDraftContracts } from './ai-harness-r21-new-goal.mjs';
 import { createEpochContracts } from './ai-harness-p3-epochs.mjs';
 import { createWikiContracts } from './ai-harness-wiki.mjs';
 import { createHumanEditRaceContracts } from './ai-harness-p3-stale.mjs';
+import { createRecoveryContracts, recoverySourceManifest } from './ai-harness-recovery.mjs';
 import { deleteOwnedFixture } from './ai-harness-cleanup.mjs';
 import { isWikiExtraction } from '../../test/wikiTransportFixture.ts';
 import { independentReviewPayload } from '../../test/independentReviewFixture.ts';
 
 const { values } = parseArgs({ options: { scenario: { type: 'string' } } });
-assert.ok(['proof-failure', 'required-skip', 'outcome-matrix', 'retained-draft-ask', 'wiki-delivery', 'new-goal-draft', 'late-cancel', 'human-edit-race'].includes(values.scenario), 'Unknown contract scenario');
+assert.ok(['proof-failure', 'required-skip', 'outcome-matrix', 'retained-draft-ask', 'wiki-delivery', 'new-goal-draft', 'late-cancel', 'human-edit-race', 'recovery'].includes(values.scenario), 'Unknown contract scenario');
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const port = Number(process.env.QA_PORT ?? 19847);
 const base = `http://127.0.0.1:${port}`;
@@ -111,12 +112,13 @@ async function runRoute(route) {
       changedPaths: review.changes.map(change => change.path), requiredProblems: review.requiredProblems });
     const findings = review?.requiredProblems.map((problem, index) => ({ id: `required-${index}`,
       target: 'draft', problem, requestedChange: 'Resolve the required problem', validation: problem })) ?? [];
-    const message = review ? { role: 'assistant', content: JSON.stringify({ revision: review.revision,
+    const message = review && p2?.review ? p2.review(body, review) : review ? { role: 'assistant', content: JSON.stringify({ revision: review.revision,
       verdict: findings.length ? 'changes_requested' : 'approved', summary: 'Scoped native review', findings }) }
       : wikiExtraction ? p2?.extract ? p2.extract(body) : wiki ? wiki.extract(body) : { role: 'assistant', content: JSON.stringify({ upserts: [] }) }
       : p2 ? await p2.respond(body) : p1Response(body);
     record('scripted-llm-http', { round: ++llmRound, hasTools: !!body.tools?.length, wikiExtraction, tool: message.tool_calls?.[0]?.function.name ?? null });
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ choices: [{ message, finish_reason: message.tool_calls?.length ? "tool_calls" : "stop" }] }) });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ choices: [{ message, finish_reason: message.tool_calls?.length ? "tool_calls" : "stop" }],
+      ...(p2?.deliverImages ? { image_delivery: await p2.deliverImages(body) } : {}) }) });
     return;
   }
   if (url.pathname.includes('/rest/v1/')) {
@@ -163,6 +165,8 @@ async function runRoute(route) {
 }
 await mkdir(out, { recursive: true });
 try {
+  if (process.env.EXPECTED_HEAD) assert.equal(report.sourceSha, process.env.EXPECTED_HEAD, 'Optional source revision guard');
+  if (values.scenario === 'recovery') report.sourceBefore = await recoverySourceManifest(root);
   const env = loadEnv('development', root, '');
   const rawUrl = (env.SUPABASE_UPSTREAM_URL ?? env.VITE_SUPABASE_URL ?? '').trim();
   assert.match(rawUrl, /^https?:\/\/[^/?#@\\\s]+\/?$/i);
@@ -221,12 +225,13 @@ try {
   await installBrowserProbe(page, { projectId, ownerTitle });
   const surface = browserSurface({ page, report, record, out });
   const harness = { ...surface, page, report, record, out, projectId, ownerTitle, titleToken,
-    armProof, bounded, observeRemote, rest, deferred, clearProofGate: () => { gate?.release.resolve(); gate = null; } };
+    armProof, bounded, observeRemote, rest, deferred, llmCalls: () => llmRound, clearProofGate: () => { gate?.release.resolve(); gate = null; } };
   await surface.capture('00-before');
   if (values.scenario === 'proof-failure') await runProofFailure(harness);
   else if (values.scenario === 'wiki-delivery') { wiki = createWikiContracts(harness); await wiki.run(); }
   else {
-    p2 = values.scenario === 'late-cancel' ? createEpochContracts(harness)
+    p2 = values.scenario === 'recovery' ? createRecoveryContracts(harness)
+      : values.scenario === 'late-cancel' ? createEpochContracts(harness)
       : values.scenario === 'human-edit-race' ? createHumanEditRaceContracts(harness)
       : values.scenario === 'new-goal-draft' ? createNewGoalDraftContracts(harness)
       : values.scenario === 'retained-draft-ask' ? createR1AskContracts(harness) : createP2Contracts(harness);
@@ -271,6 +276,13 @@ try {
     if (!created) { report.cleanup.remote = 'not-created'; return; }
     report.cleanup.remote = await deleteOwnedFixture({ rest, projectId, commits, ownsTitle });
   });
+  if (values.scenario === 'recovery') {
+    report.sourceAfter = await recoverySourceManifest(root);
+    if (JSON.stringify(report.sourceBefore) !== JSON.stringify(report.sourceAfter)) {
+      report.failure = 'Source changed during native recovery execution'; process.exitCode = 1;
+    }
+    if (report.errors.length) { report.failure ??= 'Browser or route errors during recovery'; process.exitCode = 1; }
+  }
   report.directExit = process.exitCode ?? 0;
   report.pass = report.assertionsPassed === true && !process.exitCode;
   report.cleanup.reusedListener = false;

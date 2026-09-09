@@ -1,20 +1,23 @@
 import assert from 'node:assert/strict';
 
 export async function installBrowserProbe(page, fixture) {
-  await page.evaluate(async ({ projectId, ownerTitle }) => {
+  await page.evaluate(async ({ projectId, ownerTitle, reload = false }) => {
     const [sm, em, mode, sessionModule, cfg] = await Promise.all([import('/src/project/store.ts'), import('/src/editor/editorState.ts'),
       import('/src/app/mode.ts'), import('/src/ai/assistantSession.ts'), import('/src/project/supabaseProjectConfig.ts')]);
-    if (sm.store !== window.__oprnEditorStore || sm.store.isRemotePersistenceEnabled()) throw new Error('Fresh-store boot isolation failed');
+    if (sm.store !== window.__oprnEditorStore || sm.store.isRemotePersistenceEnabled() !== reload) throw new Error('Store boot isolation failed');
+    if (reload && (sm.store.getProjectIdentity().kind !== 'remote' || sm.store.getProjectIdentity().id !== projectId)) throw new Error('Reload did not adopt the owned remote project');
     if (cfg.supabaseProjectConfig().projectId !== projectId) throw new Error('Wrong isolated project config');
     window.qa = { store: sm.store, editor: em.editorState, mode, events: [], disposers: [], sessionCount: 0 };
     qa.nextRender = () => new Promise((resolve, reject) => {
       const timer = setTimeout(() => reject(new Error('postrender deadline')), 10000);
       mode.getGame().events.once('postrender', () => { clearTimeout(timer); resolve(); });
     });
-    qa.store.update(draft => { draft.meta.title = ownerTitle; });
-    await qa.store.flush(); // Disabled boot flush clears only this fixture's debounce.
-    qa.store._setPersistedBaselineForTest(null);
-    qa.store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
+    if (!reload) {
+      qa.store.update(draft => { draft.meta.title = ownerTitle; });
+      await qa.store.flush(); // Disabled boot flush clears only this fixture's debounce.
+      qa.store._setPersistedBaselineForTest(null);
+      qa.store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
+    }
     const original = sessionModule.AssistantSession.prototype.sendUserMessage;
     const originalProof = sessionModule.AssistantSession.prototype.proveAppliedRevision;
     const seen = new WeakSet();
