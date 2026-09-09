@@ -50,5 +50,23 @@
     ],
     "lessonRecorded": "An earlier turn reasoned \"changed-tree totals (171/169) are below the clean baseline (176), therefore zero new failures\". That inference is valid for TOTALS but unsound per FILE: one file improving can mask another regressing. File-by-file comparison caught what the total hid.",
     "baselineNotRewritten": "Still refused --save-baseline; rewriting it would have buried this regression permanently."
+  },
+  "confirmationRerun": {
+    "gatesExit": 1,
+    "newFailureCount": 25,
+    "handSlotPresent": false,
+    "verdict": "The handSlot regression is CLEARED (HANDSLOT=0); the count fell 29 -> 25. None of the 25 remaining files are ones this work touched — they are AI panel, database and editor-surface tests absent from the 2026-09-02 baseline (12,277 tests vs ~14,150 now).",
+    "gatesStillExit1": "Yes, because the repository baseline is red and the surface-snapshot axis fails. That is pre-existing and NOT claimed as green.",
+    "mineChecked": [
+      "lifeFullFixture",
+      "farmingStarterTree",
+      "databaseLifeCraftingView",
+      "handSlot",
+      "placeableOverlayLoader",
+      "playScenePlaceableOverlay",
+      "lifeEconomyUiParity",
+      "lifeEconomyConsumerParity"
+    ],
+    "minePresentInNewFailures": []
   }
 }
