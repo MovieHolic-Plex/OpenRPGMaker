@@ -9,6 +9,9 @@
    "add-light-flicker-select",
    "add-light-id-input"
   ],
+  "applyItemUpgrade": [
+   "apply-item-upgrade-result-variable>select#0"
+  ],
   "battleProcessing": [
    "battle-processing-branch-on-result",
    "battle-processing-escape-checkbox",
@@ -68,6 +71,9 @@
   "choices": [
    "event-choice-cancel-branch",
    "event-choice-cancel-disallow"
+  ],
+  "craftRecipe": [
+   "craft-recipe-result-variable>select#0"
   ],
   "enterHeroName": [
    "enter-hero-name-actor-select"

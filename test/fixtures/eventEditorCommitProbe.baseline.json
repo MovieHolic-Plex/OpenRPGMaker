@@ -400,18 +400,20 @@
  },
  "craftRecipe": {
   "probes": {
-   "craft-recipe-select": "replaceCommand {\"kind\":\"craftRecipe\",\"recipeId\":\"recipe2\"}"
+   "craft-recipe-select": "replaceCommand {\"kind\":\"craftRecipe\",\"recipeId\":\"recipe2\"}",
+   "craft-recipe-result-variable>select#0": "replaceCommand {\"kind\":\"craftRecipe\",\"recipeId\":\"recipe1\",\"resultVariableId\":\"var_0020\"}"
   },
-  "probeCount": 1,
-  "commitCount": 1,
+  "probeCount": 2,
+  "commitCount": 2,
   "noCommitCount": 0
  },
  "applyItemUpgrade": {
   "probes": {
-   "apply-item-upgrade-select": "replaceCommand {\"kind\":\"applyItemUpgrade\",\"upgradeId\":\"upgrade2\"}"
+   "apply-item-upgrade-select": "replaceCommand {\"kind\":\"applyItemUpgrade\",\"upgradeId\":\"upgrade2\"}",
+   "apply-item-upgrade-result-variable>select#0": "replaceCommand {\"kind\":\"applyItemUpgrade\",\"resultVariableId\":\"var_0020\",\"upgradeId\":\"upgrade1\"}"
   },
-  "probeCount": 1,
-  "commitCount": 1,
+  "probeCount": 2,
+  "commitCount": 2,
   "noCommitCount": 0
  },
  "equipTool": {

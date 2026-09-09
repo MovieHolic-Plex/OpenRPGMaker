@@ -4523,91 +4523,177 @@
  },
  "craftRecipe": {
   "testids": [
+   "craft-recipe-result-variable",
+   "craft-recipe-result-variable-clear",
    "craft-recipe-select",
    "craft-recipe-select-card",
-   "event-command-edit-summary"
+   "event-command-edit-summary",
+   "event-variable-picker-open"
   ],
   "classes": [
+   "btn",
    "cream-command-form",
    "cream-command-form-head",
    "empty",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "inline-field",
    "record-picker",
    "record-picker-card",
    "record-picker-card-name",
    "rich-command-form",
    "rich-form-hint",
    "rich-form-row",
-   "rich-record-initial"
+   "rich-record-initial",
+   "small"
   ],
   "controls": {
-   "craft-recipe-select": "select{}"
+   "craft-recipe-result-variable-clear": "button{}",
+   "craft-recipe-result-variable>select#0": "select{}",
+   "craft-recipe-select": "select{}",
+   "event-variable-picker-open": "button{}"
   },
   "selectOptions": {
+   "craft-recipe-result-variable>select#0": [
+    "",
+    "var_0001",
+    "var_0002",
+    "var_0003",
+    "var_0004",
+    "var_0005",
+    "var_0006",
+    "var_0007",
+    "var_0008",
+    "var_0009",
+    "var_0010",
+    "var_0011",
+    "var_0012",
+    "var_0013",
+    "var_0014",
+    "var_0015",
+    "var_0016",
+    "var_0017",
+    "var_0018",
+    "var_0019",
+    "var_0020"
+   ],
    "craft-recipe-select": [
     ""
    ]
   },
-  "labels": [],
+  "labels": [
+   "(선택)",
+   "해제"
+  ],
   "tags": {
+   "button": 2,
    "div": 2,
-   "option": 1,
-   "select": 1,
-   "span": 7
+   "label": 1,
+   "option": 22,
+   "select": 2,
+   "span": 9
   },
   "tagByTestid": {
+   "craft-recipe-result-variable": "span",
+   "craft-recipe-result-variable-clear": "button",
    "craft-recipe-select": "select",
    "craft-recipe-select-card": "span",
-   "event-command-edit-summary": "div"
+   "event-command-edit-summary": "div",
+   "event-variable-picker-open": "button"
   },
   "texts": {
    "event-command-edit-summary": "제작"
   },
-  "testidCount": 3,
-  "controlCount": 1
+  "testidCount": 6,
+  "controlCount": 4
  },
  "applyItemUpgrade": {
   "testids": [
+   "apply-item-upgrade-result-variable",
+   "apply-item-upgrade-result-variable-clear",
    "apply-item-upgrade-select",
    "apply-item-upgrade-select-card",
-   "event-command-edit-summary"
+   "event-command-edit-summary",
+   "event-variable-picker-open"
   ],
   "classes": [
+   "btn",
    "cream-command-form",
    "cream-command-form-head",
    "empty",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "inline-field",
    "record-picker",
    "record-picker-card",
    "record-picker-card-name",
    "rich-command-form",
    "rich-form-hint",
    "rich-form-row",
-   "rich-record-initial"
+   "rich-record-initial",
+   "small"
   ],
   "controls": {
-   "apply-item-upgrade-select": "select{}"
+   "apply-item-upgrade-result-variable-clear": "button{}",
+   "apply-item-upgrade-result-variable>select#0": "select{}",
+   "apply-item-upgrade-select": "select{}",
+   "event-variable-picker-open": "button{}"
   },
   "selectOptions": {
+   "apply-item-upgrade-result-variable>select#0": [
+    "",
+    "var_0001",
+    "var_0002",
+    "var_0003",
+    "var_0004",
+    "var_0005",
+    "var_0006",
+    "var_0007",
+    "var_0008",
+    "var_0009",
+    "var_0010",
+    "var_0011",
+    "var_0012",
+    "var_0013",
+    "var_0014",
+    "var_0015",
+    "var_0016",
+    "var_0017",
+    "var_0018",
+    "var_0019",
+    "var_0020"
+   ],
    "apply-item-upgrade-select": [
     ""
    ]
   },
-  "labels": [],
+  "labels": [
+   "(선택)",
+   "해제"
+  ],
   "tags": {
+   "button": 2,
    "div": 2,
-   "option": 1,
-   "select": 1,
-   "span": 7
+   "label": 1,
+   "option": 22,
+   "select": 2,
+   "span": 9
   },
   "tagByTestid": {
+   "apply-item-upgrade-result-variable": "span",
+   "apply-item-upgrade-result-variable-clear": "button",
    "apply-item-upgrade-select": "select",
    "apply-item-upgrade-select-card": "span",
-   "event-command-edit-summary": "div"
+   "event-command-edit-summary": "div",
+   "event-variable-picker-open": "button"
   },
   "texts": {
    "event-command-edit-summary": "업그레이드"
   },
-  "testidCount": 3,
-  "controlCount": 1
+  "testidCount": 6,
+  "controlCount": 4
  },
  "equipTool": {
   "testids": [
