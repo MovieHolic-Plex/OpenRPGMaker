@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildIndependentReviewRequest, reviewChanges, reviewEvidenceContexts, reviewMapReferenceRoots,
-  type ReviewInput } from "@/ai/independentReview";
+  type ReviewEvidenceFit, type ReviewInput } from "@/ai/independentReview";
 import { estimateContextTokens } from "@/ai/contextCompaction";
 import type { IntentDeclaration } from "@/ai/intentDeclaration";
 import { defaultAiConfig } from "@/ai/llmClient";
@@ -24,6 +24,19 @@ const context = (project: Project, intent: IntentDeclaration | null = null) =>
     mapReferenceRoots: [project.startMapId], intent });
 const entryIds = (project: Project, intent: IntentDeclaration | null = null): string[] =>
   context(project, intent).entries.map(entry => entry.id);
+
+/** Independent decoder for the run-length rung, so losslessness is proved by round trip
+ * rather than by trusting the encoder's own bookkeeping. */
+const unpack = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(unpack);
+  if (value === null || typeof value !== "object") return value;
+  const object = value as Record<string, unknown>;
+  if (object.$encoding === "run-length") {
+    return (object.runs as [unknown, number][]).flatMap(([entry, count]) =>
+      Array.from({ length: count }, () => unpack(entry)));
+  }
+  return Object.fromEntries(Object.entries(object).map(([key, entry]) => [key, unpack(entry)]));
+};
 
 const declaredIntent = (collections: readonly string[]): IntentDeclaration => ({
   mode: "modify", space: "none", facility: null, targetMapId: null, useSelection: false,
@@ -158,6 +171,35 @@ describe("review evidence contexts", () => {
     expect(entryIds).not.toContain(`/maps/${target}`);
   });
 
+  it("packs a grid losslessly and keeps the literal form when packing would not help", () => {
+    const before = createBlankProject();
+    const target = before.startMapId;
+    before.maps[target] = { ...createBlankMap(target, 64, 64), id: target };
+    // A hand-authored strip: uniform enough to pack, so the decode has runs to expand.
+    const tiles = [...before.maps[target]!.lowerTiles];
+    for (let i = 0; i < 200; i++) tiles[i] = i % 3;
+    before.maps[target] = { ...before.maps[target]!, lowerTiles: tiles };
+    const after = structuredClone(before);
+    after.maps[target] = { ...after.maps[target]!, name: "Renamed" };
+
+    const built = (fit: ReviewEvidenceFit) => buildIndependentReviewRequest(defaultAiConfig(), {
+      revision: 1, originalRequest: "Rename", changes: reviewChanges(before, after), toolResults: [],
+      before: [], after: reviewEvidenceContexts(after, { snapshotId: "after-1", mapIds: [target],
+        targetMapId: target, mapReferenceRoots: [], intent: null }),
+      acceptance: null, requiredProblems: [], images: [], fit });
+    const tilesOf = (fit: ReviewEvidenceFit) => independentReviewPayload(built(fit))!.after
+      .flatMap(context => context.entries).find(entry => entry.id === `/maps/${target}/tiles`)!.value;
+
+    // The rung rewrites how the grid is spelled, never which cells it holds.
+    expect(unpack(tilesOf("packed-grids"))).toEqual(tilesOf("complete"));
+    expect(JSON.stringify(tilesOf("packed-grids")).length)
+      .toBeLessThan(JSON.stringify(tilesOf("complete")).length);
+    // Short arrays cost more encoded than literal, so they stay literal.
+    const metadata = independentReviewPayload(built("packed-grids"))!.after
+      .flatMap(context => context.entries).find(entry => entry.id === "/project")!.value;
+    expect(JSON.stringify(metadata)).not.toContain("run-length");
+  });
+
   it("fits a review on a 200K reviewer window that per-map fan-out overflowed", () => {
     const config = { ...defaultAiConfig(), providerId: "google-antigravity", model: "claude-opus-4-5" };
     expect(originalContextWindow(config)).toBe(200_000);
@@ -170,5 +212,103 @@ describe("review evidence contexts", () => {
       toolResults: [], acceptance: null, requiredProblems: [], images: [] });
     expect(estimateContextTokens(request.messages) + Math.min(config.maxTokens, 16384))
       .toBeLessThanOrEqual(200_000);
+  });
+});
+
+describe("review evidence fit ladder", () => {
+  const scene = (): { before: Project; after: Project; target: string } => {
+    const before = createBlankProject();
+    declareFlagSpace(before, 400);
+    const after = structuredClone(before);
+    after.maps[before.startMapId] = { ...after.maps[before.startMapId]!, name: "Renamed" };
+    return { before, after, target: before.startMapId };
+  };
+  const envelope = (before: Project, after: Project, target: string, fit: ReviewEvidenceFit): ReviewInput =>
+    independentReviewPayload(buildIndependentReviewRequest(defaultAiConfig(), {
+      revision: 1, originalRequest: "Rename the map", changes: reviewChanges(before, after), toolResults: [],
+      before: reviewEvidenceContexts(before, { snapshotId: "before-1", mapIds: [target],
+        targetMapId: target, mapReferenceRoots: [], intent: null }),
+      after: reviewEvidenceContexts(after, { snapshotId: "after-1", mapIds: [target],
+        targetMapId: target, mapReferenceRoots: [], intent: null }),
+      acceptance: null, requiredProblems: [], images: [], fit }))!;
+  const ids = (contexts: ReviewInput["before"]): string[] =>
+    contexts.flatMap(context => context.entries.map(entry => entry.id));
+  const notes = (input: ReviewInput): string =>
+    ((input as { evidenceNotes?: string[] }).evidenceNotes ?? []).join("\n");
+
+  it("omits only reference definitions identical on both sides, and names every one", () => {
+    const { before, after, target } = scene();
+    const complete = envelope(before, after, target, "complete");
+    const tilesetId = ids(complete.after).find(id => id.startsWith("/tilesets/"))!;
+    expect(tilesetId).toBeDefined();
+
+    const shed = envelope(before, after, target, "shared-reference-omitted");
+    // The tileset is 68,435 chars of definition carried unchanged on both sides.
+    expect(ids(shed.before)).not.toContain(tilesetId);
+    expect(ids(shed.after)).not.toContain(tilesetId);
+    // Told, not hidden: the reviewer can request changes instead of approving blind.
+    expect(notes(shed)).toContain(tilesetId);
+    expect(notes(shed)).toContain("request changes instead of approving");
+  });
+
+  it("keeps the authored state under review even at the last rung", () => {
+    const { before, after, target } = scene();
+    const shed = ids(envelope(before, after, target, "shared-reference-omitted").after);
+
+    // Maps, the project summary and the authored start state are the record this review
+    // judges, not reference the change points at, so no rung may shed them.
+    for (const id of [`/maps/${target}`, `/maps/${target}/tiles`, "/summary", "/session", "/project"]) {
+      expect(shed).toContain(id);
+    }
+  });
+
+  it("never omits a reference that differs between the two sides", () => {
+    const { before, after, target } = scene();
+    const tilesetId = Object.keys(after.tilesets)[0]!;
+    after.tilesets[tilesetId] = { ...after.tilesets[tilesetId]!, name: "Retitled tileset" };
+    const [actor] = after.database.actors;
+    expect(actor).toBeDefined();
+    after.database.actors = [{ ...actor!, name: "Renamed actor" }, ...after.database.actors.slice(1)];
+
+    const shed = envelope(before, after, target, "shared-reference-omitted");
+    // A difference is the subject of the review; only an exact match on both sides is dropped.
+    expect(ids(shed.after)).toContain(`/tilesets/${tilesetId}`);
+    expect(ids(shed.before)).toContain(`/tilesets/${tilesetId}`);
+    expect(ids(shed.after)).toContain(`/database/actors/${actor!.id}`);
+    expect(notes(shed)).not.toContain(`/tilesets/${tilesetId}`);
+  });
+
+  it("rescues an envelope the complete rung refuses, without dropping the changed map", () => {
+    // A 200K reviewer window, and a changed map big enough that its own grids overflow it.
+    const config = { ...defaultAiConfig(), providerId: "google-antigravity", model: "claude-opus-4-5" };
+    expect(originalContextWindow(config)).toBe(200_000);
+    const before = createBlankProject();
+    declareFlagSpace(before, 400);
+    const target = before.startMapId;
+    before.maps[target] = { ...createBlankMap(target, 512, 512), id: target };
+    const after = structuredClone(before);
+    after.maps[target] = { ...after.maps[target]!, name: "Renamed" };
+
+    const build = (fit: ReviewEvidenceFit) => buildIndependentReviewRequest(config, {
+      revision: 1, originalRequest: "Rename the map", changes: reviewChanges(before, after), toolResults: [],
+      before: reviewEvidenceContexts(before, { snapshotId: "before-1", mapIds: [target],
+        targetMapId: target, mapReferenceRoots: [], intent: null }),
+      after: reviewEvidenceContexts(after, { snapshotId: "after-1", mapIds: [target],
+        targetMapId: target, mapReferenceRoots: [], intent: null }),
+      acceptance: null, requiredProblems: [], images: [], fit });
+
+    // Narrowing cannot save this one: the map that overflows is the map under review, so
+    // before the ladder the only outcome was "no review at all".
+    expect(() => build("complete")).toThrow("independent-review-window-exceeded");
+    const packed = independentReviewPayload(build("packed-grids"))!;
+    expect(ids(packed.after)).toContain(`/maps/${target}/tiles`);
+    expect(unpack(packed.after.flatMap(context => context.entries)
+      .find(entry => entry.id === `/maps/${target}/tiles`)!.value))
+      .toEqual(independentReviewPayload(buildIndependentReviewRequest(defaultAiConfig(), {
+        revision: 1, originalRequest: "Rename the map", changes: [], toolResults: [], before: [],
+        after: reviewEvidenceContexts(after, { snapshotId: "after-1", mapIds: [target],
+          targetMapId: target, mapReferenceRoots: [], intent: null }),
+        acceptance: null, requiredProblems: [], images: [], fit: "complete" }))!.after
+        .flatMap(context => context.entries).find(entry => entry.id === `/maps/${target}/tiles`)!.value);
   });
 });

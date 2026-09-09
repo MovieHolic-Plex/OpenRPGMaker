@@ -32,7 +32,29 @@ export interface ReviewInput {
   /** Proposal heuristics and tool warnings, distinct from canonical blockers. */
   readonly completionWarnings?: readonly string[];
   readonly images: readonly { label: string; dataUrl: string }[];
+  /** How far this envelope may compact its evidence to fit. Defaults to "complete". */
+  readonly fit?: ReviewEvidenceFit;
 }
+
+/** How far the envelope may go to fit its evidence, in increasing order of aggression.
+ *
+ * The reviewer is one-shot, so it cannot retrieve what the envelope leaves out — which is why
+ * "complete" refuses an oversized envelope instead of truncating it. Refusing is only right
+ * once cheaper room has been taken, though, and the measured envelope has two dominant terms:
+ * a map's tile grids, quadratic in its area and paid three times over (once per side of the
+ * evidence, and once more in the change list, which diffs a map whole — 229,769 chars to
+ * rename a 128x128 map, 3,670,409 to rename a 512x512 one); and the tileset reference
+ * (68,435 chars, carried identically on both sides). Neither has to be paid in full before
+ * the harness gives up on reviewing at all.
+ *
+ * "packed-grids" is lossless: run-length encoding rewrites how a grid is spelled and keeps
+ * every cell value, so it weakens the gate by nothing and is tried first. Only
+ * "shared-reference-omitted" removes bytes the reviewer could have read, so it comes last and
+ * names every omission in the envelope — it drops reference definitions that are byte-identical
+ * before and after, never a difference, and a reviewer that needs an omitted definition must
+ * request changes rather than approve without it.
+ */
+export type ReviewEvidenceFit = "complete" | "packed-grids" | "shared-reference-omitted";
 
 // Project.session is the authored ProjectStartState seed, not a live PlaySession
 // (project/types/project.ts and startStateOf). Review it exactly like other authored
@@ -227,20 +249,108 @@ Echo the supplied revision. Approve only with zero findings. Changes require at 
 Each finding must locate the affected record/map/criterion and say what to repair and how to verify it.
 Approval describes this draft only, never persistence or runtime verification not present in evidence.`;
 
+type ReviewEvidenceContext = Omit<OriginalContext, "entries"> & {
+  readonly entries: readonly { readonly id: string; readonly value: unknown }[];
+};
+
+/** Below this an encoded run pays more in brackets than it saves; grids are far longer. */
+const MIN_PACKED_ARRAY_LENGTH = 64;
+const PACKED_GRID_NOTE = "Long uniform arrays are run-length encoded as"
+  + " {\"$encoding\":\"run-length\",\"runs\":[[value,repeatCount],...]} in original order."
+  + " This is a spelling of the same array: every cell value is present, none was dropped.";
+
+/** Lossless run-length rewrite of long primitive arrays, keeping whichever form is shorter.
+ *
+ * Generic rather than pointed at the map tile ids, because the same shape reaches the envelope
+ * through several ids (tile layers, tile stacks, the rendered region receipt) and a grid that
+ * does not compress simply keeps its literal form. */
+function packGrids(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    const packed = value.map(packGrids);
+    if (packed.length < MIN_PACKED_ARRAY_LENGTH
+      || packed.some(entry => entry !== null && typeof entry === "object")) return packed;
+    const runs: [unknown, number][] = [];
+    for (const entry of packed) {
+      const last = runs.at(-1);
+      if (last && last[0] === entry) last[1] += 1;
+      else runs.push([entry, 1]);
+    }
+    const encoded = { $encoding: "run-length", runs };
+    return JSON.stringify(encoded).length < JSON.stringify(packed).length ? encoded : packed;
+  }
+  if (value === null || typeof value !== "object") return value;
+  return Object.fromEntries(Object.entries(value as Record<string, unknown>)
+    .map(([key, entry]) => [key, packGrids(entry)]));
+}
+
+/** Ids whose entries are definitions the change points at, not the authored state under review.
+ * Deliberately excludes `/maps/*`, `/summary`, `/session`, `/project` and `/system`: those are
+ * the record this review judges, so they stay whole even when the envelope is tight. */
+const SHARED_REFERENCE_PREFIXES = ["/tilesets/", "/database/"];
+
+/** Drop reference entries that are byte-identical on both sides, and name each one.
+ *
+ * An id missing from one side, or carrying a different value, is a difference the reviewer has
+ * to see — only an exact match on both sides is omitted, so no change can hide here. */
+function shedSharedReference(before: ReviewEvidenceContext[], after: ReviewEvidenceContext[]): {
+  before: ReviewEvidenceContext[]; after: ReviewEvidenceContext[]; omitted: string[];
+} {
+  const shared = new Map<string, string>();
+  for (const context of before) for (const entry of context.entries) {
+    if (SHARED_REFERENCE_PREFIXES.some(prefix => entry.id.startsWith(prefix))) {
+      shared.set(entry.id, JSON.stringify(entry.value));
+    }
+  }
+  const omitted = new Set<string>();
+  for (const context of after) for (const entry of context.entries) {
+    const left = shared.get(entry.id);
+    if (left !== undefined && left === JSON.stringify(entry.value)) omitted.add(entry.id);
+  }
+  const shed = (contexts: ReviewEvidenceContext[]) => contexts.map(context => ({ ...context,
+    entries: context.entries.filter(entry => !omitted.has(entry.id)) }));
+  return { before: shed(before), after: shed(after), omitted: [...omitted].sort() };
+}
+
 /** Fresh two-message invocation; no writer transcript, streaming callbacks or executable tools. */
 export function buildIndependentReviewRequest(config: AiConfig, input: ReviewInput, signal?: AbortSignal): ChatRequest {
-  const { images, before, after, ...rest } = input;
+  const { images, before, after, changes, fit = "complete", ...rest } = input;
   // Original read receipts repeat their values; the reviewer needs the complete
   // values, not writer read-credit bookkeeping (which would double the payload).
-  const projectEvidence = (contexts: readonly OriginalContext[]) => contexts.map(context => ({ ...context,
-    entries: context.entries.map(({ id, value }) => ({ id, value })) }));
-  const evidence = { ...rest, before: projectEvidence(before), after: projectEvidence(after) };
+  const projectEvidence = (contexts: readonly OriginalContext[]): ReviewEvidenceContext[] => contexts.map(context =>
+    ({ ...context, entries: context.entries.map(({ id, value }) => ({ id, value: fit === "complete" ? value : packGrids(value) })) }));
+  let evidenceBefore = projectEvidence(before);
+  let evidenceAfter = projectEvidence(after);
+  // The change list is the larger half, not the smaller one: a map is diffed whole, so
+  // renaming one carries both copies of its grids (measured: 3,670,409 chars for a rename on
+  // a 512x512 map, against 2,599,025 for that side's evidence). Pack it on the same rung —
+  // it is the same lossless rewrite, and skipping it would leave the dominant term unpaid.
+  const evidenceChanges = fit === "complete" ? changes
+    : changes.map(change => ({ ...change, before: packGrids(change.before), after: packGrids(change.after) }));
+  const evidenceNotes: string[] = [];
+  if (fit !== "complete") evidenceNotes.push(PACKED_GRID_NOTE);
+  if (fit === "shared-reference-omitted") {
+    const shed = shedSharedReference(evidenceBefore, evidenceAfter);
+    evidenceBefore = shed.before;
+    evidenceAfter = shed.after;
+    // Told, not hidden: an omission the reviewer cannot see is an approval bought with less
+    // proof than the gate demands, while a named one it needs is a change request.
+    if (shed.omitted.length > 0) {
+      evidenceNotes.push("These reference entries were identical in before and after and were omitted"
+        + " to fit the reviewer's context window. They are unchanged by this draft. If judging it"
+        + " requires one of them, request changes instead of approving: "
+        + shed.omitted.join(", "));
+    }
+  }
+  const evidence = { ...rest, ...(evidenceNotes.length > 0 ? { evidenceNotes } : {}),
+    changes: evidenceChanges, before: evidenceBefore, after: evidenceAfter };
   const parts: ContentPart[] = [{ type: "text", text: JSON.stringify({ kind: "independent-review", ...evidence,
     imageEvidence: images.map(image => ({ label: image.label })) }) }];
   for (const image of images) parts.push({ type: "text", text: image.label }, { type: "image_url", image_url: { url: image.dataUrl } });
   const messages: ChatRequest["messages"] = [{ role: "system", content: REVIEW_SYSTEM }, { role: "user", content: parts }];
   // Unlike writer paging, a one-shot reviewer cannot retrieve omitted evidence.
-  // Refuse explicitly rather than truncate a before/after record or an image.
+  // Refuse explicitly rather than truncate a before/after record or an image. The caller
+  // climbs ReviewEvidenceFit first, so reaching this throw means the envelope does not fit
+  // even losslessly packed with its unchanged reference definitions omitted.
   //
   // Two ceilings, because they measure different things. The model window is about billed
   // tokens, so it uses admission accounting: the compaction estimate deliberately weights a
