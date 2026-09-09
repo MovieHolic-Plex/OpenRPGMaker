@@ -1,5 +1,6 @@
 import { ruleToolRejectionText, type ProposedCall } from "@/ai/assistantSession";
 import { AGENT_RUN_MAX_TOTAL_STEPS } from "@/ai/assistantSession";
+import type { SessionProgress } from "@/ai/jobs/sessionProgress";
 import type { WorkItem, WorkPlan } from "@/ai/workPlan";
 import { isItemFinished, layerItems, planLayers } from "./aiWorkPlanPages";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
@@ -142,8 +143,19 @@ function workItemActivityNode(activity: string | undefined): HTMLElement {
 }
 
 /**
+ * 세션이 이번 턴에 실제로 **진입한 라운드**(`SessionProgress.budget.rounds`). 드라이버가
+ * 자동으로 이어 보내는 턴 수(`budget.driverContinuations` → `AutonomousRunBudget`)와는 다른 축이라
+ * 절대 같은 칸에 합치지 않는다 — 「라운드 3/12」 와 「예산 5/48」 은 서로 다른 사실이다.
+ * `used` 는 턴마다 0 으로 되돌아가고, 플래너 전용 세션에는 아예 없다(null).
+ */
+export interface SessionRoundBudget {
+  readonly used: number;
+  readonly total: number;
+}
+
+/**
  * 할 일 목록 앞면 — 상태 한 줄 + 진행 + 계획 보기. 항목 본문은 페이지 책 모달(aiWorkPlanModal).
- * `active` 일 때만 중지와 활동 줄이 붙는다. 칩·예산·목표·피드는 「자세히」 서랍.
+ * `active` 일 때만 중지와 활동 줄이 붙는다. 칩·예산·라운드·목표·피드는 「자세히」 서랍.
  */
 export function renderWorkPlanChecklist(
   plan: WorkPlan,
@@ -151,6 +163,7 @@ export function renderWorkPlanChecklist(
     readonly active?: boolean;
     readonly stoppedReason?: string;
     readonly budget?: AutonomousRunBudget;
+    readonly rounds?: SessionRoundBudget;
     readonly onStop?: () => void;
     readonly onOpenBook?: () => void;
     readonly activity?: string;
@@ -181,6 +194,17 @@ export function renderWorkPlanChecklist(
               class: "ai-autonomous-budget",
               dataset: { testid: "ai-autonomous-budget" },
               text: `예산 ${budget.used}/${budget.total}${budget.exhausted ? " · 소진" : ""}`,
+            }),
+          ]
+        : []),
+      // 라운드는 드라이버 예산과 별개 축이다 — 칸을 나눠 둔다.
+      ...(opts.rounds
+        ? [
+            el("span", {
+              class: "ai-autonomous-budget",
+              attrs: { title: "이번 턴에 세션이 진입한 라운드 / 실제 한도" },
+              dataset: { testid: "ai-run-rounds" },
+              text: `라운드 ${opts.rounds.used}/${opts.rounds.total}`,
             }),
           ]
         : []),
@@ -267,6 +291,151 @@ export function renderWorkPlanChecklist(
       }),
     ],
   });
+}
+
+/**
+ * 실행 중인 durable job 의 세션 관찰(`SessionProgress`)을 앞면 텍스트로만 그린다.
+ *
+ * 백엔드가 이미 512자로 자른 요약을 **텍스트 노드로만** 붙인다(HTML 금지). `live` 는
+ * 이 체크포인트가 정말로 지금 도는 시도의 것일 때만 참이다 — 거짓이면 남아 있는
+ * `currentTool` 은 사실이 아니라 **기록**이므로 스피너도 중지도 붙이지 않는다
+ * (LIVE-PROGRESS-HANDOFF.md 「Replay and failure semantics」).
+ */
+export function renderJobProgressCurrentTool(
+  tool: NonNullable<SessionProgress["currentTool"]>,
+  live: boolean,
+): HTMLElement {
+  const label = toolLabel(tool.name);
+  const suffix = tool.nameTruncated ? "…" : "";
+  return el("span", {
+    class: live ? "ai-autonomous-item-note" : "ai-autonomous-item-note is-history",
+    attrs: { title: `${tool.name}${suffix}` },
+    dataset: { testid: "ai-job-current-tool", live: String(live) },
+    text: live ? `${label}${suffix} 중…` : `마지막 기록 — ${label}${suffix}`,
+  });
+}
+
+const PROGRESS_PHASE_LABELS: Readonly<Record<NonNullable<SessionProgress["phase"]>, string>> = {
+  plan: "계획 세우는 중",
+  execute: "작업 실행 중",
+  review: "마무리 확인 중",
+};
+
+/**
+ * 계획이 아직 없는 실행 중 작업의 앞면. 체크리스트와 같은 격자(상태 한 줄 + 자세히 서랍)를 쓴다.
+ * `live` 가 거짓이면 중지도 진행 표시도 붙지 않는다 — 종료된 작업의 기록이다.
+ */
+export function renderJobProgressHeadline(
+  progress: SessionProgress,
+  opts: {
+    readonly live?: boolean;
+    readonly rounds?: SessionRoundBudget;
+    readonly budget?: AutonomousRunBudget;
+    readonly onStop?: () => void;
+  } = {},
+): HTMLElement {
+  const live = opts.live === true;
+  const phase = progress.phase === null ? null : PROGRESS_PHASE_LABELS[progress.phase];
+  const statusLine = phase ?? (live ? "진행 중…" : "기록");
+  const stop = opts.onStop
+    ? el("button", {
+        class: "ai-run-stop",
+        text: "중지",
+        attrs: { type: "button", title: "진행 중인 작업을 중지합니다" },
+        dataset: { testid: "ai-run-stop" },
+        on: { click: () => opts.onStop?.() },
+      })
+    : null;
+  return el("div", {
+    class: "ai-autonomous-checklist",
+    dataset: {
+      testid: "ai-job-progress-headline",
+      active: String(live),
+      complete: "false",
+      blocked: "false",
+    },
+    attrs: { role: "group", "aria-label": "진행 상황" },
+    children: [
+      el("div", {
+        class: "ai-run-whisper",
+        dataset: { testid: "ai-run-whisper" },
+        children: [
+          el("div", {
+            class: "ai-run-line",
+            children: [
+              el("span", { class: "ai-run-status", dataset: { testid: "ai-run-status" }, text: statusLine }),
+              ...(stop ? [stop] : []),
+            ],
+          }),
+        ],
+      }),
+      el("details", {
+        class: "ai-run-details",
+        dataset: { testid: "ai-run-details" },
+        children: [
+          el("summary", { class: "ai-run-details-toggle", dataset: { testid: "ai-run-details-toggle" }, text: "자세히" }),
+          el("div", {
+            class: "ai-autonomous-head",
+            children: [
+              ...(opts.budget
+                ? [el("span", {
+                    class: "ai-autonomous-budget",
+                    dataset: { testid: "ai-autonomous-budget" },
+                    text: `예산 ${opts.budget.used}/${opts.budget.total}${opts.budget.exhausted ? " · 소진" : ""}`,
+                  })]
+                : []),
+              ...(opts.rounds
+                ? [el("span", {
+                    class: "ai-autonomous-budget",
+                    attrs: { title: "이번 턴에 세션이 진입한 라운드 / 실제 한도" },
+                    dataset: { testid: "ai-run-rounds" },
+                    text: `라운드 ${opts.rounds.used}/${opts.rounds.total}`,
+                  })]
+                : []),
+            ],
+          }),
+        ],
+      }),
+    ],
+  });
+}
+
+/** 최근 활동(최대 32행, 백엔드가 자른 요약). 실패 행도 진단용 원문 없이 요약만 남긴다. */
+export function renderJobProgressActivity(progress: SessionProgress): readonly HTMLElement[] {
+  const rows = progress.recentActivity.map((row) => {
+    const mark = row.kind === "tool" ? (row.ok ? "✓" : "✗") : row.kind === "paused" ? "‖" : "·";
+    const name = row.name === undefined ? null : toolLabel(row.name);
+    const summary = row.summary.trim();
+    const text = name ? (summary.length > 0 ? `${name} — ${summary}` : name) : summary;
+    return el("div", {
+      class: row.kind === "tool" && row.ok === false ? "ai-autonomous-feed-line is-apply-failed" : "ai-autonomous-feed-line",
+      dataset: { testid: "ai-job-activity-line", kind: row.kind },
+      children: [
+        el("span", { class: "ai-autonomous-feed-mark", attrs: { "aria-hidden": "true" }, text: mark }),
+        el("span", { text: row.truncated ? `${text}…` : text }),
+      ],
+    });
+  });
+  if (progress.omittedActivityCount > 0) {
+    rows.unshift(el("div", {
+      class: "ai-autonomous-feed-line",
+      dataset: { testid: "ai-job-activity-omitted" },
+      text: `이전 ${progress.omittedActivityCount}건은 보관본에만 남았습니다`,
+    }));
+  }
+  return rows;
+}
+
+/** 세션 라운드 축 — 드라이버 예산과 합치지 않는다. */
+export function sessionRoundBudget(progress: SessionProgress): SessionRoundBudget | undefined {
+  const rounds = progress.budget.rounds;
+  return rounds === null ? undefined : { used: rounds.used, total: rounds.total };
+}
+
+/** 드라이버 연속 실행 예산 — 세션 라운드와 별개 축(칩도 따로 그린다). */
+export function driverRunBudget(progress: SessionProgress): AutonomousRunBudget | undefined {
+  const driver = progress.budget.driverContinuations;
+  return driver === null ? undefined : { used: driver.used, total: driver.total, exhausted: driver.exhausted };
 }
 
 function safeJsonStringify(value: unknown): string {

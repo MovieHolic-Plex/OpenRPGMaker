@@ -20,8 +20,8 @@ import {
   subscribeAiApplyCompletion,
   type AiApplyCompletionContext,
 } from "@/editor/aiApplyCompletion";
-import type { ChangeSummary, Project, TilesetDef } from "@/project/types";
-import { computeAssistantToolMode } from "@/editor/assistantToolMode";
+import type { ChangeSummary, Project } from "@/project/types";
+
 import {
   parseAssistantTemperature,
   persistAssistantTemperature,
@@ -39,30 +39,34 @@ import {
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
 import { filterToolCategories, openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
-import { runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
-import { formatMaterialLabelHint } from "@/ai/turnGuide";
-import { createLlmIntentDeclarer } from "@/ai/intentDeclarationClient";
+import { submitAssistantJob } from "@/editor/aiJobs/submitAssistantJob";
+import { getJobClient } from "@/editor/aiJobs/jobClient";
+import { jobSubmitMessage } from "@/editor/aiJobs/jobSubmitError";
+import { bindJobView, readJobResult } from "@/editor/aiJobs/jobViewBinding";
+import { bindJobProgress, type JobProgressBinding, type JobProgressSnapshot } from "@/editor/aiJobs/jobProgress";
+import { jobOriginLink } from "@/editor/aiJobs/jobOriginLink";
+
 import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
 import { store } from "@/project/store";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
-import { genId } from "@/util/id";
+import { genId, randomUuid } from "@/util/id";
 import { createPendingWorkTracker } from "@/util/pendingWork";
 import { toast } from "@/util/toast";
 import {
-  AssistantSession,
   AGENT_RUN_MAX_TOTAL_STEPS,
   type ProposedCall,
 } from "@/ai/assistantSession";
 import { isWorkPlanComplete, type WorkPlan } from "@/ai/workPlan";
-import { renderToolImages } from "@/ai/toolImageRenderer";
-import { getEditorMapViewport } from "@/editor/editorMapViewport";
+import { parseWorkPlan } from "@/ai/jobs/sessionProgress";
+
 import {
   conversationScopeKey,
   deriveTitle,
+  loadConversation,
   loadLatestConversationForScope,
   saveConversation,
   type ConversationRecord,
@@ -79,7 +83,7 @@ import { listAiUiEvents, recordAiUiEvent } from "@/ai/uiEventLog";
 import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
 import { parseQuickReplies } from "@/ai/interviewPrompt";
 import { buildClusterEditKickoff, buildUnclassifiedAnalysisKickoff, type ClusterGroupSnapshot } from "@/ai/clusterAssistPrompt";
-import { resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
+
 import { AI_STUDIO_TOGGLE_EVENT, publishAiStudioChange } from "@/editor/aiStudioMode";
 import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
 import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
@@ -119,7 +123,18 @@ import {
   type AiFontSize,
 } from "./aiPanelLayout";
 import { narrateAiActivity } from "@/editor/aiActivityNarration";
-import { formatAiRunningStatus, formatToolActivityLine, renderToolActivityEntry, renderWorkPlanChecklist, type AutonomousRunBudget } from "./aiChatRenderers";
+import {
+  driverRunBudget,
+  formatAiRunningStatus,
+  formatToolActivityLine,
+  renderJobProgressActivity,
+  renderJobProgressCurrentTool,
+  renderJobProgressHeadline,
+  renderToolActivityEntry,
+  renderWorkPlanChecklist,
+  sessionRoundBudget,
+  type AutonomousRunBudget,
+} from "./aiChatRenderers";
 import { closeWorkPlanBook, openWorkPlanBook, updateWorkPlanBook } from "./aiWorkPlanModal";
 import {
   createConversationLogHost,
@@ -129,11 +144,9 @@ import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
 import { changePreviewChips, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
 import { createStudioShell, type StudioShell } from "./aiStudioShell";
 import { proposalHumanSummaryLine } from "./aiProposalSummary";
-import { createAiTurnRunner } from "./aiTurnRunner";
 import { createAiRegionTaskRunner } from "./aiRegionTaskRunner";
 import type { AiRunSurface, ConversationPersistTarget as ConversationPersistTargetContract } from "./aiRunSurface";
 import {
-  backupProjectSnapshot,
   displayUserAuditText,
   downloadJson,
   dropSession,
@@ -255,12 +268,17 @@ export const AI_ACTIVITY_MIN_DWELL_MS = 400;
 
 export type AiActivityScheduler = (callback: () => void, delayMs: number) => () => void;
 
+/**
+ * 패널 요소 + 이 패널이 **지금 소유한 대화**. 대화가 바뀌면(새 대화·불러오기) 값이 바뀌므로,
+ * 늦게 도착한 작업 결과가 어느 기록에 속하는지 밖에서도 판정할 수 있다.
+ */
+export type AiChatPanelSurface = HTMLElement & { readonly conversationId: string };
+
 export interface AiChatPanelOptions {
   readonly clock?: () => number;
   readonly activityScheduler?: AiActivityScheduler;
   readonly getAssistantTemperature?: () => AssistantTemperature;
   readonly onAssistantTemperatureChange?: (next: AssistantTemperature) => void;
-  readonly regionTaskRunner?: (options: RegionTaskOptions) => Promise<RegionTaskResult>;
 }
 
 let cleanupAiAssistBridge: (() => void) | null = null;
@@ -285,7 +303,7 @@ export function teardownAiChatPanel(): void {
   clearAiApplyCompletion();
 }
 
-export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement {
+export function renderAiChatPanel(options: AiChatPanelOptions = {}): AiChatPanelSurface {
   teardownAiChatPanel();
   const now = options.clock ?? (() => Date.now());
   const scheduleActivity = options.activityScheduler ?? ((callback: () => void, delayMs: number): (() => void) => {
@@ -296,7 +314,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const timer = globalThis.setTimeout(callback, delayMs);
     return () => globalThis.clearTimeout(timer);
   });
-  const runRegion = options.regionTaskRunner ?? runRegionTask;
   const readTemperature = (): AssistantTemperature =>
     parseAssistantTemperature(options.getAssistantTemperature?.() ?? editorState.get().assistantTemperature);
   let refreshTemperatureChrome: () => void = () => {};
@@ -322,15 +339,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 캡처한 id/scope를 지정할 때는 같은 시점의 entries도 반드시 함께 넘겨 대화 간 오염을 막는다.
   // 저장 공간 고갈 안내는 패널 수명 동안 한 번 — 매 툴콜마다 저장하므로 그대로 두면 토스트가 쏟아진다.
   let storageFailureToasted = false;
-  const persistConversation = (target?: ConversationPersistTarget): void => {
+  const persistConversation = (target?: ConversationPersistTarget): Promise<void> => {
     const entries = target
       ? [...target.entries]
       : [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
-    if (entries.length === 0) return;
+    if (entries.length === 0) return Promise.resolve();
     // saveConversation 은 던지지 않는다(실측 2026-09-03: localStorage quota 예외가 툴콜 스트리밍 도중
     // 여기서 터져 「오류: Failed to execute 'setItem' …」 말풍선과 함께 턴이 끊겼다). 최신 1건도 못
     // 남긴 완전 실패만 사용자에게 알린다 — 조용히 메모리에만 남으면 새로 고친 뒤 대화가 사라진 이유를 모른다.
-    void panelPendingWork.track(
+    const saved = panelPendingWork.track(
       saveConversation({
         id: target?.id ?? conversationId,
         title: deriveTitle(entries),
@@ -349,6 +366,27 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }),
     );
     refreshExportButton();
+    return saved.then(() => undefined);
+  };
+  let ownedPersistQueue = Promise.resolve();
+  const completedOwnedTurns = new Set<string>();
+  const persistOwnedEntry = (
+    conversation: { readonly id: string; readonly scope: string },
+    extra: AuditEntry,
+    turnId: string,
+  ): Promise<void> => {
+    const work = ownedPersistQueue.then(async () => {
+      if (completedOwnedTurns.has(turnId)) return;
+      const record = await loadConversation(conversation.id);
+      await persistConversation({
+        id: conversation.id,
+        scope: conversation.scope,
+        entries: [...(record?.entries ?? []), extra],
+      });
+      completedOwnedTurns.add(turnId);
+    });
+    ownedPersistQueue = work.then(() => undefined, () => undefined);
+    return panelPendingWork.track(work);
   };
 
   const status = el("span", {
@@ -512,9 +550,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     appendReasoning,
     closeToolActivity,
     appendToolLine,
-    appendTileThumbs,
-    appendTileGrid,
-    appendAiDocument,
     appendChangeCard,
     renderConversationEntry,
     clearLastReasoning,
@@ -674,6 +709,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * 직전에 무엇을 했는지 전혀 모른다.
    */
   let pendingPriorTranscript: string | null = null;
+  let pendingChatAdmission: { readonly instruction: string; readonly key: string } | null = null;
 
   // 맥락 게이지는 컴포저가 만들어질 때(파일 아래쪽) 붙는다. 복원·턴 종료 같은 이른 경로도
   // 갱신을 호출하므로 홀더 + 널 가드 한 겹을 둔다(선언 순서에 걸려 TDZ 로 죽지 않게).
@@ -685,41 +721,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     contextMeter?.refresh();
   };
 
-  const ensureSession = (): AssistantSession => {
-    if (!controller.session) {
-      backupProjectSnapshot();
-      const priorTranscript = pendingPriorTranscript;
-      pendingPriorTranscript = null;
-      controller.session = new AssistantSession(store.getCurrent(), {
-        config: resolveSurfaceAiConfig("chat"),
-        // 턴 시작에 사용자 발화를 모델이 한 번 읽어 의도(수정/생성·실내/야외·시설·되묻기·계획·툴)를 선언한다.
-        // 되묻기·플래너·툴 노출은 그 선언만 소비한다 — 문장 키워드 스캔은 없다(2026-09-03 의도 라우터 감사).
-        declareIntent: createLlmIntentDeclarer(),
-        ...(priorTranscript ? { priorTranscript } : {}),
-        contextOptions: {
-          currentMapId: editorState.get().currentMapId ?? undefined,
-          // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
-          projectScopeKey: conversationScope,
-          getViewport: () => getEditorMapViewport(),
-          // 맵 이동은 세션을 끊지 않지만 시스템 프롬프트는 톨려야 한다 — 고정 값이면
-          // 타일 어휘·구조 키트·맵 요약이 세션 시작 맵에 머버 라이브 뷰포트와 어긋난다.
-          getCurrentMapId: () => editorState.get().currentMapId ?? null,
-        },
-        // 감사 항목에 남길 턴 상황의 선택 영역 — 컨텍스트 꼬리표와 같은 조건(활성 선택만).
-        getTurnSelection: () => (selectionTaskActive ? mapContext().selection : null),
-        // 자율 실행 드라이버(todo 2): 패널 세션은 플래그 autonomous 로 진입하고
-        // pendingSends 큐를 peek 전용 훅으로 노출한다 — 드라이버가 대기 메시지를 보면
-        // 자동 계속을 양보하고 이 드레인 루프가 메시지를 전달한다(사용자 우선, 이중 전송 불가).
-        // 주입 시점에 pendingSends 가 아직 선언돼 있지 않아도 참조 시점엔 항상 존재한다(클로저).
-        peekPendingUserMessage: () => pendingSends[0]?.text ?? null,
-        // 비전(BUG C): '보여줘' 툴 이미지를 렌더해 비전 모델에 전달한다(브라우저 전용).
-        renderImages: renderToolImages,
-        // 컨텍스트 모드 스코핑(§2.2): 활성 UI 상태에서 결정론으로 계산 — 턴마다 재평가된다.
-        toolMode: computeAssistantToolMode,
-      });
-    }
-    return controller.session;
-  };
 
   const proposalApi = createProposalHost({
     proposalNoticeHost,
@@ -752,8 +753,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (!turnBusy) scheduleCollapseAfterAiWork();
     },
   });
-  const noteNoChanges = proposalApi.noteNoChanges;
-  const applyProposal = proposalApi.applyProposal;
   // pending/last-applied message state is owned by proposalApi (getters/setters).
   const setPendingProposalMessage = (value: typeof proposalApi.pendingProposalMessage) => {
     proposalApi.pendingProposalMessage = value;
@@ -834,6 +833,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     pendingSends.length = 0;
     refreshQueueIndicator();
     turnBusy = false;
+    trackedJobId = null;
     endTurnProgress();
     refreshAbortButton();
     persistConversation();
@@ -1145,29 +1145,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     };
   };
 
-  // 사용자 메시지에 현재 맵/선택 영역을 자동 첨부한다 — "여기에 지어줘"의 '여기'를
-  // 모델이 좌표로 받는다(공간 산파법의 짝: 사용자가 영역을 지정하면 그게 곧 답).
-  const contextFooter = (scopeMapId?: string): string => {
-    const ctx = mapContext();
-    const parts = [`현재 맵: ${ctx.mapName ?? "없음"}${ctx.mapId ? ` (${ctx.mapId})` : ""}`];
-    // 재료 라벨 예시는 현재 맵 타일셋의 사실이다 — 빠지면 모델이 그룹 id 를 재료로 쓰는 실수로 돌아간다.
-    const tileset = tilesetForTurn(scopeMapId);
-    if (tileset) parts.push(formatMaterialLabelHint(tileset).replace(/^- /, ""));
-    // 선택 영역은 '현재 맵의 것'이고 맵 범위 안에 있을 때만 첨부한다.
-    // 맵을 전환해도 남아 있던 이전 맵의 선택(예: 10×10 맵에 (11,9))이 모델에 새 좌표로 오인되던 문제(BUG F) 방지.
-    const sel = ctx.selection;
-    if (selectionTaskActive && sel && sel.mapId === ctx.mapId) {
-      const map = ctx.mapId ? store.getCurrent().maps[ctx.mapId] : undefined;
-      const inBounds = !map || (sel.x >= 0 && sel.y >= 0 && sel.x < map.width && sel.y < map.height);
-      if (inBounds) parts.push(`사용자 선택 영역: (${sel.x},${sel.y}) ${sel.width}×${sel.height}`);
-    }
-    // 컴포저 모드(제안서 D4·§06). 강제는 세션이 한다(sendUserMessage 옵션 composerMode — 쓰기 툴 미노출·
-    // 거부, 계획만 수립). 여기 한 절은 모델이 상황을 알게 하는 안내일 뿐이다. 지시(기본)는 덧붙이지 않는다 —
-    // 기계 텍스트가 사용자 채널에 실리던 「도구 규칙」 사고(2026-09-03 의도 라우터 감사)를 되풀이하지 않기 위해.
-    if (composerMode === "ask") parts.push("모드: 질문 — 변경 도구는 제공되지 않는다. 조회 도구로만 답한다");
-    else if (composerMode === "plan") parts.push("모드: 계획 — 이 턴은 계획만 세운다. 사용자가 「계속」이라고 하면 실행한다");
-    return `[컨텍스트] ${parts.join(" · ")}`;
-  };
 
   // AI busy 중 입력 큐(도그푸딩 결함 ⑨): 처리 중 들어온 메시지는 동시 실행(레이스) 대신
   // 큐에 쌓고 "기다리는 메시지 N개"로 표시한 뒤, 현재 턴이 끝나면 순서대로 전송한다.
@@ -1192,11 +1169,24 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // Live chrome ends with its owner turn; the session retains the plan and audit history.
   // 마일스톤 피드(milestone_applied/proposal_paused)와 예산(used/48)은
   // 자율 런에만 있고 「자세히」 서랍에 든다. active 인 동안은 패널 자동 접기(AUTO_COLLAPSE_AFTER_AI_MS)를 막는다.
-  let workPlanSurfaceState: { active: boolean; stoppedReason?: string; plan: WorkPlan | null; budget: AutonomousRunBudget | null } | null = null;
+  // `progress` 는 durable job 의 체크포인트에서 읽은 **관찰**이다(jobProgress.bindJobProgress).
+  // 실행을 몰지 않는다: 계획도 프론티어도 표시 전용이고, live 가 거짓이면 남은 currentTool 은 기록이다.
+  let workPlanSurfaceState: {
+    active: boolean;
+    stoppedReason?: string;
+    plan: WorkPlan | null;
+    budget: AutonomousRunBudget | null;
+    progress: JobProgressSnapshot | null;
+  } | null = null;
   let workPlanSurface: HTMLElement | null = null;
   let workPlanFeedHost: HTMLElement | null = null;
   // 진행 중 항목 아래 보이는 현재 툴 라벨 — tool_started 마다 그 줄만 갈아 끼운다(체크리스트 전체 재렌더 금지 — 툴콜은 수백 번 온다).
   let workPlanActivity = "";
+  let jobProgressBinding: JobProgressBinding | null = null;
+  const stopJobProgressBinding = (): void => {
+    jobProgressBinding?.stop();
+    jobProgressBinding = null;
+  };
   const removeWorkPlanSurfaceDom = (): void => {
     workPlanSurface?.remove();
     workPlanSurface = null;
@@ -1205,6 +1195,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   /** 대화 경계 — 목록을 완전히 걷는다(새 대화·전환·되감기·해제). */
   const clearWorkPlanSurface = (): void => {
+    stopJobProgressBinding();
     workPlanSurfaceState = null;
     workPlanActivity = "";
     closeWorkPlanBook();
@@ -1226,6 +1217,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       active: true,
       plan: carried,
       budget: opts.autonomous ? { used: 0, total: runBudgetTotal(), exhausted: false } : null,
+      progress: null,
     };
     workPlanActivity = "";
     removeWorkPlanSurfaceDom();
@@ -1234,6 +1226,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   /** End live chrome, retaining plan/budget state for history and continuation. */
   const settleWorkPlanTurn = (): void => {
+    stopJobProgressBinding();
     const focused = document.activeElement;
     const restoreComposerFocus = workPlanSurface?.contains(focused)
       || document.querySelector("[data-testid='ai-plan-book-overlay']")?.contains(focused);
@@ -1267,8 +1260,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     return {
       plan: state.plan,
       active: state.active,
-      activity: workPlanActivity,
-      onStop: () => abortActiveTurn(),
+      activity: state.active ? workPlanActivity : "",
+      onStop: () => { if (state.active) abortActiveTurn(); },
     };
   };
   const openPlanBook = (): void => {
@@ -1277,60 +1270,69 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     openWorkPlanBook(input);
   };
   // 계획 도착 시마다 앞면과(열려 있으면) 책 모달을 갱신한다.
+  // 관찰(progress)만 있고 계획이 아직 없는 실행 중 작업도 앞면을 갖는다 — 「무엇을 하고 있나」가
+  // 계획보다 먼저 도착하기 때문이다. 계획도 관찰도 없으면 걸 것이 없다.
   const refreshWorkPlanSurface = (): void => {
-    if (!workPlanSurfaceState?.active || !workPlanSurfaceState.plan) return;
+    const state = workPlanSurfaceState;
+    if (!state) return;
+    const observed = state.progress?.progress ?? null;
+    const plan = state.plan;
+    if (!plan && !observed) return;
     const surface = ensureWorkPlanSurface();
-    const checklist = renderWorkPlanChecklist(workPlanSurfaceState.plan, {
-      active: workPlanSurfaceState.active,
-      stoppedReason: workPlanSurfaceState.stoppedReason,
-      budget: workPlanSurfaceState.budget ?? undefined,
-      activity: workPlanActivity,
-      onStop: () => abortActiveTurn(),
-      onOpenBook: openPlanBook,
-    });
-    checklist.querySelector<HTMLElement>("[data-testid='ai-run-details']")?.append(workPlanFeedHost!);
+    const live = state.active;
+    // 체크포인트가 이번 시도의 것이 아니면(재생 중) 남은 currentTool 은 기록이다 — 애니메이션 금지.
+    const liveObservation = live && state.progress?.live === true;
+    const rounds = observed ? sessionRoundBudget(observed) : undefined;
+    // 드라이버 예산은 관찰값이 있으면 그것이 사실이다(패널의 낙관적 초기값보다 우선).
+    const driver = observed ? driverRunBudget(observed) : undefined;
+    const checklist = plan
+      ? renderWorkPlanChecklist(plan, {
+          active: live,
+          stoppedReason: state.stoppedReason,
+          budget: live ? driver ?? state.budget ?? undefined : undefined,
+          ...(live && rounds ? { rounds } : {}),
+          activity: live ? workPlanActivity : "",
+          onStop: live ? () => abortActiveTurn() : undefined,
+          onOpenBook: openPlanBook,
+        })
+      : renderJobProgressHeadline(observed!, {
+          live: liveObservation,
+          ...(live && rounds ? { rounds } : {}),
+          ...(live && driver ? { budget: driver } : {}),
+          onStop: live ? () => abortActiveTurn() : undefined,
+        });
+    if (observed?.currentTool) {
+      checklist.querySelector<HTMLElement>("[data-testid='ai-run-whisper']")
+        ?.append(renderJobProgressCurrentTool(observed.currentTool, liveObservation));
+    }
+    const feedHost = workPlanFeedHost;
+    if (feedHost && observed) feedHost.replaceChildren(...renderJobProgressActivity(observed));
+    if (feedHost) checklist.querySelector<HTMLElement>("[data-testid='ai-run-details']")?.append(feedHost);
     surface.replaceChildren(checklist);
-    studioShell?.setWorkPlan(workPlanSurfaceState.plan, workPlanSurfaceState.active);
+    studioShell?.setWorkPlan(plan, state.active);
     const input = bookInput();
     if (input) updateWorkPlanBook(input);
+  };
+  /**
+   * 실행 중 job 의 durable 체크포인트를 읽어 앞면에 붙인다. 폴링 없음 — client 의 기존 변경 알림에만 반응한다.
+   * 소유권(패널 생존·같은 대화·같은 추적 job)은 매 await 뒤에 다시 확인하고, 잃으면 늦게 도착한 읽기는 버린다.
+   */
+  const startJobProgressBinding = (jobId: string, owns: () => boolean): void => {
+    stopJobProgressBinding();
+    const binding = bindJobProgress(jobId, snapshot => {
+      if (jobProgressBinding !== binding || !owns()) return;
+      const state = workPlanSurfaceState;
+      if (!state) return;
+      state.progress = snapshot;
+      // 관찰된 계획이 있으면 앞면 체크리스트가 그것을 쓴다(터미널 payload.workPlan 이 아직 없다).
+      if (snapshot?.progress.workPlan) state.plan = snapshot.progress.workPlan;
+      refreshWorkPlanSurface();
+    }, { owns });
+    jobProgressBinding = binding;
   };
   /** work_plan 이벤트 — 어느 모드의 턴이든 계획이 오면 보인다. 턴 밖에서 오면(소유권 없는 늦은 이벤트) 무시한다.
    * 계획 책 모달은 자동으로 띄우지 않는다(2026-09: plan 팝업 제거 정책) — 앞면 체크리스트와
    * 「계획 책」 버튼으로 직접 열어본다. */
-  const showWorkPlan = (plan: WorkPlan): void => {
-    if (!workPlanSurfaceState) return;
-    workPlanSurfaceState.plan = plan;
-    refreshWorkPlanSurface();
-  };
-  /** tool_started — 진행 중 항목의 활동 줄만 갱신. 목록이 아직 없으면 다음 렌더가 가져가게 기억만 해 둔다. */
-  const noteWorkPlanActivity = (label: string): void => {
-    workPlanActivity = label;
-    const notes = [
-      ...(workPlanSurface?.querySelectorAll<HTMLElement>("[data-testid='ai-work-item-activity']") ?? []),
-      ...document.querySelectorAll<HTMLElement>("[data-testid='ai-plan-book'] [data-testid='ai-work-item-activity']"),
-    ];
-    for (const note of notes) note.textContent = label;
-  };
-  // 마일스톤 자동 적용/적용 실패 — 목록의 「자세히」 피드에 한 줄씩 쌓는다(피드는 표면과 함께 정리된다).
-  const appendMilestoneFeedLine = (kind: "applied" | "apply-failed", title: string, detail: string): void => {
-    if (!workPlanSurfaceState) return;
-    ensureWorkPlanSurface();
-    refreshWorkPlanSurface();
-    workPlanFeedHost!.append(
-      el("div", {
-        class: `ai-autonomous-feed-line is-${kind}`,
-        dataset: { testid: `ai-milestone-feed-${kind}` },
-        children: [
-          el("span", { class: "ai-autonomous-feed-mark", text: kind === "applied" ? "✓" : "!" }),
-          el("span", {
-            class: "ai-autonomous-feed-text",
-            text: `${kind === "applied" ? "마일스톤 적용" : "적용 실패"}: ${title}${detail ? ` — ${detail}` : ""}`,
-          }),
-        ],
-      })
-    );
-  };
-
   let keyPromptBubble: HTMLElement | null = null;
   const appendOpenSettingsButton = (bubble: HTMLElement, focusTarget: "first" | "apiKey" = "apiKey"): void => {
     const button = el("button", {
@@ -1362,6 +1364,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   let abortButton: HTMLButtonElement | null = null;
   let activeAbortController: AbortController | null = null;
+  let trackedJobId: string | null = null;
   let activeSelectionRegionController: AbortController | null = null;
   let activeSelectionRegionKey: string | null = null;
   const abortActiveSelectionRegionTask = (): void => {
@@ -1375,10 +1378,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   let abortNoticeShown = false;
   let progressTimer: number | null = null;
+  const jobRunning = (): boolean => {
+    if (!trackedJobId) return false;
+    const generation = getJobClient().jobs.get(trackedJobId)?.generation;
+    return generation === "queued" || generation === "running";
+  };
   const refreshAbortButton = (): void => {
     if (!abortButton) return;
-    const running = Boolean(activeAbortController && !activeAbortController.signal.aborted);
-    abortButton.hidden = !turnBusy;
+    const running = Boolean(activeAbortController && !activeAbortController.signal.aborted) || jobRunning();
+    abortButton.hidden = !running && !turnBusy;
     abortButton.disabled = !running;
     abortButton.setAttribute("aria-disabled", String(!running));
     // 전송은 항상 마운트 — 진행 중엔 비활성(disabled)으로 두고 중단은 형제로 노출한다.
@@ -1434,7 +1442,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncGlassIdle();
   };
   const abortActiveTurn = (): void => {
-    if (!activeAbortController || activeAbortController.signal.aborted) return;
+    if (trackedJobId && jobRunning()) {
+      const id = trackedJobId;
+      void getJobClient().cancel(id);
+    }
+    if (!activeAbortController || activeAbortController.signal.aborted) {
+      if (jobRunning() || trackedJobId) {
+        if (!abortNoticeShown) {
+          appendBubble("system", "사용자가 중단했습니다.");
+          abortNoticeShown = true;
+        }
+        setStatus("중단 중…");
+        refreshAbortButton();
+      }
+      return;
+    }
     activeAbortController.abort();
     // 중단 시점의 진행 정도를 함께 남긴다 — 툴 0개에서 끊긴 것과 40개 돌다 끊긴 것은 다른 사건이다.
     const toolsSoFar = (controller.session?.getAuditEntries() ?? []).filter((entry) => entry.kind === "tool").length;
@@ -1467,16 +1489,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     };
   };
 
-  // 재료 라벨 예시를 뽑을 타일셋. 스코프가 없으면 현재 열린 맵 것을 쓴다 — 라벨 힌트가 빠지면
-  // 모델이 그룹 id 를 재료로 쓰는 실수로 돌아간다.
-  const tilesetForTurn = (scopeMapId?: string): TilesetDef | undefined => {
-    const project = store.getCurrent();
-    const mapId = scopeMapId ?? editorState.get().currentMapId ?? project.startMapId ?? null;
-    if (!mapId) return undefined;
-    const map = project.maps[mapId];
-    return map ? project.tilesets[map.tilesetId] : undefined;
-  };
-
   const sendText = async (
     text: string,
     displayAs?: string,
@@ -1496,28 +1508,173 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     pendingQuestion = false;
     closeToolActivity();
     if (!opts?.replay) attachRewindAffordance(appendBubble("user", displayAs ?? trimmed), trimmed);
-    const session = ensureSession();
-    // 두 턴 사이에 사용자가 데이터베이스(개념 꾸러미 등)를 고쳤을 수 있다 — 승인 대기 제안이 없으면
-    // 세션 기준을 저장소 최신으로 맞춘다. 안 그러면 조수는 옛 나무를 읽는다(2026-09-02 실측).
-    if (!opts?.replay && proposalApi.pendingProposalMessage === null) {
-      session.syncBaselineFromStoreIfClean(store.getCurrent());
-    }
-    // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준).
-    // "chat" 은 종전대로 턴 1개(수동 「계속」). opts.autonomous 는 세션 진입점의 명시 오버라이드(브리지/테스트).
     const autonomous = loadAiConfig().agentMode === "auto";
-    // 계획 모드의 첫 턴은 계획만 세우고 멈춘다(세션이 강제). 활성 계획이 있는 채 「계속」이면 실행 턴이다.
-    const activePlan = session.getWorkPlan();
-    const planPreview = composerMode === "plan" && (!activePlan || isWorkPlanComplete(activePlan));
-    // 사용자 발화 + 사실(footer: 현재 맵·선택 영역·재료 라벨 예)만 보낸다. 예전에 여기 붙던 「도구 규칙」
-    // 17줄은 툴 설명으로 옮겼다 — 기계 텍스트가 사용자 채널에 실려 되묻기·플래너 스킵·툴 노출을 어긋나게
-    // 했던 근인이다(2026-09-03 의도 라우터 감사). 선택 사각형은 스코프 인자로 따로 넘긴다.
     const turnScope = resolveTurnScope();
-    const payload = [trimmed, contextFooter(turnScope?.mapId)].filter((part) => part.length > 0).join("\n\n");
-    await executeTurn(session, trimmed, (onEvent, signal) =>
-      // instruction: 사용자 발화 원문 — 의도 선언·툴 이름 언급·능력 승격은 이것만 본다.
-      session.sendUserMessage(payload, onEvent, signal, { autonomous, instruction: trimmed, scope: turnScope, composerMode }),
-      { autonomous: autonomous && !planPreview, composerMode }
-    );
+    const selection = selectionTaskActive ? mapContext().selection : undefined;
+    const livePrior = serializeAuditTranscript(controller.auditHistory);
+    const prior = livePrior || pendingPriorTranscript || undefined;
+    pendingPriorTranscript = null;
+    const reuse = pendingChatAdmission?.instruction === trimmed;
+    const key = reuse && pendingChatAdmission ? pendingChatAdmission.key : randomUuid();
+    pendingChatAdmission = { instruction: trimmed, key };
+    turnBusy = true;
+    refreshSendEnabled();
+    beginWorkPlanTurn({ autonomous, carriedPlan: null });
+    controller.auditHistory = [...controller.auditHistory, { kind: "user", text: trimmed }];
+    const capturedConversation = { id: conversationId, scope: conversationScope };
+    const sameConversation = (): boolean =>
+      conversationId === capturedConversation.id && conversationScope === capturedConversation.scope;
+    try {
+      const receipt = await submitAssistantJob({
+        instruction: trimmed,
+        selection: selection ? { mapId: selection.mapId, x: selection.x, y: selection.y, width: selection.width, height: selection.height } : undefined,
+        turn: { autonomous, instruction: trimmed, scope: turnScope, composerMode },
+        priorTranscript: prior,
+      }, { idempotencyKey: key });
+      pendingChatAdmission = null;
+      const ownedJobId = receipt.job.id;
+      if (sameConversation()) {
+        trackedJobId = ownedJobId;
+        refreshAbortButton();
+        setStatus(`작업함에 맡겼습니다 · ${ownedJobId}`);
+        const note = appendBubble("system", `작업함에 맡겼습니다 · ${ownedJobId}`);
+        note.append(jobOriginLink(ownedJobId, sendButton));
+        // 이 대화가 이 job 을 계속 추적하는 동안에만 관찰을 앞면에 붙인다.
+        startJobProgressBinding(ownedJobId, () => !disposed && sameConversation() && trackedJobId === ownedJobId);
+      }
+      const unbind = bindJobView(ownedJobId, job => {
+        if (disposed) {
+          unbind();
+          return;
+        }
+        if (job.generation === "succeeded") {
+          unbind();
+          const capturedSha = job.resultRef?.sha256;
+          void readJobResult(job).then(async result => {
+            if (disposed) return;
+            const live = getJobClient().jobs.get(ownedJobId);
+            if (!result || !capturedSha || live?.resultRef?.sha256 !== capturedSha) return;
+            // 터미널 payload.workPlan 은 설계상 온전한 WorkPlan 이다. 캐스팅 대신 진행 관찰과 **같은** 엄격한
+            // 파서로 통과시킨다 — 모양이 아니면 계획없음으로 떨어질뿐, 거짓 체크리스트를 그리지 않는다.
+            let plan: WorkPlan | null = null;
+            if (result.payload.workPlan !== undefined && result.payload.workPlan !== null) {
+              try {
+                plan = parseWorkPlan(result.payload.workPlan);
+              } catch (cause: unknown) {
+                console.warn("[ai-chat] 종료 계획을 읽지 못했습니다", cause);
+              }
+            }
+            const text = typeof result.payload.assistantText === "string" ? result.payload.assistantText : "";
+            if (text.trim()) {
+              if (sameConversation()) {
+                if (!completedOwnedTurns.has(ownedJobId)) {
+                  appendBubble("assistant", text);
+                  controller.auditHistory = [...controller.auditHistory, { kind: "assistant", text }];
+                  await persistConversation(undefined);
+                  completedOwnedTurns.add(ownedJobId);
+                }
+              } else {
+                await persistOwnedEntry(capturedConversation, { kind: "assistant", text }, ownedJobId);
+              }
+            }
+            const liveOwner = sameConversation() && trackedJobId === ownedJobId;
+            if (!liveOwner) return;
+            if (text.trim()) renderQuickReplies(text);
+            const retained = workPlanSurfaceState?.progress ?? null;
+            trackedJobId = null;
+            // 터미널 — 실행/중지 크롬은 모두 걷고(active:false) 종료된 계획만 읽을 수 있게 남긴다.
+            stopJobProgressBinding();
+            if (plan) {
+              workPlanSurfaceState = {
+                active: false,
+                stoppedReason: "final",
+                plan,
+                budget: null,
+                progress: retained,
+              };
+              refreshWorkPlanSurface();
+            } else if (retained) {
+              workPlanSurfaceState = {
+                active: false,
+                stoppedReason: "final",
+                plan: retained.progress.workPlan,
+                budget: null,
+                progress: retained,
+              };
+              refreshWorkPlanSurface();
+            } else {
+              settleWorkPlanTurn();
+            }
+            setStatus("응답 완료");
+            refreshAbortButton();
+          }).catch((cause: unknown) => {
+            if (disposed) return;
+            const message = jobSubmitMessage(cause);
+            if (sameConversation()) {
+              appendBubble("system", message);
+              persistConversation(undefined);
+              if (trackedJobId !== ownedJobId) return;
+              trackedJobId = null;
+              settleWorkPlanTurn();
+              setStatus(message);
+              refreshAbortButton();
+              panel.classList.add("is-turn-error");
+              panel.classList.remove("is-turn-running");
+              return;
+            }
+            void persistOwnedEntry(capturedConversation, { kind: "status", text: message }, ownedJobId);
+          });
+        } else if (job.generation === "failed" || job.generation === "cancelled" || job.generation === "interrupted") {
+          unbind();
+          const label = job.generation === "cancelled" ? "취소됨" : job.generation === "interrupted" ? "중단됨" : "실패";
+          if (!sameConversation()) {
+            void persistOwnedEntry(capturedConversation, { kind: "status", text: label }, ownedJobId);
+            return;
+          }
+          if (trackedJobId !== ownedJobId) return;
+          const observed = workPlanSurfaceState?.progress ?? null;
+          trackedJobId = null;
+          // 실패·취소·중단도 터미널이다 — 동작 크롬은 걷고, 남은 관찰은 기록으로 읽힌다.
+          stopJobProgressBinding();
+          if (observed) {
+            workPlanSurfaceState = {
+              active: false,
+              stoppedReason: job.generation === "cancelled" ? "user-stopped" : job.generation,
+              plan: observed.progress.workPlan,
+              budget: null,
+              progress: observed,
+            };
+            closeWorkPlanBook();
+            refreshWorkPlanSurface();
+          } else {
+            settleWorkPlanTurn();
+          }
+          setStatus(label);
+          refreshAbortButton();
+        }
+      });
+    } catch (error) {
+      const message = jobSubmitMessage(error);
+      // 패널이 이미 걷혔으면 앞면은 없다 — 늦게 깨어난 실패가 DOM 을 되살리면 안 된다.
+      if (disposed) return;
+      if (sameConversation()) {
+        trackedJobId = null;
+        settleWorkPlanTurn();
+        setStatus(message);
+        const bubble = appendBubble("system", message);
+        appendOpenSettingsButton(bubble);
+        panel.classList.add("is-turn-error");
+        panel.classList.remove("is-turn-running");
+      } else {
+        void persistOwnedEntry(capturedConversation, { kind: "status", text: message }, `admit:${key}`);
+      }
+    } finally {
+      turnBusy = false;
+      if (!disposed) {
+        refreshSendEnabled();
+        drainPendingSends();
+      }
+    }
   };
 
   // 한 턴 실행 공통부: 최초 전송(sendUserMessage)과 오류 후 수동 재시도(retryLastTurn)가
@@ -1566,34 +1723,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     isLastReasoningBox: (node) => isLastReasoningBox(node),
   };
 
-  // 한 턴 실행 공통부: 최초 전송(sendUserMessage)과 오류 후 수동 재시도(retryLastTurn)가
-  // 같은 스트리밍/제안/상태 처리를 공유한다(도그푸딩 결함 ⑥). 본문은 aiTurnRunner.ts.
-  const turnRunner = createAiTurnRunner({
-    surface: runSurface,
-    get applyingProposal() { return applyingProposal; },
-    set applyingProposal(value) { applyingProposal = value; },
-    get projectIdentityId() { return projectIdentityId; },
-    set projectIdentityId(value) { projectIdentityId = value; },
-    get workPlanSurfaceState() { return workPlanSurfaceState; },
-    applyProposal: (calls, assistantBubble) => applyProposal(calls, assistantBubble),
-    noteNoChanges: (result, extraWarnings) => noteNoChanges(result, extraWarnings),
-    beginWorkPlanTurn: (opts) => beginWorkPlanTurn(opts),
-    settleWorkPlanTurn: () => settleWorkPlanTurn(),
-    refreshWorkPlanSurface: () => refreshWorkPlanSurface(),
-    showWorkPlan: (plan) => showWorkPlan(plan),
-    noteWorkPlanActivity: (label) => noteWorkPlanActivity(label),
-    appendMilestoneFeedLine: (kind, title, detail) => appendMilestoneFeedLine(kind, title, detail),
-    appendTileThumbs: (tilesetId, tiles) => appendTileThumbs(tilesetId, tiles),
-    appendTileGrid: (data) => appendTileGrid(data),
-    appendAiDocument: (documentData) => appendAiDocument(documentData),
-    hasPendingQuestion: () => hasPendingQuestion(),
-    openAiSettings: (focusTarget) => openAiSettings(focusTarget),
-    renderQuickReplies: (assistantText) => renderQuickReplies(assistantText),
-    refreshContextMeter: () => refreshContextMeter(),
-  });
-  const executeTurn = turnRunner.executeTurn;
-
-  // 선택 영역 작업 — 본문은 aiRegionTaskRunner.ts(같은 실행 표면, 다른 이벤트 원천).
   const regionTaskRunner = createAiRegionTaskRunner({
     surface: runSurface,
     get status() { return status; },
@@ -1605,7 +1734,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     set activeSelectionRegionKey(value) { activeSelectionRegionKey = value; },
     currentSelectionForRegionTask: () => currentSelectionForRegionTask(),
     refreshContextChips: () => refreshContextChips(),
-    runRegion: (options) => runRegion(options),
   });
   const sendSelectionRegionTask = (text: string): Promise<void> =>
     regionTaskRunner.sendSelectionRegionTask(text);
@@ -2769,19 +2897,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   }
 
   // MCP/외부 에이전트 브리지: 같은 채팅 세션으로 send·로그·하네스 공유.
-  const sleep = (ms: number): Promise<void> =>
-    new Promise((resolve) => {
-      if (typeof window !== "undefined" && typeof window.setTimeout === "function") window.setTimeout(resolve, ms);
-      else resolve();
-    });
-  const waitUntilIdle = async (timeoutMs: number): Promise<boolean> => {
-    const started = Date.now();
-    while (turnBusy) {
-      if (Date.now() - started > timeoutMs) return false;
-      await sleep(150);
-    }
-    return true;
-  };
   const collectAudit = (): readonly AiBridgeAuditEntry[] => {
     const merged = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
     return merged.map((entry) => {
@@ -2825,8 +2940,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           harness: null,
         };
       }
-      const idle = await waitUntilIdle(120_000);
-      if (!idle) {
+      if (turnBusy) {
         return {
           ok: false,
           error: "이전 턴이 끝나지 않아 전송하지 못했습니다.",
@@ -2840,7 +2954,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       try {
         await sendText(trimmed);
-        await waitUntilIdle(300_000);
         const audit = collectAudit();
         return {
           ok: true,
@@ -2982,5 +3095,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     panel.remove();
   };
 
-  return panel;
+  // 소유 대화는 읽기 전용으로만 드러낸다 — 밖에서 바꾸면 기록 귀속이 깨진다.
+  return Object.defineProperty(panel, "conversationId", {
+    configurable: true,
+    enumerable: false,
+    get: (): string => conversationId,
+  }) as AiChatPanelSurface;
 }

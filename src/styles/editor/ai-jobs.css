@@ -46,6 +46,9 @@
 .ai-jobs-row .ai-jobs-row-title { text-align: left; overflow-wrap: anywhere; white-space: normal; height: auto; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--jobs-summary-lines); overflow: hidden; }
 .ai-jobs-row .ai-jobs-actions { padding: 0; border: 0; }
 .ai-jobs-meta { color: var(--text-2); font-size: var(--font-size-sm); overflow-wrap: anywhere; }
+/* 실행 중 작업의 관찰 한 줄. 사실 그대로의 텍스트라 강조하지 않고 부차 색으로 둔다. */
+.ai-jobs-row-progress { color: var(--text-3); font-variant-numeric: tabular-nums; }
+.ai-jobs-row-progress:empty { display: none; }
 .ai-jobs-error { color: var(--danger); overflow-wrap: anywhere; }
 .ai-jobs-error:empty { display: none; }
 .ai-jobs-empty { padding: var(--space-5); display: grid; gap: var(--space-3); }
