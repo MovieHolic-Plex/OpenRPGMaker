@@ -1,6 +1,17 @@
 import type { SpatialId } from "@/project/spatial/types";
 
 export type PlaceFloorFilter = number | null;
+export type PlaceMoveGesture = {
+  readonly kind: "move";
+  readonly childId: SpatialId;
+  readonly originX: number;
+  readonly originY: number;
+  readonly originLevel: number;
+  readonly originClientX: number;
+  readonly originClientY: number;
+  liveX: number;
+  liveY: number;
+};
 
 export const placeChromeState: {
   saveState: string;
@@ -12,6 +23,12 @@ export const placeChromeState: {
   createdDesignId: SpatialId | null;
   buildSeed: number | null;
   buildSeedText: string | null;
+  gesture: PlaceMoveGesture | null;
+  connectFromId: string;
+  connectFromPort: string;
+  connectToId: string;
+  connectToPort: string;
+  connectBidirectional: boolean;
 } = {
   saveState: "읽기",
   previewError: null,
@@ -22,6 +39,12 @@ export const placeChromeState: {
   createdDesignId: null,
   buildSeed: 7,
   buildSeedText: null,
+  gesture: null,
+  connectFromId: "",
+  connectFromPort: "",
+  connectToId: "",
+  connectToPort: "",
+  connectBidirectional: true,
 };
 
 export function resetSpatialPlacesTabChrome(): void {
@@ -34,4 +57,10 @@ export function resetSpatialPlacesTabChrome(): void {
   placeChromeState.createdDesignId = null;
   placeChromeState.buildSeed = 7;
   placeChromeState.buildSeedText = null;
+  placeChromeState.gesture = null;
+  placeChromeState.connectFromId = "";
+  placeChromeState.connectFromPort = "";
+  placeChromeState.connectToId = "";
+  placeChromeState.connectToPort = "";
+  placeChromeState.connectBidirectional = true;
 }

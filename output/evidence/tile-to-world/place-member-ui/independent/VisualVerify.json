@@ -1,0 +1,584 @@
+{
+  "task": "placed-place-member-ui",
+  "scope": "independent-visual-usability",
+  "verdict": "needs-fix",
+  "confidence": "HIGH",
+  "model": "xai/grok-4.6",
+  "actualModel": "grok-4.6",
+  "provider": "xai",
+  "sourceSHA": "0c4196ab3c602ed8a006562249daf2af45b39dcb",
+  "boundSHA": "0c4196ab3c602ed8a006562249daf2af45b39dcb",
+  "notWholeTaskApproval": true,
+  "finalSourceApproval": false,
+  "reasonNotFinal": "Source-bound independent visual pass of candidate 0c4196ab3 only. Hit-testing fails: inn token occluded by connection selects at 1024 and by inspector at 1280/1440. Drill reaches actual Inn but floor-2 room token is unclickable. Picker instantiates a new place-root_* child whose board token is not visible. Connection create/retarget/remove and compiled transfer destinations were not completed with genuine clicks. Do not treat as whole task 15 or plan approval.",
+  "taskId": "st_01a08447",
+  "capturedAt": "2026-09-09T04:10:29.521Z",
+  "origin": "http://127.0.0.1:9860",
+  "cacheDir": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-ui/.vite-cache/spatial-place-member-independent-6RdM08",
+  "ns_net": "net:[4026531833]",
+  "ns_user": "user:[4026531837]",
+  "strictPort": true,
+  "shared9888": "untouched foreign MainThread pid=3844652",
+  "forbiddenPortsAvoided": [
+    9841,
+    9842,
+    9853,
+    9888
+  ],
+  "producerPort": 9842,
+  "clicks": "Playwright locator.click hit-testing, not node.click evaluate or dispatchEvent pointerdown",
+  "enumeratedStates": [
+    "instances-identity@1024x768,1280x800,1440x900",
+    "source-mode-picker@1024x768",
+    "nudge-apply-undo-redo@1024x768",
+    "picker-add-delete@1024x768",
+    "drill-floor-level-link-retarget-disconnect-back@1024x768",
+    "escape-gesture@1024x768",
+    "stale-apply@1024x768"
+  ],
+  "pageCount": 7,
+  "capturedPageCount": 7,
+  "pages": [
+    "1024x768-instances.png",
+    "1024x768-nudge.png",
+    "1024x768-floor.png",
+    "1024x768-add.png",
+    "1024x768-source-mode.png",
+    "1280x800-instances.png",
+    "1440x900-instances.png"
+  ],
+  "pngHygiene": {
+    "allPngSignatureValid": true,
+    "viewportsMatch": true,
+    "alphaChannelIntact": true,
+    "minBytes": 116384,
+    "signature": "89504e47",
+    "actualBrowser": true,
+    "notSignatureOnly": true
+  },
+  "invocation": {
+    "surface": "Chromium Database Places against worktree /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-ui",
+    "command": "flock /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock timeout 360s ./node_modules/.bin/vite-node output/evidence/tile-to-world/place-member-ui/independent/probe.mts",
+    "url": "http://127.0.0.1:9860/?blankProject=1&aiBridge=0",
+    "vite": "--host 127.0.0.1 --port 9860 --strictPort"
+  },
+  "sourceHashesAtCapture": {
+    "src/editor/panels/spatialPlaceCanvas.ts": "712ecf84daf71214416f452acb923730464c6068ab471a7f64a87aa79023614b",
+    "src/editor/panels/spatialPlaceControls.ts": "205231826a177548eeeb9cfff4bea06680ccea04ad91eafc0f430616af61ce2d",
+    "src/editor/panels/spatialPlaceCommands.ts": "5d22727d19d8ef4ddf2a56003a13bad84e04d06d255158b98fdc7c16f27bfdba",
+    "src/editor/panels/spatialPlaceInspector.ts": "96fa0842449468485a1008fb241a0b0cd91a4cf53ffc908240f4f204cd936c9d",
+    "src/editor/panels/spatialPlacePlaced.ts": "8e8eaf5e42faff827d35827b7c1b97a930b665e8f7387352bc451ce681445059",
+    "src/editor/panels/spatialPlaceBoard.ts": "37cb25533ab2a99182d8586e52f70354265fe5945f4ff7d30182aa7bc7a8b0d2",
+    "src/editor/panels/spatialPlaceLinks.ts": "064265bd1b62c7aaf2cd954a3a9c7ff3e9ce77336dc5842db94e15b8f317a764",
+    "src/editor/panels/spatialAuthoringSession.ts": "3e2286f59d7351385e87ab6b5b42c149def057f8eb1fb2ec7bfa95a0be15d491",
+    "src/editor/panels/spatialPlaceChromeState.ts": "ce50e7b6a4403570e3760f9520f2d5e6e0664e52c1a029d88130cf26e0bb517d",
+    "src/styles/database/spatial-places.css": "bb6a985ed4337eb2d2f77832e527569536d810bc431cd24642a25f4290521008"
+  },
+  "producerEvidence": {
+    "staleForThisVerdict": true,
+    "notUsedForPass": true,
+    "reason": "Producer used dispatchEvent pointerdown, force clicks, evaluate camera/inspector, and event counts without compiled transfer destinations. This pass recaptured on unique port with locator clicks.",
+    "retainedPath": "output/evidence/tile-to-world/place-member-ui/"
+  },
+  "scenarios": [
+    {
+      "id": "S-ID-1024x768",
+      "criterion": "G6",
+      "surface": "Chromium Database Places instances 1024x768",
+      "invocation": "toolbar-database → db-tab-spatial-places → spatial-mode-instances → spatial-card-nested-village",
+      "verdict": "PASS",
+      "notes": "Actual occurrence tokens spatial-place-child-child:14:nested-village3:inn:0 and ...square:0; raster left/top 576px,192px = 24*24,8*24; frozen spatial-place-child-inn absent; members square-0 and inn-0.",
+      "artifactRefs": [
+        "1024x768-instances.png",
+        "qa.json"
+      ]
+    },
+    {
+      "id": "S-ID-1280x800",
+      "criterion": "G6",
+      "surface": "Chromium Database Places instances 1280x800",
+      "invocation": "toolbar-database → db-tab-spatial-places → spatial-mode-instances → spatial-card-nested-village",
+      "verdict": "PASS",
+      "notes": "Same actual occurrence tokens and 24px raster at 1280x800; frozen inn slot absent.",
+      "artifactRefs": [
+        "1280x800-instances.png",
+        "qa.json"
+      ]
+    },
+    {
+      "id": "S-ID-1440x900",
+      "criterion": "G6",
+      "surface": "Chromium Database Places instances 1440x900",
+      "invocation": "toolbar-database → db-tab-spatial-places → spatial-mode-instances → spatial-card-nested-village",
+      "verdict": "PASS",
+      "notes": "Same actual occurrence tokens and 24px raster at 1440x900; frozen inn slot absent.",
+      "artifactRefs": [
+        "1440x900-instances.png",
+        "qa.json"
+      ]
+    },
+    {
+      "id": "S-HIT-1024x768",
+      "criterion": "R11",
+      "surface": "Chromium Places board hit-test 1024x768",
+      "invocation": "elementFromPoint on spatial-place-child-child:14:nested-village3:inn:0 after genuine open",
+      "verdict": "FAIL",
+      "notes": "elementFromPoint on inn token center hits spatial-place-connect. Empty from/to/port selects overlay the board. Square token remains hittable.",
+      "artifactRefs": [
+        "1024x768-instances.png"
+      ]
+    },
+    {
+      "id": "S-NUDGE-APPLY",
+      "criterion": "G6/G11",
+      "surface": "Chromium 1024x768 board",
+      "invocation": "locator.click inn token; focus board; ArrowRight; spatial-apply; spatial-undo; spatial-redo",
+      "verdict": "PASS",
+      "notes": "After pan+locator click, ArrowRight preview moved inn 24→25, square stayed 2,3; live title 새 프로젝트 unchanged until Apply; Apply then Undo 25→24 then Redo 24→25; hasPreview false after apply.",
+      "artifactRefs": [
+        "1024x768-nudge.png",
+        "qa.json"
+      ]
+    },
+    {
+      "id": "S-DRILL-FLOOR-LINK",
+      "criterion": "G7/G8",
+      "surface": "Chromium 1024x768",
+      "invocation": "shell arrow pan; click inn; Enter; floor-2; level 3; connect chosen ports; retarget; disconnect; spatial-back",
+      "verdict": "FAIL",
+      "notes": "Enter drilled to Inn (chrome title Inn, 2층 selected, destination.occurrenceId). Compiler room token exists (floor-2-0) but locator.click is intercepted by <html> / overlay. Connection selects cover the interior raster. No chosen-port create/retarget/remove or compiled transfer inspection completed.",
+      "artifactRefs": [
+        "1024x768-floor.png"
+      ]
+    },
+    {
+      "id": "S-STALE",
+      "criterion": "R10",
+      "surface": "Chromium 1024x768",
+      "invocation": "ArrowDown preview; store.replace foreign-live; locator.click spatial-apply",
+      "verdict": "FAIL",
+      "notes": "Blocked: after failed room click the board never returned to village inn token; spatial-apply stale rejection not executed.",
+      "artifactRefs": [
+        "1024x768-floor.png"
+      ]
+    },
+    {
+      "id": "S-ADD-DEL",
+      "criterion": "G6",
+      "surface": "Chromium 1024x768",
+      "invocation": "locator.click spatial-place-pick-nested-inn-design; click new token; spatial-place-child-delete",
+      "verdict": "FAIL",
+      "notes": "Picker created place-root_5008bcac-62a2-4eae-bebd-1e0891e112d8 (third Inn gallery card, 미리보기). New board token never became visible (camera/board scrolled off; overlay). Delete control not reached.",
+      "artifactRefs": [
+        "1024x768-add.png"
+      ]
+    },
+    {
+      "id": "S-SOURCE",
+      "criterion": "G6/G10",
+      "surface": "Chromium 1024x768 design mode",
+      "invocation": "spatial-mode-design → library card → spatial-place-pick; compare live occurrence count before Apply",
+      "verdict": "FAIL",
+      "notes": "설계 + 내 설계 screenshot shows source link pickers labeled 자체 and 초안 draft. Restore to village inn token failed, so live-store comparison after design picker was not completed on this pass.",
+      "artifactRefs": [
+        "1024x768-source-mode.png"
+      ]
+    },
+    {
+      "id": "S-ESC",
+      "criterion": "R11",
+      "surface": "Chromium 1024x768",
+      "invocation": "pointerdown+move inn token; Escape; inspector/session must stay",
+      "verdict": "FAIL",
+      "notes": "Not executed: inn token not visible after drill/add leftovers. Earlier same-SHA capture showed Escape opening the dirty-close modal; this run has no escape.png.",
+      "artifactRefs": [
+        "1024x768-floor.png",
+        "1024x768-add.png"
+      ]
+    },
+    {
+      "id": "S-HIT-1280x800",
+      "criterion": "R11",
+      "surface": "Chromium Places board hit-test 1280x800",
+      "invocation": "elementFromPoint on spatial-place-child-child:14:nested-village3:inn:0 after genuine open",
+      "verdict": "FAIL",
+      "notes": "elementFromPoint on inn token center hits spatial-inspector. Inspector Village panel occludes the inn chip at x=24.",
+      "artifactRefs": [
+        "1280x800-instances.png"
+      ]
+    },
+    {
+      "id": "S-HIT-1440x900",
+      "criterion": "R11",
+      "surface": "Chromium Places board hit-test 1440x900",
+      "invocation": "elementFromPoint on spatial-place-child-child:14:nested-village3:inn:0 after genuine open",
+      "verdict": "FAIL",
+      "notes": "elementFromPoint on inn token center hits spatial-inspector. Inspector occludes the inn chip.",
+      "artifactRefs": [
+        "1440x900-instances.png"
+      ]
+    }
+  ],
+  "adversarial": [
+    {
+      "id": "ADV-identity",
+      "criterion": "G6",
+      "surface": "Chromium tokens",
+      "invocation": "frozen slot as occurrence",
+      "verdict": "PASS",
+      "notes": "Occurrence testids at 1024/1280/1440; frozen spatial-place-child-inn absent.",
+      "artifactRefs": [
+        "1024x768-instances.png",
+        "1280x800-instances.png",
+        "1440x900-instances.png"
+      ],
+      "adversarialClass": "identity guessing / frozen slot as occurrence",
+      "expected": "tokens use occurrence ids; spatial-place-child-inn absent"
+    },
+    {
+      "id": "ADV-member",
+      "criterion": "G6",
+      "surface": "Chromium tokens",
+      "invocation": "slot-vs-member desync",
+      "verdict": "FAIL",
+      "notes": "spatial-member-square-0 and spatial-member-inn-0 present. Keyboard nudge moved only inn. Add/delete of a second same-source child did not finish (new token not visible).",
+      "artifactRefs": [
+        "1024x768-instances.png",
+        "1024x768-nudge.png",
+        "1024x768-add.png"
+      ],
+      "adversarialClass": "slot-vs-member desync",
+      "expected": "spatial-member-<slotId>-<index> plus occurrence testid; move/delete one sibling"
+    },
+    {
+      "id": "ADV-landing",
+      "criterion": "G7",
+      "surface": "Chromium link pickers",
+      "invocation": "hardcoded landing/first-other",
+      "verdict": "FAIL",
+      "notes": "Placed connection selects exist but overlay the raster. Chosen-port create/retarget/remove and compiled transfer destinations were not completed because the floor-2 room token was unclickable.",
+      "artifactRefs": [
+        "1024x768-floor.png"
+      ],
+      "adversarialClass": "hardcoded landing/first-other",
+      "expected": "from/to occurrence+localPortId pickers; compiler ports and transfer destinations match choice"
+    },
+    {
+      "id": "ADV-drill",
+      "criterion": "G8",
+      "surface": "Chromium Enter/Back",
+      "invocation": "frozen-slot drill",
+      "verdict": "FAIL",
+      "notes": "Enter selected actual Inn occurrence (chrome Inn, 2층). Room token click intercepted; Back/camera restore after nondefault pan not completed.",
+      "artifactRefs": [
+        "1024x768-floor.png"
+      ],
+      "adversarialClass": "frozen-slot drill",
+      "expected": "Enter uses destination.occurrenceId; Back restores nondefault camera"
+    },
+    {
+      "id": "ADV-stale",
+      "criterion": "R10",
+      "surface": "Chromium Apply",
+      "invocation": "stale apply",
+      "verdict": "FAIL",
+      "notes": "Stale apply not executed; village inn token not visible after drill leftover.",
+      "artifactRefs": [
+        "1024x768-floor.png"
+      ],
+      "adversarialClass": "stale apply",
+      "expected": "foreign live title kept; preview not adopted"
+    },
+    {
+      "id": "ADV-escape",
+      "criterion": "R11",
+      "surface": "Chromium Escape",
+      "invocation": "gesture vs modal Escape",
+      "verdict": "FAIL",
+      "notes": "Escape-only-cancels-gesture not executed on this capture set (no escape.png).",
+      "artifactRefs": [
+        "1024x768-floor.png"
+      ],
+      "adversarialClass": "gesture vs modal Escape",
+      "expected": "Escape clears in-progress pointer gesture only"
+    },
+    {
+      "id": "ADV-synth",
+      "criterion": "G1",
+      "surface": "picker add",
+      "invocation": "synthetic place-preview adoption",
+      "verdict": "FAIL",
+      "notes": "Picker allocated place-root_5008bcac-62a2-4eae-bebd-1e0891e112d8 (not place-preview:), visible as a third Inn gallery card, but the board token was not visible to confirm/delete.",
+      "artifactRefs": [
+        "1024x768-add.png"
+      ],
+      "adversarialClass": "synthetic place-preview adoption",
+      "expected": "picker add instantiates actual child, not place-preview: roots"
+    },
+    {
+      "id": "ADV-clone",
+      "criterion": "G11",
+      "surface": "unit-owned",
+      "invocation": "clone-without-select",
+      "verdict": "not_applicable",
+      "notes": "Clone gallery selection is covered by the parent producer26-test cohort, not this visual surface.",
+      "artifactRefs": [],
+      "adversarialClass": "clone-without-select / labeled compiled",
+      "expected": "not exercised on this visual surface; parent runs producer26 tests separately"
+    },
+    {
+      "id": "ADV-nested",
+      "criterion": "G5",
+      "surface": "drill room edit",
+      "invocation": "nested compile underscope",
+      "verdict": "FAIL",
+      "notes": "Room token on 2층 was not hittable; nested level edit and containing-place compile were not exercised.",
+      "artifactRefs": [
+        "1024x768-floor.png"
+      ],
+      "adversarialClass": "nested compile underscope",
+      "expected": "room level edit previews containing place children"
+    },
+    {
+      "id": "ADV-assoc",
+      "criterion": "R12",
+      "surface": "history",
+      "invocation": "association-incomplete history",
+      "verdict": "not_applicable",
+      "notes": "This slice does not author incomplete parentSlot rows.",
+      "artifactRefs": [],
+      "adversarialClass": "association-incomplete history",
+      "expected": "not authored here"
+    },
+    {
+      "id": "ADV-geom",
+      "criterion": "G4 note",
+      "surface": "place canvas",
+      "invocation": "16/24 geometry",
+      "verdict": "not_applicable",
+      "notes": "Place canvas already uses 24px with scale 1.5; space tile scale is out of scope.",
+      "artifactRefs": [],
+      "adversarialClass": "16/24 geometry",
+      "expected": "place canvas 24px scale 1.5"
+    },
+    {
+      "id": "ADV-region",
+      "criterion": "task-16",
+      "surface": "geography UI",
+      "invocation": "region/world authoring",
+      "verdict": "not_applicable",
+      "notes": "Geography UI is a different worker (task 16); not triggered by placed Place member controls.",
+      "artifactRefs": [],
+      "adversarialClass": "region/world authoring",
+      "expected": "geography UI is a different worker"
+    },
+    {
+      "id": "ADV-motion",
+      "criterion": "task-16",
+      "surface": "compiled motion",
+      "invocation": "compiled geography motion",
+      "verdict": "not_applicable",
+      "notes": "Inherited task-16 geography compiled-motion backend; this slice tests place-root/room scopes only.",
+      "artifactRefs": [],
+      "adversarialClass": "compiled geography motion",
+      "expected": "future integration"
+    },
+    {
+      "id": "ADV-xss",
+      "criterion": "—",
+      "surface": "testids",
+      "invocation": "XSS via testid",
+      "verdict": "not_applicable",
+      "notes": "Static testids, no user HTML.",
+      "artifactRefs": [],
+      "adversarialClass": "XSS via testid",
+      "expected": "static testids"
+    },
+    {
+      "id": "ADV-auth",
+      "criterion": "—",
+      "surface": "local blank-project",
+      "invocation": "auth/CSRF",
+      "verdict": "not_applicable",
+      "notes": "Local blank-project Database, no network write.",
+      "artifactRefs": [],
+      "adversarialClass": "auth/CSRF",
+      "expected": "local only"
+    },
+    {
+      "id": "ADV-port",
+      "criterion": "isolation",
+      "surface": "owned port",
+      "invocation": "9841/9842/9853/9888 reuse",
+      "verdict": "PASS",
+      "notes": "owned 9860; cache removed; 9888 untouched",
+      "artifactRefs": [
+        "cleanup.md"
+      ],
+      "adversarialClass": "port isolation",
+      "expected": "owned unique strict port then closed; 9888 remains MainThread"
+    }
+  ],
+  "blocking": [
+    {
+      "id": "S-HIT-1024x768",
+      "notes": "elementFromPoint on inn token center hits spatial-place-connect. Empty from/to/port selects overlay the board. Square token remains hittable."
+    },
+    {
+      "id": "S-DRILL-FLOOR-LINK",
+      "notes": "Enter drilled to Inn (chrome title Inn, 2층 selected, destination.occurrenceId). Compiler room token exists (floor-2-0) but locator.click is intercepted by <html> / overlay. Connection selects cover the interior raster. No chosen-port create/retarget/remove or compiled transfer inspection completed."
+    },
+    {
+      "id": "S-STALE",
+      "notes": "Blocked: after failed room click the board never returned to village inn token; spatial-apply stale rejection not executed."
+    },
+    {
+      "id": "S-ADD-DEL",
+      "notes": "Picker created place-root_5008bcac-62a2-4eae-bebd-1e0891e112d8 (third Inn gallery card, 미리보기). New board token never became visible (camera/board scrolled off; overlay). Delete control not reached."
+    },
+    {
+      "id": "S-SOURCE",
+      "notes": "설계 + 내 설계 screenshot shows source link pickers labeled 자체 and 초안 draft. Restore to village inn token failed, so live-store comparison after design picker was not completed on this pass."
+    },
+    {
+      "id": "S-ESC",
+      "notes": "Not executed: inn token not visible after drill/add leftovers. Earlier same-SHA capture showed Escape opening the dirty-close modal; this run has no escape.png."
+    },
+    {
+      "id": "S-HIT-1280x800",
+      "notes": "elementFromPoint on inn token center hits spatial-inspector. Inspector Village panel occludes the inn chip at x=24."
+    },
+    {
+      "id": "S-HIT-1440x900",
+      "notes": "elementFromPoint on inn token center hits spatial-inspector. Inspector occludes the inn chip."
+    },
+    {
+      "id": "ADV-member",
+      "notes": "spatial-member-square-0 and spatial-member-inn-0 present. Keyboard nudge moved only inn. Add/delete of a second same-source child did not finish (new token not visible)."
+    },
+    {
+      "id": "ADV-landing",
+      "notes": "Placed connection selects exist but overlay the raster. Chosen-port create/retarget/remove and compiled transfer destinations were not completed because the floor-2 room token was unclickable."
+    },
+    {
+      "id": "ADV-drill",
+      "notes": "Enter selected actual Inn occurrence (chrome Inn, 2층). Room token click intercepted; Back/camera restore after nondefault pan not completed."
+    },
+    {
+      "id": "ADV-stale",
+      "notes": "Stale apply not executed; village inn token not visible after drill leftover."
+    },
+    {
+      "id": "ADV-escape",
+      "notes": "Escape-only-cancels-gesture not executed on this capture set (no escape.png)."
+    },
+    {
+      "id": "ADV-synth",
+      "notes": "Picker allocated place-root_5008bcac-62a2-4eae-bebd-1e0891e112d8 (not place-preview:), visible as a third Inn gallery card, but the board token was not visible to confirm/delete."
+    },
+    {
+      "id": "ADV-nested",
+      "notes": "Room token on 2층 was not hittable; nested level edit and containing-place compile were not exercised."
+    }
+  ],
+  "errors": [],
+  "pageErrors": [],
+  "consoleErrors": [
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}"
+    },
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}"
+    },
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}"
+    },
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}"
+    },
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}"
+    },
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}"
+    }
+  ],
+  "requestFailures": [
+    {
+      "url": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "httpFailures": [],
+  "inherited": {
+    "geographyMotion": "inherited-task-16: geography compiled-motion backend is repaired elsewhere; this slice tests place-root/room scopes only",
+    "catalogPublication": "not exercised; other workers"
+  },
+  "cleanup": {
+    "serverStarted": true,
+    "browserStarted": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true,
+    "cacheDir": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-place-ui/.vite-cache/spatial-place-member-independent-6RdM08",
+    "serverPid": 3136615,
+    "port": 9860,
+    "lockHeld": false
+  },
+  "mustFix": [
+    "Place connection/from-to/port/exterior controls overlay the board and intercept inn/room token hit-testing (1024x768-instances.png, 1024x768-floor.png).",
+    "Inspector at 1280/1440 occludes the inn token at compiled (24,8) (1280x800-instances.png, 1440x900-instances.png).",
+    "After drill, Compiler room token is in the DOM but <html>/overlay intercepts pointer events; genuine locator clicks cannot select it.",
+    "Picker add creates a new occurrence (third Inn card) whose token is off-camera/under overlay, so move/level/delete of that actual child cannot be reached."
+  ],
+  "goodKeep": [
+    "Tokens use actual occurrence ids, not frozen slot inn; member markers slotId-index exist.",
+    "24px raster: inn style left 576px top 192px.",
+    "Keyboard nudge + Apply/Undo/Redo keeps live store unchanged until Apply and restores exact inn x.",
+    "Drill Enter opens actual Inn occurrence (not library design)."
+  ],
+  "blankProjectOfflineWarning": {
+    "preserved": true,
+    "silentBypass": false,
+    "console": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "count": 6
+  }
+}

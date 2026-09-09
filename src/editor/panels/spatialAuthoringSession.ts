@@ -183,6 +183,22 @@ export function openSpatialDestination(tab: SpatialShellTab, designId: string | 
   return next;
 }
 
+/** Placed drill keeps the actual occurrence; never null occurrenceId like library open. */
+export function openPlacedSpatialDestination(destination: {
+  readonly tab: SpatialShellTab;
+  readonly mode: "instances";
+  readonly occurrenceId: string;
+}): SpatialAuthoringSession {
+  const next = patchSpatialSession({
+    tab: destination.tab,
+    mode: destination.mode,
+    occurrenceId: destination.occurrenceId,
+    designId: null,
+  });
+  tabReveal?.(destination.tab);
+  return next;
+}
+
 export function setSpatialCamera(camera: SpatialCamera): SpatialAuthoringSession {
   return patchSpatialSession({ camera });
 }
