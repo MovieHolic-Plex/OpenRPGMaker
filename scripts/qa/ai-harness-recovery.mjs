@@ -26,7 +26,8 @@ export async function recoverySourceManifest(root) {
 }
 
 // Served-code-only observation/fault seam; exact original bytes are hashed in server.log.
-// The hold is AFTER the real commit transport returns, but BEFORE apply/final transcript settlement.
+// The hold is AFTER the real remote commit transport returns and after the local apply/mutation
+// record, but BEFORE the final conversation transcript save. That is the crash-after-apply image.
 export function recoveryTransform(code, id) {
   let target, replacement;
   const hook = (name, type, args) => `(globalThis as typeof globalThis & { ${name}?: ${type} }).${name}?.(${args})`;
