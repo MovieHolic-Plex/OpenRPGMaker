@@ -9,6 +9,8 @@ export interface TeamBoardAgent {
   readonly agentId: string;
   readonly role: PiTeamRoleId;
   readonly roleLabel: string;
+  /** 사용자 정의 팀원 id(팀 모드). */
+  readonly memberId: string | null;
   readonly mapId: string | null;
   readonly mapName: string | null;
   readonly task: string;
@@ -47,9 +49,9 @@ export function createTeamBoardState(mode: "single" | "team", task: string): Tea
   return { mode, task, phase: "준비", agents: [], report: null, error: null, applied: null, changedKeys: [] };
 }
 
-function agentRow(agentId: string, role: PiTeamRoleId, mapId: string | null, mapName: string | null, task: string): TeamBoardAgent {
+function agentRow(agentId: string, role: PiTeamRoleId, mapId: string | null, mapName: string | null, task: string, memberId: string | null = null, label?: string): TeamBoardAgent {
   return {
-    agentId, role, roleLabel: ROLE_LABELS[role], mapId, mapName, task,
+    agentId, role, roleLabel: label || ROLE_LABELS[role], memberId, mapId, mapName, task,
     state: "대기", turns: 0, toolCalls: 0, toolErrors: 0, lastLine: "", lastKind: "text", summary: "", changedKeys: [], spills: [], conflicts: [],
   };
 }
@@ -93,7 +95,7 @@ export function reduceTeamBoard(state: TeamBoardState, event: PiAgentEvent): Tea
     case "team_start":
       return { ...state, phase: "실행 중", task: event.task || state.task };
     case "agent_spawn": {
-      const row = agentRow(event.agentId, event.role, event.mapId, event.mapName, event.task);
+      const row = agentRow(event.agentId, event.role, event.mapId, event.mapName, event.task, event.memberId ?? null, event.label);
       const others = state.agents.filter((agent) => agent.agentId !== event.agentId);
       return { ...state, phase: "실행 중", agents: [...others, { ...row, state: "실행 중" }] };
     }

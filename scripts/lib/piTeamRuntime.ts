@@ -5,6 +5,7 @@
 import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
+import { defaultTeamSpec, enabledMembers, memberSystemPrompt, normalizeTeamSpec, type PiTeamMember } from "../../src/ai/piAgent/teamSpec.ts";
 import type { PiToolShape } from "../../src/ai/piAgent/toolAdapter.ts";
 import type { Project } from "../../src/project/types.ts";
 import { runPiAgent, type RunPiAgentOptions } from "./piAgentRuntime.ts";
@@ -33,6 +34,16 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiAgentOpti
   let subTurns = 0;
   let finished: string | null = null;
 
+  const team = request.team ? normalizeTeamSpec(request.team) : defaultTeamSpec();
+  const builders = enabledMembers(team, "builder");
+  const reviewers = enabledMembers(team, "reviewer");
+  if (builders.length === 0) throw Object.assign(new Error("팀에 켜진 시공 팀원이 없습니다. 팀 패널에서 팀원을 켜 주세요."), { status: 400 });
+  const pickMember = (id: unknown, pool: PiTeamMember[], what: string): PiTeamMember => {
+    if (typeof id !== "string" || !id.trim()) return pool[0]!;
+    const found = pool.find((member) => member.id === id.trim());
+    if (!found) throw new Error(`${what} 팀원 '${id}' 이 없습니다. 가능: ${pool.map((member) => member.id).join(", ")}`);
+    return found;
+  };
   const candidateMaps = request.mapIds.length > 0 ? [...request.mapIds] : Object.keys(base.maps);
   const mapName = (id: string | null) => (id ? working.maps[id]?.name ?? null : null);
   const nextId = (role: PiTeamRoleId) => `${role}-${++counters[role]}`;
@@ -44,15 +55,19 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiAgentOpti
 
   emit({ type: "team_start", task: request.task, roles: teamRoleSummaries() });
 
-  async function assign(mapId: string, task: string): Promise<string> {
+  async function assign(mapId: string, task: string, member: PiTeamMember): Promise<string> {
     if (!working.maps[mapId]) throw new Error(`맵 '${mapId}' 이 프로젝트에 없습니다. 후보: ${candidateMaps.join(", ")}`);
     const agentId = nextId("builder");
-    emit({ type: "agent_spawn", agentId, role: "builder", mapId, mapName: mapName(mapId), task });
-    const role = PI_TEAM_ROLES.builder;
+    emit({ type: "agent_spawn", agentId, role: "builder", mapId, mapName: mapName(mapId), task, memberId: member.id, label: member.label });
     const snapshot = structuredClone(working) as Project;
     try {
       const done = await runPiAgent(
-        { ...request, mode: "single", mapIds: [mapId], project: snapshot, systemPrompt: role.systemPrompt(snapshot, [mapId], task), maxTurns: role.maxTurns, task },
+        {
+          ...request, mode: "single", mapIds: [mapId], project: snapshot, task,
+          systemPrompt: memberSystemPrompt(member, snapshot, [mapId]), maxTurns: member.maxTurns,
+          ...(member.model ? { model: member.model } : {}),
+          ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
+        },
         child(agentId),
       );
       const merged = mergeMapBundles(working, [{ mapIds: [mapId], project: done.project }]);
@@ -62,7 +77,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiAgentOpti
       const spills = merged.spills.flatMap((spill) => spill.keys);
       const summary = summaryOf(done);
       emit({ type: "agent_done", agentId, ok: true, summary, stats: done.stats, changedKeys: done.changedKeys, spills, conflicts: merged.conflicts });
-      return JSON.stringify({ ok: true, agentId, mapId, summary, changedKeys: done.changedKeys, spills, toolCalls: done.stats.toolCalls, toolErrors: done.stats.toolErrors });
+      return JSON.stringify({ ok: true, agentId, member: member.id, mapId, summary, changedKeys: done.changedKeys, spills, toolCalls: done.stats.toolCalls, toolErrors: done.stats.toolErrors });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       emit({ type: "agent_done", agentId, ok: false, summary: message, stats: { ms: 0, turns: 0, toolCalls: 0, toolErrors: 0 }, changedKeys: [], spills: [], conflicts: [] });
@@ -70,12 +85,11 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiAgentOpti
     }
   }
 
-  async function review(mapId: string, focus: string | undefined): Promise<string> {
+  async function review(mapId: string, focus: string | undefined, member: PiTeamMember): Promise<string> {
     if (!working.maps[mapId]) throw new Error(`맵 '${mapId}' 이 프로젝트에 없습니다`);
     const agentId = nextId("reviewer");
     const task = focus ? `맵 '${mapId}' 검수. 특히: ${focus}` : `맵 '${mapId}' 의 시공 결과를 검수하라.`;
-    emit({ type: "agent_spawn", agentId, role: "reviewer", mapId, mapName: mapName(mapId), task });
-    const role = PI_TEAM_ROLES.reviewer;
+    emit({ type: "agent_spawn", agentId, role: "reviewer", mapId, mapName: mapName(mapId), task, memberId: member.id, label: member.label });
     let verdict: { ok: boolean; findings: string[] } | null = null;
     const reportTool: PiToolShape = {
       name: "report_review",
@@ -90,7 +104,12 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiAgentOpti
     };
     const snapshot = structuredClone(working) as Project;
     const done = await runPiAgent(
-      { ...request, mode: "single", mapIds: [mapId], project: snapshot, systemPrompt: role.systemPrompt(snapshot, [mapId], task), maxTurns: role.maxTurns, task },
+      {
+        ...request, mode: "single", mapIds: [mapId], project: snapshot, task,
+        systemPrompt: memberSystemPrompt(member, snapshot, [mapId]), maxTurns: member.maxTurns,
+        ...(member.model ? { model: member.model } : {}),
+        ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
+      },
       { ...child(agentId), readOnlyTools: true, extraTools: [reportTool] },
     );
     toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns;
@@ -104,25 +123,29 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiAgentOpti
     {
       name: "assign_map_agent",
       label: "assign_map_agent",
-      description: "맵 하나에 시공 에이전트를 띄운다. 한 턴에 여러 개 호출하면 병렬로 돈다. task 에는 그 맵에서 할 일을 위치·크기·재료까지 구체적으로 적는다. 결과 요약과 변경 키를 돌려준다.",
-      parameters: { type: "object", properties: { mapId: { type: "string" }, task: { type: "string" } }, required: ["mapId", "task"], additionalProperties: false },
+      description: `맵 하나에 시공 팀원을 띄운다. 한 턴에 여러 개 호출하면 병렬로 돈다. task 에는 그 맵에서 할 일을 위치·크기·재료까지 구체적으로 적는다. member 는 시공 팀원 id(${builders.map((m) => m.id).join(", ")}); 비우면 ${builders[0]!.id}. 결과 요약과 변경 키를 돌려준다.`,
+      parameters: { type: "object", properties: { mapId: { type: "string" }, task: { type: "string" }, member: { type: "string", enum: builders.map((m) => m.id) } }, required: ["mapId", "task"], additionalProperties: false },
       async execute(_id, params) {
         const rec = (params ?? {}) as Record<string, unknown>;
         const mapId = str(rec.mapId, "mapId");
+        const member = pickMember(rec.member, builders, "시공");
         const rounds = (fixRounds.get(mapId) ?? -1) + 1;
         if (rounds > MAX_FIX_ROUNDS_PER_MAP) throw new Error(`맵 '${mapId}' 은 이미 수정 ${MAX_FIX_ROUNDS_PER_MAP}회를 썼습니다. finish 로 현재 상태를 보고하세요.`);
         fixRounds.set(mapId, rounds);
-        return text(await assign(mapId, str(rec.task, "task")));
+        return text(await assign(mapId, str(rec.task, "task"), member));
       },
     },
     {
       name: "review_map",
       label: "review_map",
-      description: "맵 하나를 검수 에이전트에게 맡긴다(읽기 전용). ok 와 findings 를 돌려준다. 여러 맵은 한 턴에 병렬로 호출한다.",
-      parameters: { type: "object", properties: { mapId: { type: "string" }, focus: { type: "string" } }, required: ["mapId"], additionalProperties: false },
+      description: reviewers.length > 0
+        ? `맵 하나를 검수 팀원에게 맡긴다(읽기 전용). ok 와 findings 를 돌려준다. 여러 맵은 한 턴에 병렬로 호출한다. member 는 검수 팀원 id(${reviewers.map((m) => m.id).join(", ")}); 비우면 ${reviewers[0]!.id}.`
+        : "검수 팀원이 없다. 호출하면 실패한다 — finish 로 바로 보고하라.",
+      parameters: { type: "object", properties: { mapId: { type: "string" }, focus: { type: "string" }, ...(reviewers.length > 0 ? { member: { type: "string", enum: reviewers.map((m) => m.id) } } : {}) }, required: ["mapId"], additionalProperties: false },
       async execute(_id, params) {
+        if (reviewers.length === 0) throw new Error("팀에 켜진 검수 팀원이 없습니다. 검수를 건너뛰고 finish 하세요.");
         const rec = (params ?? {}) as Record<string, unknown>;
-        return text(await review(str(rec.mapId, "mapId"), typeof rec.focus === "string" ? rec.focus : undefined));
+        return text(await review(str(rec.mapId, "mapId"), typeof rec.focus === "string" ? rec.focus : undefined, pickMember(rec.member, reviewers, "검수")));
       },
     },
     {
@@ -142,7 +165,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiAgentOpti
   emit({ type: "agent_spawn", agentId: orchestratorId, role: "orchestrator", mapId: null, mapName: null, task: request.task });
   const orch = PI_TEAM_ROLES.orchestrator;
   const orchDone = await runPiAgent(
-    { ...request, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: orch.systemPrompt(base, request.mapIds, request.task), maxTurns: orch.maxTurns },
+    { ...request, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: orch.systemPrompt(base, request.mapIds, request.task, team), maxTurns: orch.maxTurns },
     { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools },
   );
   emit({ type: "agent_done", agentId: orchestratorId, ok: true, summary: finished ?? summaryOf(orchDone), stats: orchDone.stats, changedKeys: [], spills: [], conflicts: [] });

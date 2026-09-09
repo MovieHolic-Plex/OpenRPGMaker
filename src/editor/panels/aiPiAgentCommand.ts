@@ -26,6 +26,8 @@ import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { createTeamBoard } from "./aiTeamBoard";
+import { publishTeamActivity } from "@/ai/piAgent/teamActivity";
+import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
 
 export const PI_COMMAND_PREFIX = "/pi";
 
@@ -86,10 +88,13 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
   let boardState: TeamBoardState = createTeamBoardState(command.mode, command.task);
   const board = createTeamBoard(boardState);
   surface.appendCard(board.root);
+  const sync = (): void => { board.update(boardState); publishTeamActivity(boardState); };
   const push = (event: PiAgentEvent): void => {
     boardState = reduceTeamBoard(boardState, event);
-    board.update(boardState);
+    sync();
   };
+  sync();
+  const teamSpec = team ? loadTeamSpec() : undefined;
   const scopeText = team
     ? (command.mapIds.length > 0 ? `후보 맵 ${command.mapIds.join(", ")}` : "프로젝트 전체")
     : groups.map((g) => g.join(",") || "전체").join(" · ");
@@ -111,24 +116,24 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
   let results: PiAgentDoneEvent[];
   try {
     results = await Promise.all(groups.map((mapIds, index) => runPiAgentViaCompanion(
-      { mode: command.mode, provider, model: config.model, task: command.task, mapIds, project: base },
+      { mode: command.mode, provider, model: config.model, task: command.task, mapIds, project: base, ...(teamSpec ? { team: teamSpec } : {}) },
       { signal: surface.signal, onEvent: wrap(mapIds, index) },
     )));
   } catch (error) {
     if (surface.signal?.aborted) {
-      boardState = markTeamBoardAborted(boardState); board.update(boardState);
+      boardState = markTeamBoardAborted(boardState); sync();
       surface.setStatus("대기");
       surface.appendBubble("system", "Pi 에이전트를 중단했습니다. 적용된 변경은 없습니다.");
       return false;
     }
     const message = error instanceof Error ? error.message : String(error);
-    boardState = markTeamBoardFailed(boardState, message); board.update(boardState);
+    boardState = markTeamBoardFailed(boardState, message); sync();
     surface.setStatus("Pi 에이전트 실패");
     surface.appendBubble("system", `Pi 에이전트 실패: ${message}`);
     return false;
   }
   if (surface.signal?.aborted) {
-    boardState = markTeamBoardAborted(boardState); board.update(boardState);
+    boardState = markTeamBoardAborted(boardState); sync();
     surface.setStatus("대기");
     surface.appendBubble("system", "Pi 에이전트를 중단했습니다. 적용된 변경은 없습니다.");
     return false;
@@ -158,13 +163,13 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
     reason: `Pi ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회`,
   });
   if (!applied.ok) {
-    boardState = markTeamBoardFailed(boardState, `적용 실패(${applied.reason}): ${applied.issue ?? "무결성 오류"}`); board.update(boardState);
+    boardState = markTeamBoardFailed(boardState, `적용 실패(${applied.reason}): ${applied.issue ?? "무결성 오류"}`); sync();
     surface.setStatus("적용 실패");
     surface.appendBubble("system", `적용 실패(${applied.reason}): ${applied.issue ?? "무결성 오류"}`);
     return false;
   }
   const appliedText = `적용했습니다 — ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedProjectKeys(base, merged.project).length}개.`;
-  boardState = markTeamBoardApplied(boardState, appliedText); board.update(boardState);
+  boardState = markTeamBoardApplied(boardState, appliedText); sync();
   surface.setStatus(team ? "Pi 팀 적용 완료" : "Pi 에이전트 적용 완료");
   surface.appendBubble("system", appliedText);
   return true;

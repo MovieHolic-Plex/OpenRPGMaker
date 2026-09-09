@@ -5,12 +5,13 @@
 //   bun scripts/pi-agent.mts --blank map_a:24x18,map_b:24x18 --task "..." --maps map_a,map_b
 //
 // 옵션: --provider google-antigravity|openai-codex  --model <id>  --report report.json  --max-turns N  --serial
-//       --team  팀장 에이전트가 맵을 나눠 시공·검수 에이전트를 띄운다(--maps 는 후보 맵)
+//       --team  팀장 에이전트가 맵을 나눠 시공·검수 에이전트를 띄운다(--maps 는 후보 맵)  --team-spec team.json  팀원 명세
 
 import fs from "node:fs";
 import path from "node:path";
 import { runPiAgent } from "./lib/piAgentRuntime.ts";
 import { runPiTeam } from "./lib/piTeamRuntime.ts";
+import { normalizeTeamSpec } from "../src/ai/piAgent/teamSpec.ts";
 import { resolveRequestApiKey } from "./lib/aiAuthRuntime.ts";
 import { loadHeadlessProject } from "../src/headless/index.ts";
 import { createBlankProject } from "../src/project/defaults/defaultProject.ts";
@@ -43,7 +44,7 @@ function loadProject(): Project {
 
 function logEvent(label: string, event: PiAgentEvent) {
   const prefix = label ? `[${label}] ` : "";
-  if (event.type === "agent_spawn") { console.log(`${prefix}spawn ${event.agentId} (${event.role}) ${event.mapId ?? ""} — ${event.task.slice(0, 120)}`); return; }
+  if (event.type === "agent_spawn") { console.log(`${prefix}spawn ${event.agentId} (${event.label ?? event.role}) ${event.mapId ?? ""} — ${event.task.slice(0, 120)}`); return; }
   if (event.type === "agent_event") { logEvent(event.agentId, event.event); return; }
   if (event.type === "agent_done") { console.log(`${prefix}done ${event.agentId} ok=${event.ok} ${event.summary}${event.spills.length ? ` spills=${event.spills.join(",")}` : ""}`); return; }
   if (event.type === "review") { console.log(`${prefix}review ${event.mapId} ok=${event.ok} ${event.findings.join(" | ")}`); return; }
@@ -71,7 +72,8 @@ async function main() {
   );
   const results: PiAgentDoneEvent[] = [];
   const team = flag("team");
-  if (team) results.push(await runPiTeam({ mode: "team", provider, model, task, mapIds, project: base }, { apiKey, onEvent: (event) => logEvent("", event) }));
+  const teamSpec = arg("team-spec") ? normalizeTeamSpec(JSON.parse(fs.readFileSync(arg("team-spec")!, "utf8"))) : undefined;
+  if (team) results.push(await runPiTeam({ mode: "team", provider, model, task, mapIds, project: base, ...(teamSpec ? { team: teamSpec } : {}) }, { apiKey, onEvent: (event) => logEvent("", event) }));
   else if (flag("serial")) for (const ids of groups) results.push(await run(ids));
   else results.push(...await Promise.all(groups.map(run)));
 
