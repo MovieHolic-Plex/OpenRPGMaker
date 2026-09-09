@@ -939,6 +939,11 @@ export class AssistantSession {
   private recoveryBudget: RunCheckpoint["budget"] | null = null;
 
   getRunIdentity(): RunCheckpointKey | null { return this.checkpointKey ? { ...this.checkpointKey } : null; }
+  /**
+   * 가장 최근 캡처 시도의 완료. 큐 전체의 과거 실패를 누적해서 보고하지 않는다 —
+   * capture 직후 await 하는 호출자는 자기 쓰기의 실패를 그대로 받고, 중간의
+   * best-effort 캡처 실패는 경고로만 남는다(그 지점들은 애초에 await 하지 않는다).
+   */
   whenCheckpointed(): Promise<void> { return this.checkpointQueue; }
 
   private exportRuntime(): RunRuntimeState {
