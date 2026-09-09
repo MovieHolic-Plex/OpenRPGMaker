@@ -124,10 +124,15 @@ export const SPACE_CATALOG: readonly SpaceDef[] = [
       { id: "hollow-mouth", name: "굴 어귀", x: 10, y: 0 },
     ],
     slots: [
-      { id: "trees", objectId: "outdoor-tree", quantity: 4, required: true },
+      { id: "tree-nw", objectId: "outdoor-tree", quantity: 1, required: true, at: { x: 3, y: 3 } },
+      { id: "tree-ne", objectId: "outdoor-tree", quantity: 1, required: true, at: { x: 15, y: 3 } },
+      { id: "tree-sw", objectId: "outdoor-tree", quantity: 1, required: true, at: { x: 3, y: 13 } },
+      { id: "tree-se", objectId: "outdoor-tree", quantity: 1, required: true, at: { x: 15, y: 13 } },
       { id: "stumps", objectId: "outdoor-stump", quantity: 2, required: false },
-      { id: "bushes", objectId: "outdoor-bush", quantity: 3, required: false },
-      { id: "flowers", objectId: "outdoor-flowers", quantity: 1, required: false },
+      { id: "bush-west", objectId: "outdoor-bush", quantity: 1, required: false, at: { x: 2, y: 8 } },
+      { id: "bush-east", objectId: "outdoor-bush", quantity: 1, required: false, at: { x: 17, y: 8 } },
+      { id: "bushes", objectId: "outdoor-bush", quantity: 1, required: false },
+      { id: "flowers", objectId: "outdoor-flowers", quantity: 1, required: false, at: { x: 12, y: 8 } },
     ],
   },
   {
