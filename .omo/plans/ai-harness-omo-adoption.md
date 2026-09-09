@@ -422,7 +422,13 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - 읽기 전용 ultrabrain 검토와 독립 deep 병렬 수정·통합 재검토를 반복한다.
     리드가 최종 승인된 HEAD만 병합하고 자원 정리 후 P4로 진행한다.
 
-- [ ] 7. 기존 IndexedDB에 버전 있는 실행 체크포인트를 추가한다
+- [x] 7. 기존 IndexedDB에 버전 있는 실행 체크포인트를 추가한다
+  - 저장 구현 `f5d638868`, 실제 브라우저 하네스 `58cbfa5c2`. 이관 RED 2건 후
+    체크포인트·기존 대화 검사 65건과 앱 타입 검사 통과. 실제 Firefox에서
+    v1/v2→v3, 대화·인덱스·tombstone 보존, durable 저장·재로드,
+    malformed/foreign/future 거부와 원본 보존 및 모든 자원 정리를 확인했다.
+    근거: `resume-01a08291/p4/checkpoint-upgrade/run-1/report.json`.
+    실행 중단 복구 연결은 별도 항목 8이며 저장만으로 완료 주장하지 않는다.
   - Recommended task executor category: deep
   - 선행: 4. 통합은 6 이후 직렬 수행. 소유: `src/ai/aiRecordDb.ts`,
     신규 `src/ai/runCheckpointStore.ts`, 기존 원장의 snapshot/load 경계.
