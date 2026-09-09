@@ -1,5 +1,35 @@
 # Editor AI Panel & Tools
 
+## durable 작업이 끝난 뒤의 채팅 패널 계약 (2026-09-09)
+
+**진행 관측 (실행 중).** `src/editor/aiJobs/jobProgress.ts` 가 `job.checkpointRef` 를 기존
+매니페스트·해시 검증 읽기로 한 번만 읽고 `parseSessionProgress` 로 통과시킨다. 패밀리별 위치는
+assistant `state`, region `state.session.state`, tileset `state.session`. 폴링은 없다 —
+클라이언트의 기존 변경 통지로 무효화하고, 한 번에 한 읽기만 돈다.
+`live` 는 `generation === "running"` **이고** 체크포인트의 attemptId 가 현재 attempt 일 때만 참이다.
+재생 중 남은 `currentTool` 은 과거 기록이므로 실행 애니메이션을 주지 않는다.
+**세션 라운드(`budget.rounds`)와 드라이버 자동 이어보내기(`driverContinuations`)는 다른 축이다** —
+같은 칸에 합치지 마라.
+
+**적용 후 표면.** durable 적용도 `emitChangeCard` 하나로 모인다(그 주석이 선언한 계약).
+`jobViewBinding.bindJobApplied` 가 기존 수령증·`job.application` 상태만 읽어 적용 성사를 관측하고,
+그때 카드를 그린다. 칩은 **에이전트가 주장한 diff 가 아니라 `summarizeChanges(before, after)` 실측**이다.
+`applyProposedProject` 가 되돌리기 스냅샷을 하나만 남기므로 카드의 되돌리기와 컴포저 되돌리기가
+같은 스냅샷을 집는다 — 새 히스토리 장치는 필요 없다. 카드는 소유 대화에서만 그리되
+**프로젝트 수준 되돌리기는 대화와 무관하게 노출한다**(바뀐 대상은 프로젝트지 대화가 아니다).
+
+**정착 신호는 두 개다.** 하나로 합치면 교착한다.
+- `whenAiChatPanelSettled()` — 저장·복원이 조용해졌다. **진행 중인 아티팩트 읽기를 기다리지 않는다.**
+- `whenAiChatPanelJobResultSettled()` — 늦게 도착한 결과의 **기록 귀속·저장이 끝났다.**
+  `readJobResult` 체인 전체와 접수 거부 경로까지 별도 추적기(`panelTerminalWork`)로 덮는다.
+
+붙잡아 둔 읽기가 있는 상태에서 첫 신호가 반환되어야 하는데 두 번째 사실도 같은 신호로 기다리면
+시간 초과한다(실측). 테스트는 기다리는 사실에 맞는 신호를 골라라. 마이크로태스크 개수·sleep 금지.
+
+**늦게 깨어난 턴은 앞면을 되살리지 않는다.** 제출 실패 경로와 정산 `finally` 는 `disposed` 를
+확인한다. 이 가드가 없으면 패널이 걷힌 뒤 `settleWorkPlanTurn` 이 `document` 를 만져 죽는다(실측).
+
+
 ## Durable AI 작업함 / immutable reports (2026-09-06, Task7)
 
 - `src/editor/aiJobs/jobClient.ts` owns one editor-lifetime client. Production
