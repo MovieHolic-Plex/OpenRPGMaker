@@ -10,6 +10,7 @@ import { generateProviderImage } from "./lib/ohMyPiImageRuntime.ts";
 import { generateCodexImage } from "./lib/codexImageRuntime.ts";
 import { CODEX_PROVIDER_ID } from "../src/ai/oauth/credentials.ts";
 import { runPiAgent } from "./lib/piAgentRuntime.ts";
+import { runPiTeam } from "./lib/piTeamRuntime.ts";
 import { encodePiAgentEvent, type PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
 
 const port = Number(process.env.RPG_ZZU_OH_MY_PI_WORKER_PORT || 0);
@@ -49,7 +50,7 @@ const server = Bun.serve({
             const write = (line: string) => {
               try { controller.enqueue(encoder.encode(line)); } catch { /* 클라이언트가 끊었다 */ }
             };
-            runPiAgent(agentRequest, { apiKey, signal: request.signal, onEvent: (event) => write(encodePiAgentEvent(event)) })
+            (agentRequest.mode === "team" ? runPiTeam : runPiAgent)(agentRequest, { apiKey, signal: request.signal, onEvent: (event) => write(encodePiAgentEvent(event)) })
               .catch((error) => write(encodePiAgentEvent({ type: "error", message: error instanceof Error ? error.message : String(error) })))
               .finally(() => { try { controller.close(); } catch { /* 이미 닫힘 */ } });
           },

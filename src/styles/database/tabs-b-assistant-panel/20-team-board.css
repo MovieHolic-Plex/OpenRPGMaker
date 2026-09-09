@@ -1,0 +1,212 @@
+/* ── Pi 팀 보드 (2026-09-09) — `/pi` 실행을 로그 안 카드로. 팀장·시공·검수 행, 상태·턴·툴콜·마지막 한 줄.
+   DOM(aiTeamBoard.ts): section.ai-team-board > header.ai-team-head + ol.ai-team-agents > li.ai-team-agent + footer.ai-team-foot.
+   색은 tokens.css 변수만. !important 0. 글자 크기는 --ai-font-scale 로 스케일. 스피너는 18-assistant-deck 의 .ai-deck-spin 재사용. */
+
+.ai-command-row > .ai-team-board {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.ai-team-board {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text-1) 4%, transparent);
+  color: var(--text-1);
+  container-type: inline-size;
+  display: grid;
+  font-family: var(--font-ui);
+  gap: 0;
+  line-height: 1.5;
+  margin: 8px 0 0;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  transition: border-color var(--transition-med);
+}
+
+.ai-team-board.is-running { border-color: var(--accent-border); }
+.ai-team-board.is-done { border-color: color-mix(in srgb, var(--success) 45%, transparent); }
+.ai-team-board.is-error { border-color: color-mix(in srgb, var(--danger) 45%, transparent); }
+
+.ai-team-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  min-width: 0;
+  padding: 12px 14px 10px;
+}
+
+.ai-team-badge {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+.ai-team-title {
+  flex: 1 1 200px;
+  font-size: calc(13.5px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-team-phase {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  color: var(--text-2);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.5;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+
+.ai-team-board.is-running .ai-team-phase { background: var(--accent-muted); border-color: var(--accent-border); color: var(--accent); }
+.ai-team-board.is-done .ai-team-phase { background: var(--success-muted); color: var(--success); }
+.ai-team-board.is-error .ai-team-phase { background: var(--danger-muted); color: var(--danger); }
+
+.ai-team-totals {
+  color: var(--text-3);
+  flex: 0 0 100%;
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  font-variant-numeric: tabular-nums;
+}
+
+.ai-team-agents {
+  border-top: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ai-team-agent {
+  border-top: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 9px 14px 9px 12px;
+  position: relative;
+}
+
+.ai-team-agent:first-child { border-top: 0; }
+
+/* 왼쪽 상태 선: 실행 중 액센트, 완료 성공색, 실패 위험색. 배경 전체를 칠하지 않아 행이 조용하다. */
+.ai-team-agent::before {
+  background: var(--border-default);
+  border-radius: 2px;
+  bottom: 9px;
+  content: "";
+  left: 4px;
+  position: absolute;
+  top: 9px;
+  width: 3px;
+}
+
+.ai-team-agent.is-running::before { background: var(--accent); }
+.ai-team-agent.is-done::before { background: var(--success); }
+.ai-team-agent.is-error::before { background: var(--danger); }
+.ai-team-agent.is-muted { color: var(--text-3); }
+
+.ai-team-agent-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  min-width: 0;
+}
+
+.ai-team-role {
+  border-radius: 6px;
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.02em;
+  padding: 1px 7px;
+}
+
+.role-orchestrator .ai-team-role { background: var(--accent-muted); color: var(--accent); }
+.role-builder .ai-team-role { background: var(--bg-inset); color: var(--text-2); }
+.role-reviewer .ai-team-role { background: var(--warning-muted); color: var(--warning); }
+
+.ai-team-map {
+  font-size: calc(13px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-team-agent-state {
+  color: var(--text-2);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+}
+
+.ai-team-agent.is-done .ai-team-agent-state { color: var(--success); }
+.ai-team-agent.is-error .ai-team-agent-state { color: var(--danger); }
+
+.ai-team-spin { height: 12px; width: 12px; }
+
+.ai-team-counters {
+  color: var(--text-3);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.ai-team-task,
+.ai-team-last,
+.ai-team-warn,
+.ai-team-report,
+.ai-team-error,
+.ai-team-applied {
+  font-size: calc(12.5px * var(--ai-font-scale, 1));
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ai-team-task { color: var(--text-2); cursor: pointer; }
+.ai-team-task.is-clamped {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.ai-team-task:focus-visible { border-radius: 4px; outline: var(--focus-outline); outline-offset: 2px; }
+.ai-team-last { color: var(--text-3); }
+.ai-team-last.is-tool { font-family: var(--font-mono); font-size: calc(11.5px * var(--ai-font-scale, 1)); }
+.ai-team-warn { color: var(--warning); }
+
+.ai-team-review { display: grid; gap: 3px; }
+.ai-team-review-verdict { font-size: calc(12.5px * var(--ai-font-scale, 1)); font-weight: var(--font-weight-semibold); }
+.ai-team-review.is-ok .ai-team-review-verdict { color: var(--success); }
+.ai-team-review.is-findings .ai-team-review-verdict { color: var(--warning); }
+
+.ai-team-findings {
+  color: var(--text-2);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  margin: 0;
+  padding-left: 18px;
+}
+
+.ai-team-foot {
+  border-top: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 6px;
+  padding: 10px 14px 12px;
+}
+
+.ai-team-report { color: var(--text-1); }
+.ai-team-error { color: var(--danger); }
+.ai-team-applied { color: var(--success); font-weight: var(--font-weight-semibold); }
+
+@container (max-width: 420px) {
+  .ai-team-counters { flex: 0 0 100%; margin-left: 0; }
+}

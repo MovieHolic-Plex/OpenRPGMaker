@@ -38,6 +38,10 @@ export interface PiToolCallRecord {
 export interface CreatePiToolsetOptions {
   /** 노출 도메인. 비우면 살아 있는 레지스트리 전부. 도메인 없는(범용) 툴은 항상 포함. */
   readonly domains?: readonly string[];
+  /** 읽기 툴만(검수 역할). */
+  readonly readOnly?: boolean;
+  /** 이름으로 딱 집어 노출(팀장 역할의 소수 읽기 툴). domains·readOnly 와 교집합. */
+  readonly toolNames?: readonly string[];
   /** 툴 호출마다 호출. 이벤트 스트림·감사 로그용. */
   readonly onCall?: (record: PiToolCallRecord) => void;
   /** 읽기 툴 data 직렬화 상한(문자). 맵 전체 덤프가 컨텍스트를 삼키지 않게. */
@@ -49,10 +53,16 @@ export interface CreatePiToolsetOptions {
 const DEFAULT_MAX_DATA_CHARS = 12_000;
 const DEFAULT_MAX_ISSUES = 8;
 
-export function selectPiToolDefinitions(domains?: readonly string[]) {
+export function selectPiToolDefinitions(
+  domains?: readonly string[],
+  options: { readonly readOnly?: boolean; readonly toolNames?: readonly string[] } = {},
+) {
   const wanted = domains && domains.length > 0 ? new Set(domains) : null;
+  const names = options.toolNames && options.toolNames.length > 0 ? new Set(options.toolNames) : null;
   return TOOL_REGISTRY.filter((tool) => {
     if (tool.deprecated) return false;
+    if (options.readOnly && tool.mode !== "read") return false;
+    if (names && !names.has(tool.name)) return false;
     if (!wanted) return true;
     if (!tool.domains || tool.domains.length === 0) return true;
     return tool.domains.some((domain) => wanted.has(domain));
@@ -95,7 +105,7 @@ export function formatPiToolFailure(result: ToolResult, maxIssues = DEFAULT_MAX_
 export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOptions = {}): PiToolShape[] {
   const maxDataChars = options.maxDataChars ?? DEFAULT_MAX_DATA_CHARS;
   const maxIssues = options.maxIssues ?? DEFAULT_MAX_ISSUES;
-  return selectPiToolDefinitions(options.domains).map((tool) => ({
+  return selectPiToolDefinitions(options.domains, { readOnly: options.readOnly, toolNames: options.toolNames }).map((tool) => ({
     name: tool.name,
     label: tool.name,
     description: tool.description,

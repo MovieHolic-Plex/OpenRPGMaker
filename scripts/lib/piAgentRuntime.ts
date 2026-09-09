@@ -7,7 +7,7 @@
 
 import { Agent } from "@oh-my-pi/pi-agent-core";
 import { getBundledModel, getBundledModels } from "@oh-my-pi/pi-catalog";
-import { createPiToolset } from "../../src/ai/piAgent/toolAdapter.ts";
+import { createPiToolset, type PiToolShape } from "../../src/ai/piAgent/toolAdapter.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
@@ -20,6 +20,10 @@ export interface RunPiAgentOptions {
   readonly signal?: AbortSignal;
   /** 전체 실행 상한(ms). 기본 10분. */
   readonly timeoutMs?: number;
+  /** 역할별 툴 범위. 레지스트리 선택에 더해 팀 런타임의 커스텀 툴(assign_map_agent 등)을 붙인다. */
+  readonly readOnlyTools?: boolean;
+  readonly toolNames?: readonly string[];
+  readonly extraTools?: readonly PiToolShape[];
 }
 
 const DEFAULT_MAX_TURNS = 40;
@@ -46,14 +50,17 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const model = resolveModel(request.provider, request.model);
   // 툴 요약은 어댑터(onCall)가 알고, 호출 id 는 코어 이벤트가 안다. 이름별 FIFO 로 둘을 맞춘다.
   const pendingSummaries = new Map<string, { ok: boolean; summary: string }[]>();
-  const tools = createPiToolset(ctx, {
+  const registryTools = createPiToolset(ctx, {
     domains: request.toolDomains,
+    readOnly: options.readOnlyTools,
+    toolNames: options.toolNames,
     onCall: ({ name, result }) => {
       const queue = pendingSummaries.get(name) ?? [];
       queue.push({ ok: result.ok, summary: trimText(result.summary, 400) });
       pendingSummaries.set(name, queue);
     },
   });
+  const tools: PiToolShape[] = [...registryTools, ...(options.extraTools ?? [])];
   const systemPrompt = request.systemPrompt ? [...request.systemPrompt] : buildPiAgentSystemPrompt(base, request.mapIds);
   const agent = new Agent({
     initialState: {

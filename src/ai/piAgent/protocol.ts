@@ -9,7 +9,11 @@ import type { Project } from "@/project/types";
 
 export type PiAgentThinkingLevel = "off" | "low" | "medium" | "high";
 
+export type PiAgentMode = "single" | "team";
+
 export interface PiAgentRequest {
+  /** 기본 single. team 이면 팀장 에이전트가 맵별 시공·검수 에이전트를 띄운다. */
+  readonly mode?: PiAgentMode;
   readonly provider: string;
   /** 비우면 제공자 기본 모델. */
   readonly model?: string;
@@ -33,8 +37,19 @@ export interface PiAgentStats {
   readonly usage?: unknown;
 }
 
+export type PiTeamRoleId = "orchestrator" | "builder" | "reviewer";
+
+export interface PiTeamAgentStats extends PiAgentStats {}
+
 export type PiAgentEvent =
   | { readonly type: "start"; readonly provider: string; readonly model: string; readonly toolCount: number }
+  // ── 팀 이벤트. 하위 에이전트의 진행은 agent_event 로 감싸서 흘린다(보드가 행 단위로 그린다). ──
+  | { readonly type: "team_start"; readonly task: string; readonly roles: readonly { id: PiTeamRoleId; label: string }[] }
+  | { readonly type: "agent_spawn"; readonly agentId: string; readonly role: PiTeamRoleId; readonly mapId: string | null; readonly mapName: string | null; readonly task: string }
+  | { readonly type: "agent_event"; readonly agentId: string; readonly event: PiAgentEvent }
+  | { readonly type: "agent_done"; readonly agentId: string; readonly ok: boolean; readonly summary: string; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spills: readonly string[]; readonly conflicts: readonly string[] }
+  | { readonly type: "review"; readonly agentId: string; readonly mapId: string | null; readonly ok: boolean; readonly findings: readonly string[] }
+  | { readonly type: "team_report"; readonly text: string }
   | { readonly type: "turn"; readonly index: number }
   | { readonly type: "assistant"; readonly text: string }
   | { readonly type: "tool_start"; readonly id: string; readonly name: string; readonly args: unknown }
