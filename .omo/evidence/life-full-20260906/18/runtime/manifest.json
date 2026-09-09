@@ -156,8 +156,8 @@
           "sequence": 1,
           "frames": 12,
           "deltaMs": 16,
-          "startFrame": 44,
-          "endFrame": 56
+          "startFrame": 42,
+          "endFrame": 54
         }
       ]
     },
@@ -263,8 +263,8 @@
           "sequence": 2,
           "frames": 12,
           "deltaMs": 16,
-          "startFrame": 66,
-          "endFrame": 78
+          "startFrame": 61,
+          "endFrame": 73
         }
       ]
     },
@@ -369,8 +369,8 @@
           "sequence": 3,
           "frames": 12,
           "deltaMs": 16,
-          "startFrame": 88,
-          "endFrame": 100
+          "startFrame": 81,
+          "endFrame": 93
         }
       ]
     },
@@ -460,8 +460,8 @@
           "sequence": 4,
           "frames": 120,
           "deltaMs": 16,
-          "startFrame": 1672,
-          "endFrame": 1792
+          "startFrame": 1660,
+          "endFrame": 1780
         }
       ]
     },
@@ -568,15 +568,15 @@
           "sequence": 5,
           "frames": 30,
           "deltaMs": 16,
-          "startFrame": 1819,
-          "endFrame": 1849
+          "startFrame": 1810,
+          "endFrame": 1840
         },
         {
           "sequence": 6,
           "frames": 16,
           "deltaMs": 16,
-          "startFrame": 1849,
-          "endFrame": 1865
+          "startFrame": 1840,
+          "endFrame": 1856
         }
       ]
     },
@@ -666,8 +666,8 @@
           "sequence": 7,
           "frames": 120,
           "deltaMs": 16,
-          "startFrame": 3436,
-          "endFrame": 3556
+          "startFrame": 3391,
+          "endFrame": 3511
         }
       ]
     },
@@ -769,15 +769,15 @@
           "sequence": 8,
           "frames": 30,
           "deltaMs": 16,
-          "startFrame": 3583,
-          "endFrame": 3613
+          "startFrame": 3539,
+          "endFrame": 3569
         },
         {
           "sequence": 9,
           "frames": 16,
           "deltaMs": 16,
-          "startFrame": 3613,
-          "endFrame": 3629
+          "startFrame": 3569,
+          "endFrame": 3585
         }
       ]
     },
@@ -975,6 +975,184 @@
             }
           ],
           "sequence": 7
+        },
+        "placeablesAt": {
+          "map_farming_demo:4,6": null
+        },
+        "inventory": {
+          "item_potato_seed": 2,
+          "item_potato": 1
+        }
+      },
+      "domTestids": [
+        "status-menu-command-rail",
+        "status-menu-command-group-action",
+        "status-menu-command-items",
+        "status-menu-command-icon-items",
+        "status-menu-command-skills",
+        "status-menu-command-icon-skills",
+        "status-menu-command-equipment",
+        "status-menu-command-icon-equipment",
+        "status-menu-command-party-menu",
+        "status-menu-command-icon-party-menu",
+        "status-menu-command-record-menu",
+        "status-menu-command-icon-record-menu",
+        "status-menu-command-system-menu",
+        "status-menu-command-icon-system-menu"
+      ]
+    },
+    {
+      "index": 10,
+      "id": "open-save-point",
+      "note": "저작된 기록판(5,4)을 조사하면 openSaveMenu 명령이 실제 저장 메뉴를 연다. 메뉴 레일 탐색이 아니라 제작자가 실제로 쓰는 이벤트 명령 경로다",
+      "shot": "11-open-save-point.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_farming_demo",
+        "x": 4,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_farming_demo": {
+            "4,6": {
+              "tilled": true,
+              "watered": false
+            }
+          }
+        },
+        "energy": 99,
+        "makerInstances": {},
+        "farmAnimals": {
+          "farm_animal_bori": {
+            "instanceId": "farm_animal_bori",
+            "speciesId": "animal_chicken",
+            "name": "보리",
+            "eventId": "ev_farm_chicken",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          },
+          "farm_animal_dubu": {
+            "instanceId": "farm_animal_dubu",
+            "speciesId": "animal_cow",
+            "name": "두부",
+            "eventId": "ev_farm_cow",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          }
+        },
+        "farmBuildingPlacements": {
+          "farm_building_workshop_1": {
+            "instanceId": "farm_building_workshop_1",
+            "typeId": "farm_building_workshop",
+            "mapId": "map_farming_demo",
+            "x": 14,
+            "y": 11,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_farming_demo",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 8
+        },
+        "placeablesAt": {
+          "map_farming_demo:4,6": null
+        },
+        "inventory": {
+          "item_potato_seed": 2,
+          "item_potato": 1
+        }
+      },
+      "domTestids": [
+        "status-menu-command-rail",
+        "status-menu-command-group-action",
+        "status-menu-command-items",
+        "status-menu-command-icon-items",
+        "status-menu-command-skills",
+        "status-menu-command-icon-skills",
+        "status-menu-command-equipment",
+        "status-menu-command-icon-equipment",
+        "status-menu-command-party-menu",
+        "status-menu-command-icon-party-menu",
+        "status-menu-command-record-menu",
+        "status-menu-command-icon-record-menu",
+        "status-menu-command-system-menu",
+        "status-menu-command-icon-system-menu"
+      ]
+    },
+    {
+      "index": 11,
+      "id": "save-slot-1",
+      "note": "실제 저장 슬롯을 활성화한다. 커서가 1번 슬롯에 있으므로 Enter 가 onSaveSlot(1) 을 부른다(playerStatusMenuDetails.ts:saveDetail). 저장 후에도 상태는 그대로여야 한다",
+      "shot": "12-save-slot-1.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_farming_demo",
+        "x": 4,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_farming_demo": {
+            "4,6": {
+              "tilled": true,
+              "watered": false
+            }
+          }
+        },
+        "energy": 99,
+        "makerInstances": {},
+        "farmAnimals": {
+          "farm_animal_bori": {
+            "instanceId": "farm_animal_bori",
+            "speciesId": "animal_chicken",
+            "name": "보리",
+            "eventId": "ev_farm_chicken",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          },
+          "farm_animal_dubu": {
+            "instanceId": "farm_animal_dubu",
+            "speciesId": "animal_cow",
+            "name": "두부",
+            "eventId": "ev_farm_cow",
+            "friendship": 0,
+            "productionProgress": 0,
+            "readyProductCount": 0,
+            "lastAdvancedDayKey": "1:spring:2",
+            "buildingId": "building_sunrise_barn"
+          }
+        },
+        "farmBuildingPlacements": {
+          "farm_building_workshop_1": {
+            "instanceId": "farm_building_workshop_1",
+            "typeId": "farm_building_workshop",
+            "mapId": "map_farming_demo",
+            "x": 14,
+            "y": 11,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_farming_demo",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 8
         },
         "placeablesAt": {
           "map_farming_demo:4,6": null

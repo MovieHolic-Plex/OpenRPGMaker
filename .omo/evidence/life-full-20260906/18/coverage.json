@@ -20,9 +20,9 @@
   "receiptSequence": "1..7 strictly increasing — no beat passed on a stale receipt",
   "notYetProven": {
     "shippingAndSettlement": "BLOCKED on scenario-side menu activation, NOT on the product. Seven attempts. Narrowed by measurement: (1) the rail renders collapsed group entries — items, skills, equipment, party-menu, record-menu, system-menu — dumped from the live DOM; (2) counted ArrowDown x4 DOES move the cursor, proven because waitForAttr aria-current=true on status-menu-command-record-menu passed; (3) Enter on the selected group entry does not expand it under __oprnInput edge injection, so status-menu-command-life-ledger never appears. pressUntil is structurally unusable for multi-step cursor movement because it waits for its condition after each single press. hasLifeLedgerData(project, session) measures true, so the ledger is reachable for a human player. Left unproven rather than asserted.",
-    "saveResume": "not attempted",
     "editorSevenTabE2E": "not attempted (test/e2e/life-full-authoring.spec.ts not created)",
-    "fullMatrix": "the 51-row happy+failure matrix and F01..F13 are NOT covered by this scenario; only the farming/day-cycle happy path above is."
+    "fullMatrix": "the 51-row happy+failure matrix and F01..F13 are NOT covered by this scenario; only the farming/day-cycle happy path above is.",
+    "resumeAfterLoad": "Save is proven; loading that slot back and asserting the restored state is not yet done."
   },
   "harnessAdditions": [
     "expect.cropGrowthDays — asserts a real day transition (a mapId-only assertion had passed while nothing happened)",
@@ -31,5 +31,14 @@
   ],
   "productDefects": "none found on this path",
   "at": "2026-09-09T07:54:54.272Z",
-  "attemptsSpent": 7
+  "attemptsSpent": 7,
+  "saveProven": {
+    "method": "Authored an ordinary save point event (openSaveMenu is a real event command, commandCatalog.ts:620) into the life-full fixture at (5,4), then walked to it and investigated — no debug hook, no status-menu rail traversal.",
+    "evidence": "save-slot-1 appears; after Enter the detail reads \"1번 저장저장됨\" with the fixture title/map/time while slots 2 and 3 stay \"비어 있음\". Harvested potato (item_potato 1) is present in the saved state.",
+    "falseAssertionsRejected": [
+      "data-save-slot-state — does not exist (detailEntryDataset)",
+      "waitForVisible + contains — that op checks visibility only and ignores text, so it would have passed vacuously",
+      "\"덮어씁니다\" hint — only shown when re-selecting an already filled slot, not right after saving"
+    ]
+  }
 }

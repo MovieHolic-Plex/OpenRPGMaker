@@ -88,5 +88,34 @@ export function createLifeFullFixture(): Project {
     },
   };
 
+  // Authored save point. openSaveMenu is a real event command (commandCatalog.ts:620),
+  // so a creator exposes saving by placing an event like this — no debug hook and no
+  // status-menu traversal. Task 18 needs the save/resume journey on the real surface.
+  const startMap = project.maps[project.startMapId]!;
+  startMap.events.push({
+    id: "ev_life_save_point",
+    x: 5,
+    y: 4,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [{
+      id: "page_save_point",
+      name: "기록판",
+      conditions: [],
+      // The reference validator dereferences page.graphic.sprite, so an authored event
+      // must carry a graphic exactly like the starter's own bed event does.
+      graphic: {
+        sprite: { type: "bundled", id: "tex_easyrpg_charset_people1" },
+        direction: "down",
+        pattern: 0,
+      },
+      trigger: { kind: "action" },
+      priority: "same",
+      overlapForbidden: true,
+      movement: { type: "fixed", speed: 3, frequency: 3 },
+      commands: [{ kind: "openSaveMenu" }],
+    }],
+  });
+
   return project;
 }

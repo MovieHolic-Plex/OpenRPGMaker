@@ -4,8 +4,8 @@
 전량 열람은 컨텍스트 낭비다.
 
 - 시각 검토: 별도 판정 필요 — 실행 비트 통과는 공간 구성·물체 식별·게임 경험의 합격을 뜻하지 않습니다.
-- 게이트: 통과 (비트 10개 중 0개 실패)
-- 열어야 할 샷: 0개 / 전체 샷 10개
+- 게이트: 통과 (비트 12개 중 0개 실패)
+- 열어야 할 샷: 0개 / 전체 샷 12개
 - 런타임 에러: 없음
 - 프로젝트: test/fixtures/life-full.project.json
 - 시드: 18 / 뷰포트: 1024×768
@@ -22,3 +22,5 @@
 | harvest-potato | 수확기 작물을 실제로 수확 → 감자 1개, 밭이 비고 농사 XP | 통과 | 08-harvest-potato.png | 시각 확인 대기 |
 | ship-potato | 상태 메뉴(Escape) → 생활 원장 출하 탭에서 수확한 감자를 실제로 출하함에 넣는다. 출하 투입은 월드 오브젝트가 아니라 원장 메뉴가 소유한다(lifeLedger.ts:depositShipping) | 통과 | 09-ship-potato.png | 시각 확인 대기 |
 | open-record-group | 레일은 접힌 그룹으로 렌더된다(실측 덤프: record-menu 가 관문이고 life-ledger 는 그룹을 연 뒤에 나타난다). 실제 그룹 항목을 눌러 펼친다 | 통과 | 10-open-record-group.png | 시각 확인 대기 |
+| open-save-point | 저작된 기록판(5,4)을 조사하면 openSaveMenu 명령이 실제 저장 메뉴를 연다. 메뉴 레일 탐색이 아니라 제작자가 실제로 쓰는 이벤트 명령 경로다 | 통과 | 11-open-save-point.png | 시각 확인 대기 |
+| save-slot-1 | 실제 저장 슬롯을 활성화한다. 커서가 1번 슬롯에 있으므로 Enter 가 onSaveSlot(1) 을 부른다(playerStatusMenuDetails.ts:saveDetail). 저장 후에도 상태는 그대로여야 한다 | 통과 | 12-save-slot-1.png | 시각 확인 대기 |

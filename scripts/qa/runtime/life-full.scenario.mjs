@@ -207,6 +207,49 @@ export const lifeFullScenario = {
       },
       shot: true,
     },
+    {
+      id: "open-save-point",
+      note: "저작된 기록판(5,4)을 조사하면 openSaveMenu 명령이 실제 저장 메뉴를 연다. "
+        + "메뉴 레일 탐색이 아니라 제작자가 실제로 쓰는 이벤트 명령 경로다",
+      ops: [
+        // 앞 비트가 상태 메뉴를 열어둔 채 끝난다 — 닫지 않으면 이동 입력이 메뉴로 간다
+        // (실측: 좌표가 4,5 에서 움직이지 않았다).
+        { kind: "key", key: "Escape" },
+        { kind: "waitFor", testid: "main-menu", state: "absent", timeoutMs: 20_000 },
+        { kind: "playerRoute", moves: [{ kind: "move", dir: "up" }] },
+        { kind: "waitForPosition", mapId: MAP, x: 4, y: 4, timeoutMs: 60_000 },
+        { kind: "face", dir: "right" },
+        { kind: "action" },
+        { kind: "waitFor", testid: "save-slot-1", state: "present", timeoutMs: 20_000 },
+      ],
+      expect: {
+        testidPresent: ["main-menu", "save-slot-1"],
+        // 수확한 감자는 저장 대상 상태에 그대로 있어야 한다.
+        inventory: { item_potato: 1 },
+      },
+      shot: true,
+    },
+    {
+      id: "save-slot-1",
+      note: "실제 저장 슬롯을 활성화한다. 커서가 1번 슬롯에 있으므로 Enter 가 onSaveSlot(1) 을 "
+        + "부른다(playerStatusMenuDetails.ts:saveDetail). 저장 후에도 상태는 그대로여야 한다",
+      ops: [
+        { kind: "waitForAttr", testid: "save-slot-1", attr: "aria-current", value: "true", timeoutMs: 15_000 },
+        { kind: "key", key: "Enter" },
+        // data-save-slot-state 는 존재하지 않고(detailEntryDataset 확인), waitForVisible 은
+        // 텍스트를 보지 않는다. 실제 신호는 저장이 반영되면 힌트가 덮어쓰기 경고로 바뀌는
+        // 것이므로(saveDetail: confirmSaveSlot) visibleText 축으로 단정한다.
+        { kind: "waitForAttr", testid: "save-slot-1", attr: "aria-current", value: "true", timeoutMs: 15_000 },
+      ],
+      expect: {
+        inventory: { item_potato: 1, item_potato_seed: 2 },
+        energy: 99,
+        // 실측: 저장 직후 힌트는 "덮어씁니다"가 아니다(그건 이미 채워진 칸을 다시 고를 때다).
+        // 실제 증거는 1번 슬롯이 "저장됨"이 되고 나머지가 "비어 있음"으로 남는 것이다.
+        visibleText: { "status-menu-detail": "1번 저장저장됨" },
+      },
+      shot: true,
+    },
   ],
 };
 
