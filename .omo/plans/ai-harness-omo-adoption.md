@@ -522,8 +522,10 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
     턴 경계 실패, 정착 대기 UI 잠금, 신원 재계산(160ms×2/라운드), 행 전체 재복제,
     원장 복원본 반복 복제(92회 13.3초), 적용 자체를 막던 대기. 더해 체크포인트 키가
     local-session id 로 굳어 **모든 기록이 거부**되던 결함과 다른 프로젝트 영수증 혼입도 고쳤다.
-  - 현재 상태: 10개 구성원 중 9개 통과(proof-failure, required-skip, outcome-matrix,
-    retained-draft-ask, wiki-delivery, new-goal-draft 를 최종 HEAD 에서 실측 통과).
+  - 현재 상태: **증거가 있는 것은 6개 통과**다 — proof-failure, required-skip, outcome-matrix,
+    retained-draft-ask, wiki-delivery, new-goal-draft 를 최종 게이트에서 실측 통과했다.
+    실행기는 첫 실패에서 멈추므로 human-edit-race·checkpoint-upgrade·crash-after-apply 는
+    이 HEAD 에서 아직 실행되지 않았다(앞선 HEAD 의 통과를 이 HEAD 의 근거로 쓰지 않는다).
     **late-cancel 은 미통과**다 — 남은 P4 체크포인트 쓰기 비용이 하네스의 60초 신호 창을
     넘긴다(같은 부하 A/B: 기준선 76.7초 대 현재 101~109초). 근본과 구조적 해법(요청 기준선을
     런당 1회 저장하고 참조; 스키마 추가)은 `openwiki/testing.md` 에 수치로 남겼다.
