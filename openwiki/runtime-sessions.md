@@ -1,3 +1,11 @@
+## Recovery ledger and scheduled failure ownership (2026-09-09)
+
+The player record menu exposes the recovery tab while `session.lifeRecovery.claims` remain, even when the authored life packages are disabled. Rows display exact claim items and unresolved details without simulating a collection transaction. Explicit activation uses `collectLifeRecoveryClaim`; unknown items and inventory-cap refusals retain the complete claim and inventory. Last action outcomes are presentation state, not persisted recovery rights.
+
+Date-transition failures retain their stage, source/problem ID and recovery entry. The existing menu controller opens the recovery tab when claims remain; the error cursor releases its listeners before opening, dismissal, replacement or clear. `observeScheduledTimeTransition` starts an operation-local task factory and accepts an acknowledgement only after that operation presents its failure. Scheduled sleep/advance and nested forced-sleep callers forward it, so their structured errors survive while unpresented failures still get fresh fallback rather than inheriting stale diagnostics.
+
+Regression coverage: `lifeRecoveryLedgerUi.test.ts`, `scheduledTimeDiagnostics.test.ts` and the real-clock `makerClockIntegration.test.ts` adapter. The actual player proves valid three-claim collection/refusal; malformed date failures are separately tested through real scheduler/module and browser keyboard boundaries, not represented as valid saved gameplay.
+
 ## Task10 field input and exact forage dates (2026-09-06)
 
 `src/player/playSceneMovement.ts` resolves ordinary action input **per coordinate**: action event -> storage chest -> generated forage -> authored fishing spot -> farming. It exhausts the front coordinate before trying the player's feet in the same order. This isn't a global event-first pass: front fishing or farming beats an underfoot event. Existing hiding/pushable event handling and event debounce remain ahead of life actions.

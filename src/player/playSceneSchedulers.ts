@@ -209,10 +209,10 @@ function startParallelTimeTransition(
   step: Extract<StepResult, { kind: "advanceTime" | "sleepUntilMorning" }>,
 ): void {
   const pending = step.kind === "advanceTime"
-    ? observeScheduledTimeTransition(scene, applyAdvanceTimeStep(scene, step), "scheduled-advance")
+    ? observeScheduledTimeTransition(scene, (onFailurePresented) => applyAdvanceTimeStep(scene, step, onFailurePresented), "scheduled-advance")
     : observeScheduledTimeTransition(
       scene,
-      Promise.resolve().then(() => scene.sleepUntilMorning()),
+      (onFailurePresented) => Promise.resolve().then(() => scene.sleepUntilMorning(onFailurePresented)),
       "scheduled-sleep",
     );
   process.pendingTimeTransition = pending;
@@ -262,13 +262,13 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       applyTimerStep(scene, step);
       return true;
     case "advanceTime":
-      observeScheduledTimeTransition(scene, applyAdvanceTimeStep(scene, step), "scheduled-advance");
+      observeScheduledTimeTransition(scene, (onFailurePresented) => applyAdvanceTimeStep(scene, step, onFailurePresented), "scheduled-advance");
       return true;
     case "setTime":
       applySetTimeStep(scene, step);
       return true;
     case "sleepUntilMorning":
-      observeScheduledTimeTransition(scene, scene.sleepUntilMorning(), "scheduled-sleep");
+      observeScheduledTimeTransition(scene, (onFailurePresented) => scene.sleepUntilMorning(onFailurePresented), "scheduled-sleep");
       return true;
     case "showPicture":
       showPictureState(scene.session, step);

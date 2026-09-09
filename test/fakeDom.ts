@@ -39,6 +39,18 @@ export class FakeNode {
     return globalThis.document;
   }
 
+  /** True while attached under document.body (or any parent chain). */
+  get isConnected(): boolean {
+    let node: FakeNode | null = this;
+    const body = (globalThis.document as unknown as { body?: FakeNode }).body;
+    while (node) {
+      if (body && node === body) return true;
+      if (node.parentNode === null) return false;
+      node = node.parentNode;
+    }
+    return false;
+  }
+
   get parentElement(): FakeElement | null {
     return this.parentNode instanceof FakeElement ? this.parentNode : null;
   }
@@ -211,11 +223,19 @@ export class FakeElement extends FakeNode {
     return null;
   }
 
-  addEventListener(type: string, listener: EventListenerOrEventListenerObject | null): void {
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject | null,
+    options?: boolean | AddEventListenerOptions,
+  ): void {
     if (listener === null) return;
+    const signal = typeof options === "object" && options ? options.signal : undefined;
+    if (signal?.aborted) return;
     const listeners = this.listeners[type] ?? [];
     listeners.push(listener);
     this.listeners[type] = listeners;
+    // Real DOM removes the listener when AbortSignal aborts; tests need the same for cursor dispose.
+    signal?.addEventListener("abort", () => this.removeEventListener(type, listener), { once: true });
   }
   removeEventListener(type: string, listener: EventListenerOrEventListenerObject | null): void {
     if (listener === null) return;
@@ -434,11 +454,22 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     },
     querySelector: (selector: string) => body.querySelector(selector),
     querySelectorAll: (selector: string) => body.querySelectorAll(selector),
-    addEventListener: (type: string, listener: EventListenerOrEventListenerObject | null): void => {
+    addEventListener: (
+      type: string,
+      listener: EventListenerOrEventListenerObject | null,
+      options?: boolean | AddEventListenerOptions,
+    ): void => {
       if (listener === null) return;
+      const signal = typeof options === "object" && options ? options.signal : undefined;
+      if (signal?.aborted) return;
       const listeners = documentListeners[type] ?? [];
       listeners.push(listener);
       documentListeners[type] = listeners;
+      signal?.addEventListener("abort", () => {
+        const current = documentListeners[type];
+        if (!current) return;
+        documentListeners[type] = current.filter((entry) => entry !== listener);
+      }, { once: true });
     },
     removeEventListener: (type: string, listener: EventListenerOrEventListenerObject | null): void => {
       if (listener === null) return;

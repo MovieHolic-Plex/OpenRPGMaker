@@ -17,7 +17,10 @@ export function showRuntimeOverlay(
 ): void {
   const host = dialogueHost(scene);
   if (!host) return;
-  host.querySelector(`[data-testid='${testId}']`)?.remove();
+  const prior = host.querySelector(`[data-testid='${testId}']`) as (HTMLElement & { __oprnDisposeCursor?: () => void }) | null;
+  prior?.__oprnDisposeCursor?.();
+  if (prior) prior.__oprnDisposeCursor = undefined;
+  prior?.remove();
   const overlay = document.createElement("div");
   overlay.className = "runtime-overlay";
   overlay.dataset.testid = testId;
@@ -26,7 +29,13 @@ export function showRuntimeOverlay(
 }
 
 export function clearRuntimeOverlay(scene: PlaySceneContext, testId: string): void {
-  dialogueHost(scene)?.querySelector(`[data-testid='${testId}']`)?.remove();
+  const host = dialogueHost(scene);
+  const overlay = host?.querySelector(`[data-testid='${testId}']`) as (HTMLElement & { __oprnDisposeCursor?: () => void }) | null | undefined;
+  if (!overlay) return;
+  // Date-error (and any overlay) may own a cursor-menu disposer; release before detach.
+  overlay.__oprnDisposeCursor?.();
+  overlay.__oprnDisposeCursor = undefined;
+  overlay.remove();
 }
 
 export function showGameOverScreen(scene: PlaySceneContext, message?: string): void {

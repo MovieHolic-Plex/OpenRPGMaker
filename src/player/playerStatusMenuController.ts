@@ -22,7 +22,7 @@ import { directionForKey, isCancelKey, isConfirmKey } from "@/player/keyBindings
 import type { RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import type { ActorInitialEquipment, SkillId } from "@/project/types";
 import type { PlaySession } from "@/project/session";
-import type { LifeLedgerTabId } from "@/player/lifeLedger";
+import { resolveLifeLedgerTab, type LifeLedgerTabId } from "@/player/lifeLedger";
 import { createLifePlacementLiveReader } from "@/player/lifePlacementScene";
 import { moveMonster, rejectPendingMonsterSkill, replacePendingMonsterSkill } from "@/project/monsterCollection";
 import {
@@ -57,7 +57,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let equipmentSlotId: keyof ActorInitialEquipment | undefined;
   let formationActorId: string | undefined;
   let monsterView: "party" | "box" = "party";
-  let lifeLedgerTab: LifeLedgerTabId = "shipping";
+  let lifeLedgerTab: LifeLedgerTabId | undefined;
   let confirmSaveSlot: SaveSlotIndex | undefined;
   let confirmToTitlePending = false;
   let waitModeEnabled = true;
@@ -83,7 +83,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     equipmentSlotId = undefined;
     formationActorId = undefined;
     monsterView = "party";
-    lifeLedgerTab = "shipping";
+    lifeLedgerTab = undefined;
     confirmSaveSlot = undefined;
     confirmToTitlePending = false;
   };
@@ -231,6 +231,15 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     // 저장 가능 여부는 렌더링과 saveSlot의 기존 맵/세션 제한을 그대로 따른다.
     mode = "function";
     options.emitMenuJuice("menu-open", renderMenu(undefined, "save"));
+  };
+
+  const openLifeRecoveryLedger = (): void => {
+    if (!options.getActiveScene()) return;
+    lifeLedgerTab = "recovery";
+    mode = "function";
+    openGroupId = undefined;
+    selectedDetailActionIndex = 0;
+    options.emitMenuJuice("menu-open", renderMenu(undefined, "life-ledger"));
   };
   function focusMenuArea(nextMode: "main" | "function"): void {
     mode = nextMode;
@@ -735,7 +744,13 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "status":
       case "to-title":
       case "wait":
-        return selectedCommand === "life-ledger" ? `life-ledger:${lifeLedgerTab}` : selectedCommand;
+        if (selectedCommand !== "life-ledger") return selectedCommand;
+        const scene = options.getActiveScene();
+        const project = store.getCurrent();
+        const resolved = scene
+          ? resolveLifeLedgerTab(project, scene.session, lifeLedgerTab)
+          : (lifeLedgerTab ?? "recovery");
+        return `life-ledger:${resolved}`;
     }
   }
 
@@ -752,7 +767,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     return session.m2Runtime?.access.save !== false;
   }
 
-  return { reset, renderMenu, openSaveMenu, toggleMenu, handleKey };
+  return { reset, renderMenu, openSaveMenu, openLifeRecoveryLedger, toggleMenu, handleKey };
 }
 
 function isRailNavKey(key: RuntimeMenuKey): boolean {

@@ -29,6 +29,8 @@ export type StatusMenuDetailEntry = {
   /** 이 후보를 고르면 능력치가 어떻게 변하는가. 커서가 올라간 항목의 값을 사이드바가 그린다.
       설명 문자열에도 증감이 들어 있지만 좁은 행에서 말줄임으로 묻혀 판단에 못 쓴다. */
   readonly statDelta?: readonly StatusMenuStatDelta[];
+  /** Semantic DOM attributes for state/behavior assertions (not prose). */
+  readonly attributes?: Readonly<Record<string, string>>;
   readonly onActivate?: () => void;
   readonly disabled?: boolean;
   readonly destructive?: boolean;

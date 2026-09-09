@@ -415,6 +415,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
         statusMenu.reset();
         renderLoad(false);
       }));
+      game.registry.set("openLifeRecoveryLedger", () => openEventMenu(layout, statusMenu.openLifeRecoveryLedger));
 
       // create() 가 이미 끝났을 수도 있으므로 ready 콜백 + 폴링으로 모두 커버.
       const ready = await waitForPlaySceneReady(nextGame, () => startRun === run, readyPromise);
