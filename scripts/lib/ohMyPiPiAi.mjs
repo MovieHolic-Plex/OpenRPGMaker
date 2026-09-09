@@ -21,10 +21,14 @@ function startWorker() {
   if (workerPortPromise) return workerPortPromise;
   workerPortPromise = new Promise((resolve, reject) => {
     const script = fileURLToPath(new URL("../oh-my-pi-worker.ts", import.meta.url));
-    const child = spawn("bun", [script], {
-      stdio: ["ignore", "pipe", "pipe"],
-      env: { ...process.env },
-    });
+    // Tests point this at a script that crashes on startup to pin the failure contract.
+    const command = process.env.RPG_ZZU_OH_MY_PI_WORKER_COMMAND;
+    const child = command
+      ? spawn(command, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env }, shell: true })
+      : spawn("bun", [script], {
+        stdio: ["ignore", "pipe", "pipe"],
+        env: { ...process.env },
+      });
     workerChild = child;
     let settled = false;
     const fail = (error) => {
@@ -42,9 +46,15 @@ function startWorker() {
       }
     };
     child.stdout?.on("data", onChunk);
+    // Keep the worker's own diagnosis: a startup crash (missing module, bad import) only
+    // ever reached the server console, so the browser showed a bare exit code and every
+    // Pi run looked like an unexplained failure.
+    let startupLog = "";
     child.stderr?.on("data", (chunk) => {
       const text = String(chunk).trim();
-      if (text) console.error(`[oh-my-pi-worker] ${text}`);
+      if (!text) return;
+      if (!settled) startupLog = `${startupLog}${startupLog ? "\n" : ""}${text}`.slice(-800);
+      console.error(`[oh-my-pi-worker] ${text}`);
     });
     child.on("error", (error) => {
       fail(new Error(
@@ -56,7 +66,9 @@ function startWorker() {
     child.on("exit", (code) => {
       workerChild = null;
       workerPortPromise = null;
-      fail(new Error(`oh-my-pi worker exited (${code ?? "?"})`));
+      fail(new Error(startupLog
+        ? `oh-my-pi worker exited (${code ?? "?"}): ${startupLog}`
+        : `oh-my-pi worker exited (${code ?? "?"})`));
     });
     setTimeout(() => fail(new Error("oh-my-pi worker start timed out")), 30_000);
   });
