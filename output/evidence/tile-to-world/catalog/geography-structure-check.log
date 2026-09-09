@@ -1,0 +1,10 @@
+ok   lake-country | places=2 routes=1
+ok   deep-forest | places=2 routes=1
+ok   harbor-coast | places=2 routes=1
+ok   snow-frontier | places=2 routes=1
+ok   high-pass | places=2 routes=1
+ok   ancient-ruins | places=2 routes=1
+--- worlds ---
+ok   lake-kingdom | regions=3 ports=3 conns=2
+ok   northern-frontier | regions=3 ports=3 conns=2
+regions=6 worlds=2 problems=0

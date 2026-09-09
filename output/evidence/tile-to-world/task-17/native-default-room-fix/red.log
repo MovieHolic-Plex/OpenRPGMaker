@@ -1,0 +1,158 @@
+monitor_id=mon_22VN92Y883XXMANP
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialRoomNativeDefault.test.ts --maxWorkers=1 --minWorkers=1 --reporter=verbose"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-projection-fix"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ] 687ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'bedroom' / [] 462ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ] 529ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > honors exact ID independent-native-bedroom when default and native aliases collide 430ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > honors exact ID legacy:[\"easyrpg_chipset_interior\",\"house\",\"place\",\"bedroom\"] when default and native aliases collide 496ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > deduplicates identity when the preferred source also has native provenance and matching name/tag 432ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > keeps shorthand when a same-atlas native has no matching name or tag 513ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ] 489ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'bedroom' / [] 456ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ] 520ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > honors exact ID independent-native-bedroom when default and native aliases collide 414ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > honors exact ID legacy:[\"easyrpg_chipset_interior\",\"house\",\"place\",\"bedroom\"] when default and native aliases collide 437ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > deduplicates identity when the preferred source also has native provenance and matching name/tag 458ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > keeps shorthand when a same-atlas native has no matching name or tag 432ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ] 429ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'bedroom' / [] 432ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ] 461ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > honors exact ID independent-native-bedroom when default and native aliases collide 401ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > honors exact ID legacy:[\"easyrpg_chipset_interior\",\"house\",\"place\",\"bedroom\"] when default and native aliases collide 410ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > deduplicates identity when the preferred source also has native provenance and matching name/tag 423ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > keeps shorthand when a same-atlas native has no matching name or tag 416ms"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ]"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'bedroom' / []"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ]"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ]"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'bedroom' / []"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ]"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ]"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'bedroom' / []"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ]"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"AssertionError: expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"\u001b[2m  {\u001b[22m"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"\u001b[32m-   \"code\": \"spatial-ambiguous\",\u001b[39m"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"\u001b[32m-   \"selectedId\": undefined,\u001b[39m"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"\u001b[31m+   \"code\": undefined,\u001b[39m"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"\u001b[31m+   \"selectedId\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"place\\\",\\\"bedroom\\\"]\",\u001b[39m"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"\u001b[2m  }\u001b[22m"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" ❯ test/spatialRoomNativeDefault.test.ts:42:71"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"     40|     catch (error) { if (!(error instanceof ToolError)) throw error; co…"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"     41|     // Then: no source may win genuine ambiguity; lookup remains read-…"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"     42|     expect({ code, selectedId: bound?.concept?.rooms.room?.placeId }).…"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"       |                                                                       ^"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"     43|     expect(JSON.stringify(project)).toBe(before);"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"     44|   });"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"      Tests  9 failed | 12 passed (21)"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"   Start at  03:45:07"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":"   Duration  14.94s (transform 3.34s, setup 0ms, collect 4.76s, tests 9.73s, environment 0ms, prepare 88ms)"}
+{"type":"line","id":"authoring-697037","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-697037","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialRoomNativeDefault.test.ts --maxWorkers=1 --minWorkers=1 --reporter=verbose
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-projection-fix
+
+ × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ] 687ms
+   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }
+ × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'bedroom' / [] 462ms
+   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }
+ × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ] 529ms
+   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > honors exact ID independent-native-bedroom when default and native aliases collide 430ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > honors exact ID legacy:["easyrpg_chipset_interior","house","place","bedroom"] when default and native aliases collide 496ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > deduplicates identity when the preferred source also has native provenance and matching name/tag 432ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > keeps shorthand when a same-atlas native has no matching name or tag 513ms
+ × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ] 489ms
+   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }
+ × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'bedroom' / [] 456ms
+   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }
+ × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ] 520ms
+   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > honors exact ID independent-native-bedroom when default and native aliases collide 414ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > honors exact ID legacy:["easyrpg_chipset_interior","house","place","bedroom"] when default and native aliases collide 437ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > deduplicates identity when the preferred source also has native provenance and matching name/tag 458ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > keeps shorthand when a same-atlas native has no matching name or tag 432ms
+ × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ] 429ms
+   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }
+ × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'bedroom' / [] 432ms
+   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }
+ × test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ] 461ms
+   → expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > honors exact ID independent-native-bedroom when default and native aliases collide 401ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > honors exact ID legacy:["easyrpg_chipset_interior","house","place","bedroom"] when default and native aliases collide 410ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > deduplicates identity when the preferred source also has native provenance and matching name/tag 423ms
+ ✓ test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > keeps shorthand when a same-atlas native has no matching name or tag 416ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ]
+ FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'bedroom' / []
+ FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=user > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ]
+ FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ]
+ FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'bedroom' / []
+ FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=ai > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ]
+ FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'bedroom' / [ 'bedroom' ]
+ FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'bedroom' / []
+ FAIL  test/spatialRoomNativeDefault.test.ts > default shorthand with native origin=builtin > rejects ambiguity when the native matches 'Independent Room' / [ 'bedroom' ]
+AssertionError: expected { code: undefined, …(1) } to deeply equal { code: 'spatial-ambiguous', …(1) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "code": "spatial-ambiguous",[39m
+[32m-   "selectedId": undefined,[39m
+[31m+   "code": undefined,[39m
+[31m+   "selectedId": "legacy:[\"easyrpg_chipset_interior\",\"house\",\"place\",\"bedroom\"]",[39m
+[2m  }[22m
+
+ ❯ test/spatialRoomNativeDefault.test.ts:42:71
+     40|     catch (error) { if (!(error instanceof ToolError)) throw error; co…
+     41|     // Then: no source may win genuine ambiguity; lookup remains read-…
+     42|     expect({ code, selectedId: bound?.concept?.rooms.room?.placeId }).…
+       |                                                                       ^
+     43|     expect(JSON.stringify(project)).toBe(before);
+     44|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  9 failed | 12 passed (21)
+   Start at  03:45:07
+   Duration  14.94s (transform 3.34s, setup 0ms, collect 4.76s, tests 9.73s, environment 0ms, prepare 88ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

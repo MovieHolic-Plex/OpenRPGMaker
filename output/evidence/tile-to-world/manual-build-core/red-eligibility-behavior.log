@@ -1,0 +1,118 @@
+monitor_id=mon_WYFS95QANBE8MKXG
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuildBoundary.test.ts --maxWorkers=1"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":" ❯ test/spatialManualBuildBoundary.test.ts (10 tests | 3 failed) 3135ms"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"   × builds canonical place maps when the gallery carries explicit library identity 220ms"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"     → {\"code\":\"unsupported\",\"message\":\"canonical-copy-required\"}"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"   × carries true canonical identity for objects without deriving it from kit IDs 113ms"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"     → {\"code\":\"unsupported\",\"message\":\"canonical-copy-required\"}"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"   × carries true canonical identity for spaces without deriving it from kit IDs 107ms"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"     → {\"code\":\"unsupported\",\"message\":\"canonical-copy-required\"}"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"   ✓ requires explicit conversion when a compatibility card has a coincident canonical localId 96ms"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"   ✓ rejects missing or invalid selection before a proposal is issued 215ms"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"   ✓ rejects missing or invalid entry before a proposal is issued 168ms"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"   ✓ rejects missing or invalid map-mismatch before a proposal is issued 206ms"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"   ✓ rejects missing or invalid fractional-seed before a proposal is issued 201ms"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"   ✓ discloses the original frozen proposal when source and seed controls change  979ms"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"   ✓ drops transient build inputs when project identity changes  826ms"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":" FAIL  test/spatialManualBuildBoundary.test.ts > builds canonical place maps when the gallery carries explicit library identity"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"TypeError: {\"code\":\"unsupported\",\"message\":\"canonical-copy-required\"}"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":" ❯ authoringValue test/support/spatialAuthoringFixture.ts:12:25"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"     10|   switch (result.kind) {"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"     11|     case \"ok\": return result.value;"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"     12|     case \"error\": throw new TypeError(JSON.stringify(result.error));"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"       |                         ^"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"     13|     default: return assertNever(result);"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"     14|   }"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":" ❯ test/spatialManualBuildBoundary.test.ts:25:21"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":" FAIL  test/spatialManualBuildBoundary.test.ts > carries true canonical identity for objects without deriving it from kit IDs"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":" FAIL  test/spatialManualBuildBoundary.test.ts > carries true canonical identity for spaces without deriving it from kit IDs"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"TypeError: {\"code\":\"unsupported\",\"message\":\"canonical-copy-required\"}"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":" ❯ authoringValue test/support/spatialAuthoringFixture.ts:12:25"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"     10|   switch (result.kind) {"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"     11|     case \"ok\": return result.value;"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"     12|     case \"error\": throw new TypeError(JSON.stringify(result.error));"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"       |                         ^"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"     13|     default: return assertNever(result);"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"     14|   }"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":" ❯ test/spatialManualBuildBoundary.test.ts:46:18"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"      Tests  3 failed | 7 passed (10)"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"   Start at  06:34:18"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":"   Duration  9.79s (transform 4.24s, setup 0ms, collect 6.25s, tests 3.13s, environment 0ms, prepare 83ms)"}
+{"type":"line","id":"authoring-3514703","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3514703","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuildBoundary.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core
+
+ ❯ test/spatialManualBuildBoundary.test.ts (10 tests | 3 failed) 3135ms
+   × builds canonical place maps when the gallery carries explicit library identity 220ms
+     → {"code":"unsupported","message":"canonical-copy-required"}
+   × carries true canonical identity for objects without deriving it from kit IDs 113ms
+     → {"code":"unsupported","message":"canonical-copy-required"}
+   × carries true canonical identity for spaces without deriving it from kit IDs 107ms
+     → {"code":"unsupported","message":"canonical-copy-required"}
+   ✓ requires explicit conversion when a compatibility card has a coincident canonical localId 96ms
+   ✓ rejects missing or invalid selection before a proposal is issued 215ms
+   ✓ rejects missing or invalid entry before a proposal is issued 168ms
+   ✓ rejects missing or invalid map-mismatch before a proposal is issued 206ms
+   ✓ rejects missing or invalid fractional-seed before a proposal is issued 201ms
+   ✓ discloses the original frozen proposal when source and seed controls change  979ms
+   ✓ drops transient build inputs when project identity changes  826ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialManualBuildBoundary.test.ts > builds canonical place maps when the gallery carries explicit library identity
+TypeError: {"code":"unsupported","message":"canonical-copy-required"}
+ ❯ authoringValue test/support/spatialAuthoringFixture.ts:12:25
+     10|   switch (result.kind) {
+     11|     case "ok": return result.value;
+     12|     case "error": throw new TypeError(JSON.stringify(result.error));
+       |                         ^
+     13|     default: return assertNever(result);
+     14|   }
+ ❯ test/spatialManualBuildBoundary.test.ts:25:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/spatialManualBuildBoundary.test.ts > carries true canonical identity for objects without deriving it from kit IDs
+ FAIL  test/spatialManualBuildBoundary.test.ts > carries true canonical identity for spaces without deriving it from kit IDs
+TypeError: {"code":"unsupported","message":"canonical-copy-required"}
+ ❯ authoringValue test/support/spatialAuthoringFixture.ts:12:25
+     10|   switch (result.kind) {
+     11|     case "ok": return result.value;
+     12|     case "error": throw new TypeError(JSON.stringify(result.error));
+       |                         ^
+     13|     default: return assertNever(result);
+     14|   }
+ ❯ test/spatialManualBuildBoundary.test.ts:46:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 7 passed (10)
+   Start at  06:34:18
+   Duration  9.79s (transform 4.24s, setup 0ms, collect 6.25s, tests 3.13s, environment 0ms, prepare 83ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

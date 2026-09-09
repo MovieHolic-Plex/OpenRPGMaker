@@ -135,7 +135,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
     doorNote = `문 (${x},${y})`;
     if (doorEventPlanned) {
       const base = `${map.id}_${input.kitId}_${x}_${y}`;
-      const interiorMapId = uniqueProjectId(draft, "map_house_interior", base);
+      let interiorMapId = uniqueProjectId(draft, "map_house_interior", base);
       const doorEventId = uniqueProjectId(draft, "ev_house_door", base);
       const exitEventId = uniqueProjectId(draft, "ev_house_exit", base);
       const ownerName = input.ownerName?.trim() || map.name;
@@ -153,6 +153,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
         seed: interiorSeed,
         exterior: { stories, kitId: input.kitId, footprintArea, ownerName },
       });
+      interiorMapId = interior.map.id;
       registerInteriorMaps(draft, interior);
       appendTreeChildOnce(draft.mapTree, interiorMapId, map.id);
       let parentFloorId = interiorMapId;

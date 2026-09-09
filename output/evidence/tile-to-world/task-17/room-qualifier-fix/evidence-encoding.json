@@ -1,0 +1,18 @@
+{
+  "reason": "Preserve raw trailing whitespace losslessly without a Git whitespace waiver",
+  "restore": "gzip -dk red-monitor.log.gz rejected-atlas-filter.diff.gz",
+  "files": [
+    {
+      "raw": "output/evidence/tile-to-world/task-17/room-qualifier-fix/red-monitor.log",
+      "compressed": "output/evidence/tile-to-world/task-17/room-qualifier-fix/red-monitor.log.gz",
+      "gitBlob": "0dab740e501d091874c72a6a8ab441b19ae43f4a",
+      "rawLocalPreserved": true
+    },
+    {
+      "raw": "output/evidence/tile-to-world/task-17/room-qualifier-fix/rejected-atlas-filter.diff",
+      "compressed": "output/evidence/tile-to-world/task-17/room-qualifier-fix/rejected-atlas-filter.diff.gz",
+      "gitBlob": "eb116a848399e6461111c744f51ba8a604ad1eac",
+      "rawLocalPreserved": true
+    }
+  ]
+}

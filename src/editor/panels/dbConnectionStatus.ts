@@ -1,3 +1,4 @@
+import { openPersistenceRecovery, persistenceStatusLabel, persistenceSurfaceVisible } from "@/editor/persistenceRecoveryUi";
 import type { DbPersistenceStatus } from "@/project/persistenceStatus";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
@@ -11,16 +12,36 @@ export function renderOnlineSaveStatus(
   openSettings: OpenSettings,
 ): HTMLElement {
   const autoSave = store.getAutoSaveState();
-  const quietReady = status.kind === "ready" && autoSave.kind === "idle";
+  const recovery = store.getPersistenceRecovery();
+  const recoveryLabel = persistenceStatusLabel(autoSave, recovery);
+  const quietReady = status.kind === "ready" && autoSave.kind === "idle" && !persistenceSurfaceVisible(recovery);
+  const warning = recovery.kind === "ready" && recovery.mirror?.status === "warning";
   const children: HTMLElement[] = [
     el("span", { class: "db-connection-label", text: onlineSaveStatusText(status) }),
   ];
-  if (!quietReady) {
+  if (recovery.kind === "blocked") {
+    children.push(
+      el("span", {
+        class: "db-autosave-state",
+        text: recoveryLabel ?? autoSaveStatusText(autoSave),
+        dataset: { testid: "db-autosave-state", recoveryCode: recovery.error.code, autosaveKind: autoSave.kind },
+      }),
+    );
+  } else if (!quietReady) {
     children.push(
       el("span", {
         class: "db-autosave-state",
         text: autoSaveStatusText(autoSave),
-        dataset: { testid: "db-autosave-state" },
+        dataset: { testid: "db-autosave-state", autosaveKind: autoSave.kind },
+      }),
+    );
+  }
+  if (warning) {
+    children.push(
+      el("span", {
+        class: "db-autosave-state persistence-mirror-warning",
+        text: "루트 저장됨 · 미리보기 경고",
+        dataset: { testid: "persistence-mirror-warning", mirrorStatus: "warning" },
       }),
     );
   }
@@ -31,7 +52,7 @@ export function renderOnlineSaveStatus(
     // 있어서, 톱바에 마운트하면 button 기본값 inline-block 으로 떨어져 라벨과 상태가 붙어
     // "온라인 저장저장 실패" 로 읽힌다. 호스트가 어디든 같게 보이도록 배치를 칩이 직접 들고 있는다.
     attrs: {
-      title: onlineSaveButtonTitle(status, autoSave),
+      title: onlineSaveButtonTitle(status, autoSave, recoveryLabel),
       type: "button",
       style: "display:inline-flex;align-items:center;gap:7px",
     },
@@ -39,6 +60,25 @@ export function renderOnlineSaveStatus(
     dataset: { testid: "db-connection-status" },
     on: { click: openSettings },
   });
+  if (recovery.kind === "blocked") {
+    const recover = el("button", {
+      class: "db-autosave-retry-button",
+      text: "복구",
+      attrs: { type: "button", title: "다시 불러오거나 복사본을 내보냅니다. 새 토큰으로 덮어쓰지 않습니다." },
+      dataset: { testid: "persistence-recovery-open" },
+      on: {
+        click: () => {
+          openPersistenceRecovery();
+          onRefresh();
+        },
+      },
+    });
+    return el("span", {
+      class: "db-connection-status-group",
+      attrs: { role: "group", "aria-label": "온라인 저장 복구" },
+      children: [button, recover],
+    });
+  }
   if (autoSave.kind === "error") {
     const retry = el("button", {
       class: "db-autosave-retry-button",
@@ -48,8 +88,9 @@ export function renderOnlineSaveStatus(
       on: {
         click: () => {
           void store.flush()
-            .catch((error) => {
-              console.error("[store] manual auto-save retry failed:", error);
+            .catch((error: unknown) => {
+              if (error instanceof Error) console.error("[store] manual auto-save retry failed:", error);
+              else console.error("[store] manual auto-save retry failed");
             })
             .finally(onRefresh);
         },
@@ -78,8 +119,10 @@ function onlineSaveStatusText(status: DbPersistenceStatus): string {
 function onlineSaveButtonTitle(
   status: DbPersistenceStatus,
   autoSave: ReturnType<typeof store.getAutoSaveState>,
+  recoveryLabel: string | null,
 ): string {
-  return `${onlineSaveStatusTitle(status)} ${autoSaveStatusTitle(autoSave)} 클릭하면 저장된 작업을 확인합니다.`;
+  const recovery = recoveryLabel ? `${recoveryLabel}.` : autoSaveStatusTitle(autoSave);
+  return `${onlineSaveStatusTitle(status)} ${recovery} 클릭하면 저장된 작업을 확인합니다.`;
 }
 
 function onlineSaveStatusTitle(status: DbPersistenceStatus): string {

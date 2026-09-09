@@ -1,0 +1,12 @@
+monitor_id=mon_PQZF1ZCAYWYSHGAP
+{"type":"line","id":"authoring-102928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-102928","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 typecheck:app"}
+{"type":"line","id":"authoring-102928","description":"task11 scoped validation","line":"> tsc --noEmit -p tsconfig.app.json"}
+{"type":"line","id":"authoring-102928","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-102928","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+> rpg-zzu@0.1.0 typecheck:app
+> tsc --noEmit -p tsconfig.app.json
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

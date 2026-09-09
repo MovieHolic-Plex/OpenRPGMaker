@@ -1,8 +1,15 @@
+import { openPersistenceRecovery, persistenceRecoveryCopy } from "@/editor/persistenceRecoveryUi";
+import { SpatialPersistenceError } from "@/project/spatial/persistence";
+import { ProjectRoutingError } from "@/project/spatial/saveRouting";
+import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
 import { store } from "@/project/store";
-import { toast } from "@/util/toast";
+import { dismissToastsByKey, toast } from "@/util/toast";
+
+const recoveryToastKey = Symbol("persistence-recovery");
 
 export async function saveProjectNow(): Promise<boolean> {
-  if (store.isLoaded() && !store.hasUnsavedChanges() && store.getAutoSaveState().kind !== "error") {
+  if (store.isLoaded() && !store.hasUnsavedChanges() && store.getAutoSaveState().kind !== "error"
+    && store.getPersistenceRecovery().kind !== "blocked") {
     toast("이미 최신 상태입니다", "ok");
     return true;
   }
@@ -10,9 +17,15 @@ export async function saveProjectNow(): Promise<boolean> {
   try {
     const result = await store.flush();
     switch (result.kind) {
-      case "saved":
-        toast("저장 완료", "ok");
+      case "saved": {
+        const recovery = store.getPersistenceRecovery();
+        if (recovery.kind === "ready" && recovery.mirror?.status === "warning") {
+          toast("저장 완료. 미리보기 동기화는 경고입니다.", "info");
+        } else {
+          toast("저장 완료", "ok");
+        }
         return true;
+      }
       case "saved-local":
         toast("저장 완료 (브라우저)", "ok");
         return true;
@@ -30,6 +43,11 @@ export async function saveProjectNow(): Promise<boolean> {
         return false;
     }
   } catch (error) {
+    if (error instanceof SpatialPersistenceError || error instanceof ProjectRoutingError) {
+      toast(persistenceRecoveryCopy(error).title, { kind: "error", key: recoveryToastKey });
+      openPersistenceRecovery();
+      return false;
+    }
     if (error instanceof Error) {
       toast(`저장 실패: ${error.message}`, "error");
       return false;
@@ -39,10 +57,20 @@ export async function saveProjectNow(): Promise<boolean> {
 }
 
 /** 온라인 저장본을 다시 읽어 맵/이벤트를 즉시 반영한다. */
-export async function reloadProjectFromDbNow(options: { readonly force?: boolean } = {}): Promise<boolean> {
+export async function reloadProjectFromDbNow(options: {
+  readonly force?: boolean;
+  readonly expectedProjectId?: string | null;
+} = {}): Promise<boolean> {
   if (!store.isLoaded()) {
     toast("아직 프로젝트를 불러오는 중입니다.", "error");
     return false;
+  }
+  if (options.expectedProjectId !== undefined) {
+    const liveId = supabaseProjectConfig()?.projectId ?? null;
+    if (liveId !== options.expectedProjectId) {
+      toast("복구 대상이 바뀌어 불러오기를 취소했습니다.", "error");
+      return false;
+    }
   }
   if (!options.force && store.hasUnsavedChanges()) {
     // 호출자가 confirm 한 뒤 force 로 다시 부를 수 있게 cancelled 는 false.
@@ -63,6 +91,7 @@ export async function reloadProjectFromDbNow(options: { readonly force?: boolean
       } else {
         editorState.set({ currentMapId: currentId });
       }
+      dismissToastsByKey(recoveryToastKey);
       toast(`온라인 저장본을 불러왔습니다${result.title ? ` — ${result.title}` : ""}`, "ok");
       return true;
     }

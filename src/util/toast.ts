@@ -19,6 +19,7 @@ export type ToastAction = {
 };
 
 export type ToastOptions = {
+  readonly key?: symbol;
   readonly kind?: ToastKind;
   readonly durationMs?: number;
   readonly action?: ToastAction;
@@ -28,6 +29,7 @@ export type ToastOptions = {
 const MAX_STACK = 4;
 
 type ToastEntry = {
+  readonly key?: symbol;
   readonly element: HTMLElement;
   timer: ReturnType<typeof setTimeout> | null;
 };
@@ -123,7 +125,7 @@ export function toast(message: string, kindOrOptions: ToastKind | ToastOptions =
 
   const entry: ToastEntry = { element: null as unknown as HTMLElement, timer: null };
   const element = buildElement(message, kind, options.action, entry);
-  Object.assign(entry, { element });
+  Object.assign(entry, { element, key: options.key });
 
   stack.append(element);
   entries.push(entry);
@@ -131,6 +133,13 @@ export function toast(message: string, kindOrOptions: ToastKind | ToastOptions =
   retagEntries();
 
   entry.timer = setTimeout(() => expireEntry(entry), durationMs);
+}
+
+export function dismissToastsByKey(key: symbol): void {
+  if (typeof document === "undefined" || !document.body) return;
+  for (const entry of [...entries]) {
+    if (entry.key === key) dropEntry(entry);
+  }
 }
 
 /** 테스트 헬퍼: 스택을 비운다. */

@@ -1,0 +1,4 @@
+build exit=0
+cache=/dev/shm/task34-check.wI4zW8
+dist=/dev/shm/task34-dist.aPr8O1
+cleanup=EXIT trap

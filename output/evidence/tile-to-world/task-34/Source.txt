@@ -1,0 +1,8 @@
+base=009771ec48ce30f571ebe8cdf6fe34d42f4a9b6c
+verified-source-tree=b257c5e4c9459573542f9fc553075068ddee3d0b
+worktree=/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-overview-associations
+branch=feat/spatial-overview-associations
+old-digest-execution-worktree-head=fdabadc371692ba898d821719159e4213161e38a
+base-digest-source-sha256=d1c1db95cab18de5ad731447fea1fd2d0b96bcfd1e9995881aba57af3bf30494  -
+old-witness-digest-source-sha256=d1c1db95cab18de5ad731447fea1fd2d0b96bcfd1e9995881aba57af3bf30494  ../spatial-geography-compiler/src/editor/spatial/compilerValidation.ts
+current-digest-source-sha256=d1c1db95cab18de5ad731447fea1fd2d0b96bcfd1e9995881aba57af3bf30494  src/editor/spatial/compilerValidation.ts

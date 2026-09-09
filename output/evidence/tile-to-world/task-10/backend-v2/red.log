@@ -1,0 +1,74 @@
+monitor_id=mon_H3YRHPXEHVSHHTVS
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialGeographyCompiler.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-geography-compiler"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":" ❯ test/spatialGeographyCompiler.test.ts (2 tests | 2 failed) 943ms"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"   × bounded geography public compiler > emits traversable overview entries when a region has positioned children 507ms"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"     → kind: geography-contract-root"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"   × bounded geography public compiler > emits traversable overview entries when a world has positioned children 434ms"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"     → kind: geography-contract-root"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":" FAIL  test/spatialGeographyCompiler.test.ts > bounded geography public compiler > emits traversable overview entries when a region has positioned children"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":" FAIL  test/spatialGeographyCompiler.test.ts > bounded geography public compiler > emits traversable overview entries when a world has positioned children"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"SpatialCompileError: kind: geography-contract-root"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":" ❯ compileSpatialOccurrence src/editor/spatial/compileSpatialOccurrence.ts:53:40"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"     51|       if (request.target) throw new SpatialCompileError(\"target\", occu…"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"     52|       return compilePlaces(context);"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"     53|     case \"region\": case \"world\": throw new SpatialCompileError(\"kind\",…"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"       |                                        ^"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"     54|     default: return assertNever(occurrence);"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"     55|   }"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":" ❯ test/spatialGeographyCompiler.test.ts:16:20"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"      Tests  2 failed (2)"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"   Start at  23:00:40"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":"   Duration  8.18s (transform 4.81s, setup 0ms, collect 6.71s, tests 943ms, environment 0ms, prepare 130ms)"}
+{"type":"line","id":"authoring-334211","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-334211","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialGeographyCompiler.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-geography-compiler
+
+ ❯ test/spatialGeographyCompiler.test.ts (2 tests | 2 failed) 943ms
+   × bounded geography public compiler > emits traversable overview entries when a region has positioned children 507ms
+     → kind: geography-contract-root
+   × bounded geography public compiler > emits traversable overview entries when a world has positioned children 434ms
+     → kind: geography-contract-root
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialGeographyCompiler.test.ts > bounded geography public compiler > emits traversable overview entries when a region has positioned children
+ FAIL  test/spatialGeographyCompiler.test.ts > bounded geography public compiler > emits traversable overview entries when a world has positioned children
+SpatialCompileError: kind: geography-contract-root
+ ❯ compileSpatialOccurrence src/editor/spatial/compileSpatialOccurrence.ts:53:40
+     51|       if (request.target) throw new SpatialCompileError("target", occu…
+     52|       return compilePlaces(context);
+     53|     case "region": case "world": throw new SpatialCompileError("kind",…
+       |                                        ^
+     54|     default: return assertNever(occurrence);
+     55|   }
+ ❯ test/spatialGeographyCompiler.test.ts:16:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  23:00:40
+   Duration  8.18s (transform 4.81s, setup 0ms, collect 6.71s, tests 943ms, environment 0ms, prepare 130ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

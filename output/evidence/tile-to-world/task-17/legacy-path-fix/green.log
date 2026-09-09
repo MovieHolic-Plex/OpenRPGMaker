@@ -1,0 +1,32 @@
+monitor_id=mon_NRBKWJ2CJ3F8QS76
+{"type":"line","id":"authoring-20077","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-20077","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-20077","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialLegacyPathIdentity.test.ts --maxWorkers=1 --no-file-parallelism --silent=false"}
+{"type":"line","id":"authoring-20077","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-20077","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-20077","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-legacy-path-fix"}
+{"type":"line","id":"authoring-20077","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-20077","description":"task11 scoped validation","line":" ✓ test/spatialLegacyPathIdentity.test.ts (6 tests) 629ms"}
+{"type":"line","id":"authoring-20077","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-20077","description":"task11 scoped validation","line":" Test Files  1 passed (1)"}
+{"type":"line","id":"authoring-20077","description":"task11 scoped validation","line":"      Tests  6 passed (6)"}
+{"type":"line","id":"authoring-20077","description":"task11 scoped validation","line":"   Start at  03:00:44"}
+{"type":"line","id":"authoring-20077","description":"task11 scoped validation","line":"   Duration  12.71s (transform 8.18s, setup 0ms, collect 11.65s, tests 629ms, environment 0ms, prepare 90ms)"}
+{"type":"line","id":"authoring-20077","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-20077","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialLegacyPathIdentity.test.ts --maxWorkers=1 --no-file-parallelism --silent=false
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-legacy-path-fix
+
+ ✓ test/spatialLegacyPathIdentity.test.ts (6 tests) 629ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  03:00:44
+   Duration  12.71s (transform 8.18s, setup 0ms, collect 11.65s, tests 629ms, environment 0ms, prepare 90ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

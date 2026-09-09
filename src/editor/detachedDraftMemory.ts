@@ -3,6 +3,12 @@
 // explicitly transfer memory so approval previews can keep harness sessions without adding
 // project/runtime schema fields.
 const memoryByDraft = new WeakMap<object, Map<string, unknown>>();
+const originByDraft = new WeakMap<object, object>();
+
+/** Object-identity lineage cannot be forged by equal project JSON or a project switch. */
+export function detachedDraftOrigin(draft: object): object {
+  return originByDraft.get(draft) ?? draft;
+}
 
 function memoryFor(draft: object, create: boolean): Map<string, unknown> | undefined {
   let memory = memoryByDraft.get(draft);
@@ -30,6 +36,7 @@ export function cloneDetachedDraft<T extends object>(draft: T): T {
 
 /** Transfer all detached namespaces without sharing mutable session objects. */
 export function transferDetachedDraftMemory(from: object, to: object): void {
+  originByDraft.set(to, detachedDraftOrigin(from));
   const source = memoryFor(from, false);
   if (!source) return;
   const target = new Map<string, unknown>();

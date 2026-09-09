@@ -18,6 +18,21 @@ afterEach(() => {
 });
 
 describe("database all-tabs render walk", () => {
+  it.each([
+    "spatialTiles", "spatialObjects", "spatialSpaces", "spatialPlaces", "spatialRegions", "spatialWorlds",
+  ] as const)("renders a destination-specific authoring surface when %s is selected", (tab) => {
+    // Given: a blank project and one of the six approved spatial primaries.
+    const root = document.createElement("div");
+    setDatabaseActiveTab(tab);
+    // When: the real database panel renders that primary.
+    renderDatabasePanel(root);
+    // Then: its specific destination contains the gallery and canvas, not an empty shell.
+    const destination = root.querySelector(DATABASE_PRIMARY_SENTINELS[tab]);
+    expect(destination).not.toBeNull();
+    expect(destination?.querySelector("[data-testid='spatial-gallery']")).not.toBeNull();
+    expect(destination?.querySelector("[data-testid='spatial-canvas']")).not.toBeNull();
+  });
+
   it("every registered tab renders a non-empty body without throwing", () => {
     const all: DatabaseTab[] = ["overview", ...TAB_GROUPS.flatMap((g) => g.tabs)];
     expect(all.length).toBeGreaterThanOrEqual(34);

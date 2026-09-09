@@ -1,0 +1,1046 @@
+[
+  {
+    "seed": 109,
+    "sourceSHA": "fdabadc371692ba898d821719159e4213161e38a",
+    "inputSHA256": "41e1e33568adcad9dbcb636b25f02311bb78a3b7d75abd0bed8a98a6dbcf9862",
+    "callerUnchanged": true,
+    "errors": {
+      "complete": "spatialAuthoring.occurrences.geography-contract-root.bindings[0].connectionIds: missing owned connection connection:23:geography-contract-root4:road",
+      "duplicate-projection": "spatialAuthoring.occurrences.child:23:geography-contract-root4:west:0.bindings[4].ports: duplicate port binding"
+    },
+    "markers": [
+      {
+        "endpoint": {
+          "occurrenceId": "child:23:geography-contract-root4:west:0",
+          "portId": "port:40:child:23:geography-contract-root4:west:05:entry"
+        },
+        "marker": {
+          "mapId": "geography-contract-overview",
+          "x": 5,
+          "y": 8
+        },
+        "landing": {
+          "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+          "x": 12,
+          "y": 17
+        }
+      },
+      {
+        "endpoint": {
+          "occurrenceId": "child:23:geography-contract-root4:east:0",
+          "portId": "port:40:child:23:geography-contract-root4:east:05:entry"
+        },
+        "marker": {
+          "mapId": "geography-contract-overview",
+          "x": 25,
+          "y": 8
+        },
+        "landing": {
+          "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+          "x": 12,
+          "y": 17
+        }
+      }
+    ],
+    "road": [
+      {
+        "x": 5,
+        "y": 8
+      },
+      {
+        "x": 6,
+        "y": 8
+      },
+      {
+        "x": 7,
+        "y": 8
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 9,
+        "y": 8
+      },
+      {
+        "x": 10,
+        "y": 8
+      },
+      {
+        "x": 11,
+        "y": 8
+      },
+      {
+        "x": 12,
+        "y": 8
+      },
+      {
+        "x": 13,
+        "y": 8
+      },
+      {
+        "x": 14,
+        "y": 8
+      },
+      {
+        "x": 15,
+        "y": 8
+      },
+      {
+        "x": 16,
+        "y": 8
+      },
+      {
+        "x": 17,
+        "y": 8
+      },
+      {
+        "x": 18,
+        "y": 8
+      },
+      {
+        "x": 19,
+        "y": 8
+      },
+      {
+        "x": 20,
+        "y": 8
+      },
+      {
+        "x": 21,
+        "y": 8
+      },
+      {
+        "x": 22,
+        "y": 8
+      },
+      {
+        "x": 23,
+        "y": 8
+      },
+      {
+        "x": 24,
+        "y": 8
+      },
+      {
+        "x": 25,
+        "y": 8
+      }
+    ],
+    "traversal": {
+      "ports": [
+        {
+          "occurrenceId": "geography-contract-root",
+          "mapId": "geography-contract-overview",
+          "x": 2,
+          "y": 8,
+          "portId": "port:23:geography-contract-root5:entry"
+        },
+        {
+          "occurrenceId": "child:23:geography-contract-root4:west:0",
+          "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+          "x": 12,
+          "y": 17,
+          "portId": "port:40:child:23:geography-contract-root4:west:05:entry"
+        },
+        {
+          "occurrenceId": "child:23:geography-contract-root4:east:0",
+          "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+          "x": 12,
+          "y": 17,
+          "portId": "port:40:child:23:geography-contract-root4:east:05:entry"
+        },
+        {
+          "occurrenceId": "child:40:child:23:geography-contract-root4:west:06:square:0",
+          "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+          "x": 12,
+          "y": 17,
+          "portId": "port:59:child:40:child:23:geography-contract-root4:west:06:square:05:entry"
+        },
+        {
+          "occurrenceId": "child:40:child:23:geography-contract-root4:west:06:square:0",
+          "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+          "x": 21,
+          "y": 16,
+          "portId": "port:59:child:40:child:23:geography-contract-root4:west:06:square:04:exit"
+        },
+        {
+          "occurrenceId": "child:40:child:23:geography-contract-root4:east:06:square:0",
+          "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+          "x": 12,
+          "y": 17,
+          "portId": "port:59:child:40:child:23:geography-contract-root4:east:06:square:05:entry"
+        },
+        {
+          "occurrenceId": "child:40:child:23:geography-contract-root4:east:06:square:0",
+          "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+          "x": 21,
+          "y": 16,
+          "portId": "port:59:child:40:child:23:geography-contract-root4:east:06:square:04:exit"
+        },
+        {
+          "occurrenceId": "child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:0",
+          "x": 10,
+          "y": 15,
+          "portId": "port:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:05:entry"
+        },
+        {
+          "occurrenceId": "child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:0",
+          "x": 10,
+          "y": 15,
+          "portId": "port:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:05:entry"
+        },
+        {
+          "occurrenceId": "child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:0",
+          "x": 10,
+          "y": 15,
+          "portId": "port:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:05:entry"
+        },
+        {
+          "occurrenceId": "child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:0",
+          "x": 10,
+          "y": 15,
+          "portId": "port:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:05:entry"
+        },
+        {
+          "occurrenceId": "child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:0",
+          "x": 10,
+          "y": 15,
+          "portId": "port:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:05:entry"
+        },
+        {
+          "occurrenceId": "child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:0",
+          "x": 10,
+          "y": 15,
+          "portId": "port:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:05:entry"
+        },
+        {
+          "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:06:stairs:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:0",
+          "x": 10,
+          "y": 15,
+          "portId": "port:95:child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:06:stairs:07:landing"
+        },
+        {
+          "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:09:stairs-up:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:0",
+          "x": 14,
+          "y": 15,
+          "portId": "port:98:child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:09:stairs-up:07:landing"
+        },
+        {
+          "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:06:stairs:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:0",
+          "x": 10,
+          "y": 15,
+          "portId": "port:95:child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:06:stairs:07:landing"
+        },
+        {
+          "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:09:stairs-up:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:0",
+          "x": 14,
+          "y": 15,
+          "portId": "port:98:child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:09:stairs-up:07:landing"
+        },
+        {
+          "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:06:stairs:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:0",
+          "x": 10,
+          "y": 15,
+          "portId": "port:95:child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:06:stairs:07:landing"
+        },
+        {
+          "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:09:stairs-up:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:0",
+          "x": 14,
+          "y": 15,
+          "portId": "port:98:child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:09:stairs-up:07:landing"
+        },
+        {
+          "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:06:stairs:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:0",
+          "x": 10,
+          "y": 15,
+          "portId": "port:95:child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:06:stairs:07:landing"
+        },
+        {
+          "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:09:stairs-up:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:0",
+          "x": 14,
+          "y": 15,
+          "portId": "port:98:child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:09:stairs-up:07:landing"
+        },
+        {
+          "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:06:stairs:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:0",
+          "x": 10,
+          "y": 15,
+          "portId": "port:95:child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:06:stairs:07:landing"
+        },
+        {
+          "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:09:stairs-up:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:0",
+          "x": 14,
+          "y": 15,
+          "portId": "port:98:child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:09:stairs-up:07:landing"
+        },
+        {
+          "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:06:stairs:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:0",
+          "x": 10,
+          "y": 15,
+          "portId": "port:95:child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:06:stairs:07:landing"
+        },
+        {
+          "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:09:stairs-up:0",
+          "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:0",
+          "x": 14,
+          "y": 15,
+          "portId": "port:98:child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:09:stairs-up:07:landing"
+        }
+      ],
+      "routes": [
+        {
+          "eventId": "contract-enter:child:23:geography-contract-root4:west:0",
+          "from": {
+            "mapId": "geography-contract-overview",
+            "x": 5,
+            "y": 8
+          },
+          "to": {
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17
+          },
+          "commands": [
+            {
+              "kind": "transfer",
+              "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+              "x": 12,
+              "y": 17,
+              "fade": "black"
+            }
+          ],
+          "walk": [
+            {
+              "x": 31,
+              "y": 23
+            },
+            {
+              "x": 31,
+              "y": 22
+            },
+            {
+              "x": 31,
+              "y": 21
+            },
+            {
+              "x": 31,
+              "y": 20
+            },
+            {
+              "x": 31,
+              "y": 19
+            },
+            {
+              "x": 31,
+              "y": 18
+            },
+            {
+              "x": 31,
+              "y": 17
+            },
+            {
+              "x": 31,
+              "y": 16
+            },
+            {
+              "x": 31,
+              "y": 15
+            },
+            {
+              "x": 31,
+              "y": 14
+            },
+            {
+              "x": 31,
+              "y": 13
+            },
+            {
+              "x": 31,
+              "y": 12
+            },
+            {
+              "x": 31,
+              "y": 11
+            },
+            {
+              "x": 31,
+              "y": 10
+            },
+            {
+              "x": 31,
+              "y": 9
+            },
+            {
+              "x": 31,
+              "y": 8
+            },
+            {
+              "x": 30,
+              "y": 8
+            },
+            {
+              "x": 29,
+              "y": 8
+            },
+            {
+              "x": 28,
+              "y": 8
+            },
+            {
+              "x": 27,
+              "y": 8
+            },
+            {
+              "x": 26,
+              "y": 8
+            },
+            {
+              "x": 25,
+              "y": 8
+            },
+            {
+              "x": 24,
+              "y": 8
+            },
+            {
+              "x": 23,
+              "y": 8
+            },
+            {
+              "x": 22,
+              "y": 8
+            },
+            {
+              "x": 21,
+              "y": 8
+            },
+            {
+              "x": 20,
+              "y": 8
+            },
+            {
+              "x": 19,
+              "y": 8
+            },
+            {
+              "x": 18,
+              "y": 8
+            },
+            {
+              "x": 17,
+              "y": 8
+            },
+            {
+              "x": 16,
+              "y": 8
+            },
+            {
+              "x": 15,
+              "y": 8
+            },
+            {
+              "x": 14,
+              "y": 8
+            },
+            {
+              "x": 13,
+              "y": 8
+            },
+            {
+              "x": 12,
+              "y": 8
+            },
+            {
+              "x": 11,
+              "y": 8
+            },
+            {
+              "x": 10,
+              "y": 8
+            },
+            {
+              "x": 9,
+              "y": 8
+            },
+            {
+              "x": 8,
+              "y": 8
+            },
+            {
+              "x": 7,
+              "y": 8
+            },
+            {
+              "x": 6,
+              "y": 8
+            },
+            {
+              "mapId": "geography-contract-overview",
+              "x": 5,
+              "y": 8
+            }
+          ],
+          "executedTransfer": {
+            "kind": "transfer",
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17,
+            "fade": "black"
+          },
+          "interpreterExecuted": true,
+          "landingPassable": true,
+          "engine": {
+            "walking": "project/collision.canMove",
+            "execution": "player/interpreter.createInterpreter"
+          }
+        },
+        {
+          "eventId": "contract-return:child:23:geography-contract-root4:west:0",
+          "from": {
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17
+          },
+          "to": {
+            "mapId": "geography-contract-overview",
+            "x": 5,
+            "y": 8
+          },
+          "commands": [
+            {
+              "kind": "transfer",
+              "mapId": "geography-contract-overview",
+              "x": 5,
+              "y": 8,
+              "fade": "black"
+            }
+          ],
+          "walk": [
+            {
+              "x": 2,
+              "y": 3
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 4,
+              "y": 3
+            },
+            {
+              "x": 5,
+              "y": 3
+            },
+            {
+              "x": 6,
+              "y": 3
+            },
+            {
+              "x": 7,
+              "y": 3
+            },
+            {
+              "x": 8,
+              "y": 3
+            },
+            {
+              "x": 9,
+              "y": 3
+            },
+            {
+              "x": 10,
+              "y": 3
+            },
+            {
+              "x": 11,
+              "y": 3
+            },
+            {
+              "x": 12,
+              "y": 3
+            },
+            {
+              "x": 12,
+              "y": 4
+            },
+            {
+              "x": 12,
+              "y": 5
+            },
+            {
+              "x": 12,
+              "y": 6
+            },
+            {
+              "x": 12,
+              "y": 7
+            },
+            {
+              "x": 12,
+              "y": 8
+            },
+            {
+              "x": 12,
+              "y": 9
+            },
+            {
+              "x": 12,
+              "y": 10
+            },
+            {
+              "x": 12,
+              "y": 11
+            },
+            {
+              "x": 12,
+              "y": 12
+            },
+            {
+              "x": 12,
+              "y": 13
+            },
+            {
+              "x": 12,
+              "y": 14
+            },
+            {
+              "x": 12,
+              "y": 15
+            },
+            {
+              "x": 12,
+              "y": 16
+            },
+            {
+              "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+              "x": 12,
+              "y": 17
+            }
+          ],
+          "executedTransfer": {
+            "kind": "transfer",
+            "mapId": "geography-contract-overview",
+            "x": 5,
+            "y": 8,
+            "fade": "black"
+          },
+          "interpreterExecuted": true,
+          "landingPassable": true,
+          "engine": {
+            "walking": "project/collision.canMove",
+            "execution": "player/interpreter.createInterpreter"
+          }
+        },
+        {
+          "eventId": "contract-enter:child:23:geography-contract-root4:east:0",
+          "from": {
+            "mapId": "geography-contract-overview",
+            "x": 25,
+            "y": 8
+          },
+          "to": {
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17
+          },
+          "commands": [
+            {
+              "kind": "transfer",
+              "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+              "x": 12,
+              "y": 17,
+              "fade": "black"
+            }
+          ],
+          "walk": [
+            {
+              "x": 0,
+              "y": 23
+            },
+            {
+              "x": 0,
+              "y": 22
+            },
+            {
+              "x": 0,
+              "y": 21
+            },
+            {
+              "x": 0,
+              "y": 20
+            },
+            {
+              "x": 0,
+              "y": 19
+            },
+            {
+              "x": 0,
+              "y": 18
+            },
+            {
+              "x": 0,
+              "y": 17
+            },
+            {
+              "x": 0,
+              "y": 16
+            },
+            {
+              "x": 0,
+              "y": 15
+            },
+            {
+              "x": 0,
+              "y": 14
+            },
+            {
+              "x": 0,
+              "y": 13
+            },
+            {
+              "x": 0,
+              "y": 12
+            },
+            {
+              "x": 0,
+              "y": 11
+            },
+            {
+              "x": 0,
+              "y": 10
+            },
+            {
+              "x": 0,
+              "y": 9
+            },
+            {
+              "x": 0,
+              "y": 8
+            },
+            {
+              "x": 1,
+              "y": 8
+            },
+            {
+              "x": 2,
+              "y": 8
+            },
+            {
+              "x": 3,
+              "y": 8
+            },
+            {
+              "x": 4,
+              "y": 8
+            },
+            {
+              "x": 5,
+              "y": 8
+            },
+            {
+              "x": 6,
+              "y": 8
+            },
+            {
+              "x": 7,
+              "y": 8
+            },
+            {
+              "x": 8,
+              "y": 8
+            },
+            {
+              "x": 9,
+              "y": 8
+            },
+            {
+              "x": 10,
+              "y": 8
+            },
+            {
+              "x": 11,
+              "y": 8
+            },
+            {
+              "x": 12,
+              "y": 8
+            },
+            {
+              "x": 13,
+              "y": 8
+            },
+            {
+              "x": 14,
+              "y": 8
+            },
+            {
+              "x": 15,
+              "y": 8
+            },
+            {
+              "x": 16,
+              "y": 8
+            },
+            {
+              "x": 17,
+              "y": 8
+            },
+            {
+              "x": 18,
+              "y": 8
+            },
+            {
+              "x": 19,
+              "y": 8
+            },
+            {
+              "x": 20,
+              "y": 8
+            },
+            {
+              "x": 21,
+              "y": 8
+            },
+            {
+              "x": 22,
+              "y": 8
+            },
+            {
+              "x": 23,
+              "y": 8
+            },
+            {
+              "x": 24,
+              "y": 8
+            },
+            {
+              "mapId": "geography-contract-overview",
+              "x": 25,
+              "y": 8
+            }
+          ],
+          "executedTransfer": {
+            "kind": "transfer",
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17,
+            "fade": "black"
+          },
+          "interpreterExecuted": true,
+          "landingPassable": true,
+          "engine": {
+            "walking": "project/collision.canMove",
+            "execution": "player/interpreter.createInterpreter"
+          }
+        },
+        {
+          "eventId": "contract-return:child:23:geography-contract-root4:east:0",
+          "from": {
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17
+          },
+          "to": {
+            "mapId": "geography-contract-overview",
+            "x": 25,
+            "y": 8
+          },
+          "commands": [
+            {
+              "kind": "transfer",
+              "mapId": "geography-contract-overview",
+              "x": 25,
+              "y": 8,
+              "fade": "black"
+            }
+          ],
+          "walk": [
+            {
+              "x": 2,
+              "y": 3
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 4,
+              "y": 3
+            },
+            {
+              "x": 5,
+              "y": 3
+            },
+            {
+              "x": 6,
+              "y": 3
+            },
+            {
+              "x": 7,
+              "y": 3
+            },
+            {
+              "x": 8,
+              "y": 3
+            },
+            {
+              "x": 9,
+              "y": 3
+            },
+            {
+              "x": 10,
+              "y": 3
+            },
+            {
+              "x": 11,
+              "y": 3
+            },
+            {
+              "x": 12,
+              "y": 3
+            },
+            {
+              "x": 12,
+              "y": 4
+            },
+            {
+              "x": 12,
+              "y": 5
+            },
+            {
+              "x": 12,
+              "y": 6
+            },
+            {
+              "x": 12,
+              "y": 7
+            },
+            {
+              "x": 12,
+              "y": 8
+            },
+            {
+              "x": 12,
+              "y": 9
+            },
+            {
+              "x": 12,
+              "y": 10
+            },
+            {
+              "x": 12,
+              "y": 11
+            },
+            {
+              "x": 12,
+              "y": 12
+            },
+            {
+              "x": 12,
+              "y": 13
+            },
+            {
+              "x": 12,
+              "y": 14
+            },
+            {
+              "x": 12,
+              "y": 15
+            },
+            {
+              "x": 12,
+              "y": 16
+            },
+            {
+              "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+              "x": 12,
+              "y": 17
+            }
+          ],
+          "executedTransfer": {
+            "kind": "transfer",
+            "mapId": "geography-contract-overview",
+            "x": 25,
+            "y": 8,
+            "fade": "black"
+          },
+          "interpreterExecuted": true,
+          "landingPassable": true,
+          "engine": {
+            "walking": "project/collision.canMove",
+            "execution": "player/interpreter.createInterpreter"
+          }
+        }
+      ],
+      "mapTree": {
+        "mapId": "map_blank_start",
+        "children": [
+          {
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+            "children": [
+              {
+                "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:0",
+                "children": [
+                  {
+                    "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:0",
+                    "children": []
+                  },
+                  {
+                    "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:0",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+            "children": [
+              {
+                "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:0",
+                "children": [
+                  {
+                    "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:0",
+                    "children": []
+                  },
+                  {
+                    "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:0",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "mapId": "geography-contract-overview",
+            "children": []
+          }
+        ]
+      },
+      "serializerReloads": 1
+    },
+    "numericOutputIdentical": true,
+    "completeBookkeepingAccepted": false,
+    "controlIsAcceptableCompilerOutput": false
+  }
+]

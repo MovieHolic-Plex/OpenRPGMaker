@@ -1,4 +1,8 @@
 import { PRODUCT_BRAND } from "@/brand";
+import { projectPreview, rawObject, serverSHA } from "./spatial/persistenceWire";
+import { rememberCanonicalTarget, routeSpatialSave, ProjectRoutingError, type ProjectWriteAuthority } from "./spatial/saveRouting";
+import type { MirrorStatus } from "./spatial/persistenceTypes";
+export type { ProjectWriteAuthority } from "./spatial/saveRouting";
 import { deserialize, serialize } from "./io";
 import { readProjectV4MapMergeSnapshot } from "./io/shape";
 import { SCHEMA_VERSION } from "./types";
@@ -75,12 +79,13 @@ export type SupabaseMapSaveConflict = {
 export type SupabaseSaveResult =
   | { readonly kind: "not-configured" }
   | { readonly kind: "conflict"; readonly conflicts: readonly SupabaseMapSaveConflict[] }
-  | { readonly kind: "saved"; readonly project?: Project; readonly sha256?: string; readonly commitId?: string };
+  | { readonly kind: "saved"; readonly project?: Project; readonly sha256?: string; readonly commitId?: string; readonly authority?: ProjectWriteAuthority; readonly mirror?: MirrorStatus };
 
 export type SupabaseProjectMapPatchInput = {
   readonly baseProject: Project;
   readonly changedMapIds?: readonly string[];
   readonly project: Project;
+  readonly authority?: ProjectWriteAuthority;
 };
 
 type ProjectWire = {
@@ -127,7 +132,8 @@ export type SupabaseProjectCommitListItem = {
   readonly summary: string | null;
 };
 
-type SupabaseProjectSnapshot = {
+export type SupabaseProjectSnapshot = {
+  readonly authority: ProjectWriteAuthority;
   readonly projectId: string | null;
   readonly project: Project;
   readonly sha256: string | null;
@@ -153,8 +159,10 @@ export class SupabaseMigrationRequiredError extends Error {
   }
 }
 
-export async function loadProjectFromSupabase(config = supabaseProjectConfig()): Promise<Project | null> {
-  const project = (await loadProjectSnapshotFromSupabase(config))?.project ?? null;
+export async function loadProjectFromSupabase(config = supabaseProjectConfig(), onAuthority?: (authority: ProjectWriteAuthority) => void): Promise<Project | null> {
+  const snapshot = await loadProjectSnapshotFromSupabase(config);
+  if (snapshot) onAuthority?.(snapshot.authority);
+  const project = snapshot?.project ?? null;
   if (project && config) void hydrateLastRemoteCommitTip(config);
   return project;
 }
@@ -192,6 +200,18 @@ export async function loadSupabaseProjectPreview(
   config: SupabaseProjectListConfig,
   projectId: string,
 ): Promise<SupabaseProjectPreview | null> {
+  const target = { ...config, projectId };
+  const rootResponse = await fetch(supabaseProjectUrl(target), { headers: supabaseJsonHeaders(config, "read") });
+  if (!rootResponse.ok) throw new SupabaseProjectSyncError(await rootResponse.text(), rootResponse.status);
+  const rootRow = (await parseProjectRows(rootResponse))[0];
+  if (rootRow && isRecord(rootRow.current_json) && Object.hasOwn(rootRow.current_json, "spatialAuthoring")) {
+    const project = projectPreview(rawObject(rootRow.current_json), true);
+    rememberCanonicalTarget(target);
+    const map = Object.values(project.maps).sort((a, b) => b.width * b.height - a.width * a.height)[0];
+    const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+    return map && tileset ? { map, tileset } : null;
+  }
+  // Legacy preview deliberately does not deserialize/repair the raw root.
   const headers = supabaseJsonHeaders(config, "read");
   const metaResponse = await fetch(supabaseProjectPreviewMapsUrl(config, projectId), { headers });
   if (!metaResponse.ok) return null;
@@ -240,37 +260,48 @@ async function loadProjectRowFromSupabase(
   return rows[0] ?? null;
 }
 
-async function loadProjectSnapshotFromSupabase(
+export async function loadProjectSnapshotFromSupabase(
   config = supabaseProjectConfig(),
-  options: { readonly includeProjectId?: boolean; readonly signal?: AbortSignal } = {},
+  options: { readonly overlayMaps?: boolean; readonly includeProjectId?: boolean; readonly signal?: AbortSignal } = {},
 ): Promise<SupabaseProjectSnapshot | null> {
   if (!config) return null;
   const row = await loadProjectRowFromSupabase(config, options);
   if (!row) return null;
-  const project = deserializeSupabaseCurrentJson(row.current_json);
+  const canonical = isRecord(row.current_json) && Object.hasOwn(row.current_json, "spatialAuthoring");
+  const project = canonical ? projectPreview(rawObject(row.current_json), true) : deserializeSupabaseCurrentJson(row.current_json);
+  const authority: ProjectWriteAuthority = canonical
+    ? { mode: "canonical", target: { ...config }, serverSHA: serverSHA(row.current_sha256) }
+    : { mode: "legacy", target: { ...config } };
+  if (canonical) rememberCanonicalTarget(config);
   // Hybrid maps SoT (editor open / public load): maps table map_json overlays current_json map bodies.
-  // Patch/conflict reads use the raw row loader separately and never overlay maps.
-  try {
-    const mapRows = await loadMapRowsFromSupabase(config, options.signal);
-    if (mapRows.length > 0) overlayMapsFromRows(project, mapRows);
-  } catch (error) {
-    if (!isOptionalTableMissingError(error)) throw error;
+  // Canonical spatial projects own their map bodies; only legacy rows take the overlay.
+  // Patch/conflict loads pass overlayMaps:false so concurrent merge still compares current_json.
+  if (!canonical && options.overlayMaps !== false) {
+    try {
+      const mapRows = await loadMapRowsFromSupabase(config, options.signal);
+      if (mapRows.length > 0) overlayMapsFromRows(project, mapRows);
+    } catch (error) {
+      if (!isOptionalTableMissingError(error)) throw error;
+    }
   }
   return {
+    authority,
     project,
     sha256: row.current_sha256,
     projectId: row.project_id,
   };
 }
 
-export async function saveProjectToSupabase(project: Project, config = supabaseProjectConfig()): Promise<SupabaseSaveResult> {
+export async function saveProjectToSupabase(project: Project, config = supabaseProjectConfig(), authority?: ProjectWriteAuthority): Promise<SupabaseSaveResult> {
   if (!config) return { kind: "not-configured" };
+  const canonical = await routeSpatialSave(project, config, authority);
+  if (canonical) return canonical;
   const persistedProject = projectWithoutEventDrafts(project);
   removeLegacySpriteReferences(persistedProject);
   const wire = await projectWire(persistedProject);
-  const response = await fetch(supabaseUpsertUrl(config), {
+  const response = await fetch(authority?.mode === "create" ? `${config.url}/rest/v1/projects` : supabaseUpsertUrl(config), {
     method: "POST",
-    headers: supabaseJsonHeaders(config, "write"),
+    headers: authority?.mode === "create" ? { ...supabaseJsonHeaders(config, "write"), Prefer: "return=minimal" } : supabaseJsonHeaders(config, "write"),
     body: JSON.stringify(projectUpsertPayload(config.projectId, persistedProject, wire)),
   });
   if (!response.ok) {
@@ -282,7 +313,8 @@ export async function saveProjectToSupabase(project: Project, config = supabaseP
   } catch (error) {
     if (!isOptionalTableMissingError(error)) throw error;
   }
-  return { kind: "saved", project: persistedProject, sha256: wire.sha256 };
+  return { kind: "saved", project: persistedProject, sha256: wire.sha256,
+    ...(authority?.mode === "create" ? { authority: { mode: "legacy" as const, target: { ...config } } } : {}) };
 }
 
 export async function saveProjectMapPatchToSupabase(
@@ -290,6 +322,8 @@ export async function saveProjectMapPatchToSupabase(
   config = supabaseProjectConfig(),
 ): Promise<SupabaseSaveResult> {
   if (!config) return { kind: "not-configured" };
+  const canonical = await routeSpatialSave(input.project, config, input.authority);
+  if (canonical) return canonical;
   const persistedProject = projectWithoutEventDrafts(input.project);
   const baseProject = projectWithoutEventDrafts(input.baseProject);
   removeLegacySpriteReferences(persistedProject);
@@ -306,6 +340,10 @@ export async function saveProjectMapPatchToSupabase(
     // Conflict/merge against current_json only (no maps overlay). RTT cut: drop
     // saveChangedMapRowsFromCanonical's before/after full-snapshot pair.
     const latestRow = await loadProjectRowFromSupabase(config);
+    // A remotely activated canonical target must not be patched from stale legacy content.
+    if (latestRow && isRecord(latestRow.current_json) && Object.hasOwn(latestRow.current_json, "spatialAuthoring")) {
+      throw new ProjectRoutingError("activation-required", "The legacy target was activated remotely. Reload before editing; stale content cannot acquire its new token.");
+    }
     const latestProject = latestRow ? readMapPatchSnapshot(latestRow.current_json) : canonicalBase;
     const latestSha = latestRow?.current_sha256 ?? null;
 
@@ -939,7 +977,7 @@ async function insertRows(
   if (rows.length === 0) return;
   const response = await fetch(supabaseTableInsertUrl(config, table), {
     method: "POST",
-    headers: supabaseJsonHeaders(config, "write"),
+    headers: { ...supabaseJsonHeaders(config, "write"), Prefer: "return=minimal" },
     body: JSON.stringify(rows),
   });
   if (!response.ok) {

@@ -1,0 +1,90 @@
+{
+  "scope": "Actual task10 geography -> shared controller integration",
+  "status": "scoped integration verified; full task11 remains unaccepted",
+  "baseCommit": "b05592170f553c6001e298c4983c4c824743d83f",
+  "verifiedGeographySourceCommit": "8b37fda2bcc35fe9a18c14d371be168c102e4b75",
+  "priorControllerFix": "4e0569d61e5a24179efed039f4b339926851431a",
+  "sourceBinding": ["source-files.sha256", "driver/controller-geography.json#sourceFiles"],
+  "logStorage": "validation-logs.tar.gz contains byte-exact red-errors.log, green-controller.log and driver.log; log fields refer to those members. The archive preserves trailing whitespace in raw Vitest error excerpts without a Git whitespace waiver.",
+  "traversalStorage": "traversal-receipts.tar.gz contains byte-exact region-routes.json and world-routes.json from driver/. Raw generated files also remain in the run-owned local evidence directory.",
+  "productionDelta": {
+    "path": "src/editor/spatial/actions.ts",
+    "addedLines": 4,
+    "behavior": "Explicit instanceof ToolError conversion to the existing invalid result; preserve message and primitive code in detail",
+    "unknownErrors": "Still rethrown by the unchanged final throw; no generic catch-all",
+    "ownership": "No compiler, ownership, draft, continuation, refresh, store or history implementation changed"
+  },
+  "fixture": {
+    "kind": "Source-only contract fixtures, compiled through real task10 code",
+    "seed": 7,
+    "region": "Nested place/space contents and one authored place-to-place route",
+    "world": "Three regions, two crossings sharing the middle region's single marker, plus the first-region world selector",
+    "sharedProof": "Two concrete links address the middle region, but exactly one overview entry represents its target",
+    "publication": "No published catalog/sample content or DB project"
+  },
+  "red": {
+    "monitorId": "mon_GEWJSAZZC4SXAGR4",
+    "log": "red-errors.log",
+    "exitCode": 1,
+    "passed": 1,
+    "failed": 3,
+    "failures": [
+      "ToolError invalid-args escapes for mountain width 6 below primitive minimum 7",
+      "ToolError out-of-bounds escapes for a valid terrain rectangle whose required mountain landing overflows",
+      "ToolError shared-structure-tileset escapes when an unrelated map uses the private structure atlas"
+    ],
+    "passingControl": "SpatialCompileError blocked at road@12,8 already returns a structured result"
+  },
+  "green": {
+    "monitorId": "mon_DW6223THG1YZRFJY",
+    "log": "green-controller.log",
+    "exitCode": 0,
+    "passed": 12,
+    "failed": 0,
+    "cases": [
+      "Real region preview changes no live state; apply is one exact undo/redo transaction",
+      "Real shared-world preview changes no live state; apply is one exact undo/redo transaction",
+      "Valid overviewEntries reorder rejects stale apply despite identical raster and digests",
+      "Valid overviewRoute reassociation rejects stale apply despite identical raster and digests",
+      "Nested region library revision edit rejects stale apply despite identical raster and digests",
+      "Shared middle-region deletion discloses exact owned and orphaned overview event impacts, preserves other terrain and supports exact undo/redo",
+      "Explicit middle-region source refresh discloses exact incoming orphaned marker/return impacts and supports exact undo/redo",
+      "Human edit to surviving world-owner raster blocks distant child cleanup without mutation",
+      "Invalid mountain width returns invalid/invalid-args without mutation",
+      "Mountain landing overflow returns invalid/out-of-bounds without mutation",
+      "Shared private atlas returns invalid/shared-structure-tileset without mutation",
+      "Blocked authored route returns invalid/blocked without mutation"
+    ],
+    "staleInputValidity": "The competing metadata-only projects pass actual deserialize/serialize validation; these are not malformed-metadata controls"
+  },
+  "legacyBoundaryTransition": {
+    "path": "test/spatialAuthoringBoundary.test.ts",
+    "change": "Replace the obsolete unsupported-geography expectation with concrete generated overview ownership",
+    "selectedCasePassed": 1,
+    "unchangedCasesNotSelected": 6,
+    "note": "Focused -t selection only; no test or failing assertion was deleted/disabled"
+  },
+  "driver": {
+    "path": "scripts/qa/spatial-geography-controller.mts",
+    "command": "unshare -Urn bun run scripts/qa/spatial-geography-controller.mts --evidence output/evidence/tile-to-world/task-11/geography-controller/driver",
+    "monitorId": "mon_REK665D488E1S0NX",
+    "log": "driver.log",
+    "exitCode": 0,
+    "receipts": "driver/controller-geography.json",
+    "region": { "overviews": 1, "interpretedTransfers": 4, "exactUndo": true, "exactRedo": true },
+    "world": { "overviews": 4, "interpretedTransfers": 18, "exactUndo": true, "exactRedo": true },
+    "oracle": "Production canMove walking and createInterpreter execution of actual generated event pages; full route receipts retained",
+    "negativePaths": "Full logical stale rejection plus all four primitive/blocked-route invalid cases preserve the caller",
+    "warning": "Existing standalone edit-activity mirror emits fetch() URL is invalid for /__oprn/edit-activity without an app origin; retained in driver.log, not suppressed. Data assertions and process exit passed."
+  },
+  "validationPolicy": {
+    "lock": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock",
+    "launcher": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/authoring-monitor.mjs",
+    "diagnostics": "All seven changed TypeScript/MTS files reported no diagnostics; git diff --check passed",
+    "deadlines": "Unchanged project test/hook deadlines; bounded owned commands, no retry-until-green or limit inflation",
+    "notRepeated": "Parent's 31 compiler tests, 24 recipe/seed outputs, broad old controller suites, app typecheck and build"
+  },
+  "review": "New files each own fixtures, error boundaries, transactions, lifecycle or the offline driver. At most 87 pure LOC across new files; actions.ts is 77. Existing typed domain/IO validators reused. No type escape hatch, parameter bloat, negative-name abstraction, log suppression, size waiver or new dependency. Test caches are compiled once then cloned/reloaded per test; no sleeps or polling.",
+  "remainingAcceptance": ["combined AV11-01 / AV11-02 / AV11-03 fixes", "real UI/controller acceptance", "lead final combined build and integration approval"],
+  "cleanup": "Fake scheduling timers cleared/restored; singleton history reset. CLI persistence remains disabled and runs in a network-isolated namespace. All bounded monitors exited. No DB/remote writes, source publication, browser, server or merge. Parallel-owned draft/continuation and refresh source untouched."
+}

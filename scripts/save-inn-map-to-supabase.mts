@@ -7,7 +7,7 @@
  */
 import fs from "node:fs";
 import {
-  loadProjectFromSupabase,
+  loadProjectSnapshotFromSupabase,
   saveProjectMapPatchToSupabase,
 } from "../src/project/supabaseProjectSync.ts";
 import type { GameMap, MapTreeNode } from "../src/project/types.ts";
@@ -38,8 +38,9 @@ const mapPath = jsonFlagIndex >= 0 && process.argv[jsonFlagIndex + 1]
 const innMap = JSON.parse(fs.readFileSync(mapPath, "utf8")) as GameMap;
 console.log(`맵 로드: ${innMap.id} (${innMap.width}×${innMap.height}, tileset=${innMap.tilesetId})`);
 
-const project = await loadProjectFromSupabase(config);
-if (!project) throw new Error(`Supabase 프로젝트 로드 실패: ${config.projectId}`);
+const snapshot = await loadProjectSnapshotFromSupabase(config);
+if (!snapshot) throw new Error(`Supabase 프로젝트 로드 실패: ${config.projectId}`);
+const project = snapshot.project;
 console.log(`프로젝트 로드: ${config.projectId} — 기존 맵 ${Object.keys(project.maps).length}개`);
 
 if (!project.tilesets[innMap.tilesetId]) {
@@ -64,7 +65,7 @@ if (!treeHas(project.mapTree, innMap.id)) {
 }
 
 const result = await saveProjectMapPatchToSupabase(
-  { baseProject, project, changedMapIds: [innMap.id] },
+  { baseProject, project, changedMapIds: [innMap.id], authority: snapshot.authority },
   config,
 );
 if (result.kind === "conflict") {

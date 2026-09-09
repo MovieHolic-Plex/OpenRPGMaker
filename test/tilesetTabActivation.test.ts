@@ -42,7 +42,7 @@ function openPassageTab(): FakeElement {
   host.className = "database-modal-body";
   document.body.append(host as unknown as Node);
   renderDatabasePanel(host as unknown as HTMLElement);
-  host.querySelector("[data-testid='db-tab-tilesets']")!.click();
+  host.querySelector("[data-testid='db-tab-spatial-tiles']")!.click();
   return host;
 }
 
@@ -88,7 +88,7 @@ describe("one internal tileset section navigation", () => {
     click(host, "tileset-section-tab-knowledge");
     expect(getTilesetSectionTab()).toBe("knowledge");
     expect(getTilesetMetadataEditMode()).toBe("ai");
-    expect(getDatabaseActiveTab()).toBe("tilesets");
+    expect(getDatabaseActiveTab()).toBe("spatialTiles");
   });
 
   it("automatic connections change the mode within the primary workspace", () => {
@@ -96,7 +96,7 @@ describe("one internal tileset section navigation", () => {
     click(host, "tileset-section-tab-compose");
     expect(getTilesetSectionTab()).toBe("compose");
     expect(getTilesetMetadataEditMode()).toBe("autotile");
-    expect(getDatabaseActiveTab()).toBe("tilesets");
+    expect(getDatabaseActiveTab()).toBe("spatialTiles");
   });
 
   it("returning to rules keeps the tileset primary selected", () => {
@@ -104,7 +104,7 @@ describe("one internal tileset section navigation", () => {
     click(host, "tileset-section-tab-compose");
     click(host, "tileset-section-tab-rules");
     expect(getTilesetSectionTab()).toBe("rules");
-    expect(getDatabaseActiveTab()).toBe("tilesets");
+    expect(getDatabaseActiveTab()).toBe("spatialTiles");
   });
 
   it("legacy route requests still open the matching section", () => {

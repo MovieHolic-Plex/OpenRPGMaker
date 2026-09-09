@@ -1,0 +1,110 @@
+/* Region/world geography canvas — Database Studio tokens only. */
+.database-modal-body .spatial-geography-canvas {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: var(--space-2, 8px);
+  padding: var(--space-2, 8px);
+  min-block-size: 0;
+}
+
+.database-modal-body .spatial-geography-tools,
+.database-modal-body .spatial-geography-materials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.database-modal-body .spatial-geography-camera {
+  min-block-size: 0;
+  overflow: auto;
+}
+
+.database-modal-body .spatial-geography-board {
+  position: relative;
+  width: max-content;
+  height: max-content;
+  min-width: 192px;
+  min-height: 144px;
+  overflow: visible;
+  outline: none;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 245, 0.45), transparent 38%),
+    var(--db-studio-well);
+  box-shadow: var(--db-studio-shadow);
+  border-radius: 8px;
+}
+
+.database-modal-body .spatial-geography-board:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 2px;
+}
+
+.database-modal-body .spatial-geography-raster {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.database-modal-body .spatial-geography-child {
+  position: absolute;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--db-studio-accent-border);
+  border-radius: 8px;
+  background: var(--db-studio-accent-soft);
+  color: var(--db-studio-text-1);
+  font: 600 12px/1.2 inherit;
+  cursor: grab;
+}
+
+.database-modal-body .spatial-geography-child.is-selected,
+.database-modal-body .spatial-geography-route.is-selected {
+  border-color: var(--db-studio-accent);
+  background: var(--db-studio-surface);
+}
+
+.database-modal-body .spatial-geography-routes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.database-modal-body .spatial-geography-route {
+  position: absolute;
+  height: 3px;
+  padding: 0;
+  pointer-events: auto;
+  transform-origin: 0 50%;
+  border: 0;
+  background: var(--db-studio-accent);
+}
+
+.database-modal-body .spatial-geography-field {
+  display: grid;
+  gap: 4px;
+  font: 500 12px/1.3 inherit;
+}
+
+.database-modal-body .spatial-geography-field input {
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+}
+
+.database-modal-body .spatial-geography-impact {
+  margin-top: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  background: var(--db-studio-well);
+  font: 500 12px/1.4 inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .database-modal-body .spatial-geography-child,
+  .database-modal-body .spatial-geography-route {
+    transition: none;
+  }
+}

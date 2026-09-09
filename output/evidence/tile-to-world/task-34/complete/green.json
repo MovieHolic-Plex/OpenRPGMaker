@@ -1,0 +1,3069 @@
+{
+  "sourceSHA": "009771ec48ce30f571ebe8cdf6fe34d42f4a9b6c",
+  "scenario": "overview-route-entry-associations",
+  "requiredComplete": true,
+  "receipts": [
+    {
+      "seed": 109,
+      "source": "submitted-task10-witness",
+      "inputSHA256": "0b17fa4edf95cfa9aed8fed61b66e94eb04d822d1a16ec101981cd4538991c80",
+      "markers": [
+        {
+          "source": {
+            "mapId": "geography-contract-overview",
+            "x": 5,
+            "y": 8,
+            "target": {
+              "occurrenceId": "child:23:geography-contract-root4:west:0",
+              "portId": "port:40:child:23:geography-contract-root4:west:05:entry"
+            },
+            "eventId": "contract-enter:child:23:geography-contract-root4:west:0",
+            "returnEventId": "contract-return:child:23:geography-contract-root4:west:0"
+          },
+          "landing": {
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17
+          }
+        },
+        {
+          "source": {
+            "mapId": "geography-contract-overview",
+            "x": 25,
+            "y": 8,
+            "target": {
+              "occurrenceId": "child:23:geography-contract-root4:east:0",
+              "portId": "port:40:child:23:geography-contract-root4:east:05:entry"
+            },
+            "eventId": "contract-enter:child:23:geography-contract-root4:east:0",
+            "returnEventId": "contract-return:child:23:geography-contract-root4:east:0"
+          },
+          "landing": {
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17
+          }
+        }
+      ],
+      "declaredEntry": {
+        "x": 2,
+        "y": 8,
+        "portId": "port:23:geography-contract-root5:entry"
+      },
+      "connectionIds": [
+        "connection:23:geography-contract-root4:road"
+      ],
+      "overviewRoute": [
+        {
+          "occurrenceId": "geography-contract-root",
+          "localConnectionId": "road"
+        }
+      ],
+      "traversal": {
+        "ports": [
+          {
+            "occurrenceId": "geography-contract-root",
+            "mapId": "geography-contract-overview",
+            "x": 2,
+            "y": 8,
+            "portId": "port:23:geography-contract-root5:entry"
+          },
+          {
+            "occurrenceId": "child:23:geography-contract-root4:west:0",
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17,
+            "portId": "port:40:child:23:geography-contract-root4:west:05:entry"
+          },
+          {
+            "occurrenceId": "child:23:geography-contract-root4:east:0",
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17,
+            "portId": "port:40:child:23:geography-contract-root4:east:05:entry"
+          },
+          {
+            "occurrenceId": "child:40:child:23:geography-contract-root4:west:06:square:0",
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17,
+            "portId": "port:59:child:40:child:23:geography-contract-root4:west:06:square:05:entry"
+          },
+          {
+            "occurrenceId": "child:40:child:23:geography-contract-root4:west:06:square:0",
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+            "x": 21,
+            "y": 16,
+            "portId": "port:59:child:40:child:23:geography-contract-root4:west:06:square:04:exit"
+          },
+          {
+            "occurrenceId": "child:40:child:23:geography-contract-root4:east:06:square:0",
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17,
+            "portId": "port:59:child:40:child:23:geography-contract-root4:east:06:square:05:entry"
+          },
+          {
+            "occurrenceId": "child:40:child:23:geography-contract-root4:east:06:square:0",
+            "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+            "x": 21,
+            "y": 16,
+            "portId": "port:59:child:40:child:23:geography-contract-root4:east:06:square:04:exit"
+          },
+          {
+            "occurrenceId": "child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:05:entry"
+          },
+          {
+            "occurrenceId": "child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:05:entry"
+          },
+          {
+            "occurrenceId": "child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:05:entry"
+          },
+          {
+            "occurrenceId": "child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:05:entry"
+          },
+          {
+            "occurrenceId": "child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:05:entry"
+          },
+          {
+            "occurrenceId": "child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:05:entry"
+          },
+          {
+            "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:06:stairs:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:95:child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:09:stairs-up:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:98:child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:06:stairs:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:95:child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:09:stairs-up:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:98:child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:06:stairs:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:95:child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:09:stairs-up:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:98:child:76:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:06:stairs:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:95:child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:09:stairs-up:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:98:child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:06:stairs:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:95:child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:09:stairs-up:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:98:child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:06:stairs:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:95:child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:09:stairs-up:0",
+            "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:98:child:76:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:09:stairs-up:07:landing"
+          }
+        ],
+        "routes": [
+          {
+            "eventId": "contract-enter:child:23:geography-contract-root4:west:0",
+            "from": {
+              "mapId": "geography-contract-overview",
+              "x": 5,
+              "y": 8
+            },
+            "to": {
+              "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+              "x": 12,
+              "y": 17
+            },
+            "commands": [
+              {
+                "kind": "transfer",
+                "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+                "x": 12,
+                "y": 17,
+                "fade": "black"
+              }
+            ],
+            "walk": [
+              {
+                "x": 31,
+                "y": 23
+              },
+              {
+                "x": 31,
+                "y": 22
+              },
+              {
+                "x": 31,
+                "y": 21
+              },
+              {
+                "x": 31,
+                "y": 20
+              },
+              {
+                "x": 31,
+                "y": 19
+              },
+              {
+                "x": 31,
+                "y": 18
+              },
+              {
+                "x": 31,
+                "y": 17
+              },
+              {
+                "x": 31,
+                "y": 16
+              },
+              {
+                "x": 31,
+                "y": 15
+              },
+              {
+                "x": 31,
+                "y": 14
+              },
+              {
+                "x": 31,
+                "y": 13
+              },
+              {
+                "x": 31,
+                "y": 12
+              },
+              {
+                "x": 31,
+                "y": 11
+              },
+              {
+                "x": 31,
+                "y": 10
+              },
+              {
+                "x": 31,
+                "y": 9
+              },
+              {
+                "x": 31,
+                "y": 8
+              },
+              {
+                "x": 30,
+                "y": 8
+              },
+              {
+                "x": 29,
+                "y": 8
+              },
+              {
+                "x": 28,
+                "y": 8
+              },
+              {
+                "x": 27,
+                "y": 8
+              },
+              {
+                "x": 26,
+                "y": 8
+              },
+              {
+                "x": 25,
+                "y": 8
+              },
+              {
+                "x": 24,
+                "y": 8
+              },
+              {
+                "x": 23,
+                "y": 8
+              },
+              {
+                "x": 22,
+                "y": 8
+              },
+              {
+                "x": 21,
+                "y": 8
+              },
+              {
+                "x": 20,
+                "y": 8
+              },
+              {
+                "x": 19,
+                "y": 8
+              },
+              {
+                "x": 18,
+                "y": 8
+              },
+              {
+                "x": 17,
+                "y": 8
+              },
+              {
+                "x": 16,
+                "y": 8
+              },
+              {
+                "x": 15,
+                "y": 8
+              },
+              {
+                "x": 14,
+                "y": 8
+              },
+              {
+                "x": 13,
+                "y": 8
+              },
+              {
+                "x": 12,
+                "y": 8
+              },
+              {
+                "x": 11,
+                "y": 8
+              },
+              {
+                "x": 10,
+                "y": 8
+              },
+              {
+                "x": 9,
+                "y": 8
+              },
+              {
+                "x": 8,
+                "y": 8
+              },
+              {
+                "x": 7,
+                "y": 8
+              },
+              {
+                "x": 6,
+                "y": 8
+              },
+              {
+                "mapId": "geography-contract-overview",
+                "x": 5,
+                "y": 8
+              }
+            ],
+            "executedTransfer": {
+              "kind": "transfer",
+              "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+              "x": 12,
+              "y": 17,
+              "fade": "black"
+            },
+            "interpreterExecuted": true,
+            "landingPassable": true,
+            "engine": {
+              "walking": "project/collision.canMove",
+              "execution": "player/interpreter.createInterpreter"
+            }
+          },
+          {
+            "eventId": "contract-return:child:23:geography-contract-root4:west:0",
+            "from": {
+              "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+              "x": 12,
+              "y": 17
+            },
+            "to": {
+              "mapId": "geography-contract-overview",
+              "x": 5,
+              "y": 8
+            },
+            "commands": [
+              {
+                "kind": "transfer",
+                "mapId": "geography-contract-overview",
+                "x": 5,
+                "y": 8,
+                "fade": "black"
+              }
+            ],
+            "walk": [
+              {
+                "x": 2,
+                "y": 3
+              },
+              {
+                "x": 3,
+                "y": 3
+              },
+              {
+                "x": 4,
+                "y": 3
+              },
+              {
+                "x": 5,
+                "y": 3
+              },
+              {
+                "x": 6,
+                "y": 3
+              },
+              {
+                "x": 7,
+                "y": 3
+              },
+              {
+                "x": 8,
+                "y": 3
+              },
+              {
+                "x": 9,
+                "y": 3
+              },
+              {
+                "x": 10,
+                "y": 3
+              },
+              {
+                "x": 11,
+                "y": 3
+              },
+              {
+                "x": 12,
+                "y": 3
+              },
+              {
+                "x": 12,
+                "y": 4
+              },
+              {
+                "x": 12,
+                "y": 5
+              },
+              {
+                "x": 12,
+                "y": 6
+              },
+              {
+                "x": 12,
+                "y": 7
+              },
+              {
+                "x": 12,
+                "y": 8
+              },
+              {
+                "x": 12,
+                "y": 9
+              },
+              {
+                "x": 12,
+                "y": 10
+              },
+              {
+                "x": 12,
+                "y": 11
+              },
+              {
+                "x": 12,
+                "y": 12
+              },
+              {
+                "x": 12,
+                "y": 13
+              },
+              {
+                "x": 12,
+                "y": 14
+              },
+              {
+                "x": 12,
+                "y": 15
+              },
+              {
+                "x": 12,
+                "y": 16
+              },
+              {
+                "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+                "x": 12,
+                "y": 17
+              }
+            ],
+            "executedTransfer": {
+              "kind": "transfer",
+              "mapId": "geography-contract-overview",
+              "x": 5,
+              "y": 8,
+              "fade": "black"
+            },
+            "interpreterExecuted": true,
+            "landingPassable": true,
+            "engine": {
+              "walking": "project/collision.canMove",
+              "execution": "player/interpreter.createInterpreter"
+            }
+          },
+          {
+            "eventId": "contract-enter:child:23:geography-contract-root4:east:0",
+            "from": {
+              "mapId": "geography-contract-overview",
+              "x": 25,
+              "y": 8
+            },
+            "to": {
+              "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+              "x": 12,
+              "y": 17
+            },
+            "commands": [
+              {
+                "kind": "transfer",
+                "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+                "x": 12,
+                "y": 17,
+                "fade": "black"
+              }
+            ],
+            "walk": [
+              {
+                "x": 0,
+                "y": 23
+              },
+              {
+                "x": 0,
+                "y": 22
+              },
+              {
+                "x": 0,
+                "y": 21
+              },
+              {
+                "x": 0,
+                "y": 20
+              },
+              {
+                "x": 0,
+                "y": 19
+              },
+              {
+                "x": 0,
+                "y": 18
+              },
+              {
+                "x": 0,
+                "y": 17
+              },
+              {
+                "x": 0,
+                "y": 16
+              },
+              {
+                "x": 0,
+                "y": 15
+              },
+              {
+                "x": 0,
+                "y": 14
+              },
+              {
+                "x": 0,
+                "y": 13
+              },
+              {
+                "x": 0,
+                "y": 12
+              },
+              {
+                "x": 0,
+                "y": 11
+              },
+              {
+                "x": 0,
+                "y": 10
+              },
+              {
+                "x": 0,
+                "y": 9
+              },
+              {
+                "x": 0,
+                "y": 8
+              },
+              {
+                "x": 1,
+                "y": 8
+              },
+              {
+                "x": 2,
+                "y": 8
+              },
+              {
+                "x": 3,
+                "y": 8
+              },
+              {
+                "x": 4,
+                "y": 8
+              },
+              {
+                "x": 5,
+                "y": 8
+              },
+              {
+                "x": 6,
+                "y": 8
+              },
+              {
+                "x": 7,
+                "y": 8
+              },
+              {
+                "x": 8,
+                "y": 8
+              },
+              {
+                "x": 9,
+                "y": 8
+              },
+              {
+                "x": 10,
+                "y": 8
+              },
+              {
+                "x": 11,
+                "y": 8
+              },
+              {
+                "x": 12,
+                "y": 8
+              },
+              {
+                "x": 13,
+                "y": 8
+              },
+              {
+                "x": 14,
+                "y": 8
+              },
+              {
+                "x": 15,
+                "y": 8
+              },
+              {
+                "x": 16,
+                "y": 8
+              },
+              {
+                "x": 17,
+                "y": 8
+              },
+              {
+                "x": 18,
+                "y": 8
+              },
+              {
+                "x": 19,
+                "y": 8
+              },
+              {
+                "x": 20,
+                "y": 8
+              },
+              {
+                "x": 21,
+                "y": 8
+              },
+              {
+                "x": 22,
+                "y": 8
+              },
+              {
+                "x": 23,
+                "y": 8
+              },
+              {
+                "x": 24,
+                "y": 8
+              },
+              {
+                "mapId": "geography-contract-overview",
+                "x": 25,
+                "y": 8
+              }
+            ],
+            "executedTransfer": {
+              "kind": "transfer",
+              "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+              "x": 12,
+              "y": 17,
+              "fade": "black"
+            },
+            "interpreterExecuted": true,
+            "landingPassable": true,
+            "engine": {
+              "walking": "project/collision.canMove",
+              "execution": "player/interpreter.createInterpreter"
+            }
+          },
+          {
+            "eventId": "contract-return:child:23:geography-contract-root4:east:0",
+            "from": {
+              "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+              "x": 12,
+              "y": 17
+            },
+            "to": {
+              "mapId": "geography-contract-overview",
+              "x": 25,
+              "y": 8
+            },
+            "commands": [
+              {
+                "kind": "transfer",
+                "mapId": "geography-contract-overview",
+                "x": 25,
+                "y": 8,
+                "fade": "black"
+              }
+            ],
+            "walk": [
+              {
+                "x": 2,
+                "y": 3
+              },
+              {
+                "x": 3,
+                "y": 3
+              },
+              {
+                "x": 4,
+                "y": 3
+              },
+              {
+                "x": 5,
+                "y": 3
+              },
+              {
+                "x": 6,
+                "y": 3
+              },
+              {
+                "x": 7,
+                "y": 3
+              },
+              {
+                "x": 8,
+                "y": 3
+              },
+              {
+                "x": 9,
+                "y": 3
+              },
+              {
+                "x": 10,
+                "y": 3
+              },
+              {
+                "x": 11,
+                "y": 3
+              },
+              {
+                "x": 12,
+                "y": 3
+              },
+              {
+                "x": 12,
+                "y": 4
+              },
+              {
+                "x": 12,
+                "y": 5
+              },
+              {
+                "x": 12,
+                "y": 6
+              },
+              {
+                "x": 12,
+                "y": 7
+              },
+              {
+                "x": 12,
+                "y": 8
+              },
+              {
+                "x": 12,
+                "y": 9
+              },
+              {
+                "x": 12,
+                "y": 10
+              },
+              {
+                "x": 12,
+                "y": 11
+              },
+              {
+                "x": 12,
+                "y": 12
+              },
+              {
+                "x": 12,
+                "y": 13
+              },
+              {
+                "x": 12,
+                "y": 14
+              },
+              {
+                "x": 12,
+                "y": 15
+              },
+              {
+                "x": 12,
+                "y": 16
+              },
+              {
+                "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+                "x": 12,
+                "y": 17
+              }
+            ],
+            "executedTransfer": {
+              "kind": "transfer",
+              "mapId": "geography-contract-overview",
+              "x": 25,
+              "y": 8,
+              "fade": "black"
+            },
+            "interpreterExecuted": true,
+            "landingPassable": true,
+            "engine": {
+              "walking": "project/collision.canMove",
+              "execution": "player/interpreter.createInterpreter"
+            }
+          }
+        ],
+        "mapTree": {
+          "mapId": "map_blank_start",
+          "children": [
+            {
+              "mapId": "spatial-place:40:child:23:geography-contract-root4:west:0:0:29:easyrpg_chipset_combined_town",
+              "children": [
+                {
+                  "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-1:0",
+                  "children": [
+                    {
+                      "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-2:0",
+                      "children": []
+                    },
+                    {
+                      "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:west:03:inn:07:floor-3:0",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "mapId": "spatial-place:40:child:23:geography-contract-root4:east:0:0:29:easyrpg_chipset_combined_town",
+              "children": [
+                {
+                  "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-1:0",
+                  "children": [
+                    {
+                      "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-2:0",
+                      "children": []
+                    },
+                    {
+                      "mapId": "spatial:child:56:child:40:child:23:geography-contract-root4:east:03:inn:07:floor-3:0",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "mapId": "geography-contract-overview",
+              "children": []
+            }
+          ]
+        },
+        "serializerReloads": 1
+      },
+      "rasterDigest": "814d71d358e58955d64e434328faba7269d67953f8b9b1f8f56952c52bbc34a1",
+      "completeBookkeepingAccepted": true,
+      "geographyCompilerImplemented": false
+    },
+    {
+      "seed": 43,
+      "source": "../spatial-geography-compiler/output/evidence/tile-to-world/task-10/backend/adversarial/independent-witness/complete-43.json",
+      "inputSHA256": "0f30091106089cbcc78126da9ffca9c240e89b2be9b9efcf849c0ec52572c558",
+      "originalError": "spatialAuthoring.occurrences.Q:96f4|opaque.bindings[0].connectionIds: missing owned connection connection:13:Q:96f4|opaque6:L:0b80",
+      "markers": [
+        {
+          "source": {
+            "mapId": "M:93e1:43",
+            "x": 7,
+            "y": 6,
+            "target": {
+              "occurrenceId": "child:13:Q:96f4|opaque6:S:a09c:0",
+              "portId": "port:32:child:13:Q:96f4|opaque6:S:a09c:06:P:8bb1"
+            },
+            "eventId": "E:child:13:Q:96f4|opaque6:S:a09c:0",
+            "returnEventId": "R:child:13:Q:96f4|opaque6:S:a09c:0"
+          },
+          "landing": {
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+            "x": 13,
+            "y": 17
+          }
+        },
+        {
+          "source": {
+            "mapId": "M:93e1:43",
+            "x": 29,
+            "y": 19,
+            "target": {
+              "occurrenceId": "child:13:Q:96f4|opaque6:S:019d:0",
+              "portId": "port:32:child:13:Q:96f4|opaque6:S:019d:06:P:8bb1"
+            },
+            "eventId": "E:child:13:Q:96f4|opaque6:S:019d:0",
+            "returnEventId": "R:child:13:Q:96f4|opaque6:S:019d:0"
+          },
+          "landing": {
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+            "x": 13,
+            "y": 17
+          }
+        }
+      ],
+      "declaredEntry": {
+        "x": 2,
+        "y": 6,
+        "portId": "port:13:Q:96f4|opaque6:P:8bb1"
+      },
+      "connectionIds": [
+        "connection:13:Q:96f4|opaque6:L:0b80"
+      ],
+      "overviewRoute": [
+        {
+          "occurrenceId": "Q:96f4|opaque",
+          "localConnectionId": "L:0b80"
+        }
+      ],
+      "traversal": {
+        "ports": [
+          {
+            "occurrenceId": "Q:96f4|opaque",
+            "mapId": "M:93e1:43",
+            "x": 2,
+            "y": 6,
+            "portId": "port:13:Q:96f4|opaque6:P:8bb1"
+          },
+          {
+            "occurrenceId": "child:13:Q:96f4|opaque6:S:a09c:0",
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+            "x": 13,
+            "y": 17,
+            "portId": "port:32:child:13:Q:96f4|opaque6:S:a09c:06:P:8bb1"
+          },
+          {
+            "occurrenceId": "child:13:Q:96f4|opaque6:S:019d:0",
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+            "x": 13,
+            "y": 17,
+            "portId": "port:32:child:13:Q:96f4|opaque6:S:019d:06:P:8bb1"
+          },
+          {
+            "occurrenceId": "child:32:child:13:Q:96f4|opaque6:S:a09c:06:square:0",
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17,
+            "portId": "port:51:child:32:child:13:Q:96f4|opaque6:S:a09c:06:square:05:entry"
+          },
+          {
+            "occurrenceId": "child:32:child:13:Q:96f4|opaque6:S:a09c:06:square:0",
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+            "x": 21,
+            "y": 16,
+            "portId": "port:51:child:32:child:13:Q:96f4|opaque6:S:a09c:06:square:04:exit"
+          },
+          {
+            "occurrenceId": "child:32:child:13:Q:96f4|opaque6:S:019d:06:square:0",
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17,
+            "portId": "port:51:child:32:child:13:Q:96f4|opaque6:S:019d:06:square:05:entry"
+          },
+          {
+            "occurrenceId": "child:32:child:13:Q:96f4|opaque6:S:019d:06:square:0",
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+            "x": 21,
+            "y": 16,
+            "portId": "port:51:child:32:child:13:Q:96f4|opaque6:S:019d:06:square:04:exit"
+          },
+          {
+            "occurrenceId": "child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:05:entry"
+          },
+          {
+            "occurrenceId": "child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:05:entry"
+          },
+          {
+            "occurrenceId": "child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:05:entry"
+          },
+          {
+            "occurrenceId": "child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:05:entry"
+          },
+          {
+            "occurrenceId": "child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:05:entry"
+          },
+          {
+            "occurrenceId": "child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:05:entry"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:06:stairs:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:87:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:09:stairs-up:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:90:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:06:stairs:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:87:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:09:stairs-up:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:90:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:06:stairs:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:87:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:09:stairs-up:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:90:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:06:stairs:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:87:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:09:stairs-up:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:90:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:06:stairs:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:87:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:09:stairs-up:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:90:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:06:stairs:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:87:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:09:stairs-up:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:90:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:09:stairs-up:07:landing"
+          }
+        ],
+        "routes": [
+          {
+            "eventId": "E:child:13:Q:96f4|opaque6:S:a09c:0",
+            "from": {
+              "mapId": "M:93e1:43",
+              "x": 7,
+              "y": 6
+            },
+            "to": {
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+              "x": 13,
+              "y": 17
+            },
+            "commands": [
+              {
+                "kind": "transfer",
+                "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+                "x": 13,
+                "y": 17,
+                "fade": "black"
+              }
+            ],
+            "walk": [
+              {
+                "x": 35,
+                "y": 27
+              },
+              {
+                "x": 35,
+                "y": 26
+              },
+              {
+                "x": 35,
+                "y": 25
+              },
+              {
+                "x": 35,
+                "y": 24
+              },
+              {
+                "x": 35,
+                "y": 23
+              },
+              {
+                "x": 35,
+                "y": 22
+              },
+              {
+                "x": 35,
+                "y": 21
+              },
+              {
+                "x": 35,
+                "y": 20
+              },
+              {
+                "x": 35,
+                "y": 19
+              },
+              {
+                "x": 35,
+                "y": 18
+              },
+              {
+                "x": 35,
+                "y": 17
+              },
+              {
+                "x": 35,
+                "y": 16
+              },
+              {
+                "x": 35,
+                "y": 15
+              },
+              {
+                "x": 35,
+                "y": 14
+              },
+              {
+                "x": 35,
+                "y": 13
+              },
+              {
+                "x": 35,
+                "y": 12
+              },
+              {
+                "x": 35,
+                "y": 11
+              },
+              {
+                "x": 35,
+                "y": 10
+              },
+              {
+                "x": 35,
+                "y": 9
+              },
+              {
+                "x": 35,
+                "y": 8
+              },
+              {
+                "x": 35,
+                "y": 7
+              },
+              {
+                "x": 35,
+                "y": 6
+              },
+              {
+                "x": 34,
+                "y": 6
+              },
+              {
+                "x": 33,
+                "y": 6
+              },
+              {
+                "x": 32,
+                "y": 6
+              },
+              {
+                "x": 31,
+                "y": 6
+              },
+              {
+                "x": 30,
+                "y": 6
+              },
+              {
+                "x": 29,
+                "y": 6
+              },
+              {
+                "x": 28,
+                "y": 6
+              },
+              {
+                "x": 27,
+                "y": 6
+              },
+              {
+                "x": 26,
+                "y": 6
+              },
+              {
+                "x": 25,
+                "y": 6
+              },
+              {
+                "x": 24,
+                "y": 6
+              },
+              {
+                "x": 23,
+                "y": 6
+              },
+              {
+                "x": 22,
+                "y": 6
+              },
+              {
+                "x": 21,
+                "y": 6
+              },
+              {
+                "x": 20,
+                "y": 6
+              },
+              {
+                "x": 19,
+                "y": 6
+              },
+              {
+                "x": 18,
+                "y": 6
+              },
+              {
+                "x": 17,
+                "y": 6
+              },
+              {
+                "x": 16,
+                "y": 6
+              },
+              {
+                "x": 15,
+                "y": 6
+              },
+              {
+                "x": 14,
+                "y": 6
+              },
+              {
+                "x": 13,
+                "y": 6
+              },
+              {
+                "x": 12,
+                "y": 6
+              },
+              {
+                "x": 11,
+                "y": 6
+              },
+              {
+                "x": 10,
+                "y": 6
+              },
+              {
+                "x": 9,
+                "y": 6
+              },
+              {
+                "x": 8,
+                "y": 6
+              },
+              {
+                "mapId": "M:93e1:43",
+                "x": 7,
+                "y": 6
+              }
+            ],
+            "executedTransfer": {
+              "kind": "transfer",
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+              "x": 13,
+              "y": 17,
+              "fade": "black"
+            },
+            "interpreterExecuted": true,
+            "landingPassable": true,
+            "engine": {
+              "walking": "project/collision.canMove",
+              "execution": "player/interpreter.createInterpreter"
+            }
+          },
+          {
+            "eventId": "R:child:13:Q:96f4|opaque6:S:a09c:0",
+            "from": {
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+              "x": 13,
+              "y": 17
+            },
+            "to": {
+              "mapId": "M:93e1:43",
+              "x": 7,
+              "y": 6
+            },
+            "commands": [
+              {
+                "kind": "transfer",
+                "mapId": "M:93e1:43",
+                "x": 7,
+                "y": 6,
+                "fade": "black"
+              }
+            ],
+            "walk": [
+              {
+                "x": 2,
+                "y": 3
+              },
+              {
+                "x": 3,
+                "y": 3
+              },
+              {
+                "x": 4,
+                "y": 3
+              },
+              {
+                "x": 5,
+                "y": 3
+              },
+              {
+                "x": 6,
+                "y": 3
+              },
+              {
+                "x": 7,
+                "y": 3
+              },
+              {
+                "x": 8,
+                "y": 3
+              },
+              {
+                "x": 9,
+                "y": 3
+              },
+              {
+                "x": 10,
+                "y": 3
+              },
+              {
+                "x": 11,
+                "y": 3
+              },
+              {
+                "x": 12,
+                "y": 3
+              },
+              {
+                "x": 13,
+                "y": 3
+              },
+              {
+                "x": 13,
+                "y": 4
+              },
+              {
+                "x": 13,
+                "y": 5
+              },
+              {
+                "x": 13,
+                "y": 6
+              },
+              {
+                "x": 13,
+                "y": 7
+              },
+              {
+                "x": 13,
+                "y": 8
+              },
+              {
+                "x": 13,
+                "y": 9
+              },
+              {
+                "x": 13,
+                "y": 10
+              },
+              {
+                "x": 13,
+                "y": 11
+              },
+              {
+                "x": 13,
+                "y": 12
+              },
+              {
+                "x": 13,
+                "y": 13
+              },
+              {
+                "x": 13,
+                "y": 14
+              },
+              {
+                "x": 13,
+                "y": 15
+              },
+              {
+                "x": 13,
+                "y": 16
+              },
+              {
+                "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+                "x": 13,
+                "y": 17
+              }
+            ],
+            "executedTransfer": {
+              "kind": "transfer",
+              "mapId": "M:93e1:43",
+              "x": 7,
+              "y": 6,
+              "fade": "black"
+            },
+            "interpreterExecuted": true,
+            "landingPassable": true,
+            "engine": {
+              "walking": "project/collision.canMove",
+              "execution": "player/interpreter.createInterpreter"
+            }
+          },
+          {
+            "eventId": "E:child:13:Q:96f4|opaque6:S:019d:0",
+            "from": {
+              "mapId": "M:93e1:43",
+              "x": 29,
+              "y": 19
+            },
+            "to": {
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+              "x": 13,
+              "y": 17
+            },
+            "commands": [
+              {
+                "kind": "transfer",
+                "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+                "x": 13,
+                "y": 17,
+                "fade": "black"
+              }
+            ],
+            "walk": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 1,
+                "y": 0
+              },
+              {
+                "x": 2,
+                "y": 0
+              },
+              {
+                "x": 3,
+                "y": 0
+              },
+              {
+                "x": 4,
+                "y": 0
+              },
+              {
+                "x": 5,
+                "y": 0
+              },
+              {
+                "x": 6,
+                "y": 0
+              },
+              {
+                "x": 7,
+                "y": 0
+              },
+              {
+                "x": 8,
+                "y": 0
+              },
+              {
+                "x": 9,
+                "y": 0
+              },
+              {
+                "x": 10,
+                "y": 0
+              },
+              {
+                "x": 11,
+                "y": 0
+              },
+              {
+                "x": 12,
+                "y": 0
+              },
+              {
+                "x": 13,
+                "y": 0
+              },
+              {
+                "x": 14,
+                "y": 0
+              },
+              {
+                "x": 15,
+                "y": 0
+              },
+              {
+                "x": 16,
+                "y": 0
+              },
+              {
+                "x": 17,
+                "y": 0
+              },
+              {
+                "x": 18,
+                "y": 0
+              },
+              {
+                "x": 19,
+                "y": 0
+              },
+              {
+                "x": 20,
+                "y": 0
+              },
+              {
+                "x": 21,
+                "y": 0
+              },
+              {
+                "x": 22,
+                "y": 0
+              },
+              {
+                "x": 23,
+                "y": 0
+              },
+              {
+                "x": 24,
+                "y": 0
+              },
+              {
+                "x": 25,
+                "y": 0
+              },
+              {
+                "x": 26,
+                "y": 0
+              },
+              {
+                "x": 27,
+                "y": 0
+              },
+              {
+                "x": 28,
+                "y": 0
+              },
+              {
+                "x": 29,
+                "y": 0
+              },
+              {
+                "x": 29,
+                "y": 1
+              },
+              {
+                "x": 29,
+                "y": 2
+              },
+              {
+                "x": 29,
+                "y": 3
+              },
+              {
+                "x": 29,
+                "y": 4
+              },
+              {
+                "x": 29,
+                "y": 5
+              },
+              {
+                "x": 29,
+                "y": 6
+              },
+              {
+                "x": 29,
+                "y": 7
+              },
+              {
+                "x": 29,
+                "y": 8
+              },
+              {
+                "x": 29,
+                "y": 9
+              },
+              {
+                "x": 29,
+                "y": 10
+              },
+              {
+                "x": 29,
+                "y": 11
+              },
+              {
+                "x": 29,
+                "y": 12
+              },
+              {
+                "x": 29,
+                "y": 13
+              },
+              {
+                "x": 29,
+                "y": 14
+              },
+              {
+                "x": 29,
+                "y": 15
+              },
+              {
+                "x": 29,
+                "y": 16
+              },
+              {
+                "x": 29,
+                "y": 17
+              },
+              {
+                "x": 29,
+                "y": 18
+              },
+              {
+                "mapId": "M:93e1:43",
+                "x": 29,
+                "y": 19
+              }
+            ],
+            "executedTransfer": {
+              "kind": "transfer",
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+              "x": 13,
+              "y": 17,
+              "fade": "black"
+            },
+            "interpreterExecuted": true,
+            "landingPassable": true,
+            "engine": {
+              "walking": "project/collision.canMove",
+              "execution": "player/interpreter.createInterpreter"
+            }
+          },
+          {
+            "eventId": "R:child:13:Q:96f4|opaque6:S:019d:0",
+            "from": {
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+              "x": 13,
+              "y": 17
+            },
+            "to": {
+              "mapId": "M:93e1:43",
+              "x": 29,
+              "y": 19
+            },
+            "commands": [
+              {
+                "kind": "transfer",
+                "mapId": "M:93e1:43",
+                "x": 29,
+                "y": 19,
+                "fade": "black"
+              }
+            ],
+            "walk": [
+              {
+                "x": 2,
+                "y": 3
+              },
+              {
+                "x": 3,
+                "y": 3
+              },
+              {
+                "x": 4,
+                "y": 3
+              },
+              {
+                "x": 5,
+                "y": 3
+              },
+              {
+                "x": 6,
+                "y": 3
+              },
+              {
+                "x": 7,
+                "y": 3
+              },
+              {
+                "x": 8,
+                "y": 3
+              },
+              {
+                "x": 9,
+                "y": 3
+              },
+              {
+                "x": 10,
+                "y": 3
+              },
+              {
+                "x": 11,
+                "y": 3
+              },
+              {
+                "x": 12,
+                "y": 3
+              },
+              {
+                "x": 13,
+                "y": 3
+              },
+              {
+                "x": 13,
+                "y": 4
+              },
+              {
+                "x": 13,
+                "y": 5
+              },
+              {
+                "x": 13,
+                "y": 6
+              },
+              {
+                "x": 13,
+                "y": 7
+              },
+              {
+                "x": 13,
+                "y": 8
+              },
+              {
+                "x": 13,
+                "y": 9
+              },
+              {
+                "x": 13,
+                "y": 10
+              },
+              {
+                "x": 13,
+                "y": 11
+              },
+              {
+                "x": 13,
+                "y": 12
+              },
+              {
+                "x": 13,
+                "y": 13
+              },
+              {
+                "x": 13,
+                "y": 14
+              },
+              {
+                "x": 13,
+                "y": 15
+              },
+              {
+                "x": 13,
+                "y": 16
+              },
+              {
+                "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+                "x": 13,
+                "y": 17
+              }
+            ],
+            "executedTransfer": {
+              "kind": "transfer",
+              "mapId": "M:93e1:43",
+              "x": 29,
+              "y": 19,
+              "fade": "black"
+            },
+            "interpreterExecuted": true,
+            "landingPassable": true,
+            "engine": {
+              "walking": "project/collision.canMove",
+              "execution": "player/interpreter.createInterpreter"
+            }
+          }
+        ],
+        "mapTree": {
+          "mapId": "map_blank_start",
+          "children": [
+            {
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+              "children": [
+                {
+                  "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:0",
+                  "children": [
+                    {
+                      "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:0",
+                      "children": []
+                    },
+                    {
+                      "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:0",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+              "children": [
+                {
+                  "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:0",
+                  "children": [
+                    {
+                      "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:0",
+                      "children": []
+                    },
+                    {
+                      "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:0",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "mapId": "M:93e1:43",
+              "children": []
+            }
+          ]
+        },
+        "serializerReloads": 1
+      },
+      "rasterDigest": "85ab7530cf438f4f8a8ffd8d9b15eed1cb307374d0f5c504cb5baf34a45f334e",
+      "completeBookkeepingAccepted": true,
+      "geographyCompilerImplemented": false
+    },
+    {
+      "seed": 271,
+      "source": "../spatial-geography-compiler/output/evidence/tile-to-world/task-10/backend/adversarial/independent-witness/complete-271.json",
+      "inputSHA256": "e2cd025777e7ca8de84d0dba283bd6bb452767c5b97dd6c28a41110b07b1ca73",
+      "originalError": "spatialAuthoring.occurrences.Q:96f4|opaque.bindings[0].connectionIds: missing owned connection connection:13:Q:96f4|opaque6:L:0b80",
+      "markers": [
+        {
+          "source": {
+            "mapId": "M:93e1:271",
+            "x": 7,
+            "y": 6,
+            "target": {
+              "occurrenceId": "child:13:Q:96f4|opaque6:S:a09c:0",
+              "portId": "port:32:child:13:Q:96f4|opaque6:S:a09c:06:P:8bb1"
+            },
+            "eventId": "E:child:13:Q:96f4|opaque6:S:a09c:0",
+            "returnEventId": "R:child:13:Q:96f4|opaque6:S:a09c:0"
+          },
+          "landing": {
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+            "x": 13,
+            "y": 17
+          }
+        },
+        {
+          "source": {
+            "mapId": "M:93e1:271",
+            "x": 29,
+            "y": 19,
+            "target": {
+              "occurrenceId": "child:13:Q:96f4|opaque6:S:019d:0",
+              "portId": "port:32:child:13:Q:96f4|opaque6:S:019d:06:P:8bb1"
+            },
+            "eventId": "E:child:13:Q:96f4|opaque6:S:019d:0",
+            "returnEventId": "R:child:13:Q:96f4|opaque6:S:019d:0"
+          },
+          "landing": {
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+            "x": 13,
+            "y": 17
+          }
+        }
+      ],
+      "declaredEntry": {
+        "x": 2,
+        "y": 6,
+        "portId": "port:13:Q:96f4|opaque6:P:8bb1"
+      },
+      "connectionIds": [
+        "connection:13:Q:96f4|opaque6:L:0b80"
+      ],
+      "overviewRoute": [
+        {
+          "occurrenceId": "Q:96f4|opaque",
+          "localConnectionId": "L:0b80"
+        }
+      ],
+      "traversal": {
+        "ports": [
+          {
+            "occurrenceId": "Q:96f4|opaque",
+            "mapId": "M:93e1:271",
+            "x": 2,
+            "y": 6,
+            "portId": "port:13:Q:96f4|opaque6:P:8bb1"
+          },
+          {
+            "occurrenceId": "child:13:Q:96f4|opaque6:S:a09c:0",
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+            "x": 13,
+            "y": 17,
+            "portId": "port:32:child:13:Q:96f4|opaque6:S:a09c:06:P:8bb1"
+          },
+          {
+            "occurrenceId": "child:13:Q:96f4|opaque6:S:019d:0",
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+            "x": 13,
+            "y": 17,
+            "portId": "port:32:child:13:Q:96f4|opaque6:S:019d:06:P:8bb1"
+          },
+          {
+            "occurrenceId": "child:32:child:13:Q:96f4|opaque6:S:a09c:06:square:0",
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17,
+            "portId": "port:51:child:32:child:13:Q:96f4|opaque6:S:a09c:06:square:05:entry"
+          },
+          {
+            "occurrenceId": "child:32:child:13:Q:96f4|opaque6:S:a09c:06:square:0",
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+            "x": 21,
+            "y": 16,
+            "portId": "port:51:child:32:child:13:Q:96f4|opaque6:S:a09c:06:square:04:exit"
+          },
+          {
+            "occurrenceId": "child:32:child:13:Q:96f4|opaque6:S:019d:06:square:0",
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+            "x": 12,
+            "y": 17,
+            "portId": "port:51:child:32:child:13:Q:96f4|opaque6:S:019d:06:square:05:entry"
+          },
+          {
+            "occurrenceId": "child:32:child:13:Q:96f4|opaque6:S:019d:06:square:0",
+            "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+            "x": 21,
+            "y": 16,
+            "portId": "port:51:child:32:child:13:Q:96f4|opaque6:S:019d:06:square:04:exit"
+          },
+          {
+            "occurrenceId": "child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:05:entry"
+          },
+          {
+            "occurrenceId": "child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:05:entry"
+          },
+          {
+            "occurrenceId": "child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:05:entry"
+          },
+          {
+            "occurrenceId": "child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:05:entry"
+          },
+          {
+            "occurrenceId": "child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:05:entry"
+          },
+          {
+            "occurrenceId": "child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:05:entry"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:06:stairs:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:87:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:09:stairs-up:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:90:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:06:stairs:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:87:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:09:stairs-up:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:90:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:06:stairs:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:87:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:09:stairs-up:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:90:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:06:stairs:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:87:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:09:stairs-up:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:90:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:06:stairs:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:87:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:09:stairs-up:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:90:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:09:stairs-up:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:06:stairs:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:0",
+            "x": 10,
+            "y": 15,
+            "portId": "port:87:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:06:stairs:07:landing"
+          },
+          {
+            "occurrenceId": "child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:09:stairs-up:0",
+            "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:0",
+            "x": 14,
+            "y": 15,
+            "portId": "port:90:child:68:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:09:stairs-up:07:landing"
+          }
+        ],
+        "routes": [
+          {
+            "eventId": "E:child:13:Q:96f4|opaque6:S:a09c:0",
+            "from": {
+              "mapId": "M:93e1:271",
+              "x": 7,
+              "y": 6
+            },
+            "to": {
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+              "x": 13,
+              "y": 17
+            },
+            "commands": [
+              {
+                "kind": "transfer",
+                "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+                "x": 13,
+                "y": 17,
+                "fade": "black"
+              }
+            ],
+            "walk": [
+              {
+                "x": 35,
+                "y": 27
+              },
+              {
+                "x": 35,
+                "y": 26
+              },
+              {
+                "x": 35,
+                "y": 25
+              },
+              {
+                "x": 35,
+                "y": 24
+              },
+              {
+                "x": 35,
+                "y": 23
+              },
+              {
+                "x": 35,
+                "y": 22
+              },
+              {
+                "x": 35,
+                "y": 21
+              },
+              {
+                "x": 35,
+                "y": 20
+              },
+              {
+                "x": 35,
+                "y": 19
+              },
+              {
+                "x": 35,
+                "y": 18
+              },
+              {
+                "x": 35,
+                "y": 17
+              },
+              {
+                "x": 35,
+                "y": 16
+              },
+              {
+                "x": 35,
+                "y": 15
+              },
+              {
+                "x": 35,
+                "y": 14
+              },
+              {
+                "x": 35,
+                "y": 13
+              },
+              {
+                "x": 35,
+                "y": 12
+              },
+              {
+                "x": 35,
+                "y": 11
+              },
+              {
+                "x": 35,
+                "y": 10
+              },
+              {
+                "x": 35,
+                "y": 9
+              },
+              {
+                "x": 35,
+                "y": 8
+              },
+              {
+                "x": 35,
+                "y": 7
+              },
+              {
+                "x": 35,
+                "y": 6
+              },
+              {
+                "x": 34,
+                "y": 6
+              },
+              {
+                "x": 33,
+                "y": 6
+              },
+              {
+                "x": 32,
+                "y": 6
+              },
+              {
+                "x": 31,
+                "y": 6
+              },
+              {
+                "x": 30,
+                "y": 6
+              },
+              {
+                "x": 29,
+                "y": 6
+              },
+              {
+                "x": 28,
+                "y": 6
+              },
+              {
+                "x": 27,
+                "y": 6
+              },
+              {
+                "x": 26,
+                "y": 6
+              },
+              {
+                "x": 25,
+                "y": 6
+              },
+              {
+                "x": 24,
+                "y": 6
+              },
+              {
+                "x": 23,
+                "y": 6
+              },
+              {
+                "x": 22,
+                "y": 6
+              },
+              {
+                "x": 21,
+                "y": 6
+              },
+              {
+                "x": 20,
+                "y": 6
+              },
+              {
+                "x": 19,
+                "y": 6
+              },
+              {
+                "x": 18,
+                "y": 6
+              },
+              {
+                "x": 17,
+                "y": 6
+              },
+              {
+                "x": 16,
+                "y": 6
+              },
+              {
+                "x": 15,
+                "y": 6
+              },
+              {
+                "x": 14,
+                "y": 6
+              },
+              {
+                "x": 13,
+                "y": 6
+              },
+              {
+                "x": 12,
+                "y": 6
+              },
+              {
+                "x": 11,
+                "y": 6
+              },
+              {
+                "x": 10,
+                "y": 6
+              },
+              {
+                "x": 9,
+                "y": 6
+              },
+              {
+                "x": 8,
+                "y": 6
+              },
+              {
+                "mapId": "M:93e1:271",
+                "x": 7,
+                "y": 6
+              }
+            ],
+            "executedTransfer": {
+              "kind": "transfer",
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+              "x": 13,
+              "y": 17,
+              "fade": "black"
+            },
+            "interpreterExecuted": true,
+            "landingPassable": true,
+            "engine": {
+              "walking": "project/collision.canMove",
+              "execution": "player/interpreter.createInterpreter"
+            }
+          },
+          {
+            "eventId": "R:child:13:Q:96f4|opaque6:S:a09c:0",
+            "from": {
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+              "x": 13,
+              "y": 17
+            },
+            "to": {
+              "mapId": "M:93e1:271",
+              "x": 7,
+              "y": 6
+            },
+            "commands": [
+              {
+                "kind": "transfer",
+                "mapId": "M:93e1:271",
+                "x": 7,
+                "y": 6,
+                "fade": "black"
+              }
+            ],
+            "walk": [
+              {
+                "x": 2,
+                "y": 3
+              },
+              {
+                "x": 3,
+                "y": 3
+              },
+              {
+                "x": 4,
+                "y": 3
+              },
+              {
+                "x": 5,
+                "y": 3
+              },
+              {
+                "x": 6,
+                "y": 3
+              },
+              {
+                "x": 7,
+                "y": 3
+              },
+              {
+                "x": 8,
+                "y": 3
+              },
+              {
+                "x": 9,
+                "y": 3
+              },
+              {
+                "x": 10,
+                "y": 3
+              },
+              {
+                "x": 11,
+                "y": 3
+              },
+              {
+                "x": 12,
+                "y": 3
+              },
+              {
+                "x": 13,
+                "y": 3
+              },
+              {
+                "x": 13,
+                "y": 4
+              },
+              {
+                "x": 13,
+                "y": 5
+              },
+              {
+                "x": 13,
+                "y": 6
+              },
+              {
+                "x": 13,
+                "y": 7
+              },
+              {
+                "x": 13,
+                "y": 8
+              },
+              {
+                "x": 13,
+                "y": 9
+              },
+              {
+                "x": 13,
+                "y": 10
+              },
+              {
+                "x": 13,
+                "y": 11
+              },
+              {
+                "x": 13,
+                "y": 12
+              },
+              {
+                "x": 13,
+                "y": 13
+              },
+              {
+                "x": 13,
+                "y": 14
+              },
+              {
+                "x": 13,
+                "y": 15
+              },
+              {
+                "x": 13,
+                "y": 16
+              },
+              {
+                "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+                "x": 13,
+                "y": 17
+              }
+            ],
+            "executedTransfer": {
+              "kind": "transfer",
+              "mapId": "M:93e1:271",
+              "x": 7,
+              "y": 6,
+              "fade": "black"
+            },
+            "interpreterExecuted": true,
+            "landingPassable": true,
+            "engine": {
+              "walking": "project/collision.canMove",
+              "execution": "player/interpreter.createInterpreter"
+            }
+          },
+          {
+            "eventId": "E:child:13:Q:96f4|opaque6:S:019d:0",
+            "from": {
+              "mapId": "M:93e1:271",
+              "x": 29,
+              "y": 19
+            },
+            "to": {
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+              "x": 13,
+              "y": 17
+            },
+            "commands": [
+              {
+                "kind": "transfer",
+                "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+                "x": 13,
+                "y": 17,
+                "fade": "black"
+              }
+            ],
+            "walk": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 1,
+                "y": 0
+              },
+              {
+                "x": 2,
+                "y": 0
+              },
+              {
+                "x": 3,
+                "y": 0
+              },
+              {
+                "x": 4,
+                "y": 0
+              },
+              {
+                "x": 5,
+                "y": 0
+              },
+              {
+                "x": 6,
+                "y": 0
+              },
+              {
+                "x": 7,
+                "y": 0
+              },
+              {
+                "x": 8,
+                "y": 0
+              },
+              {
+                "x": 9,
+                "y": 0
+              },
+              {
+                "x": 10,
+                "y": 0
+              },
+              {
+                "x": 11,
+                "y": 0
+              },
+              {
+                "x": 12,
+                "y": 0
+              },
+              {
+                "x": 13,
+                "y": 0
+              },
+              {
+                "x": 14,
+                "y": 0
+              },
+              {
+                "x": 15,
+                "y": 0
+              },
+              {
+                "x": 16,
+                "y": 0
+              },
+              {
+                "x": 17,
+                "y": 0
+              },
+              {
+                "x": 18,
+                "y": 0
+              },
+              {
+                "x": 19,
+                "y": 0
+              },
+              {
+                "x": 20,
+                "y": 0
+              },
+              {
+                "x": 21,
+                "y": 0
+              },
+              {
+                "x": 22,
+                "y": 0
+              },
+              {
+                "x": 23,
+                "y": 0
+              },
+              {
+                "x": 24,
+                "y": 0
+              },
+              {
+                "x": 25,
+                "y": 0
+              },
+              {
+                "x": 26,
+                "y": 0
+              },
+              {
+                "x": 27,
+                "y": 0
+              },
+              {
+                "x": 28,
+                "y": 0
+              },
+              {
+                "x": 29,
+                "y": 0
+              },
+              {
+                "x": 29,
+                "y": 1
+              },
+              {
+                "x": 29,
+                "y": 2
+              },
+              {
+                "x": 29,
+                "y": 3
+              },
+              {
+                "x": 29,
+                "y": 4
+              },
+              {
+                "x": 29,
+                "y": 5
+              },
+              {
+                "x": 29,
+                "y": 6
+              },
+              {
+                "x": 29,
+                "y": 7
+              },
+              {
+                "x": 29,
+                "y": 8
+              },
+              {
+                "x": 29,
+                "y": 9
+              },
+              {
+                "x": 29,
+                "y": 10
+              },
+              {
+                "x": 29,
+                "y": 11
+              },
+              {
+                "x": 29,
+                "y": 12
+              },
+              {
+                "x": 29,
+                "y": 13
+              },
+              {
+                "x": 29,
+                "y": 14
+              },
+              {
+                "x": 29,
+                "y": 15
+              },
+              {
+                "x": 29,
+                "y": 16
+              },
+              {
+                "x": 29,
+                "y": 17
+              },
+              {
+                "x": 29,
+                "y": 18
+              },
+              {
+                "mapId": "M:93e1:271",
+                "x": 29,
+                "y": 19
+              }
+            ],
+            "executedTransfer": {
+              "kind": "transfer",
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+              "x": 13,
+              "y": 17,
+              "fade": "black"
+            },
+            "interpreterExecuted": true,
+            "landingPassable": true,
+            "engine": {
+              "walking": "project/collision.canMove",
+              "execution": "player/interpreter.createInterpreter"
+            }
+          },
+          {
+            "eventId": "R:child:13:Q:96f4|opaque6:S:019d:0",
+            "from": {
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+              "x": 13,
+              "y": 17
+            },
+            "to": {
+              "mapId": "M:93e1:271",
+              "x": 29,
+              "y": 19
+            },
+            "commands": [
+              {
+                "kind": "transfer",
+                "mapId": "M:93e1:271",
+                "x": 29,
+                "y": 19,
+                "fade": "black"
+              }
+            ],
+            "walk": [
+              {
+                "x": 2,
+                "y": 3
+              },
+              {
+                "x": 3,
+                "y": 3
+              },
+              {
+                "x": 4,
+                "y": 3
+              },
+              {
+                "x": 5,
+                "y": 3
+              },
+              {
+                "x": 6,
+                "y": 3
+              },
+              {
+                "x": 7,
+                "y": 3
+              },
+              {
+                "x": 8,
+                "y": 3
+              },
+              {
+                "x": 9,
+                "y": 3
+              },
+              {
+                "x": 10,
+                "y": 3
+              },
+              {
+                "x": 11,
+                "y": 3
+              },
+              {
+                "x": 12,
+                "y": 3
+              },
+              {
+                "x": 13,
+                "y": 3
+              },
+              {
+                "x": 13,
+                "y": 4
+              },
+              {
+                "x": 13,
+                "y": 5
+              },
+              {
+                "x": 13,
+                "y": 6
+              },
+              {
+                "x": 13,
+                "y": 7
+              },
+              {
+                "x": 13,
+                "y": 8
+              },
+              {
+                "x": 13,
+                "y": 9
+              },
+              {
+                "x": 13,
+                "y": 10
+              },
+              {
+                "x": 13,
+                "y": 11
+              },
+              {
+                "x": 13,
+                "y": 12
+              },
+              {
+                "x": 13,
+                "y": 13
+              },
+              {
+                "x": 13,
+                "y": 14
+              },
+              {
+                "x": 13,
+                "y": 15
+              },
+              {
+                "x": 13,
+                "y": 16
+              },
+              {
+                "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+                "x": 13,
+                "y": 17
+              }
+            ],
+            "executedTransfer": {
+              "kind": "transfer",
+              "mapId": "M:93e1:271",
+              "x": 29,
+              "y": 19,
+              "fade": "black"
+            },
+            "interpreterExecuted": true,
+            "landingPassable": true,
+            "engine": {
+              "walking": "project/collision.canMove",
+              "execution": "player/interpreter.createInterpreter"
+            }
+          }
+        ],
+        "mapTree": {
+          "mapId": "map_blank_start",
+          "children": [
+            {
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:a09c:0:0:29:easyrpg_chipset_combined_town",
+              "children": [
+                {
+                  "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-1:0",
+                  "children": [
+                    {
+                      "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-2:0",
+                      "children": []
+                    },
+                    {
+                      "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:a09c:03:inn:07:floor-3:0",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "mapId": "spatial-place:32:child:13:Q:96f4|opaque6:S:019d:0:0:29:easyrpg_chipset_combined_town",
+              "children": [
+                {
+                  "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-1:0",
+                  "children": [
+                    {
+                      "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-2:0",
+                      "children": []
+                    },
+                    {
+                      "mapId": "spatial:child:48:child:32:child:13:Q:96f4|opaque6:S:019d:03:inn:07:floor-3:0",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "mapId": "M:93e1:271",
+              "children": []
+            }
+          ]
+        },
+        "serializerReloads": 1
+      },
+      "rasterDigest": "2a1ccb68e2ba6023ecdf5a0e820ae7062a3aee4dea2ef5f10296632152fcbc46",
+      "completeBookkeepingAccepted": true,
+      "geographyCompilerImplemented": false
+    }
+  ],
+  "geographyCompilerImplemented": false,
+  "task11TransactionsImplemented": false,
+  "remoteWrites": 0
+}

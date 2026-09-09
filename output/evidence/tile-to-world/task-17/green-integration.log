@@ -1,0 +1,104 @@
+monitor_id=mon_PFJZ0Q5HASTH72CT
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialToolAcceptance.test.ts test/spatialLegacyTools.test.ts"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":" ✓ test/spatialToolAcceptance.test.ts (5 tests) 4637ms"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > accepts the authored source in one reversible transaction  1576ms"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live source before any publication  846ms"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live map before any publication  783ms"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live identity before any publication  796ms"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a stale generic map proposal in canonical mode  635ms"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":" ❯ test/spatialLegacyTools.test.ts (7 tests | 1 failed) 7187ms"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs  633ms"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > places canonical sources without reviving retired furniture  2112ms"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions  426ms"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"   × legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade 1933ms"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"     → 'author_house' 실행 실패: 집 시공이 선언되지 않은 프로젝트 영역을 변경했습니다.: expected false to be true // Object.is equality"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > builds village-linked interiors from the same canonical frozen source  1534ms"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections  438ms"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > preserves explicit empty legacy rejection when canonical authoring is absent 107ms"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":" FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"AssertionError: 'author_house' 실행 실패: 집 시공이 선언되지 않은 프로젝트 영역을 변경했습니다.: expected false to be true // Object.is equality"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"\u001b[32m- true\u001b[39m"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"\u001b[31m+ false\u001b[39m"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":" ❯ test/spatialLegacyTools.test.ts:69:39"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"     67|     const result = runAuthorHouse(ctx, { ...exteriorSingle, interior: …"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"     68|     // Then"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"     69|     expect(result.ok, result.summary).toBe(true);"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"       |                                       ^"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"     70|     expect(Object.values(ctx.project.spatialAuthoring.occurrences).som…"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"     71|     const transfers = Object.values(ctx.project.maps).flatMap(map => m…"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":" Test Files  1 failed | 1 passed (2)"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"      Tests  1 failed | 11 passed (12)"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"   Start at  01:44:21"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":"   Duration  16.54s (transform 7.74s, setup 0ms, collect 17.38s, tests 11.82s, environment 1ms, prepare 340ms)"}
+{"type":"line","id":"authoring-2948630","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-2948630","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialToolAcceptance.test.ts test/spatialLegacyTools.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools
+
+ ✓ test/spatialToolAcceptance.test.ts (5 tests) 4637ms
+   ✓ spatial proposals at the actual shared acceptance boundary > accepts the authored source in one reversible transaction  1576ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live source before any publication  846ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live map before any publication  783ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live identity before any publication  796ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a stale generic map proposal in canonical mode  635ms
+ ❯ test/spatialLegacyTools.test.ts (7 tests | 1 failed) 7187ms
+   ✓ legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs  633ms
+   ✓ legacy tools with active canonical designs > places canonical sources without reviving retired furniture  2112ms
+   ✓ legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions  426ms
+   × legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade 1933ms
+     → 'author_house' 실행 실패: 집 시공이 선언되지 않은 프로젝트 영역을 변경했습니다.: expected false to be true // Object.is equality
+   ✓ legacy tools with active canonical designs > builds village-linked interiors from the same canonical frozen source  1534ms
+   ✓ legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections  438ms
+   ✓ legacy tools with active canonical designs > preserves explicit empty legacy rejection when canonical authoring is absent 107ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade
+AssertionError: 'author_house' 실행 실패: 집 시공이 선언되지 않은 프로젝트 영역을 변경했습니다.: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/spatialLegacyTools.test.ts:69:39
+     67|     const result = runAuthorHouse(ctx, { ...exteriorSingle, interior: …
+     68|     // Then
+     69|     expect(result.ok, result.summary).toBe(true);
+       |                                       ^
+     70|     expect(Object.values(ctx.project.spatialAuthoring.occurrences).som…
+     71|     const transfers = Object.values(ctx.project.maps).flatMap(map => m…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 11 passed (12)
+   Start at  01:44:21
+   Duration  16.54s (transform 7.74s, setup 0ms, collect 17.38s, tests 11.82s, environment 1ms, prepare 340ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

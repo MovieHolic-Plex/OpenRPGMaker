@@ -1,0 +1,141 @@
+{
+  "status": "PASS",
+  "beats": [
+    {
+      "id": "title",
+      "observation": {
+        "status": "success",
+        "before": [
+          {
+            "value": false
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      }
+    },
+    {
+      "id": "ready",
+      "observation": {
+        "status": "success",
+        "before": [
+          {
+            "value": false
+          },
+          {
+            "missing": true
+          },
+          {
+            "missing": true
+          },
+          {
+            "missing": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          },
+          {
+            "value": "READY"
+          },
+          {
+            "value": 11
+          },
+          {
+            "value": 29
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      }
+    },
+    {
+      "id": "g1-f18",
+      "observation": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          },
+          {
+            "value": "READY"
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          },
+          {
+            "value": "HelloOther29 world"
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      }
+    },
+    {
+      "id": "complete",
+      "observation": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          },
+          {
+            "value": "HelloOther29 world"
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          },
+          {
+            "value": "DONE"
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "writes": [],
+  "exactExportedCommand": {
+    "kind": "text",
+    "speaker": "Narrator",
+    "body": "Hello\\n[2]\\v[2] world",
+    "emotion": "happy"
+  },
+  "wrongTargetRejections": 2,
+  "observationReleased": true
+}

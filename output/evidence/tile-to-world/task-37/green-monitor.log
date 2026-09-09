@@ -1,0 +1,32 @@
+monitor_id=mon_EHXJ28RJV64K4K7Y
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append"}
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":" ✓ test/supabaseAuditAppend.test.ts (5 tests) 17ms"}
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":" Test Files  1 passed (1)"}
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":"      Tests  5 passed (5)"}
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":"   Start at  02:43:42"}
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":"   Duration  5.54s (transform 3.55s, setup 0ms, collect 5.10s, tests 17ms, environment 0ms, prepare 94ms)"}
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":"No violations in 2 file(s)."}
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":"/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/prerequisites/task37.Di0RwQ/postgrest: OK"}
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":"Evidence: /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append/output/evidence/tile-to-world/task-37/run.D8dnKS"}
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":"Task37 real PostgREST append, receipt, immutability and ordinary-upsert checks passed."}
+{"type":"summary","id":"authoring-3940179","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append
+
+ ✓ test/supabaseAuditAppend.test.ts (5 tests) 17ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  02:43:42
+   Duration  5.54s (transform 3.55s, setup 0ms, collect 5.10s, tests 17ms, environment 0ms, prepare 94ms)
+
+No violations in 2 file(s).
+/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/prerequisites/task37.Di0RwQ/postgrest: OK
+Evidence: /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append/output/evidence/tile-to-world/task-37/run.D8dnKS
+Task37 real PostgREST append, receipt, immutability and ordinary-upsert checks passed.
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

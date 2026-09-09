@@ -1,0 +1,42 @@
+monitor_id=mon_7CYTZATES8G1H4BF
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix"}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: false 2613ms"}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: true 2239ms"}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringRefreshCollision.test.ts > recreates an entire missing subtree when a retained floor aliases its constructor identity at port level: false 1567ms"}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringRefreshCollision.test.ts > recreates an entire missing subtree when a retained floor aliases its constructor identity at port level: true 1627ms"}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringRefreshCollision.test.ts > preserves transitive opaque identities and ports when a place refresh updates frozen object revisions 1406ms"}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringRefresh.test.ts > retains actual child identity when a space source refresh changes repetition count 1109ms"}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringRefresh.test.ts > recompiles a nested place when its source revision is explicitly refreshed 1378ms"}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringRefresh.test.ts > removes incoming overview events atomically when a child place is explicitly refreshed 2181ms"}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringRefresh.test.ts > removes obsolete bound ports when a compiled space source drops an entry 967ms"}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":" Test Files  2 passed (2)"}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":"      Tests  9 passed (9)"}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":"   Start at  00:03:28"}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":"   Duration  24.73s (transform 5.18s, setup 0ms, collect 8.26s, tests 15.09s, environment 535ms, prepare 188ms)"}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1108397","description":"task11 scoped validation","line":"JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix/output/evidence/tile-to-world/task-11/refresh-identity/green-final.json"}
+{"type":"summary","id":"authoring-1108397","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix
+
+ ✓ test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: false 2613ms
+ ✓ test/spatialAuthoringRefreshCollision.test.ts > restores both repetitions through preview/apply/IO when the surviving opaque ID collides: true 2239ms
+ ✓ test/spatialAuthoringRefreshCollision.test.ts > recreates an entire missing subtree when a retained floor aliases its constructor identity at port level: false 1567ms
+ ✓ test/spatialAuthoringRefreshCollision.test.ts > recreates an entire missing subtree when a retained floor aliases its constructor identity at port level: true 1627ms
+ ✓ test/spatialAuthoringRefreshCollision.test.ts > preserves transitive opaque identities and ports when a place refresh updates frozen object revisions 1406ms
+ ✓ test/spatialAuthoringRefresh.test.ts > retains actual child identity when a space source refresh changes repetition count 1109ms
+ ✓ test/spatialAuthoringRefresh.test.ts > recompiles a nested place when its source revision is explicitly refreshed 1378ms
+ ✓ test/spatialAuthoringRefresh.test.ts > removes incoming overview events atomically when a child place is explicitly refreshed 2181ms
+ ✓ test/spatialAuthoringRefresh.test.ts > removes obsolete bound ports when a compiled space source drops an entry 967ms
+
+ Test Files  2 passed (2)
+      Tests  9 passed (9)
+   Start at  00:03:28
+   Duration  24.73s (transform 5.18s, setup 0ms, collect 8.26s, tests 15.09s, environment 535ms, prepare 188ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-refresh-identity-fix/output/evidence/tile-to-world/task-11/refresh-identity/green-final.json
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

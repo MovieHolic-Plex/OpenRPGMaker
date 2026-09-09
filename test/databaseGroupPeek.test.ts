@@ -22,7 +22,7 @@ describe("접힌 그룹 헤더 부제", () => {
     const world = TAB_GROUPS.find((group) => group.slug === "world");
     expect(world, "맵 그룹이 사라졌다").toBeTruthy();
     expect(world?.label).toBe("맵");
-    expect(world!.tabs).toEqual(["scratchConcepts", "tilesets"]);
+    expect(world!.tabs).toEqual(["spatialTiles", "spatialObjects", "spatialSpaces", "spatialPlaces", "spatialRegions", "spatialWorlds"]);
   });
 
   it("세계관 그룹이 레일 맨 앞에 있다", () => {

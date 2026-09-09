@@ -1,0 +1,186 @@
+monitor_id=mon_HRCBF7CQ0ZNK0CV4
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-space-edit"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":" × test/placedSpaceEdits.test.ts > moves compiled mixed cells when a placed fixed slot moves 1999ms"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"   → expected 1 to be 2 // Object.is equality"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":" × test/placedSpaceEdits.test.ts > changes effective event chips when a placed slot recipe changes 1548ms"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"   → expected [ 'event' ] to deeply equal []"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":" × test/placedSpaceEdits.test.ts > moves the concrete landing when the named entry moves 1316ms"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"   → expected [ { x: 8, y: 11, …(3) } ] to deep equally contain { x: 7, y: 10, …(3) }"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":" FAIL  test/placedSpaceEdits.test.ts > moves compiled mixed cells when a placed fixed slot moves"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"AssertionError: expected 1 to be 2 // Object.is equality"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"\u001b[32m- 2\u001b[39m"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"\u001b[31m+ 1\u001b[39m"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":" ❯ test/placedSpaceEdits.test.ts:34:19"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     32|   // Then projections and both layers move to the input offset; live o…"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     33|   const child = own(fixtureDocument(preview.project).occurrences, chil…"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     34|   expect(child.x).toBe(2);"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"       |                   ^"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     35|   const binding = child.bindings[0];"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     36|   if (!binding) throw new TypeError(\"Missing projection\");"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":" FAIL  test/placedSpaceEdits.test.ts > changes effective event chips when a placed slot recipe changes"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"AssertionError: expected [ 'event' ] to deeply equal []"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"\u001b[32m- []\u001b[39m"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"\u001b[31m+ [\u001b[39m"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"\u001b[31m+   \"event\",\u001b[39m"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"\u001b[31m+ ]\u001b[39m"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":" ❯ test/placedSpaceEdits.test.ts:54:70"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     52|   // Then effective chips and their generated events disappear togethe…"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     53|   const child = own(fixtureDocument(preview.project).occurrences, chil…"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     54|   expect(own(child.snapshot.library.objects, child.source.id).chips).t…"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"       |                                                                      ^"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     55|   const beforeMap = own(store.getCurrent().maps, `spatial:${spaceRoot}…"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     56|   expect(own(preview.project.maps, beforeMap.id).events.length).toBe(b…"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":" FAIL  test/placedSpaceEdits.test.ts > moves the concrete landing when the named entry moves"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"AssertionError: expected [ { x: 8, y: 11, …(3) } ] to deep equally contain { x: 7, y: 10, …(3) }"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"\u001b[32m- Expected:\u001b[39m "}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"{"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"  \"id\": \"port:13:compiler-room5:entry\","}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"  \"localPortId\": \"entry\","}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"  \"name\": \"Entry\","}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"  \"x\": 7,"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"  \"y\": 10,"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"}"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"\u001b[31m+ Received:\u001b[39m "}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"["}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"  {"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"    \"id\": \"port:13:compiler-room5:entry\","}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"    \"localPortId\": \"entry\","}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"    \"name\": \"Entry\","}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"    \"x\": 8,"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"    \"y\": 11,"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"  },"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"]"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":" ❯ test/placedSpaceEdits.test.ts:70:31"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     68|   // Then the same concrete identity lands at the translated input pos…"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     69|   const next = own(fixtureDocument(preview.project).occurrences, space…"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     70|   expect(next.snapshot.ports).toContainEqual({ ...port, x: 7, y: 10 });"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"       |                               ^"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     71|   expect(next.bindings[0]?.ports).toContainEqual({ portId: port.id, x:…"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"     72| });"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"      Tests  3 failed (3)"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"   Start at  06:15:49"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":"   Duration  14.27s (transform 5.85s, setup 0ms, collect 8.50s, tests 4.87s, environment 384ms, prepare 94ms)"}
+{"type":"line","id":"authoring-3112432","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3112432","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-placed-space-edit
+
+ × test/placedSpaceEdits.test.ts > moves compiled mixed cells when a placed fixed slot moves 1999ms
+   → expected 1 to be 2 // Object.is equality
+ × test/placedSpaceEdits.test.ts > changes effective event chips when a placed slot recipe changes 1548ms
+   → expected [ 'event' ] to deeply equal []
+ × test/placedSpaceEdits.test.ts > moves the concrete landing when the named entry moves 1316ms
+   → expected [ { x: 8, y: 11, …(3) } ] to deep equally contain { x: 7, y: 10, …(3) }
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/placedSpaceEdits.test.ts > moves compiled mixed cells when a placed fixed slot moves
+AssertionError: expected 1 to be 2 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 1[39m
+
+ ❯ test/placedSpaceEdits.test.ts:34:19
+     32|   // Then projections and both layers move to the input offset; live o…
+     33|   const child = own(fixtureDocument(preview.project).occurrences, chil…
+     34|   expect(child.x).toBe(2);
+       |                   ^
+     35|   const binding = child.bindings[0];
+     36|   if (!binding) throw new TypeError("Missing projection");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/placedSpaceEdits.test.ts > changes effective event chips when a placed slot recipe changes
+AssertionError: expected [ 'event' ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "event",[39m
+[31m+ ][39m
+
+ ❯ test/placedSpaceEdits.test.ts:54:70
+     52|   // Then effective chips and their generated events disappear togethe…
+     53|   const child = own(fixtureDocument(preview.project).occurrences, chil…
+     54|   expect(own(child.snapshot.library.objects, child.source.id).chips).t…
+       |                                                                      ^
+     55|   const beforeMap = own(store.getCurrent().maps, `spatial:${spaceRoot}…
+     56|   expect(own(preview.project.maps, beforeMap.id).events.length).toBe(b…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  test/placedSpaceEdits.test.ts > moves the concrete landing when the named entry moves
+AssertionError: expected [ { x: 8, y: 11, …(3) } ] to deep equally contain { x: 7, y: 10, …(3) }
+
+[32m- Expected:[39m
+{
+  "id": "port:13:compiler-room5:entry",
+  "localPortId": "entry",
+  "name": "Entry",
+  "x": 7,
+  "y": 10,
+}
+
+[31m+ Received:[39m
+[
+  {
+    "id": "port:13:compiler-room5:entry",
+    "localPortId": "entry",
+    "name": "Entry",
+    "x": 8,
+    "y": 11,
+  },
+]
+
+ ❯ test/placedSpaceEdits.test.ts:70:31
+     68|   // Then the same concrete identity lands at the translated input pos…
+     69|   const next = own(fixtureDocument(preview.project).occurrences, space…
+     70|   expect(next.snapshot.ports).toContainEqual({ ...port, x: 7, y: 10 });
+       |                               ^
+     71|   expect(next.bindings[0]?.ports).toContainEqual({ portId: port.id, x:…
+     72| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  06:15:49
+   Duration  14.27s (transform 5.85s, setup 0ms, collect 8.50s, tests 4.87s, environment 384ms, prepare 94ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

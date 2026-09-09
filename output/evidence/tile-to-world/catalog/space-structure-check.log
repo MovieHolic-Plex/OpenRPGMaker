@@ -1,0 +1,14 @@
+count=12
+ok   market-square | fams=8 ports=4
+ok   quiet-courtyard | fams=5 ports=2
+ok   kitchen-garden | fams=8 ports=2
+ok   forest-clearing | fams=6 ports=3
+ok   lakeshore | fams=11 ports=2
+ok   river-crossing | fams=6 ports=2
+ok   harbor-pier | fams=9 ports=3
+ok   snow-camp | fams=9 ports=2
+ok   mountain-gate | fams=6 ports=2
+ok   cave-mouth | fams=9 ports=2
+ok   mine-chamber | fams=8 ports=2
+ok   ruined-court | fams=9 ports=2
+problems=0

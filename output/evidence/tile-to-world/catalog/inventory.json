@@ -1,0 +1,943 @@
+{
+ "generatedBy": "scripts/qa/spatial-catalog.mts",
+ "atlas": {
+  "path": "public/assets/easyrpg-chipset-combined-town-transparent.png",
+  "rows": 16,
+  "tilesPerRow": 30,
+  "tileSize": 16,
+  "license": "EasyRPG RTP (CC0)"
+ },
+ "seeds": [
+  7,
+  19,
+  31
+ ],
+ "counts": {
+  "objects": 20,
+  "spaces": 12,
+  "places": 8,
+  "regions": 6,
+  "worlds": 2
+ },
+ "receipts": [
+  {
+   "kind": "objects",
+   "id": "outdoor-tree",
+   "file": "contact-sheets/objects/outdoor-tree.png",
+   "sha256": "e09e3bb968be9a9999ae79c76dd4dcc3eb607d9101b03d018b2a30b818dd2325",
+   "opaquePixels": 2332
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-pine",
+   "file": "contact-sheets/objects/outdoor-pine.png",
+   "sha256": "4de77d12fc2a2988de5aa0536cb4272898e052dace2f27f2622f7f7650477207",
+   "opaquePixels": 1276
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-dead-tree",
+   "file": "contact-sheets/objects/outdoor-dead-tree.png",
+   "sha256": "eba6a1941f7aedad28849ebd1bc7cd662c34156c5361fb8e9aba0b1d4e64d84f",
+   "opaquePixels": 672
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-stump",
+   "file": "contact-sheets/objects/outdoor-stump.png",
+   "sha256": "a24e7e22c867414f18c5386e9b1b566af5ba14ecd43094ec8faf5bd74e610fe7",
+   "opaquePixels": 508
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-rock",
+   "file": "contact-sheets/objects/outdoor-rock.png",
+   "sha256": "454c4801d084d25d85d73ef6aeae35edf0472aea70d0e8ef083b109ee9c8c8fa",
+   "opaquePixels": 544
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-boulder",
+   "file": "contact-sheets/objects/outdoor-boulder.png",
+   "sha256": "448f054c4ee034a413c4cf46ab97fd973cde552d0288475639b4255af7295678",
+   "opaquePixels": 1064
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-bush",
+   "file": "contact-sheets/objects/outdoor-bush.png",
+   "sha256": "f59aa66752fa0f7f2a95dd7a6d4d5caec0d285bae51f7c81aa4855a2b2273961",
+   "opaquePixels": 504
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-flowers",
+   "file": "contact-sheets/objects/outdoor-flowers.png",
+   "sha256": "3bf2f28316ad7ea184106a4bf2acf1cef4c25a164a879f25885b4106f9368609",
+   "opaquePixels": 512
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-well",
+   "file": "contact-sheets/objects/outdoor-well.png",
+   "sha256": "861922e6c6573cd810e5a835d70495490f5d3a6a8e30e4846f8dc27162e58eb0",
+   "opaquePixels": 1024
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-sign",
+   "file": "contact-sheets/objects/outdoor-sign.png",
+   "sha256": "f557c6a759573f800220628e7928762c73a882d52f329995af29bf28f3236c46",
+   "opaquePixels": 500
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-bench",
+   "file": "contact-sheets/objects/outdoor-bench.png",
+   "sha256": "8c3b1df55b93330933c2ebce14a4dafd5217b352ac258deb47ffbf41ab988ca1",
+   "opaquePixels": 936
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-lamp",
+   "file": "contact-sheets/objects/outdoor-lamp.png",
+   "sha256": "be28fcba972bb64994845c015ed98cbfcd80446b15a91346b5e4c9ed0ec9b534",
+   "opaquePixels": 1240
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-crate",
+   "file": "contact-sheets/objects/outdoor-crate.png",
+   "sha256": "22c4db24023de49f35f09e0f215245ba2bfc05fd94c9ac407d553241eb71ce56",
+   "opaquePixels": 2048
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-barrel",
+   "file": "contact-sheets/objects/outdoor-barrel.png",
+   "sha256": "119b113d8100aabab4ad2d3305265c761abb977d9a51e54e7e380506131139cd",
+   "opaquePixels": 1152
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-fence",
+   "file": "contact-sheets/objects/outdoor-fence.png",
+   "sha256": "80f021a70c756a1a67264959ed0d644d51dcdd0c1bb80dfc6fd5ba95bd387704",
+   "opaquePixels": 976
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-gate",
+   "file": "contact-sheets/objects/outdoor-gate.png",
+   "sha256": "f4a26abb1fb54f4b6d1773114d933aceaa0eb0068b5906192a4d9344dca087a8",
+   "opaquePixels": 2048
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-wood-bridge",
+   "file": "contact-sheets/objects/outdoor-wood-bridge.png",
+   "sha256": "9bc9906e7b84889a548ab7f58fd930a6c76e9c1ef5e1635510c779abb713e61d",
+   "opaquePixels": 3072
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-stone-bridge",
+   "file": "contact-sheets/objects/outdoor-stone-bridge.png",
+   "sha256": "7804adaf5ebd5effeffe45888d331627aa9069ee20aede1c93ddd26090b64e18",
+   "opaquePixels": 3072
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-stairs",
+   "file": "contact-sheets/objects/outdoor-stairs.png",
+   "sha256": "0fe848234f94df8e2e7a562b2fdbfefc4058d9657903a96d4626b0c97fec8afe",
+   "opaquePixels": 3072
+  },
+  {
+   "kind": "objects",
+   "id": "outdoor-dock",
+   "file": "contact-sheets/objects/outdoor-dock.png",
+   "sha256": "0fc34848037791431e84e788179daee992c863c72f6c39a7942cd756a6419a58",
+   "opaquePixels": 3072
+  },
+  {
+   "kind": "sheets",
+   "id": "outdoor-objects",
+   "file": "contact-sheets/sheets/outdoor-objects.png",
+   "sha256": "4a166b045705bf794be2739f603d64d8794ce5570660bc90f35ff13ad96892c8",
+   "opaquePixels": 29624
+  },
+  {
+   "kind": "spaces",
+   "id": "market-square",
+   "file": "contact-sheets/spaces/market-square.png",
+   "sha256": "3c142facd1f0c4658522b32a2b8fc9eb3feaab132c38803d73d27f13bcfa955a",
+   "opaquePixels": 3396
+  },
+  {
+   "kind": "spaces",
+   "id": "quiet-courtyard",
+   "file": "contact-sheets/spaces/quiet-courtyard.png",
+   "sha256": "0b9ef798741d6686b62a2100cff712a3fd8c3286b88e5fb2b7d7a97574d8f0af",
+   "opaquePixels": 3112
+  },
+  {
+   "kind": "spaces",
+   "id": "kitchen-garden",
+   "file": "contact-sheets/spaces/kitchen-garden.png",
+   "sha256": "6bcd07cc4a79fb057bf940ccd12a87d1afaa5584f88784ef544ede79a1fc966e",
+   "opaquePixels": 5152
+  },
+  {
+   "kind": "spaces",
+   "id": "forest-clearing",
+   "file": "contact-sheets/spaces/forest-clearing.png",
+   "sha256": "141688ddebd5b29b11aa8489c10e6fc6c10f77a3724ecc3557f48acbee62adc6",
+   "opaquePixels": 10848
+  },
+  {
+   "kind": "spaces",
+   "id": "lakeshore",
+   "file": "contact-sheets/spaces/lakeshore.png",
+   "sha256": "ced68186e41f8908d4364f0f0e0e39cb26dcf6c74ebabe313f5fe947c595b9f9",
+   "opaquePixels": 5288
+  },
+  {
+   "kind": "spaces",
+   "id": "river-crossing",
+   "file": "contact-sheets/spaces/river-crossing.png",
+   "sha256": "d64707101ecb9fb19dcebd2e38593460d9a65709613c5e9a419f6bd1816443dd",
+   "opaquePixels": 3572
+  },
+  {
+   "kind": "spaces",
+   "id": "harbor-pier",
+   "file": "contact-sheets/spaces/harbor-pier.png",
+   "sha256": "41e91d7f4e719f2886b9009dbb8c65372ea5d704b20a61f095ee43287af3b51d",
+   "opaquePixels": 4008
+  },
+  {
+   "kind": "spaces",
+   "id": "snow-camp",
+   "file": "contact-sheets/spaces/snow-camp.png",
+   "sha256": "4da21f7815f76dcdc915161626b03f78c6b8ffa3789e90d90c1ca45792f9b150",
+   "opaquePixels": 3200
+  },
+  {
+   "kind": "spaces",
+   "id": "mountain-gate",
+   "file": "contact-sheets/spaces/mountain-gate.png",
+   "sha256": "46fa96bfede935e2a66a1c3c2b15ab5602f2acab11ef4966c237180c84747b9b",
+   "opaquePixels": 5620
+  },
+  {
+   "kind": "spaces",
+   "id": "cave-mouth",
+   "file": "contact-sheets/spaces/cave-mouth.png",
+   "sha256": "f4eabc9a6a30e0b26b66d2dd93ffebbdd8e50d4c9ed639b9556ec17a4c922391",
+   "opaquePixels": 3960
+  },
+  {
+   "kind": "spaces",
+   "id": "mine-chamber",
+   "file": "contact-sheets/spaces/mine-chamber.png",
+   "sha256": "d615e519fa00f835cdd4e279ab38a25792a67a1228a748d0d4cc688563c66f99",
+   "opaquePixels": 1064
+  },
+  {
+   "kind": "spaces",
+   "id": "ruined-court",
+   "file": "contact-sheets/spaces/ruined-court.png",
+   "sha256": "5ad0df7bd4703fd8dac0b768dbbdc4d954ae734a26832f159f013581efffa9fe",
+   "opaquePixels": 6144
+  },
+  {
+   "kind": "sheets",
+   "id": "spaces",
+   "file": "contact-sheets/sheets/spaces.png",
+   "sha256": "71369d8009b4012cd2c5a3b54ada85867d8496045feb75bb0d75bfe762528a51",
+   "opaquePixels": 55364
+  }
+ ],
+ "composition": {
+  "places": [
+   {
+    "id": "lake-village",
+    "children": [
+     {
+      "id": "square",
+      "kind": "space",
+      "designId": "market-square",
+      "level": 0
+     },
+     {
+      "id": "shore",
+      "kind": "space",
+      "designId": "lakeshore",
+      "level": 0
+     },
+     {
+      "id": "inn",
+      "kind": "place",
+      "designId": "inn",
+      "level": 1
+     },
+     {
+      "id": "shop",
+      "kind": "place",
+      "designId": "shop",
+      "level": 2
+     },
+     {
+      "id": "house",
+      "kind": "place",
+      "designId": "house",
+      "level": 3
+     }
+    ],
+    "links": [
+     {
+      "id": "square-to-inn",
+      "from": {
+       "childId": "square",
+       "portId": "inn-door"
+      },
+      "to": {
+       "childId": "inn",
+       "portId": "entrance"
+      }
+     },
+     {
+      "id": "square-to-shop",
+      "from": {
+       "childId": "square",
+       "portId": "shop-door"
+      },
+      "to": {
+       "childId": "shop",
+       "portId": "entrance"
+      }
+     },
+     {
+      "id": "square-to-house",
+      "from": {
+       "childId": "square",
+       "portId": "north-lane"
+      },
+      "to": {
+       "childId": "house",
+       "portId": "entrance"
+      }
+     }
+    ]
+   },
+   {
+    "id": "forest-hamlet",
+    "children": [
+     {
+      "id": "clearing",
+      "kind": "space",
+      "designId": "forest-clearing",
+      "level": 0
+     },
+     {
+      "id": "house",
+      "kind": "place",
+      "designId": "house",
+      "level": 1
+     },
+     {
+      "id": "hunter-cabin",
+      "kind": "place",
+      "designId": "hunter",
+      "level": 2
+     }
+    ],
+    "links": [
+     {
+      "id": "clearing-to-house",
+      "from": {
+       "childId": "clearing",
+       "portId": "west-trail"
+      },
+      "to": {
+       "childId": "house",
+       "portId": "entrance"
+      }
+     },
+     {
+      "id": "clearing-to-cabin",
+      "from": {
+       "childId": "clearing",
+       "portId": "hollow-mouth"
+      },
+      "to": {
+       "childId": "hunter-cabin",
+       "portId": "entrance"
+      }
+     }
+    ]
+   },
+   {
+    "id": "harbor-town",
+    "children": [
+     {
+      "id": "pier",
+      "kind": "space",
+      "designId": "harbor-pier",
+      "level": 0
+     },
+     {
+      "id": "warehouse",
+      "kind": "place",
+      "designId": "warehouse",
+      "level": 1
+     },
+     {
+      "id": "tavern",
+      "kind": "place",
+      "designId": "tavern",
+      "level": 2
+     }
+    ],
+    "links": [
+     {
+      "id": "pier-to-warehouse",
+      "from": {
+       "childId": "pier",
+       "portId": "warehouse-door"
+      },
+      "to": {
+       "childId": "warehouse",
+       "portId": "entrance"
+      }
+     },
+     {
+      "id": "pier-to-tavern",
+      "from": {
+       "childId": "pier",
+       "portId": "gangway"
+      },
+      "to": {
+       "childId": "tavern",
+       "portId": "entrance"
+      }
+     }
+    ]
+   },
+   {
+    "id": "snow-outpost",
+    "children": [
+     {
+      "id": "camp",
+      "kind": "space",
+      "designId": "snow-camp",
+      "level": 0
+     },
+     {
+      "id": "barracks",
+      "kind": "place",
+      "designId": "barracks",
+      "level": 1
+     },
+     {
+      "id": "clinic",
+      "kind": "place",
+      "designId": "clinic",
+      "level": 2
+     }
+    ],
+    "links": [
+     {
+      "id": "camp-to-barracks",
+      "from": {
+       "childId": "camp",
+       "portId": "tent-flap"
+      },
+      "to": {
+       "childId": "barracks",
+       "portId": "entrance"
+      }
+     },
+     {
+      "id": "camp-to-clinic",
+      "from": {
+       "childId": "camp",
+       "portId": "camp-gate"
+      },
+      "to": {
+       "childId": "clinic",
+       "portId": "entrance"
+      }
+     }
+    ]
+   },
+   {
+    "id": "mountain-pass",
+    "children": [
+     {
+      "id": "gate",
+      "kind": "space",
+      "designId": "mountain-gate",
+      "level": 0
+     },
+     {
+      "id": "crossing",
+      "kind": "space",
+      "designId": "river-crossing",
+      "level": 0
+     },
+     {
+      "id": "rest-house",
+      "kind": "place",
+      "designId": "inn",
+      "level": 1
+     }
+    ],
+    "links": [
+     {
+      "id": "gate-to-crossing",
+      "from": {
+       "childId": "gate",
+       "portId": "lowland-side"
+      },
+      "to": {
+       "childId": "crossing",
+       "portId": "north-bank"
+      }
+     },
+     {
+      "id": "crossing-to-rest",
+      "from": {
+       "childId": "crossing",
+       "portId": "south-bank"
+      },
+      "to": {
+       "childId": "rest-house",
+       "portId": "entrance"
+      }
+     }
+    ]
+   },
+   {
+    "id": "old-ruins",
+    "children": [
+     {
+      "id": "court",
+      "kind": "space",
+      "designId": "ruined-court",
+      "level": 0
+     },
+     {
+      "id": "cave",
+      "kind": "space",
+      "designId": "cave-mouth",
+      "level": 0
+     },
+     {
+      "id": "shrine",
+      "kind": "place",
+      "designId": "church",
+      "level": 1
+     }
+    ],
+    "links": [
+     {
+      "id": "court-to-cave",
+      "from": {
+       "childId": "court",
+       "portId": "broken-arch"
+      },
+      "to": {
+       "childId": "cave",
+       "portId": "trailhead"
+      }
+     },
+     {
+      "id": "court-to-shrine",
+      "from": {
+       "childId": "court",
+       "portId": "vault-stair"
+      },
+      "to": {
+       "childId": "shrine",
+       "portId": "entrance"
+      }
+     }
+    ]
+   },
+   {
+    "id": "working-mine",
+    "children": [
+     {
+      "id": "mouth",
+      "kind": "space",
+      "designId": "cave-mouth",
+      "level": 0
+     },
+     {
+      "id": "chamber-upper",
+      "kind": "space",
+      "designId": "mine-chamber",
+      "level": 0
+     },
+     {
+      "id": "chamber-lower",
+      "kind": "space",
+      "designId": "mine-chamber",
+      "level": 0
+     }
+    ],
+    "links": [
+     {
+      "id": "mouth-to-upper",
+      "from": {
+       "childId": "mouth",
+       "portId": "adit"
+      },
+      "to": {
+       "childId": "chamber-upper",
+       "portId": "gallery-north"
+      }
+     },
+     {
+      "id": "upper-to-lower",
+      "from": {
+       "childId": "chamber-upper",
+       "portId": "gallery-south"
+      },
+      "to": {
+       "childId": "chamber-lower",
+       "portId": "gallery-north"
+      }
+     }
+    ]
+   },
+   {
+    "id": "forest-sanctuary",
+    "children": [
+     {
+      "id": "clearing",
+      "kind": "space",
+      "designId": "forest-clearing",
+      "level": 0
+     },
+     {
+      "id": "courtyard",
+      "kind": "space",
+      "designId": "quiet-courtyard",
+      "level": 0
+     },
+     {
+      "id": "shrine",
+      "kind": "place",
+      "designId": "church",
+      "level": 1
+     }
+    ],
+    "links": [
+     {
+      "id": "clearing-to-courtyard",
+      "from": {
+       "childId": "clearing",
+       "portId": "hollow-mouth"
+      },
+      "to": {
+       "childId": "courtyard",
+       "portId": "garden-arch"
+      }
+     },
+     {
+      "id": "courtyard-to-shrine",
+      "from": {
+       "childId": "courtyard",
+       "portId": "cloister-gate"
+      },
+      "to": {
+       "childId": "shrine",
+       "portId": "entrance"
+      }
+     }
+    ]
+   }
+  ],
+  "regions": [
+   {
+    "id": "lake-country",
+    "world": "lake-kingdom",
+    "places": [
+     {
+      "id": "lake-village",
+      "designId": "lake-village",
+      "x": 30,
+      "y": 40
+     },
+     {
+      "id": "working-mine",
+      "designId": "working-mine",
+      "x": 92,
+      "y": 30
+     }
+    ],
+    "routes": [
+     {
+      "id": "village-to-mine",
+      "points": [
+       {
+        "x": 30,
+        "y": 40
+       },
+       {
+        "x": 92,
+        "y": 40
+       },
+       {
+        "x": 92,
+        "y": 30
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "deep-forest",
+    "world": "lake-kingdom",
+    "places": [
+     {
+      "id": "forest-hamlet",
+      "designId": "forest-hamlet",
+      "x": 34,
+      "y": 34
+     },
+     {
+      "id": "forest-sanctuary",
+      "designId": "forest-sanctuary",
+      "x": 88,
+      "y": 58
+     }
+    ],
+    "routes": [
+     {
+      "id": "hamlet-to-sanctuary",
+      "points": [
+       {
+        "x": 34,
+        "y": 34
+       },
+       {
+        "x": 88,
+        "y": 34
+       },
+       {
+        "x": 88,
+        "y": 58
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "harbor-coast",
+    "world": "lake-kingdom",
+    "places": [
+     {
+      "id": "harbor-town",
+      "designId": "harbor-town",
+      "x": 28,
+      "y": 66
+     },
+     {
+      "id": "coast-warehouse",
+      "designId": "harbor-town",
+      "x": 96,
+      "y": 70
+     }
+    ],
+    "routes": [
+     {
+      "id": "town-to-warehouse",
+      "points": [
+       {
+        "x": 28,
+        "y": 66
+       },
+       {
+        "x": 96,
+        "y": 66
+       },
+       {
+        "x": 96,
+        "y": 70
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "snow-frontier",
+    "world": "northern-frontier",
+    "places": [
+     {
+      "id": "snow-outpost",
+      "designId": "snow-outpost",
+      "x": 36,
+      "y": 26
+     },
+     {
+      "id": "hunter-cabin",
+      "designId": "forest-hamlet",
+      "x": 94,
+      "y": 44
+     }
+    ],
+    "routes": [
+     {
+      "id": "outpost-to-cabin",
+      "points": [
+       {
+        "x": 36,
+        "y": 26
+       },
+       {
+        "x": 94,
+        "y": 26
+       },
+       {
+        "x": 94,
+        "y": 44
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "high-pass",
+    "world": "northern-frontier",
+    "places": [
+     {
+      "id": "mountain-pass",
+      "designId": "mountain-pass",
+      "x": 32,
+      "y": 52
+     },
+     {
+      "id": "working-mine",
+      "designId": "working-mine",
+      "x": 90,
+      "y": 62
+     }
+    ],
+    "routes": [
+     {
+      "id": "pass-to-mine",
+      "points": [
+       {
+        "x": 32,
+        "y": 52
+       },
+       {
+        "x": 90,
+        "y": 52
+       },
+       {
+        "x": 90,
+        "y": 62
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "ancient-ruins",
+    "world": "northern-frontier",
+    "places": [
+     {
+      "id": "old-ruins",
+      "designId": "old-ruins",
+      "x": 30,
+      "y": 30
+     },
+     {
+      "id": "forest-sanctuary",
+      "designId": "forest-sanctuary",
+      "x": 86,
+      "y": 68
+     }
+    ],
+    "routes": [
+     {
+      "id": "ruins-to-sanctuary",
+      "points": [
+       {
+        "x": 30,
+        "y": 30
+       },
+       {
+        "x": 86,
+        "y": 30
+       },
+       {
+        "x": 86,
+        "y": 68
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "worlds": [
+   {
+    "id": "lake-kingdom",
+    "entryRegion": "lake-country",
+    "regions": [
+     "lake-country",
+     "deep-forest",
+     "harbor-coast"
+    ],
+    "ports": [
+     "lake-entrance",
+     "forest-entrance",
+     "coast-entrance"
+    ],
+    "connections": [
+     {
+      "id": "lake-forest",
+      "from": "lake-country",
+      "to": "deep-forest"
+     },
+     {
+      "id": "forest-coast",
+      "from": "deep-forest",
+      "to": "harbor-coast"
+     }
+    ]
+   },
+   {
+    "id": "northern-frontier",
+    "entryRegion": "snow-frontier",
+    "regions": [
+     "snow-frontier",
+     "high-pass",
+     "ancient-ruins"
+    ],
+    "ports": [
+     "snow-entrance",
+     "pass-entrance",
+     "ruins-entrance"
+    ],
+    "connections": [
+     {
+      "id": "snow-pass",
+      "from": "snow-frontier",
+      "to": "high-pass"
+     },
+     {
+      "id": "pass-ruins",
+      "from": "high-pass",
+      "to": "ancient-ruins"
+     }
+    ]
+   }
+  ]
+ }
+}

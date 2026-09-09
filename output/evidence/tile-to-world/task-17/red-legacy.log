@@ -1,0 +1,2230 @@
+monitor_id=mon_06GK6JPDER0ZWYJ8
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialLegacyTools.test.ts"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":" ❯ test/spatialLegacyTools.test.ts (5 tests | 4 failed) 3163ms"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"   × legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs 979ms"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     → expected { Object (query, facilities, ...) } to match object { canonical: { kind: 'place', …(1) } }"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"(5 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"   × legacy tools with active canonical designs > places canonical sources without reviving retired furniture 651ms"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     → 'place_concept' 실행 실패: 이 타일셋의 개념 꾸러미가 비어 있다. 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 시설 템플릿을 만들거나 초안(여관·민가·상점…)을 넣은 뒤 그 장소·물건으로 설계하라.: expected false to be true // Object.is equality"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"   × legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions 695ms"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     → 집 내부의 개념 꾸러미(house)가 없습니다. get_concept_facility로 현재 꾸러미를 읽고 place_concept(plan)으로 실내를 설계하세요."}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"   × legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections 648ms"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     → 개념 꾸러미가 비어 있습니다. 사용할 장소·물건을 개념 꾸러미에 등록한 뒤 실내를 설계하세요."}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > preserves explicit empty legacy rejection when canonical authoring is absent 188ms"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":" FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"AssertionError: expected { Object (query, facilities, ...) } to match object { canonical: { kind: 'place', …(1) } }"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"(5 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[2m  {\u001b[22m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[32m-   \"canonical\": {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[32m-     \"design\": {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[32m-       \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"facility\\\",\\\"house\\\"]\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[32m-       \"revision\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+   \"facilities\": [],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+   \"query\": \"house\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+   \"sources\": [],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+   \"template\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+   \"vocabulary\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"bed_h\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"침대(가로)\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"bed\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"bedroom\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         355,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         356,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"bed_v\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"침대(세로)\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"bed\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"bedroom\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         324,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         354,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"bookshelf\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"책장\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"bookshelf\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         18,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         19,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         20,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         48,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         49,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         50,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         78,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         79,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         80,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"stove\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"화덕\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"stove\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         21,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         51,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"table_long\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"긴 탁자\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         325,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         326,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         327,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"study_desk\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"학습 책상과 걸상\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         328,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         266,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"counter\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"접수용 긴 탁자\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"counter\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         325,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         326,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         327,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"table_chairs\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"사각 탁자+의자 짝\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         297,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         328,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         298,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"piano\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"피아노\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         357,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         358,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         359,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"clock\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"벽걸이 괘종시계\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-any\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"bedroom\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         389,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         419,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"armor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"갑옷 전시대\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"corridor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"storage\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         87,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         117,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"bust\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"흉상\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"corridor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         88,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         118,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"mirror\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"대형 거울\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"bedroom\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         269,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         299,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"display\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"검 진열 박스\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         263,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         293,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"cabinet\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"캐비닛\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"bedroom\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         148,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         178,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"rug\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"러그\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"bedroom\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         279,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         280,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         281,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         309,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         310,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         311,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         339,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         340,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         341,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"hearth\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"벽난로 아궁이\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-any\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         373,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"cauldron\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"가마솥\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         323,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"barrel\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"술통\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"storage\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         205,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"crate\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"나무 상자\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"storage\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         55,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"jars\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"항아리\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"storage\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"bedroom\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         350,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"plant\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"화분\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"corridor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         289,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"window\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"창문\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-any\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"bedroom\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"storage\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"corridor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         56,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"picture\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"그림\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-any\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"bedroom\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"corridor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         114,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         115,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"sword_rack\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"검 거치대\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-any\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"corridor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         260,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"crystal\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"수정구 점술대\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         329,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"stairs\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"붉은 카펫 대계단\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"free\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"corridor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         465,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         466,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         467,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"tavern_sign\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"선술집 간판\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-any\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         58,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"ladder\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"사다리\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-any\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"storage\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         472,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"religious\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"성상\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-any\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"bedroom\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"corridor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         59,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"fruit_shelf\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"과일 선반\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-any\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         25,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"shelf_jars\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"항아리 선반\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-any\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"storage\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         320,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"grain\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"곡물 자루\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"storage\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         471,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"box\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"잡화 상자\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"storage\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"bedroom\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         295,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"bucket\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"물통\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"storage\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         265,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"kettle\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"항아리\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         235,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"stool\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"스툴\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         266,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"rug_red\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"붉은 카펫\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"corridor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         375,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         376,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         377,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         405,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         406,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         407,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         435,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         436,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         437,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"rug_mat\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"짚 돗자리\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"bedroom\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"storage\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         108,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         109,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         110,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         138,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         139,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         140,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         168,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         169,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         170,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"table_wood\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"확장 목재 탁자\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         156,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         157,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         158,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         186,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         187,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         188,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         198,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         199,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         200,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"table_white\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"흰색 탁자\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         159,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         160,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         161,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         189,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         190,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         191,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         228,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         229,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         230,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"tea_table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"차탁과 마주 보는 의자\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         156,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         157,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         158,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         186,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         187,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         188,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         198,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         199,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         200,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         297,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         298,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         235,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         204,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 5,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"reading_table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"책·촛대와 독서 좌석\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         156,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         157,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         158,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         186,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         187,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         188,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         198,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         199,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         200,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         297,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         298,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         145,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         204,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 5,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"dining_table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"식기·요리와 식사 좌석\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         156,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         157,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         158,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         186,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         187,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         188,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         198,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         199,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         200,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         297,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         298,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         207,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         238,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         208,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 5,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"consultation_table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"기록·촛대와 상담 좌석\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         159,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         160,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         161,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         189,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         190,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         191,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         228,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         229,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         230,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         297,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         298,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         145,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         204,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 5,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"altar_table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"흰 제단과 촛대\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"floor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         159,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         160,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         161,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         189,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         190,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         191,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         228,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         229,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         230,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         204,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"work_table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"작업 탁자와 도구\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         156,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         157,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         158,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         186,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         187,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         188,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         198,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         199,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         200,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         261,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         414,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"stairs_small\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"한 칸 계단\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"free\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"corridor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         444,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[2m      },\u001b[22m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[32m-     \"kind\": \"place\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"stairs_horizontal\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"벽 높이를 잇는 돌계단\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"free\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"corridor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         141,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         111,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         171,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"stairs_down\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"아래층 계단\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"free\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"corridor\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         474,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"flue\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"난로 연통\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         209,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         239,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 1,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"description\": \"하나의 3×3 석조 화로: 402·403·404 / 432·433·434 / 462·463·464. 아래 가운데 463은 불이 꺼진 화구다. 벽·창살 낱장으로 조립하지 않는다. 켜진 화로는 stone_hearth_lit을 선택한다.\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"stone_hearth_unlit\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"석조 화로 (꺼짐, 3×3)\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         402,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         403,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         404,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         432,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         433,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         434,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         462,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         463,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         464,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[2m      },\u001b[22m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"description\": \"꺼진 화로의 아래 가운데 (1,2)만 463 대신 124로 바꾼다. 불은 124→154→184→214, 초당 4프레임으로 반복 재생된다. 나머지 여덟 석재 셀은 동일하다. 꺼진 화로는 stone_hearth_unlit을 선택한다.\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"stone_hearth_lit\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"석조 화로 (불 켜짐, 3×3)\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": null,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"kitchen\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"tavern\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"dining\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         402,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         403,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         404,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         432,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         433,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         434,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         462,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         124,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         464,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"care_bed\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"병상과 간병 걸상\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"bed\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"bedroom\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         324,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         354,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         266,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     {\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"height\": 2,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"id\": \"teacher_desk\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"label\": \"교사용 책상과 펼친 책\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"role\": \"table\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"snap\": \"wall-north\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"themes\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         \"study\",\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"tileIds\": [\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         156,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         157,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         158,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         198,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         199,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         200,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+         145,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+       \"width\": 3,\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+     },\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+   ],\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[2m  }\u001b[22m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":" ❯ test/spatialLegacyTools.test.ts:35:25"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     33|     // Then"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     34|     expect(result.ok, result.summary).toBe(true);"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     35|     expect(result.data).toMatchObject({ canonical: { kind: \"place\", de…"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"       |                         ^"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     36|     expect(JSON.stringify(project)).toBe(before);"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     37|   });"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":" FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > places canonical sources without reviving retired furniture"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"AssertionError: 'place_concept' 실행 실패: 이 타일셋의 개념 꾸러미가 비어 있다. 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 시설 템플릿을 만들거나 초안(여관·민가·상점…)을 넣은 뒤 그 장소·물건으로 설계하라.: expected false to be true // Object.is equality"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[32m- true\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"\u001b[31m+ false\u001b[39m"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":" ❯ test/spatialLegacyTools.test.ts:45:39"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     43|     const result = runTool(ctx, \"place_concept\", { query: \"house\", map…"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     44|     // Then"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     45|     expect(result.ok, result.summary).toBe(true);"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"       |                                       ^"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     46|     const occurrence = ctx.project.spatialAuthoring?.occurrences[\"cano…"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     47|     expect(occurrence?.source).toEqual({ kind: \"place\", id: house.id, …"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":" FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"ToolError: 집 내부의 개념 꾸러미(house)가 없습니다. get_concept_facility로 현재 꾸러미를 읽고 place_concept(plan)으로 실내를 설계하세요."}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":" ❯ resolveHouseConcept src/editor/interiorConceptPlan.ts:36:24"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     34|   const facility = resolveConceptFacility(project, program, TILESET)"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     35|     ?? resolveConceptFacility(project, PROGRAM_FACILITIES[program], TI…"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     36|   if (!facility) throw new ToolError("}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"       |                        ^"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     37|     `집 내부의 개념 꾸러미(${PROGRAM_FACILITIES[program]})가 없습니다. get_concept_f…"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     38|     { code: \"concept-not-found\" },"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":" ❯ test/spatialLegacyTools.test.ts:55:20"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":" FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"ToolError: 개념 꾸러미가 비어 있습니다. 사용할 장소·물건을 개념 꾸러미에 등록한 뒤 실내를 설계하세요."}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":" ❯ bindInteriorConceptPlan src/editor/interiorConceptPlan.ts:72:30"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     70|   );"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     71|   const bundles = liveBundlesForTileset(project, tilesetId);"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     72|   if (!bundles.length) throw new ToolError("}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"       |                              ^"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     73|     \"개념 꾸러미가 비어 있습니다. 사용할 장소·물건을 개념 꾸러미에 등록한 뒤 실내를 설계하세요.\","}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"     74|     { code: \"concept-bundle-empty\", mapId: plan.mapId },"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":" ❯ test/spatialLegacyTools.test.ts:64:18"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"      Tests  4 failed | 1 passed (5)"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"   Start at  01:33:39"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":"   Duration  22.01s (transform 12.64s, setup 0ms, collect 17.90s, tests 3.16s, environment 0ms, prepare 249ms)"}
+{"type":"line","id":"authoring-2476636","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-2476636","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialLegacyTools.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools
+
+ ❯ test/spatialLegacyTools.test.ts (5 tests | 4 failed) 3163ms
+   × legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs 979ms
+     → expected { Object (query, facilities, ...) } to match object { canonical: { kind: 'place', …(1) } }
+(5 matching properties omitted from actual)
+   × legacy tools with active canonical designs > places canonical sources without reviving retired furniture 651ms
+     → 'place_concept' 실행 실패: 이 타일셋의 개념 꾸러미가 비어 있다. 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 시설 템플릿을 만들거나 초안(여관·민가·상점…)을 넣은 뒤 그 장소·물건으로 설계하라.: expected false to be true // Object.is equality
+   × legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions 695ms
+     → 집 내부의 개념 꾸러미(house)가 없습니다. get_concept_facility로 현재 꾸러미를 읽고 place_concept(plan)으로 실내를 설계하세요.
+   × legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections 648ms
+     → 개념 꾸러미가 비어 있습니다. 사용할 장소·물건을 개념 꾸러미에 등록한 뒤 실내를 설계하세요.
+   ✓ legacy tools with active canonical designs > preserves explicit empty legacy rejection when canonical authoring is absent 188ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs
+AssertionError: expected { Object (query, facilities, ...) } to match object { canonical: { kind: 'place', …(1) } }
+(5 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "canonical": {[39m
+[32m-     "design": {[39m
+[32m-       "id": "legacy:[\"easyrpg_chipset_interior\",\"house\",\"facility\",\"house\"]",[39m
+[32m-       "revision": 2,[39m
+[31m+   "facilities": [],[39m
+[31m+   "query": "house",[39m
+[31m+   "sources": [],[39m
+[31m+   "template": null,[39m
+[31m+   "vocabulary": [[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "bed_h",[39m
+[31m+       "label": "침대(가로)",[39m
+[31m+       "role": "bed",[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "bedroom",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         355,[39m
+[31m+         356,[39m
+[31m+       ],[39m
+[31m+       "width": 2,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 2,[39m
+[31m+       "id": "bed_v",[39m
+[31m+       "label": "침대(세로)",[39m
+[31m+       "role": "bed",[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "bedroom",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         324,[39m
+[31m+         354,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "bookshelf",[39m
+[31m+       "label": "책장",[39m
+[31m+       "role": "bookshelf",[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "study",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         18,[39m
+[31m+         19,[39m
+[31m+         20,[39m
+[31m+         48,[39m
+[31m+         49,[39m
+[31m+         50,[39m
+[31m+         78,[39m
+[31m+         79,[39m
+[31m+         80,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 2,[39m
+[31m+       "id": "stove",[39m
+[31m+       "label": "화덕",[39m
+[31m+       "role": "stove",[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "kitchen",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         21,[39m
+[31m+         51,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "table_long",[39m
+[31m+       "label": "긴 탁자",[39m
+[31m+       "role": "table",[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "dining",[39m
+[31m+         "tavern",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         325,[39m
+[31m+         326,[39m
+[31m+         327,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 2,[39m
+[31m+       "id": "study_desk",[39m
+[31m+       "label": "학습 책상과 걸상",[39m
+[31m+       "role": "table",[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "study",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         328,[39m
+[31m+         266,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "counter",[39m
+[31m+       "label": "접수용 긴 탁자",[39m
+[31m+       "role": "counter",[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "tavern",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         325,[39m
+[31m+         326,[39m
+[31m+         327,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "table_chairs",[39m
+[31m+       "label": "사각 탁자+의자 짝",[39m
+[31m+       "role": "table",[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "dining",[39m
+[31m+         "study",[39m
+[31m+         "kitchen",[39m
+[31m+         "tavern",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         297,[39m
+[31m+         328,[39m
+[31m+         298,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "piano",[39m
+[31m+       "label": "피아노",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "tavern",[39m
+[31m+         "dining",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         357,[39m
+[31m+         358,[39m
+[31m+         359,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 2,[39m
+[31m+       "id": "clock",[39m
+[31m+       "label": "벽걸이 괘종시계",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-any",[39m
+[31m+       "themes": [[39m
+[31m+         "bedroom",[39m
+[31m+         "study",[39m
+[31m+         "dining",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         389,[39m
+[31m+         419,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 2,[39m
+[31m+       "id": "armor",[39m
+[31m+       "label": "갑옷 전시대",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "corridor",[39m
+[31m+         "storage",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         87,[39m
+[31m+         117,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 2,[39m
+[31m+       "id": "bust",[39m
+[31m+       "label": "흉상",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "corridor",[39m
+[31m+         "study",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         88,[39m
+[31m+         118,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 2,[39m
+[31m+       "id": "mirror",[39m
+[31m+       "label": "대형 거울",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "bedroom",[39m
+[31m+         "dining",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         269,[39m
+[31m+         299,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 2,[39m
+[31m+       "id": "display",[39m
+[31m+       "label": "검 진열 박스",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "tavern",[39m
+[31m+         "dining",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         263,[39m
+[31m+         293,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 2,[39m
+[31m+       "id": "cabinet",[39m
+[31m+       "label": "캐비닛",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "bedroom",[39m
+[31m+         "dining",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         148,[39m
+[31m+         178,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "rug",[39m
+[31m+       "label": "러그",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "bedroom",[39m
+[31m+         "dining",[39m
+[31m+         "study",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         279,[39m
+[31m+         280,[39m
+[31m+         281,[39m
+[31m+         309,[39m
+[31m+         310,[39m
+[31m+         311,[39m
+[31m+         339,[39m
+[31m+         340,[39m
+[31m+         341,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "hearth",[39m
+[31m+       "label": "벽난로 아궁이",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-any",[39m
+[31m+       "themes": [[39m
+[31m+         "kitchen",[39m
+[31m+         "tavern",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         373,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "cauldron",[39m
+[31m+       "label": "가마솥",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "kitchen",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         323,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "barrel",[39m
+[31m+       "label": "술통",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "storage",[39m
+[31m+         "tavern",[39m
+[31m+         "kitchen",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         205,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "crate",[39m
+[31m+       "label": "나무 상자",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "storage",[39m
+[31m+         "tavern",[39m
+[31m+         "kitchen",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         55,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "jars",[39m
+[31m+       "label": "항아리",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "kitchen",[39m
+[31m+         "storage",[39m
+[31m+         "bedroom",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         350,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "plant",[39m
+[31m+       "label": "화분",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "corridor",[39m
+[31m+         "dining",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         289,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "window",[39m
+[31m+       "label": "창문",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-any",[39m
+[31m+       "themes": [[39m
+[31m+         "bedroom",[39m
+[31m+         "study",[39m
+[31m+         "dining",[39m
+[31m+         "kitchen",[39m
+[31m+         "storage",[39m
+[31m+         "tavern",[39m
+[31m+         "corridor",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         56,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "picture",[39m
+[31m+       "label": "그림",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-any",[39m
+[31m+       "themes": [[39m
+[31m+         "bedroom",[39m
+[31m+         "study",[39m
+[31m+         "dining",[39m
+[31m+         "corridor",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         114,[39m
+[31m+         115,[39m
+[31m+       ],[39m
+[31m+       "width": 2,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "sword_rack",[39m
+[31m+       "label": "검 거치대",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-any",[39m
+[31m+       "themes": [[39m
+[31m+         "tavern",[39m
+[31m+         "corridor",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         260,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "crystal",[39m
+[31m+       "label": "수정구 점술대",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "study",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         329,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "stairs",[39m
+[31m+       "label": "붉은 카펫 대계단",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "free",[39m
+[31m+       "themes": [[39m
+[31m+         "corridor",[39m
+[31m+         "tavern",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         465,[39m
+[31m+         466,[39m
+[31m+         467,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "tavern_sign",[39m
+[31m+       "label": "선술집 간판",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-any",[39m
+[31m+       "themes": [[39m
+[31m+         "tavern",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         58,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "ladder",[39m
+[31m+       "label": "사다리",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-any",[39m
+[31m+       "themes": [[39m
+[31m+         "storage",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         472,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "religious",[39m
+[31m+       "label": "성상",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-any",[39m
+[31m+       "themes": [[39m
+[31m+         "study",[39m
+[31m+         "dining",[39m
+[31m+         "bedroom",[39m
+[31m+         "corridor",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         59,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "fruit_shelf",[39m
+[31m+       "label": "과일 선반",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-any",[39m
+[31m+       "themes": [[39m
+[31m+         "kitchen",[39m
+[31m+         "dining",[39m
+[31m+         "tavern",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         25,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "shelf_jars",[39m
+[31m+       "label": "항아리 선반",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-any",[39m
+[31m+       "themes": [[39m
+[31m+         "kitchen",[39m
+[31m+         "storage",[39m
+[31m+         "tavern",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         320,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "grain",[39m
+[31m+       "label": "곡물 자루",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "storage",[39m
+[31m+         "kitchen",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         471,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "box",[39m
+[31m+       "label": "잡화 상자",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "storage",[39m
+[31m+         "bedroom",[39m
+[31m+         "study",[39m
+[31m+         "dining",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         295,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "bucket",[39m
+[31m+       "label": "물통",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "kitchen",[39m
+[31m+         "storage",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         265,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "kettle",[39m
+[31m+       "label": "항아리",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "kitchen",[39m
+[31m+         "tavern",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         235,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "stool",[39m
+[31m+       "label": "스툴",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "tavern",[39m
+[31m+         "kitchen",[39m
+[31m+         "dining",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         266,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "rug_red",[39m
+[31m+       "label": "붉은 카펫",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "dining",[39m
+[31m+         "tavern",[39m
+[31m+         "study",[39m
+[31m+         "corridor",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         375,[39m
+[31m+         376,[39m
+[31m+         377,[39m
+[31m+         405,[39m
+[31m+         406,[39m
+[31m+         407,[39m
+[31m+         435,[39m
+[31m+         436,[39m
+[31m+         437,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "rug_mat",[39m
+[31m+       "label": "짚 돗자리",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "bedroom",[39m
+[31m+         "kitchen",[39m
+[31m+         "storage",[39m
+[31m+         "dining",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         108,[39m
+[31m+         109,[39m
+[31m+         110,[39m
+[31m+         138,[39m
+[31m+         139,[39m
+[31m+         140,[39m
+[31m+         168,[39m
+[31m+         169,[39m
+[31m+         170,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "table_wood",[39m
+[31m+       "label": "확장 목재 탁자",[39m
+[31m+       "role": "table",[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "dining",[39m
+[31m+         "study",[39m
+[31m+         "kitchen",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         156,[39m
+[31m+         157,[39m
+[31m+         158,[39m
+[31m+         186,[39m
+[31m+         187,[39m
+[31m+         188,[39m
+[31m+         198,[39m
+[31m+         199,[39m
+[31m+         200,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "table_white",[39m
+[31m+       "label": "흰색 탁자",[39m
+[31m+       "role": "table",[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "dining",[39m
+[31m+         "study",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         159,[39m
+[31m+         160,[39m
+[31m+         161,[39m
+[31m+         189,[39m
+[31m+         190,[39m
+[31m+         191,[39m
+[31m+         228,[39m
+[31m+         229,[39m
+[31m+         230,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "tea_table",[39m
+[31m+       "label": "차탁과 마주 보는 의자",[39m
+[31m+       "role": "table",[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "study",[39m
+[31m+         "dining",[39m
+[31m+         "kitchen",[39m
+[31m+         "tavern",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         156,[39m
+[31m+         157,[39m
+[31m+         158,[39m
+[31m+         186,[39m
+[31m+         187,[39m
+[31m+         188,[39m
+[31m+         198,[39m
+[31m+         199,[39m
+[31m+         200,[39m
+[31m+         297,[39m
+[31m+         298,[39m
+[31m+         235,[39m
+[31m+         204,[39m
+[31m+       ],[39m
+[31m+       "width": 5,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "reading_table",[39m
+[31m+       "label": "책·촛대와 독서 좌석",[39m
+[31m+       "role": "table",[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "study",[39m
+[31m+         "dining",[39m
+[31m+         "kitchen",[39m
+[31m+         "tavern",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         156,[39m
+[31m+         157,[39m
+[31m+         158,[39m
+[31m+         186,[39m
+[31m+         187,[39m
+[31m+         188,[39m
+[31m+         198,[39m
+[31m+         199,[39m
+[31m+         200,[39m
+[31m+         297,[39m
+[31m+         298,[39m
+[31m+         145,[39m
+[31m+         204,[39m
+[31m+       ],[39m
+[31m+       "width": 5,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "dining_table",[39m
+[31m+       "label": "식기·요리와 식사 좌석",[39m
+[31m+       "role": "table",[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "study",[39m
+[31m+         "dining",[39m
+[31m+         "kitchen",[39m
+[31m+         "tavern",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         156,[39m
+[31m+         157,[39m
+[31m+         158,[39m
+[31m+         186,[39m
+[31m+         187,[39m
+[31m+         188,[39m
+[31m+         198,[39m
+[31m+         199,[39m
+[31m+         200,[39m
+[31m+         297,[39m
+[31m+         298,[39m
+[31m+         207,[39m
+[31m+         238,[39m
+[31m+         208,[39m
+[31m+       ],[39m
+[31m+       "width": 5,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "consultation_table",[39m
+[31m+       "label": "기록·촛대와 상담 좌석",[39m
+[31m+       "role": "table",[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "study",[39m
+[31m+         "dining",[39m
+[31m+         "kitchen",[39m
+[31m+         "tavern",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         159,[39m
+[31m+         160,[39m
+[31m+         161,[39m
+[31m+         189,[39m
+[31m+         190,[39m
+[31m+         191,[39m
+[31m+         228,[39m
+[31m+         229,[39m
+[31m+         230,[39m
+[31m+         297,[39m
+[31m+         298,[39m
+[31m+         145,[39m
+[31m+         204,[39m
+[31m+       ],[39m
+[31m+       "width": 5,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "altar_table",[39m
+[31m+       "label": "흰 제단과 촛대",[39m
+[31m+       "role": "table",[39m
+[31m+       "snap": "floor",[39m
+[31m+       "themes": [[39m
+[31m+         "study",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         159,[39m
+[31m+         160,[39m
+[31m+         161,[39m
+[31m+         189,[39m
+[31m+         190,[39m
+[31m+         191,[39m
+[31m+         228,[39m
+[31m+         229,[39m
+[31m+         230,[39m
+[31m+         204,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "work_table",[39m
+[31m+       "label": "작업 탁자와 도구",[39m
+[31m+       "role": "table",[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "kitchen",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         156,[39m
+[31m+         157,[39m
+[31m+         158,[39m
+[31m+         186,[39m
+[31m+         187,[39m
+[31m+         188,[39m
+[31m+         198,[39m
+[31m+         199,[39m
+[31m+         200,[39m
+[31m+         261,[39m
+[31m+         414,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "stairs_small",[39m
+[31m+       "label": "한 칸 계단",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "free",[39m
+[31m+       "themes": [[39m
+[31m+         "corridor",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         444,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[2m      },[22m
+[32m-     "kind": "place",[39m
+[31m+     {[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "stairs_horizontal",[39m
+[31m+       "label": "벽 높이를 잇는 돌계단",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "free",[39m
+[31m+       "themes": [[39m
+[31m+         "corridor",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         141,[39m
+[31m+         111,[39m
+[31m+         171,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 1,[39m
+[31m+       "id": "stairs_down",[39m
+[31m+       "label": "아래층 계단",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "free",[39m
+[31m+       "themes": [[39m
+[31m+         "corridor",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         474,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 2,[39m
+[31m+       "id": "flue",[39m
+[31m+       "label": "난로 연통",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "kitchen",[39m
+[31m+         "tavern",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         209,[39m
+[31m+         239,[39m
+[31m+       ],[39m
+[31m+       "width": 1,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "description": "하나의 3×3 석조 화로: 402·403·404 / 432·433·434 / 462·463·464. 아래 가운데 463은 불이 꺼진 화구다. 벽·창살 낱장으로 조립하지 않는다. 켜진 화로는 stone_hearth_lit을 선택한다.",[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "stone_hearth_unlit",[39m
+[31m+       "label": "석조 화로 (꺼짐, 3×3)",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "kitchen",[39m
+[31m+         "tavern",[39m
+[31m+         "dining",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         402,[39m
+[31m+         403,[39m
+[31m+         404,[39m
+[31m+         432,[39m
+[31m+         433,[39m
+[31m+         434,[39m
+[31m+         462,[39m
+[31m+         463,[39m
+[31m+         464,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[2m      },[22m
+[31m+     {[39m
+[31m+       "description": "꺼진 화로의 아래 가운데 (1,2)만 463 대신 124로 바꾼다. 불은 124→154→184→214, 초당 4프레임으로 반복 재생된다. 나머지 여덟 석재 셀은 동일하다. 꺼진 화로는 stone_hearth_unlit을 선택한다.",[39m
+[31m+       "height": 3,[39m
+[31m+       "id": "stone_hearth_lit",[39m
+[31m+       "label": "석조 화로 (불 켜짐, 3×3)",[39m
+[31m+       "role": null,[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "kitchen",[39m
+[31m+         "tavern",[39m
+[31m+         "dining",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         402,[39m
+[31m+         403,[39m
+[31m+         404,[39m
+[31m+         432,[39m
+[31m+         433,[39m
+[31m+         434,[39m
+[31m+         462,[39m
+[31m+         124,[39m
+[31m+         464,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 2,[39m
+[31m+       "id": "care_bed",[39m
+[31m+       "label": "병상과 간병 걸상",[39m
+[31m+       "role": "bed",[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "bedroom",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         324,[39m
+[31m+         354,[39m
+[31m+         266,[39m
+[31m+       ],[39m
+[31m+       "width": 2,[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "height": 2,[39m
+[31m+       "id": "teacher_desk",[39m
+[31m+       "label": "교사용 책상과 펼친 책",[39m
+[31m+       "role": "table",[39m
+[31m+       "snap": "wall-north",[39m
+[31m+       "themes": [[39m
+[31m+         "study",[39m
+[31m+       ],[39m
+[31m+       "tileIds": [[39m
+[31m+         156,[39m
+[31m+         157,[39m
+[31m+         158,[39m
+[31m+         198,[39m
+[31m+         199,[39m
+[31m+         200,[39m
+[31m+         145,[39m
+[31m+       ],[39m
+[31m+       "width": 3,[39m
+[31m+     },[39m
+[31m+   ],[39m
+[2m  }[22m
+
+ ❯ test/spatialLegacyTools.test.ts:35:25
+     33|     // Then
+     34|     expect(result.ok, result.summary).toBe(true);
+     35|     expect(result.data).toMatchObject({ canonical: { kind: "place", de…
+       |                         ^
+     36|     expect(JSON.stringify(project)).toBe(before);
+     37|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > places canonical sources without reviving retired furniture
+AssertionError: 'place_concept' 실행 실패: 이 타일셋의 개념 꾸러미가 비어 있다. 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 시설 템플릿을 만들거나 초안(여관·민가·상점…)을 넣은 뒤 그 장소·물건으로 설계하라.: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/spatialLegacyTools.test.ts:45:39
+     43|     const result = runTool(ctx, "place_concept", { query: "house", map…
+     44|     // Then
+     45|     expect(result.ok, result.summary).toBe(true);
+       |                                       ^
+     46|     const occurrence = ctx.project.spatialAuthoring?.occurrences["cano…
+     47|     expect(occurrence?.source).toEqual({ kind: "place", id: house.id, …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions
+ToolError: 집 내부의 개념 꾸러미(house)가 없습니다. get_concept_facility로 현재 꾸러미를 읽고 place_concept(plan)으로 실내를 설계하세요.
+ ❯ resolveHouseConcept src/editor/interiorConceptPlan.ts:36:24
+     34|   const facility = resolveConceptFacility(project, program, TILESET)
+     35|     ?? resolveConceptFacility(project, PROGRAM_FACILITIES[program], TI…
+     36|   if (!facility) throw new ToolError(
+       |                        ^
+     37|     `집 내부의 개념 꾸러미(${PROGRAM_FACILITIES[program]})가 없습니다. get_concept_f…
+     38|     { code: "concept-not-found" },
+ ❯ test/spatialLegacyTools.test.ts:55:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections
+ToolError: 개념 꾸러미가 비어 있습니다. 사용할 장소·물건을 개념 꾸러미에 등록한 뒤 실내를 설계하세요.
+ ❯ bindInteriorConceptPlan src/editor/interiorConceptPlan.ts:72:30
+     70|   );
+     71|   const bundles = liveBundlesForTileset(project, tilesetId);
+     72|   if (!bundles.length) throw new ToolError(
+       |                              ^
+     73|     "개념 꾸러미가 비어 있습니다. 사용할 장소·물건을 개념 꾸러미에 등록한 뒤 실내를 설계하세요.",
+     74|     { code: "concept-bundle-empty", mapId: plan.mapId },
+ ❯ test/spatialLegacyTools.test.ts:64:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 1 passed (5)
+   Start at  01:33:39
+   Duration  22.01s (transform 12.64s, setup 0ms, collect 17.90s, tests 3.16s, environment 0ms, prepare 249ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

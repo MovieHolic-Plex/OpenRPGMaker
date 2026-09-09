@@ -1,0 +1,83 @@
+[
+  {
+    "width": 1024,
+    "height": 768,
+    "url": "http://127.0.0.1:40543/player.html",
+    "editor": false,
+    "pending": false,
+    "focused": "BODY",
+    "text": "HelloOther29 world",
+    "boxes": [
+      {
+        "x": 32,
+        "y": 24,
+        "width": 960,
+        "height": 720,
+        "right": 992,
+        "bottom": 744
+      },
+      {
+        "x": 62,
+        "y": 511.20001220703125,
+        "width": 900,
+        "height": 208.8000030517578,
+        "right": 962,
+        "bottom": 720.0000152587891
+      }
+    ]
+  },
+  {
+    "width": 1280,
+    "height": 800,
+    "url": "http://127.0.0.1:40543/player.html",
+    "editor": false,
+    "pending": false,
+    "focused": "BODY",
+    "text": "HelloOther29 world",
+    "boxes": [
+      {
+        "x": 160,
+        "y": 40,
+        "width": 960,
+        "height": 720,
+        "right": 1120,
+        "bottom": 760
+      },
+      {
+        "x": 190,
+        "y": 527.2000122070312,
+        "width": 900,
+        "height": 208.8000030517578,
+        "right": 1090,
+        "bottom": 736.0000152587891
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "height": 900,
+    "url": "http://127.0.0.1:40543/player.html",
+    "editor": false,
+    "pending": false,
+    "focused": "BODY",
+    "text": "HelloOther29 world",
+    "boxes": [
+      {
+        "x": 240,
+        "y": 90,
+        "width": 960,
+        "height": 720,
+        "right": 1200,
+        "bottom": 810
+      },
+      {
+        "x": 270,
+        "y": 577.2000122070312,
+        "width": 900,
+        "height": 208.8000030517578,
+        "right": 1170,
+        "bottom": 786.0000152587891
+      }
+    ]
+  }
+]

@@ -51,6 +51,7 @@ import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai
 import { store } from "@/project/store";
 import { parsePiCommand, runPiCommand } from "./aiPiAgentCommand";
 import { createTeamPanel } from "./aiTeamPanel";
+import { DEFAULT_EXECUTION_ROUTE, EXECUTION_ROUTE_LABEL, resolveExecutionRoute } from "@/ai/piAgent/executionRoute";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
@@ -1823,8 +1824,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     input.value = "";
     syncInputHeight();
     refreshSendEnabled();
-    // `/pi …` 는 Bun 쪽 Pi 에이전트 경로(실험). 기존 세션 루프를 거치지 않고 결과만 커밋 게이트로 적용한다.
-    const piCommand = parsePiCommand(text, store.getCurrent(), editorState.get().currentMapId ?? null);
+    // 실행 경로: 컴포저 셀렉트(설정과 같은 값)가 기본을 정하고, 질문·계획·선택 영역은 기존 조수로 간다.
+    // `/pi …` 는 언제나 명시적 Pi 경로다.
+    const decision = resolveExecutionRoute({
+      text,
+      // The composer no longer carries mode chips (#731); the autonomy dial derives it.
+      composerMode: derivedComposerMode(),
+      preferred: loadAiConfig().executionRoute ?? DEFAULT_EXECUTION_ROUTE,
+      selectionTaskActive: Boolean(selectionTaskActive && currentSelectionForRegionTask()),
+    });
+    const explicit = parsePiCommand(text, store.getCurrent(), editorState.get().currentMapId ?? null);
+    const piCommand = explicit
+      ?? (decision.route === "session"
+        ? null
+        : parsePiCommand(`/pi ${decision.route === "pi-team" ? "team " : ""}${text}`, store.getCurrent(), editorState.get().currentMapId ?? null));
     if (piCommand) {
       if (turnBusy) {
         toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
@@ -2484,6 +2497,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     onPreferenceOpen: () => preferenceMemory.refresh(),
     // 바깥 클릭 판정은 데크 전체 — 레일의 ⋯ 가 바 밖에 있다(데크 조립 전엔 바 기준).
     isInside: (target) => (deckRoot ?? composerShell.commandBar).contains(target),
+    routeChips: {
+      initial: loadAiConfig().executionRoute ?? DEFAULT_EXECUTION_ROUTE,
+      onChange: (route) => {
+        saveAiConfig({ ...loadAiConfig(), executionRoute: route });
+        setStatus(`지시 경로: ${EXECUTION_ROUTE_LABEL[route]}`);
+      },
+    },
     effortChips: {
       initialAutonomy,
       onAutonomyChange: (level) => {

@@ -1,0 +1,50 @@
+{
+  "taskId": "st_01a082dc",
+  "status": "adapter-verified-ui-acceptance-pending",
+  "baseline": "1efacf9765412fcf51a255eaea21ea2049280307",
+  "productBlobs": {
+    "src/editor/spatial/placedSpaceEdits.ts": "deba3520a7fd364f721f44e7b31f77b516acd47a",
+    "src/editor/spatial/placedSpaceMembers.ts": "7822428bb016f39c28b880f04fcab2bd30a3d7f3",
+    "src/editor/panels/spatialSpaceDraft.ts": "273bd550301759cac802fe5ece6b5222e0bb34a7",
+    "src/editor/panels/spatialSpaceCommands.ts": "818bb0dc03f302b34650c3b042aa39a2681d6bd3"
+  },
+  "verification": {
+    "red": [
+      { "log": "red.log", "failed": 3, "cause": "Actual x, effective chips and concrete port coordinates stayed unchanged" },
+      { "log": "members-red.log", "failed": 10, "cause": "Missing adapter API after actual compiled fixture setup" },
+      { "log": "commands-red.log", "failed": 1, "cause": "Actual panel command let typed missing error escape" }
+    ],
+    "finalFocusedTests": { "log": "final-green.log", "passed": 38, "failed": 0, "seconds": 67.82, "exitCode": 0 },
+    "retainedTemplateEmptyTest": { "log": "empty.log", "passed": 1, "failed": 0, "exitCode": 0 },
+    "appTypes": { "log": "typecheck.log", "command": "npm run typecheck:app", "exitCode": 0 },
+    "diagnostics": "No diagnostics on all changed TypeScript files through LSP",
+    "focusedBundle": {
+      "log": "build.log",
+      "command": "esbuild src/editor/spatial/placedSpaceEdits.ts --bundle --platform=browser --format=esm",
+      "exitCode": 0,
+      "warning": "1.1MB bundle size indicator",
+      "sha256": "a4ac4108bdbc4617c92157cfa384e8d3e4f7b2cff8b301f828ad20420e365f60",
+      "temporaryOutput": "Removed by EXIT trap; not a served application build"
+    },
+    "lock": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock",
+    "monitor": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/authoring-monitor.mjs",
+    "commandDeadlineSeconds": 180
+  },
+  "compiledEvidence": {
+    "selectedMemberMove": { "local": [9, 4], "projection": [11, 8, 3, 3], "lowerTileAt11_8": 402, "upperTileAt12_9": 433 },
+    "selectedMemberEvent": { "chip": "event", "eventPosition": [11, 10], "sameSourceSiblingPreserved": true },
+    "namedPortMove": { "localPortId": "west", "local": [6, 10], "bindingLanding": [8, 14], "opaqueConcreteIdPreserved": true },
+    "history": "One actual Apply/Undo/Redo cycle restores exact full projects and identities",
+    "actualEmpty": "No generated objects/events even when the frozen slot retains quantity 3",
+    "nestedRoom": "Containing known root recompilation preserves real map connections and sibling room",
+    "frozenClosure": "Source deletion, different-kind frozen ID conflict, deletion gaps, explicit growth/shrink/zero covered",
+    "ownership": "Fresh draft after manual raster change rejects without overwriting; compiler guards unchanged"
+  },
+  "pendingAcceptance": [
+    "Parent shared authoring access must retain the adapter's exact issued final preview",
+    "Parent UI binds actual member identities and explicit add/remove/quantity operations",
+    "Parent consumes manual-core authoringScope.ts at the nested-room panel boundary; local adapter tests explicitly supplied the known containing root",
+    "Full combined product build and real browser/UI/gesture acceptance remain parent-owned"
+  ],
+  "scopePreserved": "No canvas, inspector, CSS, images, provider, database, publication, backend compiler, placed-place adapter or shared build/session edits"
+}

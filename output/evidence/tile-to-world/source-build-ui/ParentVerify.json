@@ -1,0 +1,49 @@
+{
+  "plan": "tile-to-world-authoring",
+  "scope": "Explicit canonical source Build UI for objects, spaces and places",
+  "verdict": "confirmed-source-build-slice",
+  "wholeTask11To15Accepted": false,
+  "base": "2961dbe3b0878ecb06f1412183dbd1440dd63e29",
+  "parent": {
+    "testsPassed": 27,
+    "testFiles": 5,
+    "testAndAppTypecheckExitCode": 0,
+    "cssGateExitCode": 0,
+    "cssHexLiterals": {"baseline": 1668, "current": 1668},
+    "appBuildExitCode": 0,
+    "appBuildSeconds": 26.45,
+    "playerBuild": "Unchanged player sources; previous integrated build evidence retained."
+  },
+  "independent": {
+    "inputBoundaries": "independent/BoundaryFixVerify.json",
+    "layout": "independent/VisualFixVerify.json",
+    "physicalKeyboardAndEligibility": "independent/FocusFixVerify.json",
+    "finalBuildChromeSha256": "91767b56d05fd3514375a83ae24b45899dd8bbf4a2f9b18c0176cfcc97c4c230",
+    "sourceHashesCheckedByParent": 12,
+    "viewports": ["1024x768", "1280x800", "1440x900"],
+    "verified": [
+      "Canonical source eligibility remains disabled for coincident-ID compatibility cards after input changes.",
+      "Project changes invalidate previous object target consent.",
+      "Empty, decimal and unsafe seeds reject; explicit zero is valid.",
+      "Invalid numeric object input rejects before pinning and permits correction.",
+      "Valid pending input and unsaved source edits remain preserved.",
+      "Object Build remains detached until one explicit Apply; space and place Build/Apply were independently exercised at 1280.",
+      "Actual sequential map, seed and numeric input preserves the mounted field and caret; Tab followed by one Build and one Apply works.",
+      "The target panel, compact frozen disclosure, canvas and Korean labels remain reachable at the required sizes."
+    ]
+  },
+  "historicalFailuresPreserved": [
+    "Original eight boundary tests reported seven passes and one obsolete compiler-path precondition after intentional earlier UI validation. A separate one-assertion adapted copy proved the eight original behaviors; its additional focus case failed and was subsequently fixed.",
+    "Original source-build and layout RED reports and screenshots remain separate from corrected evidence.",
+    "Blank-project autosave warnings, optional activity-request aborts and WebGL warnings were not suppressed."
+  ],
+  "remaining": [
+    "Placed-object editing and selective refresh",
+    "Actual space member add, move, chips, quantity and deletion controls",
+    "Nested compile scope wiring and exact placed-child drill/back",
+    "Place floors, actual children and connection controls",
+    "Space art and handle coordinate alignment",
+    "Q2/Q3, complete sample catalog, remote examples and full-plan shipment"
+  ],
+  "cleanup": "All source-build validation processes, owned browsers, private servers and caches closed. Shared port 9888 was not reused."
+}

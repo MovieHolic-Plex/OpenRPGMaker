@@ -1,0 +1,5 @@
+G1-F20 restored-A: real Z -> mapA/(2,3)/left; fade retained; wrong mapB rejected: PASS
+G1-F20 direction-up: real Z -> mapA/(2,3)/up; fade retained; wrong mapB rejected: PASS
+U03 player cleanup: browser, fresh contexts/save namespaces, server and owned cache closed
+
+DIRECT_EXIT_CODE=0

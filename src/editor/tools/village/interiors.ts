@@ -43,7 +43,7 @@ export function createVillageHouseInteriors(
     // Prefer explicit house plan owner; fall back to NPC slot name (legacy heuristic).
     const owner = house.ownerName?.trim() || npcText(index, overrides).name;
     const base = `${seed >>> 0}_${mapPart}_${index + 1}`;
-    const interiorMapId = uniqueId(draft, "map_house_interior", base);
+    let interiorMapId = uniqueId(draft, "map_house_interior", base);
     const doorEventId = uniqueId(draft, "ev_house_door", base);
     const exitEventId = uniqueId(draft, "ev_house_exit", base);
     const footprintArea = exteriorFootprintArea(house.templateId, house.bbox);
@@ -66,6 +66,7 @@ export function createVillageHouseInteriors(
         ...(house.program ? { program: house.program } : {}),
       },
     });
+    interiorMapId = interior.map.id;
     if (interior.warnings?.length) {
       warnings.push(`내부(${owner}): ${interior.warnings.slice(0, 4).join("; ")}`);
     }

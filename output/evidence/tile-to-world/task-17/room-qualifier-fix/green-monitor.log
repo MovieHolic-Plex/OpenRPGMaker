@@ -1,0 +1,212 @@
+monitor_id=mon_D3YR9FFQ7J5SH680
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialRoomQualifier.test.ts test/spatialLegacyTools.test.ts test/interiorConceptRoutes.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-room-qualifier-fix"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ test/spatialRoomQualifier.test.ts (13 tests | 5 failed) 6882ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   × requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is Shared Room 927ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"     → Ambiguous canonical room; use its exact spatial id"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   × requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is shared-room-tag 512ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"     → Ambiguous canonical room; use its exact spatial id"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is bedroom  640ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > foreign-first=true > binds an exact interior ID when same-atlas aliases are ambiguous  463ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   × requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is Shared Room 534ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"     → Ambiguous canonical room; use its exact spatial id"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   × requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is shared-room-tag 500ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"     → Ambiguous canonical room; use its exact spatial id"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is bedroom  566ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > foreign-first=false > binds an exact interior ID when same-atlas aliases are ambiguous  407ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is Shared Room  472ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is shared-room-tag  484ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is bedroom  458ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ requested-atlas canonical room binding > preserves the atlas error when an exact foreign ID is requested  450ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   × requested-atlas canonical room binding > uses the default atlas when binding wings by plan theme 462ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"     → Ambiguous canonical room; use its exact spatial id"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ test/spatialLegacyTools.test.ts (9 tests | 1 failed) 22915ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs  1013ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > places canonical sources without reviving retired furniture  4277ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions  641ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade  4513ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > builds village-linked interiors from the same canonical frozen source  2203ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > authors a village through the registered facade with canonical interiors  7147ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > rejects disconnected canonical house interiors without publishing partial maps  2114ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   × legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections 845ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"     → Ambiguous canonical room; use its exact spatial id"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > preserves explicit empty legacy rejection when canonical authoring is absent 155ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ✓ test/interiorConceptRoutes.test.ts (14 tests) 5806ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > author_house preserves shipped inn flights and connects only the authored descent on each floor  1185ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > run_interior_room_pipeline records edited concept contents before building  329ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > author_house uses edited facility layout, objects, and keeps its return transfer  429ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > linked upper floors and serialized plans keep the authored contents  408ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > re-furnishing a room replaces only its generated interactions without duplicate ids  1867ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   ✓ all AI interior routes consume concept bundles > new unknown facilities can be built by combining the returned sources  554ms"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"ToolError: Ambiguous canonical room; use its exact spatial id"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ canonicalRoomAlias src/editor/spatial/legacyConcepts.ts:116:33"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    114|     && list(JSON.parse(entry.sourceKey), \"legacyImport.sourceKey\", tex…"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    115|   const matches = named.length ? named : candidates.filter(space => ma…"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    116|   if (matches.length > 1) throw new ToolError(\"Ambiguous canonical roo…"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"       |                                 ^"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    117|   return matches[0];"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    118| }"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ src/editor/spatial/legacyInteriorPlan.ts:16:19"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ bindCanonicalInteriorPlan src/editor/spatial/legacyInteriorPlan.ts:15:29"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ bindInteriorConceptPlan src/editor/interiorConceptPlan.ts:72:71"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ test/spatialLegacyTools.test.ts:136:18"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" FAIL  test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is Shared Room"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" FAIL  test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is shared-room-tag"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" FAIL  test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is Shared Room"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" FAIL  test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is shared-room-tag"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"ToolError: Ambiguous canonical room; use its exact spatial id"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ canonicalRoomAlias src/editor/spatial/legacyConcepts.ts:116:33"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    114|     && list(JSON.parse(entry.sourceKey), \"legacyImport.sourceKey\", tex…"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    115|   const matches = named.length ? named : candidates.filter(space => ma…"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    116|   if (matches.length > 1) throw new ToolError(\"Ambiguous canonical roo…"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"       |                                 ^"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    117|   return matches[0];"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    118| }"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ src/editor/spatial/legacyInteriorPlan.ts:16:19"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ bindCanonicalInteriorPlan src/editor/spatial/legacyInteriorPlan.ts:15:29"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ bindInteriorConceptPlan src/editor/interiorConceptPlan.ts:72:71"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ test/spatialRoomQualifier.test.ts:57:21"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" FAIL  test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > uses the default atlas when binding wings by plan theme"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"ToolError: Ambiguous canonical room; use its exact spatial id"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ canonicalRoomAlias src/editor/spatial/legacyConcepts.ts:116:33"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    114|     && list(JSON.parse(entry.sourceKey), \"legacyImport.sourceKey\", tex…"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    115|   const matches = named.length ? named : candidates.filter(space => ma…"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    116|   if (matches.length > 1) throw new ToolError(\"Ambiguous canonical roo…"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"       |                                 ^"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    117|   return matches[0];"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"    118| }"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ src/editor/spatial/legacyInteriorPlan.ts:16:19"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ bindCanonicalInteriorPlan src/editor/spatial/legacyInteriorPlan.ts:15:29"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ bindInteriorConceptPlan src/editor/interiorConceptPlan.ts:72:71"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" ❯ test/spatialRoomQualifier.test.ts:100:19"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":" Test Files  2 failed | 1 passed (3)"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"      Tests  6 failed | 30 passed (36)"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   Start at  03:00:57"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":"   Duration  57.66s (transform 11.01s, setup 0ms, collect 20.34s, tests 35.60s, environment 1ms, prepare 440ms)"}
+{"type":"line","id":"authoring-28192","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-28192","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialRoomQualifier.test.ts test/spatialLegacyTools.test.ts test/interiorConceptRoutes.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-room-qualifier-fix
+
+ ❯ test/spatialRoomQualifier.test.ts (13 tests | 5 failed) 6882ms
+   × requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is Shared Room 927ms
+     → Ambiguous canonical room; use its exact spatial id
+   × requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is shared-room-tag 512ms
+     → Ambiguous canonical room; use its exact spatial id
+   ✓ requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is bedroom  640ms
+   ✓ requested-atlas canonical room binding > foreign-first=true > binds an exact interior ID when same-atlas aliases are ambiguous  463ms
+   × requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is Shared Room 534ms
+     → Ambiguous canonical room; use its exact spatial id
+   × requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is shared-room-tag 500ms
+     → Ambiguous canonical room; use its exact spatial id
+   ✓ requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is bedroom  566ms
+   ✓ requested-atlas canonical room binding > foreign-first=false > binds an exact interior ID when same-atlas aliases are ambiguous  407ms
+   ✓ requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is Shared Room  472ms
+   ✓ requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is shared-room-tag  484ms
+   ✓ requested-atlas canonical room binding > rejects same-atlas ambiguity when the query is bedroom  458ms
+   ✓ requested-atlas canonical room binding > preserves the atlas error when an exact foreign ID is requested  450ms
+   × requested-atlas canonical room binding > uses the default atlas when binding wings by plan theme 462ms
+     → Ambiguous canonical room; use its exact spatial id
+ ❯ test/spatialLegacyTools.test.ts (9 tests | 1 failed) 22915ms
+   ✓ legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs  1013ms
+   ✓ legacy tools with active canonical designs > places canonical sources without reviving retired furniture  4277ms
+   ✓ legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions  641ms
+   ✓ legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade  4513ms
+   ✓ legacy tools with active canonical designs > builds village-linked interiors from the same canonical frozen source  2203ms
+   ✓ legacy tools with active canonical designs > authors a village through the registered facade with canonical interiors  7147ms
+   ✓ legacy tools with active canonical designs > rejects disconnected canonical house interiors without publishing partial maps  2114ms
+   × legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections 845ms
+     → Ambiguous canonical room; use its exact spatial id
+   ✓ legacy tools with active canonical designs > preserves explicit empty legacy rejection when canonical authoring is absent 155ms
+ ✓ test/interiorConceptRoutes.test.ts (14 tests) 5806ms
+   ✓ all AI interior routes consume concept bundles > author_house preserves shipped inn flights and connects only the authored descent on each floor  1185ms
+   ✓ all AI interior routes consume concept bundles > run_interior_room_pipeline records edited concept contents before building  329ms
+   ✓ all AI interior routes consume concept bundles > author_house uses edited facility layout, objects, and keeps its return transfer  429ms
+   ✓ all AI interior routes consume concept bundles > linked upper floors and serialized plans keep the authored contents  408ms
+   ✓ all AI interior routes consume concept bundles > re-furnishing a room replaces only its generated interactions without duplicate ids  1867ms
+   ✓ all AI interior routes consume concept bundles > new unknown facilities can be built by combining the returned sources  554ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections
+ToolError: Ambiguous canonical room; use its exact spatial id
+ ❯ canonicalRoomAlias src/editor/spatial/legacyConcepts.ts:116:33
+    114|     && list(JSON.parse(entry.sourceKey), "legacyImport.sourceKey", tex…
+    115|   const matches = named.length ? named : candidates.filter(space => ma…
+    116|   if (matches.length > 1) throw new ToolError("Ambiguous canonical roo…
+       |                                 ^
+    117|   return matches[0];
+    118| }
+ ❯ src/editor/spatial/legacyInteriorPlan.ts:16:19
+ ❯ bindCanonicalInteriorPlan src/editor/spatial/legacyInteriorPlan.ts:15:29
+ ❯ bindInteriorConceptPlan src/editor/interiorConceptPlan.ts:72:71
+ ❯ test/spatialLegacyTools.test.ts:136:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is Shared Room
+ FAIL  test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=true > binds the requested atlas when the query is shared-room-tag
+ FAIL  test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is Shared Room
+ FAIL  test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > foreign-first=false > binds the requested atlas when the query is shared-room-tag
+ToolError: Ambiguous canonical room; use its exact spatial id
+ ❯ canonicalRoomAlias src/editor/spatial/legacyConcepts.ts:116:33
+    114|     && list(JSON.parse(entry.sourceKey), "legacyImport.sourceKey", tex…
+    115|   const matches = named.length ? named : candidates.filter(space => ma…
+    116|   if (matches.length > 1) throw new ToolError("Ambiguous canonical roo…
+       |                                 ^
+    117|   return matches[0];
+    118| }
+ ❯ src/editor/spatial/legacyInteriorPlan.ts:16:19
+ ❯ bindCanonicalInteriorPlan src/editor/spatial/legacyInteriorPlan.ts:15:29
+ ❯ bindInteriorConceptPlan src/editor/interiorConceptPlan.ts:72:71
+ ❯ test/spatialRoomQualifier.test.ts:57:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  test/spatialRoomQualifier.test.ts > requested-atlas canonical room binding > uses the default atlas when binding wings by plan theme
+ToolError: Ambiguous canonical room; use its exact spatial id
+ ❯ canonicalRoomAlias src/editor/spatial/legacyConcepts.ts:116:33
+    114|     && list(JSON.parse(entry.sourceKey), "legacyImport.sourceKey", tex…
+    115|   const matches = named.length ? named : candidates.filter(space => ma…
+    116|   if (matches.length > 1) throw new ToolError("Ambiguous canonical roo…
+       |                                 ^
+    117|   return matches[0];
+    118| }
+ ❯ src/editor/spatial/legacyInteriorPlan.ts:16:19
+ ❯ bindCanonicalInteriorPlan src/editor/spatial/legacyInteriorPlan.ts:15:29
+ ❯ bindInteriorConceptPlan src/editor/interiorConceptPlan.ts:72:71
+ ❯ test/spatialRoomQualifier.test.ts:100:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+
+ Test Files  2 failed | 1 passed (3)
+      Tests  6 failed | 30 passed (36)
+   Start at  03:00:57
+   Duration  57.66s (transform 11.01s, setup 0ms, collect 20.34s, tests 35.60s, environment 1ms, prepare 440ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

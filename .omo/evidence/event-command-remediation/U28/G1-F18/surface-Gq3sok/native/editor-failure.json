@@ -1,0 +1,69 @@
+{
+  "error": "AssertionError [ERR_ASSERTION]: {\"status\":\"timeout\",\"before\":[{\"missing\":true}],\"after\":[{\"missing\":true}],\"event\":null,\"cleanup\":{\"observer\":true,\"timer\":true,\"event\":true,\"pagehide\":true,\"abort\":true},\"error\":\"eventCommand observation timed out\"}\n+ actual - expected\n\n+ 'timeout'\n- 'success'\n",
+  "errors": [],
+  "consoleErrors": [
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]"
+  ],
+  "traces": [
+    {
+      "disabledPicker": [
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": false,
+          "focused": "event-record-picker-search",
+          "actions": [
+            {
+              "x": 675.066650390625,
+              "y": 613.63330078125,
+              "right": 724.9999847412109,
+              "bottom": 645.63330078125,
+              "width": 49.93333435058594,
+              "height": 32
+            }
+          ]
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "overflow": false,
+          "focused": "event-record-picker-search",
+          "actions": [
+            {
+              "x": 803.066650390625,
+              "y": 637,
+              "right": 852.9999847412109,
+              "bottom": 669,
+              "width": 49.93333435058594,
+              "height": 32
+            }
+          ]
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "overflow": false,
+          "focused": "event-record-picker-search",
+          "actions": [
+            {
+              "x": 883.066650390625,
+              "y": 693,
+              "right": 932.9999847412109,
+              "bottom": 725,
+              "width": 49.93333435058594,
+              "height": 32
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "surface": "✦\nOPRN Studio\nG1-F18 text insertion\n변경 없음\nDB\n리소스\n명령 · 맵 이동\nCtrl K\n▶\n테스트\n스튜디오\n보기\n도움말\n게스트 세션 248f\nAI 설정\n더 보기\n인스펙터\n규칙 감사\n작업 기록\n1\n바닥\n덧그림\n이벤트\n이벤트\n맵 이벤트 목록\nText tools\n2,2 · 1p\nText tools\n위치 2,2 / 1 페이지\n이벤트 편집 열기\n맵\n1\n새 맵\nText tools\n8×8 · 1이벤트 · 문0\n시작\n개발 모드 — 이 브라우저에만 저장됩니다.\n−\n2x\n+\n⋯\n만들기\n다듬기\n검사\nAI 요청\n1\n조수\nText tools\n맥락 —\n지시\n질문\n계획\nText tools\ngemini-3.7-flash · 균형\nText tools\n2, 2\n테스트\n1\nText tools\n조건 없음\n+\n페이지\n복제\n복사\n붙여넣기\n삭제\n이 페이지 설정\n어떻게 보이고 언제 켜지는지\n모습과 대화\n그래픽 있음\n이 페이지\n말을 걸면\n같은 층 · 정지\n모습\n이미지 선택\n맵에서 숨기기\n언제 보이나요\n조건 없음\n움직임과 속도\n정지\n겹침과 통행\n겹침 금지\nNPC와 일정\n연결 안 됨\n이 페이지가 하는 일\n위에서 아래로 차례대로 실행됩니다\n1개\n명령\n되돌리기\n다시 실행\n편집\n도구\n목록\n스토리\n미리보기\n플로우\nAI 명령\n1\n문장 표시: Hello world · 기쁨\n+ 여기에 명령 추가\nAI로 명령 만들기\n문장 표시\nHello world · 기쁨\n미리보기 새로고침\n문장 표시\n게임 화면 미리보기\n입력한 문장이 실제 창에서 보이는 모습\nLIVE\nHello world\nNarrator\n말하는 사람비워 두면 이름표를 숨깁니다.\n대화 내용\n최대 4줄 / 50자 권장\n말투·연출\n창이 뜨는 모습과 글자 속도가 함께 바뀝니다.\n기본\n기쁨\n슬픔\n분노\n놀람\n문장 도구\n선택한 문장이나 커서 위치에 적용됩니다.\n↵\n줄 바꿈\n人\n주인공 이름\n#\n변수 값\nA\n강조\nⅡ\n잠시 멈춤\n고급 옵션 (자동 넘김)\n더 많은 문장 효과\n필요할 때만\n이벤트 삭제\n변경 없음\n취소\n적용\n저장하고 닫기\n문장 표시\n문장 표시\n게임 화면 미리보기\n입력한 문장이 실제 창에서 보이는 모습\nLIVE\nHello world\nNarrator\n말하는 사람\n비워 두면 이름표를 숨깁니다.\n대화 내용\n최대 4줄 / 50자 권장\n말투·연출\n창이 뜨는 모습과 글자 속도가 함께 바뀝니다.\n기본\n기쁨\n슬픔\n분노\n놀람\n문장 도구\n선택한 문장이나 커서 위치에 적용됩니다.\n↵\n줄 바꿈\n人\n주인공 이름\n#\n변수 값\nA\n강조\nⅡ\n잠시 멈춤\n고급 옵션 (자동 넘김)\n더 많은 문장 효과\n필요할 때만\n확인\n취소\n변수 선택\n전체 22개\nF\nFirst value\n아직 안 쓰임\n0001\nR\nReward\n아직 안 쓰임\n0002\nF\nFresh reward\n아직 안 쓰임\n0003\n이름\n4\n이름 없음\n아직 안 쓰임\n0004\n5\n이름 없음\n아직 안 쓰임\n0005\n6\n이름 없음\n아직 안 쓰임\n0006\n7\n이름 없음\n아직 안 쓰임\n0007\n8\n이름 없음\n아직 안 쓰임\n0008\n9\n이름 없음\n아직 안 쓰임\n0009\n1\n이름 없음\n아직 안 쓰임\n0010\n1\n이름 없음\n아직 안 쓰임\n0011\n1\n이름 없음\n아직 안 쓰임\n0012\n1\n이름 없음\n아직 안 쓰임\n0013\n1\n이름 없음\n아직 안 쓰임\n0014\n1\n이름 없음\n아직 안 쓰임\n0015\n1\n이름 없음\n아직 안 쓰임\n0016\n1\n이름 없음\n아직 안 쓰임\n0017\n1\n이름 없음\n아직 안 쓰임\n0018\n1\n이름 없음\n아직 안 쓰임\n0019\n2\n이름 없음\n아직 안 쓰임\n0020\nU\nUnsupported reward\n아직 안 쓰임 · 이 변수는 현재 문장 번호로 참조할 수 없습니다.\n0021\nS\nShadowed reward\n아직 안 쓰임 · 이 변수는 현재 문장 번호로 참조할 수 없습니다.\n0022\n+ 새 변수\n닫기\n선택"
+}

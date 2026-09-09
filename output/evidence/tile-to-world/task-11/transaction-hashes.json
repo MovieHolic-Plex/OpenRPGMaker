@@ -1,0 +1,102 @@
+{
+  "scenario": "preview-history",
+  "source": {
+    "src/editor/spatial/authoringTypes.ts": "478fe5c4688aaa4fd12c8106937bf3e551170209e7037dd37b4145a8795e4792",
+    "src/editor/spatial/actions.ts": "52ff1c9c59f9054a4f932404d1eba8caf54939ad151925d1c0ec05f872b43faf",
+    "src/editor/spatial/preview.ts": "f733c32a0d6c4d44c63c1b647200d6324be07d230d3de71e03c84a3fe6c79464",
+    "src/editor/spatial/authoringOperations.ts": "3827a57ff562b0dd50f7561631ec93548ddfa5ba825392f11e70c4dd9dbed4a4",
+    "src/editor/spatial/authoringRefresh.ts": "834e62c56d76bcb986f5c2d7e67e70bee4e9d0b9e7d030cd6b2a4a391d6f8faa",
+    "src/editor/spatial/authoringOverview.ts": "c9c521b3532a4ddc76ecf605263cabcd2e3e529f8130ee92660b9d7f00991150",
+    "src/editor/spatial/authoringConnections.ts": "208dbba7a369d768e02b1d04730e9fd03bd49ad86e582075b8b5cdfb32999fec",
+    "src/project/spatial/overviewPairs.ts": "3ec66349184c0dc06a71cda57b06e1cbae34b955bad4f05ffe0431be65fb4755",
+    "src/editor/mapEditHistory.ts": "2d250e45c48f5e42dda89269c596a1c8b1e1f3ff4a531a19ccb3ba755710c921",
+    "src/project/store.ts": "3240176c3e862ce5aeb319596eeb04c2163f9825c2d423f1dbd7150e2b3a7fd3"
+  },
+  "receipts": [
+    {
+      "kind": "object",
+      "beforeSHA256": "0b65a30daa6b9a09e34c626d1ad690f1ed0715642ed4c259ed69dd09091519c9",
+      "acceptedSHA256": "ba0d38e2ffd820e6acbd518f929b2ef1e91ca99b4520686b1a4fd4f2356dbe0c",
+      "exactUndo": true,
+      "exactRedo": true,
+      "historyEntries": 1,
+      "impact": {
+        "mapIds": [
+          "stamp-target"
+        ],
+        "occurrenceIds": [
+          "standalone-hearth"
+        ],
+        "events": []
+      }
+    },
+    {
+      "kind": "space",
+      "beforeSHA256": "f42c3732f09fe803557142e3e5d513e44ec047b9bf810625800844aba896540e",
+      "acceptedSHA256": "c5227ec062e0569abf21931470c138367469c7e78bca17f0e50bd48dbb1b590a",
+      "exactUndo": true,
+      "exactRedo": true,
+      "historyEntries": 1,
+      "impact": {
+        "mapIds": [
+          "spatial:compiler-room"
+        ],
+        "occurrenceIds": [
+          "compiler-room",
+          "child:13:compiler-room4:beds:0",
+          "child:13:compiler-room4:beds:1",
+          "child:13:compiler-room6:hearth:0",
+          "child:13:compiler-room6:stairs:0"
+        ],
+        "events": []
+      }
+    },
+    {
+      "kind": "place",
+      "beforeSHA256": "668a46016958836a45686b1094bba05336be74b2f22a96bd7a323346ae16cf99",
+      "acceptedSHA256": "d1b81144601194d0d391af3e027220b92b5989b6bb6df6a748e4f37aff22e1b1",
+      "exactUndo": true,
+      "exactRedo": true,
+      "historyEntries": 1,
+      "impact": {
+        "mapIds": [
+          "spatial-place:14:nested-village:0:29:easyrpg_chipset_combined_town",
+          "spatial:child:30:child:14:nested-village3:inn:07:floor-1:0",
+          "spatial:child:30:child:14:nested-village3:inn:07:floor-2:0",
+          "spatial:child:30:child:14:nested-village3:inn:07:floor-3:0"
+        ],
+        "occurrenceIds": [
+          "nested-village",
+          "child:14:nested-village6:square:0",
+          "child:14:nested-village3:inn:0",
+          "child:33:child:14:nested-village6:square:09:tree-slot:0",
+          "child:33:child:14:nested-village6:square:011:flower-slot:0",
+          "child:33:child:14:nested-village6:square:011:flower-slot:1",
+          "child:30:child:14:nested-village3:inn:07:floor-1:0",
+          "child:30:child:14:nested-village3:inn:07:floor-2:0",
+          "child:30:child:14:nested-village3:inn:07:floor-3:0",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-1:04:beds:0",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-1:04:beds:1",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-1:06:hearth:0",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-1:06:stairs:0",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-1:09:stairs-up:0",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-2:04:beds:0",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-2:04:beds:1",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:hearth:0",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-2:06:stairs:0",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-2:09:stairs-up:0",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-3:04:beds:0",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-3:04:beds:1",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:hearth:0",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-3:06:stairs:0",
+          "child:50:child:30:child:14:nested-village3:inn:07:floor-3:09:stairs-up:0"
+        ],
+        "events": []
+      }
+    }
+  ],
+  "staleApply": "stale",
+  "remoteWrites": 0,
+  "geographyCompilerIntegrated": false,
+  "uiAcceptance": "pending-parent-integration"
+}

@@ -1,0 +1,1 @@
+[{"table": "rpg_zzu.project_commits", "delete": false, "insert": true, "select": true, "update": false},{"table": "rpg_zzu.project_changes", "delete": false, "insert": true, "select": true, "update": false}]

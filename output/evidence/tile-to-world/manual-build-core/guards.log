@@ -1,0 +1,24 @@
+monitor_id=mon_EPHXWMK7Y07NYV2X
+{"type":"line","id":"authoring-3835715","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3835715","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3835715","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuildOwnership.test.ts test/spatialAuthoringContinuation.test.ts test/spatialAuthoringContinuationSafety.test.ts test/spatialCardByIdMode.test.ts --maxWorkers=1"}
+{"type":"line","id":"authoring-3835715","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3835715","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3835715","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core"}
+{"type":"line","id":"authoring-3835715","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3835715","description":"task11 scoped validation","line":" ✓ test/spatialCardByIdMode.test.ts (3 tests) 3045ms"}
+{"type":"line","id":"authoring-3835715","description":"task11 scoped validation","line":"   ✓ spatialCardById mode-local resolution > does not resolve a deleted occurrence to the live design that shares its opaque id  1156ms"}
+{"type":"line","id":"authoring-3835715","description":"task11 scoped validation","line":"   ✓ spatialCardById mode-local resolution > does not resolve a missing design to a placed occurrence that reused the presentation id  1756ms"}
+{"type":"summary","id":"authoring-3835715","description":"task11 scoped validation","summary":"watcher timed_out"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuildOwnership.test.ts test/spatialAuthoringContinuation.test.ts test/spatialAuthoringContinuationSafety.test.ts test/spatialCardByIdMode.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core
+
+ ✓ test/spatialCardByIdMode.test.ts (3 tests) 3045ms
+   ✓ spatialCardById mode-local resolution > does not resolve a deleted occurrence to the live design that shares its opaque id  1156ms
+   ✓ spatialCardById mode-local resolution > does not resolve a missing design to a placed occurrence that reused the presentation id  1756ms
+
+monitor_exit={"backend":"pipe-fallback","exitCode":null,"signal":"SIGTERM","cancelled":true,"timedOut":true}

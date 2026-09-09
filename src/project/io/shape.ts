@@ -1,4 +1,6 @@
 import { assertGrowthShape } from "@/project/growth/validation";
+import { validateSpatialProject } from "../spatial/overviewPairs";
+import { validateSpatialAuthoring } from "../spatial/guards";
 import { validateAudioDescriptions } from "../audioDescriptions";
 import { validateMonsterMetadata } from "../monsterMetadata";
 import { validateCharacterGraphicsProject } from "../characterGraphics";
@@ -70,9 +72,16 @@ export function validateProjectV2(data: JsonRecord): ProjectV2 {
 
 /** 현재(v4) 프로젝트 셰이프 검증. v3 저장본은 migrateV3toV4 가 얼굴 짝을 바꾼 뒤 여기로 들어온다. */
 export function validateProjectV4(data: JsonRecord): Project {
+  const spatialAuthoring = data.spatialAuthoring === undefined ? undefined : validateSpatialAuthoring(data.spatialAuthoring);
   validateAudioDescriptions(data.audioDescriptions);
   validateMonsterMetadata(data.monsterMetadata);
   const project = normalizeProjectV4(data);
+  // Spatial authoring is validated against the normalized project before reference
+  // repair, so a canonical overview pair cannot be pruned as an unknown reference.
+  if (spatialAuthoring !== undefined) {
+    validateSpatialProject(spatialAuthoring, project);
+    project.spatialAuthoring = spatialAuthoring;
+  }
   repairProjectReferences(project);
   validateProjectReferences(project);
   return project;

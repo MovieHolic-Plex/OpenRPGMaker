@@ -1,0 +1,58 @@
+monitor_id=mon_Z66W8EE95X32D68W
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialAuthoringHandoffLineage.test.ts test/spatialAuthoringPreviewHandoff.test.ts test/spatialManualBuildContinuation.test.ts --maxWorkers=1"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringHandoffLineage.test.ts (4 tests) 8002ms"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"   ✓ preserves the entire pending build when an obsolete same-controller preview is handed off  2851ms"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"   ✓ rejects an earlier generation when shared edits return to identical source contents  1199ms"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"   ✓ retains exact final authority when a real multi-step adapter continues the active build  2429ms"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"   ✓ rejects an unrelated controller branch for retention without globally invalidating that branch  1522ms"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":" ✓ test/spatialManualBuildContinuation.test.ts (4 tests) 8615ms"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"   ✓ builds the same allocated root when source correction follows a failed compile  1867ms"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"   ✓ freezes the issued request when a caller mutates its original entry input  1320ms"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"   ✓ clears redo when a new build is accepted after Undo  2505ms"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"   ✓ retains the first frozen occurrence when a second root is explicitly built after a source edit  2922ms"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringPreviewHandoff.test.ts (3 tests) 3368ms"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"   ✓ retains exact controller authority when an external adapter returns an issued compiled preview  1693ms"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"   ✓ rejects another controller's handle when a foreign preview is handed off  720ms"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"   ✓ rejects stale authority when the project changes before the external handoff  954ms"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":" Test Files  3 passed (3)"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"      Tests  11 passed (11)"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"   Start at  07:51:12"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":"   Duration  28.32s (transform 3.76s, setup 0ms, collect 7.30s, tests 19.99s, environment 1ms, prepare 215ms)"}
+{"type":"line","id":"authoring-193088","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-193088","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialAuthoringHandoffLineage.test.ts test/spatialAuthoringPreviewHandoff.test.ts test/spatialManualBuildContinuation.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core
+
+ ✓ test/spatialAuthoringHandoffLineage.test.ts (4 tests) 8002ms
+   ✓ preserves the entire pending build when an obsolete same-controller preview is handed off  2851ms
+   ✓ rejects an earlier generation when shared edits return to identical source contents  1199ms
+   ✓ retains exact final authority when a real multi-step adapter continues the active build  2429ms
+   ✓ rejects an unrelated controller branch for retention without globally invalidating that branch  1522ms
+ ✓ test/spatialManualBuildContinuation.test.ts (4 tests) 8615ms
+   ✓ builds the same allocated root when source correction follows a failed compile  1867ms
+   ✓ freezes the issued request when a caller mutates its original entry input  1320ms
+   ✓ clears redo when a new build is accepted after Undo  2505ms
+   ✓ retains the first frozen occurrence when a second root is explicitly built after a source edit  2922ms
+ ✓ test/spatialAuthoringPreviewHandoff.test.ts (3 tests) 3368ms
+   ✓ retains exact controller authority when an external adapter returns an issued compiled preview  1693ms
+   ✓ rejects another controller's handle when a foreign preview is handed off  720ms
+   ✓ rejects stale authority when the project changes before the external handoff  954ms
+
+ Test Files  3 passed (3)
+      Tests  11 passed (11)
+   Start at  07:51:12
+   Duration  28.32s (transform 3.76s, setup 0ms, collect 7.30s, tests 19.99s, environment 1ms, prepare 215ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

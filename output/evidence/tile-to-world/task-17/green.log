@@ -1,0 +1,23 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world
+
+ ✓ test/interiorConceptRoutes.test.ts (14 tests) 2677ms
+   ✓ all AI interior routes consume concept bundles > author_house preserves shipped inn flights and connects only the authored descent on each floor  615ms
+   ✓ all AI interior routes consume concept bundles > author_house uses edited facility layout, objects, and keeps its return transfer  331ms
+   ✓ all AI interior routes consume concept bundles > re-furnishing a room replaces only its generated interactions without duplicate ids  569ms
+ ✓ test/spatialTools.test.ts (13 tests) 7360ms
+   ✓ registered canonical spatial tools > changes only the source when a revision is explicitly replaced  715ms
+   ✓ registered canonical spatial tools > compiles only on the detached draft when an issued preview is applied  1115ms
+   ✓ registered canonical spatial tools > rejects forged preview acceptance without mutation  704ms
+   ✓ registered canonical spatial tools > rejects stale preview acceptance without mutation  836ms
+   ✓ registered canonical spatial tools > rejects foreign preview acceptance without mutation  682ms
+   ✓ registered canonical spatial tools > rejects spent preview acceptance without mutation  1244ms
+   ✓ registered canonical spatial tools > retains preview lineage when the normal assistant draft is cloned  1129ms
+ ✓ test/spatialAiContext.test.ts (1 test) 146ms
+
+ Test Files  3 passed (3)
+      Tests  28 passed (28)
+   Start at  16:32:30
+   Duration  24.17s (transform 7.01s, setup 0ms, collect 13.00s, tests 10.18s, environment 1ms, prepare 207ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/output/evidence/tile-to-world/task-17/green.json

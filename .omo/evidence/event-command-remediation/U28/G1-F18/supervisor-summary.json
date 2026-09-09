@@ -1,0 +1,31 @@
+{
+  "finding": "G1-F18",
+  "sourceCommit": "f1e75bd6ac88d45105581c5cd0bc8e0eade4cda3",
+  "integrationBase": "b1fc60ee8",
+  "regression": {
+    "passed": 158,
+    "failed": 0,
+    "report": "../../checkpoints/text-tools-integration.json"
+  },
+  "editor": {
+    "cases": 2,
+    "native": "surface-U5xuRo/native/editor-observations.json",
+    "loaded209": "surface-U5xuRo/raw209/editor-observations.json"
+  },
+  "player": {
+    "titleAndBeats": 4,
+    "report": "surface-U5xuRo/player-observations.json",
+    "wrongTargetRejections": 2,
+    "rendered": "HelloOther29 world"
+  },
+  "static": {
+    "productionLspErrors": 0,
+    "typecheckAppExit": 0,
+    "buildAppExit": 0
+  },
+  "cleanup": {
+    "editor": "surface-U5xuRo/editor-cleanup.json",
+    "player": "surface-U5xuRo/player-cleanup.json"
+  },
+  "visual": "Three viewport geometry checks passed; screenshots retained locally. Available model omits image pixels; no pixel-level visual verdict claimed."
+}

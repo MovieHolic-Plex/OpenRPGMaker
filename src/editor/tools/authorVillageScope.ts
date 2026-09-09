@@ -4,6 +4,7 @@ import { TILE } from "@/project/defaults/constants";
 import type { GameEvent, GameMap, MapTreeNode, Project, TileGraft, TilesetDef } from "@/project/types";
 import type { VillageFacadeState } from "./authorVillageSupport";
 import { ToolError } from "./types";
+import { spatialConstructionEnvelope, spatialReachableMaps } from "./spatialConstructionScope";
 
 const INN_SIGN_GRAFT: TileGraft = {
   targetTile: 443,
@@ -156,22 +157,9 @@ function allowedAddedMapIds(state: VillageFacadeState): ReadonlySet<string> {
 
 /** 타깃 맵의 문 이벤트 transfer 명령이 interiorId를 가리키는가. */
 function isLinkedInteriorMap(draft: Project, exteriorMapId: string, interiorMapId: string): boolean {
+  if (draft.spatialAuthoring !== undefined) return spatialReachableMaps(draft, exteriorMapId).has(interiorMapId);
   const exterior = draft.maps[exteriorMapId];
-  if (!exterior) return false;
-  for (const event of exterior.events) {
-    for (const page of event.pages ?? []) {
-      for (const command of page.commands ?? []) {
-        if (
-          typeof command === "object" && command !== null
-          && Reflect.get(command, "kind") === "transfer"
-          && Reflect.get(command, "mapId") === interiorMapId
-        ) {
-          return true;
-        }
-      }
-    }
-  }
-  return false;
+  return (exterior?.events ?? []).some(event => (event.pages ?? []).some(page => page.commands.some(command => command.kind === "transfer" && command.mapId === interiorMapId)));
 }
 
 function assertMapSetAndContents(state: VillageFacadeState, allowedAdded: ReadonlySet<string>): void {
@@ -293,7 +281,8 @@ function assertStart(state: VillageFacadeState): void {
 }
 
 function assertProjectCore(state: VillageFacadeState): void {
-  if (!same(projectCore(state.baseline), projectCore(state.draft))) {
+  const envelope = spatialConstructionEnvelope(state.baseline, state.draft, state.inspection.interiorMapIds);
+  if (!same(projectCore(state.baseline), projectCore(envelope))) {
     scopeError("Village changed undeclared project data.");
   }
 }

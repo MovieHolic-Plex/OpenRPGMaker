@@ -1,0 +1,5 @@
+4de4506728ea809d2ebd2ee676ee7f949f77d744f8b9258a7e2e930d2c9a31a0  /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools/output/evidence/tile-to-world/task-17/independent/AdversarialVerify.json
+efce0e112f2cacb63502391e431c44be3ba0ef558b9d62719289e1703b53ab8a  /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools/output/evidence/tile-to-world/task-17/independent/legacy-probes.mts
+8a858369eddf8d1d81f2efab3b7b6020b9dcf1b2ef989d036641e9a1d2eba154  /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools/output/evidence/tile-to-world/task-17/independent/probe-results.json
+236ba621dc36b3381fb09cdf9e90d684f347be04468fb3c8b68d7e2e66fa39b5  /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools/output/evidence/tile-to-world/task-17/independent/snapshots/legacy-opaque-path-collision-given.json.gz
+051d1ccfae6ad7d8b57faf4f2be1793befa2695a67a41f8ba49dccb0fd655038  test/support/spatialSpaceCompilerFixture.ts

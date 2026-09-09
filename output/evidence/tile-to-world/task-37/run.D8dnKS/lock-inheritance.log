@@ -1,0 +1,8 @@
+/proc/3944656/fd/0 /dev/null
+/proc/3944656/fd/1 /tmp/spatial-sql-st_01a07acd.KicKF1/postgres.log
+/proc/3944656/fd/2 /tmp/spatial-sql-st_01a07acd.KicKF1/postgres.log
+/proc/3944656/fd/3 anon_inode:[signalfd]
+/proc/3944656/fd/4 pipe:[918137208]
+/proc/3944656/fd/5 pipe:[918137208]
+/proc/3944656/fd/6 socket:[918137209]
+/proc/3944656/fd/7 anon_inode:[eventpoll]

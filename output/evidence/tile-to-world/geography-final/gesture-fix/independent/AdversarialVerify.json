@@ -1,0 +1,160 @@
+{
+  "taskId": "st_01a0844e",
+  "verdict": "needs-fix",
+  "commit": "b215d722c3b17cac70d4ba6120002e7987f62782",
+  "backendHead": "05ae04c62f94103355c482b9d459829fcf382280",
+  "overrideCommit": "b63c36e788ebc0e9a4b7a644e4cc4a91745a675a",
+  "worktree": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-geography-final",
+  "scope": "Independent source/behavior verification of geography board gestures at b215d722. Six-region catalog and full task16 acceptance are out of scope.",
+  "skillPerspectiveCheck": {
+    "ran": true,
+    "skills": ["programming", "remove-ai-slops"],
+    "programming": "Loaded TypeScript README and type-patterns. Diff violates the empty-catch iron rule and duplicates identical tagged-design branches. The pointerup listener is not a stable trampoline, so removeEventListener cannot release the registered callback.",
+    "removeAiSlops": "Loaded skill categories. Production slop: empty catch, copy-pasted if/else with identical bodies, document listener that is not RAII-stable. Producer tests forge occurrence coordinates as a baseline and pin GEOGRAPHY_TILE_PX arithmetic. Complementary probes assert observable occurrence/library/error outcomes from recipe fixtures, not implementation constants."
+  },
+  "summary": "Isolated pointer/keyboard gestures do write recipe occurrence coordinates in placed mode and only source design slots in source mode. Out-of-bounds on a fresh board is typed clipped with zero live/draft mutation. Empty-terrain entry keeps the named lake-country port. Scrolled 8px mapping hits working-mine at x=100. Keyboard nudge plus compiled preview/apply/undo/redo retains sibling x=46 and mapConnection ids. Blocking: after a gesture that rerenders before pointerup, a later instance out-of-bounds drop reports unknown-child because document.pointerup listeners are registered as the current finishMove value and never removed.",
+  "blocking": [
+    "spatialGeographyCanvas.ts registers document.addEventListener('pointerup', pendingDrop.run) then reassigns pendingDrop.run on every render. removeEventListener(pendingDrop.run) cannot drop the previously registered finishMove. After a mid-gesture rerender, a later placed out-of-bounds drop yields unknown-child instead of clipped."
+  ],
+  "findings": [
+    {
+      "severity": "HIGH",
+      "id": "pointerup-listener-leak",
+      "file": "src/editor/panels/spatialGeographyCanvas.ts",
+      "lines": [69, 162, 198],
+      "detail": "childButton pointerdown adds pendingDrop.run; renderSpatialGeographyCanvas replaces pendingDrop.run with a new finishMove; finishMove/Escape remove the new function, not the registered one. Isolated instance OOB is clipped; the same drop after a rerendered region drag is unknown-child."
+    },
+    {
+      "severity": "MEDIUM",
+      "id": "empty-catch-and-identical-branches",
+      "file": "src/editor/panels/spatialGeographyCanvas.ts",
+      "lines": [43, 164, 165],
+      "detail": "captureBoard swallows all setPointerCapture failures. finishMove's places/else branches call the same overloaded commit."
+    },
+    {
+      "severity": "MEDIUM",
+      "id": "producer-forged-occurrence-baseline",
+      "file": "test/spatialGeographyGestures.test.ts",
+      "lines": [171, 186],
+      "detail": "Producer instance-move test store.replace-s occurrence x to 18/53 before the gesture. Complementary probe used unmodified recipe 16/46/76 and still observed occurrence 16→18 with library source remaining 16."
+    },
+    {
+      "severity": "LOW",
+      "id": "qa-cleanup-and-head-mismatch",
+      "file": "output/evidence/tile-to-world/geography-final/gesture-fix/qa.json",
+      "detail": "qa.json still has browserClosed/serverClosed/cacheRemoved false and head 05ae04c62 while DoneClaim reports cleanup true and commit b215d722. Not a runtime blocker."
+    }
+  ],
+  "reviewedInputs": [
+    "output/evidence/tile-to-world/geography-final/gesture-fix/DoneClaim.json",
+    "output/evidence/tile-to-world/geography-final/gesture-fix/st_01a083fb-manual-qa.md",
+    "output/evidence/tile-to-world/geography-final/gesture-fix/qa.json",
+    "Full seven-file delta at b215d722",
+    "output/evidence/tile-to-world/geography-final/compiled-move-fix/receipt.json (05ae04c62)",
+    "output/evidence/tile-to-world/geography-final/override-fix/receipt.json (b63c36e78)",
+    "Original independent VisualVerify.json needs-fix retained unread-as-green",
+    "output/evidence/tile-to-world/geography-final/red.log retained unread-as-green"
+  ],
+  "sourceReview": {
+    "placedVsSourceWrites": {
+      "result": "confirmed",
+      "evidence": "geographyViewChildren overlays occurrence x/y when occurrenceId is set. Complementary source probe moved lake-village 20→28 in library.places while the village occurrence x stayed at the instantiated marker. Complementary placed probe moved lake-country occurrence 16→18 and left library.worlds.lake-kingdom.regions x=16 and siblings 46/76."
+    },
+    "typedRejection": {
+      "result": "confirmed-isolated-only",
+      "evidence": "commitWorkingGeography maps rejected clipped onto previewError and skips editAuthoringDraft. Isolated instance OOB: clipped, live serialize unchanged, draft serialize unchanged. After mid-gesture rerender the same drop is unknown-child from a stale finishMove closure."
+    },
+    "entryNamedPort": {
+      "result": "confirmed",
+      "evidence": "worldEntryAt uses hit child id then namedChildPortId from existing connections/entryPort; empty terrain has no port. Complementary empty-tile entry left entryPort {childId:lake-country,portId:entry} with previewError=port. Producer deep-forest click is consistent. No first-child default observed."
+    },
+    "geometry": {
+      "result": "confirmed",
+      "evidence": "Board is sized to terrain*GEOGRAPHY_TILE_PX (8). Child left is x*8; CSS min hit target is 32px. tileOf under camera scroll left=-638 maps clientX for fixture x=100 to tile 100. Route dataset.points still contains 100,40."
+    },
+    "noHiddenApplyOrDirectGraphMutation": {
+      "result": "confirmed",
+      "evidence": "editAuthoringDraft stores compile request and clears preview; it does not apply. Source move left store identity and connections equal. Keyboard nudge left live store identity until apply. Apply created one history entry; undo/redo restored exact serialize."
+    },
+    "compiledPairIdsAndOverrides": {
+      "result": "confirmed",
+      "evidence": "After ArrowRight to x=17, preview compiled without mutating live serialize. apply/undo/redo kept mapConnection ids and deep-forest occurrence x=46. Backend 05ae04c62/b63c36e78 unchanged in this delta."
+    },
+    "rerenderGesture": {
+      "result": "needs-fix",
+      "evidence": "bindGeographyBoard keeps gesture when boardKey is unchanged, so the in-flight childId survived paint(). The document pointerup callback did not: later instance OOB became unknown-child."
+    }
+  },
+  "complementaryProbes": {
+    "file": "adversarial.test.ts",
+    "acceptedBaseline": "geographyRecipeFixture lake-kingdom/lake-country instantiated through the real controller. No store-patched occurrence coordinates and no forged pair/digest authority.",
+    "cases": [
+      { "case": "isolated instance OOB", "result": "passed", "coverage": "clipped; live and draft serialize unchanged" },
+      { "case": "source pointer move", "result": "passed", "coverage": "library slot 20→28; occurrence x unchanged; connections unchanged; no preview; live store identity" },
+      { "case": "placed pointer move from recipe 16", "result": "passed", "coverage": "occurrence 16→18; siblings 46/76; shared library region x remains 16" },
+      { "case": "rerender during drag then later instance OOB", "result": "failed", "coverage": "in-flight childId kept, destination 28 written, but later OOB previewError=unknown-child" },
+      { "case": "entry on empty terrain", "result": "passed", "coverage": "port error; entryPort stays lake-country/entry" },
+      { "case": "scrolled far child tileOf", "result": "passed", "coverage": "working-mine x=100 under scrollLeft 638 equivalent rect; route endpoint 100,40" },
+      { "case": "keyboard nudge plus preview/apply/undo/redo", "result": "passed", "coverage": "occurrence 17; sibling 46; one history entry; pair ids stable; live untouched until apply" }
+    ]
+  },
+  "execution": {
+    "lock": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock",
+    "lockAcquisitionTimeoutSeconds": 120,
+    "testDeadlineSecondsAfterLock": 180,
+    "testCommand": "flock -w 120 /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock timeout 180s npm test -- --config output/evidence/tile-to-world/geography-final/gesture-fix/independent/vitest.config.ts output/evidence/tile-to-world/geography-final/gesture-fix/independent/adversarial.test.ts --maxWorkers=1 --no-file-parallelism --reporter=verbose",
+    "config": "vitest.config.ts preserves repository options and replaces include with this single evidence probe; CLI also supplies that FILE filter.",
+    "testRunsAfterValidSource": 1,
+    "testsPassed": 6,
+    "testsFailed": 1,
+    "testsSkipped": 0,
+    "durationSeconds": 26.33,
+    "testExitCode": 1,
+    "testLog": "adversarial.log",
+    "testExitFile": "adversarial.exit",
+    "incompleteLogPreserved": "adversarial-incomplete-transform.log (empty-lock/transform interruption, not relabeled green)",
+    "notRun": ["Parent 25 focused producer tests", "app types", "broad build", "browser", "server", "screenshots"]
+  },
+  "preservedPriorFailures": [
+    { "file": "../../red.log", "classification": "Original geography-final RED log retained unread-as-green.", "sha256": "f5a97cc4bf12bf3080aac62c7a1fc0681d3d611ff931fbf4e6fbc5ccfe10cbb7" },
+    { "file": "../../independent/VisualVerify.json", "classification": "Earlier independent needs-fix for camera/instance/OOB/entry retained unread-as-green." },
+    { "file": "../qa.json", "classification": "Producer browser matrix left with cleanup flags false and head 05ae04c62; not rewritten as a clean commit receipt." }
+  ],
+  "sourceBinding": {
+    "headConfirmed": true,
+    "head": "b215d722c3b17cac70d4ba6120002e7987f62782",
+    "productionSha256": {
+      "src/editor/panels/spatialGeographyCanvas.ts": "2d4eee4f4841028a8d95d5d95e2a0ba51c4dae4fda50c9238270d36785bb571a",
+      "src/editor/panels/spatialGeographyChromeState.ts": "ab50a3e21f39977e6060c4dd9ea245a331e53c7c3a1e4396a19750ce8fade347",
+      "src/editor/panels/spatialGeographyGeometry.ts": "759227dd68a1ada703294acff536f7e1488fc303c83ee9242f48418b77f78697",
+      "src/editor/panels/spatialGeographyInspector.ts": "649a6ecfb0f78bd33e20ef24b7c1f382ba37347510f76a12c82077e3b623cb0f",
+      "src/editor/panels/spatialGeographyQuery.ts": "7018ca7ac855983ccf78c6d2d1a0f82d2677d2c875739e77199c5c853471b8ec",
+      "src/styles/database/spatial-geography.css": "b3ebbf9ef0736c946ba8170b8a5e161179e684d1372ccb01d309240c60b516fe",
+      "test/spatialGeographyGestures.test.ts": "99631a0fdb43e57d9bee3ce9fa53a07b3402e5e4b1a1199b02f3ac088928644d"
+    },
+    "evidenceSha256": {
+      "adversarial.test.ts": "ce4c831f0e8f730e84a1407fa7195e2a4b0364cd22794f898cfb6854c223e692",
+      "adversarial.log": "4061598d8ef35d913c73f97e924e7d0e5118f9f36e1e663f67cb1c2f162a0a19"
+    }
+  },
+  "architecturalSelfReview": {
+    "responsibilities": "adversarial.test.ts owns independent gesture/controller probes; vitest.config.ts owns single-file include replacement.",
+    "pureLoc": { "adversarial.test.ts": 273, "spatialGeographyCanvas.ts": 231 },
+    "sizeNote": "Probe file is above 250 pure LOC because it keeps Given/When/Then cases in one file. Product canvas is in the 200-250 warning band.",
+    "escapeHatches": "No product edits. Probe uses no any, non-null assertions, ts-ignore, skips or sleeps.",
+    "determinism": "No sleeps or polling in probes. Fake timers not used; controller actions are synchronous besides recipe fixture setup."
+  },
+  "cleanup": {
+    "productAndTests": "Read-only. git diff --check against b215d722 for src/test is clean.",
+    "ownedFiles": "Only ignored independent evidence under gesture-fix/independent.",
+    "ownedProcesses": "Scoped npm test completed and released flock. Other worktree vitest/flock holders were left untouched.",
+    "serversBrowsersPortsContainers": "None started or reused.",
+    "commitsRemoteWrites": "None.",
+    "priorEvidence": "Producer RED, qa.json, DoneClaim, VisualVerify, compiled-move and override receipts were read-only."
+  },
+  "assumptionsAndLimits": [
+    "Catalog/task18 and task16 full acceptance are out of scope.",
+    "32px is the CSS min hit target; tile mapping remains 8px via tileOf and child left offsets.",
+    "Verdict is needs-fix solely for the document pointerup leak after rerender; isolated gesture contracts otherwise held on real DOM plus the real controller."
+  ]
+}

@@ -87,6 +87,52 @@ Tests: `communitySaveBoot.test.ts`, `publicationSaves.test.ts`,
 operations and browser QA commands are in `editor-workflows-misc.md` under
 Versioned publication.
 
+[Spatial overview associations](spatial-overview-associations.md) define the task34
+optional route/entry fields, exact ownership checks, unchanged digest semantics,
+and the explicit task11 transaction boundary (project v4 / spatial v1).
+
+## Spatial canonical routing (task6 backend increment, 2026-09-07)
+
+`ProjectWriteAuthority` is separate from `Project`: an explicit create intent, a
+legacy loaded target, or a canonical loaded/accepted server SHA plus target.
+`loadProjectSnapshotFromSupabase` returns it; the ordinary load callback carries
+it into the store before normalization. Local clones, map edits, AI acceptance
+and same-target replacement retain that authority. A null editor baseline never
+means insert-only creation. Canonical full/map saves use one publication RPC,
+not legacy merge/upsert or a fresh-token retry. New-project transactions retain
+typed failure causes and restore authority when local adoption rolls back.
+
+Canonical load, proof, reload/reconnect and picker materials use the same root
+snapshot, including an empty library. Present malformed markers fail. Legacy
+reads retain their repaired/hybrid loader and child-based preview. A process-local
+set remembers canonical targets only to deny legacy writes, never to grant tokens;
+the existing server fence is still the cross-process authority.
+
+`store.activateSpatialAuthoring()` / `activateSpatialProjectFromRaw(config)` are
+explicit operations: capture raw root plus map rows, convert raw baseline, publish
+with ordinary JSON. They never recover raw content from normalized editor state.
+Raw-version/SHA limitations fail explicitly. Drafts and newer local edits survive
+awaits; late acceptance cannot adopt into another target or replacement lineage.
+Ordinary writes still strip event drafts. Accepted SHA/baseline survives mirror
+failure, reported separately by `store.getPersistenceRecovery()` (`ready` with
+optional mirror warning, or `blocked` with typed error and reload/export-copy
+actions). Canonical reset/import marker removal throws `ProjectRoutingError`;
+copying to an explicit new target is a separate operation.
+
+The compatibility facade now returns save results and loaded authority; callers
+must pass it when saving canonical content. The legacy force-file utility refuses
+canonical writes rather than grafting a fresh token onto old file content.
+Q7/Q8 local API scenarios use `scripts/qa/spatial-persistence.mts --local-only`;
+they prove loopback HTTP/store behavior, not SQL authorization or deployment.
+Editor save/error/status controls bind `getPersistenceRecovery()`: a canonical
+conflict or migration-required error keeps the dirty draft and offers explicit
+reload plus export-copy, never a silent retry with a new token. Mirror failure
+stays a warning beside an accepted root save, and does not hide in-flight
+`AutoSaveState`. Explicit reload captures the dialog project id and rejects a
+live target change across the async import; export-copy preserves the local draft
+and active project identity. Activation remains an explicit operation, not an
+open-time side effect.
+
 ## P1 accepted-save receipts and read-only proof (2026-09-06)
 
 `ProjectFlushResult` keeps its existing variants; `saved` optionally includes a

@@ -1,0 +1,126 @@
+monitor_id=mon_SG7ZQAEKQKN1CH6V
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialAuthoringPreviewHandoff.test.ts --maxWorkers=1"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":" ❯ test/spatialAuthoringPreviewHandoff.test.ts (3 tests | 2 failed) 3134ms"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"   × retains exact controller authority when an external adapter returns an issued compiled preview 1086ms"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"     → {\"code\":\"ownership\",\"message\":\"ownership: Raster edits require the map editor, not a spatial draft\",\"detail\":\"ownership\"}"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"   × rejects another controller's handle when a foreign preview is handed off 1078ms"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"     → expected { kind: 'ok', value: { …(2) } } to match object { kind: 'error', …(1) }"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"(3 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"   ✓ rejects stale authority when the project changes before the external handoff  969ms"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":" FAIL  test/spatialAuthoringPreviewHandoff.test.ts > retains exact controller authority when an external adapter returns an issued compiled preview"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"TypeError: {\"code\":\"ownership\",\"message\":\"ownership: Raster edits require the map editor, not a spatial draft\",\"detail\":\"ownership\"}"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":" ❯ authoringValue test/support/spatialAuthoringFixture.ts:12:25"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"     10|   switch (result.kind) {"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"     11|     case \"ok\": return result.value;"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"     12|     case \"error\": throw new TypeError(JSON.stringify(result.error));"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"       |                         ^"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"     13|     default: return assertNever(result);"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"     14|   }"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":" ❯ test/spatialAuthoringPreviewHandoff.test.ts:24:20"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":" FAIL  test/spatialAuthoringPreviewHandoff.test.ts > rejects another controller's handle when a foreign preview is handed off"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"AssertionError: expected { kind: 'ok', value: { …(2) } } to match object { kind: 'error', …(1) }"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"(3 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"\u001b[2m  {\u001b[22m"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"\u001b[32m-   \"error\": {\u001b[39m"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"\u001b[32m-     \"code\": \"foreign-preview\",\u001b[39m"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"\u001b[32m-   },\u001b[39m"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"\u001b[32m-   \"kind\": \"error\",\u001b[39m"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"\u001b[31m+   \"kind\": \"ok\",\u001b[39m"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"\u001b[2m  }\u001b[22m"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":" ❯ test/spatialAuthoringPreviewHandoff.test.ts:43:18"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"     41|   const result = retainAuthoringPreview(issued);"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"     42|   // Then"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"     43|   expect(result).toMatchObject({ kind: \"error\", error: { code: \"foreig…"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"       |                  ^"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"     44|   expect(store.getCurrent()).toEqual(project);"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"     45|   expect(getMapEditHistoryEntries()).toHaveLength(0);"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"      Tests  2 failed | 1 passed (3)"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"   Start at  07:28:32"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":"   Duration  8.32s (transform 3.32s, setup 0ms, collect 4.84s, tests 3.13s, environment 0ms, prepare 64ms)"}
+{"type":"line","id":"authoring-4123389","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-4123389","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialAuthoringPreviewHandoff.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core
+
+ ❯ test/spatialAuthoringPreviewHandoff.test.ts (3 tests | 2 failed) 3134ms
+   × retains exact controller authority when an external adapter returns an issued compiled preview 1086ms
+     → {"code":"ownership","message":"ownership: Raster edits require the map editor, not a spatial draft","detail":"ownership"}
+   × rejects another controller's handle when a foreign preview is handed off 1078ms
+     → expected { kind: 'ok', value: { …(2) } } to match object { kind: 'error', …(1) }
+(3 matching properties omitted from actual)
+   ✓ rejects stale authority when the project changes before the external handoff  969ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialAuthoringPreviewHandoff.test.ts > retains exact controller authority when an external adapter returns an issued compiled preview
+TypeError: {"code":"ownership","message":"ownership: Raster edits require the map editor, not a spatial draft","detail":"ownership"}
+ ❯ authoringValue test/support/spatialAuthoringFixture.ts:12:25
+     10|   switch (result.kind) {
+     11|     case "ok": return result.value;
+     12|     case "error": throw new TypeError(JSON.stringify(result.error));
+       |                         ^
+     13|     default: return assertNever(result);
+     14|   }
+ ❯ test/spatialAuthoringPreviewHandoff.test.ts:24:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/spatialAuthoringPreviewHandoff.test.ts > rejects another controller's handle when a foreign preview is handed off
+AssertionError: expected { kind: 'ok', value: { …(2) } } to match object { kind: 'error', …(1) }
+(3 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "error": {[39m
+[32m-     "code": "foreign-preview",[39m
+[32m-   },[39m
+[32m-   "kind": "error",[39m
+[31m+   "kind": "ok",[39m
+[2m  }[22m
+
+ ❯ test/spatialAuthoringPreviewHandoff.test.ts:43:18
+     41|   const result = retainAuthoringPreview(issued);
+     42|   // Then
+     43|   expect(result).toMatchObject({ kind: "error", error: { code: "foreig…
+       |                  ^
+     44|   expect(store.getCurrent()).toEqual(project);
+     45|   expect(getMapEditHistoryEntries()).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  07:28:32
+   Duration  8.32s (transform 3.32s, setup 0ms, collect 4.84s, tests 3.13s, environment 0ms, prepare 64ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

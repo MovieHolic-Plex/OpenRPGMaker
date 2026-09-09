@@ -1,0 +1,98 @@
+monitor_id=mon_KT1K44C9NTEM02ZK
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuild.test.ts test/spatialAuthoringScope.test.ts --maxWorkers=1"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":" ✓ test/spatialManualBuild.test.ts (7 tests) 8961ms"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > displays exact raster without adoption when an explicit object target is built  1219ms"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > adopts one undo step and selects the exact root when Apply accepts a space build  1961ms"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > retains the allocated root when a displayed build is previewed again  1447ms"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > preserves continuation when a build is edited without replaying instantiate  1598ms"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > creates no occurrence when ordinary source-save Preview is used  825ms"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > rejects stale Apply without adoption when a live target tile changes  1122ms"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"   ✓ manual source build through the real controller > keeps Apply unavailable when an occupied object target is rejected  787ms"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":" ❯ test/spatialAuthoringScope.test.ts (2 tests | 1 failed) 2940ms"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"   × compiles the connected containing root when a nested actual room is edited 2090ms"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"     → expected 22 to be 18 // Object.is equality"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"   ✓ uses actual containment when an object belongs to a standalone room  848ms"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":" FAIL  test/spatialAuthoringScope.test.ts > compiles the connected containing root when a nested actual room is edited"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"AssertionError: expected 22 to be 18 // Object.is equality"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"\u001b[32m- 18\u001b[39m"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"\u001b[31m+ 22\u001b[39m"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":" ❯ test/spatialAuthoringScope.test.ts:35:30"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"     33|   const binding = own(fixtureDocument(preview.project).occurrences, fl…"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"     34|   if (!binding) throw new TypeError(\"Missing room binding\");"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"     35|   expect(binding.rect.width).toBe(18);"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"       |                              ^"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"     36|   expect(fixtureDocument(preview.project).connections).toEqual(fixture…"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"     37|   expect(store.getCurrent()).toEqual(project);"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":" Test Files  1 failed | 1 passed (2)"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"      Tests  1 failed | 8 passed (9)"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"   Start at  06:29:30"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":"   Duration  22.21s (transform 5.58s, setup 0ms, collect 9.35s, tests 11.90s, environment 1ms, prepare 205ms)"}
+{"type":"line","id":"authoring-3421366","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3421366","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuild.test.ts test/spatialAuthoringScope.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core
+
+ ✓ test/spatialManualBuild.test.ts (7 tests) 8961ms
+   ✓ manual source build through the real controller > displays exact raster without adoption when an explicit object target is built  1219ms
+   ✓ manual source build through the real controller > adopts one undo step and selects the exact root when Apply accepts a space build  1961ms
+   ✓ manual source build through the real controller > retains the allocated root when a displayed build is previewed again  1447ms
+   ✓ manual source build through the real controller > preserves continuation when a build is edited without replaying instantiate  1598ms
+   ✓ manual source build through the real controller > creates no occurrence when ordinary source-save Preview is used  825ms
+   ✓ manual source build through the real controller > rejects stale Apply without adoption when a live target tile changes  1122ms
+   ✓ manual source build through the real controller > keeps Apply unavailable when an occupied object target is rejected  787ms
+ ❯ test/spatialAuthoringScope.test.ts (2 tests | 1 failed) 2940ms
+   × compiles the connected containing root when a nested actual room is edited 2090ms
+     → expected 22 to be 18 // Object.is equality
+   ✓ uses actual containment when an object belongs to a standalone room  848ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialAuthoringScope.test.ts > compiles the connected containing root when a nested actual room is edited
+AssertionError: expected 22 to be 18 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 18[39m
+[31m+ 22[39m
+
+ ❯ test/spatialAuthoringScope.test.ts:35:30
+     33|   const binding = own(fixtureDocument(preview.project).occurrences, fl…
+     34|   if (!binding) throw new TypeError("Missing room binding");
+     35|   expect(binding.rect.width).toBe(18);
+       |                              ^
+     36|   expect(fixtureDocument(preview.project).connections).toEqual(fixture…
+     37|   expect(store.getCurrent()).toEqual(project);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 8 passed (9)
+   Start at  06:29:30
+   Duration  22.21s (transform 5.58s, setup 0ms, collect 9.35s, tests 11.90s, environment 1ms, prepare 205ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

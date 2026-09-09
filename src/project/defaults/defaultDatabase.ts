@@ -146,7 +146,6 @@ export function defaultTitleScreenSettings(): TitleScreenSettings {
       continueGame: true,
       quit: true,
     },
-    titleGraphic: { mode: "text", x: 32, y: 62 },
     showInputHint: true,
   };
 }

@@ -1,0 +1,4 @@
+cdac9e3e5a3c08951f0a0d35466a5cb5a9a221fca84f4c2b9bff6396bcbd10e5  test/integration/spatial-task20-receipt.json
+9ee68702c8e33920c611967e9a58bac96218a971f83775002b92be0fb9951527  test/integration/spatial-persistence-races.md
+52cf01e3ddf99ebfe0b6cb20608bd979ce57f746f45f804f3b061b7c8441f571  scripts/qa/spatial-sql-local.sh
+e88602e89abb025134f1766448b2817b120d7790091d1cf14632ba72d19a0927  scripts/qa/spatial-postgrest.mts

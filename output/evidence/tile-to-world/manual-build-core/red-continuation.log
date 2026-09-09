@@ -1,0 +1,118 @@
+monitor_id=mon_YRT187P03NX57D6J
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuildContinuation.test.ts --maxWorkers=1"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":" ❯ test/spatialManualBuildContinuation.test.ts (4 tests | 2 failed) 6937ms"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"   × builds the same allocated root when source correction follows a failed compile 1033ms"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"     → expected [] to deeply equal [ 'corrected-build' ]"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"   × freezes the issued request when a caller mutates its original entry input 981ms"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"     → {\"code\":\"invalid\",\"message\":\"entry: stamp-target@999,1\",\"detail\":\"entry\"}"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"   ✓ clears redo when a new build is accepted after Undo  2230ms"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"   ✓ retains the first frozen occurrence when a second root is explicitly built after a source edit  2692ms"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":" FAIL  test/spatialManualBuildContinuation.test.ts > builds the same allocated root when source correction follows a failed compile"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"AssertionError: expected [] to deeply equal [ 'corrected-build' ]"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"\u001b[32m- [\u001b[39m"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"\u001b[32m-   \"corrected-build\",\u001b[39m"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"\u001b[32m- ]\u001b[39m"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"\u001b[31m+ []\u001b[39m"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":" ❯ test/spatialManualBuildContinuation.test.ts:34:62"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"     32|   const preview = authoringValue(previewSpatialSourceBuild(input));"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"     33|   // Then"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"     34|   expect(fixtureDocument(preview.project).rootOccurrenceIds).toEqual([…"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"       |                                                              ^"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"     35|   expect(own(fixtureDocument(preview.project).occurrences, input.rootI…"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"     36|   expect(getMapEditHistoryEntries()).toHaveLength(0);"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":" FAIL  test/spatialManualBuildContinuation.test.ts > freezes the issued request when a caller mutates its original entry input"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"TypeError: {\"code\":\"invalid\",\"message\":\"entry: stamp-target@999,1\",\"detail\":\"entry\"}"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":" ❯ authoringValue test/support/spatialAuthoringFixture.ts:12:25"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"     10|   switch (result.kind) {"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"     11|     case \"ok\": return result.value;"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"     12|     case \"error\": throw new TypeError(JSON.stringify(result.error));"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"       |                         ^"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"     13|     default: return assertNever(result);"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"     14|   }"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":" ❯ test/spatialManualBuildContinuation.test.ts:53:19"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"      Tests  2 failed | 2 passed (4)"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"   Start at  06:39:43"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":"   Duration  12.86s (transform 3.83s, setup 0ms, collect 5.53s, tests 6.94s, environment 0ms, prepare 70ms)"}
+{"type":"line","id":"authoring-3632425","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3632425","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuildContinuation.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core
+
+ ❯ test/spatialManualBuildContinuation.test.ts (4 tests | 2 failed) 6937ms
+   × builds the same allocated root when source correction follows a failed compile 1033ms
+     → expected [] to deeply equal [ 'corrected-build' ]
+   × freezes the issued request when a caller mutates its original entry input 981ms
+     → {"code":"invalid","message":"entry: stamp-target@999,1","detail":"entry"}
+   ✓ clears redo when a new build is accepted after Undo  2230ms
+   ✓ retains the first frozen occurrence when a second root is explicitly built after a source edit  2692ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialManualBuildContinuation.test.ts > builds the same allocated root when source correction follows a failed compile
+AssertionError: expected [] to deeply equal [ 'corrected-build' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   "corrected-build",[39m
+[32m- ][39m
+[31m+ [][39m
+
+ ❯ test/spatialManualBuildContinuation.test.ts:34:62
+     32|   const preview = authoringValue(previewSpatialSourceBuild(input));
+     33|   // Then
+     34|   expect(fixtureDocument(preview.project).rootOccurrenceIds).toEqual([…
+       |                                                              ^
+     35|   expect(own(fixtureDocument(preview.project).occurrences, input.rootI…
+     36|   expect(getMapEditHistoryEntries()).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/spatialManualBuildContinuation.test.ts > freezes the issued request when a caller mutates its original entry input
+TypeError: {"code":"invalid","message":"entry: stamp-target@999,1","detail":"entry"}
+ ❯ authoringValue test/support/spatialAuthoringFixture.ts:12:25
+     10|   switch (result.kind) {
+     11|     case "ok": return result.value;
+     12|     case "error": throw new TypeError(JSON.stringify(result.error));
+       |                         ^
+     13|     default: return assertNever(result);
+     14|   }
+ ❯ test/spatialManualBuildContinuation.test.ts:53:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  06:39:43
+   Duration  12.86s (transform 3.83s, setup 0ms, collect 5.53s, tests 6.94s, environment 0ms, prepare 70ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

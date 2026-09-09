@@ -1,0 +1,20 @@
+{
+  "raw": {
+    "kind": "m2Command",
+    "commandId": "m2-209-advanced-dialogue",
+    "fields": {
+      "body": "Hello world",
+      "speaker": "Narrator",
+      "emotion": "happy",
+      "autoAdvance": true
+    }
+  },
+  "loaded": {
+    "kind": "text",
+    "body": "Hello world",
+    "speaker": "Narrator",
+    "emotion": "happy",
+    "autoAdvance": true
+  },
+  "legacy": true
+}

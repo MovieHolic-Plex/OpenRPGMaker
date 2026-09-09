@@ -191,6 +191,17 @@ export function recordProjectSnapshot(label?: string, mapId?: string | null, opt
   pushSnapshot(makeSnapshotFromCurrent(mapId, options), label, historyMapId(mapId, options));
 }
 
+/** Commit an already validated project proposal; rejected store writes never alter history. */
+export function applyProjectWithHistory(project: Project, label: string): boolean {
+  const before = projectWithoutEventDrafts(store.getCurrent());
+  if (JSON.stringify(before) === JSON.stringify(projectWithoutEventDrafts(project))) return false;
+  store.replace(project, { change: { label }, commitHistory: () => {
+    lastCoalesceKey = null;
+    pushSnapshot({ kind: "project", before }, label);
+  } });
+  return true;
+}
+
 /**
  * Run a synchronous map edit, inserting its before-state only if it changed data.
  * Store updates replace maps rather than mutating them, so retaining the before

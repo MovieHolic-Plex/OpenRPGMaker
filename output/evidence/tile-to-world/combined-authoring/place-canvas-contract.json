@@ -1,0 +1,51 @@
+{
+  "surface": "browser UI — Database → Places place authoring canvas",
+  "invocation": "vite --configLoader runner --host 127.0.0.1 --port 44055 --strictPort ; chromium 1280x800 ; http://127.0.0.1:44055/?blankProject=1&aiBridge=0 ; click [data-testid=toolbar-database] ; expand [data-testid=db-tab-group-world] if collapsed ; click [data-testid=db-tab-spatial-places] ; wait [data-testid=spatial-shell-places] [data-testid=spatial-canvas]",
+  "outcome": "PASS",
+  "errors": [],
+  "port": 44055,
+  "base": "http://127.0.0.1:44055",
+  "sourceHash": "d35db7bf4592722b8ad14569c81ca507fd62ffe23da1ee23767f1e5e1b724aba",
+  "screenshot": "/home/main/z-project/rpg-zzu-tile-to-world/output/evidence/tile-to-world/combined-authoring/place-canvas-1280x800.png",
+  "canvas": {
+    "tag": "DIV",
+    "className": "spatial-canvas spatial-places-canvas",
+    "testid": "spatial-canvas",
+    "display": "grid",
+    "visibility": "visible",
+    "opacity": "1",
+    "position": "relative",
+    "overflow": "auto",
+    "gridTemplateRows": "32px 32px 411.406px 32px 55.5938px",
+    "box": {
+      "x": 584.21875,
+      "y": 123,
+      "width": 401.78125,
+      "height": 611
+    }
+  },
+  "board": {
+    "tag": "DIV",
+    "className": "spatial-places-board",
+    "testid": "spatial-places-board",
+    "tabindex": 0,
+    "ariaLabel": "장소 배치",
+    "display": "block",
+    "position": "relative",
+    "box": {
+      "x": 592.21875,
+      "y": 211,
+      "width": 1128,
+      "height": 744
+    }
+  },
+  "cleanup": {
+    "serverStarted": true,
+    "browserStarted": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true,
+    "cacheDir": "/home/main/z-project/rpg-zzu-tile-to-world/.vite-cache/place-canvas-contract-bcYIjf",
+    "serverPid": 674347
+  }
+}

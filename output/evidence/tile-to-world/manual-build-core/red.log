@@ -1,0 +1,86 @@
+monitor_id=mon_N294A9DXM6XFVHFX
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuild.test.ts test/spatialAuthoringScope.test.ts --maxWorkers=1"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":" FAIL  test/spatialAuthoringScope.test.ts [ test/spatialAuthoringScope.test.ts ]"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"Error: Cannot find module '../src/editor/spatial/authoringScope' imported from '/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core/test/spatialAuthoringScope.test.ts'"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":" ❯ test/spatialAuthoringScope.test.ts:3:1"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"      1| import { afterEach, expect, it } from \"vitest\";"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"      2| import { bindSpatialAuthoringControllerFactory, editAuthoringDraft, pr…"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"      3| import { spatialAuthoringCompileScope } from \"../src/editor/spatial/au…"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"       | ^"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"      4| import { compileSpatialOccurrence } from \"../src/editor/spatial/compil…"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"      5| import { own } from \"../src/project/spatial/domain\";"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"Caused by: Error: Failed to load url ../src/editor/spatial/authoringScope (resolved id: ../src/editor/spatial/authoringScope) in /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core/test/spatialAuthoringScope.test.ts. Does the file exist?"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":" ❯ loadAndTransform ../../../../rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:35835:17"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":" FAIL  test/spatialManualBuild.test.ts [ test/spatialManualBuild.test.ts ]"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"Error: Cannot find module '../src/editor/panels/spatialBuildActions' imported from '/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core/test/spatialManualBuild.test.ts'"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":" ❯ test/spatialManualBuild.test.ts:5:1"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"Caused by: Error: Failed to load url ../src/editor/panels/spatialBuildActions (resolved id: ../src/editor/panels/spatialBuildActions) in /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core/test/spatialManualBuild.test.ts. Does the file exist?"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":" ❯ loadAndTransform ../../../../rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:35835:17"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":" Test Files  2 failed (2)"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"      Tests  no tests"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"   Start at  06:22:57"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":"   Duration  12.07s (transform 6.91s, setup 0ms, collect 0ms, tests 0ms, environment 1ms, prepare 265ms)"}
+{"type":"line","id":"authoring-3253290","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-3253290","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialManualBuild.test.ts test/spatialAuthoringScope.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialAuthoringScope.test.ts [ test/spatialAuthoringScope.test.ts ]
+Error: Cannot find module '../src/editor/spatial/authoringScope' imported from '/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core/test/spatialAuthoringScope.test.ts'
+ ❯ test/spatialAuthoringScope.test.ts:3:1
+      1| import { afterEach, expect, it } from "vitest";
+      2| import { bindSpatialAuthoringControllerFactory, editAuthoringDraft, pr…
+      3| import { spatialAuthoringCompileScope } from "../src/editor/spatial/au…
+       | ^
+      4| import { compileSpatialOccurrence } from "../src/editor/spatial/compil…
+      5| import { own } from "../src/project/spatial/domain";
+
+Caused by: Error: Failed to load url ../src/editor/spatial/authoringScope (resolved id: ../src/editor/spatial/authoringScope) in /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core/test/spatialAuthoringScope.test.ts. Does the file exist?
+ ❯ loadAndTransform ../../../../rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:35835:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/spatialManualBuild.test.ts [ test/spatialManualBuild.test.ts ]
+Error: Cannot find module '../src/editor/panels/spatialBuildActions' imported from '/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core/test/spatialManualBuild.test.ts'
+ ❯ test/spatialManualBuild.test.ts:5:1
+
+
+Caused by: Error: Failed to load url ../src/editor/panels/spatialBuildActions (resolved id: ../src/editor/panels/spatialBuildActions) in /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-manual-build-core/test/spatialManualBuild.test.ts. Does the file exist?
+ ❯ loadAndTransform ../../../../rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:35835:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  no tests
+   Start at  06:22:57
+   Duration  12.07s (transform 6.91s, setup 0ms, collect 0ms, tests 0ms, environment 1ms, prepare 265ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

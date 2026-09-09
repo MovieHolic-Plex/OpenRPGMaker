@@ -1,0 +1,85 @@
+import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { mkdir, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { parseArgs } from "node:util";
+import { deserialize } from "../../src/project/io";
+import { ProjectFormatError } from "../../src/project/io/errors";
+import { isPassableLanding } from "../../src/project/collision";
+import { computeReachableCells } from "../../src/project/lint/reachability";
+import { isOwnedSpatialBinding } from "../../src/project/spatial/bindings";
+import { own } from "../../src/project/spatial/domain";
+import { sha256HexTextSync } from "../../src/util/sha256";
+import { fixtureDocument } from "../../test/support/spatialSpaceCompilerFixture";
+import { projectedStairOutput } from "../../test/support/spatialPlaceOutputContract";
+
+// A deliberately RED output-contract probe, not --scenario nested-places implementation.
+const { values } = parseArgs({ options: { evidence: { type: "string" } }, strict: true });
+const directory = resolve(values.evidence ?? "output/evidence/tile-to-world/task-9/backend");
+await mkdir(`${directory}/maps`, { recursive: true });
+const sourceSHA = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+const rejections = [];
+const allPorts = [];
+const allRoutes = [];
+for (const seed of [7, 19, 31]) {
+  // Given: actual compiler output for the associated outdoor square and three inn floors.
+  const { input, proposal, control, ports, routes } = projectedStairOutput(seed);
+  assert.deepEqual(deserialize(JSON.stringify(control)).spatialAuthoring, control.spatialAuthoring);
+  for (const route of routes) {
+    const map = own(proposal.maps, route.from.mapId);
+    const target = own(proposal.maps, route.to.mapId);
+    const owner = own(fixtureDocument(proposal).occurrences, route.from.ownerId ?? "");
+    const entry = owner.bindings.flatMap(binding => binding.ports)[0];
+    assert.ok(entry);
+    const reached = computeReachableCells(proposal, map, entry.x, entry.y);
+    assert.ok(reached.has(`${route.from.x},${route.from.y}`));
+    assert.ok(isPassableLanding(proposal, target, route.to.x, route.to.y));
+    assert.deepEqual(route.commands, [{ kind: "transfer", mapId: target.id, x: route.to.x, y: route.to.y, fade: "black" }]);
+    allRoutes.push({ seed, ...route, entry, sourceReachable: true, landingPassable: true,
+      engine: "project/collision + project/lint/reachability", interpreterExecuted: false });
+  }
+  allPorts.push({ seed, ports });
+  const mapFiles = [];
+  for (const [index, map] of Object.values(proposal.maps).filter(map => !Object.hasOwn(input.maps, map.id)).entries()) {
+    const path = `maps/seed-${seed}-${index}.json`;
+    await writeFile(`${directory}/${path}`, `${JSON.stringify(map, null, 2)}\n`);
+    mapFiles.push({ mapId: map.id, path, sha256: sha256HexTextSync(JSON.stringify(map)) });
+  }
+  await writeFile(`${directory}/proposed-${seed}.json`, `${JSON.stringify(proposal)}\n`);
+  await writeFile(`${directory}/control-${seed}.json`, `${JSON.stringify(control)}\n`);
+  const first = routes[0];
+  assert.ok(first?.from.ownerId);
+  const document = fixtureDocument(control);
+  const projected = own(document.occurrences, first.from.occurrenceId);
+  const projection = projected.bindings[0];
+  assert.ok(projection && !isOwnedSpatialBinding(projection));
+  const variants = [
+    { key: "raster-owner-connectionIds", project: proposal },
+    { key: "projection-connectionIds", project: { ...control, spatialAuthoring: { ...document, occurrences: {
+      ...document.occurrences, [projected.id]: { ...projected, bindings: [{ ...projection, connectionIds: [first.connectionId] }] },
+    } } } },
+    { key: "projected-child-owned-event", project: { ...control, spatialAuthoring: { ...document, occurrences: {
+      ...document.occurrences, [projected.id]: { ...projected, bindings: [{ mapId: projection.mapId, rect: projection.rect,
+        ports: projection.ports, eventIds: [first.eventId], connectionIds: [first.connectionId], contentDigest: "0".repeat(64) }] },
+    } } } },
+  ];
+  for (const variant of variants) {
+    // When: the precise alternative relationship crosses the same real project schema.
+    try {
+      deserialize(JSON.stringify(variant.project));
+      assert.fail(`Contract variant unexpectedly accepted: ${variant.key}`);
+    } catch (error) {
+      // Then: record the concrete schema rejection; unrelated failures propagate.
+      if (!(error instanceof ProjectFormatError)) throw error;
+      rejections.push({ seed, variant: variant.key, error: error.message, sourceSHA, mapFiles,
+        inputSHA256: sha256HexTextSync(JSON.stringify(input)), controlAccepted: true });
+    }
+  }
+}
+await writeFile(`${directory}/ports.json`, `${JSON.stringify(allPorts, null, 2)}\n`);
+await writeFile(`${directory}/routes.json`, `${JSON.stringify(allRoutes, null, 2)}\n`);
+await writeFile(`${directory}/output-contract.json`, `${JSON.stringify({ sourceSHA, backendImplemented: false,
+  visualApproved: false, rejections }, null, 2)}\n`);
+// Preserve an actual failing subprocess exit instead of reporting diagnostic controls as GREEN.
+const { proposal } = projectedStairOutput(7);
+deserialize(JSON.stringify(proposal));

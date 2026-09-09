@@ -1,0 +1,771 @@
+{
+  "mode": "offline-real-tool-runner",
+  "provider": null,
+  "base": "c9739691fcb0ff078f54ac1ba2777e681f5c74ab",
+  "sourceHashes": {
+    "scripts/qa/spatial-ai-tools.mts": "02690fc7391081ddc7fcb135df7904102c929710eeb6caace78243c0c976d8e0",
+    "src/ai/spatialContext.ts": "52dc19c721d284e81c0a3fcde67f3b36ae62e27ca236d7e4fa36462d08211f37",
+    "src/editor/spatial/legacyConcepts.ts": "920bc5331ce2ffa4572a79ff71b4edbf0d77392f5e48644701120eb38a56599f",
+    "src/editor/spatial/legacyHouseInterior.ts": "9a1acf75de33e32e6b274232547ef921241c501ca6b21f1bf267786d88e34791",
+    "src/editor/spatial/legacyInteriorPlan.ts": "6a3f36ea3a3a350aa51053fb88a591b88fcb033b9af16d2a5735f5dc7cfecfa0",
+    "src/editor/tools/spatialConceptTools.ts": "7a26cf7f60daf96b99aa1e9889a67fab0799c45ad61a2a3ed22f0e3f039901be",
+    "src/editor/tools/spatialConstructionScope.ts": "0bd33df2939ea80e7abe17e211764bf389eb829a9be4487927ac90dd706607eb",
+    "src/editor/tools/spatialToolSchemas.ts": "e838b3a9e7c81894409cd7fa23aaf36652201e92f48d59c5a8b1625ae8363286",
+    "src/editor/tools/spatialToolState.ts": "bad9ec29998d3fac467db699e459246d1db3e51368a69d2443e3552f0ffd6ae3",
+    "src/editor/tools/spatialTools.ts": "0c05b8df92a04ee104dcb6f65671731a4d346fd78ec578ce1a05501fbb294f8d",
+    "test/spatialAiContext.test.ts": "201c00034b17abafd6780f989fb2d1346b29ec08e5bed6f3fb73b3a7ed04ef4c",
+    "test/spatialLegacyTools.test.ts": "88e9a8d75c6fcd2646d5a95ffc03d700f0422515350d74cc981e952f8c576416",
+    "test/spatialToolAcceptance.test.ts": "4d3936567f04871c8df359c65b7b9bfa70579d31e819eb0cc05b55e492904fd1",
+    "test/spatialTools.test.ts": "8ad23536c47efea94fc6aa9f8a519b5037d527e452e1a1389b84a1b4d1f6ce79",
+    "src/ai/contextBuilder.ts": "cf2390ab230b7742f11793c103f52d60408d6ca4d59e977a2137e867a9d15ac2",
+    "src/editor/conceptBundleResolve.ts": "3bd491641c6fb8bd25044ffa61427e68a83f31add9bd2c0dcaf237115a425f5a",
+    "src/editor/detachedDraftMemory.ts": "1c220b3047d5c3d6a03ca134b61fc05e186ac90ec7b2828937ed42c93424e93b",
+    "src/editor/houseInteriors.ts": "76d64ee52201b9e632519c6892e2472628d43b4e0217352d889a9a731fb973b1",
+    "src/editor/interiorConceptPlan.ts": "51789a1a7dbf3c6fa3513b47917cc9f0799f34d1f2c37391f9572ad7ac131cdd",
+    "src/editor/tools/applyChangesetToStore.ts": "851912e93b5967bac33db62c1f3bc7e97d2f3df7cc6802aefca067bcc05ed190",
+    "src/editor/tools/authorHousePostconditions.ts": "067cd83e41fcffc4cf0a2df71cf0dd33126b0567cb4234161b5bcac20ff00f64",
+    "src/editor/tools/authorVillageScope.ts": "75ea21dd301ad47e5b04934c7bd5f32efff049ff4d10ce95a463734d7e55a7df",
+    "src/editor/tools/changeset.ts": "040c2b35666178eaa5e52cb7157ad0c4d24134cb6a3eb8d5fe74a64d2eda33f7",
+    "src/editor/tools/houseKitDomain.ts": "9f9eef006c3244feef0895b3757eb8f688c433b4a6f01846cba2edb8d310b8cd",
+    "src/editor/tools/placeConceptTool.ts": "b48473ffd658fb693a977b51bf2d60255e05c455879be557908963b101cd7b58",
+    "src/editor/tools/toolRegistry.ts": "ee326d15623080fd1b4bb361b8bc3f7e07a320272c6bf884fd1436166ace692c",
+    "src/editor/tools/toolRunner.ts": "fde143b00e0ed95f57662fe8025e604898df058b98ce1be2bf71e7153b0d2033",
+    "src/editor/tools/village/interiors.ts": "8dabc4eb9b6feec291254cb8963455f48f91527c5d4d729e13b1bc0cdc3f8ad6"
+  },
+  "fixtureSHA256": "fb4dbef9a19cbfec3e8630ae058a51f7bdae1aeb037495adc1137ce8c3d31f97",
+  "acceptedSHA256": "c64a121fae3c14ff43396d9909acc9d979f9b32e3bfcbda2aa458a20ffad2ac0",
+  "transcript": [
+    {
+      "name": "list_spatial_designs",
+      "args": {
+        "kind": "space"
+      },
+      "result": {
+        "ok": true,
+        "summary": "1 spatial designs",
+        "data": {
+          "active": true,
+          "designs": [
+            {
+              "id": "room-design",
+              "name": "Compiler room",
+              "revision": 1,
+              "tags": [],
+              "provenance": {
+                "origin": "user"
+              },
+              "tilesetId": "easyrpg_chipset_interior",
+              "shape": "rect",
+              "width": 16,
+              "height": 12,
+              "floor": "wood",
+              "wall": "cream",
+              "objectSlots": [
+                {
+                  "id": "beds",
+                  "objectDesignId": "bed-design",
+                  "quantity": 1,
+                  "required": true,
+                  "placement": {
+                    "mode": "auto"
+                  }
+                },
+                {
+                  "id": "hearth",
+                  "objectDesignId": "hearth-design",
+                  "quantity": 1,
+                  "required": true,
+                  "placement": {
+                    "mode": "fixed",
+                    "x": 1,
+                    "y": 4
+                  }
+                },
+                {
+                  "id": "stairs",
+                  "objectDesignId": "stair-design",
+                  "quantity": 1,
+                  "required": true,
+                  "placement": {
+                    "mode": "fixed",
+                    "x": 8,
+                    "y": 11
+                  }
+                }
+              ],
+              "ports": [
+                {
+                  "x": 8,
+                  "y": 11,
+                  "id": "entry",
+                  "name": "Entry"
+                }
+              ],
+              "environment": "interior",
+              "role": "entrance",
+              "kind": "space",
+              "children": [
+                {
+                  "id": "beds",
+                  "source": {
+                    "kind": "object",
+                    "id": "bed-design"
+                  },
+                  "quantity": 1
+                },
+                {
+                  "id": "hearth",
+                  "source": {
+                    "kind": "object",
+                    "id": "hearth-design"
+                  },
+                  "quantity": 1
+                },
+                {
+                  "id": "stairs",
+                  "source": {
+                    "kind": "object",
+                    "id": "stair-design"
+                  },
+                  "quantity": 1
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "get_spatial_design",
+      "args": {
+        "kind": "space",
+        "id": "room-design"
+      },
+      "result": {
+        "ok": true,
+        "summary": "Spatial space: room-design",
+        "data": {
+          "kind": "space",
+          "design": {
+            "id": "room-design",
+            "name": "Compiler room",
+            "revision": 1,
+            "tags": [],
+            "provenance": {
+              "origin": "user"
+            },
+            "tilesetId": "easyrpg_chipset_interior",
+            "shape": "rect",
+            "width": 16,
+            "height": 12,
+            "floor": "wood",
+            "wall": "cream",
+            "objectSlots": [
+              {
+                "id": "beds",
+                "objectDesignId": "bed-design",
+                "quantity": 1,
+                "required": true,
+                "placement": {
+                  "mode": "auto"
+                }
+              },
+              {
+                "id": "hearth",
+                "objectDesignId": "hearth-design",
+                "quantity": 1,
+                "required": true,
+                "placement": {
+                  "mode": "fixed",
+                  "x": 1,
+                  "y": 4
+                }
+              },
+              {
+                "id": "stairs",
+                "objectDesignId": "stair-design",
+                "quantity": 1,
+                "required": true,
+                "placement": {
+                  "mode": "fixed",
+                  "x": 8,
+                  "y": 11
+                }
+              }
+            ],
+            "ports": [
+              {
+                "x": 8,
+                "y": 11,
+                "id": "entry",
+                "name": "Entry"
+              }
+            ],
+            "environment": "interior",
+            "role": "entrance"
+          },
+          "resolved": {
+            "snapshot": {
+              "root": {
+                "kind": "space",
+                "id": "room-design",
+                "revision": 1
+              },
+              "library": {
+                "objects": {
+                  "bed-design": {
+                    "id": "bed-design",
+                    "name": "bed-design",
+                    "revision": 1,
+                    "tags": [],
+                    "provenance": {
+                      "origin": "user"
+                    },
+                    "graphic": {
+                      "tilesetId": "easyrpg_chipset_interior",
+                      "kitId": "bed_v"
+                    },
+                    "anchors": [],
+                    "chips": [
+                      "event"
+                    ]
+                  },
+                  "hearth-design": {
+                    "id": "hearth-design",
+                    "name": "hearth-design",
+                    "revision": 1,
+                    "tags": [],
+                    "provenance": {
+                      "origin": "user"
+                    },
+                    "graphic": {
+                      "tilesetId": "easyrpg_chipset_interior",
+                      "kitId": "fixture-asymmetric"
+                    },
+                    "anchors": [],
+                    "chips": [
+                      "event"
+                    ]
+                  },
+                  "stair-design": {
+                    "id": "stair-design",
+                    "name": "stair-design",
+                    "revision": 1,
+                    "tags": [],
+                    "provenance": {
+                      "origin": "user"
+                    },
+                    "graphic": {
+                      "tilesetId": "easyrpg_chipset_interior",
+                      "kitId": "stairs_down"
+                    },
+                    "anchors": [
+                      {
+                        "x": 0,
+                        "y": 0,
+                        "id": "landing",
+                        "name": "Landing"
+                      }
+                    ],
+                    "chips": [
+                      "pass"
+                    ]
+                  }
+                },
+                "spaces": {
+                  "room-design": {
+                    "id": "room-design",
+                    "name": "Compiler room",
+                    "revision": 1,
+                    "tags": [],
+                    "provenance": {
+                      "origin": "user"
+                    },
+                    "tilesetId": "easyrpg_chipset_interior",
+                    "shape": "rect",
+                    "width": 16,
+                    "height": 12,
+                    "floor": "wood",
+                    "wall": "cream",
+                    "objectSlots": [
+                      {
+                        "id": "beds",
+                        "objectDesignId": "bed-design",
+                        "quantity": 1,
+                        "required": true,
+                        "placement": {
+                          "mode": "auto"
+                        }
+                      },
+                      {
+                        "id": "hearth",
+                        "objectDesignId": "hearth-design",
+                        "quantity": 1,
+                        "required": true,
+                        "placement": {
+                          "mode": "fixed",
+                          "x": 1,
+                          "y": 4
+                        }
+                      },
+                      {
+                        "id": "stairs",
+                        "objectDesignId": "stair-design",
+                        "quantity": 1,
+                        "required": true,
+                        "placement": {
+                          "mode": "fixed",
+                          "x": 8,
+                          "y": 11
+                        }
+                      }
+                    ],
+                    "ports": [
+                      {
+                        "x": 8,
+                        "y": 11,
+                        "id": "entry",
+                        "name": "Entry"
+                      }
+                    ],
+                    "environment": "interior",
+                    "role": "entrance"
+                  }
+                },
+                "places": {},
+                "regions": {},
+                "worlds": {}
+              },
+              "kitCells": {
+                "bed-design": {
+                  "tilesetId": "easyrpg_chipset_interior",
+                  "kitId": "bed_v",
+                  "width": 1,
+                  "height": 2,
+                  "cells": [
+                    {
+                      "x": 0,
+                      "y": 0,
+                      "layer": "upper",
+                      "tile": 324
+                    },
+                    {
+                      "x": 0,
+                      "y": 1,
+                      "layer": "upper",
+                      "tile": 354
+                    }
+                  ]
+                },
+                "hearth-design": {
+                  "tilesetId": "easyrpg_chipset_interior",
+                  "kitId": "fixture-asymmetric",
+                  "width": 3,
+                  "height": 3,
+                  "cells": [
+                    {
+                      "x": 0,
+                      "y": 0,
+                      "layer": "lower",
+                      "tile": 402
+                    },
+                    {
+                      "x": 1,
+                      "y": 0,
+                      "layer": "lower",
+                      "tile": 403
+                    },
+                    {
+                      "x": 2,
+                      "y": 0,
+                      "layer": "lower",
+                      "tile": 404
+                    },
+                    {
+                      "x": 0,
+                      "y": 1,
+                      "layer": "lower",
+                      "tile": 432
+                    },
+                    {
+                      "x": 1,
+                      "y": 1,
+                      "layer": "upper",
+                      "tile": 433
+                    },
+                    {
+                      "x": 2,
+                      "y": 1,
+                      "layer": "lower",
+                      "tile": 434
+                    },
+                    {
+                      "x": 0,
+                      "y": 2,
+                      "layer": "upper",
+                      "tile": 462
+                    },
+                    {
+                      "x": 1,
+                      "y": 2,
+                      "layer": "upper",
+                      "tile": 124
+                    },
+                    {
+                      "x": 2,
+                      "y": 2,
+                      "layer": "upper",
+                      "tile": 464
+                    }
+                  ]
+                },
+                "stair-design": {
+                  "tilesetId": "easyrpg_chipset_interior",
+                  "kitId": "stairs_down",
+                  "width": 1,
+                  "height": 1,
+                  "cells": [
+                    {
+                      "x": 0,
+                      "y": 0,
+                      "layer": "upper",
+                      "tile": 474
+                    }
+                  ]
+                }
+              },
+              "ports": []
+            },
+            "occurrenceCount": 4,
+            "snapshotEntries": 7,
+            "frozenCellCount": 24
+          }
+        }
+      }
+    },
+    {
+      "name": "upsert_spatial_design",
+      "args": {
+        "kind": "space",
+        "expectedRevision": 1,
+        "space": {
+          "id": "room-design",
+          "name": "Compiler room",
+          "revision": 2,
+          "tags": [],
+          "provenance": {
+            "origin": "user"
+          },
+          "tilesetId": "easyrpg_chipset_interior",
+          "shape": "rect",
+          "width": 16,
+          "height": 12,
+          "floor": "wood",
+          "wall": "cream",
+          "objectSlots": [
+            {
+              "id": "beds",
+              "objectDesignId": "bed-design",
+              "quantity": 2,
+              "required": true,
+              "placement": {
+                "mode": "auto"
+              }
+            },
+            {
+              "id": "hearth",
+              "objectDesignId": "hearth-design",
+              "quantity": 1,
+              "required": true,
+              "placement": {
+                "mode": "fixed",
+                "x": 1,
+                "y": 4
+              }
+            },
+            {
+              "id": "stairs",
+              "objectDesignId": "stair-design",
+              "quantity": 1,
+              "required": true,
+              "placement": {
+                "mode": "fixed",
+                "x": 8,
+                "y": 11
+              }
+            }
+          ],
+          "ports": [
+            {
+              "x": 8,
+              "y": 11,
+              "id": "entry",
+              "name": "Entry"
+            }
+          ],
+          "environment": "interior",
+          "role": "entrance"
+        }
+      },
+      "result": {
+        "ok": true,
+        "summary": "Spatial space room-design revision 2",
+        "diff": {
+          "tilesChanged": 0,
+          "mapPropertiesChanged": 0,
+          "audioDescriptionsChanged": 0,
+          "monsterMetadataChanged": 0,
+          "eventsAdded": 0,
+          "eventsModified": 0,
+          "eventsRemoved": 0,
+          "mapsAdded": 0,
+          "mapsRemoved": 0,
+          "dbRecordsChanged": 1,
+          "tilesetsChanged": 0,
+          "switchesAdded": 0,
+          "variablesAdded": 0,
+          "worldEntitiesAdded": 0,
+          "worldEntitiesModified": 0,
+          "palettePresetsAdded": 0,
+          "palettePresetsModified": 0,
+          "endingsChanged": 0,
+          "sessionChanged": false,
+          "systemChanged": false,
+          "warnings": []
+        },
+        "data": {
+          "kind": "space",
+          "design": {
+            "id": "room-design",
+            "name": "Compiler room",
+            "revision": 2,
+            "tags": [],
+            "provenance": {
+              "origin": "user"
+            },
+            "tilesetId": "easyrpg_chipset_interior",
+            "shape": "rect",
+            "width": 16,
+            "height": 12,
+            "floor": "wood",
+            "wall": "cream",
+            "objectSlots": [
+              {
+                "id": "beds",
+                "objectDesignId": "bed-design",
+                "quantity": 2,
+                "required": true,
+                "placement": {
+                  "mode": "auto"
+                }
+              },
+              {
+                "id": "hearth",
+                "objectDesignId": "hearth-design",
+                "quantity": 1,
+                "required": true,
+                "placement": {
+                  "mode": "fixed",
+                  "x": 1,
+                  "y": 4
+                }
+              },
+              {
+                "id": "stairs",
+                "objectDesignId": "stair-design",
+                "quantity": 1,
+                "required": true,
+                "placement": {
+                  "mode": "fixed",
+                  "x": 8,
+                  "y": 11
+                }
+              }
+            ],
+            "ports": [
+              {
+                "x": 8,
+                "y": 11,
+                "id": "entry",
+                "name": "Entry"
+              }
+            ],
+            "environment": "interior",
+            "role": "entrance"
+          }
+        }
+      }
+    },
+    {
+      "name": "preview_spatial_build",
+      "args": {
+        "kind": "space",
+        "id": "room-design",
+        "occurrenceId": "transcript-room",
+        "seed": 23
+      },
+      "result": {
+        "ok": true,
+        "summary": "Preview space room-design: 1 maps",
+        "data": {
+          "previewId": "e75685ef-1da9-468a-9018-bf7bae16a957",
+          "impact": {
+            "mapIds": [
+              "spatial:transcript-room"
+            ],
+            "occurrenceIds": [
+              "transcript-room",
+              "child:15:transcript-room4:beds:0",
+              "child:15:transcript-room4:beds:1",
+              "child:15:transcript-room6:hearth:0",
+              "child:15:transcript-room6:stairs:0"
+            ],
+            "events": []
+          },
+          "source": {
+            "kind": "space",
+            "id": "room-design",
+            "revision": 2
+          }
+        }
+      }
+    },
+    {
+      "name": "apply_spatial_build",
+      "args": {
+        "previewId": "e75685ef-1da9-468a-9018-bf7bae16a957"
+      },
+      "result": {
+        "ok": true,
+        "summary": "Spatial build: 1 maps",
+        "diff": {
+          "tilesChanged": 0,
+          "mapPropertiesChanged": 1,
+          "audioDescriptionsChanged": 0,
+          "monsterMetadataChanged": 0,
+          "eventsAdded": 3,
+          "eventsModified": 0,
+          "eventsRemoved": 0,
+          "mapsAdded": 1,
+          "mapsRemoved": 0,
+          "dbRecordsChanged": 1,
+          "tilesetsChanged": 0,
+          "switchesAdded": 0,
+          "variablesAdded": 0,
+          "worldEntitiesAdded": 0,
+          "worldEntitiesModified": 0,
+          "palettePresetsAdded": 0,
+          "palettePresetsModified": 0,
+          "endingsChanged": 0,
+          "sessionChanged": false,
+          "systemChanged": false,
+          "warnings": []
+        },
+        "data": {
+          "impact": {
+            "mapIds": [
+              "spatial:transcript-room"
+            ],
+            "occurrenceIds": [
+              "transcript-room",
+              "child:15:transcript-room4:beds:0",
+              "child:15:transcript-room4:beds:1",
+              "child:15:transcript-room6:hearth:0",
+              "child:15:transcript-room6:stairs:0"
+            ],
+            "events": []
+          }
+        }
+      }
+    },
+    {
+      "name": "applyProposedProject",
+      "args": {
+        "source": "agent"
+      },
+      "result": {
+        "ok": true,
+        "commit": {
+          "commitId": null,
+          "persisted": false,
+          "reviewStatus": "approved",
+          "summary": "Canonical two-bed room",
+          "toolNames": [
+            "list_spatial_designs",
+            "get_spatial_design",
+            "upsert_spatial_design",
+            "preview_spatial_build",
+            "apply_spatial_build"
+          ],
+          "recordedAt": "2026-09-08T17:18:10.815Z"
+        }
+      }
+    },
+    {
+      "name": "apply_spatial_build",
+      "args": {
+        "previewId": "forged"
+      },
+      "result": {
+        "ok": false,
+        "summary": "'apply_spatial_build' 실행 실패: Preview was not issued for this draft",
+        "issues": [
+          {
+            "severity": "error",
+            "code": "spatial-foreign-preview",
+            "message": "Preview was not issued for this draft"
+          }
+        ]
+      }
+    }
+  ],
+  "beds": [
+    {
+      "id": "child:15:transcript-room4:beds:0",
+      "source": {
+        "kind": "object",
+        "id": "bed-design",
+        "revision": 1
+      },
+      "bindings": [
+        {
+          "kind": "projection",
+          "mapId": "spatial:transcript-room",
+          "rect": {
+            "x": 10,
+            "y": 10,
+            "width": 1,
+            "height": 2
+          },
+          "ports": []
+        }
+      ]
+    },
+    {
+      "id": "child:15:transcript-room4:beds:1",
+      "source": {
+        "kind": "object",
+        "id": "bed-design",
+        "revision": 1
+      },
+      "bindings": [
+        {
+          "kind": "projection",
+          "mapId": "spatial:transcript-room",
+          "rect": {
+            "x": 8,
+            "y": 9,
+            "width": 1,
+            "height": 2
+          },
+          "ports": []
+        }
+      ]
+    }
+  ],
+  "sourceLookupSucceeded": true,
+  "undoRedoExact": true,
+  "remoteWrites": 0,
+  "visualAcceptance": "parent-owned",
+  "realProviderQ6": "not-run"
+}

@@ -1,0 +1,3 @@
+04246b219966c2fea7ed0f76b2215cf60d4c727b44d45730ab7a39e16ecd9c93  scripts/qa/spatial-place-contract.mts
+2d3cd9411c1a9d29d785169e0b4282b0b239a8dada0cec7369ef4c2a054996cf  test/support/spatialPlaceCompilerFixture.ts
+84f4b9c380c53bc4918eeaced7b56e1e02c9058b28f929bdec7154715b3c634e  test/support/spatialPlaceOutputContract.ts

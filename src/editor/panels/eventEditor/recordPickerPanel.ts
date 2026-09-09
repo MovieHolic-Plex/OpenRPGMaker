@@ -37,6 +37,8 @@ export type RecordPickerPanelRequest = {
   readonly kind: RecordKind;
   readonly currentId: string;
   readonly onSelect: (id: string) => void;
+  /** Unavailable records remain visible, with this reason, but cannot be selected. */
+  readonly disabledReason?: (id: string) => string | undefined;
 };
 
 type PanelState = {
@@ -81,7 +83,10 @@ function renderPanel(options: {
   const { request } = options;
   const state: PanelState = {
     query: "",
-    selectedId: resolveInitialId(recordsOf(request.kind), request.currentId),
+    selectedId: resolveInitialId(
+      recordsOf(request.kind).filter(record => !request.disabledReason?.(record.id)),
+      request.currentId,
+    ),
   };
 
   const search = el("input", {
@@ -114,7 +119,7 @@ function renderPanel(options: {
   };
 
   const commit = (): void => {
-    if (!state.selectedId) return;
+    if (!state.selectedId || request.disabledReason?.(state.selectedId)) return;
     request.onSelect(state.selectedId);
     options.close();
   };
@@ -230,7 +235,7 @@ function renderList(
         dataset: { testid: "event-record-picker-no-result" },
       }),
     );
-    updateConfirm(hosts.confirm, state);
+    updateConfirm(hosts.confirm, state, request);
     return;
   }
 
@@ -247,6 +252,7 @@ function renderList(
         kind: request.kind,
         selected: entry.record.id === state.selectedId,
         usage: hosts.usageOf(entry.record.id),
+        disabledReason: request.disabledReason?.(entry.record.id),
         onSelect: () => {
           state.selectedId = entry.record.id;
           renderList(hosts, request, state, commit);
@@ -278,7 +284,7 @@ function renderList(
       }),
     );
   }
-  updateConfirm(hosts.confirm, state);
+  updateConfirm(hosts.confirm, state, request);
 }
 
 function sectionHeading(label: string, count: number, slug: string): HTMLElement {
@@ -292,8 +298,8 @@ function sectionHeading(label: string, count: number, slug: string): HTMLElement
   });
 }
 
-function updateConfirm(confirm: HTMLButtonElement, state: PanelState): void {
-  confirm.disabled = !state.selectedId;
+function updateConfirm(confirm: HTMLButtonElement, state: PanelState, request: RecordPickerPanelRequest): void {
+  confirm.disabled = !state.selectedId || Boolean(request.disabledReason?.(state.selectedId));
 }
 
 type VisibleEntry = { readonly index: number; readonly record: RecordEntry };
@@ -319,7 +325,8 @@ function moveSelection(
   commit: () => void,
   delta: number,
 ): void {
-  const matches = visibleEntries(recordsOf(request.kind), state.query).slice(0, RENDER_LIMIT);
+  const matches = visibleEntries(recordsOf(request.kind), state.query).slice(0, RENDER_LIMIT)
+    .filter(entry => !request.disabledReason?.(entry.record.id));
   if (matches.length === 0) return;
   const current = matches.findIndex((entry) => entry.record.id === state.selectedId);
   const nextIndex = current < 0
@@ -343,6 +350,7 @@ function recordRow(options: {
   readonly kind: RecordKind;
   readonly selected: boolean;
   readonly usage: number;
+  readonly disabledReason?: string;
   readonly onSelect: () => void;
   readonly onConfirm: () => void;
   readonly onRename: (name: string) => void;
@@ -355,6 +363,7 @@ function recordRow(options: {
   const meta: string[] = [];
   if (subtitle) meta.push(subtitle);
   meta.push(options.usage > 0 ? `쓰는 곳 ${options.usage}곳` : "아직 안 쓰임");
+  if (options.disabledReason) meta.push(options.disabledReason);
 
   const row = el("button", {
     class: `event-record-picker-row${options.selected ? " selected" : ""}`,
@@ -362,7 +371,8 @@ function recordRow(options: {
       type: "button",
       role: "option",
       "aria-selected": options.selected ? "true" : "false",
-      title: name || "이름 없음",
+      title: options.disabledReason ?? (name || "이름 없음"),
+      ...(options.disabledReason ? { disabled: "" } : {}),
     },
     dataset: { testid: `event-record-picker-row-${entry.index + 1}` },
     children: [

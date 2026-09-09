@@ -1,0 +1,4 @@
+monitor_id=mon_WERPY3HA7DXJXKSE
+{"type":"summary","id":"authoring-3835698","description":"task11 scoped validation","summary":"watcher timed_out"}
+
+monitor_exit={"backend":"pipe-fallback","exitCode":null,"signal":"SIGTERM","cancelled":true,"timedOut":true}

@@ -28,6 +28,19 @@
 .ai-team-board.is-running { border-color: var(--accent-border); }
 .ai-team-board.is-done { border-color: color-mix(in srgb, var(--success) 45%, transparent); }
 .ai-team-board.is-error { border-color: color-mix(in srgb, var(--danger) 45%, transparent); }
+.ai-team-board.is-review { border-color: color-mix(in srgb, var(--warning) 55%, transparent); }
+.ai-team-board.is-review .ai-team-phase { background: var(--warning-muted); color: var(--warning); }
+
+.ai-team-review-card {
+  background: var(--warning-muted);
+  border-radius: 10px;
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+}
+.ai-team-review-title { color: var(--text-1); font-size: calc(12.5px * var(--ai-font-scale, 1)); margin: 0; }
+.ai-team-review-chips { padding: 0; }
+.ai-team-review-actions { display: flex; gap: 6px; }
 
 .ai-team-head {
   align-items: center;

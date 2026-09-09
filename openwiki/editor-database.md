@@ -1,3 +1,8 @@
+## Placed-place child proposal adapter (2026-09-08)
+
+Association-based child lifecycle, frozen actual read models, clone/deletion data and
+the pending UI integration boundary: [placed-place-edits.md](placed-place-edits.md).
+
 ## Monster resource metadata worksheet (2026-09-07)
 
 Database > 전투 몬스터 > 몬스터 소재 uses the full resource catalog independently

@@ -25,11 +25,19 @@ vi.mock("@/project/projectCommitLog", () => ({
 describe("store preserves open event drafts across remote autosave", () => {
   beforeEach(() => {
     vi.resetModules();
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"] });
+    // The writer is mocked here; connection configuration must not come from a developer's environment.
+    vi.stubEnv("VITE_SUPABASE_URL", "http://127.0.0.1");
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "local-draft-fixture-only");
+    vi.stubEnv("VITE_SUPABASE_USE_PROXY", "0");
     _resetEventDraftVaultForTest();
   });
 
   afterEach(() => {
     _resetEventDraftVaultForTest();
+    vi.clearAllTimers();
+    vi.useRealTimers();
+    vi.unstubAllEnvs();
     vi.clearAllMocks();
   });
 

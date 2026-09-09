@@ -6,6 +6,7 @@ import { isRelationshipState, RELATIONSHIP_STATES, relationshipStateName } from 
 import { recordUsageHint } from "./recordUsageHint";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { segmentedSelect, type SegmentOption } from "./recordPicker";
+import { openRecordPickerPanel } from "./recordPickerDialog";
 import { choicesBody } from "./commandBodyChoices";
 import { inputNumberBody } from "./commandBodyInputNumber";
 import { labelBody } from "./commandBodyLabels";
@@ -328,16 +329,16 @@ type TextEasyTool = {
   readonly glyph: string;
   readonly label: string;
   readonly hint: string;
-  readonly run: (body: HTMLTextAreaElement) => void;
+  readonly run: (body: HTMLTextAreaElement, commit: () => void) => void;
 };
 
 function textEasyTools(body: HTMLTextAreaElement, apply: () => void): HTMLElement {
   const tools: readonly TextEasyTool[] = [
-    { key: "new-line", glyph: "↵", label: "줄 바꿈", hint: "커서 위치에서 다음 줄로 넘깁니다.", run: (target) => insertAtCursor(target, "\n") },
-    { key: "hero-name", glyph: "人", label: "주인공 이름", hint: "첫 번째 주인공 이름을 게임 값으로 넣습니다.", run: (target) => insertAtCursor(target, "\\n[1]") },
-    { key: "variable", glyph: "#", label: "변수 값", hint: "첫 번째 변수 값을 게임 값으로 넣습니다.", run: (target) => insertAtCursor(target, "\\v[1]") },
-    { key: "emphasis", glyph: "A", label: "강조", hint: "선택한 문장을 강조 색으로 표시합니다.", run: (target) => wrapSelection(target, "\\c[2]", "\\c[0]") },
-    { key: "pause", glyph: "Ⅱ", label: "잠시 멈춤", hint: "이 위치에서 플레이어 입력을 기다립니다.", run: (target) => insertAtCursor(target, "\\!") },
+    { key: "new-line", glyph: "↵", label: "줄 바꿈", hint: "커서 위치에서 다음 줄로 넘깁니다.", run: (target, commit) => { insertAtCursor(target, "\n"); commit(); } },
+    { key: "hero-name", glyph: "人", label: "주인공 이름", hint: "문장에 넣을 주인공을 고릅니다.", run: (target, commit) => selectTextRecord(target, "actor", commit) },
+    { key: "variable", glyph: "#", label: "변수 값", hint: "문장에 넣을 변수를 고릅니다.", run: (target, commit) => selectTextRecord(target, "variable", commit) },
+    { key: "emphasis", glyph: "A", label: "강조", hint: "선택한 문장을 강조 색으로 표시합니다.", run: (target, commit) => { wrapSelection(target, "\\c[2]", "\\c[0]"); commit(); } },
+    { key: "pause", glyph: "Ⅱ", label: "잠시 멈춤", hint: "이 위치에서 플레이어 입력을 기다립니다.", run: (target, commit) => { insertAtCursor(target, "\\!"); commit(); } },
   ];
   return el("div", {
     class: "event-command-text-easy-tools",
@@ -357,11 +358,10 @@ function textEasyTools(body: HTMLTextAreaElement, apply: () => void): HTMLElemen
           attrs: { type: "button", title: tool.hint, "aria-label": tool.label },
           dataset: { testid: `event-command-text-tool-${tool.key}` },
           on: {
-            click: () => {
-              tool.run(body);
+            click: () => tool.run(body, () => {
               apply();
               body.focus();
-            },
+            }),
           },
           children: [
             el("span", { class: "event-command-text-tool-glyph", text: tool.glyph, attrs: { "aria-hidden": "true" } }),
@@ -370,6 +370,40 @@ function textEasyTools(body: HTMLTextAreaElement, apply: () => void): HTMLElemen
         })),
       }),
     ],
+  });
+}
+
+function textVariableSlot(id: string): number | undefined {
+  const index = Number(id.replace(/^(?:var_0*|v)/, ""));
+  if (!Number.isInteger(index)) return undefined;
+  const variables = store.getCurrent().session.variables;
+  const resolvedId = [`var_${String(index).padStart(4, "0")}`, String(index), `v${index}`]
+    .find(candidate => variables[candidate] !== undefined);
+  return resolvedId === id ? index : undefined;
+}
+
+function selectTextRecord(body: HTMLTextAreaElement, kind: "actor" | "variable", commit: () => void): void {
+  const start = body.selectionStart;
+  const end = body.selectionEnd;
+  // The existing subdialog restores this textarea, including on Cancel.
+  body.focus({ preventScroll: true });
+  openRecordPickerPanel({
+    kind,
+    currentId: "",
+    ...(kind === "variable" ? {
+      disabledReason: (id: string) => textVariableSlot(id) === undefined
+        ? "이 변수는 현재 문장 번호로 참조할 수 없습니다."
+        : undefined,
+    } : {}),
+    onSelect: id => {
+      const index = kind === "actor"
+        ? store.getCurrent().database.actors.findIndex(actor => actor.id === id) + 1
+        : textVariableSlot(id);
+      if (index === undefined || (kind === "actor" && index === 0)) return;
+      body.setSelectionRange(start, end);
+      insertAtCursor(body, `\\${kind === "actor" ? "n" : "v"}[${index}]`);
+      commit();
+    },
   });
 }
 

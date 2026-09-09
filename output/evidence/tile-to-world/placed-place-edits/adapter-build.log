@@ -1,0 +1,12 @@
+monitor_id=mon_1GZCRTCC6DBZB4H3
+{"type":"line","id":"authoring-4063811","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4063811","description":"task11 scoped validation","line":"  ../../../../../../../dev/null  1020.8kb"}
+{"type":"line","id":"authoring-4063811","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4063811","description":"task11 scoped validation","line":"⚡ Done in 43ms"}
+{"type":"summary","id":"authoring-4063811","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+  ../../../../../../../dev/null  1020.8kb
+
+⚡ Done in 43ms
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}
