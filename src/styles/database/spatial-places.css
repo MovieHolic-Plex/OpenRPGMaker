@@ -1,10 +1,13 @@
 /* Nested place floors — Database Studio tokens only. */
-.database-modal-body .spatial-places-canvas {
+.database-modal-body .spatial-canvas.spatial-places-canvas {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto auto minmax(0, 1fr) auto auto;
   gap: var(--space-2, 8px);
   padding: var(--space-2, 8px);
   min-block-size: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 .database-modal-body .spatial-place-floors,
@@ -16,8 +19,8 @@
   flex-wrap: wrap;
   gap: 6px;
   align-items: center;
-  position: relative;
-  z-index: 2;
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 .database-modal-body .spatial-place-floors {
@@ -25,18 +28,31 @@
   flex-wrap: nowrap;
 }
 
+.database-modal-body .spatial-places-viewport {
+  min-width: 0;
+  min-height: 0;
+  min-block-size: 0;
+  overflow: hidden;
+  display: grid;
+}
+
 .database-modal-body .spatial-places-board {
   position: relative;
-  min-width: 192px;
-  min-height: 144px;
+  min-width: 0;
+  min-height: 0;
   min-block-size: 0;
   overflow: auto;
+  overscroll-behavior: contain;
   outline: none;
   background:
     linear-gradient(180deg, rgba(255, 252, 245, 0.55), transparent 42%),
     var(--db-studio-well, #EEF2F6);
   box-shadow: var(--db-studio-shadow, 0 1px 3px rgba(15, 23, 42, 0.08));
   border-radius: 8px;
+}
+
+.database-modal-body .spatial-places-world {
+  position: relative;
 }
 
 .database-modal-body .spatial-places-board:focus-visible {

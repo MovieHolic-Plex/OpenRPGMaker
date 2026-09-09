@@ -36,6 +36,20 @@ function typingTarget(event: Event): boolean {
   return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement;
 }
 
+function floorIn(levels: readonly number[]): number | null {
+  const selected = placeChromeState.selectedFloor;
+  if (selected === null || !levels.includes(selected)) return null;
+  return selected;
+}
+
+function revealBoard(board: HTMLElement, camera: SpatialAuthoringSession["camera"]): void {
+  board.scrollLeft = Math.max(0, -camera.x);
+  board.scrollTop = Math.max(0, -camera.y);
+  const selected = board.querySelector<HTMLElement>(".spatial-place-child.is-selected");
+  const fallback = board.querySelectorAll<HTMLElement>(".spatial-place-child");
+  (selected ?? fallback.item(fallback.length - 1))?.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+
 export function renderSpatialPlacesCanvas(
   session: SpatialAuthoringSession,
   card: SpatialGalleryCard | undefined,
@@ -47,51 +61,73 @@ export function renderSpatialPlacesCanvas(
   const placed = session.mode === "instances" && target?.occurrenceId
     ? placedPlaceChildren(project, target.occurrenceId)
     : null;
+  const levels = placed
+    ? [...new Set(placed.map((child) => child.level))]
+    : place ? [...new Set(place.children.map((child) => child.level))] : [];
+  placeChromeState.selectedFloor = floorIn(levels);
+  const floor = placeChromeState.selectedFloor;
   const visiblePlaced = placed
-    ? placed.filter((child) => placeChromeState.selectedFloor === null || child.level === placeChromeState.selectedFloor)
+    ? placed.filter((child) => floor === null || child.level === floor)
     : [];
-  const visibleSource = place ? childrenOnFloor(place, placeChromeState.selectedFloor) : [];
+  const visibleSource = place ? childrenOnFloor(place, floor) : [];
   const board = el("div", {
     class: "spatial-places-board",
     attrs: { tabindex: "0", "aria-label": "장소 배치" },
     dataset: { testid: "spatial-places-board" },
+  });
+  const world = el("div", {
+    class: "spatial-places-world",
+    dataset: { testid: "spatial-places-world" },
   });
   if (place) {
     const preview = previewPlaceRasters({
       project,
       place,
       ...(target?.occurrenceId ? { occurrenceId: target.occurrenceId } : {}),
-      floor: placeChromeState.selectedFloor,
+      floor,
       scale: PLACE_TILE_PX / 16,
     });
-    board.style.width = `${Math.max(preview.width, 8) * PLACE_TILE_PX}px`;
-    board.style.height = `${Math.max(preview.height, 6) * PLACE_TILE_PX}px`;
-    for (const stamp of preview.stamps) board.append(stamp.canvas);
+    const kids = placed ? visiblePlaced : visibleSource;
+    world.style.width = `${Math.max(preview.width, 8, ...kids.map((child) => child.x + 3)) * PLACE_TILE_PX}px`;
+    world.style.height = `${Math.max(preview.height, 6, ...kids.map((child) => child.y + 3)) * PLACE_TILE_PX}px`;
+    for (const stamp of preview.stamps) world.append(stamp.canvas);
     if (preview.error) {
-      board.append(el("p", {
+      world.append(el("p", {
         class: "spatial-place-preview-error",
         text: preview.error,
         dataset: { testid: "spatial-place-preview-error" },
       }));
     }
     if (placed && target?.occurrenceId) {
-      board.append(placedLinkLayer(project, target.occurrenceId, ordinaryPlacedConnections(project, target.occurrenceId), visiblePlaced, rerender));
+      world.append(placedLinkLayer(project, target.occurrenceId, ordinaryPlacedConnections(project, target.occurrenceId), visiblePlaced, rerender));
       for (const child of visiblePlaced) {
-        board.append(placedMemberMarker(child));
-        board.append(placedChildToken(child, rerender));
+        world.append(placedMemberMarker(child));
+        world.append(placedChildToken(child, rerender));
       }
     } else {
-      board.append(sourceLinkLayer(place, new Set(visibleSource.map((child) => child.id)), rerender));
-      for (const child of visibleSource) board.append(sourceChildToken(place, child.id, rerender));
+      world.append(sourceLinkLayer(place, new Set(visibleSource.map((child) => child.id)), rerender));
+      for (const child of visibleSource) world.append(sourceChildToken(place, child.id, rerender));
     }
   }
+  board.append(world);
+  const viewport = el("div", {
+    class: "spatial-places-viewport",
+    dataset: { testid: "spatial-places-viewport" },
+    children: [board],
+  });
+  queueMicrotask(() => revealBoard(board, session.camera));
   board.addEventListener("pointermove", (event) => {
-    if (!placeChromeState.gesture || !(event instanceof PointerEvent)) return;
-    if (Math.hypot(event.clientX - placeChromeState.gesture.originClientX, event.clientY - placeChromeState.gesture.originClientY) < 4) return;
+    const gesture = placeChromeState.gesture;
+    if (!gesture || !(event instanceof PointerEvent)) return;
+    if (Math.hypot(event.clientX - gesture.originClientX, event.clientY - gesture.originClientY) < 4) return;
     const tile = placeTileOf(event, board);
-    placeChromeState.gesture.liveX = tile.x;
-    placeChromeState.gesture.liveY = tile.y;
-    rerender();
+    gesture.liveX = tile.x;
+    gesture.liveY = tile.y;
+    const token = board.querySelector<HTMLElement>(`[data-child-id="${gesture.childId}"]`);
+    if (token) {
+      token.style.left = `${tile.x * PLACE_TILE_PX}px`;
+      token.style.top = `${tile.y * PLACE_TILE_PX}px`;
+    }
   });
   board.addEventListener("pointerup", (event) => {
     const gesture = placeChromeState.gesture;
@@ -154,7 +190,7 @@ export function renderSpatialPlacesCanvas(
     children: [
       place && target ? renderPlaceFloorStrip(place, target, session, rerender) : el("div"),
       place && target ? renderPlaceChildPicker(place, target, session, rerender) : el("div"),
-      board,
+      viewport,
       place && target ? renderPlaceLinkActions(place, target, session, rerender) : el("div"),
       place && target ? renderPlaceExterior(place, target, rerender) : el("div"),
     ],

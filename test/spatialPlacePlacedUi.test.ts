@@ -101,6 +101,33 @@ it("renders and selects actual child occurrence ids rather than frozen slot ids"
   host.remove();
 });
 
+it("sizes the raster world inside a board scrollport instead of stretching the board", () => {
+  const { host } = mountVillage();
+  const board = host.querySelector<HTMLElement>("[data-testid='spatial-places-board']");
+  const world = host.querySelector<HTMLElement>("[data-testid='spatial-places-world']");
+  const viewport = host.querySelector("[data-testid='spatial-places-viewport']");
+  const actions = host.querySelector("[data-testid='spatial-place-link-actions']");
+  expect(board).not.toBeNull();
+  expect(world).not.toBeNull();
+  expect(viewport?.contains(board)).toBe(true);
+  expect(board?.style.width).toBe("");
+  expect(world?.style.width).toMatch(/px$/);
+  expect(board?.contains(world)).toBe(true);
+  expect(actions).not.toBeNull();
+  expect(board?.contains(actions)).toBe(false);
+  expect(viewport?.contains(actions)).toBe(false);
+  host.remove();
+});
+
+it("keeps village tokens visible when a leftover nested floor filter is still selected", () => {
+  const innId = placeChild(store.getCurrent(), placeRoot, "inn");
+  placeChromeState.selectedFloor = 2;
+  const { host } = mountVillage();
+  expect(host.querySelector(`[data-testid='spatial-place-child-${innId}']`)).not.toBeNull();
+  expect(placeChromeState.selectedFloor).toBeNull();
+  host.remove();
+});
+
 it("instantiates a picker add through the adapter without adopting the live store", () => {
   const before = structuredClone(store.getCurrent());
   const innSource = own(fixtureDocument(before).occurrences, placeChild(before, placeRoot, "inn")).source.id;
@@ -115,6 +142,9 @@ it("instantiates a picker add through the adapter without adopting the live stor
     .filter((child) => child.source.id === innSource);
   expect(added).toHaveLength(2);
   expect(new Set(added.map((child) => child.occurrenceId)).size).toBe(2);
+  for (const child of added) {
+    expect(host.querySelector(`[data-testid='spatial-place-child-${child.occurrenceId}']`)).not.toBeNull();
+  }
   host.remove();
 });
 

@@ -42,11 +42,13 @@ export function sourceChildToken(place: PlaceDesign, childId: SpatialId, rerende
           originClientY: event instanceof PointerEvent ? event.clientY : 0,
           liveX: child.x, liveY: child.y,
         };
-        rerender();
       },
       pointerup: (event) => {
         const gesture = placeChromeState.gesture;
-        if (gesture && gesture.liveX === gesture.originX && gesture.liveY === gesture.originY) event.stopPropagation();
+        if (gesture && gesture.liveX === gesture.originX && gesture.liveY === gesture.originY) {
+          event.stopPropagation();
+          window.setTimeout(() => rerender(), 0);
+        }
       },
     },
   });
@@ -73,11 +75,13 @@ export function placedChildToken(child: PlacedPlaceChild, rerender: () => void):
           originClientY: event instanceof PointerEvent ? event.clientY : 0,
           liveX: child.x, liveY: child.y,
         };
-        rerender();
       },
       pointerup: (event) => {
         const gesture = placeChromeState.gesture;
-        if (gesture && gesture.liveX === gesture.originX && gesture.liveY === gesture.originY) event.stopPropagation();
+        if (gesture && gesture.liveX === gesture.originX && gesture.liveY === gesture.originY) {
+          event.stopPropagation();
+          window.setTimeout(() => rerender(), 0);
+        }
       },
     },
   });
