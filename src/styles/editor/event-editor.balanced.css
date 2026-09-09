@@ -10,7 +10,9 @@
   --balanced-header-height: 48px;
   --balanced-pages-height: 40px;
   --balanced-footer-height: 40px;
-  --balanced-settings-width: 228px;
+  /* --balanced-settings-width 는 아래 «Hierarchy zones» 블록이 268px 로 선언한다.
+     여기 있던 228px 는 같은 선택자의 뒤 선언에 덮여 한 번도 쓰이지 않았고,
+     레일 폭을 찾는 사람에게 228/268 중 어느 쪽인지 헷갈리게 만들었다. */
   --balanced-inspector-width: 340px;
 
   --bg-base: #F7F8F8;
@@ -408,20 +410,19 @@
 }
 
 /* Workbench */
+/* 트랙 목록은 이 파일의 «Hierarchy zones» 블록이 단독 소유한다(변수 기반).
+   여기 있던 `228px minmax(0,1fr) 340px !important` 와 `:not(.has-command-inspector)` 의
+   `228px minmax(0,1fr) !important` 는 둘 다 같은 선택자의 뒤 규칙에 덮여 사문이었다.
+   같은 파일 안에서 트랙을 두 번 못 박으면 다음 사람이 위쪽을 읽고 폭을 잘못 추론한다. */
 .event-editor .event-editor-workbench {
   --event-editor-settings-track: var(--balanced-settings-width);
   background: var(--bg-base);
   display: grid;
   gap: 0;
-  grid-template-columns: 228px minmax(0, 1fr) 340px !important;
   grid-template-rows: minmax(0, 1fr);
   height: 100%;
   min-height: 0;
   overflow: hidden;
-}
-
-.event-editor .event-editor-workbench:not(.has-command-inspector) {
-  grid-template-columns: 228px minmax(0, 1fr) !important;
 }
 
 /* 컬럼 배치는 이 파일이 소유하는 최종 트랙 목록(설정 | 목록 1fr | 인스펙터, 923~930행)과
@@ -430,7 +431,11 @@
    덮으면서 목록이 인스펙터 트랙(340px)에 앉고 1fr 트랙이 빈 채 남아 1440px에서 396px
    죽은 띠가 생겼다(실측: 설정 0~268, 목록 642~982). 리사이저는 자기 트랙 없이
    `grid-column: 1` + `justify-self: end` 로 설정 컬럼 경계에 얹히므로 트랙은 3개다.
-   단일 컬럼으로 접히는 720px 이하는 제외한다. */
+   720px 이하는 이 배치에서 제외한다 — 다만 «거기서 단일 컬럼으로 접힌다»는 전제는 사실이
+   아니다. 트랙 목록은 이 파일이 기본 레벨 `!important` 로 못 박으므로 좁은 폭에서도 3트랙이
+   유지되고, 그 폴드를 가진 은퇴 레이어(event-editor.modern/06 · windowing · mockup)는 전부
+   가려진다. 문서화된 최소 지원 뷰포트가 1024x768 이라 실사용 범위 밖이지만, 720px 이하를
+   지원하게 되는 날에는 폴드를 이 파일이 직접 선언해야 한다. */
 @media (min-width: 721px) {
   .event-editor .event-editor-workbench > .event-editor-settings-column {
     grid-column: 1;
@@ -476,7 +481,6 @@
   background: var(--bg-raised);
   display: flex;
   flex-direction: column;
-  gap: 16px;
   height: 100%;
   min-height: 0;
   overflow-x: hidden;
@@ -1379,13 +1383,9 @@ footer {
   }
 }
 
-/* Destructive delete leaves the commit cluster. */
-.event-editor-modal-footer .event-editor-footer-actions {
-  align-items: center;
-  display: flex;
-  gap: 8px;
-}
-
+/* Destructive delete leaves the commit cluster.
+   `.event-editor-footer-actions` 의 flex 배치는 아래쪽 규칙이 소유한다(justify-content 까지
+   같이 선언하는 곳). 여기 있던 같은 값의 사본은 뒤 규칙에 덮여 사문이었다. */
 .event-editor-modal-footer [data-testid="event-delete"] {
   margin-right: auto;
 }
@@ -2260,17 +2260,17 @@ footer {
   outline-offset: -2px;
 }
 
+/* align-items·display·gap 은 아래 «분류 칩» 공통 규칙(cmd-cat-icon 과 한 묶음)이 소유한다.
+   여기 있던 사본은 뒤 규칙에 덮여 사문이었고, gap 은 3px 로 적혀 있어 실제 값(6px)과
+   달라 더 헷갈렸다. */
 .event-editor .event-storyboard-card-cat {
-  align-items: center;
   align-self: start;
   background: color-mix(in srgb, var(--blk-cat, var(--text-3)) 12%, var(--bg-raised));
   border: 1px solid color-mix(in srgb, var(--blk-cat, var(--text-3)) 28%, var(--border));
   border-radius: 999px;
   color: var(--blk-cat, var(--text-3));
-  display: inline-flex;
   font-size: 10px;
   font-weight: 700;
-  gap: 3px;
   height: 20px;
   justify-content: center;
   margin-top: 2px;
@@ -2278,7 +2278,8 @@ footer {
   white-space: nowrap;
 }
 
-.event-editor .event-storyboard-card-cat::before { content: attr(data-glyph); }
+/* ::before 는 아래 아이콘 정리 규칙이 `content: none` 으로 끈다(글리프는 .ee-icon 이 그린다).
+   여기 있던 `content: attr(data-glyph)` 는 그 규칙에 덮여 사문이었다. */
 .event-editor .event-storyboard-card-cat::after { content: attr(data-label); }
 
 /* 좁은 폭에서도 낱말을 지우지 않는다 — 목록의 `.cmd-cat-icon` 과 같은 계약. */
@@ -2623,12 +2624,6 @@ footer {
 .event-editor-modal-window .event-editor-modal-footer .event-editor-draft-status,
 .event-editor-modal-window .event-editor-modal-footer .event-editor-remote-status {
   color: var(--text-2);
-}
-
-/* 선택지 토큰: 갈색 14% 틴트 위 갈색 글자(3.67:1)를 회색 바탕 위 갈색(5.6:1)으로. */
-.event-editor-modal-window .event-editor .cmd-summary-token.choice-option {
-  background: var(--control-bg);
-  color: var(--warning);
 }
 
 /* 라운딩 — 바깥 6px. */
@@ -2983,6 +2978,9 @@ footer {
   padding: 0 6px;
 }
 
+/* 선택지 토큰: 갈색 14% 틴트 위 갈색 글자는 3.67:1 이라 회색 바탕(--control-bg)으로 옮겼다.
+   글자색은 --warning(갈색)이 아니라 --text-1 이다 — 위쪽에 --warning 을 쓰는 사본이
+   있었지만 이 규칙에 덮여 한 번도 적용되지 않았으므로 함께 지웠다. */
 .event-editor-modal-window .event-editor .cmd-summary-token.choice-option {
   background: var(--control-bg);
   color: var(--text-1);
