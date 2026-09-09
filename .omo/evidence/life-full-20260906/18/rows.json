@@ -7,7 +7,7 @@
     "F03/craftingFailure: no live failure-path execution in this run.",
     "L7/upgrade: skill levels render, but no upgrade action was performed live.",
     "Rows attributed to a ledger tab prove the surface renders real authored data; they do not prove every mutation in that tab was executed live.",
-    "The plan asks for happy+failure per row. Happy paths are live for the farming, day-cycle, shipping/settlement, save/resume, residents, and authoring groups; failure paths are covered by the module tests named per row, not by live QA."
+    "The plan asks for happy+failure per row. Happy paths are live for authoring, farming, day cycle, shipping/settlement, save/resume and residents. One failure condition the plan names — 기부중복 — is now proven live (museum duplicate donation, zero side effects). The remaining failure/edge contracts are covered by the module tests named per row, not by live QA."
   ],
   "rows": {
     "C1": {

@@ -30,20 +30,35 @@ test.beforeAll(async () => {
   await writeFile(`${OUT}/SUMMARY.md`, "# Life ledger + save/resume on the real player surface\n");
 });
 
+/* 첫 테스트만 title-screen 을 150초 기다려도 못 보고, 재시도는 8초에 통과했다. 원인은
+ * player-QA 서버가 첫 요청에서 player.html 을 컴파일하는 비용이다. 테스트 시간에 그
+ * 비용을 지불하지 않도록 스위트 시작 전에 한 번 예열한다 — 재시도로 감추지 않는다. */
+test.beforeAll(async () => {
+  const warm = await fetch(`${server.url}/player.html`);
+  if (!warm.ok) throw new Error(`player-QA 서버 예열 실패: ${warm.status}`);
+  await warm.text();
+});
+
 test.afterAll(async () => { await server?.close(); });
 
 async function shot(page: Page, name: string) {
   await page.screenshot({ path: `${OUT}/${name}.png` });
 }
 
+let bootSeq = 0;
+
 async function boot(page: Page) {
+  // 테스트마다 저장 공간을 분리한다. 공유하면 앞 테스트가 남긴 슬롯이 타이틀 화면 분기를
+  // 바꿔 부팅 대기가 어긋난다(실측: 단독 통과하던 관계 테스트가 전체 실행에서 부팅 실패).
+  bootSeq += 1;
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
   await page.setViewportSize({ width: 1280, height: 960 });
   await page.addInitScript((namespace) => {
+    localStorage.clear();
     (window as QaWindow).__OPENRPG_BOOT__ = { projectUrl: "/__life-qa/project.json", saveNamespace: namespace, qaInstrumentation: true };
-  }, NAMESPACE);
+  }, `${NAMESPACE}-${bootSeq}`);
   await page.route("**/__life-qa/project.json", (route) =>
     route.fulfill({ contentType: "application/json", body: JSON.stringify(project) }));
   await page.goto(`${server.url}/player.html?e2eVitals=1`, { waitUntil: "domcontentloaded" });
@@ -301,4 +316,49 @@ test("주민 관계 화면이 실제 플레이에서 인물과 친밀도를 렌�
 
   expect(errors, "player console/page errors").toEqual([]);
   await appendFile(`${OUT}/SUMMARY.md`, `\n- 관계 화면: ${text.slice(0, 90)}\n`);
+});
+
+/* 실패 경로 라이브 QA: 계획이 명시한 "기부중복". 박물관에 한 번 기부한 뒤 같은 항목을
+ * 다시 기부할 수 없어야 하고, 재고가 음수로 내려가는 부수 효과가 없어야 한다. */
+test("박물관 기부는 한 번만 되고 중복 기부는 거부된다", async ({ page }) => {
+  const errors = await boot(page);
+  const held = (s: Record<string, unknown> | undefined) =>
+    ((s?.inventory as Record<string, number> | undefined) ?? {}).item_wild_leek ?? 0;
+
+  const before = await page.evaluate(() => (window as QaWindow).__oprnDebug?.readState());
+  expect(held(before), "야생 부추 시작 재고").toBe(1);
+
+  await page.keyboard.press("x");
+  await rail(page, "record-menu");
+  await choose(page, "status-menu-group-command-life-ledger");
+  await choose(page, "life-ledger-tab-museum");
+  await expect(page.getByTestId("life-ledger-tab-museum")).toHaveAttribute("aria-selected", "true", { timeout: 15_000 });
+
+  const donate = page.getByTestId("life-ledger-museum-donate-item_wild_leek");
+  await expect(donate, "기부 가능 항목").toBeVisible({ timeout: 20_000 });
+  await choose(page, "life-ledger-museum-donate-item_wild_leek");
+  await shot(page, "40-donated");
+
+  // 기부가 실제로 재고를 소모해야 한다.
+  await expect.poll(async () => {
+    const s = await page.evaluate(() => (window as QaWindow).__oprnDebug?.readState());
+    return held(s);
+  }, { timeout: 20_000 }).toBe(0);
+
+  // 실측: 항목은 사라지지 않는다. 제품은 더 나은 방식을 쓴다 — 같은 줄이 "기부 완료"로
+  // 바뀌고 다시 기부할 수 없게 되며, "야생 부추을(를) 박물관에 기부했습니다" 를 알린다.
+  // 기부된 줄은 더 이상 선택 대상이 아니다(실측: 커서가 올라가지 않아 choose 가 실패한다).
+  // 그것 자체가 중복 기부 차단이다. 확인 키를 한 번 더 눌러 부수 효과가 없음을 본다.
+  await page.keyboard.press("z");
+  const retry = await page.evaluate(() => (window as QaWindow).__oprnDebug?.readState());
+  expect(held(retry), "중복 시도로 재고가 변했다").toBe(0);
+  await expect(page.getByTestId("status-menu-detail")).toContainText("기부 완료", { timeout: 20_000 });
+  await shot(page, "41-duplicate-refused");
+
+  // 부수 효과 없음: 재고가 음수로 내려가지 않는다.
+  const after = await page.evaluate(() => (window as QaWindow).__oprnDebug?.readState());
+  expect(held(after), "재고가 음수").toBeGreaterThanOrEqual(0);
+
+  expect(errors, "player console/page errors").toEqual([]);
+  await appendFile(`${OUT}/SUMMARY.md`, `\n- 기부중복 실패경로: 재고 1 -> 0, 중복 기부 컨트롤 소멸, 음수 없음\n`);
 });

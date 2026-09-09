@@ -116,5 +116,17 @@
     "findings": 13,
     "crossChecked": "Every id in rows.json exists in lifeFullCoverageMap.ts and vice versa (notInMap [] / notInRows []), so nothing was invented or dropped.",
     "limitsCarried": "rows.json states its own limits: recovery has no live surface (no claims in session), craftingFailure had no live failure run, upgrade rendered but was not executed, ledger-tab rows prove rendering rather than every mutation, and failure paths come from named module tests rather than live QA."
+  },
+  "liveFailurePathProven": {
+    "condition": "기부중복 — one of the failure conditions the plan names explicitly.",
+    "test": "test/runtime/life-full.spec.ts — \"박물관 기부는 한 번만 되고 중복 기부는 거부된다\"",
+    "evidence": "Inventory item_wild_leek measured 1 -> 0 through readState (not screen text). The row becomes 기부 완료 with the notice 야생 부추을(를) 박물관에 기부했습니다, gold rises to 150G, the donated row is no longer cursor-selectable, and a further confirm press leaves inventory at 0 — zero side effects.",
+    "productBetterThanAssumed": "I asserted the control would disappear. It does not: the product keeps the row and marks it 기부 완료, which is better UX. The assertion was corrected to the measured contract rather than the product to my guess."
+  },
+  "suiteStability": {
+    "result": "5 passed in 50.6s with no retries (npx playwright test --config playwright.runtime.config.ts test/runtime/life-full.spec.ts).",
+    "flakeOneFixed": "The relationship test passed alone but failed in the full run. Cause: all tests shared one save namespace, so an earlier test left a slot that changed the title-screen branch. Fixed by giving each test its own namespace and clearing localStorage on init.",
+    "flakeTwoFixed": "The first test needed 150s and still failed, while its retry passed in 8s. Cause: the player-QA server compiles player.html on the first request. Fixed by warming the server once before the suite instead of widening timeouts or accepting the retry.",
+    "principle": "Neither flake was absorbed by retries; both causes were measured and removed."
   }
 }
