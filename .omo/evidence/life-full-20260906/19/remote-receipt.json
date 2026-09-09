@@ -21,5 +21,11 @@
       "reason": "The fixture now authors the save-point event (openSaveMenu) added for the task18 save proof, so the serialized project legitimately differs."
     },
     "honestLimit": "Task 19 remains proven as a real save+reload round trip, but the remote row must be treated as ephemeral: any later consumer has to re-save first. The earlier receipt implied a persistent row and is corrected here."
+  },
+  "finalObservedSha": {
+    "value": "f9a96530f628cce2d8e1a6149e0b31f820d84e142d00dbccedd2b355a7eb63f1",
+    "updatedAt": "2026-09-09T17:32:33.024+00:00",
+    "whyItChanged": "The F3 editor e2e opens ?project=rpg-zzu-life-full-01a08046-verify in the real editor, and the editor autosaves, so the row was rewritten during QA. Recorded as observed rather than leaving the earlier f793ee07 sha in place.",
+    "demoRowStillUnchanged": "rpg-zzu-stardew-demo bd9b8c08... updated_at 2026-08-24"
   }
 }

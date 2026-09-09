@@ -28,7 +28,12 @@ for (const id of declared) {
   if (!row.failurePathModuleTests) failures.push(`row ${id} has no failure-path coverage`);
 }
 for (const id of findings) {
-  if (!rows.findings[id]) failures.push(`finding ${id} is not attributed`);
+  const finding = rows.findings[id];
+  if (!finding) { failures.push(`finding ${id} is not attributed`); continue; }
+  if (!finding.liveEvidence) failures.push(`finding ${id} has no liveEvidence`);
+  // Reviewer caught this: findings were only checked for existence, so a finding could
+  // carry no evidence at all and still pass.
+  if (finding.artifacts === undefined) failures.push(`finding ${id} must state artifacts (use null with a documented exemption)`);
 }
 for (const id of Object.keys(rows.rows)) {
   if (!declared.includes(id)) failures.push(`row ${id} is attributed but absent from the fixture map`);
@@ -36,8 +41,22 @@ for (const id of Object.keys(rows.rows)) {
 
 // 2) Every referenced artifact must exist. A missing evidence file fails the audit.
 const globs = new Set();
-for (const row of [...Object.values(rows.rows), ...Object.values(rows.findings)]) {
-  if (row.artifacts) globs.add(row.artifacts);
+/* Reviewer caught this: `if (row.artifacts)` skipped verification entirely when the field
+ * was absent or null, so a row could drop its evidence and still pass. Now an absent
+ * field fails, and an explicit null is allowed ONLY when the row is named in
+ * exemptArtifacts with a reason. */
+const exempt = new Set(Object.keys(rows.exemptArtifacts ?? {}));
+for (const [id, row] of [...Object.entries(rows.rows), ...Object.entries(rows.findings)]) {
+  // Reviewer: "" is neither undefined nor null, so it used to verify nothing silently.
+  if (row.artifacts !== null && (typeof row.artifacts !== "string" || !row.artifacts.trim())) {
+    failures.push(`${id} has a missing or blank artifacts field`);
+    continue;
+  }
+  if (row.artifacts === null) {
+    if (!exempt.has(id)) failures.push(`${id} has null artifacts but is not listed in exemptArtifacts`);
+    continue;
+  }
+  globs.add(row.artifacts);
 }
 /* Expand brace groups FIRST, then split on commas. Splitting first tore
  * "a/{x,y}.png" apart — my own parser bug, caught by this audit on its first run. */
@@ -63,7 +82,19 @@ for (const glob of globs) {
   }
 }
 
-// 3) Limits must stay declared, so a future edit cannot quietly claim full coverage.
+// 3) Named test files must exist. A typo'd spec path used to pass as "evidence".
+const referencedSpecs = new Set();
+for (const row of [...Object.values(rows.rows), ...Object.values(rows.findings)]) {
+  for (const text of [row.liveEvidence, row.failurePathModuleTests]) {
+    if (typeof text !== "string") continue;
+    for (const m of text.matchAll(/\b(test\/[\w./-]+\.(?:test|spec)\.[cm]?[tj]sx?)/g)) referencedSpecs.add(m[1]);
+  }
+}
+for (const spec of referencedSpecs) {
+  if (!existsSync(spec)) failures.push(`referenced spec does not exist: ${spec}`);
+}
+
+// 4) Limits must stay declared, so a future edit cannot quietly claim full coverage.
 if (!Array.isArray(rows.honestLimits) || rows.honestLimits.length === 0) {
   failures.push("rows.json must keep an explicit honestLimits list");
 }
@@ -73,4 +104,4 @@ if (failures.length) {
   for (const f of failures) console.error(`  - ${f}`);
   process.exit(1);
 }
-console.log(`coverage audit ok — ${declared.length} rows, ${findings.length} findings, ${globs.size} artifact groups verified`);
+console.log(`coverage audit ok — ${declared.length} rows, ${findings.length} findings, ${globs.size} artifact groups, ${referencedSpecs.size} referenced specs verified`);

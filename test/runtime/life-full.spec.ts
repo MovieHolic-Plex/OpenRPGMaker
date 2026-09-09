@@ -55,8 +55,15 @@ async function boot(page: Page) {
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
   await page.setViewportSize({ width: 1280, height: 960 });
+  /* addInitScript 는 모든 내비게이션에서 실행된다. 여기서 무조건 지우면 page.reload()
+   * 때도 저장이 날아가 "저장이 재로딩을 못 넘긴다"는 거짓 실패가 난다(실측).
+   * 첫 부팅에서만 비우고 이후에는 보존한다. */
   await page.addInitScript((namespace) => {
-    localStorage.clear();
+    const marker = `${namespace}:qa-booted`;
+    if (!sessionStorage.getItem(marker)) {
+      localStorage.clear();
+      sessionStorage.setItem(marker, "1");
+    }
     (window as QaWindow).__OPENRPG_BOOT__ = { projectUrl: "/__life-qa/project.json", saveNamespace: namespace, qaInstrumentation: true };
   }, `${NAMESPACE}-${bootSeq}`);
   await page.route("**/__life-qa/project.json", (route) =>
@@ -119,6 +126,9 @@ test("생활 원장을 실제 메뉴로 열고 저장 슬롯까지 도달한다"
 
   await choose(page, "status-menu-group-command-life-ledger");
   await expect(page.getByTestId("life-ledger-tab-shipping")).toBeVisible({ timeout: 20_000 });
+  // 가시성만 보면 빈 껍데기도 통과한다. 장부가 실제 저작 데이터를 그리는지 내용으로 확인한다.
+  await expect(page.locator("#life-ledger-tab-panel"), "출하 탭에 실제 품목이 없다")
+    .toContainText("야생 부추", { timeout: 20_000 });
   await shot(page, "03-life-ledger-shipping");
 
   // 시스템 그룹 -> 저장. 로드도 같은 그룹에 있다.
@@ -129,6 +139,9 @@ test("생활 원장을 실제 메뉴로 열고 저장 슬롯까지 도달한다"
 
   await choose(page, "status-menu-group-command-save");
   await expect(page.getByTestId("save-slot-1")).toBeVisible({ timeout: 20_000 });
+  // 슬롯도 상태 문자열까지 본다 — 새 namespace 라 아직 비어 있어야 한다.
+  await expect(page.getByTestId("save-slot-1"), "새 세션인데 슬롯이 비어 있지 않다")
+    .toContainText("비어 있음", { timeout: 20_000 });
   await shot(page, "05-save-slots");
 
   expect(errors, "player console/page errors").toEqual([]);
@@ -146,12 +159,27 @@ test("출하 투입 -> 수면 정산 -> 저장 -> 로드 재개를 실제 메뉴
 
   // 상세 항목은 onActivate 기반이라 키보드로 결정한다(.click 은 대상이 아니다 — 실측: 타임아웃).
   await expect(page.getByTestId("life-ledger-shipping-deposit-item_wild_leek")).toBeVisible({ timeout: 20_000 });
+  // 투입 전에 단가를 읽는다 — 투입 후에는 줄이 "꺼내기"로 바뀌어 문구가 사라진다(실측).
+  /* 예상 단가는 항목의 description 이고, 렌더러는 그것을 항목 줄이 아니라 하단 힌트로
+   * 보여준다(playerStatusMenuDetailRenderer.ts:27 — unavailableReason ?? description ?? hint).
+   * 같은 값이 항목의 aria-label 에도 들어가므로(같은 파일 169행) 거기서 읽는다. */
+  const unitPriceText = (await page
+    .getByTestId("life-ledger-shipping-deposit-item_wild_leek")
+    .getAttribute("aria-label")) ?? "";
+  const unitPrice = Number(/예상 단가 (\d+)G/.exec(unitPriceText)?.[1] ?? "0");
+  expect(unitPrice, `장부에서 예상 단가를 읽지 못했다: "${unitPriceText}"`).toBeGreaterThan(0);
   await choose(page, "life-ledger-shipping-deposit-item_wild_leek");
   // 투입 성공의 제품측 증거: 꺼내기 항목이 생긴다.
   await expect(page.getByTestId("life-ledger-shipping-withdraw-item_wild_leek")).toBeVisible({ timeout: 20_000 });
   await shot(page, "10-deposited");
 
-  const goldBefore = (await page.getByTestId("status-menu-gold").textContent()) ?? "";
+  const goldNumber = async () => {
+    const s = await page.evaluate(() => (window as QaWindow).__oprnDebug?.readState() as { gold?: number } | undefined);
+    return s?.gold ?? -1;
+  };
+  const goldBeforeNum = await goldNumber();
+  // 정산액은 위에서 읽은 단가로 못박는다(문자열 부등호는 형식 변경이나 엉뚱한
+  // 금액도 통과시킨다 — 독립 검토 지적).
 
   // 2) 메뉴를 닫고 잠자리에서 하루를 넘긴다 — 정산은 날짜 전환에 일어난다.
   await closeMenu(page);
@@ -186,8 +214,10 @@ test("출하 투입 -> 수면 정산 -> 저장 -> 로드 재개를 실제 메뉴
 
   // 3) 정산 결과: 골드가 늘어야 한다.
   await page.keyboard.press("x");
-  const goldAfter = (await page.getByTestId("status-menu-gold").textContent()) ?? "";
-  expect(goldAfter, `정산 전 ${goldBefore} -> 후 ${goldAfter}`).not.toBe(goldBefore);
+  const goldAfterNum = await goldNumber();
+  // 정확히 단가만큼 늘어야 한다. +1 이나 기본 수입으로는 통과하지 못한다.
+  expect(goldAfterNum, `정산액이 단가와 다르다: ${goldBeforeNum} -> ${goldAfterNum}, 단가 ${unitPrice}`)
+    .toBe(goldBeforeNum + unitPrice);
   await shot(page, "12-settled-gold");
 
   // 4) 저장한다.
@@ -201,10 +231,22 @@ test("출하 투입 -> 수면 정산 -> 저장 -> 로드 재개를 실제 메뉴
   await rail(page, "system-menu");
   await choose(page, "status-menu-group-command-save");
   await expect(page.getByTestId("save-slot-1")).toBeVisible({ timeout: 20_000 });
+  const beforeSave = await page.evaluate(() => {
+    const s = (window as QaWindow).__oprnDebug?.readState() as
+      { gold?: number; gameTime?: { day?: number }; inventory?: Record<string, number> } | undefined;
+    return { gold: s?.gold, day: s?.gameTime?.day, inventory: s?.inventory ?? {} };
+  });
   await choose(page, "save-slot-1");
   await shot(page, "13-saved");
 
-  // 5) 같은 세션에서 로드로 재개한다. 슬롯이 present 여야 활성화된다.
+  // 5) 페이지를 새로 띄워 로드한다 — 같은 세션 로드는 직렬화를 거치지 않으므로
+  // 저장이 실제로 저장소를 왕복했는지 증명하지 못한다(독립 검토 지적).
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.getByTestId("title-screen")).toBeVisible({ timeout: 150_000 });
+  await page.keyboard.press("Enter");
+  await page.waitForFunction(() => Boolean((window as QaWindow).__oprnDebug?.readState().currentMapId), null, { timeout: 120_000 });
+  await expect(page.getByTestId("play-loading-overlay")).toHaveCount(0, { timeout: 120_000 });
+
   await page.keyboard.press("x");
   await rail(page, "system-menu");
   await choose(page, "status-menu-group-command-load");
@@ -214,10 +256,18 @@ test("출하 투입 -> 수면 정산 -> 저장 -> 로드 재개를 실제 메뉴
   // 재개 후 플레이가 다시 살아야 한다.
   await expect(page.getByTestId("main-menu")).toHaveCount(0, { timeout: 30_000 });
   await page.waitForFunction(() => Boolean((window as QaWindow).__oprnDebug?.readState().currentMapId), null, { timeout: 60_000 });
+  // 재개는 "플레이가 살아 있다"가 아니라 "저장 시점 상태가 돌아왔다"여야 한다.
+  const afterLoad = await page.evaluate(() => {
+    const s = (window as QaWindow).__oprnDebug?.readState() as
+      { gold?: number; gameTime?: { day?: number }; inventory?: Record<string, number> } | undefined;
+    return { gold: s?.gold, day: s?.gameTime?.day, inventory: s?.inventory ?? {} };
+  });
+  // 인벤토리 전체를 비교한다 — 한 키만 보면 나머지 손실을 놓친다(독립 검토 지적).
+  expect(afterLoad, "로드 후 상태가 저장 시점과 다르다").toEqual(beforeSave);
   await shot(page, "14-resumed");
 
   expect(errors, "player console/page errors").toEqual([]);
-  await appendFile(`${OUT}/SUMMARY.md`, `\n- 출하 투입 -> 정산(${goldBefore} -> ${goldAfter}) -> 저장 -> 로드 재개\n`);
+  await appendFile(`${OUT}/SUMMARY.md`, `\n- 출하 투입 -> 정산(${goldBeforeNum}G -> ${goldAfterNum}G, 단가 ${unitPrice}G) -> 저장 -> 로드 재개\n`);
 });
 
 /* 51행 커버리지: 생활 장부 9탭은 K(출하)·L(기술/제작/꾸러미)·A(동물)·S(건물)·수집·박물관·복구
@@ -237,9 +287,15 @@ test("생활 장부 9탭이 실제 플레이 화면에서 내용을 렌더한다
   await expect(page.getByTestId("life-ledger-tab-shipping")).toBeVisible({ timeout: 20_000 });
 
   const seen: Record<string, string> = {};
+  const rendered: Record<string, string> = {};
   for (const [id, label] of LEDGER_TABS) {
     const tab = page.getByTestId(`life-ledger-tab-${id}`);
-    if (!(await tab.count())) { seen[id] = "탭 없음(해당 데이터 없음)"; continue; }
+    if (!(await tab.count())) {
+      // 복구 탭만 세션 클레임이 없어 렌더되지 않는다. 그 외가 빠지면 실패다.
+      expect(id, `${label} 탭이 없다`).toBe("recovery");
+      seen[id] = "탭 없음(해당 데이터 없음)";
+      continue;
+    }
     // force 클릭은 탭을 바꾸지 못한다(실측: 8개 탭이 전부 출하 내용으로 남았고, 강화한
     // aria-selected 단정이 "꾸러미 미선택"으로 잡아냈다). 탭은 actionIndex 를 가진
     // status-menu-detail-action 이므로 커서 이동 + 확인 키로 고른다.
@@ -250,6 +306,11 @@ test("생활 장부 9탭이 실제 플레이 화면에서 내용을 렌더한다
     const text = ((await panel.innerText()) ?? "").replace(/\s+/g, " ").trim();
     // 탭 목록은 패널 밖이므로 여기 텍스트는 그 탭의 실제 내용이다.
     expect(text.length, `${label} 내용 없음`).toBeGreaterThan(0);
+    // 탭마다 내용이 달라야 한다. 길이만 보면 9개 탭이 같은 텍스트여도 통과한다.
+    for (const [priorId, priorText] of Object.entries(rendered)) {
+      expect(text, `${label} 내용이 ${priorId} 와 동일하다`).not.toBe(priorText);
+    }
+    rendered[id] = text;
     seen[id] = text.slice(0, 80);
     await shot(page, `20-ledger-${id}`);
   }
@@ -272,7 +333,8 @@ test("주민 관계 화면이 실제 플레이에서 인물과 친밀도를 렌�
   // 실측: 시작 세션은 "알려진 관계가 없습니다 / 호감이 기록된 관계만 표시됩니다".
   // 제품이 옳다 — 빈 상태를 정직하게 보여준다. 그러니 먼저 실제로 관계를 만든다.
   const empty = ((await panel.innerText()) ?? "").replace(/\s+/g, " ").trim();
-  expect(empty, "빈 상태 문구가 아니다").toContain("관계");
+  // 대화 전에는 촌장이 없어야 한다. 문구만 확인하면 처음부터 올라와 있어도 통과한다.
+  expect(empty, "대화 전인데 촌장이 이미 목록에 있다").not.toContain("촌장");
   await shot(page, "30-relationships-empty");
 
   // 촌장에게 말을 건다(ev_npc_mayor @14,5 → changeFriendship).
@@ -349,9 +411,38 @@ test("박물관 기부는 한 번만 되고 중복 기부는 거부된다", asyn
   // 바뀌고 다시 기부할 수 없게 되며, "야생 부추을(를) 박물관에 기부했습니다" 를 알린다.
   // 기부된 줄은 더 이상 선택 대상이 아니다(실측: 커서가 올라가지 않아 choose 가 실패한다).
   // 그것 자체가 중복 기부 차단이다. 확인 키를 한 번 더 눌러 부수 효과가 없음을 본다.
+  /* 중복 기부 거부를 두 축으로 증명한다.
+   * readState 는 박물관 진행도를 노출하지 않으므로(runtimeDom.ts:93 의 스냅샷 필드),
+   * 제품이 보여주는 박물관 탭 내용 전체를 비교 대상으로 쓴다 — 진행도가 오염되면
+   * "기부 완료" 표시나 목록이 달라진다(독립 검토 지적). */
+  const snap = async () => {
+    const state = await page.evaluate(() => {
+      const s = (window as QaWindow).__oprnDebug?.readState() as
+        { gold?: number; inventory?: Record<string, number>; switches?: Record<string, boolean> } | undefined;
+      return JSON.stringify({ gold: s?.gold, inventory: s?.inventory, switches: s?.switches });
+    });
+    const museum = ((await page.locator("#life-ledger-tab-panel").innerText()) ?? "").replace(/\s+/g, " ").trim();
+    return JSON.stringify({ state, museum });
+  };
+  const afterDonate = await snap();
+
+  // 축 1: 기부된 줄은 더 이상 커서로 도달할 수 없어야 한다 = 활성화 경로 회수.
+  let reachedDonatedRow = false;
+  for (let i = 0; i < 24; i++) {
+    if (await page.locator(`[data-testid='life-ledger-museum-donate-item_wild_leek'].selected`).count()) {
+      reachedDonatedRow = true;
+      break;
+    }
+    await page.keyboard.press("ArrowDown");
+  }
+  expect(reachedDonatedRow, "기부된 항목이 여전히 선택 가능하다").toBe(false);
+
+  // 축 2: 그 상태에서 확인 키를 눌러도 상태와 박물관 화면이 모두 그대로여야 한다.
   await page.keyboard.press("z");
-  const retry = await page.evaluate(() => (window as QaWindow).__oprnDebug?.readState());
-  expect(held(retry), "중복 시도로 재고가 변했다").toBe(0);
+  await page.keyboard.press("z");
+  const afterRetry = await snap();
+  expect(afterRetry, "중복 시도가 상태나 박물관 진행도를 바꿨다").toBe(afterDonate);
+  expect(held(JSON.parse(JSON.parse(afterRetry).state)), "재고가 0 이 아니다").toBe(0);
   await expect(page.getByTestId("status-menu-detail")).toContainText("기부 완료", { timeout: 20_000 });
   await shot(page, "41-duplicate-refused");
 
