@@ -22,9 +22,11 @@
 
 .database-modal-body .spatial-geography-board {
   position: relative;
+  width: max-content;
+  height: max-content;
   min-width: 192px;
   min-height: 144px;
-  overflow: auto;
+  overflow: visible;
   outline: none;
   background:
     linear-gradient(180deg, rgba(255, 252, 245, 0.45), transparent 38%),

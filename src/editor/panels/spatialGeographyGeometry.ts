@@ -159,6 +159,32 @@ export function setWorldEntry(world: WorldDesign, entry: SpatialLocalEndpoint): 
   return { kind: "ok", design: { ...world, entryPort: entry } };
 }
 
+function namedChildPortId(world: WorldDesign, childId: SpatialId): SpatialId | undefined {
+  for (const link of world.connections) {
+    if (link.from.childId === childId) return link.from.portId;
+    if (link.to.childId === childId) return link.to.portId;
+  }
+  return world.entryPort.childId === childId ? world.entryPort.portId : undefined;
+}
+
+export function worldEntryAt(
+  world: WorldDesign,
+  tile: SpatialPoint,
+  hitChildId?: SpatialId,
+): GeographyEditResult<WorldDesign> {
+  const child = hitChildId
+    ? world.regions.find((entry) => entry.id === hitChildId)
+    : world.regions.find((entry) => entry.x === tile.x && entry.y === tile.y);
+  if (child) {
+    const portId = namedChildPortId(world, child.id);
+    if (!portId) return rejected(world, "port");
+    return setWorldEntry(world, { childId: child.id, portId });
+  }
+  const port = world.ports.find((entry) => entry.x === tile.x && entry.y === tile.y);
+  if (!port) return rejected(world, "port");
+  return setWorldEntry(world, { childId: null, portId: port.id });
+}
+
 export function setWorldCrossing(
   world: WorldDesign,
   connectionId: SpatialId,

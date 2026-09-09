@@ -2,9 +2,10 @@ import { spatialPresentationId } from "@/editor/panels/spatialPresentation";
 import { compileSpatialOccurrence, SpatialCompileError } from "@/editor/spatial/compileSpatialOccurrence";
 import { findOccurrenceChildId } from "@/project/spatial/domain";
 import { inspectSpatialDesignReferences } from "@/project/spatial/ownership";
-import type { SpatialId } from "@/project/spatial/types";
+import type { SpatialChildSlot, SpatialId } from "@/project/spatial/types";
 import type { Project } from "@/project/types";
-import type { GeographyDraftTarget, GeographyKind } from "@/editor/panels/spatialGeographyDraft";
+import type { GeographyDesign, GeographyDraftTarget, GeographyKind } from "@/editor/panels/spatialGeographyDraft";
+import { geographyChildren } from "@/editor/panels/spatialGeographyGeometry";
 
 export type GeographyDeletePreview = {
   readonly strong: readonly { readonly path: string }[];
@@ -61,4 +62,19 @@ export function childOccurrenceId(
   const document = project.spatialAuthoring;
   if (!document?.occurrences[parentOccurrenceId]) return undefined;
   return findOccurrenceChildId(document, parentOccurrenceId, { slotId, index });
+}
+
+/** Instance boards use persisted parent-slot occurrence coords; source boards use design slots. */
+export function geographyViewChildren(
+  project: Project,
+  design: GeographyDesign,
+  occurrenceId?: SpatialId,
+): readonly SpatialChildSlot<"place" | "region">[] {
+  const slots = geographyChildren(design);
+  if (!occurrenceId) return slots;
+  return slots.map((slot) => {
+    const id = childOccurrenceId(project, occurrenceId, slot.id);
+    const child = id ? project.spatialAuthoring?.occurrences[id] : undefined;
+    return child ? { ...slot, x: child.x, y: child.y, level: child.level } : slot;
+  });
 }

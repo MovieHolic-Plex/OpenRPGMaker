@@ -4,9 +4,11 @@ import {
   geographyDeletePreview,
   mutateWorkingGeography,
   workingGeography,
+  workingProject,
 } from "@/editor/panels/spatialGeographyCommands";
 import { geographyDraftTarget, withGeographyName } from "@/editor/panels/spatialGeographyDraft";
-import { geographyChildren, worldCrossingPoints } from "@/editor/panels/spatialGeographyGeometry";
+import { worldCrossingPoints } from "@/editor/panels/spatialGeographyGeometry";
+import { geographyViewChildren } from "@/editor/panels/spatialGeographyQuery";
 import { openSelectedChild } from "@/editor/panels/spatialGeographyNavigate";
 import { el } from "@/util/dom";
 
@@ -53,7 +55,7 @@ export function renderSpatialGeographyInspector(view: GeographyView, rerender: (
       text: `${design.terrain.width}×${design.terrain.height} · ${design.terrain.floor}`,
       dataset: { testid: "spatial-geography-size" },
     }));
-    const child = geographyChildren(design).find((entry) => entry.id === geographyChromeState.selectedChildId);
+    const child = geographyViewChildren(workingProject(), design, target.occurrenceId).find((entry) => entry.id === geographyChromeState.selectedChildId);
     if (child) {
       body.push(el("p", {
         class: "spatial-inspector-sub",
@@ -79,8 +81,9 @@ export function renderSpatialGeographyInspector(view: GeographyView, rerender: (
       }
     } else {
       const link = design.connections[0];
-      const from = link?.from.childId ? design.regions.find((entry) => entry.id === link.from.childId) : undefined;
-      const to = link?.to.childId ? design.regions.find((entry) => entry.id === link.to.childId) : undefined;
+      const kids = geographyViewChildren(workingProject(), design, target.occurrenceId);
+      const from = link?.from.childId ? kids.find((entry) => entry.id === link.from.childId) : undefined;
+      const to = link?.to.childId ? kids.find((entry) => entry.id === link.to.childId) : undefined;
       if (from && to) {
         body.push(el("p", {
           class: "spatial-inspector-sub",

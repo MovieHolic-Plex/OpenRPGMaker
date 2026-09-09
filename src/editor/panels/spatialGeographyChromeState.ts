@@ -18,6 +18,7 @@ export const geographyChromeState: {
   routeDraft: SpatialPoint[];
   gesture: GeographyGesture | null;
   createdDesignId: SpatialId | null;
+  boardKey: string;
 } = {
   saveState: "읽기",
   previewError: null,
@@ -29,6 +30,7 @@ export const geographyChromeState: {
   routeDraft: [],
   gesture: null,
   createdDesignId: null,
+  boardKey: "",
 };
 
 export function resetSpatialGeographyChrome(): void {
@@ -42,4 +44,16 @@ export function resetSpatialGeographyChrome(): void {
   geographyChromeState.routeDraft = [];
   geographyChromeState.gesture = null;
   geographyChromeState.createdDesignId = null;
+  geographyChromeState.boardKey = "";
 }
+
+export function bindGeographyBoard(key: string): void {
+  if (geographyChromeState.boardKey === key) return;
+  geographyChromeState.boardKey = key;
+  geographyChromeState.tool = "select";
+  geographyChromeState.gesture = null;
+  geographyChromeState.routeDraft = [];
+  geographyChromeState.selectedChildId = null;
+  geographyChromeState.selectedRouteId = null;
+}
+
