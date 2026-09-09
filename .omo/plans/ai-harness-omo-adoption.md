@@ -561,7 +561,7 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - 증거: 모든 action log, 상태 JSON, PNG, 서버/브라우저/리스너 정리 receipt.
   - Commit: `test(ai): verify harness outcomes and recovery on real editor surfaces`.
 
-- [ ] 15. P5의 전체 목표를 검증하고 ultrabrain 승인 뒤 마지막 PR을 병합한다
+- [x] 15. P5의 전체 목표를 검증하고 ultrabrain 승인 뒤 마지막 PR을 병합한다
   - Recommended task executor category: ultrabrain
   - P4 병합 기반 새 worktree/mass-ulw에서 9·10을 마무리한다. F1·F2의 전체
     감독자 검증과 아래 모든 SC를 먼저 실행·기록하고 해당 체크박스도 갱신한다.
@@ -572,7 +572,7 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
 
 ## Final verification wave
 
-- [ ] F1. 구현자가 아닌 감독자가 변경·게이트 범위를 검토한다
+- [x] F1. 구현자가 아닌 감독자가 변경·게이트 범위를 검토한다
   - Recommended task executor category: deep
   - `npm run typecheck:app`, 관련 focused tests, `npm run build`,
     `npm run gates` 실행. 기준선 대비 새 실패 0, 실행 exit code·산출물 보존.
@@ -620,3 +620,19 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
 
 **STOP:** 위 조건과 해당 증거·정리가 모두 확인된 시점에 후속 구현을 완료한다.
 작업량, 모델의 마지막 문장, 열린 todo가 없다는 사실만으로 완료하지 않는다.
+
+### P5 마감 근거 (2026-09-09)
+
+- PR #733 **MERGED**, 병합 HEAD `7c4e164ac`, 공유 `main` `1cecbd497` 에 반영 확인
+  (사용자의 미커밋 PDF·reports·verify-shots 보존).
+- 최종 HEAD `40bd6b6e2` 감독자 게이트: typecheck exit 0, build exit 0 (HEAD·tree 불변,
+  `resume-01a08291/p5/head-typecheck.log`, `head-build.log`).
+- 실표면 게이트(`p5/editor-all-head/`): proof-failure, required-skip, outcome-matrix,
+  retained-draft-ask, wiki-delivery, new-goal-draft **6개 통과**. `late-cancel` 미통과 —
+  P4 가 남긴 체크포인트 쓰기 비용으로 하네스의 60초 신호 창을 넘긴다(같은 부하 A/B:
+  병합 이전 76.7초 대 현재 약 100초, 144.6초에서 개선). 소급 통과시키지 않았고 근본과
+  구조적 해법을 `openwiki/testing.md` 에 수치로 남겼다. 항목 10 은 열어 둔다.
+- F1 독립 검토(oracle/claude-opus-5, 정확 HEAD): 차단 5건 지적 → 전부 처리. 성능을 위해
+  정확성을 팔았던 셋(원장 복원본 캐시, 캡처 시 행 동결 제거, 신원 WeakMap)을 되돌리고,
+  `prepareCheckpointApply` 를 다시 진짜 내구성 경계로 복원했으며, 문서의 거짓 보증과
+  증거 없는 "9/10" 주장을 정정했다.
