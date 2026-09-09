@@ -58,7 +58,8 @@ export interface RunCheckpoint extends RunCheckpointKey {
     readonly proposal: {
       readonly baseContentIdentity: string;
       readonly contentIdentity: string;
-      readonly project: Project;
+      /** 적용 대기(applying)에서만 싣는다 — 재개가 실제로 그 내용을 쓰는 유일한 단계다. */
+    readonly project?: Project;
       readonly calls: readonly ProposedCall[];
     } | null;
   } | null;
