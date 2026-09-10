@@ -23,6 +23,33 @@ npm run wt remove <name>      # 제거 (--keep-branch 로 브랜치 보존)
 npm run wt snapshot           # 현재 워킹트리를 커밋 객체로 박제(HEAD·인덱스 불변)
 ```
 
+## `git stash` 를 쓰지 마라 (실측 2026-09-10, 남의 작업을 꺼내 버렸다)
+
+**stash 목록은 저장소 하나에 하나뿐이고 모든 워크트리가 공유한다.** 워크트리마다 따로가 아니다.
+
+실측: `agent/uievidence` 워크트리에서 「고친 코드를 되돌려 캡처 스크립트가 정말 잡는지」
+음성 대조를 하려고 `git stash push <파일 둘>` → 스크립트 실행 → `git stash pop` 을 했다.
+그 사이에 다른 세션이 stash 를 하나 더 밀어 넣어 `stash@{0}` 이 바뀌었고, 내 pop 은
+**그 세션의 stash** 를 꺼냈다. 결과:
+
+- 내 수정은 파일에서 사라진 채 stash 항목도 소비됐다(손으로 다시 썼다).
+- 남의 추적 파일 변경 2개 + 미추적 테스트 6개가 내 워킹트리에 쏟아졌다.
+- 그 상태로 돌린 음성 대조는 **가짜 초록**이었다 — 되돌렸다고 믿은 코드가 실은 그대로였다.
+
+대신 이렇게 한다. 파일 단위로, 사본으로:
+
+```bash
+cp src/x.ts /tmp/x.fixed.ts            # 내 수정을 사본으로 뜬다
+git show HEAD:src/x.ts > src/x.ts      # 기준선으로 되돌린다 (stash 아님)
+node scripts/qa/<capture>.mjs          # 음성 대조 — 여기서 FAIL 이 나와야 단언이 살아 있다
+cp /tmp/x.fixed.ts src/x.ts            # 사본에서 복원
+grep -c <표식> src/x.ts                # 복원됐는지 눈으로 확인한다
+```
+
+되돌린 뒤에는 **dev 서버가 정말 그 코드를 서빙하는지** 확인하라 —
+`curl -s http://127.0.0.1:<포트>/src/x.ts | grep -c <표식>`. HMR 이 물고 있으면
+음성 대조가 조용히 통과한다.
+
 ## 회수 규칙 (커밋이 유일한 안전망)
 
 **미커밋 작업은 git 이 지켜주지 않는다.** 브랜치를 지워도 커밋 객체는 reflog·`git fsck` 로
