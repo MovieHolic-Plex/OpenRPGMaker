@@ -17,7 +17,7 @@
 
 import { TILE_SIZE } from "@/assets/bundled";
 import { editorState } from "@/editor/editorState";
-import { resolveClientPointTile } from "@/editor/regionClientRect";
+import { resolveClientPointTile, resolveRegionClientRect } from "@/editor/regionClientRect";
 import {
   adoptLayoutRegions,
   createLocationFromRect,
@@ -79,8 +79,27 @@ function ensureInspector(): HTMLElement | null {
   return inspectorEl;
 }
 
+/**
+ * 타일 사각형 → 오버레이 로컬 픽셀.
+ *
+ * **카메라를 통해서 변환한다.** 오버레이는 `.phaser-container` 전체를 덮고, 그 안의 캔버스는
+ * 스크롤·중앙정렬·카메라 worldView 만큼 어긋나 있다. `x * TILE * zoom` 만 쓰면 상자가 맵과
+ * 어긋난 자리에 그려진다(2026-09-10 브라우저 실측: 드래그 미리보기가 커서에서 500px 떨어졌다).
+ * 등록된 해석기가 없으면(테스트·헤드리스) 카메라 없는 단순 기하로 떨어진다 — 그때는 오버레이가
+ * 곧 맵 원점이라 결과가 같다.
+ */
 function tileToOverlayRect(rect: Rect): { left: number; top: number; width: number; height: number } {
   const zoom = editorState.get().zoom ?? 1;
+  const client = resolveRegionClientRect({ x: rect.x, y: rect.y, width: rect.w, height: rect.h });
+  const overlayRect = overlayEl?.getBoundingClientRect?.();
+  if (client && overlayRect) {
+    return {
+      left: client.x - overlayRect.left,
+      top: client.y - overlayRect.top,
+      width: Math.max(1, client.width),
+      height: Math.max(1, client.height),
+    };
+  }
   return {
     left: rect.x * TILE_SIZE * zoom,
     top: rect.y * TILE_SIZE * zoom,
