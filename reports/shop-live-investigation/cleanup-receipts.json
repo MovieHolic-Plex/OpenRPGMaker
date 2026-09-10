@@ -1,0 +1,34 @@
+{
+  "ownedPids": {
+    "1324": {
+      "exists": false
+    },
+    "62439": {
+      "exists": false
+    },
+    "128225": {
+      "exists": false
+    }
+  },
+  "ownedControlPorts": {
+    "36541": {
+      "listening": false
+    },
+    "35759": {
+      "listening": false
+    },
+    "36297": {
+      "listening": false
+    }
+  },
+  "existingAppPorts": {
+    "9841": {
+      "listening": true
+    },
+    "9888": {
+      "listening": true
+    }
+  },
+  "productionEdits": false,
+  "databaseWrites": false
+}

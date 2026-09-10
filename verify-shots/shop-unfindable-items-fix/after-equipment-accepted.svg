@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#2b221c"/>
+  <rect x="40" y="36" width="1200" height="648" rx="18" fill="#f6ead7" stroke="#c9b496"/>
+  <rect x="40" y="36" width="1200" height="56" rx="18" fill="#3d2c22"/>
+  <rect x="40" y="72" width="1200" height="20" fill="#3d2c22"/>
+  <text x="64" y="72" fill="#f6ead7" font-family="ui-sans-serif, system-ui, sans-serif" font-size="22" font-weight="700">상점 · 장비 진열</text>
+  <text x="1130" y="72" fill="#9ad7b0" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14">AFTER</text>
+  <rect x="64" y="112" width="1152" height="48" rx="10" fill="#d9ecdc" stroke="#2f7a4a"/>
+  <text x="84" y="142" fill="#215736" font-family="ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="700">자료집에 있는 장비입니다. 판매 목록 1개.</text>
+  <rect x="64" y="184" width="720" height="420" rx="12" fill="#fff8ee" stroke="#e2c9a8"/>
+  <rect x="64" y="184" width="720" height="92" rx="12" fill="#f0e0c8" stroke="#2f7a4a"/>
+  <text x="96" y="222" fill="#3a2a1c" font-family="ui-sans-serif, system-ui, sans-serif" font-size="22" font-weight="700">청동검</text>
+  <text x="96" y="250" fill="#8a6a4e" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14">무기 · 사계절</text>
+  <text x="680" y="236" text-anchor="end" fill="#3a2a1c" font-family="ui-sans-serif, system-ui, sans-serif" font-size="20" font-weight="700">120 G</text>
+  <rect x="808" y="184" width="408" height="420" rx="12" fill="#fff8ee" stroke="#e2c9a8"/>
+  <text x="832" y="228" fill="#3a2a1c" font-family="ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="700">미리보기</text>
+  <text x="832" y="268" fill="#2f7a4a" font-family="ui-sans-serif, system-ui, sans-serif" font-size="15">로드 검증과 같은 기준:</text>
+  <text x="832" y="294" fill="#3a2a1c" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" font-weight="700">items ∪ equipment</text>
+  <text x="64" y="640" fill="#2f7a4a" font-family="ui-sans-serif, system-ui, sans-serif" font-size="15">없는 ID만 오류. 무기/갑옷 진열은 더 이상 «찾을 수 없는 상점 아이템»이 아님.</text>
+</svg>
