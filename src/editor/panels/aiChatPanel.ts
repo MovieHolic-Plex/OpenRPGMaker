@@ -1,3 +1,4 @@
+import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
 import { readLatestRunCheckpoint } from "@/ai/runCheckpointStore";
 import { reconcileRunCheckpoint, type RunRecovery } from "@/ai/runRecovery";
 // editor/panels/aiChatPanel.ts
@@ -3264,5 +3265,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     panel.remove();
   };
 
+  installDelayedTooltips(panel);
   return panel;
 }

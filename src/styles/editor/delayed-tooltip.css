@@ -1,0 +1,20 @@
+/* 공통 지연 툴팁 (OPRN-OUT-024) — 클릭을 가로채지 않고, 레이아웃을 흔들지 않는다. */
+.delayed-tooltip {
+  position: fixed;
+  z-index: 400;
+  max-width: 22ch;
+  padding: 4px 8px;
+  border: 1px solid var(--oprn-border, #3a3f4b);
+  border-radius: 6px;
+  background: var(--oprn-surface-raised, #20242c);
+  color: var(--oprn-text, #e8ebf0);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 35%);
+  pointer-events: none;
+}
+
+.delayed-tooltip.side-above {
+  transform: none;
+}

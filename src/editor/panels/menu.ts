@@ -35,6 +35,7 @@ import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { createStandaloneHtmlExport } from "@/project/standaloneExport";
 import { openPublishingDialog } from "./publishingDialog";
 import { createWebPlayerExportPackage, webExportFileName } from "@/project/webExport";
+import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
 import { store, type AutoSaveState } from "@/project/store";
 import type { Project } from "@/project/types";
 import { downloadBlob } from "@/util/downloadBlob";
@@ -165,6 +166,7 @@ export function renderTopbar(topbar: HTMLElement): void {
   menuBar.append(trailing);
 
   topbar.append(menuBar);
+  installDelayedTooltips(topbar);
   // 플레이 모드(편집기 안에서 게임이 도는 상태)에서만 「편집으로 돌아가기」 줄을 하나 더 둔다.
   // 편집 모드의 클래식 툴바 행은 2026-09-03 에 걷었다 — 15개 중 14개가 메뉴 항목의 복제였다.
   if (mode !== "edit") {

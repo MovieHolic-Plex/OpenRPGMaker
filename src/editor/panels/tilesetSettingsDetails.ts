@@ -1,3 +1,4 @@
+import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
 import { renderPalettePresetEditor } from "@/editor/panels/palettePresetEditor";
 import { renderTilesetCheckerSummary } from "@/editor/panels/tilesetCheckerSummary";
 import { openTilesetReviewWizard } from "@/editor/panels/tilesetReviewWizard";
@@ -9,13 +10,15 @@ import { el } from "@/util/dom";
 
 export function renderTilesetEditor(tileset: TilesetDef, rerender: () => void): HTMLElement {
   const tab = getTilesetSectionTab();
-  return el("section", {
+  const editor = el("section", {
     class: "tileset-db-editor simplified oprn-tileset-editor",
     children: [
       renderTilesetProperties(tileset, rerender),
       renderTilesetWorkbench(tileset, tab, rerender),
     ],
   });
+  installDelayedTooltips(editor);
+  return editor;
 }
 
 /* 그림판이 이 탭의 주인공인데 30열 × 16px 시트는 2x 에서 960px 를 원한다. 보조 패널이
