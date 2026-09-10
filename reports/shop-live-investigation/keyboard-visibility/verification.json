@@ -1,0 +1,144 @@
+{
+  "result": "PASS",
+  "checked": "three actual viewports; all 4 numeric attributes inline/detail; selected canonical row; keyboard opener and return focus; each detail row visibly reachable; snapshot and shipped bundle hash equality; screenshot sizes; script syntax; cleanup",
+  "screenshots": [
+    {
+      "file": "00-normal-unequip-preview.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 188936,
+      "sha256": "4f7bbce984b671041673e62c840429c0881a71eaffa57150228fa7385bb75e37"
+    },
+    {
+      "file": "1024x768-detail-initial.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 114693,
+      "sha256": "def3cd2c7fc8afae0334edb81346e6a43630b83e820a4c71a6c60eaf840e2fc6"
+    },
+    {
+      "file": "1024x768-inline.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 133069,
+      "sha256": "c5a0da0a8608af9eb77d10ac2858e6435474d6ade1006b8ba8fa8267e3805714"
+    },
+    {
+      "file": "1024x768-opener.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 133001,
+      "sha256": "57497302c0d55e4f7b5b05cbdf7e5e5fb31847a626811701982e10ca1548c7a9"
+    },
+    {
+      "file": "320x240-detail-initial.png",
+      "width": 320,
+      "height": 240,
+      "bytes": 32607,
+      "sha256": "2e2f23588c8b0e17664314dde264ede21d479e1d0fbc4fa39571d029427c9c39"
+    },
+    {
+      "file": "320x240-detail-keyboard-scroll-03.png",
+      "width": 320,
+      "height": 240,
+      "bytes": 26312,
+      "sha256": "7117afc2c38760b24af46f5de763ae76a9c7650d8edc8ce2a929112f4acafe73"
+    },
+    {
+      "file": "320x240-detail-keyboard-scroll-04.png",
+      "width": 320,
+      "height": 240,
+      "bytes": 27180,
+      "sha256": "737dc9d5ca12ad245a009f4288368a2e00c1be8d99b0cc30853798dad318311e"
+    },
+    {
+      "file": "320x240-detail-keyboard-scroll-05.png",
+      "width": 320,
+      "height": 240,
+      "bytes": 27643,
+      "sha256": "56cb249a30a18cf334beda3b0e4c10a956c07c5521a65c7699b84fac421541ec"
+    },
+    {
+      "file": "320x240-detail-keyboard-scroll-07.png",
+      "width": 320,
+      "height": 240,
+      "bytes": 26975,
+      "sha256": "3a53067a469408bdf48edbad716b6babb019fc749dc92c5eb6a19b0fceb9c21f"
+    },
+    {
+      "file": "320x240-inline.png",
+      "width": 320,
+      "height": 240,
+      "bytes": 36293,
+      "sha256": "fcad610098189fd471fae64e4092c255d11f789df296f41eb075604b454b8fd5"
+    },
+    {
+      "file": "320x240-opener.png",
+      "width": 320,
+      "height": 240,
+      "bytes": 36424,
+      "sha256": "e439f562c1a13293e0b680cd5d8139caf9f185886daee90cf006bc3ad37c0d52"
+    },
+    {
+      "file": "320x240-return.png",
+      "width": 320,
+      "height": 240,
+      "bytes": 36424,
+      "sha256": "e439f562c1a13293e0b680cd5d8139caf9f185886daee90cf006bc3ad37c0d52"
+    },
+    {
+      "file": "640x480-detail-initial.png",
+      "width": 640,
+      "height": 480,
+      "bytes": 63534,
+      "sha256": "0a6b5e49dcd5bee93408f1f116995396ff4c4c27fdb10f322dbae67e2ad36d95"
+    },
+    {
+      "file": "640x480-detail-keyboard-scroll.png",
+      "width": 640,
+      "height": 480,
+      "bytes": 63128,
+      "sha256": "68be17168e5b3fb40d4ae19c0f0d1fd12ff56926bf77cd45e3255d03f383a484"
+    },
+    {
+      "file": "640x480-inline.png",
+      "width": 640,
+      "height": 480,
+      "bytes": 81967,
+      "sha256": "97d5789a16c0597c8eb5942815a2c41030734683c5a5f1555503086d4c9b6719"
+    },
+    {
+      "file": "640x480-opener.png",
+      "width": 640,
+      "height": 480,
+      "bytes": 82108,
+      "sha256": "b2668b6a1ebd6828043bec661be6a46ca47821c2daa2c3e965d059a5888e53f1"
+    }
+  ],
+  "recordedObserverErrors": [
+    "Error: page.evaluate: Missing observed state\nwindow.__visibilityPending</timer<@debugger eval code line 303 > eval:1:476\nsetTimeout handler*window.__visibilityPending<@debugger eval code line 303 > eval:1:445\n@debugger eval code line 303 > eval:1:38\n@debugger eval code line 303 > eval:1:789\nevaluate@debugger eval code:303:30\n@debugger eval code:1:44\n@debugger eval code:1:62\n",
+    "Missing observed state"
+  ],
+  "observerErrorAssessment": "Evidence harness Missing observed state entries retained, including a mistaken child-focus predicate in the status menu. Actual menu used aria-activedescendant; resumed same browser and same gameplay, no reset. No failed network requests. These logs do not support a zero-error-run claim.",
+  "ownedPageContextBrowserClosed": [
+    {
+      "resource": "page",
+      "closed": true
+    },
+    {
+      "resource": "context",
+      "closed": true
+    },
+    {
+      "resource": "browser",
+      "closed": true
+    }
+  ],
+  "ownedProcessAbsent": true,
+  "ownedControlListenerAbsent": true,
+  "existingServersListening": {
+    "9841": true,
+    "9888": true
+  },
+  "imageReviewLimitation": "Model cannot view images; files captured and dimensions verified. Visibility judgments use DOM clipping geometry and source CSS, not subjective screenshot inspection."
+}

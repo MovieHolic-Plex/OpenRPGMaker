@@ -1,0 +1,46 @@
+{
+  "geometry": {
+    "x": 343.6666564941406,
+    "y": 269.1999969482422,
+    "rect": {
+      "x": 89,
+      "y": 236.1999969482422,
+      "width": 509.33331298828125,
+      "height": 66,
+      "top": 236.1999969482422,
+      "right": 598.3333129882812,
+      "bottom": 302.1999969482422,
+      "left": 89
+    },
+    "hit": "<span class=\"runtime-shop-item-main\"><span class=\"runtime-shop-item-name\">수리검</span><span class=\"runtime-shop-item-type\">특수</span></span>"
+  },
+  "events": [
+    {
+      "type": "pointerdown",
+      "target": "shop-buy-item_gen_shuriken",
+      "x": 343,
+      "y": 269,
+      "prevented": false,
+      "selected": "shop-buy-item_gen_throwing_knife",
+      "detail": false
+    },
+    {
+      "type": "pointerup",
+      "target": "shop-buy-item_gen_shuriken",
+      "x": 343,
+      "y": 269,
+      "prevented": false,
+      "selected": "shop-buy-item_gen_throwing_knife",
+      "detail": false
+    },
+    {
+      "type": "click",
+      "target": "shop-buy-item_gen_shuriken",
+      "x": 343,
+      "y": 269,
+      "prevented": false,
+      "selected": "shop-buy-item_gen_throwing_knife",
+      "detail": false
+    }
+  ]
+}

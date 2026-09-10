@@ -1,0 +1,38 @@
+[
+  {
+    "url": "http://127.0.0.1:9841/export-player/assets/player-BhSXHFWt.css",
+    "sha256": "e44f805a11eda7b96408b82e352e4530ff4ba67004c0dbc8080978d3ea2e2c0e",
+    "bytes": 309017,
+    "tokens": {
+      "shop-summary-stat": false,
+      "shop-detail-open": true,
+      "shop-comparison": true,
+      "notEquipment": false,
+      "unsupportedItemEquipment": false
+    }
+  },
+  {
+    "url": "http://127.0.0.1:9841/export-player/player.js",
+    "sha256": "fba48fdd6baa19109fac3eceaa069ba4301c4cadebb54491d97660005338af6b",
+    "bytes": 1692583,
+    "tokens": {
+      "shop-summary-stat": false,
+      "shop-detail-open": false,
+      "shop-comparison": false,
+      "notEquipment": false,
+      "unsupportedItemEquipment": false
+    }
+  },
+  {
+    "url": "http://127.0.0.1:9841/export-player/assets/PlayScene-BAKbtaZw.js",
+    "sha256": "34958e9b3eaa86463bf217547b9b7c0a5968256456c9e1395bb955cca1f6ff3f",
+    "bytes": 449665,
+    "tokens": {
+      "shop-summary-stat": true,
+      "shop-detail-open": true,
+      "shop-comparison": true,
+      "notEquipment": true,
+      "unsupportedItemEquipment": true
+    }
+  }
+]

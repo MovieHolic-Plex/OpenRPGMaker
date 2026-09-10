@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#2b221c"/>
+  <rect x="40" y="36" width="1200" height="648" rx="18" fill="#f6ead7" stroke="#c9b496"/>
+  <rect x="40" y="36" width="1200" height="56" rx="18" fill="#3d2c22"/>
+  <rect x="40" y="72" width="1200" height="20" fill="#3d2c22"/>
+  <text x="64" y="72" fill="#f6ead7" font-family="ui-sans-serif, system-ui, sans-serif" font-size="22" font-weight="700">상점 명령 편집</text>
+  <text x="1130" y="72" fill="#9ad7b0" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14">AFTER</text>
+  <text x="80" y="192" fill="#3a2a1c" font-family="ui-sans-serif, system-ui, sans-serif" font-size="20" font-weight="700">진열 상품</text>
+  <rect x="210" y="172" width="46" height="28" rx="14" fill="#3d2c22"/>
+  <text x="224" y="192" fill="#f6ead7" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14">0개</text>
+  <rect x="1040" y="168" width="160" height="40" rx="8" fill="#c45c2c"/>
+  <text x="1068" y="194" fill="#fff8ee" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" font-weight="700">+ 상품 추가</text>
+  <rect x="64" y="224" width="1136" height="288" rx="12" fill="#fff8ee" stroke="#e2c9a8"/>
+  <text x="640" y="350" text-anchor="middle" fill="#3a2a1c" font-family="ui-sans-serif, system-ui, sans-serif" font-size="22" font-weight="700">아직 진열한 상품이 없습니다.</text>
+  <text x="640" y="384" text-anchor="middle" fill="#8a6a4e" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16">상품 추가에서 판매할 물건을 골라 주세요.</text>
+  <text x="64" y="560" fill="#2f7a4a" font-family="ui-sans-serif, system-ui, sans-serif" font-size="15">기본 itemIds = [] · 없는 잡화 ID를 심지 않음 · 실제 품목은 추가/서식/프리셋만</text>
+</svg>

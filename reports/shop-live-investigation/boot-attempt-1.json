@@ -1,0 +1,137 @@
+{
+  "startedAt": "2026-09-08T05:39:54.155Z",
+  "url": "http://127.0.0.1:9841/export-player/player.html",
+  "errors": [
+    "Unexpected token '<'",
+    "Unexpected token '<'",
+    "Error: page.evaluate: Error: Missing observed state\n    at eval (eval at evaluate (:303:30), <anonymous>:1:425)"
+  ],
+  "failedRequests": [],
+  "actions": [
+    {
+      "at": "2026-09-08T05:40:16.624Z",
+      "command": {
+        "op": "goto"
+      },
+      "result": "OPRN Player"
+    },
+    {
+      "at": "2026-09-08T05:40:18.307Z",
+      "command": {
+        "op": "eval",
+        "code": "() => ({text:document.body.innerText.slice(0,1500),testids:[...document.querySelectorAll(\"[data-testid]\")].map(e=>e.dataset.testid),scripts:[...document.scripts].map(e=>e.src)})"
+      }
+    },
+    {
+      "at": "2026-09-08T05:40:38.327Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => ({text:document.body.innerText.slice(0,1500),testids:[...document.querySelectorAll(\"[data-testid]\")].map(e=>e.dataset.testid),scripts:[...document.scripts].map(e=>e.src)}))()"
+      },
+      "result": {
+        "text": "새 프로젝트\n새 게임\n불러오기\n종료\nA NEW ADVENTURE\n이야기가 시작되는 곳\n방향키로 고르고 Enter로 시작",
+        "testids": [
+          "play-viewport",
+          "play-stage",
+          "title-screen",
+          "title-new-game",
+          "title-load-game",
+          "title-quit-game",
+          "title-kicker",
+          "title-subtitle",
+          "title-input-hint",
+          "title-selection-json"
+        ],
+        "scripts": [
+          "http://127.0.0.1:9841/export-player/player.js",
+          ""
+        ]
+      }
+    },
+    {
+      "at": "2026-09-08T05:41:04.333Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {window.__livePending = new Promise((resolve,reject)=>{const check=()=>{return (window.__oprnDebug && document.querySelector(\"[data-testid=runtime-state-json]\") && !document.querySelector(\"[data-testid=play-loading-overlay]\"))};const finish=()=>{if(check()){observer.disconnect();clearTimeout(timer);resolve(true)}};const observer=new MutationObserver(finish);const timer=setTimeout(()=>{observer.disconnect();reject(new Error('Missing observed state'))},120000);observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});finish();});return 'armed';})()"
+      },
+      "result": "armed"
+    },
+    {
+      "at": "2026-09-08T05:41:04.373Z",
+      "command": {
+        "op": "key",
+        "key": "Enter"
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:43:17.754Z",
+      "command": {
+        "op": "eval",
+        "code": "({text:document.body.innerText.slice(0,2000),testids:[...document.querySelectorAll(\"[data-testid]\")].map(e=>e.dataset.testid)})"
+      },
+      "result": {
+        "text": "플레이를 시작하지 못했습니다\nError: Phaser script loaded without exposing window.Phaser\n자동으로 복구한 항목\n시작 좌표 (18, 24) 가 맵 밖이거나 통행 불가라 (17, 24) 로 옮겼습니다. (start-position-unreachable)\n다시 시도\n안전 모드로 시작\n진단 내용 복사",
+        "testids": [
+          "play-viewport",
+          "play-stage",
+          "play-canvas",
+          "play-loading-overlay",
+          "play-loading-message",
+          "play-loading-hint",
+          "play-loading-bar",
+          "play-loading-bar-fill",
+          "play-loading-stage",
+          "play-recovery-panel",
+          "play-recovery-reason",
+          "play-recovery-repairs",
+          "play-recovery-retry",
+          "play-recovery-safe-mode",
+          "play-recovery-copy"
+        ]
+      }
+    },
+    {
+      "at": "2026-09-08T05:43:17.964Z",
+      "command": {
+        "op": "shot",
+        "name": "boot-failure.png"
+      },
+      "result": "boot-failure.png"
+    },
+    {
+      "at": "2026-09-08T05:43:18.164Z",
+      "command": {
+        "op": "close"
+      },
+      "result": [
+        {
+          "resource": "page",
+          "closed": true
+        },
+        {
+          "resource": "isolated context",
+          "closed": true
+        },
+        {
+          "resource": "owned browser",
+          "closed": true
+        }
+      ]
+    }
+  ],
+  "cleanup": [
+    {
+      "resource": "page",
+      "closed": true
+    },
+    {
+      "resource": "isolated context",
+      "closed": true
+    },
+    {
+      "resource": "owned browser",
+      "closed": true
+    }
+  ]
+}
