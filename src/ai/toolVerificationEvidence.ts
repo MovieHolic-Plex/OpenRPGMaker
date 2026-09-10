@@ -22,6 +22,13 @@ export interface VerificationRequirement {
   readonly ownerId: string;
   readonly name: string;
   readonly args: Record<string, unknown> | null;
+  /**
+   * `args === null` 인 이유. 두 사건을 한 표현으로 담으면 안 된다:
+   * `"omitted"` = 플래너가 선언 자체를 빼먹은 계획의 공백(진단만, 완료를 막지 않는다).
+   * `"malformed"` = 선언은 했는데 스코프가 파싱되지 않은 것 — 이건 계속 차단해야 한다.
+   * 막지 않으면 malformed 스코프가 **무관한 통과 기준에 얹혀** 통과로 집계된다.
+   */
+  readonly pendingReason?: "omitted" | "malformed";
   readonly criterion?: VerificationCriterionRef;
   readonly acceptedCriterion?: AcceptanceCriterion;
   /** Host declaration provenance; user-refined executable criteria are not amendable. */
@@ -468,7 +475,7 @@ export class ToolVerificationEvidence {
     // 영구히 미통과로 집계됐다(assistantSession 이 성공 기록을 지움 → 완료 게이트 영구 거부).
     // pending 은 판정에서 제외하고, 남은 판단은 아래 attempts 분기가 현재 revision 기준으로 한다.
     const states = [...this.requirements.values()].filter(state => !state.inactive && state.requirement.name === name
-      && state.requirement.args !== null
+      && (state.requirement.args !== null || state.requirement.pendingReason === "malformed")
       && (checkIds === undefined || checkIds.includes(state.requirement.checkId)));
     if (states.length) return states.every(state => state.pass && !state.stale && state.criterionPassed)
       && ![...this.findings.values()].some(f => !this.resolved(f) && f.name === name && (checkIds === undefined || states.some(s => s.requirement.ownerId === f.ownerId)));
@@ -496,6 +503,9 @@ export class ToolVerificationEvidence {
         // 스펙 미지정은 진단으로만 노출한다. blocking 으로 세면 해소 경로가 set_work_plan 하나뿐인데
         // 그 입력은 배열 원자 거부라 모델이 좌표를 못 잡아 턴이 영구히 끝나지 않는다.
         if (requirement.args === null) {
+          if (requirement.pendingReason === "malformed") {
+            return [`${requirement.name}: verificationChecks 스코프가 malformed — {checkId, args} 를 다시 지정하세요 [${requirement.checkId}]`];
+          }
           return scope === "all"
             ? [`${requirement.name}: pending specification — set_work_plan 의 verificationChecks 에 {checkId, args} 로 지정하세요 [${requirement.checkId}]`]
             : [];
