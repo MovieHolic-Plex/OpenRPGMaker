@@ -33,6 +33,13 @@ import {
   type RegionChunk,
 } from "@/editor/regionTask/regionChangeGroups";
 import { composePartialProject } from "@/editor/regionTask/partialApplyCompose";
+import { createRegionSelectionProjection } from "@/editor/regionTask/regionSelectionProjection";
+import {
+  clearActiveRegionSelection,
+  notifyRegionSelectionChanged,
+  setActiveRegionSelection,
+} from "@/editor/regionTask/regionPreviewSelection";
+import { replaceAgentGhostPreviewFromProjectDiff } from "@/editor/agentGhostPreview";
 import {
   loadRecentInstructions,
   pushRecentInstruction,
@@ -791,6 +798,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   activeModalCleanup = (): void => {
     disposed = true;
     reviewShortcuts = null;
+    // 창이 사라지면 청크 선택도 사라진다. settlePendingUi 를 안 거치고 닫히는 경로
+    // (새 모달이 먼저 열림·명시적 close)가 있어 여기서도 치운다.
+    clearActiveRegionSelection();
     // 신호/세대를 먼저 끊어 late result와 pending subscriber가 DOM을 만지지 못하게 한다.
     invalidateExecution(true);
     pendingUnsubscribe?.();
@@ -804,6 +814,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     if (disposed) return;
     reviewShortcuts = null;
     releaseExecution();
+    // 검토가 끝났으므로 투영을 치운다 — 안 치우면 다음 결과의 고스트가 옛 선택을 물려받는다.
+    clearActiveRegionSelection();
     const appliedSummary = `적용됨 — ${activePending?.changedCells ?? 0}칸 타일 · 이벤트 ${activePending?.changedEvents ?? 0}건`;
     setSummary(
       applied === true
@@ -875,7 +887,6 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     // A: 부분 적용 — 청크 그룹화. 썸네일보다 먼저 계산한다: "이후" 그림에 변경 칸
     // 하이라이트를 겹치려면 어떤 칸이 바뀌었는지 알아야 한다.
     // groupRegionChanges/labeling 이 예외를 던지면(예: 테스트용 최소 맵) 안전하게 폴백 — 비교 UI는 정상 렌더.
-    const compose = options.composePartial ?? composePartialProject;
     let groups: { lower: readonly RegionChunk[]; upper: readonly RegionChunk[]; unchangedCells: number } = { lower: [], upper: [], unchangedCells: 0 };
     let rawGroups = groups;
     try {
@@ -908,6 +919,32 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     const allChunkIds = allChunks.map((c) => c.id);
     // 기본: 모든 청크 선택(=전체 적용과 동일). 사용자가 일부 해제하면 부분 적용.
     for (const id of allChunkIds) selectedChunkIds.add(id);
+    // 선택 → 합성 프로젝트 투영. 캔버스 고스트와 적용 버튼이 **이 하나**를 함께 본다.
+    // 예전에는 고스트가 언제나 clippedProject(전체 결과)였고 체크리스트만 일부를 뺐다 —
+    // 두 화면이 서로 다른 것을 보여줬고 사용자가 머릿속에서 합성해야 했다.
+    const selectionProjection = createRegionSelectionProjection({
+      base: pending.baseProject,
+      clipped: pending.clippedProject,
+      mapId: pending.mapId,
+      region: pending.region,
+      groups: rawGroups,
+      ...(options.composePartial ? { compose: options.composePartial } : {}),
+    });
+    // 부분 적용을 제공하지 않는 제안(단일 덩어리·구조 제안·이벤트 섞임)은 투영을 활성화하지
+    // 않는다 — 선택이 바뀔 일이 없고, 고스트는 종전대로 전체 결과를 그리면 된다.
+    if (partialUseful) setActiveRegionSelection(selectionProjection);
+    /** 선택이 바뀔 때마다 캔버스 고스트를 다시 그린다. 창을 안 보고도 결과가 보인다. */
+    const syncSelectionToCanvas = (): void => {
+      if (!partialUseful) return;
+      selectionProjection.setSelection(selectedChunkIds);
+      notifyRegionSelectionChanged();
+      if (pending.settled) return;
+      try {
+        replaceAgentGhostPreviewFromProjectDiff(pending.baseProject, selectionProjection.project());
+      } catch {
+        // 고스트는 보조 표현이다 — 여기서 던져도 검토 UI 자체는 계속 쓸 수 있어야 한다.
+      }
+    };
     const cellsOf = (ids: Iterable<string>): number => {
       let total = 0;
       const wanted = new Set(ids);
@@ -1113,17 +1150,10 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       if (partialUseful && ids.length === 0) return;
       const partial = partialUseful && ids.length > 0 && ids.length < allChunkIds.length;
       selfSettling = true;
+      // 적용 대상은 **화면에 보이던 그 프로젝트**다 — 미리보기와 적용이 같은 투영을 쓴다.
+      selectionProjection.setSelection(ids);
       const outcome = partial
-        ? pending.applyProject(
-          compose({
-            base: pending.baseProject,
-            clipped: pending.clippedProject,
-            mapId: pending.mapId,
-            region: pending.region,
-            selectedChunkIds: ids,
-            groups: rawGroups,
-          }),
-        )
+        ? pending.applyProject(selectionProjection.project())
         : pending.apply();
       if (!outcome.ok) {
         selfSettling = false;
@@ -1206,6 +1236,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         const excluded = !selectedChunkIds.has(id);
         for (const cell of cells) cell.classList.toggle("is-excluded", excluded);
       }
+      // 썸네일뿐 아니라 **캔버스**도 같은 말을 해야 한다. 이 함수가 선택 변경의 단일 통로다.
+      syncSelectionToCanvas();
     };
     // 같은 타일로 된 덩어리가 여럿이면 라벨이 완전히 겹친다("Stone floor(3칸)" 두 줄).
     // 겹치는 것들에만 위치를 붙인다 — 안 겹치는데 붙이면 그냥 소음이다.

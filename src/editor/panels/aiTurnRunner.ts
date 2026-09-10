@@ -37,6 +37,7 @@ import {
   syncAgentBlueprintWithSpec,
 } from "@/editor/agentBlueprint";
 import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
+import { regionPreviewProject } from "@/editor/regionTask/regionPreviewSelection";
 import { appliedBlueprintRegions } from "@/editor/agentBlueprintRegions";
 import { focusEditorRegion, type EditorFocusRegion } from "@/editor/editorReferenceNavigation";
 import { shouldClearAiHighlightSelection } from "@/editor/transientEditorChrome";
@@ -504,8 +505,10 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       const pendingRegion = getPendingRegionApply();
       if (pendingRegion) {
         // Region approval owns its own draft. Return the shared preview surface to it.
-        setAgentGhostDraftMapProvider((mapId) => pendingRegion.clippedProject.maps[mapId]);
-        replaceAgentGhostPreviewFromProjectDiff(pendingRegion.baseProject, pendingRegion.clippedProject);
+        // 전체 결과가 아니라 지금 선택된 청크만 합성한 결과를 그린다(활성 투영이 없으면 전체 결과).
+        // 공급자는 호출 시점의 선택을 읽어야 하므로 스냅숏을 잡지 않는다.
+        setAgentGhostDraftMapProvider((mapId) => regionPreviewProject(pendingRegion).maps[mapId]);
+        replaceAgentGhostPreviewFromProjectDiff(pendingRegion.baseProject, regionPreviewProject(pendingRegion));
       } else {
         setAgentGhostDraftMapProvider(null);
       }

@@ -14,6 +14,7 @@ import type { AiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { clearAgentBlueprint } from "@/editor/agentBlueprint";
 import { clearAgentGhostPreview, replaceAgentGhostPreviewFromProjectDiff, setAgentGhostDraftMapProvider } from "@/editor/agentGhostPreview";
+import { regionPreviewProject } from "@/editor/regionTask/regionPreviewSelection";
 import type { PendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { getTool } from "@/editor/tools";
 import { showConfirm } from "@/editor/ui/modal";
@@ -213,9 +214,12 @@ export function dropSession(controller: ChatController, pendingRegion: PendingRe
   controller.session = null;
   clearAgentGhostPreview();
   // The caller owns the project boundary. Only a surviving independent region gets the surface back.
-  setAgentGhostDraftMapProvider(pendingRegion ? (mapId) => pendingRegion.clippedProject.maps[mapId] : null);
+  // 그릴 대상은 전체 결과가 아니라 **지금 선택된 청크만 합성한 결과**다 — 검토 중 청크를 빼면
+  // 캔버스도 그 칸을 원본으로 되돌려야 체크리스트와 같은 말을 한다(활성 투영이 없으면 전체 결과).
+  // 공급자는 클로저라 호출 시점의 선택을 읽어야 한다 — 스냅숏을 잡으면 토글이 반영되지 않는다.
+  setAgentGhostDraftMapProvider(pendingRegion ? (mapId) => regionPreviewProject(pendingRegion).maps[mapId] : null);
   if (pendingRegion) {
-    replaceAgentGhostPreviewFromProjectDiff(pendingRegion.baseProject, pendingRegion.clippedProject);
+    replaceAgentGhostPreviewFromProjectDiff(pendingRegion.baseProject, regionPreviewProject(pendingRegion));
   }
   // 세션이 사라지면 그 세션의 밑그림(BuildSpec)도 사라진다 — 청사진의 수명은 스펙에 매여 있고
   // 새 대화·대화 복원·프로젝트 전환이 모두 이 함수를 지나간다.
