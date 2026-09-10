@@ -9,7 +9,12 @@ import { repairTreePairsOnMap } from "@/project/lint/repairTreePairs";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import { isCombinedTownTileset, isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
-import { expandHardClusterPlacement, type HardClusterTileEdit } from "@/editor/tools/clusterRulePlacement";
+import {
+  describeHardClusterRejection,
+  expandHardClusterPlacement,
+  type HardClusterRejection,
+  type HardClusterTileEdit,
+} from "@/editor/tools/clusterRulePlacement";
 import { toast } from "@/util/toast";
 import type { AutotileGroup, Command, GameMap, MapId, PassFlag, Project, TilesetDef } from "@/project/types";
 import { markUserTileRuntimeMetadata } from "./runtimeTileMetadata";
@@ -39,6 +44,31 @@ export type TilePaintOptions = {
   readonly preservePattern?: boolean;
   /** false면 hard 클러스터 동반 타일 확장을 건너뛴다 — 스탬프처럼 "고른 그대로" 찍는 도구용. */
   readonly clusterExpand?: boolean;
+  /**
+   * 사람이 일부러 골라서 하는 **정확 배치 / 수리** (OPRN-OUT-017).
+   *
+   * 동반 타일을 강제하지 않고 고른 칸·레이어 하나만 쓴다. 스탬프의 `clusterExpand:false` 와
+   * 달리 **안전망은 남는다** — 다른 덧그림 오브젝트나 보호셀을 조용히 덮어쓰지 않는다.
+   * 스탬프·AI·구조물킷은 이 옵션을 쓰지 않으므로 그들의 기존 동작은 그대로다.
+   */
+  readonly exactPlacement?: boolean;
+  /**
+   * 거부를 토스트로만 말하는 대신 호출부가 받아 복구 경로(정확 배치 버튼)를 제시한다.
+   * 넘기지 않으면 지금까지처럼 사유 토스트만 띄운다.
+   */
+  readonly onRejected?: (rejection: TilePaintRejection) => void;
+};
+
+/** 사람이 보는 배치 거부 — 규칙·동반 타일·좌표와 원래 누르려던 칸을 같이 들고 온다. */
+export type TilePaintRejection = {
+  readonly cluster?: HardClusterRejection;
+  readonly layer: TileLayer;
+  readonly reason: string;
+  /** 사람이 고른 정확 배치가 가능한가 — 보호셀·다른 덧그림이면 그곳도 닫혀 있다. */
+  readonly recoverable: boolean;
+  readonly tile: number;
+  readonly x: number;
+  readonly y: number;
 };
 type LowerTileEdit = {
   readonly layer: TileLayer;
@@ -49,7 +79,7 @@ type LowerTileEdit = {
 type PlannedTileEdit = HardClusterTileEdit;
 type TilePaintPlan =
   | { readonly edits: readonly PlannedTileEdit[]; readonly ok: true }
-  | { readonly ok: false; readonly reason: string };
+  | { readonly cluster?: HardClusterRejection; readonly ok: false; readonly reason: string; readonly recoverable: boolean };
 
 export type TileStrokeCell = {
   readonly layer: TileLayer;
@@ -77,21 +107,33 @@ export function paintTilesBulk(
   if (!currentMap) return;
   const tileset = current.tilesets[currentMap.tilesetId];
   const autoConnect = options.autoConnect ?? true;
-  const clusterExpand = options.clusterExpand !== false;
+  const exactPlacement = options.exactPlacement === true;
+  // 정확 배치는 정의상 동반 확장을 하지 않는다 — 두 토글을 따로 넘겨 어긋나는 경우를 없앤다.
+  const clusterExpand = !exactPlacement && options.clusterExpand !== false;
 
   const planned: PlannedTileEdit[] = [];
-  let rejection: string | null = null;
+  let rejection: TilePaintRejection | null = null;
   for (const stroke of strokes) {
     const targetLayer = effectiveLayer(tileset, stroke.layer, stroke.tile);
-    const plan = !clusterExpand
-      ? { ok: true as const, edits: inMap(currentMap, stroke.x, stroke.y) ? [{ layer: targetLayer, tile: stroke.tile, x: stroke.x, y: stroke.y }] : [] }
-      : planManualClusterPaint(current, currentMap, tileset, targetLayer, stroke.x, stroke.y, stroke.tile);
+    const plan = exactPlacement
+      ? planExactPlacement(current, currentMap, targetLayer, stroke.x, stroke.y, stroke.tile)
+      : !clusterExpand
+        ? { ok: true as const, edits: inMap(currentMap, stroke.x, stroke.y) ? [{ layer: targetLayer, tile: stroke.tile, x: stroke.x, y: stroke.y }] : [] }
+        : planManualClusterPaint(current, currentMap, tileset, targetLayer, stroke.x, stroke.y, stroke.tile);
     if (!plan.ok) {
-      rejection = plan.reason;
+      rejection = {
+        layer: targetLayer,
+        reason: plan.reason,
+        recoverable: plan.recoverable,
+        tile: stroke.tile,
+        x: stroke.x,
+        y: stroke.y,
+        ...(plan.cluster ? { cluster: plan.cluster } : {}),
+      };
       continue;
     }
     const previous = tileAt(currentMap, targetLayer, stroke.x, stroke.y);
-    if (tileset && isCombinedTownTileset(tileset)
+    if (tileset && isCombinedTownTileset(tileset) && !exactPlacement
       && targetLayer === "upper" && previous !== undefined && isTreeCanopyTileId(previous)
       && !isTreeCanopyTileId(stroke.tile)) {
       // Replacing a canopy replaces its tree, just like erasing it. Otherwise
@@ -103,12 +145,12 @@ export function paintTilesBulk(
     planned.push(...plan.edits);
   }
   if (planned.length === 0) {
-    if (rejection) showClusterRejectionToast(rejection);
+    if (rejection) reportPaintRejection(rejection, options);
     return;
   }
   if (rejection && planned.length < strokes.length) {
     // 일부만 실패 — 성공분은 적용, 실패 사유는 알림
-    showClusterRejectionToast(rejection);
+    reportPaintRejection(rejection, options);
   }
 
   // 같은 칸 중복: 나중 stroke 우선
@@ -128,7 +170,10 @@ export function paintTilesBulk(
   // even when UI Manual is on (RM brush contract). Dirty-cell expansion follows.
   const shapeAutotile = !options.preservePattern
     && lowerEditsNeedAutotileShape(currentMap, tileset, edits, autoConnect);
-  const repairTrees = !options.preservePattern && !lowerTerrainOnly && editsNeedTreePairRepair(edits);
+  // 정확 배치는 나무 짝 보정도 지난다 — 안 그러면 y=0 밑동은 지워지고, 밑동 위 칸에는
+  // 수관이 강제로 심겨 "고른 칸만 바꾼다"는 계약이 그 자리에서 깨진다(OPRN-OUT-017).
+  const repairTrees = !options.preservePattern && !exactPlacement
+    && !lowerTerrainOnly && editsNeedTreePairRepair(edits);
 
   store.updateMap(mapId, (m) => {
     const lowerPoints: RoadPoint[] = [];
@@ -619,7 +664,7 @@ function planManualClusterPaint(
     tile,
     tileset,
   });
-  if (!expansion.ok) return { ok: false, reason: expansion.reason ?? "동반 타일 배치 불가" };
+  if (!expansion.ok) return clusterRejected(project, map, layer, x, y, tile, expansion.rejection, expansion.reason);
   if (expansion.autoTiles === 0) return { ok: true, edits: expansion.edits };
   const protectedExpansion = expandHardClusterPlacement({
     blocked: protectedClusterCells(project, map),
@@ -629,13 +674,84 @@ function planManualClusterPaint(
     tile,
     tileset,
   });
-  if (!protectedExpansion.ok) return { ok: false, reason: protectedExpansion.reason ?? "동반 타일 배치 불가" };
+  if (!protectedExpansion.ok) {
+    return clusterRejected(project, map, layer, x, y, tile, protectedExpansion.rejection, protectedExpansion.reason);
+  }
   return { ok: true, edits: protectedExpansion.edits };
 }
 
-function showClusterRejectionToast(reason: string): void {
+/**
+ * 보조 배치가 거부됐을 때의 계획 결과. 사유는 규칙·동반 타일·좌표를 다 말하고,
+ * 그 자리에 **정확 배치**가 가능한지를 같은 안전망으로 미리 계산해 붙인다 — 누를 수 없는
+ * 복구 버튼을 보여 주는 것은 또 다른 막다른 길이다.
+ */
+function clusterRejected(
+  project: Project,
+  map: GameMap,
+  layer: TileLayer,
+  x: number,
+  y: number,
+  tile: number,
+  cluster: HardClusterRejection | undefined,
+  fallbackReason: string | undefined
+): TilePaintPlan {
+  const exact = planExactPlacement(project, map, layer, x, y, tile);
+  return {
+    ok: false,
+    reason: cluster ? describeHardClusterRejection(cluster) : fallbackReason ?? "동반 타일 배치 불가",
+    recoverable: exact.ok && exact.edits.length > 0,
+    ...(cluster ? { cluster } : {}),
+  };
+}
+
+/**
+ * 거부를 사람에게 돌려준다. 호출부가 복구 경로를 붙일 수 있으면(`onRejected`) 그쪽이 UI 를
+ * 소유하고, 아니면 예전처럼 사유 토스트만 띄운다. 조용한 무동작은 이제 어느 쪽에서도 없다.
+ */
+function reportPaintRejection(rejection: TilePaintRejection, options: TilePaintOptions): void {
+  if (options.onRejected) {
+    options.onRejected(rejection);
+    return;
+  }
   if (typeof document === "undefined") return;
-  toast(`클러스터 규칙 때문에 배치할 수 없습니다: ${reason}`, "error");
+  toast(`클러스터 규칙 때문에 배치할 수 없습니다: ${rejection.reason}`, "error");
+}
+
+/**
+ * 정확 배치 계획 — 고른 칸·레이어 하나만. 동반 타일을 만들지 않으므로 hard 규칙 위반이
+ * 남을 수 있고, 그건 lint(`cluster-rule:adjacency:<group>`) 가 규칙·좌표와 함께 계속 보여 준다.
+ * 대신 두 가지는 정확 배치에서도 절대 암묵적으로 깨지지 않는다.
+ *   1. 보호셀(시작 지점·이벤트·장소이동 대상)은 덮지 않는다.
+ *   2. 다른 덧그림 오브젝트(지붕·수관 등)를 조용히 치우지 않는다.
+ * 둘 다 거부되면 복구 불가(`recoverable:false`) — 사용자가 먼저 그 칸을 치워야 한다.
+ */
+function planExactPlacement(
+  project: Project,
+  map: GameMap,
+  layer: TileLayer,
+  x: number,
+  y: number,
+  tile: number
+): TilePaintPlan {
+  if (!inMap(map, x, y)) return { ok: true, edits: [] };
+  if (computeProtectedClusterCells(project, map).has(coordKey(x, y))) {
+    return {
+      ok: false,
+      reason: `(${x},${y})는 보호셀입니다 — 시작 지점·이벤트·장소이동 대상은 정확 배치로도 덮지 않습니다`,
+      recoverable: false,
+    };
+  }
+  if (layer === "upper" && tile !== TILE.EMPTY) {
+    const existing = tileAt(map, "upper", x, y) ?? TILE.EMPTY;
+    if (existing !== TILE.EMPTY && existing >= 0 && existing !== tile) {
+      return {
+        ok: false,
+        reason: `(${x},${y})의 덧그림에 다른 오브젝트(${existing})가 있습니다 — 먼저 지우고 배치하세요`,
+        recoverable: false,
+      };
+    }
+  }
+  return { ok: true, edits: [{ layer, tile, x, y }] };
 }
 
 // 보호 셀 집합은 이벤트/시작점에서만 유도되고 타일 값과 무관하다. 페인트 드래그는 셀마다
@@ -656,6 +772,18 @@ function installProtectedCellsInvalidator(): void {
 function protectedClusterCells(project: Project, map: GameMap): ReadonlySet<string> {
   installProtectedCellsInvalidator();
   if (protectedCellsCache?.mapId === map.id) return protectedCellsCache.cells;
+  const blocked = computeProtectedClusterCells(project, map);
+  protectedCellsCache = { cells: blocked, mapId: map.id };
+  return blocked;
+}
+
+/**
+ * 캐시를 **읽지도 쓰지도 않는** 보호셀 계산. 정확 배치는 페인트 드래그처럼 셀마다 돌지 않고
+ * (한 칸씩 의도적으로 누르는 행동), 거부 시 복구 가능 여부를 미리 볼 때도 쓴다. 그 미리보기가
+ * 캐시를 채우면 이후의 실제 배치가 **오래된 보호셀 집합**을 보게 된다 —
+ * 실측: 캐시를 태우자 직접 map.events 를 밀어 넣은 회귀 테스트에서 보호셀 거부가 사라졌다.
+ */
+function computeProtectedClusterCells(project: Project, map: GameMap): ReadonlySet<string> {
   const blocked = new Set<string>();
   if (project.startMapId === map.id) blocked.add(coordKey(project.startPos.x, project.startPos.y));
   for (const event of map.events) {
@@ -671,7 +799,6 @@ function protectedClusterCells(project: Project, map: GameMap): ReadonlySet<stri
     }
   }
   for (const commonEvent of project.commonEvents) collectTransferTargets(commonEvent.commands, map.id, blocked);
-  protectedCellsCache = { cells: blocked, mapId: map.id };
   return blocked;
 }
 

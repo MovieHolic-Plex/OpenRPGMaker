@@ -1,4 +1,5 @@
 import { TILE_SIZE } from "@/assets/bundled";
+import { clusterAssistCopy, toggleClusterAssistMode } from "@/editor/clusterAssistRecovery";
 import { editorState } from "@/editor/editorState";
 import {
   favoriteTilesSnapshot,
@@ -18,6 +19,7 @@ const CHIPSET_CELL_SIZE = TILE_SIZE * 2;
 
 export type TileBrushAssistModel = {
   readonly autoConnectMode: boolean;
+  readonly clusterAssistMode: boolean;
   readonly mapId: string;
   readonly onSelectTile: (tile: number) => void;
   readonly rerender: () => void;
@@ -73,7 +75,8 @@ export function makeTileBrushAssistPanel(model: TileBrushAssistModel): HTMLEleme
             type: "button",
             title: autoOn
               ? "자동 연결 켜짐 — 이웃 지형까지 다시 검사해 이어 붙입니다. 누르면 수동으로."
-              : "수동 배치 켜짐 — 일반 타일은 그대로 둡니다. 단 오토타일 브러시(흙길·모래·실내 366 등)는 항상 성형됩니다.",
+              : "수동 배치 켜짐 — 일반 타일은 그대로 둡니다. 단 오토타일 브러시(흙길·모래·실내 366 등)는 항상 성형됩니다."
+                + " 이것은 지형 연결만 끕니다 — 나무·벤치 같은 구조물의 짝 배치는 아래 「구조 보조」가 따로 정합니다.",
             "aria-pressed": String(autoOn),
             "aria-label": autoOn ? "자동 연결 끄기" : "자동 연결 켜기",
           },
@@ -93,12 +96,51 @@ export function makeTileBrushAssistPanel(model: TileBrushAssistModel): HTMLEleme
       ],
     })
   );
+  panel.append(makeClusterAssistRow(model));
   // 2글자 라벨(즐겨/유사/사용/주변)은 뜻이 전달되지 않았다 — 풀어 쓴다.
   panel.append(makeTileStrip("즐겨찾기", favorites, "favorite-tile-grid", "favorite-tile", model));
   panel.append(makeTileStrip("닮은 타일", similar, "similar-tile-grid", "similar-tile", model));
   panel.append(makeUsedLocations(model.mapId, used, model.rerender));
   panel.append(makeCurrentNeighborhoodSummary());
   return panel;
+}
+
+/**
+ * 구조 보조(hard 클러스터 동반 배치) 토글. 이웃 연결과 **다른 줄**에 있고 다른 말을 쓴다 —
+ * 「이웃 연결: 수동」 하나가 두 가지를 다 끈다고 읽혀 사용자가 나무밑동을 손댈 수 없다고
+ * 보고한 것이 이 분리의 이유다(OPRN-OUT-017).
+ */
+function makeClusterAssistRow(model: TileBrushAssistModel): HTMLElement {
+  const on = model.clusterAssistMode;
+  const copy = clusterAssistCopy(on);
+  return el("div", {
+    class: "tile-brush-row tile-brush-cluster-row",
+    children: [
+      el("span", { class: "tile-brush-label", text: "구조 보조" }),
+      el("button", {
+        class: "btn tile-brush-chip" + (on ? " active" : ""),
+        text: copy.chip,
+        attrs: {
+          type: "button",
+          title: copy.title,
+          "aria-pressed": String(on),
+          "aria-label": on ? "구조 보조 끄고 정확 배치" : "구조 보조 켜기",
+        },
+        dataset: { testid: "cluster-assist-mode-toggle" },
+        on: {
+          click: () => {
+            toggleClusterAssistMode();
+            model.rerender();
+          },
+        },
+      }),
+      el("span", {
+        class: "tile-brush-hint",
+        text: copy.hint,
+        dataset: { testid: "cluster-assist-mode-hint" },
+      }),
+    ],
+  });
 }
 
 function makeTileStrip(

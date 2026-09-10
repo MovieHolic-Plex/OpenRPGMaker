@@ -237,6 +237,8 @@ function makePaletteSurface(input: {
   options.append(makeTileBrushControls(state, renderPalettePreservingViewport));
   if (state.tool === 'paint' && !state.activePaletteStamp && getEditorChrome().advancedSidebarControls) options.append(makePaintShapeSelect(model));
   if (assist.modeRow) options.append(assist.modeRow);
+  // 구조 보조는 이웃 연결과 나란히 보인다 — 두 계약이 따로 있다는 사실 자체가 UI 정보다.
+  if (assist.clusterRow) options.append(assist.clusterRow);
   root.append(options);
   root.append(makePaletteFilterBar(tileset));
 
@@ -388,9 +390,10 @@ function makeBrushAssistSection(
   mapId: string,
   state: ReturnType<typeof editorState.get>,
   tileset: TilesetDef
-): { readonly modeRow: HTMLElement | null; readonly section: HTMLElement } {
+): { readonly clusterRow: HTMLElement | null; readonly modeRow: HTMLElement | null; readonly section: HTMLElement } {
   const panel = makeTileBrushAssistPanel({
     autoConnectMode: state.autoConnectMode,
+    clusterAssistMode: state.clusterAssistMode,
     mapId,
     onSelectTile: selectPaletteTile,
     rerender: renderPalettePreservingViewport,
@@ -398,11 +401,13 @@ function makeBrushAssistSection(
     tileset,
   });
   const modeRow = panel.querySelector<HTMLElement>(".tile-brush-mode-row");
+  const clusterRow = panel.querySelector<HTMLElement>(".tile-brush-cluster-row");
 
   modeRow?.remove();
+  clusterRow?.remove();
   const section = makeSidebarSurface({ id: 'assist', label: '붓 보조', triggerId: 'palette-brush-assist-toggle',
     rerender: renderPalettePreservingViewport, body: () => panel });
-  return { modeRow, section };
+  return { clusterRow, modeRow, section };
 }
 
 // makeTilePropsSection 은 삭제됨 — src/editor/panels/tilePropsDialog.ts 의 창으로 대체.

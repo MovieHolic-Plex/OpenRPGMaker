@@ -7,6 +7,11 @@ import {
 } from "@/editor/actions";
 import { comboBrushPlacement, evaluateComboBrushPlacement, isComboBrush } from "@/editor/comboBrush";
 import { editorState } from "@/editor/editorState";
+import {
+  clusterRecoveryOffer,
+  freehandPaintOptions,
+  presentClusterRecovery,
+} from "@/editor/clusterAssistRecovery";
 import { revealPaletteTileFromMap } from "@/editor/panels/tilePalette";
 import { selectTileRegion } from "@/editor/mapClipboard";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
@@ -72,7 +77,7 @@ export class TilePaintEngine {
       toast(mapEditLockNotice(mid), "error");
       return;
     }
-    const { activePaletteStamp, autoConnectMode, brushSize, selectedTile } = editorState.get();
+    const { activePaletteStamp, autoConnectMode, brushSize, clusterAssistMode, selectedTile } = editorState.get();
     const key = `${x},${y}`;
     const previousKey = this.deps.getPaintState().lastPaintKey;
     const firstStrokeTile = previousKey === "";
@@ -178,10 +183,24 @@ export class TilePaintEngine {
             return;
           }
           // 브러시 전 칸을 한 번의 updateMap 으로 (셀마다 clone 금지)
+          //
+          // 구조 보조(clusterAssistMode)는 이웃 연결과 **별개** 토글이다. 보조가 켜져 있으면
+          // 동반 칸까지 원자적으로 배치하고, 막히면 그 자리에서 정확 배치를 제안한다.
+          // 보조가 꺼져 있으면 고른 칸만 쓴다 — 그래도 보호셀·다른 덧그림은 덮지 않는다.
           paintTilesBulk(
             mid,
             points.map((point) => ({ ...point, layer: tileLayer, tile: selectedTile })),
-            { autoConnect: autoConnectMode },
+            freehandPaintOptions({
+              autoConnect: autoConnectMode,
+              clusterAssist: clusterAssistMode,
+              onRejected: (rejection) => {
+                // 드래그 중 같은 말을 수십 번 띄우지 않되, 스트로크의 **첫 거부**에서는
+                // 반드시 규칙·좌표와 복구 버튼을 보여 준다(붓이 잠긴 것처럼 보이던 원인).
+                if (this.placementNoticeShown) return;
+                this.placementNoticeShown = true;
+                presentClusterRecovery(clusterRecoveryOffer(mid, rejection));
+              },
+            }),
           );
         });
         break;

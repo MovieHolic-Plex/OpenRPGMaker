@@ -958,6 +958,7 @@
 }
 
 .editor-layout .left-panel-stack .tile-brush-mode-row .tile-brush-chip,
+.editor-layout .left-panel-stack .tile-brush-cluster-row .tile-brush-chip,
 .editor-layout .map-context-trigger,
 .editor-layout .map-tree-more {
   min-height: var(--space-5);
@@ -1031,6 +1032,11 @@
 
 .sidebar-paint-options .tile-brush-mode-row {
   margin-left: auto;
+  gap: var(--space-1);
+}
+
+/* 구조 보조는 이웃 연결 바로 뒤에 붙는다 — 두 줄이 나란히 보여 계약이 둘임을 드러낸다. */
+.sidebar-paint-options .tile-brush-cluster-row {
   gap: var(--space-1);
 }
 

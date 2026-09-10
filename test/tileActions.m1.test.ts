@@ -161,7 +161,12 @@ describe("paintTile — layer routing", () => {
       paintTile(mapId, "lower", 1, bottomY, 260);
 
       expect(currentMap().upperTiles).toEqual(beforeBoundary);
-      expect(toastText()).toContain("맵 경계");
+      // OPRN-OUT-017: 거부 문장은 규칙·요구 동반 타일·좌표를 모두 말한다.
+      const boundaryText = toastText() ?? "";
+      expect(boundaryText).toContain("맵 밖");
+      expect(boundaryText).toContain("290");
+      expect(boundaryText).toContain(`(1,${bottomY + 1})`);
+      expect(boundaryText).toContain("침엽수 상단(260)은 하단(290) 바로 위에 있어야 합니다");
 
       const protectedMap = currentMap();
       protectedMap.events.push({ id: "event_under_tree", x: 3, y: 2, trigger: { kind: "action" }, commands: [] });
@@ -170,7 +175,9 @@ describe("paintTile — layer routing", () => {
       paintTile(mapId, "lower", 3, 1, 260);
 
       expect(currentMap().upperTiles).toEqual(beforeProtected);
-      expect(toastText()).toContain("보호셀");
+      const protectedText = toastText() ?? "";
+      expect(protectedText).toContain("보호셀");
+      expect(protectedText).toContain("(3,2)");
     } finally {
       restoreDom();
     }

@@ -34,8 +34,18 @@ Regression coverage: `test/exteriorDoorBackground.test.ts`.
   and current-layer policy on upper, including EMPTY. Explicit `pickTileAt`
   remains layer-specific. Sampling and structure-kit selection reset shape to
   pen; B/1 clears an active stamp like the normal Paint button.
+- **Cluster assistance is a second, independent toggle (2026-09-10, OPRN-OUT-017).**
+  `autoConnectMode` owns terrain autotile shaping; `clusterAssistMode` (default **on**) owns
+  hard-cluster companion placement. Do not route a new "manual" label through `autoConnect`
+  alone — that is exactly what made trunks 290-292 look unpaintable. Freehand paint uses
+  `freehandPaintOptions`; rejection flows to `clusterAssistRecovery.ts`, which offers a
+  one-undo `exactPlacement` write. `exactPlacement` still refuses protected cells and foreign
+  upper objects and skips tree-pair repair. Stamps, AI tools and structure kits are untouched.
+  Details, the protected-cell cache trap and the out-of-scope `bAlt` parity candidate:
+  `openwiki/editor-validation.md`.
 - Regression seams: `test/editScenePaintHistory.test.ts`,
-  `test/tileBrushState.test.ts`, `test/structureKitBrushConditions.test.ts`.
+  `test/tileBrushState.test.ts`, `test/structureKitBrushConditions.test.ts`,
+  `test/clusterAssistRecovery.test.ts`, `test/clusterAssistUi.test.ts`.
   Real browser proof is `scripts/qa/sidebar-brush.mjs`; its fixture is local-only
   and requires disabled remote persistence.
 
