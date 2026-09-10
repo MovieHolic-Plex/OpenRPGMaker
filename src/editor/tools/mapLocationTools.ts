@@ -5,10 +5,21 @@
 // `find_layout_regions`(queryTools.ts) 와 역할이 다르다. 그쪽은 **마을 빌더의 설계 기록**을 본다.
 // 이쪽은 **사람이 저작한 로케이션 레이어**를 본다. 승격(빌더 영역 → 로케이션)은
 // `adopt_layout_regions` 한 방향뿐이며 layoutPlan 을 바꾸지 않는다.
+//
+// 이관은 두 툴로 나뉜다: `survey_layout_adoption`(읽기 전용 조사, 먼저) → `adopt_layout_regions`(실행).
+// 실행 툴의 `roles` 기본값은 **전부가 아니라** `DEFAULT_ADOPTION_ROLES`(광장·장터)다 —
+// 근거는 `project/mapLocationAdoption.ts` 상단.
 
 import {
+  DEFAULT_ADOPTION_ROLES,
+  adoptLayoutRegionsForMaps,
+  adoptionRoleCaution,
+  adoptionRoleLabel,
+  describeAdoptionOutcome,
+  surveyProjectAdoption,
+} from "@/project/mapLocationAdoption";
+import {
   addMapLocation,
-  adoptLayoutRegionsAsLocations,
   deleteMapLocation,
   describeLocation,
   findLocationById,
@@ -272,8 +283,13 @@ const adoptLayoutRegions: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      roles: { type: "array", items: { type: "string" }, description: "이 role 만 승격(예: [\"house\",\"market\"]). 생략하면 전부." },
+      roles: {
+        type: "array",
+        items: { type: "string" },
+        description: `이 role 만 승격. 생략하면 기본 선택(${DEFAULT_ADOPTION_ROLES.join(", ")})이며 "전부"가 아니다. house 는 시공 단위라 수십 개가 한꺼번에 생긴다.`,
+      },
       regionIds: { type: "array", items: { type: "string" }, description: "특정 region id 만 승격." },
+      collisionPolicy: { type: "string", enum: ["suffix", "skip"], description: "이름이 겹칠 때: suffix 는 번호를 붙여 만들고 skip 은 건너뛴다. 기본 suffix." },
     },
     required: ["mapId"],
     additionalProperties: false,
@@ -286,13 +302,67 @@ const adoptLayoutRegions: ToolDefinition = {
         mapId: map.id,
       });
     }
-    const result = adoptLayoutRegionsAsLocations(map, {
-      ...(Array.isArray(args.roles) ? { roles: args.roles as string[] } : {}),
+    // 역할을 생략하면 기본 선택(광장·장터)이다. "전부"가 아니라는 것이 중요하다 —
+    // 조수가 말을 즐기다 집 롯 40개를 사용자-가시 장소로 만들면 사람이 손으로 지우는 수밖에 없다.
+    const roles = Array.isArray(args.roles) ? (args.roles as string[]) : [...DEFAULT_ADOPTION_ROLES];
+    const outcome = adoptLayoutRegionsForMaps(draft, {
+      mapIds: [map.id],
+      roles,
       ...(Array.isArray(args.regionIds) ? { regionIds: args.regionIds as string[] } : {}),
+      collisionPolicy: args.collisionPolicy === "skip" ? "skip" : "suffix",
     });
+    const cautions = roles.map((role) => adoptionRoleCaution(role)).filter(Boolean);
     return {
-      summary: `승격 ${result.adopted.length}건, 이미 승격돼 건너뜀 ${result.skipped.length}건 (layoutPlan 불변)`,
-      data: { adopted: result.adopted.map(locationData), skipped: result.skipped },
+      summary:
+        `${describeAdoptionOutcome(outcome)} 역할 ${roles.map(adoptionRoleLabel).join("·")} (layoutPlan 불변)` +
+        (cautions.length > 0 ? ` — 주의: ${cautions.join(" ")}` : ""),
+      data: {
+        adopted: outcome.adopted,
+        skippedAlreadyAdopted: outcome.skippedAlreadyAdopted,
+        skippedNameCollision: outcome.skippedNameCollision,
+        rebound: outcome.rebound,
+        roles,
+      },
+    };
+  },
+};
+
+const surveyLayoutAdoption: ToolDefinition = {
+  name: "survey_layout_adoption",
+  description:
+    "프로젝트 전체에서 아직 명명 로케이션으로 옮기지 않은 빌더 설계 영역을 **읽기만** 하고 맵별로 센다. " +
+    "아무것도 바꾸지 않는다. 사용자가 '어느 맵을 이관해야 하나' 를 물으면 adopt_layout_regions 보다 먼저 이걸 써라.",
+  mode: "read",
+  parameters: {
+    type: "object",
+    properties: {
+      roles: {
+        type: "array",
+        items: { type: "string" },
+        description: `이 role 기준으로 센다. 생략하면 기본 ${DEFAULT_ADOPTION_ROLES.join(", ")}.`,
+      },
+    },
+    additionalProperties: false,
+  },
+  run(project, args): ToolExecResult {
+    const survey = surveyProjectAdoption(project, {
+      ...(Array.isArray(args.roles) ? { roles: args.roles as string[] } : {}),
+    });
+    if (survey.maps.length === 0) {
+      return {
+        summary: "빌더 설계 기록(layoutPlan.regions)이 있는 맵이 없습니다. 이관할 것이 없습니다.",
+        data: { maps: [], totalAdoptable: 0 },
+      };
+    }
+    const lines = survey.maps.map(
+      (map) =>
+        `${map.mapName}(${map.mapId}): 후보 ${map.adoptableCount} · 이미 ${map.adoptedCount}` +
+        `${map.rebindableCount > 0 ? ` · 재시공으로 다시 묶을 것 ${map.rebindableCount}` : ""}` +
+        `${map.collisions.length > 0 ? ` · 이름 충돌 ${map.collisions.length}` : ""}`,
+    );
+    return {
+      summary: `설계 기록 맵 ${survey.maps.length}개 · 역할 ${survey.selectedRoles.map(adoptionRoleLabel).join("·")} 기준 승격 후보 ${survey.totalAdoptable}개 — ${lines.join(" / ")}`,
+      data: { maps: survey.maps, roles: survey.roles, selectedRoles: survey.selectedRoles, totalAdoptable: survey.totalAdoptable },
     };
   },
 };
@@ -303,5 +373,6 @@ export const MAP_LOCATION_TOOLS: readonly ToolDefinition[] = [
   createMapLocation,
   updateMapLocation,
   deleteMapLocationTool,
+  surveyLayoutAdoption,
   adoptLayoutRegions,
 ];

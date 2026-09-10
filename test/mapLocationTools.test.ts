@@ -163,8 +163,43 @@ describe("assistant map-location tools", () => {
 
     const again = runTool(ctx, "adopt_layout_regions", { mapId: MAP_ID, roles: ["house"] });
     expect(again.ok).toBe(true);
-    expect((again.data as { adopted: unknown[]; skipped: string[] }).skipped).toEqual(["house-a"]);
+    // 건너뛴 이유가 세 갈래(이미 승격 / 이름 충돌 / 재시공 재바인딩)로 갈라졌으므로 이유별로 센다.
+    const skipped = (again.data as { skippedAlreadyAdopted: { regionId: string }[] }).skippedAlreadyAdopted;
+    expect(skipped.map((entry) => entry.regionId)).toEqual(["house-a"]);
     expect(mapLocations(ctx.project.maps[MAP_ID])).toHaveLength(1);
+  });
+
+  it("adopt_layout_regions defaults to commons roles, not to every builder region", () => {
+    const plan: MapLayoutPlan = {
+      version: 1,
+      kind: "village-harness-natural-v2",
+      regions: [
+        { id: "house-a", role: "house", label: "파랑 지붕 집", x: 2, y: 2, w: 4, h: 4 },
+        { id: "market-a", role: "market", label: "중앙 시장", x: 9, y: 9, w: 5, h: 5 },
+      ],
+    };
+    const ctx = context(structuredClone(plan));
+    // roles 를 생략하면 "전부"가 아니다 — 집 롯은 사람이 명시적으로 켜야만 들어온다.
+    const result = runTool(ctx, "adopt_layout_regions", { mapId: MAP_ID });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    expect(mapLocations(ctx.project.maps[MAP_ID]).map((entry) => entry.name)).toEqual(["중앙 시장"]);
+  });
+
+  it("survey_layout_adoption counts candidates without changing anything", () => {
+    const plan: MapLayoutPlan = {
+      version: 1,
+      kind: "village-harness-natural-v2",
+      regions: [
+        { id: "house-a", role: "house", label: "파랑 지붕 집", x: 2, y: 2, w: 4, h: 4 },
+        { id: "market-a", role: "market", label: "중앙 시장", x: 9, y: 9, w: 5, h: 5 },
+      ],
+    };
+    const ctx = context(structuredClone(plan));
+    const before = JSON.stringify(ctx.project);
+    const result = runTool(ctx, "survey_layout_adoption", {});
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    expect((result.data as { totalAdoptable: number }).totalAdoptable).toBe(1);
+    expect(JSON.stringify(ctx.project)).toBe(before);
   });
 
   it("adopt_layout_regions refuses a map that was not produced by the builder", () => {
