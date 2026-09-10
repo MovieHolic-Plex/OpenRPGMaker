@@ -37,10 +37,10 @@ export function bgmInstallBanner(input: {
   if (input.status === null) return null;
   if (input.status !== undefined && input.status.installed.length >= input.status.expected) return null;
 
-  const text = el("div", { dataset: { testid: "bgm-install-status-text" } });
-  const error = el("small", { class: "bgm-install-error", dataset: { testid: "bgm-install-error" } });
-  const progress = el("progress", { dataset: { testid: "bgm-install-progress" } });
-  const button = el("button", { attrs: { type: "button" }, dataset: { testid: "bgm-install-button" } });
+  const text = el("div", { text: "설치 상태 확인 중…", dataset: { testid: "bgm-install-status-text" } });
+  const error = el("small", { class: "bgm-install-error", attrs: { hidden: "" }, dataset: { testid: "bgm-install-error" } });
+  const progress = el("progress", { attrs: { hidden: "" }, dataset: { testid: "bgm-install-progress" } });
+  const button = el("button", { attrs: { type: "button", hidden: "" }, dataset: { testid: "bgm-install-button" } });
   const cancel = el("button", {
     attrs: { type: "button" }, text: "취소", dataset: { testid: "bgm-install-cancel" },
     on: { click: () => { void cancelBgmInstall(); } },
