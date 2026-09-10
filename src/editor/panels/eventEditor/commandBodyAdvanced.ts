@@ -1188,7 +1188,16 @@ function callCommonEventBody(
       commonEventId: ceSel.value,
     });
   });
-  return ceSel;
+  if (project.commonEvents.length > 0) return ceSel;
+  return el("div", {
+    children: [
+      ceSel,
+      el("div", {
+        class: "empty-hint",
+        text: "공통 이벤트가 없습니다. 먼저 공통 이벤트를 만드세요.",
+      }),
+    ],
+  });
 }
 
 function callMapEventBody(

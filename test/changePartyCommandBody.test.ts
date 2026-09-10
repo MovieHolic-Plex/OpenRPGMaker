@@ -80,4 +80,11 @@ describe("changeParty command body UX", () => {
       { kind: "changeLevel", actorId, op: "+=", amount: 3 } satisfies Command
     );
   });
+  it("uses correct object particle for level descriptions", () => {
+    const body = renderWithFakeDom(() =>
+      changeLevelBody(ctx(), { kind: "changeLevel", actorId, op: "+=", amount: 2 })
+    );
+    expect(body.textContent).not.toContain("레벨를");
+    expect(body.textContent).toContain("레벨을");
+  });
 });

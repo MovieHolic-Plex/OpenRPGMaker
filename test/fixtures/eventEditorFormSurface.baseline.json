@@ -1259,7 +1259,8 @@
   ],
   "classes": [
    "cream-command-form",
-   "cream-command-form-head"
+   "cream-command-form-head",
+   "empty-hint"
   ],
   "controls": {
    "event-command-label-name": "input[text]{}"
@@ -1267,7 +1268,7 @@
   "selectOptions": {},
   "labels": [],
   "tags": {
-   "div": 4,
+   "div": 5,
    "input": 1
   },
   "tagByTestid": {
@@ -1287,7 +1288,8 @@
   ],
   "classes": [
    "cream-command-form",
-   "cream-command-form-head"
+   "cream-command-form-head",
+   "empty-hint"
   ],
   "controls": {
    "event-command-goto-label-name": "input[text]{}"
@@ -1295,7 +1297,7 @@
   "selectOptions": {},
   "labels": [],
   "tags": {
-   "div": 4,
+   "div": 5,
    "input": 1
   },
   "tagByTestid": {
@@ -2840,7 +2842,8 @@
    "event-command-edit-summary"
   ],
   "classes": [
-   "cream-command-form-head"
+   "cream-command-form-head",
+   "empty-hint"
   ],
   "controls": {
    "event-command-call-common-event-select": "select{}"
@@ -2852,7 +2855,7 @@
   },
   "labels": [],
   "tags": {
-   "div": 2,
+   "div": 4,
    "option": 1,
    "select": 1
   },

@@ -40,6 +40,22 @@ const PLAYER_OPTIONS = [{ value: "player", label: "주인공" }] as const;
 
 export function renderM2CommandBody(context: CommandEditContext, cmd: Command): HTMLElement | undefined {
   if (cmd.kind !== "m2Command") return undefined;
+  const body = renderM2CommandBodyInner(context, cmd);
+  if (!body) return undefined;
+  // 은퇴한 M2 행 — 저장된 프로젝트는 열리지만 새로 고르는 길은 피커에서 막혀 있다.
+  // 전용 폼 경로를 포함해 모든 M2 다이얼로그에 붙는다.
+  const deprecated = m2CommandById(cmd.commandId)?.deprecated;
+  if (deprecated) {
+    body.prepend(el("div", {
+      class: "empty-hint",
+      dataset: { testid: "m2-command-deprecated-notice" },
+      text: `이 명령은 ${deprecated.supersededBy}로 통합되었습니다. ${deprecated.reason}`,
+    }));
+  }
+  return body;
+}
+
+function renderM2CommandBodyInner(context: CommandEditContext, cmd: Extract<Command, { kind: "m2Command" }>): HTMLElement | undefined {
   const rich = renderActorM2CommandBody(context, cmd);
   if (rich) return rich;
   const weighted = renderWeightedBranchCommandBody(context, cmd);
@@ -66,17 +82,18 @@ export function renderM2CommandBody(context: CommandEditContext, cmd: Command): 
     return wrap;
   }
 
+  // 필드 없는 명령은 안내 한 줄만 — 도움말+빈문구 이중 노출을 막는다.
+  if (entry.fields.length === 0) {
+    wrap.append(el("div", { class: "empty-hint", text: m2CommandHelpText(0) }));
+    return wrap;
+  }
+
   wrap.append(
     el("div", {
       class: "empty-hint",
       text: m2CommandHelpText(entry.fields.length),
     })
   );
-
-  if (entry.fields.length === 0) {
-    wrap.append(el("div", { class: "empty-hint", text: "추가 설정 없음" }));
-    return wrap;
-  }
 
   for (const spec of entry.fields) {
     wrap.append(fieldRow(fieldLabelForSpec(cmd.commandId, entry.title, spec), controlForField({ context, cmd, spec, title: entry.title, value: cmd.fields[spec.key] ?? spec.defaultValue })));
@@ -692,7 +709,11 @@ function resourcePreview(options: ResourcePreviewOptions): HTMLElement {
     return preview;
   }
   preview.dataset.empty = "true";
-  preview.textContent = options.value ? `${options.selectedName} 미리보기 없음` : "그림을 고르세요";
+  // 종류가 근거다 — 동영상 칸에 "그림을 고르세요"는 거짓말이다.
+  const emptyCopy = options.semantic.resourceKinds.size === 1 && options.semantic.resourceKinds.has("movie")
+    ? "동영상을 고르세요"
+    : "그림을 고르세요";
+  preview.textContent = options.value ? `${options.selectedName} 미리보기 없음` : emptyCopy;
   return preview;
 }
 
@@ -767,7 +788,7 @@ function resourceSemantic(title: string): ResourceFieldSemantic {
   if (title.includes("Picture")) return { kind: "resource", label: "그림 선택", resourceKinds: new Set(["picture"]) };
   if (title.includes("BGM")) return { kind: "resource", label: "배경음 선택", resourceKinds: new Set(["music"]) };
   if (title.includes("SE")) return { kind: "resource", label: "효과음 선택", resourceKinds: new Set(["sound"]) };
-  if (title.includes("Movie")) return { kind: "resource", label: "영상 선택", resourceKinds: IMAGE_RESOURCE_KINDS };
+  if (title.includes("Movie")) return { kind: "resource", label: "영상 선택", resourceKinds: new Set(["movie"]) };
   return { kind: "resource", label: "그림 선택", resourceKinds: IMAGE_RESOURCE_KINDS };
 }
 
@@ -799,6 +820,7 @@ function resourcePickerTestIds(key: string): { readonly picker: string; readonly
 function resourcePreviewAriaLabel(kind: ResourceKind | undefined): string {
   if (kind === "picture") return "선택한 그림 리소스 미리보기";
   if (kind === "backdrop") return "선택한 전투 배경 리소스 미리보기";
+  if (kind === "movie") return "선택한 동영상 리소스 미리보기";
   return "선택한 리소스 미리보기";
 }
 

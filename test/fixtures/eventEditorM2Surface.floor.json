@@ -298,7 +298,7 @@
  "m2-066-play-movie": {
   "testidCount": 6,
   "controlCount": 2,
-  "selectOptionCount": 31,
+  "selectOptionCount": 1,
   "classCount": 8,
   "labelCount": 2,
   "textCount": 2

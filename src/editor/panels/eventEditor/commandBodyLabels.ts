@@ -18,6 +18,12 @@ export function labelBody(context: CommandEditContext, cmd: LabelCommand): HTMLE
     children: [
       el("div", { class: "cream-command-form-head", text: cmd.kind === "label" ? "라벨" : "라벨로 이동" }),
       name,
+      el("div", {
+        class: "empty-hint",
+        text: cmd.kind === "label"
+          ? "같은 이벤트 안에서 라벨로 점프가 돌아오는 지점입니다."
+          : "같은 이벤트 안의 라벨 이름으로 점프합니다.",
+      }),
     ],
   });
 }
