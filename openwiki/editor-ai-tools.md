@@ -1,6 +1,6 @@
 # Editor AI Tools & Vocabulary
 
-## 명명 로케이션 툴 6종 (OPRN-OUT-020, 2026-09-10)
+## 명명 로케이션 툴 7종 (OPRN-OUT-020 + LOC-ADOPT, 2026-09-10)
 
 `src/editor/tools/mapLocationTools.ts`. 목표 하나다: 사용자가 "정문 광장"이라고 말하면 조수가
 좌표를 되묻지 않고 그 사각형을 쓴다.
@@ -12,8 +12,20 @@
 | `create_map_location` | write | 이름 붙은 구역 생성(겹침 허용) |
 | `update_map_location` | write | 이름 또는 사각형 변경. **이름을 바꿔도 ID 는 그대로** |
 | `delete_map_location` | write | 삭제. 참조가 있으면 `brokenReferences` 로 복구 방식을 밝혀야 한다 |
+| `survey_layout_adoption` | read | 프로젝트 전체에서 아직 안 옮긴 설계 영역을 맵별로 **센다**(아무것도 안 바꾼다) |
 | `adopt_layout_regions` | write | 빌더 `layoutPlan.regions` → 로케이션 **복사**(멱등, layoutPlan 불변) |
 
+- **이관은 조사 → 실행 두 단계다 (LOC-ADOPT).** 사용자가 "어느 맵을 이관해야 하나" 를 물으면
+  `survey_layout_adoption` 을 먼저 써라 — 읽기 전용이고 맵별 (후보 / 이미 승격 / 재시공 재바인딩 /
+  이름 충돌 / 고아) 를 준다. `adopt_layout_regions` 의 `roles` 기본값은 **「전부」가 아니라**
+  `DEFAULT_ADOPTION_ROLES`(`plaza`, `market`) 다: `house` 는 시공·보호 단위라 한 마을에 20~40개가
+  나오고, 기본으로 켜면 저작자가 쓴 적 없는 이름 수십 개를 게임에 실어 버린다. 사용자가 명시적으로
+  요청할 때만 넓혀라. `collisionPolicy` 는 `suffix`(기본, 밀린 이름을 `renamedFrom` 으로 보고) 와
+  `skip` 중 하나이며, 어느 쪽이든 기존 로케이션의 이름·ID 는 바뀌지 않는다.
+  반환의 `skipped` 는 `skippedAlreadyAdopted` / `skippedNameCollision` / `rebound` 세 이유로
+  갈라졌다 — `rebound` 는 빌더 재시공으로 region ID 만 바뀐 같은 장소를 **새로 만들지 않고**
+  기존 로케이션에 다시 묶었다는 뜻이다(로케이션 ID 불변 = 참조 생존).
+  사람 경로는 편집기의 「설계 영역 이관」 창이다.
 - **`find_layout_regions` 와 층이 다르다.** 그쪽은 마을 빌더의 설계 기록만 본다. 이쪽은 사람이 저작한
   로케이션 층이다. 두 층의 관계·마이그레이션은 `openwiki/runtime-project-schema.md` 의
   「명명 로케이션 레이어」 절이 소유한다.

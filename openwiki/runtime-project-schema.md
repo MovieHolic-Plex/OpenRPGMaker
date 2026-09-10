@@ -530,6 +530,45 @@ bytes after real remote reload and Test Play. The default is not remote proof.
     편집기 「설계 영역을 구역으로 가져오기」)가 복사하고, layoutPlan 은 한 바이트도 바뀌지 않는다.
     승격본은 `origin { kind:"layoutRegion", regionId, planKind? }` 스냅샷을 남기고 멱등이다.
     자동 승격은 없다 — **옛 빌더 맵을 열기만 해서는 아무 일도 일어나지 않는다.**
+  - **일괄 이관 도구 — 「설계 영역 이관」 (LOC-ADOPT, 2026-09-10):** OPRN-OUT-020 이 제품
+    책임자에게 미뤄 뒀던 「기존 빌더 맵 이관」이 **도구로** 들어왔다. 자동 승격은 여전히 없다 —
+    바뀐 것은 사람이 보고 고를 수단이 생겼다는 것뿐이다. 규칙 원본은
+    `src/project/mapLocationAdoption.ts`, 편집기 상태는 `src/editor/mapLocationAdoptionState.ts`,
+    창은 `src/editor/panels/mapLocationAdoptionPanel.ts`.
+    - **조사가 먼저다.** `surveyProjectAdoption(project, {roles})` 은 프로젝트를 한 바이트도 바꾸지
+      않고 맵별로 (승격 후보 / 이미 승격 / 재바인딩 가능 / 이름 충돌 / 재시공 고아)를 센다.
+      창을 여는 것만으로는 `locations` 필드가 생기지 않는다.
+    - **실행은 계획을 받는다.** `adoptLayoutRegionsForMaps(project, {mapIds, roles, regionIds,
+      collisionPolicy})`. `mapIds` 가 비면 **아무 일도 하지 않는다** — 프로젝트 전체 자동 적용
+      진입점은 존재하지 않는다. `layoutPlan` 은 읽기만 하므로 실행 전후 바이트 동일.
+    - **멱등성이 두 겹이다.** `origin.regionId` 뿐 아니라 **같은 사각형(x,y,w,h)** 도 본다.
+      빌더는 재시공마다 `regions` 를 통째로 갈아치우고 `uniqueHouseRegionId` 는 그때 살아 있는
+      배열만 보고 번호를 매기므로, 같은 자리의 같은 장소가 **새 region ID** 를 받을 수 있다.
+      ID 만 보면 그 장소가 두 번 승격된다. 같은 사각형이면 로케이션을 다시 만들지 않고
+      `origin.regionId` 만 새 ID 로 **다시 묶는다(rebind)** — 로케이션 ID 는 그대로이므로
+      `insideLocation` 조건과 인카운터 참조가 전부 살아 있다.
+    - **기본 역할은 `DEFAULT_ADOPTION_ROLES = ["plaza","market"]` 이고, 근거는 코드다.**
+      `houseProtection.ts:53` 과 `villageEvaluate.ts:704` 가 `role === "house"` 를 **시공 사실**로
+      읽고 한 마을에 집 롯이 20~40개 나온다 — 기본으로 켜면 저작자가 쓴 적 없는 이름 수십 개가
+      한꺼번에 사용자-가시 장소가 된다. `river`/`lake`/`forest` 도 지형 기록이다. 반대로
+      `villageEvaluate.ts:649` 는 `plaza|market` 을 **마을 공용 생활 공간**으로 묶어 센다 —
+      사람이 "광장에서 만나자" 라고 말하는 층이 정확히 그것이다. 나머지 역할은 **숨기지 않고**
+      필터에 전부 보이며 `adoptionRoleCaution(role)` 이 왜 껐는지 한 문장으로 화면에 적는다.
+    - **이름 충돌은 조용히 해결하지 않는다.** 원시 `adoptLayoutRegionsAsLocations` 는 「상점 2」로
+      말없이 피하지만, 일괄 이관에서는 수십 개가 한 번에 들어와 무엇이 밀렸는지 알 수 없다.
+      조사가 충돌을 미리 세어 보여 주고, 실행은 정책을 고른다: `suffix`(번호를 붙이되 영수증에
+      `renamedFrom` 을 적는다) 또는 `skip`(만들지 않고 목록에 남긴다). **어느 쪽이든 기존
+      로케이션의 이름과 ID 는 바뀌지 않는다** — 사람이 쓴 낱말이 항상 이긴다.
+    - **되돌림은 한 덩어리다.** 여러 맵을 골라도 `recordProjectSnapshot` 1건 + `store.update`
+      1회다. 그리고 **무변경 실행은 되돌리기 칸을 먹지 않는다**: 실행 전에 복제본으로 예행하고
+      no-op 이면 스냅샷을 아예 밀지 않는다(브라우저 QA 실측으로 잡힌 결함 — 멱등성을 확인하려고
+      두 번째로 누른 사용자가 Ctrl+Z 를 치면 빈 스냅샷이 돌아와 승격이 남았다).
+    - **출처 영역이 사라진 승격본(고아)은 조사가 보고만 하고 지우지 않는다.** 사람이 이름을
+      고쳤을 수 있고 조건·인카운터가 가리키고 있을 수 있다.
+    - 조수 툴도 같은 규칙을 지난다: `survey_layout_adoption`(읽기 전용, 먼저) →
+      `adopt_layout_regions`(실행). 실행 툴의 `roles` 기본값은 **「전부」가 아니라**
+      `DEFAULT_ADOPTION_ROLES` 이고 `collisionPolicy` 를 받는다. 반환의 `skipped` 는
+      `skippedAlreadyAdopted` / `skippedNameCollision` / `rebound` 세 이유로 갈라졌다.
   - **ID 와 표시명은 분리된다.** ID(`loc1`, `loc2` … 맵 안에서만 유일)는 참조가 쓰고, `name` 은 사람과
     조수가 쓴다. 이름을 바꿔도 `insideLocation` 조건과 인카운터 참조가 살아 있다.
   - **참조 지점(실측 전량):** `map.encounterTable[].conditions.locationId`, `Condition` 의
@@ -562,6 +601,10 @@ bytes after real remote reload and Test Play. The default is not remote proof.
     전투 이벤트는 `BattleSessionState.currentMapId/x/y`(전투 개시 시점 필드 위치)로 같은 판정을 내므로
     페이지·맵 fork·전투 세 표면이 일치한다 — `test/conditionEvaluatorParity.test.ts` 의 allowlist 는
     여전히 비어 있다. 세이브 스키마 버전은 그대로다(추가 필드 전부 optional).
+  - 회귀(이관 도구): `test/mapLocationAdoption.test.ts`(33건 — 조사 무변경·역할 필터·명시 선택·
+    멱등 2회·layoutPlan 바이트 동일·충돌 2정책·재시공 후 재실행·되돌림 1회·무변경 실행이
+    되돌리기를 먹지 않음·저장/불러오기 왕복), `test/mapLocationAdoptionPanel.test.ts`(9건, 실제 DOM).
+    브라우저 증거: `verify-shots/loc-adopt/`.
   - 회귀: `test/mapNamedLocations.test.ts`(31건 — 스키마 왕복·중복 ID 거부·겹침·리사이즈·시프트·복사·
     승격 멱등·조건 의미·인카운터·레거시 사각형·진단·복구 3종), `test/mapLocationTools.test.ts`(12건),
     `test/mapLocationLayer.test.ts`(7건, 실제 DOM). 브라우저 증거: `verify-shots/oprn-020/`.
