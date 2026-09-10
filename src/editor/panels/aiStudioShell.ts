@@ -17,6 +17,8 @@ import {
 } from "@/editor/panels/aiChangePreview";
 import { renderEditorIcon, type EditorIconName } from "@/editor/panels/eventEditor/editorIcons";
 import { createMapThumbnail } from "@/editor/panels/mapThumbnail";
+import { createPlanningListView, currentPlanningMapId, type PlanningListView } from "@/editor/panels/aiPlanningList";
+import { listMapPlanningItems } from "@/editor/mapPlanningActions";
 import {
   filterToolCategories,
   FREQUENT_TOOL_NAMES,
@@ -30,7 +32,7 @@ import { store } from "@/project/store";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
 import { el } from "@/util/dom";
 
-export type StudioDeckTab = "tools" | "work" | "changes" | "activity";
+export type StudioDeckTab = "tools" | "work" | "planning" | "changes" | "activity";
 
 export interface StudioShellPieces {
   readonly historyLogMount: HTMLElement;
@@ -71,6 +73,7 @@ const WORK_STATUS_LABEL: Record<WorkItem["status"], string> = {
 const DECK_TABS: readonly { readonly id: StudioDeckTab; readonly label: string; readonly icon: EditorIconName }[] = [
   { id: "tools", label: "도구", icon: "tool" },
   { id: "work", label: "작업", icon: "lines" },
+  { id: "planning", label: "기획", icon: "check" },
   { id: "changes", label: "변경", icon: "image" },
   { id: "activity", label: "활동", icon: "clock" },
 ];
@@ -563,6 +566,18 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     requestCanvasFit();
   };
 
+  // 보존 기획 판은 자기 상태(입력 중인 초안)를 들고 있으므로 한 번 만들어 재사용한다 — 매 툴콜마다
+  // 다시 그리면 사용자가 타이핑 중인 한 줄이 사라진다.
+  let planningView: PlanningListView | null = null;
+  const refreshPlanningBadge = (): void => {
+    const count = listMapPlanningItems(currentPlanningMapId()).filter((item) => item.status === "active").length;
+    setBadge("planning", count > 0 ? String(count) : null);
+  };
+  const ensurePlanningView = (): PlanningListView => {
+    planningView ??= createPlanningListView({ onChanged: () => refreshPlanningBadge() });
+    return planningView;
+  };
+
   const renderDeck = (): void => {
     if (deckTab === "tools") {
       deckPane.replaceChildren(renderToolsPane(toolQuery, options.onUseTool));
@@ -570,6 +585,12 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     }
     if (deckTab === "work") {
       deckPane.replaceChildren(renderWorkPane(workPlan, workActive));
+      return;
+    }
+    if (deckTab === "planning") {
+      const view = ensurePlanningView();
+      view.refresh();
+      deckPane.replaceChildren(view.root);
       return;
     }
     if (deckTab === "activity") {
@@ -596,6 +617,9 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
       refreshScenes();
     });
     sceneCount.textContent = String(Object.keys(project.maps).length);
+    // 기획 항목은 맵별이다 — 장면을 바꿔으면 막 상자와 리스트를 그 맵 것으로 갈아끈다.
+    refreshPlanningBadge();
+    if (deckTab === "planning" && planningView) planningView.refresh();
     if (rows.length === 0) {
       rows.push(el("p", {
         class: "ai-studio-empty-text",

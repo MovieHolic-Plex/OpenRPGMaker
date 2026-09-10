@@ -1290,6 +1290,7 @@
 /* 성향·맥락 팝오버의 토글은 레일에 있다 — 팝오버도 레일 아래로 내려 붙인다(컴포저 위로 띄우면
    기록과 레일을 덮어 토글 자신을 가렸다 — 실측 2026-09-03). */
 .ai-deck-rail > .ai-preference-popover,
+.ai-deck-rail > .ai-planning-popover,
 .ai-deck-rail > .ai-context-panel {
   bottom: calc(100% + 6px);
   left: auto;
@@ -1301,6 +1302,7 @@
 }
 
 .ai-deck-rail > .ai-preference-popover[hidden],
+.ai-deck-rail > .ai-planning-popover[hidden],
 .ai-deck-rail > .ai-context-panel[hidden] {
   display: none;
 }
@@ -1451,4 +1453,104 @@
 body:has(.database-modal-backdrop) .ai-chat-panel .ai-deck,
 body:has([data-testid='resource-modal']) .ai-chat-panel .ai-deck {
   display: none;
+}
+
+/* ── 12. 보존 기획 재사용(OPRN-019) ─────────────────────────────────────────
+   컴포저 칩은 선택 영역 칩과 같은 알약 문법을 쓰되 강조 색을 쓰지 않는다 — 선택 영역은
+   이번 턴의 좌표(사실)이고, 보존 기획은 사용자가 고른 지침(의견)이라 무게가 다르다.
+   팝오버는 「무엇이 실리는지」를 원문 그대로 보여주는 자리다. */
+:is(.ai-deck, .ai-studio-composer) .ai-planning-chip {
+  background: var(--bg-inset);
+  border-color: var(--border-strong);
+  color: var(--text-1);
+  cursor: pointer;
+}
+
+.ai-planning-popover {
+  max-width: 380px;
+  min-width: 260px;
+  padding: var(--space-3);
+}
+
+.ai-planning-reuse {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.ai-planning-reuse-head {
+  display: grid;
+  gap: 2px;
+}
+
+.ai-planning-reuse-scope {
+  color: var(--text-2);
+  font-size: 12.5px;
+  margin: 0;
+}
+
+.ai-planning-reuse-modes {
+  display: grid;
+  gap: var(--space-1);
+  grid-auto-flow: column;
+}
+
+.ai-planning-reuse-mode {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  color: var(--text-2);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+}
+
+.ai-planning-reuse-mode.is-on {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent-active);
+}
+
+.ai-planning-reuse-mode:disabled {
+  color: var(--text-disabled);
+  cursor: default;
+}
+
+.ai-planning-reuse-items {
+  display: grid;
+  gap: var(--space-1);
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.ai-planning-reuse-item {
+  align-items: start;
+  color: var(--text-1);
+  display: grid;
+  font-size: 13px;
+  gap: var(--space-2);
+  grid-template-columns: auto minmax(0, 1fr);
+  line-height: 1.4;
+}
+
+.ai-planning-reuse-effect {
+  color: var(--text-2);
+  font-size: 12.5px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.ai-planning-reuse-preview {
+  background: var(--bg-inset);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.5;
+  margin: 0;
+  max-height: 160px;
+  overflow: auto;
+  padding: var(--space-2);
+  white-space: pre-wrap;
 }

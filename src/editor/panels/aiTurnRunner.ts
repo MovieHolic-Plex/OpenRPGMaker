@@ -24,6 +24,8 @@ import type { ProposalApplyOutcome } from "@/editor/panels/aiProposalCard";
 import type { WorkPlan } from "@/ai/workPlan";
 import type { AcceptanceSnapshot } from "@/ai/assistantAcceptance";
 import type { BuildSpec } from "@/ai/buildSpec";
+import { addMapPlanningItem } from "@/editor/mapPlanningActions";
+import { planningTextFromSpecAsset } from "@/project/mapPlanningItems";
 import type { AiDocument } from "@/project/types";
 import {
   beginAgentBlueprintTurn,
@@ -364,6 +366,27 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
                 `· ${asset.id} (${asset.kind}) (${asset.x},${asset.y}) ${asset.w}×${asset.h}${asset.style ? ` — ${asset.style}` : ""}`
             ),
           ];
+          // 밑그림은 여전힐 세션 것이다. 그것을 맵에 살리고 싶으면 사용자가 지금 담아 둔다 —
+          // 자동으로 담지 않는다(사용자가 원하지 않은 항목이 항구적 지침문으로 남는 것을 막는다).
+          const captureButton = el("button", {
+            class: "ai-assistant-action",
+            text: "보존 기획에 담기",
+            attrs: { type: "button", title: `${spec.mapId} 의 보존 기획 목록에 이 밑그림 항목을 넣습니다` },
+            dataset: { testid: "ai-build-spec-capture" },
+            on: {
+              click: () => {
+                let added = 0;
+                for (const asset of spec.assets) {
+                  if (addMapPlanningItem(spec.mapId, planningTextFromSpecAsset(asset), {
+                    origin: "spec",
+                    specAssetId: `${spec.mapId}:${asset.id}`,
+                  })) added += 1;
+                }
+                captureButton.disabled = true;
+                captureButton.textContent = added > 0 ? `보존 기획에 ${added}개 담았습니다` : "이밌 담긴 항목입니다";
+              },
+            },
+          }) as HTMLButtonElement;
           const details = el("details", {
             class: "ai-chat-bubble ai-chat-system ai-build-spec-summary",
             dataset: { testid: "ai-build-spec-summary" },
@@ -373,6 +396,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
                 class: "ai-build-spec-detail",
                 text: detailLines.length > 0 ? detailLines.join("\n") : "(영역 상세 없음)",
               }),
+              ...(spec.assets.length > 0 ? [captureButton] : []),
             ],
           });
           deps.surface.log.append(details);

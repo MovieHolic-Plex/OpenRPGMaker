@@ -325,6 +325,19 @@
   padding: 9px;
 }
 
+/* 「보존 기획 재사용」 껍데기. 성향 팝오버와 같은 표면 규칙을 쓴다 — 맵 위에 뜨는
+   팝오버가 배경 없이 서면 캔버스 타일이 글자 밑으로 비쳐 읽을 수 없다(실측
+   verify-shots/oprn-019/07 초판). 내용 스타일은 18-assistant-deck.css §12 가 맡는다. */
+.ai-planning-popover {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  box-shadow: var(--shadow-pop);
+  left: 0;
+  max-height: min(420px, 60vh);
+  overflow-y: auto;
+}
+
 /* 팝오버 안에서는 바깥 테두리가 이중이 된다 — 껍데기가 이미 테두리를 갖고 있다. */
 .ai-preference-popover .ai-preference-settings {
   border: none;
