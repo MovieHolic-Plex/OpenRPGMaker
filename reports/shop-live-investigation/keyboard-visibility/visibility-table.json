@@ -1,0 +1,499 @@
+{
+  "projectId": "oprn-e98456e1d8",
+  "title": "용사의 여정",
+  "rectUnits": "CSS px; XYWH rounded to 0.001; unrounded raw captures retain all ancestor geometry",
+  "visibilityMetric": "Row boxes intersected with browser viewport and clipping ancestors; not OCR or glyph-level visibility",
+  "rows": [
+    {
+      "viewport": "1024x768",
+      "shopRectXYWH": [
+        44,
+        36,
+        936,
+        696
+      ],
+      "inline": {
+        "attack": {
+          "values": {
+            "current": 45,
+            "next": 53,
+            "delta": 8
+          },
+          "rowVisibility": "fully-visible",
+          "rectXYWH": [
+            643.333,
+            360.9,
+            287.667,
+            37.3
+          ]
+        },
+        "defense": {
+          "values": {
+            "current": 72,
+            "next": 72,
+            "delta": 0
+          },
+          "rowVisibility": "fully-visible",
+          "rectXYWH": [
+            643.333,
+            398.2,
+            287.667,
+            37.3
+          ]
+        },
+        "mind": {
+          "values": {
+            "current": 48,
+            "next": 48,
+            "delta": 0
+          },
+          "rowVisibility": "fully-visible",
+          "rectXYWH": [
+            643.333,
+            435.5,
+            287.667,
+            37.3
+          ]
+        },
+        "agility": {
+          "values": {
+            "current": 45,
+            "next": 45,
+            "delta": 0
+          },
+          "rowVisibility": "fully-visible",
+          "rectXYWH": [
+            643.333,
+            472.8,
+            287.667,
+            37.3
+          ]
+        }
+      },
+      "inlineStatSlotDisplay": "block",
+      "detailOpener": {
+        "rectXYWH": [
+          687.883,
+          634.6,
+          114.983,
+          33.6
+        ],
+        "enabled": true,
+        "keyboardOpened": true
+      },
+      "detailInitial": {
+        "attack": {
+          "values": {
+            "current": 45,
+            "next": 53,
+            "delta": 8
+          },
+          "rowVisibility": "fully-visible",
+          "rectXYWH": [
+            177,
+            341.5,
+            670,
+            37.3
+          ]
+        },
+        "defense": {
+          "values": {
+            "current": 72,
+            "next": 72,
+            "delta": 0
+          },
+          "rowVisibility": "fully-visible",
+          "rectXYWH": [
+            177,
+            378.8,
+            670,
+            37.3
+          ]
+        },
+        "mind": {
+          "values": {
+            "current": 48,
+            "next": 48,
+            "delta": 0
+          },
+          "rowVisibility": "fully-visible",
+          "rectXYWH": [
+            177,
+            416.1,
+            670,
+            37.3
+          ]
+        },
+        "agility": {
+          "values": {
+            "current": 45,
+            "next": 45,
+            "delta": 0
+          },
+          "rowVisibility": "fully-visible",
+          "rectXYWH": [
+            177,
+            453.4,
+            670,
+            37.3
+          ]
+        }
+      },
+      "detailScroll": {
+        "rectXYWH": [
+          169,
+          77,
+          686,
+          537.6
+        ],
+        "clientHeight": 538,
+        "scrollHeight": 700,
+        "initialScrollTop": 0
+      },
+      "keyboardScrollEvidence": [],
+      "detailReturnFocus": "shop-detail-open"
+    },
+    {
+      "viewport": "640x480",
+      "shopRectXYWH": [
+        0,
+        0,
+        640,
+        480
+      ],
+      "inline": {
+        "attack": {
+          "values": {
+            "current": 45,
+            "next": 53,
+            "delta": 8
+          },
+          "rowVisibility": "fully-visible",
+          "rectXYWH": [
+            407.65,
+            289,
+            211.35,
+            34.4
+          ]
+        },
+        "defense": {
+          "values": {
+            "current": 72,
+            "next": 72,
+            "delta": 0
+          },
+          "rowVisibility": "fully-visible",
+          "rectXYWH": [
+            407.65,
+            323.4,
+            211.35,
+            34.4
+          ]
+        },
+        "mind": {
+          "values": {
+            "current": 48,
+            "next": 48,
+            "delta": 0
+          },
+          "rowVisibility": "partially-visible",
+          "rectXYWH": [
+            407.65,
+            357.8,
+            211.35,
+            34.4
+          ]
+        },
+        "agility": {
+          "values": {
+            "current": 45,
+            "next": 45,
+            "delta": 0
+          },
+          "rowVisibility": "outside-clipped-viewport",
+          "rectXYWH": [
+            407.65,
+            392.2,
+            211.35,
+            34.4
+          ]
+        }
+      },
+      "inlineStatSlotDisplay": "block",
+      "detailOpener": {
+        "rectXYWH": [
+          375.883,
+          402.6,
+          114.983,
+          33.6
+        ],
+        "enabled": true,
+        "keyboardOpened": true
+      },
+      "detailInitial": {
+        "attack": {
+          "values": {
+            "current": 45,
+            "next": 53,
+            "delta": 8
+          },
+          "rowVisibility": "fully-visible",
+          "rectXYWH": [
+            25,
+            260,
+            590,
+            34.4
+          ]
+        },
+        "defense": {
+          "values": {
+            "current": 72,
+            "next": 72,
+            "delta": 0
+          },
+          "rowVisibility": "fully-visible",
+          "rectXYWH": [
+            25,
+            294.4,
+            590,
+            34.4
+          ]
+        },
+        "mind": {
+          "values": {
+            "current": 48,
+            "next": 48,
+            "delta": 0
+          },
+          "rowVisibility": "fully-visible",
+          "rectXYWH": [
+            25,
+            328.8,
+            590,
+            34.4
+          ]
+        },
+        "agility": {
+          "values": {
+            "current": 45,
+            "next": 45,
+            "delta": 0
+          },
+          "rowVisibility": "partially-visible",
+          "rectXYWH": [
+            25,
+            363.2,
+            590,
+            34.4
+          ]
+        }
+      },
+      "detailScroll": {
+        "rectXYWH": [
+          17,
+          17,
+          606,
+          377.6
+        ],
+        "clientHeight": 378,
+        "scrollHeight": 644,
+        "initialScrollTop": 0
+      },
+      "keyboardScrollEvidence": [
+        {
+          "file": "640x480-detail-keyboard-scroll.json",
+          "scrollTop": 32,
+          "fullyVisibleRows": [
+            "attack",
+            "defense",
+            "mind",
+            "agility"
+          ]
+        }
+      ],
+      "detailReturnFocus": "shop-detail-open"
+    },
+    {
+      "viewport": "320x240",
+      "shopRectXYWH": [
+        0,
+        0,
+        320,
+        240
+      ],
+      "inline": {
+        "attack": {
+          "values": {
+            "current": 45,
+            "next": 53,
+            "delta": 8
+          },
+          "rowVisibility": "css-hidden",
+          "rectXYWH": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "defense": {
+          "values": {
+            "current": 72,
+            "next": 72,
+            "delta": 0
+          },
+          "rowVisibility": "css-hidden",
+          "rectXYWH": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "mind": {
+          "values": {
+            "current": 48,
+            "next": 48,
+            "delta": 0
+          },
+          "rowVisibility": "css-hidden",
+          "rectXYWH": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "agility": {
+          "values": {
+            "current": 45,
+            "next": 45,
+            "delta": 0
+          },
+          "rowVisibility": "css-hidden",
+          "rectXYWH": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "inlineStatSlotDisplay": "none",
+      "detailOpener": {
+        "rectXYWH": [
+          13,
+          187,
+          85.5,
+          24
+        ],
+        "enabled": true,
+        "keyboardOpened": true
+      },
+      "detailInitial": {
+        "attack": {
+          "values": {
+            "current": 45,
+            "next": 53,
+            "delta": 8
+          },
+          "rowVisibility": "outside-clipped-viewport",
+          "rectXYWH": [
+            21,
+            246.3,
+            278,
+            34.4
+          ]
+        },
+        "defense": {
+          "values": {
+            "current": 72,
+            "next": 72,
+            "delta": 0
+          },
+          "rowVisibility": "outside-clipped-viewport",
+          "rectXYWH": [
+            21,
+            280.7,
+            278,
+            34.4
+          ]
+        },
+        "mind": {
+          "values": {
+            "current": 48,
+            "next": 48,
+            "delta": 0
+          },
+          "rowVisibility": "outside-clipped-viewport",
+          "rectXYWH": [
+            21,
+            315.1,
+            278,
+            34.4
+          ]
+        },
+        "agility": {
+          "values": {
+            "current": 45,
+            "next": 45,
+            "delta": 0
+          },
+          "rowVisibility": "outside-clipped-viewport",
+          "rectXYWH": [
+            21,
+            349.5,
+            278,
+            34.4
+          ]
+        }
+      },
+      "detailScroll": {
+        "rectXYWH": [
+          13,
+          13,
+          294,
+          130.8
+        ],
+        "clientHeight": 131,
+        "scrollHeight": 676,
+        "initialScrollTop": 42
+      },
+      "keyboardScrollEvidence": [
+        {
+          "file": "320x240-detail-keyboard-scroll-03.json",
+          "scrollTop": 184,
+          "fullyVisibleRows": [
+            "attack"
+          ]
+        },
+        {
+          "file": "320x240-detail-keyboard-scroll-04.json",
+          "scrollTop": 216,
+          "fullyVisibleRows": [
+            "attack",
+            "defense"
+          ]
+        },
+        {
+          "file": "320x240-detail-keyboard-scroll-05.json",
+          "scrollTop": 248,
+          "fullyVisibleRows": [
+            "attack",
+            "defense",
+            "mind"
+          ]
+        },
+        {
+          "file": "320x240-detail-keyboard-scroll-07.json",
+          "scrollTop": 312,
+          "fullyVisibleRows": [
+            "mind",
+            "agility"
+          ]
+        }
+      ],
+      "detailReturnFocus": "shop-detail-open"
+    }
+  ]
+}

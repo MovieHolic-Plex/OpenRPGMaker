@@ -1,0 +1,218 @@
+{
+  "projectId": "oprn-e98456e1d8",
+  "title": "용사의 여정",
+  "snapshotSha256": "2684a77c47d1ea75eb5ba9b4f17e09ff556550b08f42f0db81f67e616976ab3b",
+  "commonEventCount": 0,
+  "equipmentDatabaseCount": 87,
+  "shops": [
+    {
+      "mapId": "map_blank_start",
+      "mapName": "시작의 마을",
+      "eventId": "ev_merchant_claire",
+      "eventName": "상인 클레어",
+      "x": 9,
+      "y": 7,
+      "pageIndex": 0,
+      "trigger": {
+        "kind": "action"
+      },
+      "path": "commands.4",
+      "command": {
+        "kind": "shop",
+        "stock": [
+          {
+            "itemId": "item_potion",
+            "priceOverride": 50
+          }
+        ],
+        "itemIds": [
+          "item_potion"
+        ],
+        "shopType": "normal",
+        "allowSell": true,
+        "messageType": "welcome",
+        "quantityMode": "select"
+      },
+      "goodsClassification": [
+        {
+          "id": "item_potion",
+          "source": "item",
+          "itemType": "medicine",
+          "name": "초보자용 체력 포션",
+          "consumable": true,
+          "occasion": "always",
+          "canonicalEquipmentMatch": false
+        }
+      ]
+    },
+    {
+      "mapId": "map_blank_start",
+      "mapName": "시작의 마을",
+      "eventId": "ev_merchant_claire",
+      "eventName": "상인 클레어",
+      "x": 9,
+      "y": 7,
+      "pageIndex": 1,
+      "trigger": {
+        "kind": "action"
+      },
+      "path": "commands.2",
+      "command": {
+        "kind": "shop",
+        "stock": [
+          {
+            "itemId": "item_potion",
+            "priceOverride": 50
+          }
+        ],
+        "itemIds": [
+          "item_potion"
+        ],
+        "shopType": "normal",
+        "allowSell": true,
+        "messageType": "welcome",
+        "quantityMode": "select"
+      },
+      "goodsClassification": [
+        {
+          "id": "item_potion",
+          "source": "item",
+          "itemType": "medicine",
+          "name": "초보자용 체력 포션",
+          "consumable": true,
+          "occasion": "always",
+          "canonicalEquipmentMatch": false
+        }
+      ]
+    },
+    {
+      "mapId": "map_weapon_shop",
+      "mapName": "무기 상점",
+      "eventId": "ev_villager_35c9ba59-6f59-47a3-b0fb-bcf9b6de5c25",
+      "x": 5,
+      "y": 9,
+      "pageIndex": 0,
+      "trigger": {
+        "kind": "action"
+      },
+      "path": "commands.0",
+      "command": {
+        "kind": "shop",
+        "stock": [
+          {
+            "itemId": "item_throwing_knife"
+          },
+          {
+            "itemId": "item_gen_throwing_knife"
+          },
+          {
+            "itemId": "item_gen_shuriken"
+          },
+          {
+            "itemId": "item_poison_dart"
+          },
+          {
+            "itemId": "item_bomb"
+          },
+          {
+            "itemId": "item_fire_bomb"
+          },
+          {
+            "itemId": "item_ice_shard"
+          },
+          {
+            "itemId": "item_thunder_stone"
+          }
+        ],
+        "itemIds": [
+          "item_throwing_knife",
+          "item_gen_throwing_knife",
+          "item_gen_shuriken",
+          "item_poison_dart",
+          "item_bomb",
+          "item_fire_bomb",
+          "item_ice_shard",
+          "item_thunder_stone"
+        ],
+        "shopType": "normal",
+        "allowSell": true,
+        "messageType": "welcome",
+        "quantityMode": "select"
+      },
+      "goodsClassification": [
+        {
+          "id": "item_throwing_knife",
+          "source": "item",
+          "itemType": "special",
+          "name": "투척 단검",
+          "consumable": true,
+          "occasion": "battle",
+          "canonicalEquipmentMatch": false
+        },
+        {
+          "id": "item_gen_throwing_knife",
+          "source": "item",
+          "itemType": "special",
+          "name": "균형 투척 단검",
+          "consumable": true,
+          "occasion": "battle",
+          "canonicalEquipmentMatch": false
+        },
+        {
+          "id": "item_gen_shuriken",
+          "source": "item",
+          "itemType": "special",
+          "name": "수리검",
+          "consumable": true,
+          "occasion": "battle",
+          "canonicalEquipmentMatch": false
+        },
+        {
+          "id": "item_poison_dart",
+          "source": "item",
+          "itemType": "special",
+          "name": "독침",
+          "consumable": true,
+          "occasion": "battle",
+          "canonicalEquipmentMatch": false
+        },
+        {
+          "id": "item_bomb",
+          "source": "item",
+          "itemType": "special",
+          "name": "철제 폭탄",
+          "consumable": true,
+          "occasion": "battle",
+          "canonicalEquipmentMatch": false
+        },
+        {
+          "id": "item_fire_bomb",
+          "source": "item",
+          "itemType": "special",
+          "name": "화염 폭탄",
+          "consumable": true,
+          "occasion": "battle",
+          "canonicalEquipmentMatch": false
+        },
+        {
+          "id": "item_ice_shard",
+          "source": "item",
+          "itemType": "special",
+          "name": "빙결 파편",
+          "consumable": true,
+          "occasion": "battle",
+          "canonicalEquipmentMatch": false
+        },
+        {
+          "id": "item_thunder_stone",
+          "source": "item",
+          "itemType": "special",
+          "name": "뇌전석",
+          "consumable": true,
+          "occasion": "battle",
+          "canonicalEquipmentMatch": false
+        }
+      ]
+    }
+  ]
+}

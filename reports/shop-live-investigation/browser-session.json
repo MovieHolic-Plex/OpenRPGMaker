@@ -1,0 +1,1276 @@
+{
+  "startedAt": "2026-09-08T05:47:40.999Z",
+  "url": "http://127.0.0.1:9841/export-player/player.html",
+  "errors": [
+    "Error: page.evaluate: Missing observed state\nwindow.__livePending</timer<@debugger eval code line 303 > eval:1:369\nsetTimeout handler*window.__livePending<@debugger eval code line 303 > eval:1:334\n@debugger eval code line 303 > eval:1:32\n@debugger eval code line 303 > eval:1:552\nevaluate@debugger eval code:303:30\n@debugger eval code:1:44\n@debugger eval code:1:62\n",
+    "Missing observed state"
+  ],
+  "failedRequests": [],
+  "actions": [
+    {
+      "at": "2026-09-08T05:47:54.103Z",
+      "command": {
+        "op": "goto"
+      },
+      "result": "OPRN Player"
+    },
+    {
+      "at": "2026-09-08T05:47:54.506Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {window.__livePending = new Promise((resolve,reject)=>{const check=()=>{return (document.querySelector(\"[data-testid=title-new-game]\"))};const finish=()=>{if(check()){observer.disconnect();clearTimeout(timer);resolve(true)}};const observer=new MutationObserver(finish);const timer=setTimeout(()=>{observer.disconnect();reject(new Error('Missing observed state'))},120000);observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});finish();});return 'armed';})()"
+      },
+      "result": "armed"
+    },
+    {
+      "at": "2026-09-08T05:47:55.098Z",
+      "command": {
+        "op": "eval",
+        "code": "window.__livePending"
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:47:55.188Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {window.__livePending = new Promise((resolve,reject)=>{const check=()=>{return (window.__oprnDebug && document.querySelector(\"[data-testid=runtime-state-json]\") && !document.querySelector(\"[data-testid=play-loading-overlay]\"))};const finish=()=>{if(check()){observer.disconnect();clearTimeout(timer);resolve(true)}};const observer=new MutationObserver(finish);const timer=setTimeout(()=>{observer.disconnect();reject(new Error('Missing observed state'))},120000);observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});finish();});return 'armed';})()"
+      },
+      "result": "armed"
+    },
+    {
+      "at": "2026-09-08T05:47:55.357Z",
+      "command": {
+        "op": "key",
+        "key": "Enter"
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:48:02.822Z",
+      "command": {
+        "op": "eval",
+        "code": "window.__livePending"
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:48:03.701Z",
+      "command": {
+        "op": "shot",
+        "name": "01-canonical-field-firefox.png"
+      },
+      "result": "01-canonical-field-firefox.png"
+    },
+    {
+      "at": "2026-09-08T05:48:03.851Z",
+      "command": {
+        "op": "eval",
+        "code": "({state:window.__oprnDebug.readState(),merchant:JSON.parse(document.querySelector(\"[data-testid=runtime-state-json]\").textContent).events.ev_village_42_map_lake_village_3})"
+      },
+      "result": {
+        "state": {
+          "farmPlots": {},
+          "makerInstances": {},
+          "eventLocations": {},
+          "currentMapId": "map_lake_village",
+          "x": 17,
+          "y": 24,
+          "gold": 0,
+          "switches": {
+            "sw_0001": false,
+            "sw_0002": false,
+            "sw_0003": false,
+            "sw_0004": false,
+            "sw_0005": false,
+            "sw_0006": false,
+            "sw_0007": false,
+            "sw_0008": false,
+            "sw_0009": false,
+            "sw_0010": false,
+            "sw_0011": false,
+            "sw_0012": false,
+            "sw_0013": false,
+            "sw_0014": false,
+            "sw_0015": false,
+            "sw_0016": false,
+            "sw_0017": false,
+            "sw_0018": false,
+            "sw_0019": false,
+            "sw_0020": false
+          },
+          "variables": {
+            "var_0001": 0,
+            "var_0002": 0,
+            "var_0003": 0,
+            "var_0004": 0,
+            "var_0005": 0,
+            "var_0006": 0,
+            "var_0007": 0,
+            "var_0008": 0,
+            "var_0009": 0,
+            "var_0010": 0,
+            "var_0011": 0,
+            "var_0012": 0,
+            "var_0013": 0,
+            "var_0014": 0,
+            "var_0015": 0,
+            "var_0016": 0,
+            "var_0017": 0,
+            "var_0018": 0,
+            "var_0019": 0,
+            "var_0020": 0
+          },
+          "selfSwitches": {},
+          "timers": {},
+          "inventory": {},
+          "monsterInstances": {},
+          "monsterParty": [],
+          "monsterBox": [],
+          "partyActorIds": [
+            "actor_hero"
+          ],
+          "npcActivities": {},
+          "friendship": {},
+          "rng": {
+            "seed": 3464986055,
+            "streams": {
+              "encounter": {
+                "seed": 1434372198,
+                "state": 1434372198
+              },
+              "battle": {
+                "seed": 2610488883,
+                "state": 2610488883
+              },
+              "movement": {
+                "seed": 4247461044,
+                "state": 4247461044
+              },
+              "fishing": {
+                "seed": 3403015985,
+                "state": 3403015985
+              },
+              "misc": {
+                "seed": 1585473597,
+                "state": 1585473597
+              }
+            }
+          }
+        },
+        "merchant": {
+          "x": 30,
+          "y": 26,
+          "pageId": "ev_village_42_map_lake_village_3_p0",
+          "priority": "same",
+          "trigger": "action",
+          "direction": "down",
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "passRows": 1,
+          "bodyRect": {
+            "left": 30,
+            "right": 30,
+            "top": 26,
+            "bottom": 26
+          },
+          "passRect": {
+            "left": 30,
+            "right": 30,
+            "top": 26,
+            "bottom": 26
+          }
+        }
+      }
+    },
+    {
+      "at": "2026-09-08T05:48:04.080Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {const m=JSON.parse(document.querySelector(\"[data-testid=runtime-state-json]\").textContent).events.ev_village_42_map_lake_village_3;window.__oprnDebug.teleport(\"map_lake_village\",m.x,m.y+1);window.__oprnInput.face(\"up\");return {x:m.x,y:m.y};})()"
+      },
+      "result": {
+        "x": 30,
+        "y": 26
+      }
+    },
+    {
+      "at": "2026-09-08T05:48:04.146Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {window.__livePending = new Promise((resolve,reject)=>{const check=()=>{return (document.querySelector(\"[data-testid=dialogue-speaker]\"))};const finish=()=>{if(check()){observer.disconnect();clearTimeout(timer);resolve(true)}};const observer=new MutationObserver(finish);const timer=setTimeout(()=>{observer.disconnect();reject(new Error('Missing observed state'))},120000);observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});finish();});return 'armed';})()"
+      },
+      "result": "armed"
+    },
+    {
+      "at": "2026-09-08T05:48:04.264Z",
+      "command": {
+        "op": "key",
+        "key": "z"
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:48:04.311Z",
+      "command": {
+        "op": "eval",
+        "code": "window.__livePending"
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:48:04.346Z",
+      "command": {
+        "op": "eval",
+        "code": "({text:document.body.innerText.slice(0,1200),testids:[...document.querySelectorAll(\"[data-testid]\")].map(e=>e.dataset.testid)})"
+      },
+      "result": {
+        "text": "easyrpg-faceset-people1-05\n광장에\n상인\n▼\nev_village_42_map_lake_village_2_p0\nev_village_42_map_lake_village_2_p0\nev_village_42_map_lake_village_6_p0\nev_village_42_map_lake_village_6_p0\nev_village_42_map_lake_village_7_p0\nev_village_42_map_lake_village_7_p0\nev_village_42_map_lake_village_8_p0\nev_village_42_map_lake_village_8_p0",
+        "testids": [
+          "play-viewport",
+          "play-stage",
+          "play-canvas",
+          "dialogue-box",
+          "dialogue-face",
+          "dialogue-speaker",
+          "hand-slot",
+          "hand-slot-label",
+          "runtime-state-json",
+          "audio-state-json",
+          "picture-layer",
+          "event-ev_village_42_map_lake_village_1",
+          "event-sprite-ev_village_42_map_lake_village_1",
+          "event-ev_village_42_map_lake_village_2",
+          "event-sprite-ev_village_42_map_lake_village_2",
+          "event-ev_village_42_map_lake_village_3",
+          "event-sprite-ev_village_42_map_lake_village_3",
+          "event-ev_village_42_map_lake_village_4",
+          "event-sprite-ev_village_42_map_lake_village_4",
+          "event-ev_village_42_map_lake_village_5",
+          "event-sprite-ev_village_42_map_lake_village_5",
+          "event-ev_village_42_map_lake_village_6",
+          "event-sprite-ev_village_42_map_lake_village_6",
+          "event-ev_village_42_map_lake_village_7",
+          "event-sprite-ev_village_42_map_lake_village_7",
+          "event-ev_village_42_map_lake_village_8",
+          "event-sprite-ev_village_42_map_lake_village_8",
+          "event-ev_gate_e6834b8f-8059-4767-bc14-85d2096caf60"
+        ]
+      }
+    },
+    {
+      "at": "2026-09-08T05:48:04.608Z",
+      "command": {
+        "op": "shot",
+        "name": "02-merchant-dialogue-firefox.png"
+      },
+      "result": "02-merchant-dialogue-firefox.png"
+    },
+    {
+      "at": "2026-09-08T05:48:57.278Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {window.__livePending = new Promise((resolve,reject)=>{const check=()=>{return (document.querySelector(\"[data-testid=dialogue-box] .body\")?.textContent === \"광장에서 과일을 팔고 있어요.\")};const finish=()=>{if(check()){observer.disconnect();clearTimeout(timer);resolve(true)}};const observer=new MutationObserver(finish);const timer=setTimeout(()=>{observer.disconnect();reject(new Error('Missing observed state'))},120000);observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});finish();});return 'armed';})()"
+      },
+      "result": "armed"
+    },
+    {
+      "at": "2026-09-08T05:48:57.344Z",
+      "command": {
+        "op": "eval",
+        "code": "window.__livePending"
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:48:57.963Z",
+      "command": {
+        "op": "shot",
+        "name": "03-merchant-first-line.png"
+      },
+      "result": "03-merchant-first-line.png"
+    },
+    {
+      "at": "2026-09-08T05:48:58.022Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {const e=document.querySelector(\"[data-testid=dialogue-box]\");const r=e.getBoundingClientRect();const x=r.x+r.width/2,y=r.y+r.height/2;return {rect:r.toJSON(),display:getComputedStyle(e).display,opacity:getComputedStyle(e).opacity,x,y,hit:document.elementFromPoint(x,y)?.outerHTML.slice(0,500),text:e.innerText};})()"
+      },
+      "result": {
+        "rect": {
+          "x": 62,
+          "y": 511.20001220703125,
+          "width": 900,
+          "height": 208.8000030517578,
+          "top": 511.20001220703125,
+          "right": 962,
+          "bottom": 720.0000152587891,
+          "left": 62
+        },
+        "display": "flex",
+        "opacity": "1",
+        "x": 512,
+        "y": 615.6000137329102,
+        "hit": "<div class=\"body\"><span class=\"dialogue-char\">광</span><span class=\"dialogue-char\">장</span><span class=\"dialogue-char\">에</span><span class=\"dialogue-char\">서</span><span class=\"dialogue-char\"> </span><span class=\"dialogue-char\">과</span><span class=\"dialogue-char\">일</span><span class=\"dialogue-char\">을</span><span class=\"dialogue-char\"> </span><span class=\"dialogue-char\">팔</span><span class=\"dialogue-char\">고</span><span class=\"dialogue-char\"> </span><span class=\"dialogue-char\">있</span><span class=\"d",
+        "text": "easyrpg-faceset-people1-05\n광장에서 과일을 팔고 있어요.\n상인\n▼"
+      }
+    },
+    {
+      "at": "2026-09-08T05:48:58.048Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {window.__livePending = new Promise((resolve,reject)=>{const check=()=>{return (document.querySelector(\"[data-testid=dialogue-box] .body\")?.textContent?.startsWith(\"호수\"))};const finish=()=>{if(check()){observer.disconnect();clearTimeout(timer);resolve(true)}};const observer=new MutationObserver(finish);const timer=setTimeout(()=>{observer.disconnect();reject(new Error('Missing observed state'))},120000);observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});finish();});return 'armed';})()"
+      },
+      "result": "armed"
+    },
+    {
+      "at": "2026-09-08T05:48:58.196Z",
+      "command": {
+        "op": "mouse",
+        "x": 512,
+        "y": 615.6000137329102
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:51:18.564Z",
+      "command": {
+        "op": "eval",
+        "code": "document.querySelector(\"[data-testid=dialogue-box]\")?.innerText"
+      },
+      "result": "easyrpg-faceset-people1-05\n광장에서 과일을 팔고 있어요.\n상인\n▼"
+    },
+    {
+      "at": "2026-09-08T05:51:18.908Z",
+      "command": {
+        "op": "shot",
+        "name": "04-pointer-click-no-change.png"
+      },
+      "result": "04-pointer-click-no-change.png"
+    },
+    {
+      "at": "2026-09-08T05:51:18.930Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {window.__livePending = new Promise((resolve,reject)=>{const check=()=>{return (document.querySelector(\"[data-testid=dialogue-box] .body\")?.textContent?.startsWith(\"호수\"))};const finish=()=>{if(check()){observer.disconnect();clearTimeout(timer);resolve(true)}};const observer=new MutationObserver(finish);const timer=setTimeout(()=>{observer.disconnect();reject(new Error('Missing observed state'))},120000);observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});finish();});return 'armed';})()"
+      },
+      "result": "armed"
+    },
+    {
+      "at": "2026-09-08T05:51:19.069Z",
+      "command": {
+        "op": "key",
+        "key": "Enter"
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:51:19.178Z",
+      "command": {
+        "op": "eval",
+        "code": "window.__livePending"
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:51:19.251Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {window.__livePending = new Promise((resolve,reject)=>{const check=()=>{return (document.querySelector(\"[data-testid=dialogue-box] .body\")?.textContent === \"호수 쪽 산책로도 추천해요!\")};const finish=()=>{if(check()){observer.disconnect();clearTimeout(timer);resolve(true)}};const observer=new MutationObserver(finish);const timer=setTimeout(()=>{observer.disconnect();reject(new Error('Missing observed state'))},120000);observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});finish();});return 'armed';})()"
+      },
+      "result": "armed"
+    },
+    {
+      "at": "2026-09-08T05:51:19.640Z",
+      "command": {
+        "op": "eval",
+        "code": "window.__livePending"
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:51:19.945Z",
+      "command": {
+        "op": "shot",
+        "name": "05-keyboard-second-line.png"
+      },
+      "result": "05-keyboard-second-line.png"
+    },
+    {
+      "at": "2026-09-08T05:51:19.955Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {window.__livePending = new Promise((resolve,reject)=>{const check=()=>{return (!document.querySelector(\"[data-testid=dialogue-box]\"))};const finish=()=>{if(check()){observer.disconnect();clearTimeout(timer);resolve(true)}};const observer=new MutationObserver(finish);const timer=setTimeout(()=>{observer.disconnect();reject(new Error('Missing observed state'))},120000);observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});finish();});return 'armed';})()"
+      },
+      "result": "armed"
+    },
+    {
+      "at": "2026-09-08T05:51:20.006Z",
+      "command": {
+        "op": "key",
+        "key": "Enter"
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:51:20.091Z",
+      "command": {
+        "op": "eval",
+        "code": "window.__livePending"
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:51:20.244Z",
+      "command": {
+        "op": "shot",
+        "name": "06-merchant-return-no-shop.png"
+      },
+      "result": "06-merchant-return-no-shop.png"
+    },
+    {
+      "at": "2026-09-08T05:51:20.458Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {const ids=['shop-scene','shop-summary-stat-attack','shop-detail-open','shop-comparison','shop-stat-attack'];return {url:location.href,title:document.title,viewport:{width:innerWidth,height:innerHeight},state:window.__oprnDebug.readState(),mirror:JSON.parse(document.querySelector('[data-testid=runtime-state-json]').textContent),selectors:Object.fromEntries(ids.map(id=>{const e=document.querySelector('[data-testid=\"'+id+'\"]');return [id,e?{present:true,display:getComputedStyle(e).display,rect:e.getBoundingClientRect().toJSON(),data:{...e.dataset}}:{present:false,display:null,rect:null}]})),resources:performance.getEntriesByType('resource').map(r=>r.name),stage:{rect:document.querySelector('[data-testid=play-stage]').getBoundingClientRect().toJSON(),canvas:document.querySelector('canvas').getBoundingClientRect().toJSON()}};})()"
+      },
+      "result": {
+        "url": "http://127.0.0.1:9841/export-player/player.html",
+        "title": "호수 마을",
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "state": {
+          "farmPlots": {},
+          "makerInstances": {},
+          "actionReceipt": {
+            "kind": "action",
+            "mapId": "map_lake_village",
+            "handled": true,
+            "farmAttempts": [],
+            "sequence": 1
+          },
+          "eventLocations": {},
+          "currentMapId": "map_lake_village",
+          "x": 30,
+          "y": 27,
+          "gold": 0,
+          "switches": {
+            "sw_0001": false,
+            "sw_0002": false,
+            "sw_0003": false,
+            "sw_0004": false,
+            "sw_0005": false,
+            "sw_0006": false,
+            "sw_0007": false,
+            "sw_0008": false,
+            "sw_0009": false,
+            "sw_0010": false,
+            "sw_0011": false,
+            "sw_0012": false,
+            "sw_0013": false,
+            "sw_0014": false,
+            "sw_0015": false,
+            "sw_0016": false,
+            "sw_0017": false,
+            "sw_0018": false,
+            "sw_0019": false,
+            "sw_0020": false
+          },
+          "variables": {
+            "var_0001": 0,
+            "var_0002": 0,
+            "var_0003": 0,
+            "var_0004": 0,
+            "var_0005": 0,
+            "var_0006": 0,
+            "var_0007": 0,
+            "var_0008": 0,
+            "var_0009": 0,
+            "var_0010": 0,
+            "var_0011": 0,
+            "var_0012": 0,
+            "var_0013": 0,
+            "var_0014": 0,
+            "var_0015": 0,
+            "var_0016": 0,
+            "var_0017": 0,
+            "var_0018": 0,
+            "var_0019": 0,
+            "var_0020": 0
+          },
+          "selfSwitches": {},
+          "timers": {},
+          "inventory": {},
+          "monsterInstances": {},
+          "monsterParty": [],
+          "monsterBox": [],
+          "partyActorIds": [
+            "actor_hero"
+          ],
+          "npcActivities": {},
+          "friendship": {},
+          "rng": {
+            "seed": 3464986055,
+            "streams": {
+              "encounter": {
+                "seed": 1434372198,
+                "state": 1434372198
+              },
+              "battle": {
+                "seed": 2610488883,
+                "state": 2610488883
+              },
+              "movement": {
+                "seed": 4247461044,
+                "state": 4247461044
+              },
+              "fishing": {
+                "seed": 3403015985,
+                "state": 3403015985
+              },
+              "misc": {
+                "seed": 1585473597,
+                "state": 1585473597
+              }
+            }
+          }
+        },
+        "mirror": {
+          "farmPlots": {},
+          "makerInstances": {},
+          "actionReceipt": {
+            "kind": "action",
+            "mapId": "map_lake_village",
+            "handled": true,
+            "farmAttempts": [],
+            "sequence": 1
+          },
+          "mapId": "map_lake_village",
+          "inputEnabled": true,
+          "running": false,
+          "player": {
+            "x": 30,
+            "y": 27
+          },
+          "switches": {
+            "sw_0001": false,
+            "sw_0002": false,
+            "sw_0003": false,
+            "sw_0004": false,
+            "sw_0005": false,
+            "sw_0006": false,
+            "sw_0007": false,
+            "sw_0008": false,
+            "sw_0009": false,
+            "sw_0010": false,
+            "sw_0011": false,
+            "sw_0012": false,
+            "sw_0013": false,
+            "sw_0014": false,
+            "sw_0015": false,
+            "sw_0016": false,
+            "sw_0017": false,
+            "sw_0018": false,
+            "sw_0019": false,
+            "sw_0020": false
+          },
+          "variables": {
+            "var_0001": 0,
+            "var_0002": 0,
+            "var_0003": 0,
+            "var_0004": 0,
+            "var_0005": 0,
+            "var_0006": 0,
+            "var_0007": 0,
+            "var_0008": 0,
+            "var_0009": 0,
+            "var_0010": 0,
+            "var_0011": 0,
+            "var_0012": 0,
+            "var_0013": 0,
+            "var_0014": 0,
+            "var_0015": 0,
+            "var_0016": 0,
+            "var_0017": 0,
+            "var_0018": 0,
+            "var_0019": 0,
+            "var_0020": 0
+          },
+          "timers": {},
+          "timerActive": {},
+          "flags": {},
+          "mapOverrides": {},
+          "gold": 0,
+          "inventory": {},
+          "partyActorIds": [
+            "actor_hero"
+          ],
+          "actorSkillIds": {},
+          "actorExperience": {
+            "actor_hero": 0
+          },
+          "actorLevels": {
+            "actor_hero": 1,
+            "actor_guardian": 1,
+            "actor_mage": 1,
+            "actor_scout": 1,
+            "actor_cleric": 1,
+            "actor_ranger": 1
+          },
+          "actorVitals": {
+            "actor_hero": {
+              "hp": 514,
+              "mp": 43,
+              "maxHp": 514,
+              "maxMp": 43
+            }
+          },
+          "eventLocations": {},
+          "followers": [],
+          "followerTrail": [],
+          "removedEventIds": {},
+          "spawnedEvents": {},
+          "camera": {
+            "mode": "follow",
+            "target": {
+              "kind": "player"
+            }
+          },
+          "lighting": {
+            "ambient": 0,
+            "sources": []
+          },
+          "actorEquipment": {
+            "actor_hero": {
+              "armor": "equip_leather_armor",
+              "helmet": "equip_traveler_hat",
+              "shield": "equip_oak_shield",
+              "weapon": "equip_sword",
+              "accessory": "equip_focus_charm"
+            },
+            "actor_guardian": {
+              "armor": "equip_leather_armor",
+              "helmet": "equip_traveler_hat",
+              "shield": "equip_oak_shield",
+              "weapon": "equip_sword",
+              "accessory": "equip_focus_charm"
+            },
+            "actor_mage": {
+              "armor": "equip_mystic_robe",
+              "helmet": "equip_traveler_hat",
+              "weapon": "equip_mage_staff",
+              "accessory": "equip_focus_charm"
+            },
+            "actor_scout": {
+              "armor": "equip_leather_armor",
+              "helmet": "equip_traveler_hat",
+              "weapon": "equip_scout_dagger",
+              "accessory": "equip_focus_charm"
+            },
+            "actor_cleric": {
+              "armor": "equip_mystic_robe",
+              "helmet": "equip_traveler_hat",
+              "shield": "equip_oak_shield",
+              "weapon": "equip_mage_staff",
+              "accessory": "equip_focus_charm"
+            },
+            "actor_ranger": {
+              "armor": "equip_leather_armor",
+              "helmet": "equip_traveler_hat",
+              "weapon": "equip_scout_dagger",
+              "accessory": "equip_focus_charm"
+            }
+          },
+          "actorRows": {
+            "actor_hero": "front"
+          },
+          "classOverrides": {},
+          "audio": {
+            "bgm": {
+              "resourceId": "cc0-bgm-rtp-hal-001",
+              "loop": true
+            }
+          },
+          "pictures": {},
+          "events": {
+            "ev_village_42_map_lake_village_1": {
+              "x": 28,
+              "y": 15,
+              "pageId": "ev_village_42_map_lake_village_1_p0",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 28,
+                "right": 28,
+                "top": 15,
+                "bottom": 15
+              },
+              "passRect": {
+                "left": 28,
+                "right": 28,
+                "top": 15,
+                "bottom": 15
+              }
+            },
+            "ev_village_42_map_lake_village_2": {
+              "x": 10,
+              "y": 19,
+              "pageId": "ev_village_42_map_lake_village_2_p0",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 10,
+                "right": 10,
+                "top": 19,
+                "bottom": 19
+              },
+              "passRect": {
+                "left": 10,
+                "right": 10,
+                "top": 19,
+                "bottom": 19
+              }
+            },
+            "ev_village_42_map_lake_village_3": {
+              "x": 30,
+              "y": 26,
+              "pageId": "ev_village_42_map_lake_village_3_p0",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 30,
+                "right": 30,
+                "top": 26,
+                "bottom": 26
+              },
+              "passRect": {
+                "left": 30,
+                "right": 30,
+                "top": 26,
+                "bottom": 26
+              }
+            },
+            "ev_village_42_map_lake_village_4": {
+              "x": 7,
+              "y": 43,
+              "pageId": "ev_village_42_map_lake_village_4_p0",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 7,
+                "right": 7,
+                "top": 43,
+                "bottom": 43
+              },
+              "passRect": {
+                "left": 7,
+                "right": 7,
+                "top": 43,
+                "bottom": 43
+              }
+            },
+            "ev_village_42_map_lake_village_5": {
+              "x": 17,
+              "y": 47,
+              "pageId": "ev_village_42_map_lake_village_5_p0",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 17,
+                "right": 17,
+                "top": 47,
+                "bottom": 47
+              },
+              "passRect": {
+                "left": 17,
+                "right": 17,
+                "top": 47,
+                "bottom": 47
+              }
+            },
+            "ev_village_42_map_lake_village_6": {
+              "x": 8,
+              "y": 32,
+              "pageId": "ev_village_42_map_lake_village_6_p0",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 8,
+                "right": 8,
+                "top": 32,
+                "bottom": 32
+              },
+              "passRect": {
+                "left": 8,
+                "right": 8,
+                "top": 32,
+                "bottom": 32
+              }
+            },
+            "ev_village_42_map_lake_village_7": {
+              "x": 17,
+              "y": 24,
+              "pageId": "ev_village_42_map_lake_village_7_p0",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 17,
+                "right": 17,
+                "top": 24,
+                "bottom": 24
+              },
+              "passRect": {
+                "left": 17,
+                "right": 17,
+                "top": 24,
+                "bottom": 24
+              }
+            },
+            "ev_village_42_map_lake_village_8": {
+              "x": 20,
+              "y": 25,
+              "pageId": "ev_village_42_map_lake_village_8_p0",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 20,
+                "right": 20,
+                "top": 25,
+                "bottom": 25
+              },
+              "passRect": {
+                "left": 20,
+                "right": 20,
+                "top": 25,
+                "bottom": 25
+              }
+            },
+            "ev_gate_e6834b8f-8059-4767-bc14-85d2096caf60": {
+              "x": 49,
+              "y": 22,
+              "pageId": "ev_gate_e6834b8f-8059-4767-bc14-85d2096caf60_page",
+              "priority": "below",
+              "trigger": "playerTouch",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 49,
+                "right": 49,
+                "top": 22,
+                "bottom": 22
+              },
+              "passRect": {
+                "left": 49,
+                "right": 49,
+                "top": 22,
+                "bottom": 22
+              }
+            }
+          },
+          "movers": {
+            "ev_village_42_map_lake_village_2": {
+              "step": 0,
+              "moveCount": 4,
+              "remainingMoveCount": 4,
+              "repeat": true,
+              "strategy": "random",
+              "facing": "down",
+              "directionFix": false,
+              "through": false,
+              "animationEnabled": true,
+              "opacity": 255,
+              "speedRank": 2,
+              "frequencyRank": 3,
+              "moveIntervalMs": 560,
+              "moveDurationMs": 480,
+              "activeMove": null
+            },
+            "ev_village_42_map_lake_village_3": {
+              "step": 0,
+              "moveCount": 4,
+              "remainingMoveCount": 4,
+              "repeat": true,
+              "strategy": "random",
+              "facing": "down",
+              "directionFix": false,
+              "through": false,
+              "animationEnabled": true,
+              "opacity": 255,
+              "speedRank": 2,
+              "frequencyRank": 3,
+              "moveIntervalMs": 560,
+              "moveDurationMs": 480,
+              "activeMove": null
+            },
+            "ev_village_42_map_lake_village_5": {
+              "step": 0,
+              "moveCount": 4,
+              "remainingMoveCount": 4,
+              "repeat": true,
+              "strategy": "random",
+              "facing": "down",
+              "directionFix": false,
+              "through": false,
+              "animationEnabled": true,
+              "opacity": 255,
+              "speedRank": 2,
+              "frequencyRank": 3,
+              "moveIntervalMs": 560,
+              "moveDurationMs": 480,
+              "activeMove": null
+            },
+            "ev_village_42_map_lake_village_6": {
+              "step": 0,
+              "moveCount": 4,
+              "remainingMoveCount": 4,
+              "repeat": true,
+              "strategy": "random",
+              "facing": "down",
+              "directionFix": false,
+              "through": false,
+              "animationEnabled": true,
+              "opacity": 255,
+              "speedRank": 2,
+              "frequencyRank": 3,
+              "moveIntervalMs": 560,
+              "moveDurationMs": 480,
+              "activeMove": null
+            }
+          }
+        },
+        "selectors": {
+          "shop-scene": {
+            "present": false,
+            "display": null,
+            "rect": null
+          },
+          "shop-summary-stat-attack": {
+            "present": false,
+            "display": null,
+            "rect": null
+          },
+          "shop-detail-open": {
+            "present": false,
+            "display": null,
+            "rect": null
+          },
+          "shop-comparison": {
+            "present": false,
+            "display": null,
+            "rect": null
+          },
+          "shop-stat-attack": {
+            "present": false,
+            "display": null,
+            "rect": null
+          }
+        },
+        "resources": [
+          "http://127.0.0.1:9841/export-player/player.js",
+          "http://127.0.0.1:9841/export-player/assets/player-BhSXHFWt.css",
+          "http://127.0.0.1:9841/favicon.ico",
+          "http://127.0.0.1:9841/__runtime-qa/project.json",
+          "http://127.0.0.1:9841/export-player/assets/generated/title/oprn-title-field.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-exterior.png",
+          "http://127.0.0.1:9841/export-player/assets/dialogue-frame.png",
+          "http://127.0.0.1:9841/export-player/assets/generated-emotes.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-interior-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-dungeon-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-ship-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/sound/Decision2.wav",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-world-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-retro-dungeon-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-retro-exterior-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-retro-house-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-combined-town-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-retro-world-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/sound/Decision1.wav",
+          "http://127.0.0.1:9841/export-player/assets/modern-exteriors/modern-city-atlas.png",
+          "http://127.0.0.1:9841/export-player/assets/scarloxy/scarloxy-chipset-grassland.png",
+          "http://127.0.0.1:9841/export-player/assets/scarloxy/scarloxy-chipset-wilds.png",
+          "http://127.0.0.1:9841/export-player/assets/scarloxy/scarloxy-chipset-indoor.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Actor1.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Actor2.png",
+          "http://127.0.0.1:9841/export-player/assets/phaser.min-CwlHMuXa.js",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Actor3.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Actor4.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Animal.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Monster1.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Monster2.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Monster3.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Object1.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Object2.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/People1.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/People2.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/People3.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/People4.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/People5.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Template.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Vehicles.png",
+          "http://127.0.0.1:9841/export-player/assets/scarloxy/scarloxy-charset-people1.png",
+          "http://127.0.0.1:9841/export-player/assets/scarloxy/scarloxy-charset-people2.png",
+          "http://127.0.0.1:9841/export-player/assets/farming/animals/chicken.png",
+          "http://127.0.0.1:9841/export-player/assets/farming/animals/cow.png",
+          "http://127.0.0.1:9841/export-player/assets/PlayScene-BAKbtaZw.js",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-exterior.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-dungeon-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-interior-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-ship-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-world-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-retro-dungeon-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-retro-exterior-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-retro-house-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-combined-town-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg-chipset-retro-world-transparent.png",
+          "http://127.0.0.1:9841/export-player/assets/modern-exteriors/modern-city-atlas.png",
+          "http://127.0.0.1:9841/export-player/assets/scarloxy/scarloxy-chipset-grassland.png",
+          "http://127.0.0.1:9841/export-player/assets/scarloxy/scarloxy-chipset-wilds.png",
+          "http://127.0.0.1:9841/export-player/assets/scarloxy/scarloxy-chipset-indoor.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Actor1.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Actor2.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Actor3.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Actor4.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Animal.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Monster1.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Monster2.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Monster3.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Object1.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Object2.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/People1.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/People2.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/People3.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/People4.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/People5.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Template.png",
+          "http://127.0.0.1:9841/export-player/assets/easyrpg/charset/Vehicles.png",
+          "http://127.0.0.1:9841/export-player/assets/scarloxy/scarloxy-charset-people1.png",
+          "http://127.0.0.1:9841/export-player/assets/scarloxy/scarloxy-charset-people2.png",
+          "http://127.0.0.1:9841/export-player/assets/farming/animals/chicken.png",
+          "http://127.0.0.1:9841/export-player/assets/farming/animals/cow.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-slime-01.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-bat-01.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-golem-01.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/monsters/corrected/skeleton-archer.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-dragon-01.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-slime-blue.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-slime-red.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-slime-green.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-slime-metal.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-slime-cube.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-slime-king.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-ooze-black.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-ooze-acid.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-bat-cave.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-spider-cave.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-bat-vampire.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-bee-giant.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-spider-widow.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-scorpion-sand.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-mantis-blade.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-beetle-horn.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-centipede-fire.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-moth-dust.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-ant-soldier.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-worm-sand.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-wolf-dire.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-wolf-grey.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-boar-tusk.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-bear-brown.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-tiger-saber.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-rat-giant.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-bird-hawk.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-snake-viper.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-cat-shadow.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-goat-mountain.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-crab-rock.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-hound-hell.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-ape-stone.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-deer-forest.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-skeleton-bone.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-skeleton-knight.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-zombie-rot.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-ghoul-grave.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-ghost-pale.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-wraith-dark.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-lich-frost.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-mummy-bandage.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-banshee-wail.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-revenant-vengeful.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-bonepile-crawler.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/monsters/corrected/spirit-fire.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/monsters/corrected/spirit-water.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/monsters/corrected/spirit-earth.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-spirit-wind.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-spirit-light.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-spirit-dark.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/monsters/corrected/wisp-blue.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-sylph-air.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-undine-sea.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-salamander-flame.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-golem-stone.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-golem-iron.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-golem-crystal.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-golem-clay.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-armor-living.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-sword-flying.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-mimic-chest.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-scarecrow-field.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-puppet-string.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-totem-cursed.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-goblin-scout.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-goblin-brute.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-orc-warrior.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/monsters/corrected/orc-shaman.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-bandit-mask.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-kobold-digger.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-mage-rogue.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-knight-fallen.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-lizardman-spear.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-harpy-cliff.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-minotaur-maze.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-centaur-plains.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-troll-cave.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-ogre-club.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-imp-mischief.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-squid-deep.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-fish-piranha.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-shark-land.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-eel-electric.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-griffin-sky.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-wyvern-cliff.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-roc-giant.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-gargoyle-stone.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-phoenix-rebirth.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-dragon-whelp.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-dragon-red.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-dragon-blue.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-dragon-bone.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-hydra-three.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-behemoth-horn.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-demon-lord.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-angel-fallen.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-eye-floating.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-plant-carnivore.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/monsters/corrected/sparkit-fire.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-leafling-01.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-aqualing-01.png",
+          "http://127.0.0.1:9841/export-player/assets/generated/starter/monster-skeleton-01.png",
+          "http://127.0.0.1:9841/export-player/assets/dialogue-frame.png",
+          "http://127.0.0.1:9841/export-player/assets/generated-emotes.png",
+          "http://127.0.0.1:9841/export-player/assets/cc0/audio/catalog/rtp-hal-001-community-hall-final_c96a0631.mp3"
+        ],
+        "stage": {
+          "rect": {
+            "x": 32,
+            "y": 24,
+            "width": 960,
+            "height": 720,
+            "top": 24,
+            "right": 992,
+            "bottom": 744,
+            "left": 32
+          },
+          "canvas": {
+            "x": 32,
+            "y": 24,
+            "width": 960,
+            "height": 720,
+            "top": 24,
+            "right": 992,
+            "bottom": 744,
+            "left": 32
+          }
+        }
+      }
+    },
+    {
+      "at": "2026-09-08T05:51:21.432Z",
+      "command": {
+        "op": "close"
+      },
+      "result": [
+        {
+          "resource": "page",
+          "closed": true
+        },
+        {
+          "resource": "isolated context",
+          "closed": true
+        },
+        {
+          "resource": "owned browser",
+          "closed": true
+        }
+      ]
+    }
+  ],
+  "cleanup": [
+    {
+      "resource": "page",
+      "closed": true
+    },
+    {
+      "resource": "isolated context",
+      "closed": true
+    },
+    {
+      "resource": "owned browser",
+      "closed": true
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "resource": "page",
+    "closed": true
+  },
+  {
+    "resource": "context",
+    "closed": true
+  },
+  {
+    "resource": "browser",
+    "closed": true
+  }
+]
