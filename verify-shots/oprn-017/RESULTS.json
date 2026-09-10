@@ -1,0 +1,116 @@
+{
+  "baseUrl": "http://127.0.0.1:9852",
+  "pageErrors": [],
+  "results": [
+    {
+      "name": "A1-two-independent-controls",
+      "status": "PASS",
+      "observed": {
+        "neighborLabel": "수동",
+        "neighborPressed": "false",
+        "neighborTitle": "수동 배치 켜짐 — 일반 타일은 그대로 둡니다. 단 오토타일 브러시(흙길·모래·실내 366 등)는 항상 성형됩니다. 이것은 지형 연결만 끕니다 — 나무·벤치 같은 구조물의 짝 배치는 아래 「구조 보조」가 따로 정합니다.",
+        "clusterLabel": "보조",
+        "clusterPressed": "true",
+        "clusterTitle": "구조 보조 켜짐 — 나무·벤치·문처럼 규칙이 짝을 요구하는 타일은 동반 칸까지 한 번에 배치합니다. 놓을 수 없으면 그 자리에서 「이 칸만 정확히 배치」를 제안합니다. 누르면 정확 배치로 바뀝니다."
+      },
+      "screenshot": "A1-two-independent-controls.png"
+    },
+    {
+      "name": "A2-assisted-places-companion-atomically",
+      "status": "PASS",
+      "observed": {
+        "anchor": {
+          "x": 42,
+          "y": 48,
+          "topY": 39
+        },
+        "trunk": 290,
+        "canopy": 260
+      },
+      "screenshot": "A2-assisted-places-companion-atomically.png"
+    },
+    {
+      "name": "B-290-rejection-offers-exact-place",
+      "status": "PASS",
+      "observed": {
+        "trunk": 290,
+        "target": {
+          "x": 46,
+          "y": 51
+        },
+        "message": "보조 배치 실패 — 타일 290 (46,51): 동반 타일 260 자리 (46,50)의 덧그림에 다른 오브젝트가 있습니다 — 규칙: 침엽수 상단(260)은 하단(290) 바로 위에 있어야 합니다.이 칸만 정확히 배치 (290)",
+        "actionLabel": "이 칸만 정확히 배치 (290)",
+        "violation": {
+          "code": "cluster-rule:adjacency:harness-combined-town-conifer-tree",
+          "message": "침엽수 상단(260)은 하단(290) 바로 위에 있어야 합니다.",
+          "coords": [
+            "46,51"
+          ]
+        }
+      },
+      "screenshot": "B-290-rejection-offers-exact-place.png"
+    },
+    {
+      "name": "B-291-rejection-offers-exact-place",
+      "status": "PASS",
+      "observed": {
+        "trunk": 291,
+        "target": {
+          "x": 50,
+          "y": 51
+        },
+        "message": "보조 배치 실패 — 타일 291 (50,51): 동반 타일 261 자리 (50,50)의 덧그림에 다른 오브젝트가 있습니다 — 규칙: 마른나무 상단(261)은 하단(291) 바로 위에 있어야 합니다.이 칸만 정확히 배치 (291)",
+        "actionLabel": "이 칸만 정확히 배치 (291)",
+        "violation": {
+          "code": "cluster-rule:adjacency:harness-combined-town-dry-tree",
+          "message": "마른나무 상단(261)은 하단(291) 바로 위에 있어야 합니다.",
+          "coords": [
+            "50,51"
+          ]
+        }
+      },
+      "screenshot": "B-291-rejection-offers-exact-place.png"
+    },
+    {
+      "name": "B-292-rejection-offers-exact-place",
+      "status": "PASS",
+      "observed": {
+        "trunk": 292,
+        "target": {
+          "x": 54,
+          "y": 51
+        },
+        "message": "보조 배치 실패 — 타일 292 (54,51): 동반 타일 262 자리 (54,50)의 덧그림에 다른 오브젝트가 있습니다 — 규칙: 활엽수 왼쪽 열은 상단(262)이 하단(292) 바로 위에 있어야 합니다.이 칸만 정확히 배치 (292)",
+        "actionLabel": "이 칸만 정확히 배치 (292)",
+        "violation": {
+          "code": "cluster-rule:adjacency:harness-combined-town-broadleaf-tree-2x2",
+          "message": "활엽수 왼쪽 열은 상단(262)이 하단(292) 바로 위에 있어야 합니다.",
+          "coords": [
+            "54,51"
+          ]
+        }
+      },
+      "screenshot": "B-292-rejection-offers-exact-place.png"
+    },
+    {
+      "name": "C-exact-mode-paints-boundary-and-lint-shows-debt",
+      "status": "PASS",
+      "observed": {
+        "exact": {
+          "x": 44,
+          "y": 39
+        },
+        "chipLabel": "정확",
+        "violation": {
+          "code": "cluster-rule:adjacency:harness-combined-town-dry-tree",
+          "message": "마른나무 상단(261)은 하단(291) 바로 위에 있어야 합니다.",
+          "coords": [
+            "44,39",
+            "50,51"
+          ]
+        }
+      },
+      "screenshot": "C-exact-mode-paints-boundary-and-lint-shows-debt.png"
+    }
+  ]
+}
