@@ -47,6 +47,22 @@ describe("편집기 z 층 순서", () => {
     expect(wide).toContain("calc(var(--z-app-modal) + 20)");
   });
 
+  /* 브라우저 실측(2026-09-10, verify-shots/oprn-024/09-tileset-editor-*.png): 지연 툴팁이
+     z-index 400 이라 데이터베이스 모달(2600) 안 타일셋 편집기 컨트롤의 툴팁이 모달 뒤에
+     그려져 화면에 보이지 않았다. 롤아웃 14개 중 5개가 그 모달 안에 있다. */
+  it("지연 툴팁이 앱 모달과 넓은 비교 오버레이보다 위다 — 모달 안 컨트롤도 툴팁이 보여야 한다", () => {
+    expect(tokenValue(tokens, "z-tooltip")).toBeGreaterThan(tokenValue(tokens, "z-app-modal") + 20);
+  });
+
+  it("지연 툴팁은 토스트보다 아래다 — 알림이 툴팁에 가리지 않는다", () => {
+    expect(tokenValue(tokens, "z-tooltip")).toBeLessThan(tokenValue(tokens, "z-toast"));
+  });
+
+  it("툴팁 CSS 가 하드코딩 대신 그 토큰을 쓴다", () => {
+    const tooltipCss = readFileSync(resolve(ROOT, "src/styles/editor/delayed-tooltip.css"), "utf8");
+    expect(tooltipCss).toContain("z-index: var(--z-tooltip)");
+  });
+
   it("런타임 밴드는 편집기 토큰과 다른 자리다 — 세 자리 아래를 유지한다", () => {
     // .play-stage 안쪽 밴드(26~45)와 편집기 토큰(2100~2700)이 섞이면 서로를 가린다.
     expect(tokenValue(tokens, "z-proposal")).toBeGreaterThan(100);

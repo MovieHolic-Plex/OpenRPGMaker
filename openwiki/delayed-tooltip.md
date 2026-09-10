@@ -14,8 +14,16 @@
 - 키보드 초점은 같은 라벨을 **즉시** 보여 준다. `Escape` 는 툴팁만 닫고 컨트롤을 실행하지 않는다.
 - `pointerdown`·`blur`·문서 스크롤에서도 닫는다.
 - 대상이 DOM 에서 떨어졌으면(패널 리렌더) 타이머가 끝나도 **뜨지 않는다** — 유령 툴팁 방지.
+  **이미 떠 있는 툴팁도** 대상이 리렌더로 교체되면 같이 사라진다. 초점이 아니라 호버로 띄운
+  경우에는 `blur` 가 없으므로 `MutationObserver` 가 대상의 이탈을 보고 닫는다 — 브라우저
+  실측(2026-09-10, `verify-shots/oprn-024/06-rerender-clears.png`)에서 이 경로가 뚫려 있었고
+  툴팁이 죽은 노드 좌표에 남아 있었다. 유닛 테스트는 대기 중 타이머만 덮고 있었다.
 - 위치: 아래 우선, 공간이 없으면 위로 뒤집고, 가로는 대상 중앙 정렬 후 여백 8px 안으로 자른다.
   대상 사각형을 덮지 않는다.
+- 층: `--z-tooltip`(2650) — 데이터베이스 모달보다 위, 토스트(2700)보다 아래. 롤아웃 14개 중
+  5개(타일셋 편집기)가 그 모달 **안**에 있어서, 예전 하드코딩 `z-index: 400` 에서는 툴팁이
+  모달 뒤에 그려져 화면에 아예 보이지 않았다(같은 실측, `09-tileset-editor-*.png`).
+  순서는 `test/editorZLayerOrder.test.ts` 가 고정한다.
 
 ## 문구 규칙
 
@@ -43,5 +51,16 @@
 
 ## 테스트
 
-`test/delayedTooltip.test.ts` — 지연, 조기 이탈, 키보드 초점, Escape, 리렌더 정리,
-네 변 배치, 접근 이름 보존, `title` 임시 제거·복원, 롤아웃 멱등성. 시간은 가짜 타이머로만 움직인다.
+`test/delayedTooltip.test.ts` — 지연, 조기 이탈, 키보드 초점, Escape, 리렌더 정리(대기 중 +
+**표시 중** 둘 다), 네 변 배치, 접근 이름 보존, `title` 임시 제거·복원, 롤아웃 멱등성.
+시간은 가짜 타이머로만 움직인다. 층 순서는 `test/editorZLayerOrder.test.ts`.
+
+브라우저 증거는 `scripts/qa/delayed-tooltip.mjs` → `verify-shots/oprn-024/`(9장면). 유닛
+테스트는 fakeDom + 가짜 타이머라 실제 렌더 좌표·실제 `setTimeout`·CSS 층을 밟지 않는다 —
+위의 결함 두 건은 브라우저 실측에서만 드러났다. 스크립트는 단언 실패 시 exit 1 이고,
+툴팁이 **가려졌는지**까지 `elementFromPoint` + z-index 로 잰다(DOM 존재만으로는 증거가 아니다).
+
+```
+DEV_SERVER_PORT=9865 npm run dev:worktree
+TOOLTIP_QA_URL=http://127.0.0.1:9865 node scripts/qa/delayed-tooltip.mjs
+```

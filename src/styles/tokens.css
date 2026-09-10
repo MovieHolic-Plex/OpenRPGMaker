@@ -139,6 +139,13 @@
      눈에 안 보이는 알림은 없는 알림이므로 옷을 올린다.
      이 순서는 test/editorZLayerOrder.test.ts 가 고정한다. */
   --z-toast: 2700;
+  /* 지연 툴팁은 데이터베이스 모달(--z-app-modal 2600) 안의 컨트롤에도 붙는다 —
+     타일셋 편집기 규칙 탭이 롤아웃 대상 다섯 개를 그 안에 두고 있다. 400 이었을 때
+     툴팁이 모달 뒤에 그려져 화면에 아예 보이지 않았다(브라우저 실측 2026-09-10,
+     verify-shots/oprn-024/09-tileset-editor-*.png). 넓은 비교 오버레이(app-modal + 20)
+     보다도 위여야 하고, 토스트보다는 아래다 — 알림이 툴팁에 가리면 안 된다.
+     이 순서는 test/editorZLayerOrder.test.ts 가 고정한다. */
+  --z-tooltip: 2650;
 
   --brand-blue: #4A57D6;
   --mix-base: #F7F8F8;
