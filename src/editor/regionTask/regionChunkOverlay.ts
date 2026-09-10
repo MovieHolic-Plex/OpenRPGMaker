@@ -151,6 +151,29 @@ export function buildChunkOverlayShapes(
   }));
 }
 
+/**
+ * 클릭 타깃 최소 크기(px).
+ *
+ * 왜 필요한가 — 실측(2026-09-11, 호수 마을 12×10 영역, forest 오퍼레이터):
+ * 청크 22개 중 **18개가 1칸**이었다. 나무를 흩뿌리는 생성기에서는 4-연결성 청킹이
+ * 나무 한 그루씩을 청크로 만들기 때문이다. 1칸은 1x 줌에서 16×16px 이라 사실상 누를 수 없다.
+ * 그림은 타일 크기 그대로 두고 **히트 영역만** 이 값까지 넓힌다.
+ */
+export const MIN_CHUNK_HIT_PX = 24;
+
+/** 사각형의 중심을 유지하며 최소 크기까지 넓힌 히트 영역. 이미 크면 그대로. */
+export function hitRectFor(rect: OverlayRect, min: number = MIN_CHUNK_HIT_PX): OverlayRect {
+  const width = Math.max(rect.width, min);
+  const height = Math.max(rect.height, min);
+  if (width === rect.width && height === rect.height) return rect;
+  return {
+    x: rect.x - (width - rect.width) / 2,
+    y: rect.y - (height - rect.height) / 2,
+    width,
+    height,
+  };
+}
+
 function countCells(chunks: readonly RegionChunk[]): number {
   let total = 0;
   for (const chunk of chunks) total += chunk.cells.length;

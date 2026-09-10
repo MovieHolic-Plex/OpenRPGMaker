@@ -40,59 +40,53 @@ afterEach(() => {
   restoreDom = null;
 });
 
-describe("「모두 보기」 명령 시트", () => {
+describe("진입 화면의 컨트롤 수", () => {
   beforeEach(() => { restoreDom = installFakeDom(); });
 
-  // 여기 있던 두 테스트(「전체 추천」 복귀 칩, "어느 카테고리를 골라도 칩 2개 이상")는
-  // **카테고리 필터 자체가 없어져서** 지켜야 할 대상이 사라졌다. 추천 줄은 이제 무엇을
-  // 눌러도 갈아치워지지 않으므로 비어 보일 일도, 돌아갈 길을 찾을 일도 없다.
-  // 그 자리를 대신하는 계약은 "전체 명령이 계열별로 한 번에 펼쳐진다"다.
+  // 여기 있던 세 테스트(「모두 보기」 시트가 접혀 있다 / 눌러 펼친다 / 시트 칩을 누르면
+  // 입력창이 채워진다)는 **시트 자체가 없어져서** 지켜야 할 대상이 사라졌다.
+  // 진입 화면에서 스물두 개를 펼쳐 보여 주면 고르는 일이 읽는 일이 된다(스펙 §2).
+  // 전체 목록은 `/` 자동완성이 같은 코퍼스로 그대로 낸다 — 아래 describe 가 지킨다.
 
-  it("추천 줄은 문맥 추천 4개 + 「모두 보기」 칩이고, 시트는 접혀 있다", () => {
+  it("추천 칩은 3개고, 그 밖에 고를 것을 진입 화면에 두지 않는다", () => {
     const root = openModal({ mapId: "m1", region: REGION, run: vi.fn(), projectForContext: () => stubProject() });
     const row = findByTestId(root, "region-task-suggestions");
-    expect(row?.querySelectorAll("button").length).toBe(5);
-    const browse = findByTestId(root, "region-task-browse-all");
-    expect(browse).not.toBeNull();
-    // 「(+N)」이 전체 명령 수를 말한다 — 추천 4개가 전부라는 오해를 막는 유일한 표시다.
-    expect(browse?.textContent).toContain("모두 보기");
-    expect(browse?.textContent).toMatch(/\+\d+/);
-    expect(findByTestId(root, "region-task-categories")?.classList.contains("hidden")).toBe(true);
+    expect(row?.querySelectorAll("button").length).toBe(3);
+    expect(findByTestId(root, "region-task-browse-all")).toBeNull();
+    expect(findByTestId(root, "region-task-categories")).toBeNull();
+    expect(findByTestId(root, "region-task-mode-switch")).toBeNull();
   });
 
-  it("「모두 보기」를 누르면 모든 계열의 명령이 한 번에 펼쳐진다", () => {
+  it("추천이 전부가 아니라는 사실은 입력창 안내가 말한다 — 「(+N)」 칩을 대신한다", () => {
     const root = openModal({ mapId: "m1", region: REGION, run: vi.fn(), projectForContext: () => stubProject() });
-    const browse = findByTestId(root, "region-task-browse-all") as unknown as HTMLElement | null;
-    browse?.click();
-    const sheet = findByTestId(root, "region-task-categories");
-    expect(sheet?.classList.contains("hidden")).toBe(false);
-    expect(browse?.getAttribute("aria-expanded")).toBe("true");
-    // 계열마다 소제목 + 명령 칩 2개 이상. 필터를 거치지 않고 바로 고를 수 있어야 한다.
-    let groups = 0;
-    for (const id of ["tiles", "structures", "polish", "npc", "interaction", "combat", "mood", "composite"]) {
-      const group = findByTestId(root, `region-category-${id}`);
-      if (!group) continue;
-      groups += 1;
-      expect(group.querySelector(".region-task-category-group-title")).not.toBeNull();
-      const chips = group.querySelectorAll(".region-task-suggest-chip");
-      expect(chips.length, `${id} 계열`).toBeGreaterThanOrEqual(2);
+    const input = findByTestId(root, "region-task-input");
+    expect(input?.getAttribute("placeholder") ?? "").toMatch(/\/ 로 전체 \d+개/);
+  });
+
+  it("실행 버튼 하나가 「다듬기」와 「실행」을 겸한다", () => {
+    const root = openModal({ mapId: "m1", region: REGION, run: vi.fn(), projectForContext: () => stubProject() });
+    const run = findByTestId(root, "region-task-run");
+    expect(findByTestId(root, "region-task-polish")).toBeNull();
+    expect(run?.textContent).toContain("다듬기");
+    const input = findByTestId(root, "region-task-input") as unknown as HTMLTextAreaElement;
+    input.value = "울창한 숲";
+    input.dispatchEvent(new Event("input"));
+    expect(run?.textContent).toBe("실행");
+  });
+
+  it("생성기 설정·실내 프리셋은 「조절…」 안으로 물러난다 — 진입 화면엔 없다", () => {
+    const root = openModal({ mapId: "m1", region: REGION, run: vi.fn(), projectForContext: () => stubProject() });
+    const adjust = findByTestId(root, "region-task-adjust");
+    expect(adjust).not.toBeNull();
+    // 진입 화면에 남아 있던 별도 진입점들이 사라졌는지 — 요소가 「조절…」의 자손이어야 한다.
+    for (const id of ["region-task-operator-panel", "region-task-direct-preset", "region-task-direct-room"]) {
+      const node = findByTestId(root, id);
+      expect(node, id).not.toBeNull();
+      expect(adjust?.contains?.(node as unknown as Node) ?? true, id).toBe(true);
     }
-    expect(groups).toBeGreaterThanOrEqual(5);
-    // 다시 누르면 접힌다 — 여는 문과 닫는 문이 같은 칩이다.
-    browse?.click();
-    expect(sheet?.classList.contains("hidden")).toBe(true);
-    expect(browse?.getAttribute("aria-expanded")).toBe("false");
-  });
-
-  it("시트의 명령 칩을 누르면 지시 입력창이 채워진다", () => {
-    const root = openModal({ mapId: "m1", region: REGION, run: vi.fn(), projectForContext: () => stubProject() });
-    (findByTestId(root, "region-task-browse-all") as unknown as HTMLElement | null)?.click();
-    const group = findByTestId(root, "region-category-polish");
-    const chip = group?.querySelector(".region-task-suggest-chip") as unknown as HTMLElement | null;
-    expect(chip).not.toBeNull();
-    chip?.click();
-    const input = findByTestId(root, "region-task-input") as unknown as HTMLTextAreaElement | null;
-    expect(input?.value ?? "").not.toBe("");
+    expect(findByTestId(root, "region-task-direct-disclosure")).toBeNull();
+    expect(findByTestId(root, "region-task-operator-reseed")).toBeNull();
+    expect(findByTestId(root, "region-task-operator-intent-run")).toBeNull();
   });
 });
 
@@ -117,18 +111,28 @@ describe("`/` 자동완성", () => {
   });
 });
 
-describe("AI 없이 실내 초안 줄", () => {
+describe("AI 없이 실내 초안 경로", () => {
   beforeEach(() => { restoreDom = installFakeDom(); });
 
-  it("섹션 제목과 버튼이 같은 문구를 두 번 말하지 않는다", () => {
-    const root = openModal({ mapId: "m1", region: REGION, run: vi.fn(), projectForContext: () => stubProject() });
-    const button = findByTestId(root, "region-task-direct-room");
-    expect(button?.textContent).toBe("초안 만들기");
-    const disclosure = findByTestId(root, "region-task-direct-disclosure");
-    expect(disclosure?.textContent).toContain("AI 없이 실내 초안 만들기");
-    // 같은 문구가 두 번 나오지 않는다(제목 1회).
-    const occurrences = (disclosure?.textContent ?? "").split("AI 없이 실내 초안").length - 1;
-    expect(occurrences).toBe(1);
+  // 예전에는 이 경로의 진입점이 진입 화면의 접이식 줄(select 2개 + 버튼)이었고, 그래서
+  // "섹션 제목과 버튼이 같은 말을 두 번 하지 않는다"가 지킬 계약이었다. 이제 진입점은
+  // **문장**이다 — 접이식 줄이 없으므로 그 계약도 없다. 대신 문장이 이 경로로 가는지를 지킨다.
+  it("실내 낱말이 있는 문장은 실내 초안 경로로 간다", async () => {
+    const runDirectRoomDraft = vi.fn(async () => ({ assistantText: "ok" }));
+    const root = openModal({
+      mapId: "m1",
+      region: REGION,
+      run: vi.fn(),
+      projectForContext: () => stubProject(),
+      runDirectRoomDraft: runDirectRoomDraft as never,
+    });
+    const input = findByTestId(root, "region-task-input") as unknown as HTMLTextAreaElement;
+    input.value = "여관 실내를 방으로 나눠줘";
+    (findByTestId(root, "region-task-run") as unknown as HTMLElement).click();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(runDirectRoomDraft).toHaveBeenCalledTimes(1);
+    expect(runDirectRoomDraft.mock.calls[0]![0]).toMatchObject({ preset: "inn" });
   });
 });
 
@@ -248,7 +252,9 @@ describe("검토 화면", () => {
     const root = await openReview();
     // 요약 줄은 비어 있고(변경 목록·미리보기가 말한다), 진행 칩도 남지 않는다.
     expect((findByTestId(root, "region-task-summary")?.textContent ?? "").trim()).toBe("");
-    expect((findByTestId(root, "region-task-live-progress")?.textContent ?? "").trim()).toBe("");
+    // 진행 타임라인은 삭제됐다 — 헤더의 단계 세그먼트(지시·생성·검토)와 요약 한 줄이
+    // 같은 것을 말하고 있었다(스펙 §10).
+    expect(findByTestId(root, "region-task-live-progress")).toBeNull();
   });
 
   it("미리보기 비교는 문장이 아니라 동작으로 알린다", async () => {

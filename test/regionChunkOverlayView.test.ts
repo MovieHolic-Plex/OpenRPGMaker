@@ -1,5 +1,5 @@
 // test/regionChunkOverlayView.test.ts
-// 캔버스 위 청크 도형 레이어의 DOM 계약.
+// 캔버스 위 청크 도형 레이어 + 검토 액션 바의 DOM 계약.
 // 스펙 docs/superpowers/specs/2026-09-10-region-task-uiux-redesign-design.md §4.
 
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -13,6 +13,7 @@ import {
   regionChunkOverlayLayer,
   repositionRegionChunkOverlay,
   setRegionChunkOverlayLayer,
+  type RegionChunkOverlayConfig,
 } from "@/editor/regionTask/regionChunkOverlayView";
 import type { MapId, Project, RegionRect } from "@/project/types";
 import { FakeElement, installFakeDom } from "./fakeDom";
@@ -58,25 +59,36 @@ function setup() {
   return { chunks, groups, projection, raw };
 }
 
-function shapeNode(id: string): FakeElement | null {
-  return (document.body as unknown as FakeElement)
-    .querySelector(`[data-testid="region-chunk-shape-${id}"]`);
+type Overrides = Partial<RegionChunkOverlayConfig>
+  & Pick<RegionChunkOverlayConfig, "chunks" | "projection">;
+
+function open(over: Overrides): void {
+  openRegionChunkOverlay({
+    region: REGION,
+    initialLayer: "lower",
+    // ⚠ 화면에 보이는 총 칸수는 pending.changedCells 다(청크 합산은 레이어 이중계산).
+    changedCells: 42,
+    onSelectionChanged: () => {},
+    onApply: () => {},
+    onRetry: () => {},
+    onDiscard: () => {},
+    ...over,
+  });
 }
+
+const body = (): FakeElement => document.body as unknown as FakeElement;
+const byTestId = (id: string): FakeElement | null => body().querySelector(`[data-testid="${id}"]`);
+const shapeNode = (id: string): FakeElement | null => byTestId(`region-chunk-shape-${id}`);
 
 describe("openRegionChunkOverlay", () => {
   it("캔버스 호스트가 없으면 열지 않는다 — 헤드리스에서 조용히 아무것도 안 한다", () => {
     restoreDom = installFakeDom();
     const { chunks, projection } = setup();
 
-    openRegionChunkOverlay({
-      region: REGION,
-      chunks,
-      projection,
-      initialLayer: "lower",
-      onSelectionChanged: () => {},
-    });
+    open({ chunks, projection });
 
     expect(isRegionChunkOverlayOpen()).toBe(false);
+    expect(byTestId("region-review-bar")).toBeNull();
   });
 
   it("청크마다 도형 노드를 하나씩 만들고 role=checkbox 로 노출한다", () => {
@@ -84,13 +96,7 @@ describe("openRegionChunkOverlay", () => {
     mountCanvasHost();
     const { chunks, projection } = setup();
 
-    openRegionChunkOverlay({
-      region: REGION,
-      chunks,
-      projection,
-      initialLayer: "lower",
-      onSelectionChanged: () => {},
-    });
+    open({ chunks, projection });
 
     expect(isRegionChunkOverlayOpen()).toBe(true);
     for (const chunk of chunks) {
@@ -103,13 +109,26 @@ describe("openRegionChunkOverlay", () => {
     }
   });
 
+  it("셀마다 히트 영역을 따로 둔다 — 1칸 청크(16px)를 누를 수 있어야 한다", () => {
+    restoreDom = installFakeDom();
+    mountCanvasHost();
+    const { chunks, projection, groups } = setup();
+
+    open({ chunks, projection });
+
+    const single = groups.lower.find((c) => c.cells.length === 1)!;
+    const node = shapeNode(single.id)!;
+    expect(node.querySelectorAll(".region-chunk-cell")).toHaveLength(1);
+    expect(node.querySelectorAll(".region-chunk-hit")).toHaveLength(1);
+  });
+
   it("도형을 누르면 투영에서 빠지고 aria-checked 가 뒤집히며 콜백이 온다", () => {
     restoreDom = installFakeDom();
     mountCanvasHost();
     const { chunks, projection, groups } = setup();
     const onSelectionChanged = vi.fn();
 
-    openRegionChunkOverlay({ region: REGION, chunks, projection, initialLayer: "lower", onSelectionChanged });
+    open({ chunks, projection, onSelectionChanged });
 
     const target = groups.lower[0]!;
     shapeNode(target.id)!.click();
@@ -118,7 +137,6 @@ describe("openRegionChunkOverlay", () => {
     expect(shapeNode(target.id)!.getAttribute("aria-checked")).toBe("false");
     expect(onSelectionChanged).toHaveBeenCalledTimes(1);
 
-    // 다시 누르면 되돌아온다.
     shapeNode(target.id)!.click();
     expect(projection.selected().has(target.id)).toBe(true);
     expect(onSelectionChanged).toHaveBeenCalledTimes(2);
@@ -130,7 +148,7 @@ describe("openRegionChunkOverlay", () => {
     const { chunks, projection, groups } = setup();
     const onSelectionChanged = vi.fn();
 
-    openRegionChunkOverlay({ region: REGION, chunks, projection, initialLayer: "lower", onSelectionChanged });
+    open({ chunks, projection, onSelectionChanged });
 
     const upper = groups.upper[0]!;
     const node = shapeNode(upper.id)!;
@@ -138,7 +156,7 @@ describe("openRegionChunkOverlay", () => {
     expect(node.getAttribute("aria-disabled")).toBe("true");
 
     node.click();
-    expect(projection.selected().has(upper.id)).toBe(true); // 그대로
+    expect(projection.selected().has(upper.id)).toBe(true);
     expect(onSelectionChanged).not.toHaveBeenCalled();
   });
 
@@ -147,21 +165,17 @@ describe("openRegionChunkOverlay", () => {
     mountCanvasHost();
     const { chunks, projection, groups } = setup();
 
-    openRegionChunkOverlay({
-      region: REGION, chunks, projection, initialLayer: "lower", onSelectionChanged: () => {},
-    });
+    open({ chunks, projection });
     expect(regionChunkOverlayLayer()).toBe("lower");
 
     setRegionChunkOverlayLayer("upper");
     expect(regionChunkOverlayLayer()).toBe("upper");
 
-    const upper = groups.upper[0]!;
-    const lower = groups.lower[0]!;
-    expect(shapeNode(upper.id)!.className).not.toContain("is-dim");
-    expect(shapeNode(lower.id)!.className).toContain("is-dim");
+    expect(shapeNode(groups.upper[0]!.id)!.className).not.toContain("is-dim");
+    expect(shapeNode(groups.lower[0]!.id)!.className).toContain("is-dim");
 
-    shapeNode(upper.id)!.click();
-    expect(projection.selected().has(upper.id)).toBe(false);
+    shapeNode(groups.upper[0]!.id)!.click();
+    expect(projection.selected().has(groups.upper[0]!.id)).toBe(false);
   });
 
   it("재배치는 노드를 다시 만들지 않는다 — 매 프레임 DOM 을 갈면 포인터가 다른 노드에 떨어진다", () => {
@@ -169,9 +183,7 @@ describe("openRegionChunkOverlay", () => {
     mountCanvasHost();
     const { chunks, projection, groups } = setup();
 
-    openRegionChunkOverlay({
-      region: REGION, chunks, projection, initialLayer: "lower", onSelectionChanged: () => {},
-    });
+    open({ chunks, projection });
     const before = shapeNode(groups.lower[0]!.id);
 
     repositionRegionChunkOverlay();
@@ -179,19 +191,103 @@ describe("openRegionChunkOverlay", () => {
     expect(shapeNode(groups.lower[0]!.id)).toBe(before);
   });
 
-  it("닫으면 레이어가 사라진다", () => {
+  it("닫으면 레이어와 액션 바가 함께 사라진다", () => {
     restoreDom = installFakeDom();
     mountCanvasHost();
     const { chunks, projection } = setup();
 
-    openRegionChunkOverlay({
-      region: REGION, chunks, projection, initialLayer: "lower", onSelectionChanged: () => {},
-    });
+    open({ chunks, projection });
     expect(isRegionChunkOverlayOpen()).toBe(true);
 
     closeRegionChunkOverlay();
 
     expect(isRegionChunkOverlayOpen()).toBe(false);
-    expect((document.body as unknown as FakeElement).querySelector('[data-testid="region-chunk-layer"]')).toBeNull();
+    expect(byTestId("region-chunk-layer")).toBeNull();
+    expect(byTestId("region-review-bar")).toBeNull();
+  });
+});
+
+describe("검토 액션 바", () => {
+  it("전량일 때 적용 라벨은 pending.changedCells 를 쓴다 — 청크 합산은 레이어 이중계산이다", () => {
+    restoreDom = installFakeDom();
+    mountCanvasHost();
+    const { chunks, projection } = setup();
+
+    open({ chunks, projection, changedCells: 12 });
+
+    expect(byTestId("region-review-apply")!.textContent).toBe("적용 · 12칸");
+  });
+
+  it("일부를 빼면 라벨이 선택 칸수로 바뀐다", () => {
+    restoreDom = installFakeDom();
+    mountCanvasHost();
+    const { chunks, projection, groups } = setup();
+
+    open({ chunks, projection, changedCells: 12 });
+    shapeNode(groups.lower[0]!.id)!.click();
+
+    expect(byTestId("region-review-apply")!.textContent).toContain("칸만 적용");
+  });
+
+  it("전부 빼면 적용을 막고 다음 행동을 말한다", () => {
+    restoreDom = installFakeDom();
+    mountCanvasHost();
+    const { chunks, projection } = setup();
+
+    open({ chunks, projection });
+    // 활성 레이어를 옮겨가며 전부 해제
+    for (const layer of ["lower", "upper"] as const) {
+      setRegionChunkOverlayLayer(layer);
+      for (const chunk of chunks.filter((c) => c.layer === layer)) shapeNode(chunk.id)!.click();
+    }
+
+    const apply = byTestId("region-review-apply")!;
+    expect(apply.getAttribute("disabled")).not.toBeNull();
+    expect(apply.textContent).toBe("되돌릴 구역을 남겨두세요");
+  });
+
+  it("레이어 버튼은 포함/전체 개수를 보여주고 누르면 활성 레이어가 바뀐다", () => {
+    restoreDom = installFakeDom();
+    mountCanvasHost();
+    const { chunks, projection, groups } = setup();
+
+    open({ chunks, projection });
+
+    const lowerBtn = byTestId("region-review-layer-lower")!;
+    expect(lowerBtn.textContent).toBe(`바닥 ${groups.lower.length}/${groups.lower.length}`);
+    expect(lowerBtn.className).toContain("is-active");
+
+    byTestId("region-review-layer-upper")!.click();
+    expect(regionChunkOverlayLayer()).toBe("upper");
+    expect(byTestId("region-review-layer-upper")!.className).toContain("is-active");
+  });
+
+  it("적용·다시·버리기가 호출부 콜백으로 이어진다", () => {
+    restoreDom = installFakeDom();
+    mountCanvasHost();
+    const { chunks, projection } = setup();
+    const onApply = vi.fn();
+    const onRetry = vi.fn();
+    const onDiscard = vi.fn();
+
+    open({ chunks, projection, onApply, onRetry, onDiscard });
+
+    byTestId("region-review-apply")!.click();
+    byTestId("region-review-retry")!.click();
+    byTestId("region-review-discard")!.click();
+
+    expect(onApply).toHaveBeenCalledTimes(1);
+    expect(onRetry).toHaveBeenCalledTimes(1);
+    expect(onDiscard).toHaveBeenCalledTimes(1);
+  });
+
+  it("경로 라벨을 주면 바에 표시한다", () => {
+    restoreDom = installFakeDom();
+    mountCanvasHost();
+    const { chunks, projection } = setup();
+
+    open({ chunks, projection, routeLabel: "생성기 · 숲 (시드 629022113)" });
+
+    expect(byTestId("region-review-route")!.textContent).toContain("생성기 · 숲");
   });
 });
