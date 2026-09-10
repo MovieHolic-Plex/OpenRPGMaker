@@ -29,6 +29,10 @@ export interface RunPiAgentOptions {
 const DEFAULT_MAX_TURNS = 40;
 const DEFAULT_TIMEOUT_MS = 10 * 60_000;
 
+/** 읽기 전용 실행에 덧붙이는 한 줄. 강제는 툴 목록이 하고(쓰기 툴 미제공), 이 문장은 이유를 말한다. */
+const READ_ONLY_INSTRUCTION =
+  "이번 실행은 읽기 전용이다. 쓰기 도구가 제공되지 않는다. 조회한 사실과 근거만 보고하고, 고칠 거리는 문장으로만 제안한다.";
+
 /** 요청 모델 해석. 번들에 없는 저장 ID 는 제공자 기본 모델로 떨어진다 — 번들 첫 항목으로
  * 조용히 바꾸면(구 동작) CCA 에 없는 와이어 ID 로 첫 호출부터 404 가 난다(실측 2026-09-10:
  * gemini-3.8-flash 저장 → claude-opus-4-5 → claude-opus-4-5-thinking 와이어 404).
@@ -69,6 +73,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   });
   const tools: PiToolShape[] = [...registryTools, ...(options.extraTools ?? [])];
   const systemPrompt = request.systemPrompt ? [...request.systemPrompt] : buildPiAgentSystemPrompt(base, request.mapIds);
+  // 읽기 전용은 툴 목록으로 강제된다(options.readOnlyTools). 이 한 줄은 모델이 "왜 답만 하는지" 알게 한다 —
+  // 이유를 모르면 쓰기를 시도하며 턴을 태운다.
+  if (request.readOnly) systemPrompt.push(READ_ONLY_INSTRUCTION);
   const agent = new Agent({
     initialState: {
       systemPrompt,
