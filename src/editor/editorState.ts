@@ -16,6 +16,15 @@ export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select"
 export type PaintShape = "pen" | "rect" | "round";
 export type Layer = "lower" | "upper" | "event";
 export type AutoConnectMode = boolean;
+/**
+ * 구조 보조(hard 클러스터 동반 배치)를 켜는가. **이웃 연결과 별개다** (OPRN-OUT-017).
+ *
+ * 이웃 연결(autoConnectMode)은 지형 오토타일 성형을 말하고, 이것은 나무·벤치·문처럼
+ * 규칙이 짝을 요구하는 구조물의 동반 칸을 자동으로 놓아 주는 것을 말한다. 예전에는
+ * 「이웃 연결: 수동」 하나가 두 가지를 다 끈다고 읽혔지만 실제로는 오토타일만 껐다.
+ * 기본은 켜짐(true) — 보조 배치가 안전한 기본값이라는 계약은 그대로다.
+ */
+export type ClusterAssistMode = boolean;
 export type ActivePaletteStamp = PaletteStamp | null;
 export const EDITOR_ZOOM_LEVELS = [1, 2, 3, 4, 6, 8] as const;
 export type EditorZoom = typeof EDITOR_ZOOM_LEVELS[number];
@@ -58,6 +67,7 @@ export interface EditorState {
   paintShape: PaintShape;
   selectedTile: number;
   autoConnectMode: AutoConnectMode;
+  clusterAssistMode: ClusterAssistMode;
   activePaletteStamp: ActivePaletteStamp;
   brushSize: EditorBrushSize;
   selectedEventPageId: string | null;
@@ -88,6 +98,8 @@ class EditorStateStore {
     selectedTile: 360,
     // Manual by default: free tile placement must not reshape neighbors unless Auto is chosen.
     autoConnectMode: false,
+    // 보조 배치가 기본 — 평범한 사용자에게는 짝이 자동으로 맞는 쪽이 안전하다.
+    clusterAssistMode: true,
     activePaletteStamp: null,
     brushSize: 1,
     selectedEventId: null,
