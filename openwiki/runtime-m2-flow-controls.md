@@ -111,9 +111,22 @@ M2 runtime commands: event processing, erase, graphic pattern, movement, checkpo
   단계**가 막혔을 때 그 단계를 버리는 것이고, 이 이슈가 요구하는 것은 **목적지 전체**에 대한
   성공/실패 판정 + 분기다. 게다가 `moveEvent` 인터프리터 단계가 그 값을 아예 싣지 않는다
   (런타임 단계 타입에 필드가 없다) — 고쳐서 쓰려면 별 작업이며 의미도 이 계약을 덮지 못한다.
-- 회귀: `test/coordinateDestinationMove.test.ts` (37건 — 순수 해석기·인터프리터·씬 재생·
+- **m2Runtime 상태 기록은 해석된 목적지를 남긴다.** 변수 소스면 `x`/`y` 필드가 아예
+  없을 수 있고, 그걸 `fieldNumber` 로 읽으면 실행마다 `[m2] missing field: x/y` 가
+  콘솔을 도배한다(출하 플레이어 QA 실측). `m2ModernRuntime` 은 `resolveDestination` 으로
+  기록하며, 고정 좌표 명령의 기록은 바이트 단위로 이전과 같다.
+- 회귀: `test/coordinateDestinationMove.test.ts` (38건 — 순수 해석기·인터프리터·씬 재생·
   병렬 이벤트·지속성). 기존 `runtimeMovementStability` 의 재지정/큐 사례와
-  `commandContracts/m2Command` 의 단계 모양 계약은 그대로 초록이다.
+  `commandContracts/m2Command`·`interpreter` 의 단계/기록 모양 계약은 그대로 초록이다.
+- **출하 플레이어 QA(도착 증거):**
+  `npx tsx scripts/prepare-coordinate-move-qa.mts && node scripts/qa-coordinate-move.mjs`.
+  키보드만 조작하고 `__oprnDebug.readState` 는 관찰에만 쓴다. 네 단계(변수 좌표 도착 ·
+  맵 밖 · 길 없음 · 없는 변수 + 중단)를 한 이벤트로 실행하고, 좌표 표본으로 **걸어갔는지**
+  (순간이동이 아닌지)까지 잰다. `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` 를
+  **먼저** 읽어라. 그 경로는 매 실행 재생성되는 gitignore 대상이라 보존본은
+  `verify-shots/oprn-013/test-play/` 에 있다. 실패를 일부러 만드는 계약이므로
+  `[player] pathfind …` / `[m2] Pathfind Move …` 경고는 오류가 아니라 **증거**다 —
+  하네스가 따로 모아 `report.json` 에 남기고, 진단이 실제로 났는지도 단정한다.
 
 ### 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
 
