@@ -146,6 +146,15 @@
 .role-builder .ai-team-role { background: var(--bg-inset); color: var(--text-2); }
 .role-reviewer .ai-team-role { background: var(--warning-muted); color: var(--warning); }
 
+/* 팀원 이름이 역할 배지를 덮을 때 종류(시공·검수)를 잇대어 붙인다. */
+.ai-team-kind {
+  border: 1px solid var(--border-default);
+  border-radius: 5px;
+  color: var(--text-3);
+  font-size: calc(10.5px * var(--ai-font-scale, 1));
+  padding: 0 5px;
+}
+
 .ai-team-map {
   font-size: calc(13px * var(--ai-font-scale, 1));
   font-weight: var(--font-weight-semibold);
@@ -175,6 +184,7 @@
 
 .ai-team-task,
 .ai-team-last,
+.ai-team-fix-of,
 .ai-team-warn,
 .ai-team-report,
 .ai-team-error,
@@ -195,6 +205,7 @@
 .ai-team-task:focus-visible { border-radius: 4px; outline: var(--focus-outline); outline-offset: 2px; }
 .ai-team-last { color: var(--text-3); }
 .ai-team-last.is-tool { font-family: var(--font-mono); font-size: calc(11.5px * var(--ai-font-scale, 1)); }
+.ai-team-fix-of { color: var(--warning); font-weight: var(--font-weight-semibold); }
 .ai-team-warn { color: var(--warning); }
 
 .ai-team-review { display: grid; gap: 3px; }

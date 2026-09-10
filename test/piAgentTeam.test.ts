@@ -78,6 +78,26 @@ describe("팀 보드 리듀서", () => {
     expect(state.phase).toBe("적용 중");
     expect(markTeamBoardApplied(state, "적용").phase).toBe("적용됨");
   });
+  // 깨질 것: 팀원 이름이 roleLabel 을 덮으면 그 행이 시공인지 검수인지 알 방법이 사라진다
+  // (팀 패널의 「지금」 구획에서 정원사 행에 종류 배지가 없던 이유).
+  it("팀원 이름이 배지를 덮어도 종류 배지는 남는다", () => {
+    let state = createTeamBoardState("team", "x");
+    state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "b1", role: "builder", mapId: "m", mapName: "M", task: "t", memberId: "gardener", label: "정원사" });
+    state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "r1", role: "reviewer", mapId: "m", mapName: "M", task: "t", memberId: "qa", label: "품질" });
+    expect(state.agents.map((agent) => [agent.roleLabel, agent.kindLabel])).toEqual([["정원사", "시공"], ["품질", "검수"]]);
+  });
+
+  // 깨질 것: 재배정 행이 원인이 된 검수를 가리키지 않으면, 같은 맵에 시공·수정 행이 나란히 쌓여
+  // 사용자가 어느 것이 검수 지적 때문에 다시 돈 것인지 구분할 수 없다.
+  it("수정 배정 행은 원인이 된 검수 행을 가리킨다", () => {
+    let state = createTeamBoardState("team", "x");
+    state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "b1", role: "builder", mapId: "m", mapName: "M", task: "짓기" });
+    state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "r1", role: "reviewer", mapId: "m", mapName: "M", task: "검수" });
+    state = reduceTeamBoard(state, { type: "review", agentId: "r1", mapId: "m", ok: false, findings: ["길 끊김"] });
+    state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "b2", role: "builder", mapId: "m", mapName: "M", task: "길 잇기", fixOf: "r1" });
+    expect(state.agents.map((agent) => agent.fixOf)).toEqual([null, null, "r1"]);
+  });
+
   it("중단은 실행 중인 행만 중단으로 바꾼다", () => {
     let state = createTeamBoardState("single", "x");
     state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "a", role: "builder", mapId: "map_a", mapName: "A", task: "x" });
