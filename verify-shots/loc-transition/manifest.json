@@ -1,0 +1,442 @@
+{
+  "scenarioId": "loc-transition",
+  "projectPath": "../../../../tmp/loc-transition.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "타이틀 화면이 뜬다",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "field-start-outside",
+      "note": "새 게임 → (10,8), 광장 밖. 부팅만으로는 구역 이벤트가 돌지 않는다(기준선만 심는다).",
+      "shot": "02-field-start-outside.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 10,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "seed",
+          "seed": 1
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "step-toward-plaza",
+      "note": "(11,8) — 아직 광장 밖이다. 한 칸 접근만으로 발동하지 않는다.",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 11,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 8,
+          "timeoutMs": 30000
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "enter-plaza",
+      "note": "(12,8) 광장 경계를 밟는 걸음 → enter 이벤트의 대사가 떠야 한다",
+      "shot": "04-enter-plaza.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 12,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 8,
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present",
+          "timeoutMs": 20000
+        },
+        {
+          "kind": "key",
+          "key": "Enter"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "walk-inside-no-refire",
+      "note": "광장 안에서 두 칸 더 걸어도 enter 가 다시 나지 않는다 (같은 점유 집합)",
+      "shot": "05-walk-inside-no-refire.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 13,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "dialogue-box",
+          "state": "absent",
+          "maxPresses": 8
+        },
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 13,
+          "y": 8,
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 13,
+          "y": 9,
+          "timeoutMs": 30000
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "leave-plaza",
+      "note": "왼쪽으로 걸어 경계를 넘으면 leave 이벤트의 대사가 떠야 한다",
+      "shot": "06-leave-plaza.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 11,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 13,
+          "y": 8,
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "left"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 8,
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "left"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 8,
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present",
+          "timeoutMs": 20000
+        },
+        {
+          "kind": "key",
+          "key": "Enter"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "reenter-fires-again",
+      "note": "나갔다 다시 들어오면 enter 가 또 난다 (일회성이 아니다)",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 12,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "dialogue-box",
+          "state": "absent",
+          "maxPresses": 8
+        },
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 8,
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present",
+          "timeoutMs": 20000
+        },
+        {
+          "kind": "key",
+          "key": "Enter"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "id": "walk-to-door",
+      "note": "광장을 나와 문(10,10) 앞까지 걷는다. 나가는 걸음에서 leave 가 한 번 난다.",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 10,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "dialogue-box",
+          "state": "absent",
+          "maxPresses": 8
+        },
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "left"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 8,
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present",
+          "timeoutMs": 20000
+        },
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "dialogue-box",
+          "state": "absent",
+          "maxPresses": 8
+        },
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 9,
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "left"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 10,
+          "y": 9,
+          "timeoutMs": 30000
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "id": "teleport-into-plaza",
+      "note": "문을 밟아 (14,8) 로 장소 이동 — 중간 걸음이 없어도 광장 enter 가 난다",
+      "shot": "09-teleport-into-plaza.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 14,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 14,
+          "y": 8,
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present",
+          "timeoutMs": 20000
+        },
+        {
+          "kind": "key",
+          "key": "Enter"
+        }
+      ]
+    }
+  ]
+}
