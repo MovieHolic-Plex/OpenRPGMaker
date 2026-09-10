@@ -1,0 +1,27 @@
+{
+  "layerOrder": ["tokens", "base", "components", "shell", "map", "event", "database", "resources", "runtime", "overrides"],
+  "surfaces": {
+    "tokens":     { "dir": "src/styles/tokens.css", "entry": "src/styles/tokens.css", "prefixes": [], "roots": [":root", "html", "body"] },
+    "base":       { "dir": "src/styles/base", "entry": "src/styles/base/index.css", "prefixes": [], "roots": ["html", "body", "*", "::selection", "::-webkit-scrollbar"] },
+    "components": { "dir": "src/styles/components", "entry": "src/styles/components/index.css",
+                    "prefixes": ["btn", "icon", "app-modal", "empty-state", "grid-4", "field", "input", "select", "checkbox", "chip", "badge", "toast"], "roots": [] },
+    "shell":      { "dir": "src/styles/shell", "entry": "src/styles/shell/index.css",
+                    "prefixes": ["topbar", "oprn-menu", "oprn-toolbar", "editor-layout", "left-panel", "basic-rail", "team-", "coach-mark", "editor-welcome", "director-briefing", "editor-statusbar", "map-context-menu", "chipset-sheet-popout", "authoring-journey", "ai-settings", "ai-auth", "help-modal", "audio-test", "audio-preview", "cluster-ai", "local-diagnostics", "project-picker", "db-config-project"],
+                    "roots": ["body.editor-ui-beginner", "body.editor-ui-standard", "body.editor-ui-expert", ".editor-layout"] },
+    "map":        { "dir": "src/styles/map", "entry": "src/styles/map/index.css",
+                    "prefixes": ["map-", "tile-", "chipset-", "palette-", "brush-", "quick-tile", "canvas-", "region-task", "region-size", "selection-action", "world-", "village-info", "map-props", "map-history", "map-event-search", "event-marker-tooltip", "build-palette", "harness-", "structure-kit", "inline-assist", "ghost-", "ai-ghost", "ai-activity", "agent-", "runtime-overlay", "runtime-debug", "resource-"],
+                    "roots": [".editor-layout"] },
+    "event":      { "dir": "src/styles/event", "entry": "src/styles/event/index.css",
+                    "prefixes": ["event-", "ecp-", "cmd-", "rich-", "m2-", "page3-", "schema-", "shop-", "move-route", "coordinate-move", "cream-command", "input-number-command", "play-audio-command", "change-", "transfer-", "party-member", "actor-m2", "storage-chest", "character-id", "npc-", "record-browser", "pick-", "blk-", "oprn-command"],
+                    "roots": [".event-editor-modal-backdrop", ".event-editor-modal-window", ".event-subdialog-backdrop"] },
+    "database":   { "dir": "src/styles/database", "entry": "src/styles/database/index.css",
+                    "prefixes": ["database-", "db-", "oprn-record", "oprn-tileset", "actor-", "enemy-", "troop-", "tileset-", "palette-preset", "ai-chat", "ai-command-bar", "ai-deck", "ai-studio", "ai-assistant", "ai-status", "ai-abort", "ai-sticky", "spatial-", "world-gen", "scratch-", "title-", "system-", "growth-", "battle-studio", "animation-", "curve-"],
+                    "roots": [".database-modal-backdrop", ".database-modal-window", "body.ai-studio-open", "body.ai-panel-docked", "body.ai-command-bar-active"] },
+    "resources":  { "dir": "src/styles/resources", "entry": "src/styles/resources/index.css", "prefixes": ["resource-manager", "rm-"], "roots": [] },
+    "runtime":    { "dir": "src/styles/runtime", "entry": "src/styles/runtime/index.css", "prefixes": ["*"], "roots": [] },
+    "overrides":  { "dir": "src/styles/overrides.css", "entry": "src/styles/overrides.css", "prefixes": ["*"], "roots": [] }
+  },
+  "sharedStatePrefixes": ["is-", "has-", "active", "selected", "disabled", "hidden", "open", "empty", "error", "warning", "locked"],
+  "orderCommentPatterns": ["뒤에 와야", "뒤에 읽", "앞에 와야", "마지막 발언자", "마지막 @import", "must come after", "must follow", "load order", "cascade order", "순서 금지", "재배열 금지"],
+  "dynamicPrefixMinLength": 3
+}

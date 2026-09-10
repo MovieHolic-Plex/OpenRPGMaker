@@ -1,0 +1,3 @@
+.al-card { color: var(--accent); background: var(--nope); border: var(--nope2, var(--accent)); }
+.al-card .bt-row { margin: 0 !important; }
+.al-ghost { color: blue; }

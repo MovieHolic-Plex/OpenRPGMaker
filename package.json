@@ -15,7 +15,7 @@
     "dev:worktree": "vite --configLoader runner --host 127.0.0.1 --strictPort",
     "wt": "node scripts/agent-worktree.mjs",
     "gates": "node scripts/verify-gates.mjs",
-    "gates:css": "node scripts/check-css-budget.mjs && node scripts/check-css-graph.mjs && node scripts/check-css-live-classes.mjs",
+    "gates:css": "node scripts/check-css-budget.mjs && node scripts/check-css-graph.mjs && node scripts/check-css-live-classes.mjs && node scripts/check-css-surfaces.mjs",
     "gates:css:save": "node scripts/check-css-budget.mjs --save-baseline",
     "gates:css:live": "node scripts/check-css-live-classes.mjs",
     "audit:db-css-ownership": "node scripts/audit-db-css-ownership.mjs",
