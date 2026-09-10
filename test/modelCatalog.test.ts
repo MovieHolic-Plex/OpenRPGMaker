@@ -11,7 +11,7 @@ async function loadCatalog() {
   return await import("@/ai/modelCatalog");
 }
 
-/** 실측 `bun -e getBundledModels("google-antigravity")` (2026-08-27). */
+/** 실측 `bun -e getBundledModels("google-antigravity")` (2026-08-27, 2026-09-10 번들 17.4.0 재확인: 19종, 3.8 없음). */
 const ANTIGRAVITY_BUNDLED = [
   "claude-opus-4-5",
   "claude-opus-4-6",
@@ -29,7 +29,6 @@ const ANTIGRAVITY_BUNDLED = [
   "gemini-3.6-flash",
   "gemini-3.7-flash",
   "gemini-3.7-flash-tiered",
-  "gemini-3.8-flash",
   "gpt-oss-120b",
   "tab_flash_lite_preview",
   "tab_jump_flash_lite_preview",
@@ -122,10 +121,11 @@ describe("isModelValidForAuthMode — 선택된 제공자 기준", () => {
     expect(isModelValidForAuthMode("chatgpt", "gemini-9-experimental", ANTIGRAVITY_PROVIDER_ID)).toBe(true);
   });
 
-  it("Gemini 3.8 Flash 를 Antigravity 목록에서 고를 수 있다", async () => {
+  it("번들에 없는 Gemini 3.8 Flash 는 목록에 없다(실측 2026-09-10 번들 17.4.0 19종)", async () => {
     const { isModelValidForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
     const models = modelCatalogForAuthMode("chatgpt", ANTIGRAVITY_PROVIDER_ID).flatMap((g) => g.models);
-    expect(models).toContain("gemini-3.8-flash");
+    expect(models).not.toContain("gemini-3.8-flash");
+    // gemini 네임스페이스 통과 예외로 검증 자체는 통과하지만, 목록에서 골라 저장되지는 않는다.
     expect(isModelValidForAuthMode("chatgpt", "gemini-3.8-flash", ANTIGRAVITY_PROVIDER_ID)).toBe(true);
   });
 

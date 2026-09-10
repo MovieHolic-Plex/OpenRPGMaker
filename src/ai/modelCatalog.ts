@@ -39,6 +39,10 @@ const CODEX_MODELS: readonly string[] = [
  * `gemini-3.7-flash-high` 는 없다 — 실측(2026-08-26) 결과 Cloud Code Assist 가 그 ID 를 404
  * `Requested entity was not found` 로 거부한다. Antigravity 에서 `-high`/`-medium`/`-low` 는
  * 독립 모델이 아니라 `gemini-3.7-flash` 의 `thinking.effortRouting` 대상 이름이다.
+ *
+ * `gemini-3.8-flash` 도 없다 — 실측(2026-09-10) 결과 번들 17.4.0 의
+ * `getBundledModels("google-antigravity")` 19종에 없고, 저장된 Pi 요청이 번들 첫 항목으로
+ * 조용히 바뀌어 CCA 404 즉시 실패가 났다. 번들에 들어오면 그때 목록에 올린다.
  */
 const ANTIGRAVITY_MODELS: readonly string[] = [
   "gemini-3.7-flash",
@@ -57,7 +61,6 @@ const ANTIGRAVITY_MODELS: readonly string[] = [
   "gemini-3.5-flash",
   "gemini-3.6-flash",
   "gemini-3.7-flash-tiered",
-  "gemini-3.8-flash",
   "gpt-oss-120b",
   "tab_flash_lite_preview",
   "tab_jump_flash_lite_preview",

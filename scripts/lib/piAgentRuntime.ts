@@ -29,13 +29,20 @@ export interface RunPiAgentOptions {
 const DEFAULT_MAX_TURNS = 40;
 const DEFAULT_TIMEOUT_MS = 10 * 60_000;
 
-function resolveModel(provider: string, modelId?: string) {
+/** 요청 모델 해석. 번들에 없는 저장 ID 는 제공자 기본 모델로 떨어진다 — 번들 첫 항목으로
+ * 조용히 바꾸면(구 동작) CCA 에 없는 와이어 ID 로 첫 호출부터 404 가 난다(실측 2026-09-10:
+ * gemini-3.8-flash 저장 → claude-opus-4-5 → claude-opus-4-5-thinking 와이어 404).
+ * 세션 경로(ohMyPiPiAiRuntime.resolveModel)와 같은 폴백이다. */
+export function resolvePiModel(provider: string, modelId?: string) {
   const wanted = modelId?.trim() || getOhMyPiProvider(provider)?.defaultModel || "";
   const exact = wanted ? getBundledModel(provider as never, wanted) : undefined;
   if (exact && typeof exact === "object" && "id" in exact) return exact;
-  const fallback = getBundledModels(provider as never)[0];
-  if (!fallback) throw new Error(`oh-my-pi 카탈로그에 ${provider} 모델이 없습니다`);
-  return fallback;
+  const providerDefault = getOhMyPiProvider(provider)?.defaultModel;
+  const providerFallback = providerDefault ? getBundledModel(provider as never, providerDefault) : undefined;
+  if (providerFallback && typeof providerFallback === "object" && "id" in providerFallback) return providerFallback;
+  const first = getBundledModels(provider as never)[0];
+  if (!first) throw new Error(`oh-my-pi 카탈로그에 ${provider} 모델이 없습니다`);
+  return first;
 }
 
 function trimText(value: unknown, max: number): string {
@@ -47,7 +54,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const emit = (event: PiAgentEvent) => options.onEvent?.(event);
   const base = request.project;
   const ctx = { project: structuredClone(base) as Project };
-  const model = resolveModel(request.provider, request.model);
+  const model = resolvePiModel(request.provider, request.model);
   // 툴 요약은 어댑터(onCall)가 알고, 호출 id 는 코어 이벤트가 안다. 이름별 FIFO 로 둘을 맞춘다.
   const pendingSummaries = new Map<string, { ok: boolean; summary: string }[]>();
   const registryTools = createPiToolset(ctx, {
