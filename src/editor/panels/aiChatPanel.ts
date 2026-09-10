@@ -94,6 +94,8 @@ import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMen
 import { downloadAiUsageLogText } from "./aiUsageLogDownload";
 import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
 import { createComposerElements, type ComposerElements, type ComposerMode, type ComposerPopover } from "./aiComposer";
+import { createPlanningReuseControl, type PlanningReuseControl } from "./aiPlanningReuse";
+import { describePlanningReuse } from "@/project/mapPlanningItems";
 import { deckIcon } from "./aiDeckIcons";
 import { createDeckRail, deckStateOfTone, type DeckState } from "./aiDeckRail";
 import { regionFromToolCall, renderMapChip } from "./aiMapChip";
@@ -496,6 +498,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 그 전에 정의되는 핸들러들이 팝오버/실측을 부를 수 있어 늦은 바인딩으로 노출한다 —
   // 이 파일이 이미 쓰는 패턴(applyAssistantViewPolicy, syncGlassIdle 등)과 같다.
   let openComposerPopover: (kind: ComposerPopover | null) => void = () => {};
+  // 보존 기획 재사용 제어기. 컴포저보다 아래에서 만들어지지만 칩 갱신은 그보다 앞에도 돌아간다.
+  let planningReuseControl: PlanningReuseControl | null = null;
   let composerPopoverKind: () => ComposerPopover | null = () => null;
   let syncCommandBarClearance: () => void = () => {};
   /** 데크 상태(idle|run|attention|done|error)를 레일·패널·알약에 함께 바른다. 데크 조립 뒤 바인딩. */
@@ -1690,7 +1694,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 17줄은 툴 설명으로 옮겼다 — 기계 텍스트가 사용자 채널에 실려 되묻기·플래너 스킵·툴 노출을 어긋나게
     // 했던 근인이다(2026-09-03 의도 라우터 감사). 선택 사각형은 스코프 인자로 따로 넘긴다.
     const turnScope = resolveTurnScope();
-    const payload = [trimmed, contextFooter(turnScope?.mapId)].filter((part) => part.length > 0).join("\n\n");
+    // 보존 기획 지침은 사용자 발화 뒤·사실 줄 앞에 온다. 고른 게 없으면 빈 문자열이라 아무 것도 붙지 않는다.
+    // 보낸 뒤에는 선택을 자동으로 푸는다 — 한 번 고른 재사용이 다음 턴에 조용히 또 실리면 그게 숨은 기억이다.
+    const planningGuidance = planningReuse.guidanceBlock();
+    if (planningGuidance) {
+      const chosen = planningReuse.resolvedItems();
+      appendBubble("system", `${describePlanningReuse(chosen.length, planningReuse.choice().mode)} — 이번 요청에 지침으로 넣습니다.`);
+    }
+    const payload = [trimmed, planningGuidance, contextFooter(turnScope?.mapId)]
+      .filter((part) => part.length > 0)
+      .join("\n\n");
+    planningReuse.reset();
     const composerMode = derivedComposerMode();
     await executeTurn(session, trimmed, (onEvent, signal) =>
       // instruction: 사용자 발화 원문 — 의도 선언·툴 이름 언급·능력 승격은 이것만 본다.
@@ -2000,6 +2014,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (selection) {
       chips.push(renderSelectionTaskChip(selection));
     }
+    // 보존 기획 재사용 칩 — 고른 것이 있을 때만 선다. 이 함수는 컴포저 조립 전에도 한 번 돌아가므로
+    // 제어기가 아직 없을 수 있다(TDZ) — 그때는 칩이 없는 게 맞다.
+    if (planningReuseControl) {
+      const reuseCount = planningReuseControl.resolvedItems().length;
+      planningReuseControl.chip.hidden = reuseCount === 0;
+      if (reuseCount > 0) chips.push(planningReuseControl.chip);
+    }
     // idle 상태는 컨텍스트 칩을 숨기지만, 선택 스코프가 붙어 있으면 그 칩만은 보여야 한다 —
     // 안 보이면 사용자는 스코프가 붙는지 모르고 ×도 누를 수 없다(2026-09-03 실측 7건 전부 display:none).
     contextChips.classList.toggle("has-selection-scope", selection !== null);
@@ -2009,6 +2030,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   refreshContextChips();
   refreshComposerPlaceholder();
   const unsubscribeContextEditor = editorState.subscribe(() => {
+    // 맵을 바꾸면 재사용 선택은 그 맵의 것이 아니다 — 칩보다 먼저 범위를 갈아끈는다.
+    planningReuseControl?.refresh();
     refreshContextChips();
     refreshComposerPlaceholder();
     applyAssistantViewPolicy();
@@ -2019,6 +2042,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
   });
   const unsubscribeContextStore = store.subscribe(() => {
+    // 항목 편집·은퇴·삭제가 저장소에서 오면 재사용 선택도 그 사실을 따른다(조용한 부활 금지).
+    planningReuseControl?.refresh();
     refreshContextChips();
     refreshComposerPlaceholder();
     if (studioShell?.attached()) {
@@ -2473,6 +2498,25 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     controller.session?.updateConfig(next);
     composerShell.setModelLabel(modelChipLabel());
   };
+  // 보존 기획 재사용(OPRN-019). 컴포저의 명시적 선택만이 이 맵의 기획 항목을 조수 턴에 싣는다 —
+  // 목록이 있다는 사실만으로는 아무 것도 실리지 않는다(숨은 강제 기억 금지).
+  const planningReuse: PlanningReuseControl = createPlanningReuseControl({
+    onChange: () => {
+      refreshContextChips();
+      refreshComposerPlaceholder();
+    },
+    onOpenList: () => {
+      openComposerPopover?.(null);
+      if (!studioShell?.attached()) studioButton.click();
+      studioShell?.setDeckTab("planning");
+    },
+  });
+  planningReuseControl = planningReuse;
+  // 칩을 누르면 그 선택을 다시 열어 무엇이 실리는지 본다 — 칩이 상태판이기만 하면 되돌릴 길이 없다.
+  planningReuse.chip.addEventListener("click", () => {
+    planningReuse.refresh();
+    openComposerPopover("planning");
+  });
   const effortInitial = loadAiConfig();
   const initialAutonomy: AutonomyLevel = isAutonomyLevel(effortInitial.autonomyLevel)
     ? effortInitial.autonomyLevel
@@ -2496,6 +2540,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     preferenceContent: preferenceMemory.element,
     // 대화 중 증류가 목록을 바꾼다 — 열 때마다 다시 읽어야 방금 배운 성향이 보인다.
     onPreferenceOpen: () => preferenceMemory.refresh(),
+    planningContent: planningReuse.content,
+    // 팝오버를 여는 순간의 상자가 진상이다 — 맵 전환·항목 삭제가 그 사이에 있었을 수 있다.
+    onPlanningOpen: () => planningReuse.refresh(),
     // 바깥 클릭 판정은 데크 전체 — 레일의 ⋯ 가 바 밖에 있다(데크 조립 전엔 바 기준).
     isInside: (target) => (deckRoot ?? composerShell.commandBar).contains(target),
     routeChips: {
@@ -2572,6 +2619,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     composerShell.newChatButton,
     ...(composerShell.conversationsButton ? [composerShell.conversationsButton] : []),
     ...(composerShell.preferenceToggle ? [composerShell.preferenceToggle] : []),
+    ...(composerShell.planningToggle ? [composerShell.planningToggle] : []),
     composerShell.menuToggle,
     collapseButton,
   );
@@ -2579,7 +2627,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   rail.statusSlot.append(status);
   // ⋯ 메뉴·성향·맥락 팝오버는 토글이 있는 레일 아래 오른쪽에 붙는다 — 열림/닫힘 기계는 컴포저 것 그대로.
   // 컴포저 위로 띄우면 기록과 레일을 덮어 토글 자신이 가려진다(실측 2026-09-03).
-  rail.root.append(commandMenu, composerShell.preferencePopover, contextMeter.popover);
+  rail.root.append(commandMenu, composerShell.preferencePopover, composerShell.planningPopover, contextMeter.popover);
   // 팀 패널: 레일 아래 접힌 막대. 유휴 상태(본문 숨김)에서도 「누가 무엇을 하는지」 한 줄이 보인다.
   const teamPanel = createTeamPanel();
   const deck = el("div", {

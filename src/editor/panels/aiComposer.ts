@@ -35,9 +35,9 @@ import { deckIcon } from "./aiDeckIcons";
 import { anchoredPopupPosition } from "./popupPosition";
 
 /** 서로 배타적인 컴포저 팝오버. 하나가 열리면 나머지는 닫힌다. */
-export type ComposerPopover = "suggest" | "menu" | "preference" | "context";
+export type ComposerPopover = "suggest" | "menu" | "preference" | "context" | "planning";
 
-const POPOVER_KINDS = ["suggest", "menu", "preference", "context"] as const;
+const POPOVER_KINDS = ["suggest", "menu", "preference", "context", "planning"] as const;
 
 export { COMPOSER_MODES, COMPOSER_MODE_LABEL, type ComposerMode };
 
@@ -68,6 +68,10 @@ export interface ComposerElements {
   readonly preferenceToggle: HTMLButtonElement | null;
   /** 성향 팝오버 껍데기 — 패널이 레일 아래로 옮겨 붙인다(토글이 레일에 있다). */
   readonly preferencePopover: HTMLElement;
+  /** 보존 기획 재사용 토글. `planningContent` 를 주지 않았으면 null. */
+  readonly planningToggle: HTMLButtonElement | null;
+  /** 보존 기획 재사용 팝오버 껍데기 — 성향 팝오버와 같은 자리 규칙. */
+  readonly planningPopover: HTMLElement;
   /** 자율성 셀렉트 — 지시줄의 유일한 컨트롤. `effortChips` 를 주지 않았으면 null. */
   readonly autonomySelect: HTMLSelectElement | null;
   /** 실행 경로 셀렉트. `routeChips` 를 주지 않았으면 null. */
@@ -110,6 +114,13 @@ export interface ComposerOptions {
   readonly preferenceContent?: HTMLElement;
   /** 성향 팝오버가 열릴 때. 목록을 다시 읽는 자리다(대화 중 증류로 내용이 바뀐다). */
   readonly onPreferenceOpen?: () => void;
+  /**
+   * 「보존 기획 재사용」 팝오버의 내용. 성향 팝오버와 같은 주입 관례다 — 안 주면 버튼도
+   * 팝오버도 만들지 않는다(컴포저 단위 테스트가 프로젝트 스토어를 끌어오지 않게 한다).
+   */
+  readonly planningContent?: HTMLElement;
+  /** 재사용 팝오버가 열릴 때 — 항목 목록을 프로젝트에서 다시 읽는 자리. */
+  readonly onPlanningOpen?: () => void;
   /**
    * 바깥 클릭 판정. 기본은 `commandBar.contains`. 데크에서는 레일의 토글이 바 밖에 있으므로
    * 패널이 `deck.contains` 를 넘긴다 — 안 그러면 ⋯ 를 다시 누를 때 pointerdown 이 먼저 닫고
@@ -223,6 +234,28 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     ...(options.preferenceContent ? { children: [options.preferenceContent] } : {}),
   });
   preferencePopover.hidden = true;
+
+  // 보존 기획 재사용 — 이 턴에 어떤 기획 항목을 참고할지(없음/전체/선택) 고르는 자리.
+  // 기본은 「없음」이고, 고르지 않으면 아무 문장도 실리지 않는다.
+  const planningToggle = options.planningContent
+    ? iconButton({
+      class: "ai-planning-toggle",
+      icon: "list",
+      label: "보존 기획 재사용",
+      title: "보존 기획 재사용 — 없음 · 전체 · 선택",
+      testid: "ai-planning-toggle",
+      attrs: { "aria-expanded": "false", "aria-haspopup": "dialog" },
+      onClick: () => openPopover(openState === "planning" ? null : "planning"),
+    })
+    : null;
+
+  const planningPopover = el("div", {
+    class: "ai-composer-popover ai-planning-popover",
+    attrs: { role: "dialog", "aria-label": "보존 기획 재사용" },
+    dataset: { testid: "ai-planning-popover" },
+    ...(options.planningContent ? { children: [options.planningContent] } : {}),
+  });
+  planningPopover.hidden = true;
 
   // 추천 — 입력창 포커스 + 빈 값일 때 자동으로 뜬다(전용 토글 없음). 데크 안에서 입력창 위에
   // 흐름으로 선다. `nextSteps`(맵 진단 힌트 + 실행 문장 행)는 감독 프롬프트 칩 다음에 온다.
@@ -342,6 +375,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       suggestPopover,
       commandMenu,
       preferencePopover,
+      planningPopover,
       ...(options.contextMeterPopover ? [options.contextMeterPopover] : []),
       composer,
     ],
@@ -357,11 +391,13 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     if (kind === "suggest") return suggestPopover;
     if (kind === "menu") return commandMenu;
     if (kind === "preference") return options.preferenceContent ? preferencePopover : null;
+    if (kind === "planning") return options.planningContent ? planningPopover : null;
     return options.contextMeterPopover ?? null;
   };
   const toggleOf = (kind: ComposerPopover): HTMLElement | null => {
     if (kind === "menu") return menuToggle;
     if (kind === "preference") return preferenceToggle;
+    if (kind === "planning") return planningToggle;
     if (kind === "context") return options.contextMeterButton ?? null;
     return null;
   };
@@ -405,6 +441,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     commandBar.classList.toggle("has-popover", resolved !== null);
     // 목록 갱신은 **열기 직후** 한 번만 — 매 턴 갱신하면 닫힌 팝오버를 위해 localStorage 를 계속 읽는다.
     if (resolved === "preference") options.onPreferenceOpen?.();
+    if (resolved === "planning") options.onPlanningOpen?.();
     popoverResize?.disconnect();
     positionPopover();
     if (resolved !== null && resolved !== "suggest") {
@@ -458,6 +495,8 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     menuToggle,
     preferenceToggle,
     preferencePopover,
+    planningToggle,
+    planningPopover,
     autonomySelect,
     routeSelect,
     setRoute,

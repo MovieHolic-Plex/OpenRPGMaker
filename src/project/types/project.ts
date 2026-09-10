@@ -21,6 +21,7 @@ import type {
 import type { ProjectDatabaseRecords, SystemRecords } from "./database";
 import type { VillageHouseTemplateRecord, VillageLayoutPresetRecord } from "./village";
 import type { AnyQuestDef } from "../quest/questDef";
+import type { MapPlanningItem } from "../mapPlanningItems";
 import type { WorldCanon } from "../world/canon";
 import type { ProjectWorld } from "../world/types";
 import type { WorldGraph } from "../worldGraph/types";
@@ -126,6 +127,15 @@ export interface GameMap {
    * 배열 순서가 곧 시간 순서다 — 겹칠 때는 뒤(나중)가 이긴다. optional 이라 마이그레이션 불필요.
    */
   structurePlacements?: StructurePlacement[];
+  /**
+   * 사용자가 이 맵에 보존해 둔 기획 항목(사람이 읽는 한 줄). 조수 세션이 죽어도 남고,
+   * 새 대화·프로젝트 재열기에도 사라지지 않는다. optional — 없는 맵은 옛 저장본과 동일하다.
+   *
+   * 이것은 자동 프롬프트 기억이 아니다. 재사용(없음/전체/선택)은 매 턴 사용자가 컴포저에서
+   * 고르고, 고르지 않으면 어떤 문장도 조수에게 가지 않는다. 시공 게이트·검증기는 읽지 않는다.
+   * 권위: `src/project/mapPlanningItems.ts`.
+   */
+  planningItems?: MapPlanningItem[];
 }
 
 /** 맵에 찍힌 구조물 킷 한 채. 좌상단(x,y) + 크기(w,h)는 찍은 순간의 킷 크기다. */

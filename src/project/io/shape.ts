@@ -8,6 +8,7 @@ import { villageDesignIssue } from "../villageDesign";
 import type { Project, ProjectV1, ProjectV2 } from "../types";
 import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRecordModel";
 import { STORY_FLAG_ID_PATTERN } from "../storyFlags";
+import { normalizeMapPlanningItems } from "../mapPlanningItems";
 import { normalizeWorldCanon } from "../world/canonNormalize";
 import { normalizeWorld } from "../world/guards";
 import { normalizeProjectFactions } from "../factions";
@@ -157,6 +158,7 @@ function normalizeProjectV4(data: JsonRecord): Project {
   dropLegacyTerrainTemplates(project);
   normalizeEndings(project);
   normalizeStoryFlags(project);
+  normalizeProjectPlanningItems(project);
   normalizeTilesetPalettePresets(project);
   if (data.world !== undefined) project.world = normalizeWorld(data.world);
   if (data.worldCanon !== undefined) {
@@ -221,6 +223,19 @@ function validateStoryFlags(
     const targetKey = `${kind}:${targetId}`;
     assert(!activeTargets.has(targetKey), `활성 storyFlags target이 중복됩니다: ${targetKey}`);
     activeTargets.add(targetKey);
+  }
+}
+
+/**
+ * 맵별 보존 기획 항목 정리. 항목이 하나도 안 남으면 필드 자체를 지워 옛 프로젝트 JSON 이
+ * 바이트 그대로 유지되게 한다(스키마 버전 상승 불필요한 추가 필드).
+ */
+function normalizeProjectPlanningItems(project: Project): void {
+  for (const map of Object.values(project.maps)) {
+    if (map.planningItems === undefined) continue;
+    const normalized = normalizeMapPlanningItems(map.planningItems);
+    if (normalized) map.planningItems = normalized;
+    else delete map.planningItems;
   }
 }
 

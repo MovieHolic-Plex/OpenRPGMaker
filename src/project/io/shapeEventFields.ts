@@ -9,6 +9,11 @@ import { validateCommandArray, validateConditionShape, validateMoveRoute } from 
 import { validateLightingState } from "./shapeLightingFields";
 import { validateTrigger } from "./shapeReferenceFields";
 import { isSeason, isTimePhase } from "@/project/gameTime";
+import {
+  isMapPlanningItemOrigin,
+  isMapPlanningItemStatus,
+  MAP_PLANNING_ITEMS_MAX,
+} from "@/project/mapPlanningItems";
 
 export function validateCommonEvents(value: unknown): void {
   for (const [index, entry] of requireArray("commonEvents", value).entries()) {
@@ -43,6 +48,7 @@ export function validateMaps(value: unknown): Record<string, unknown> {
     if (map.safeZones !== undefined) validateSafeZones(`map ${id}.safeZones`, map.safeZones);
     if (map.farmableArea !== undefined) validateRectArray(`map ${id}.farmableArea`, map.farmableArea);
     if (map.locations !== undefined) validateMapNamedLocations(`map ${id}.locations`, map.locations, width, height);
+    if (map.planningItems !== undefined) validatePlanningItems(`map ${id}.planningItems`, map.planningItems);
     if (map.defaultLighting !== undefined) validateLightingState(`map ${id}.defaultLighting`, map.defaultLighting);
     for (const [eventIndex, eventValue] of requireArray(`map ${id}.events`, map.events).entries()) {
       validateEventShape(`map ${id}.events[${eventIndex}]`, eventValue);
@@ -152,6 +158,31 @@ function validateRoguelikeRoom(label: string, value: unknown): void {
 
 function validateSafeZones(label: string, value: unknown): void {
   validateRectArray(label, value);
+}
+
+/**
+ * 보존 기획 항목은 JSON 경계에서 fail-closed 다 — 이상한 행을 조용하게 버리면 사용자가
+ * 보존하기로 결정한 문장이 밝힐 이유 없이 사라진다. 섬을 통과한 목록은 로드 후
+ * `normalizeMapPlanningItems` 가 다심 정리한다(공백·상한).
+ */
+function validatePlanningItems(label: string, value: unknown): void {
+  const rows = requireArray(label, value);
+  assert(rows.length <= MAP_PLANNING_ITEMS_MAX, `${label}: 보존 기획 항목은 ${MAP_PLANNING_ITEMS_MAX}개까지입니다.`);
+  const seen = new Set<string>();
+  for (const [index, rowValue] of rows.entries()) {
+    const row = requireRecord(`${label}[${index}]`, rowValue);
+    const rowId = requireString(`${label}[${index}].id`, row.id);
+    assert(rowId.trim().length > 0, `${label}[${index}].id는 빈 보존 기획 항목 id 입니다.`);
+    assert(!seen.has(rowId), `${label}[${index}].id가 중복되었습니다.`);
+    seen.add(rowId);
+    const text = requireString(`${label}[${index}].text`, row.text);
+    assert(text.trim().length > 0, `${label}[${index}].text는 본문이 필요합니다.`);
+    assert(isMapPlanningItemStatus(row.status), `${label}[${index}].status가 잘못되었습니다.`);
+    assert(isMapPlanningItemOrigin(row.origin), `${label}[${index}].origin이 잘못되었습니다.`);
+    for (const key of ["createdAt", "updatedAt", "specAssetId"] as const) {
+      if (row[key] !== undefined) requireString(`${label}[${index}].${key}`, row[key]);
+    }
+  }
 }
 
 function validateRectArray(label: string, value: unknown): void {
