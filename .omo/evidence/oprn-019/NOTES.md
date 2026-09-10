@@ -2,6 +2,15 @@
 
 Branch `agent/oprn019`, worktree `/home/main/z-project/rpg-zzu-oprn019`, dev port 9853.
 
+## Commits on `agent/oprn019` (base `950b14d38`)
+
+| Hash | Unit |
+|---|---|
+| `8a24fd958` | `feat(project)` schema (`GameMap.planningItems`), fail-closed wire validation, load normalization, authoring actions, `test/mapPlanningItems.test.ts` |
+| `47c0381d8` | `feat(editor)` list UI (studio deck 「기획」 tab), reuse choice (none/all/selected), blueprint capture button, token-only CSS, `test/mapPlanningReuse.test.ts` + `test/mapPlanningSpecCapture.test.ts` |
+| `b9871d356` | `docs(openwiki)` two wiki pages, capture script, 8 browser PNGs, this NOTES file, `.gitignore` allowlist |
+| `21606a050` | `docs(openwiki)` INDEX regeneration after the new modules became tracked files |
+
 ## What shipped
 
 A map can now hold a durable, human-readable planning list that outlives the assistant
