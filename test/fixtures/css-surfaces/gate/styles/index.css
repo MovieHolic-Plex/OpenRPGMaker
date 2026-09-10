@@ -2,4 +2,4 @@
 @import "./tokens.css" layer(tokens);
 @import "./alpha/index.css";
 @import "./beta/index.css";
-.unlayered-leak { color: red; }
+.unlayered-leak { color: red; margin: 0; }

@@ -2,9 +2,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { flattenImports, indexDeclarations, lastCompound } from "./css-flatten.mjs";
+import { flattenImports, indexDeclarations } from "./css-flatten.mjs";
 
 const BASELINE_PATH = "scripts/css-surfaces.baseline.json";
+// 기준선 지문을 남기는 규칙. R1 은 표면별 카운트(unlayered)로 래칫한다.
+const FINGERPRINT_RULES = new Set(["R2", "R4", "R5", "R6"]);
 
 function walkFiles(dir, exts, out = []) {
   if (!fs.existsSync(dir)) return out;
@@ -12,6 +14,20 @@ function walkFiles(dir, exts, out = []) {
     const p = path.join(dir, e.name);
     if (e.isDirectory()) { if (!/node_modules|^\.|dist|output/.test(e.name)) walkFiles(p, exts, out); }
     else if (exts.some((x) => p.endsWith(x))) out.push(p);
+  }
+  return out;
+}
+
+// 여러 진입 시트를 하나의 dedup 으로 평탄화한다. 앞선 진입에서 이미 닿은 파일은 뒤 진입에서 copy > 1 이다.
+function flattenAll(entries) {
+  const seen = new Map();
+  const out = [];
+  for (const e of entries) {
+    for (const o of flattenImports(e)) {
+      const n = (seen.get(o.file) ?? 0) + 1;
+      seen.set(o.file, n);
+      out.push(n === o.copy ? o : { ...o, copy: n });
+    }
   }
   return out;
 }
@@ -25,9 +41,14 @@ function surfaceOfFile(relFile, registry) {
 }
 
 function classTokens(sel) {
-  // :not(.x) 안의 클래스는 규칙이 스타일하는 대상이 아니다 → 제외
-  const stripped = sel.replace(/:not\([^)]*\)/g, "");
+  // [attr="..."] 안의 텍스트와 :not(.x) 안의 클래스는 규칙이 스타일하는 대상이 아니다 → 제외
+  const stripped = sel.replace(/\[[^\]]*\]/g, "").replace(/:not\([^)]*\)/g, "");
   return [...stripped.matchAll(/\.([\w-]+)/g)].map((m) => m[1]);
+}
+
+// `-` 로 끝나는 항목만 접두어(startsWith), 나머지 낱말은 정확히 일치해야 한다.
+function matchesPrefix(cls, p) {
+  return p.endsWith("-") ? cls === p.slice(0, -1) || cls.startsWith(p) : cls === p;
 }
 
 function collectSourceTokens(srcRoot, minLen) {
@@ -38,8 +59,8 @@ function collectSourceTokens(srcRoot, minLen) {
     if (f.includes(`${path.sep}styles${path.sep}`)) continue;
     const src = fs.readFileSync(f, "utf8");
     for (const m of src.matchAll(/[\w-]+/g)) literal.add(m[0]);
-    for (const m of src.matchAll(/`([\w-]*-)\$\{/g)) if (m[1].length >= minLen) dynamicPrefixes.add(m[1]);
-    for (const m of src.matchAll(/["']([\w-]*-)["']\s*\+/g)) if (m[1].length >= minLen) dynamicPrefixes.add(m[1]);
+    for (const m of src.matchAll(/`([\w-]*[-_])\$\{/g)) if (m[1].length >= minLen) dynamicPrefixes.add(m[1]);
+    for (const m of src.matchAll(/["']([\w-]*[-_])["']\s*\+/g)) if (m[1].length >= minLen) dynamicPrefixes.add(m[1]);
   }
   return { literal, dynamicPrefixes: [...dynamicPrefixes] };
 }
@@ -60,10 +81,10 @@ function parseVarUses(value) {
 
 export function runSurfaceChecks({ stylesRoot, srcRoot, registry, entries }) {
   const violations = [];
-  const counts = Object.fromEntries(Object.keys(registry.surfaces).map((s) => [s, { important: 0 }]));
-  const push = (rule, surface, file, line, message) => violations.push({ rule, surface, file, line, message });
+  const counts = Object.fromEntries(Object.keys(registry.surfaces).map((s) => [s, { important: 0, unlayered: 0 }]));
+  const push = (rule, surface, file, line, sel, detail, message) => violations.push({ rule, surface, file, line, sel, detail, message });
 
-  const order = entries.flatMap((e) => flattenImports(e));
+  const order = flattenAll(entries);
   const decls = indexDeclarations(order, stylesRoot);
   const entryRel = new Set(entries.map((e) => path.relative(stylesRoot, e)));
   for (const s of Object.values(registry.surfaces)) entryRel.add(s.entry.replace(/^src\/styles\/?/, "").replace(/^styles\/?/, ""));
@@ -80,8 +101,9 @@ export function runSurfaceChecks({ stylesRoot, srcRoot, registry, entries }) {
   const tsDefs = new Set();
   for (const f of walkFiles(srcRoot, [".ts", ".tsx"])) {
     if (f.includes(`${path.sep}styles${path.sep}`)) continue;
-    for (const m of fs.readFileSync(f, "utf8").matchAll(/setProperty\(\s*[`"'](--[\w-]+)/g)) tsDefs.add(m[1]);
-    for (const m of fs.readFileSync(f, "utf8").matchAll(/setProperty\(\s*`(--[\w-]*)\$\{/g)) tsDefs.add(m[1] + "*");
+    const src = fs.readFileSync(f, "utf8");
+    for (const m of src.matchAll(/setProperty\(\s*[`"'](--[\w-]+)/g)) tsDefs.add(m[1]);
+    for (const m of src.matchAll(/setProperty\(\s*`(--[\w-]*)\$\{/g)) tsDefs.add(m[1] + "*");
   }
   const tsDefined = (name) => tsDefs.has(name) || [...tsDefs].some((k) => k.endsWith("*") && name.startsWith(k.slice(0, -1)));
 
@@ -95,9 +117,14 @@ export function runSurfaceChecks({ stylesRoot, srcRoot, registry, entries }) {
   for (const d of decls) {
     const surface = surfaceOfFile(d.file, registry);
     const spec = surface ? registry.surfaces[surface] : null;
-    // R1
-    if (!d.layer && !(d.file === "index.css" && d.sel === "@layer")) {
-      if (!surface || !["tokens", "base"].includes(surface)) push("R1", surface, d.file, d.line, `언레이어 규칙: ${d.sel}`);
+    // R1 — (file, sel) 당 한 번
+    if (!d.layer && (!surface || !["tokens", "base"].includes(surface))) {
+      const key = `R1|${d.file}|${d.sel}`;
+      if (!seenRule.has(key)) {
+        seenRule.add(key);
+        if (surface) counts[surface].unlayered++;
+        push("R1", surface, d.file, d.line, d.sel, "", `언레이어 규칙: ${d.sel}`);
+      }
     }
     // R3
     if (d.imp && surface && surface !== "overrides") counts[surface].important++;
@@ -105,9 +132,9 @@ export function runSurfaceChecks({ stylesRoot, srcRoot, registry, entries }) {
     if (spec && !spec.prefixes.includes("*")) {
       const allowed = [...spec.prefixes, ...(registry.surfaces.components?.prefixes ?? []), ...sharedState];
       for (const cls of classTokens(d.sel)) {
-        if (!allowed.some((p) => cls === p.replace(/-$/, "") || cls.startsWith(p))) {
+        if (!allowed.some((p) => matchesPrefix(cls, p))) {
           const key = `R2|${d.file}|${d.line}|${cls}`;
-          if (!seenRule.has(key)) { seenRule.add(key); push("R2", surface, d.file, d.line, `표면 밖 클래스 .${cls} in ${d.sel}`); }
+          if (!seenRule.has(key)) { seenRule.add(key); push("R2", surface, d.file, d.line, d.sel, cls, `표면 밖 클래스 .${cls} in ${d.sel}`); }
         }
       }
     }
@@ -118,13 +145,13 @@ export function runSurfaceChecks({ stylesRoot, srcRoot, registry, entries }) {
       const fallbackOk = u.fallback !== null && (!/var\(/.test(u.fallback) || parseVarUses(u.fallback).every((f) => tokenDefs.has(f.name)));
       if (fallbackOk) continue;
       const key = `R4|${d.file}|${d.line}|${u.name}`;
-      if (!seenRule.has(key)) { seenRule.add(key); push("R4", surface, d.file, d.line, `미정의 변수 ${u.name} (폴백 없음)`); }
+      if (!seenRule.has(key)) { seenRule.add(key); push("R4", surface, d.file, d.line, d.sel, u.name, `미정의 변수 ${u.name} (폴백 없음)`); }
     }
     // R5 — 선택자의 클래스 전부가 소스에 없을 때만
     const classes = classTokens(d.sel);
     if (classes.length > 0 && classes.every((c) => !alive(c))) {
       const key = `R5|${d.file}|${d.sel}`;
-      if (!seenRule.has(key)) { seenRule.add(key); push("R5", surface, d.file, d.line, `죽은 선택자 ${d.sel}`); }
+      if (!seenRule.has(key)) { seenRule.add(key); push("R5", surface, d.file, d.line, d.sel, d.sel, `죽은 선택자 ${d.sel}`); }
     }
   }
   // R6 — 순서 주석
@@ -133,19 +160,25 @@ export function runSurfaceChecks({ stylesRoot, srcRoot, registry, entries }) {
   for (const abs of cssFiles) {
     const rel = path.relative(stylesRoot, abs);
     const lines = fs.readFileSync(abs, "utf8").split("\n");
-    lines.forEach((L, i) => { if (patterns.some((p) => L.includes(p))) push("R6", surfaceOfFile(rel, registry), rel, i + 1, `순서 주석: ${L.trim().slice(0, 80)}`); });
+    lines.forEach((L, i) => {
+      if (!patterns.some((p) => L.includes(p))) return;
+      const text = L.trim().slice(0, 80);
+      push("R6", surfaceOfFile(rel, registry), rel, i + 1, "", text, `순서 주석: ${text}`);
+    });
   }
   // 허브 깊이 1 (진입 시트 밖 @import)
   for (const o of order) {
+    if (o.copy > 1) continue;
     const rel = path.relative(stylesRoot, o.file);
     if (o.depth >= 1 && !entryRel.has(rel) && /@import/.test(fs.readFileSync(o.file, "utf8").replace(/\/\*[\s\S]*?\*\//g, ""))) {
-      push("R1", surfaceOfFile(rel, registry), rel, 1, "진입 시트가 아닌 파일의 @import (허브 깊이 1 위반)");
+      push("R1", surfaceOfFile(rel, registry), rel, 1, "", "", "진입 시트가 아닌 파일의 @import (허브 깊이 1 위반)");
     }
   }
   return { violations, counts };
 }
 
-function fingerprint(v) { return `${v.rule}|${v.file}|${v.line}|${v.message}`; }
+// 줄 번호를 넣지 않는다 — 위쪽 편집으로 줄이 밀려도 같은 부채는 같은 지문이어야 한다.
+export function fingerprint(v) { return `${v.rule}|${v.file}|${v.sel}|${v.detail}`; }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
@@ -154,9 +187,11 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const entries = [path.resolve("src/styles/index.css"), ...Object.values(registry.surfaces).map((s) => path.resolve(s.entry))]
     .filter((p, i, a) => fs.existsSync(p) && a.indexOf(p) === i);
   const { violations, counts } = runSurfaceChecks({ stylesRoot, srcRoot: path.resolve("src"), registry, entries });
+  const fingerprinted = violations.filter((v) => FINGERPRINT_RULES.has(v.rule));
   if (args.includes("--baseline")) {
-    fs.writeFileSync(BASELINE_PATH, JSON.stringify({ counts, known: violations.map(fingerprint).sort() }, null, 2) + "\n");
-    console.log(`baseline saved: ${violations.length} known violations`);
+    const known = [...new Set(fingerprinted.map(fingerprint))].sort();
+    fs.writeFileSync(BASELINE_PATH, JSON.stringify({ counts, known }, null, 2) + "\n");
+    console.log(`baseline saved: ${known.length} known fingerprints, ${violations.length} violations`);
     process.exit(0);
   }
   const baseline = fs.existsSync(BASELINE_PATH) ? JSON.parse(fs.readFileSync(BASELINE_PATH, "utf8")) : { counts: {}, known: [] };
@@ -165,15 +200,18 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const enforced = (s) => enforce.has("all") || (s && enforce.has(s));
   let failed = false;
   const byRule = {};
-  for (const v of violations) {
-    byRule[v.rule] = (byRule[v.rule] ?? 0) + 1;
-    const isNew = !known.has(fingerprint(v));
-    if (isNew && enforced(v.surface)) { failed = true; console.error(`FAIL ${v.rule} [${v.surface}] ${v.file}:${v.line} ${v.message}`); }
+  for (const v of violations) byRule[v.rule] = (byRule[v.rule] ?? 0) + 1;
+  for (const v of fingerprinted) {
+    if (!known.has(fingerprint(v)) && enforced(v.surface)) { failed = true; console.error(`FAIL ${v.rule} [${v.surface}] ${v.file}:${v.line} ${v.message}`); }
   }
   for (const [s, c] of Object.entries(counts)) {
-    const base = baseline.counts?.[s]?.important ?? Infinity;
-    if (c.important > base && enforced(s)) { failed = true; console.error(`FAIL R3 [${s}] !important ${base} → ${c.important}`); }
+    if (!enforced(s)) continue;
+    for (const k of ["important", "unlayered"]) {
+      const base = baseline.counts?.[s]?.[k] ?? Infinity;
+      if (c[k] > base) { failed = true; console.error(`FAIL ${k === "important" ? "R3" : "R1"} [${s}] ${k} ${base} → ${c[k]}`); }
+    }
   }
-  console.log("css-surfaces:", JSON.stringify(byRule), "important:", JSON.stringify(Object.fromEntries(Object.entries(counts).map(([k, v]) => [k, v.important]))));
+  const summary = (k) => JSON.stringify(Object.fromEntries(Object.entries(counts).map(([s, c]) => [s, c[k]])));
+  console.log("css-surfaces:", JSON.stringify(byRule), "important:", summary("important"), "unlayered:", summary("unlayered"));
   process.exit(failed ? 1 : 0);
 }
