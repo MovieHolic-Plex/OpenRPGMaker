@@ -543,7 +543,7 @@
 
 /* 코드는 사람이 손으로 옮겨 적는 값이다 — 자간을 벌리고 줄바꿈을 막는다. */
 .ai-oauth-device-usercode {
-  background: var(--surface-1);
+  background: var(--bg-inset);
   border: 1px solid var(--border-subtle);
   border-radius: 6px;
   color: var(--text-1);
