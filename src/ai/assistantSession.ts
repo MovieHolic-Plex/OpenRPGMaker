@@ -872,6 +872,8 @@ export class AssistantSession {
   /** 현재 WorkItem에서 이번 사용자 메시지 동안 성공한 모든 툴 이름(읽기 포함). */
   private turnSuccessfulTools = new Set<string>();
   private workItemToolOutcomes: WorkToolOutcome[] = [];
+  /** 마지막으로 감사에 **전체 목록**을 남긴 도구 카탈로그. 같은 카탈로그는 개수만 남긴다. */
+  private lastAuditedToolCatalog: string | null = null;
   private successfulToolsWorkItemId: string | null = null;
   /** 현재 WorkItem 이 새로 만든 맵 id — 산출물 게이트가 "만들고 안 채운 맵"을 잡는 근거. */
   private turnItemCreatedMapIds = new Set<string>();
@@ -4880,9 +4882,18 @@ export class AssistantSession {
         .filter((tool) => this.turnComposerMode !== "ask" || !isWriteToolName(tool.function.name))
         .map((tool) => tool.function.name === "verify_npc_reward" ? tool : injectToolReasonIntoOpenAiTool(tool));
       const toolsChars = JSON.stringify(tools).length;
+      // 카탈로그는 라운드마다 거의 그대로다. 매번 227개 이름을 찍으면 clipText 상한(4KB)에 걸린
+      // 행이 라운드마다 쌓여 AUDIT_BUDGET_BYTES(384KB)를 상수 문자열로 다 먹고, fitWithinBudget 이
+      // 가운데를 버려 **실제 대화 기록이 축출된다**(2026-09-10 실측: 대화 472건 유실, planner:replan
+      // 원문 소실). 변경될 때만 전체 목록을 남기고 그 외에는 개수만 남긴다.
+      const toolCatalog = tools.map((tool) => tool.function.name).join(",");
+      const catalogChanged = toolCatalog !== this.lastAuditedToolCatalog;
+      this.lastAuditedToolCatalog = toolCatalog;
       this.pushAudit({
         kind: "status",
-        text: `tools:exposed ${tools.length} — ${tools.map((tool) => tool.function.name).join(",")}`,
+        text: catalogChanged
+          ? `tools:exposed ${tools.length} — ${toolCatalog}`
+          : `tools:exposed ${tools.length} (카탈로그 동일)`,
       });
       // 컨텍스트 압축(요약)은 요청 조립보다 **먼저** 돈다: 대화 자체를 줄이지 못하면
       // 아래 문자 클램프가 오래된 assistant/tool 을 통째로 버려 기억이 소리 없이 사라진다.

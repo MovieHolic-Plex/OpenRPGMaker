@@ -166,8 +166,13 @@ export class ToolReadEvidence {
       }
     }
     if (missing.length === 0) return null;
+    // 순서 규칙을 반드시 실어 보낸다. 읽기 크레딧은 **모델에게 전달된 뒤**에만 적립되므로
+    // (observeDelivered), 조회와 쓰기를 한 응답에 함께 담으면 조회가 성공해도 이 게이트는 100%
+    // 실패한다. 이 문장이 없던 동안 모델은 같은 조회를 반복 성공시키며 같은 실패를 반복했다.
     const summary = `조회 선행 조건 미충족: ${[...new Set(missing)].join("; ")}`
-      + ". 조회를 성공시키고 반환된 값으로 다시 호출하세요. 프로젝트는 변경하지 않았습니다.";
+      + ". 조회를 성공시키고 **다음 응답에서** 반환된 값으로 다시 호출하세요"
+      + " — 조회와 쓰기를 같은 응답에 함께 담으면 조회 결과가 아직 전달되지 않아 반드시 실패합니다."
+      + " 프로젝트는 변경하지 않았습니다.";
     return { ok: false, summary, issues: [{ severity: "error", code: "read-before-write-required", message: summary }] };
   }
 }

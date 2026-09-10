@@ -463,9 +463,14 @@ export class ToolVerificationEvidence {
   }
 
   passed(name: string, checkIds?: readonly string[], ownerId?: string): boolean {
+    // 스펙 미지정(args === null)은 **계획의 공백**이지 검증 실패가 아니다. 이전 구현은 pending 이
+    // 하나라도 있으면 every() 를 무조건 false 로 만들어, 실제로 통과한 run_lint·check_reachability 가
+    // 영구히 미통과로 집계됐다(assistantSession 이 성공 기록을 지움 → 완료 게이트 영구 거부).
+    // pending 은 판정에서 제외하고, 남은 판단은 아래 attempts 분기가 현재 revision 기준으로 한다.
     const states = [...this.requirements.values()].filter(state => !state.inactive && state.requirement.name === name
+      && state.requirement.args !== null
       && (checkIds === undefined || checkIds.includes(state.requirement.checkId)));
-    if (states.length) return states.every(state => state.requirement.args !== null && state.pass && !state.stale && state.criterionPassed)
+    if (states.length) return states.every(state => state.pass && !state.stale && state.criterionPassed)
       && ![...this.findings.values()].some(f => !this.resolved(f) && f.name === name && (checkIds === undefined || states.some(s => s.requirement.ownerId === f.ownerId)));
     return ![...this.findings.values()].some(f => !this.resolved(f) && f.name === name && (ownerId === undefined || f.ownerId === ownerId))
       && this.attempts.some(attempt => attempt.name === name && attempt.status === "passed" && attempt.revision === this.revision && (ownerId === undefined || attempt.ownerId === ownerId));
@@ -488,7 +493,14 @@ export class ToolVerificationEvidence {
         .flatMap(f => f.verdict.blockingIssues.map(issue => `${f.name}: ${issue} [${f.checkId}]`)),
       ...[...this.requirements.values()].flatMap(({ requirement, pass, stale, criterionPassed, inactive }) => {
         if (inactive) return [];
-        const problem = requirement.args === null ? "pending specification" : stale ? "변경 후 재검증 필요" : !pass || !criterionPassed ? "필수 검증 미통과" : null;
+        // 스펙 미지정은 진단으로만 노출한다. blocking 으로 세면 해소 경로가 set_work_plan 하나뿐인데
+        // 그 입력은 배열 원자 거부라 모델이 좌표를 못 잡아 턴이 영구히 끝나지 않는다.
+        if (requirement.args === null) {
+          return scope === "all"
+            ? [`${requirement.name}: pending specification — set_work_plan 의 verificationChecks 에 {checkId, args} 로 지정하세요 [${requirement.checkId}]`]
+            : [];
+        }
+        const problem = stale ? "변경 후 재검증 필요" : !pass || !criterionPassed ? "필수 검증 미통과" : null;
         return problem ? [`${requirement.name}: ${problem} [${requirement.checkId}]`] : [];
       }),
     ])];
