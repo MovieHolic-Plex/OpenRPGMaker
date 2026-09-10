@@ -147,14 +147,18 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
   `resolveRegionClientRect`(타일→화면)와 `resolveClientPointTile`(화면→타일)를 쓰고, 둘 다
   `EditScene.create` 가 꽂는다. 등록 전(부팅 중)에는 null 이므로 제스처를 시작하지 않는다 —
   브라우저 QA 는 `__oprnEditWorldToClient` 를 기다린 뒤 시작해야 한다.
-- **카메라 제스처는 오버레이가 아니라 카메라의 것이다 (2026-09-11).** 오버레이는 포인터의
+- **캔버스·카메라 제스처는 오버레이가 아니라 캔버스의 것이다 (2026-09-11).** 오버레이는 포인터의
   **표적**이라 그 아래 캔버스는 `pointerdown` 을 아예 받지 못한다. 그래서 켜 둔 동안 「화면 밀기」
-  도구·스페이스 팬·가운데 버튼 드래그가 팬을 시작조차 못 하고 오버레이의 «빈 곳 그리기» 로
-  흘러들어 구역을 만들거나 옮겼다 — 실측: 맵을 밀려던 드래그가 좌표를 3,3 → 7,5 로 옮겼고,
-  스페이스 드래그가 구역을 하나 더 만들었다. `src/editor/cameraPanBridge.ts` 등록소가
-  «양보할 때인가»(`armed`)와 «이미 지나간 좌표에서 팬 시작»(`startPan`)을 EditScene 에서 받아
-  오버레이를 카메라에 넘긴다. 휠은 캔버스로 그대로 전달한다(휠 팬·Ctrl+휠 확대 둘 다 캔버스
-  리스너가 처리하므로 여기서 팬을 다시 구현하지 않는다). 「화면 밀기」 동안 커서도 캔버스와 같다.
+  도구·스페이스 팬·가운데 버튼·우클릭 영역 제스처(AI 영역 채우기)·선택 도구 맵 밖 드래그·붙여넣기
+  미리보기 클릭이 동작하지 않고 오버레이의 «빈 곳 그리기» 로 흘러들어 구역을 만들거나 옮겼다.
+  순수 판정기 `src/editor/canvasPointerOwnership.ts` 의 `resolveCanvasGestureOwner` 와
+  `src/editor/canvasPointerBridge.ts` 의 `claimCanvasPointer` 가 제스처 소유권을 중재한다.
+  여기에는 두 가지 실측 트랩이 있다: (1) `pointerdown` 을 `preventDefault()` 하면 브라우저가
+  그 포인터의 호환 마우스 이벤트(mousedown/mousemove/mouseup)를 통째로 삼켜 Phaser 가 드래그를
+  잇지 못한다 — 그래서 `"region"` 제스처는 `preventDefault` 하지 않는다; (2) 영역 제스처 동안
+  오버레이는 `.is-yielding`(`pointer-events: none`)으로 물러나 캔버스가 드래그 추종을 이어받고,
+  `mouseup`(capture)·`pointercancel`·`blur` 및 동기 복원에 따른 mouseup 유실을 막기 위해
+  한 매크로태스크 지연된 `pointerup` 에서 복원한다. 휠은 캔버스로 그대로 전달한다.
 - **상자는 카메라를 따라간다 — 다시 그리지 않고 좌표만 다시 쓴다.** 손 팬·휠·스크롤바·프로그램
   팬이 모두 `EditScene.afterCameraMoved` 를 지나고, 거기서 `repositionMapLocationLayer()` 가
   상자·설계 고스트의 `left/top/width/height` 만 갱신한다. 인스펙터는 그대로 둔다 — 팬 중에 이름을
@@ -171,10 +175,7 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
   **삭제된 구역의 진단·복구는 조건과 같은 통로를 쓴다**(끊긴 참조 패널·`map-location-missing-ref`).
 - 브라우저 QA: `npm run dev:worktree` 뒤
   `MAP_LOCATION_QA_URL=http://127.0.0.1:<포트> node scripts/qa/map-location-layer.mjs`
-  → `verify-shots/oprn-020/SUMMARY.md`. 07~10 은 카메라 제스처 몫이다: 세 제스처(화면 밀기 ·
-  스페이스 · 휠)가 맵을 실제로 움직이고 구역 좌표를 건드리지 않으며 상자가 제 타일에 남는지,
-  상자의 화면 사각형을 캔버스 기준 `__oprnEditWorldToClient` 훅으로 **독립 검산**한다.
-
+  → `verify-shots/oprn-020/SUMMARY.md`. 우클릭 영역 선택·붙여넣기 확정·선택 도구 맵 밖 팬·제스처 중 레이어 끄기 등 실측 엣지 단계를 포함한 16개 단계가 실 브라우저 이벤트 경로로 검증된다.
 ### 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
 
 빌더 `layoutPlan.regions` 를 명명 로케이션으로 **일괄** 옮기는 창. OPRN-OUT-020 이 미뤄 뒀던

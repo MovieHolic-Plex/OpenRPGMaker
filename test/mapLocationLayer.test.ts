@@ -1,6 +1,6 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { setCameraPanBridge } from "@/editor/cameraPanBridge";
+import { setCanvasPointerBridge } from "@/editor/canvasPointerBridge";
 import { editorState } from "@/editor/editorState";
 import { setRegionClientRectResolver } from "@/editor/regionClientRect";
 import { installMapLocationLayer, repositionMapLocationLayer } from "@/editor/mapLocationLayer";
@@ -85,7 +85,7 @@ describe("map location editor layer", () => {
     document.body.innerHTML = "";
     setLocationLayerEnabled(false);
     Reflect.deleteProperty(globalThis, "localStorage");
-    setCameraPanBridge(null);
+    setCanvasPointerBridge(null);
     setRegionClientRectResolver(null);
   });
 
@@ -216,13 +216,17 @@ describe("map location editor layer", () => {
     const overlay = testId("map-location-layer")!;
     const pans: Array<[number, number]> = [];
     const bridge = (armed: () => boolean) => ({
-      armed,
-      startPan: (screenX: number, screenY: number) => pans.push([screenX, screenY]),
+      claim: (point: { button: number; buttons: number; clientX: number; clientY: number }) => {
+        if (point.button === 1 || (point.buttons & 4) === 4 || editorState.get().tool === "pan" || armed()) {
+          return { kind: "pan" as const, start: () => pans.push([point.clientX, point.clientY]) };
+        }
+        return null;
+      },
     });
 
     // 「화면 밀기」 도구: 맵을 밀려는 드래그다. 오버레이가 삼키면 구역이 그려진다.
     editorState.set({ tool: "pan" });
-    setCameraPanBridge(bridge(() => false));
+    setCanvasPointerBridge(bridge(() => false));
     overlay.dispatchEvent(pointerDownAt(120, 240));
     expect(pans).toEqual([[120, 240]]);
     expect(locationLayerState().drag).toBeNull();
@@ -230,15 +234,146 @@ describe("map location editor layer", () => {
 
     // 스페이스 팬은 도구와 무관하게 카메라의 것이다.
     editorState.set({ tool: "paint" });
-    setCameraPanBridge(bridge(() => true));
+    setCanvasPointerBridge(bridge(() => true));
     overlay.dispatchEvent(pointerDownAt(10, 20));
     expect(pans).toHaveLength(2);
     expect(currentLocations()).toHaveLength(0);
 
     // 가운데 버튼 드래그도 같은 길로 간다.
-    setCameraPanBridge(bridge(() => false));
+    setCanvasPointerBridge(bridge(() => false));
     overlay.dispatchEvent(pointerDownAt(5, 6, { button: 1, buttons: 4 }));
     expect(pans).toHaveLength(3);
+    expect(currentLocations()).toHaveLength(0);
+  });
+
+  it("오른쪽 버튼은 캔버스의 것 — 브리지 start 호출 + is-yielding 부착 + 레이어 드래그 없음", () => {
+    mount();
+    setLocationLayerEnabled(true);
+    const overlay = testId("map-location-layer")!;
+    let regionCalls = 0;
+    setCanvasPointerBridge({
+      claim: (point) => {
+        if (point.button === 2) {
+          return { kind: "region", start: () => { regionCalls++; } };
+        }
+        return null;
+      },
+    });
+
+    overlay.dispatchEvent(pointerDownAt(50, 60, { button: 2, buttons: 2 }));
+    expect(regionCalls).toBe(1);
+    expect(overlay.classList.contains("is-yielding")).toBe(true);
+    expect(locationLayerState().drag).toBeNull();
+    expect(currentLocations()).toHaveLength(0);
+  });
+
+  it("pointerup 은 is-yielding 을 해제하지 않고 mouseup 이 해제한다 (R5 계약 고정)", () => {
+    mount();
+    setLocationLayerEnabled(true);
+    const overlay = testId("map-location-layer")!;
+    setCanvasPointerBridge({
+      claim: () => ({ kind: "region", start: () => undefined }),
+    });
+
+    overlay.dispatchEvent(pointerDownAt(50, 60, { button: 2, buttons: 2 }));
+    expect(overlay.classList.contains("is-yielding")).toBe(true);
+
+    // pointerup 은 mouseup 보다 먼저 발생하므로 is-yielding 을 해제해서는 안 된다
+    window.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
+    expect(overlay.classList.contains("is-yielding")).toBe(true);
+
+    // mouseup 시점에 정상 복원
+    window.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+    expect(overlay.classList.contains("is-yielding")).toBe(false);
+  });
+
+  it("제스처 중 레이어를 비활성화하면 is-yielding 이 즉시 정리된다 (R3)", () => {
+    mount();
+    setLocationLayerEnabled(true);
+    const overlay = testId("map-location-layer")!;
+    setCanvasPointerBridge({
+      claim: () => ({ kind: "region", start: () => undefined }),
+    });
+
+    overlay.dispatchEvent(pointerDownAt(50, 60, { button: 2, buttons: 2 }));
+    expect(overlay.classList.contains("is-yielding")).toBe(true);
+
+    // 레이어 OFF
+    setLocationLayerEnabled(false);
+    expect(overlay.classList.contains("is-yielding")).toBe(false);
+  });
+
+  it("claim('region')은 preventDefault 를 호출하지 않고(호환 마우스 이벤트 보존), claim('pan')은 호출한다", () => {
+    mount();
+    setLocationLayerEnabled(true);
+    const overlay = testId("map-location-layer")!;
+
+    let regionStarted = false;
+    setCanvasPointerBridge({
+      claim: (point) => {
+        if (point.button === 2) {
+          return { kind: "region", start: () => { regionStarted = true; } };
+        }
+        return null;
+      },
+    });
+
+    const regionEvent = pointerDownAt(50, 60, { button: 2, buttons: 2 });
+    overlay.dispatchEvent(regionEvent);
+    expect(regionStarted).toBe(true);
+    expect(regionEvent.defaultPrevented).toBe(false);
+
+    let panStarted = false;
+    setCanvasPointerBridge({
+      claim: (point) => {
+        if (point.button === 1) {
+          return { kind: "pan", start: () => { panStarted = true; } };
+        }
+        return null;
+      },
+    });
+
+    const panEvent = pointerDownAt(50, 60, { button: 1, buttons: 4 });
+    overlay.dispatchEvent(panEvent);
+    expect(panStarted).toBe(true);
+    expect(panEvent.defaultPrevented).toBe(true);
+  });
+
+  it("단독 pointerup 은 is-yielding 을 동기적으로 해제하지 않고 지연된 매크로태스크 후 해제한다", async () => {
+    mount();
+    setLocationLayerEnabled(true);
+    const overlay = testId("map-location-layer")!;
+    setCanvasPointerBridge({
+      claim: () => ({ kind: "region", start: () => undefined }),
+    });
+
+    overlay.dispatchEvent(pointerDownAt(50, 60, { button: 2, buttons: 2 }));
+    expect(overlay.classList.contains("is-yielding")).toBe(true);
+
+    // pointerup 발생 직후(동기)에는 여전히 is-yielding 유지
+    window.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
+    expect(overlay.classList.contains("is-yielding")).toBe(true);
+
+    // 매크로태스크 1회 대기 후에는 해제되어야 한다
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(overlay.classList.contains("is-yielding")).toBe(false);
+  });
+
+  it("claim('scene') 경로: start() 가 실행되고 로케이션 드래그가 시작되지 않으며 is-yielding 이 붙지 않는다", () => {
+    mount();
+    setLocationLayerEnabled(true);
+    const overlay = testId("map-location-layer")!;
+    let sceneCalls = 0;
+    setCanvasPointerBridge({
+      claim: () => ({ kind: "scene", start: () => { sceneCalls++; } }),
+    });
+
+    const sceneEvent = pointerDownAt(50, 60, { button: 0, buttons: 1 });
+    overlay.dispatchEvent(sceneEvent);
+
+    expect(sceneCalls).toBe(1);
+    expect(overlay.classList.contains("is-yielding")).toBe(false);
+    expect(locationLayerState().drag).toBeNull();
     expect(currentLocations()).toHaveLength(0);
   });
 
@@ -246,7 +381,14 @@ describe("map location editor layer", () => {
     mount();
     setLocationLayerEnabled(true);
     const pans: Array<[number, number]> = [];
-    setCameraPanBridge({ armed: () => false, startPan: (x, y) => pans.push([x, y]) });
+    setCanvasPointerBridge({
+      claim: (point) => {
+        if (point.button === 1) {
+          return { kind: "pan", start: () => pans.push([point.clientX, point.clientY]) };
+        }
+        return null;
+      },
+    });
     editorState.set({ tool: "paint" });
 
     // 카메라 좌표 해석기가 없으면(null) 제스처를 시작하지 않는다 — 좌표를 지어내지 않는다.

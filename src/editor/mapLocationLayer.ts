@@ -3,23 +3,11 @@
 //
 // 왜 DOM 인가: 이름·메모·버튼이 붙는 저작 표면이고, Phaser 텍스처로 그리면 한글 라벨과
 // 접근성(포커스·키보드)을 다시 만들어야 한다. 기존 `layoutBboxOverlay` 와 같은 자리
-// (`.phaser-container` 자식)에 붙되, **레이어가 켜졌을 때만** `pointer-events` 를 받는다 —
-// 꺼져 있으면 타일 편집을 한 픽셀도 방해하지 않는다.
-//
-// 제스처 계약(로케이션 레이어가 켜진 동안만):
-//   - 빈 곳 드래그          → 새 구역을 그린다(놓는 순간 생성 + 선택 + 이름 입력 포커스)
-//   - 구역 클릭             → 선택
-//   - 선택된 구역의 몸통 드래그 → 이동
-//   - 선택된 구역의 우하단 손잡이 드래그 → 크기 변경
-//   - Delete/Backspace      → 선택 구역 삭제(참조가 있으면 확인 문구를 먼저 보여준다)
-//   - Escape                → 선택 해제, 드래그 취소
-//   - 화면 밀기 도구·스페이스 팬·가운데 버튼, 그리고 휠 → **카메라의 제스처**다. 오버레이가 이걸
-//     삼키면 맵이 안 움직이고 드래그가 위 «빈 곳 그리기» 로 흘러들어 구역이 만들어진다
-//     (`editor/cameraPanBridge.ts` 로 넘긴다, 2026-09-11).
+// 제스처 위임 계약: pan 도구 / 스페이스 팬 / 가운데 버튼 / 오른쪽 버튼 영역 제스처 / select 도구 맵 밖 팬 / 붙여넣기 미리보기 클릭은 캔버스·카메라에 위임한다.
 // 겹침은 허용이므로 클릭 판정은 «가장 구체적인(작은) 구역» 이 이긴다(순수 모듈 규칙).
 
 import { TILE_SIZE } from "@/assets/bundled";
-import { cameraPanArmed, startCameraPan } from "@/editor/cameraPanBridge";
+import { claimCanvasPointer, type CanvasPointerPoint } from "@/editor/canvasPointerBridge";
 import { editorState } from "@/editor/editorState";
 import { resolveClientPointTile, resolveRegionClientRect } from "@/editor/regionClientRect";
 import {
@@ -56,9 +44,11 @@ import { toast } from "@/util/toast";
 let overlayEl: HTMLElement | null = null;
 let inspectorEl: HTMLElement | null = null;
 let teardown: (() => void) | null = null;
+let cleanupYield: (() => void) | null = null;
+/** pointerup 뒤 한 매크로태스크 미뤄 복원하는 타이머(`yieldPointerToCanvas` 참조). */
+let yieldTimer: number | null = null;
 /** 방금 만든 구역의 이름 칸에 초점을 준다 — 그리자마자 이름을 붙이는 게 이 레이어의 목적이다. */
 let focusNameOnNextRender = false;
-
 function ensureHost(): HTMLElement | null {
   const host = document.querySelector<HTMLElement>(".phaser-container");
   if (!host) return null;
@@ -142,6 +132,9 @@ function render(): void {
   overlay.classList.toggle("is-active", state.enabled);
   inspector.classList.toggle("is-active", state.enabled);
   if (!state.enabled) {
+    cleanupYield?.();
+    cleanupYield = null;
+    overlay.classList.remove("is-yielding");
     clearChildren(overlay);
     clearChildren(inspector);
     return;
@@ -508,26 +501,64 @@ function overlayPointToTile(event: PointerEvent): { readonly x: number; readonly
 }
 
 /**
- * 이 포인터는 오버레이가 아니라 **카메라**의 것이다.
+ * 캔버스에 영역 제스처 소유권을 잠시 양보한다.
  *
- * 셋뿐이다: 「화면 밀기」 도구 · 스페이스 팬(진행 중 포함) · 가운데 버튼. 셋 다 맵을 옮기는
- * 제스처라, 오버레이가 표적이 되어 삼키면 팬이 시작조차 못 하고 그 드래그가 «빈 곳 그리기» 로
- * 흘러 들어간다 — 맵을 밀려던 사람이 구역을 만들거나 옮겨 버린다(2026-09-11 브라우저 실측:
- * 좌표 3,3 → 7,5, 그리고 스페이스 드래그가 새 구역을 하나 만들었다).
+ * 왜 필요한가: 영역 제스처는 우클릭 다운 이후의 «이동(mousemove)과 업(mouseup)»까지 캔버스가
+ * 직접 받아야 한다. 오버레이를 잠시 비우지(pointer-events: none) 않으면 이벤트의 표적으로
+ * 오버레이가 계속 잡혀 Phaser 가 드래그 추종을 이어가지 못한다.
+ *
+ * 복원은 `mouseup`(capture) + `pointercancel` + `blur` 에서 한다. `pointerup` 은 **한 매크로태스크
+ * 미뤄** 복원하는데, 동기 복원이면 pointerup 직후 도착하는 `mouseup` 의 표적이 오버레이로 돌아가
+ * Phaser 가 POINTER_UP 대신 POINTER_UP_OUTSIDE 를 받는다. 미룬 복원은 그 mouseup 이 캔버스에
+ * 닿은 뒤에 실행되므로 안전하고, 호환 마우스 이벤트가 아예 오지 않는 환경에서도 양보가 남지 않는다.
  */
-function cameraOwnsPointer(event: PointerEvent): boolean {
-  if (event.button === 1 || (event.buttons & 4) === 4) return true;
-  if (editorState.get().tool === "pan") return true;
-  return cameraPanArmed();
+function yieldPointerToCanvas(): void {
+  cleanupYield?.();
+  const overlay = overlayEl;
+  if (!overlay) return;
+  overlay.classList.add("is-yielding");
+
+  const restore = (): void => {
+    if (yieldTimer !== null) {
+      clearTimeout(yieldTimer);
+      yieldTimer = null;
+    }
+    overlay.classList.remove("is-yielding");
+    window.removeEventListener("mouseup", restore, true);
+    window.removeEventListener("pointerup", restoreDeferred, true);
+    window.removeEventListener("pointercancel", restore, true);
+    window.removeEventListener("blur", restore, true);
+    if (cleanupYield === restore) cleanupYield = null;
+  };
+  const restoreDeferred = (): void => {
+    if (yieldTimer !== null) return;
+    yieldTimer = window.setTimeout(restore, 0);
+  };
+  cleanupYield = restore;
+
+  window.addEventListener("mouseup", restore, { capture: true, once: true });
+  window.addEventListener("pointerup", restoreDeferred, { capture: true, once: true });
+  window.addEventListener("pointercancel", restore, { capture: true, once: true });
+  window.addEventListener("blur", restore, { capture: true, once: true });
 }
 
 function onPointerDown(event: PointerEvent): void {
   if (!locationLayerState().enabled) return;
-  if (cameraOwnsPointer(event)) {
-    // 표적은 이미 정해졌으므로 이 pointerdown 을 캔버스에 다시 던질 수 없다. 눌린 좌표를 그대로
-    // 넘겨 팬의 기준점으로 삼게 한다 — 이후 이동은 컨트롤러의 window 가드가 받는다.
-    event.preventDefault();
-    startCameraPan(event.clientX, event.clientY);
+  const point: CanvasPointerPoint = { button: event.button, buttons: event.buttons, clientX: event.clientX, clientY: event.clientY };
+  const claim = claimCanvasPointer(point);
+  if (claim) {
+    // 영역 제스처는 **취소하면 안 된다.** pointerdown 을 preventDefault 하면 브라우저가 그 포인터
+    // 열의 호환 마우스 이벤트(mousedown/mousemove/mouseup)를 통째로 삼킨다. Phaser 는 캔버스의
+    // 마우스 이벤트로 제스처를 구동하므로 드래그가 첫 칸에서 멈추고, mouseup 도 오지 않아
+    // 아래 양보 상태가 영원히 남는다(2026-09-11 브라우저 실측: canvas mousedown/move/up = 0/0/0,
+    // 선택 없음, 업 이후에도 `.is-yielding` 유지). 팬·장면 클릭은 이어받는 경로가 포인터/window
+    // 쪽이라 취소해도 안전하고, 가운데 버튼 자동 스크롤 차단에는 취소가 필요하다.
+    if (claim.kind !== "region") event.preventDefault();
+    // 영역 제스처는 «이후 이동» 까지 캔버스가 받아야 한다 — 오버레이를 잠시 비우지 않으면
+    // mousemove/mouseup 의 표적으로 오버레이가 계속 잡힌다.
+    // kind === "scene" 은 클릭 한 번으로 끝나므로 양보하지 않는다.
+    if (claim.kind === "region") yieldPointerToCanvas();
+    claim.start();
     return;
   }
   if (event.button !== 0) return;
