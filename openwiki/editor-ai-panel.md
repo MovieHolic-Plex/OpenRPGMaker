@@ -90,6 +90,17 @@ never reported delivery facts omits the attribute entirely — unknown is not re
 as failure. Contract tests: `test/aiVisualEvidenceReceipt.test.ts`; the axis table lives in
 `test/aiRunOutcome.test.ts`.
 
+**Pi 경로도 같은 4축을 그린다 (2026-09-11).** 2026-09-10부터 평문 지시는 전부 Pi 에이전트
+경로로 가므로(`src/ai/piAgent/executionRoute.ts` DEFAULT_EXECUTION_ROUTE), 이 줄이 세션에만
+붙으면 20턴 내내 한 번도 안 그려진다(실측: 적대 평가 2026-09-11, 20턴 0회 렌더). 이제
+`runPiCommand`가 종료 4축을 `PiCommandSurface.setRunOutcome`으로 게시하고(`src/editor/panels/aiPiAgentCommand.ts`),
+패널은 `piRunOutcome ?? controller.session?.getRunOutcome()` 순으로 슬롯에 그린다
+(`src/editor/panels/aiChatPanel.ts` refreshRunOutcome). Pi 경로는 수용 검사가 없으므로
+`goal`은 늘 `unassessed`이고 `persistence`는 `none`이다 — 사실 없는 축을 성공으로 올리지
+않는다. 같은 종료 캡션은 스트림 오류·툴 실패를 숫자+첫줄로 묻고(예: `(⚠ 오류 1건 — OAuth
+token expired…)`), 범위 밖 spill 버림도 `범위 밖 N건 버림(키들)`으로 성공 캡션에 함께 고지한다.
+계약: `test/piAgentRunOutcome.test.ts`.
+
 ## P3 run retirement and stale drafts (2026-09-07)
 
 P3 adds client-local execution ownership and a captured proposal base to the P1/P2

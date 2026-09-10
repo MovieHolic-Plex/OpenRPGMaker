@@ -133,6 +133,7 @@ import {
 } from "./aiPanelLayout";
 import { narrateAiActivity } from "@/editor/aiActivityNarration";
 import { formatAiRunningStatus, formatToolActivityLine, renderToolActivityEntry, renderWorkPlanChecklist, renderRunOutcome, type AutonomousRunBudget } from "./aiChatRenderers";
+import type { RunOutcome } from "@/ai/runOutcome";
 import { closeWorkPlanBook, openWorkPlanBook, updateWorkPlanBook } from "./aiWorkPlanModal";
 import {
   createConversationLogHost,
@@ -313,8 +314,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let refreshTemperatureChrome: () => void = () => {};
   const controller: ChatController = { session: null, auditHistory: [], statusTimeline: [] };
   const outcomeSlot = el("div");
+  /** Pi 경로(2026-09-10 이후 기본)가 종료 4축을 남긴다. 세션 경로는 getRunOutcome 이 계속 소유한다 — 마지막 게시가 이긴다. */
+  let piRunOutcome: RunOutcome | null = null;
   const refreshRunOutcome = (): void => {
-    const outcome = controller.session?.getRunOutcome();
+    const outcome = piRunOutcome ?? controller.session?.getRunOutcome() ?? null;
     outcomeSlot.replaceChildren(...(outcome ? [renderRunOutcome(outcome)] : []));
   };
   let refreshAcceptanceMenus: () => void = () => {};
@@ -1876,6 +1879,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         getCurrentMapId: () => editorState.get().currentMapId ?? null,
         signal: piRunController.signal,
         showChangeReceipt: showPiChangeReceipt,
+        // 종료 4축 — 세션이 없는 Pi 경로가 직접 게시한다(2026-09-11 실측: 20턴 내내 미렌더).
+        setRunOutcome: (outcome) => { piRunOutcome = outcome; refreshRunOutcome(); },
       }, plan ? {
         readOnly: plan.readOnly,
         planOnly: plan.planOnly,
@@ -1883,6 +1888,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         thinkingLevel: plan.thinkingLevel,
       } : {});
     } finally {
+      // 다음 턴이 이번 4축을 물고 가지 않게 한다 — 세션 경로 beginWorkPlanTurn 의 슬롯 클리어와 같은 수명.
+      piRunOutcome = null;
       if (activeAbortController === piRunController) activeAbortController = null;
       piRunController = null;
       runSurface.turnBusy = false;
