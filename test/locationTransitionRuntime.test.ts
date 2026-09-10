@@ -9,6 +9,12 @@ import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { addMapLocation, deleteMapLocation, resizeMapLocation } from "@/project/mapNamedLocations";
 import { runSceneTest } from "@/testing/sceneTestRunner";
+import {
+  drainPendingLocationTransitions,
+  fireLocationTransitionTriggers,
+  fireLocationTransitionTriggersAfterTransfer,
+  seedLocationOccupancyForScene,
+} from "@/player/playSceneLocationTransitions";
 import type { Command, EventPage, GameEvent, GameMap, Project, Trigger } from "@/project/types";
 
 const ENTERED = "sw_entered";
@@ -477,5 +483,142 @@ describe("location transition trigger — 저작이 깨진 상태", () => {
     });
     expect(result.failureReason).toBeUndefined();
     expect(result.ok).toBe(true);
+  });
+});
+
+// ── 실행이 «밀리는» 경로 ──────────────────────────────────────────────────────
+//
+// 브라우저 실측으로 발견한 결함의 회귀다(2026-09-10): 문(playerTouch)을 밟아 장소 이동하면
+// `transferTo` 가 **문 이벤트의 인터프리터 안에서** 불리므로 그 시점 `scene.running` 이
+// 참이고 `runEvent` 가 즉시 되돌아 나온다 — 가장 흔한 저작(문으로 구역에 들어가기)의
+// enter 이벤트가 한 번도 돌지 않았다. 이제 실행할 수 없었던 것은 큐에 담기고
+// `refreshRuntimeSurfaces`(= 이벤트가 끝나는 자리)에서 뽑힌다.
+//
+// 씬 대역을 쓰는 이유: 이 결함은 Phaser 씬의 `running` 수명에 걸린 배선 문제이고,
+// runSceneTest 하네스는 이벤트를 중첩 실행하므로(running 개념이 없다) 이 경로를 재현하지 못한다.
+describe("location transition trigger — 진행 중이면 밀리고 이벤트가 끝나면 돌아온다", () => {
+  type StubScene = {
+    map: GameMap;
+    session: { occupiedLocationIds?: Record<string, string[]> };
+    tileX: number;
+    tileY: number;
+    running: boolean;
+    ran: string[];
+    activeRuntimeEvents: (kind: string) => { event: { id: string }; trigger: Trigger }[];
+    runEvent: (eventId: string) => Promise<void>;
+  };
+
+  function stubScene(map: GameMap, triggers: readonly { id: string; trigger: Trigger }[]): StubScene {
+    const scene: StubScene = {
+      map,
+      session: {},
+      tileX: 1,
+      tileY: 3,
+      running: false,
+      ran: [],
+      activeRuntimeEvents: (kind) => kind === "locationTransition"
+        ? triggers.map((entry) => ({ event: { id: entry.id }, trigger: entry.trigger }))
+        : [],
+      runEvent: async (eventId) => { scene.ran.push(eventId); },
+    };
+    return scene;
+  }
+
+  it("running 중의 순간이동 진입은 버려지지 않고 이벤트 종료 후 실행된다", async () => {
+    const { project, mapId, plazaId } = projectWithPlaza();
+    const map = project.maps[mapId]!;
+    const scene = stubScene(map, [
+      { id: "ev_enter", trigger: { kind: "locationTransition", locationId: plazaId, transition: "enter" } },
+    ]);
+    seedLocationOccupancyForScene(scene);
+
+    // 문 이벤트가 도는 중이다.
+    scene.running = true;
+    scene.tileX = 4;
+    scene.tileY = 4;
+    fireLocationTransitionTriggersAfterTransfer(scene, mapId);
+    await Promise.resolve();
+    expect(scene.ran).toEqual([]);
+    // 점유 기록은 밀림과 무관하게 이미 갱신됐다.
+    expect(scene.session.occupiedLocationIds?.[mapId]).toEqual([plazaId]);
+
+    // 이벤트가 끝나 running 이 내려간 자리에서 뽑힌다.
+    scene.running = false;
+    drainPendingLocationTransitions(scene);
+    await Promise.resolve();
+    expect(scene.ran).toEqual(["ev_enter"]);
+
+    // 두 번 뽑아도 다시 돌지 않는다.
+    drainPendingLocationTransitions(scene);
+    await Promise.resolve();
+    expect(scene.ran).toEqual(["ev_enter"]);
+  });
+
+  it("running 중의 걸음 진입도 같은 자리에서 회복된다", async () => {
+    const { project, mapId, plazaId } = projectWithPlaza();
+    const map = project.maps[mapId]!;
+    const scene = stubScene(map, [
+      { id: "ev_enter", trigger: { kind: "locationTransition", locationId: plazaId, transition: "enter" } },
+    ]);
+    seedLocationOccupancyForScene(scene);
+
+    scene.running = true;
+    scene.tileX = 3;
+    scene.tileY = 3;
+    fireLocationTransitionTriggers(scene);
+    await Promise.resolve();
+    expect(scene.ran).toEqual([]);
+
+    scene.running = false;
+    drainPendingLocationTransitions(scene);
+    await Promise.resolve();
+    expect(scene.ran).toEqual(["ev_enter"]);
+  });
+
+  it("한 사건에 두 이벤트가 반응하면 첫 이벤트가 대화를 열어도 두 번째가 살아남는다", async () => {
+    const { project, mapId, plazaId } = projectWithPlaza();
+    const map = project.maps[mapId]!;
+    const trigger: Trigger = { kind: "locationTransition", locationId: plazaId, transition: "enter" };
+    const scene = stubScene(map, [{ id: "ev_first", trigger }, { id: "ev_second", trigger }]);
+    seedLocationOccupancyForScene(scene);
+    // 첫 이벤트가 대화를 열어 running 을 세우는 상황을 흉내낸다.
+    scene.runEvent = async (eventId) => {
+      scene.ran.push(eventId);
+      if (eventId === "ev_first") scene.running = true;
+    };
+
+    scene.tileX = 3;
+    scene.tileY = 3;
+    fireLocationTransitionTriggers(scene);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(scene.ran).toEqual(["ev_first"]);
+
+    scene.running = false;
+    drainPendingLocationTransitions(scene);
+    await Promise.resolve();
+    // 이미 돌린 첫 이벤트가 다시 뽑히지 않는다 — 꼬리만 이어 간다.
+    expect(scene.ran).toEqual(["ev_first", "ev_second"]);
+  });
+
+  it("기준선 심기는 이전 세션의 밀린 사건을 물려받지 않는다", async () => {
+    const { project, mapId, plazaId } = projectWithPlaza();
+    const map = project.maps[mapId]!;
+    const scene = stubScene(map, [
+      { id: "ev_enter", trigger: { kind: "locationTransition", locationId: plazaId, transition: "enter" } },
+    ]);
+    seedLocationOccupancyForScene(scene);
+    scene.running = true;
+    scene.tileX = 3;
+    scene.tileY = 3;
+    fireLocationTransitionTriggers(scene);
+    await Promise.resolve();
+
+    // 세이브 불러오기 = 새 기준선. 밀린 사건은 버려진다.
+    scene.running = false;
+    seedLocationOccupancyForScene(scene);
+    drainPendingLocationTransitions(scene);
+    await Promise.resolve();
+    expect(scene.ran).toEqual([]);
   });
 });
