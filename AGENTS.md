@@ -26,6 +26,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - Editor validation: `openwiki/editor-validation.md`
+   - 타일 레이어·배경 정책 (투명 여부와 홈 레이어·받침·다중 조각 제약의 분리, 커스텀 칩셋 검토 흐름): `openwiki/tile-layer-policy.md`
    - Interior room harness: `openwiki/editor-interior-room-harness.md`
    - `openwiki/editor-workflows.md` is now a slim index linking to the above topic pages.
    - `openwiki/large-village-generation.md` for 100×100 river/market village plan → build → road → QA flow.

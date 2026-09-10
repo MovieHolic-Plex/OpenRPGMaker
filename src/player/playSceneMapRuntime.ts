@@ -9,9 +9,8 @@ import {
   supportsChipsetTileAnimation,
   tilesetTextureKey,
 } from "@/editor/tilesetImage";
+import { tileBackingTile } from "@/editor/tileLayerPolicy";
 import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
-import { isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
-import { TILE } from "@/project/defaults/constants";
 import {
   isLakeAutotileTile,
   lakeAutotileQuarterSources,
@@ -25,7 +24,6 @@ import { mapWithCommittedEvents } from "@/project/eventDrafts";
 import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
-import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { applyStoredCameraState } from "@/player/playSceneCamera";
@@ -398,15 +396,11 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
       return;
     }
   }
-  // lower 투명 밑동: 잔디를 먼저 깔아 투명 픽셀이 검게 보이지 않게 한다.
-  if (
-    layer === "lower"
-    && isDefaultTilesetTexture(tileset)
-    && isTreeTrunkTileId(tile)
-    && isTransparentChipsetTile(tile)
-  ) {
-    const grass = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${TILE.GRASS}`);
-    placeMapTileImage(scene, grass, tileset, TILE.GRASS, x, y, layer);
+  // lower 투명 칩: 정책이 정한 받침을 먼저 깔아 투명 픽셀이 검게 보이지 않게 한다.
+  const backingTile = layer === "lower" && isDefaultTilesetTexture(tileset) ? tileBackingTile(tileset, tile) : null;
+  if (backingTile !== null) {
+    const backing = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${backingTile}`);
+    placeMapTileImage(scene, backing, tileset, backingTile, x, y, layer);
   }
   const baseAnimationKey = supportsChipsetTileAnimation(tileset, tile) ? animationKeyForTile(tile) : null;
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;

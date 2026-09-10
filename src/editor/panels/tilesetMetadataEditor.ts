@@ -27,8 +27,24 @@ import {
   type TilesetSectionTab,
 } from "@/editor/panels/tilesetUsageGuide";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
-import { markUserTileRuntimeMetadata, setTileLayerOverride, userTileLayerOverride, type TileLayerChoice } from "@/editor/runtimeTileMetadata";
+import {
+  markUserTileRuntimeMetadata,
+  setTileBackingOverride,
+  setTileLayerOverride,
+  userTileBackingOverride,
+  userTileLayerOverride,
+  type TileBackingChoice,
+  type TileLayerChoice,
+} from "@/editor/runtimeTileMetadata";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
+import {
+  backgroundlessLowerReviews,
+  DEFAULT_TRUNK_BACKING_TILE,
+  tileLayerPolicy,
+  TILE_LAYER_REVIEW_CHOICE_LABELS,
+  type TileLayerPolicyClass,
+  type TileLayerReviewChoice,
+} from "@/editor/tileLayerPolicy";
 import { isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import { confirmUserTileMetadata } from "@/project/tilesetPalette";
@@ -434,10 +450,139 @@ function renderSelectedTilePanel(tileset: TilesetDef, rerender: () => void): HTM
 }
 
 // ── 타일 규칙 탭: 레이어(자동/하위/상위) + 통행 + 지면 종류 ──────
+const POLICY_KIND_LABELS: Readonly<Record<TileLayerPolicyClass, string>> = {
+  opaqueFloor: "불투명 바닥",
+  transparentOverlay: "투명 오버레이(상위)",
+  backedLower: "받침 있는 하위",
+  transparentLower: "투명 하위(받침 없음)",
+  multiPart: "다중 조각",
+};
+
+// 받침 선택 — 투명 칩을 하위에 둘 때 아래에 깔 타일. 자동은 정책 기본값을 따른다.
+function renderBackingControls(tileset: TilesetDef, backingTile: number | null, rerender: () => void): HTMLElement[] {
+  const home = tileLayerHome(tileset, selectedTile);
+  const transparent = isCombinedTownTileset(tileset) && isTransparentChipsetTile(selectedTile);
+  if (!transparent || home === "upper") return [];
+  const override = userTileBackingOverride(tileset, selectedTile);
+  const current: TileBackingChoice = override ?? "auto";
+  const backingButton = (value: TileBackingChoice, label: string): HTMLElement =>
+    el("button", {
+      class: `database-footer-button tileset-backing-choice${current === value ? " active" : ""}`,
+      text: label,
+      attrs: { type: "button", "aria-pressed": String(current === value) },
+      dataset: { testid: `tileset-backing-${typeof value === "number" ? "tile" : value}` },
+      on: {
+        click: () => {
+          updateBackingChoice(tileset.id, value);
+          rerender();
+        },
+      },
+    });
+  return [
+    el("fieldset", {
+      class: "oprn-db-fieldset tileset-rule-layer-backing",
+      dataset: { testid: "tileset-rule-backing" },
+      children: [
+        el("legend", { text: "배경(받침)" }),
+        el("div", {
+          class: "tileset-rule-buttons",
+          children: [
+            backingButton("auto", "자동"),
+            backingButton("none", "없음"),
+            backingButton(DEFAULT_TRUNK_BACKING_TILE, "잔디 받침"),
+          ],
+        }),
+        el("div", {
+          class: "tileset-rule-note",
+          dataset: { testid: "tileset-backing-note" },
+          text: backingTile === null ? "받침 없음 — 투명 픽셀 아래가 비어 보입니다." : `받침 타일 ${backingTile} 을 함께 그립니다.`,
+        }),
+      ],
+    }),
+  ];
+}
+
+// 배경 없는 하위 타일 검토 — 목록은 읽기만 하고, 적용은 사용자가 고른 항목에만 일어난다.
+function renderBackgroundlessReview(tileset: TilesetDef, rerender: () => void): HTMLElement[] {
+  const reviews = backgroundlessLowerReviews(tileset);
+  if (reviews.length === 0) return [];
+  const choiceButton = (tile: number, choice: TileLayerReviewChoice): HTMLElement =>
+    el("button", {
+      class: "database-footer-button tileset-review-choice",
+      text: TILE_LAYER_REVIEW_CHOICE_LABELS[choice],
+      attrs: { type: "button" },
+      dataset: { testid: `tileset-review-${tile}-${choice}` },
+      on: {
+        click: () => {
+          applyReviewChoice(tileset.id, tile, choice);
+          rerender();
+        },
+      },
+    });
+  return [
+    el("fieldset", {
+      class: "oprn-db-fieldset tileset-rule-layer-review",
+      dataset: { testid: "tileset-rule-review" },
+      children: [
+        el("legend", { text: `배경 없는 하위 타일 검토 (${reviews.length})` }),
+        el("div", {
+          class: "tileset-rule-note",
+          text: "가져온 칩셋을 자동으로 상위로 옮기지 않습니다. 타일마다 직접 고르세요.",
+        }),
+        el("ul", {
+          class: "tileset-review-list",
+          dataset: { testid: "tileset-review-list" },
+          children: reviews.slice(0, REVIEW_LIST_LIMIT).map((review) =>
+            el("li", {
+              class: "tileset-review-item",
+              dataset: { testid: `tileset-review-item-${review.tile}` },
+              children: [
+                el("span", { class: "tileset-review-tile", text: `타일 ${review.tile}` }),
+                el("span", { class: "tileset-review-reason", text: review.reason }),
+                el("div", {
+                  class: "tileset-rule-buttons",
+                  children: review.choices.map((choice) => choiceButton(review.tile, choice)),
+                }),
+              ],
+            })
+          ),
+        }),
+      ],
+    }),
+  ];
+}
+
+const REVIEW_LIST_LIMIT = 20;
+
+function applyReviewChoice(tilesetId: string, tile: number, choice: TileLayerReviewChoice): void {
+  store.update((project) => {
+    const target = project.tilesets[tilesetId];
+    if (!target) return;
+    if (choice === "overlay") {
+      setTileLayerOverride(target, tile, "upper");
+      setTileBackingOverride(target, tile, "auto");
+      return;
+    }
+    if (choice === "lowerWithBacking") {
+      setTileLayerOverride(target, tile, "lower");
+      setTileBackingOverride(target, tile, DEFAULT_TRUNK_BACKING_TILE);
+      return;
+    }
+    if (choice === "transparentLower") {
+      setTileLayerOverride(target, tile, "lower");
+      setTileBackingOverride(target, tile, "none");
+      return;
+    }
+    setTileLayerOverride(target, tile, "auto");
+    setTileBackingOverride(target, tile, "auto");
+  });
+}
+
 function renderRuleControls(tileset: TilesetDef, rerender: () => void): HTMLElement[] {
   const override = userTileLayerOverride(tileset, selectedTile);
   const choice: TileLayerChoice = override ?? "auto";
   const home = tileLayerHome(tileset, selectedTile);
+  const policy = tileLayerPolicy(tileset, selectedTile);
   const transparent = isCombinedTownTileset(tileset) && isTransparentChipsetTile(selectedTile);
   const homeLabel = home === "both" ? "양쪽" : home === "upper" ? "상위" : "하위";
   const blocked = isBlockedPassage(tileset.passability[selectedTile]);
@@ -482,15 +627,29 @@ function renderRuleControls(tileset: TilesetDef, rerender: () => void): HTMLElem
           dataset: { testid: "tileset-layer-note" },
           text: choice === "auto" ? `자동 판정: ${homeLabel}${transparent ? " (투명 배경 칩)" : ""}` : `사용자 확정: ${choice === "upper" ? "상위" : "하위"}`,
         }),
-        ...(choice === "lower" && transparent
+        ...(policy.home !== "upper" && transparent && policy.backingTile === null
           ? [el("div", {
               class: "tileset-rule-warning",
               dataset: { testid: "tileset-layer-warning" },
-              text: "⚠ 투명 배경 칩을 하위에 깔면 투명 부분이 검게 보일 수 있습니다.",
+              text: "⚠ 투명 배경 칩을 받침 없이 하위에 깔면 투명 부분이 검게 보일 수 있습니다.",
+            })]
+          : []),
+        el("div", {
+          class: "tileset-rule-note",
+          dataset: { testid: "tileset-layer-policy-reason" },
+          text: `${POLICY_KIND_LABELS[policy.kind]} — ${policy.reason}`,
+        }),
+        ...(policy.multiPart
+          ? [el("div", {
+              class: "tileset-rule-note",
+              dataset: { testid: "tileset-layer-multipart" },
+              text: `다중 조각 제약: ${policy.multiPart.partnerLabel}(${policy.multiPart.partnerTiles.join(", ")})과 짝을 이룹니다.`,
             })]
           : []),
       ],
     }),
+    ...renderBackingControls(tileset, policy.backingTile, rerender),
+    ...renderBackgroundlessReview(tileset, rerender),
     el("fieldset", {
       class: "oprn-db-fieldset tileset-rule-passage",
       dataset: { testid: "tileset-rule-passage" },
@@ -588,6 +747,13 @@ function updateLayerChoice(tilesetId: string, choice: TileLayerChoice): void {
   store.update((project) => {
     const target = project.tilesets[tilesetId];
     if (target) setTileLayerOverride(target, selectedTile, choice);
+  });
+}
+
+function updateBackingChoice(tilesetId: string, choice: TileBackingChoice): void {
+  store.update((project) => {
+    const target = project.tilesets[tilesetId];
+    if (target) setTileBackingOverride(target, selectedTile, choice);
   });
 }
 

@@ -7,6 +7,9 @@ type UserRuntimePatch = Partial<Pick<TileAiMetadata, "passage" | "terrainTag">>;
 // DB 타일셋 편집기의 레이어 선택지 — "auto"는 하네스/투명 칩 판정에 맡긴다.
 export type TileLayerChoice = "auto" | "lower" | "upper";
 
+// 받침 선택지 — "auto"는 정책 기본값(기본 칩셋 나무 밑동 = 잔디), 숫자는 받침 타일 id.
+export type TileBackingChoice = "auto" | "none" | number;
+
 export function markUserTileRuntimeMetadata(tileset: TilesetDef, tile: number, patch: UserRuntimePatch): void {
   if (tile < 0 || tile >= tileset.count) return;
   const current = ensureTileMetaSlot(tileset, tile);
@@ -14,7 +17,10 @@ export function markUserTileRuntimeMetadata(tileset: TilesetDef, tile: number, p
   const next = confirmUserTileMetadata(current, patch);
   // 번들/AI 메타를 통행·지형 편집으로 승격할 때 상속된 defaultLayer까지 "사용자 확정
   // 레이어"로 둔갑하면 안 된다 — 레이어 확정은 레이어 버튼(setTileLayerOverride)으로만.
-  if (!wasUser) delete next.defaultLayer;
+  if (!wasUser) {
+    delete next.defaultLayer;
+    delete next.layerBacking;
+  }
   tileset.tileMeta![tile] = next;
 }
 
@@ -23,6 +29,27 @@ export function userTileLayerOverride(tileset: TilesetDef, tile: number): "lower
   const meta = tileset.tileMeta?.[tile];
   if (!meta || (tileMetaOrigin(meta) !== "user" && !tileMetaLocked(meta))) return null;
   return meta.defaultLayer === "lower" || meta.defaultLayer === "upper" ? meta.defaultLayer : null;
+}
+
+// 사용자가 확정한 받침(있으면). 정책 기본값보다 우선한다.
+export function userTileBackingOverride(tileset: TilesetDef, tile: number): "none" | number | null {
+  const meta = tileset.tileMeta?.[tile];
+  if (!meta || (tileMetaOrigin(meta) !== "user" && !tileMetaLocked(meta))) return null;
+  const backing = meta.layerBacking;
+  if (backing === "none") return "none";
+  return typeof backing === "number" && Number.isInteger(backing) && backing >= 0 ? backing : null;
+}
+
+export function setTileBackingOverride(tileset: TilesetDef, tile: number, choice: TileBackingChoice): void {
+  if (tile < 0 || tile >= tileset.count) return;
+  const current = ensureTileMetaSlot(tileset, tile);
+  if (choice === "auto") {
+    const next: TileAiMetadata = { ...current };
+    delete next.layerBacking;
+    tileset.tileMeta![tile] = next;
+    return;
+  }
+  tileset.tileMeta![tile] = confirmUserTileMetadata(current, { layerBacking: choice });
 }
 
 // DB 타일셋 편집기에서 타일의 홈 레이어를 직접 지정/해제한다.

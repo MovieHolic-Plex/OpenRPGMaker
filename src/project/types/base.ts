@@ -88,6 +88,8 @@ export interface TileAiMetadata {
   role?: string;
   repeatability?: "auto" | "center" | "fixed" | "repeat";
   defaultLayer?: TileGroupLayer;
+  // 하위에 그릴 때 투명 픽셀 아래에 함께 깔 타일. "none" 은 받침 없이 그대로 둔다.
+  layerBacking?: "none" | number;
   terrainTag?: number;
   passage?: "passable" | "solid" | "star";
   confidence?: number | "high" | "low" | "medium";

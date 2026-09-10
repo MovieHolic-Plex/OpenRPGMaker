@@ -7,8 +7,7 @@ import {
   supportsChipsetTileAnimation,
 } from "@/editor/tilesetImage";
 import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
-import { isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
-import { TILE } from "@/project/defaults/constants";
+import { tileBackingTile } from "@/editor/tileLayerPolicy";
 import {
   isLakeAutotileTile,
   lakeAutotileQuarterSources,
@@ -20,7 +19,6 @@ import {
   chipsetQuarterComposition,
   type ChipsetQuarterComposition,
 } from "@/project/defaults/terrainQuarterAutotile";
-import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { store } from "@/project/store";
 import type { GameMap, TilesetDef } from "@/project/types";
 
@@ -67,25 +65,26 @@ export function createChipsetTileObject(
   }
   const roadTile = isDefaultTilesetTexture(tileset) ? roadAutotileTileForCell(map, { x, y }) : null;
   if (roadTile !== null) return createRawTileObject(scene, tileset, x * TILE_SIZE, y * TILE_SIZE, roadTile);
-  // 숲 밑동(투명 칩)이 lower 에 단독이면 투명 부분이 검게 보임 → 잔디 받침 합성.
-  if (isDefaultTilesetTexture(tileset) && isTreeTrunkTileId(tile) && isTransparentChipsetTile(tile)) {
-    return createTrunkOnGrassObject(scene, tileset, x, y, tile);
+  // 투명 칩이 lower 에 단독이면 투명 부분이 검게 보임 → 정책이 정한 받침 타일과 합성.
+  const backingTile = isDefaultTilesetTexture(tileset) ? tileBackingTile(tileset, tile) : null;
+  if (backingTile !== null) {
+    return createBackedTileObject(scene, tileset, x, y, tile, backingTile);
   }
   return createRawTileObject(scene, tileset, x * TILE_SIZE, y * TILE_SIZE, tile);
 }
 
-/** lower 나무 밑동 + 잔디 받침(투명 픽셀이 잔디를 비추게). */
-function createTrunkOnGrassObject(
+function createBackedTileObject(
   scene: Phaser.Scene,
   tileset: TilesetDef,
   x: number,
   y: number,
-  trunkTile: number,
+  tile: number,
+  backingTile: number,
 ): Phaser.GameObjects.Container {
   const container = scene.add.container(x * TILE_SIZE, y * TILE_SIZE);
   container.setSize(TILE_SIZE, TILE_SIZE);
-  container.add(createRawTileObject(scene, tileset, 0, 0, TILE.GRASS));
-  container.add(createRawTileObject(scene, tileset, 0, 0, trunkTile));
+  container.add(createRawTileObject(scene, tileset, 0, 0, backingTile));
+  container.add(createRawTileObject(scene, tileset, 0, 0, tile));
   return container;
 }
 
