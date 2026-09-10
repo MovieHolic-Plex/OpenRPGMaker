@@ -29,6 +29,7 @@ const DESTRUCTIVE_CALLS: ReadonlySet<string> = new Set([
   "delete_database_record",
   "delete_resource",
   "clear_region",
+  "clear_map",
   "reset_project",
 ]);
 

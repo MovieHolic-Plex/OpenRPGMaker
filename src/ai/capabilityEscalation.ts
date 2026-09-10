@@ -30,6 +30,8 @@ export const MIN_CAPABILITY_MATCH_SCORE = 20;
 export const ESCALATION_DENYLIST: ReadonlySet<string> = new Set([
   "reset_project",
   "remove_map",
+  // 맵 전체 청소는 remove_map 과 같은 규모의 소실을 만든다 — 이름이 스쳤다는 이유로 얹지 않는다.
+  "clear_map",
   "delete_resource",
 ]);
 
