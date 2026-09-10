@@ -15,6 +15,16 @@ const paths: Path[] = ["tool", "planner"];
 const scopes = ["check_reachability", "run_lint", "run_scene_test", "play_walkthrough", "simulate_battle", "verify_quest", "evaluate_game_quality"];
 afterEach(() => vi.unstubAllGlobals());
 
+// **모듈 스코프에 둔다.** @vitest/spy 의 `mocks` Set 은 한 번 담은 spy 를 파일이 끝날 때까지
+// 놓지 않는다(추가만 있고 제거가 없다 — clear/reset/restoreAllMocks 도 Set 을 비우지 않는다).
+// 이 구현을 fixture() 안에서 만들면 클로저가 fixture 스코프(session·project·스냅샷 전체)를
+// 잡고, spy 가 살아 있는 동안 테스트마다 세션이 하나씩 누적된다 — 2026-09-11 실측으로
+// 6 테스트 후 세션 6개가 강제 GC 뒤에도 살아남아(queryObjects) 테스트당 약 55MB,
+// 파일 전체에서 V8 워커 상한 4GB 를 넘겨 "Ineffective mark-compacts" OOM 이 났다.
+function refuseNetwork(): never {
+  throw new Error("Offline session must not access network");
+}
+
 async function offlineResponse(response: ChatResult): Promise<ChatResult> {
   // Real async model transport, without network or timing waits. A fully
   // synchronous scripted model can starve Vitest's IPC during this large matrix.
@@ -31,7 +41,7 @@ async function offlineResponse(response: ChatResult): Promise<ChatResult> {
 }
 
 function fixture(name = "check_reachability") {
-  const network = vi.fn(() => { throw new Error("Offline session must not access network"); });
+  const network = vi.fn(refuseNetwork);
   vi.stubGlobal("fetch", network);
   const project = createBlankProject();
   const mapId = project.startMapId;
