@@ -108,6 +108,16 @@ export class CameraPanController {
     return this.isPanning;
   }
 
+  /**
+   * 스페이스 팬이 켜졌거나 팬이 진행 중인가.
+   *
+   * 캔버스 위를 덮는 DOM 오버레이(로케이션 레이어)는 이 상태를 볼 수 없어서, 스페이스를 누른 채
+   * 시작한 드래그를 자기 제스처로 가져가 버린다. 오버레이가 양보 여부를 물을 때 쓴다.
+   */
+  armed(): boolean {
+    return this.spacePanActive || this.isPanning;
+  }
+
   handleSpaceKeyDown(event: KeyboardEvent): boolean {
     if (event.code !== "Space") return false;
     event.preventDefault();

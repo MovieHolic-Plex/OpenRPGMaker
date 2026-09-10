@@ -21,6 +21,8 @@ export interface PiRunContext {
   readonly instruction: string;
   /** single = 에이전트 하나(맵마다 병렬일 수 있다), team = 팀장 + 시공·검수. */
   readonly mode: "single" | "team";
+  /** `/loop N` 반복 횟수. 1 이면 반복 없음(생략과 같다). */
+  readonly loop?: number;
   /** 요청이 지정한 맵들. 비면 프로젝트 전체 범위. */
   readonly mapIds: readonly string[];
   /** 로그의 mapId 컬럼 — 첫 번째 범위 맵(없으면 현재 맵). */
@@ -126,6 +128,7 @@ function runAudit(context: PiRunContext, facts: PiRunFacts): AuditEntry[] {
     : facts.applied
       ? `적용됨 — 바뀐 맵·항목 ${facts.changedCount}개`
       : `${facts.stoppedReason ?? "끝남"} — 바뀐 맵·항목 ${facts.changedCount}개`;
-  rows.push({ kind: "status", text: `Pi ${facts.board.mode === "team" ? "팀" : "에이전트"} · 범위 ${scope} · ${ending}` });
+  const rounds = (context.loop ?? 1) > 1 ? ` ×${context.loop}회` : "";
+  rows.push({ kind: "status", text: `Pi ${facts.board.mode === "team" ? "팀" : "에이전트"}${rounds} · 범위 ${scope} · ${ending}` });
   return rows;
 }

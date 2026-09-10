@@ -1,0 +1,421 @@
+{
+  "canvas": {
+    "x": 288,
+    "y": 49,
+    "w": 992,
+    "h": 751
+  },
+  "phaser": {
+    "x": 288,
+    "y": 97,
+    "w": 992,
+    "h": 703
+  },
+  "popover": {
+    "x": 360,
+    "y": 16,
+    "w": 560,
+    "h": 362
+  },
+  "chunkLayer": {
+    "x": 288,
+    "y": 97,
+    "w": 992,
+    "h": 703
+  },
+  "checklist": true,
+  "checklistVisible": false,
+  "thumbsVisible": false,
+  "canvasReview": true,
+  "commandBar": null,
+  "actionBar": {
+    "x": 777,
+    "y": 440,
+    "w": 491,
+    "h": 47
+  },
+  "dock": {
+    "x": 784,
+    "y": 589,
+    "w": 480,
+    "h": 195
+  },
+  "barTopmost": "BUTTON.region-review-action is-primary",
+  "applyLabel": "적용 · 64칸",
+  "layerLabels": [
+    "바닥 12/12",
+    "위 14/14"
+  ],
+  "shapes": [
+    {
+      "id": "chunk-upper-0",
+      "cls": "region-chunk is-included is-dim",
+      "checked": "true",
+      "label": "Tree(3칸) · 좌상단",
+      "rect": {
+        "x": 928,
+        "y": 499,
+        "w": 32,
+        "h": 32
+      },
+      "cells": 3,
+      "edges": 8
+    },
+    {
+      "id": "chunk-upper-1",
+      "cls": "region-chunk is-included is-dim",
+      "checked": "true",
+      "label": "Tree(10칸) · 위쪽",
+      "rect": {
+        "x": 960,
+        "y": 499,
+        "w": 80,
+        "h": 80
+      },
+      "cells": 10,
+      "edges": 20
+    },
+    {
+      "id": "chunk-upper-2",
+      "cls": "region-chunk is-included is-dim",
+      "checked": "true",
+      "label": "Tree(1칸) · 우상단",
+      "rect": {
+        "x": 1088,
+        "y": 499,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-lower-0",
+      "cls": "region-chunk is-included",
+      "checked": "true",
+      "label": "Tree(3칸) · 좌상단",
+      "rect": {
+        "x": 928,
+        "y": 515,
+        "w": 32,
+        "h": 32
+      },
+      "cells": 3,
+      "edges": 8
+    },
+    {
+      "id": "chunk-lower-1",
+      "cls": "region-chunk is-included",
+      "checked": "true",
+      "label": "Tree(10칸) · 위쪽",
+      "rect": {
+        "x": 960,
+        "y": 515,
+        "w": 80,
+        "h": 80
+      },
+      "cells": 10,
+      "edges": 20
+    },
+    {
+      "id": "chunk-upper-3",
+      "cls": "region-chunk is-included is-dim",
+      "checked": "true",
+      "label": "Tree(1칸) · 위쪽",
+      "rect": {
+        "x": 1024,
+        "y": 515,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-upper-4",
+      "cls": "region-chunk is-included is-dim",
+      "checked": "true",
+      "label": "Tree(2칸) · 우상단",
+      "rect": {
+        "x": 1056,
+        "y": 515,
+        "w": 32,
+        "h": 16
+      },
+      "cells": 2,
+      "edges": 6
+    },
+    {
+      "id": "chunk-lower-2",
+      "cls": "region-chunk is-included",
+      "checked": "true",
+      "label": "Tree(1칸) · 우상단",
+      "rect": {
+        "x": 1088,
+        "y": 515,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-lower-3",
+      "cls": "region-chunk is-included",
+      "checked": "true",
+      "label": "Tree(1칸) · 위쪽",
+      "rect": {
+        "x": 1024,
+        "y": 531,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-upper-5",
+      "cls": "region-chunk is-included is-dim",
+      "checked": "true",
+      "label": "Tree(1칸) · 위쪽",
+      "rect": {
+        "x": 1040,
+        "y": 531,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-lower-4",
+      "cls": "region-chunk is-included",
+      "checked": "true",
+      "label": "Tree(2칸) · 우상단",
+      "rect": {
+        "x": 1056,
+        "y": 531,
+        "w": 32,
+        "h": 16
+      },
+      "cells": 2,
+      "edges": 6
+    },
+    {
+      "id": "chunk-upper-6",
+      "cls": "region-chunk is-included is-dim",
+      "checked": "true",
+      "label": "Tree(4칸) · 우상단",
+      "rect": {
+        "x": 1072,
+        "y": 531,
+        "w": 48,
+        "h": 32
+      },
+      "cells": 4,
+      "edges": 10
+    },
+    {
+      "id": "chunk-upper-7",
+      "cls": "region-chunk is-included is-dim",
+      "checked": "true",
+      "label": "Tree(1칸) · 좌상단",
+      "rect": {
+        "x": 960,
+        "y": 547,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-lower-5",
+      "cls": "region-chunk is-included",
+      "checked": "true",
+      "label": "Tree(1칸) · 위쪽",
+      "rect": {
+        "x": 1040,
+        "y": 547,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-lower-6",
+      "cls": "region-chunk is-included",
+      "checked": "true",
+      "label": "Tree(3칸) · 오른쪽",
+      "rect": {
+        "x": 1088,
+        "y": 547,
+        "w": 32,
+        "h": 32
+      },
+      "cells": 3,
+      "edges": 8
+    },
+    {
+      "id": "chunk-upper-8",
+      "cls": "region-chunk is-included is-dim",
+      "checked": "true",
+      "label": "Tree(1칸) · 왼쪽",
+      "rect": {
+        "x": 944,
+        "y": 563,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-lower-7",
+      "cls": "region-chunk is-included",
+      "checked": "true",
+      "label": "Tree(1칸) · 왼쪽",
+      "rect": {
+        "x": 960,
+        "y": 563,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-upper-9",
+      "cls": "region-chunk is-included is-dim",
+      "checked": "true",
+      "label": "Flowers(1칸) · 왼쪽",
+      "rect": {
+        "x": 976,
+        "y": 563,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-upper-10",
+      "cls": "region-chunk is-included is-dim",
+      "checked": "true",
+      "label": "Object(1칸) · 오른쪽",
+      "rect": {
+        "x": 1104,
+        "y": 563,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-lower-8",
+      "cls": "region-chunk is-included",
+      "checked": "true",
+      "label": "Tree(1칸) · 왼쪽",
+      "rect": {
+        "x": 944,
+        "y": 579,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-upper-11",
+      "cls": "region-chunk is-included is-dim",
+      "checked": "true",
+      "label": "Tree(1칸) · 가운데",
+      "rect": {
+        "x": 992,
+        "y": 579,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-lower-9",
+      "cls": "region-chunk is-included",
+      "checked": "true",
+      "label": "Object(1칸) · 오른쪽",
+      "rect": {
+        "x": 1104,
+        "y": 579,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-lower-10",
+      "cls": "region-chunk is-included",
+      "checked": "true",
+      "label": "Dirt road(17칸) · 아래쪽",
+      "rect": {
+        "x": 928,
+        "y": 595,
+        "w": 192,
+        "h": 48
+      },
+      "cells": 17,
+      "edges": 34
+    },
+    {
+      "id": "chunk-upper-12",
+      "cls": "region-chunk is-included is-dim",
+      "checked": "true",
+      "label": "Tree(1칸) · 오른쪽",
+      "rect": {
+        "x": 1072,
+        "y": 595,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-upper-13",
+      "cls": "region-chunk is-included is-dim",
+      "checked": "true",
+      "label": "Tree(1칸) · 우하단",
+      "rect": {
+        "x": 1104,
+        "y": 627,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    },
+    {
+      "id": "chunk-lower-11",
+      "cls": "region-chunk is-included",
+      "checked": "true",
+      "label": "Tree(1칸) · 우하단",
+      "rect": {
+        "x": 1104,
+        "y": 643,
+        "w": 16,
+        "h": 16
+      },
+      "cells": 1,
+      "edges": 4
+    }
+  ],
+  "popoverShareOfCanvas": "56.5%",
+  "afterClick": {
+    "checked": "false",
+    "cls": "region-chunk is-focus is-excluded",
+    "applyText": "선택한 68칸만 적용"
+  }
+}

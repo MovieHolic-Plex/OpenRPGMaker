@@ -1,29 +1,26 @@
 # Editor AI Panel & Tools
 
-## 실행 경로는 둘, 팀은 비트 하나 (2026-09-11)
+## Pi 실행이 감사 기록을 남긴다 (2026-09-11)
 
-Pi 경로가 2026-09-10 부터 생 입력의 기본이 되면서 UI 라벨은 셋(조수 / Pi 에이전트 / Pi 팀)이었지만
-엔진은 둘이고, 그중 하나는 모드 비트를 경로 enum 으로 한 번 더 인코딩한 것이었다. 그 인코딩을 없앴다.
+Pi 경로는 2026-09-10(`2fcbeb269`)부터 평문 지시의 기본이고, `5063b6f42`에서 조수 경로가 컴포저
+어휘에서 빠지며 **컴포저의 유일한 경로**가 됐다(남은 세션 호출자는 선택 영역 작업·DB AI 바·
+클러스터 모달·벤치마크). 그런데 감사 기록이 없어서 `npm run ai:log --failed` 가 기본 경로의
+실패를 통째로 못 봤다 — 실측(2026-09-11): 최근 400행이 `chat 57 / region 41 / ui 61 / other 241`,
+**pi 행 0**.
 
-| 표면 | 값 | 소유 |
-|---|---|---|
-| 실행 경로 | `session`(조수) · `pi-agent`(Pi) | `src/ai/piAgent/executionRoute.ts` `EXECUTION_ROUTES` |
-| 팀 | boolean | `AiConfig.piTeam` — 컴포저 「팀」 토글(`ai-composer-team`) · 설정 「Pi 팀 실행」(`ai-config-pi-team`) |
-| 명시 입력 | `/pi …` · `/pi team …` | `parsePiCommand` — 언제나 최우선 |
+`src/ai/piAgent/activityLog.ts` 가 세션 턴과 **같은 관례**로 기록한다(`channel: "pi"`):
 
-- 경로 결정은 여전히 순수 함수 하나(`resolveExecutionRoute`)다: 질문·계획·선택 영역은 세션 고정,
-  `/pi` 는 명시 Pi, 나머지는 저장된 기본 경로. 팀은 이 결정에 끼지 않는다 — 경로가 Pi 일 때
-  평문 앞에 `team` 을 붙이는 것은 같은 파서를 통과하므로 `/pi team` 과 규칙이 갈릴 수 없다.
-- 옛 blob 의 `executionRoute: "pi-team"` 은 **Pi 경로 + 팀 비트**로 승격된다(`loadAiConfig`,
-  `LEGACY_PI_TEAM_ROUTE`). 이 승격이 이 변경의 유일한 데이터 위험이고
-  `test/piAgentExecutionRoute.test.ts` 가 고정한다.
-- 컴포저의 팀 토글은 경로가 Pi 일 때만 보인다 — 세션 경로에는 «몇 명이 도는가» 축이 없다.
-- Pi 실행은 이제 활동 로그를 남긴다(`channel: "pi"`, `src/ai/piAgent/activityLog.ts`): 시작 pending 행 →
-  같은 id 로 종료/적용/버림 upsert. 하위 에이전트는 `pi:시공` 같은 toolCalls 로, 팀장·검수 서사와
-  범위 밖 버림은 audit 으로 실린다. 이 기록이 없던 동안 `npm run ai:log --failed` 는 기본 경로의
-  실패를 통째로 못 봤다(실측 2026-09-11: 최근 400행에 pi 행 0).
-- 검증: `test/piAgentExecutionRoute.test.ts`(경로 결정 + `pi-team` 승격), `test/piAgentRunLog.test.ts`
-  (pending→종료 upsert, 하위 에이전트 매핑, 실패 기록). 경로 문서는 `docs/pi-agent.md`.
+- 시작할 때 pending 행 하나 → 끝날 때 **같은 id 로 upsert**(검토 대기 → 적용/버림도 같은 행을 다시
+  갱신하므로 로그의 마지막 기록이 그 실행의 결말이다). 죽은 실행도 «무슨 지시였고 언제 시작했는지» 가 남는다.
+- 하위 에이전트는 `pi:시공` 같은 **toolCalls** 로, 팀장·검수 서사·범위 밖 버림·맵 충돌은 **audit** 으로
+  실려 기존 뷰어(`npm run ai:log --tools`)에서 그대로 읽힌다.
+- `/loop N` 회차는 감사 첫 줄(`Pi 팀 ×3회 · 범위 … · …`)에 붙는다.
+
+곁다리로 고친 것: 설정에서 「지시 실행 경로」를 바꾸면 컴포저 셀렉트가 즉시 따라온다(`onSaved` →
+`composerShell.setRoute`). 그 전에는 화면이 옛 값을 보여 주고 **다음 전송만** 저장값을 읽었다.
+
+검증: `test/piAgentRunLog.test.ts`(pending→종료 upsert, 하위 에이전트 매핑, 실패 기록)와
+`test/e2e/ai-pi-run-log.spec.ts`(실제 전송 한 건이 로그 행 pending→종료로 남는지 브라우저에서 확인).
 
 
 ## Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
@@ -1410,6 +1407,10 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - Side work log is RM-style `@>` command rows (`data-testid="ai-command-row"`), not chat bubbles. There is no pending-proposal pin: a turn's writes are applied as the turn ends, so the command row is followed by the applied change card (`ai-change-card`) with its `되돌리기` button.
 
 - **Assistant skills removed (2026-08-27):** the assistant-side skill feature is gone — no skill drawer, no `/` slash skill list, no skill palette section, no skill prompt plumbing (`src/ai/skills.ts`, `aiSkillDrawer.ts`, `assistant-skills.css`, `explicitSkillId`, `appendSkillPromptToggle` all deleted). The composer is free text + send only, and a leading `/` is ordinary text with no popover. Ctrl+K keeps 명령 + 맵 이동 sections. Game skills (battle/life/`database.skills`) are unrelated and untouched. Regression test: `test/assistantSkillsRemoved.test.ts`.
+
+- **Pi 슬래시 노브와 Pi 전용 컴포저 (2026-09-10):** 실행 경로 어휘는 `pi-agent`·`pi-team` 둘뿐이다 — 「조수」 경로가 사라졌고 옛 저장값 `executionRoute:"session"` 은 Pi 에이전트로 떨어진다(`src/ai/piAgent/executionRoute.ts`). 지시 앞 노브는 `/team` · `/loop N`(1~20, 바뀐 것이 없으면 조기 종료) · `/30m`(s·m·h) 이고 `/pi` 없이 맨 앞에 와도 같은 뜻이다. 모르는 `/이름` 은 여전히 **평문**이며, 알려진 노브의 인자가 틀리면 사용법 한 줄을 말하고 **입력을 지우지 않는다**(`parsePiDirective`, `aiChatPanel` send). 자율성 다이얼은 `resolvePiRunPlan` 이 Pi 요청으로 푼다: 읽기 전용 → `readOnly`, 확인 → `readOnly`+계획 지시, 그 밖은 `maxTurns`(4/6/16/32/48)·`thinkingLevel`(low/medium/high). 세션 턴 경로는 컴포저에서 도달 불가가 됐고(선택 영역 작업만 세션), 그 코드 삭제는 아직 남았다. 자격 때문에 죽은 Pi 실행에는 「설정 열기」가 붙는다. 증거: `test/piAgentCommandAndRoute.test.ts`·`piAgentExecutionRoute.test.ts`·`piAgentCommandLoop.test.ts`·`aiChatPanelComposerMode.test.ts`, 브라우저 `test/e2e/_pi-knobs.spec.ts`(`verify-shots/pi-knobs/`), `docs/pi-agent.md`.
+
+  위 2026-08-27 의 「스킬 표면 재도입 금지」 는 **세션 컴포저**의 스킬 드로어를 가리킨다. Pi 경로의 슬래시 노브는 팝오버도 목록도 없이 입력 앞 토큰일 뿐이므로 그 금지와 충돌하지 않는다 — 규칙을 다시 쓸 때 이 경계를 유지하라.
 
 - **Assistant temperature:** `AssistantTemperature = "quiet-gold" | "ink-only" | "map-first"` is persisted with `chatDock` in `oprn:editor-layout:v4` (`src/editor/assistantTemperature.ts`). The header and float command menus expose A 조용한 골드 / B 잉크만 / C 맵 우선. Quiet Gold shows at most two idle hints, Ink Only hides gold idle chrome, and Map First hides the idle card until a turn exists. Tests: `test/assistantTemperature.test.ts`, `test/aiPanelChrome.test.ts`, `test/editorLayoutPersist.test.ts`.
 

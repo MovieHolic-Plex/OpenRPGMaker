@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { DEFAULT_EXECUTION_ROUTE, resolveExecutionRoute } from "@/ai/piAgent/executionRoute";
+import { resolveAutonomy } from "@/ai/autonomyLevels";
+import { DEFAULT_EXECUTION_ROUTE, resolvePiRunPlan } from "@/ai/piAgent/executionRoute";
 import { AI_CONFIG_STORAGE_KEY, loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 import { createTeamBoardState, markTeamBoardDiscarded, markTeamBoardReview, reduceTeamBoard } from "@/ai/piAgent/teamBoardState";
 
@@ -13,47 +14,53 @@ class MemoryStorage {
   setItem(key: string, value: string) { this.map.set(key, value); }
 }
 
-describe("실행 경로 결정", () => {
-  it("기본은 선택한 경로, 질문·계획·선택 영역은 기존 조수", () => {
-    expect(resolveExecutionRoute({ text: "집 지어", composerMode: "do", preferred: "pi-agent" })).toEqual({ route: "pi-agent", reason: null });
-    expect(resolveExecutionRoute({ text: "집 지어", composerMode: "do", preferred: "session" })).toEqual({ route: "session", reason: null });
-    expect(resolveExecutionRoute({ text: "이벤트 몇 개?", composerMode: "ask", preferred: "pi-agent" }).route).toBe("session");
-    expect(resolveExecutionRoute({ text: "이벤트 몇 개?", composerMode: "ask", preferred: "pi-agent" }).reason).toMatch(/질문/);
-    expect(resolveExecutionRoute({ text: "이벤트 몇 개?", composerMode: "ask", preferred: "session" }).reason).toBeNull();
-    expect(resolveExecutionRoute({ text: "마을 계획", composerMode: "plan", preferred: "pi-agent" }).route).toBe("session");
-    expect(resolveExecutionRoute({ text: "여기 고쳐", composerMode: "do", preferred: "pi-agent", selectionTaskActive: true }).route).toBe("session");
+const plan = (level: Parameters<typeof resolveAutonomy>[0], explicitDirective = false, preferred: "pi-agent" | "pi-team" = "pi-agent") =>
+  resolvePiRunPlan({ explicitDirective, preferred, autonomy: resolveAutonomy(level) });
+
+describe("실행 계획 결정", () => {
+  it("평문 지시는 셀렉트가 고른 Pi 경로로 간다", () => {
+    expect(plan("balanced")).toEqual({ route: "pi-agent", readOnly: false, planOnly: false, maxTurns: 16, thinkingLevel: "low" });
+    expect(plan("balanced", false, "pi-team").route).toBe("pi-team");
   });
-  it("/pi 는 언제나 명시적 Pi 경로", () => {
-    expect(resolveExecutionRoute({ text: "/pi team 마을", composerMode: "ask", preferred: "session" }).route).toBe("pi-agent");
-    expect(resolveExecutionRoute({ text: "/pixel", composerMode: "do", preferred: "session" }).route).toBe("session");
+  it("읽기 전용 레벨은 쓰기 없는 Pi 다", () => {
+    expect(plan("readonly")).toMatchObject({ readOnly: true, planOnly: false, maxTurns: 4, thinkingLevel: "low" });
+  });
+  it("확인 레벨은 계획만 세우는 읽기 전용 실행이다", () => {
+    // 계획 턴에 쓰기가 열려 있으면 "실행 전에 확인" 약속이 깨진다.
+    expect(plan("confirm")).toMatchObject({ readOnly: true, planOnly: true, maxTurns: 6 });
+  });
+  it("자율·최대 레벨은 더 깊은 추론과 큰 예산을 싣는다", () => {
+    expect(plan("autonomous")).toMatchObject({ readOnly: false, maxTurns: 32, thinkingLevel: "medium" });
+    expect(plan("max")).toMatchObject({ readOnly: false, maxTurns: 48, thinkingLevel: "high" });
+  });
+  it("슬래시 노브는 사용자 선택이라 다이얼의 읽기 전용·계획보다 세다", () => {
+    expect(plan("readonly", true)).toMatchObject({ readOnly: false, planOnly: false });
+    expect(plan("confirm", true)).toMatchObject({ readOnly: false, planOnly: false });
+  });
+  it("세션은 더 이상 경로가 아니다", () => {
+    expect(DEFAULT_EXECUTION_ROUTE).toBe("pi-agent");
   });
 });
 
 describe("AI 설정의 경로·적용 방식", () => {
-  beforeEach(() => { Object.defineProperty(globalThis, "localStorage", { configurable: true, writable: true, value: new MemoryStorage() }); });
-  it("옛 blob 은 Pi 에이전트 + 팀 아님 + 검토 후 적용으로 백필한다", () => {
+  beforeEach(() => { (globalThis as { localStorage?: unknown }).localStorage = new MemoryStorage(); });
+  it("옛 blob 은 Pi 에이전트 + 검토 후 적용으로 백필한다", () => {
     localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ model: "gemini-3.7-flash" }));
     const config = loadAiConfig();
     expect(config.executionRoute).toBe(DEFAULT_EXECUTION_ROUTE);
-    expect(config.piTeam).toBe(false);
     expect(config.piApply).toBe("review");
   });
   it("저장한 값은 유지되고 이상한 값은 기본으로", () => {
-    saveAiConfig({ ...loadAiConfig(), executionRoute: "session", piTeam: true, piApply: "auto" });
-    expect(loadAiConfig().executionRoute).toBe("session");
-    expect(loadAiConfig().piTeam).toBe(true);
+    saveAiConfig({ ...loadAiConfig(), executionRoute: "pi-team", piApply: "auto" });
+    expect(loadAiConfig().executionRoute).toBe("pi-team");
     expect(loadAiConfig().piApply).toBe("auto");
     localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...JSON.parse(localStorage.getItem(AI_CONFIG_STORAGE_KEY)!), executionRoute: "nope", piApply: "later" }));
     expect(loadAiConfig().executionRoute).toBe("pi-agent");
     expect(loadAiConfig().piApply).toBe("review");
   });
-  // 팀이 경로에서 비트로 내려온 날(2026-09-11)의 유일한 데이터 위험: 저장된 `pi-team` 이
-  // 읽히지 않으면 사용자의 팀 설정이 조용히 사라진다. 승격을 여기서 고정한다.
-  it("옛 `pi-team` 경로는 Pi 경로 + 팀 비트로 승격한다", () => {
-    localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ model: "gemini-3.7-flash", executionRoute: "pi-team", piApply: "review" }));
-    const config = loadAiConfig();
-    expect(config.executionRoute).toBe("pi-agent");
-    expect(config.piTeam).toBe(true);
+  it("삭제된 'session' 저장값도 Pi 에이전트로 떨어진다", () => {
+    localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ executionRoute: "session" }));
+    expect(loadAiConfig().executionRoute).toBe("pi-agent");
   });
 });
 

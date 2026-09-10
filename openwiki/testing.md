@@ -1,3 +1,37 @@
+## 전체 스위트가 워커 힙에서 죽던 문제 (2026-09-11)
+
+`npm run gates` 의 vitest 축(그리고 전체 vitest)이 **OOM 으로 죽어 리포트조차 못 내놨다**. 원인은 컨테이너
+캡이 아니라 Node 의 **프로세스당** 기본 힙 상한이다 — 실측: `/sys/fs/cgroup/memory.max` 비어 있음,
+`ulimit -m` unlimited, RAM 98GB 인데 `v8.getHeapStatistics().heap_size_limit` = **4,288MB**.
+
+`test/verificationPlanAtomicity.test.ts` 한 파일이 그 상한을 넘겼다(단독 실행, `/usr/bin/time -v` 피크 RSS):
+
+| 상태 | 케이스 | 피크 |
+|---|---|---|
+| 수정 전 | 108 | **4.34GB → `Ineffective mark-compacts near heap limit`** |
+| 같은 매트릭스에서 `-t "via tool"` | 54 | 3.55GB |
+| 분할 후 1/3 (`…Atomicity.test.ts`) | 48 | 3.13GB |
+| 분할 후 2/3 (`…Ownership.test.ts`) | 32 | 2.06GB |
+| 분할 후 3/3 (`…Reuse.test.ts`) | 28 | 2.88GB |
+
+케이스가 누적될수록 한 워커의 힙이 자란다(2케이스 0.52GB → 8케이스 0.92GB → 54케이스 3.55GB). 케이스마다
+명시적 `gc()` 를 불러도 회수되지 않았다 = 참조가 남아 있다. **원인 객체는 아직 못 찾았다** — 배제한 것:
+게이트 JSON 리포터, 줄 수 큰 파일들(`aiAssistantSession` 1.34GB·`supabaseProjectSync` 0.78GB·`villageBuilder` 0.76GB),
+`mapEditHistory`, `agentBlueprint`, 타일셋/캐릭터 이미지 캐시, `conversationStore`(세션이 아예 안 쓴다),
+부트 진단 링(상한 40), 세션 생성, 평범한 턴.
+
+대응 두 가지:
+
+1. 매트릭스를 세 파일로 가르고 픽스처를 `test/helpers/verificationPlanAtomicityFixture.ts` 로 옮겼다 —
+   워커 하나가 지는 케이스 수가 줄어 기본 힙에서도 돈다(테스트 108건 수 보존, 확인함).
+2. `scripts/run-vitest.mjs` 가 워커 힙을 **8GB 기본**으로 깐다(`npm test`·`npm run gates`·`test:watch`·
+   `test:parity` 공용이고 게이트도 이 스크립트를 탄다). 사용자가 `--max-old-space-size` 를 주면 그 값을 존중하고,
+   `RPG_ZZU_VITEST_HEAP_MB` 로 조절한다.
+
+**같은 증상이 다시 나면**: `--logHeapUsage` 는 **완료된 파일만** 찍으므로 죽는 파일은 목록에 안 나온다.
+`.omo/gates-vitest-report.json` 에서 **오래 걸린 파일 상위**를 뽑아 `/usr/bin/time -v` 로 단독 실행해
+피크 RSS 를 재는 쪽이 빠르다(이번에도 그렇게 찾았다).
+
 ## P5 delivery gates and the P4 regressions they caught (2026-09-09)
 
 ### Open: checkpoint writes still slow the authoring loop

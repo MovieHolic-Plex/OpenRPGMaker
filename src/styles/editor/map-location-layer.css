@@ -12,6 +12,10 @@
   pointer-events: none;
 }
 .map-location-layer.is-active { pointer-events: auto; cursor: crosshair; }
+/* 「화면 밀기」 가 켜지면 이 층의 드래그는 카메라의 것이므로 커서도 캔버스와 같아야 한다
+ * (editor/cameraPanBridge.ts). crosshair 를 그대로 두면 여기서 구역이 그려질 것처럼 보인다. */
+body[data-editor-tool="pan"] .map-location-layer.is-active { cursor: var(--editor-tool-cursor, grab); }
+body[data-editor-tool="pan"] .map-location-layer.is-active:active { cursor: grabbing; }
 
 .map-location-box {
   position: absolute;

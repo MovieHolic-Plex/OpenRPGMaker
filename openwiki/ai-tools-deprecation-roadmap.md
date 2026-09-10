@@ -54,5 +54,9 @@
   단, 맵 인터뷰·미분류 분석 스킬의 저장 경로가 내부적으로 이 구현을 쓰는지 먼저 확인할 것.
 - `show_tiles`/`show_tile_grid`/`render_group_sample`: `tile_query` 통합 완료 — 1단계
   계측에서 실호출이 없으면 가장 먼저 2단계 후보.
+- `create_map` / `generate_map` 의 `border` **파라미터**: 모델 스키마에서 제거(2026-09-11).
+  도구 폐기가 아니라 파라미터 비노출이라 `run()` 은 인자를 그대로 받는다(위 1~2단계와 같은 형태).
+  근거·실측은 `editor-ai-tools.md` 「맵 생성 테두리 옵션은 모델에게 주지 않는다」. 완전 삭제는
+  `borderWalls`/`MapBorder`·`carvePath` 인자·관련 테스트를 지우는 별도 정리이며, 아직 하지 않았다.
 - 테스트: `test/tileToolsV2.test.ts`, `test/toolDomainScoping.test.ts`가 deprecated
   마킹·비노출·supersededBy를 회귀 고정한다. 단계 진행 시 이 테스트들의 기대를 함께 갱신.

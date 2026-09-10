@@ -113,6 +113,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const child = (agentId: string): RunPiAgentOptions => ({
     apiKey: options.apiKey,
     signal: options.signal,
+    ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}),
     onEvent: (event) => {
       const row = progress.get(agentId);
       if (row) {

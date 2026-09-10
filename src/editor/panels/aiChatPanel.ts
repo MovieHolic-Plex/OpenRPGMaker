@@ -50,9 +50,9 @@ import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyResolution } from "@/ai/autonomyLevels";
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
 import { store } from "@/project/store";
-import { parsePiCommand, runPiCommand } from "./aiPiAgentCommand";
+import { PI_DIRECTIVE_HINT, parsePiDirective, plainPiCommand, runPiCommand } from "./aiPiAgentCommand";
 import { createTeamPanel } from "./aiTeamPanel";
-import { DEFAULT_EXECUTION_ROUTE, DEFAULT_PI_TEAM, EXECUTION_ROUTE_LABEL, resolveExecutionRoute } from "@/ai/piAgent/executionRoute";
+import { DEFAULT_EXECUTION_ROUTE, EXECUTION_ROUTE_LABEL, resolvePiRunPlan } from "@/ai/piAgent/executionRoute";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
@@ -280,6 +280,9 @@ let activeAiChatPanelCleanup: (() => void) | null = null;
 // 안 끝나 있다 — 테스트·헤드리스 하네스는 이걸로 정착을 기다린다.
 const panelPendingWork = createPendingWorkTracker();
 
+/** Pi 실패 문구가 자격·동반 서비스 문제인지. 세션 폴백이 없어 이 경우만 "설정 열기" 를 붙인다. */
+const PI_AUTH_FAILURE = /401|403|로그인|자격|인증|OAuth|credential|동반 서비스|워커/i;
+
 /** 패널의 비동기 저장·복원·프로젝트 전환 처리가 모두 끝날 때까지 기다린다. */
 export function whenAiChatPanelSettled(): Promise<void> {
   return panelPendingWork.settled();
@@ -483,7 +486,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const input = el("textarea", {
     class: "ai-assistant-input",
-    attrs: { placeholder: formatComposerPlaceholder(readAgentBrief()), rows: "1" },
+    attrs: { placeholder: formatComposerPlaceholder(readAgentBrief()), title: PI_DIRECTIVE_HINT, rows: "1" },
     dataset: { testid: "ai-input" },
   }) as HTMLTextAreaElement;
 
@@ -534,10 +537,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       controller.session?.updateConfig(config);
       composerShell.setModelLabel(modelChipLabel());
       composerShell.syncEffort(isAutonomyLevel(config.autonomyLevel) ? config.autonomyLevel : "balanced");
-      // 경로·팀은 컴포저와 설정이 함께 쓰는 값이다. 설정에서 바꾼 것을 컴포저가 계속 옛 값으로
-      // 보여 주면 화면이 거짓말을 한다 — 다음 전송은 저장값을 읽기 때문이다.
+      // 경로는 컴포저와 설정이 함께 쓰는 값이다. 설정에서 바꾼 것을 컴포저가 계속 옛 값으로 보여 주면
+      // 화면이 거짓말을 한다 — 다음 전송은 저장값을 읽기 때문이다.
       composerShell.setRoute(config.executionRoute ?? DEFAULT_EXECUTION_ROUTE);
-      composerShell.setPiTeam(config.piTeam ?? DEFAULT_PI_TEAM);
     },
     extraSections: settingsExtraSections,
   }));
@@ -1840,59 +1842,75 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
       return;
     }
+    // 슬래시 노브(`/pi` `/team` `/loop 3` `/30m`)는 입력을 비우기 전에 읽는다 — 잘못된 노브면
+    // 사용자가 쓴 문장을 그대로 두고 사용법만 알린다.
+    const directive = parsePiDirective(text, store.getCurrent(), editorState.get().currentMapId ?? null);
+    if (directive?.kind === "error") {
+      appendBubble("system", directive.message);
+      return;
+    }
     input.value = "";
     syncInputHeight();
     refreshSendEnabled();
-    // 실행 경로: 컴포저 셀렉트(설정과 같은 값)가 기본을 정하고, 질문·계획·선택 영역은 기존 조수로 간다.
-    // `/pi …` 는 언제나 명시적 Pi 경로다. 팀은 경로가 아니라 그 Pi 의 실행 모드 — 설정의 비트
-    // (`piTeam`)가 평문을 팀으로 돌리고, 명시 `/pi team …` 이 그 위에 선다(파서가 최종 권위).
-    const sendConfig = loadAiConfig();
-    const decision = resolveExecutionRoute({
-      text,
-      // The composer no longer carries mode chips (#731); the autonomy dial derives it.
-      composerMode: derivedComposerMode(),
-      preferred: sendConfig.executionRoute ?? DEFAULT_EXECUTION_ROUTE,
-      selectionTaskActive: Boolean(selectionTaskActive && currentSelectionForRegionTask()),
-    });
-    const team = sendConfig.piTeam ?? DEFAULT_PI_TEAM;
-    const explicit = parsePiCommand(text, store.getCurrent(), editorState.get().currentMapId ?? null);
-    const piCommand = explicit
-      ?? (decision.route === "session"
-        ? null
-        : parsePiCommand(`/pi ${team ? "team " : ""}${text}`, store.getCurrent(), editorState.get().currentMapId ?? null));
-    if (piCommand) {
-      if (turnBusy) {
-        toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
-        return;
-      }
-      appendBubble("user", text);
-      // 기존 턴과 같은 중단 버튼을 쓴다 — 컨트롤러를 활성 자리에 앉히고 실행 중 표시(turnBusy)를 켠다.
-      piRunController = new AbortController();
-      activeAbortController = piRunController;
-      abortNoticeShown = false;
-      runSurface.turnBusy = true;
-      refreshAbortButton();
-      // 유휴 판정을 갱신해야 로그 카드가 펼쳐진다 — 이 경로는 세션 턴 러너를 거치지 않아 스스로 부른다.
-      syncGlassIdle();
-      try {
-        await runPiCommand(piCommand, {
-          appendBubble: (role, line) => appendBubble(role, line),
-          appendCard: (element) => { appendChangeCard(element); log.scrollTop = log.scrollHeight; },
-          setStatus,
-          getCurrentMapId: () => editorState.get().currentMapId ?? null,
-          signal: piRunController.signal,
-        });
-      } finally {
-        if (activeAbortController === piRunController) activeAbortController = null;
-        piRunController = null;
-        runSurface.turnBusy = false;
-        refreshAbortButton();
-        syncGlassIdle();
-      }
+    // 선택 영역 작업은 세션 경로(하드 클립·블렌드 폴리시·고스트 프리뷰)를 그대로 쓴다 — 슬래시 노브가 있으면 Pi 가 이긴다.
+    if (!directive && selectionTaskActive && currentSelectionForRegionTask()) {
+      await sendSelectionRegionTask(text);
       return;
     }
-    if (selectionTaskActive && currentSelectionForRegionTask()) await sendSelectionRegionTask(text);
-    else await sendText(text);
+    // 실행 계획: 슬래시 노브가 있으면 그대로 Pi, 없으면 컴포저 셀렉트(설정과 같은 값)가 경로를 정한다.
+    // 자율성 다이얼은 여기서 Pi 노브(쓰기 금지·계획만·턴 상한·추론)로 풀린다 — 예전에는 세션이 읽었다.
+    const runPlan = resolvePiRunPlan({
+      explicitDirective: directive !== null,
+      preferred: loadAiConfig().executionRoute ?? DEFAULT_EXECUTION_ROUTE,
+      autonomy: currentAutonomy(),
+    });
+    const piCommand = directive?.kind === "command"
+      ? directive.command
+      : plainPiCommand(text, runPlan.route === "pi-team" ? "team" : "single", editorState.get().currentMapId ?? null);
+    if (turnBusy) {
+      toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
+      return;
+    }
+    appendBubble("user", text);
+    // 기존 턴과 같은 중단 버튼을 쓴다 — 컨트롤러를 활성 자리에 앉히고 실행 중 표시(turnBusy)를 켠다.
+    piRunController = new AbortController();
+    activeAbortController = piRunController;
+    abortNoticeShown = false;
+    runSurface.turnBusy = true;
+    refreshAbortButton();
+    // 유휴 판정을 갱신해야 로그 카드가 펼쳐진다 — 이 경로는 세션 턴 러너를 거치지 않아 스스로 부른다.
+    syncGlassIdle();
+    // Pi 실패에 "설정 열기" 를 붙이려면 마지막 시스템 버블을 잡아 둬야 한다(실패 문구는 명령이 붙인다).
+    // 객체 필드로 두는 이유: 지역 변수는 클로저 안 대입을 TS 흐름 분석이 못 봐서 null 로 좁혀진다.
+    const piRun = { failureBubble: null as HTMLElement | null };
+    try {
+      const finished = await runPiCommand(piCommand, {
+        appendBubble: (role, line) => {
+          const bubble = appendBubble(role, line);
+          if (role === "system") piRun.failureBubble = bubble;
+          return bubble;
+        },
+        appendCard: (element) => { appendChangeCard(element); log.scrollTop = log.scrollHeight; },
+        setStatus,
+        getCurrentMapId: () => editorState.get().currentMapId ?? null,
+        signal: piRunController.signal,
+      }, {
+        readOnly: runPlan.readOnly,
+        planOnly: runPlan.planOnly,
+        maxTurns: runPlan.maxTurns,
+        thinkingLevel: runPlan.thinkingLevel,
+      });
+      // 세션 폴백이 없어졌으므로(2026-09-10) Pi 실패가 곧 막다른 길이다. 자격 문제면 복구 동선을 준다.
+      if (!finished && piRun.failureBubble && PI_AUTH_FAILURE.test(piRun.failureBubble.textContent ?? "")) {
+        appendOpenSettingsButton(piRun.failureBubble, "first");
+      }
+    } finally {
+      if (activeAbortController === piRunController) activeAbortController = null;
+      piRunController = null;
+      runSurface.turnBusy = false;
+      refreshAbortButton();
+      syncGlassIdle();
+    }
   };
 
   sendButton.addEventListener("click", () => void send());
@@ -2554,14 +2572,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     isInside: (target) => (deckRoot ?? composerShell.commandBar).contains(target),
     routeChips: {
       initial: loadAiConfig().executionRoute ?? DEFAULT_EXECUTION_ROUTE,
-      initialTeam: loadAiConfig().piTeam ?? DEFAULT_PI_TEAM,
       onChange: (route) => {
         saveAiConfig({ ...loadAiConfig(), executionRoute: route });
         setStatus(`지시 경로: ${EXECUTION_ROUTE_LABEL[route]}`);
-      },
-      onTeamChange: (team) => {
-        saveAiConfig({ ...loadAiConfig(), piTeam: team });
-        setStatus(team ? "Pi 팀으로 실행합니다 — 팀장이 맵을 나눠 배정하고 검수합니다." : "Pi 에이전트 하나로 실행합니다.");
       },
     },
     effortChips: {
