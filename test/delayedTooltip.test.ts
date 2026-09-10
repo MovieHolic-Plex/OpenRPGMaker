@@ -148,6 +148,22 @@ describe("attachDelayedTooltip — 동작 계약", () => {
     expect(activeDelayedTooltipElement()).toBeNull();
   });
 
+  // 브라우저 실측(2026-09-10, verify-shots/oprn-024/05-rerender-clears.png): 이미 떠 있는
+  // 툴팁은 대상이 리렌더로 교체돼도 `pointerleave` 를 못 받아 유령으로 남아 있었다.
+  it("이미 떠 있는 툴팁도 대상이 리렌더로 떨어지면 사라진다", async () => {
+    const node = button();
+    attachDelayedTooltip(node, { label: "저장" });
+
+    node.dispatchEvent(new Event("pointerenter"));
+    vi.advanceTimersByTime(TOOLTIP_DELAY_MS);
+    expect(activeDelayedTooltipElement()?.textContent).toBe("저장");
+
+    node.remove();
+    await Promise.resolve();
+
+    expect(activeDelayedTooltipElement()).toBeNull();
+  });
+
   it("완전한 접근 가능한 이름은 짧은 시각 라벨과 별개로 남는다", () => {
     const node = button();
     attachDelayedTooltip(node, { label: "저장", accessibleName: "프로젝트 저장 (Ctrl+S)" });

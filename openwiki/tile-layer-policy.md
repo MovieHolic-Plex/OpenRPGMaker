@@ -64,10 +64,31 @@ DB 타일셋 편집기(`src/editor/panels/tilesetMetadataEditor.ts`), 테스트�
 
 | 파일 | 고정하는 것 |
 |---|---|
-| `test/tileLayerPolicy.test.ts` | 다섯 부류 판정, 사용자 override, 자동 복귀, 검토 목록 비변형 |
+| `test/tileLayerPolicy.test.ts` | 다섯 부류 판정, 사용자 override, 자동 복귀, 검토 목록 비변형, **근거 문장이 실제 받침 결과와 일치** |
 | `test/tileLayerPolicyEditorSurface.test.ts` | 규칙 탭의 정책 근거·다중 조각 표시, 받침 버튼, 검토 목록 적용 |
 | `test/tileLayerPolicyClusterRegression.test.ts` | 레이어/받침 선택 대비 하드클러스터 거부 행렬, 통행 불변 |
 | `test/forestTrunkLayers.test.ts`, `test/transparentTileLayerRouting.test.ts` | 기존 밑동 하위·투명 상위 계약 회귀 |
+
+## 브라우저 증거 (2026-09-10)
+
+`scripts/qa/tile-layer-backing-policy.mjs` → `verify-shots/oprn-026/`(6장면, 6/6 PASS).
+데이터베이스 → 맵/타일 → 합본 마을 칩셋 → 「통행·지형」 탭에서 밑동 290 을 실제로 클릭해
+정책 부류·근거·다중 조각 제약, 받침 자동→없음→잔디 전환, 경고가 켜지는 정확한 순간,
+검토 목록의 등장·소멸, 검토 항목 「상위 오버레이」의 단일 타일 범위를 찍는다.
+단언 실패 시 exit 1. 고정 sleep 없이 앱의 `project-export-json` 미러 갱신을 기다린다.
+
+함정 두 개를 기록해 둔다.
+- **앱의 store 를 스크립트에서 다시 import 하면 다른 인스턴스다.** dev 서버가 앱에는
+  `store.ts?t=<hmr>` 를 실어 주므로 쿼리 없는 `import('/src/project/store.ts')` 는
+  로드되지 않은 두 번째 싱글턴을 준다(실측: `isLoaded() === false`). 저작 상태는
+  숨은 `project-export-json` 미러에서 읽고, 판정은 순수 함수로 계산한다.
+- **규칙 패널은 세로로 스크롤된다.** 경고와 검토 목록이 접힌 아래쪽에 있어서
+  스크롤 없이 찍으면 단언은 통과하는데 스크린샷에는 그 증거가 없다.
+
+그 촬영이 **결함 하나**를 드러냈다: 받침을 「없음」으로 확정하면 부류는
+「투명 하위(받침 없음)」로 바뀌는데 근거 문장만 "받침 타일로 투명 픽셀을 채웁니다" 로
+굳어 있어, 바로 위 경고와 정면으로 모순되는 설명이 같은 화면(그리고 검토 목록 항목)에
+떴다. `tileLayerPolicy.ts` 의 `trunkReason()` 이 실제 받침 결과를 말하도록 고쳤다.
 
 ## 아직 결정이 필요한 것 (제품 소유자)
 

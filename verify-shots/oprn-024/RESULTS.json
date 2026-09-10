@@ -1,0 +1,183 @@
+{
+  "baseUrl": "http://127.0.0.1:9865",
+  "pageErrors": [],
+  "results": [
+    {
+      "name": "01-short-hover",
+      "status": "PASS",
+      "observed": {
+        "delayMs": 1200,
+        "hoverMs": 400,
+        "tooltip": null,
+        "titleWhileHovered": null
+      },
+      "screenshot": "01-short-hover.png"
+    },
+    {
+      "name": "02-delayed-shown",
+      "status": "PASS",
+      "observed": {
+        "label": "저장",
+        "accessibleName": "프로젝트 저장 (Ctrl+S)",
+        "side": "below",
+        "rect": {
+          "left": 231,
+          "top": 46,
+          "right": 271,
+          "bottom": 73
+        },
+        "pointerEvents": "none",
+        "zIndex": "2650"
+      },
+      "screenshot": "02-delayed-shown.png"
+    },
+    {
+      "name": "03-keyboard-focus",
+      "status": "PASS",
+      "observed": {
+        "control": "workspace-command-palette-button",
+        "label": "명령 팔레트",
+        "accessibleName": "명령 팔레트 — 명령 실행 · 맵 이동 (Ctrl+K)",
+        "rect": {
+          "left": 855,
+          "top": 46,
+          "right": 931,
+          "bottom": 73
+        }
+      },
+      "screenshot": "03-keyboard-focus.png"
+    },
+    {
+      "name": "04-escape-dismiss",
+      "status": "PASS",
+      "observed": {
+        "clicks": 0,
+        "paletteOpen": false,
+        "tooltipAfterEscape": null
+      },
+      "screenshot": "04-escape-dismiss.png"
+    },
+    {
+      "name": "05-viewport-edge",
+      "status": "PASS",
+      "observed": {
+        "control": "window-fullscreen",
+        "targetRight": 1428,
+        "tooltipRect": {
+          "left": 1370,
+          "top": 46,
+          "right": 1432,
+          "bottom": 73
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "screenshot": "05-viewport-edge.png"
+    },
+    {
+      "name": "06-rerender-clears",
+      "status": "PASS",
+      "observed": {
+        "labelBefore": "AI 설정",
+        "tooltipAfterRerender": null,
+        "reattached": "1"
+      },
+      "screenshot": "06-rerender-clears.png"
+    },
+    {
+      "name": "07-title-restored",
+      "status": "PASS",
+      "observed": {
+        "idleTitle": "프로젝트 저장 (Ctrl+S)",
+        "hoveredTitle": null,
+        "restoredTitle": "프로젝트 저장 (Ctrl+S)",
+        "accessibleName": "프로젝트 저장 (Ctrl+S)",
+        "visualLabel": "저장"
+      },
+      "screenshot": "07-title-restored.png"
+    },
+    {
+      "name": "08-assistant-panel",
+      "status": "PASS",
+      "observed": {
+        "controls": [
+          {
+            "testid": "ai-new-chat",
+            "label": "새 대화",
+            "accessibleName": "새 대화 시작",
+            "side": "below",
+            "rect": {
+              "left": 1214,
+              "top": 729,
+              "right": 1268,
+              "bottom": 756
+            },
+            "zIndex": "2650"
+          },
+          {
+            "testid": "ai-command-menu-toggle",
+            "label": "명령 메뉴",
+            "accessibleName": "조수 명령 메뉴 열기",
+            "side": "below",
+            "rect": {
+              "left": 1336,
+              "top": 729,
+              "right": 1401,
+              "bottom": 756
+            },
+            "zIndex": "2650"
+          }
+        ]
+      },
+      "screenshot": "08-assistant-panel.png"
+    },
+    {
+      "name": "09-tileset-editor",
+      "status": "PASS",
+      "observed": {
+        "controls": [
+          {
+            "testid": "tileset-layer-filter-lower",
+            "label": "바닥",
+            "accessibleName": "레이어 필터: 바닥(하위) 타일만",
+            "side": "below",
+            "rect": {
+              "left": 484,
+              "top": 412,
+              "right": 524,
+              "bottom": 439
+            },
+            "zIndex": "2650"
+          },
+          {
+            "testid": "tileset-layer-auto",
+            "label": "자동",
+            "accessibleName": "레이어 자동 판정에 맡기기",
+            "side": "below",
+            "rect": {
+              "left": 1249,
+              "top": 688,
+              "right": 1289,
+              "bottom": 715
+            },
+            "zIndex": "2650"
+          }
+        ],
+        "coveredRolloutControls": [
+          "toolbar-save",
+          "workspace-command-palette-button",
+          "window-fullscreen",
+          "topbar-ai-settings",
+          "ai-new-chat",
+          "ai-command-menu-toggle",
+          "tileset-layer-filter-lower",
+          "tileset-layer-auto"
+        ],
+        "rolloutSize": 14
+      },
+      "screenshot": "09-tileset-editor.png"
+    }
+  ]
+}

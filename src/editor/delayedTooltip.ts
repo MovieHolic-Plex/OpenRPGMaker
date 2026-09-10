@@ -76,6 +76,9 @@ let active: ActiveTooltip | null = null;
 let showTimer: ReturnType<typeof setTimeout> | null = null;
 let pendingTarget: HTMLElement | null = null;
 let documentKeyHandlerBound = false;
+// 떠 있는 툴팁의 대상이 패널 리렌더로 교체되면 `pointerleave` 가 오지 않는다 — 감시자가
+// 없으면 툴팁이 죽은 노드 좌표에 유령으로 남는다(브라우저 실측 2026-09-10).
+let detachObserver: MutationObserver | null = null;
 
 export function attachDelayedTooltip(target: HTMLElement, spec: DelayedTooltipSpec): () => void {
   if (spec.accessibleName) target.setAttribute("aria-label", spec.accessibleName);
@@ -146,6 +149,8 @@ export function attachDelayedTooltip(target: HTMLElement, spec: DelayedTooltipSp
 
 export function hideDelayedTooltip(): void {
   cancelPending();
+  detachObserver?.disconnect();
+  detachObserver = null;
   active?.element.remove();
   active = null;
 }
@@ -175,6 +180,20 @@ function showDelayedTooltip(target: HTMLElement, spec: DelayedTooltipSpec): void
   active = { element: tip, target };
   positionActiveTooltip();
   bindDocumentKeyHandler();
+  watchTargetDetachment(target);
+}
+
+/** 대상이 DOM 에서 사라지면 툴팁도 같이 사라진다 — 패널 리렌더가 이 경로다. */
+function watchTargetDetachment(target: HTMLElement): void {
+  detachObserver?.disconnect();
+  detachObserver = null;
+  if (typeof MutationObserver === "undefined" || typeof document === "undefined") return;
+  const observer = new MutationObserver(() => {
+    if (active?.target !== target || target.isConnected) return;
+    hideDelayedTooltip();
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+  detachObserver = observer;
 }
 
 function positionActiveTooltip(): void {
