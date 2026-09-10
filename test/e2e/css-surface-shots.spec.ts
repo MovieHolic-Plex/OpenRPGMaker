@@ -7,11 +7,13 @@ import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 // 레일 버튼은 database.ts 의 tabs 레지스트리가 이미 `db-tab-<kebab>` testid 를 붙인다 — 그 이름을 그대로 쓴다.
 const NAV_TESTID = (tab: string) => `db-tab-${tab.replace(/[A-Z]/g, (ch) => `-${ch.toLowerCase()}`)}`;
 const VIEWPORTS = [{ w: 1280, h: 800 }, { w: 1440, h: 900 }];
+// 시계 고정 — 상대 시각·날짜 표기가 실행마다 달라지지 않게 한다.
+const FROZEN_TIME = new Date("2026-09-11T00:00:00Z");
 // 레일에 없는 탭의 진입 경로. terrain 은 spatialTiles 의 맵 컨텍스트 내비 자식이고,
 // 오토타일/미분류는 타일 작업공간의 면(facet)이라 탭 검색으로만 드러난다.
 // 옛 별칭 6개(tilesets·structureKits·tilesetSpaces·scratchConcepts·villages·worldGen)는
 // LEGACY_SPATIAL_ROUTE 가 spatial* 로 흡수해 UI 진입점이 없으므로, 그 목적지인 spatial* 탭(레일의 「맵」 그룹
-// 6개, spatialTiles 는 원래 목록에 있었음)을 대신 찍는다. 그래서 DB 기준선은 37 이 아니라 36장이다.
+// 6개, spatialTiles 는 원래 목록에 있었음)을 대신 찍는다.
 const CONTEXT_CHILD: Record<string, string> = { terrain: "spatialTiles" };
 const SEARCH_ONLY = new Set(["tilesetAutotile", "tilesetUnlabeled"]);
 const DB_TABS = [
@@ -21,6 +23,8 @@ const DB_TABS = [
   "spatialTiles", "tilesetAutotile", "tilesetUnlabeled", "spatialObjects", "spatialSpaces", "spatialPlaces",
   "spatialRegions", "spatialWorlds", "crops", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial",
   "factions", "lifeCollections", "worldCanon", "worldCodex",
+  // 컬렉션 7탭 — 레일의 파티/몬스터/전투 규칙 그룹에 보이는 레코드 편집 표면.
+  "actors", "classes", "skills", "items", "enemies", "troops", "states",
 ];
 
 async function settle(page: Page) {
@@ -36,9 +40,11 @@ const BOOT_ATTEMPTS = 5;
 // 저장값 없는 첫 방문은 applyFirstVisitEditorUiMode 가 초보 모드로 박는다(자동화 URL 예외 없음).
 // 「표준」기준선이 우연히 초보 화면이 되지 않도록 모드를 항상 명시한다. parseEditorUiMode 는
 // 날 문자열("beginner")을 받는다 — JSON 으로 감싸면 standard 로 떨어진다.
-type UiMode = "standard" | "beginner";
+type UiMode = "standard" | "beginner" | "expert";
 
 async function boot(page: Page, w: number, h: number, mode: UiMode = "standard") {
+  // Date.now()/new Date() 를 고정 시각으로 못 박는다(타이머는 그대로 흐른다). 내비게이션 전에 걸어야 첫 렌더부터 적용된다.
+  await page.clock.setFixedTime(FROZEN_TIME);
   await page.addInitScript((value) => localStorage.setItem("oprn:editor-ui-mode", value), mode);
   await page.setViewportSize({ width: w, height: h });
   const seed = mockupProject();
@@ -60,9 +66,14 @@ async function boot(page: Page, w: number, h: number, mode: UiMode = "standard")
   if (lastError) throw lastError;
   // 초보 모드엔 toolbar-database 가 없다(paletteRail) — 두 모드에 다 있는 저장 버튼을 앵커로 쓴다.
   await expect(page.getByTestId("toolbar-save")).toBeVisible({ timeout: 60_000 });
-  if (mode === "standard") await expect(page.getByTestId("toolbar-database")).toBeVisible({ timeout: 60_000 });
+  if (mode !== "beginner") await expect(page.getByTestId("toolbar-database")).toBeVisible({ timeout: 60_000 });
   await settle(page);
   return seed;
+}
+
+// 게스트 신원 라벨은 부트마다 무작위다(editorIdentity) — 셸 샷에서는 그 버튼을 가린다.
+function shellMasks(page: Page) {
+  return [page.getByTestId("topbar-identity")];
 }
 
 // eventEditorCertEvidence.openEventEditor 는 전문가 모드 전제(tool-event 버튼)다. 표준 모드는 이벤트
@@ -79,13 +90,19 @@ async function openEventEditorInShell(page: Page, eventId: string) {
 for (const { w, h } of VIEWPORTS) {
   test(`shell ${w}x${h}`, async ({ page }) => {
     await boot(page, w, h);
-    await expect(page).toHaveScreenshot(`shell-${w}.png`, { fullPage: false });
+    await expect(page).toHaveScreenshot(`shell-${w}.png`, { fullPage: false, mask: shellMasks(page) });
   });
 
   test(`shell beginner mode ${w}x${h}`, async ({ page }) => {
     await boot(page, w, h, "beginner");
     await expect(page.locator("body.editor-ui-beginner")).toHaveCount(1);
-    await expect(page).toHaveScreenshot(`shell-beginner-${w}.png`);
+    await expect(page).toHaveScreenshot(`shell-beginner-${w}.png`, { mask: shellMasks(page) });
+  });
+
+  test(`shell expert mode ${w}x${h}`, async ({ page }) => {
+    await boot(page, w, h, "expert");
+    await expect(page.locator("body.editor-ui-expert")).toHaveCount(1);
+    await expect(page).toHaveScreenshot(`shell-expert-${w}.png`, { mask: shellMasks(page) });
   });
 
   test(`event editor pages ${w}x${h}`, async ({ page }) => {
@@ -94,13 +111,15 @@ for (const { w, h } of VIEWPORTS) {
     const modal = page.getByTestId("event-editor-modal");
     await settle(page);
     await expect(page).toHaveScreenshot(`event-page1-${w}.png`);
-    // 페이지 탭은 `.evt-page-segment`(testid evt-page-segment-N) — 브리프의 `.event-page-tab` 은 DOM 에 없다.
-    const tabs = modal.locator(".evt-page-segment");
-    if ((await tabs.count()) > 1) {
-      await modal.getByTestId("evt-page-segment-2").click();
-      await settle(page);
-      await expect(page).toHaveScreenshot(`event-page2-${w}.png`);
-    }
+    // 페이지 탭은 `.evt-page-segment`(testid evt-page-segment-N). mockupProject 는 3페이지 — 조건부 건너뛰기 없이 둘 다 찍는다.
+    await expect(modal.getByTestId("evt-page-segment-2")).toHaveCount(1);
+    await expect(modal.getByTestId("evt-page-segment-3")).toHaveCount(1);
+    await modal.getByTestId("evt-page-segment-2").click();
+    await settle(page);
+    await expect(page).toHaveScreenshot(`event-page2-${w}.png`);
+    await modal.getByTestId("evt-page-segment-3").click();
+    await settle(page);
+    await expect(page).toHaveScreenshot(`event-page3-${w}.png`);
     await modal.getByTestId("event-command-toolbar-add").first().click();
     await expect(page.getByTestId("event-command-picker")).toBeVisible();
     await settle(page);
@@ -135,7 +154,8 @@ for (const { w, h } of VIEWPORTS) {
 // 그룹 내비는 활성 탭의 그룹만 펼쳐 두고 나머지 탭 버튼은 hidden 이다(applyGroupCollapse). 접힌 그룹의
 // 탭은 바로 앞 형제인 그룹 헤더(db-tab-group-<slug>)를 눌러 펼친 뒤 누른다 — 사용자 경로 그대로.
 async function clickRailTab(page: Page, tab: string) {
-  const nav = page.getByTestId(NAV_TESTID(tab)).first();
+  const nav = page.getByTestId(NAV_TESTID(tab));
+  await expect(nav, `rail button for ${tab}`).toHaveCount(1);
   if (await nav.isHidden()) {
     const slug = await nav.evaluate((node) => {
       let sibling = node.previousElementSibling;
@@ -147,35 +167,33 @@ async function clickRailTab(page: Page, tab: string) {
   await nav.click();
 }
 
-async function navigateDbTab(page: Page, tab: string): Promise<boolean> {
+// 진입 버튼이 없으면 조용히 건너뛰지 않고 실패한다 — 비교 집합이 소리 없이 줄어들면 기준선이 아니다.
+async function navigateDbTab(page: Page, tab: string) {
   const parent = CONTEXT_CHILD[tab];
   if (parent) {
     await clickRailTab(page, parent);
     const child = page.getByTestId(`db-context-${tab}`);
-    if ((await child.count()) === 0) return false;
-    await child.first().click();
-    return true;
+    await expect(child, `context nav for ${tab}`).toHaveCount(1);
+    await child.click();
+    return;
   }
   if (SEARCH_ONLY.has(tab)) {
-    const search = page.getByTestId("db-tab-search");
-    await search.fill(tab.toLowerCase());
+    await page.getByTestId("db-tab-search").fill(tab.toLowerCase());
     const nav = page.getByTestId(NAV_TESTID(tab));
-    if ((await nav.count()) === 0) { await search.fill(""); return false; }
-    await nav.first().click(); // 탭 클릭이 검색 상자를 비우고 보조 버튼을 걷어낸다.
-    return true;
+    await expect(nav, `search result for ${tab}`).toHaveCount(1);
+    await nav.click(); // 탭 클릭이 검색 상자를 비우고 보조 버튼을 걷어낸다.
+    return;
   }
-  if ((await page.getByTestId(NAV_TESTID(tab)).count()) === 0) return false;
   await clickRailTab(page, tab);
-  return true;
 }
 
 test("database tabs 1440x900", async ({ page }) => {
-  test.slow(); // 한 테스트에 36장 — 기본 180s 의 3배.
+  test.slow(); // 한 테스트에 43장 — 기본 180s 의 3배.
   await boot(page, 1440, 900);
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible({ timeout: 30_000 });
   for (const tab of DB_TABS) {
-    if (!(await navigateDbTab(page, tab))) { test.info().annotations.push({ type: "skip-tab", description: tab }); continue; }
+    await navigateDbTab(page, tab);
     await settle(page);
     await expect(page).toHaveScreenshot(`db-${tab}.png`);
   }
