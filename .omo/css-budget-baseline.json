@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-03T09:08:47.557Z",
+  "generatedAt": "2026-09-10T22:42:27.588Z",
   "metrics": {
-    "hexLiterals": 1668,
-    "important": 988,
-    "undefinedVars": 61,
+    "hexLiterals": 1675,
+    "important": 813,
+    "undefinedVars": 59,
     "globalRootFiles": 10,
-    "cssFileCount": 267
+    "cssFileCount": 278
   },
   "details": {
     "hexByFile": {
-      "src/styles/components/app-modal.css": 4,
+      "src/styles/components/app-modal.css": 7,
       "src/styles/components/empty-state.css": 1,
       "src/styles/components/icons.css": 10,
       "src/styles/database/actors.css": 18,
@@ -18,7 +18,7 @@
       "src/styles/database/assistant-composer.css": 1,
       "src/styles/database/assistant-proposal.css": 2,
       "src/styles/database/assistant-rising-overlay.css": 2,
-      "src/styles/database/battle-studio.css": 9,
+      "src/styles/database/battle-studio.css": 7,
       "src/styles/database/core.part-1.css": 13,
       "src/styles/database/core.part-2.css": 2,
       "src/styles/database/curve-editors.css": 1,
@@ -26,18 +26,20 @@
       "src/styles/database/desktop-record-shell/03-class-panels.css": 14,
       "src/styles/database/desktop-record-shell/04-modern-records.css": 4,
       "src/styles/database/desktop-record-shell/05-dense-workbenches.css": 2,
-      "src/styles/database/desktop-record-shell/11-life-authoring.css": 1,
       "src/styles/database/desktop-record-shell/12-spatial-authoring.css": 1,
       "src/styles/database/desktop-record-shell/13-actor-studio.css": 2,
-      "src/styles/database/desktop-record-shell/14-party-ux-fixes.css": 25,
+      "src/styles/database/desktop-record-shell/14-party-ux-fixes.css": 19,
       "src/styles/database/enemies.part-1.css": 2,
-      "src/styles/database/light-theme.css": 22,
+      "src/styles/database/light-theme.css": 20,
+      "src/styles/database/modern/spatial-collections.css": 1,
       "src/styles/database/modern/tilesets.css": 1,
       "src/styles/database/modern/troops.css": 5,
       "src/styles/database/record-list-modern.css": 12,
-      "src/styles/database/sidebar.css": 21,
+      "src/styles/database/sidebar.css": 19,
+      "src/styles/database/spatial-places.css": 9,
+      "src/styles/database/spatial-shell.css": 31,
+      "src/styles/database/spatial-spaces.css": 9,
       "src/styles/database/studio-theme.css": 25,
-      "src/styles/database/system-studio.css": 14,
       "src/styles/database/tabs-a.part-2.css": 3,
       "src/styles/database/tabs-b-assistant-panel/03-three-tier-ia.css": 2,
       "src/styles/database/tabs-b-assistant-panel/04-chat-bubbles-proposals.css": 4,
@@ -47,7 +49,6 @@
       "src/styles/database/tabs-b-assistant-panel/09-ux-polish-density.css": 4,
       "src/styles/database/tabs-b-assistant-panel/10-dock-mode-rich-doc.css": 9,
       "src/styles/database/tabs-b-assistant-panel/12-assistant-temperature.css": 1,
-      "src/styles/database/tabs-b-assistant-panel/13-assistant-modern.css": 1,
       "src/styles/database/tabs-b-status-menu-base.css": 2,
       "src/styles/database/tabs-b-status-menu-main.css": 2,
       "src/styles/database/tabs-b-title-screen.css": 20,
@@ -56,6 +57,7 @@
       "src/styles/database/title-workbench.css": 4,
       "src/styles/dialogue.css": 7,
       "src/styles/editor/core.part-2.css": 18,
+      "src/styles/editor/delayed-tooltip.css": 3,
       "src/styles/editor/event-editor-legacy.part-1.css": 3,
       "src/styles/editor/event-editor-rich-forms/02-rich-gold-badge.css": 11,
       "src/styles/editor/event-editor-rich-forms/03-change-battle-commands-menu.css": 21,
@@ -67,7 +69,7 @@
       "src/styles/editor/event-editor.command-preview/01-event-editor-modern-import.css": 3,
       "src/styles/editor/event-editor.command-preview/02-changeface-play-mock-larger.css": 17,
       "src/styles/editor/event-editor.command-preview/03-ecp-result-screen.css": 16,
-      "src/styles/editor/event-editor.command-preview/04-ecp-variable-stage.css": 47,
+      "src/styles/editor/event-editor.command-preview/04-ecp-variable-stage.css": 46,
       "src/styles/editor/event-editor.command-preview/05-seteventgraphicpattern-charset-frame-stage.css": 15,
       "src/styles/editor/event-editor.command-preview/06-force-full-rm-grid.css": 14,
       "src/styles/editor/event-editor.command-preview/07-actor-battle-authoring-surface.css": 33,
@@ -84,7 +86,7 @@
       "src/styles/editor/event-editor.modernize.css": 47,
       "src/styles/editor/event-editor.p1-pagetabs.css": 6,
       "src/styles/editor/event-editor.part-1.css": 8,
-      "src/styles/editor/event-editor.part-2.css": 32,
+      "src/styles/editor/event-editor.part-2.css": 17,
       "src/styles/editor/event-editor.part-3/02-prevent-parent-auto-fit.css": 2,
       "src/styles/editor/event-editor.part-3/03-event-condition-label.css": 5,
       "src/styles/editor/event-editor.part-3/04-auto-fit.css": 20,
@@ -92,13 +94,13 @@
       "src/styles/editor/event-editor.part-3/07-map-preview-keeps-dark.css": 16,
       "src/styles/editor/event-editor.part-4.css": 4,
       "src/styles/editor/event-marker-tooltip.css": 20,
-      "src/styles/editor/harness-suggestion.css": 80,
+      "src/styles/editor/harness-suggestion.css": 87,
       "src/styles/editor/help-modal.css": 29,
       "src/styles/editor/inline-assist.css": 35,
+      "src/styles/editor/left-sidebar.modern.css": 2,
       "src/styles/editor/map-panel.modern.css": 1,
-      "src/styles/editor/map-props.css": 24,
+      "src/styles/editor/map-props.css": 21,
       "src/styles/editor/palette-player.css": 4,
-      "src/styles/editor/region-task.css": 5,
       "src/styles/editor/responsive-a.css": 16,
       "src/styles/editor/storyboard.css": 3,
       "src/styles/editor/tile-palette-clusters.css": 1,
@@ -140,13 +142,12 @@
       "src/styles/runtime/nameEntry.css": 11,
       "src/styles/runtime/pictures.css": 1,
       "src/styles/runtime/playLoading.css": 7,
-      "src/styles/runtime/playSurface.css": 2,
-      "src/styles/runtime/statusMenuEdgeDock.css": 6,
+      "src/styles/runtime/playSurface.css": 5,
       "src/styles/runtime/timer.css": 1,
       "src/styles/runtime/title.css": 4,
       "src/styles/runtime/touchpad.css": 2,
       "src/styles/runtime/transitions.css": 5,
-      "src/styles/shell/editor-ui-modes.css": 41,
+      "src/styles/shell/editor-ui-modes.css": 38,
       "src/styles/shell/shell-density.part-1.css": 2,
       "src/styles/tokens.css": 25,
       "src/player/player.css": 1
@@ -155,16 +156,13 @@
       "src/styles/database/assistant-command-bar.css": 1,
       "src/styles/database/assistant-rising-overlay.css": 1,
       "src/styles/database/desktop-record-shell/05-dense-workbenches.css": 2,
-      "src/styles/database/desktop-record-shell/11-life-authoring.css": 5,
       "src/styles/database/desktop-record-shell/12-spatial-authoring.css": 6,
-      "src/styles/database/desktop-record-shell/13-actor-studio.css": 3,
       "src/styles/database/dock.css": 11,
-      "src/styles/database/modern/enemies.css": 1,
+      "src/styles/database/modern/spatial-collections.css": 111,
       "src/styles/database/modern/weather-animals.css": 1,
       "src/styles/database/play-resolution.css": 1,
-      "src/styles/database/sidebar.css": 44,
-      "src/styles/database/studio-theme.css": 116,
-      "src/styles/database/system-studio.css": 242,
+      "src/styles/database/sidebar.css": 40,
+      "src/styles/database/studio-theme.css": 84,
       "src/styles/database/tabs-b-assistant-panel/03-three-tier-ia.css": 1,
       "src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css": 2,
       "src/styles/database/tabs-b-assistant-panel/09-ux-polish-density.css": 21,
@@ -174,7 +172,7 @@
       "src/styles/dialogue.css": 1,
       "src/styles/editor/event-editor-rich-forms/02-rich-gold-badge.css": 3,
       "src/styles/editor/event-editor-rich-forms/05-force-modern-actor-page3.css": 9,
-      "src/styles/editor/event-editor.balanced.css": 5,
+      "src/styles/editor/event-editor.balanced.css": 3,
       "src/styles/editor/event-editor.command-preview/01-event-editor-modern-import.css": 2,
       "src/styles/editor/event-editor.command-preview/03-ecp-result-screen.css": 2,
       "src/styles/editor/event-editor.command-preview/04-ecp-variable-stage.css": 4,
@@ -186,12 +184,12 @@
       "src/styles/editor/event-editor.modern/01-event-editor-modal-backdrop.css": 2,
       "src/styles/editor/event-editor.modern/05-changeface-form-selected-card.css": 3,
       "src/styles/editor/event-editor.modern/06-event-editor-modal-footer.css": 1,
-      "src/styles/editor/event-editor.part-2.css": 2,
       "src/styles/editor/event-editor.part-3/01-transfer-player-command-picker.css": 8,
       "src/styles/editor/event-editor.part-3/05-event-command-edit-body.css": 1,
       "src/styles/editor/event-editor.windowing.css": 7,
       "src/styles/editor/region-task.css": 1,
       "src/styles/map/resource-system.part-1.css": 2,
+      "src/styles/resources/resource-manager.css": 6,
       "src/styles/runtime/battle-skins/_battlers.css": 11,
       "src/styles/runtime/battle-skins/_bravely.css": 5,
       "src/styles/runtime/battle-skins/_chrono.css": 3,
@@ -205,7 +203,7 @@
       "src/styles/runtime/battle-skins/_vxace.css": 264,
       "src/styles/runtime/battle-skins/_windowskin.css": 5,
       "src/styles/runtime/title.css": 1,
-      "src/styles/shell/editor-ui-modes.css": 29,
+      "src/styles/shell/editor-ui-modes.css": 28,
       "src/styles/shell/editor-welcome.css": 1,
       "src/styles/shell/figma-editor/03-layout-left-palette.css": 2,
       "src/styles/shell/figma-editor/04-chipset-events.css": 1,
@@ -241,13 +239,11 @@
       "--actor-resource-y",
       "--ai-dock-width",
       "--bg-input",
+      "--bg-subtle",
       "--border-color",
       "--cluster-cols",
       "--db-modern-raised",
       "--db-modern-surface",
-      "--db-studio-accent-muted",
-      "--editor-row-hover",
-      "--editor-surface",
       "--enemy-index",
       "--hover-bg",
       "--ink",
@@ -301,7 +297,8 @@
       ],
       "--accent-subtle": [
         "src/styles/editor/harness-suggestion.css",
-        "src/styles/editor/harness-suggestion.css"
+        "src/styles/editor/harness-suggestion.css",
+        "src/styles/resources/resource-manager.css"
       ],
       "--actor-index": [
         "src/styles/runtime/battle-skins/_rm2000.css"
@@ -334,6 +331,9 @@
       "--bg-input": [
         "src/styles/editor/event-editor.part-3/06-event-command-picker-favorite.css"
       ],
+      "--bg-subtle": [
+        "src/styles/resources/resource-manager.css"
+      ],
       "--border-color": [
         "src/styles/editor/map-props.css",
         "src/styles/editor/map-props.css",
@@ -351,21 +351,10 @@
         "src/styles/database/actors.css",
         "src/styles/database/desktop-record-shell/03-class-panels.css"
       ],
-      "--db-studio-accent-muted": [
-        "src/styles/database/sidebar.css"
-      ],
-      "--editor-row-hover": [
-        "src/styles/editor/region-task.css",
-        "src/styles/editor/region-task.css"
-      ],
-      "--editor-surface": [
-        "src/styles/editor/region-task.css"
-      ],
       "--enemy-index": [
         "src/styles/runtime/battle-skins/_rm2000.css"
       ],
       "--hover-bg": [
-        "src/styles/editor/map-props.css",
         "src/styles/editor/map-props.css"
       ],
       "--ink": [
@@ -387,7 +376,8 @@
         "src/styles/editor/event-editor.p1-graphic.css"
       ],
       "--oprn-border": [
-        "src/styles/database/core.part-1.css"
+        "src/styles/database/core.part-1.css",
+        "src/styles/editor/delayed-tooltip.css"
       ],
       "--oprn-border-dark": [
         "src/styles/database/actors.css",
@@ -457,7 +447,8 @@
       ],
       "--oprn-surface-raised": [
         "src/styles/database/actors.css",
-        "src/styles/database/actors.css"
+        "src/styles/database/actors.css",
+        "src/styles/editor/delayed-tooltip.css"
       ],
       "--oprn-text": [
         "src/styles/database/actors.css",
@@ -479,11 +470,9 @@
         "src/styles/shell/editor-ui-modes.css"
       ],
       "--surface-1": [
-        "src/styles/database/tabs-b-assistant-panel/02-chat-dock.css",
-        "src/styles/editor/ai-settings-modal.css"
+        "src/styles/database/tabs-b-assistant-panel/02-chat-dock.css"
       ],
       "--surface-raised": [
-        "src/styles/editor/map-props.css",
         "src/styles/editor/map-props.css",
         "src/styles/editor/map-props.css"
       ],
@@ -515,7 +504,10 @@
       "src/styles/database/assistant-composer.css",
       "src/styles/database/assistant-proposal.css",
       "src/styles/database/assistant-rising-overlay.css",
+      "src/styles/database/assistant-sticky-checklist.css",
       "src/styles/database/battle-studio.css",
+      "src/styles/database/character-appearances.css",
+      "src/styles/database/character-graphics.css",
       "src/styles/database/core.css",
       "src/styles/database/core.part-1.css",
       "src/styles/database/core.part-2.css",
@@ -543,6 +535,7 @@
       "src/styles/database/enemies.part-1.css",
       "src/styles/database/enemies.part-2.css",
       "src/styles/database/enemies.part-3.css",
+      "src/styles/database/growth-tree.css",
       "src/styles/database/light-theme.css",
       "src/styles/database/modern-controls.css",
       "src/styles/database/modern/crops-characters.css",
@@ -564,6 +557,10 @@
       "src/styles/database/scratch-concept.css",
       "src/styles/database/sidebar.css",
       "src/styles/database/skill-item-visuals.css",
+      "src/styles/database/spatial-geography.css",
+      "src/styles/database/spatial-places.css",
+      "src/styles/database/spatial-shell.css",
+      "src/styles/database/spatial-spaces.css",
       "src/styles/database/states.css",
       "src/styles/database/studio-theme.css",
       "src/styles/database/studio-v2.css",
@@ -586,11 +583,10 @@
       "src/styles/database/tabs-b-assistant-panel/10-dock-mode-rich-doc.css",
       "src/styles/database/tabs-b-assistant-panel/11-autonomous-run-surface.css",
       "src/styles/database/tabs-b-assistant-panel/12-assistant-temperature.css",
-      "src/styles/database/tabs-b-assistant-panel/13-assistant-modern.css",
-      "src/styles/database/tabs-b-assistant-panel/14-assistant-ux-repair.css",
-      "src/styles/database/tabs-b-assistant-panel/15-assistant-readable.css",
-      "src/styles/database/tabs-b-assistant-panel/16-modern-change-first.css",
-      "src/styles/database/tabs-b-assistant-panel/17-assistant-modern-shell.css",
+      "src/styles/database/tabs-b-assistant-panel/18-assistant-deck.css",
+      "src/styles/database/tabs-b-assistant-panel/19-assistant-cards.css",
+      "src/styles/database/tabs-b-assistant-panel/20-team-board.css",
+      "src/styles/database/tabs-b-assistant-panel/21-team-panel.css",
       "src/styles/database/tabs-b-resource-manager.css",
       "src/styles/database/tabs-b-shell-layout.css",
       "src/styles/database/tabs-b-status-menu-base.css",
@@ -602,8 +598,8 @@
       "src/styles/database/tilesets.css",
       "src/styles/database/title-workbench.css",
       "src/styles/database/troops.css",
-      "src/styles/database/troops.part-1.css",
       "src/styles/database/troops.part-2.css",
+      "src/styles/database/village-design.css",
       "src/styles/database/virtual-list.css",
       "src/styles/database/workspace-modern.css",
       "src/styles/database/world-gen.css",
@@ -616,6 +612,7 @@
       "src/styles/editor/core.css",
       "src/styles/editor/core.part-1.css",
       "src/styles/editor/core.part-2.css",
+      "src/styles/editor/delayed-tooltip.css",
       "src/styles/editor/event-editor-ai.css",
       "src/styles/editor/event-editor-follower-preset.css",
       "src/styles/editor/event-editor-help.css",
@@ -679,8 +676,10 @@
       "src/styles/editor/help-modal.css",
       "src/styles/editor/inline-assist.css",
       "src/styles/editor/left-sidebar.modern.css",
+      "src/styles/editor/local-diagnostics.css",
       "src/styles/editor/map-event-search.css",
       "src/styles/editor/map-history.css",
+      "src/styles/editor/map-location-layer.css",
       "src/styles/editor/map-panel.modern.css",
       "src/styles/editor/map-props.css",
       "src/styles/editor/palette-player.css",
@@ -689,7 +688,7 @@
       "src/styles/editor/rule-audit.css",
       "src/styles/editor/storyboard.css",
       "src/styles/editor/tile-palette-clusters.css",
-      "src/styles/editor/village-info.css",
+      "src/styles/editor/walk-encounter.css",
       "src/styles/editor/world-panel.css",
       "src/styles/index.css",
       "src/styles/map/resource-system.css",
@@ -709,6 +708,7 @@
       "src/styles/runtime/battle-skins/_octopath.css",
       "src/styles/runtime/battle-skins/_pokemon.css",
       "src/styles/runtime/battle-skins/_rm2000.css",
+      "src/styles/runtime/battle-skins/_rm2003.css",
       "src/styles/runtime/battle-skins/_transitions.css",
       "src/styles/runtime/battle-skins/_vxace.css",
       "src/styles/runtime/battle-skins/_windowskin.css",
@@ -753,7 +753,6 @@
       "src/styles/runtime/touchpad.css",
       "src/styles/runtime/transitions.css",
       "src/styles/runtime/zoneFeedback.css",
-      "src/styles/shell/editor-responsive-expert.css",
       "src/styles/shell/editor-ui-modes.css",
       "src/styles/shell/editor-welcome.css",
       "src/styles/shell/figma-editor.css",
@@ -770,6 +769,7 @@
       "src/styles/shell/shell-density.css",
       "src/styles/shell/shell-density.part-1.css",
       "src/styles/shell/shell-density.part-2.css",
+      "src/styles/shell/studio-bar.modern.css",
       "src/styles/tokens.css"
     ]
   }

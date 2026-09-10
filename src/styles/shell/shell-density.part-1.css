@@ -282,7 +282,7 @@
   inset: 0;
   justify-content: center;
   position: fixed;
-  /* 이벤트 에디터 모달(2600)보다 낮게, 캔버스 크롬보다 높게. */
+  /* 이벤트 에디터 모달(1000)·서브다이얼로그(--z-popover-high 1200)보다 위, 앱 모달(--z-app-modal 2600)보다 아래. */
   z-index: 2400;
 }
 
