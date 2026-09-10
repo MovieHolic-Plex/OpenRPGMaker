@@ -1,0 +1,128 @@
+{
+  "baseUrl": "http://127.0.0.1:9865",
+  "pageErrors": [],
+  "results": [
+    {
+      "name": "01-trunk-policy",
+      "status": "PASS",
+      "observed": {
+        "policyReason": "받침 있는 하위 — 나무 밑동은 수관(상위)과 같은 칸에 공존해야 하므로 투명해도 하위에 남고, 받침 타일로 투명 픽셀을 채웁니다.",
+        "multiPart": "다중 조각 제약: 나무 수관(260, 261, 262, 263)과 짝을 이룹니다.",
+        "layerNote": "자동 판정: 하위 (투명 배경 칩)",
+        "storeKind": "backedLower"
+      },
+      "screenshot": "01-trunk-policy.png"
+    },
+    {
+      "name": "02-backing-auto",
+      "status": "PASS",
+      "observed": {
+        "backingPressed": {
+          "auto": "true",
+          "none": "false",
+          "tile": "false"
+        },
+        "backingNote": "받침 타일 240 을 함께 그립니다.",
+        "warning": null,
+        "renderBacking": 240
+      },
+      "screenshot": "02-backing-auto.png"
+    },
+    {
+      "name": "03-backing-none-warning",
+      "status": "PASS",
+      "observed": {
+        "backingPressed": {
+          "auto": "false",
+          "none": "true",
+          "tile": "false"
+        },
+        "backingNote": "받침 없음 — 투명 픽셀 아래가 비어 보입니다.",
+        "warning": "⚠ 투명 배경 칩을 받침 없이 하위에 깔면 투명 부분이 검게 보일 수 있습니다.",
+        "policyReason": "투명 하위(받침 없음) — 나무 밑동은 수관(상위)과 같은 칸에 공존해야 하므로 하위에 남지만, 사용자가 받침을 없음으로 확정해 투명 픽셀 아래가 비어 보일 수 있습니다.",
+        "sibling": {
+          "kind": "backedLower",
+          "home": "lower",
+          "backingTile": 240,
+          "renderBacking": 240,
+          "layerHome": "lower",
+          "layerOverride": null,
+          "backingOverride": null,
+          "reason": "나무 밑동은 수관(상위)과 같은 칸에 공존해야 하므로 투명해도 하위에 남고, 받침 타일로 투명 픽셀을 채웁니다."
+        }
+      },
+      "screenshot": "03-backing-none-warning.png"
+    },
+    {
+      "name": "04-review-appears",
+      "status": "PASS",
+      "observed": {
+        "reviewLegend": "배경 없는 하위 타일 검토 (1)",
+        "reviewItems": [
+          290
+        ],
+        "choices": [
+          {
+            "testid": "tileset-review-290-overlay",
+            "label": "상위 오버레이"
+          },
+          {
+            "testid": "tileset-review-290-lowerWithBacking",
+            "label": "하위 + 받침"
+          },
+          {
+            "testid": "tileset-review-290-transparentLower",
+            "label": "투명 하위 유지"
+          },
+          {
+            "testid": "tileset-review-290-auto",
+            "label": "자동 판정"
+          }
+        ]
+      },
+      "screenshot": "04-review-appears.png"
+    },
+    {
+      "name": "05-backing-grass",
+      "status": "PASS",
+      "observed": {
+        "backingPressed": {
+          "auto": "false",
+          "none": "false",
+          "tile": "true"
+        },
+        "backingNote": "받침 타일 240 을 함께 그립니다.",
+        "warning": null,
+        "reviewLegend": null
+      },
+      "screenshot": "05-backing-grass.png"
+    },
+    {
+      "name": "06-review-overlay-one",
+      "status": "PASS",
+      "observed": {
+        "moved": {
+          "tile": 290,
+          "before": "lower",
+          "after": "upper",
+          "kind": "transparentOverlay"
+        },
+        "untouched": {
+          "291": {
+            "home": "lower",
+            "backing": 240
+          },
+          "292": {
+            "home": "lower",
+            "backing": 240
+          },
+          "293": {
+            "home": "lower",
+            "backing": 240
+          }
+        }
+      },
+      "screenshot": "06-review-overlay-one.png"
+    }
+  ]
+}

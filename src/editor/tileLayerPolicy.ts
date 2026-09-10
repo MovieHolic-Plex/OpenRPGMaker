@@ -75,9 +75,7 @@ export function tileLayerPolicy(tileset: TilesetDef, tile: number): TileLayerPol
       backingTile: backing,
       multiPart: { partnerLabel: "나무 수관", partnerTiles: CANOPY_TILES },
       source: override ? "user" : "harness",
-      reason: override
-        ? `사용자가 ${override === "lower" ? "하위" : "상위"}로 확정했습니다. 밑동은 수관과 같은 칸에 겹치므로 레이어를 바꾸면 숲 합성이 달라집니다.`
-        : "나무 밑동은 수관(상위)과 같은 칸에 공존해야 하므로 투명해도 하위에 남고, 받침 타일로 투명 픽셀을 채웁니다.",
+      reason: trunkReason(tileset, tile, home, backing, override),
     };
   }
 
@@ -130,6 +128,30 @@ export function tileLayerPolicy(tileset: TilesetDef, tile: number): TileLayerPol
       ? "투명 칩을 하위에 두되 받침이 없습니다 — 투명 부분 아래가 비어 보일 수 있습니다(의도적 선택)."
       : `투명 칩을 하위에 두고 받침 타일 ${backing} 을 함께 그립니다.`,
   };
+}
+
+/**
+ * 밑동의 근거 문장. 받침을 "없음"으로 확정하면 부류가 `transparentLower` 로 바뀌는데,
+ * 근거만 "받침 타일로 투명 픽셀을 채웁니다" 로 고정되어 바로 위 경고("받침 없이 하위에
+ * 깔면 투명 부분이 검게 보일 수 있습니다")와 정면으로 모순됐다
+ * (브라우저 실측 2026-09-10, verify-shots/oprn-026/03-backing-none-warning.png).
+ */
+function trunkReason(
+  tileset: TilesetDef,
+  tile: number,
+  home: TileLayerHome,
+  backing: number | null,
+  override: "lower" | "upper" | null,
+): string {
+  if (override) {
+    return `사용자가 ${override === "lower" ? "하위" : "상위"}로 확정했습니다. 밑동은 수관과 같은 칸에 겹치므로 레이어를 바꾸면 숲 합성이 달라집니다.`;
+  }
+  if (home !== "upper" && backing === null) {
+    return userTileBackingOverride(tileset, tile) === "none"
+      ? "나무 밑동은 수관(상위)과 같은 칸에 공존해야 하므로 하위에 남지만, 사용자가 받침을 없음으로 확정해 투명 픽셀 아래가 비어 보일 수 있습니다."
+      : "나무 밑동은 수관(상위)과 같은 칸에 공존해야 하므로 하위에 남지만, 받침이 없어 투명 픽셀 아래가 비어 보일 수 있습니다.";
+  }
+  return "나무 밑동은 수관(상위)과 같은 칸에 공존해야 하므로 투명해도 하위에 남고, 받침 타일로 투명 픽셀을 채웁니다.";
 }
 
 // 편집기 미리보기와 런타임 렌더러가 같은 받침 답을 쓰도록 이 함수 하나만 부른다.

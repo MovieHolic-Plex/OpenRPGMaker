@@ -63,6 +63,22 @@ describe("tileLayerPolicy — 다섯 부류", () => {
     expect(tileBackingTile(tileset, CONIFER_TRUNK)).toBeNull();
   });
 
+  // 브라우저 실측(2026-09-10, verify-shots/oprn-026/03-backing-none-warning.png): 규칙 탭이
+  // 「투명 하위(받침 없음)」 부류와 함께 "받침 타일로 투명 픽셀을 채웁니다" 근거를 같이 띄워
+  // 바로 위 경고와 모순됐다. 근거는 실제 받침 결과를 말해야 한다.
+  it("받침을 없음으로 확정한 밑동의 근거는 받침이 채운다고 말하지 않는다", () => {
+    const tileset = defaultTileset();
+    setTileBackingOverride(tileset, CONIFER_TRUNK, "none");
+    const policy = tileLayerPolicy(tileset, CONIFER_TRUNK);
+    expect(policy.reason).not.toContain("받침 타일로 투명 픽셀을 채웁니다");
+    expect(policy.reason).toContain("비어 보일 수 있습니다");
+  });
+
+  it("받침이 살아 있는 밑동의 근거는 여전히 받침 합성을 설명한다", () => {
+    const policy = tileLayerPolicy(defaultTileset(), CONIFER_TRUNK);
+    expect(policy.reason).toContain("받침 타일로 투명 픽셀을 채웁니다");
+  });
+
   it("사용자가 받침 타일을 지정하면 그 타일이 받침이 된다", () => {
     const tileset = defaultTileset();
     setTileBackingOverride(tileset, CONIFER_TRUNK, TILE.PATH);
