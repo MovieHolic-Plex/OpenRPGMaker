@@ -22,13 +22,6 @@ export interface VerificationRequirement {
   readonly ownerId: string;
   readonly name: string;
   readonly args: Record<string, unknown> | null;
-  /**
-   * `args === null` 인 이유. 두 사건을 한 표현으로 담으면 안 된다:
-   * `"omitted"` = 플래너가 선언 자체를 빼먹은 계획의 공백(진단만, 완료를 막지 않는다).
-   * `"malformed"` = 선언은 했는데 스코프가 파싱되지 않은 것 — 이건 계속 차단해야 한다.
-   * 막지 않으면 malformed 스코프가 **무관한 통과 기준에 얹혀** 통과로 집계된다.
-   */
-  readonly pendingReason?: "omitted" | "malformed";
   readonly criterion?: VerificationCriterionRef;
   readonly acceptedCriterion?: AcceptanceCriterion;
   /** Host declaration provenance; user-refined executable criteria are not amendable. */
@@ -470,14 +463,15 @@ export class ToolVerificationEvidence {
   }
 
   passed(name: string, checkIds?: readonly string[], ownerId?: string): boolean {
-    // 스펙 미지정(args === null)은 **계획의 공백**이지 검증 실패가 아니다. 이전 구현은 pending 이
-    // 하나라도 있으면 every() 를 무조건 false 로 만들어, 실제로 통과한 run_lint·check_reachability 가
-    // 영구히 미통과로 집계됐다(assistantSession 이 성공 기록을 지움 → 완료 게이트 영구 거부).
-    // pending 은 판정에서 제외하고, 남은 판단은 아래 attempts 분기가 현재 revision 기준으로 한다.
+    // 스펙 미지정(args === null)을 여기서 제외하면 안 된다. 형제 하나가 통과했다고 미지정 선언이
+    // 함께 만족되면, 선언만 해두고 지정하지 않은 검증이 조용히 완료로 넘어간다 —
+    // verificationRouteDeclaration·verificationNativeScopes·verificationPlanAtomicity 가 지키는 성질.
+    // 2026-09-10 로그의 complete_work_item 영구 거부는 이 게이트가 아니라 **탈출 경로 미고지** 탓이다:
+    // 미지정은 set_work_plan 재선언({checkId, args})으로만 해소되는데 그 사실이 어디에도 없었다.
+    // 그 고지는 problems() 문구가 담당한다.
     const states = [...this.requirements.values()].filter(state => !state.inactive && state.requirement.name === name
-      && (state.requirement.args !== null || state.requirement.pendingReason === "malformed")
       && (checkIds === undefined || checkIds.includes(state.requirement.checkId)));
-    if (states.length) return states.every(state => state.pass && !state.stale && state.criterionPassed)
+    if (states.length) return states.every(state => state.requirement.args !== null && state.pass && !state.stale && state.criterionPassed)
       && ![...this.findings.values()].some(f => !this.resolved(f) && f.name === name && (checkIds === undefined || states.some(s => s.requirement.ownerId === f.ownerId)));
     return ![...this.findings.values()].some(f => !this.resolved(f) && f.name === name && (ownerId === undefined || f.ownerId === ownerId))
       && this.attempts.some(attempt => attempt.name === name && attempt.status === "passed" && attempt.revision === this.revision && (ownerId === undefined || attempt.ownerId === ownerId));
@@ -500,15 +494,14 @@ export class ToolVerificationEvidence {
         .flatMap(f => f.verdict.blockingIssues.map(issue => `${f.name}: ${issue} [${f.checkId}]`)),
       ...[...this.requirements.values()].flatMap(({ requirement, pass, stale, criterionPassed, inactive }) => {
         if (inactive) return [];
-        // 스펙 미지정은 진단으로만 노출한다. blocking 으로 세면 해소 경로가 set_work_plan 하나뿐인데
-        // 그 입력은 배열 원자 거부라 모델이 좌표를 못 잡아 턴이 영구히 끝나지 않는다.
+        // 스펙 미지정은 **계획의 공백**이므로 계속 blocking 이다 — 선언만 해두고 지정하지 않은 검증이
+        // 조용히 "verified" 로 넘어가면 승인 원장이 거짓이 된다. 다만 실행으로는 절대 해소되지 않으므로
+        // (observe 의 matching 은 args !== null 만 고른다) 유일한 해소 경로를 문구에 명시한다.
+        // 이 문구가 없던 동안 모델은 무엇을 지정해야 하는지 몰라 같은 검증만 반복 실행했다.
         if (requirement.args === null) {
-          if (requirement.pendingReason === "malformed") {
-            return [`${requirement.name}: verificationChecks 스코프가 malformed — {checkId, args} 를 다시 지정하세요 [${requirement.checkId}]`];
-          }
-          return scope === "all"
-            ? [`${requirement.name}: pending specification — set_work_plan 의 verificationChecks 에 {checkId, args} 로 지정하세요 [${requirement.checkId}]`]
-            : [];
+          return [`${requirement.name}: 검증 스펙 미지정 — set_work_plan 의 verificationChecks 에`
+            + ` {checkId:"${requirement.checkId}", args:{…}} 로 지정하세요 (실행만으로는 해소되지 않습니다)`
+            + ` [${requirement.checkId}]`];
         }
         const problem = stale ? "변경 후 재검증 필요" : !pass || !criterionPassed ? "필수 검증 미통과" : null;
         return problem ? [`${requirement.name}: ${problem} [${requirement.checkId}]`] : [];

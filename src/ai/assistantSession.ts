@@ -1409,11 +1409,8 @@ export class AssistantSession {
           || binding.mapId === undefined || item.mapTargets.includes(binding.mapId)));
         const declarations = (item.verificationChecks ?? []).filter(check => check.tool === name);
         if (criteria.length && !declarations.length && !malformedItems.has(item.id)) { checkIds.push(...criteria.map(binding => binding.checkId)); continue; }
-        // malformed 선언은 계획의 공백이 아니라 잘못 쓴 스코프다. 구분해서 심지 않으면
-        // 완료 게이트가 그것을 진단으로만 보고 무관한 통과 기준에 얹혀 통과시킨다.
-        const pendingReason = malformedItems.has(item.id) ? "malformed" as const : "omitted" as const;
         const adoptPending = (checkId: string) => {
-          this.verificationEvidence.adopt({ checkId, ownerId, name, args: null, pendingReason, mapTargets: item.mapTargets ?? undefined });
+          this.verificationEvidence.adopt({ checkId, ownerId, name, args: null, mapTargets: item.mapTargets ?? undefined });
           checkIds.push(checkId);
         };
         if (!declarations.length) adoptPending(`${ownerId}:${name}:pending`);
