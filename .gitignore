@@ -34,6 +34,7 @@ dist/
 !.omo/evidence/oprn-022/
 !.omo/evidence/oprn-024/
 !.omo/evidence/oprn-026/
+!.omo/evidence/loc-adopt/
 !.omo/rules/
 !.omo/rules/**
 artifacts/

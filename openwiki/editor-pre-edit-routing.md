@@ -152,6 +152,32 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
   `MAP_LOCATION_QA_URL=http://127.0.0.1:<포트> node scripts/qa/map-location-layer.mjs`
   → `verify-shots/oprn-020/SUMMARY.md`.
 
+### 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
+
+빌더 `layoutPlan.regions` 를 명명 로케이션으로 **일괄** 옮기는 창. OPRN-OUT-020 이 미뤄 뒀던
+항목이고, 자동 승격은 여전히 없다 — 사람이 보고 고르는 수단이 생겼을 뿐이다.
+
+- 소유 파일: 순수 규칙 `src/project/mapLocationAdoption.ts`, 상태 `src/editor/mapLocationAdoptionState.ts`,
+  창 `src/editor/panels/mapLocationAdoptionPanel.ts`, 조수 툴 `src/editor/tools/mapLocationTools.ts`
+  (`survey_layout_adoption` → `adopt_layout_regions`). 계약 원본은
+  `openwiki/runtime-project-schema.md` 의 「명명 로케이션 레이어」 절.
+- **여기에 「전부 승격」 버튼을 다시 만들지 마라.** 로케이션 레이어 인스펙터에 있던 «이 맵 전부
+  한 방에» 버튼은 무엇이 생기는지 보여 주지 않아 되돌리기 전에는 검토가 불가능했다. 그 자리에는
+  이 맵의 조사 한 줄(`map-location-adopt-survey`)과 창을 여는 버튼만 남겼다
+  (testid `map-location-adopt-regions` 는 유지 — 진입점의 자리는 같다).
+- **기본 역할을 넓히려면 근거를 코드에서 가져와라.** `DEFAULT_ADOPTION_ROLES` 는 `plaza`/`market`
+  이고, `house` 를 넣으면 한 마을에 사용자-가시 이름 20~40개가 한꺼번에 생긴다
+  (`houseProtection.ts:53`, `villageEvaluate.ts:704` 가 그 낱말을 시공 사실로 읽는다).
+- **되돌림 함정(실측):** 무변경 실행에서도 `recordProjectSnapshot` 을 부르면 두 번째로 누른
+  사용자의 Ctrl+Z 가 **빈 스냅샷**으로 가서 승격이 남는다. `runAdoption` 은 복제본으로 먼저
+  예행하고 no-op 이면 스냅샷을 밀지 않는다. 비슷한 «확인용 재실행» 이 있는 행위는 같은 걸 하라.
+- 창은 `document.body` 에 붙으므로 반드시 `registerModal`/`unregisterModal` 을 짝지어 쓴다
+  (`test/modalEscapeLayerGate.test.ts` 가 강제한다).
+- 브라우저 QA: `DEV_SERVER_PORT=<포트> npm run dev:worktree` 뒤
+  `ADOPTION_QA_URL=http://127.0.0.1:<포트> node scripts/qa/map-location-adoption.mjs`
+  → `verify-shots/loc-adopt/SUMMARY.md`. **포트를 명시로 넘겨라** — dev 스크립트가
+  node_modules 정션을 통해 본 저장소의 `.env.local` 을 읽을 수 있다.
+
 ### Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
 
 - Standard `mapTree=false` means a focused, always-mounted tile/event task host,
