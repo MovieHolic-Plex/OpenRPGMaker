@@ -1,3 +1,4 @@
+import { LOCATION_TRANSITION_TRIGGER_LABEL } from "@/editor/locationTriggerAuthoring";
 import type { Command, Condition, EventAnimationType, EventPage, Project, Trigger } from "@/project/types";
 
 export function collectNpcActivitySuggestions(project: Project): readonly string[] {
@@ -32,6 +33,9 @@ export const TRIGGER_OPTIONS = [
   { value: "eventTouch", label: "이벤트가 닿으면" },
   { value: "auto", label: "나타나면 바로 실행" },
   { value: "parallel", label: "뒤에서 계속 실행" },
+  // 구역(로케이션) 드나듦. 이 하나만 추가 필드(구역 · 들어옴/나감)를 갖고,
+  // 그 필드 DOM 은 `editor/locationTriggerAuthoring.ts` 가 소유한다.
+  { value: "locationTransition", label: LOCATION_TRANSITION_TRIGGER_LABEL },
 ] as const satisfies readonly SelectOption<EventEditorTriggerKind>[];
 
 export const COMMAND_KIND_OPTIONS = [

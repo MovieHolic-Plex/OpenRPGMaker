@@ -22,6 +22,33 @@
   `test/conditionEvaluatorParity.test.ts`(페이지·맵 fork·전투 세 표면 일치),
   `test/commandKindCoverage.test.ts`(shape 왕복).
 
+## 구역 드나듦 트리거 (2026-09-10)
+
+「시작 방식」 선택기의 **「구역에 드나들면」**(`{ kind:"locationTransition", locationId, transition }`).
+OPRN-OUT-020 이 미뤄 둔 enter/leave 이고, 제품 책임자 승인 후 **기존 트리거 유니온과 기존
+디스패치**를 확장했다(새 스케줄러 없음). 런타임 계약·경계 사례는
+`openwiki/runtime-project-schema.md` 의 「구역 드나듦 트리거」 절이 소유한다.
+
+- 고르면 그 아래에 구역·시점 선택기가 붙는다(`event-page-trigger-location`,
+  `event-page-trigger-location-transition`). **구역은 이름으로 고른다 — 좌표 입력칸이 없다.**
+  사각형은 로케이션 레이어가 소유하고 트리거는 ID 만 저장하므로 이름을 바꿔도 참조가 살아 있다.
+- 표면의 집은 `src/editor/locationTriggerAuthoring.ts` 하나다. 끊긴 참조 문구는 이미 있던
+  `mapLocationLabels`(`insideLocationSentence` 와 같은 규칙)를 재사용한다 — 같은 사실을 두 낱말로
+  말하지 않는다. 호버 카드 라벨도 구역 이름을 담은 문장을 쓴다(「구역」만 적으면 어느 구역인지
+  안 보인다).
+- **끊긴 참조는 조건과 같은 통로다.** 선택기에서 사라지지 않고 「(삭제된 로케이션 …)」 항목으로
+  남고(조용히 다른 구역으로 갈아치우면 사고가 데이터에 굳는다), `eventDraftValidator` 가
+  `page.trigger.location-missing`(error, field `event-page-trigger-location`)으로 적용/테스트를
+  막고, `projectLint` 가 `map-location-missing-ref` 로 올린다. 복구
+  (`repairMapLocationReferences`)의 `detach` 는 시작 방식을 **`action` 으로 강등**한다 —
+  `auto` 로 강등하면 맵 진입마다 멋대로 돌고, 명령을 지우면 저작이 사라진다.
+- `triggerFromKind` 는 이제 `SimpleTriggerKind`(매개변수 없는 종류)만 받는다. 이 트리거를
+  `{ kind }` 만으로 지으면 서란된 데이터가 되므로 타입으로 막았고, 생산기는
+  `locationTransitionTrigger`(이전 값 보존 + 첫 구역 기본값) 하나다.
+- 회귀: `test/locationTransitionAuthoring.test.ts`(12건, 실제 DOM — 선택 가능성·이름 목록·
+  ID 안정성·구역 없는 맵 안내·삭제된 구역 항목·검증기 차단),
+  `test/locationTransitions.test.ts`(진단·복구), 브라우저 증거 `verify-shots/loc-transition/`.
+
 ## Native battle confirmation admission (2026-09-08)
 
 `commandEditDialog.ts` validates native battle commands before its button-based

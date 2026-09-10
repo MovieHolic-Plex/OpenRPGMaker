@@ -1,7 +1,7 @@
 // emberQuestGame.ts — 《잿불의 유산》: 에디터 기능 시연용 소형 완성 RPG.
 // 구성: 맵 5개 / 주인공 1명 / NPC 12명 / 몬스터 5종 / 아이템 8종 / 퀘스트 3개 / 고정 전투 5회 + 엔딩.
 import { PRODUCT_BRAND } from "@/brand";
-import type { ActorParameterCurves, Command, EnemyStats, EventPage, GameEvent, GameMap, Project } from "../types";
+import type { ActorParameterCurves, Command, EnemyStats, EventPage, GameEvent, GameMap, Project, SimpleTriggerKind } from "../types";
 import { SCHEMA_VERSION } from "../types";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { dropCropsWithMissingItems, normalizeItemRecord, normalizeTroopRecord } from "../databaseRecordModel";
@@ -847,7 +847,7 @@ function transfer(mapId: string, x: number, y: number): Command {
   return { kind: "transfer", mapId, x, y, fade: "black" };
 }
 
-function event(id: string, x: number, y: number, pages: readonly EventPage[], trigger: GameEvent["trigger"]["kind"] = "action"): GameEvent {
+function event(id: string, x: number, y: number, pages: readonly EventPage[], trigger: SimpleTriggerKind = "action"): GameEvent {
   return { id, x, y, trigger: { kind: trigger }, commands: [], pages: pages.map((entry) => ({ ...entry, trigger: { kind: trigger } })) };
 }
 

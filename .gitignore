@@ -34,7 +34,10 @@ dist/
 !.omo/evidence/oprn-022/
 !.omo/evidence/oprn-024/
 !.omo/evidence/oprn-026/
+!.omo/evidence/balt-parity/
+!.omo/evidence/chipset-transparency/
 !.omo/evidence/loc-adopt/
+!.omo/evidence/loc-transition/
 !.omo/rules/
 !.omo/rules/**
 artifacts/
@@ -260,7 +263,13 @@ verify-shots/battle-skin-trio/
 !.omo/evidence/oprn-022/
 !.omo/evidence/oprn-022/**
 
+<<<<<<< HEAD
 # bAlt/aAlt 패리티 별도 리뷰 — 재현·판정 근거 (st_01a08ac6). OPRN-OUT-017 이 미뤄 둔 항목이
 # 실제 결함이었다는 증거라, 확장기 변경과 같이 리뷰돼야 한다.
 !.omo/evidence/balt-parity/
 !.omo/evidence/balt-parity/**
+=======
+# 구역 드나듦 트리거(locationTransition) 수용 근거. `evidence/` 규칙이 다시 잡으므로 여기서 예외.
+!.omo/evidence/loc-transition/
+!.omo/evidence/loc-transition/**
+>>>>>>> agent/loctrans

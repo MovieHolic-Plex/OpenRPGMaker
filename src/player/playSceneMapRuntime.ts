@@ -25,7 +25,8 @@ import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { store } from "@/project/store";
-import type { MapId, TilesetDef } from "@/project/types";
+import type { MapId, TilesetDef, Trigger } from "@/project/types";
+import { drainPendingLocationTransitions } from "@/player/playSceneLocationTransitions";
 import { applyStoredCameraState } from "@/player/playSceneCamera";
 import {
   CUTSCENE_HUD_HIDDEN_CLASS,
@@ -552,7 +553,7 @@ export function resetMapRuntime(scene: PlaySceneContext): void {
 
 export function activeRuntimeEvents(
   scene: PlaySceneContext,
-  triggerKind: "action" | "touch" | "playerTouch" | "eventTouch" | "auto" | "parallel"
+  triggerKind: Trigger["kind"]
 ): RuntimeEventView[] {
   return runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
     .filter((event) => event.trigger.kind === triggerKind
@@ -667,6 +668,11 @@ export function refreshRuntimeSurfaces(scene: PlaySceneContext): void {
   scene.renderTiles();
   scene.registerPageMoveRoutes();
   syncScreenEffects(scene);
+  // 이벤트가 끔나는 자리다 — 그 이벤트 안에서 난 구역 드나듦(문을 밟은 장소 이동이
+  // 대표적이다)은 running 이라 밀려 있다. 자동 트리거보다 **먼지** 돌린다:
+  // «어떤 구역에 들어왔는가» 가 도착 맵 전역 연출보다 국지적이고, 자동 이벤트가 먼지 돌아
+  // running 을 썼으면 드나듦이 또 밀린다.
+  drainPendingLocationTransitions(scene);
   void fireAutoTriggers(scene);
 }
 
@@ -679,6 +685,7 @@ export function refreshRuntimeEntities(scene: PlaySceneContext): void {
   scene.registerPageMoveRoutes();
   syncScreenEffects(scene);
   rebindEventFollowCamera(scene);
+  drainPendingLocationTransitions(scene);
   void fireAutoTriggers(scene);
 }
 

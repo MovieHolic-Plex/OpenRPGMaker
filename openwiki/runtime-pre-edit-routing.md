@@ -8,6 +8,19 @@
   (`playSceneInterpreter`)과 병렬(`playSceneSchedulers`) **양쪽**에 있어야 한다.
   `MoveRoute.skippable` 은 개별 루트 단계용이라 재사용하지 않았다(사유는 M2 페이지).
   상세: `openwiki/runtime-m2-flow-controls.md`.
+- **구역 드나듦 트리거는 걸음 완료·순간이동·이벤트 종료 세 지점에서만 판정한다 (2026-09-10):**
+  `{ kind:"locationTransition", locationId, transition }`. 판정의 집은
+  `src/project/locationTransitions.ts` 하나이고 「안에 있는가」의 시간 미분이다 — 두 번째
+  내부/외부 규칙을 만들면 `insideLocation` 조건과 답이 갈린다. 배선은
+  `src/player/playSceneLocationTransitions.ts`: 걸음 완료(`advancePlayerStepFrame` 의 칸 확정
+  직후, 접촉 트리거 앞), 순간이동 완료(`transferTo`, 자동 트리거 앞), 이벤트 종료 후 재개
+  (`refreshRuntimeSurfaces`). **세 번째가 없으면 문(playerTouch)으로 구역에 들어가는 저작이
+  조용히 죽는다** — `transferTo` 가 문 이벤트의 인터프리터 안에서 불려 `scene.running` 이
+  참이고 `runEvent` 가 즉시 되돌아 나온다(브라우저 실측). 밀린 것은 **이벤트 id** 로 큐에
+  담고(사건으로 담으면 나중 해석 시점의 페이지 조건이 반응 대상을 지운다) 상한 8로 자른다.
+  점유 기록(`session.occupiedLocationIds`, ID 만·optional)은 큐와 무관하게 즉시 갱신한다.
+  새 스케줄러를 만들지 마라 — 이 트리거는 auto 와 같은 «사건 하나» 성질이다. 계약 전문은
+  `openwiki/runtime-project-schema.md` 의 「구역 드나듦 트리거」 절.
 - **이벤트 명령 실동작 검토 (2026-09-05):** `docs/reviews/2026-09-05-event-runtime-audit.md`. 「철수의 기억」에서 강제 NPC 방향 전환이 `scene.running` 게이트에 막혀 30초 뒤에야 다음 명령으로 진행됐다. `updatePlayScene`은 NPC 업데이트를 호출하고 `updateAutonomousNPCs`가 대화 중 **명령 루트만** 허용한다. 배경 자율 이동과 병렬 이벤트는 기존 설정대로 정지한다. 직접 NPC updater만 호출하는 테스트로는 이 배선 결함을 잡지 못하므로 `test/runtimeMovementStability.test.ts`의 실제 프레임 디스패치 회귀를 유지한다. 저장된 M2 대화 설정의 강제 기본값 초기화도 수정했다(`test/persistedMessageSettings.test.ts`). `Wait Until`, `Pathfind Move`, 메뉴/로드 화면, 좌표 ID 조회, 저장된 M2 영화 명령의 후속 미구현·오연결도 수정했다. 실행 계약과 제한은 `openwiki/runtime-m2-flow-controls.md`의 2026-09-05 항목을 따른다. 카탈로그 배지나 최종 종료만으로 전체 명령을 검증했다고 보고하지 않는다.
 - **실내 화로 불 애니메이션:** `src/editor/tilesetImage.ts`의 `supportsChipsetTileAnimation(tileset,tile)`이 기존 마을 애니메이션과 실내 불 스트립 124/154/184/214만 허용한다. 플레이어 `playSceneMapRuntime.renderTile`과 편집기 `chipsetTileRender.createRawTileObject`가 공통 조건을 쓴다. `isDefaultTilesetTexture`를 넓히면 실내에 마을 길/나무 규칙까지 적용되므로 바꾸지 않는다. `stone_hearth_unlit`의 463은 정지, `stone_hearth_lit`의 아래 가운데 124는 4fps이다. `test/interiorFireRendering.test.ts`는 양 레이어의 실제 렌더 경로를 검사한다.
 - **Shipping pointer-exclusion contract (2026-08-28):** `.player-layout[data-play-input-owner="keyboard-only"]` is keyboard-only regardless of `navigator.webdriver`. The capture blocker rejects mouse, pointer, touch, wheel, context-menu, drag, selection, auxiliary, and native trusted-click channels; Phaser mouse/touch managers are disabled. The root prevents selection, dragging, canvas hit testing, browser scroll, and autoscroll. Exactly two pointer owners exist: `[data-play-input-owner="touch-controls"]`, mounted only by explicit `VITE_TOUCH_CONTROLS` / `OPENRPG_PLAYER_TOUCH_CONTROLS`, and `[data-play-input-owner="host-fullscreen"]`, mounted only when `hostFeatures` advertises fullscreen. Ownership never escapes those subtrees, and keyboard-only runtime content has no native `title` tooltips.

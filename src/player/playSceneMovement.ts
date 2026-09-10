@@ -43,6 +43,7 @@ import type { RuntimeDomOverlay } from "@/player/runtimeDom";
 import type { FarmInteractionResult } from "@/player/farming";
 import { farmIntentForHand, interactWithFarmPlot, farmIgnoreMessage } from "@/player/farming";
 import { showFarmFeedbackMessage } from "@/player/playSceneZoneFeedback";
+import { fireLocationTransitionTriggers } from "@/player/playSceneLocationTransitions";
 import { interactWithLifeField } from "@/player/lifeFieldInteraction";
 import { diagnosticObserved, publishDiagnostic } from "@/util/diagnosticObserver";
 import { tryChestInteraction } from "@/player/playSceneChest";
@@ -221,6 +222,11 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
       scene.playerHop = null;
     }
     syncFollowerSprites(scene);
+    // 구역 드나듦은 **걸음이 끝난 직후**의 칸 하나에서 판정한다 — 보간 중인 사이값에서
+    // 하면 같은 걸음에서 경경를 여러 번 가로지른 것으로 세어진다. 접촉 트리거보다 먼지
+    // 부를 이유는 없지만, 접촉 트리거가 running 을 썼으면 드나듦은 기록만 남기고
+    // 생략되므로 이 순서를 명시해 둔다(자리가 바뀌면 생략 대상이 바뀐다).
+    fireLocationTransitionTriggers(scene);
     fireTouchTriggers(scene);
     maybeTriggerRandomEncounter(scene);
     return;

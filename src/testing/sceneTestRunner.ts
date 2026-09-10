@@ -59,6 +59,14 @@ import {
   type FieldSpawnRuntimeState,
 } from "@/player/fieldSpawns";
 import { firesOnPlayerCollision, PLAYER_COLLISION_TRIGGER_KINDS } from "@/project/eventTouchRules";
+import {
+  beginLocationOccupancyOnMap,
+  leaveAllLocationsOnMap,
+  seedLocationOccupancy,
+  triggerMatchesTransition,
+  updateLocationOccupancy,
+  type LocationTransition,
+} from "@/project/locationTransitions";
 import { nearestCellInRect, pointRect, rectsOverlap } from "@/project/footprint";
 import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
 import { roguelikeRoomId, syncRoguelikeRoomEventGeneration } from "@/project/roguelikeRooms";
@@ -506,6 +514,12 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
     rewardBaseline: { gold: session.gold, inventory: { ...session.inventory }, monsters: ownedMonsterCounts(session) },
   };
   initializeFieldSpawnsForRunner(state);
+  // 시작 지점의 구역 점유는 기준선만 심는다 — 장면 테스트가 시작하는 순간을
+  // «구역 진입» 으로 치면 start 좌표를 구역 알에 놓는 모든 테스트가 예상 밖의 이벤트를 맞는다.
+  {
+    const startMap = currentMap(state);
+    if (startMap) seedLocationOccupancy(state.session, startMap, { x: state.session.x, y: state.session.y });
+  }
   syncFollowCamera(state);
   applyNpcSchedulesForRunner(state);
   refreshChasers(state);
@@ -656,6 +670,9 @@ function movePlayerOneStep(state: RunnerState, x: number, y: number): string | n
   state.session.y = y;
   recordFollowerPlayerStep(state.session, { ...previous, direction: state.facing });
   syncFollowCamera(state);
+  // 섬하는 경로와 같은 순서: 드나듦 → 접촉 → 인카운터.
+  const transition = fireLocationTransitionsForRunner(state);
+  if (transition) return transition;
   const touch = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y, PLAYER_COLLISION_TRIGGER_KINDS);
   if (touch) return runEventView(state, touch);
   return maybeTriggerRandomEncounterForRunner(state);
@@ -671,6 +688,8 @@ function movePlayerToReachableTarget(state: RunnerState, x: number, y: number): 
   state.session.y = y;
   recordFollowerPlayerStep(state.session, { ...previous, direction: state.facing });
   syncFollowCamera(state);
+  const transition = fireLocationTransitionsForRunner(state);
+  if (transition) return transition;
   const touch = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y, PLAYER_COLLISION_TRIGGER_KINDS);
   if (touch) return runEventView(state, touch);
   return maybeTriggerRandomEncounterForRunner(state);
@@ -1024,6 +1043,13 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         if (state.rewardProof && state.rewardProof.report.phase !== "prelude") return { stop: "failed", reason: "Protected transfer" };
         if (state.rewardProof && step.direction && step.direction !== "retain") state.facing = step.direction;
         state.lastTransfer = state.executingEventId ? { fromMapId: state.session.currentMapId, eventId: state.executingEventId, toMapId: step.mapId } : undefined;
+        {
+          // 순간이동은 산법 맵의 점유를 통째로 leave 로 낸다(실하 경로와 같은 산법).
+          // 이 leave 는 산법 맵 이벤트가 받아야 하므로 맵을 바꾸기 전에 돌린다.
+          const left = leaveAllLocationsOnMap(state.session, state.session.currentMapId);
+          const failure = runLocationTransitionTriggersForRunner(state, left);
+          if (failure) return { stop: "failed", reason: failure };
+        }
         state.session.currentMapId = step.mapId;
         state.session.x = step.x;
         state.session.y = step.y;
@@ -1045,6 +1071,13 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
           if (landingFailure) return { stop: "failed", reason: landingFailure };
         }
         state.autoStartedKeys.clear();
+        {
+          // 도착 지점의 구역 진입은 자동 트리거보다 먼지 돌린다(실하 경로와 같은 우선순위).
+          // 기록이 없는 맵은 첫 판정이 seed 로 떨어지므로 도착 기준선을 먼지 열어 둔다.
+          beginLocationOccupancyOnMap(state.session, state.session.currentMapId);
+          const failure = fireLocationTransitionsForRunner(state);
+          if (failure) return { stop: "failed", reason: failure };
+        }
         {
           const autoReason = runAutoTriggers(state);
           if (autoReason) return { stop: "failed", reason: autoReason };
@@ -1164,6 +1197,40 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
     }
   }
   return { stop: "failed", reason: "인터프리터 무한루프 가드 도달" };
+}
+
+/**
+ * 구역 드나듦 트리거 — 실하 재버이 무직하지 안는 유일한 이유는 이 하네스가 그 경로를
+ * **거지지 않으니** 다. 그러니 판정은 산법(`project/locationTransitions.ts`)을 그대로 쓰고
+ * 실행만 이 하네스의 `runEventView` 로 한다 — 엔진이 티 곳이 되지 않도록 극복한다.
+ */
+function runLocationTransitionTriggersForRunner(
+  state: RunnerState,
+  transitions: readonly LocationTransition[],
+): string | null {
+  if (transitions.length === 0) return null;
+  const map = currentMap(state);
+  if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
+  const pending: RuntimeEventView[] = [];
+  for (const transition of transitions) {
+    for (const view of runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions)) {
+      if (!triggerMatchesTransition(view.trigger, transition)) continue;
+      pending.push(view);
+    }
+  }
+  for (const view of pending) {
+    const failure = runEventView(state, view);
+    if (failure) return failure;
+  }
+  return null;
+}
+
+/** 한 걸음(또는 한 번의 이동) 이 끝난 뒤 점유를 갱신하고 트리거를 돌린다. */
+function fireLocationTransitionsForRunner(state: RunnerState): string | null {
+  const map = currentMap(state);
+  if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
+  const update = updateLocationOccupancy(state.session, map, { x: state.session.x, y: state.session.y });
+  return runLocationTransitionTriggersForRunner(state, update.transitions);
 }
 
 function runAutoTriggers(state: RunnerState): string | null {

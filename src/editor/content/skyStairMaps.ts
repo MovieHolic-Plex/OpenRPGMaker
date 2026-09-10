@@ -9,7 +9,7 @@ import { npcFaceGraphicFromEventGraphic } from "@/assets/charsetFaceMap";
 import { queryNpcGraphics } from "@/assets/charsetQuery";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { stampRectHouseKit, type HouseKitId } from "@/editor/houseKit";
-import type { Command, EventPage, GameEvent, GameMap, LightingState, Project, TilesetDef } from "@/project/types";
+import type { Command, EventPage, GameEvent, GameMap, LightingState, Project, SimpleTriggerKind, TilesetDef } from "@/project/types";
 import { canMove, isPassable } from "@/project/collision";
 import { FARMLAND_TILE } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
@@ -1457,7 +1457,7 @@ function event(
   x: number,
   y: number,
   pages: readonly EventPage[],
-  trigger: GameEvent["trigger"]["kind"] = "action"
+  trigger: SimpleTriggerKind = "action"
 ): GameEvent {
   return {
     id,

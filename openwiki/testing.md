@@ -1401,6 +1401,23 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
   `--project /tmp/chest-open.json`). 개방 SE·아이템 징글·동전 SE 세 개가 도달하고 `gold` 0→50, 열린 상자
   프레임이 03 샷에 남아야 통과다. 대사청 스크린샷은 타자기 첫 글자에서 잡힐 수 있다 — 문장은
   유닛 테스트(`test/placeChestSavepoint.test.ts`)가 재고 하네스는 소지금·오디오·프레임을 재다.
+- **타자기를 고정 sleep 으로 기다리지 마라 — 결정 키 한 번으로 페이지를 완성시킨다** (2026-09-10).
+  `visibleText` 로 대사 글자를 축으로 쓰면 관측 순간 본문이 `"▼"` 나 `"광▼"` 일 수 있다(실측:
+  `loc-transition` 첫 실행에서 네 비트가 이 이유로 실패했다). `\>`(fastOn) 도 해결책이 아니다 —
+  `setTimeout(0)` 로 한 글자씩 계속 비동기다. `waitFor: dialogue-box present` 다음에
+  `key: Enter` **한 번**을 넣으면 `consumeRemainingPage` 가 페이지를 통째로 드러내고 창은 닫히지
+  않는다(RM 관례이고 출하 입력 경로다). 창을 닫는 것은 `pressUntil` 이 따로 한다.
+- **장소 이동의 «중간 좌표» 는 관측되지 않는다** (2026-09-10). 접촉 이벤트가 도착 프레임에 곧바로
+  `transfer` 를 걸면 그 칸에 서 있는 상태가 프레임 사이에 존재하지 않는다 —
+  `waitForPosition` 을 거기 걸면 30초 타임아웃이 난다(실측). 도착 좌표만 기다려라.
+  걸음은 `playerRoute` + `waitForPosition` 조건 대기로 태운다(저작 이동 루트 = 실제 상태기).
+- **구역 드나듦 시나리오** `loc-transition`(2026-09-10)은 픽스처를 별도 파일이 굽는다:
+  `npx tsx scripts/qa/runtime/loc-transition-fixture.mts > /tmp/loc-transition.json` 다음
+  `npm run qa:runtime -- --scenario loc-transition --project /tmp/loc-transition.json --out verify-shots/loc-transition`.
+  좌표만 보면 «트리거가 안 돌아도 통과» 하므로 축은 대사 글자다. 이 시나리오가 실제로 결함을
+  잡았다: 문(playerTouch)으로 장소 이동할 때 도착 구역의 enter 이벤트가 한 번도 돌지 않았다
+  (`transferTo` 가 이벤트 인터프리터 안에서 불려 `scene.running` 이 참이었다). 유닛 테스트로는
+  보이지 않는 결함이었다 — `runSceneTest` 하네스는 이벤트를 중첩 실행해 running 개념이 없다.
 - 체공(점프·낙하) 시나리오와 그 전용 op/expect 는 위 "체공 런타임 QA" 절에 있다. 거기서
   얻은 일반 교훈: **오브젝트가 존재한다는 검사는 그것이 그려졌다는 뜻이 아니다.**
 - **`testidPresent` 만 쓴 비트는 이빨이 없다** (2026-08-30 실측). `item-care`·`item-equipment`

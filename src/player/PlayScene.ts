@@ -67,6 +67,7 @@ import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
 import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
 import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
+import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransitions";
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
 import type { LightingAmbientTransition } from "@/project/lightingRules";
 import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/playSceneWeather";
@@ -255,6 +256,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false, applyMapBgm: false });
     this.tileX = this.session.x;
     this.tileY = this.session.y;
+    // 구역 드나듦의 기준선을 심는다. 시작 지점이 어떤 구역 안이라도 «새 게입에 들어왔다»
+    // 로 치지 않는다 — 부톨 직후에 트리거가 튰지면 그것은 auto 트리거의 일이지 드나듦이 아니다.
+    // 세이브가 이미 기록을 갖고 있으면 같은 값을 다시 쓰는 생개 동작이다.
+    seedLocationOccupancyForScene(this);
     this.player = this.add.sprite(
       // 주인공도 **몸 중앙**에 놓는다 — 1x1 이면 타일 중앙과 같은 값이다(항등).
       footprintSpriteX(this.tileX, resolvePlayerBody(project, this.session).footprint),
@@ -564,6 +569,9 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     void this.syncMinimap();
     this.tileX = this.session.x;
     this.tileY = this.session.y;
+    // 불러오기는 «그 자리에 서 있는 상태» 를 부활하는 것이다 — 안에서 잡았으면
+    // 새로 들어온 것이 아니므로 기준선만 심고 트리거를 돌리지 않는다.
+    seedLocationOccupancyForScene(this);
     this.player.setTexture(this.playerSprite.texture);
     this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));
     this.player.setPosition(

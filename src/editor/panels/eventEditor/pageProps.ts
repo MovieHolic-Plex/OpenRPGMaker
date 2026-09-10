@@ -63,6 +63,11 @@ import { relationshipStateName } from "@/project/relationshipState";
 import { appearanceBindingControl } from "../appearanceBindingControl";
 import { getCharacterAppearance } from "@/project/characterAppearances";
 import { insideLocationSentence, mapLocationLabel } from "@/editor/mapLocationLabels";
+import {
+  locationTransitionSentence,
+  locationTransitionTrigger,
+  renderLocationTransitionTriggerFields,
+} from "@/editor/locationTriggerAuthoring";
 export function renderEventNameControl(
   mapId: MapId,
   eventId: string,
@@ -817,6 +822,8 @@ function triggerLabel(trigger: Trigger): string {
     case "eventTouch": return "이벤트가 닿으면";
     case "auto": return "자동 실행";
     case "parallel": return "병렬 처리";
+    // 지종 문장은 구역 이름을 포함한다 — «구역» 만 적으면 어느 구역인지 보이지 않는다.
+    case "locationTransition": return locationTransitionSentence(trigger, { mapId: editorState.get().currentMapId ?? undefined });
   }
 }
 
@@ -834,8 +841,22 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
   const trigger = selectWithOptions(TRIGGER_OPTIONS, eventEditorTriggerKind(page.trigger), "event-page-trigger-select");
   trigger.addEventListener("change", () => {
     const kind = selectedOptionValue(trigger, TRIGGER_OPTIONS, eventEditorTriggerKind(page.trigger));
-    updateEventPage(mapId, eventId, page.id, { trigger: triggerFromKind(kind) });
+    updateEventPage(mapId, eventId, page.id, {
+      trigger: kind === "locationTransition"
+        // 구역 트리거는 매개변수가 있으므로 `{ kind }` 만으로 지으면 서란된 데이터가 된다.
+        // 이전 값이 이미 구역 트리거면 그것을 보존한다(다른 종류로 갔다 돌아오는 사용에서는
+        // 기본값이 다시 잡힐다 — 그게 이 상태기의 한계이고 선택기가 그걸 드러낸다).
+        ? locationTransitionTrigger(page.trigger)
+        : triggerFromKind(kind),
+    });
   });
+  const triggerBody = el("div", { class: "event-trigger-body", children: [trigger] });
+  if (page.trigger.kind === "locationTransition") {
+    const authored = page.trigger;
+    triggerBody.append(renderLocationTransitionTriggerFields(authored, (next) => {
+      updateEventPage(mapId, eventId, page.id, { trigger: next });
+    }));
+  }
 
   const priority = selectWithOptions(EVENT_PRIORITY_OPTIONS, page.priority, "event-page-priority-select");
   priority.addEventListener("change", () => {
@@ -908,7 +929,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       class: "event-page-behavior-sections",
       dataset: { testid: "event-page-trigger-priority-stack" },
       children: [
-        rm2k3Fieldset("시작 방식", trigger, "event-classic-trigger"),
+        rm2k3Fieldset("시작 방식", triggerBody, "event-classic-trigger"),
         renderEventPageSafetyWarning(page),
       ],
     }),
@@ -1519,6 +1540,7 @@ function eventEditorTriggerKind(trigger: Trigger): EventEditorTriggerKind {
     case "eventTouch":
     case "auto":
     case "parallel":
+    case "locationTransition":
       return trigger.kind;
   }
 }
