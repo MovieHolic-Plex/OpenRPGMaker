@@ -44,7 +44,7 @@ function loadProject(): Project {
 
 function logEvent(label: string, event: PiAgentEvent) {
   const prefix = label ? `[${label}] ` : "";
-  if (event.type === "agent_spawn") { console.log(`${prefix}spawn ${event.agentId} (${event.label ?? event.role}) ${event.mapId ?? ""} — ${event.task.slice(0, 120)}`); return; }
+  if (event.type === "agent_spawn") { console.log(`${prefix}spawn ${event.agentId} (${event.label ?? event.role}) ${event.mapId ?? ""}${event.fixOf ? ` [수정←${event.fixOf}]` : ""} — ${event.task.slice(0, 120)}`); return; }
   if (event.type === "agent_event") { logEvent(event.agentId, event.event); return; }
   if (event.type === "agent_done") { console.log(`${prefix}done ${event.agentId} ok=${event.ok} ${event.summary}${event.spills.length ? ` spills=${event.spills.join(",")}` : ""}`); return; }
   if (event.type === "review") { console.log(`${prefix}review ${event.mapId} ok=${event.ok} ${event.findings.join(" | ")}`); return; }

@@ -8,9 +8,14 @@ export type TeamAgentState = "대기" | "실행 중" | "완료" | "실패" | "�
 export interface TeamBoardAgent {
   readonly agentId: string;
   readonly role: PiTeamRoleId;
+  /** 행에 크게 붙는 이름. 팀 모드면 팀원 이름(「정원사」), 아니면 역할 이름. */
   readonly roleLabel: string;
+  /** 역할 이름(팀장·시공·검수). roleLabel 이 팀원 이름으로 덮여도 종류는 여기 남는다. */
+  readonly kindLabel: string;
   /** 사용자 정의 팀원 id(팀 모드). */
   readonly memberId: string | null;
+  /** 검수 지적을 고치러 간 배정이면 그 검수 행의 agentId. */
+  readonly fixOf: string | null;
   readonly mapId: string | null;
   readonly mapName: string | null;
   readonly task: string;
@@ -51,9 +56,9 @@ export function createTeamBoardState(mode: "single" | "team", task: string): Tea
   return { mode, task, phase: "준비", agents: [], report: null, error: null, applied: null, changedKeys: [], reviewChips: [] };
 }
 
-function agentRow(agentId: string, role: PiTeamRoleId, mapId: string | null, mapName: string | null, task: string, memberId: string | null = null, label?: string): TeamBoardAgent {
+function agentRow(agentId: string, role: PiTeamRoleId, mapId: string | null, mapName: string | null, task: string, memberId: string | null = null, label?: string, fixOf: string | null = null): TeamBoardAgent {
   return {
-    agentId, role, roleLabel: label || ROLE_LABELS[role], memberId, mapId, mapName, task,
+    agentId, role, roleLabel: label || ROLE_LABELS[role], kindLabel: ROLE_LABELS[role], memberId, mapId, mapName, task, fixOf,
     state: "대기", turns: 0, toolCalls: 0, toolErrors: 0, lastLine: "", lastKind: "text", summary: "", changedKeys: [], spills: [], conflicts: [],
   };
 }
@@ -97,7 +102,7 @@ export function reduceTeamBoard(state: TeamBoardState, event: PiAgentEvent): Tea
     case "team_start":
       return { ...state, phase: "실행 중", task: event.task || state.task };
     case "agent_spawn": {
-      const row = agentRow(event.agentId, event.role, event.mapId, event.mapName, event.task, event.memberId ?? null, event.label);
+      const row = agentRow(event.agentId, event.role, event.mapId, event.mapName, event.task, event.memberId ?? null, event.label, event.fixOf ?? null);
       const others = state.agents.filter((agent) => agent.agentId !== event.agentId);
       return { ...state, phase: "실행 중", agents: [...others, { ...row, state: "실행 중" }] };
     }

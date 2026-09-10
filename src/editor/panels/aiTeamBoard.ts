@@ -41,14 +41,22 @@ function renderAgent(agent: TeamBoardAgent, startedAt: number): HTMLElement {
     attrs: { "aria-label": `${agent.roleLabel} ${agentTitle(agent)} ${agent.state}` },
   });
   const head = el("div", { class: "ai-team-agent-head" });
+  head.append(el("span", { class: "ai-team-role", text: agent.roleLabel }));
+  // 팀원 이름이 배지를 덮으면 그 행이 시공인지 검수인지 사라진다 — 종류를 따로 붙인다.
+  if (agent.kindLabel && agent.kindLabel !== agent.roleLabel) {
+    head.append(el("span", { class: "ai-team-kind", text: agent.kindLabel, dataset: { testid: "ai-team-kind" } }));
+  }
   head.append(
-    el("span", { class: "ai-team-role", text: agent.roleLabel }),
     el("span", { class: "ai-team-map", text: agentTitle(agent), attrs: { title: agent.mapId ?? "" } }),
     el("span", { class: "ai-team-agent-state", text: agent.state, dataset: { testid: "ai-team-agent-state" } }),
   );
   if (agent.state === "실행 중") head.append(el("span", { class: "ai-deck-spin ai-team-spin", attrs: { "aria-hidden": "true" } }));
   if (counters.length > 0) head.append(el("span", { class: "ai-team-counters", text: counters.join(" · ") }));
   row.append(head);
+  if (agent.fixOf) {
+    // 같은 맵에 시공 행이 둘 쌓였을 때 어느 것이 검수 지적 때문에 다시 돈 것인지 밝힌다.
+    row.append(el("p", { class: "ai-team-fix-of", text: "검수 지적을 고치러 다시 배정됨", dataset: { testid: "ai-team-fix-of", fixOf: agent.fixOf } }));
+  }
   if (agent.task && agent.role !== "orchestrator") {
     // 팀장이 쓴 작업 지시는 길다 — 두 줄로 접고, 누르면 펼친다.
     const task = el("p", { class: "ai-team-task is-clamped", text: agent.task, attrs: { role: "button", tabindex: "0", "aria-expanded": "false", title: "누르면 전체 지시를 펼칩니다" } });

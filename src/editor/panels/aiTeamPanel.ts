@@ -103,8 +103,13 @@ export function createTeamPanel(): TeamPanelHandle {
       const item = el("li", { class: `ai-team-live-row role-${row.kind}`, dataset: { testid: "ai-team-live-row" } });
       const head = el("div", { class: "ai-team-live-head" });
       const running = row.agents.filter((agent) => agent.state === "실행 중");
+      head.append(el("span", { class: "ai-team-role", text: row.label }));
+      // 팀원 이름(「정원사」)만 그리면 그 행이 시공인지 검수인지 알 수 없다 — 종류를 따로 붙인다.
+      const kindLabel = row.kind === "builder" || row.kind === "reviewer" ? KIND_LABEL[row.kind] : null;
+      if (kindLabel && kindLabel !== row.label) {
+        head.append(el("span", { class: "ai-team-kind", text: kindLabel, dataset: { testid: "ai-team-kind" } }));
+      }
       head.append(
-        el("span", { class: "ai-team-role", text: row.label }),
         el("span", { class: "ai-team-live-count", text: running.length > 0 ? `${running.length}명 작업 중` : `${row.agents.length}건 ${row.agents.every((agent) => agent.state === "완료") ? "완료" : row.agents.at(-1)!.state}` }),
       );
       if (running.length > 0) head.append(el("span", { class: "ai-deck-spin ai-team-spin", attrs: { "aria-hidden": "true" } }));
