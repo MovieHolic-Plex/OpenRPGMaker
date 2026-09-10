@@ -10,6 +10,7 @@ import {
 import { formatWeightedBranchSummary } from "./weightedBranchTable";
 import { BGM_CATALOG } from "@/assets/bgmCatalog";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
+import { coordinateAxisSpec, coordinateFailurePolicy } from "@/project/eventCommands/coordinateDestination";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { eventDisplayName } from "@/project/eventDisplayName";
@@ -603,6 +604,34 @@ function changeActorIdentitySummaryParts(
   return commandLine(label, valuePart(actorName), plainPart(" · "), valuePart(value));
 }
 
+/**
+ * OPRN-OUT-013: 제네릭 폴백 요약은 `누구에게 this-event, X 값은 숫자, X 0` 처럼 처음 세
+ * 필드만 내몰아 새 소스 키가 정작 목적지를 가린다. 목적지가 이 명령의 전부다.
+ */
+function coordinateMoveSummaryParts(
+  cmd: Extract<Command, { kind: "m2Command" }>,
+  label: string,
+): readonly CommandSummaryPart[] {
+  const target = String(cmd.fields.target ?? "this-event").trim();
+  const who = target === PLAYER_MOVE_TARGET || target === "player" ? "주인공"
+    : !target || target === "this-event" || target === "this" ? "이 이벤트"
+      : target;
+  const axis = (key: "x" | "y"): string => {
+    const spec = coordinateAxisSpec(cmd.fields, key);
+    if (spec.source === "fixed") return String(spec.fixedValue);
+    return spec.variableId ? `변수 ${recordName("variable", spec.variableId)}` : "변수 (미선택)";
+  };
+  const wait = cmd.fields.wait === false ? "" : " · 대기";
+  const failure = coordinateFailurePolicy(cmd.fields) === "stop" ? " · 실패시 중단" : "";
+  return commandLine(
+    label,
+    valuePart(who),
+    plainPart(" → "),
+    valuePart(`(${axis("x")}, ${axis("y")})`),
+    plainPart(`${wait}${failure}`),
+  );
+}
+
 function weightedBranchSummaryParts(
   cmd: Extract<Command, { kind: "m2Command" }>,
 ): readonly CommandSummaryPart[] {
@@ -673,6 +702,9 @@ function m2CommandSummaryParts(cmd: Extract<Command, { kind: "m2Command" }>): re
   }
   if (title === "Weighted Branch" || cmd.commandId === "m2-211-weighted-branch") {
     return weightedBranchSummaryParts(cmd);
+  }
+  if (title === "Pathfind Move" || cmd.commandId === "m2-205-pathfind-move") {
+    return coordinateMoveSummaryParts(cmd, entry?.label ?? "좌표로 이동");
   }
 
   const page3 = page3M2SummaryParts(cmd, title, entry?.label);

@@ -1,5 +1,10 @@
 import { commandReferenceField, m2ReferenceField, withEventDraftIssueDetails } from "./eventDraftIssueDetails";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import {
+  coordinateAxisSpec,
+  COORDINATE_FAILURE_LABELS,
+  resolveCoordinateAxis,
+} from "@/project/eventCommands/coordinateDestination";
 import { battleTroopError } from "@/project/battleAdmission";
 import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
@@ -1090,6 +1095,9 @@ const M2_REFERENCE_RULES: Readonly<Record<string, M2ReferenceRule>> = {
   mapId: { code: "reference.map.missing", label: "M2 맵", known: (refs) => refs.maps },
   mapVariableId: { code: "reference.variable.missing", label: "M2 맵 변수", known: (refs) => refs.variables },
   prefabId: { code: "reference.event.missing", label: "M2 생성 원본 이벤트", known: (refs) => refs.eventTemplates },
+  // OPRN-OUT-013 결과 계약. 넣지 않는 것이 기본이지만, 넣었다면 실재해야 한다.
+  resultSwitchId: { code: "reference.switch.missing", label: "M2 결과 스위치", known: (refs) => refs.switches },
+  resultVariableId: { code: "reference.variable.missing", label: "M2 결과 변수", known: (refs) => refs.variables },
   resourceId: { code: "reference.resource.missing", label: "M2 리소스", known: (refs) => refs.resources },
   skillId: { code: "reference.skill.missing", label: "M2 스킬", known: (refs) => refs.skills },
   switchId: { code: "reference.switch.missing", label: "M2 스위치", known: (refs) => refs.switches },
@@ -1136,6 +1144,17 @@ function m2ReferenceFieldApplies(
   if (fieldKey === "valueVariableId") {
     return String(m2FieldValue(command, entry, "valueSource")) === "variable";
   }
+  // OPRN-OUT-013: 좌표 변수는 그 축이 「변수」일 때만 참조다. 고정 좌표 명령의
+  // 빈 변수 칸을 「없는 변수」로 신고하면 옛 프로젝트가 전부 빨간불이 된다.
+  if (fieldKey === "xVariableId" || fieldKey === "yVariableId") {
+    const axis = fieldKey === "xVariableId" ? "x" : "y";
+    // 소스 키가 없는 명령(Move to Variable Location)은 예전대로 항상 필수 참조다 —
+    // 빈 칸도 계속 신고해야 한다. 새 규칙은 소스를 선언한 명령에만 적용한다.
+    if (!entry.fields.some((field) => field.key === `${axis}Source`)) return true;
+    return coordinateAxisSpec(command.fields, axis).source === "variable";
+  }
+  // 결과 기록처는 선택이다 — 비워 두는 것이 기본이고, 값이 있을 때만 실재를 따진다.
+  if (fieldKey === "resultVariableId" || fieldKey === "resultSwitchId") return value.length > 0;
   if (entry.title === "Spawn Event") {
     if (fieldKey === "eventId") return false;
     if (fieldKey === "mapId") return value.length > 0;
@@ -1198,6 +1217,13 @@ function validateM2CommandCoordinates(
 ): void {
   const fieldKeys = new Set(entry.fields.map((field) => field.key));
   if (!fieldKeys.has("x") || !fieldKeys.has("y")) return;
+  // OPRN-OUT-013: 좌표 소스를 갖는 명령은 축별로 판정이 다르다. 고정 축은 지금
+  // 범위까지 재고, 변수 축은 「런타상 전에 알 수 있는 것」만 — 변수를 골랐는가 —
+  // 재다. 유효한 변수 참조의 장래 값은 어느 정적 검사로도 알 수 없다.
+  if (fieldKeys.has("xSource") || fieldKeys.has("ySource")) {
+    validateCoordinateSourceAxes(project, currentMapId, command, pageId, commandPath, entry, issues);
+    return;
+  }
   const x = Number(m2FieldValue(command, entry, "x"));
   const y = Number(m2FieldValue(command, entry, "y"));
   if (fieldKeys.has("mapId")) {
@@ -1231,6 +1257,64 @@ function validateM2CommandCoordinates(
       m2ReferenceField(entry.title, "x"),
     );
   }
+}
+
+/**
+ * 고정/변수 좌표 명령의 자작 시점 진단 (OPRN-OUT-013).
+ *
+ * 단종으로 고정인 두 축만 지도 범위를 재다 — 한 축이라도 변수면 목적지가
+ * 런타상에만 정해지므로 있지도 않는 사습을 단정하면 안 된다. 그래도 고정값
+ * 자체가 정수·양수가 아니거나 변수 칸을 비워둔 것은 지금 잡을 수 있다.
+ */
+function validateCoordinateSourceAxes(
+  project: Project,
+  currentMapId: MapId,
+  command: Extract<Command, { kind: "m2Command" }>,
+  pageId: string,
+  commandPath: readonly number[],
+  entry: M2CatalogEntry,
+  issues: EventDraftIssue[],
+): void {
+  const specs = { x: coordinateAxisSpec(command.fields, "x"), y: coordinateAxisSpec(command.fields, "y") };
+  for (const axis of ["x", "y"] as const) {
+    const spec = specs[axis];
+    if (spec.source === "variable") {
+      if (!spec.variableId) {
+        issues.push({
+          severity: "error",
+          code: "m2.coordinate.variable.unselected",
+          message: `${entry.label} 의 ${axis.toUpperCase()} 좌표를 「변수」로 곰냈지만 어떤 변수인지 정하지 않았습니다.`,
+          pageId,
+          commandPath: [...commandPath],
+          field: m2ReferenceField(entry.title, `${axis}VariableId`),
+        });
+      }
+      continue;
+    }
+    // 고정값은 런타임과 **같은** 해석기를 쓴다. 사사오입·소수·음수 판정이 달라지지 않는다.
+    const resolved = resolveCoordinateAxis(spec, () => undefined);
+    if (resolved.ok) continue;
+    issues.push({
+      severity: "error",
+      code: "m2.coordinate.fixed.invalid",
+      message: `${entry.label} 의 ${axis.toUpperCase()} 좌표가 올바른 칸 번호가 아닙니다 — ${COORDINATE_FAILURE_LABELS[resolved.reason]}.`,
+      pageId,
+      commandPath: [...commandPath],
+      field: m2ReferenceField(entry.title, axis),
+    });
+  }
+  if (specs.x.source !== "fixed" || specs.y.source !== "fixed") return;
+  validateMapPosition(
+    project,
+    currentMapId,
+    specs.x.fixedValue,
+    specs.y.fixedValue,
+    pageId,
+    commandPath,
+    `${entry.label} 위치`,
+    issues,
+    m2ReferenceField(entry.title, "x"),
+  );
 }
 
 function validateMapPosition(

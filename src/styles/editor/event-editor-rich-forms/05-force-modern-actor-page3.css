@@ -229,6 +229,15 @@
   margin: 0;
 }
 
+/*
+ * OPRN-OUT-013 좌표 이동 폼의 자작 경고. 색만이 아니라 낱말(「주의:」)로도
+ * 경고라고 말하므로, 이 사건은 시간을 단축하는 보조 생토다.
+ */
+.coordinate-move-preview-warning {
+  color: var(--danger);
+  font-weight: 600;
+}
+
 .actor-m2-preview-actor,
 .actor-m2-preview-copy {
   align-items: center;
