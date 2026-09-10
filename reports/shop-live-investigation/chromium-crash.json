@@ -1,0 +1,225 @@
+{
+  "startedAt": "2026-09-08T05:43:38.530Z",
+  "url": "http://127.0.0.1:9841/export-player/player.html",
+  "errors": [
+    "Error: page.evaluate: Target crashed ",
+    "Error: keyboard.press: Target crashed "
+  ],
+  "failedRequests": [],
+  "actions": [
+    {
+      "at": "2026-09-08T05:43:58.739Z",
+      "command": {
+        "op": "goto"
+      },
+      "result": "OPRN Player"
+    },
+    {
+      "at": "2026-09-08T05:43:59.313Z",
+      "command": {
+        "op": "eval",
+        "code": "({resources:performance.getEntriesByType(\"resource\").map(e=>e.name),text:document.body.innerText.slice(0,500)})"
+      },
+      "result": {
+        "resources": [
+          "http://127.0.0.1:9841/export-player/player.js",
+          "http://127.0.0.1:9841/export-player/assets/player-BhSXHFWt.css",
+          "http://127.0.0.1:9841/__runtime-qa/project.json"
+        ],
+        "text": "새 프로젝트\n새 게임\n불러오기\n종료\nA NEW ADVENTURE\n이야기가 시작되는 곳\n방향키로 고르고 Enter로 시작"
+      }
+    },
+    {
+      "at": "2026-09-08T05:44:08.680Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {window.__livePending = new Promise((resolve,reject)=>{const check=()=>{return (window.__oprnDebug && document.querySelector(\"[data-testid=runtime-state-json]\") && !document.querySelector(\"[data-testid=play-loading-overlay]\"))};const finish=()=>{if(check()){observer.disconnect();clearTimeout(timer);resolve(true)}};const observer=new MutationObserver(finish);const timer=setTimeout(()=>{observer.disconnect();reject(new Error('Missing observed state'))},120000);observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});finish();});return 'armed';})()"
+      },
+      "result": "armed"
+    },
+    {
+      "at": "2026-09-08T05:44:08.710Z",
+      "command": {
+        "op": "key",
+        "key": "Enter"
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:44:16.006Z",
+      "command": {
+        "op": "eval",
+        "code": "window.__livePending"
+      },
+      "result": true
+    },
+    {
+      "at": "2026-09-08T05:44:16.300Z",
+      "command": {
+        "op": "eval",
+        "code": "JSON.stringify({state:window.__oprnDebug.readState(),sprites:window.__oprnCharacterSprites?.(),testids:[...document.querySelectorAll(\"[data-testid]\")].map(e=>e.dataset.testid)})"
+      },
+      "result": "{\"state\":{\"farmPlots\":{},\"makerInstances\":{},\"eventLocations\":{},\"currentMapId\":\"map_lake_village\",\"x\":17,\"y\":24,\"gold\":0,\"switches\":{\"sw_0001\":false,\"sw_0002\":false,\"sw_0003\":false,\"sw_0004\":false,\"sw_0005\":false,\"sw_0006\":false,\"sw_0007\":false,\"sw_0008\":false,\"sw_0009\":false,\"sw_0010\":false,\"sw_0011\":false,\"sw_0012\":false,\"sw_0013\":false,\"sw_0014\":false,\"sw_0015\":false,\"sw_0016\":false,\"sw_0017\":false,\"sw_0018\":false,\"sw_0019\":false,\"sw_0020\":false},\"variables\":{\"var_0001\":0,\"var_0002\":0,\"var_0003\":0,\"var_0004\":0,\"var_0005\":0,\"var_0006\":0,\"var_0007\":0,\"var_0008\":0,\"var_0009\":0,\"var_0010\":0,\"var_0011\":0,\"var_0012\":0,\"var_0013\":0,\"var_0014\":0,\"var_0015\":0,\"var_0016\":0,\"var_0017\":0,\"var_0018\":0,\"var_0019\":0,\"var_0020\":0},\"selfSwitches\":{},\"timers\":{},\"inventory\":{},\"monsterInstances\":{},\"monsterParty\":[],\"monsterBox\":[],\"partyActorIds\":[\"actor_hero\"],\"npcActivities\":{},\"friendship\":{},\"rng\":{\"seed\":1014655644,\"streams\":{\"encounter\":{\"seed\":226933960,\"state\":226933960},\"battle\":{\"seed\":995366897,\"state\":995366897},\"movement\":{\"seed\":1841258746,\"state\":1841258746},\"fishing\":{\"seed\":2068713679,\"state\":2068713679},\"misc\":{\"seed\":1218253383,\"state\":1218253383}}}},\"sprites\":{\"player\":{\"x\":280,\"y\":400,\"depth\":200400,\"liftPx\":0,\"airborne\":false,\"visible\":true,\"scaleX\":1,\"scaleY\":1},\"shadows\":{},\"events\":{\"ev_village_42_map_lake_village_1\":{\"alpha\":1,\"frame\":34,\"textureKey\":\"tex_easyrpg_charset_people5\",\"x\":456,\"y\":256,\"depth\":200256,\"liftPx\":0},\"ev_village_42_map_lake_village_2\":{\"alpha\":1,\"frame\":76,\"textureKey\":\"tex_easyrpg_charset_people1\",\"x\":168,\"y\":320,\"depth\":200320,\"liftPx\":0},\"ev_village_42_map_lake_village_3\":{\"alpha\":1,\"frame\":76,\"textureKey\":\"tex_easyrpg_charset_people5\",\"x\":488,\"y\":432,\"depth\":200432,\"liftPx\":0},\"ev_village_42_map_lake_village_4\":{\"alpha\":1,\"frame\":79,\"textureKey\":\"tex_easyrpg_charset_people1\",\"x\":120,\"y\":704,\"depth\":200704,\"liftPx\":0},\"ev_village_42_map_lake_village_5\":{\"alpha\":1,\"frame\":82,\"textureKey\":\"tex_easyrpg_charset_people5\",\"x\":280,\"y\":768,\"depth\":200768,\"liftPx\":0},\"ev_village_42_map_lake_village_6\":{\"alpha\":1,\"frame\":82,\"textureKey\":\"tex_easyrpg_charset_people1\",\"x\":136,\"y\":528,\"depth\":200528,\"liftPx\":0},\"ev_village_42_map_lake_village_7\":{\"alpha\":1,\"frame\":25,\"textureKey\":\"tex_easyrpg_charset_people1\",\"x\":280,\"y\":400,\"depth\":200400,\"liftPx\":0},\"ev_village_42_map_lake_village_8\":{\"alpha\":1,\"frame\":25,\"textureKey\":\"tex_easyrpg_charset_people2\",\"x\":328,\"y\":416,\"depth\":200416,\"liftPx\":0}}},\"testids\":[\"play-viewport\",\"play-stage\",\"play-canvas\",\"hand-slot\",\"hand-slot-label\",\"runtime-state-json\",\"audio-state-json\",\"picture-layer\",\"event-ev_village_42_map_lake_village_1\",\"event-sprite-ev_village_42_map_lake_village_1\",\"event-ev_village_42_map_lake_village_2\",\"event-sprite-ev_village_42_map_lake_village_2\",\"event-ev_village_42_map_lake_village_3\",\"event-sprite-ev_village_42_map_lake_village_3\",\"event-ev_village_42_map_lake_village_4\",\"event-sprite-ev_village_42_map_lake_village_4\",\"event-ev_village_42_map_lake_village_5\",\"event-sprite-ev_village_42_map_lake_village_5\",\"event-ev_village_42_map_lake_village_6\",\"event-sprite-ev_village_42_map_lake_village_6\",\"event-ev_village_42_map_lake_village_7\",\"event-sprite-ev_village_42_map_lake_village_7\",\"event-ev_village_42_map_lake_village_8\",\"event-sprite-ev_village_42_map_lake_village_8\",\"event-ev_gate_e6834b8f-8059-4767-bc14-85d2096caf60\",\"zone-feedback\",\"zone-feedback-banner\",\"zone-feedback-toast\",\"zone-feedback-objective\",\"zone-feedback-prompt\"]}"
+    },
+    {
+      "at": "2026-09-08T05:44:16.817Z",
+      "command": {
+        "op": "shot",
+        "name": "01-canonical-field.png"
+      },
+      "result": "01-canonical-field.png"
+    },
+    {
+      "at": "2026-09-08T05:44:32.330Z",
+      "command": {
+        "op": "eval",
+        "code": "JSON.stringify({state:window.__oprnDebug.readState(),merchant:window.__oprnCharacterSprites().events.ev_village_42_map_lake_village_3,mirror:JSON.parse(document.querySelector(\"[data-testid=runtime-state-json]\").textContent)})"
+      },
+      "result": "{\"state\":{\"farmPlots\":{},\"makerInstances\":{},\"eventLocations\":{},\"currentMapId\":\"map_lake_village\",\"x\":17,\"y\":24,\"gold\":0,\"switches\":{\"sw_0001\":false,\"sw_0002\":false,\"sw_0003\":false,\"sw_0004\":false,\"sw_0005\":false,\"sw_0006\":false,\"sw_0007\":false,\"sw_0008\":false,\"sw_0009\":false,\"sw_0010\":false,\"sw_0011\":false,\"sw_0012\":false,\"sw_0013\":false,\"sw_0014\":false,\"sw_0015\":false,\"sw_0016\":false,\"sw_0017\":false,\"sw_0018\":false,\"sw_0019\":false,\"sw_0020\":false},\"variables\":{\"var_0001\":0,\"var_0002\":0,\"var_0003\":0,\"var_0004\":0,\"var_0005\":0,\"var_0006\":0,\"var_0007\":0,\"var_0008\":0,\"var_0009\":0,\"var_0010\":0,\"var_0011\":0,\"var_0012\":0,\"var_0013\":0,\"var_0014\":0,\"var_0015\":0,\"var_0016\":0,\"var_0017\":0,\"var_0018\":0,\"var_0019\":0,\"var_0020\":0},\"selfSwitches\":{},\"timers\":{},\"inventory\":{},\"monsterInstances\":{},\"monsterParty\":[],\"monsterBox\":[],\"partyActorIds\":[\"actor_hero\"],\"npcActivities\":{},\"friendship\":{},\"rng\":{\"seed\":1014655644,\"streams\":{\"encounter\":{\"seed\":226933960,\"state\":226933960},\"battle\":{\"seed\":995366897,\"state\":995366897},\"movement\":{\"seed\":1841258746,\"state\":1961564840},\"fishing\":{\"seed\":2068713679,\"state\":2068713679},\"misc\":{\"seed\":1218253383,\"state\":1218253383}}}},\"merchant\":{\"alpha\":1,\"frame\":76,\"textureKey\":\"tex_easyrpg_charset_people5\",\"x\":488,\"y\":432,\"depth\":200432,\"liftPx\":0},\"mirror\":{\"farmPlots\":{},\"makerInstances\":{},\"mapId\":\"map_lake_village\",\"inputEnabled\":true,\"running\":false,\"player\":{\"x\":17,\"y\":24},\"switches\":{\"sw_0001\":false,\"sw_0002\":false,\"sw_0003\":false,\"sw_0004\":false,\"sw_0005\":false,\"sw_0006\":false,\"sw_0007\":false,\"sw_0008\":false,\"sw_0009\":false,\"sw_0010\":false,\"sw_0011\":false,\"sw_0012\":false,\"sw_0013\":false,\"sw_0014\":false,\"sw_0015\":false,\"sw_0016\":false,\"sw_0017\":false,\"sw_0018\":false,\"sw_0019\":false,\"sw_0020\":false},\"variables\":{\"var_0001\":0,\"var_0002\":0,\"var_0003\":0,\"var_0004\":0,\"var_0005\":0,\"var_0006\":0,\"var_0007\":0,\"var_0008\":0,\"var_0009\":0,\"var_0010\":0,\"var_0011\":0,\"var_0012\":0,\"var_0013\":0,\"var_0014\":0,\"var_0015\":0,\"var_0016\":0,\"var_0017\":0,\"var_0018\":0,\"var_0019\":0,\"var_0020\":0},\"timers\":{},\"timerActive\":{},\"flags\":{},\"mapOverrides\":{},\"gold\":0,\"inventory\":{},\"partyActorIds\":[\"actor_hero\"],\"actorSkillIds\":{},\"actorExperience\":{\"actor_hero\":0},\"actorLevels\":{\"actor_hero\":1,\"actor_guardian\":1,\"actor_mage\":1,\"actor_scout\":1,\"actor_cleric\":1,\"actor_ranger\":1},\"actorVitals\":{\"actor_hero\":{\"hp\":514,\"mp\":43,\"maxHp\":514,\"maxMp\":43}},\"eventLocations\":{},\"followers\":[],\"followerTrail\":[],\"removedEventIds\":{},\"spawnedEvents\":{},\"camera\":{\"mode\":\"follow\",\"target\":{\"kind\":\"player\"}},\"lighting\":{\"ambient\":0,\"sources\":[]},\"actorEquipment\":{\"actor_hero\":{\"armor\":\"equip_leather_armor\",\"helmet\":\"equip_traveler_hat\",\"shield\":\"equip_oak_shield\",\"weapon\":\"equip_sword\",\"accessory\":\"equip_focus_charm\"},\"actor_guardian\":{\"armor\":\"equip_leather_armor\",\"helmet\":\"equip_traveler_hat\",\"shield\":\"equip_oak_shield\",\"weapon\":\"equip_sword\",\"accessory\":\"equip_focus_charm\"},\"actor_mage\":{\"armor\":\"equip_mystic_robe\",\"helmet\":\"equip_traveler_hat\",\"weapon\":\"equip_mage_staff\",\"accessory\":\"equip_focus_charm\"},\"actor_scout\":{\"armor\":\"equip_leather_armor\",\"helmet\":\"equip_traveler_hat\",\"weapon\":\"equip_scout_dagger\",\"accessory\":\"equip_focus_charm\"},\"actor_cleric\":{\"armor\":\"equip_mystic_robe\",\"helmet\":\"equip_traveler_hat\",\"shield\":\"equip_oak_shield\",\"weapon\":\"equip_mage_staff\",\"accessory\":\"equip_focus_charm\"},\"actor_ranger\":{\"armor\":\"equip_leather_armor\",\"helmet\":\"equip_traveler_hat\",\"weapon\":\"equip_scout_dagger\",\"accessory\":\"equip_focus_charm\"}},\"actorRows\":{\"actor_hero\":\"front\"},\"classOverrides\":{},\"audio\":{\"bgm\":{\"resourceId\":\"cc0-bgm-rtp-hal-001\",\"loop\":true}},\"pictures\":{},\"events\":{\"ev_village_42_map_lake_village_1\":{\"x\":28,\"y\":15,\"pageId\":\"ev_village_42_map_lake_village_1_p0\",\"priority\":\"same\",\"trigger\":\"action\",\"direction\":\"down\",\"footprint\":{\"width\":1,\"height\":1},\"passRows\":1,\"bodyRect\":{\"left\":28,\"right\":28,\"top\":15,\"bottom\":15},\"passRect\":{\"left\":28,\"right\":28,\"top\":15,\"bottom\":15}},\"ev_village_42_map_lake_village_2\":{\"x\":9,\"y\":19,\"pageId\":\"ev_village_42_map_lake_village_2_p0\",\"priority\":\"same\",\"trigger\":\"action\",\"direction\":\"right\",\"footprint\":{\"width\":1,\"height\":1},\"passRows\":1,\"bodyRect\":{\"left\":9,\"right\":9,\"top\":19,\"bottom\":19},\"passRect\":{\"left\":9,\"right\":9,\"top\":19,\"bottom\":19}},\"ev_village_42_map_lake_village_3\":{\"x\":30,\"y\":26,\"pageId\":\"ev_village_42_map_lake_village_3_p0\",\"priority\":\"same\",\"trigger\":\"action\",\"direction\":\"down\",\"footprint\":{\"width\":1,\"height\":1},\"passRows\":1,\"bodyRect\":{\"left\":30,\"right\":30,\"top\":26,\"bottom\":26},\"passRect\":{\"left\":30,\"right\":30,\"top\":26,\"bottom\":26}},\"ev_village_42_map_lake_village_4\":{\"x\":7,\"y\":43,\"pageId\":\"ev_village_42_map_lake_village_4_p0\",\"priority\":\"same\",\"trigger\":\"action\",\"direction\":\"down\",\"footprint\":{\"width\":1,\"height\":1},\"passRows\":1,\"bodyRect\":{\"left\":7,\"right\":7,\"top\":43,\"bottom\":43},\"passRect\":{\"left\":7,\"right\":7,\"top\":43,\"bottom\":43}},\"ev_village_42_map_lake_village_5\":{\"x\":15,\"y\":48,\"pageId\":\"ev_village_42_map_lake_village_5_p0\",\"priority\":\"same\",\"trigger\":\"action\",\"direction\":\"left\",\"footprint\":{\"width\":1,\"height\":1},\"passRows\":1,\"bodyRect\":{\"left\":15,\"right\":15,\"top\":48,\"bottom\":48},\"passRect\":{\"left\":15,\"right\":15,\"top\":48,\"bottom\":48}},\"ev_village_42_map_lake_village_6\":{\"x\":10,\"y\":30,\"pageId\":\"ev_village_42_map_lake_village_6_p0\",\"priority\":\"same\",\"trigger\":\"action\",\"direction\":\"left\",\"footprint\":{\"width\":1,\"height\":1},\"passRows\":1,\"bodyRect\":{\"left\":10,\"right\":10,\"top\":30,\"bottom\":30},\"passRect\":{\"left\":10,\"right\":10,\"top\":30,\"bottom\":30}},\"ev_village_42_map_lake_village_7\":{\"x\":17,\"y\":24,\"pageId\":\"ev_village_42_map_lake_village_7_p0\",\"priority\":\"same\",\"trigger\":\"action\",\"direction\":\"down\",\"footprint\":{\"width\":1,\"height\":1},\"passRows\":1,\"bodyRect\":{\"left\":17,\"right\":17,\"top\":24,\"bottom\":24},\"passRect\":{\"left\":17,\"right\":17,\"top\":24,\"bottom\":24}},\"ev_village_42_map_lake_village_8\":{\"x\":20,\"y\":25,\"pageId\":\"ev_village_42_map_lake_village_8_p0\",\"priority\":\"same\",\"trigger\":\"action\",\"direction\":\"down\",\"footprint\":{\"width\":1,\"height\":1},\"passRows\":1,\"bodyRect\":{\"left\":20,\"right\":20,\"top\":25,\"bottom\":25},\"passRect\":{\"left\":20,\"right\":20,\"top\":25,\"bottom\":25}},\"ev_gate_e6834b8f-8059-4767-bc14-85d2096caf60\":{\"x\":49,\"y\":22,\"pageId\":\"ev_gate_e6834b8f-8059-4767-bc14-85d2096caf60_page\",\"priority\":\"below\",\"trigger\":\"playerTouch\",\"footprint\":{\"width\":1,\"height\":1},\"passRows\":1,\"bodyRect\":{\"left\":49,\"right\":49,\"top\":22,\"bottom\":22},\"passRect\":{\"left\":49,\"right\":49,\"top\":22,\"bottom\":22}}},\"movers\":{\"ev_village_42_map_lake_village_2\":{\"step\":14,\"moveCount\":4,\"remainingMoveCount\":0,\"repeat\":true,\"strategy\":\"random\",\"facing\":\"right\",\"directionFix\":false,\"through\":false,\"animationEnabled\":true,\"opacity\":255,\"speedRank\":2,\"frequencyRank\":3,\"moveIntervalMs\":560,\"moveDurationMs\":480,\"activeMove\":{\"fromX\":8,\"fromY\":19,\"toX\":9,\"toY\":19,\"dir\":\"right\"}},\"ev_village_42_map_lake_village_3\":{\"step\":19,\"moveCount\":4,\"remainingMoveCount\":0,\"repeat\":true,\"strategy\":\"random\",\"facing\":\"down\",\"directionFix\":false,\"through\":false,\"animationEnabled\":true,\"opacity\":255,\"speedRank\":2,\"frequencyRank\":3,\"moveIntervalMs\":560,\"moveDurationMs\":480,\"activeMove\":null},\"ev_village_42_map_lake_village_5\":{\"step\":11,\"moveCount\":4,\"remainingMoveCount\":0,\"repeat\":true,\"strategy\":\"random\",\"facing\":\"left\",\"directionFix\":false,\"through\":false,\"animationEnabled\":true,\"opacity\":255,\"speedRank\":2,\"frequencyRank\":3,\"moveIntervalMs\":560,\"moveDurationMs\":480,\"activeMove\":null},\"ev_village_42_map_lake_village_6\":{\"step\":10,\"moveCount\":4,\"remainingMoveCount\":0,\"repeat\":true,\"strategy\":\"random\",\"facing\":\"left\",\"directionFix\":false,\"through\":false,\"animationEnabled\":true,\"opacity\":255,\"speedRank\":2,\"frequencyRank\":3,\"moveIntervalMs\":560,\"moveDurationMs\":480,\"activeMove\":null}}}}"
+    },
+    {
+      "at": "2026-09-08T05:44:32.400Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {const s=window.__oprnCharacterSprites().events.ev_village_42_map_lake_village_3;const x=Math.floor(s.x/16),y=Math.round(s.y/16)-1;window.__oprnDebug.teleport(\"map_lake_village\",x,y+1);window.__oprnInput.face(\"up\");return {merchant:{x,y},player:window.__oprnDebug.readState()};})()"
+      },
+      "result": {
+        "merchant": {
+          "x": 30,
+          "y": 26
+        },
+        "player": {
+          "farmPlots": {},
+          "makerInstances": {},
+          "eventLocations": {},
+          "currentMapId": "map_lake_village",
+          "x": 30,
+          "y": 27,
+          "gold": 0,
+          "switches": {
+            "sw_0001": false,
+            "sw_0002": false,
+            "sw_0003": false,
+            "sw_0004": false,
+            "sw_0005": false,
+            "sw_0006": false,
+            "sw_0007": false,
+            "sw_0008": false,
+            "sw_0009": false,
+            "sw_0010": false,
+            "sw_0011": false,
+            "sw_0012": false,
+            "sw_0013": false,
+            "sw_0014": false,
+            "sw_0015": false,
+            "sw_0016": false,
+            "sw_0017": false,
+            "sw_0018": false,
+            "sw_0019": false,
+            "sw_0020": false
+          },
+          "variables": {
+            "var_0001": 0,
+            "var_0002": 0,
+            "var_0003": 0,
+            "var_0004": 0,
+            "var_0005": 0,
+            "var_0006": 0,
+            "var_0007": 0,
+            "var_0008": 0,
+            "var_0009": 0,
+            "var_0010": 0,
+            "var_0011": 0,
+            "var_0012": 0,
+            "var_0013": 0,
+            "var_0014": 0,
+            "var_0015": 0,
+            "var_0016": 0,
+            "var_0017": 0,
+            "var_0018": 0,
+            "var_0019": 0,
+            "var_0020": 0
+          },
+          "selfSwitches": {},
+          "timers": {},
+          "inventory": {},
+          "monsterInstances": {},
+          "monsterParty": [],
+          "monsterBox": [],
+          "partyActorIds": [
+            "actor_hero"
+          ],
+          "npcActivities": {},
+          "friendship": {},
+          "rng": {
+            "seed": 1014655644,
+            "streams": {
+              "encounter": {
+                "seed": 226933960,
+                "state": 226933960
+              },
+              "battle": {
+                "seed": 995366897,
+                "state": 995366897
+              },
+              "movement": {
+                "seed": 1841258746,
+                "state": 1961564840
+              },
+              "fishing": {
+                "seed": 2068713679,
+                "state": 2068713679
+              },
+              "misc": {
+                "seed": 1218253383,
+                "state": 1218253383
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "at": "2026-09-08T05:44:32.459Z",
+      "command": {
+        "op": "eval",
+        "code": "(() => {window.__livePending = new Promise((resolve,reject)=>{const check=()=>{return (document.querySelector(\"[data-testid=dialogue-text]\") || document.querySelector(\"[data-testid=dialogue-window]\"))};const finish=()=>{if(check()){observer.disconnect();clearTimeout(timer);resolve(true)}};const observer=new MutationObserver(finish);const timer=setTimeout(()=>{observer.disconnect();reject(new Error('Missing observed state'))},120000);observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});finish();});return 'armed';})()"
+      },
+      "result": "armed"
+    },
+    {
+      "at": "2026-09-08T05:47:11.800Z",
+      "command": {
+        "op": "close"
+      },
+      "result": [
+        {
+          "resource": "page",
+          "closed": true
+        },
+        {
+          "resource": "isolated context",
+          "closed": true
+        },
+        {
+          "resource": "owned browser",
+          "closed": true
+        }
+      ]
+    }
+  ],
+  "cleanup": [
+    {
+      "resource": "page",
+      "closed": true
+    },
+    {
+      "resource": "isolated context",
+      "closed": true
+    },
+    {
+      "resource": "owned browser",
+      "closed": true
+    }
+  ]
+}
