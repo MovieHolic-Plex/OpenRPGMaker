@@ -16,12 +16,14 @@ OPRN-OUT-020 은 `adoptLayoutRegionsAsLocations` 라는 멱등 원시 동작만 
 | 해시 | 내용 |
 |---|---|
 | `76a0d9ce8` | `src/project/mapLocationAdoption.ts` 순수 규칙 + `test/mapLocationAdoption.test.ts` |
-| `4c67351b1` | 편집기 상태·창·레이어 진입점·조수 툴·CSS + `test/mapLocationAdoptionPanel.test.ts` |
+| `4c67351b1` | 편집기 상태·창·레이어 진입점·CSS + `test/mapLocationAdoptionPanel.test.ts` |
 | `d0b94e56e` | 무변경 실행이 되돌리기 칸을 먹던 결함 수정(브라우저 QA 실측) + 회귀 1건 |
 | `42a22d1a0` | 브라우저 QA 스크립트 + `verify-shots/loc-adopt/` 증거 6장 |
-| `<docs>` | openwiki 3쪽 갱신 + INDEX 재생성 + 이 NOTES + `.gitignore` 부정 규칙 |
+| `17af65dac` | 조수 툴 `survey_layout_adoption` 추가 + `adopt_layout_regions` 를 같은 규칙으로 |
+| `0febcdc52` | openwiki 3쪽 + INDEX 재생성 + 이 NOTES + `.gitignore` 부정 규칙 |
 
-(마지막 문서 커밋 해시는 최종 보고 참조 — 이 파일 자신을 담는 커밋이라 여기 적을 수 없다.)
+(마지막 줄의 해시는 이 파일을 담은 커밋의 **직전** 상태에서 적은 것이라, 이 문장을 고친
+최종 커밋 해시는 최종 보고를 참조하라.)
 
 ## 요구사항 → 증거
 
