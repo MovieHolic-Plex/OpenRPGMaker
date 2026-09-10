@@ -5,8 +5,12 @@ import { fileURLToPath } from "node:url";
 import { flattenImports, indexDeclarations } from "./css-flatten.mjs";
 
 const BASELINE_PATH = "scripts/css-surfaces.baseline.json";
-// 기준선 지문을 남기는 규칙. R1 은 표면별 카운트(unlayered)로 래칫한다.
+// 기준선 지문을 남기는 규칙. R1 은 표면별 카운트(unlayered, hubs)로 래칫한다.
 const FINGERPRINT_RULES = new Set(["R2", "R4", "R5", "R6"]);
+// 레지스트리 표면에 속하지 않는 파일(surface === null)의 카운트 버킷. 레지스트리 surfaces 에는 넣지 않는다.
+const UNASSIGNED = "unassigned";
+const COUNT_KEYS = ["important", "unlayered", "hubs"];
+const bucketOf = (surface) => surface ?? UNASSIGNED;
 
 function walkFiles(dir, exts, out = []) {
   if (!fs.existsSync(dir)) return out;
@@ -81,7 +85,7 @@ function parseVarUses(value) {
 
 export function runSurfaceChecks({ stylesRoot, srcRoot, registry, entries }) {
   const violations = [];
-  const counts = Object.fromEntries(Object.keys(registry.surfaces).map((s) => [s, { important: 0, unlayered: 0 }]));
+  const counts = Object.fromEntries([...Object.keys(registry.surfaces), UNASSIGNED].map((s) => [s, { important: 0, unlayered: 0, hubs: 0 }]));
   const push = (rule, surface, file, line, sel, detail, message) => violations.push({ rule, surface, file, line, sel, detail, message });
 
   const order = flattenAll(entries);
@@ -122,12 +126,12 @@ export function runSurfaceChecks({ stylesRoot, srcRoot, registry, entries }) {
       const key = `R1|${d.file}|${d.sel}`;
       if (!seenRule.has(key)) {
         seenRule.add(key);
-        if (surface) counts[surface].unlayered++;
+        counts[bucketOf(surface)].unlayered++;
         push("R1", surface, d.file, d.line, d.sel, "", `언레이어 규칙: ${d.sel}`);
       }
     }
     // R3
-    if (d.imp && surface && surface !== "overrides") counts[surface].important++;
+    if (d.imp && surface !== "overrides") counts[bucketOf(surface)].important++;
     // R2
     if (spec && !spec.prefixes.includes("*")) {
       const allowed = [...spec.prefixes, ...(registry.surfaces.components?.prefixes ?? []), ...sharedState];
@@ -171,7 +175,9 @@ export function runSurfaceChecks({ stylesRoot, srcRoot, registry, entries }) {
     if (o.copy > 1) continue;
     const rel = path.relative(stylesRoot, o.file);
     if (o.depth >= 1 && !entryRel.has(rel) && /@import/.test(fs.readFileSync(o.file, "utf8").replace(/\/\*[\s\S]*?\*\//g, ""))) {
-      push("R1", surfaceOfFile(rel, registry), rel, 1, "", "", "진입 시트가 아닌 파일의 @import (허브 깊이 1 위반)");
+      const surface = surfaceOfFile(rel, registry);
+      counts[bucketOf(surface)].hubs++;
+      push("R1", surface, rel, 1, "", "", "진입 시트가 아닌 파일의 @import (허브 깊이 1 위반)");
     }
   }
   return { violations, counts };
@@ -197,21 +203,22 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const baseline = fs.existsSync(BASELINE_PATH) ? JSON.parse(fs.readFileSync(BASELINE_PATH, "utf8")) : { counts: {}, known: [] };
   const known = new Set(baseline.known);
   const enforce = new Set(args.flatMap((a, i) => (a === "--enforce" ? [args[i + 1]] : [])));
-  const enforced = (s) => enforce.has("all") || (s && enforce.has(s));
+  const enforced = (s) => enforce.has("all") || enforce.has(bucketOf(s));
   let failed = false;
   const byRule = {};
   for (const v of violations) byRule[v.rule] = (byRule[v.rule] ?? 0) + 1;
   for (const v of fingerprinted) {
-    if (!known.has(fingerprint(v)) && enforced(v.surface)) { failed = true; console.error(`FAIL ${v.rule} [${v.surface}] ${v.file}:${v.line} ${v.message}`); }
+    if (!known.has(fingerprint(v)) && enforced(v.surface)) { failed = true; console.error(`FAIL ${v.rule} [${bucketOf(v.surface)}] ${v.file}:${v.line} ${v.message}`); }
   }
   for (const [s, c] of Object.entries(counts)) {
     if (!enforced(s)) continue;
-    for (const k of ["important", "unlayered"]) {
-      const base = baseline.counts?.[s]?.[k] ?? Infinity;
+    for (const k of COUNT_KEYS) {
+      // 기준선에 없는 표면은 0 — 새로 등록한 표면은 처음부터 강제된다.
+      const base = baseline.counts?.[s]?.[k] ?? 0;
       if (c[k] > base) { failed = true; console.error(`FAIL ${k === "important" ? "R3" : "R1"} [${s}] ${k} ${base} → ${c[k]}`); }
     }
   }
   const summary = (k) => JSON.stringify(Object.fromEntries(Object.entries(counts).map(([s, c]) => [s, c[k]])));
-  console.log("css-surfaces:", JSON.stringify(byRule), "important:", summary("important"), "unlayered:", summary("unlayered"));
+  console.log("css-surfaces:", JSON.stringify(byRule), ...COUNT_KEYS.flatMap((k) => [`${k}:`, summary(k)]));
   process.exit(failed ? 1 : 0);
 }

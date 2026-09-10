@@ -1,2 +1,3 @@
 /* 반드시 beta 뒤에 와야 이긴다 */
 @import "./a.css" layer(alpha);
+@import "./nested.css" layer(alpha);
