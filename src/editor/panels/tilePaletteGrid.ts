@@ -6,7 +6,11 @@ import { tileVisibleOnLayer } from "@/editor/tileLayerClassification";
 import type { AutotileGroup, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
-import { installCustomPaletteGesture } from "@/editor/panels/tilePaletteCustomGesture";
+import {
+  displayOrderStampFactory,
+  installPaletteStampGesture,
+  sourceCoordinateStampFactory,
+} from "@/editor/panels/tilePaletteCustomGesture";
 
 // RM2003식 단일 타일 팔레트 — 그룹/시트 보기 분리 없이 가로 6칸 고정 리플로우.
 // 오토타일 그룹(autotileGroupsForTileset)은 그룹당 대표 1칸(외딴/anchor 타일)으로
@@ -49,6 +53,14 @@ type MakeGridPaletteArgs = {
 };
 
 type MakeCustomPaletteArgs = MakeGridPaletteArgs & {
+  readonly onCreatePaletteStamp?: (stamp: PaletteStamp) => void;
+};
+
+type MakeGridPaletteWithStampArgs = MakeGridPaletteArgs & {
+  /**
+   * 있으면 기본 팔레트에서도 사각 드래그 = Combo Brush 가 된다 (OPRN-OUT-022).
+   * 없으면 예전처럼 단일 선택만 — 구조물 편집기처럼 조합 선택이 뜻을 갖지 않는 호출부용.
+   */
   readonly onCreatePaletteStamp?: (stamp: PaletteStamp) => void;
 };
 
@@ -155,7 +167,24 @@ export function gridPaletteDisplayTile(tileset: TilesetDef, tile: number): numbe
   return tile;
 }
 
-export function makeGridPalette(input: MakeGridPaletteArgs): HTMLElement {
+/**
+ * 화면에 실제로 깔리는 순서 — 오토타일 대표 칸이 앞, 이어서 일반 나열.
+ * 드래그 스탬프는 이 순서를 격자로 읽는다(리플로우 팔레트에는 원본 좌표가 없다).
+ */
+export function gridPaletteDisplayOrder(input: MakeGridPaletteArgs): readonly number[] {
+  const args = { ...input, selectedTile: gridPaletteDisplayTile(input.tileset, input.selectedTile) };
+  const model = buildGridPaletteModel(args.tileset, args.layer);
+  const order: number[] = [];
+  for (const entry of model.autotiles) {
+    if (passesFilter(args, entry.representativeTile)) order.push(entry.representativeTile);
+  }
+  for (const tileId of model.tileIds) {
+    if (passesFilter(args, tileId)) order.push(tileId);
+  }
+  return order;
+}
+
+export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElement {
   // Selection is a display projection only; do not replace the selected paint variant.
   const args = { ...input, selectedTile: gridPaletteDisplayTile(input.tileset, input.selectedTile) };
   const model = buildGridPaletteModel(args.tileset, args.layer);
@@ -189,6 +218,19 @@ export function makeGridPalette(input: MakeGridPaletteArgs): HTMLElement {
     shown += 1;
   }
   installGridRoving(grid, GRID_PALETTE_COLUMNS);
+  if (input.onCreatePaletteStamp) {
+    installPaletteStampGesture(
+      sheet,
+      grid,
+      displayOrderStampFactory({
+        displayTiles: gridPaletteDisplayOrder(input),
+        displayTilesPerRow: GRID_PALETTE_COLUMNS,
+        tileset: args.tileset,
+      }),
+      args.onSelectTile,
+      input.onCreatePaletteStamp,
+    );
+  }
   sheet.append(grid);
   if (shown === 0) {
     sheet.append(el("div", { class: "empty-hint palette-filter-empty", text: "조건에 맞는 타일이 없습니다.", dataset: { testid: "palette-filter-empty" } }));
@@ -223,7 +265,13 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
   }
   installGridRoving(grid, columns);
   if (args.onCreatePaletteStamp) {
-    installCustomPaletteGesture(sheet, grid, args.tileset, args.onSelectTile, args.onCreatePaletteStamp);
+    installPaletteStampGesture(
+      sheet,
+      grid,
+      sourceCoordinateStampFactory(args.tileset),
+      args.onSelectTile,
+      args.onCreatePaletteStamp,
+    );
   }
   sheet.append(grid);
   return sheet;

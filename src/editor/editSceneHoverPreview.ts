@@ -1,6 +1,7 @@
 import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
+import { comboBrushPlacement } from "@/editor/comboBrush";
 import { editorState } from "@/editor/editorState";
 import { brushStrokePoints } from "@/editor/TilePaintEngine";
 import { store } from "@/project/store";
@@ -32,16 +33,33 @@ export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
   if (state.tool !== "paint" && state.tool !== "fill" && state.tool !== "erase") return;
   if (spec.centerX < 0 || spec.centerY < 0 || spec.centerX >= map.width || spec.centerY >= map.height) return;
   if (state.tool === "paint" && state.activePaletteStamp) {
-    for (const cell of state.activePaletteStamp.cells) {
-      const x = spec.centerX + cell.dx;
-      const y = spec.centerY + cell.dy;
-      if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
-      const preview = createChipsetTileObject(spec.scene, map, tileset, x, y, cell.tile);
-      preview.setAlpha(cell.layer === "upper" ? 0.72 : 0.58);
-      spec.layer.add(preview);
-      const marker = spec.scene.add.rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0x51cf66, 0.12);
+    // 발자국은 comboBrushPlacement 하나로 푸다 — 여기서 두 번째 경계 계산을 하지 않는다.
+    // 예전에는 미리보기와 페인트가 각자 `x < map.width` 를 세서 둘이 어긋날 수 있었고,
+    // 잘리는 칸은 그냥 안 그려서 "누르면 몇 칸이 사라진다"는 사실이 누르기 전에 보이지 않았다.
+    const placement = comboBrushPlacement({
+      bounds: { height: map.height, width: map.width },
+      stamp: state.activePaletteStamp,
+      x: spec.centerX,
+      y: spec.centerY,
+    });
+    for (const placed of placement.cells) {
+      const { x, y } = placed;
+      if (placed.inBounds) {
+        const preview = createChipsetTileObject(spec.scene, map, tileset, x, y, placed.cell.tile);
+        preview.setAlpha(placed.cell.layer === "upper" ? 0.72 : 0.58);
+        spec.layer.add(preview);
+      }
+      // 맵 밖 칸도 표시한다 — 붉은 슬롯이 계약대로 "이 칸은 잘린다"를 미리 말한다.
+      const marker = spec.scene.add.rectangle(
+        x * TILE_SIZE,
+        y * TILE_SIZE,
+        TILE_SIZE,
+        TILE_SIZE,
+        placed.inBounds ? 0x51cf66 : 0xff6b6b,
+        placed.inBounds ? 0.12 : 0.22,
+      );
       marker.setOrigin(0, 0);
-      marker.setStrokeStyle(1, 0xd3f9d8, 0.72);
+      marker.setStrokeStyle(1, placed.inBounds ? 0xd3f9d8 : 0xffc9c9, placed.inBounds ? 0.72 : 0.9);
       spec.layer.add(marker);
     }
     return;

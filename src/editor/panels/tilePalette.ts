@@ -250,6 +250,9 @@ function makePaletteSurface(input: {
         visibleTiles,
       })
     : makeGridPalette({
+        // 기본 리플로우 팔레트도 사각 드래그 = Combo Brush (OPRN-OUT-022).
+        // 예전에는 이 게 커스텀 아틀라스에만 있어 기본 칩셋 사용자는 조합을 만들 수 없었다.
+        onCreatePaletteStamp: selectPaletteStamp,
         layer: tileLayer,
         onSelectTile: selectPaletteTile,
         selectedTile: state.selectedTile,
