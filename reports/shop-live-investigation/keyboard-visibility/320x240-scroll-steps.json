@@ -1,0 +1,57 @@
+[
+  {
+    "arrowDownCount": 0,
+    "scrollTop": 88,
+    "fullyVisibleStats": []
+  },
+  {
+    "arrowDownCount": 1,
+    "scrollTop": 120,
+    "fullyVisibleStats": []
+  },
+  {
+    "arrowDownCount": 2,
+    "scrollTop": 152,
+    "fullyVisibleStats": []
+  },
+  {
+    "arrowDownCount": 3,
+    "scrollTop": 184,
+    "fullyVisibleStats": [
+      "attack"
+    ]
+  },
+  {
+    "arrowDownCount": 4,
+    "scrollTop": 216,
+    "fullyVisibleStats": [
+      "attack",
+      "defense"
+    ]
+  },
+  {
+    "arrowDownCount": 5,
+    "scrollTop": 248,
+    "fullyVisibleStats": [
+      "attack",
+      "defense",
+      "mind"
+    ]
+  },
+  {
+    "arrowDownCount": 6,
+    "scrollTop": 280,
+    "fullyVisibleStats": [
+      "defense",
+      "mind"
+    ]
+  },
+  {
+    "arrowDownCount": 7,
+    "scrollTop": 312,
+    "fullyVisibleStats": [
+      "mind",
+      "agility"
+    ]
+  }
+]

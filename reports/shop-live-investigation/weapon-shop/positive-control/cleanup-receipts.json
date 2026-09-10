@@ -1,0 +1,15 @@
+{
+  "pid": 386230,
+  "processExists": false,
+  "ports": {
+    "42611": {
+      "listening": false
+    },
+    "9841": {
+      "listening": true
+    },
+    "9888": {
+      "listening": true
+    }
+  }
+}
