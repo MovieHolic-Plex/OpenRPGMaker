@@ -20,6 +20,19 @@ import type { Command, Condition, GameMap, Project } from "./types";
 
 export type MapLocationReferenceSite =
   | { readonly kind: "encounter"; readonly mapId: string; readonly entryIndex: number }
+  /**
+   * 트리거 자식이 로케이션을 가리키는 자리(`{ kind:"locationTransition" }`).
+   * 조건과 분리한 이유: 복구 계획이 다르다 — 조건은 «떼어내기(detach)» 가 재리지만
+   * 트리거는 떼어내면 «언제 도는가» 를 새로 정해야 하므로 생개가 다른 트리거로 갈라마한다.
+   */
+  | {
+      readonly kind: "trigger";
+      readonly mapId: string;
+      readonly eventId: string;
+      readonly pageId?: string;
+      /** 사람이 읽을 위치 경로. 진단 메시지에 그대로 싣린다. */
+      readonly path: string;
+    }
   | {
       readonly kind: "condition";
       readonly mapId: string;
@@ -54,6 +67,19 @@ export function collectMapLocationReferences(project: Project): MapLocationRefer
     }
     for (const event of map.events) {
       const base = { mapId: map.id, eventId: event.id } as const;
+      if (event.trigger.kind === "locationTransition" && event.trigger.locationId) {
+        refs.push({
+          locationId: event.trigger.locationId,
+          site: { kind: "trigger", ...base, path: `이벤트 ${event.id} 시작 방식` },
+        });
+      }
+      for (const page of event.pages ?? []) {
+        if (page.trigger.kind !== "locationTransition" || !page.trigger.locationId) continue;
+        refs.push({
+          locationId: page.trigger.locationId,
+          site: { kind: "trigger", ...base, pageId: page.id, path: `이벤트 ${event.id} 페이지 ${page.id} 시작 방식` },
+        });
+      }
       if (event.condition) {
         collectConditionRefs(event.condition, refs, { kind: "condition", ...base, path: `이벤트 ${event.id} 출현 조건` });
       }
@@ -83,6 +109,19 @@ export function collectMapLocationReferences(project: Project): MapLocationRefer
  * 진단. 고아 참조는 error(런타임에서 조용히 거짓이 되어 이벤트가 안 도는 결함),
  * 퇴화한 기하와 같은 이름 중복은 warning(동작은 하지만 저작 의도가 흐려진다).
  */
+function locationIssueMessage(ref: MapLocationReference): string {
+  const tail = "로케이션 레이어에서 다시 지정하거나 조건을 떼어 주세요.";
+  if (ref.site.kind === "encounter") {
+    return `인카운터 ${ref.site.entryIndex + 1}번이 없는 로케이션 '${ref.locationId}' 을 가리킵니다. ${tail}`;
+  }
+  if (ref.site.kind === "trigger") {
+    // 트리거는 «조건만 떼기» 로 복구되지 않는다 — 시작 방식 자시므로, 다른 구역을
+    // 가리키거나 다른 시작 방식을 고르는 것만이 복구다. 문장도 그렇게 말해야 한다.
+    return `${ref.site.path} 이 없는 로케이션 '${ref.locationId}' 에 드나드는 것을 기다립니다 — 이 이벤트는 절대 실행되지 않습니다. 다른 구역을 고르거나 시작 방식을 바꿔 주세요.`;
+  }
+  return `${ref.site.path} 가 없는 로케이션 '${ref.locationId}' 을 가리킵니다. ${tail}`;
+}
+
 export function collectMapLocationReferenceIssues(project: Project): MapLocationIssue[] {
   const issues: MapLocationIssue[] = [];
   for (const ref of collectMapLocationReferences(project)) {
@@ -93,10 +132,7 @@ export function collectMapLocationReferenceIssues(project: Project): MapLocation
       code: "map-location-missing-ref",
       mapId: ref.site.mapId,
       locationId: ref.locationId,
-      message:
-        ref.site.kind === "encounter"
-          ? `인카운터 ${ref.site.entryIndex + 1}번이 없는 로케이션 '${ref.locationId}' 을 가리킵니다. 로케이션 레이어에서 다시 지정하거나 조건을 떼어 주세요.`
-          : `${ref.site.path} 가 없는 로케이션 '${ref.locationId}' 을 가리킵니다. 로케이션 레이어에서 다시 지정하거나 조건을 떼어 주세요.`,
+      message: locationIssueMessage(ref),
     });
   }
   for (const map of Object.values(project.maps)) {
@@ -171,6 +207,15 @@ export function repairMapLocationReferences(
       notes.push(`${map.name} 인카운터 ${entryIndex + 1}번`);
     }
     for (const event of map.events) {
+      if (repairTrigger(event, missingLocationId, plan)) {
+        repaired += 1;
+        notes.push(`${map.name} 이벤트 ${event.id} 시작 방식`);
+      }
+      for (const page of event.pages ?? []) {
+        if (!repairTrigger(page, missingLocationId, plan)) continue;
+        repaired += 1;
+        notes.push(`${map.name} 이벤트 ${event.id} 페이지 ${page.id} 시작 방식`);
+      }
       if (event.condition) {
         const next = repairCondition(event.condition, missingLocationId, plan);
         if (next.changed) {
@@ -260,6 +305,31 @@ function commandBranches(command: Command): readonly Command[][] {
     default:
       return [];
   }
+}
+
+/**
+ * 트리거 복구. `remap` 은 구역만 갈아끔고, `detach`/`freezeRect` 는 시작 방식을
+ * **「말을 걸면」(action)** 으로 강단한다.
+ *
+ * 왜 action 인가: 삭제된 구역을 기다리는 트리거는 적었지만 절대 실행되지 않는 이벤트다.
+ * 조건을 떼는 일의 뒷머리인 «조건 없이 항상 참» 을 트리거에 그대로 옮기면 `auto` 가 되어
+ * 맵에 들어가는 순간 멋대로 돌아버린다 — 조용한 복구가 생산하는 가장 나챜 결과다.
+ * `action` 은 사람이 말을 걸 때만 돌아서 명령이 살아 있고(떼어내기의 본뜻), 스스로 발동하지
+ * 않음을 약속한다. 이 강단은 복구 노트에 그대로 다시 오른다.
+ */
+function repairTrigger(
+  host: { trigger: import("./types").Trigger },
+  missingLocationId: string,
+  plan: LocationRepairPlan,
+): boolean {
+  if (host.trigger.kind !== "locationTransition") return false;
+  if (host.trigger.locationId !== missingLocationId) return false;
+  if (plan.kind === "remap") {
+    host.trigger = { ...host.trigger, locationId: plan.locationId };
+    return true;
+  }
+  host.trigger = { kind: "action" };
+  return true;
 }
 
 type ConditionRepair = { readonly condition: Condition | undefined; readonly changed: number };

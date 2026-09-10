@@ -8,7 +8,7 @@ import { resolveEventPlacement, upsertEventIntoMap } from "@/editor/tools/eventT
 import { ensureNamedSwitch, ensureNamedVariable } from "@/editor/tools/flagHelpers";
 import { resolveGraphic, type GraphicSpec } from "@/editor/tools/eventCompile";
 import { isPassable } from "@/project/collision";
-import type { Command, EventPage, EventPageCondition, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
+import type { Command, EventPage, EventPageCondition, EventPageGraphic, GameEvent, GameMap, Project, SimpleTriggerKind } from "@/project/types";
 import {
   isValidQuestKey,
   questFlagIds,
@@ -100,7 +100,7 @@ function page(
   conditions: EventPageCondition[],
   commands: Command[],
   graphic: EventPageGraphic,
-  options: { trigger?: EventPage["trigger"]["kind"]; priority?: EventPage["priority"] } = {}
+  options: { trigger?: SimpleTriggerKind; priority?: EventPage["priority"] } = {}
 ): EventPage {
   const trigger = options.trigger ?? "action";
   const priority = options.priority ?? "same";
@@ -117,7 +117,7 @@ function page(
   };
 }
 
-function event(id: string, x: number, y: number, trigger: GameEvent["trigger"]["kind"], pages: EventPage[]): GameEvent {
+function event(id: string, x: number, y: number, trigger: SimpleTriggerKind, pages: EventPage[]): GameEvent {
   return { id, x, y, trigger: { kind: trigger }, commands: [], pages };
 }
 

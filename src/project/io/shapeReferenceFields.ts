@@ -23,7 +23,8 @@ export function requirePosition(label: string, value: unknown): void {
   requireNumber(`${label}.y`, position.y);
 }
 
-const TRIGGER_KINDS = ["action", "touch", "playerTouch", "eventTouch", "auto", "parallel"] as const;
+const TRIGGER_KINDS = ["action", "touch", "playerTouch", "eventTouch", "auto", "parallel", "locationTransition"] as const;
+const LOCATION_TRANSITIONS = ["enter", "leave"] as const;
 
 export function validateTrigger(label: string, value: unknown): void {
   const trigger = requireRecord(label, value);
@@ -33,6 +34,16 @@ export function validateTrigger(label: string, value: unknown): void {
   assert(
     TRIGGER_KINDS.includes(kind as (typeof TRIGGER_KINDS)[number]),
     `${label}: 알 수 없는 trigger "${kind}". 허용: ${TRIGGER_KINDS.join(", ")} (자동 실행은 "auto").`,
+  );
+  if (kind !== "locationTransition") return;
+  // 구역 드나듦은 트리거 중 유일하게 매개변수가 있다. 로케이션 ID 의 **실재 여부는 검사하지
+  // 않는다** — 삭제된 구역을 가리키는 저장본이 로드를 막아 버리면 사용자가 고칠 수단이 사라진다.
+  // 그 상태는 `insideLocation` 과 똑같이 projectLint 의 `map-location-missing-ref` 가 올린다.
+  requireString(`${label}.locationId`, trigger.locationId);
+  const transition = requireString(`${label}.transition`, trigger.transition);
+  assert(
+    LOCATION_TRANSITIONS.includes(transition as (typeof LOCATION_TRANSITIONS)[number]),
+    `${label}: 알 수 없는 transition "${transition}". 허용: ${LOCATION_TRANSITIONS.join(", ")}.`,
   );
 }
 

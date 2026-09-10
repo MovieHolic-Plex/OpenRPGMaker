@@ -311,6 +311,13 @@ export interface PlaySession {
   actorStateIds?: Record<string, string[]>;
   /** 저작 태도표와 다른 진영 쌍만 담는 런타임 평판 오버레이. */
   factionStanceOverrides?: FactionStanceOverrides;
+  /**
+   * 명명 로케이션 드나듦 트리거의 «직전 점유» 기록(mapId → locationId[]).
+   * **ID 만** 담는다 — 사각형을 복사하면 저작자가 구역을 옮긴 뒤에도 세이브 안의 낡은
+   * 사각형이 판정을 지배한다. 생략(기본)이면 첫 판정이 기준선만 심고 발동하지 않는다.
+   * 계약은 `src/project/locationTransitions.ts`.
+   */
+  occupiedLocationIds?: Record<MapId, string[]>;
   // 현재 위치(맵 진입/transfer 시 갱신).
   currentMapId: MapId;
   x: number;

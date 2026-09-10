@@ -13,7 +13,7 @@ import {
 import { commandKindLabel } from "@/editor/panels/eventEditor/options";
 import { recordCommandToolbarChange } from "@/editor/panels/eventEditor/commandToolbarHistory";
 import { store, type ProjectChangeDescriptor } from "@/project/store";
-import type { Command, EventPage, GameEvent, MapId, Trigger } from "@/project/types";
+import type { Command, EventPage, GameEvent, MapId, SimpleTriggerKind, Trigger } from "@/project/types";
 import { genId } from "@/util/id";
 
 export { clearCopiedEventPage, subscribeCopiedEventPage } from "@/editor/eventPageClipboard";
@@ -497,7 +497,12 @@ export function moveEventPageCommandAcross(
   ));
 }
 
-export function triggerFromKind(kind: Trigger["kind"]): Trigger {
+/**
+ * 매개변수 없는 트리거만 이 생산기로 만들 수 있다. `locationTransition` 은 로케이션 ID 와
+ * 방향을 햨솔 갖는 상품이므로 `{ kind }` 만으로 지으면 생개를 낸다 — 그것은
+ * `locationTransitionTrigger`(`editor/locationTriggerAuthoring.ts`) 가 지은다.
+ */
+export function triggerFromKind(kind: SimpleTriggerKind): Trigger {
   return { kind };
 }
 

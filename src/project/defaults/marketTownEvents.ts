@@ -1,5 +1,5 @@
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
-import type { Command, EventPage, EventPageCondition, EventPageGraphic, EventPageMovement, GameEvent, GameMap, Trigger } from "../types";
+import type { Command, EventPage, EventPageCondition, EventPageGraphic, EventPageMovement, GameEvent, GameMap, SimpleTriggerKind } from "../types";
 import { DEFAULT_ITEM_ID } from "./constants";
 
 const NPC_SPRITES = [
@@ -234,7 +234,7 @@ function createMarketResidentEvent(id: string, point: Point, spriteIndex: number
   ]);
 }
 
-function createEvent(id: string, point: Point, triggerKind: Trigger["kind"], pages: readonly EventPage[]): GameEvent {
+function createEvent(id: string, point: Point, triggerKind: SimpleTriggerKind, pages: readonly EventPage[]): GameEvent {
   return { id, x: point.x, y: point.y, trigger: { kind: triggerKind }, commands: [], pages: [...pages] };
 }
 
@@ -242,7 +242,7 @@ function createPage(
   id: string,
   name: string,
   conditions: readonly EventPageCondition[],
-  triggerKind: Trigger["kind"],
+  triggerKind: SimpleTriggerKind,
   graphic: EventPageGraphic,
   movement: EventPageMovement,
   commands: readonly Command[]

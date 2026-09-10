@@ -5,7 +5,7 @@
 // (src/assets/scarloxyPackManifest.json 블록 배치), 인덱스 상수에 블록 이름을 병기한다.
 
 import { PRODUCT_BRAND } from "@/brand";
-import type { Command, EventPage, GameEvent, GameMap, Project } from "../types";
+import type { Command, EventPage, GameEvent, GameMap, Project, SimpleTriggerKind } from "../types";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { normalizeEnemyRecord, normalizeSkillRecord, normalizeTroopRecord } from "@/project/databaseRecordModel";
 import { DEFAULT_ACTOR_ID } from "./constants";
@@ -332,7 +332,7 @@ export function transferEvent(id: string, x: number, y: number, mapId: string, t
   ], "playerTouch", "below");
 }
 
-export function event(id: string, x: number, y: number, pages: readonly EventPage[], trigger: GameEvent["trigger"]["kind"] = "action", priority: EventPage["priority"] = "same"): GameEvent {
+export function event(id: string, x: number, y: number, pages: readonly EventPage[], trigger: SimpleTriggerKind = "action", priority: EventPage["priority"] = "same"): GameEvent {
   return { id, x, y, trigger: { kind: trigger }, commands: [], pages: pages.map((entry) => ({ ...entry, trigger: { kind: trigger }, priority })) };
 }
 

@@ -32,7 +32,22 @@ export type Trigger =
   | { kind: "playerTouch" }
   | { kind: "eventTouch" }
   | { kind: "auto" }
-  | { kind: "parallel" };
+  | { kind: "parallel" }
+  /**
+   * 주인공이 같은 맵의 명명 로케이션에 **들어오거나 나갈 때** 한 번 실행한다.
+   * 사각형을 여기 복사하지 않는다 — `GameMap.locations` 의 기하를 가리키므로 구역을 옮기면
+   * 발동 범위도 따라온다(`insideLocation` 조건과 같은 규칙, 같은 해석자).
+   * 판정은 `project/locationTransitions.ts` 하나가 갖고, 세션의 점유 기록
+   * (`PlaySession.occupiedLocationIds`) 이 «직전에 안에 있었나» 를 세이브 너머로 기억한다.
+   */
+  | { kind: "locationTransition"; locationId: string; transition: "enter" | "leave" };
+
+/**
+ * 매개변수가 없는 트리거 종류. `{ kind }` 만으로 트리거를 지을 수 있는 곳
+ * (콘텐자 마만로 생산기, 허스트 콜러서, 트리거 마묵이 보)은 이 집합을 쓴다 —
+ * `locationTransition` 은 로케이션 ID 와 방향이 있어야 성립하므로 그 생산기로 만들 수 없다.
+ */
+export type SimpleTriggerKind = Exclude<Trigger, { kind: "locationTransition" }>["kind"];
 
 export type SelfSwitchKey = "A" | "B" | "C" | "D";
 
