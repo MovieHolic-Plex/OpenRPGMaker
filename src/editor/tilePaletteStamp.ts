@@ -15,6 +15,13 @@ export type PaletteStamp = {
   readonly height: number;
   /** 등록된 구조 킷("내 스탬프")에서 온 스탬프면 그 킷 id — 팔레트 선반 하이라이트용. */
   readonly kitId?: string;
+  /** 큐레이션 조합에서 온 붓이면 그 이름 — 사이드바가 번호가 아니라 이름으로 말한다. */
+  readonly label?: string;
+  /**
+   * 붓의 출처. 없으면 `comboBrushOrigin` 이 kitId 유무로 유도한다(옛 스탬프 하위 호환).
+   * 값 정의는 `@/editor/comboBrush` 의 `ComboBrushOrigin`. 순환 import 를 피해 여기서는 문자열로 둔다.
+   */
+  readonly origin?: "curated" | "palette-drag" | "structure-kit";
   readonly source: {
     readonly endTile: number;
     readonly startTile: number;
@@ -56,6 +63,7 @@ export function createPaletteStampFromDrag(input: PaletteStampDragInput): Palett
   return {
     cells,
     height: bottom - top + 1,
+    origin: "palette-drag",
     source: { endTile: input.endTile, startTile: input.startTile },
     width: right - left + 1,
   };
@@ -88,6 +96,7 @@ export function createPaletteStampFromDisplayDrag(input: PaletteStampDisplayDrag
   return {
     cells,
     height: bottom - top + 1,
+    origin: "palette-drag",
     source: { endTile: input.endTile, startTile: input.startTile },
     width: right - left + 1,
   };

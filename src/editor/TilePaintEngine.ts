@@ -5,6 +5,7 @@ import {
   toggleCollision,
   fillTile,
 } from "@/editor/actions";
+import { comboBrushPlacement, evaluateComboBrushPlacement, isComboBrush } from "@/editor/comboBrush";
 import { editorState } from "@/editor/editorState";
 import { revealPaletteTileFromMap } from "@/editor/panels/tilePalette";
 import { selectTileRegion } from "@/editor/mapClipboard";
@@ -105,6 +106,28 @@ export class TilePaintEngine {
       case "paint":
         this.applyStrokeEdit(mid, () => {
           if (activePaletteStamp) {
+            // Combo Brush 경계 판정 — 미리보기와 **같은** 모델(evaluateComboBrushPlacement)을 탄다.
+            // 발자국이 통째로 맵 밖이면 아무 칸도 쓰지 않고 진단만 돌려준다 — 패턴이 반쪽만 남지 않는다.
+            const comboMap = store.getCurrent().maps[mid];
+            if (comboMap) {
+              const verdict = evaluateComboBrushPlacement({
+                bounds: { height: comboMap.height, width: comboMap.width },
+                stamp: activePaletteStamp,
+                x,
+                y,
+              });
+              if (!verdict.ok) {
+                if (!this.placementNoticeShown) {
+                  this.placementNoticeShown = true;
+                  toast(verdict.diagnostic.text, "error");
+                }
+                return;
+              }
+              if (verdict.warning && !this.placementNoticeShown) {
+                this.placementNoticeShown = true;
+                toast(verdict.warning.text, "info");
+              }
+            }
             // 배치 조건(kit.ai.placement) 검사 — 킷에 조건이 있을 때만 돈다.
             // hard 를 어기면 **칠하지 않는다**. 예전에는 조건이 산문뿐이라 아무 일도 일어나지 않았고,
             // 「화덕은 북벽에 붙는다」 같은 말이 지켜지는지 확인할 방법이 없었다.
@@ -131,7 +154,14 @@ export class TilePaintEngine {
             // 구조물 배치 기록은 **스트로크의 첫 타일에서 한 번만** — 드래그로 배치가 수십 개 생기는 것을 막는다.
             // 구조물 킷이 아닌 스탬프(일반 드래그 선택·실내 오브젝트)는 beginKitStampCapture 가 null 을 준다.
             const capture = firstStrokeTile ? beginKitStampCapture(mid, activePaletteStamp, x, y) : null;
-            applyPaletteStamp({ mapId: mid, stamp: activePaletteStamp, x, y, autoConnect: autoConnectMode });
+            applyPaletteStamp({
+              autoConnect: autoConnectMode,
+              bounds: comboMap ? { height: comboMap.height, width: comboMap.width } : null,
+              mapId: mid,
+              stamp: activePaletteStamp,
+              x,
+              y,
+            });
             if (capture) commitKitStampCapture(capture);
             return;
           }
@@ -268,6 +298,8 @@ function strokeCenters(previousKey: string, x: number, y: number): readonly { x:
 
 function applyPaletteStamp(input: {
   readonly autoConnect: boolean;
+  /** 맵 크기. 있으면 칸 좌표를 미리보기와 같은 comboBrushPlacement 로 푼다. */
+  readonly bounds: { readonly height: number; readonly width: number } | null;
   readonly mapId: MapId;
   readonly stamp: PaletteStamp;
   readonly x: number;
@@ -276,13 +308,19 @@ function applyPaletteStamp(input: {
   // 여러 칸 스탬프는 "고른 그대로" 찍는다 — 클러스터 동반 확장이 셀마다 발화해
   // 스탬프 밖 이웃의 상위 레이어를 덮어쓰던 문제 차단 + 의도한 배열 보존.
   // 1칸 스탬프는 지형 오토타일(흙길/모래 등)이 기대대로 성형되도록 autoConnect 를 존중한다.
-  const single = input.stamp.cells.length === 1;
+  const single = !isComboBrush(input.stamp);
+  // 칸 좌표는 호버 미리보기와 **같은** comboBrushPlacement 에서 온다 — 두 번째 경계 계산 금지.
+  // bounds 가 없으면(맵 조회 실패) 예전처럼 전량을 넘기고 paintTilesBulk 의 inMap 이 막는다.
+  const cells = input.bounds
+    ? comboBrushPlacement({ bounds: input.bounds, stamp: input.stamp, x: input.x, y: input.y })
+      .paintableCells.map((placed) => ({ layer: placed.cell.layer, tile: placed.cell.tile, x: placed.x, y: placed.y }))
+    : input.stamp.cells.map((cell) => ({ layer: cell.layer, tile: cell.tile, x: input.x + cell.dx, y: input.y + cell.dy }));
   paintTilesBulk(
     input.mapId,
-    input.stamp.cells.map((cell) => ({
+    cells.map((cell) => ({
       layer: cell.layer,
-      x: input.x + cell.dx,
-      y: input.y + cell.dy,
+      x: cell.x,
+      y: cell.y,
       tile: cell.tile,
     })),
     {

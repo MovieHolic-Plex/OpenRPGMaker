@@ -3,7 +3,8 @@ import { el } from '@/util/dom';
 import { hasOpenModalLayer } from '@/editor/ui/modalStack';
 import { closeMapContextMenu } from '@/editor/panels/mapContextMenu';
 
-type SurfaceId = 'maps' | 'tools' | 'assist' | 'kits';
+// 'combos' = 큐레이션 Combo Brush 선반 (OPRN-OUT-022 지형 도구탭 조합 목록).
+type SurfaceId = 'maps' | 'tools' | 'assist' | 'kits' | 'combos';
 type SurfaceInput = {
   readonly id: SurfaceId;
   readonly label: string;

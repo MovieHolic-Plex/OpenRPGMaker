@@ -247,3 +247,7 @@ verify-shots/battle-skin-trio/
 # GRAFT-1 strict graft-image evidence (st_01a07c55).
 !.omo/evidence/graft-proof/
 !.omo/evidence/graft-proof/**
+
+# OPRN-OUT-022 Combo Brush — acceptance evidence (st_01a08a5b).
+!.omo/evidence/oprn-022/
+!.omo/evidence/oprn-022/**

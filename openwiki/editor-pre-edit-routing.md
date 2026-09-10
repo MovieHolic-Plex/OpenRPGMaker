@@ -39,6 +39,75 @@ Regression coverage: `test/exteriorDoorBackground.test.ts`.
   Real browser proof is `scripts/qa/sidebar-brush.mjs`; its fixture is local-only
   and requires disabled remote persistence.
 
+## Combo Brush (2026-09-10, OPRN-OUT-022)
+
+**붓이 «몇 칸을 덮는가» 를 둘이 아니라 하나로 대답하게 한 라운드다.** 물음이 둘로 갈리면
+미리보기와 결과가 어긋난다 — 예전에는 호버와 페인트가 각자 `x < map.width` 를 세었다.
+
+### 용어 (코드와 UI 가 같은 말을 쓴다)
+
+| 말 | 뜻 | 어디서 정해지나 |
+|---|---|---|
+| **Combo Brush (조합 붓)** | 서로 **다른** 칸 2개 이상이 모인 합성 붓. 원본 배열이 정보다. | `isComboBrush(stamp)` = `cells.length > 1` |
+| **브러시 크기** | 같은 타일 하나를 N×N 으로 되풀이하는 것. 배열 정보가 없다. | `EDITOR_BRUSH_SIZES`, `brushStrokePoints` |
+| **발자국(footprint)** | 원점에 대고 풀어난 칸 목록. 맵 밖 칸도 `inBounds:false` 로 남는다. | `comboBrushPlacement` |
+
+이 둘을 UI 에서 반드시 다르게 보여야 한다. 그 문구의 **유일한 집은 `comboBrushBadge`** 이고,
+사이드바 상태칩은 `data-brush-kind` 로 `combo` / `stamp` / `repeat` 를 노출한다. 문구를 두 번째
+장소에서 지어내지 마라.
+
+### 소유 경계
+
+- `src/editor/comboBrush.ts` — 순수 모델(store·DOM 없음). 발자국 해석, 경계 판정, 레이어 요약, 배지 문구.
+  호버 미리보기(`editSceneHoverPreview`)와 페인트(`TilePaintEngine.applyPaletteStamp`)가 **둘 다** 이걸 태야 한다.
+  새 경계 계산을 또 쓰지 마라.
+- `src/editor/comboBrushCatalog.ts` — **큐레이션 조합 메타데이터의 정보이자 유일한 집.**
+  목록을 다른 파일에 복사하지 말고, 사용하는 쪽은 `curatedComboBrushesForTileset` 를 불러 끔어다 쓴다.
+- `src/editor/panels/comboBrushShelf.ts` — 지형 도구 표면의 「조합」 선반. 목록을 **만들지 않고** 그릴 뿐이다.
+- `src/editor/panels/tilePaletteCustomGesture.ts` — 팔레트 사각 드래그 제스처 하나. 두 팔레트의 차이는
+  «좌표를 무엇으로 읽는가» 뿐이라 `PaletteStampFactory` 하나로 갈라 넣는다:
+  커스텀 아틀라스 = 원본 시트 좌표, 기본 팔레트 = **화면 표시 순서**(6열 리플로우, 오토타일 대표 칸 앞).
+
+### 근거 규칙 — 번호 인접으로 추론하지 않는다
+
+타일 번호가 이어져 있다는 사실은 «나무 한 그루» 나 «집 한 채» 의 근거가 아니다 — 칩셋 열이 행을 넘어가면
+이웃 번호는 전혀 다른 그림이다. 모든 셀은 `CHIPSET_TILE_GROUPS` 의 실측 멤버십을 `sourceGroups` 로
+**인용해서** 짜고, 그 인용을 `test/comboBrushCatalog.test.ts` 가 기계적으로 검사한다:
+
+1. 모든 셀 타일이 그 조합이 인용한 가방 안에 있는가.
+2. 선언한 레이어가 `defaultPaintLayerForTile` 의 실제 판정과 같은가.
+   (실제 사고: 성 지붕 면을 upper 로 적었다가 이 검사에 걸려 lower 로 바로잡았다.)
+3. `dx`/`dy` 가 선언한 `width`×`height` 를 구멍 없이 정확히 채우는가.
+
+### 검토 책임
+
+새 조합은 **타일 콘텐츠 검토 담당(감독)의 승인**을 받고 들어온다. 코드 안의 같은 말은
+`COMBO_BRUSH_REVIEW_OWNER` 이고, 그 상수는 이 문서를 가리킨다. 제출할 때 같이 낸다:
+
+- 무엇이 **완결**되는가 (조각을 따로 찍으면 무엇이 망가지는가) — `note` 에 한 줄.
+- 셀 타일의 출시(`sourceGroups`)와 그 근거가 된 실측/사용자 확정 기록.
+- 계약 테스트 통과 결과. «AI 가 제안했다» 는 근거가 아니다.
+
+목록은 기본 칩셋(combined_town) 전용이다. 다른 칩셋에서는 타일 번호의 뜻이 달라 그대로 쓰면
+엉뚱한 그림이 찍히므로 `curatedComboBrushesForTileset` 가 빈 목록을 돌려준다.
+
+### 경계와 진단
+
+- 발자국이 **통째로** 맵 밖 → 거부. 한 칸도 쓰지 않으므로 패턴이 반쪽만 남지 않는다.
+- 일부만 잘림 → 허용 + 경고. 경계에 붙여 찍는 것은 정상 저작이고, 맵 안 칸은 전부 원본 배열대로 들어간다.
+  호버 미리보기는 잘리는 칸을 **붉게** 표시한다 — 누르기 전에 보여야 한다.
+- 구조 킷의 `kit.ai.placement` hard 조건은 여전히 `checkKitStampConditions` 가 본다. 두 검사는 서로를
+  확장하지 않는다(OPRN-OUT-017 과 같은 경계).
+- 한 번 배치 = 되돌리기 한 단위. `paintTilesBulk` 한 번 + `recordMapEditIfChanged` 규약 그대로다.
+- 붓은 해제하거나 다른 붓을 고를 때까지 **살아 있다** — 반복 배치의 전제다.
+
+### 회귀 이음줌
+
+`test/comboBrushCatalog.test.ts`(목록 계약), `test/comboBrushPlacement.test.ts`(실제 페인트 경로 —
+배열 보존·레이어 라우팅·경계·되돌리기·진단·호환), `test/comboBrushPaletteUi.test.ts`(제스처·선반·배지).
+실브라우저 증거는 `scripts/qa/combo-brush.mjs` → `verify-shots/oprn-022/`. 그 픽스처는 지역 전용이고
+원격 지속성이 꺼져 있어야 한다(sidebar-brush QA 와 같은 규약).
+
 **2026-09-07 project wiki:** read [project-wiki.md](project-wiki.md) before changing
 world-document AI integration. The former blanket exclusion is superseded by
 awaited editor-owned wiki checkpoints, sourced relevant retrieval and combat
