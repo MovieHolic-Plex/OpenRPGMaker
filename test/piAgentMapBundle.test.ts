@@ -77,6 +77,28 @@ describe("piAgent mapBundle", () => {
     expect(merged.project.maps.map_east!.name).toBe("B");
   });
 
+  // 깨질 것: 비동기 배정에서 에이전트는 자기가 출발한 사본을 기준으로 판정해야 한다. 병합 시점의
+  // working 을 기준으로 삼으면, 그 사이 다른 에이전트가 남의 맵을 병합했다는 이유만으로 멀쩡한
+  // 결과가 "범위 밖 변경"으로 보고된다(팀 보드에 없는 경고가 뜬다).
+  it("결과의 출발 사본을 주면 그 사이 남이 바꾼 맵을 spill 로 오인하지 않는다", () => {
+    const base = seed();
+    const snapshot = clone(base);
+    const east = clone(snapshot);
+    east.maps.map_east!.name = "동쪽 (A)";
+
+    // A 가 도는 동안 B 가 map_west 를 이미 병합해 working 이 앞서 나갔다.
+    const working = clone(base);
+    working.maps.map_west!.name = "서쪽 (B)";
+
+    const withoutBase = mergeMapBundles(working, [{ mapIds: ["map_east"], project: east }]);
+    expect(withoutBase.spills).toEqual([{ mapIds: ["map_east"], keys: ["maps.map_west"] }]);
+
+    const merged = mergeMapBundles(working, [{ mapIds: ["map_east"], project: east, base: snapshot }]);
+    expect(merged.spills).toEqual([]);
+    expect(merged.project.maps.map_east!.name).toBe("동쪽 (A)");
+    expect(merged.project.maps.map_west!.name).toBe("서쪽 (B)");
+  });
+
   it("NDJSON 디코더는 조각 경계와 깨진 줄을 견딘다", () => {
     const events: string[] = [];
     const decoder = createPiAgentLineDecoder((event) => events.push(event.type));

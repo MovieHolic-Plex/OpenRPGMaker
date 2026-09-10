@@ -12,6 +12,13 @@ import type { MapTreeNode, Project } from "@/project/types";
 export interface MapBundleResult {
   readonly mapIds: readonly string[];
   readonly project: Project;
+  /**
+   * 이 결과를 만든 에이전트가 출발한 사본. 범위 밖 변경 감사에만 쓴다(병합은 언제나 `base` 위에
+   * 얹는다). 비동기 배정에서는 에이전트가 도는 동안 다른 에이전트의 결과가 먼저 병합돼 병합
+   * base 가 앞서 나간다 — 그때 병합 base 로 감사하면 남이 바꾼 맵이 이 에이전트의 spill 로
+   * 잘못 잡힌다. 비우면 병합 base 를 쓴다.
+   */
+  readonly base?: Project;
 }
 
 export interface MapBundleSpill {
@@ -134,7 +141,7 @@ export function mergeMapBundles(base: Project, results: readonly MapBundleResult
   const claimed = new Set<string>();
   const conflicts = new Set<string>();
   for (const result of results) {
-    const keys = mapBundleSpill(base, result.project, result.mapIds);
+    const keys = mapBundleSpill(result.base ?? base, result.project, result.mapIds);
     if (keys.length > 0) spills.push({ mapIds: result.mapIds, keys });
     const bundle = new Set<string>();
     for (const id of result.mapIds) {
