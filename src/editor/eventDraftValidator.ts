@@ -246,6 +246,29 @@ function validatePage(
   });
   if (page.movement) validateMovement(project, page, refs, issues);
 
+  // 구역 드나듦 트리거는 조건이 아니라 **시작 방식**이므로 자기 검사가 필요하다.
+  // 삭제된 구역을 기다리는 페이지는 생기긴 하는데 절대 실행되지 않는다 — 조용하 실패는
+  // 이 저장소가 가장 싫어하는 종류의 결함이다(`insideLocation` 과 같은 진단 계약).
+  if (trigger.kind === "locationTransition") {
+    if (!trigger.locationId.trim()) {
+      issues.push({
+        severity: "error",
+        code: "page.trigger.location-empty",
+        message: "시작 방식이 「구역에 드나들면」 인데 구역을 선택하지 않았습니다.",
+        pageId: page.id,
+        field: { testId: "event-page-trigger-location" },
+      });
+    } else if (!lookupLocation(trigger.locationId)) {
+      issues.push({
+        severity: "error",
+        code: "page.trigger.location-missing",
+        message: `로케이션 '${trigger.locationId}' 이 삭제됐습니다. 다른 구역을 고르거나 시작 방식을 바꿔 주세요.`,
+        pageId: page.id,
+        field: { testId: "event-page-trigger-location" },
+      });
+    }
+  }
+
   const riskyTrigger = trigger.kind === "auto" || trigger.kind === "parallel";
   if (riskyTrigger && !hasRecursivePageCondition(conditions)) {
     issues.push({

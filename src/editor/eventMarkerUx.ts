@@ -3,6 +3,7 @@ import type { Layer } from "@/editor/editorState";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import { store } from "@/project/store";
 import { relationshipStateName } from "@/project/relationshipState";
+import { locationTransitionSentence } from "@/editor/locationTriggerAuthoring";
 import type {
   Command,
   EventPage,
@@ -29,6 +30,9 @@ const TRIGGER_LABELS: Readonly<Record<Trigger["kind"], string>> = {
   eventTouch: "이벤트가 접촉",
   auto: "자동 실행",
   parallel: "병렬 처리",
+  // 구역 트리거는 이 표를 쓰지 않는다 — 아래 triggerLabel 이 구역 이름을 담은 문장을 만든다.
+  // 그래도 표에 남긴다: 이 Record 가 전수 보장이므로 새 트리거 종류를 넘기는 버팀목이다.
+  locationTransition: "구역에 드나들면",
 };
 
 const PRIORITY_LABELS: Readonly<Record<EventPage["priority"], string>> = {
@@ -334,6 +338,8 @@ function primaryEventPage(event: Pick<GameEvent, "pages">): EventPage | undefine
 
 function triggerLabel(trigger: Trigger | undefined): string {
   if (!trigger) return "트리거 없음";
+  // 구역 트리거만 매개변수가 있다 — 어느 구역인지가 보이지 않으면 호버 카드가 반준만 말한다.
+  if (trigger.kind === "locationTransition") return locationTransitionSentence(trigger);
   return TRIGGER_LABELS[trigger.kind] ?? trigger.kind;
 }
 
