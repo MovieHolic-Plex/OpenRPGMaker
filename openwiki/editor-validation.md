@@ -232,6 +232,53 @@ Wiki verification, Playwright evidence, and focused test guidance for editor cha
 - Database item deletion is blocked by building costs and decoration placement items. Building/decor type deletion is blocked while a starting placement uses it. Map deletion impact reports separate P2 building/decor counts and IDs, removes only target-map placements, and prunes the deleted map from type allowlists.
 - Mandatory focused regression: `test/p2SpatialReferenceIntegrity.test.ts` plus `test/mapDeletionIntegrity.test.ts`, `test/p1ReferenceIntegrity.test.ts`, and `test/npcScheduleReferenceIntegrity.test.ts`.
 
+## 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
+
+**「이웃 연결: 수동」은 구조 보조를 끄지 않는다.** 두 보조는 서로 다른 계약이고, 이제 상태·동작·
+UI 문구가 모두 분리돼 있다.
+
+| 상태 | 무엇을 하나 | 어디에 있나 |
+|---|---|---|
+| `editorState.autoConnectMode` (기본 false) | 지형 오토타일 이웃 성형 (흙길·모래·실내 366) | `auto-connect-mode-toggle` — 「이웃 연결: 자동/수동」 |
+| `editorState.clusterAssistMode` (기본 **true**) | hard 클러스터 동반 칸 배치 (나무 수관, 벤치 짝, 문 상하) | `cluster-assist-mode-toggle` — 「구조 보조: 보조/정확」 |
+
+보조 배치가 기본이고 원자적이라는 계약은 그대로다. 달라진 것은 **막혔을 때**다.
+
+- `expandHardClusterPlacement` 는 문장(`reason`)과 함께 **구조화된** `rejection` 을 돌려준다
+  (`HardClusterRejection`: kind, 동반 타일 id, 동반 좌표, 원점 좌표, 규칙 id/문구, 그룹).
+  kind 는 `out-of-bounds | protected | occupied-upper | plan-conflict`.
+  기존 `reason` 문구는 호출부 호환을 위해 유지된다(`legacyReason`).
+- 규칙 귀속은 **그 칸을 처음 만들어 낸** 규칙이다. 활엽수 2×2 처럼 한 칸이 열·행 두 규칙에
+  걸릴 때 나중 규칙으로 덮으면 「위 칸이 필요하다」가 아니라 엉뚱한 옆 칸 규칙이 표시된다.
+- `paintTilesBulk` 의 새 옵션 두 개:
+  - `exactPlacement: true` — 고른 칸·레이어 **하나만** 쓴다. `clusterExpand:false` 와 달리
+    **안전망은 남는다**: 보호셀(시작 지점·이벤트·장소이동 대상)과 다른 덧그림 오브젝트는
+    거부한다(`recoverable:false`). 나무 짝 보정(`repairTreePairsOnMap`)도 건너뛴다 —
+    안 그러면 y=0 밑동은 지워지고 밑동 위에는 수관이 강제로 심겨 계약이 그 자리에서 깨진다.
+  - `onRejected(rejection)` — 거부를 호출부가 받아 복구 UI 를 소유한다. 넘기지 않으면 예전처럼
+    사유 토스트만 뜬다. **조용한 무동작은 어느 쪽에도 없다.**
+- `src/editor/clusterAssistRecovery.ts` 가 복구를 소유한다: `clusterRecoveryOffer`(순수 모델),
+  `presentClusterRecovery`(토스트 + `cluster-exact-place` 액션 버튼), `applyExactPlacement`
+  (`recordMapEditIfChanged` 로 **되돌리기 한 단위**).
+- 정확 배치가 남긴 hard 위반은 숨지 않는다. `validateClusterRules` 가
+  `cluster-rule:adjacency:<groupId>` 로 규칙 문구와 좌표를 계속 보고한다(커밋은 막지 않는다 —
+  위 절의 `cluster-rule:` 예외 관례와 같다).
+
+**함정 (실측 2026-09-10):** 복구 가능 여부를 미리 계산할 때 보호셀 **캐시를 태우면 안 된다.**
+`protectedClusterCells` 는 타일 전용 store 변경에서 무효화되지 않으므로, 미리보기가 캐시를 채우면
+그 뒤에 생긴 이벤트가 보호셀로 보이지 않는다. 그래서 정확 배치는 캐시를 읽지도 쓰지도 않는
+`computeProtectedClusterCells` 를 쓴다. 회귀 좌표: `test/clusterAssistRecovery.test.ts`
+「복구 가능 여부를 미리 계산해도 보호셀 판정이 낡지 않는다」(store 통지 없이 제자리 mutation).
+
+**바뀌지 않은 것:** AI 툴(`paint_tiles`·`scatter_object`), 구조물 킷 조건 검사, 여러 칸 팔레트
+스탬프(`clusterExpand:false` + `preservePattern`). `bAlt` 패리티(검사기는 대체 타일을 보지만
+확장기는 안 본다)는 **범위 밖**이며 별 회귀와 승인이 필요하다.
+
+**회귀 좌표:** `test/clusterAssistRecovery.test.ts`(290·291·292 × 경계/위 칸 점유/보호셀 옆/
+정상 공터, 되돌리기·다시 실행, 스탬프 불변), `test/clusterAssistUi.test.ts`(두 토글의 독립
+표현과 복구 토스트), `test/tileActions.m1.test.ts`(거부 문장이 규칙·동반 타일·좌표를 말한다).
+브라우저 증거: `node scripts/qa/cluster-assist-recovery.mjs` → `verify-shots/oprn-017/`.
+
 - **배치 조건이 산문에서 실제 기하 검사로 바뀌었다 (2026-08-30, PR #316).** `checkPlacementSurface`
   (`src/project/placementSurface.ts:126`)가 사각의 밑변을 기준으로 **통행 가능성 데이터**만 보고
   판정한다 — 벽 = 통행 불가 또는 맵 밖, 바닥 = 맵 안이고 통행 가능. `PlacementZone` 은
