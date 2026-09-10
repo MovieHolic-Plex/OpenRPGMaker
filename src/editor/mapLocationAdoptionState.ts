@@ -134,6 +134,20 @@ export function runAdoption(): AdoptionRunResult {
     return { ok: false, error };
   }
 
+  // **아무것도 안 바뀔 실행은 되돌리기 칸을 먹지 않는다.** 멱등성을 확인하려고 두 번째로
+  // 누른 사용자가 Ctrl+Z 를 누르면 첫 번째 실행이 아니라 **빈 스냅샷**이 돌아와
+  // 승격이 그대로 남는다(브라우저 QA 실측으로 잡힌 결함). 복제본에 먼저 돌려 본다.
+  const rehearsal = adoptLayoutRegionsForMaps(structuredClone(store.getCurrent()), {
+    mapIds,
+    roles: state.roles,
+    collisionPolicy: state.collisionPolicy,
+  });
+  if (adoptionOutcomeIsNoop(rehearsal)) {
+    const message = describeAdoptionOutcome(rehearsal);
+    set({ lastOutcome: rehearsal, lastError: message });
+    return { ok: true, outcome: rehearsal, message };
+  }
+
   recordProjectSnapshot(ADOPTION_HISTORY_LABEL);
   let outcome: AdoptionOutcome | null = null;
   store.update(

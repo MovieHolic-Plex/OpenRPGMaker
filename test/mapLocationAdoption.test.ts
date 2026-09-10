@@ -415,6 +415,18 @@ describe("editor workbench — one undoable author action", () => {
     expect(mapLocations(store.getCurrent().maps[VILLAGE]!)).toHaveLength(2);
   });
 
+  it("a no-op second run does not consume an undo slot", () => {
+    // 브라우저 QA 실측으로 잡힌 결함: 두 번째(무변경) 실행이 스냅샷을 하나 더 밀어 넣으면
+    // Ctrl+Z 한 번이 «빈 스냅샷»으로 돌아가 승격이 그대로 남는다. 사용자에겐 undo 가 고장 난 것이다.
+    openAdoptionWorkbench();
+    setAdoptionMapSelection([VILLAGE]);
+    runAdoption();
+    runAdoption();
+    expect(undoMapEdit()).toBe(true);
+    expect(store.getCurrent().maps[VILLAGE]!.locations).toBeUndefined();
+    expect(getMapEditHistoryState().canUndo).toBe(false);
+  });
+
   it("role toggles change what the survey and the run produce", () => {
     openAdoptionWorkbench();
     toggleAdoptionRole("house", true);
