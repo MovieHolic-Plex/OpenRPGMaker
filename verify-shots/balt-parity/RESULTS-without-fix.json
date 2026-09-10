@@ -1,0 +1,49 @@
+{
+  "baseUrl": "http://127.0.0.1:9864",
+  "pageErrors": [],
+  "results": [
+    {
+      "name": "A-dry-tree-stack-keeps-terrain",
+      "status": "FAIL",
+      "error": "grass survives under the stack, got [291,291]\n+ actual - expected\n\n  [\n+   291,\n+   291\n-   240,\n-   240\n  ]\n",
+      "screenshot": "A-dry-tree-stack-keeps-terrain.png"
+    },
+    {
+      "name": "B-erasing-mid-stack-exposes-no-buried-trunk",
+      "status": "PASS",
+      "observed": {
+        "erased": {
+          "x": 2,
+          "y": 8
+        },
+        "lowerNow": 240
+      },
+      "screenshot": "B-erasing-mid-stack-exposes-no-buried-trunk.png"
+    },
+    {
+      "name": "C-stacking-one-canopy-is-one-undo-unit",
+      "status": "FAIL",
+      "error": "stacking touched exactly one cell, got [\"L142\",\"U122\"]\n\n2 !== 1\n",
+      "screenshot": "C-stacking-one-canopy-is-one-undo-unit.png"
+    },
+    {
+      "name": "D-conifer-without-alternatives-still-forces-companion",
+      "status": "PASS",
+      "observed": {
+        "target": {
+          "x": 7,
+          "y": 9
+        },
+        "trunk": 290,
+        "canopy": 260
+      },
+      "screenshot": "D-conifer-without-alternatives-still-forces-companion.png"
+    },
+    {
+      "name": "E-long-table-extends-past-three-cells",
+      "status": "FAIL",
+      "error": "extension commits without rejection",
+      "screenshot": "E-long-table-extends-past-three-cells.png"
+    }
+  ]
+}
