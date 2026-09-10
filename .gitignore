@@ -34,6 +34,7 @@ dist/
 !.omo/evidence/oprn-022/
 !.omo/evidence/oprn-024/
 !.omo/evidence/oprn-026/
+!.omo/evidence/loc-transition/
 !.omo/rules/
 !.omo/rules/**
 artifacts/
@@ -258,3 +259,7 @@ verify-shots/battle-skin-trio/
 # OPRN-OUT-022 Combo Brush — acceptance evidence (st_01a08a5b).
 !.omo/evidence/oprn-022/
 !.omo/evidence/oprn-022/**
+
+# 구역 드나듦 트리거(locationTransition) 수용 근거. `evidence/` 규칙이 다시 잡으므로 여기서 예외.
+!.omo/evidence/loc-transition/
+!.omo/evidence/loc-transition/**
