@@ -1439,3 +1439,88 @@ body.region-task-modal-open .ai-authoring-examples {
   padding: 2px 6px;
 }
 .slot-board-reset:disabled { cursor: default; opacity: 0.45; }
+
+/* ── 캔버스 위 청크 도형 레이어 ─────────────────────────────────────────────
+   검토를 판단 대상 위에서 한다. 스펙: docs/superpowers/specs/2026-09-10-region-task-uiux-redesign-design.md §4
+   레이어 자체는 포인터를 받지 않는다 — 청크는 사각형이 아니라서 경계 상자에 이벤트를 걸면
+   구멍 난 자리의 클릭이 엉뚱한 청크로 간다. **셀만** 받는다. */
+.region-chunk-layer {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 6;
+}
+
+.region-chunk {
+  position: absolute;
+  pointer-events: none;
+}
+
+.region-chunk-cell {
+  position: absolute;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.region-chunk-edge {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* 포함: 인디고 채움 + 실선 외곽. 「이건 적용된다」 */
+.region-chunk.is-included > .region-chunk-cell { background: rgba(74, 87, 214, 0.16); }
+.region-chunk.is-included > .region-chunk-edge { background: var(--accent); }
+
+/* 제외: 채움 없음(원본 타일이 그대로 보인다) + 붉은 파선 외곽. 고스트가 이미 걷혀 있으므로
+   여기서 "버릴 칸"을 그려 보일 필요가 없다 — 화면이 곧 적용 결과다. */
+.region-chunk.is-excluded > .region-chunk-cell { background: rgba(198, 64, 61, 0.06); }
+.region-chunk.is-excluded > .region-chunk-edge {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--danger) 0 4px,
+    transparent 4px 8px
+  );
+}
+
+/* 하나를 지목하는 동안 나머지는 물러난다 — 팝오버 썸네일의 is-isolating 과 같은 어휘. */
+.region-chunk-layer.is-isolating > .region-chunk:not(.is-focus) { opacity: 0.45; }
+
+.region-chunk.is-focus > .region-chunk-edge { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85); }
+.region-chunk.is-focus > .region-chunk-cell { background: rgba(74, 87, 214, 0.3); }
+
+.region-chunk:focus-visible { outline: none; }
+.region-chunk:focus-visible > .region-chunk-edge { box-shadow: var(--focus-ring); }
+
+/* 비활성 레이어 — 존재만 알린다. 클릭도 포커스도 활성 레이어의 것이다(스펙 §4.3). */
+.region-chunk.is-dim {
+  opacity: 0.18;
+}
+
+.region-chunk.is-dim > .region-chunk-cell {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* 라벨은 도형 위쪽에 붙인다. 도형이 화면 상단에 닿아도 잘리지 않게 음수 top 대신 translate. */
+.region-chunk-label {
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  color: var(--on-accent);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  left: 0;
+  line-height: var(--line-height-tight);
+  padding: 2px 7px;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform: translateY(-115%);
+  white-space: nowrap;
+}
+
+.region-chunk.is-excluded > .region-chunk-label { background: var(--danger); }
+.region-chunk.is-dim > .region-chunk-label { display: none; }
+
+/* 지목하지 않은 청크의 라벨은 감춘다 — 청크가 여섯 개면 라벨 여섯 개가 서로를 덮는다. */
+.region-chunk-layer.is-isolating > .region-chunk:not(.is-focus) > .region-chunk-label { display: none; }

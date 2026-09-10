@@ -40,6 +40,11 @@ import {
   setActiveRegionSelection,
 } from "@/editor/regionTask/regionPreviewSelection";
 import { replaceAgentGhostPreviewFromProjectDiff } from "@/editor/agentGhostPreview";
+import { defaultOverlayLayer } from "@/editor/regionTask/regionChunkOverlay";
+import {
+  closeRegionChunkOverlay,
+  openRegionChunkOverlay,
+} from "@/editor/regionTask/regionChunkOverlayView";
 import {
   loadRecentInstructions,
   pushRecentInstruction,
@@ -801,6 +806,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     // 창이 사라지면 청크 선택도 사라진다. settlePendingUi 를 안 거치고 닫히는 경로
     // (새 모달이 먼저 열림·명시적 close)가 있어 여기서도 치운다.
     clearActiveRegionSelection();
+    closeRegionChunkOverlay();
     // 신호/세대를 먼저 끊어 late result와 pending subscriber가 DOM을 만지지 못하게 한다.
     invalidateExecution(true);
     pendingUnsubscribe?.();
@@ -816,6 +822,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     releaseExecution();
     // 검토가 끝났으므로 투영을 치운다 — 안 치우면 다음 결과의 고스트가 옛 선택을 물려받는다.
     clearActiveRegionSelection();
+    closeRegionChunkOverlay();
     const appliedSummary = `적용됨 — ${activePending?.changedCells ?? 0}칸 타일 · 이벤트 ${activePending?.changedEvents ?? 0}건`;
     setSummary(
       applied === true
@@ -1316,6 +1323,29 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       ] : [],
     });
     updatePartialState();
+
+    // 캔버스 위 청크 도형. 판단 대상 위에서 고르게 한다 — 380px 컬럼의 체크리스트는 P4 에서
+    // 사라지고, 그때까지는 두 표면이 같은 선택을 보여준다(아래 adoptCanvasSelection).
+    // 캔버스가 없으면(테스트·헤드리스) openRegionChunkOverlay 가 조용히 아무것도 안 한다.
+    if (partialUseful && hasChanges) {
+      openRegionChunkOverlay({
+        region: pending.region,
+        chunks: allChunks,
+        projection: selectionProjection,
+        initialLayer: defaultOverlayLayer(rawGroups),
+        onSelectionChanged: () => {
+          // 도형이 투영을 직접 토글했으므로 창의 Set·체크박스를 그 결과로 맞춘다.
+          const selected = selectionProjection.selected();
+          selectedChunkIds.clear();
+          for (const id of selected) selectedChunkIds.add(id);
+          for (const id of allChunkIds) {
+            const box = document.querySelector<HTMLInputElement>(`[data-testid="region-task-chunk-${id}"]`);
+            if (box) box.checked = selected.has(id);
+          }
+          updatePartialState();
+        },
+      });
+    }
 
     // 부분 적용은 검토 화면의 본문에 둔다. 「고급(로그·부분 적용·스탬프)」 안에 있던 동안은
     // "이건 받고 저건 뺀다" 는 검토의 핵심 결정을 하려면 접힌 섹션을 열고 로그를 지나쳐야 했다.

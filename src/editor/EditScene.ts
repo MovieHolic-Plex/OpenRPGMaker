@@ -89,6 +89,7 @@ import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalet
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { getEditorMapViewport, setEditorMapViewport } from "@/editor/editorMapViewport";
 import { setClientPointTileResolver, setRegionClientRectResolver } from "@/editor/regionClientRect";
+import { repositionRegionChunkOverlay } from "@/editor/regionTask/regionChunkOverlayView";
 import { notifyRightDragRegionSelected } from "@/editor/selectionChipHint";
 import { computeMapViewport } from "@/ai/mapViewportContext";
 import { renderSelectionActionChips } from "@/editor/selectionActionChips";
@@ -1970,6 +1971,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.syncNavigationGeometry();
     this.refreshAgentGhostDomMarkers();
     this.renderBuildPaletteOverlay();
+    // 검토 중인 청크 도형도 카메라를 따라간다. 노드를 다시 만들지 않고 좌표만 고쳐 쓴다.
+    repositionRegionChunkOverlay();
     this.publishMapViewport();
   }
 
