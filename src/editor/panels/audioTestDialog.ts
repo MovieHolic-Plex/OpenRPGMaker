@@ -3,6 +3,7 @@ import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp"
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { audioResourceDocument, audioPlayback } from "./audioResourcePresentation";
 import { createAudioPreviewPlayer } from "./audioPreviewPlayer";
+import { bgmInstallBanner } from "./bgmInstallBanner";
 import { renderEditorIcon as editorIcon } from "./eventEditor/editorIcons";
 import { uiLabel } from "@/editor/uiCopy";
 import { isTopModal, registerModal } from "@/editor/ui/modalStack";
@@ -30,6 +31,20 @@ export function openAudioTestDialog(): void {
   });
   const description = el("div", { dataset: { testid: "audio-test-description" } });
   const notice = el("p", { class: "audio-preview-meta", attrs: { role: "status" } });
+  // 미설치 곡이 있으면 음악 탭에 전체 받기 배너를 건다. 효과음은 레포에 다 있다.
+  // 설치 완료 콜백은 목록만 다시 읽는다 — 여기서 배너를 재생성하면
+  // fetch→onInstalled→재생성→fetch 무한 재귀가 된다(실측: 테스트 워커 사망).
+  const bannerHost = el("div", { class: "audio-test-banner-slot", attrs: { hidden: "" } });
+  const refreshBanner = (): void => {
+    if (!bannerHost.isConnected) return;
+    const next = category === "music"
+      ? bgmInstallBanner({ kind: "music", onInstalled: () => { renderList(); renderDetail(); } })
+      : null;
+    bannerHost.replaceChildren(...(next ? [next] : []));
+    if (next === null) bannerHost.setAttribute("hidden", "");
+    else bannerHost.removeAttribute("hidden");
+  };
+
   const closeAction = el("button", {
     class: "btn", text: "닫기", attrs: { type: "button" }, dataset: { testid: "audio-test-close" },
     on: { click: () => close() },
@@ -40,6 +55,7 @@ export function openAudioTestDialog(): void {
       class: "audio-test-window", attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": "audio-test-title" },
       children: [
         el("header", { class: "audio-test-titlebar", children: [el("h2", { text: uiLabel("audio"), attrs: { id: "audio-test-title" } }), closeButton] }),
+        bannerHost,
         el("div", { class: "audio-test-body", children: [
           el("section", { class: "audio-test-left", children: [tabs, el("div", { class: "audio-test-filter-row", children: [search, count] }), list] }),
           el("section", { class: "audio-test-right", attrs: { "aria-label": "선택한 음원" }, children: [description, notice, player.advanced] }),
@@ -99,7 +115,7 @@ export function openAudioTestDialog(): void {
         if (category === kind) return;
         category = kind;
         selectedId = "";
-        renderTabs(); renderList(); renderDetail();
+        renderTabs(); renderList(); renderDetail(); refreshBanner();
         tabs.querySelector<HTMLButtonElement>('[aria-selected="true"]')?.focus();
       } },
     })));
@@ -128,12 +144,12 @@ export function openAudioTestDialog(): void {
   closeButton.addEventListener("click", close);
   backdrop.addEventListener("mousedown", event => { if (event.target === backdrop) close(); });
   document.body.append(backdrop);
-  renderTabs(); renderList(); renderDetail();
+  renderTabs(); renderList(); renderDetail(); refreshBanner();
   unsubscribe = store.subscribe((_project, change) => {
     if (change.projectSwitch) { close(); return; }
     if (change.scope !== "project" && change.scope !== "assets") return;
     if (selectedId && !current()) selectedId = "";
-    renderList(); renderDetail();
+    renderList(); renderDetail(); refreshBanner();
   });
   search.focus();
 }
