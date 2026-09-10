@@ -88,7 +88,7 @@ import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { getEditorMapViewport, setEditorMapViewport } from "@/editor/editorMapViewport";
-import { setRegionClientRectResolver } from "@/editor/regionClientRect";
+import { setClientPointTileResolver, setRegionClientRectResolver } from "@/editor/regionClientRect";
 import { notifyRightDragRegionSelected } from "@/editor/selectionChipHint";
 import { computeMapViewport } from "@/ai/mapViewportContext";
 import { renderSelectionActionChips } from "@/editor/selectionActionChips";
@@ -451,6 +451,9 @@ export class EditScene extends PhaserRuntime.Scene {
     // 선택 액션 바가 영역 작업 창을 열 때 대상 영역의 화면 사각형(avoid)을 알아야 한다.
     // 그 계산은 Phaser 카메라를 읽으므로 여기서만 가능하다 — 등록소에 꽂아 둔다.
     setRegionClientRectResolver((region) => this.regionClientRect(region));
+    // 로케이션 레이어(DOM 오버레이)는 사람의 포인터를 타일로 바꿔야 한다. 역변환도 카메라를
+    // 읽으므로 같은 등록소에 꽂는다 — 오버레이가 Phaser 를 직접 참조하지 않게 한다.
+    setClientPointTileResolver((point) => this.clientPointToTile(point));
 
     // scene 정지/파괴 시 구독 해제(이중 호출 방지).
     this.events.once(PhaserRuntime.Scenes.Events.SHUTDOWN, () => this.cleanup());
@@ -510,6 +513,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.regionSizeBadge?.remove();
     this.regionSizeBadge = null;
     setRegionClientRectResolver(null);
+    setClientPointTileResolver(null);
     setEditorMapViewport(null);
   }
 
@@ -1294,6 +1298,20 @@ export class EditScene extends PhaserRuntime.Scene {
         this.renderPastePreviewGhost();
       }
     }
+  }
+
+  /**
+   * 화면(클라이언트) 좌표 → 타일. `pointerToTile` 과 같은 기하를 쓰되 Phaser 포인터 없이
+   * 계산한다(DOM 오버레이용). 카메라/캔버스를 못 읽으면 null.
+   */
+  private clientPointToTile(point: { readonly x: number; readonly y: number }): { readonly x: number; readonly y: number } | null {
+    const canvas = this.game?.canvas;
+    const camera = this.cameras?.main;
+    if (!canvas || !camera || typeof canvas.getBoundingClientRect !== "function") return null;
+    const rect = canvas.getBoundingClientRect();
+    const worldX = camera.worldView.x + (point.x - rect.left) / camera.zoom;
+    const worldY = camera.worldView.y + (point.y - rect.top) / camera.zoom;
+    return { x: Math.floor(worldX / TILE_SIZE), y: Math.floor(worldY / TILE_SIZE) };
   }
 
   private pointerToTile(ptr: Phaser.Input.Pointer): { x: number; y: number } {

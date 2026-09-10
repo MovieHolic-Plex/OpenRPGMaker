@@ -14,23 +14,40 @@ type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
     readonly relationships?: Record<string, RelationshipState>;
     readonly battleResult?: "victory" | "defeat" | "escape";
     readonly roguelikeRun?: RoguelikeRunState;
+    /** 주인공 타일 좌표. `insideLocation` 조건이만 사용한다. */
+    readonly x?: number;
+    readonly y?: number;
   };
+
+/**
+ * 로케이션 기하 해석기. 호출측이 현재 맵의 `locations` 를 넘긴다.
+ * 넘기지 않으면 `insideLocation` 페이지 조건은 **거짓**이다(조용한 참 금지).
+ */
+export type EventPageLocationContext = {
+  readonly locations?: readonly { readonly id: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }[];
+};
 
 export function resolveEventPage(
   event: GameEvent,
-  session: EventPageSession
+  session: EventPageSession,
+  context?: EventPageLocationContext
 ): EventPage | undefined {
   if (!event.pages || event.pages.length === 0) return undefined;
   for (let index = event.pages.length - 1; index >= 0; index--) {
     const page = event.pages[index];
-    if (page.conditions.every((condition) => evalPageCondition(condition, session, event))) {
+    if (page.conditions.every((condition) => evalPageCondition(condition, session, event, context))) {
       return page;
     }
   }
   return undefined;
 }
 
-function evalPageCondition(condition: EventPageCondition, session: EventPageSession, event: GameEvent): boolean {
+function evalPageCondition(
+  condition: EventPageCondition,
+  session: EventPageSession,
+  event: GameEvent,
+  context?: EventPageLocationContext
+): boolean {
   switch (condition.kind) {
     case "switch":
       return (session.switches[condition.switchId] ?? false) === condition.value;
@@ -56,6 +73,16 @@ function evalPageCondition(condition: EventPageCondition, session: EventPageSess
       return conditionMatchesSeason(session.gameTime, condition.season);
     case "npcActivity":
       return session.npcActivities?.[event.id] === condition.activity;
+    case "insideLocation": {
+      const location = context?.locations?.find((entry) => entry.id === condition.locationId);
+      if (!location || session.x === undefined || session.y === undefined) return false;
+      const inside =
+        session.x >= location.x &&
+        session.y >= location.y &&
+        session.x < location.x + Math.max(0, location.w) &&
+        session.y < location.y + Math.max(0, location.h);
+      return inside === condition.inside;
+    }
     case "friendshipAtLeast": {
       const npcKey = resolveSocialKey(event, condition.npcKey);
       if (!npcKey) return false;
@@ -68,10 +95,10 @@ function evalPageCondition(condition: EventPageCondition, session: EventPageSess
     case "run":
       return evalRoguelikeRunCondition(session, condition);
     case "all":
-      return condition.conditions.every((child) => evalPageCondition(child, session, event));
+      return condition.conditions.every((child) => evalPageCondition(child, session, event, context));
     case "any":
-      return condition.conditions.some((child) => evalPageCondition(child, session, event));
+      return condition.conditions.some((child) => evalPageCondition(child, session, event, context));
     case "not":
-      return !evalPageCondition(condition.condition, session, event);
+      return !evalPageCondition(condition.condition, session, event, context);
   }
 }

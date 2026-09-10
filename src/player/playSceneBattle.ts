@@ -122,6 +122,10 @@ export async function playBattle(
         npcActivities: scene.session.npcActivities,
         friendship: scene.session.friendship,
         relationships: scene.session.relationships,
+        // insideLocation 조건의 판정 기준 — 전투 개시 시점의 필드 위치.
+        currentMapId: scene.session.currentMapId,
+        x: scene.session.x,
+        y: scene.session.y,
       },
       partyMonsters: monsterPartyMode ? partyMonsters : undefined,
       // Terrain at the player's tile feeds battle backdrop when troop has no preview.

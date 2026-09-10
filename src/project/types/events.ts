@@ -54,6 +54,14 @@ export type Condition =
   | { kind: "timePhase"; phase: TimePhase }
   | { kind: "season"; season: Season }
   | { kind: "npcActivity"; activity: string }
+  /**
+   * 주인공이 같은 맵의 명명 로케이션 안(또는 밖)에 있는가.
+   * `inside: true` = 안에 있을 때 참, `false` = 밖에 있을 때 참.
+   * 로케이션 기하는 `GameMap.locations` 가 소유하므로 좌표를 여기에 복사하지 않는다 —
+   * 로케이션을 옮기거나 넓히면 이 조건도 함께 따라온다.
+   * 평가에는 로케이션 해석자가 필요하다(`evalCondition` 의 `context.locations`).
+   */
+  | { kind: "insideLocation"; locationId: string; inside: boolean }
   | { kind: "friendshipAtLeast"; npcKey?: string; value: number }
   | RelationshipCondition
   | { kind: "battleResult"; result: "victory" | "defeat" | "escape" }

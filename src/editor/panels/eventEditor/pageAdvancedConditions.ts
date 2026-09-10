@@ -1,6 +1,7 @@
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
-import type { EventPageCondition } from "@/project/types";
+import { editorState } from "@/editor/editorState";
+import type { EventPageCondition, Project } from "@/project/types";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { commandSummary } from "./commandSummary";
 import {
@@ -8,6 +9,7 @@ import {
   renderFriendshipAtLeastCondition,
   renderRelationshipAtLeastCondition,
   renderGoldCondition,
+  renderInsideLocationCondition,
   renderNpcActivityCondition,
   renderRunCondition,
   renderSeasonCondition,
@@ -45,6 +47,7 @@ const LEAF_CONDITION_OPTIONS = [
   { value: "timePhase", label: "시간대" },
   { value: "season", label: "계절" },
   { value: "npcActivity", label: "활동" },
+  { value: "insideLocation", label: "구역(로케이션)" },
   { value: "friendshipAtLeast", label: "호감도" },
   { value: "relationshipAtLeast", label: "관계" },
   { value: "battleResult", label: "전투 결과" },
@@ -443,6 +446,11 @@ function renderAdvancedConditionContent(
         className: "event-advanced-condition-control npc-activity",
         activityTestId: `event-page-advanced-condition-npc-activity-${suffix}`,
       });
+    case "insideLocation":
+      return renderInsideLocationCondition(condition, onChange, {
+        className: "event-advanced-condition-control inside-location",
+        locationTestId: `event-page-advanced-condition-inside-location-${suffix}`,
+      });
     case "relationshipAtLeast":
       return renderRelationshipAtLeastCondition(condition, onChange, {
         className: "event-advanced-condition-control relationship",
@@ -469,6 +477,12 @@ function renderAdvancedConditionContent(
   return document.createElement("div");
 }
 
+/** 현재 편집 중인 맵의 첫 로케이션. 없으면 빈 값이고 편집기가 「구역을 선택하세요」로 막는다. */
+function firstEditorMapLocationId(project: Project): string {
+  const mapId = editorState.get().currentMapId ?? project.startMapId;
+  return project.maps[mapId]?.locations?.[0]?.id ?? "";
+}
+
 function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageCondition {
   const project = store.getCurrent();
   switch (kind) {
@@ -493,6 +507,8 @@ function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageConditi
       return { kind: "season", season: "spring" };
     case "npcActivity":
       return { kind: "npcActivity", activity: "work" };
+    case "insideLocation":
+      return { kind: "insideLocation", locationId: firstEditorMapLocationId(project), inside: true };
     case "friendshipAtLeast":
       return { kind: "friendshipAtLeast", value: 100 };
     case "relationshipAtLeast":

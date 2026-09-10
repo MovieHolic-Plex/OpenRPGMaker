@@ -558,6 +558,12 @@ export function validateConditionShape(label: string, value: unknown): void {
     case "npcActivity":
       requireString(`${label}.activity`, condition.activity);
       return;
+    case "insideLocation": {
+      const locationId = requireString(`${label}.locationId`, condition.locationId);
+      if (locationId.trim().length === 0) break;
+      requireBoolean(`${label}.inside`, condition.inside);
+      return;
+    }
     case "friendshipAtLeast":
       if (condition.npcKey !== undefined) requireString(`${label}.npcKey`, condition.npcKey);
       requireNumber(`${label}.value`, condition.value);

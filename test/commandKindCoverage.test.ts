@@ -135,6 +135,7 @@ function buildMinimalConditions(ids: {
     timePhase: { kind: "timePhase", phase: "day" },
     season: { kind: "season", season: "spring" },
     npcActivity: { kind: "npcActivity", activity: "work" },
+    insideLocation: { kind: "insideLocation", locationId: "loc1", inside: true },
     friendshipAtLeast: { kind: "friendshipAtLeast", value: 10 },
     relationshipAtLeast: { kind: "relationshipAtLeast", state: "dating" },
     battleResult: { kind: "battleResult", result: "victory" },

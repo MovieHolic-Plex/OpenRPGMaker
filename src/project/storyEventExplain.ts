@@ -230,6 +230,16 @@ function traceCondition(
         summary: `season=${actual ?? "none"} expected ${condition.season}`,
       };
     }
+    case "insideLocation": {
+      return {
+        index,
+        kind: condition.kind,
+        ok,
+        actual: `(${session.x},${session.y})`,
+        expected: `${condition.inside ? "안" : "밖"} of ${condition.locationId}`,
+        summary: `insideLocation ${condition.locationId} ${condition.inside ? "안" : "밖"} — 주인공 (${session.x},${session.y})`,
+      };
+    }
     case "npcActivity": {
       const actual = session.npcActivities?.[event.id] ?? null;
       return {

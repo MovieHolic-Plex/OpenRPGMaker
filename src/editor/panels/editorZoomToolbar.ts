@@ -7,6 +7,7 @@ import type { GameMap } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { openWalkEncounterList } from "@/editor/panels/walkEncounterModal";
+import { locationLayerState, toggleLocationLayer } from "@/editor/mapLocationLayerState";
 
 let mapScreenshotRequestSeq = 0;
 
@@ -101,6 +102,20 @@ export function renderCanvasToolbar(container: HTMLElement): void {
     class: "btn walk-encounter-list-button", text: "걸을 때 적 만나기",
     attrs: { type: "button", title: "범위 목록 · 추가 · 편집 · 삭제" },
     dataset: { testid: "walk-encounter-list-open" }, on: { click: openWalkEncounterList },
+  }));
+  // 로케이션 레이어는 모든 편집 모드에서 같은 자리에 있다 — 이벤트 조건·인카운터·조수가
+  // 공유하는 층이라 전문가 전용으로 숨기면 애초에 만들어지지 않는다.
+  const locationLayerOn = locationLayerState().enabled;
+  container.append(el("button", {
+    class: `btn map-location-layer-button${locationLayerOn ? " is-active" : ""}`,
+    text: "로케이션",
+    attrs: {
+      type: "button",
+      title: "이름 붙인 구역 레이어 켜기/끄기 — 그리고 이름을 붙이면 이벤트 조건과 랜덤 인카운터가 가리킬 수 있습니다",
+      "aria-pressed": String(locationLayerOn),
+    },
+    dataset: { testid: "map-location-layer-toggle" },
+    on: { click: () => toggleLocationLayer() },
   }));
   // Basic: zoom only (always expanded). Expert: ⋯ expand + build palette + map screenshot.
   if (!chrome.canvasChromeDense) {

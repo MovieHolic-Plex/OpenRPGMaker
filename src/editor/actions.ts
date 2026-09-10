@@ -14,6 +14,7 @@ import { createBlankMap, TILE } from "@/project/defaults";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import { cloneGameMap } from "@/project/mapClone";
+import { clampLocationsToMapSize } from "@/project/mapNamedLocations";
 import { clampMapSize, INTERIOR_FLOOR_TILE, INTERIOR_TILESET_ID, type MapCreateSpec } from "@/project/mapCreateSpec";
 import { exceedsMapDimensionLimit, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import {
@@ -236,6 +237,9 @@ export function resizeMap(mapId: MapId, width: number, height: number): void {
       p.startPos.x = Math.min(p.startPos.x, width - 1);
       p.startPos.y = Math.min(p.startPos.y, height - 1);
     }
+    // 명명 로케이션은 새 크기 안으로 자르고 **지우지 않는다** — 이벤트 조건·인카운터 참조가
+    // 조용히 끊기면 안 된다. 완전히 밖으로 나간 것은 경계 1×1 로 남고 lint 가 알린다.
+    clampLocationsToMapSize(m, width, height);
   }, { scope: "map", mapId });
 }
 

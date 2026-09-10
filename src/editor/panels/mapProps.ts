@@ -8,6 +8,7 @@ import { editorState } from "@/editor/editorState";
 import { DEFAULT_ENEMY_FACTION_ID, factionName, resolveFactionTable } from "@/project/factions";
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
 import { store } from "@/project/store";
+import { mapLocations } from "@/project/mapNamedLocations";
 import type { EncounterTableEntry, FieldSpawnDef, MapBgmSetting } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { showConfirm } from "@/editor/ui/modal";
@@ -701,7 +702,39 @@ function encounterRow(
 
   details.append(grid);
 
-  // 구역 제한
+  // 이름 붙은 구역 참조 — 사각형을 복사하지 않고 로케이션 하나를 가리킨다.
+  // 로케이션을 옮기거나 넓히면 이 인카운터도 함께 따라간다(사본이 없으므로 어긋날 수 없다).
+  const locations = mapLocations(map);
+  const brokenLocationId =
+    conditions?.locationId && !locations.some((entry) => entry.id === conditions.locationId)
+      ? conditions.locationId
+      : undefined;
+  if (locations.length > 0 || brokenLocationId) {
+    details.append(
+      selectField(
+        "이름 붙은 구역",
+        `map-encounter-location-${index}`,
+        [
+          { value: "", label: "— 사용 안 함 —" },
+          ...(brokenLocationId ? [{ value: brokenLocationId, label: `(삭제된 로케이션 ${brokenLocationId})` }] : []),
+          ...locations.map((entry) => ({ value: entry.id, label: `${entry.name} (${entry.x},${entry.y}) ${entry.w}×${entry.h}` })),
+        ],
+        conditions?.locationId ?? "",
+        (value) => patchConditions({ locationId: value || undefined }),
+      ),
+    );
+    if (brokenLocationId) {
+      details.append(
+        el("p", {
+          class: "map-encounter-location-broken",
+          text: `이 인카운터가 가리키는 로케이션 '${brokenLocationId}' 이 삭제됐습니다. 다른 구역을 고르거나 「사용 안 함」으로 되돌리세요 — 지금은 이 항목이 절대 뽑히지 않습니다.`,
+          dataset: { testid: `map-encounter-location-broken-${index}` },
+        }),
+      );
+    }
+  }
+
+  // 구역 제한(레거시 raw 사각형). 이름 붙은 구역을 지정하면 그쪽이 이긴다.
   const region = conditions?.region;
   const regionToggle = el("input", { attrs: { type: "checkbox" }, dataset: { testid: `map-encounter-region-toggle-${index}` } }) as HTMLInputElement;
   regionToggle.checked = Boolean(region);
@@ -709,7 +742,15 @@ function encounterRow(
     patchConditions({ region: regionToggle.checked ? (region ?? { x: 0, y: 0, w: map.width, h: map.height }) : undefined });
   });
   const regionRow = el("label", { class: "map-props-check-row" });
-  regionRow.append(regionToggle, el("span", { text: "구역 제한 (이 사각형 안에서만 출현)" }));
+  regionToggle.disabled = Boolean(conditions?.locationId);
+  regionRow.append(
+    regionToggle,
+    el("span", {
+      text: conditions?.locationId
+        ? "구역 제한 (이름 붙은 구역을 쓰는 동안에는 사각형이 무시됩니다)"
+        : "구역 제한 (이 사각형 안에서만 출현)",
+    }),
+  );
   details.append(regionRow);
 
   if (region) {

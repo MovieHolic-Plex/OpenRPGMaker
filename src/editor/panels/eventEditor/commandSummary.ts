@@ -19,6 +19,7 @@ import type { Command, SwitchValue, VariableOperand } from "@/project/types";
 
 import { relationshipStateName } from "@/project/relationshipState";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
+import { insideLocationSentence } from "@/editor/mapLocationLabels";
 export type CommandSummaryTone =
   | "plain"
   | "command"
@@ -1088,6 +1089,8 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>['conditi
       return `계절 ${seasonLabel(condition.season)}`;
     case "npcActivity":
       return `활동 ${condition.activity}`;
+    case "insideLocation":
+      return insideLocationSentence(condition.locationId, condition.inside);
     case "friendshipAtLeast":
       return `호감도 ${condition.npcKey || "이 이벤트"} ${condition.value} 이상`;
     case "relationshipAtLeast":

@@ -22,6 +22,9 @@ import { lintHorrorAuthoring } from "./horrorAuthoringLint";
 //  - story-flag:*          (warning) 서사 플래그 read/write/미선언 사용 문제
 //  - quest-graph:*         (error|warning) 퀘스트 그래프 조건/도달성 문제
 //  - reachability          (error)   opts.reachability 지정 시 도달 불가
+//  - map-location-missing-ref (error) 삭제된 명명 로케이션을 가리키는 이벤트 조건/인카운터
+//  - map-location-degenerate  (warning) 맵 축소로 경계 1×1 까지 눌린 로케이션
+//  - map-location-duplicate-name (warning) 같은 맵 안 로케이션 표시명 중복
 //  - cluster-rule:*        (error|warning|info) 타일 그룹 규칙 강도별 위반
 //  - world-graph/world-transfer/world-adjacent:* (error|warning) 선언형 월드 그래프/맵 경계/transfer 정합 문제
 
@@ -53,6 +56,7 @@ import { lintWorldGraph } from "../worldGraph";
 import { validateClusterRules, type ClusterRuleViolation } from "./clusterRuleValidators";
 import { checkReachability, isAdjacentOrOn, type ReachabilitySpec } from "./reachability";
 import { activeTileGrafts } from "@/assets/tileGrafts";
+import { collectMapLocationReferenceIssues } from "../mapLocationReferences";
 
 export type { LintSeverity } from "../types";
 
@@ -96,7 +100,23 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkTileGrafts(project, issues);
   checkSystemOptInConsistency(project, issues);
   checkShopIntegrity(project, issues);
+  checkMapNamedLocations(project, issues);
   return issues;
+}
+
+/**
+ * 명명 로케이션 레이어의 진단. 상세 규칙과 복구 경로는 `project/mapLocationReferences.ts`.
+ * 여기서는 프로젝트 lint 표면으로 올리기만 한다 — 규칙이 두 곳으로 갈라지지 않게.
+ */
+function checkMapNamedLocations(project: Project, issues: LintIssue[]): void {
+  for (const issue of collectMapLocationReferenceIssues(project)) {
+    issues.push({
+      severity: issue.severity,
+      code: issue.code,
+      mapId: issue.mapId,
+      message: issue.message,
+    });
+  }
 }
 
 /**

@@ -803,12 +803,26 @@ export function erasePictureState(session: PlaySession, pictureId: string): void
   delete session.pictures[pictureId];
 }
 
+/**
+ * 조건 평가에 세션만으로는 부족한 저작 데이터를 넣는 구멍.
+ *
+ * 왜 필요한가: `insideLocation` 은 `GameMap.locations` 의 기하를 읽어야 하는데 세션에는 그 사본이
+ * 없다(사본을 만들면 저작 편집과 어긋난 stale 사각형이 세이브에 굳는다). 그래서 호출측이
+ * **지금 프로젝트의 맵**을 넘긴다. 넘기지 않으면 그 조건은 해석 불가로 **거짓**이 되고
+ * `projectLint` 가 별도로 고아/미배선 참조를 알린다 — 조용히 참으로 통과시키지 않는다.
+ */
+export type ConditionEvalContext = {
+  /** 세션의 현재 맵. 로케이션 기하의 유일한 출처다. */
+  readonly map?: { readonly locations?: readonly { readonly id: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }[] };
+};
+
 // 조건(Condition) 평가. condition이 없으면 항상 참.
 // host: 셀프 스위치/활동은 event id, 호감도 self 는 characterId 필요 (SocialHost 권장).
 export function evalCondition(
   session: PlaySessionLike,
   condition: Condition | undefined,
-  host?: SocialHost | string
+  host?: SocialHost | string,
+  context?: ConditionEvalContext
 ): boolean {
   if (!condition) return true;
   const eventId = hostEventId(host);
@@ -841,6 +855,18 @@ export function evalCondition(
       return conditionMatchesSeason(session.gameTime, condition.season);
     case "npcActivity":
       return eventId ? session.npcActivities?.[eventId] === condition.activity : false;
+    case "insideLocation": {
+      const location = context?.map?.locations?.find((entry) => entry.id === condition.locationId);
+      // 해석 불가(맵 미전달·삭제된 로케이션)는 거짓이다. inside=false 라도 참이 되지 않는다 —
+      // 없는 장소의 "밖"을 참으로 만들면 삭제 사고가 이벤트 폭주로 번진다.
+      if (!location) return false;
+      const inside =
+        session.x >= location.x &&
+        session.y >= location.y &&
+        session.x < location.x + Math.max(0, location.w) &&
+        session.y < location.y + Math.max(0, location.h);
+      return inside === condition.inside;
+    }
     case "friendshipAtLeast":
       return getFriendship(session, condition.npcKey, hostSocial(host)) >= clampFriendship(condition.value);
     case "relationshipAtLeast":
@@ -850,11 +876,11 @@ export function evalCondition(
     case "run":
       return evalRoguelikeRunCondition(session, condition);
     case "all":
-      return condition.conditions.every((child) => evalCondition(session, child, host));
+      return condition.conditions.every((child) => evalCondition(session, child, host, context));
     case "any":
-      return condition.conditions.some((child) => evalCondition(session, child, host));
+      return condition.conditions.some((child) => evalCondition(session, child, host, context));
     case "not":
-      return !evalCondition(session, condition.condition, host);
+      return !evalCondition(session, condition.condition, host, context);
   }
 }
 

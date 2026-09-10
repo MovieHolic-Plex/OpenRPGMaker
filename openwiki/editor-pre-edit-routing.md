@@ -125,6 +125,33 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 
 ## Pre-edit routing
 
+### 명명 로케이션 레이어 (2026-09-10)
+
+맵에 **이름 붙은 구역**을 그리는 층이다. 캔버스 툴바의 `map-location-layer-toggle` 「로케이션」이
+켜고 끄며, 꺼져 있으면 오버레이가 `pointer-events: none` 이라 타일 편집을 한 픽셀도 막지 않는다.
+
+- 소유 파일: 순수 규칙 `src/project/mapNamedLocations.ts`, 참조·복구 `src/project/mapLocationReferences.ts`,
+  편집기 상태·store 편집 `src/editor/mapLocationLayerState.ts`, DOM 오버레이·인스펙터
+  `src/editor/mapLocationLayer.ts`, 라벨 문장 `src/editor/mapLocationLabels.ts`,
+  조수 툴 `src/editor/tools/mapLocationTools.ts`, 스타일 `src/styles/editor/map-location-layer.css`.
+- **`layoutPlan.regions` 를 사람이 편집하는 층으로 쓰지 마라.** `setMapLayoutPlan` 이 통째로
+  갈아치우므로 사람 편집이 재시공에서 사라진다. 관계·승격 계약은
+  `openwiki/runtime-project-schema.md` 의 「명명 로케이션 레이어」 절이 소유한다.
+- **오버레이 기하는 카메라를 통해 변환한다.** 오버레이는 `.phaser-container` 전체를 덮고 그 안의
+  캔버스는 스크롤·중앙정렬·`worldView` 만큼 어긋나 있다. `x * TILE * zoom` 만 쓰면 상자가 맵과
+  어긋난다(실측: 드래그 미리보기가 커서에서 500px 떨어졌다). `regionClientRect` 등록소의
+  `resolveRegionClientRect`(타일→화면)와 `resolveClientPointTile`(화면→타일)를 쓰고, 둘 다
+  `EditScene.create` 가 꽂는다. 등록 전(부팅 중)에는 null 이므로 제스처를 시작하지 않는다 —
+  브라우저 QA 는 `__oprnEditWorldToClient` 를 기다린 뒤 시작해야 한다.
+- **Escape/Delete 는 모달이 열려 있으면 물러난다**(`hasOpenModalLayer`). 이 층은 캔버스 위의 비모달
+  표면이라 위쪽 창의 취소 키를 훔치면 안 된다. 오버레이는 `document.body` 가 아니라
+  `.phaser-container` 자식이므로 `modalEscapeLayerGate` 대상이 아니다.
+- 모든 편집은 `store.update(..., { scope:"map", mapId, label:"로케이션 …" })` + 저작 단위
+  `recordProjectSnapshot` 을 지난다(editor-observability 라벨 계약).
+- 브라우저 QA: `npm run dev:worktree` 뒤
+  `MAP_LOCATION_QA_URL=http://127.0.0.1:<포트> node scripts/qa/map-location-layer.mjs`
+  → `verify-shots/oprn-020/SUMMARY.md`.
+
 ### Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
 
 - Standard `mapTree=false` means a focused, always-mounted tile/event task host,

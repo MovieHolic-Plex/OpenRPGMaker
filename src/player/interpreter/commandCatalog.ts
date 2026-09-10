@@ -12,7 +12,7 @@ import { craftRecipe } from "@/project/craftRecipes";
 import { applyItemUpgrade } from "@/project/upgrades";
 import { setEquippedTool } from "@/project/toolActions";
 import { changeLifeSkillXp } from "@/project/lifeSkillProgress";
-import { friendshipKey, changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, getSwitch, changeActorSkill, nextSessionRandom, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
+import { friendshipKey, changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, getSwitch, changeActorSkill, nextSessionRandom, setSwitch, setTimer, setVariable, type ConditionEvalContext, type PlaySession } from "@/project/session";
 import type { SocialHost } from "@/project/socialKey";
 import { promoteActor } from "@/project/sessionClass";
 import { changeActorEquipment, changeActorExperience, changeActorLevel, changeActorVital, recoverAll } from "@/project/sessionActorCommands";
@@ -77,7 +77,7 @@ function callMapEvent(state: InterpreterState, frame: Frame, eventId: string): C
     console.warn(`[interpreter] 맵 이벤트 없음: ${eventId}`);
     return resumeNext(frame);
   }
-  const page = event.pages?.length ? resolveEventPage(event, state.session) : undefined;
+  const page = event.pages?.length ? resolveEventPage(event, state.session, { locations: map?.locations }) : undefined;
   const commands = page?.commands ?? event.commands;
   if (commands.length) {
     if (pushFrame(state, commands)) return { kind: "continue" };
@@ -380,7 +380,7 @@ function selectEnding(
 ): EndingDef | undefined {
   if (endingId) return endings.find((ending) => ending.id === endingId);
   return endings
-    .filter((ending) => ending.conditions.every((condition) => evalCondition(state.session, condition, resolveSocialHost(state) ?? state.currentEventId)))
+    .filter((ending) => ending.conditions.every((condition) => evalCondition(state.session, condition, resolveSocialHost(state) ?? state.currentEventId, locationEvalContext(state))))
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
 }
 
@@ -445,7 +445,7 @@ export function executeCommand(
         cancelBehavior: command.cancelBehavior,
       });
     case "fork": {
-      const branch = evalCondition(state.session, command.condition, resolveSocialHost(state) ?? state.currentEventId) ? command.then : command.else ?? [];
+      const branch = evalCondition(state.session, command.condition, resolveSocialHost(state) ?? state.currentEventId, locationEvalContext(state)) ? command.then : command.else ?? [];
       if (pushFrame(state, branch)) return { kind: "continue" };
       return resumeNext(frame);
     }
@@ -1062,6 +1062,15 @@ function resolveOpenChestId(state: InterpreterState): string {
     return `chest_${mapId}_${x}_${y}`;
   }
   return `chest_${mapId}_0_0`;
+}
+
+/**
+ * `insideLocation` 조건이 읽는 명명 로케이션 기하. 항상 **세션의 현재 맵**이 원처다 —
+ * 조건은 맵 경계를 넘지 않으므로 맵 복사본은 자기 로케이션을 보게 된다.
+ * 프로젝트를 부채로 돌리는 잡트리(단위 테스트 등)에서는 해석 불가 = 거짓이다.
+ */
+function locationEvalContext(state: InterpreterState): ConditionEvalContext {
+  return { map: state.project?.maps[state.session.currentMapId] };
 }
 
 function resolveSocialHost(state: InterpreterState): SocialHost | undefined {

@@ -17,6 +17,7 @@ const OWNER_EVENT: GameEvent = {
 };
 
 const BATTLE_PAGE_ID = "parity_battle_page";
+const PARITY_LOCATION_ID = "loc_parity";
 
 // Empty by design: all three surfaces receive the same full state and host event,
 // so there is no input limitation that justifies a condition-kind divergence.
@@ -91,6 +92,12 @@ const CASES = {
     satisfying: (state) => { state.npcActivities = { [OWNER_EVENT.id]: "work" }; },
     nonSatisfying: (state) => { state.npcActivities = { [OWNER_EVENT.id]: "sleep" }; },
   },
+  insideLocation: {
+    condition: { kind: "insideLocation", locationId: PARITY_LOCATION_ID, inside: true },
+    // 주인공 좌표만 움직인다 — 세 표면 모두 같은 로케이션 기하로 같은 판정을 내야 한다.
+    satisfying: (state) => { state.x = 1; state.y = 1; },
+    nonSatisfying: (state) => { state.x = 9; state.y = 9; },
+  },
   friendshipAtLeast: {
     condition: { kind: "friendshipAtLeast", value: 20 },
     satisfying: (state) => { state.friendship = { [OWNER_EVENT.characterId as string]: 20 }; },
@@ -159,8 +166,8 @@ describe("condition evaluator parity", () => {
       mutate(state);
 
       const verdicts = {
-        page: pageVerdict(parityCase.condition, state),
-        mapFork: evalCondition(state, parityCase.condition, OWNER_EVENT),
+        page: pageVerdict(parityCase.condition, state, project),
+        mapFork: evalCondition(state, parityCase.condition, OWNER_EVENT, { map: project.maps[state.currentMapId] }),
         battle: battleVerdict(project, parityCase.condition, state),
       };
 
@@ -190,11 +197,14 @@ describe("condition evaluator parity", () => {
 
 function parityProject(): Project {
   const project = createBlankProject();
-  project.maps[project.startMapId].events.push(OWNER_EVENT);
+  const map = project.maps[project.startMapId];
+  map.events.push(OWNER_EVENT);
+  // insideLocation 패리티용 구역. 세 표면 모두 같은 맵의 같은 로케이션을 본다.
+  map.locations = [{ id: PARITY_LOCATION_ID, name: "패리티 구역", x: 0, y: 0, w: 2, h: 2 }];
   return project;
 }
 
-function pageVerdict(condition: Condition, state: PlaySession): boolean {
+function pageVerdict(condition: Condition, state: PlaySession, project?: Project): boolean {
   const event: GameEvent = {
     ...OWNER_EVENT,
     pages: [{
@@ -208,7 +218,8 @@ function pageVerdict(condition: Condition, state: PlaySession): boolean {
       commands: [],
     }],
   };
-  return resolveEventPage(event, state)?.id === "parity_page";
+  const locations = project?.maps[state.currentMapId]?.locations;
+  return resolveEventPage(event, state, { locations })?.id === "parity_page";
 }
 
 function battleVerdict(project: Project, condition: Condition, state: PlaySession): boolean {

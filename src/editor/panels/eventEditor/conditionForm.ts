@@ -22,6 +22,7 @@ const CONDITION_MODE_OPTIONS = [
   { value: "timePhase", label: "시간대" },
   { value: "season", label: "계절" },
   { value: "npcActivity", label: "활동" },
+  { value: "insideLocation", label: "구역(로케이션)" },
   { value: "friendshipAtLeast", label: "호감도" },
   { value: "relationshipAtLeast", label: "관계" },
   { value: "battleResult", label: "전투 결과" },
@@ -95,6 +96,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       case "npcActivity":
         onChange({ kind: "npcActivity", activity: "work" });
         return;
+      case "insideLocation":
+        onChange({ kind: "insideLocation", locationId: firstLocationId(), inside: true });
+        return;
       case "friendshipAtLeast":
         onChange({ kind: "friendshipAtLeast", value: 100 });
         return;
@@ -151,6 +155,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       break;
     case "npcActivity":
       wrap.append(field("지금 하는 일", renderNpcActivityCondition(cond, onChange)));
+      break;
+    case "insideLocation":
+      wrap.append(renderInsideLocationCondition(cond, onChange));
       break;
     case "friendshipAtLeast":
       wrap.append(labeledFriendship(cond, onChange));
@@ -613,6 +620,8 @@ function conditionHint(kind: Condition["kind"]): string {
       return "현재 계절을 검사합니다.";
     case "npcActivity":
       return "지금 하는 일이 일치하는지 검사합니다.";
+    case "insideLocation":
+      return "주인공이 이름 붙은 구역 안(또는 밖)에 있는지 검사합니다. 좌표를 적지 않으므로 구역을 옮기거나 넓히면 조건도 함께 따라옵니다.";
     case "friendshipAtLeast":
       return "호감도가 지정 값 이상인지 검사합니다. 누구를 비우면 이 이벤트 기준입니다.";
     case "relationshipAtLeast":
@@ -1003,6 +1012,69 @@ export function renderNpcActivityCondition(
   });
   row.append(activity, npcActivitySuggestionList(listId));
   return row;
+}
+
+const INSIDE_LOCATION_OPTIONS = [
+  { value: "true", label: "안에 있을 때" },
+  { value: "false", label: "밖에 있을 때" },
+] as const;
+
+function firstLocationId(): string {
+  return currentMapLocations()[0]?.id ?? "";
+}
+
+function currentMapLocations(): readonly { readonly id: string; readonly name: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }[] {
+  const project = store.getCurrent();
+  const mapId = editorState.get().currentMapId ?? project.startMapId;
+  return project.maps[mapId]?.locations ?? [];
+}
+
+/**
+ * 「구역(로케이션)」 조건 편집. 선택기는 **현재 맵의 로케이션만** 담는다 — 조건은 맵 경계를
+ * 넘지 않으므로 다른 맵 목록을 섞으면 저작자가 절대 참이 되지 않는 조건을 만든다.
+ *
+ * 참조가 끊긴 저장본(로케이션 삭제)은 선택기에서 사라지는 대신 **끊긴 항목을 그대로 남긴다** —
+ * 조용히 다른 구역으로 바뀌면 사고가 데이터에 굳는다.
+ */
+export function renderInsideLocationCondition(
+  cond: Extract<Condition, { kind: "insideLocation" }>,
+  onChange: (condition: Condition) => void,
+  options: { readonly className?: string; readonly locationTestId?: string } = {}
+): HTMLElement {
+  const box = el("div", { class: options.className ?? "event-condition-detail" });
+  const locations = currentMapLocations();
+  const known = locations.some((location) => location.id === cond.locationId);
+  const choices = [
+    ...(cond.locationId && !known
+      ? [{ value: cond.locationId, label: `(삭제된 로케이션 ${cond.locationId})` }]
+      : []),
+    ...(locations.length === 0 && !cond.locationId ? [{ value: "", label: "(이 맵에 로케이션이 없습니다)" }] : []),
+    ...locations.map((location) => ({
+      value: location.id,
+      label: `${location.name} — (${location.x},${location.y}) ${location.w}×${location.h}`,
+    })),
+  ];
+  const picker = selectWithOptions(choices, cond.locationId, options.locationTestId ?? "event-condition-inside-location");
+  const side = selectWithOptions(INSIDE_LOCATION_OPTIONS, String(cond.inside), "event-condition-inside-location-side");
+  const error = el("p", {
+    class: "event-condition-error",
+    text: known || !cond.locationId
+      ? "구역을 선택하세요. 맵의 「로케이션」 레이어에서 먼저 그려야 합니다."
+      : `로케이션 '${cond.locationId}' 이 삭제됐습니다. 다른 구역을 고르거나 조건을 지워 주세요.`,
+    dataset: { testid: "event-condition-inside-location-error" },
+  });
+  const syncError = (): void => {
+    error.hidden = Boolean(picker.value.trim()) && locations.some((location) => location.id === picker.value);
+  };
+  const apply = (): void => {
+    onChange({ kind: "insideLocation", locationId: picker.value, inside: side.value === "true" });
+    syncError();
+  };
+  picker.addEventListener("change", apply);
+  side.addEventListener("change", apply);
+  syncError();
+  box.append(field("구역", picker), error, field("판정", side));
+  return box;
 }
 
 const BATTLE_RESULT_OPTIONS = [

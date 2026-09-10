@@ -28,6 +28,8 @@ import {
   type MapEditLockStatus,
 } from "@/editor/mapEditLocks";
 import { installLayoutBboxOverlay } from "@/editor/layoutBboxOverlay";
+import { installMapLocationLayer } from "@/editor/mapLocationLayer";
+import { subscribeLocationLayer } from "@/editor/mapLocationLayerState";
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { bindMapSurfaceFocusHandoff } from "@/editor/mapSurfaceFocus";
 import { installEditorToolHook } from "@/editor/editorToolHook";
@@ -132,6 +134,8 @@ let unsubMapPanel: (() => void) | null = null;
 let assistantTemperature = initialLayout.assistantTemperature;
 let unsubUiMode: (() => void) | null = null;
 let unsubLayoutBbox: (() => void) | null = null;
+let unsubLocationLayer: (() => void) | null = null;
+let unsubLocationToggle: (() => void) | null = null;
 let unsubWorkspace: (() => void) | null = null;
 // 좌측 도크 마운트 — 패널 호스트를 레이아웃 데이터에서 만든 결과. 구성이 바뀔 때만 다시 짓는다.
 let leftDock: DockMount | null = null;
@@ -225,6 +229,12 @@ export function renderEditor(main: HTMLElement): void {
   bindMapSurfaceFocusHandoff(phaserContainer);
   void startEditGame(phaserContainer).then(() => scheduleFitCanvas());
   unsubLayoutBbox = installLayoutBboxOverlay();
+  // 명명 로케이션 레이어. 꺼져 있으면 포인터를 받지 않으므로 타일 편집과 겹치지 않는다.
+  unsubLocationLayer = installMapLocationLayer();
+  // 툴바의 로케이션 토글이 눌린 상태를 그대로 보여야 한다 — 레이어 상태 변화에 토글도 다시 그린다.
+  unsubLocationToggle = subscribeLocationLayer(() => {
+    if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
+  });
 
   unsubStore = store.subscribe((_project, change) => refreshPanels(change));
   unsubEditor = editorState.subscribe(() => scheduleFullPanelRefresh());
@@ -372,6 +382,8 @@ export function teardownEditor(): void {
   unsubMapLocks?.();
   unsubUiMode?.();
   unsubLayoutBbox?.();
+  unsubLocationLayer?.();
+  unsubLocationToggle?.();
   unsubWorkspace?.();
   unsubMapPanel?.();
   unsubMapPanel = null;
@@ -384,6 +396,8 @@ export function teardownEditor(): void {
   unsubMapLocks = null;
   unsubUiMode = null;
   unsubLayoutBbox = null;
+  unsubLocationLayer = null;
+  unsubLocationToggle = null;
   unsubWorkspace = null;
   leftDock = null;
   const ro2 = (window as unknown as Record<string, unknown>)["__oprnLayoutRO"] as ResizeObserver | undefined;

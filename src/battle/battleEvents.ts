@@ -49,6 +49,14 @@ export type BattleEventRuntimeState = {
   readonly friendship?: Record<string, number>;
   friendshipWrites?: Record<string, number>;
   readonly relationships?: Record<string, RelationshipState>;
+  /**
+   * 전투를 시작한 필드 위치. `insideLocation` 조건이 이것과 `project.maps[currentMapId].locations`
+   * 로 판정한다 — 전투 중에는 주인공이 움직이지 않으므로 개시 시점 좌표가 곧 그 전투의 위치다.
+   * 없으면(직접 호출·구 브리지) 해석 불가 = 거짓이고 추적 로그가 남는다.
+   */
+  readonly currentMapId?: string;
+  readonly x?: number;
+  readonly y?: number;
   // 전투가 실제로 쓴 관계 키만 모은다. 스냅숏에 지도 전체를 실으면 전투 중 맵에서 지운
   // 관계를 write-back 이 되살린다(setRelationshipState 는 single 을 삭제로 처리한다).
   relationshipWrites?: Record<string, RelationshipState>;
@@ -71,6 +79,9 @@ export const BATTLE_CONDITION_SESSION_STATE_FIELDS = [
   "npcActivities",
   "friendship",
   "relationships",
+  "currentMapId",
+  "x",
+  "y",
 ] as const satisfies readonly (keyof BattleEventRuntimeState)[];
 
 type BattleConditionRuntimeState = Pick<
@@ -164,6 +175,18 @@ type BattleInvocation = {
   labelJumps: number;
 };
 
+/**
+ * 전투 런타임이 해석할 수 없는 조건. 전투에는 소유 이벤트도 필드 좌표도 없다.
+ * 조용히 참으로 통과시키지 않고 종류별 1회 로그를 남긴다.
+ */
+type OwnerlessConditionKind = "selfSwitch" | "npcActivity" | "insideLocation";
+
+const OWNERLESS_CONDITION_DETAIL: Record<OwnerlessConditionKind, string> = {
+  selfSwitch: "selfSwitch condition without owner event (treated as OFF)",
+  npcActivity: "npcActivity condition without owner event (treated as false)",
+  insideLocation: "insideLocation condition has no map position in battle (treated as false)",
+};
+
 const MAX_BATTLE_LOOP_ITERATIONS = 10_000;
 const MAX_BATTLE_LABEL_JUMPS = 10_000;
 
@@ -185,9 +208,9 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   const conditionState: BattleConditionRuntimeState = options.state;
   // 소유 이벤트 없는 전투에서 소유자 의존 조건이 평가되면 종류별로 1회만 추적 로그를 남긴다
   // (조건 평가는 tick/라운드마다 반복되므로 매번 기록하면 eventLogs 가 범람한다).
-  const loggedOwnerlessConditions = new Set<"selfSwitch" | "npcActivity">();
+  const loggedOwnerlessConditions = new Set<OwnerlessConditionKind>();
 
-  function logOwnerlessConditionOnce(kind: "selfSwitch" | "npcActivity"): void {
+  function logOwnerlessConditionOnce(kind: OwnerlessConditionKind): void {
     if (loggedOwnerlessConditions.has(kind)) return;
     loggedOwnerlessConditions.add(kind);
     logs.push({
@@ -195,9 +218,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       round: 0,
       triggerId: "external",
       kind: "unsupported",
-      detail: kind === "selfSwitch"
-        ? "selfSwitch condition without owner event (treated as OFF)"
-        : "npcActivity condition without owner event (treated as false)",
+      detail: OWNERLESS_CONDITION_DETAIL[kind],
     });
   }
 
@@ -936,6 +957,22 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           return false;
         }
         return conditionState.npcActivities?.[ownerEventId] === condition.activity;
+      }
+      case "insideLocation": {
+        // 전투 중에는 주인공이 움직이지 않는다 — 전투 개시 시점 좌표가 이 전투의 위치다.
+        // 좌표나 맵을 못 받은 호출(구 브리지·직접 호출)은 조용한 참 대신 거짓 + 추적 로그다.
+        const map = conditionState.currentMapId ? options.project.maps[conditionState.currentMapId] : undefined;
+        const location = map?.locations?.find((entry) => entry.id === condition.locationId);
+        if (!location || conditionState.x === undefined || conditionState.y === undefined) {
+          logOwnerlessConditionOnce("insideLocation");
+          return false;
+        }
+        const inside =
+          conditionState.x >= location.x &&
+          conditionState.y >= location.y &&
+          conditionState.x < location.x + Math.max(0, location.w) &&
+          conditionState.y < location.y + Math.max(0, location.h);
+        return inside === condition.inside;
       }
       case "friendshipAtLeast": {
         const npcKey = ownerEvent
