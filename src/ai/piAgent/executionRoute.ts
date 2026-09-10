@@ -18,11 +18,10 @@ export const EXECUTION_ROUTE_DESCRIPTION: Readonly<Record<ExecutionRoute, string
   "pi-team": "팀장이 팀원을 나눠 배정하고 검수한다. 진행은 팀 패널과 보드에 보인다.",
 };
 
-// The shipped default stays the existing assistant: the composer's route select and
-// an explicit "/pi …" are the two ways to reach Pi. Defaulting every write to Pi silently
-// diverted the autonomy dial's write levels away from sendUserMessage (measured: four
-// aiChatPanelComposerMode cases stopped sending at all).
-export const DEFAULT_EXECUTION_ROUTE: ExecutionRoute = "session";
+// 기본은 Pi 에이전트다(2026-09-10 변경): 생 입력은 현재 맵에서 끝까지 일하는 Pi 로 간다.
+// `/pi …` 명시 입력·질문/계획/선택 영역의 세션 고정은 그대로다. 이전 기본(session)은
+// 질문·계획 모드에서만 살아남는다.
+export const DEFAULT_EXECUTION_ROUTE: ExecutionRoute = "pi-agent";
 
 export type PiApplyMode = "review" | "auto";
 export const DEFAULT_PI_APPLY: PiApplyMode = "review";
