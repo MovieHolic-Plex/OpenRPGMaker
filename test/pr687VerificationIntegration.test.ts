@@ -3,7 +3,7 @@ import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
 import { fixedDeclarer } from "./intentFixture";
-import { verificationEvent, verificationJourney } from "./fixtures/verificationOwnership";
+import { unboundCriterionCheck, verificationEvent, verificationJourney } from "./fixtures/verificationOwnership";
 import { offlineChatResponse } from "./fixtures/offlineChatResponse";
 import { approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";
 import { getTool } from "@/editor/tools";
@@ -46,7 +46,9 @@ function rig(maxToolCalls = 4, project = createBlankProject()) {
     acceptance: [{ id: "preserve", title: "Map", criteria: [{ kind: "preserve", target: { mapId } }] }],
     layers: [{ title: "Checks", items: [{ id: "verify", title: "Verify", instruction: "Check the declared scene then inspect project",
       successTools: ["run_scene_test", "get_project_summary"], mapTargets: [mapId],
-      ...(declared ? { verificationChecks: [{ tool: "run_scene_test", args, interactionTargets: [] }] } : {}) },
+      // declared=false 는 스펙 미지정 요구를 만든다. 선언을 아예 비우면 더 이상 요구가 생기지
+      // 않으므로(하네스가 해소 불가능한 요구를 만들지 않는다) 남아 있는 경로로 만든다.
+      verificationChecks: declared ? [{ tool: "run_scene_test", args, interactionTargets: [] }] : [unboundCriterionCheck("run_scene_test")] },
     { id: "optional", title: "Optional", instruction: "Optional inspection" }] }],
   } });
   async function send(...next: Call[][]) {

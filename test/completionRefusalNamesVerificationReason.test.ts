@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import type { ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults/defaultProject";
+import { unboundCriterionCheck } from "./fixtures/verificationOwnership";
 
 /**
  * 2026-09-11 실 LLM 턴 계측으로 확정한 회귀.
@@ -46,7 +47,7 @@ describe("complete_work_item 거부 문구", () => {
     const project = createBlankProject();
     const mapId = project.startMapId;
 
-    // verificationChecks 를 일부러 뺀 계획 — 세션이 args: null pending requirement 를 심는다.
+    // 채택되지 않은 승인 약속을 가리키는 선언 — 스펙 미지정(args: null) 요구가 된다.
     const plan = {
       goal: "시작 맵 통행 점검",
       acceptance: [{ id: "preserve", title: "보존", criteria: [{ kind: "preserve", target: { mapId } }] }],
@@ -55,6 +56,7 @@ describe("complete_work_item 거부 문구", () => {
         items: [{
           id: "reach-item", title: "도달성 점검", instruction: "도달 불가 영역이 없는지 확인",
           successTools: ["check_reachability"], mapTargets: [mapId],
+          verificationChecks: [unboundCriterionCheck("check_reachability")],
         }],
       }],
     };
@@ -95,6 +97,9 @@ describe("complete_work_item 거부 문구", () => {
     // 지워진 **이유**와 유일한 해소 경로가 같은 결과에 들어가야 한다.
     expect(complete?.summary).toContain("검증 스펙 미지정");
     expect(complete?.summary).toContain("set_work_plan");
-    expect(complete?.summary).toContain("check_reachability:pending");
+    // 어느 선언이 막고 있는지 지목해야 한다 — id 형식은 고정하지 않는다.
+    const pending = session.getVerificationSnapshot().requirements.find((entry) => entry.args === null);
+    expect(pending).toBeDefined();
+    expect(complete?.summary).toContain(pending!.checkId);
   });
 });

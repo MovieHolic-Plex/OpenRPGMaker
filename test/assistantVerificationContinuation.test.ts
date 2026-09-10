@@ -9,7 +9,7 @@ import { getTool, runTool } from "@/editor/tools";
 import type { ReviewInput } from "@/ai/independentReview";
 import { independentReviewPayload } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
-import { verificationEvent, verificationJourney } from "./fixtures/verificationOwnership";
+import { unboundCriterionCheck, verificationEvent, verificationJourney } from "./fixtures/verificationOwnership";
 
 const reach = "check_reachability";
 const scene = "run_scene_test";
@@ -185,7 +185,8 @@ describe("normal session ownership through skip, replan and continuation", () =>
         round++;
         if (stage === 0) {
           stage++;
-          return response([{ name: "set_work_plan", args: plan() }, { name: reach, args }, { name: "skip_work_item", args: {} }], round);
+          // 스펙 미지정 요구를 만드는 현행 경로 — 선언을 비우는 방식은 더 이상 요구를 만들지 않는다.
+          return response([{ name: "set_work_plan", args: plan([unboundCriterionCheck(reach)]) }, { name: reach, args }, { name: "skip_work_item", args: {} }], round);
         }
         if (stage === 2) {
           stage++;

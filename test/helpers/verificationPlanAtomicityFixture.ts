@@ -7,7 +7,7 @@ import type { AcceptancePromise } from "@/ai/assistantAcceptance";
 import { createBlankProject } from "@/project/defaults";
 import { runTool, type ToolResult } from "@/editor/tools";
 import { fixedDeclarer } from "../intentFixture";
-import { verificationEvent } from "../fixtures/verificationOwnership";
+import { unboundCriterionCheck, verificationEvent } from "../fixtures/verificationOwnership";
 
 type Call = { name: string; args: Record<string, unknown> };
 type Path = "tool" | "planner";
@@ -137,7 +137,9 @@ export function fixture(name = "check_reachability") {
   };
   const probe = (input = args): Call => ({ name, args: input });
   async function setup(status: "passed" | "unverified" | "stale" = "unverified", checks: unknown[] | null = [check()]) {
-    await send([{ name: "set_work_plan", args: plan(checks ?? undefined) }, ...(status === "unverified" ? [] : [probe()])]);
+    // checks === null: 스펙 미지정 요구를 만든다. 「선언을 아예 비운다」는 더 이상 요구를 만들지
+    // 않으므로(하네스가 해소 불가능한 요구를 만들지 않는다) 남아 있는 경로로 만든다.
+    await send([{ name: "set_work_plan", args: plan(checks ?? [unboundCriterionCheck(name)]) }, ...(status === "unverified" ? [] : [probe()])]);
     if (status === "stale") {
       const edited = session.getProposedProject();
       edited.session.gold = (edited.session.gold ?? 0) + 1;

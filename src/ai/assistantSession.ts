@@ -1413,7 +1413,20 @@ export class AssistantSession {
           this.verificationEvidence.adopt({ checkId, ownerId, name, args: null, mapTargets: item.mapTargets ?? undefined });
           checkIds.push(checkId);
         };
-        if (!declarations.length) adoptPending(`${ownerId}:${name}:pending`);
+        // 스펙이 아예 없는 successTools 는 검증 요구로 채택하지 않는다. 예전에는 `args: null`
+        // 요구를 심었는데, 그건 **하네스가 스스로 만든 해소 불가능한 요구**였다: 실행은 반영되지
+        // 않고(observe 의 matching 은 args !== null 만 고른다) correct_verification 도 거부하므로
+        // (correction 의 `if (!stored?.args) return null`) set_work_plan 재선언 말고는 뚫을 수 없다.
+        // 2026-09-11 실 LLM 턴에서 gemini-3.8-flash·3.1-flash·3.1-flash-lite 셋 다 이유와 checkId 를
+        // 툴 결과로 받고도 재선언하지 못했다 — 2026-09-10 로그의 예산 소진이 그 결과다.
+        // 검증 계약은 verificationChecks 가 담는다. 스펙 없는 successTools 는 원래 의미대로
+        // "이 툴을 성공시켜라"로만 판정한다(passed() 의 attempts 분기).
+        // 단 **입력이 망가져 선언이 탈락한 항목**은 그대로 막는다 — 그러지 않으면 망가진 선언이
+        // 조용히 사라지고 무관한 승인 기준을 재사용한다.
+        if (!declarations.length) {
+          if (!malformedItems.has(item.id)) continue;
+          adoptPending(`${ownerId}:${name}:pending`);
+        }
         for (const [index, check] of declarations.entries()) {
           const previous = check.checkId ? this.verificationEvidence.snapshot(false).requirements.find(entry => entry.checkId === check.checkId) : undefined;
           const declarationOwner = previous?.ownerId ?? ownerId;
