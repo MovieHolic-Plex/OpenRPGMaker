@@ -89,7 +89,8 @@ import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalet
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { getEditorMapViewport, setEditorMapViewport } from "@/editor/editorMapViewport";
 import { setClientPointTileResolver, setRegionClientRectResolver } from "@/editor/regionClientRect";
-import { setCameraPanBridge } from "@/editor/cameraPanBridge";
+import { setCanvasPointerBridge, type CanvasGestureClaim, type CanvasPointerPoint } from "@/editor/canvasPointerBridge";
+import { resolveCanvasGestureOwner } from "@/editor/canvasPointerOwnership";
 import { repositionMapLocationLayer } from "@/editor/mapLocationLayer";
 import { repositionRegionChunkOverlay } from "@/editor/regionTask/regionChunkOverlayView";
 import { notifyRightDragRegionSelected } from "@/editor/selectionChipHint";
@@ -457,13 +458,9 @@ export class EditScene extends PhaserRuntime.Scene {
     // 로케이션 레이어(DOM 오버레이)는 사람의 포인터를 타일로 바꿔야 한다. 역변환도 카메라를
     // 읽으므로 같은 등록소에 꽂는다 — 오버레이가 Phaser 를 직접 참조하지 않게 한다.
     setClientPointTileResolver((point) => this.clientPointToTile(point));
-    // 로케이션 오버레이는 포인터의 **표적**이 되므로 캔버스의 팬 제스처를 스스로 시작할 수 없다.
-    // 카메라를 가진 쪽이 «양보할 때인가»와 «이미 지나간 좌표에서 팬을 시작하라»를 꽂는다.
-    setCameraPanBridge({
-      armed: () => this.cameraPanController?.armed() ?? false,
-      startPan: (screenX, screenY) => this.cameraPanController?.startFromScreenPoint(screenX, screenY),
-    });
-
+    // 로케이션 오버레이는 포인터의 **표적**이 되므로 캔버스의 팬/영역 제스처를 스스로 시작할 수 없다.
+    // 카메라와 장면 제스처를 가진 쪽이 «양보할 때인가»와 «이미 지나간 좌표에서 제스처를 시작하라»를 꽂는다.
+    setCanvasPointerBridge({ claim: (point) => this.claimCanvasPointer(point) });
     // scene 정지/파괴 시 구독 해제(이중 호출 방지).
     this.events.once(PhaserRuntime.Scenes.Events.SHUTDOWN, () => this.cleanup());
     this.events.once(PhaserRuntime.Scenes.Events.DESTROY, () => this.cleanup());
@@ -523,7 +520,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.regionSizeBadge = null;
     setRegionClientRectResolver(null);
     setClientPointTileResolver(null);
-    setCameraPanBridge(null);
+    setCanvasPointerBridge(null);
     setEditorMapViewport(null);
   }
 
@@ -660,17 +657,10 @@ export class EditScene extends PhaserRuntime.Scene {
     this.input.on("pointerdown", (ptr: Phaser.Input.Pointer) => {
       this.cancelCameraFocus(true, ptr);
       this.updatePointerStatus(ptr);
-      // 붙여넣기 미리보기 모드: 좌클릭 → 확정, 우클릭 → 취소.
+      // 붙여넣기 미리보기 모드: 좌클릭 → 확정, 우클릭/맵 밖 → 취소.
       if (editorState.get().pastePreview) {
-        const mid = this.mapId();
-        const { x, y } = this.pointerToTile(ptr);
-        if (this.isRightClick(ptr) || !mid || x < 0 || y < 0) {
-          cancelPastePreview();
-        } else {
-          confirmPastePreview(mid);
-        }
-        // 붙여넣기 미리보기도 제스처다 — 확정/취소로 끝나면 미뤄 둔 초점을 재생한다.
-        this.replayDeferredCameraFocus();
+        const tile = this.pointerToTile(ptr);
+        this.handlePastePreviewPointerDown(this.isRightClick(ptr), tile);
         return;
       }
       if (this.isRightClick(ptr)) {
@@ -823,27 +813,84 @@ export class EditScene extends PhaserRuntime.Scene {
   private isRightClick(ptr: Phaser.Input.Pointer): boolean {
     return ptr.rightButtonDown() || ptr.button === 2;
   }
-
   private beginRightRegionGesture(ptr: Phaser.Input.Pointer): void {
+    this.beginRightRegionGestureAt(this.pointerScreenPosition(ptr), this.pointerToTile(ptr));
+  }
+
+  /** 화면 좌표 + 타일로 시작하는 단일 구현. DOM 오버레이와 Phaser 입력이 같은 길을 쓴다. */
+  private beginRightRegionGestureAt(screen: { readonly x: number; readonly y: number }, tile: { readonly x: number; readonly y: number }): void {
     // 영역 작업이 돌고 있거나 결과 검토 중이면 대상 영역이 잠긴다. 창은 비모달이라 캔버스가
     // 살아 있고, 그 상태로 새 영역을 잡으면 선택과 창이 서로 다른 곳을 가리킨다 —
     // 「적용」이 화면에 보이는 선택이 아닌 옛 영역을 고치게 된다. 그래서 제스처를 아예
-    // 시작하지 않는다(지시 단계라면 finishRightRegionGesture 가 창을 새 영역으로 옮긴다).
+    // 시작하지 않고 조용히 넘긴다.
     if (isRegionTaskRegionLocked()) return;
     const mapId = this.mapId();
     if (!mapId) return;
     const map = store.getCurrent().maps[mapId];
     if (!map) return;
-    const start = this.pointerToTile(ptr);
-    if (start.x < 0 || start.y < 0 || start.x >= map.width || start.y >= map.height) return;
-    const screen = this.pointerScreenPosition(ptr);
-    this.rightRegionGesture = { mapId, start, screen, moved: false };
+    if (tile.x < 0 || tile.y < 0 || tile.x >= map.width || tile.y >= map.height) return;
+    this.rightRegionGesture = { mapId, start: tile, screen, moved: false };
     // mouseup 시 contextmenu 가 문서 타겟으로 뜨는 브라우저 대비.
     this.suppressBrowserContextMenuUntil = Date.now() + 1500;
     this.isPainting = false;
     this.lastPaintKey = "";
     // 우클릭 시작 시점에는 기존 선택을 유지 — 드래그가 실제로 진행되면 updateRightRegionGesture에서 새 선택을 만든다.
     // 이전에는 여기서 1×1 선택을 만들었는데, 클릭으로 끝나면 1×1 박스가 캔버스에 남는 문제가 있었다.
+  }
+
+  /** 붙여넣기 미리보기 모드 클릭 처리 — Phaser 포인터다운과 오버레이 claim("scene")이 공통으로 사용한다. */
+  private handlePastePreviewPointerDown(isRightClick: boolean, tile: { readonly x: number; readonly y: number } | null): void {
+    const mid = this.mapId();
+    if (isRightClick || !mid || !tile || tile.x < 0 || tile.y < 0) {
+      cancelPastePreview();
+    } else {
+      confirmPastePreview(mid);
+    }
+    // 붙여넣기 미리보기도 제스처다 — 확정/취소로 끝나면 미뤄 둔 초점을 재생한다.
+    this.replayDeferredCameraFocus();
+  }
+
+  /** 오버레이에서 넘어온 우클릭을 pointerdown 의 우클릭과 같은 순서로 처리한다. */
+  private beginRightRegionGestureFromClientPoint(point: CanvasPointerPoint): void {
+    // DOM 오버레이 경로에는 Phaser 포인터 객체가 없으므로 pointer 없이 settleZoom=true 로 카메라 초점을 취소한다.
+    this.cancelCameraFocus(true);
+    const tile = this.clientPointToTile({ x: point.clientX, y: point.clientY });
+    if (!tile) return;
+    this.beginRightRegionGestureAt({ x: point.clientX, y: point.clientY }, tile);
+  }
+
+  /** 오버레이가 삼킨 pointerdown 을 캔버스 제스처로 되살린다. 판정은 순수 모듈 하나가 갖는다. */
+  private claimCanvasPointer(point: CanvasPointerPoint): CanvasGestureClaim | null {
+    const state = editorState.get();
+    const tool = state.tool;
+    const tile = this.clientPointToTile({ x: point.clientX, y: point.clientY });
+    const mapId = this.mapId();
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    const owner = resolveCanvasGestureOwner({
+      pointer: point,
+      pastePreviewActive: state.pastePreview !== null,
+      panArmed: this.cameraPanController?.armed() ?? false,
+      tool,
+      selectionActive: state.selection !== null,
+      paletteStampActive: state.activePaletteStamp !== null && state.activePaletteStamp !== undefined,
+      deferCameraFocus: shouldDeferCameraFocus(this.pointerGestureState()),
+      tileInMapBounds: Boolean(map && tile && tile.x >= 0 && tile.y >= 0 && tile.x < map.width && tile.y < map.height),
+    });
+    if (!owner) return null;
+    if (owner === "scene") {
+      return {
+        kind: "scene",
+        start: () => {
+          this.cancelCameraFocus(true);
+          const isRight = point.button === 2 || (point.buttons & 2) === 2;
+          this.handlePastePreviewPointerDown(isRight, tile);
+        },
+      };
+    }
+    if (owner === "pan") {
+      return { kind: "pan", start: () => this.cameraPanController?.startFromScreenPoint(point.clientX, point.clientY) };
+    }
+    return { kind: "region", start: () => this.beginRightRegionGestureFromClientPoint(point) };
   }
 
   private updateRightRegionGesture(ptr: Phaser.Input.Pointer): void {

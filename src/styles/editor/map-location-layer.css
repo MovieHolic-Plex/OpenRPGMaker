@@ -12,8 +12,13 @@
   pointer-events: none;
 }
 .map-location-layer.is-active { pointer-events: auto; cursor: crosshair; }
+/* 영역 제스처(우클릭 AI 영역 채우기·스포이트) 동안 이 층은 물러난다 — 클래스만 붙고 규칙이 없으면
+ * pointer-events: auto 그대로라 캔버스가 마우스 이동을 못 받아 드래그가 첫 칸에서 멈춘다
+ * (2026-09-11 브라우저 실측: canvas mousemove 0건 · selection 이 업 시점에야 확정됐다).
+ * `!important` 는 쓰지 않는다 — `.is-active`(0,2,0)보다 명시도가 높은 (0,3,0) 이라 순서와 무관하게 이긴다. */
+.map-location-layer.is-active.is-yielding { pointer-events: none; }
 /* 「화면 밀기」 가 켜지면 이 층의 드래그는 카메라의 것이므로 커서도 캔버스와 같아야 한다
- * (editor/cameraPanBridge.ts). crosshair 를 그대로 두면 여기서 구역이 그려질 것처럼 보인다. */
+ * (editor/canvasPointerBridge.ts). crosshair 를 그대로 두면 여기서 구역이 그려질 것처럼 보인다. */
 body[data-editor-tool="pan"] .map-location-layer.is-active { cursor: var(--editor-tool-cursor, grab); }
 body[data-editor-tool="pan"] .map-location-layer.is-active:active { cursor: grabbing; }
 
