@@ -1,0 +1,113 @@
+{
+  "baseUrl": "http://127.0.0.1:9855",
+  "errors": [],
+  "results": [
+    {
+      "name": "01-selection",
+      "observed": {
+        "badge": "조합 붓 2×2 · 4칸 · 바닥",
+        "brushKind": "combo",
+        "cells": [
+          0,
+          93,
+          6,
+          9
+        ],
+        "footprint": [
+          2,
+          2
+        ]
+      },
+      "screenshot": "01-selection.png",
+      "status": "PASS"
+    },
+    {
+      "name": "02-hover-footprint",
+      "observed": {
+        "anchor": {
+          "x": 10,
+          "y": 14
+        },
+        "previewCells": 4,
+        "clipped": 0
+      },
+      "screenshot": "02-hover-footprint.png",
+      "status": "PASS"
+    },
+    {
+      "name": "03-repeat",
+      "observed": {
+        "origins": [
+          [
+            10,
+            14
+          ],
+          [
+            14,
+            14
+          ],
+          [
+            10,
+            18
+          ]
+        ],
+        "stillActive": true
+      },
+      "screenshot": "03-repeat.png",
+      "status": "PASS"
+    },
+    {
+      "name": "04-boundary",
+      "observed": {
+        "clippedCount": 2,
+        "diagnostic": "조합 붓 2×2이 맵(20×20) 밖입니다 — 맵 안쪽을 눌러 주세요.",
+        "edge": [
+          19,
+          17
+        ],
+        "painted": 2
+      },
+      "screenshot": "04-boundary.png",
+      "status": "PASS"
+    },
+    {
+      "name": "05-terrain-list",
+      "observed": {
+        "badge": "나무 한 그루 · 조합 붓 1×2 · 2칸 · 바닥+덧그림",
+        "curated": [
+          "나무 한 그루",
+          "넓은 나무 (2×2)",
+          "광장 석상",
+          "원형 타워 (2×5)",
+          "성 지붕 여장 (3×4)",
+          "목조 벽면 (3×3)",
+          "흰 벽 건물면 (3×3)",
+          "집 출입구 받침",
+          "가로 탁자 한 벌 (3×3)",
+          "세로 탁자 한 벌 (3×3)",
+          "집 앞 마당 소품 (4×1)",
+          "울타리 한 구간 (3×1)"
+        ],
+        "label": "나무 한 그루"
+      },
+      "screenshot": "05-terrain-list.png",
+      "status": "PASS"
+    },
+    {
+      "name": "06-curated-place",
+      "observed": {
+        "label": "나무 한 그루",
+        "placed": [
+          260,
+          290
+        ],
+        "target": {
+          "x": 18,
+          "y": 16
+        }
+      },
+      "screenshot": "06-curated-place.png",
+      "status": "PASS"
+    }
+  ]
+}
