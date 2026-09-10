@@ -14,7 +14,18 @@
 // 이 모듈은 분류를 바꾸지 않는다. 기존 판정(tileLayerHome)을 그대로 읽고 설명·받침
 // 전략만 덧붙인다. 커스텀 칩셋 가져오기에서도 자동 변형을 하지 않고 **검토 항목**만
 // 만든다 — 자동·되돌릴 수 없는 재분류는 OPRN-OUT-026 의 범위 밖이다.
+//
+// 커스텀 칩셋 픽셀 감지(2026-09-10): 명시 `투명` 태그가 없는 사용자 칩셋도 실제 알파를
+// 스캔해 투명 여부를 안다. 감지는 **주입**된다 — 이 모듈은 DOM 을 모르고, 런타임 렌더러가
+// 쓰는 `tileBackingTile` 경로도 감지 없이 예전과 똑같이 동작한다. 감지가 하는 일은
+// 검토 목록에 항목을 띄우는 것뿐이고, 메타 변경은 사용자 선택에서만 일어난다.
 import { tileLayerHome, type TileLayerHome } from "@/editor/tileLayerClassification";
+import {
+  alphaClassHasTransparency,
+  isReviewableAlphaClass,
+  type TileAlphaClass,
+  type TileAlphaSample,
+} from "@/project/tileAlphaScan";
 import { userTileBackingOverride, userTileLayerOverride } from "@/editor/runtimeTileMetadata";
 import { isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
@@ -45,8 +56,10 @@ export type TileLayerPolicy = {
   readonly backingTile: number | null;
   /** 다중 조각 제약이 있으면 짝 조각 설명. */
   readonly multiPart: { readonly partnerLabel: string; readonly partnerTiles: readonly number[] } | null;
-  /** 판정 근거의 출처. */
-  readonly source: "user" | "harness" | "transparency" | "priority";
+  /** 판정 근거의 출처. `detected` 는 커스텀 칩셋 픽셀 스캔에서 왔다. */
+  readonly source: "user" | "harness" | "transparency" | "priority" | "detected";
+  /** 픽셀 감지 결과(주입됐고 이 타일에 해당할 때만). 없으면 감지를 안 썼다는 뜻. */
+  readonly detected: TileAlphaClass | null;
   /** 사람이 읽는 근거(편집기 표시·검토 목록에 그대로 쓴다). */
   readonly reason: string;
 };
@@ -61,16 +74,39 @@ function isDefaultTransparent(tileset: TilesetDef, tile: number): boolean {
   return isCombinedTownTileset(tileset) && isTransparentChipsetTile(tile);
 }
 
-export function tileLayerPolicy(tileset: TilesetDef, tile: number): TileLayerPolicy {
+/**
+ * 픽셀 감지 주입 지점. 감지는 이 모듈 밖에서 이미 끝난 상태로 들어온다.
+ *
+ * 주입으로 둔 이유: 정책 모듈은 DOM·비동기를 모르는 순수 함수로 남아야 한다. 런타임
+ * 렌더러가 쓰는 `tileBackingTile` 경로는 감지 없이 예전과 똑같이 동작하고, 감지는
+ * 검토 목록을 부르는 편집기 표면에서만 달린다.
+ */
+export type TileTransparencyDetection = {
+  readonly classOf: (tile: number) => TileAlphaClass | null;
+  readonly sampleOf?: (tile: number) => TileAlphaSample | null;
+};
+
+export function tileLayerPolicy(
+  tileset: TilesetDef,
+  tile: number,
+  detection?: TileTransparencyDetection,
+): TileLayerPolicy {
   const home = tileLayerHome(tileset, tile);
-  const transparent = isDefaultTransparent(tileset, tile) || (isCustomTileset(tileset) && customTileHasTransparency(tileset, tile));
+  // 감지는 커스텀 칩셋에만 보기로 붙는다 — 내장 칩셋은 생성 목록이 정본이다.
+  const detected = isCustomTileset(tileset) ? detection?.classOf(tile) ?? null : null;
+  const taggedTransparent = isCustomTileset(tileset) && customTileHasTransparency(tileset, tile);
+  const detectedTransparent = detected !== null && alphaClassHasTransparency(detected);
+  const transparent = isDefaultTransparent(tileset, tile) || taggedTransparent || detectedTransparent;
   const override = userTileLayerOverride(tileset, tile);
   const backing = resolveBackingTile(tileset, tile, home);
+  // 명시 `투명` 태그가 없을 때만 감지를 근거의 출처로 적는다 — 태그가 우선이다.
+  const detectedSource = detectedTransparent && !taggedTransparent;
 
   if (isCombinedTownTileset(tileset) && isTreeTrunkTileId(tile)) {
     return {
       home,
       transparent,
+      detected,
       kind: home === "upper" ? "transparentOverlay" : backing === null ? "transparentLower" : "backedLower",
       backingTile: backing,
       multiPart: { partnerLabel: "나무 수관", partnerTiles: CANOPY_TILES },
@@ -83,6 +119,7 @@ export function tileLayerPolicy(tileset: TilesetDef, tile: number): TileLayerPol
     return {
       home,
       transparent,
+      detected,
       kind: "multiPart",
       backingTile: backing,
       multiPart: { partnerLabel: "나무 밑동", partnerTiles: TRUNK_TILES },
@@ -95,13 +132,16 @@ export function tileLayerPolicy(tileset: TilesetDef, tile: number): TileLayerPol
     return {
       home,
       transparent: false,
+      detected,
       kind: home === "upper" ? "transparentOverlay" : "opaqueFloor",
       backingTile: null,
       multiPart: null,
       source: override ? "user" : isCustomTileset(tileset) ? "priority" : "harness",
       reason: home === "upper"
         ? "불투명 칩이지만 상위가 홈입니다(소품/구조물) — 하위 지면을 보존합니다."
-        : "불투명 바닥/벽면이므로 하위에 그대로 놓입니다. 받침이 필요 없습니다.",
+        : detected === "unknown"
+          ? "픽셀을 읽지 못해 투명 여부를 알 수 없습니다 — 불투명이라고 단정하지 않았습니다."
+          : "불투명 바닥/벽면이므로 하위에 그대로 놓입니다. 받침이 필요 없습니다.",
     };
   }
 
@@ -109,24 +149,27 @@ export function tileLayerPolicy(tileset: TilesetDef, tile: number): TileLayerPol
     return {
       home,
       transparent: true,
+      detected,
       kind: "transparentOverlay",
       backingTile: null,
       multiPart: null,
-      source: override ? "user" : "transparency",
+      source: override ? "user" : detectedSource ? "detected" : "transparency",
       reason: "투명 배경 칩이라 상위 오버레이입니다 — 하위 지면이 투명 픽셀 아래로 보입니다.",
     };
   }
 
+  const detectionNote = describeDetection(detected, detection?.sampleOf?.(tile) ?? null);
   return {
     home,
     transparent: true,
+    detected,
     kind: backing === null ? "transparentLower" : "backedLower",
     backingTile: backing,
     multiPart: null,
-    source: override ? "user" : isCustomTileset(tileset) ? "priority" : "transparency",
+    source: override ? "user" : detectedSource ? "detected" : isCustomTileset(tileset) ? "priority" : "transparency",
     reason: backing === null
-      ? "투명 칩을 하위에 두되 받침이 없습니다 — 투명 부분 아래가 비어 보일 수 있습니다(의도적 선택)."
-      : `투명 칩을 하위에 두고 받침 타일 ${backing} 을 함께 그립니다.`,
+      ? `투명 칩을 하위에 두되 받침이 없습니다 — 투명 부분 아래가 비어 보일 수 있습니다(의도적 선택).${detectionNote}`
+      : `투명 칩을 하위에 두고 받침 타일 ${backing} 을 함께 그립니다.${detectionNote}`,
   };
 }
 
@@ -152,6 +195,26 @@ function trunkReason(
       : "나무 밑동은 수관(상위)과 같은 칸에 공존해야 하므로 하위에 남지만, 받침이 없어 투명 픽셀 아래가 비어 보일 수 있습니다.";
   }
   return "나무 밑동은 수관(상위)과 같은 칸에 공존해야 하므로 투명해도 하위에 남고, 받침 타일로 투명 픽셀을 채웁니다.";
+}
+
+/** 감지 부류의 사람이 읽는 이름 — 편집기·검토 목록·증거 노트가 같은 말을 쓴다. */
+export const TILE_ALPHA_CLASS_LABELS: Readonly<Record<TileAlphaClass, string>> = {
+  opaque: "불투명",
+  softEdge: "가장자리만 부드러움",
+  partial: "부분 투명",
+  mostlyEmpty: "거의 빈 칸",
+  empty: "완전히 빈 칸",
+  unknown: "알 수 없음",
+};
+
+/** 감지 근거를 문장으로. 사용자가 실측 수치를 보고 선택하게 하는 것이 목적이다. */
+function describeDetection(detected: TileAlphaClass | null, sample: TileAlphaSample | null): string {
+  if (detected === null) return "";
+  if (detected === "unknown") return " 픽셀 감지: 알 수 없음(이미지를 읽지 못함).";
+  const label = TILE_ALPHA_CLASS_LABELS[detected];
+  if (!sample) return ` 픽셀 감지: ${label}.`;
+  const coverage = Math.round(sample.coverage * 1000) / 10;
+  return ` 픽셀 감지: ${label}(커버리지 ${coverage}%, 투명 ${sample.emptyPixels}px, 반투명 ${sample.softPixels}px).`;
 }
 
 // 편집기 미리보기와 런타임 렌더러가 같은 받침 답을 쓰도록 이 함수 하나만 부른다.
@@ -182,6 +245,8 @@ export type BackgroundlessLowerReview = {
   readonly kind: TileLayerPolicyClass;
   readonly backingTile: number | null;
   readonly reason: string;
+  /** 이 항목이 픽셀 감지에서 왔으면 그 부류. 명시 태그·하네스에서 왔으면 null. */
+  readonly detected: TileAlphaClass | null;
   /** 사용자에게 제시할 선택지 — 적용은 사용자 행동에서만 일어난다. */
   readonly choices: readonly TileLayerReviewChoice[];
 };
@@ -201,19 +266,27 @@ export const TILE_LAYER_REVIEW_CHOICE_LABELS: Readonly<Record<TileLayerReviewCho
  * 계약: 이 함수는 타일셋을 변형하지 않는다. 가져오기·준비 단계에서 전부 상위로 올리는
  * 자동 재분류는 금지이고(OPRN-OUT-026 범위 경계), 대신 사용자가 항목마다 선택한다.
  */
-export function backgroundlessLowerReviews(tileset: TilesetDef): readonly BackgroundlessLowerReview[] {
+export function backgroundlessLowerReviews(
+  tileset: TilesetDef,
+  detection?: TileTransparencyDetection,
+): readonly BackgroundlessLowerReview[] {
   const reviews: BackgroundlessLowerReview[] = [];
   for (let tile = 0; tile < tileset.count; tile += 1) {
-    const policy = tileLayerPolicy(tileset, tile);
+    const policy = tileLayerPolicy(tileset, tile, detection);
     if (!policy.transparent) continue;
     if (policy.home === "upper") continue;
     if (policy.kind === "backedLower") continue;
+    // 감지에서만 온 항목은 **뚫린 투명**(partial·mostlyEmpty)만 올린다. 가장자리 안티에일리어싱
+    // (softEdge)과 완전히 빈 여백(empty)은 하위에 깔아도 검은 구멍이 안 나므로 목록만 오염시킨다.
+    // 실측(modern-city-atlas 480칸): 이 규칙이 softEdge 36칸·empty 22칸을 걸러낸다.
+    if (policy.source === "detected" && !isReviewableAlphaClass(policy.detected ?? "unknown")) continue;
     reviews.push({
       tile,
       home: policy.home,
       kind: policy.kind,
       backingTile: policy.backingTile,
       reason: policy.reason,
+      detected: policy.source === "detected" ? policy.detected : null,
       choices: ["overlay", "lowerWithBacking", "transparentLower", "auto"],
     });
   }

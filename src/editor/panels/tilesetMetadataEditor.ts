@@ -41,14 +41,25 @@ import {
   backgroundlessLowerReviews,
   DEFAULT_TRUNK_BACKING_TILE,
   tileLayerPolicy,
+  TILE_ALPHA_CLASS_LABELS,
   TILE_LAYER_REVIEW_CHOICE_LABELS,
   type TileLayerPolicyClass,
   type TileLayerReviewChoice,
+  type TileTransparencyDetection,
 } from "@/editor/tileLayerPolicy";
+import {
+  cachedCustomChipsetAlphaScan,
+  CUSTOM_CHIPSET_ALPHA_SCANNED_EVENT,
+  detectedTileAlphaClass,
+  detectedTileAlphaSample,
+  peekCustomChipsetAlphaScan,
+} from "@/editor/customChipsetTransparency";
+import { summarizeTileAlphaScan } from "@/project/tileAlphaScan";
 import { isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import { confirmUserTileMetadata } from "@/project/tilesetPalette";
 import { isCombinedTownTileset } from "@/project/tilesetHarness";
+import { isCustomTileset } from "@/project/tilesetKind";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
 import {
   isBlockedPassage,
@@ -70,6 +81,33 @@ const PASSAGE_META: Record<PassageMark, NonNullable<TileAiMetadata["passage"]>> 
   x: "solid",
   star: "star",
 };
+
+/**
+ * 커스텀 칩셋 픽셀 감지를 정책에 주입한다. 캐시 히트면 즉시, 아니면 null 을 주고 스캔을
+ * 예약한다(`peek…` 이 예약한다) — 스캔이 끝나면 아래 `installAlphaScanRerender` 가 다시 그린다.
+ *
+ * 감지는 메타를 만지지 않는다. 여기서 나온 값은 검토 목록 항목과 근거 문장에만 쓰인다.
+ */
+function chipsetTransparencyDetection(tileset: TilesetDef): TileTransparencyDetection {
+  return {
+    classOf: (tile) => detectedTileAlphaClass(tileset, tile),
+    sampleOf: (tile) => detectedTileAlphaSample(tileset, tile),
+  };
+}
+
+/** 비동기 스캔 완료 → 규칙 탭 한 번 다시 그리기. 한 번 듣고 스스로 떼어 낸다(누수·루프 금지). */
+function installAlphaScanRerender(host: HTMLElement, tilesetId: string, rerender: () => void): void {
+  if (typeof window === "undefined") return;
+  const onScanned = (event: Event): void => {
+    const detail = (event as CustomEvent<{ tilesetId?: string }>).detail;
+    if (detail?.tilesetId !== tilesetId) return;
+    window.removeEventListener(CUSTOM_CHIPSET_ALPHA_SCANNED_EVENT, onScanned);
+    // 이미 화면에서 떼어진 노드라면 다시 그릴 이유가 없다.
+    if (!host.isConnected) return;
+    rerender();
+  };
+  window.addEventListener(CUSTOM_CHIPSET_ALPHA_SCANNED_EVENT, onScanned);
+}
 
 export function renderTilesetMetadataEditor(tileset: TilesetDef, rerender: () => void): HTMLElement {
   clampSelectedTile(tileset);
@@ -97,7 +135,7 @@ export function renderTilesetMetadataEditor(tileset: TilesetDef, rerender: () =>
   const sidebar = renderEditSidebar(tileset, rerender);
   const tools = paintLayout ? renderToolBox(rerender) : null;
   const autotileTools = autotileLayout ? renderAutotileLayoutToolbar(tileset, rerender) : null;
-  return el("div", {
+  const host = el("div", {
     class: `tileset-db-edit-area${editMode === "group" ? " knowledge-mode" : ""}${paintLayout ? " passage-paint" : ""}${autotileLayout ? " autotile-compose" : ""}`,
     children: paintLayout
       ? [...(tools ? [tools] : []), preview, sidebar]
@@ -105,6 +143,8 @@ export function renderTilesetMetadataEditor(tileset: TilesetDef, rerender: () =>
         ? [...(autotileTools ? [autotileTools] : []), preview, sidebar]
         : [sidebar, preview],
   });
+  installAlphaScanRerender(host, tileset.id, rerender);
+  return host;
 }
 
 function renderEditSidebar(tileset: TilesetDef, rerender: () => void): HTMLElement {
@@ -461,7 +501,10 @@ const POLICY_KIND_LABELS: Readonly<Record<TileLayerPolicyClass, string>> = {
 // 받침 선택 — 투명 칩을 하위에 둘 때 아래에 깔 타일. 자동은 정책 기본값을 따른다.
 function renderBackingControls(tileset: TilesetDef, backingTile: number | null, rerender: () => void): HTMLElement[] {
   const home = tileLayerHome(tileset, selectedTile);
-  const transparent = isCombinedTownTileset(tileset) && isTransparentChipsetTile(selectedTile);
+  // 내장 칩셋은 생성 목록, 커스텀 칩셋은 정책(명시 태그 + 픽셀 감지)이 투명 여부를 말한다.
+  const transparent = isCombinedTownTileset(tileset)
+    ? isTransparentChipsetTile(selectedTile)
+    : tileLayerPolicy(tileset, selectedTile, chipsetTransparencyDetection(tileset)).transparent;
   if (!transparent || home === "upper") return [];
   const override = userTileBackingOverride(tileset, selectedTile);
   const current: TileBackingChoice = override ?? "auto";
@@ -503,9 +546,13 @@ function renderBackingControls(tileset: TilesetDef, backingTile: number | null, 
 }
 
 // 배경 없는 하위 타일 검토 — 목록은 읽기만 하고, 적용은 사용자가 고른 항목에만 일어난다.
+// 커스텀 칩셋이면 픽셀 감지가 이 목록을 채운다(메타는 그대로 둔 채로).
 function renderBackgroundlessReview(tileset: TilesetDef, rerender: () => void): HTMLElement[] {
-  const reviews = backgroundlessLowerReviews(tileset);
-  if (reviews.length === 0) return [];
+  // peek 이 캐시 미스면 스캔을 예약하고, 완료 이벤트가 규칙 탭을 한 번 다시 그린다.
+  const scan = peekCustomChipsetAlphaScan(tileset);
+  const reviews = backgroundlessLowerReviews(tileset, chipsetTransparencyDetection(tileset));
+  const scanNotes = renderAlphaScanNotes(tileset, scan);
+  if (reviews.length === 0) return scanNotes;
   const choiceButton = (tile: number, choice: TileLayerReviewChoice): HTMLElement =>
     el("button", {
       class: "database-footer-button tileset-review-choice",
@@ -529,6 +576,7 @@ function renderBackgroundlessReview(tileset: TilesetDef, rerender: () => void): 
           class: "tileset-rule-note",
           text: "가져온 칩셋을 자동으로 상위로 옮기지 않습니다. 타일마다 직접 고르세요.",
         }),
+        ...scanNotes,
         el("ul", {
           class: "tileset-review-list",
           dataset: { testid: "tileset-review-list" },
@@ -538,6 +586,13 @@ function renderBackgroundlessReview(tileset: TilesetDef, rerender: () => void): 
               dataset: { testid: `tileset-review-item-${review.tile}` },
               children: [
                 el("span", { class: "tileset-review-tile", text: `타일 ${review.tile}` }),
+                ...(review.detected
+                  ? [el("span", {
+                      class: `tileset-review-detected detected-${review.detected}`,
+                      dataset: { testid: `tileset-review-detected-${review.tile}` },
+                      text: `픽셀 감지 ${TILE_ALPHA_CLASS_LABELS[review.detected]}`,
+                    })]
+                  : []),
                 el("span", { class: "tileset-review-reason", text: review.reason }),
                 el("div", {
                   class: "tileset-rule-buttons",
@@ -553,6 +608,36 @@ function renderBackgroundlessReview(tileset: TilesetDef, rerender: () => void): 
 }
 
 const REVIEW_LIST_LIMIT = 20;
+
+/**
+ * 픽셀 감지 상태를 정직하게 표시한다. 세 가지 답만 있다.
+ *  - 아직 스캔 중: "읽는 중" (목록이 곧 채워진다)
+ *  - 읽음: 부류별 칸 수 요약 (사용자가 감지를 믿을지 스스로 판단할 근거)
+ *  - 못 읽음: "알 수 없음" + 이유. **불투명이라고 말하지 않는다.**
+ */
+function renderAlphaScanNotes(tileset: TilesetDef, scan: ReturnType<typeof cachedCustomChipsetAlphaScan>): HTMLElement[] {
+  if (!isCustomTileset(tileset)) return [];
+  if (!scan) {
+    return [el("div", {
+      class: "tileset-rule-note",
+      dataset: { testid: "tileset-alpha-scan-pending" },
+      text: "칩셋 픽셀을 읽는 중입니다 — 끝나면 검토 목록이 채워집니다.",
+    })];
+  }
+  if (scan.status === "unknown") {
+    return [el("div", {
+      class: "tileset-rule-warning",
+      dataset: { testid: "tileset-alpha-scan-unknown" },
+      text: `⚠ 투명 여부 알 수 없음 — ${scan.unknownReason ?? "이미지를 읽지 못했습니다."} 불투명으로 단정하지 않았습니다.`,
+    })];
+  }
+  const summary = summarizeTileAlphaScan(scan);
+  return [el("div", {
+    class: "tileset-rule-note",
+    dataset: { testid: "tileset-alpha-scan-summary" },
+    text: `픽셀 감지: 불투명 ${summary.opaque} · 부분 투명 ${summary.partial} · 거의 빈 칸 ${summary.mostlyEmpty} · 가장자리만 부드러움 ${summary.softEdge} · 빈 칸 ${summary.empty}`,
+  })];
+}
 
 function applyReviewChoice(tilesetId: string, tile: number, choice: TileLayerReviewChoice): void {
   store.update((project) => {
@@ -582,8 +667,9 @@ function renderRuleControls(tileset: TilesetDef, rerender: () => void): HTMLElem
   const override = userTileLayerOverride(tileset, selectedTile);
   const choice: TileLayerChoice = override ?? "auto";
   const home = tileLayerHome(tileset, selectedTile);
-  const policy = tileLayerPolicy(tileset, selectedTile);
-  const transparent = isCombinedTownTileset(tileset) && isTransparentChipsetTile(selectedTile);
+  const policy = tileLayerPolicy(tileset, selectedTile, chipsetTransparencyDetection(tileset));
+  // 내장 칩셋은 생성 목록, 커스텀 칩셋은 정책(명시 태그 + 픽셀 감지)이 투명 여부를 말한다.
+  const transparent = isCombinedTownTileset(tileset) ? isTransparentChipsetTile(selectedTile) : policy.transparent;
   const homeLabel = home === "both" ? "양쪽" : home === "upper" ? "상위" : "하위";
   const blocked = isBlockedPassage(tileset.passability[selectedTile]);
 
