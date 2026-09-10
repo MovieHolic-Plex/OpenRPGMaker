@@ -1,0 +1,88 @@
+{
+  "base": "http://127.0.0.1:9851",
+  "ids": {
+    "mapId": "map_village_30_100x100",
+    "eventId": "ev_oprn013_guard",
+    "variableCount": 1003
+  },
+  "results": [
+    {
+      "id": "01-legacy-fixed-coordinates",
+      "state": {
+        "xSource": "fixed",
+        "x": "6",
+        "y": "4",
+        "numberFieldShown": true,
+        "variableFieldShown": false,
+        "eventFieldShown": false,
+        "preview": "이 이벤트 → X 6 , Y 4 속도 4 · 도착까지 대기 실패해도 다음 명령으로 진행합니다. 맵 밖·막힘·경로 없음은 대체하지 않고 실패로 보고합니다. (0,0) 으로 떨어지지 않습니다. 결과 변수를 정하면 실패 종류까지 조건 분기로 구분할 수 있습니다. 병렬 이벤트끼리 결과가 섞이지 않습니다."
+      }
+    },
+    {
+      "id": "04-x-variable-selected",
+      "pickerRows": 0,
+      "state": {
+        "numberFieldShown": false,
+        "variableFieldShown": true,
+        "preview": "주인공 → X 변수 «목표 X» , Y 4 속도 4 · 도착까지 대기 실패해도 다음 명령으로 진행합니다. 맵 밖·막힘·경로 없음은 대체하지 않고 실패로 보고합니다. (0,0) 으로 떨어지지 않습니다. 결과 변수를 정하면 실패 종류까지 조건 분기로 구분할 수 있습니다. 병렬 이벤트끼리 결과가 섞이지 않습니다."
+      },
+      "fields": {
+        "target": "@player",
+        "x": 6,
+        "y": 4,
+        "speed": 4,
+        "wait": true,
+        "xSource": "variable",
+        "xVariableId": "var_oprn013_x",
+        "ySource": "fixed",
+        "yVariableId": "",
+        "onFailure": "continue",
+        "fallback": "none",
+        "resultVariableId": "",
+        "resultSwitchId": ""
+      }
+    },
+    {
+      "id": "06-target-event-selected",
+      "optionVisible": true,
+      "fields": {
+        "target": "ev_oprn013_guard",
+        "x": 3,
+        "y": 3,
+        "speed": 4,
+        "wait": true,
+        "xSource": "fixed",
+        "xVariableId": "",
+        "ySource": "fixed",
+        "yVariableId": "",
+        "onFailure": "continue",
+        "fallback": "none",
+        "resultVariableId": "",
+        "resultSwitchId": ""
+      }
+    },
+    {
+      "id": "07-failure-policy-and-result",
+      "preview": "주인공 → X 변수 «목표 X» , Y 변수 «목표 Y» 속도 4 · 도착까지 대기 실패하면 이벤트를 중단합니다. 맵 밖 좌표는 가장 가까운 통행 가능한 칸으로 대체합니다. 결과 변수 «이동 결과» — 도착 0 / 좌표 값 오류 1 / 대상 없음 2 / 맵 밖 3 / 막힘 4 / 경로 없음 5 / 중단 6",
+      "fields": {
+        "target": "@player",
+        "xSource": "variable",
+        "xVariableId": "var_oprn013_x",
+        "ySource": "variable",
+        "yVariableId": "var_oprn013_y",
+        "speed": 4,
+        "wait": true,
+        "x": 0,
+        "y": 0,
+        "onFailure": "stop",
+        "fallback": "nearest",
+        "resultVariableId": "var_oprn013_result",
+        "resultSwitchId": "sw_oprn013_arrived"
+      }
+    },
+    {
+      "id": "08-unselected-variable-warning",
+      "warning": "주의: X 좌표를 「변수」로 골랐지만 변수를 정하지 않았습니다."
+    }
+  ]
+}

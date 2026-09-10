@@ -859,6 +859,32 @@ Use the lightest command that proves the change.
 - `test/moveRouteCatalogPersistence.test.ts`: 팔레트 44 버튼이 만드는 커맨드 전부를 하나씩·통째로 왕복시킨다(범인 버튼의 `testId` 를 실어 실패). 그리고 「효과음 재생」 기본값이 `collectResourceIds` 안에 있는지 잠근다 — 이 한 줄이 "없는 리소스 기본값이 이벤트 저장을 통째로 막는" 결함의 회귀 게이트다.
 - 회귀는 `test/runtimeNpcRoute*.test.ts`, `test/runtimeMoveRoute*.test.ts`, `test/e2e/oprn-move-route-focused.spec.ts`(카탈로그 버튼/행 수) 까지. 그 스펙의 스윕 시험은 **스위치·효과음 칸을 채우지 않는다** — 없는 id 를 넣으면 「적용」이 이벤트를 저장하지 않아 내보내기가 빈 채로 나온다(예전 `sw_route_seen`/`se_route_chime` 이 그래서 0 개를 뱉었다).
 
+### 좌표 목적지 이동 QA — `node scripts/qa-coordinate-move.mjs` (OPRN-OUT-013, 2026-09-10)
+
+출하 플레이어(`player.html`)에서 「좌표로 이동」의 **도착과 실패 네 가지**를 한 이벤트로
+실행한다. 준비는 `npx tsx scripts/prepare-coordinate-move-qa.mts`(테스트 전용 최소 fixture,
+원격 저장 경로를 타지 않는다). 결과는 `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`.
+
+- 단계: (1) 변수 좌표로 걸어가 도착 · (2) 맵 밖 변수 값 → 코드 3, 좌표는 그대로(**(0,0) 아님**) ·
+  (3) 물로 둘러싼 목적지 → 코드 5 · (4) 없는 변수 + 「실패하면 중단」 → 코드 1, 뒤 명령 미실행.
+  각 단계 뒤 대사가 실제로 떴다는 것이 곧 「대기 명령이 끝났다」의 증거다.
+- **좌표 표본으로 「걸어갔는지」를 잰다.** 40ms 간격 표본에 시작·목적지가 아닌 칸이
+  없으면 실패한다 — 최종 좌표만 보면 순간이동과 보행을 구별하지 못한다.
+- 이 계약은 실패를 **일부러** 만들므로 `[player] pathfind …` / `[m2] Pathfind Move …`
+  경고는 오류가 아니라 증거다. 하네스가 따로 모아 `report.json` 에 남기고, 진단이
+  실제로 났는지도 단정한다. 그 둘을 그냥 버리면 「조용히 아무 일도 안 한」 회귀를 놓친다.
+- `verify-shots/runtime-qa/` 는 매 실행 디렉터리째 재생성되는 gitignore 경로다.
+  보존본은 `verify-shots/oprn-013/test-play/` 에 복사해 추적한다.
+
+### 좌표 이동 저작 폼 QA — `node scripts/capture-coordinate-move-form.mjs`
+
+편집기 셸에서 명령 편집 다이얼로그를 열어 찍는다(`RPG_ZZU_URL` 로 자기 워크트리 포트를 준다).
+**스크린샷만으로는 부족하다** — 이 드라이버는 두 가지를 함께 단정한다:
+(1) 숨겨야 할 필드의 **계산된** `display`(`hidden` 속성만 보면 `display: grid` 가 UA
+`display:none` 을 이기는 죽은 입력을 놓친다 — 실측으로 잡힌 결함이다),
+(2) 「확인」을 눌러 실제로 커밋된 명령 필드(그림은 「눌렀는데 저장은 안 됐다」를 구별 못 한다).
+세그먼트 선택은 숨은 `<select>` 가 아니라 **버튼**을 눌러야 한다(`selectOption` 은 timeout).
+
 ### 체공 런타임 QA — `npm run qa:runtime -- --scenario hop`
 
 jsdom 이 못 하는 것만 본다. 리프트는 Phaser 의 `displayOrigin` 에 실리고 `setFrame` 이 그것을

@@ -23,6 +23,50 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
   Use a fresh owned dev server with a unique `VITE_CACHE_DIR`. The driver blocks remote
   requests and all writes, uses `freshProject=1`, and checks disabled persistence.
   It exercises the production command dialog and toolbar, not production game content.
+## 좌표로 이동 — 고정/변수 좌표와 실패 정책 (OPRN-OUT-013, 2026-09-10)
+
+`m2-205-pathfind-move`(카탈로그 라벨 「경로 탐색 이동」, 폼 제목 「좌표로 이동」)의 저작 표면.
+전용 폼은 `eventEditor/commandBodyM2Coordinate.ts` 이고 `commandBodyM2.ts` 가 Page3 폼 다음,
+제네릭 폼 앞에서 라우팅한다.
+
+- **저장 형태(정본)와 기본값**은 `project/eventCommands/coordinateDestination.ts` 하나가 갖는다.
+  `xSource`/`ySource` = `fixed`(기본) | `variable`, 고정값은 기존 `x`/`y` 그대로, 변수는
+  `xVariableId`/`yVariableId`, `onFailure` = `continue`(기본) | `stop`, `fallback` =
+  `none`(기본) | `nearest`, 선택적 `resultVariableId`/`resultSwitchId`.
+  **없는 키는 전부 기본값으로 읽힌다 — 그것이 곧 마이그레이션이다.** 옛 고정 좌표 명령은
+  저장본을 다시 쓰지 않고 예전과 같은 런타임 단계를 낸다(계약 테스트가 `toEqual` 로 잰다).
+  소스 키가 없어도 변수 id 만 저장돼 있으면 변수 의도로 읽어 부분 저장본을 구제한다.
+- **재사용할 것**(어기면 두 번째 엔진이 생긴다): 대상은
+  `createMoveRouteTargetPicker` + `project/eventTargetCatalog`(OPRN-OUT-012 계약, 정본 값은
+  `@player` / `this-event` / 이 맵 이벤트 id), 좌표 변수·결과 변수·도착 스위치는 표준
+  레코드 픽커 `databasePicker("variable"|"switch", …)`, 경로는 런타임 `playScenePathfinding`.
+  폼은 좌표를 **계산하지 않는다**.
+- **폼을 여는 것만으로 저장값이 바뀌지 않는다.** 옛 프로젝트를 여는 것이 편집이 되면
+  사용자가 알아채기 전에 의도가 사라진다(이동 대상 픽커와 같은 규칙).
+- **미리보기**(`coordinate-move-preview`)는 목적지·속도·대기·실패 정책과 결과 코드 표를
+  글자로 말한다. 변수를 골랐는데 정하지 않았거나 고정값이 정수·양수가 아니면
+  `coordinate-move-preview-warning` 이 「주의:」 접두어 + `--danger` 로 뜬다 — 색만으로
+  상태를 구분하지 않는다.
+- **저작 시점 진단**(`eventDraftValidator`): 두 축이 **모두 고정**일 때만 지도 범위를 단정한다
+  (`map.position.out-of-bounds`). 한 축이라도 변수면 목적지가 런타임에만 정해지므로 단정하지
+  않는다. 고정값의 소수·음수는 런타임과 **같은 해석기**로 `m2.coordinate.fixed.invalid`,
+  「변수」인데 미선택은 `m2.coordinate.variable.unselected`, 없는 변수는 기존
+  `reference.variable.missing`. 결과 기록처는 비워 두는 것이 정상이고 값이 있을 때만 실재를 따진다.
+  `xVariableId`/`yVariableId` 참조 규칙은 **소스 키를 선언한 명령에만** 축 조건을 적용한다 —
+  「변수 위치로 이동」(소스 키 없음)은 예전대로 항상 필수 참조다.
+- **요약**은 전용 경로다. 제네릭 폴백은 필드 앞 세 개만 내보내므로 새 소스 키가 정작
+  목적지를 가렸다. 지금은 `대상 → (X, Y) · 대기 · 실패시 중단` 을 말한다.
+- **CSS 함정 두 개(실측, 2026-09-10 브라우저 QA):**
+  (1) `.actor-m2-field { display: grid }` 는 `[hidden]` 의 UA `display:none` 을 이긴다.
+  `.actor-m2-field[hidden] { display: none }` 이 없으면 배타 필드(숫자/변수)가 둘 다 보여
+  **눌러도 아무 일 없는 죽은 입력**이 남는다. Page3 `valueSourceControls` 도 같은 계약이다.
+  (2) 이동 대상 픽커 CSS 는 전부 `.move-route-editor` 스코프다. 다른 폼에서 재사용하려면
+  규칙을 복제하지 말고 선택자에 스코프를 **하나 더 붙인다**(`event-editor.part-1.css`).
+- 회귀: `test/coordinateMoveCommandBody.test.ts`(폼 22건 — 대상 3종·축별 소스·정책·진단),
+  M2 표면 기준선은 `m2-205` 만 갱신했다. 브라우저 증거:
+  `node scripts/capture-coordinate-move-form.mjs` → `verify-shots/oprn-013/`
+  (스크린샷 + 숨긴 칸의 **계산된** display + 「확인」으로 커밋된 실제 필드).
+
 ## 장소 이동의 목적지 원복과 설정 보존 (2026-09-06)
 
 - `transferPlayerDialog.ts`는 창을 열 때의 값이 아니라 마지막으로 반영한 명령과 현재 선택을 비교한다. A → B → A로 고르면 초안도 다시 A가 된다.

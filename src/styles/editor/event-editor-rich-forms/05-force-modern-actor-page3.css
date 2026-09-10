@@ -151,6 +151,16 @@
   gap: 4px;
 }
 
+/*
+ * `display: grid` 는 `[hidden]` 의 UA `display: none` 을 이긴다. 그래서 순숫자/변수
+ * 같은 배타 필드가 `field.hidden = true` 에도 그대로 보여, 저작자가 생감해도
+ * 아무 일도 안 일어나는 죽은 입력을 만들었다(2026-09-10 버플로 실제 토지난 결함).
+ * `valueSourceControls`(Page3)와 좌표 이동 폼이 같은 계약을 공유한다.
+ */
+.actor-m2-field[hidden] {
+  display: none;
+}
+
 .actor-m2-field-label,
 .actor-m2-presets-label {
   color: var(--text-2, #5C5348);
@@ -229,6 +239,15 @@
   margin: 0;
 }
 
+/*
+ * OPRN-OUT-013 좌표 이동 폼의 자작 경고. 색만이 아니라 낱말(「주의:」)로도
+ * 경고라고 말하므로, 이 사건은 시간을 단축하는 보조 생토다.
+ */
+.coordinate-move-preview-warning {
+  color: var(--danger);
+  font-weight: 600;
+}
+
 .actor-m2-preview-actor,
 .actor-m2-preview-copy {
   align-items: center;
@@ -267,6 +286,34 @@
 /* 숫자 입력은 값 폭에 맞춰 좁게 — 넓은 입력이 프리뷰 열을 밀어내지 않게. */
 .page3-command-body .actor-m2-field input[type="number"] {
   inline-size: 108px;
+}
+
+/* 그리드 칸은 기본이 stretch 다 — 보다 토글 상자가 열 전폭으로 부풀지 않게 왼쪽에 고정한다. */
+.page3-command-body .actor-m2-field input[type="checkbox"] {
+  justify-self: start;
+}
+
+/*
+ * 이동 대상 검색 줄은 `move-route-editor` 의 규칙을 그대로 재사용한다(event-editor.part-1.css).
+ * 그 규칙의 `input { width: 100% }` 는 넓은 도구모음을 전제하므로, 좁은 리치 폼 안에서는
+ * 「목록」 버튼을 다음 줄로 밀어낸다. 입력만 남는 폭을 주고 버튼은 옆에 세운다.
+ */
+.coordinate-move-command-body .move-route-target-row {
+  flex-wrap: nowrap;
+  max-inline-size: 100%;
+}
+
+.coordinate-move-command-body .move-route-target-row input {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+/* 해석 상태 문구는 자기 줄 안에서 잘린다 — 넘치면 프리뷰 열 위로 흘러 읽을 수 없게 된다. */
+.coordinate-move-command-body .move-route-target-name {
+  flex: 0 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .actor-m2-preview-stage {

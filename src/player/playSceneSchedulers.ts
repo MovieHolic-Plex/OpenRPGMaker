@@ -171,12 +171,22 @@ function consumeParallelSteps(
       return;
     }
     if (result.kind === "pathfindMove") {
-      const pending = playPathfindMove(scene, result, process.currentEventId).then(() => true);
-      if (result.wait) {
+      const step = result;
+      const move = playPathfindMove(scene, step, process.currentEventId);
+      const pending = move.then(() => true);
+      if (step.wait) {
         process.pendingTimeTransition = pending;
-        void pending.then(() => {
+        void move.then((outcome) => {
           if (scene.parallelProcesses.get(key) !== process) return;
           process.pendingTimeTransition = undefined;
+          // 병렬 이벤트도 「실패하면 중단」을 지킨다. 안 그러면 전경 명령과 같은
+          // 저작이 병렬에서만 조용히 계속 돌아 다른 결말이 된다(OPRN-OUT-013).
+          if (step.onFailure === "stop" && outcome !== "arrived") {
+            releaseCutsceneControlForOwner(scene.session, process.currentEventId);
+            scene.parallelProcesses.delete(key);
+            scene.refreshRuntimeSurfaces();
+            return;
+          }
           consumeParallelSteps(scene, key, process, process.interpreter.resume(undefined));
         });
         return;

@@ -27,7 +27,12 @@ dist/
 !.omo/evidence/battle-flash-map/
 !.omo/evidence/ai-surfaces-ux/
 !.omo/evidence/ai-studio-console/
+!.omo/evidence/oprn-013/
 !.omo/evidence/oprn-017/
+!.omo/evidence/oprn-020/
+!.omo/evidence/oprn-022/
+!.omo/evidence/oprn-024/
+!.omo/evidence/oprn-026/
 !.omo/rules/
 !.omo/rules/**
 artifacts/

@@ -1,5 +1,6 @@
 import { renderActorM2CommandBody } from "./commandBodyM2Actor";
 import { renderPage3M2CommandBody } from "./commandBodyM2Page3";
+import { renderCoordinateMoveCommandBody } from "./commandBodyM2Coordinate";
 import { renderWeightedBranchCommandBody } from "./commandBodyWeightedBranch";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
@@ -62,6 +63,10 @@ function renderM2CommandBodyInner(context: CommandEditContext, cmd: Extract<Comm
   if (weighted) return weighted;
   const page3 = renderPage3M2CommandBody(context, cmd);
   if (page3) return page3;
+  // OPRN-OUT-013 좌표 목적지 이동. 제네릭 폼은 변수 픽커·대상 픽커·실패 정책을
+  // 표현할 수 없으므로 전용 폼이 필요하다.
+  const coordinateMove = renderCoordinateMoveCommandBody(context, cmd);
+  if (coordinateMove) return coordinateMove;
   const entry = m2CommandById(cmd.commandId);
   if (entry?.title === "Erase Event" || cmd.commandId === "m2-086-erase-event") {
     return eraseEventCommandBody(context, cmd);

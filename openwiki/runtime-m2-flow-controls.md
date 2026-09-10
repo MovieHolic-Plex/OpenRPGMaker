@@ -69,6 +69,65 @@ M2 runtime commands: event processing, erase, graphic pattern, movement, checkpo
 
 - 2026-09-05 검증 보완: `m2-002-display-text-settings`의 생략 가능한 필드는 기본값을 먼저 채워 missing-field 경고 없이 실행한다. `test/m2EventCommandCatalog.test.ts`와 `test/commandContracts/m2Command.contract.test.ts`의 기존 빈 필드 계약도 유지한다.
 
+## 좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10)
+
+`Pathfind Move` 는 이제 목적지를 「고정 정수 또는 스튜디오 변수」에서 읽고, 실패를 저작자가
+고른 정책으로 처리한다. 경로 계획은 기존 A*(`playScenePathfinding` → `findChasePath`) 그대로다.
+
+- **좌표 해석은 순수 모듈 하나가 갖는다**: `project/eventCommands/coordinateDestination.ts`.
+  저장 형태·기본값은 `openwiki/editor-event-commands.md` 의 같은 날짜 항목을 따른다.
+  없는 키는 전부 옛 고정 좌표로 읽히므로 마이그레이션이 없다.
+- **변수 조회는 원시 조회여야 한다.** `commandCatalog` 는 `state.session.variables[id]` 를
+  직접 읽는다. `getVariable` 의 `?? 0` 은 「변수 없음」과 「값 0」을 지워, 이 이슈의 원래
+  결함(나쁜 데이터가 (0,0) 이라는 그럴듯한 목적지가 되는 것)을 그대로 되살린다.
+  값 0 은 유효한 좌표이고 키 부재는 실패다 — 이 구분이 계약이다.
+- **해석 실패는 이동 단계를 아예 내지 않는다.** 없음·비수치·비유한·소수·음수는
+  `invalidInput` 으로 기록되고, `onFailure` 에 따라 `resumeNext`(기본) 또는 `{kind:"done"}` 이다.
+  그래서 **대기 설정이어도 기다릴 것이 없다** — 무효한 목적지로 영원히 멈추는 경로가 없다.
+- **씬 재생은 결과를 돌려준다.** `playPathfindMove` 의 반환형은 `Promise<MovementResult>` 다
+  (기존 `void` 소비 호출부는 그대로 동작한다). 분류:
+  `arrived`(0) · `invalidInput`(1) · `missingTarget`(2) · `outOfBounds`(3) · `blocked`(4) ·
+  `unreachable`(5) · `interrupted`(6). **정수 코드는 계약이다** — 저작자가 조건 분기에서
+  그 숫자를 쓰므로 순서를 바꾸거나 재사용하지 마라.
+  · `outOfBounds` 는 계획 **전에** `inBounds` 로 가른다.
+  · `blocked` vs `unreachable` 은 목적지 네 이웃 칸으로의 계획을 같은 planner 로 다시 세워
+    가른다(두 번째 통행 규칙을 만들지 않는다). 이웃까지는 갈 수 있으면 칸 자체가 막힌 것이다.
+  · `interrupted` 는 abort·씬/세션 교체와 **다른 명령의 교체**를 포함한다. 교체 판정은
+    `latestPathfind` 소유권 비교다 — 위치 비교만 하면 「내 명령이 도착했다」와
+    「내 명령이 쓸려나갔다」가 같은 결과가 된다.
+- **결과는 명령별이다.** `resultVariableId`(코드) / `resultSwitchId`(도착 여부)에 기록한다
+  (`player/movementResult.ts`). 기존 `session.flags.pathfindSucceeded` 는 **호환을 위해 유지**
+  하지만 세션 전역 한 칸이라 병렬 이벤트 둘이 각자 이동 명령을 내면 나중 것이 앞 것을 덮는다.
+  그 플래그로 분기하면 자기 것이 아닌 결과로 분기한다 — 그래서 명령별 기록처가 필요하다.
+  스위치는 참/거짓 둘뿐이라 실패 **종류**는 변수만 구분한다.
+- **`fallback: "nearest"` 는 저작자가 켜야만 동작한다.** 기존 `nearestPassableTile`
+  (`playSceneMapCommands`)을 그대로 쓴다. 기본은 `none` — 맵 밖 좌표를 조용히 클램프해
+  「그럴듯한 다른 곳」으로 보내지 않는다.
+- **`onFailure: "stop"` 은 전경과 병렬 양쪽에서 지켜진다.** 전경은
+  `playSceneInterpreter` 가 `{kind:"done"}` 을 돌리고, 병렬은 `playSceneSchedulers` 가
+  큐를 지우고 cutscene 소유 잠금을 놓는다. 한쪽만 고치면 같은 저작이 실행 문맥에 따라
+  다른 결말이 된다.
+- **`MoveRoute.skippable` 은 재사용하지 않았다** (감사 결과). 그 옵션은 이동 루트의 **개별
+  단계**가 막혔을 때 그 단계를 버리는 것이고, 이 이슈가 요구하는 것은 **목적지 전체**에 대한
+  성공/실패 판정 + 분기다. 게다가 `moveEvent` 인터프리터 단계가 그 값을 아예 싣지 않는다
+  (런타임 단계 타입에 필드가 없다) — 고쳐서 쓰려면 별 작업이며 의미도 이 계약을 덮지 못한다.
+- **m2Runtime 상태 기록은 해석된 목적지를 남긴다.** 변수 소스면 `x`/`y` 필드가 아예
+  없을 수 있고, 그걸 `fieldNumber` 로 읽으면 실행마다 `[m2] missing field: x/y` 가
+  콘솔을 도배한다(출하 플레이어 QA 실측). `m2ModernRuntime` 은 `resolveDestination` 으로
+  기록하며, 고정 좌표 명령의 기록은 바이트 단위로 이전과 같다.
+- 회귀: `test/coordinateDestinationMove.test.ts` (38건 — 순수 해석기·인터프리터·씬 재생·
+  병렬 이벤트·지속성). 기존 `runtimeMovementStability` 의 재지정/큐 사례와
+  `commandContracts/m2Command`·`interpreter` 의 단계/기록 모양 계약은 그대로 초록이다.
+- **출하 플레이어 QA(도착 증거):**
+  `npx tsx scripts/prepare-coordinate-move-qa.mts && node scripts/qa-coordinate-move.mjs`.
+  키보드만 조작하고 `__oprnDebug.readState` 는 관찰에만 쓴다. 네 단계(변수 좌표 도착 ·
+  맵 밖 · 길 없음 · 없는 변수 + 중단)를 한 이벤트로 실행하고, 좌표 표본으로 **걸어갔는지**
+  (순간이동이 아닌지)까지 잰다. `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` 를
+  **먼저** 읽어라. 그 경로는 매 실행 재생성되는 gitignore 대상이라 보존본은
+  `verify-shots/oprn-013/test-play/` 에 있다. 실패를 일부러 만드는 계약이므로
+  `[player] pathfind …` / `[m2] Pathfind Move …` 경고는 오류가 아니라 **증거**다 —
+  하네스가 따로 모아 `report.json` 에 남기고, 진단이 실제로 났는지도 단정한다.
+
 ### 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
 
 - `Pathfind Move`를 걷는 중 재호출하면 플레이어의 이미 허용된 착지 좌표(`movingTo`)에서 다음 경로를 계산한다. 현재 걸음의 속도는 유지하고 새 속도는 `PlayerRouteState.nextMoveDurationMs`를 통해 다음 걸음부터 적용한다.
