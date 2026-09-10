@@ -2890,11 +2890,21 @@ export class AssistantSession {
         outcomeGate: this.outcomeGate(),
       });
       if (!result.ok) {
-        this.lastBlockReasonByItemId.set(id, result.reason);
+        // 「필수 successTools 중 X 성공 기록이 없습니다」만 보내면 모델은 **이미 성공한** X 를 다시
+        // 돌린다 — 성공 기록은 검증 미충족 시 지워지는데(아래 verification:unmet 분기) 그 사실이
+        // 이 문구에 없기 때문이다. 2026-09-10 로그가 그 결과다: run_lint 21회·check_reachability
+        // 15회를 같은 인자로 반복 성공시키고도 complete_work_item 7/12 거부, 예산 소진으로 종료.
+        // 지워진 **이유**는 검증 증거만 알고 있으므로(스펙 미지정·재검증 필요·미통과) 같은 툴
+        // 결과에 실어 보낸다. 이 채널이 모델이 실제로 읽는 유일한 채널이다 —
+        // problems() 는 그 외에 감사 행과 사용자 노출 문구로만 나간다.
+        const blocking = this.verificationEvidence.problems("blocking")
+          .filter((problem) => (item?.successTools ?? []).some((tool) => problem.startsWith(`${tool}: `)));
+        const reason = blocking.length ? `${result.reason}\n검증 상태: ${blocking.join("\n")}` : result.reason;
+        this.lastBlockReasonByItemId.set(id, reason);
         return {
           ok: false,
-          summary: result.reason,
-          issues: [{ severity: "error", code: "work-item-incomplete", message: result.reason }],
+          summary: reason,
+          issues: [{ severity: "error", code: "work-item-incomplete", message: reason }],
           data: { targetIssues: result.item ? workTargetIssues(result.item, this.workItemToolOutcomes, this.workPlan) : [] },
         };
       }
