@@ -1,5 +1,32 @@
 # Editor AI Tools & Vocabulary
 
+## 명명 로케이션 툴 6종 (OPRN-OUT-020, 2026-09-10)
+
+`src/editor/tools/mapLocationTools.ts`. 목표 하나다: 사용자가 "정문 광장"이라고 말하면 조수가
+좌표를 되묻지 않고 그 사각형을 쓴다.
+
+| 툴 | 모드 | 하는 일 |
+|---|---|---|
+| `list_map_locations` | read | 맵의 명명 로케이션 전량(ID·이름·사각형·메모·태그·출처) |
+| `resolve_map_location` | read | 이름/ID/부분일치, 또는 `x,y` 로 그 칸을 덮는 **가장 구체적인** 구역 |
+| `create_map_location` | write | 이름 붙은 구역 생성(겹침 허용) |
+| `update_map_location` | write | 이름 또는 사각형 변경. **이름을 바꿔도 ID 는 그대로** |
+| `delete_map_location` | write | 삭제. 참조가 있으면 `brokenReferences` 로 복구 방식을 밝혀야 한다 |
+| `adopt_layout_regions` | write | 빌더 `layoutPlan.regions` → 로케이션 **복사**(멱등, layoutPlan 불변) |
+
+- **`find_layout_regions` 와 층이 다르다.** 그쪽은 마을 빌더의 설계 기록만 본다. 이쪽은 사람이 저작한
+  로케이션 층이다. 두 층의 관계·마이그레이션은 `openwiki/runtime-project-schema.md` 의
+  「명명 로케이션 레이어」 절이 소유한다.
+- **`delete_map_location` 은 참조가 있으면 그냥 지우지 않는다.** `brokenReferences` 로
+  `remap`(+`replacementLocationId`) / `detach` / `freezeRect` 중 하나를 밝혀야 하고, 밝히지 않으면
+  `location-referenced` 로 거부한다. 이유는 실측이다: 툴 러너의 커밋 게이트가 «이 변경이 새로 만든
+  error» 를 막으므로 참조를 남긴 삭제는 애초에 커밋되지 않는다. 그리고 참조를 끊는 것은 사용자에게
+  물어야 하는 결정이다. 사람은 편집기 레이어에서 그냥 지우고 나중에 복구 UI 로 고칠 수 있다 —
+  두 경로의 비대칭은 의도된 것이다(조수는 한 턴에 원상복구까지 끝낸다).
+- 회귀: `test/mapLocationTools.test.ts`(12건 — 등록 모드, 이름/부분일치/점 해석, 이름 변경 후 ID 불변,
+  참조 있는 삭제 거부, detach/freezeRect/remap 복구, 승격 멱등 + layoutPlan 불변,
+  `find_layout_regions` 가 사람 층을 보지 않음).
+
 ## Exact project values and sourced declarations (2026-09-08)
 
 The existing acceptance ledger supports `projectTitle` (exact `meta.title` and

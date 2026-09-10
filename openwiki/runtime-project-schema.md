@@ -515,6 +515,56 @@ bytes after real remote reload and Test Play. The default is not remote proof.
 - **저장이 스킵되는 세션은 화면이 그렇다고 말해야 한다 (2026-08-30):** `?freshProject=1` / `?blankProject=1` / dev 쇼케이스 위치는 의도적으로 `remotePersistenceEnabled = false` 이고 `isSaveSkippedLocation()` 이면 localStorage 기록조차 스킵한다. 예전에는 이 상태에서 편집해도 자동 저장 표시가 조용해서(또는 `saved` 로 보여서) 사용자가 저장됐다고 믿었고, 다시 열면 추가한 레코드가 사라졌다. 이제 `store` 가 이 조합에서 `{ kind: "error", code: "session-not-persisted" }` 를 세워 톱바 저장 칩(`db-autosave-state`)에 "이 세션은 저장되지 않습니다" 를 띄운다. 저장이 안 되는 것은 의도된 동작이고, 조용했던 것이 결함이었다. 계약은 `test/itemAddPersistence.test.ts` 가 실제 store·실제 `addDatabaseRecord` 경로로 고정한다.
 - Runtime item-use charges are optional save/session data for backward compatibility. Missing or malformed charge maps normalize to an empty map; finite-use transitions own inventory/charge conservation. `src/project/itemQuantities.ts` owns the shared `ITEM_QUANTITY_MAX` (9,999,999), safe-integer validation, and result resolution. `changeItem`/`changeItemsAtomically` reject an unsafe current value, delta, or result before touching inventory or charge cursors; shipping, bundles, upgrades, makers, farming, crafting, storage transfers, and shop purchases/sales commit item movement through that contract. Chest save parsing and direct snapshot restore preserve valid chest metadata while dropping zero, unsafe, or over-cap inventory rows. Runtime equipment reads use effective normalized equipment, while user equip/unequip writes go through the strict atomic transition authority and never mint or delete inventory.
 - Optional `GameMap.layoutPlan` stores generation bbox design after village/market builds (`MapLayoutPlan` / `MapLayoutRegion` in `types/project.ts`). Helpers: `src/project/mapLayoutPlan.ts` (`findLayoutRegions`, `rankRegionsByCenter`). Do not discard plan after stamping tiles — keep for “move blue house in center” style queries.
+- **명명 로케이션 레이어 — `GameMap.locations` (OPRN-OUT-020, 2026-09-10):** 사람이 저작하고
+  이벤트·인카운터·조수가 **이름으로** 가리키는 지역 층이다. `MapNamedLocation { id, name, x, y, w, h,
+  note?, tags?, color?, origin? }`. optional 이라 **옛 맵은 필드 자체가 없고 마이그레이션도 없다**
+  (`test/mapNamedLocations.test.ts` 의 "a legacy builder map with no locations layer is unchanged by
+  load/save" 가 byte-stable 을 고정한다). 규칙 원본은 `src/project/mapNamedLocations.ts` 하나뿐이고
+  편집기 UI·조수 툴·런타임·lint 가 모두 그걸 지난다.
+  - **`layoutPlan.regions` 와 왜 분리했는가:** layoutPlan 은 **빌더 기록**이다. `setMapLayoutPlan` 이
+    배열을 통째로 갈아치우고(`village/builder.ts`, `largeRiverMarketVillageBuild.ts`),
+    `houseProtection`·`villageEvaluate` 가 `role === "house"` 를 시공 의미로 읽는다. 사람이 그 배열을
+    편집하게 하면 (1) 재시공에서 사람 편집이 조용히 사라지고 (2) 사람이 붙인 낱말이 시공 검증기 판정을
+    오염시킨다. 관계는 **한 방향뿐**이다 — `adoptLayoutRegionsAsLocations`(조수 툴 `adopt_layout_regions`,
+    편집기 「설계 영역을 구역으로 가져오기」)가 복사하고, layoutPlan 은 한 바이트도 바뀌지 않는다.
+    승격본은 `origin { kind:"layoutRegion", regionId, planKind? }` 스냅샷을 남기고 멱등이다.
+    자동 승격은 없다 — **옛 빌더 맵을 열기만 해서는 아무 일도 일어나지 않는다.**
+  - **ID 와 표시명은 분리된다.** ID(`loc1`, `loc2` … 맵 안에서만 유일)는 참조가 쓰고, `name` 은 사람과
+    조수가 쓴다. 이름을 바꿔도 `insideLocation` 조건과 인카운터 참조가 살아 있다.
+  - **참조 지점(실측 전량):** `map.encounterTable[].conditions.locationId`, `Condition` 의
+    `{ kind:"insideLocation", locationId, inside }`(fork 조건 트리 + 페이지 출현 조건 + 레거시
+    `event.condition`). 조건은 **맵 경계를 넘지 않는다** — 그래서 맵 복사가 안전하다.
+  - **겹침은 허용이다**(상점가 안의 좌판). 조회 우선순위는 `topLocationAtPoint` 한 곳이 정한다:
+    면적이 작은 것 먼저, 동률이면 저작 순서. 편집기는 정보 배지로만 알린다(차단 아님).
+  - **맵 리사이즈·시프트는 로케이션을 클램프하고 절대 삭제하지 않는다**(`clampLocationsToMapSize`,
+    `shiftMapLocations`; `editor/actions.resizeMap`·`mapShiftActions.applyMapShift` 가 호출).
+    축소로 완전히 밖에 나간 로케이션은 경계 1×1 로 남고 lint 가 `map-location-degenerate` 로 알린다 —
+    지우면 조건·인카운터 참조가 조용히 끊긴다.
+  - **맵 복사**(`cloneGameMap`)는 `structuredClone` 으로 로케이션을 **같은 ID 로** 옮긴다. 참조가 맵 안에서만
+    걸리므로 복사본의 조건·인카운터는 복사본의 로케이션을 가리키고, 한쪽 이름을 바꿔도 다른 쪽은 불변이다.
+  - **로드는 맵 밖 사각형을 거부하지 않는다.** 맵 폭이 준 저장본이 열리지 않으면 사용자가 복구할 수단이
+    사라진다. 로드는 타입·ID 유일성만 강제하고(`shapeEventFields.validateMapNamedLocations`), 기하 모순은
+    편집기 통로 클램프와 lint 진단이 담당한다.
+  - **레거시 raw 사각형은 그대로 동작한다.** `EncounterConditions.region` 은 유지되고, 같은 항목에 둘이
+    있으면 `locationId` 가 이긴다(`src/player/encounters.ts`). 새 저작은 `locationId` 를 쓴다.
+  - **끊긴 참조는 조용히 지우지 않는다.** 로케이션 삭제는 참조를 그대로 남기고
+    `projectLint` 가 `map-location-missing-ref`(error) 로 올린다. 복구 경로는
+    `repairMapLocationReferences` 하나이고 세 가지다: `remap`(다른 구역으로 재지정) /
+    `detach`(구역 조건만 떼기 — 조건이 통째로 그것뿐이던 fork 는 항상-참 `{kind:"all",conditions:[]}` 로
+    굳어 then 분기가 사라지지 않는다) / `freezeRect`(인카운터를 예전 사각형의 레거시 raw 구역으로 강등).
+    lint 코드 셋: `map-location-missing-ref`(error), `map-location-degenerate`(warning),
+    `map-location-duplicate-name`(warning).
+  - **런타임 해석은 세션이 아니라 프로젝트에서 온다.** 세션에 사각형 사본을 만들면 저작 편집과 어긋난
+    stale 사각형이 세이브에 굳는다. 그래서 `evalCondition(session, condition, host, { map })` 과
+    `resolveEventPage(event, session, { locations })` 가 **현재 맵**을 받는다. 못 받으면 해석 불가 =
+    **거짓**이고 lint 가 따로 알린다 — 조용한 참으로 통과시키지 않는다(`inside:false` 도 참이 되지 않는다).
+    전투 이벤트는 `BattleSessionState.currentMapId/x/y`(전투 개시 시점 필드 위치)로 같은 판정을 내므로
+    페이지·맵 fork·전투 세 표면이 일치한다 — `test/conditionEvaluatorParity.test.ts` 의 allowlist 는
+    여전히 비어 있다. 세이브 스키마 버전은 그대로다(추가 필드 전부 optional).
+  - 회귀: `test/mapNamedLocations.test.ts`(31건 — 스키마 왕복·중복 ID 거부·겹침·리사이즈·시프트·복사·
+    승격 멱등·조건 의미·인카운터·레거시 사각형·진단·복구 3종), `test/mapLocationTools.test.ts`(12건),
+    `test/mapLocationLayer.test.ts`(7건, 실제 DOM). 브라우저 증거: `verify-shots/oprn-020/`.
+
 - `ActorRecord.faceResourceId` stores a standalone 48×48 face graphic resource id. `ActorRecord.characterIndex` (0..7) remains an optional sheet cell defaulting to 0 when omitted. `ActorRecord.faceIndex` is removed. Project schema version is bumped to 4 (`SCHEMA_VERSION = 4`); `migrateV3toV4` rewrites stored legacy (sheet id, faceIndex) pairs to standalone face resource ids on load, treating an omitted index as cell 0. Normalization may drop explicit characterIndex 0 to keep legacy JSON compact; editor previews and list thumbnails treat missing characterIndex as 0.
 - `SkillRecord.scope` accepts `self | ally | allAllies | enemy | allEnemies`. `allAllies` is an additive value handled by type guards, normalization, references, tools, editor controls, runtime targeting, and serialization; existing scope values and saved projects remain valid, so this addition does **not** require a project schema-version bump or migration. Keep authored scope authoritative instead of deriving target side/cardinality from damage/healing/support effect kind.
 - Gen1 battle metadata is additive and optional in schema v3: `SkillRecord.maxPp` (1..99) and `gen1CriticalRate: "normal"|"high"`, `StateRecord.gen1MajorStatus` (`poison|burn|sleep|freeze|paralysis`), `TroopRecord.trainerBattle`, and `ItemCaptureProfile.ballClass` (`poke|great|ultra|master`). Omission keeps the compatibility contract: no authored PP cap, normal critical class, no major-status semantic, wild/non-trainer troop, and the existing capture `multiplier` path. Normalization drops invalid metadata while preserving valid values through load/save, so this optional expansion does **not** bump `SCHEMA_VERSION` or require migration.

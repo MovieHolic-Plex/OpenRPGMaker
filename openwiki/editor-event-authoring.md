@@ -1,5 +1,27 @@
 # Editor Event Authoring
 
+## 구역(로케이션) 조건분기 (OPRN-OUT-020, 2026-09-10)
+
+`Condition` 에 `{ kind: "insideLocation", locationId, inside }` 가 있다. 「조건 종류」 선택기의
+**구역(로케이션)** 이고, fork(조건분기)와 페이지 출현 조건 양쪽에서 저작한다. 좌표를 적지 않는다 —
+`GameMap.locations` 의 사각형을 가리키므로 구역을 옮기거나 넓히면 조건도 함께 따라온다.
+
+- 선택기는 **현재 맵의 로케이션만** 담는다(`renderInsideLocationCondition` in `conditionForm.ts`).
+  조건은 맵 경계를 넘지 않으므로 다른 맵 목록을 섞으면 절대 참이 되지 않는 조건이 만들어진다.
+- **끊긴 참조는 목록에서 사라지지 않고 「(삭제된 로케이션 …)」 항목으로 남는다.** 조용히 다른 구역으로
+  갈아치우면 사고가 데이터에 굳는다. 같은 상태를 `eventDraftValidator` 가
+  `condition.insideLocation.missing`(error, field `event-condition-inside-location`)로 막고,
+  `projectLint` 가 `map-location-missing-ref` 로 올린다.
+- 요약 문장은 `src/editor/mapLocationLabels.ts` 한 곳이 만든다(`insideLocationSentence`) — 명령 요약·
+  페이지 조건 문장·배지가 같은 낱말을 쓴다. 배지는 이름 10자 절단 + 「안/밖」.
+- 미리보기(`conditionEvalPreview`)는 이 조건을 **판정 불가(undefined)** 로 둔다 — 미리보기 세션에는
+  주인공 좌표가 없으므로 참/거짓을 지어내지 않는다.
+- 구역을 그리는 곳은 맵 캔버스 툴바의 **로케이션** 토글이다. 계약은
+  `openwiki/runtime-project-schema.md` 의 「명명 로케이션 레이어」 절이 소유한다.
+- 회귀: `test/mapNamedLocations.test.ts`(조건 의미·이름 변경 후 참조 생존·페이지 조건),
+  `test/conditionEvaluatorParity.test.ts`(페이지·맵 fork·전투 세 표면 일치),
+  `test/commandKindCoverage.test.ts`(shape 왕복).
+
 ## Native battle confirmation admission (2026-09-08)
 
 `commandEditDialog.ts` validates native battle commands before its button-based
