@@ -1,5 +1,46 @@
 # Editor AI Panel & Tools
 
+## Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
+
+An assistant `BuildSpec` remains **session** state: `assistantSession.specsByMap` replaces the
+prior spec for the same map, and `dropSession` (new conversation, history restore, project
+switch) clears the blueprint. That lifecycle is unchanged. What is new is a separate,
+project-persistent, user-owned list beside it.
+
+- `GameMap.planningItems?: MapPlanningItem[]` is optional authored data:
+  `{id ("pi_N"), text, status: "active"|"retired", origin: "user"|"spec", createdAt?, updatedAt?,
+  specAssetId?}`. Authority is `src/project/mapPlanningItems.ts`. Absent when unauthored, so old
+  project JSON stays byte-stable and no schema-version bump is required. See
+  `runtime-project-schema.md` for the load/validate/normalize contract.
+- Writes go only through `src/editor/mapPlanningActions.ts`
+  (`add`/`update`/`setRetired`/`delete`), each a `store.update(..., {scope:"map", mapId})`, so
+  autosave, undo and remote sync behave like any other map edit. Emptying the list deletes the
+  field. Retire and delete are different actions: a retired row stays visible and struck through
+  but leaves the reuse pool; delete removes it.
+- Surfaces: the studio deck gained a **기획** tab (`ai-studio-tab-planning`, badge = active count)
+  hosting `aiPlanningList.ts` — inline text editing, retire/restore, delete, and an add row.
+  The composer rail gained a **보존 기획 재사용** toggle (`ai-planning-toggle`) opening
+  `aiPlanningReuse.ts` with three exclusive modes `none | all | selected`
+  (`ai-planning-reuse-mode-*`). `none` is the default at every open.
+- **The list never enters a prompt by itself.** Only an explicit all/selected choice appends a
+  `[보존 기획]` guidance block after the user utterance and before the `[컨텍스트]` facts line;
+  `formatPlanningReuseBlock` states in-band that the items are guidance, not a blocking rule.
+  The popover preview (`ai-planning-reuse-preview`) is the exact text that will be sent, shown
+  before sending, and the composer chip (`ai-planning-chip`) repeats the choice on the action row.
+  The choice resets after each send, when the map changes, and when a chosen item is retired or
+  deleted. `instruction` (intent declaration, tool-name promotion) still sees only the raw
+  utterance. Nothing in the spec gate, approval policy or validators reads this field, so retained
+  guidance cannot block manual editing or an unrelated assistant turn.
+- Blueprint → list is a user action, never automatic: the `set_build_spec` chat summary carries a
+  **보존 기획에 담기** button (`ai-build-spec-capture`) that converts each asset through
+  `planningTextFromSpecAsset` (label + kind + coordinates), tagged `origin:"spec"` with a
+  `mapId:assetId` key so repeat presses cannot duplicate rows.
+- Tests: `mapPlanningItems` (schema, roundtrip, fail-closed wire data, reuse resolution),
+  `mapPlanningReuse` (conversation reset, project reload, per-map scope, edit/retire/delete,
+  the three modes, real panel payload, non-blocking), `mapPlanningSpecCapture` (real turn loop:
+  a confirmed blueprint writes nothing until the capture button is pressed).
+  Browser evidence: `verify-shots/oprn-019/`.
+
 ## Run outcome line: four independent axes (2026-09-09)
 
 The single `[data-testid="ai-run-outcome"]` line drawn by `renderRunOutcome` states four
