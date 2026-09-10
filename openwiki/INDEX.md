@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **62쪽 / 2340KB / 약 652,971 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **62쪽 / 2343KB / 약 654,013 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -20,7 +20,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-database.md` | 257KB | 56KB ⚠상한 초과 — 절을 더 쪼개라 | 1350 | ~73,776 |
 | `openwiki/editor-event-authoring.md` | 132KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 713 | ~37,928 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
-| `openwiki/editor-pre-edit-routing.md` | 91KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 439 | ~25,776 |
+| `openwiki/editor-pre-edit-routing.md` | 91KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 442 | ~25,837 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 29KB | 456 | ~17,604 |
 | `openwiki/runtime-battle.md` | 133KB | 31KB | 539 | ~37,775 |
 | `openwiki/runtime-project-schema.md` | 123KB | 53KB ⚠상한 초과 — 절을 더 쪼개라 | 754 | ~32,797 |
@@ -40,7 +40,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 109, 122, 123, 125, 128, 129 |
 | `openwiki/editor-observability.md` | 1 | 310 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 260, 269, 276, 278, 301 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 263, 272, 279, 281, 304 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
 
 ## 없는 파일을 가리키는 참조
@@ -509,33 +509,33 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L455` AI 툴·액션 이유 (2026-09-02)
 - `L465` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 91KB · 439줄 · ~25,776 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 91KB · 442줄 · ~25,837 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L7` Exterior door backing
 - `L17` Tile brush reliability (2026-09-06)
-- `L52` Combo Brush (2026-09-10, OPRN-OUT-022)
-  - `L57` 용어 (코드와 UI 가 같은 말을 쓴다)
-  - `L69` 소유 경계
-  - `L81` 근거 규칙 — 번호 인접으로 추론하지 않는다
-  - `L92` 검토 책임
-  - `L104` 경계와 진단
-  - `L114` 회귀 이음줌
-- `L126` Pre-edit routing
-  - `L128` 명명 로케이션 레이어 (2026-09-10)
-  - `L155` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L214` Automatic usage guides disabled (2026-09-06)
-  - `L224` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L312` Agent cautions
-- `L322` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L353` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L385` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L414` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+- `L55` Combo Brush (2026-09-10, OPRN-OUT-022)
+  - `L60` 용어 (코드와 UI 가 같은 말을 쓴다)
+  - `L72` 소유 경계
+  - `L84` 근거 규칙 — 번호 인접으로 추론하지 않는다
+  - `L95` 검토 책임
+  - `L107` 경계와 진단
+  - `L117` 회귀 이음줌
+- `L129` Pre-edit routing
+  - `L131` 명명 로케이션 레이어 (2026-09-10)
+  - `L158` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+  - `L217` Automatic usage guides disabled (2026-09-06)
+  - `L227` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L315` Agent cautions
+- `L325` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L356` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L388` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L417` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 1KB · 15줄 · ~333 토큰
 
 - `L5` Storage chest authoring
 
-### `openwiki/editor-validation.md` — 41KB · 307줄 · ~11,161 토큰
+### `openwiki/editor-validation.md` — 45KB · 342줄 · ~12,142 토큰
 
 - `L3` Event validation location and UNSENT handoff (issue 693, 2026-09-08)
 - `L40` AI blocked-event relocation recovery (2026-09-06)
@@ -551,6 +551,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L219` Event editor aggregate gate (2026-07-30)
 - `L228` P2 spatial integrity (2026-08-25)
 - `L235` 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
+  - `L281` `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
 
 ### `openwiki/editor-workflows-misc.md` — 65KB · 456줄 · ~17,604 토큰 · 통째읽기 잘림
 

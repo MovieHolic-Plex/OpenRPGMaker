@@ -271,13 +271,48 @@ UI 문구가 모두 분리돼 있다.
 「복구 가능 여부를 미리 계산해도 보호셀 판정이 낡지 않는다」(store 통지 없이 제자리 mutation).
 
 **바뀌지 않은 것:** AI 툴(`paint_tiles`·`scatter_object`), 구조물 킷 조건 검사, 여러 칸 팔레트
-스탬프(`clusterExpand:false` + `preservePattern`). `bAlt` 패리티(검사기는 대체 타일을 보지만
-확장기는 안 본다)는 **범위 밖**이며 별 회귀와 승인이 필요하다.
+스탬프(`clusterExpand:false` + `preservePattern`).
 
 **회귀 좌표:** `test/clusterAssistRecovery.test.ts`(290·291·292 × 경계/위 칸 점유/보호셀 옆/
 정상 공터, 되돌리기·다시 실행, 스탬프 불변), `test/clusterAssistUi.test.ts`(두 토글의 독립
 표현과 복구 토스트), `test/tileActions.m1.test.ts`(거부 문장이 규칙·동반 타일·좌표를 말한다).
 브라우저 증거: `node scripts/qa/cluster-assist-recovery.mjs` → `verify-shots/oprn-017/`.
+
+### `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
+
+OPRN-OUT-017 은 이 항목을 「따로 재현·리뷰한 뒤에 범위를 넓힌다」로 미뤘다. 그 리뷰를 했고,
+재현이 나왔다. **규칙 데이터와 검사기가 합법이라 부르는 배치를 손붓으로 만들 수 없었다.**
+
+- `bAlt` 는 「a 옆에 b 대신 와도 되는 타일」이고 `aAlt` 는 그 역방향 짝이다
+  (`src/project/lint/clusterRuleValidators.ts` — `acceptedCompanionTiles`·`adjacencyCompanionSatisfied`).
+  판정은 **레이어를 가리지 않는다**(`hasAnyTileAt`) — 수관은 upper, 밑동은 lower 이기 때문이다.
+- 실제로 대체 타일을 쓰는 그룹은 세 가족이다: 마른나무 세로 스택(`bAlt:[261]`),
+  활엽수 2×2 대각 겹침(`bAlt:[262]`), 긴 탁자 임의 길이(`aAlt`/`bAlt` 두 규칙).
+- 결함(수정 전 실측): ① 261 을 위로 쌓으면 아래 칸의 **하위 레이어에 291 이 몰래 찍혀**
+  지형이 파괴됐다(수관 아래에 숨어 lint 도 조용했고, 위 수관을 지우면 밑동이 드러났다).
+  ② 3칸을 넘는 긴 탁자(`325 326 326 327`)를 손으로 이어 붙일 수 없었다 — 확장기가 이미 놓인
+  326(=`aAlt`) 자리에 325 를 요구해 `occupied-upper` 로 거부했다. 같은 배치를 `validateClusterRules`
+  와 행 배치기는 항상 합법으로 봤다(`test/interiorLongTable.test.ts` 의 `[325,326,326,326,327]`).
+- 수정(가장 좁게): `expandHardClusterPlacement` 는 동반 칸을 계획하기 전에 **맵이 이미 허용 타일을
+  들고 있는지** 묻고(`companionAlreadySatisfied`), 그렇다면 그 칸을 건드리지 않는다. 허용 목록과
+  판정은 검사기에서 빌려 쓰는다 — 두 계약이 같은 목록을 읽지 않으면 이 결함이 다시 생긴다.
+  **예외 둘:** 사용자가 직접 누른 원점 칸(지금 덮어쓰는 중)과 이번 배치가 이미 계획한 칸은
+  만족으로 치지 않는다.
+- 바뀜지 **않은** 것: 대체 타일이 없는 그룹은 예전처럼 정본 동반 타일을 강제한다(침엽수 290→260).
+  번 칸에는 여전히 정본 동반 타일을 만들고(몸통 하나 → 닫힌 3칸 탁자), 보호셀·다른 덤그림
+  오브젝트 가드레일과 「한 번의 되돌리기 단위」도 그대로다.
+
+**함정 (실측 2026-09-10):** 번들 픽스처 `dew-village-demo.json` 의
+`harness-combined-town-dry-tree` 그룹은 **`bAlt` 이전 규칙**(`{a:261,b:291}`)을 그대로 들고 있고,
+`preserveHarnessGroup`(`src/project/tilesetHarness/combinedTown.ts:309`)은 규칙이 있는 그룹을
+절대 갱신하지 않는다. 그래서 `?freshProject=1`(예제 어드벤처)에서는 마른나무 스택이 그 규칙
+자체로 허용되지 않는다 — 브라우저 증거가 `?blankProject=1`(공장 생성 타일셋)을 쓰는 이유다.
+이건 타일셋 **데이터** 마이그레이션 문제지 이 계약의 문제가 아니라 여기서 고치지 않았다.
+
+**회귀 좀표:** `test/clusterAssistAltParity.test.ts`(마른나무 스택·수관 지우기·되돌리기 단위·
+긴 탁자 확장·대체 없는 그룹 불변). 브라우저 증거: `node scripts/qa/cluster-alt-parity.mjs` →
+`verify-shots/balt-parity/`(수정 후 5/5 PASS, 수정 전 2/5 —
+`verify-shots/balt-parity/RESULTS-without-fix.json` 이 같은 하네스로 측정한 결함 서명이다).
 
 - **배치 조건이 산문에서 실제 기하 검사로 바뀌었다 (2026-08-30, PR #316).** `checkPlacementSurface`
   (`src/project/placementSurface.ts:126`)가 사각의 밑변을 기준으로 **통행 가능성 데이터**만 보고
