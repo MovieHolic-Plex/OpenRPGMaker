@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<title>영역 작업 UI/UX 재설계 목업 (2026-09-10)</title>
+<style>
+:root{
+  --bg-base:#F7F8F8; --bg-raised:#FFFFFF; --bg-inset:#EEF1F4; --bg-canvas:#EEF1F4;
+  --bg-scrim:rgba(15,23,42,.40); --bg-hover:rgba(15,23,42,.05);
+  --control-bg:rgba(15,23,42,.04);
+  --border-subtle:rgba(15,23,42,.08); --border-default:rgba(15,23,42,.127); --border-strong:rgba(15,23,42,.461);
+  --text-1:#0F172A; --text-2:#475569; --text-3:#626E89; --text-placeholder:#626E89;
+  --accent:#4A57D6; --accent-muted:rgba(74,87,214,.12); --accent-border:rgba(74,87,214,.45); --on-accent:#fff;
+  --danger:#C6403D; --danger-muted:rgba(198,64,61,.13);
+  --success:#18764F; --success-muted:rgba(24,118,79,.13);
+  --warning:#8A5E00; --warning-muted:rgba(138,94,0,.13);
+  --radius-s:6px; --radius-m:10px; --radius-l:14px; --radius-pill:999px;
+  --shadow-pop:0 4px 12px rgba(15,23,42,.08), 0 12px 32px rgba(15,23,42,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;background:#DDE2E8;font:12px/1.45 -apple-system,"Segoe UI","Noto Sans KR",sans-serif;color:var(--text-1)}
+.frame{width:1280px;background:var(--bg-base);margin:0 0 28px;position:relative}
+.fhead{height:34px;display:flex;align-items:center;gap:10px;padding:0 14px;background:#0F172A;color:#fff}
+.fhead b{font-size:12px;font-weight:700;letter-spacing:.02em}
+.fhead span{font-size:11px;color:#A8B2C6}
+.fhead .tag{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:var(--radius-pill);background:rgba(255,255,255,.14)}
+.shell{height:766px;display:flex}
+
+/* ── 좌측 패널 ── */
+.left{width:220px;background:var(--bg-base);border-right:1px solid var(--border-default);padding:12px;flex:none}
+.lt{font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.06em;margin:0 0 8px}
+.lrow{height:24px;border-radius:var(--radius-s);display:flex;align-items:center;padding:0 8px;color:var(--text-2);font-size:11px;margin-bottom:2px}
+.lrow.on{background:var(--accent-muted);color:var(--accent);font-weight:600}
+.pal{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-top:14px}
+.pal i{aspect-ratio:1;border-radius:3px;background:#C9D4C2}
+.pal i:nth-child(3n){background:#B7C8AE}.pal i:nth-child(4n){background:#D8CDB4}
+.pal i:nth-child(5n){background:#9FB79A}.pal i:nth-child(7n){background:#C2B79C}
+
+/* ── 캔버스 ── */
+.canvas{flex:1;min-width:0;background:var(--bg-canvas);position:relative;overflow:hidden}
+.tiles{position:absolute;inset:0;display:grid;grid-template-columns:repeat(31,24px);grid-auto-rows:24px}
+.tiles i{width:24px;height:24px}
+.g1{background:#A8C49B}.g2{background:#9DBB90}.g3{background:#B2CCA4}
+.rd{background:#CDBD97}.tr{background:#5E8A5C}.wt{background:#8FB6C6}
+
+/* 선택 사각형 */
+.sel{position:absolute;outline:2px solid var(--accent);outline-offset:-1px;background:rgba(74,87,214,.07)}
+.selbadge{position:absolute;top:-9px;left:0;background:var(--accent);color:#fff;font-size:10px;font-weight:600;
+  padding:2px 7px;border-radius:var(--radius-pill);white-space:nowrap}
+
+/* ── AI 도크 ── */
+.dock{width:320px;background:var(--bg-base);border-left:1px solid var(--border-default);padding:12px;flex:none;display:flex;flex-direction:column}
+.dockh{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:10px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--success)}
+.msg{background:var(--bg-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-m);padding:8px 10px;font-size:11px;color:var(--text-2);margin-bottom:6px}
+.msg b{color:var(--text-1)}
+.logline{font:10px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--text-3)}
+.dockspacer{flex:1}
+.composer{border:1px solid var(--border-default);border-radius:var(--radius-m);background:var(--bg-raised);padding:8px 10px;color:var(--text-placeholder);font-size:11px}
+
+/* ── (A) 현재 팝오버 ── */
+.pop{position:absolute;width:380px;background:var(--bg-raised);border:1px solid var(--border-strong);
+  border-radius:var(--radius-m);box-shadow:var(--shadow-pop);padding:12px;display:flex;flex-direction:column;gap:9px}
+.pop .ph{display:flex;align-items:center;gap:6px}
+.pop .ph b{font-size:12px;flex:1}
+.mini{font-size:10px;padding:2px 6px;border:1px solid var(--border-default);border-radius:var(--radius-s);color:var(--text-3)}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:10px;padding:3px 8px;border-radius:var(--radius-pill);background:var(--control-bg);color:var(--text-2);border:1px solid var(--border-subtle);white-space:nowrap}
+.chip.acc{background:var(--accent-muted);color:var(--accent);border-color:var(--accent-border)}
+.seg{display:flex;border:1px solid var(--border-default);border-radius:var(--radius-s);overflow:hidden;width:max-content}
+.seg span{font-size:10px;padding:4px 12px;color:var(--text-2)}
+.seg span.on{background:var(--accent);color:#fff;font-weight:600}
+.ta{border:1px solid var(--border-default);border-radius:var(--radius-s);background:var(--bg-raised);padding:7px 8px;color:var(--text-placeholder);font-size:11px;min-height:44px}
+.btnrow{display:flex;gap:5px;flex-wrap:wrap}
+.btn{font-size:11px;padding:5px 11px;border-radius:var(--radius-s);border:1px solid var(--border-default);background:var(--bg-raised);color:var(--text-1)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.btn.gho{border:none;background:transparent;color:var(--text-3)}
+.fold{font-size:10px;color:var(--text-2);border-top:1px solid var(--border-subtle);padding-top:7px}
+.cmp{display:flex;gap:6px}
+.cmp figure{margin:0;flex:1}
+.cmp .im{height:74px;border:1px solid var(--border-default);border-radius:var(--radius-s);position:relative;overflow:hidden}
+.cmp .im .tg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:1fr}
+.cmp .im .tg i{outline:.5px solid rgba(255,255,255,.25)}
+.cmp figcaption{font-size:9px;color:var(--text-3);text-align:center;margin-top:2px}
+.tree{border:1px solid var(--border-subtle);border-radius:var(--radius-s);padding:7px 8px;background:var(--bg-inset)}
+.tree .tt{font-size:10px;font-weight:700;color:var(--text-1);margin-bottom:5px}
+.tree .ln{font-size:10px;color:var(--text-2);display:flex;align-items:center;gap:5px;padding:1px 0}
+.tree .cb{width:11px;height:11px;border:1px solid var(--border-strong);border-radius:2px;background:var(--accent);flex:none;position:relative}
+.tree .cb::after{content:"";position:absolute;left:2.5px;top:.5px;width:4px;height:7px;border:solid #fff;border-width:0 1.5px 1.5px 0;transform:rotate(40deg)}
+.tree .cb.off{background:var(--bg-raised)}.tree .cb.off::after{display:none}
+.tree .sub{font-size:9px;color:var(--text-3);padding-left:2px;margin:5px 0 2px;font-weight:700}
+.warn{font-size:10px;background:var(--warning-muted);color:var(--warning);border-radius:var(--radius-s);padding:5px 7px}
+.scrollhint{position:absolute;right:3px;top:40px;bottom:10px;width:3px;border-radius:2px;background:rgba(15,23,42,.16)}
+
+/* 계측 오버레이 */
+.meas{position:absolute;height:18px;border-left:1px solid var(--danger);border-right:1px solid var(--danger);
+  display:flex;align-items:center;justify-content:center}
+.meas::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px dashed var(--danger)}
+.meas b{position:relative;background:var(--danger);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:var(--radius-pill)}
+
+/* ── (B/C/D) 신설: 인라인 명령 바 ── */
+.cmd{position:absolute;background:var(--bg-raised);border:1px solid var(--accent-border);border-radius:var(--radius-m);
+  box-shadow:var(--shadow-pop);padding:6px;display:flex;flex-direction:column;gap:6px;width:344px}
+.cmd .in{display:flex;align-items:center;gap:6px}
+.cmd .fld{flex:1;font-size:12px;color:var(--text-placeholder);padding:4px 6px;display:flex;align-items:center;gap:1px}
+.caret{width:1.5px;height:14px;background:var(--accent);display:inline-block}
+.kbd{font:10px/1 ui-monospace,Menlo,monospace;border:1px solid var(--border-default);border-bottom-width:2px;
+  border-radius:4px;padding:3px 5px;color:var(--text-3);background:var(--bg-base)}
+.cmd .sug{display:flex;gap:4px;padding:0 2px 2px}
+
+/* 실행 중: 영역 자체가 진행 표시 */
+.sel.run{outline:2px solid var(--accent);background:rgba(74,87,214,.05)}
+.runbadge{position:absolute;left:50%;transform:translateX(-50%);background:#0F172A;color:#fff;font-size:10px;
+  padding:4px 10px;border-radius:var(--radius-pill);display:flex;align-items:center;gap:6px;white-space:nowrap;box-shadow:var(--shadow-pop)}
+.spin{width:8px;height:8px;border:1.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%}
+.ghost i{outline:1px solid rgba(74,87,214,.5)}
+.gh-new{background:#6E9C63}.gh-new2{background:#79A86C}.gh-path{background:#C9B892}
+
+/* 청크 도형 */
+.chunk{position:absolute;display:grid;grid-auto-rows:24px;pointer-events:none}
+.chunk i{width:24px;height:24px}
+.ck-in{outline:2px solid var(--accent);background:rgba(74,87,214,.16)}
+.ck-out{outline:2px dashed rgba(198,64,61,.85);background:rgba(198,64,61,.07)}
+.ck-hot{outline:2px solid var(--accent);background:rgba(74,87,214,.30);box-shadow:0 0 0 2px rgba(255,255,255,.75)}
+.cklab{position:absolute;font-size:10px;font-weight:600;padding:2px 7px;border-radius:var(--radius-pill);
+  white-space:nowrap;box-shadow:var(--shadow-pop)}
+.cklab.in{background:var(--accent);color:#fff}
+.cklab.out{background:var(--danger);color:#fff}
+.cklab.hot{background:#0F172A;color:#fff}
+
+/* 하단 액션 바 */
+.actbar{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--bg-raised);
+  border:1px solid var(--border-strong);border-radius:var(--radius-pill);box-shadow:var(--shadow-pop);
+  padding:6px 8px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.lyr{display:flex;gap:4px}
+.lyr span{font-size:10px;padding:4px 9px;border-radius:var(--radius-pill);border:1px solid var(--border-default);color:var(--text-2)}
+.lyr span.on{background:var(--accent-muted);border-color:var(--accent-border);color:var(--accent);font-weight:700}
+.vr{width:1px;height:18px;background:var(--border-default)}
+.pill{font-size:11px;padding:5px 12px;border-radius:var(--radius-pill);border:1px solid var(--border-default);background:var(--bg-raised);color:var(--text-1);display:flex;align-items:center;gap:5px}
+.pill.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.pill .k{font:9px/1 ui-monospace,Menlo,monospace;opacity:.7}
+.route{font-size:10px;color:var(--text-3);padding:0 4px;display:flex;align-items:center;gap:5px}
+.route b{color:var(--success);background:var(--success-muted);padding:2px 7px;border-radius:var(--radius-pill);font-size:9px}
+
+/* 미확정 리본 */
+.unsettled{position:absolute;top:0;left:0;right:0;height:24px;background:rgba(74,87,214,.10);
+  border-bottom:1px solid var(--accent-border);display:flex;align-items:center;gap:8px;padding:0 12px;font-size:10px;color:var(--accent);font-weight:600}
+.note{position:absolute;background:#0F172A;color:#fff;font-size:10px;line-height:1.5;padding:7px 10px;
+  border-radius:var(--radius-s);max-width:230px;box-shadow:var(--shadow-pop)}
+.note::before{content:"";position:absolute;width:8px;height:8px;background:#0F172A;transform:rotate(45deg)}
+.note.l::before{left:-4px;top:12px}
+.note.r::before{right:-4px;top:12px}
+.note b{color:#FFD9A8}
+</style>
+<body>
+
+<!-- ══════════════════ A. 현재 ══════════════════ -->
+<div class="frame">
+  <div class="fhead"><b>A · 현재</b><span>작성·실행·검토가 380px 한 컬럼을 공유한다</span><span class="tag">as-is</span></div>
+  <div class="shell">
+    <div class="left">
+      <div class="lt">맵</div>
+      <div class="lrow on">마을 외곽</div><div class="lrow">마을 중앙</div><div class="lrow">숲길</div><div class="lrow">여관 1층</div>
+      <div class="lt" style="margin-top:16px">타일</div>
+      <div class="pal" id="palA"></div>
+    </div>
+    <div class="canvas" id="cvA">
+      <div class="tiles" id="tA"></div>
+      <div class="sel" style="left:24px;top:168px;width:288px;height:264px">
+        <div class="selbadge">12 × 11</div>
+      </div>
+      <div class="pop" style="left:344px;top:12px;height:742px">
+        <div class="scrollhint"></div>
+        <div class="ph"><b>영역 작업</b><span class="mini">로그</span><span class="mini">✕</span></div>
+        <div class="chips">
+          <span class="chip">2단계</span><span class="chip">x24 y7 · 12×11</span><span class="chip">잔디 71% · 나무 18%</span>
+        </div>
+        <div class="seg"><span class="on">조수</span><span>생성기</span></div>
+        <div class="chips">
+          <span class="chip acc">주변과 어울리게</span><span class="chip">침엽수 숲</span><span class="chip">오솔길</span><span class="chip">빈터</span><span class="chip">모두 보기 ▾</span>
+        </div>
+        <div class="ta">이 영역에 무엇을 할까요? 예: 침엽수 숲으로 채워줘</div>
+        <div class="btnrow">
+          <span class="btn">AI 없이 실내 초안 만들기 ▾</span><span class="btn">주변과 어울리게 다듬기</span><span class="btn pri">AI 실행</span><span class="btn gho">중단</span>
+        </div>
+        <div class="cmp">
+          <figure><div class="im"><div class="tg" id="imB1"></div></div><figcaption>이전</figcaption></figure>
+          <figure><div class="im"><div class="tg" id="imB2"></div></div><figcaption>이후</figcaption></figure>
+        </div>
+        <div class="tree">
+          <div class="tt">적용할 구역을 고르세요</div>
+          <div class="sub">바닥(지형)</div>
+          <div class="ln"><span class="cb"></span>Grass field(38칸) · 왼쪽 위</div>
+          <div class="ln"><span class="cb"></span>Dirt path(12칸)</div>
+          <div class="ln"><span class="cb off"></span>Grass field(9칸) · 오른쪽 아래</div>
+          <div class="sub">위(사물)</div>
+          <div class="ln"><span class="cb"></span>Conifer(14칸)</div>
+          <div class="ln"><span class="cb"></span>Rock(3칸)</div>
+        </div>
+        <div class="warn">⚠ 이 변경 2건은 선택 영역 밖입니다 — 적용하면 프로젝트 전체에 반영됩니다</div>
+        <div class="btnrow"><span class="btn pri">선택한 64칸만 적용</span><span class="btn">다시 만들기</span><span class="btn gho">버리기</span></div>
+        <div class="fold">▸ 고급 (실행 로그)</div>
+      </div>
+      <div class="meas" style="left:344px;width:380px;bottom:28px"><b>380px · 캔버스의 51%</b></div>
+      <div class="meas" style="left:0;width:740px;bottom:58px"><b>캔버스 740px (1280 − 220 − 320)</b></div>
+    </div>
+    <div class="dock">
+      <div class="dockh"><i class="dot"></i>AI 조수</div>
+      <div class="msg"><b>조수</b><br>무엇을 도와드릴까요?</div>
+      <div class="dockspacer"></div>
+      <div class="composer">메시지를 입력하세요…</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ B. 제안 · 작성 ══════════════════ -->
+<div class="frame">
+  <div class="fhead"><b>B · 제안 · 작성</b><span>표면 0개. 선택하면 캐럿이 그 위에 뜬다 — 바로 타이핑</span><span class="tag">to-be</span></div>
+  <div class="shell">
+    <div class="left">
+      <div class="lt">맵</div>
+      <div class="lrow on">마을 외곽</div><div class="lrow">마을 중앙</div><div class="lrow">숲길</div><div class="lrow">여관 1층</div>
+      <div class="lt" style="margin-top:16px">타일</div>
+      <div class="pal" id="palB"></div>
+    </div>
+    <div class="canvas">
+      <div class="tiles" id="tB"></div>
+      <div class="sel" style="left:120px;top:216px;width:288px;height:264px">
+        <div class="selbadge">12 × 11 · 132칸</div>
+      </div>
+      <div class="cmd" style="left:120px;top:120px">
+        <div class="in">
+          <div class="fld">이 영역에…<span class="caret"></span></div>
+          <span class="kbd">⏎</span>
+          <span class="pill pri" style="padding:4px 12px">다듬기</span>
+        </div>
+        <div class="sug">
+          <span class="chip acc">주변과 어울리게</span><span class="chip">침엽수 숲</span><span class="chip">오솔길 하나</span>
+        </div>
+      </div>
+      <div class="note l" style="left:436px;top:250px">
+        입력이 <b>비어 있으면</b> 버튼은 「다듬기」.<br>뭐라도 쓰면 「실행」으로 바뀐다.<br>
+        모드 스위치·프리셋·시드는 <b>여기 없다</b> —<br>결과를 본 뒤에 고른다.
+      </div>
+      <div class="note l" style="left:490px;top:44px">
+        선택지 <b>7종류 → 5개</b><br>(입력 1 + 칩 3 + 버튼 1)
+      </div>
+    </div>
+    <div class="dock">
+      <div class="dockh"><i class="dot"></i>AI 조수</div>
+      <div class="msg" style="border-color:var(--accent-border)"><b>마을 외곽</b> · x24 y7 · 12×11<br><span style="color:var(--text-3)">잔디 71% · 나무 18% · 길 11%</span></div>
+      <div class="dockspacer"></div>
+      <div class="composer">메시지를 입력하세요…</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ C. 제안 · 실행 중 ══════════════════ -->
+<div class="frame">
+  <div class="fhead"><b>C · 제안 · 실행 중</b><span>진행 표시는 영역 그 자체. 타임라인 위젯 없음</span><span class="tag">to-be</span></div>
+  <div class="shell">
+    <div class="left">
+      <div class="lt">맵</div>
+      <div class="lrow on">마을 외곽</div><div class="lrow">마을 중앙</div><div class="lrow">숲길</div><div class="lrow">여관 1층</div>
+      <div class="lt" style="margin-top:16px">타일</div>
+      <div class="pal" id="palC"></div>
+    </div>
+    <div class="canvas">
+      <div class="tiles" id="tC"></div>
+      <div class="tiles ghost" id="gC" style="left:120px;top:216px;grid-template-columns:repeat(12,24px);width:288px;height:264px"></div>
+      <div class="sel run" style="left:120px;top:216px;width:288px;height:264px"></div>
+      <div class="runbadge" style="left:264px;top:190px"><i class="spin"></i>침엽수를 놓는 중 · 3/5</div>
+      <div class="note l" style="left:436px;top:250px">
+        기존 <b>고스트 reveal</b> 을 그대로 쓴다.<br>타일이 순차로 채워지고,<br><b>꾹 누르면</b> 원본이 보인다.
+      </div>
+      <div class="actbar"><span class="pill">중단 <i class="k">Esc</i></span></div>
+    </div>
+    <div class="dock">
+      <div class="dockh"><i class="dot"></i>AI 조수</div>
+      <div class="msg"><b>영역 작업</b> · 침엽수 숲<br><span style="color:var(--text-3)">x24 y7 · 12×11</span></div>
+      <div class="msg">
+        <div class="logline">✓ read_region 12×11</div>
+        <div class="logline">✓ paint_tiles lower ×38</div>
+        <div class="logline">▸ place_objects conifer ×14</div>
+      </div>
+      <div class="dockspacer"></div>
+      <div class="composer">메시지를 입력하세요…</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ D. 제안 · 결과 ══════════════════ -->
+<div class="frame">
+  <div class="fhead"><b>D · 제안 · 결과 (미확정)</b><span>검토 국면 삭제 — 이미 적용됐다. 청크를 클릭해 되돌린다</span><span class="tag">to-be</span></div>
+  <div class="shell">
+    <div class="left">
+      <div class="lt">맵</div>
+      <div class="lrow on">마을 외곽</div><div class="lrow">마을 중앙</div><div class="lrow">숲길</div><div class="lrow">여관 1층</div>
+      <div class="lt" style="margin-top:16px">타일</div>
+      <div class="pal" id="palD"></div>
+    </div>
+    <div class="canvas">
+      <div class="tiles" id="tD"></div>
+      <div class="tiles ghost" id="gD" style="left:120px;top:240px;grid-template-columns:repeat(12,24px);width:288px;height:264px"></div>
+      <div class="unsettled">● 미확정 — 적용됨 76칸 · 되돌림 9칸 · 다른 작업을 시작하면 확정됩니다</div>
+
+      <!-- 청크 도형 -->
+      <div class="chunk" style="left:120px;top:240px;grid-template-columns:repeat(7,24px)">
+        <i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i></i>
+        <i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i>
+        <i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i>
+        <i></i><i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i class="ck-in"></i><i></i>
+      </div>
+      <div class="cklab in" style="left:132px;top:228px">잔디밭 38칸 · 포함</div>
+
+      <div class="chunk" style="left:288px;top:384px;grid-template-columns:repeat(5,24px)">
+        <i class="ck-out"></i><i class="ck-out"></i><i class="ck-out"></i><i></i><i></i>
+        <i class="ck-out"></i><i class="ck-out"></i><i class="ck-out"></i><i class="ck-out"></i><i></i>
+        <i></i><i class="ck-out"></i><i class="ck-out"></i><i></i><i></i>
+      </div>
+      <div class="cklab out" style="left:290px;top:460px">잔디밭 9칸 · 되돌림 — 원본 타일</div>
+
+      <div class="chunk" style="left:144px;top:360px;grid-template-columns:repeat(4,24px)">
+        <i class="ck-hot"></i><i class="ck-hot"></i><i></i><i></i>
+        <i class="ck-hot"></i><i class="ck-hot"></i><i class="ck-hot"></i><i></i>
+        <i></i><i class="ck-hot"></i><i class="ck-hot"></i><i class="ck-hot"></i>
+      </div>
+      <div class="cklab hot" style="left:146px;top:348px">흙길 12칸 · 클릭해 되돌리기</div>
+
+      <div class="sel" style="left:120px;top:240px;width:288px;height:264px;outline-color:rgba(74,87,214,.5)"></div>
+
+      <div class="note l" style="left:436px;top:250px">
+        <b>승인 게이트가 사라진 게 아니다</b> —<br>
+        적용은 즉시, <b>확정은 지연</b>된다.<br>
+        Esc = 전부 되돌리기.<br>
+        다른 작업 시작 = 확정.
+      </div>
+      <div class="note l" style="left:436px;top:378px">
+        고스트가 곧 결과다.<br>
+        <b>composePartialProject</b> →<br>
+        <b>replaceAgentGhostPreviewFromProjectDiff</b><br>
+        미리보기와 적용이 같은 함수를 쓴다.
+      </div>
+
+      <div class="actbar">
+        <span class="route">생성기로 만듦 <b>LLM 0콜 · 0.4초</b></span>
+        <span class="vr"></span>
+        <div class="lyr"><span class="on">바닥 50/59</span><span>위 17/17</span></div>
+        <span class="vr"></span>
+        <span class="pill">AI로 다시</span>
+        <span class="pill">조절… </span>
+        <span class="pill">다시 <i class="k">R</i></span>
+        <span class="pill pri">확정 <i class="k">⏎</i></span>
+      </div>
+    </div>
+    <div class="dock">
+      <div class="dockh"><i class="dot"></i>AI 조수</div>
+      <div class="msg"><b>침엽수 숲</b> · 생성기<br><span style="color:var(--text-3)">76칸 변경 · 청크 6개</span></div>
+      <div class="msg">
+        <div class="logline">✓ operator forest.conifer</div>
+        <div class="logline">  seed 8134 · density .62</div>
+        <div class="logline">✓ 59 lower · 17 upper</div>
+      </div>
+      <div class="msg" style="background:var(--warning-muted);border-color:rgba(138,94,0,.3);color:var(--warning)">
+        ⚠ 영역 밖 변경 2건<br><span style="font-size:10px">여관 1층 문 좌표 · 마을 중앙 진입점</span>
+      </div>
+      <div class="dockspacer"></div>
+      <div class="composer">메시지를 입력하세요…</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const R=(s)=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return()=>((h=(h*1103515245+12345)>>>0)/4294967296)};
+function tiles(id,seed){const host=document.getElementById(id);if(!host)return;const rnd=R(seed);
+  for(let y=0;y<32;y++)for(let x=0;x<31;x++){const i=document.createElement('i');const v=rnd();
+    let c='g1'; if(v>.86)c='tr'; else if(v>.78)c='g3'; else if(v>.60)c='g2';
+    if(y>=13&&y<=14)c=(x%7===3)?'g2':'rd';
+    if(x>=26&&y>=22)c=(v>.5)?'wt':'wt';
+    i.className=c;host.appendChild(i);}}
+['tA','tB','tC','tD'].forEach((id,k)=>tiles(id,'map'+k));
+function pal(id){const h=document.getElementById(id);if(!h)return;for(let i=0;i<36;i++)h.appendChild(document.createElement('i'))}
+['palA','palB','palC','palD'].forEach(pal);
+function thumb(id,seed,after){const h=document.getElementById(id);if(!h)return;const rnd=R(seed);
+  for(let i=0;i<132;i++){const e=document.createElement('i');const v=rnd();
+    e.className = after ? (v>.72?'tr':v>.34?'gh-new':'gh-path') : (v>.86?'tr':v>.6?'g2':'g1');
+    h.appendChild(e);}}
+thumb('imB1','t1',false);thumb('imB2','t2',true);
+function ghost(id,seed,partial){const h=document.getElementById(id);if(!h)return;const rnd=R(seed);
+  for(let y=0;y<11;y++)for(let x=0;x<12;x++){const e=document.createElement('i');const v=rnd();
+    const revealed = partial ? true : (y*12+x) < 84;
+    // D 프레임: 되돌린 청크 영역은 원본 잔디로 남긴다
+    const reverted = partial && x>=7 && x<=10 && y>=6 && y<=8;
+    if(!revealed){e.className='';}
+    else if(reverted){e.className=(v>.85)?'tr':'g1';}
+    else{e.className=(v>.74)?'tr':(v>.40)?'gh-new':(v>.30)?'gh-path':'gh-new2';}
+    h.appendChild(e);}}
+ghost('gC','gc',false);ghost('gD','gd',true);
+</script>
+</body></html>
