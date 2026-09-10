@@ -1,0 +1,13 @@
+{
+  "tag": "BUTTON",
+  "disabled": false,
+  "ariaDisabled": null,
+  "data": {
+    "testid": "shop-buy-item_gen_shuriken",
+    "category": "special",
+    "unitPrice": "120",
+    "maxQty": "0",
+    "unaffordable": "1"
+  },
+  "html": "<button type=\"button\" class=\"runtime-shop-item-row is-unaffordable rm-nav-item\" data-testid=\"shop-buy-item_gen_shuriken\" data-category=\"special\" data-unit-price=\"120\" role=\"listitem\" data-max-qty=\"0\" data-unaffordable=\"1\" aria-label=\"수리검 · 120G · 보유 0개 · 소지금 부족\"><span class=\"runtime-shop-item-icon\" data-testid=\"shop-item-icon-item_gen_shuriken\" style=\"background-image: url(&quot;http://127.0.0.1:9841/export-player/assets/cc0/jetrel/icons/gen-shuriken.png&quot;);\" data-item-icon-resource=\"cc0-jetrel-gen-shuriken\"></span><span class=\"runtime-shop-item-main\"><span class=\"runtime-shop-item-name\">수리검</span><span class=\"runtime-shop-item-type\">특수</span></span><span class=\"runtime-shop-item-owned\" data-testid=\"shop-owned-item_gen_shuriken\">x0</span><span class=\"runtime-shop-item-price\" data-testid=\"shop-price-item_gen_shuriken\">120G</span><span class=\"runtime-shop-item-lock\" aria-hidden=\"true\">"
+}

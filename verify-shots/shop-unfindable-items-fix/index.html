@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>상점 «찾을 수 없는 아이템» 수정</title>
+  <style>
+    :root { --ink:#2b221c; --cream:#f6ead7; --paper:#fff8ee; --line:#e2c9a8; --red:#c23b2e; --green:#2f7a4a; --accent:#c45c2c; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, sans-serif; background: #1c1612; color: var(--ink); }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 32px 24px 80px; }
+    h1 { color: var(--cream); font-size: 34px; margin: 0 0 8px; }
+    .lede { color: #d9c4a8; font-size: 18px; margin: 0 0 28px; }
+    .path { background: #2b221c; color: #f6ead7; padding: 14px 16px; border-radius: 10px; font-family: ui-monospace, monospace; font-size: 14px; margin: 0 0 10px; overflow-wrap: anywhere; }
+    .open { background: #3d2c22; color: #9ad7b0; padding: 12px 16px; border-radius: 10px; font-family: ui-monospace, monospace; font-size: 14px; margin: 0 0 36px; }
+    h2 { color: var(--cream); font-size: 22px; margin: 40px 0 16px; }
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+    figure { margin: 0; background: #2b221c; border-radius: 14px; overflow: hidden; border: 1px solid #4a3a30; }
+    figure img { display: block; width: 100%; height: auto; background: #f6ead7; }
+    figcaption { padding: 10px 14px 14px; color: #d9c4a8; font-size: 13px; }
+    figcaption b { color: #f6ead7; }
+    .before figcaption b { color: #f3b4aa; }
+    .after figcaption b { color: #9ad7b0; }
+    .card { background: var(--cream); border-radius: 14px; padding: 20px 22px; }
+    .card h3 { margin: 0 0 10px; font-size: 18px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    code { font-family: ui-monospace, monospace; background: #ead7c2; padding: 1px 6px; border-radius: 4px; }
+    table { width: 100%; border-collapse: collapse; background: var(--cream); border-radius: 12px; overflow: hidden; }
+    th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 14px; }
+    th { background: #ead7c2; }
+    .ok { color: var(--green); font-weight: 700; }
+    @media (max-width: 900px) { .pair, .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>상점 유령 아이템 수정</h1>
+    <p class="lede">이벤트 에디터가 없는 잡화 ID를 자동 주입하던 것과, 장비를 «찾을 수 없는 상점 아이템»으로 찍던 초안 검증을 고쳤다.</p>
+    <div class="path">/home/main/z-project/rpg-zzu/verify-shots/shop-unfindable-items-fix/index.html</div>
+    <div class="open">xdg-open /home/main/z-project/rpg-zzu/verify-shots/shop-unfindable-items-fix/index.html</div>
+
+    <h2>1. 새 상점 명령 — 유령 진열을 그만 심는다</h2>
+    <div class="pair">
+      <figure class="before">
+        <img src="before-missing-goods.svg" alt="수정 전: 찾을 수 없는 상품 3행" />
+        <figcaption><b>BEFORE</b> · <code>before-missing-goods.svg</code> · <code>newCommand("shop")</code>가 <code>item_potion</code> / <code>item_ether</code> / <code>item_antidote</code>를 자동 주입. DB에 없으면 «찾을 수 없는 상품».</figcaption>
+      </figure>
+      <figure class="after">
+        <img src="after-empty-listing.svg" alt="수정 후: 빈 진열과 상품 추가" />
+        <figcaption><b>AFTER</b> · <code>after-empty-listing.svg</code> · 기본 <code>itemIds: []</code>. 실제 품목은 상품 추가·잡화점 프리셋·빈 이벤트 상점 서식만 채운다.</figcaption>
+      </figure>
+    </div>
+
+    <h2>2. 장비 진열 — 초안 검증을 카탈로그와 맞춘다</h2>
+    <div class="pair">
+      <figure class="before">
+        <img src="before-equipment-false-missing.svg" alt="수정 전: 청동검이 보이는데 찾을 수 없음 오류" />
+        <figcaption><b>BEFORE</b> · <code>before-equipment-false-missing.svg</code> · 목록에는 청동검이 있는데 벨만 <code>상점 아이템 'equip_sword'을(를) 찾을 수 없습니다.</code> (items만 대조)</figcaption>
+      </figure>
+      <figure class="after">
+        <img src="after-equipment-accepted.svg" alt="수정 후: 장비를 정상 진열" />
+        <figcaption><b>AFTER</b> · <code>after-equipment-accepted.svg</code> · 로드 검증과 같이 <code>items ∪ equipment</code>. 없는 ID만 오류.</figcaption>
+      </figure>
+    </div>
+
+    <h2>무엇을 바꿨나</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>자동 주입 제거</h3>
+        <p><code>eventCommandFactory</code> 상점 기본값을 다시 빈 목록으로. <code>defaultShopItemIds()</code> 삭제. 잡화점 프리셋 버튼은 그대로 — 카탈로그에 있는 ID만 고른다.</p>
+      </div>
+      <div class="card">
+        <h3>검증 기준 통일</h3>
+        <p><code>eventDraftValidator</code> 상점 참조를 <code>refs.items</code>만이 아니라 장비 집합과 합친다. 진짜로 양쪽 다 없는 ID는 기존처럼 <code>상점 아이템 '…'을(를) 찾을 수 없습니다.</code></p>
+      </div>
+    </div>
+
+    <h2>검증</h2>
+    <table>
+      <thead><tr><th>명령</th><th>결과</th></tr></thead>
+      <tbody>
+        <tr><td><code>vitest</code> 6파일 / 53테스트<br>eventDraftValidator, quickAuthoringSurface, shopProcessingCommand, shopMerchantGold, shopCommandBodyUx, eventEditorValidationBell</td><td class="ok">53 passed</td></tr>
+        <tr><td>새 상점 <code>itemIds</code></td><td class="ok"><code>[]</code></td></tr>
+        <tr><td>장비 ID 진열</td><td class="ok">reference.item.missing 없음</td></tr>
+        <tr><td>없는 ID <code>item_does_not_exist</code></td><td class="ok">기존 오류 유지</td></tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

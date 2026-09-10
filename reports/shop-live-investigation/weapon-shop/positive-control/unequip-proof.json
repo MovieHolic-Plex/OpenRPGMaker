@@ -1,0 +1,812 @@
+{
+  "before": {
+    "farmPlots": {},
+    "makerInstances": {},
+    "mapId": "map_blank_start",
+    "inputEnabled": true,
+    "running": false,
+    "player": {
+      "x": 3,
+      "y": 8
+    },
+    "switches": {
+      "sw_0001": false,
+      "sw_0002": false,
+      "sw_0003": false,
+      "sw_0004": false,
+      "sw_0005": false,
+      "sw_0006": false,
+      "sw_0007": false,
+      "sw_0008": false,
+      "sw_0009": false,
+      "sw_0010": false,
+      "sw_0011": false,
+      "sw_0012": false,
+      "sw_0013": false,
+      "sw_0014": false,
+      "sw_0015": false,
+      "sw_0016": false,
+      "sw_0017": false,
+      "sw_0018": false,
+      "sw_0019": false,
+      "sw_0020": false,
+      "sw_ev_dungeon_boss_clear": false
+    },
+    "variables": {
+      "var_0001": 0,
+      "var_0002": 0,
+      "var_0003": 0,
+      "var_0004": 0,
+      "var_0005": 0,
+      "var_0006": 0,
+      "var_0007": 0,
+      "var_0008": 0,
+      "var_0009": 0,
+      "var_0010": 0,
+      "var_0011": 0,
+      "var_0012": 0,
+      "var_0013": 0,
+      "var_0014": 0,
+      "var_0015": 0,
+      "var_0016": 0,
+      "var_0017": 0,
+      "var_0018": 0,
+      "var_0019": 0,
+      "var_0020": 0
+    },
+    "timers": {},
+    "timerActive": {},
+    "flags": {},
+    "mapOverrides": {},
+    "gold": 0,
+    "inventory": {},
+    "partyActorIds": [
+      "actor_hero",
+      "actor_guardian"
+    ],
+    "actorSkillIds": {},
+    "actorExperience": {
+      "actor_hero": 0,
+      "actor_guardian": 0
+    },
+    "actorLevels": {
+      "actor_hero": 1,
+      "actor_guardian": 1,
+      "actor_mage": 1,
+      "actor_scout": 1,
+      "actor_cleric": 1,
+      "actor_ranger": 1
+    },
+    "actorVitals": {
+      "actor_hero": {
+        "hp": 514,
+        "mp": 43,
+        "maxHp": 514,
+        "maxMp": 43
+      },
+      "actor_guardian": {
+        "hp": 514,
+        "mp": 43,
+        "maxHp": 514,
+        "maxMp": 43
+      }
+    },
+    "eventLocations": {},
+    "followers": [],
+    "followerTrail": [],
+    "removedEventIds": {},
+    "spawnedEvents": {},
+    "camera": {
+      "mode": "follow",
+      "target": {
+        "kind": "player"
+      }
+    },
+    "lighting": {
+      "ambient": 0,
+      "sources": []
+    },
+    "actorEquipment": {
+      "actor_hero": {
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "shield": "equip_oak_shield",
+        "weapon": "equip_sword",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "shield": "equip_oak_shield",
+        "weapon": "equip_sword",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "weapon": "equip_mage_staff",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "weapon": "equip_scout_dagger",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "shield": "equip_oak_shield",
+        "weapon": "equip_mage_staff",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "weapon": "equip_scout_dagger",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "actorRows": {
+      "actor_hero": "front",
+      "actor_guardian": "front"
+    },
+    "classOverrides": {},
+    "audio": {
+      "bgm": {
+        "resourceId": "cc0-bgm-rtp-fld-003",
+        "loop": true
+      }
+    },
+    "pictures": {},
+    "events": {
+      "ev_npc_guide": {
+        "x": 5,
+        "y": 8,
+        "pageId": "ev_npc_guide_p0",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 5,
+          "right": 5,
+          "top": 8,
+          "bottom": 8
+        },
+        "passRect": {
+          "left": 5,
+          "right": 5,
+          "top": 8,
+          "bottom": 8
+        }
+      },
+      "ev_npc_companion": {
+        "x": 3,
+        "y": 9,
+        "pageId": "ev_npc_companion_p0",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 3,
+          "right": 3,
+          "top": 9,
+          "bottom": 9
+        },
+        "passRect": {
+          "left": 3,
+          "right": 3,
+          "top": 9,
+          "bottom": 9
+        }
+      },
+      "chest_starter": {
+        "x": 2,
+        "y": 7,
+        "pageId": "chest_starter_closed",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 2,
+          "right": 2,
+          "top": 7,
+          "bottom": 7
+        },
+        "passRect": {
+          "left": 2,
+          "right": 2,
+          "top": 7,
+          "bottom": 7
+        }
+      },
+      "ev_dungeon_sign": {
+        "x": 16,
+        "y": 2,
+        "pageId": "pages[0]",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 16,
+          "right": 16,
+          "top": 2,
+          "bottom": 2
+        },
+        "passRect": {
+          "left": 16,
+          "right": 16,
+          "top": 2,
+          "bottom": 2
+        }
+      },
+      "ev_merchant_claire": {
+        "x": 9,
+        "y": 7,
+        "pageId": "ev_merchant_claire_p0",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 9,
+          "right": 9,
+          "top": 7,
+          "bottom": 7
+        },
+        "passRect": {
+          "left": 9,
+          "right": 9,
+          "top": 7,
+          "bottom": 7
+        }
+      },
+      "ev_gate_47162682-104f-4a7b-8c16-7fab86ba1d1e": {
+        "x": 20,
+        "y": 5,
+        "pageId": "ev_gate_47162682-104f-4a7b-8c16-7fab86ba1d1e_page",
+        "priority": "below",
+        "trigger": "playerTouch",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 20,
+          "right": 20,
+          "top": 5,
+          "bottom": 5
+        },
+        "passRect": {
+          "left": 20,
+          "right": 20,
+          "top": 5,
+          "bottom": 5
+        }
+      },
+      "ev_npc_elder": {
+        "x": 12,
+        "y": 10,
+        "pageId": "ev_npc_elder_p0",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 12,
+          "right": 12,
+          "top": 10,
+          "bottom": 10
+        },
+        "passRect": {
+          "left": 12,
+          "right": 12,
+          "top": 10,
+          "bottom": 10
+        }
+      },
+      "ev_gate_73ef4f65-9e36-4259-b0f6-a24e6b30eb94": {
+        "x": 9,
+        "y": 5,
+        "pageId": "ev_gate_73ef4f65-9e36-4259-b0f6-a24e6b30eb94_page",
+        "priority": "below",
+        "trigger": "playerTouch",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 9,
+          "right": 9,
+          "top": 5,
+          "bottom": 5
+        },
+        "passRect": {
+          "left": 9,
+          "right": 9,
+          "top": 5,
+          "bottom": 5
+        }
+      },
+      "ev_7a083504-1a06-4655-94c0-680278a53c13": {
+        "x": 13,
+        "y": 11,
+        "pageId": "page_ccc523f3-ba51-4f27-9cf9-1e0ce99cc7ce",
+        "priority": "same",
+        "trigger": "action",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 13,
+          "right": 13,
+          "top": 11,
+          "bottom": 11
+        },
+        "passRect": {
+          "left": 13,
+          "right": 13,
+          "top": 11,
+          "bottom": 11
+        }
+      }
+    },
+    "movers": {
+      "ev_npc_companion": {
+        "step": 0,
+        "moveCount": 4,
+        "remainingMoveCount": 4,
+        "repeat": true,
+        "strategy": "random",
+        "facing": "down",
+        "directionFix": false,
+        "through": false,
+        "animationEnabled": true,
+        "opacity": 255,
+        "speedRank": 2,
+        "frequencyRank": 3,
+        "moveIntervalMs": 560,
+        "moveDurationMs": 480,
+        "activeMove": null
+      }
+    }
+  },
+  "after": {
+    "farmPlots": {},
+    "makerInstances": {},
+    "mapId": "map_blank_start",
+    "inputEnabled": true,
+    "running": false,
+    "player": {
+      "x": 3,
+      "y": 8
+    },
+    "switches": {
+      "sw_0001": false,
+      "sw_0002": false,
+      "sw_0003": false,
+      "sw_0004": false,
+      "sw_0005": false,
+      "sw_0006": false,
+      "sw_0007": false,
+      "sw_0008": false,
+      "sw_0009": false,
+      "sw_0010": false,
+      "sw_0011": false,
+      "sw_0012": false,
+      "sw_0013": false,
+      "sw_0014": false,
+      "sw_0015": false,
+      "sw_0016": false,
+      "sw_0017": false,
+      "sw_0018": false,
+      "sw_0019": false,
+      "sw_0020": false,
+      "sw_ev_dungeon_boss_clear": false
+    },
+    "variables": {
+      "var_0001": 0,
+      "var_0002": 0,
+      "var_0003": 0,
+      "var_0004": 0,
+      "var_0005": 0,
+      "var_0006": 0,
+      "var_0007": 0,
+      "var_0008": 0,
+      "var_0009": 0,
+      "var_0010": 0,
+      "var_0011": 0,
+      "var_0012": 0,
+      "var_0013": 0,
+      "var_0014": 0,
+      "var_0015": 0,
+      "var_0016": 0,
+      "var_0017": 0,
+      "var_0018": 0,
+      "var_0019": 0,
+      "var_0020": 0
+    },
+    "timers": {},
+    "timerActive": {},
+    "flags": {},
+    "mapOverrides": {},
+    "gold": 0,
+    "inventory": {
+      "equip_sword": 1
+    },
+    "partyActorIds": [
+      "actor_hero",
+      "actor_guardian"
+    ],
+    "actorSkillIds": {},
+    "actorExperience": {
+      "actor_hero": 0,
+      "actor_guardian": 0
+    },
+    "actorLevels": {
+      "actor_hero": 1,
+      "actor_guardian": 1,
+      "actor_mage": 1,
+      "actor_scout": 1,
+      "actor_cleric": 1,
+      "actor_ranger": 1
+    },
+    "actorVitals": {
+      "actor_hero": {
+        "hp": 514,
+        "mp": 43,
+        "maxHp": 514,
+        "maxMp": 43
+      },
+      "actor_guardian": {
+        "hp": 514,
+        "mp": 43,
+        "maxHp": 514,
+        "maxMp": 43
+      }
+    },
+    "eventLocations": {},
+    "followers": [],
+    "followerTrail": [],
+    "removedEventIds": {},
+    "spawnedEvents": {},
+    "camera": {
+      "mode": "follow",
+      "target": {
+        "kind": "player"
+      }
+    },
+    "lighting": {
+      "ambient": 0,
+      "sources": []
+    },
+    "actorEquipment": {
+      "actor_hero": {
+        "shield": "equip_oak_shield",
+        "helmet": "equip_traveler_hat",
+        "armor": "equip_leather_armor",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "shield": "equip_oak_shield",
+        "weapon": "equip_sword",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "weapon": "equip_mage_staff",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "weapon": "equip_scout_dagger",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "shield": "equip_oak_shield",
+        "weapon": "equip_mage_staff",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "weapon": "equip_scout_dagger",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "actorRows": {
+      "actor_hero": "front",
+      "actor_guardian": "front"
+    },
+    "classOverrides": {},
+    "audio": {
+      "bgm": {
+        "resourceId": "cc0-bgm-rtp-fld-003",
+        "loop": true
+      }
+    },
+    "pictures": {},
+    "events": {
+      "ev_npc_guide": {
+        "x": 5,
+        "y": 8,
+        "pageId": "ev_npc_guide_p0",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 5,
+          "right": 5,
+          "top": 8,
+          "bottom": 8
+        },
+        "passRect": {
+          "left": 5,
+          "right": 5,
+          "top": 8,
+          "bottom": 8
+        }
+      },
+      "ev_npc_companion": {
+        "x": 3,
+        "y": 9,
+        "pageId": "ev_npc_companion_p0",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 3,
+          "right": 3,
+          "top": 9,
+          "bottom": 9
+        },
+        "passRect": {
+          "left": 3,
+          "right": 3,
+          "top": 9,
+          "bottom": 9
+        }
+      },
+      "chest_starter": {
+        "x": 2,
+        "y": 7,
+        "pageId": "chest_starter_closed",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 2,
+          "right": 2,
+          "top": 7,
+          "bottom": 7
+        },
+        "passRect": {
+          "left": 2,
+          "right": 2,
+          "top": 7,
+          "bottom": 7
+        }
+      },
+      "ev_dungeon_sign": {
+        "x": 16,
+        "y": 2,
+        "pageId": "pages[0]",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 16,
+          "right": 16,
+          "top": 2,
+          "bottom": 2
+        },
+        "passRect": {
+          "left": 16,
+          "right": 16,
+          "top": 2,
+          "bottom": 2
+        }
+      },
+      "ev_merchant_claire": {
+        "x": 9,
+        "y": 7,
+        "pageId": "ev_merchant_claire_p0",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 9,
+          "right": 9,
+          "top": 7,
+          "bottom": 7
+        },
+        "passRect": {
+          "left": 9,
+          "right": 9,
+          "top": 7,
+          "bottom": 7
+        }
+      },
+      "ev_gate_47162682-104f-4a7b-8c16-7fab86ba1d1e": {
+        "x": 20,
+        "y": 5,
+        "pageId": "ev_gate_47162682-104f-4a7b-8c16-7fab86ba1d1e_page",
+        "priority": "below",
+        "trigger": "playerTouch",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 20,
+          "right": 20,
+          "top": 5,
+          "bottom": 5
+        },
+        "passRect": {
+          "left": 20,
+          "right": 20,
+          "top": 5,
+          "bottom": 5
+        }
+      },
+      "ev_npc_elder": {
+        "x": 12,
+        "y": 10,
+        "pageId": "ev_npc_elder_p0",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 12,
+          "right": 12,
+          "top": 10,
+          "bottom": 10
+        },
+        "passRect": {
+          "left": 12,
+          "right": 12,
+          "top": 10,
+          "bottom": 10
+        }
+      },
+      "ev_gate_73ef4f65-9e36-4259-b0f6-a24e6b30eb94": {
+        "x": 9,
+        "y": 5,
+        "pageId": "ev_gate_73ef4f65-9e36-4259-b0f6-a24e6b30eb94_page",
+        "priority": "below",
+        "trigger": "playerTouch",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 9,
+          "right": 9,
+          "top": 5,
+          "bottom": 5
+        },
+        "passRect": {
+          "left": 9,
+          "right": 9,
+          "top": 5,
+          "bottom": 5
+        }
+      },
+      "ev_7a083504-1a06-4655-94c0-680278a53c13": {
+        "x": 13,
+        "y": 11,
+        "pageId": "page_ccc523f3-ba51-4f27-9cf9-1e0ce99cc7ce",
+        "priority": "same",
+        "trigger": "action",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 13,
+          "right": 13,
+          "top": 11,
+          "bottom": 11
+        },
+        "passRect": {
+          "left": 13,
+          "right": 13,
+          "top": 11,
+          "bottom": 11
+        }
+      }
+    },
+    "movers": {
+      "ev_npc_companion": {
+        "step": 0,
+        "moveCount": 4,
+        "remainingMoveCount": 4,
+        "repeat": true,
+        "strategy": "random",
+        "facing": "down",
+        "directionFix": false,
+        "through": false,
+        "animationEnabled": true,
+        "opacity": 255,
+        "speedRank": 2,
+        "frequencyRank": 3,
+        "moveIntervalMs": 560,
+        "moveDurationMs": 480,
+        "activeMove": null
+      }
+    }
+  },
+  "action": "Enter on status-menu-equipment-item-none"
+}

@@ -1,0 +1,50 @@
+{
+  "geometry": {
+    "x": 745.3749694824219,
+    "y": 651.3999710083008,
+    "rect": {
+      "x": 687.88330078125,
+      "y": 634.5999755859375,
+      "width": 114.98333740234375,
+      "height": 33.59999084472656,
+      "top": 634.5999755859375,
+      "right": 802.8666381835938,
+      "bottom": 668.1999664306641,
+      "left": 687.88330078125
+    },
+    "hit": "shop-detail-open",
+    "disabled": false
+  },
+  "events": [
+    {
+      "type": "pointerdown",
+      "target": "shop-detail-open",
+      "x": 745,
+      "y": 651,
+      "prevented": false
+    },
+    {
+      "type": "pointerup",
+      "target": "shop-detail-open",
+      "x": 745,
+      "y": 651,
+      "prevented": false
+    },
+    {
+      "type": "click",
+      "target": "shop-detail-open",
+      "x": 745,
+      "y": 651,
+      "prevented": false
+    }
+  ],
+  "after": {
+    "detail": false,
+    "selected": "shop-sell-equip_sword",
+    "gold": 0,
+    "inventory": {
+      "equip_sword": 1
+    },
+    "focus": "shop-sell-equip_sword"
+  }
+}
