@@ -60,6 +60,82 @@
   image-rendering: pixelated;
 }
 
+/* ── 팔레트 「조합」 선반 (Combo Brush) ────────────────────────────────────
+   구조 킷 선반과 같은 어학이다: 그림이 주인공, 이름은 그 아래 한 줄.
+   다른 점 하나 — 조합은 «기능 단위» 이므로 이름을 반드시 같이 보여준다.
+   타일 번호는 어느 칸에도 없다. */
+.combo-brush-shelf {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.combo-brush-shelf-note {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-2, #5C5348);
+}
+
+.combo-brush-shelf-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-2, #5C5348);
+  letter-spacing: 0.04em;
+}
+
+.combo-brush-shelf-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.combo-brush-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 84px;
+  padding: 4px;
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  border-radius: 8px;
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.combo-brush-cell:hover {
+  border-color: var(--border-strong, rgba(42, 37, 33, 0.20));
+  background: var(--bg-hover, rgba(42, 37, 33, 0.06));
+}
+
+.combo-brush-cell.active {
+  border-color: var(--accent, #4A57D6);
+  box-shadow: 0 0 0 1px var(--accent, #4A57D6);
+  background: var(--accent-muted, var(--accent-muted));
+}
+
+.combo-brush-icon {
+  display: block;
+  width: 100%;
+  max-width: 72px;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.combo-brush-cell-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-1, #2A2521);
+  text-align: center;
+}
+
+.combo-brush-cell-size {
+  font-size: 9px;
+  color: var(--text-3, #8A7F70);
+}
+
 /* ── 데이터베이스 '구조물' 탭 — 구조 킷 관리(타일 실렌더가 주인공) ── */
 
 /* 담는 그릇을 세로 flex 로 만든다. sidebar.css 의 .db-body.db-shared-workspace 는

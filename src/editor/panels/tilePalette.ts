@@ -14,6 +14,7 @@ import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/ti
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
 import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
 import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
+import { makeComboBrushShelf } from "@/editor/panels/comboBrushShelf";
 import { makeTileBrushAssistPanel } from "@/editor/panels/tilePalettePreviewPanel";
 import { makeTileBrushControls } from "@/editor/panels/tilePaletteStampStatus";
 import { selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
@@ -271,6 +272,12 @@ function makePaletteSurface(input: {
   // 보통 비어 있어서 공짜였다. 2026-07-20 에 내장 집 킷이 합류하면서 선반이 상시 렌더로 바뀌었고
   // 실측 팔레트 창 446px 중 192px(43%)을 점거해 타일 팔레트를 접힘선 아래로 밀어냈다.
   // 타일 선택이 이 면의 주 작업이므로 순서를 뒤집고, 내장 킷은 기본 접힘으로 둔다.
+  // 「조합」 = 검토를 통과한 큐레이션 Combo Brush 목록 (OPRN-OUT-022).
+  // 구조 킷 선반보다 **먼저** 온다: 내장 조합은 항상 있고, 킷은 사용자가 등록해야 생긴다.
+  const comboShelf = makeComboBrushShelf({ rerender: renderPalettePreservingViewport, tileset });
+  if (comboShelf) utilities.append(makeSidebarSurface({ id: 'combos', label: '조합', triggerId: 'sidebar-combo-brushes',
+    rerender: renderPalettePreservingViewport, body: () => comboShelf }));
+
   const kitShelf = makeStructureKitShelf({
     tileset,
     activeKitId: state.activePaletteStamp?.kitId ?? null,

@@ -935,6 +935,16 @@
   margin-left: auto;
 }
 
+/* 합성 Combo Brush 는 반복 붓(브러시 크기)과 **눈으로** 달라야 한다.
+   문구는 comboBrushBadge 가, 생김새는 이 규칙 하나가 책임진다. */
+.sidebar-brush-state.is-combo-brush {
+  padding-inline: var(--space-1);
+  border: 1px solid var(--accent, #4A57D6);
+  border-radius: var(--radius-sm, 4px);
+  color: var(--accent, #4A57D6);
+  font-weight: 600;
+}
+
 .editor-layout .sidebar-brush-controls .btn,
 .editor-layout .basic-tile-search-feedback .btn {
   min-height: var(--space-6);
