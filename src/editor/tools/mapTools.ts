@@ -151,7 +151,13 @@ export function assignCreatedMapBgm(
 
 const createMap: ToolDefinition = {
   name: "create_map",
-  description: `새 맵을 생성한다(기본은 테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 돌벽 테두리가 필요할 때만 border:"wall"을 지정한다. 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. 이름에서 테마를 읽어 BGM을 고른다(bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 place_concept 또는 start_interior_room_session 이 새 mapId 까지 함께 시공한다.`,
+  // border 는 모델 스키마에서 뺐다(2026-09-11). 실측: 스키마에 enum 이 있으면 조수가 동굴·던전·지하실
+  // 요청마다 스스로 border:"wall" 을 골라 맵 4변을 돌벽으로 둘렀고(대화 62건 중 7건, 전부 그런 맵),
+  // 설명을 "명시 요청 때만" 으로 바꿔도 선택은 그대로였다(3/3). 스키마에서 감추면 0/3.
+  // 맵 밖은 이미 엔진이 통행 불가라(project/collision.ts canMove 의 inBounds) 테두리 벽은 화면 장식일 뿐이고,
+  // 작은 맵에서는 면적만 먹는다(12×10 지하실 = 120칸 중 40칸). 런타임 호출 호환은 남긴다 — 과거 대화
+  // 재생·저장 스크립트가 같은 인자를 넘겨도 같은 결과가 나와야 한다(ai-tools-deprecation-roadmap 1~2단계).
+  description: `새 맵을 생성한다(테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. 이름에서 테마를 읽어 BGM을 고른다(bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 place_concept 또는 start_interior_room_session 이 새 mapId 까지 함께 시공한다.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -160,7 +166,7 @@ const createMap: ToolDefinition = {
       width: { type: "integer", description: `가로 타일 수(3 이상, 최대 ${MAX_TOOL_MAP_DIMENSION})` },
       height: { type: "integer", description: `세로 타일 수(3 이상, 최대 ${MAX_TOOL_MAP_DIMENSION})` },
       id: { type: "string", description: "맵 id(생략 시 자동 생성)" },
-      border: { type: "string", enum: ["none", "wall"], description: "테두리 처리(기본 none, wall이면 외곽 TILE.WALL)" },
+      // border 는 여기 없다 — 위 주석 참조. run() 은 인자를 계속 받는다(런타임 호환).
       seed: { type: "integer", description: "BGM 선택 시드(생략 시 이름 해시)" },
       bgmResourceId: { type: "string", description: "맵 BGM 리소스 id. 있으면 자동 선택을 건너뛴다." },
       bgm: {
@@ -195,7 +201,11 @@ const createMap: ToolDefinition = {
       upperTiles: new Array<number>(size).fill(TILE.EMPTY),
       events: [],
     };
-    const border = (args.border as "none" | "wall" | undefined) ?? "none";
+    const borderArg = args.border;
+    if (borderArg !== undefined && borderArg !== "none" && borderArg !== "wall") {
+      throw new ToolError("border는 none, wall 중 하나여야 합니다.", { code: "invalid-args" });
+    }
+    const border = (borderArg as "none" | "wall" | undefined) ?? "none";
     if (border === "wall") borderWalls(map);
     const bgmResourceId = assignCreatedMapBgm(map, args);
     draft.maps[id] = map;

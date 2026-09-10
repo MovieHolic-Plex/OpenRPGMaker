@@ -28,6 +28,12 @@ type MapTheme = "village" | "forest" | "cave";
 // 항상 외곽에 벽을 깐다"). 장애물 팔레트는 프로파일 13종 전부 벽/솔리드 타일이라
 // (mapGenerationProfiles.ts: village/cave=306 TILE.WALL 등) 테마와 무관하게
 // 맵 4변이 통행 불가 벽으로 봉인됐다.
+//
+// 2026-09-11: border 는 **모델 스키마에서 뺐다**(create_map 과 같은 조치). 실측 근거는 mapTools.ts 의
+// create_map 주석 참조 — 스키마에 enum 이 있으면 조수가 동굴·던전 요청마다 스스로 wall 을 고르고,
+// 설명을 "명시 요청 때만" 으로 바꿔도 선택이 그대로였다(3/3 → 스키마에서 감추면 0/3).
+// 아래 런타임 경로(blankThemedMap·carvePath·inset)는 남긴다: 명시 인자를 넘긴 스크립트·테스트·
+// 과거 대화 재생이 같은 결과를 받아야 한다(ai-tools-deprecation-roadmap 1~2단계).
 type MapBorder = "none" | "wall";
 
 function paintPaletteTile(map: GameMap, x: number, y: number, choice: MapGenerationTile): void {
@@ -134,13 +140,13 @@ const generateMap: ToolDefinition = {
   description:
     `테마(village/forest/cave) 맵을 생성한다(기본은 테두리 없는 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프). `
     + "테마에 맞는 BGM을 CC0 카탈로그에서 고른다(같은 seed면 같은 곡, bgm/bgmResourceId가 있으면 그걸 쓴다). "
-    + "동굴/던전처럼 외곽이 막혀야 할 때만 border:\"wall\"을 지정한다 — 지정하면 맵 4변이 통행 불가 장애물로 봉인된다.",
+    + "테마 장애물은 맵 안쪽에만 산포하고 외곽 4변은 봉인하지 않는다.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       theme: { type: "string", enum: ["village", "forest", "cave"] },
-      border: { type: "string", enum: ["none", "wall"], description: "테두리 처리(기본 none, wall이면 외곽 4변을 테마 장애물 타일로 봉인)" },
+      // border 는 여기 없다 — 위 주석 참조. run() 은 인자를 계속 받는다(런타임 호환).
       tilesetId: { type: "string", description: "이 맵에 사용할 타일셋. 타일셋별 전용 생성 로직을 선택한다." },
       name: { type: "string" },
       width: { type: "integer", description: `가로 타일 수(최대 ${MAX_TOOL_MAP_DIMENSION})` },
@@ -183,7 +189,12 @@ const generateMap: ToolDefinition = {
     // code:"map-exists" 누락으로 이 경로만 감사·게이트에서 다른 실패로 세어졌다(진단 근본원인 15).
     assertMapIdAvailable(draft, id);
     const rng = mulberry32((args.seed as number | undefined) ?? 1);
-    const border = (args.border as MapBorder | undefined) ?? "none";
+    // 스키마에서 뺀 인자라도 명시 호출은 종전 규약대로 검증한다(오타를 조용히 none 으로 떨어뜨리지 않는다).
+    const borderArg = args.border;
+    if (borderArg !== undefined && borderArg !== "none" && borderArg !== "wall") {
+      throw new ToolError("border는 none, wall 중 하나여야 합니다.", { code: "invalid-args" });
+    }
+    const border = (borderArg as MapBorder | undefined) ?? "none";
     const map = blankThemedMap(
       id,
       (args.name as string | undefined) ?? `${theme} 맵`,

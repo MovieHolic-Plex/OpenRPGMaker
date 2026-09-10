@@ -97,7 +97,7 @@ test("선택 칩 바 — 원탭 「다듬기」 칩", async ({ page }) => {
   saveFacts();
 });
 
-test("모달 지시 단계 — 「주변과 어울리게 다듬기」 버튼 + 추천 칩", async ({ page }) => {
+test("모달 지시 단계 — 실행 버튼 하나 + 추천 칩", async ({ page }) => {
   test.setTimeout(120_000);
 
   await page.evaluate((region) => {
@@ -106,23 +106,25 @@ test("모달 지시 단계 — 「주변과 어울리게 다듬기」 버튼 + �
   }, REGION);
   const modal = page.getByTestId("region-task-modal");
   await expect(modal).toBeVisible();
-  await expect(page.getByTestId("region-task-polish")).toBeVisible();
+  // 별도 「다듬기」 버튼은 없어졌다 — 빈 입력의 실행 버튼이 그 자리다.
+  const run = page.getByTestId("region-task-run");
+  await expect(run).toBeVisible();
+  await expect(run).toContainText("다듬기");
   await shotOf(page, "region-task-modal", "20-modal-compose.png");
 
-  // 카테고리 **필터 칩**은 없다(상시 노출 8칩 → 상태 없는 시트로 교체됨). 전체 명령은
-  // 「모두 보기」 시트에서 계열 소제목으로 한 번에 펼쳐지고, 「다듬기」 계열은 그 안의 한 묶음이다.
-  const browseAll = page.getByTestId("region-task-browse-all");
-  await browseAll.click();
-  await expect(page.getByTestId("region-task-categories")).toBeVisible();
-  const polishGroup = page.getByTestId("region-category-polish");
-  await expect(polishGroup).toBeVisible();
-  await shotOf(page, "region-task-modal", "21-modal-category-polish.png");
+  // 카테고리 시트도 사라졌다 — 전체 명령은 `/` 자동완성이 같은 코퍼스로 낸다.
+  await expect(page.getByTestId("region-task-browse-all")).toHaveCount(0);
+  const input = page.getByTestId("region-task-input");
+  await input.click();
+  await input.fill("/다듬");
+  await expect(page.getByTestId("region-task-autocomplete")).toBeVisible();
+  await shotOf(page, "region-task-modal", "21-modal-autocomplete-polish.png");
 
-  facts.polishButtonLabel = await page.getByTestId("region-task-polish").innerText();
-  facts.polishButtonTitle = await page.getByTestId("region-task-polish").getAttribute("title");
+  facts.runButtonLabel = await run.innerText();
+  facts.runButtonTitle = await run.getAttribute("title");
   facts.suggestionRow = await page.getByTestId("region-task-suggestions").innerText().catch(() => "");
-  facts.browseAllLabel = await browseAll.innerText();
-  facts.polishCategoryChips = await polishGroup.innerText().catch(() => "");
+  facts.autocompletePolish = await page.getByTestId("region-task-autocomplete").innerText().catch(() => "");
+  await input.fill("");
   saveFacts();
 });
 

@@ -228,30 +228,10 @@
   font-weight: 600;
   padding: var(--space-2) var(--space-4);
 }
-.region-task-run:disabled,
-.region-task-polish:disabled,
-.region-task-direct-room:disabled,
+
 .region-task-direct-select:disabled {
   cursor: default;
   opacity: 0.6;
-}
-
-/* 다듬기 — 실행 버튼과 같은 줄의 보조 행동이다. 강조색을 나눠 가지면 어느 쪽이 주 경로인지
-   읽히지 않으므로 테두리만 남긴 2차 버튼으로 둔다. */
-.region-task-polish {
-  background: transparent;
-  border: 1px solid var(--accent-border);
-  border-radius: var(--radius-s);
-  color: var(--accent);
-  cursor: pointer;
-  font: inherit;
-  font-weight: 600;
-  padding: var(--space-2) var(--space-3);
-}
-.region-task-polish:hover,
-.region-task-polish:focus-visible {
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  outline: none;
 }
 
 .region-task-cancel {
@@ -271,8 +251,8 @@
   color: var(--danger);
   outline: none;
 }
-.region-task-modal[data-stage="running"] .region-task-run,
-.region-task-modal[data-stage="running"] .region-task-polish { display: none; }
+
+.region-task-modal[data-stage="running"] .region-task-run { display: none; }
 .region-task-modal[data-stage="running"] .region-task-cancel { display: inline-flex; }
 
 .region-task-direct-room {
@@ -653,57 +633,6 @@ body.region-task-modal-open .ai-authoring-examples {
   pointer-events: none;
 }
 
-/* ── 「모두 보기」 시트 — 명령 전체를 계열별로 ──────────────────────────────────
-   예전에는 이 자리에 카테고리 필터 칩 8개가 **가로 스크롤러**로 상주했다. 380px 폭
-   팝오버에서는 다섯 번째 칩이 경계에서 잘렸고(페이드 마스크를 덧대도 여전히 스크롤이었다),
-   칩을 누르면 아래 추천 줄이 그 계열로 갈아치워져 "지금 무엇을 보고 있나"가 상태로 남았다.
-   지금은 세로로 흐르는 접이식 시트다 — 잘릴 것이 없고, 남는 상태도 없다. */
-.region-task-categories {
-  border-top: 1px solid var(--border-subtle);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
-  max-height: 42vh;
-  overflow-y: auto;
-  overscroll-behavior-y: contain;
-  padding-top: var(--space-2);
-  scrollbar-width: thin;
-  /* 아래쪽 페이드 — 시트가 넘칠 때 마지막 줄이 경계에서 **딱 잘린 채로** 끝나면 그게 다인 줄
-     읽힌다(가로 스크롤러 시절의 잘린 다섯 번째 칩과 같은 실수다). 세로 스크롤이라 스크롤바도
-     같이 나오지만, 페이드가 "아래에 더 있다"를 먼저 말한다.
-     hex 리터럴을 쓰지 않는다 — 예산 게이트가 센다. 마스크는 알파만 보므로 keyword 로 충분하다. */
-  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
-  mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
-}
-.region-task-categories.hidden { display: none; }
-.region-task-category-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-/* 소제목은 누를 것이 아니다 — 명령 칩과 무게를 확실히 벌려 "계열 이름"으로 읽히게 한다. */
-.region-task-category-group-title {
-  align-items: center;
-  color: var(--editor-text-soft, var(--editor-text-muted));
-  display: flex;
-  font: 600 10px/1 var(--font-ui, system-ui, sans-serif);
-  gap: var(--space-1);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-.region-task-category-group-title svg {
-  flex-shrink: 0;
-  height: 12px;
-  vertical-align: middle;
-  width: 12px;
-}
-.region-task-category-group-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-}
-
 /* ── 추천 명령 목록 (Tier 2: Icon + Label structured rows/cards) ── */
 .region-task-suggestions {
   display: flex;
@@ -731,29 +660,6 @@ body.region-task-modal-open .ai-authoring-examples {
   height: 14px;
   vertical-align: middle;
   width: 14px;
-}
-/* 「모두 보기」 칩 — 같은 줄에 있지만 명령이 아니라 목록을 여는 문이므로 조용하게. */
-.region-task-suggest-chip.is-browse-all {
-  background: transparent;
-  color: var(--editor-text-muted);
-}
-.region-task-suggest-chip.is-browse-all svg { color: var(--editor-text-muted); }
-.region-task-suggest-chip.is-browse-all.is-active {
-  background: var(--accent-muted);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-/* 펼침 상태를 글리프로도 말한다 — 색만으로는 접혔는지 열렸는지 알 수 없다. */
-.region-task-browse-chevron {
-  border-bottom: 1px solid currentColor;
-  border-right: 1px solid currentColor;
-  height: 5px;
-  transform: rotate(45deg);
-  transition: transform var(--transition-fast);
-  width: 5px;
-}
-.region-task-suggest-chip.is-browse-all.is-active .region-task-browse-chevron {
-  transform: rotate(-135deg);
 }
 .region-task-suggest-chip:hover,
 .region-task-suggest-chip:focus-visible {
@@ -883,23 +789,6 @@ body.region-task-modal-open .ai-authoring-examples {
   .region-task-room-row { align-items: stretch; flex-wrap: wrap; }
   .region-task-room-name { flex-basis: 100%; }
 }
-
-.region-task-live-progress {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-}
-.region-task-live-progress:empty,
-.region-task-modal[data-stage="compose"] .region-task-live-progress { display: none; }
-.region-task-live-progress span {
-  border: 1px solid var(--editor-line);
-  border-radius: 999px;
-  color: var(--editor-text-muted);
-  font-size: 10px;
-  padding: 3px var(--space-2);
-}
-.region-task-live-progress .is-active { border-color: var(--accent); color: var(--accent); }
-.region-task-live-progress .is-done { border-color: var(--success); color: var(--success); }
 
 /* NPC 일정은 암묵적으로 켜지지 않는다. 승인 전에 실행 방식 세 가지를 명시적으로 고른다. */
 .region-task-npc-decision {
@@ -1061,13 +950,15 @@ body.region-task-modal-open .ai-authoring-examples {
   color: var(--accent);
 }
 
-/* ── 실내 초안 디스클로쟀 ──
-   select 2개 + 버튼을 액션 줄에 나란하 놓으면 380px 팝오버에서 가장 산만해진다. */
-.region-task-direct-disclosure {
+/* ── 「조절…」 — 결과를 본 뒤에 여는 자리 ──
+   생성기 종류·파라미터·시드·재료 슬롯과 실내 프리셋이 여기 산다. 진입 시점에는 이것들을
+   판단할 근거가 없었다(결과를 보기 전에 "밀도 0.7 이 맞나"를 고를 수 없다). 그래서 사전이
+   아니라 사후에 둔다 — 검토 단계에서만 보인다. */
+.region-task-adjust {
   flex: 1 1 100%;
   min-width: 0;
 }
-.region-task-direct-summary {
+.region-task-adjust-summary {
   align-items: center;
   color: var(--editor-text-muted);
   cursor: pointer;
@@ -1089,10 +980,11 @@ body.region-task-modal-open .ai-authoring-examples {
   transition: transform 140ms ease;
   width: 6px;
 }
-.region-task-direct-disclosure[open] .region-task-direct-chevron { transform: rotate(45deg); }
-.region-task-direct-summary::-webkit-details-marker { display: none; }
-.region-task-direct-summary:hover { color: var(--editor-text); }
-.region-task-direct-summary:focus-visible {
+.region-task-adjust[open] .region-task-direct-chevron,
+.region-task-slot-disclosure[open] .region-task-direct-chevron { transform: rotate(45deg); }
+.region-task-adjust-summary::-webkit-details-marker { display: none; }
+.region-task-adjust-summary:hover { color: var(--editor-text); }
+.region-task-adjust-summary:focus-visible {
   border-radius: var(--radius-s);
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -1183,48 +1075,6 @@ body.region-task-modal-open .ai-authoring-examples {
   gap: var(--space-2);
 }
 
-/* ── 생성 모드 스위치 ──
-   조수(문장) 와 생성기(파라미터) 는 입력 방식이 달라 한 화면에 겹쳐 두면 지금 어느 쪽에
-   말하는지 잃는다. 세그먼트 하나로 갈라 놓고, 조수 쪽 화면은 그대로 둔다. */
-.region-task-mode-switch {
-  align-self: flex-start;
-  background: var(--bg-inset);
-  border: 1px solid var(--editor-line);
-  border-radius: var(--radius-s);
-  display: inline-flex;
-  gap: 2px;
-  padding: 2px;
-}
-.region-task-mode-button {
-  background: transparent;
-  border: 0;
-  border-radius: calc(var(--radius-s) - 2px);
-  color: var(--editor-text-muted);
-  cursor: pointer;
-  font: 600 11px/1.6 var(--font-ui, system-ui, sans-serif);
-  padding: 2px 10px;
-}
-.region-task-mode-button:hover {
-  color: var(--editor-text);
-}
-.region-task-mode-button.is-active {
-  background: var(--bg-surface);
-  color: var(--editor-text);
-}
-
-/* 생성기 모드에서 조수 입력부를 숨긴다. 각 요소의 hidden 상태는 건드리지 않는다 —
-   시트·자동완성은 자기 열림 여부를 hidden 으로 들고 있어서 여기서 지우면 모드를 되돌릴 때
-   닫혀 있어야 할 것이 열린 채로 나온다. */
-.region-task-prompt.is-operator-mode > .region-task-suggestions,
-.region-task-prompt.is-operator-mode > .region-task-categories,
-.region-task-prompt.is-operator-mode > .region-task-input,
-.region-task-prompt.is-operator-mode > .region-task-autocomplete,
-.region-task-prompt.is-operator-mode .region-task-direct-disclosure,
-.region-task-prompt.is-operator-mode .region-task-polish,
-.region-task-prompt.is-operator-mode .region-task-run {
-  display: none;
-}
-
 .region-task-operator-panel {
   border: 1px solid var(--editor-line);
   border-radius: var(--radius-s);
@@ -1232,9 +1082,6 @@ body.region-task-modal-open .ai-authoring-examples {
   flex-direction: column;
   gap: var(--space-2);
   padding: var(--space-2);
-}
-.region-task-operator-panel.hidden {
-  display: none;
 }
 .region-task-operator-head {
   align-items: center;
@@ -1288,15 +1135,6 @@ body.region-task-modal-open .ai-authoring-examples {
   flex: 1;
   text-align: left;
 }
-.region-task-operator-reseed {
-  background: transparent;
-  border: 1px solid var(--editor-line);
-  border-radius: var(--radius-s);
-  color: var(--editor-text);
-  cursor: pointer;
-  font: 600 11px/1.6 var(--font-ui, system-ui, sans-serif);
-  padding: 3px 10px;
-}
 .region-task-operator-run {
   background: var(--accent);
   border: 1px solid transparent;
@@ -1306,51 +1144,9 @@ body.region-task-modal-open .ai-authoring-examples {
   font: 600 11px/1.6 var(--font-ui, system-ui, sans-serif);
   padding: 3px 12px;
 }
-.region-task-operator-run:disabled,
-.region-task-operator-reseed:disabled {
+.region-task-operator-run:disabled {
   cursor: default;
   opacity: 0.6;
-}
-
-/* 문장 입력 — 모델은 이 한 줄을 파라미터로 옮기기만 한다. */
-.region-task-operator-intent {
-  display: flex;
-  gap: var(--space-2);
-}
-.region-task-operator-intent-input {
-  background: var(--bg-inset);
-  border: 1px solid var(--editor-line);
-  border-radius: var(--radius-s);
-  color: var(--editor-text);
-  flex: 1;
-  font: inherit;
-  min-width: 0;
-  padding: 4px 8px;
-}
-.region-task-operator-intent-run {
-  background: transparent;
-  border: 1px solid var(--editor-line);
-  border-radius: var(--radius-s);
-  color: var(--editor-text);
-  cursor: pointer;
-  font: 600 11px/1.6 var(--font-ui, system-ui, sans-serif);
-  padding: 3px 12px;
-  white-space: nowrap;
-}
-.region-task-operator-intent-run:disabled,
-.region-task-operator-intent-input:disabled {
-  cursor: default;
-  opacity: 0.6;
-}
-.region-task-operator-intent-note {
-  color: var(--editor-text-muted);
-  font: 400 11px/1.5 var(--font-ui, system-ui, sans-serif);
-}
-.region-task-operator-intent-note.hidden {
-  display: none;
-}
-.region-task-operator-intent-note.is-error {
-  color: var(--danger);
 }
 
 /* 재료 슬롯 보드 — 자동 해석 결과를 실물 타일로 드러내고 틀린 칸만 고치게 한다. */
@@ -1524,3 +1320,177 @@ body.region-task-modal-open .ai-authoring-examples {
 
 /* 지목하지 않은 청크의 라벨은 감춘다 — 청크가 여섯 개면 라벨 여섯 개가 서로를 덮는다. */
 .region-chunk-layer.is-isolating > .region-chunk:not(.is-focus) > .region-chunk-label { display: none; }
+
+/* 히트 영역 — 그림과 분리한다. 1칸 청크는 1x 줌에서 16×16px 이라(실측 2026-09-11: 22개 중
+   18개) 타일 크기 그대로 두면 누를 수 없다. 보이지 않고 넓기만 하다. */
+.region-chunk-hit {
+  background: transparent;
+  cursor: pointer;
+  /* 부모 `.region-chunk` 가 pointer-events:none 이므로 여기서 명시적으로 되살린다.
+     빼먹었을 때는 히트 테스트가 히트 영역을 아예 못 보고 그 아래 Phaser 캔버스로
+     떨어졌다(실측 2026-09-11: elementFromPoint → CANVAS). */
+  pointer-events: auto;
+  position: absolute;
+}
+
+.region-chunk.is-dim > .region-chunk-hit {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* 청크 셀은 그림만 담당 — 포인터는 히트 영역이 받는다. */
+.region-chunk-cell { pointer-events: none; }
+
+/* 라벨은 기본으로 감춘다. 실측: 12×10 영역에서 청크 22개 → 라벨 22개가 서로를 덮고
+   같은 이름이 중복됐다("Tree(1칸) · 우상단" 두 개). 지목된 것만 보인다. */
+.region-chunk-label { display: none; }
+.region-chunk.is-focus > .region-chunk-label { display: block; }
+
+/* ── 캔버스 하단 검토 액션 바 ───────────────────────────────────────────────
+   결정을 판단 대상과 같은 화면에 둔다. 창 안 「적용/다시 만들기/버리기」는
+   is-canvas-review 에서 내려간다. */
+.region-review-bar {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-pop);
+  display: flex;
+  gap: var(--space-2);
+  /* 좌표는 JS(positionBar)가 대상 영역 기준으로 넣는다 — 고정 하단 중앙은 플로팅 AI 패널에
+     가렸다(실측 2026-09-11). 초기값은 첫 배치 전 한 프레임용. */
+  left: 12px;
+  padding: var(--space-2);
+  position: absolute;
+  top: 12px;
+  white-space: nowrap;
+  z-index: 7;
+}
+
+.region-review-route {
+  color: var(--text-3);
+  font-size: var(--font-size-xs);
+  max-width: 220px;
+  overflow: hidden;
+  padding: 0 var(--space-1);
+  text-overflow: ellipsis;
+}
+
+.region-review-layers { display: flex; gap: var(--space-1); }
+
+.region-review-layer {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: var(--font-size-xs);
+  padding: 4px 9px;
+}
+
+.region-review-layer.is-active {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  font-weight: var(--font-weight-bold);
+}
+
+.region-review-actions { display: flex; gap: var(--space-1); }
+
+.region-review-action {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  color: var(--text-1);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  padding: 5px 12px;
+}
+
+.region-review-action.is-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  font-weight: var(--font-weight-bold);
+}
+
+.region-review-action.is-ghost { border-color: transparent; color: var(--text-3); }
+
+.region-review-action[disabled] {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ── 캔버스 검토 모드: 창이 본문을 내려놓는다 ──────────────────────────────
+   실측(2026-09-11): 검토 단계의 중앙 모달이 960×768 로 캔버스(992×751)를 거의 다 덮어
+   캔버스 도형이 자기가 만든 창에 가려 클릭조차 되지 않았다. 기하 판단과 결정이 캔버스로
+   갔으므로 창에는 서사(경로·요약·변경 목록·결정·로그)만 남고, 자리도 위로 비켜선다. */
+.region-task-modal.is-canvas-review {
+  gap: var(--space-2);
+  max-width: min(560px, calc(100vw - 32px));
+  padding: var(--space-3);
+}
+
+/* 창 높이 상한 — 캔버스가 검토를 맡았으니 창은 맵을 덮지 않을 만큼만 크면 된다.
+   실측(2026-09-11): 40vh(=320px) 로 잡았더니 막는 이슈가 펼쳐진 검토에서 「고급」 줄이
+   스크롤 밖으로 밀렸다. 결정 문장 + 이슈 목록까지는 스크롤 없이 보여야 한다. */
+.region-task-backdrop:not(.region-task-backdrop-popover) .region-task-modal.is-canvas-review {
+  align-self: flex-start;
+  max-height: 55vh;
+  max-height: 55dvh;
+}
+
+/* 캔버스가 대신하는 것들 — 썸네일 두 장, 청크 체크리스트, 창 안 액션, 키 안내. */
+.region-task-modal.is-canvas-review .region-task-compare,
+.region-task-modal.is-canvas-review .region-task-partial-host,
+.region-task-modal.is-canvas-review .region-task-compare-actions,
+.region-task-modal.is-canvas-review .region-task-kbd-hints {
+  display: none;
+}
+
+/* 대상이 화면 위쪽이면 창은 아래로 비킨다 — 중앙 모달에는 팝오버의 avoid 협상이 없다. */
+.region-task-backdrop:not(.region-task-backdrop-popover) .region-task-modal.is-canvas-review.is-below {
+  align-self: flex-end;
+}
+
+/* 캔버스 검토 중에는 스크림을 걷는다 — 창을 비켜 세워도 inset:0 backdrop 이 캔버스 전체의
+   포인터를 먹어 청크를 누를 수 없었다(실측 2026-09-11: elementFromPoint → .region-task-backdrop).
+   팝오버 변형(.region-task-backdrop-popover)이 이미 같은 이유로 이렇게 하고 있다.
+   캔버스를 판단 대상으로 쓰는 동안 대상을 어둡게 덮을 이유도 없다. */
+.region-task-backdrop.is-canvas-review {
+  background: transparent;
+  pointer-events: none;
+}
+
+.region-task-backdrop.is-canvas-review > .region-task-modal {
+  pointer-events: auto;
+}
+
+/* 「조절…」은 검토 단계에서만 나타난다 — 진입 화면은 입력 1 + 칩 3 + 버튼 1 이 전부다. */
+.region-task-modal:not([data-stage="review"]) .region-task-adjust { display: none; }
+.region-task-adjust-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+
+/* 반대 경로로 다시 — 경로를 코드가 골랐으니 오라우팅의 복구가 한 클릭이어야 한다. */
+.region-task-reroute {
+  background: transparent;
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  font: 600 11px/1.6 var(--font-ui, system-ui, sans-serif);
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.region-task-reroute:hover,
+.region-task-reroute:focus-visible {
+  border-color: var(--accent-border);
+  color: var(--accent);
+  outline: none;
+}
+.region-task-reroute:disabled { cursor: default; opacity: 0.6; }

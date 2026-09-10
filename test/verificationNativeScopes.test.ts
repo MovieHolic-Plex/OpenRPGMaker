@@ -7,7 +7,7 @@ import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { getTool, runTool } from "@/editor/tools";
 import { fixedDeclarer } from "./intentFixture";
-import { verificationEvent } from "./fixtures/verificationOwnership";
+import { unboundCriterionCheck, verificationEvent } from "./fixtures/verificationOwnership";
 
 type Call = { name: string; args: Record<string, unknown> };
 const nonMapTools = ["run_lint", "evaluate_game_quality", "verify_quest", "simulate_battle", "play_walkthrough"];
@@ -109,7 +109,7 @@ describe("native verification scopes through the real session and terminal accep
     const project = createBlankProject();
     const call = nativeCall(name, project);
     const f = rig(project);
-    await f.send([plan(project, name), call]);
+    await f.send([plan(project, name, [unboundCriterionCheck(name)]), call]);
     const pending = f.session.getVerificationSnapshot().requirements[0]!;
     expect(pending).toMatchObject({ args: null, mapTargets: [project.startMapId], status: "pending-specification" });
     expect(results(f.events, name).every(result => parseToolVerdict(name, result).pass)).toBe(true);
@@ -177,7 +177,7 @@ describe("native verification scopes through the real session and terminal accep
     const project = createBlankProject();
     const call = nativeCall("run_lint", project);
     const f = rig(project);
-    await f.send([plan(project, call.name)]);
+    await f.send([plan(project, call.name, [unboundCriterionCheck(call.name)])]);
     const pending = f.session.getVerificationSnapshot().requirements[0]!;
     await f.send([plan(project, call.name, [declaration(call, pending.checkId)], []), call]);
     expect(f.session.getVerificationSnapshot().requirements.find(check => check.checkId === pending.checkId)).toEqual(pending);

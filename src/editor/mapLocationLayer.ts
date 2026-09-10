@@ -3,19 +3,11 @@
 //
 // 왜 DOM 인가: 이름·메모·버튼이 붙는 저작 표면이고, Phaser 텍스처로 그리면 한글 라벨과
 // 접근성(포커스·키보드)을 다시 만들어야 한다. 기존 `layoutBboxOverlay` 와 같은 자리
-// (`.phaser-container` 자식)에 붙되, **레이어가 켜졌을 때만** `pointer-events` 를 받는다 —
-// 꺼져 있으면 타일 편집을 한 픽셀도 방해하지 않는다.
-//
-// 제스처 계약(로케이션 레이어가 켜진 동안만):
-//   - 빈 곳 드래그          → 새 구역을 그린다(놓는 순간 생성 + 선택 + 이름 입력 포커스)
-//   - 구역 클릭             → 선택
-//   - 선택된 구역의 몸통 드래그 → 이동
-//   - 선택된 구역의 우하단 손잡이 드래그 → 크기 변경
-//   - Delete/Backspace      → 선택 구역 삭제(참조가 있으면 확인 문구를 먼저 보여준다)
-//   - Escape                → 선택 해제, 드래그 취소
+// 제스처 위임 계약: pan 도구 / 스페이스 팬 / 가운데 버튼 / 오른쪽 버튼 영역 제스처 / select 도구 맵 밖 팬 / 붙여넣기 미리보기 클릭은 캔버스·카메라에 위임한다.
 // 겹침은 허용이므로 클릭 판정은 «가장 구체적인(작은) 구역» 이 이긴다(순수 모듈 규칙).
 
 import { TILE_SIZE } from "@/assets/bundled";
+import { claimCanvasPointer, type CanvasPointerPoint } from "@/editor/canvasPointerBridge";
 import { editorState } from "@/editor/editorState";
 import { resolveClientPointTile, resolveRegionClientRect } from "@/editor/regionClientRect";
 import {
@@ -52,9 +44,11 @@ import { toast } from "@/util/toast";
 let overlayEl: HTMLElement | null = null;
 let inspectorEl: HTMLElement | null = null;
 let teardown: (() => void) | null = null;
+let cleanupYield: (() => void) | null = null;
+/** pointerup 뒤 한 매크로태스크 미뤄 복원하는 타이머(`yieldPointerToCanvas` 참조). */
+let yieldTimer: number | null = null;
 /** 방금 만든 구역의 이름 칸에 초점을 준다 — 그리자마자 이름을 붙이는 게 이 레이어의 목적이다. */
 let focusNameOnNextRender = false;
-
 function ensureHost(): HTMLElement | null {
   const host = document.querySelector<HTMLElement>(".phaser-container");
   if (!host) return null;
@@ -109,6 +103,17 @@ function tileToOverlayRect(rect: Rect): { left: number; top: number; width: numb
   };
 }
 
+/** 상자·고스트·미리보기가 모두 같은 네 값을 쓴다 — 기하를 쓰는 자리를 하나로 모은다. */
+function applyOverlayRect(node: HTMLElement, rect: Rect): void {
+  const geometry = tileToOverlayRect(rect);
+  Object.assign(node.style, {
+    left: `${geometry.left}px`,
+    top: `${geometry.top}px`,
+    width: `${geometry.width}px`,
+    height: `${geometry.height}px`,
+  });
+}
+
 function report(result: LocationActionResult): void {
   if (!result.ok) {
     toast(result.error, "error");
@@ -127,6 +132,9 @@ function render(): void {
   overlay.classList.toggle("is-active", state.enabled);
   inspector.classList.toggle("is-active", state.enabled);
   if (!state.enabled) {
+    cleanupYield?.();
+    cleanupYield = null;
+    overlay.classList.remove("is-yielding");
     clearChildren(overlay);
     clearChildren(inspector);
     return;
@@ -144,18 +152,12 @@ function renderBoxes(overlay: HTMLElement, map: GameMap, selectedId: string | nu
   const state = locationLayerState();
   if (state.showLayoutRegions) {
     for (const region of map.layoutPlan?.regions ?? []) {
-      const geometry = tileToOverlayRect(region);
       const box = el("div", {
         class: "map-location-region-ghost",
-        dataset: { testid: `map-location-region-${region.id}` },
+        dataset: { testid: `map-location-region-${region.id}`, regionId: region.id },
         children: [el("span", { class: "map-location-region-label", text: `설계 ${region.label}` })],
       });
-      Object.assign(box.style, {
-        left: `${geometry.left}px`,
-        top: `${geometry.top}px`,
-        width: `${geometry.width}px`,
-        height: `${geometry.height}px`,
-      });
+      applyOverlayRect(box, region);
       overlay.append(box);
     }
   }
@@ -163,20 +165,14 @@ function renderBoxes(overlay: HTMLElement, map: GameMap, selectedId: string | nu
   const ordered = [...mapLocations(map)].sort((a, b) => b.w * b.h - a.w * a.h);
   for (const location of ordered) {
     const selected = location.id === selectedId;
-    const geometry = tileToOverlayRect(location);
     const color = locationDisplayColor(location);
     const box = el("div", {
       class: `map-location-box${selected ? " is-selected" : ""}`,
       attrs: { role: "button", tabindex: "0", "aria-label": `구역 ${location.name}`, "aria-pressed": String(selected) },
       dataset: { testid: `map-location-box-${location.id}`, locationId: location.id },
     });
-    Object.assign(box.style, {
-      left: `${geometry.left}px`,
-      top: `${geometry.top}px`,
-      width: `${geometry.width}px`,
-      height: `${geometry.height}px`,
-      "--map-location-color": color,
-    });
+    applyOverlayRect(box, location);
+    box.style.setProperty("--map-location-color", color);
     box.append(
       el("span", {
         class: "map-location-box-label",
@@ -212,16 +208,39 @@ function renderDragPreview(overlay: HTMLElement): void {
       : drag.kind === "resize"
         ? rectFromDrag(drag.anchor, drag.to)
         : { ...drag.origin };
-  const geometry = tileToOverlayRect(rect);
   const preview = el("div", { class: "map-location-draw-preview", dataset: { testid: "map-location-draw-preview" } });
-  Object.assign(preview.style, {
-    left: `${geometry.left}px`,
-    top: `${geometry.top}px`,
-    width: `${geometry.width}px`,
-    height: `${geometry.height}px`,
-  });
+  applyOverlayRect(preview, rect);
   preview.append(el("span", { class: "map-location-draw-size", text: `${rect.w}×${rect.h}` }));
   overlay.append(preview);
+}
+
+/**
+ * 카메라가 움직인 뒤 **좌표만** 다시 쓴다 — 노드는 만들지 않는다.
+ *
+ * 왜 다시 그리지 않는가: 인스펙터에는 이름·사각형 입력이 살아 있다. 팬 한 프레임마다 노드를 새로
+ * 만들면 타이핑이 끊기고 포커스가 날아간다(영역 청크 오버레이가 같은 이유로 같은 계약을 쓴다).
+ * 손 팬·휠·스크롤바·프로그램 팬이 모두 `EditScene.afterCameraMoved` 를 지나므로 호출점은 하나다.
+ * 이 함수가 없으면 상자는 화면에 남고 타일만 미끄러진다(2026-09-11 브라우저 실측: 스크롤바 팬
+ * 한 번에 상자가 제 타일에서 162px 어긋난 채 굳었다).
+ */
+export function repositionMapLocationLayer(): void {
+  const overlay = overlayEl;
+  const state = locationLayerState();
+  if (!overlay || !state.enabled) return;
+  const map = currentLocationMap();
+  if (!map) return;
+  const locations = new Map(mapLocations(map).map((entry) => [entry.id, entry]));
+  for (const box of overlay.querySelectorAll<HTMLElement>(".map-location-box")) {
+    const location = box.dataset.locationId ? locations.get(box.dataset.locationId) : undefined;
+    if (location) applyOverlayRect(box, location);
+  }
+  if (!state.showLayoutRegions) return;
+  // 설계 고스트도 같은 계약이다 — 켜 둔 사람에게만 보이는 층이라 갱신 지점도 여기 하나다.
+  const regions = new Map((map.layoutPlan?.regions ?? []).map((region) => [region.id, region]));
+  for (const ghost of overlay.querySelectorAll<HTMLElement>(".map-location-region-ghost")) {
+    const region = ghost.dataset.regionId ? regions.get(ghost.dataset.regionId) : undefined;
+    if (region) applyOverlayRect(ghost, region);
+  }
 }
 
 // ───────────────────────────────────────────────────────────── 인스펙터
@@ -481,8 +500,68 @@ function overlayPointToTile(event: PointerEvent): { readonly x: number; readonly
   return tile;
 }
 
+/**
+ * 캔버스에 영역 제스처 소유권을 잠시 양보한다.
+ *
+ * 왜 필요한가: 영역 제스처는 우클릭 다운 이후의 «이동(mousemove)과 업(mouseup)»까지 캔버스가
+ * 직접 받아야 한다. 오버레이를 잠시 비우지(pointer-events: none) 않으면 이벤트의 표적으로
+ * 오버레이가 계속 잡혀 Phaser 가 드래그 추종을 이어가지 못한다.
+ *
+ * 복원은 `mouseup`(capture) + `pointercancel` + `blur` 에서 한다. `pointerup` 은 **한 매크로태스크
+ * 미뤄** 복원하는데, 동기 복원이면 pointerup 직후 도착하는 `mouseup` 의 표적이 오버레이로 돌아가
+ * Phaser 가 POINTER_UP 대신 POINTER_UP_OUTSIDE 를 받는다. 미룬 복원은 그 mouseup 이 캔버스에
+ * 닿은 뒤에 실행되므로 안전하고, 호환 마우스 이벤트가 아예 오지 않는 환경에서도 양보가 남지 않는다.
+ */
+function yieldPointerToCanvas(): void {
+  cleanupYield?.();
+  const overlay = overlayEl;
+  if (!overlay) return;
+  overlay.classList.add("is-yielding");
+
+  const restore = (): void => {
+    if (yieldTimer !== null) {
+      clearTimeout(yieldTimer);
+      yieldTimer = null;
+    }
+    overlay.classList.remove("is-yielding");
+    window.removeEventListener("mouseup", restore, true);
+    window.removeEventListener("pointerup", restoreDeferred, true);
+    window.removeEventListener("pointercancel", restore, true);
+    window.removeEventListener("blur", restore, true);
+    if (cleanupYield === restore) cleanupYield = null;
+  };
+  const restoreDeferred = (): void => {
+    if (yieldTimer !== null) return;
+    yieldTimer = window.setTimeout(restore, 0);
+  };
+  cleanupYield = restore;
+
+  window.addEventListener("mouseup", restore, { capture: true, once: true });
+  window.addEventListener("pointerup", restoreDeferred, { capture: true, once: true });
+  window.addEventListener("pointercancel", restore, { capture: true, once: true });
+  window.addEventListener("blur", restore, { capture: true, once: true });
+}
+
 function onPointerDown(event: PointerEvent): void {
-  if (!locationLayerState().enabled || event.button !== 0) return;
+  if (!locationLayerState().enabled) return;
+  const point: CanvasPointerPoint = { button: event.button, buttons: event.buttons, clientX: event.clientX, clientY: event.clientY };
+  const claim = claimCanvasPointer(point);
+  if (claim) {
+    // 영역 제스처는 **취소하면 안 된다.** pointerdown 을 preventDefault 하면 브라우저가 그 포인터
+    // 열의 호환 마우스 이벤트(mousedown/mousemove/mouseup)를 통째로 삼킨다. Phaser 는 캔버스의
+    // 마우스 이벤트로 제스처를 구동하므로 드래그가 첫 칸에서 멈추고, mouseup 도 오지 않아
+    // 아래 양보 상태가 영원히 남는다(2026-09-11 브라우저 실측: canvas mousedown/move/up = 0/0/0,
+    // 선택 없음, 업 이후에도 `.is-yielding` 유지). 팬·장면 클릭은 이어받는 경로가 포인터/window
+    // 쪽이라 취소해도 안전하고, 가운데 버튼 자동 스크롤 차단에는 취소가 필요하다.
+    if (claim.kind !== "region") event.preventDefault();
+    // 영역 제스처는 «이후 이동» 까지 캔버스가 받아야 한다 — 오버레이를 잠시 비우지 않으면
+    // mousemove/mouseup 의 표적으로 오버레이가 계속 잡힌다.
+    // kind === "scene" 은 클릭 한 번으로 끝나므로 양보하지 않는다.
+    if (claim.kind === "region") yieldPointerToCanvas();
+    claim.start();
+    return;
+  }
+  if (event.button !== 0) return;
   const tile = overlayPointToTile(event);
   if (!tile) return;
   const target = event.target as HTMLElement | null;
@@ -602,6 +681,33 @@ function onKeyDown(event: KeyboardEvent): void {
   confirmDelete(selected);
 }
 
+/**
+ * 휠은 캔버스의 것이다: 휠 = 맵 밀기, Ctrl+휠 = 확대·축소(`EditScene.bindCanvasPanGuards`).
+ * 오버레이가 위에 있으면 캔버스의 리스너가 아예 돌지 않아 레이어를 켠 동안 맵을 휠로 못 움직인다.
+ * 노드를 만들지 않고 이벤트만 그대로 넘긴다 — 원본의 preventDefault 는 여기서 직접 해야 한다
+ * (합성 이벤트의 preventDefault 는 실제 브라우저 제스처를 막지 못한다: Ctrl+휠의 페이지 확대).
+ */
+function onWheel(event: WheelEvent): void {
+  const canvas = ensureHost()?.querySelector("canvas");
+  if (!canvas) return;
+  event.preventDefault();
+  canvas.dispatchEvent(
+    new WheelEvent("wheel", {
+      deltaX: event.deltaX,
+      deltaY: event.deltaY,
+      deltaMode: event.deltaMode,
+      clientX: event.clientX,
+      clientY: event.clientY,
+      ctrlKey: event.ctrlKey,
+      shiftKey: event.shiftKey,
+      altKey: event.altKey,
+      metaKey: event.metaKey,
+      bubbles: true,
+      cancelable: true,
+    }),
+  );
+}
+
 export function installMapLocationLayer(): () => void {
   render();
   const overlay = ensureOverlay();
@@ -609,6 +715,8 @@ export function installMapLocationLayer(): () => void {
   overlay?.addEventListener("pointermove", onPointerMove);
   overlay?.addEventListener("pointerup", onPointerUp);
   overlay?.addEventListener("pointercancel", onPointerUp);
+  // passive: false — 위 onWheel 이 원본 이벤트를 취소해야 한다(Ctrl+휠 페이지 확대 차단).
+  overlay?.addEventListener("wheel", onWheel, { passive: false });
   window.addEventListener("keydown", onKeyDown);
   const offLayer = subscribeLocationLayer(() => render());
   const offEditor = editorState.subscribe(() => render());
@@ -622,6 +730,7 @@ export function installMapLocationLayer(): () => void {
     overlay?.removeEventListener("pointermove", onPointerMove);
     overlay?.removeEventListener("pointerup", onPointerUp);
     overlay?.removeEventListener("pointercancel", onPointerUp);
+    overlay?.removeEventListener("wheel", onWheel);
   };
   return () => {
     teardown?.();

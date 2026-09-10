@@ -308,7 +308,7 @@ export function renderAiSettingsForm(options: {
     "자율: AI가 요청을 스스로 작업 계획으로 분해해 진행합니다. 채팅: 종래처럼 대화로 진행합니다(감독·실행 모델이 다를 때만 계획 단계 사용).",
   );
 
-  // 실행 경로: 지시가 어느 루프로 가는가. 질문·계획·선택 영역은 경로와 무관하게 기존 조수.
+  // 실행 경로: 평문 지시가 Pi 에이전트 / Pi 팀 중 어디로 가는가. 슬래시 노브와 질문(읽기 전용)은 이 값을 덮는다.
   const routeSelect = el("select", {
     class: "ai-config-select",
     dataset: { testid: "ai-config-route" },

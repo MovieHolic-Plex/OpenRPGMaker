@@ -70,7 +70,7 @@ describe("E: 동적 추천", () => {
     restoreDom = installFakeDom();
   });
 
-  it("projectForContext 주입 시 추천 칩 4개 렌더", () => {
+  it("projectForContext 주입 시 추천 칩 3개 렌더", () => {
     const root = openModal({
       mapId: "m1",
       region: REGION,
@@ -79,10 +79,10 @@ describe("E: 동적 추천", () => {
     });
     const suggestions = findByTestId(root, "region-task-suggestions");
     expect(suggestions).not.toBeNull();
-    // 문맥 추천 4개 + 줄 끝의 「모두 보기」 칩 1개.
+    // 문맥 추천 3개가 전부다 — 「모두 보기」 칩은 없어졌고, 전체 목록은 `/` 자동완성이 낸다.
     const chips = suggestions?.querySelectorAll("button");
-    expect(chips?.length).toBe(5);
-    expect(findByTestId(root, "region-task-browse-all")).not.toBeNull();
+    expect(chips?.length).toBe(3);
+    expect(findByTestId(root, "region-task-browse-all")).toBeNull();
   });
 });
 

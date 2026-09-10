@@ -1413,7 +1413,20 @@ export class AssistantSession {
           this.verificationEvidence.adopt({ checkId, ownerId, name, args: null, mapTargets: item.mapTargets ?? undefined });
           checkIds.push(checkId);
         };
-        if (!declarations.length) adoptPending(`${ownerId}:${name}:pending`);
+        // 스펙이 아예 없는 successTools 는 검증 요구로 채택하지 않는다. 예전에는 `args: null`
+        // 요구를 심었는데, 그건 **하네스가 스스로 만든 해소 불가능한 요구**였다: 실행은 반영되지
+        // 않고(observe 의 matching 은 args !== null 만 고른다) correct_verification 도 거부하므로
+        // (correction 의 `if (!stored?.args) return null`) set_work_plan 재선언 말고는 뚫을 수 없다.
+        // 2026-09-11 실 LLM 턴에서 gemini-3.8-flash·3.1-flash·3.1-flash-lite 셋 다 이유와 checkId 를
+        // 툴 결과로 받고도 재선언하지 못했다 — 2026-09-10 로그의 예산 소진이 그 결과다.
+        // 검증 계약은 verificationChecks 가 담는다. 스펙 없는 successTools 는 원래 의미대로
+        // "이 툴을 성공시켜라"로만 판정한다(passed() 의 attempts 분기).
+        // 단 **입력이 망가져 선언이 탈락한 항목**은 그대로 막는다 — 그러지 않으면 망가진 선언이
+        // 조용히 사라지고 무관한 승인 기준을 재사용한다.
+        if (!declarations.length) {
+          if (!malformedItems.has(item.id)) continue;
+          adoptPending(`${ownerId}:${name}:pending`);
+        }
         for (const [index, check] of declarations.entries()) {
           const previous = check.checkId ? this.verificationEvidence.snapshot(false).requirements.find(entry => entry.checkId === check.checkId) : undefined;
           const declarationOwner = previous?.ownerId ?? ownerId;
@@ -2890,11 +2903,21 @@ export class AssistantSession {
         outcomeGate: this.outcomeGate(),
       });
       if (!result.ok) {
-        this.lastBlockReasonByItemId.set(id, result.reason);
+        // 「필수 successTools 중 X 성공 기록이 없습니다」만 보내면 모델은 **이미 성공한** X 를 다시
+        // 돌린다 — 성공 기록은 검증 미충족 시 지워지는데(아래 verification:unmet 분기) 그 사실이
+        // 이 문구에 없기 때문이다. 2026-09-10 로그가 그 결과다: run_lint 21회·check_reachability
+        // 15회를 같은 인자로 반복 성공시키고도 complete_work_item 7/12 거부, 예산 소진으로 종료.
+        // 지워진 **이유**는 검증 증거만 알고 있으므로(스펙 미지정·재검증 필요·미통과) 같은 툴
+        // 결과에 실어 보낸다. 이 채널이 모델이 실제로 읽는 유일한 채널이다 —
+        // problems() 는 그 외에 감사 행과 사용자 노출 문구로만 나간다.
+        const blocking = this.verificationEvidence.problems("blocking")
+          .filter((problem) => (item?.successTools ?? []).some((tool) => problem.startsWith(`${tool}: `)));
+        const reason = blocking.length ? `${result.reason}\n검증 상태: ${blocking.join("\n")}` : result.reason;
+        this.lastBlockReasonByItemId.set(id, reason);
         return {
           ok: false,
-          summary: result.reason,
-          issues: [{ severity: "error", code: "work-item-incomplete", message: result.reason }],
+          summary: reason,
+          issues: [{ severity: "error", code: "work-item-incomplete", message: reason }],
           data: { targetIssues: result.item ? workTargetIssues(result.item, this.workItemToolOutcomes, this.workPlan) : [] },
         };
       }

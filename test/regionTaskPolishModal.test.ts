@@ -109,14 +109,17 @@ async function openWithPending(opts: {
 }
 
 describe("다듬기 진입점", () => {
-  it("다듬기 버튼은 입력창이 비어 있어도 실행되고 mode:\"polish\" 로 라우팅한다", async () => {
+  it("빈 입력으로 실행하면 다듬기다 — 버튼 하나가 「다듬기」와 「실행」을 겸한다", async () => {
     const run = vi.fn(async () => ({
       ok: true, applied: false, changedCells: 0, changedEvents: 0, clippedCells: 0,
       proposedCalls: 0, assistantText: "",
     } as RegionTaskResult));
     const root = openModal({ mapId: "m1", region: REGION, run, projectForContext: () => stubProject() });
 
-    findByTestId(root, "region-task-polish")?.click();
+    // 별도 「다듬기」 버튼은 없어졌다 — 빈 입력의 실행 버튼이 그 자리다.
+    expect(findByTestId(root, "region-task-polish")).toBeNull();
+    expect(findByTestId(root, "region-task-run")?.textContent).toContain("다듬기");
+    findByTestId(root, "region-task-run")?.click();
     await flush();
 
     expect(run).toHaveBeenCalledTimes(1);

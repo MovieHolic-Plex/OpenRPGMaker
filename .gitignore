@@ -38,6 +38,7 @@ dist/
 !.omo/evidence/chipset-transparency/
 !.omo/evidence/loc-adopt/
 !.omo/evidence/loc-transition/
+!.omo/evidence/verif-scope/
 !.omo/rules/
 !.omo/rules/**
 artifacts/

@@ -67,31 +67,26 @@ test.beforeEach(async ({ page }) => {
   await expect(page.getByTestId("edit-canvas").locator("canvas")).toBeVisible();
 });
 
-test("지시 단계 — 「모두 보기」 시트·초안 만들기·자동완성", async ({ page }) => {
+test("지시 단계 — 칩 3개 + 입력 + 버튼 하나, 전체 목록은 `/`", async ({ page }) => {
   test.setTimeout(120_000);
   await shot(page, "01-editor.png");
 
   await openCompose(page);
   await shotOf(page, "region-task-modal", "03-modal-compose.png");
 
-  // 「모두 보기」: 전체 명령이 계열 소제목으로 묶여 한 번에 펼쳐진다.
-  await page.getByTestId("region-task-browse-all").click();
-  await expect(page.getByTestId("region-category-polish")).toBeVisible();
-  await shotOf(page, "region-task-modal", "04-modal-category.png");
-  await page.getByTestId("region-task-browse-all").click();
+  // 「모두 보기」 시트와 실내 초안 접이식 줄은 사라졌다 — 진입 화면은 칩 3개가 전부고,
+  // 실내 초안은 문장("여관 실내를 방으로 나눠줘")이 라우팅한다.
+  await expect(page.getByTestId("region-task-browse-all")).toHaveCount(0);
+  await expect(page.getByTestId("region-task-direct-disclosure")).toHaveCount(0);
+  expect(await page.getByTestId("region-task-suggestions").locator("button").count()).toBe(3);
 
-  // `/` 자동완성 — 전체 명령에서 찾는다.
+  // `/` 자동완성 — 전체 명령에서 찾는다(시트가 하던 일).
   const input = page.getByTestId("region-task-input");
   await input.click();
   await input.fill("/");
   await expect(page.getByTestId("region-task-autocomplete")).toBeVisible();
   await shotOf(page, "region-task-modal", "06-modal-autocomplete.png");
   await input.fill("");
-
-  // AI 없이 실내 초안 — 제목과 버튼이 다른 말을 한다.
-  await page.getByTestId("region-task-direct-disclosure").locator("summary").click();
-  await expect(page.getByTestId("region-task-direct-room")).toBeVisible();
-  await shotOf(page, "region-task-modal", "05-modal-direct-open.png");
 });
 
 test("선택 칩 바 — AI 작업 라벨 + 지우기 확인", async ({ page }) => {

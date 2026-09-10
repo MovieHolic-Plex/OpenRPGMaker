@@ -44,13 +44,16 @@ describe("openRegionTaskModal", () => {
     expect(chip?.querySelector("svg")).not.toBeNull();
   });
 
-  it("빈 지시로 실행하면 runner를 호출하지 않고 안내한다", () => {
+  it("빈 지시로 실행하면 다듬기로 간다 — 버튼 하나가 두 뜻을 겸한다", () => {
     restoreDom = installFakeDom();
     const run = vi.fn();
     const root = openModal({ mapId: "m1", region: REGION, run });
+    // 예전에는 "지시 내용을 입력하세요" 로 막았다. 빈 사각형에 할 수 있는 일이 하나뿐인데
+    // (주변과 어울리게) 그걸 막고 다른 버튼을 찾게 하는 것은 왕복만 만든다(스펙 §5).
+    expect(findByTestId(root, "region-task-run")?.textContent).toContain("다듬기");
     findByTestId(root, "region-task-run")?.click();
-    expect(run).not.toHaveBeenCalled();
-    expect(findByTestId(root, "region-task-summary")?.textContent).toContain("입력");
+    expect(run).toHaveBeenCalledTimes(1);
+    expect(run.mock.calls[0]![0]).toMatchObject({ mode: "polish" });
   });
 
   it("지시를 넣고 실행하면 영역·지시로 runner를 부르고 결과를 요약한다", async () => {
@@ -193,7 +196,8 @@ describe("openRegionTaskModal", () => {
     }));
     const root = openModal({ mapId: "m1", region: REGION, run });
     const input = findByTestId(root, "region-task-input");
-    if (input) input.value = "나무";
+    // ⚠ "나무" 는 생성기 키워드다 — 이제 forest 생성기로 라우팅되어 조수 러너가 안 불린다.
+    if (input) input.value = "상인 NPC 를 놓아줘";
     findByTestId(root, "region-task-run")?.click();
     await flush();
     findByTestId(root, "region-task-copy-log")?.click();
@@ -236,7 +240,8 @@ describe("영역 재지정 (retargetRegionTaskModal)", () => {
     const run = vi.fn(() => new Promise<never>(() => {}));
     const root = openModal({ mapId: "m1", region: REGION, run: run as never });
     const input = findByTestId(root, "region-task-input");
-    if (input) input.value = "나무";
+    // 생성기 키워드가 없는 문장 — 끝나지 않는 조수 러너에 머물러야 실행 단계가 유지된다.
+    if (input) input.value = "상인 NPC 를 놓아줘";
     findByTestId(root, "region-task-run")?.click();
     await flush();
 
@@ -370,18 +375,14 @@ describe("pending 비교 UI", () => {
     expect(findByTestId(rootB, "region-task-input")).not.toBeNull();
   });
 
-  it("계열 소제목과 추천 칩이 SVG 아이콘과 라벨을 렌더한다", () => {
+  it("추천 칩이 SVG 아이콘과 라벨을 렌더한다", () => {
     restoreDom = installFakeDom();
+    // 계열 소제목 검사는 「모두 보기」 시트와 함께 사라졌다 — 진입 화면에 계열이 없다.
     const root = openModal({ mapId: "m1", region: REGION });
-    const categoryTitle = root.querySelector(".region-task-category-group-title");
-    expect(categoryTitle).not.toBeNull();
-    expect(categoryTitle?.querySelector("svg")).not.toBeNull();
-    expect(categoryTitle?.querySelector(".region-task-chip-label")).not.toBeNull();
-
-    const suggestChip = root.querySelector(".region-task-suggest-chip");
-    expect(suggestChip).not.toBeNull();
-    expect(suggestChip?.querySelector("svg")).not.toBeNull();
-    expect(suggestChip?.querySelector(".region-task-chip-label")).not.toBeNull();
+    const chip = root.querySelector(".region-task-suggest-chip");
+    expect(chip).not.toBeNull();
+    expect(chip?.querySelector("svg")).not.toBeNull();
+    expect(chip?.querySelector(".region-task-chip-label")).not.toBeNull();
   });
 
   it("앵커 팝오버는 뷰포트 밖으로 나가지 않게 left/top/maxHeight를 클램프한다", () => {
