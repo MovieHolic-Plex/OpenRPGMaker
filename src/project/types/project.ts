@@ -83,8 +83,20 @@ export interface GameMap {
   /**
    * 생성·시공 시 bbox 설계도. 타일 시공 후에도 남겨 두어
    * "가운데 파란 집 옮겨줘" 같은 영역 쿼리에 쓴다. 선택 필드 — 옛 맵 호환.
+   *
+   * **사람이 편집하는 층이 아니다.** `setMapLayoutPlan` 이 통째로 갈아치우는 빌더 기록이라
+   * 손으로 고친 값이 재시공에서 조용히 사라진다. 사람·이벤트·인카운터가 이름으로 가리키는
+   * 층은 `locations` 이고, 둘 사이 이동은 `adoptLayoutRegionsAsLocations` 한 방향뿐이다
+   * (layoutPlan 은 절대 역으로 바뀌지 않는다). `openwiki/runtime-project-schema.md` 의
+   * 「명명 로케이션 레이어」 절 참조.
    */
   layoutPlan?: MapLayoutPlan;
+  /**
+   * 사람이 저작하는 명명 로케이션 층. 안정 ID(`id`) + 사용자 표시명(`name`) 이 분리돼
+   * 이름을 바꿔도 이벤트 조건·인카운터 참조가 살아 있다.
+   * optional 이라 옛 맵은 필드 자체가 없다(마이그레이션 불필요, 옛 빌더 맵도 불변).
+   */
+  locations?: MapNamedLocation[];
   /** 시공 당시 설계서와 시드. 원본 변경이 기존 맵을 바꾸지 않는다. */
   villageDesignSource?: {
     preset: VillageLayoutPresetRecord;
@@ -209,9 +221,49 @@ export interface EncounterConditions {
   atLeast?: number;
   minPartyLevel?: number;
   maxPartyLevel?: number;
+  /**
+   * 레거시 생좌표 사각형. 계속 지원한다 — 옛 저작물은 그대로 동작하고,
+   * 새 저작은 `locationId` 를 권장한다. 둘이 함께 있으면 `locationId` 가 이긴다.
+   */
   region?: Rect;
+  /**
+   * 같은 맵의 `locations[].id`. 사각형을 베끼지 않고 이름 붙은 로케이션을 가리킨다.
+   * 로케이션을 넓히면 이 조건도 함께 넓어진다(복사본이 없으므로 어긋날 수 없다).
+   */
+  locationId?: string;
   timePhase?: TimePhase;
   season?: Season;
+}
+
+/**
+ * 사람이 이름 붙인 맵 영역 한 개. 맵 안에서만 유효한 ID 다(맵 복사는 ID 를 그대로 옮긴다 —
+ * 참조도 같은 맵 안에서만 걸리므로 복사본은 자기 로케이션을 가리킨다).
+ */
+export interface MapNamedLocation {
+  /** 맵 안에서 유일한 안정 ID. 이름을 바꿔도 변하지 않는다. */
+  id: string;
+  /** 사용자·조수 대화에 쓰는 표시명. 중복이 허용되지만 편집기가 경고한다. */
+  name: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** 저작 의도 메모. 조수 프롬프트에 그대로 실린다. */
+  note?: string;
+  /** 검색·조수 질의 보조 낱말. */
+  tags?: string[];
+  /** 편집기 레이어 표시색(#RRGGBB). 없으면 ID 해시로 결정론적 배정. */
+  color?: string;
+  /** layoutPlan.regions 에서 승격돼 왔다면 그 출처. 되돌림/추적용이며 역방향 동기화는 없다. */
+  origin?: MapNamedLocationOrigin;
+}
+
+export interface MapNamedLocationOrigin {
+  kind: "layoutRegion";
+  /** 원본 MapLayoutRegion.id. 원본이 사라져도 로케이션은 남는다(스냅샷). */
+  regionId: string;
+  /** 승격 당시 layoutPlan.kind. */
+  planKind?: string;
 }
 
 /**

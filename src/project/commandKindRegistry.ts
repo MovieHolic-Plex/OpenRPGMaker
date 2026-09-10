@@ -113,6 +113,7 @@ export const CONDITION_KINDS = [
   "timePhase",
   "season",
   "npcActivity",
+  "insideLocation",
   "friendshipAtLeast",
   "relationshipAtLeast",
   "battleResult",

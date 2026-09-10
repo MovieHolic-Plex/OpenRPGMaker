@@ -1,4 +1,5 @@
 import { TILE } from "@/project/defaults";
+import { shiftMapLocations } from "@/project/mapNamedLocations";
 import { store } from "@/project/store";
 import type { GameMap, MapId, Project } from "@/project/types";
 
@@ -28,6 +29,8 @@ export function applyMapShift(project: Project, mapId: MapId, offset: MapShiftOf
     event.x = clamp(event.x + dx, 0, map.width - 1);
     event.y = clamp(event.y + dy, 0, map.height - 1);
   }
+  // 로케이션도 내용과 같은 방향으로 민다 — 이름 붙은 장소가 타일과 어긋나면 조건이 거짓말을 한다.
+  shiftMapLocations(map, dx, dy);
   if (project.startMapId === mapId) {
     project.startPos = {
       x: clamp(project.startPos.x + dx, 0, map.width - 1),

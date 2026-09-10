@@ -15,6 +15,7 @@ import { hasCharacterId } from "@/project/socialKey";
 import { collectNpcActivitySuggestions } from "@/editor/panels/eventEditor/options";
 import { advancedConditionEntries, pageConditionField } from "@/editor/panels/eventEditor/pageConditionLayout";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
+import { lookupLocation } from "@/editor/mapLocationLabels";
 import type {
   Command,
   Condition,
@@ -573,6 +574,27 @@ function validateCondition(
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: { testId: "event-condition-run-flag" },
+        });
+      }
+      return;
+    case "insideLocation":
+      if (!condition.locationId.trim()) {
+        issues.push({
+          severity: "error",
+          code: "condition.insideLocation.empty",
+          message: "로케이션을 선택하지 않았습니다.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: { testId: "event-condition-inside-location" },
+        });
+      } else if (!lookupLocation(condition.locationId)) {
+        issues.push({
+          severity: "error",
+          code: "condition.insideLocation.missing",
+          message: `로케이션 '${condition.locationId}' 이 삭제됐습니다. 로케이션 레이어에서 다시 지정하거나 조건을 지워 주세요.`,
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: { testId: "event-condition-inside-location" },
         });
       }
       return;

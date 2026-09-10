@@ -28,7 +28,14 @@ export function eligibleEncounterEntries(
     if (conditions.variableId && (session.variables[conditions.variableId] ?? 0) < (conditions.atLeast ?? 0)) return false;
     if (conditions.minPartyLevel !== undefined && partyLevel < conditions.minPartyLevel) return false;
     if (conditions.maxPartyLevel !== undefined && partyLevel > conditions.maxPartyLevel) return false;
-    if (conditions.region && !pointInRect(position, conditions.region)) return false;
+    // 로케이션 참조가 레거시 raw 사각형보다 이긴다. 둘을 같이 쓰는 저작은 없지만,
+    // 복구로 freezeRect 를 받은 직후처럼 공존 상황이 생기면 이름 붙은 장소가 진상이다.
+    if (conditions.locationId) {
+      const location = (map.locations ?? []).find((entry) => entry.id === conditions.locationId);
+      // 삭제된 로케이션을 가리키는 항목은 뿱지 않는다 — 맵 전역으로 조용하게 번지면
+      // 서생지 적이 마을 광장에서 튀어나온다. lint 가 `map-location-missing-ref` 로 알린다.
+      if (!location || !pointInRect(position, location)) return false;
+    } else if (conditions.region && !pointInRect(position, conditions.region)) return false;
     if (conditions.timePhase && !conditionMatchesTimePhase(session.gameTime, conditions.timePhase)) return false;
     if (conditions.season && !conditionMatchesSeason(session.gameTime, conditions.season)) return false;
     return true;

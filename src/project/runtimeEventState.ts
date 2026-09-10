@@ -1,4 +1,4 @@
-import { resolveEventPage } from "@/project/io";
+import { resolveEventPage, type EventPageLocationContext } from "@/project/io";
 import { resolveEventAppearanceGraphic } from "./characterAppearances";
 import {
   footprintBounds,
@@ -105,8 +105,13 @@ export function runtimeEventView(
   session: PlaySessionLike,
   positions: RuntimeEventPositions,
   project?: Pick<Project, "database" | "assets">,
+  /**
+   * 명명 로케이션 기하. `insideLocation` 페이지 조건이만 읽고, 순회기가 현재 맵에서 넘긴다.
+   * 삹잡이 맵을 가로지러 오간 이벤트도 **지금 서 있는 맵**의 로케이션으로 평가된다.
+   */
+  pageContext?: EventPageLocationContext,
 ): RuntimeEventView {
-  const authoredPage = resolveEventPage(event, session);
+  const authoredPage = resolveEventPage(event, session, pageContext);
   const page = authoredPage && project
     ? { ...authoredPage, graphic: resolveEventAppearanceGraphic(project, authoredPage.graphic) }
     : authoredPage;
@@ -156,6 +161,7 @@ function forEachRuntimeEventView(
   visit: (view: RuntimeEventView) => boolean | void
 ): void {
   const appearanceProject = project.database && project.assets ? { database: project.database, assets: project.assets } : undefined;
+  const pageContext: EventPageLocationContext = { locations: map.locations };
   const erased = idSet(session.erasedEventIds);
   const removedOnCurrentMap = removedEventSet(session, map.id);
   const locations = session.eventLocations;
@@ -166,7 +172,7 @@ function forEachRuntimeEventView(
     const location = locations?.[event.id];
     if (location && location.mapId !== map.id) continue;
     included.add(event.id);
-    if (visit(runtimeEventView(event, session, positions, appearanceProject)) === true) return;
+    if (visit(runtimeEventView(event, session, positions, appearanceProject, pageContext)) === true) return;
   }
   // 다른 맵의 이벤트는 **이 맵으로 옮겨진 것만** 후보다. 옮겨진 이벤트가 없으면
   // 맵 전체 순회를 건너뛴다(대부분의 프레임이 여기에 해당한다). 후보 집합은 다른 맵이
@@ -186,7 +192,7 @@ function forEachRuntimeEventView(
       if (included.has(event.id)) continue;
       if (removedOnSourceMap?.has(event.id)) continue;
       included.add(event.id);
-      if (visit(runtimeEventView(event, session, positions, appearanceProject)) === true) return;
+      if (visit(runtimeEventView(event, session, positions, appearanceProject, pageContext)) === true) return;
     }
   }
   const spawned = session.spawnedEvents;
@@ -198,7 +204,7 @@ function forEachRuntimeEventView(
     const event = materializeSpawnedEvent(project, spawnedEventId, spawn);
     if (!event) continue;
     included.add(spawnedEventId);
-    if (visit(runtimeEventView(event, session, positions, appearanceProject)) === true) return;
+    if (visit(runtimeEventView(event, session, positions, appearanceProject, pageContext)) === true) return;
   }
 }
 

@@ -172,6 +172,10 @@ export interface BattleSessionState {
   readonly npcActivities?: Readonly<Record<string, string>>;
   readonly friendship?: Readonly<Record<string, number>>;
   readonly relationships?: Readonly<Record<string, RelationshipState>>;
+  /** 전투 개시 시점의 필드 위치. 트룹 배틀 이벤트의 insideLocation 조건이 이것으로 판정한다. */
+  readonly currentMapId?: string;
+  readonly x?: number;
+  readonly y?: number;
 }
 
 export interface BattlePartyProgress {

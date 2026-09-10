@@ -96,6 +96,7 @@
 @import "./editor/rule-audit.css";
 @import "./editor/region-task.css";
 @import "./editor/walk-encounter.css";
+@import "./editor/map-location-layer.css";
 @import "./editor/build-palette.css";
 @import "./editor/map-event-search.css";
 @import "./editor/event-marker-tooltip.css";

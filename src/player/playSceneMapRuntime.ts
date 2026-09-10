@@ -564,7 +564,7 @@ export function activeRuntimeEvents(
     .filter((event) => event.trigger.kind === triggerKind
       && (event.event.pages?.length
         ? event.page !== undefined
-        : evalCondition(scene.session, event.event.condition, event.event)));
+        : evalCondition(scene.session, event.event.condition, event.event, { map: scene.map })));
 }
 
 export function syncRuntimeState(scene: PlaySceneContext): void {

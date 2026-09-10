@@ -22,6 +22,7 @@ import { LIGHTING_TOOLS } from "./lightingTools";
 import { ACTION_TOOLS } from "./actionTools";
 import { PROJECT_WIKI_TOOLS } from "./projectWikiTools";
 import { MAP_TOOLS } from "./mapTools";
+import { MAP_LOCATION_TOOLS } from "./mapLocationTools";
 import { MONSTER_SYSTEM_TOOLS } from "./monsterSystemTools";
 import { PALETTE_PRESET_TOOLS } from "./palettePresetTools";
 import { PLAY_TOOLS } from "./playTools";
@@ -173,6 +174,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
   ...withDomain(TILE_QUERY_TOOLS, "tile"),
   ...withDomain(MAP_TOOLS, "map"),
+  ...withDomain(MAP_LOCATION_TOOLS, "map"),
   ...withDomain(ACTION_TOOLS, "map"),
   ...withDomain(MAP_GEN_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),

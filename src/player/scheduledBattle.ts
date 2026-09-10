@@ -31,7 +31,7 @@ export function resumeScheduledBattle(scene: PlaySceneContext, key: string, proc
       return !!view && (view.pageId ?? 'legacy') === process.pageId && view.trigger.kind === 'parallel'
         && (view.event.pages?.length
           ? view.page !== undefined
-          : evalCondition(scene.session, view.event.condition, view.event));
+          : evalCondition(scene.session, view.event.condition, view.event, { map: scene.map }));
     }
     const event = project.commonEvents.find(entry => entry.id === process.pageId);
     return event?.trigger === 'parallel' && (!event.conditionSwitchId || scene.session.switches[event.conditionSwitchId] === true);

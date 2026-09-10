@@ -7,6 +7,7 @@ import type { Condition } from "@/project/types";
 import { createPreviewSimState, previewSessionFromSimState } from "./previewSimulation";
 
 import { relationshipStateName } from "@/project/relationshipState";
+import { insideLocationSentence } from "@/editor/mapLocationLabels";
 type PreviewVerdict = boolean | undefined;
 
 /**
@@ -103,6 +104,9 @@ function evaluatePreviewCondition(
     case "npcActivity":
       if (!hostEventId || !Object.hasOwn(session.npcActivities ?? {}, hostEventId)) return undefined;
       break;
+    case "insideLocation":
+      // 미리보기 세션에는 주인공 좌표가 없다 — 참/거짓을 지어내는 대신 "판정 불가"로 남긴다.
+      return undefined;
     case "friendshipAtLeast": {
       const npcKey = condition.npcKey?.trim();
       if (!npcKey || !Object.hasOwn(session.friendship ?? {}, npcKey)) return undefined;
@@ -146,6 +150,8 @@ function describeCondition(condition: Condition | undefined): string {
       return `계절 ${seasonName(condition.season)}`;
     case "npcActivity":
       return `활동 ${condition.activity || "(없음)"}일 때`;
+    case "insideLocation":
+      return `${insideLocationSentence(condition.locationId, condition.inside)}일 때`;
     case "friendshipAtLeast":
       return `${condition.npcKey?.trim() || "이 이벤트"} 호감도 ${condition.value} 이상`;
     case "relationshipAtLeast":

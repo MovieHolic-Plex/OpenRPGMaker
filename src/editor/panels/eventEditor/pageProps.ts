@@ -62,6 +62,7 @@ import {
 import { relationshipStateName } from "@/project/relationshipState";
 import { appearanceBindingControl } from "../appearanceBindingControl";
 import { getCharacterAppearance } from "@/project/characterAppearances";
+import { insideLocationSentence, mapLocationLabel } from "@/editor/mapLocationLabels";
 export function renderEventNameControl(
   mapId: MapId,
   eventId: string,
@@ -420,6 +421,8 @@ function pageConditionSummary(condition: EventPageCondition): string {
       return `계절 ${seasonLabel(condition.season)}`;
     case "npcActivity":
       return `활동 ${condition.activity}`;
+    case "insideLocation":
+      return insideLocationSentence(condition.locationId, condition.inside);
     case "friendshipAtLeast":
       return `호감도 ${condition.npcKey || "이 이벤트"} ${condition.value} 이상`;
     case "relationshipAtLeast":
@@ -1264,6 +1267,8 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
       return seasonLabel(condition.season);
     case "npcActivity":
       return truncateBadgeToken(condition.activity, 10);
+    case "insideLocation":
+      return `${truncateBadgeToken(mapLocationLabel(condition.locationId), 10)} ${condition.inside ? "안" : "밖"}`;
     case "friendshipAtLeast":
       return `호감≥${condition.value}`;
     case "relationshipAtLeast":

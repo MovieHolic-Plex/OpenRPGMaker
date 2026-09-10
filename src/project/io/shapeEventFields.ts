@@ -42,6 +42,7 @@ export function validateMaps(value: unknown): Record<string, unknown> {
     if (map.roguelikeRoom !== undefined) validateRoguelikeRoom(`map ${id}.roguelikeRoom`, map.roguelikeRoom);
     if (map.safeZones !== undefined) validateSafeZones(`map ${id}.safeZones`, map.safeZones);
     if (map.farmableArea !== undefined) validateRectArray(`map ${id}.farmableArea`, map.farmableArea);
+    if (map.locations !== undefined) validateMapNamedLocations(`map ${id}.locations`, map.locations, width, height);
     if (map.defaultLighting !== undefined) validateLightingState(`map ${id}.defaultLighting`, map.defaultLighting);
     for (const [eventIndex, eventValue] of requireArray(`map ${id}.events`, map.events).entries()) {
       validateEventShape(`map ${id}.events[${eventIndex}]`, eventValue);
@@ -72,6 +73,10 @@ function validateEncounterConditions(label: string, value: unknown): void {
   if (conditions.minPartyLevel !== undefined) requireNumber(`${label}.minPartyLevel`, conditions.minPartyLevel);
   if (conditions.maxPartyLevel !== undefined) requireNumber(`${label}.maxPartyLevel`, conditions.maxPartyLevel);
   if (conditions.region !== undefined) validateRect(`${label}.region`, conditions.region);
+  if (conditions.locationId !== undefined) {
+    const locationId = requireString(`${label}.locationId`, conditions.locationId);
+    assert(locationId.trim().length > 0, `${label}.locationId는 바울 수 없습니다.`);
+  }
   if (conditions.timePhase !== undefined) {
     const phase = requireString(`${label}.timePhase`, conditions.timePhase);
     assert(isTimePhase(phase), `${label}.timePhase가 잘못되었습니다.`);
@@ -152,6 +157,34 @@ function validateSafeZones(label: string, value: unknown): void {
 function validateRectArray(label: string, value: unknown): void {
   for (const [index, rectValue] of requireArray(label, value).entries()) {
     validateRect(`${label}[${index}]`, rectValue);
+  }
+}
+
+/**
+ * 명명 로케션 레이어. **로드 시 맵 밖 사각형을 거부하지 않는다** — 맵 폭이 준 저장본이
+ * 열리지 않으면 사용자가 복구할 수단이 사라진다. 기하 모수는 편집기 통로가 클릨하고
+ * `projectLint` 가 진단으로 알린다. 이곳은 타입·ID 유일성만 보장한다.
+ */
+function validateMapNamedLocations(label: string, value: unknown, _width: number, _height: number): void {
+  const seen = new Set<string>();
+  for (const [index, entryValue] of requireArray(label, value).entries()) {
+    const entry = requireRecord(`${label}[${index}]`, entryValue);
+    const locationId = requireString(`${label}[${index}].id`, entry.id);
+    assert(locationId.trim().length > 0, `${label}[${index}].id는 바울 수 없습니다.`);
+    assert(!seen.has(locationId), `${label}[${index}].id가 중복입니다: ${locationId}`);
+    seen.add(locationId);
+    const name = requireString(`${label}[${index}].name`, entry.name);
+    assert(name.trim().length > 0, `${label}[${index}].name은 바울 수 없습니다.`);
+    validateRect(`${label}[${index}]`, entry);
+    if (entry.note !== undefined) requireString(`${label}[${index}].note`, entry.note);
+    if (entry.color !== undefined) requireString(`${label}[${index}].color`, entry.color);
+    if (entry.tags !== undefined) validateIdArray(`${label}[${index}].tags`, entry.tags);
+    if (entry.origin !== undefined) {
+      const origin = requireRecord(`${label}[${index}].origin`, entry.origin);
+      assert(origin.kind === "layoutRegion", `${label}[${index}].origin.kind가 지원되지 않습니다.`);
+      requireString(`${label}[${index}].origin.regionId`, origin.regionId);
+      if (origin.planKind !== undefined) requireString(`${label}[${index}].origin.planKind`, origin.planKind);
+    }
   }
 }
 
