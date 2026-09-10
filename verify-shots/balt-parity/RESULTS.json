@@ -1,0 +1,85 @@
+{
+  "baseUrl": "http://127.0.0.1:9864",
+  "pageErrors": [],
+  "results": [
+    {
+      "name": "A-dry-tree-stack-keeps-terrain",
+      "status": "PASS",
+      "observed": {
+        "column": 2,
+        "canopies": [
+          261,
+          261,
+          261
+        ],
+        "terrainUnder": [
+          240,
+          240
+        ],
+        "trunkBottomY": 10
+      },
+      "screenshot": "A-dry-tree-stack-keeps-terrain.png"
+    },
+    {
+      "name": "B-erasing-mid-stack-exposes-no-buried-trunk",
+      "status": "PASS",
+      "observed": {
+        "erased": {
+          "x": 2,
+          "y": 8
+        },
+        "lowerNow": 240
+      },
+      "screenshot": "B-erasing-mid-stack-exposes-no-buried-trunk.png"
+    },
+    {
+      "name": "C-stacking-one-canopy-is-one-undo-unit",
+      "status": "PASS",
+      "observed": {
+        "changedCells": [
+          "U122"
+        ]
+      },
+      "screenshot": "C-stacking-one-canopy-is-one-undo-unit.png"
+    },
+    {
+      "name": "D-conifer-without-alternatives-still-forces-companion",
+      "status": "PASS",
+      "observed": {
+        "target": {
+          "x": 7,
+          "y": 9
+        },
+        "trunk": 290,
+        "canopy": 260
+      },
+      "screenshot": "D-conifer-without-alternatives-still-forces-companion.png"
+    },
+    {
+      "name": "E-long-table-extends-past-three-cells",
+      "status": "PASS",
+      "observed": {
+        "row": {
+          "x": 2,
+          "y": 9
+        },
+        "three": [
+          325,
+          326,
+          327
+        ],
+        "four": [
+          325,
+          326,
+          326,
+          327
+        ],
+        "tableRules": [
+          "r_interior_long_table_h_pair",
+          "r_interior_long_table_h_end"
+        ]
+      },
+      "screenshot": "E-long-table-extends-past-three-cells.png"
+    }
+  ]
+}

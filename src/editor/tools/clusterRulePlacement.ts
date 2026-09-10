@@ -1,4 +1,9 @@
 import { TILE } from "@/project/defaults/constants";
+import {
+  acceptedCompanionTiles,
+  adjacencyCompanionSatisfied,
+  clusterAdjacencyParams,
+} from "@/project/lint/clusterRuleValidators";
 import { isCombinedTownTileset, isTreeTrunkTileId, isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
 import type { ClusterRule, GameMap, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { inMapBounds, type Point } from "./mapHelpers";
@@ -8,7 +13,9 @@ type Layer = "lower" | "upper";
 
 interface HardAdjacencyContext {
   readonly a: number;
+  readonly aAlt: readonly number[];
   readonly b: number;
+  readonly bAlt: readonly number[];
   readonly group: TileGroupMetadata;
   readonly relation: ClusterRelation;
   readonly rule: ClusterRule;
@@ -110,6 +117,10 @@ export function expandHardClusterPlacement(input: {
       for (const context of hardAdjacencyContexts(tileset, entry.tile)) {
         const companion = companionFor(entry, context);
         if (!companion) continue;
+        // 이미 맵에 **허용된 대체 타일**(`bAlt`/`aAlt`)이 서 있으면 규칙은 그대로 지켜졌다 —
+        // 그 칸은 건드리지 않는다. 안 그러면 검사기가 합법이라 부르는 배치를 확장기가 덮어쓰거나
+        // 거부한다(실측: 마른나무 스택 지형 파괴, 3칸 넘는 긴 탁자 거부).
+        if (companionAlreadySatisfied(map, planned, originKey, entry, context)) continue;
         const next: PlannedTile = {
           layer: layerForClusterTile(tileset, context.group, companion.tile),
           tile: companion.tile,
@@ -216,24 +227,42 @@ function validatePlanned(
   return { autoTiles, edits: [...planned.values()], ok: true };
 }
 
+/**
+ * 동반 칸이 **이미** 규칙을 만족하는가 — 정본 동반 타일이든 대체 타일(`bAlt`/`aAlt`)이든.
+ * 허용 목록과 판정은 검사기(`clusterRuleValidators`)에서 그대로 빌려 쓴다 — 두 계약이 같은
+ * 목록을 읽지 않으면 이 결함이 다시 생긴다.
+ *
+ * 두 가지는 만족으로 치지 않는다:
+ *  1. 사용자가 직접 누른 원점 칸 — 거기에 있던 타일은 지금 덮어쓰는 중이다.
+ *  2. 이번 배치가 이미 계획한 칸 — 계획값이 맵의 과거값을 이긴다(`add` 가 충돌까지 봐준다).
+ */
+function companionAlreadySatisfied(
+  map: GameMap,
+  planned: ReadonlyMap<string, PlannedTile>,
+  originKey: string,
+  entry: PlannedTile,
+  context: HardAdjacencyContext
+): boolean {
+  const target = entry.tile === context.a
+    ? neighbor(entry, context.relation)
+    : neighbor(entry, oppositeRelation(context.relation));
+  const key = coordKey(target.x, target.y);
+  if (key === originKey || planned.has(key)) return false;
+  const direction = entry.tile === context.a ? "forward" : "reverse";
+  return adjacencyCompanionSatisfied(map, target, acceptedCompanionTiles(context, direction));
+}
+
 function hardAdjacencyContexts(tileset: TilesetDef, tile: number): readonly HardAdjacencyContext[] {
   const contexts: HardAdjacencyContext[] = [];
   for (const group of tileset.tileGroups ?? []) {
     for (const rule of group.rules ?? []) {
       if (rule.kind !== "adjacency" || rule.strength !== "hard") continue;
-      const params = adjacencyParams(rule.params);
+      const params = clusterAdjacencyParams(rule.params);
       if (!params || (params.a !== tile && params.b !== tile)) continue;
       contexts.push({ ...params, group, rule });
     }
   }
   return contexts;
-}
-
-function adjacencyParams(params: Record<string, unknown>): { readonly a: number; readonly b: number; readonly relation: ClusterRelation } | null {
-  const a = integerParam(params.a);
-  const b = integerParam(params.b);
-  const relation = relationParam(params.relation);
-  return a === null || b === null || !relation ? null : { a, b, relation };
 }
 
 function companionFor(entry: PlannedTile, context: HardAdjacencyContext): { readonly tile: number; readonly x: number; readonly y: number } | null {
@@ -278,22 +307,6 @@ function layerForClusterTile(tileset: TilesetDef, group: TileGroupMetadata, tile
   if (isCombinedTownTileset(tileset) && isTreeTrunkTileId(tile)) return "lower";
   if (group.defaultLayer === "upper" || group.role === "prop" || isUpperOnlyOverlayTile(tileset, tile)) return "upper";
   return tileset.priority[tile] === "upper" ? "upper" : "lower";
-}
-
-function integerParam(value: unknown): number | null {
-  return typeof value === "number" && Number.isInteger(value) ? value : null;
-}
-
-function relationParam(value: unknown): ClusterRelation | null {
-  switch (value) {
-    case "aAboveB":
-    case "aBelowB":
-    case "aLeftOfB":
-    case "aRightOfB":
-      return value;
-    default:
-      return null;
-  }
 }
 
 function coordKey(x: number, y: number): string {

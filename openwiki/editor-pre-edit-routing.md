@@ -41,7 +41,10 @@ Regression coverage: `test/exteriorDoorBackground.test.ts`.
   `freehandPaintOptions`; rejection flows to `clusterAssistRecovery.ts`, which offers a
   one-undo `exactPlacement` write. `exactPlacement` still refuses protected cells and foreign
   upper objects and skips tree-pair repair. Stamps, AI tools and structure kits are untouched.
-  Details, the protected-cell cache trap and the out-of-scope `bAlt` parity candidate:
+  Cluster expansion accepts the alternatives (`bAlt`/`aAlt`) the validator accepts: it never
+  overwrites or rejects a companion cell that already holds a legal alternative, so dry-tree
+  stacks and tables longer than their closed form are paintable by hand.
+  Details, the protected-cell cache trap and the `bAlt` parity verdict:
   `openwiki/editor-validation.md`.
 - Regression seams: `test/editScenePaintHistory.test.ts`,
   `test/tileBrushState.test.ts`, `test/structureKitBrushConditions.test.ts`,

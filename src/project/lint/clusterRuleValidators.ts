@@ -175,26 +175,61 @@ function adjacencyViolation(map: GameMap, group: TileGroupMetadata, rule: Cluste
   const coords = new Map<string, ClusterRuleViolationCoord>();
   for (const coord of tileCoords(map, params.a)) {
     const expected = neighbor(coord, params.relation);
-    // bAlt: a 옆에 b 대신 와도 되는 대체 타일(예: 마른나무 261 세로 스택 — 261 아래 261 허용, 체인 끝은 291).
-    const ok = isInside(map, expected.x, expected.y)
-      && (hasTileAt(map, expected.x, expected.y, params.b)
-        || params.bAlt.some((alt) => hasTileAt(map, expected.x, expected.y, alt)));
-    if (!ok) {
+    if (!adjacencyCompanionSatisfied(map, expected, acceptedCompanionTiles(params, "forward"))) {
       coords.set(coordKey(coord), { mapId: map.id, x: coord.x, y: coord.y });
     }
   }
   for (const coord of tileCoords(map, params.b)) {
     const expected = neighbor(coord, oppositeRelation(params.relation));
-    // aAlt is the symmetric counterpart of bAlt, not permission to skip the reverse check.
-    if (!isInside(map, expected.x, expected.y) || !(hasTileAt(map, expected.x, expected.y, params.a)
-      || params.aAlt.some((alt) => hasTileAt(map, expected.x, expected.y, alt)))) {
+    if (!adjacencyCompanionSatisfied(map, expected, acceptedCompanionTiles(params, "reverse"))) {
       coords.set(coordKey(coord), { mapId: map.id, x: coord.x, y: coord.y });
     }
   }
   return coords.size > 0 ? baseViolation(group, rule, [...coords.values()]) : null;
 }
 
-function adjacencyParams(params: Record<string, unknown>): { readonly a: number; readonly b: number; readonly aAlt: readonly number[]; readonly bAlt: readonly number[]; readonly relation: RuleRelation } | null {
+/**
+ * 이 규칙이 **동반 칸에 허용하는 타일 전체**. 정본 동반 타일이 맨 앞이고 그 뒤가 대체 타일이다.
+ *
+ * `bAlt` 는 「a 옆에 b 대신 와도 되는 타일」이다 — 마른나무 261 세로 스택(261 아래 261 허용,
+ * 체인 끝은 291)과 활엽수 대각 겹침(293 자리에 다음 원자의 262), 긴 탁자 임의 길이
+ * (326 오른쪽에 326)가 모두 이 장치를 쓴다. `aAlt` 는 역방향 검사의 대칭 짝이며
+ * **역방향 검사를 건너뛸 권한이 아니다**.
+ *
+ * 검사기와 배치 확장기(`expandHardClusterPlacement`)가 **같은 목록**을 읽어야 한다. 예전에는
+ * 확장기만 이 목록을 몰라서, 규칙이 합법이라고 말하는 배치를 손붓으로 만들 수 없었다(실측:
+ * 3칸을 넘는 긴 탁자 거부, 마른나무 스택 아래 칸에 291 이 몰래 찍혀 지형 파괴).
+ */
+export function acceptedCompanionTiles(
+  params: ClusterAdjacencyParams,
+  direction: "forward" | "reverse"
+): readonly number[] {
+  return direction === "forward" ? [params.b, ...params.bAlt] : [params.a, ...params.aAlt];
+}
+
+/** 동반 칸이 이미 허용 타일 중 하나를 들고 있는가. 레이어를 가리지 않는다(수관 upper + 밑동 lower). */
+export function adjacencyCompanionSatisfied(
+  map: GameMap,
+  at: { readonly x: number; readonly y: number },
+  accepted: readonly number[]
+): boolean {
+  return isInside(map, at.x, at.y) && hasAnyTileAt(map, at.x, at.y, new Set(accepted));
+}
+
+export type ClusterAdjacencyParams = {
+  readonly a: number;
+  readonly b: number;
+  readonly aAlt: readonly number[];
+  readonly bAlt: readonly number[];
+  readonly relation: RuleRelation;
+};
+
+/** 규칙 params → 검사·확장이 함께 쓰는 정규형. 잘못된 params 는 null(조용히 무시). */
+export function clusterAdjacencyParams(params: Record<string, unknown>): ClusterAdjacencyParams | null {
+  return adjacencyParams(params);
+}
+
+function adjacencyParams(params: Record<string, unknown>): ClusterAdjacencyParams | null {
   const a = integerParam(params.a);
   const b = integerParam(params.b);
   const relation = RELATIONS.find((candidate) => candidate === params.relation);

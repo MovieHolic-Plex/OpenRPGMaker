@@ -259,3 +259,8 @@ verify-shots/battle-skin-trio/
 # OPRN-OUT-022 Combo Brush — acceptance evidence (st_01a08a5b).
 !.omo/evidence/oprn-022/
 !.omo/evidence/oprn-022/**
+
+# bAlt/aAlt 패리티 별도 리뷰 — 재현·판정 근거 (st_01a08ac6). OPRN-OUT-017 이 미뤄 둔 항목이
+# 실제 결함이었다는 증거라, 확장기 변경과 같이 리뷰돼야 한다.
+!.omo/evidence/balt-parity/
+!.omo/evidence/balt-parity/**

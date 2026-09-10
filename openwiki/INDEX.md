@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **62쪽 / 2348KB / 약 655,467 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **62쪽 / 2356KB / 약 657,985 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -20,7 +20,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-database.md` | 257KB | 56KB ⚠상한 초과 — 절을 더 쪼개라 | 1350 | ~73,776 |
 | `openwiki/editor-event-authoring.md` | 132KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 713 | ~37,928 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
-| `openwiki/editor-pre-edit-routing.md` | 93KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 465 | ~26,451 |
+| `openwiki/editor-pre-edit-routing.md` | 93KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 468 | ~26,512 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 29KB | 456 | ~17,604 |
 | `openwiki/runtime-battle.md` | 133KB | 31KB | 539 | ~37,775 |
 | `openwiki/runtime-project-schema.md` | 128KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 797 | ~34,203 |
@@ -40,7 +40,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 109, 122, 123, 125, 128, 129 |
 | `openwiki/editor-observability.md` | 1 | 310 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 286, 295, 302, 304, 327 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 289, 298, 305, 307, 330 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
 
 ## 없는 파일을 가리키는 참조
@@ -57,7 +57,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-authoring.md` | 6 | `audit-before.md`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `verify-shots/page-preview-probe/02-preview-open.png`, `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md` |
 | `openwiki/editor-event-command-fixes.md` | 13 | `.omo/evidence/event-command-remediation/U04/api-ownership.md`, `scripts/qa/runtime/event-command-remediation-u02.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u04.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u05.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u06.scenario.mjs`, `test/e2e/event-command-remediation-U02.spec.ts`, `test/e2e/event-command-remediation-U04.spec.ts`, `test/e2e/event-command-remediation-U05.spec.ts`, `test/e2e/event-command-remediation-U06.spec.ts`, `test/eventCommandRemediation/U02.test.ts`, `test/eventCommandRemediation/U04.test.ts`, `test/eventCommandRemediation/U05.test.ts`, `test/eventCommandRemediation/U06.test.ts` |
 | `openwiki/editor-event-commands.md` | 7 | `07-identifiable-previews.css`, `choicesDialog.ts`, `command-preview.css`, `event-editor.part-2/3.css`, `messageCommandDialogs.ts`, `messageDialogControls.ts`, `textCommandDialog.ts` |
-| `openwiki/editor-interior-room-harness.md` | 7 | `hearth-lit.json`, `hearth-unlit.json`, `output/evidence/concept-v2/index.html`, `output/evidence/inn-exploration-v4/index.html`, `output/evidence/inn-inspection-v5/index.html`, `output/evidence/pr618-fixtures/inn.json`, `player/SUMMARY.md` |
+| `openwiki/editor-interior-room-harness.md` | 6 | `hearth-lit.json`, `hearth-unlit.json`, `output/evidence/concept-v2/index.html`, `output/evidence/inn-exploration-v4/index.html`, `output/evidence/inn-inspection-v5/index.html`, `player/SUMMARY.md` |
 | `openwiki/editor-pre-edit-routing.md` | 7 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `worldTools.ts` |
 | `openwiki/editor-validation.md` | 2 | `final-layout.json`, `viewport-matrix.json` |
 | `openwiki/editor-workflows-misc.md` | 6 | `.qa.json`, `default.json`, `game.html`, `release.json`, `runtime.json`, `src/editor/authoringTestGate.ts` |
@@ -72,11 +72,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-project-schema.md` | 3 | `.json`, `.png`, `output/evidence/event-command-completion/legacy-persistence/ledger.json` |
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
 | `openwiki/se-catalog.md` | 7 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json` |
-| `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
-| `openwiki/testing.md` | 17 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
+| `openwiki/testing.md` | 16 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
-| `openwiki/village-design.md` | 1 | `output/village-direction/index.html` |
 | `openwiki/world-structure-authoring.md` | 1 | `verify-shots/runtime-qa/world-structure-tools/SUMMARY.md` |
 
 ## 페이지별 절 좌표
@@ -108,19 +106,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L177` 턴 예산이 결과를 지배한다
 - `L191` 비용 주의
 
-### `openwiki/agent-worktrees.md` — 12KB · 174줄 · ~3,722 토큰
+### `openwiki/agent-worktrees.md` — 14KB · 201줄 · ~4,216 토큰
 
 - `L6` 적용 범위
 - `L16` 명령
-- `L26` 회수 규칙 (커밋이 유일한 안전망)
-  - `L38` 에이전트에게 줄 지시
-  - `L75` e2e 는 `DEV_SERVER_PORT` 없이 돌리면 **남의 코드를 검증한다** (실측 2026-08-29)
-- `L92` 검증 게이트
-  - `L94` 통합 작업의 검증 대상 고정 (2026-09-06)
-  - `L113` 왜 기준선 방식인가
-  - `L124` 왜 별도 스크립트인가
-- `L133` 감독 절차
-- `L144` 알려진 함정
+- `L26` `git stash` 를 쓰지 마라 (실측 2026-09-10, 남의 작업을 꺼내 버렸다)
+- `L53` 회수 규칙 (커밋이 유일한 안전망)
+  - `L65` 에이전트에게 줄 지시
+  - `L102` e2e 는 `DEV_SERVER_PORT` 없이 돌리면 **남의 코드를 검증한다** (실측 2026-08-29)
+- `L119` 검증 게이트
+  - `L121` 통합 작업의 검증 대상 고정 (2026-09-06)
+  - `L140` 왜 기준선 방식인가
+  - `L151` 왜 별도 스크립트인가
+- `L160` 감독 절차
+- `L171` 알려진 함정
 
 ### `openwiki/ai-context-compaction.md` — 16KB · 190줄 · ~4,783 토큰
 
@@ -234,13 +233,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L167` Ops notes
 - `L171` Gotchas learned
 
-### `openwiki/delayed-tooltip.md` — 3KB · 48줄 · ~822 토큰
+### `openwiki/delayed-tooltip.md` — 4KB · 67줄 · ~1,278 토큰
 
 - `L11` 동작 계약
-- `L20` 문구 규칙
-- `L28` 1차 롤아웃 대상
-- `L38` 설치 지점
-- `L44` 테스트
+- `L28` 문구 규칙
+- `L36` 1차 롤아웃 대상
+- `L46` 설치 지점
+- `L52` 테스트
 
 ### `openwiki/editor-ai-panel.md` — 373KB · 1830줄 · ~105,323 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
@@ -509,34 +508,34 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L455` AI 툴·액션 이유 (2026-09-02)
 - `L465` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 93KB · 465줄 · ~26,451 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 93KB · 468줄 · ~26,512 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L7` Exterior door backing
 - `L17` Tile brush reliability (2026-09-06)
-- `L52` Combo Brush (2026-09-10, OPRN-OUT-022)
-  - `L57` 용어 (코드와 UI 가 같은 말을 쓴다)
-  - `L69` 소유 경계
-  - `L81` 근거 규칙 — 번호 인접으로 추론하지 않는다
-  - `L92` 검토 책임
-  - `L104` 경계와 진단
-  - `L114` 회귀 이음줌
-- `L126` Pre-edit routing
-  - `L128` 명명 로케이션 레이어 (2026-09-10)
-  - `L155` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
-  - `L181` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L240` Automatic usage guides disabled (2026-09-06)
-  - `L250` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L338` Agent cautions
-- `L348` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L379` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L411` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L440` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+- `L55` Combo Brush (2026-09-10, OPRN-OUT-022)
+  - `L60` 용어 (코드와 UI 가 같은 말을 쓴다)
+  - `L72` 소유 경계
+  - `L84` 근거 규칙 — 번호 인접으로 추론하지 않는다
+  - `L95` 검토 책임
+  - `L107` 경계와 진단
+  - `L117` 회귀 이음줌
+- `L129` Pre-edit routing
+  - `L131` 명명 로케이션 레이어 (2026-09-10)
+  - `L158` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
+  - `L184` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+  - `L243` Automatic usage guides disabled (2026-09-06)
+  - `L253` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L341` Agent cautions
+- `L351` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L382` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L414` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L443` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 1KB · 15줄 · ~333 토큰
 
 - `L5` Storage chest authoring
 
-### `openwiki/editor-validation.md` — 41KB · 307줄 · ~11,161 토큰
+### `openwiki/editor-validation.md` — 45KB · 342줄 · ~12,142 토큰
 
 - `L3` Event validation location and UNSENT handoff (issue 693, 2026-09-08)
 - `L40` AI blocked-event relocation recovery (2026-09-06)
@@ -552,6 +551,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L219` Event editor aggregate gate (2026-07-30)
 - `L228` P2 spatial integrity (2026-08-25)
 - `L235` 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
+  - `L281` `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
 
 ### `openwiki/editor-workflows-misc.md` — 65KB · 456줄 · ~17,604 토큰 · 통째읽기 잘림
 
@@ -1010,7 +1010,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1661` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
 - `L1671` 실내 조립·형상 검증 (2026-09-05)
 
-### `openwiki/tile-layer-policy.md` — 5KB · 76줄 · ~1,610 토큰
+### `openwiki/tile-layer-policy.md` — 7KB · 97줄 · ~2,136 토큰
 
 - `L11` 다섯 부류
 - `L24` 받침(backing) 메타
@@ -1018,7 +1018,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L44` 나무 밑동 290~293 을 상위로 옮기면 안 되는 이유
 - `L52` OPRN-OUT-017 과의 관계 (원인 공유는 미증명)
 - `L63` 테스트
-- `L72` 아직 결정이 필요한 것 (제품 소유자)
+- `L72` 브라우저 증거 (2026-09-10)
+- `L93` 아직 결정이 필요한 것 (제품 소유자)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,019 토큰
 
