@@ -185,7 +185,9 @@ function installCanvasStub(): { stub: CanvasStub; restore: () => void } {
         getImageData: () => {
           stub.getImageDataCalls += 1;
           if (stub.taint) throw new Error("SecurityError: tainted canvas");
-          return { data: stub.pixels, width: SHEET_WIDTH, height: SHEET_HEIGHT };
+          // 실제 getImageData 는 매번 새 사본을 준다. 호출자가 색상 키를 제자리에서
+          // 적용하므로 스텁도 사본을 줘야 한다(공유 버퍼면 호출 간에 오염된다).
+          return { data: stub.pixels.slice(), width: SHEET_WIDTH, height: SHEET_HEIGHT };
         },
       };
     }) as HTMLCanvasElement["getContext"];
@@ -333,6 +335,67 @@ describe("커스텀 칩셋 감지 — 캐시·비변형·정직한 저하", () =
     await ensureCustomChipsetAlphaScan(customTileset());
     await ensureCustomChipsetAlphaScan(customTileset({ tileSize: 8, count: 2 }));
     expect(canvas.stub.getImageDataCalls).toBe(2);
+  });
+
+  // ── 3-b. 투명색 키(color key) ────────────────────────────────
+  //
+  // 런타임은 `transparentColor` 를 베이크 시점에 키아웃하지만 `tilesetImageUrl` 은 키아웃 이전
+  // 바이트를 준다. 스캔이 같은 키를 적용하지 않으면 마젠타 배경 시트는 전부 불투명으로 읽혀
+  // 정작 투명한 칸이 검토 목록에서 사라진다 — 가장 위험한 거짓 음성이다.
+
+  /** 알파는 전부 255, 반은 마젠타(#ff00ff) 배경인 칸 하나짜리 시트. */
+  function magentaBackedSheet(): Uint8ClampedArray {
+    const rgba = new Uint8ClampedArray(SHEET_WIDTH * SHEET_HEIGHT * 4);
+    for (let y = 0; y < SHEET_HEIGHT; y += 1) {
+      for (let x = 0; x < SHEET_WIDTH; x += 1) {
+        const index = (y * SHEET_WIDTH + x) * 4;
+        const magenta = x % TILE_SIZE < 2; // 칸마다 왜쪽 절반이 배경색
+        rgba[index] = magenta ? 255 : 60;
+        rgba[index + 1] = magenta ? 0 : 60;
+        rgba[index + 2] = magenta ? 255 : 60;
+        rgba[index + 3] = 255; // 알파로는 투명한 것이 하나도 없다
+      }
+    }
+    return rgba;
+  }
+
+  it("투명색 키로 배경을 만든 칩셋은 부분 투명으로 잡힌다 — 알파만 보면 전부 불투명이다", async () => {
+    registerUploaded("data:image/png;base64,AAAA");
+    canvas.stub.pixels = magentaBackedSheet();
+
+    // 키 지정 없이 읽으면: 알파가 전부 255 이니 모든 칸이 opaque — 검토할 것이 없다고 말한다.
+    const untagged = await ensureCustomChipsetAlphaScan(customTileset());
+    expect(untagged.samples.map((sample) => sample.cls)).toEqual(["opaque", "opaque", "opaque", "opaque"]);
+
+    // 같은 바이트, `transparentColor` 만 붙이면 런타임과 같은 답이 나와야 한다.
+    const keyed = customTileset({ transparentColor: "#FF00FF" });
+    const scan = await ensureCustomChipsetAlphaScan(keyed);
+    expect(scan.status).toBe("scanned");
+    // 칸마다 절반(8/16px)이 키아웃되므로 쯤리 부분 투명이다.
+    expect(scan.samples.map((sample) => sample.cls)).toEqual(["partial", "partial", "partial", "partial"]);
+    expect(scan.samples[0]?.emptyPixels).toBe(TILE_PIXELS / 2);
+
+    // 그리고 그 칸들이 실제로 검토 목록에 오른다.
+    const reviews = backgroundlessLowerReviews(keyed, {
+      classOf: (tile) => cachedCustomChipsetAlphaScan(keyed)?.samples[tile]?.cls ?? null,
+    });
+    expect(reviews.map((review) => review.tile)).toEqual([0, 1, 2, 3]);
+  });
+
+  it("투명색만 바뀌어도 캐시가 무효화된다 — 같은 이미지를 다른 답으로 재해석한다", async () => {
+    registerUploaded("data:image/png;base64,AAAA");
+    canvas.stub.pixels = magentaBackedSheet();
+    await ensureCustomChipsetAlphaScan(customTileset());
+    await ensureCustomChipsetAlphaScan(customTileset({ transparentColor: "#FF00FF" }));
+    expect(canvas.stub.getImageDataCalls).toBe(2);
+  });
+
+  it("스캔은 원본 픽셀 버팜를 오염시키지 않는다 — 키아웃은 사본에서만 일어난다", async () => {
+    registerUploaded("data:image/png;base64,AAAA");
+    canvas.stub.pixels = magentaBackedSheet();
+    await ensureCustomChipsetAlphaScan(customTileset({ transparentColor: "#FF00FF" }));
+    // 마젠타 픽셀의 알파가 원본에선 그대로 255 여야 한다(제자리 수정 금지).
+    expect(canvas.stub.pixels[3]).toBe(255);
   });
 
   it("스캔이 끝나면 이벤트를 쏜다 — 검토 목록이 그때 다시 그려진다", async () => {

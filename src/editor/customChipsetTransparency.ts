@@ -12,7 +12,13 @@
 // 캐시: 큰 아틀라스를 매 렌더마다 다시 스캔하면 안 되므로 이미지 신원 + 기하로 키를 만든다.
 // 이미지가 바뀌면(업로드 교체·이식 베이크·투명색 키 변경) 키가 달라져 자동으로 무효화된다.
 // 순수 판정은 `src/project/tileAlphaScan.ts` 에 있다(브라우저 없이 테스트된다).
+//
+// 투명색 키(color key): 런타임은 `tileset.transparentColor` 를 **베이크 시점에** 키아웃한다
+// (`tilesetTextureNeedsBake` → `createTransparentColorKeyCanvas`). 그런데 `tilesetImageUrl` 은
+// 키아웃 이전 바이트를 준다. 그래서 스캔도 같은 키를 적용해야 한다 — 안 하면 마젠타 배경
+// 시트(알파는 전부 255)가 '전부 불투명' 으로 읽혀서, 정작 투명한 칸이 검토 목록에서 사라진다.
 import { tilesetImageUrl } from "@/editor/tilesetImage";
+import { applyTransparentColorKeys, parseRgbHexColor } from "@/assets/transparentColorKey";
 import {
   scanTileAlpha,
   unknownTileAlphaScan,
@@ -98,7 +104,7 @@ export function ensureCustomChipsetAlphaScan(tileset: TilesetDef): Promise<TileA
     tilesPerRow: tileset.tilesPerRow,
     count: tileset.count,
   };
-  const pending = scanImageAlpha(url, geometry)
+  const pending = scanImageAlpha(url, geometry, parseRgbHexColor(tileset.transparentColor ?? ""))
     .catch((cause: unknown) => unknownTileAlphaScan(`타일 그림판을 읽지 못했습니다: ${describeCause(cause)}`))
     .then((scan) => {
       scanCache.set(key, scan);
@@ -130,7 +136,11 @@ type ScanGeometry = { readonly tileSize: number; readonly tilesPerRow: number; r
  * 정직한 저하: CORS 오염(`getImageData` 가 SecurityError)·로드 실패·2D 컨텍스트 부재는
  * 전부 **"모름"** 이다. `opaque` 로 낙관하면 사용자가 검은 구멍을 나중에 발견하게 된다.
  */
-async function scanImageAlpha(url: string, geometry: ScanGeometry): Promise<TileAlphaScan> {
+async function scanImageAlpha(
+  url: string,
+  geometry: ScanGeometry,
+  colorKey: ReturnType<typeof parseRgbHexColor>,
+): Promise<TileAlphaScan> {
   if (typeof document === "undefined") {
     return unknownTileAlphaScan("브라우저 캔버스가 없어 픽셀을 읽지 못했습니다.");
   }
@@ -152,6 +162,9 @@ async function scanImageAlpha(url: string, geometry: ScanGeometry): Promise<Tile
     // 대표 사례: 다른 출처에서 온 이미지라 캔버스가 오염됨(SecurityError).
     return unknownTileAlphaScan(`픽셀을 읽을 수 없습니다(교차 출처 이미지일 수 있음): ${describeCause(cause)}`);
   }
+  // 런타임이 실제로 그릴 알파와 같은 상태로 맞춘다(위 주석의 색상 키 이유).
+  // getImageData 는 사본이므로 여기서 제자리 수정해도 캔버스·원본 이미지에 영향이 없다.
+  if (colorKey) applyTransparentColorKeys(data, [colorKey]);
   return scanTileAlpha(data, { width, height, ...geometry });
 }
 
