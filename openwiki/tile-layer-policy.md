@@ -67,9 +67,56 @@ DB 타일셋 편집기(`src/editor/panels/tilesetMetadataEditor.ts`), 테스트�
 | `test/tileLayerPolicy.test.ts` | 다섯 부류 판정, 사용자 override, 자동 복귀, 검토 목록 비변형 |
 | `test/tileLayerPolicyEditorSurface.test.ts` | 규칙 탭의 정책 근거·다중 조각 표시, 받침 버튼, 검토 목록 적용 |
 | `test/tileLayerPolicyClusterRegression.test.ts` | 레이어/받침 선택 대비 하드클러스터 거부 행렬, 통행 불변 |
+| `test/customChipsetTransparencyDetection.test.ts` | 픽셀 스캔 판정·띄 경계, 감지 비변형(직렬화 바교), 캐시 히트/무효화/투명색, unknown 세 경로, 내장 칩셋 불변 |
 | `test/forestTrunkLayers.test.ts`, `test/transparentTileLayerRouting.test.ts` | 기존 밑동 하위·투명 상위 계약 회귀 |
+
+## 커스텀 칩셋 픽셀 자동 감지 — 출하된 계약
+
+명시 `투명` 태그가 없는 사용자 칩셋도 **알파를 직접 스캔**해 투명 여부를 안다.
+순수 판정은 `src/project/tileAlphaScan.ts`, 브라우저 배선은 `src/editor/customChipsetTransparency.ts`.
+
+계약 다섯 줄 — 이것이 전부다:
+
+1. **감지는 검토 신호일 뿐, 메타를 스스로 바꾸지 않는다.** 가져오기·준비 단계에서의 일괄
+   재분류는 금지다. 적용은 항목마다 사용자가 고른다(상위 오버레이 / 하위+받침 / 투명 하위 유지 / 자동).
+2. **검토 목록에는 뚫린 투명만 올라간다** — `partial`·`mostlyEmpty` 만. 가장자리 안티에일리어싱
+   (`softEdge`)과 빈 여백(`empty`)은 하위 배치가 안전하므로 목록을 오염시키지 않는다.
+3. **캐시 키 = 이미지 신원 + 아틀라스 기하 + 투명색.** 그중 하나라도 바뀌면 자동
+   무효화되어 재스캔한다. 동시 요청은 하나로 합친다(큰 아틀라스를 렌더마다 다시 읽지 않는다).
+4. **읽지 못한 이미지는 '알 수 없음' 이다.** CORS 오염·로드 실패·2D 컨텍스트 부재는 전부
+   `unknown` 이고 그 사실을 화면에 적는다. 절대 '불투명' 으로 낙관하지 않는다.
+5. **내장 칩셋 경로는 불변이다.** 생성 투명 목록(`generatedChipsetTransparency.ts`)이 그대로
+   정본이고 스캔조차 하지 않는다. 런타임 렌더러의 `tileBackingTile` 경로도 예전과 동일하다
+   — 감지는 편집기 표면에만 **주입**된다.
+
+투명색 키(color key)도 같은 알파를 본다: 런타임이 `transparentColor` 를 베이크 시점에
+키아웃하므로 스캔도 동일한 키를 적용한다. 이걸 빼면 마젠타 배경 시트(알파는 전부 255)가
+'전부 불투명' 으로 읽혀 검토 목록이 통째로 비는 거짓 음성이 난다.
+
+### 임계값 — 실제 시트를 재서 얻은 수치다 (2026-09-10)
+
+표본: 실제 출하 시트 6장, 16×16 셀 **2,880칸**.
+`easyrpg-chipset-{combined-town,interior,dungeon,retro-house,ship}-transparent.png` +
+`modern-exteriors/modern-city-atlas.png`. 재측정: `node scripts/measureChipsetAlpha.mjs`.
+
+| 상수 | 값 | 실제 관측 근거 |
+|---|---|---|
+| `OPAQUE_ALPHA` | **250** | 표본 전체에서 알파 249~254 픽셀이 **0개**. 경계가 관측값 없는 빈 구간에 농인다 |
+| `EMPTY_ALPHA` | **8** | 알파 1~8 픽셀이 **0개**. 하드 픽셀은 정확히 0과 255만 쓴다 |
+| `SOFT_EDGE_MAX_RATIO` | **16/256 = 6.25%** | 비불투명 픽셀 수가 2,4,5,6,7,8,11,12,16 에 초초하다가 그 위로 벌어진다. 16 이하는 전부 "실루에은 꽉 찬 칩의 가장자리" 였다 |
+| `MOSTLY_EMPTY_MAX_COVERAGE` | **0.15** | 0이 아닌 최저 커버리지가 0.043 · 0.109 · 0.121 · 0.129 다음이 **0.156**. 그 빈 구간을 가른다 |
+
+부류는 여섯: `opaque` · `softEdge` · `partial` · `mostlyEmpty` · `empty` · `unknown`.
+
+### 브라우저 실측 (Modern Exteriors 아틀라스 480칸)
+
+감지 결과: 불투명 302 · 부분 투명 135 · 거의 빈 칸 2 · 가장자리만 부드러움 19 · 빈 칸 22.
+이 중 검토 목록에 오른 것은 **97칸**(뚫린 투명만). 감지가 돌은 뒤에도 프로젝트 정본
+직렬화(`canonicalPayload`)와 모든 타일셋의 `priority`·`tileMeta` 가 바이트 단위로 동일했다.
+증거 PNG: `verify-shots/chipset-transparency/`, 재현 명령:
+`.omo/evidence/chipset-transparency/NOTES.md`.
 
 ## 아직 결정이 필요한 것 (제품 소유자)
 
 - 내보낸 플레이(export player)에서 받침 합성을 별도로 검증하는 QA 시나리오 추가 여부.
-- 커스텀 칩셋의 투명 여부를 픽셀 스캔으로 자동 감지할지(현재는 명시 메타 `투명` 태그만 신뢰).
+
