@@ -43,7 +43,10 @@ import { replaceAgentGhostPreviewFromProjectDiff } from "@/editor/agentGhostPrev
 import { defaultOverlayLayer } from "@/editor/regionTask/regionChunkOverlay";
 import {
   closeRegionChunkOverlay,
+  isRegionChunkOverlayOpen,
   openRegionChunkOverlay,
+  regionIsInTopHalf,
+  syncRegionChunkOverlay,
 } from "@/editor/regionTask/regionChunkOverlayView";
 import {
   loadRecentInstructions,
@@ -1245,6 +1248,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       }
       // 썸네일뿐 아니라 **캔버스**도 같은 말을 해야 한다. 이 함수가 선택 변경의 단일 통로다.
       syncSelectionToCanvas();
+      syncRegionChunkOverlay();
     };
     // 같은 타일로 된 덩어리가 여럿이면 라벨이 완전히 겹친다("Stone floor(3칸)" 두 줄).
     // 겹치는 것들에만 위치를 붙인다 — 안 겹치는데 붙이면 그냥 소음이다.
@@ -1324,15 +1328,25 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     });
     updatePartialState();
 
-    // 캔버스 위 청크 도형. 판단 대상 위에서 고르게 한다 — 380px 컬럼의 체크리스트는 P4 에서
-    // 사라지고, 그때까지는 두 표면이 같은 선택을 보여준다(아래 adoptCanvasSelection).
-    // 캔버스가 없으면(테스트·헤드리스) openRegionChunkOverlay 가 조용히 아무것도 안 한다.
+    // 캔버스 위 청크 도형 + 하단 액션 바. 기하 판단과 결정을 **판단 대상 위**에서 한다.
+    //
+    // 실측(2026-09-11)이 이 순서를 강제했다: P1 에서 도형만 얹었을 때, 검토 단계의 중앙 모달이
+    // 960×768 로 캔버스(992×751)를 거의 다 덮어 도형이 자기가 만든 창에 가려 클릭조차 되지
+    // 않았다. 그래서 도형이 사는 동안 창은 검토 본문을 내려놓는다(`is-canvas-review`).
+    //
+    // 캔버스가 없으면(테스트·헤드리스) openRegionChunkOverlay 가 조용히 아무것도 안 하고,
+    // 창은 종전 본문을 그대로 쓴다 — 헤드리스 검증 경로가 죽지 않아야 한다.
     if (partialUseful && hasChanges) {
       openRegionChunkOverlay({
         region: pending.region,
         chunks: allChunks,
         projection: selectionProjection,
         initialLayer: defaultOverlayLayer(rawGroups),
+        changedCells: totalChangedCells,
+        onApply: () => doApply(),
+        onRetry: () => doRetry(),
+        onDiscard: () => doDiscard(),
+        ...(recapText.textContent ? { routeLabel: recapText.textContent } : {}),
         onSelectionChanged: () => {
           // 도형이 투영을 직접 토글했으므로 창의 Set·체크박스를 그 결과로 맞춘다.
           const selected = selectionProjection.selected();
@@ -1345,6 +1359,19 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
           updatePartialState();
         },
       });
+      // 도형이 실제로 붙었을 때만 창을 접는다 — 헤드리스에서는 붙지 않는다.
+      if (isRegionChunkOverlayOpen()) {
+        windowNode.classList.add("is-canvas-review");
+        // 스크림도 걷는다. 중앙 모달의 backdrop 은 inset:0 풀스크린이라 창을 비켜 세워도
+        // **캔버스 전체의 포인터를 먹는다**(실측 2026-09-11: 청크 히트 영역의 클릭 지점
+        // 최상단 엘리먼트가 .region-task-backdrop 이었다). 팝오버 변형이 이미 같은 이유로
+        // pointer-events:none 이다 — region-task.css:13 의 기록과 같은 처방이다.
+        // 부작용으로 바깥클릭-폐기 핸들러가 자연히 죽는다(캔버스를 누르면 제안이 사라지던 것).
+        backdrop.classList.add("is-canvas-review");
+        // 대상이 화면 위쪽이면 창은 아래로 비킨다. 중앙 모달에는 팝오버의 `avoid` 협상이
+        // 없어서, 맵 위쪽 영역을 상단 창이 그대로 덮었다(실측 2026-09-11: 클릭 자체가 막혔다).
+        windowNode.classList.toggle("is-below", regionIsInTopHalf());
+      }
     }
 
     // 부분 적용은 검토 화면의 본문에 둔다. 「고급(로그·부분 적용·스탬프)」 안에 있던 동안은

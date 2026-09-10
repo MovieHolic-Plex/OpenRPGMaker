@@ -6,6 +6,8 @@ import { describe, expect, it } from "vitest";
 import {
   buildChunkOverlayShapes,
   defaultOverlayLayer,
+  hitRectFor,
+  MIN_CHUNK_HIT_PX,
   nextChunkInDirection,
   selectionAfterToggle,
 } from "@/editor/regionTask/regionChunkOverlay";
@@ -170,5 +172,29 @@ describe("nextChunkInDirection", () => {
 
   it("모르는 id 는 null 을 준다", () => {
     expect(nextChunkInDirection(shapes, "nope", "down")).toBeNull();
+  });
+});
+
+describe("hitRectFor", () => {
+  it("타일이 작아도 최소 히트 타깃까지 넓힌다 — 1칸 청크는 16px 라 그냥 두면 누를 수 없다", () => {
+    // 실측(2026-09-11, 호수 마을 12×10 영역): 청크 22개 중 18개가 1칸 = 16×16px.
+    const hit = hitRectFor({ x: 100, y: 50, width: 16, height: 16 });
+
+    expect(hit.width).toBe(MIN_CHUNK_HIT_PX);
+    expect(hit.height).toBe(MIN_CHUNK_HIT_PX);
+    // 원래 칸의 중심을 유지한다 — 넓힌 쪽이 한쪽으로 치우치면 커서가 엉뚱한 칸을 가리킨다.
+    expect(hit.x + hit.width / 2).toBe(100 + 8);
+    expect(hit.y + hit.height / 2).toBe(50 + 8);
+  });
+
+  it("이미 최소치보다 큰 사각형은 그대로 둔다", () => {
+    const rect = { x: 0, y: 0, width: 48, height: 32 };
+    expect(hitRectFor(rect)).toEqual(rect);
+  });
+
+  it("한 축만 작으면 그 축만 넓힌다", () => {
+    const hit = hitRectFor({ x: 0, y: 0, width: 48, height: 16 });
+    expect(hit.width).toBe(48);
+    expect(hit.height).toBe(MIN_CHUNK_HIT_PX);
   });
 });
