@@ -89,6 +89,8 @@ import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalet
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { getEditorMapViewport, setEditorMapViewport } from "@/editor/editorMapViewport";
 import { setClientPointTileResolver, setRegionClientRectResolver } from "@/editor/regionClientRect";
+import { setCameraPanBridge } from "@/editor/cameraPanBridge";
+import { repositionMapLocationLayer } from "@/editor/mapLocationLayer";
 import { repositionRegionChunkOverlay } from "@/editor/regionTask/regionChunkOverlayView";
 import { notifyRightDragRegionSelected } from "@/editor/selectionChipHint";
 import { computeMapViewport } from "@/ai/mapViewportContext";
@@ -455,6 +457,12 @@ export class EditScene extends PhaserRuntime.Scene {
     // 로케이션 레이어(DOM 오버레이)는 사람의 포인터를 타일로 바꿔야 한다. 역변환도 카메라를
     // 읽으므로 같은 등록소에 꽂는다 — 오버레이가 Phaser 를 직접 참조하지 않게 한다.
     setClientPointTileResolver((point) => this.clientPointToTile(point));
+    // 로케이션 오버레이는 포인터의 **표적**이 되므로 캔버스의 팬 제스처를 스스로 시작할 수 없다.
+    // 카메라를 가진 쪽이 «양보할 때인가»와 «이미 지나간 좌표에서 팬을 시작하라»를 꽂는다.
+    setCameraPanBridge({
+      armed: () => this.cameraPanController?.armed() ?? false,
+      startPan: (screenX, screenY) => this.cameraPanController?.startFromScreenPoint(screenX, screenY),
+    });
 
     // scene 정지/파괴 시 구독 해제(이중 호출 방지).
     this.events.once(PhaserRuntime.Scenes.Events.SHUTDOWN, () => this.cleanup());
@@ -515,6 +523,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.regionSizeBadge = null;
     setRegionClientRectResolver(null);
     setClientPointTileResolver(null);
+    setCameraPanBridge(null);
     setEditorMapViewport(null);
   }
 
@@ -1889,6 +1898,9 @@ export class EditScene extends PhaserRuntime.Scene {
       // 그 뒷정리는 마지막 프레임에만 한다. 반면 뷰포트 스냅샷은 매 프레임 게시한다 —
       // 팬이 도는 300ms 동안 조수가 도구를 부르면 출발 지점의 화면을 사실로 읽어 버린다.
       if (progress < 1) {
+        // 좌표만 다시 쓰는 재배치는 노드를 만들지 않으므로 매 프레임 해도 안전하다 —
+        // 300ms 팬 동안 로케이션 상자가 제자리에 남아 있으면 그 화면이 곧 거짓말이 된다.
+        repositionMapLocationLayer();
         this.publishMapViewport();
         return;
       }
@@ -1973,6 +1985,9 @@ export class EditScene extends PhaserRuntime.Scene {
     this.renderBuildPaletteOverlay();
     // 검토 중인 청크 도형도 카메라를 따라간다. 노드를 다시 만들지 않고 좌표만 고쳐 쓴다.
     repositionRegionChunkOverlay();
+    // 로케이션 상자·설계 고스트도 카메라를 따라간다. 같은 계약: 노드는 그대로, 좌표만.
+    // (인스펙터는 손대지 않는다 — 팬 중에 이름을 입력하고 있을 수 있다.)
+    repositionMapLocationLayer();
     this.publishMapViewport();
   }
 
