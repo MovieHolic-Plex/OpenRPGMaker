@@ -18,6 +18,15 @@ import { promoteActor } from "@/project/sessionClass";
 import { changeActorEquipment, changeActorExperience, changeActorLevel, changeActorVital, recoverAll } from "@/project/sessionActorCommands";
 import { syncActorVitals } from "@/project/sessionVitals";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import {
+  coordinateFailurePolicy,
+  coordinateFallbackPolicy,
+  describeDestinationFailure,
+  movementResultSwitchId,
+  movementResultVariableId,
+  resolveDestination,
+} from "@/project/eventCommands/coordinateDestination";
+import { movementResultLogText, recordMovementResult } from "@/player/movementResult";
 import { resolveEventPage } from "@/project/io";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult } from "@/player/interpreter/types";
@@ -189,13 +198,35 @@ function executeM2Command(
 
   if (entry.title === "Pathfind Move") {
     executeM2RuntimeCommand(state.session, entry, command, m2Context);
+    const resultVariableId = movementResultVariableId(command.fields);
+    const resultSwitchId = movementResultSwitchId(command.fields);
+    const onFailure = coordinateFailurePolicy(command.fields);
+    // 부재 키를 0 으로 메꾸지 않는 원시 조회다. `getVariable` 은 `?? 0` 이므로
+    // 「변수 없음」과 「값이 0」을 지운다 — 이 이슈의 원래 결함이 그것이다.
+    const destination = resolveDestination(command.fields, (variableId) => state.session.variables[variableId]);
+    if (!destination.ok) {
+      const detail = describeDestinationFailure(destination);
+      console.warn(`[m2] Pathfind Move — ${movementResultLogText("invalidInput", detail)}`);
+      state.session.flags.pathfindSucceeded = false;
+      recordMovementResult(state.session, { resultVariableId, resultSwitchId }, "invalidInput");
+      // 이동 단계를 아예 내지 않는다 — 대기 설정이여도 기다릴 것이 없으므로
+      // 목적지가 무효한 대기 명령은 항상 여기에서 종료한다.
+      if (onFailure === "stop") return { kind: "done" };
+      return resumeNext(frame);
+    }
     return pause("pathfindMove", {
       kind: "pathfindMove",
       target: fieldString(command.fields, "target", "this-event"),
-      x: Math.trunc(fieldNumber(command.fields, "x", 0)),
-      y: Math.trunc(fieldNumber(command.fields, "y", 0)),
+      x: destination.x,
+      y: destination.y,
       speed: Math.max(1, Math.min(6, fieldNumber(command.fields, "speed", 4))),
       wait: fieldBoolean(command.fields, "wait", true),
+      // 기본값은 단계에 싣지 않는다 — 옛 고정 좌표 명령이 내는 단계는 바이트 단위로
+      // 이전과 같은 모양이어야 한다(기존 계약 테스트가 toEqual 로 재는 자리다).
+      ...(resultVariableId ? { resultVariableId } : {}),
+      ...(resultSwitchId ? { resultSwitchId } : {}),
+      ...(onFailure === "stop" ? { onFailure } : {}),
+      ...(coordinateFallbackPolicy(command.fields) === "nearest" ? { fallback: "nearest" as const } : {}),
     });
   }
 

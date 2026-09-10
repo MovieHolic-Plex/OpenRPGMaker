@@ -25,6 +25,29 @@ export const SCREEN_EFFECT_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "weather", label: "날씨" },
 ];
 
+// OPRN-OUT-013: 좌표 목적지 이동. 저장 형태·기본값의 정본 주석은
+// `src/project/eventCommands/coordinateDestination.ts` 머리말에 있다.
+export const COORDINATE_TARGET_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "player", label: "주인공" },
+  { value: "this-event", label: "이 이벤트" },
+  { value: "event", label: "특정 이벤트" },
+];
+
+export const COORDINATE_SOURCE_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "fixed", label: "숫자" },
+  { value: "variable", label: "변수" },
+];
+
+export const COORDINATE_FAILURE_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "continue", label: "계속 진행" },
+  { value: "stop", label: "이벤트 중단" },
+];
+
+export const COORDINATE_FALLBACK_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "none", label: "없음" },
+  { value: "nearest", label: "가장 가까운 통행 가능 칸" },
+];
+
 const WAIT_CONDITION_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "switchOn", label: "스위치 켜짐" },
   { value: "switchOff", label: "스위치 꺼짐" },
@@ -136,12 +159,22 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
     case "Remove Event":
       return [{ key: "eventId", label: "이벤트", type: "text", defaultValue: "" }];
     case "Pathfind Move":
+      // 키를 늘리기만 한다. 옛 저장본에는 새 키가 없고, 없으면 defaultValue
+      // (fixed/continue/none)로 읽혀 예전 고정 좌표 동작과 완전히 같다.
       return [
         { key: "target", label: "누구에게", type: "text", defaultValue: "this-event" },
+        { key: "xSource", label: "X 값은", type: "select", defaultValue: "fixed", options: COORDINATE_SOURCE_OPTIONS },
         { key: "x", label: "X", type: "number", defaultValue: 0 },
+        { key: "xVariableId", label: "X 변수", type: "text", defaultValue: "" },
+        { key: "ySource", label: "Y 값은", type: "select", defaultValue: "fixed", options: COORDINATE_SOURCE_OPTIONS },
         { key: "y", label: "Y", type: "number", defaultValue: 0 },
+        { key: "yVariableId", label: "Y 변수", type: "text", defaultValue: "" },
         { key: "speed", label: "속도", type: "number", defaultValue: 4 },
         { key: "wait", label: "완료까지 대기", type: "boolean", defaultValue: true },
+        { key: "onFailure", label: "실패하면", type: "select", defaultValue: "continue", options: COORDINATE_FAILURE_OPTIONS },
+        { key: "fallback", label: "대체 목적지", type: "select", defaultValue: "none", options: COORDINATE_FALLBACK_OPTIONS },
+        { key: "resultVariableId", label: "결과 변수", type: "text", defaultValue: "" },
+        { key: "resultSwitchId", label: "도착 스위치", type: "text", defaultValue: "" },
       ];
     case "Wait Until":
       return [

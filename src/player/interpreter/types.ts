@@ -64,7 +64,25 @@ export type StepResult =
   | { kind: "openSaveMenu" }
   | { kind: "openMenuScreen" }
   | { kind: "openLoadMenu" }
-  | { kind: "pathfindMove"; target: string; x: number; y: number; speed: number; wait: boolean }
+  | {
+      kind: "pathfindMove";
+      target: string;
+      x: number;
+      y: number;
+      speed: number;
+      wait: boolean;
+      /**
+       * OPRN-OUT-013 결과 계약. 없으면 예전과 같이 `session.flags.pathfindSucceeded`
+       * 만 남긴다. 있으면 **명령별** 변수/스위치에도 쓰므로 병렬 이벤트가
+       * 공유 플래그를 두고 경쟁하지 않는다.
+       */
+      resultVariableId?: string;
+      resultSwitchId?: string;
+      /** 실패 시 명령열을 끝낼지(stop) 그대로 진행할지(continue, 기본). */
+      onFailure?: "continue" | "stop";
+      /** 저작자가 명시적으로 켜야 쓰는 대체 목적지. 기본은 없음. */
+      fallback?: "none" | "nearest";
+    }
   | { kind: "spawnFieldEnemy"; spawn: FieldSpawnDef }
   | { kind: "despawnFieldEnemy"; spawnId: string }
   | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }

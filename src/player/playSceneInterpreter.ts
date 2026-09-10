@@ -461,9 +461,15 @@ async function consumeBlockingStep(
       const abort = new AbortController();
       const pending = playPathfindMove(scene, step, currentEventId, abort.signal);
       if (step.wait) {
-        await Promise.race([pending, skipController.waitForSkip()]);
+        // 대기하는 명령은 반드시 끝난다: playPathfindMove 는 막힘·경로 없음·중단을
+        // 모두 해결된 결과로 돌려주므로 영원히 기다리는 경로가 없다(OPRN-OUT-013).
+        const outcome = await Promise.race([pending, skipController.waitForSkip()]);
         const skipped = skipController.takeResult();
         if (skipped) { abort.abort(); return skipped; }
+        if (step.onFailure === "stop" && outcome !== undefined && outcome !== "arrived") {
+          scene.refreshRuntimeSurfaces();
+          return { kind: "done" };
+        }
       }
       return resumeAfterSurface(scene, interpreter);
     }
