@@ -20,6 +20,7 @@ import { syncFollowerSprites } from "@/player/playSceneFollowers";
 // 잎 모듈에서 가져온다 — playSceneMovement 를 통하면 전투·농사·조우까지 끌려온다(playerRouteState 주석).
 import { clearPlayerRouteThrough } from "@/player/playerRouteState";
 import { maybeAutosave } from "@/player/autosave";
+import { fireLocationTransitionTriggersAfterTransfer } from "@/player/playSceneLocationTransitions";
 import { abortHop } from "@/player/characterHopRuntime";
 import { clearFurniturePush, furniturePushPosition } from "@/player/furniturePushAnimation";
 
@@ -93,6 +94,8 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   );
   carryPursuitThroughDoor({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, scene.autonomousNPCs,
     { mapId: request.mapId, ...landing });
+  // 드나듦 트리거의 «나간 맵» 은 loadMap 이 scene.map 을 갈아치기 **전**에 잡아야 한다.
+  const departureMapId = scene.map.id;
   scene.loadMap(request.mapId);
   scene.tileX = landing.x;
   scene.tileY = landing.y;
@@ -121,6 +124,11 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   // 오토세이브 훅(PlayScene 경로 전용): 전이 좌표/맵이 세션에 커밋된 뒤, 도착 맵의
   // 자동 트리거가 상태를 바꾸기 전 시점을 굽는다. 정책(save 금지·디바운스·컷신)은 maybeAutosave 가 판정.
   maybeAutosave(project, scene.session, "transfer");
+  // 순간이동은 중간 걸음이 없지만 «나갔다/들어왔다» 는 그대로 사실이다.
+  // 자동 트리거보다 **먼지** 판정하는 것은 우선순위 선언이다: 도착 맵의 자동 이벤트가
+  // 먼지 돌아 running 을 썼으면 구역 진입 이벤트가 조용하 생략된다. 모두 자기 지점에서
+  // 한 번만 돌는 사건이고, «어떤 구역에 들어왔는가» 가 맵 전역 연출보다 국지적이다.
+  fireLocationTransitionTriggersAfterTransfer(scene, departureMapId);
   void fireAutoTriggers(scene);
 }
 

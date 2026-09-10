@@ -372,6 +372,17 @@ export function isRuntimeRemovedEventIds(value: unknown): value is RuntimeRemove
   return Object.values(value).every(isStringArray);
 }
 
+/**
+ * 구역 드나듦 점유 기록(mapId → locationId[]). 구조만 본다 — 로케이션이 지금 실재하는가는
+ * 반대로 검사하지 않는다: 지워진 구역의 ID 가 기록에 남아 있는 것은 정상이고
+ * (모델이 다음 판정에서 leave 로 토해놀가다), 세이부버가 삭제된 ID 를 검사하려면
+ * 프로젝트를 봐야 하는데 이 함수는 와이어 단계에 있어 프로젝트를 몰론다.
+ */
+export function isLocationOccupancyRecord(value: unknown): value is Record<string, string[]> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every(isStringArray);
+}
+
 export function isRuntimeNpcTravelStateRecord(value: unknown): value is Record<string, RuntimeNpcTravelState> {
   if (!isRecord(value)) return false;
   return Object.values(value).every((state) =>

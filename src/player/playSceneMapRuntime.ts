@@ -25,7 +25,7 @@ import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { store } from "@/project/store";
-import type { MapId, TilesetDef } from "@/project/types";
+import type { MapId, TilesetDef, Trigger } from "@/project/types";
 import { applyStoredCameraState } from "@/player/playSceneCamera";
 import {
   CUTSCENE_HUD_HIDDEN_CLASS,
@@ -552,7 +552,7 @@ export function resetMapRuntime(scene: PlaySceneContext): void {
 
 export function activeRuntimeEvents(
   scene: PlaySceneContext,
-  triggerKind: "action" | "touch" | "playerTouch" | "eventTouch" | "auto" | "parallel"
+  triggerKind: Trigger["kind"]
 ): RuntimeEventView[] {
   return runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
     .filter((event) => event.trigger.kind === triggerKind

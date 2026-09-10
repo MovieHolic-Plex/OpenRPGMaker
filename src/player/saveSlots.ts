@@ -70,6 +70,7 @@ import {
   isRuntimeFollowerTrail,
   isRuntimeNpcScheduleStateRecord,
   isRuntimeNpcTravelStateRecord,
+  isLocationOccupancyRecord,
   isRuntimeRemovedEventIds,
   isRuntimeSpawnedEventRecord,
   isShopPawnTicketsRecord,
@@ -180,6 +181,8 @@ export type SaveSnapshot = {
     readonly detectionEncounterCompletions?: PlaySession["detectionEncounterCompletions"];
     readonly eventLocations?: PlaySession["eventLocations"];
     readonly erasedEventIds?: readonly string[];
+    /** 구역 드나듦 트리거의 점유 기록. 없으면 불러온 뒤 기준선만 심긴다(셡 세이부 호환). */
+    readonly occupiedLocationIds?: PlaySession["occupiedLocationIds"];
     readonly removedEventIds?: PlaySession["removedEventIds"];
     readonly spawnedEvents?: PlaySession["spawnedEvents"];
     readonly camera?: PlaySession["camera"];
@@ -371,6 +374,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       detectionEncounterCompletions: structuredClone(session.detectionEncounterCompletions),
       eventLocations: structuredClone(session.eventLocations),
       erasedEventIds: structuredClone(session.erasedEventIds),
+      occupiedLocationIds: structuredClone(session.occupiedLocationIds),
       removedEventIds: structuredClone(session.removedEventIds),
       spawnedEvents: structuredClone(session.spawnedEvents),
       camera: structuredClone(session.camera),
@@ -587,6 +591,9 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   session.detectionEncounterCompletions = structuredClone(snapshot.session.detectionEncounterCompletions);
   if (snapshot.session.eventLocations) session.eventLocations = structuredClone(snapshot.session.eventLocations);
   if (snapshot.session.erasedEventIds) session.erasedEventIds = [...snapshot.session.erasedEventIds];
+  // 없으면 **지우지 않고 그대로 둔다**: 재생 직전의 기록이 남아 있는 편이,
+  // 불러오기 뒤 PlayScene 이 기준선을 다시 심는 경로와 같이 동작하며 안전하다.
+  if (snapshot.session.occupiedLocationIds) session.occupiedLocationIds = structuredClone(snapshot.session.occupiedLocationIds);
   if (snapshot.session.removedEventIds) session.removedEventIds = structuredClone(snapshot.session.removedEventIds);
   if (snapshot.session.spawnedEvents) session.spawnedEvents = structuredClone(snapshot.session.spawnedEvents);
   if (snapshot.session.camera) session.camera = structuredClone(snapshot.session.camera);
@@ -1019,6 +1026,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       detectionEncounterCompletions: session.detectionEncounterCompletions,
       eventLocations: isRuntimeEventLocationRecord(session.eventLocations) ? session.eventLocations : undefined,
       erasedEventIds: isStringArray(session.erasedEventIds) ? session.erasedEventIds : undefined,
+      occupiedLocationIds: isLocationOccupancyRecord(session.occupiedLocationIds) ? session.occupiedLocationIds : undefined,
       removedEventIds: isRuntimeRemovedEventIds(session.removedEventIds) ? session.removedEventIds : undefined,
       spawnedEvents: isRuntimeSpawnedEventRecord(session.spawnedEvents) ? session.spawnedEvents : undefined,
       camera: isRuntimeCameraState(session.camera) ? session.camera : undefined,
