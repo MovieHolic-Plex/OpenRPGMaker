@@ -566,6 +566,68 @@ bytes after real remote reload and Test Play. The default is not remote proof.
     승격 멱등·조건 의미·인카운터·레거시 사각형·진단·복구 3종), `test/mapLocationTools.test.ts`(12건),
     `test/mapLocationLayer.test.ts`(7건, 실제 DOM). 브라우저 증거: `verify-shots/oprn-020/`.
 
+- **구역 드나듦 트리거 — `{ kind:"locationTransition", locationId, transition }` (2026-09-10):**
+  OPRN-OUT-020 이 「엔진에 걸음마다의 로케이션 변화 훅이 없다」는 이유로 미룬 enter/leave 의
+  구현이다. 제품 책임자 승인 후 **기존 트리거 유니온과 기존 디스패치를 확장**했다 —
+  새 스케줄러를 만들지 않았다.
+  - **왜 기존 경로인가:** 이 트리거는 「auto」와 같은 성질이다(프레임 루프가 아니라 사건 하나가
+    실행을 시작한다). 병렬(`parallelProcesses`)은 인터프리터를 프레임마다 조금씩 굴리는 다른
+    기계이고, 여기 필요한 것은 «걸음이 끝났을 때 한 번» 이다. 그래서
+    `activeRuntimeEvents("locationTransition")` → `runEvent` 를 그대로 쓴다
+    (`activeRuntimeEvents` 의 인자 타입을 하드코딩 6종에서 `Trigger["kind"]` 로 넓혔다).
+  - **판정의 집은 `src/project/locationTransitions.ts` 하나다.** 드나듦은 「안에 있는가」의
+    **시간 미분**이므로 점유 집합(`locationsAtPoint`)의 차집합만 계산한다. 두 번째 내부/외부
+    규칙을 만들면 `insideLocation` 조건과 트리거가 서로 다른 답을 내는 순간이 생긴다.
+  - **상태는 세션의 `occupiedLocationIds`(mapId → locationId[]) 이고 ID 만 담는다.**
+    사각형을 복사해 두면 저작자가 구역을 옮긴 뒤에도 세이브 안의 낡은 사각형이 판정을 지배한다
+    (`insideLocation` 이 프로젝트에서 기하를 읽는 것과 같은 이유). optional 이라
+    **SAVE_SCHEMA_VERSION 도 SCHEMA_VERSION 도 오르지 않는다.**
+  - **호출 지점은 셋뿐이다:** (1) 걸음 완료 — `playSceneMovement.advancePlayerStepFrame` 의 칸
+    확정 직후, 접촉 트리거 앞. 보간 중간값에서 판정하면 한 걸음이 경계를 여러 번 가로지른 것으로
+    세어진다. (2) 순간이동 완료 — `playSceneMapCommands.transferTo`, 자동 트리거보다 먼저.
+    (3) 이벤트 종료 후 재개 — `refreshRuntimeSurfaces` / `refreshRuntimeEntities`.
+  - **(3) 이 없으면 가장 흔한 저작이 조용히 죽는다 (브라우저 실측 2026-09-10).** 문(playerTouch)을
+    밟아 장소 이동하면 `transferTo` 가 **문 이벤트의 인터프리터 안에서** 불리므로 그 시점
+    `scene.running` 이 참이고 `runEvent` 는 즉시 되돌아 나온다. 그래서 실행할 수 없었던 것은
+    버리지 않고 **아직 돌리지 못한 이벤트 id** 를 큐에 담아 이벤트가 끝나는 자리에서 뽑는다.
+    큐가 사건이 아니라 이벤트 id 를 담는 이유: 사건 → 이벤트 해석을 나중으로 미루면 그 사이 바뀐
+    페이지 조건이 «그때 반응했어야 할 이벤트» 를 지운다. 첫 이벤트가 대화를 열면 **꼬리만**
+    되돌려 담는다(사건을 통째로 담으면 이미 돌린 것이 두 번 연소한다). 상한 8 — 긴 전투 동안
+    지나온 구역 전부를 뒤늦게 연소시키면 다섯 구역의 대사가 한꺼번에 터진다.
+    점유 기록은 큐와 **무관하게** 즉시 갱신된다(기록이 발밑과 어긋나면 이후 판정 전부가 틀어진다).
+  - **결정된 경계 사례** (전부 회귀 테스트가 있다):
+
+    | 상황 | 계약 |
+    |---|---|
+    | 같은 칸 재판정 / 구역 안 이동 | 발동하지 않는다(점유 집합이 같다) |
+    | 겹친 구역 A 안에서 B 진입 | B 의 enter 만, A 는 유지. 집합 차이라 포함관계를 특별 취급하지 않는다 |
+    | 순간이동(중간 걸음 없음) | 출발 맵 점유 전부 leave + 도착 지점 enter. `transferLocationOccupancy` 한 번의 원자적 판정이다 — 두 단계로 쪼개면 「기록 없음 = 기준선」 해석에 도착 enter 가 삼켜진다(실측) |
+    | 같은 맵 안 워프 | 같은 구역 안으로 떨어져도 leave + enter 가 **둘 다** 난다(벗어났다 돌아온 것이고 재진입 연출이 다시 돌아야 한다) |
+    | 맵을 넘는 leave | 대상 이벤트는 이미 화면에 없다 — 「이벤트는 자기 맵 안에서만 산다」의 따름정리 |
+    | 서 있는 채로 구역 삭제·축소 | 다음 판정에서 leave 로 정리된다. 끊긴 참조를 가리키는 이벤트는 발동하지 않고 lint 가 올린다 |
+    | 안에서 저장 → 불러오기 | 아무것도 발동하지 않는다(기록이 세이브에 실려 복원된다) |
+    | 기록 없는 옛 세이브 | 첫 판정은 **기준선만 심는다**. 불러오는 순간 이벤트가 터지는 것은 저작 의도가 아니다 |
+    | 새 게임 시작 지점이 구역 안 | 기준선만 심는다(시작 연출은 auto 트리거의 일이다) |
+
+  - **저작 표면:** 페이지 「시작 방식」 선택기의 **「구역에 드나들면」** + 그 아래 구역·시점
+    선택기(`event-page-trigger-location`, `-transition`). 구역은 **이름**으로 고른다 —
+    좌표 입력칸이 없다. 표면의 집은 `src/editor/locationTriggerAuthoring.ts` 하나이고 끊긴
+    참조 문구는 `mapLocationLabels` 를 재사용한다. `triggerFromKind` 는 이제 `SimpleTriggerKind`
+    만 받는다 — 매개변수 있는 이 트리거를 `{ kind }` 만으로 짓지 못하게 타입으로 막는다.
+  - **끊긴 참조는 조건과 같은 통로다.** 참조 수집(`collectMapLocationReferences` 의
+    `site.kind === "trigger"`) → `projectLint` 의 `map-location-missing-ref`(error) →
+    `repairMapLocationReferences`. 트리거의 `detach`/`freezeRect` 는 시작 방식을
+    **`action` 으로 강등**한다 — `auto` 로 강등하면 맵에 들어가는 순간 멋대로 돌아버리고,
+    명령을 지우면 저작이 사라진다. 편집기 선택기는 삭제된 구역을 「(삭제된 로케이션 …)」 항목으로
+    남기고 `eventDraftValidator` 가 `page.trigger.location-missing`(error)로 적용을 막는다.
+  - **와이어 검사는 로케이션 실재 여부를 보지 않는다** — 삭제된 구역을 가리키는 저장본이 열리지
+    않으면 사용자가 고칠 수단이 사라진다. `transition` 열거와 `locationId` 문자열만 강제한다.
+  - 회귀: `test/locationTransitions.test.ts`(25건 — 순수 판정·겹침·삭제·축소·순간이동·세이브
+    왕복·byte-stable·진단·복구), `test/locationTransitionRuntime.test.ts`(19건 — 실제 걸음·
+    순간이동 `runSceneTest` + running 밀림 회복 3건), `test/locationTransitionAuthoring.test.ts`
+    (12건, 실제 DOM). 출하 플레이어 브라우저 증거: `verify-shots/loc-transition/SUMMARY.md`
+    (`npm run qa:runtime -- --scenario loc-transition`).
+
 - `ActorRecord.faceResourceId` stores a standalone 48×48 face graphic resource id. `ActorRecord.characterIndex` (0..7) remains an optional sheet cell defaulting to 0 when omitted. `ActorRecord.faceIndex` is removed. Project schema version is bumped to 4 (`SCHEMA_VERSION = 4`); `migrateV3toV4` rewrites stored legacy (sheet id, faceIndex) pairs to standalone face resource ids on load, treating an omitted index as cell 0. Normalization may drop explicit characterIndex 0 to keep legacy JSON compact; editor previews and list thumbnails treat missing characterIndex as 0.
 - `SkillRecord.scope` accepts `self | ally | allAllies | enemy | allEnemies`. `allAllies` is an additive value handled by type guards, normalization, references, tools, editor controls, runtime targeting, and serialization; existing scope values and saved projects remain valid, so this addition does **not** require a project schema-version bump or migration. Keep authored scope authoritative instead of deriving target side/cardinality from damage/healing/support effect kind.
 - Gen1 battle metadata is additive and optional in schema v3: `SkillRecord.maxPp` (1..99) and `gen1CriticalRate: "normal"|"high"`, `StateRecord.gen1MajorStatus` (`poison|burn|sleep|freeze|paralysis`), `TroopRecord.trainerBattle`, and `ItemCaptureProfile.ballClass` (`poke|great|ultra|master`). Omission keeps the compatibility contract: no authored PP cap, normal critical class, no major-status semantic, wild/non-trainer troop, and the existing capture `multiplier` path. Normalization drops invalid metadata while preserving valid values through load/save, so this optional expansion does **not** bump `SCHEMA_VERSION` or require migration.

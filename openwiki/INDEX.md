@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **62쪽 / 2340KB / 약 652,971 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **62쪽 / 2353KB / 약 656,889 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -18,14 +18,14 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-ai-panel.md` | 373KB | 97KB ⚠상한 초과 — 절을 더 쪼개라 | 1830 | ~105,323 |
 | `openwiki/editor-ai-tools.md` | 166KB | 79KB ⚠상한 초과 — 절을 더 쪼개라 | 1232 | ~45,951 |
 | `openwiki/editor-database.md` | 257KB | 56KB ⚠상한 초과 — 절을 더 쪼개라 | 1350 | ~73,776 |
-| `openwiki/editor-event-authoring.md` | 132KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 713 | ~37,928 |
+| `openwiki/editor-event-authoring.md` | 134KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 740 | ~38,645 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
-| `openwiki/editor-pre-edit-routing.md` | 91KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 439 | ~25,776 |
+| `openwiki/editor-pre-edit-routing.md` | 91KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 445 | ~25,956 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 29KB | 456 | ~17,604 |
 | `openwiki/runtime-battle.md` | 133KB | 31KB | 539 | ~37,775 |
-| `openwiki/runtime-project-schema.md` | 123KB | 53KB ⚠상한 초과 — 절을 더 쪼개라 | 754 | ~32,797 |
+| `openwiki/runtime-project-schema.md` | 130KB | 60KB ⚠상한 초과 — 절을 더 쪼개라 | 816 | ~34,811 |
 | `openwiki/runtime-sessions.md` | 89KB | 46KB | 318 | ~23,590 |
-| `openwiki/testing.md` | 183KB | 48KB | 1674 | ~50,234 |
+| `openwiki/testing.md` | 185KB | 48KB | 1691 | ~50,822 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -36,11 +36,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-ai-panel.md` | 25 | 1476, 1477, 1478, 1479, 1480, 1481, 1493, 1503 |
 | `openwiki/editor-ai-tools.md` | 6 | 879, 880, 884, 886, 888, 1075 |
 | `openwiki/editor-database.md` | 7 | 556, 560, 561, 562, 571, 597, 600 |
-| `openwiki/editor-event-authoring.md` | 16 | 283, 284, 287, 292, 293, 294, 295, 296 |
+| `openwiki/editor-event-authoring.md` | 16 | 310, 311, 314, 319, 320, 321, 322, 323 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 109, 122, 123, 125, 128, 129 |
 | `openwiki/editor-observability.md` | 1 | 310 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 260, 269, 276, 278, 301 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 266, 275, 282, 284, 307 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
 
 ## 없는 파일을 가리키는 참조
@@ -398,43 +398,44 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1343` 검토한 실내 기본값의 원격 반영 (2026-09-05)
 - `L1347` 특정 꾸러미의 명시적 교체 (2026-09-06)
 
-### `openwiki/editor-event-authoring.md` — 132KB · 713줄 · ~37,928 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 134KB · 740줄 · ~38,645 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
 - `L3` 구역(로케이션) 조건분기 (OPRN-OUT-020, 2026-09-10)
-- `L25` Native battle confirmation admission (2026-09-08)
-- `L44` Character graphic no-match recovery (OUT-007, 2026-09-08)
-- `L67` Page preview state follows the current script (2026-09-08)
-- `L88` Event editor window controls (2026-09-06)
-- `L135` 이벤트 편집기 가독성 — 읽는 글자와 꾸미는 글자 (2026-09-03 후속)
-- `L148` 이벤트 편집기 문법 고정 — P0 (2026-09-03)
-- `L161` NPC 일정 구조화 편집 (2026-08-24)
-- `L173` AI 가 이벤트 페이지를 이해하지 못했다 (2026-08-30 실측 · 수정)
-  - `L195` 우선순위는 1페이지가 아니다 (바꾸지 않았다)
-  - `L203` 랜덤 대사는 페이지가 아니다
-  - `L210` 새 린트가 출하 콘텐츠에서 실제로 잡은 것 (skyStair autoEvent)
-  - `L220` 조건만 걸고 켜지 않으면 그것도 죽은 페이지다 (가려짐의 거울상)
-- `L237` 복잡한 NPC 는 조회 후 상태별 다중 페이지로 저작한다 (2026-09-01)
-- `L267` Roguelike run authoring (2026-08-24)
-- `L274` Event Authoring
-- `L496` Condition / Loop / Variable command trust fixes (2026-08-07)
-- `L506` Event draft trust loop (2026-07-30)
-- `L514` 회상 오프닝 저작 — beat 컴파일러다 (2026-09-03)
-- `L523` Guided story arc facade
-- `L527` 지도·화면 효과 탭 초보자 UX (2026-08-27)
-- `L532` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
-- `L540` Companion roster in the command picker (2026-08-27)
-- `L546` Presentation and system M2 command bodies
-- `L553` 좌측 설정 레일 그룹 소속 (2026-08-27)
-- `L571` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
-- `L581` 「움직임과 속도」 부피 정리 (2026-08-29)
-- `L616` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
-  - `L650` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
-  - `L661` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
-  - `L669` 참조를 비워도 조건을 삭제하지 않는다
-  - `L676` 조건 미리보기는 모르면 모른다고 말한다
-  - `L685` 조건 문구에 내부 토큰을 넣지 마라
-- `L700` 공포 게임 제작 기능 (2026-09-05)
-  - `L705` NPC 발견·추격 저작 (2026-09-06)
+- `L25` 구역 드나듦 트리거 (2026-09-10)
+- `L52` Native battle confirmation admission (2026-09-08)
+- `L71` Character graphic no-match recovery (OUT-007, 2026-09-08)
+- `L94` Page preview state follows the current script (2026-09-08)
+- `L115` Event editor window controls (2026-09-06)
+- `L162` 이벤트 편집기 가독성 — 읽는 글자와 꾸미는 글자 (2026-09-03 후속)
+- `L175` 이벤트 편집기 문법 고정 — P0 (2026-09-03)
+- `L188` NPC 일정 구조화 편집 (2026-08-24)
+- `L200` AI 가 이벤트 페이지를 이해하지 못했다 (2026-08-30 실측 · 수정)
+  - `L222` 우선순위는 1페이지가 아니다 (바꾸지 않았다)
+  - `L230` 랜덤 대사는 페이지가 아니다
+  - `L237` 새 린트가 출하 콘텐츠에서 실제로 잡은 것 (skyStair autoEvent)
+  - `L247` 조건만 걸고 켜지 않으면 그것도 죽은 페이지다 (가려짐의 거울상)
+- `L264` 복잡한 NPC 는 조회 후 상태별 다중 페이지로 저작한다 (2026-09-01)
+- `L294` Roguelike run authoring (2026-08-24)
+- `L301` Event Authoring
+- `L523` Condition / Loop / Variable command trust fixes (2026-08-07)
+- `L533` Event draft trust loop (2026-07-30)
+- `L541` 회상 오프닝 저작 — beat 컴파일러다 (2026-09-03)
+- `L550` Guided story arc facade
+- `L554` 지도·화면 효과 탭 초보자 UX (2026-08-27)
+- `L559` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
+- `L567` Companion roster in the command picker (2026-08-27)
+- `L573` Presentation and system M2 command bodies
+- `L580` 좌측 설정 레일 그룹 소속 (2026-08-27)
+- `L598` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
+- `L608` 「움직임과 속도」 부피 정리 (2026-08-29)
+- `L643` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
+  - `L677` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
+  - `L688` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
+  - `L696` 참조를 비워도 조건을 삭제하지 않는다
+  - `L703` 조건 미리보기는 모르면 모른다고 말한다
+  - `L712` 조건 문구에 내부 토큰을 넣지 마라
+- `L727` 공포 게임 제작 기능 (2026-09-05)
+  - `L732` NPC 발견·추격 저작 (2026-09-06)
 
 ### `openwiki/editor-event-command-fixes.md` — 24KB · 98줄 · ~6,208 토큰 · 깨진 줄 11
 
@@ -509,7 +510,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L455` AI 툴·액션 이유 (2026-09-02)
 - `L465` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 91KB · 439줄 · ~25,776 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 91KB · 445줄 · ~25,956 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L7` Exterior door backing
 - `L17` Tile brush reliability (2026-09-06)
@@ -522,14 +523,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L114` 회귀 이음줌
 - `L126` Pre-edit routing
   - `L128` 명명 로케이션 레이어 (2026-09-10)
-  - `L155` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L214` Automatic usage guides disabled (2026-09-06)
-  - `L224` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L312` Agent cautions
-- `L322` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L353` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L385` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L414` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+  - `L161` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+  - `L220` Automatic usage guides disabled (2026-09-06)
+  - `L230` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L318` Agent cautions
+- `L328` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L359` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L391` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L420` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 1KB · 15줄 · ~333 토큰
 
@@ -749,15 +750,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L72` 좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10)
   - `L131` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
 
-### `openwiki/runtime-pre-edit-routing.md` — 34KB · 201줄 · ~9,907 토큰
+### `openwiki/runtime-pre-edit-routing.md` — 36KB · 214줄 · ~10,326 토큰
 
-- `L162` ESC skill thumbnails (2026-09-06)
-- `L173` Recovered head emotes (2026-09-05)
-- `L179` 메뉴 입력·불러오기 배율 (2026-09-05)
-- `L187` 가구 밀기 애니메이션 (2026-09-05)
-- `L196` Recovered head emotes (2026-09-05)
+- `L175` ESC skill thumbnails (2026-09-06)
+- `L186` Recovered head emotes (2026-09-05)
+- `L192` 메뉴 입력·불러오기 배율 (2026-09-05)
+- `L200` 가구 밀기 애니메이션 (2026-09-05)
+- `L209` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 123KB · 754줄 · ~32,797 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 130KB · 816줄 · ~34,811 토큰 · 통째읽기 잘림
 
 - `L3` Truthful migrated-load state (2026-09-07)
 - `L36` Explicit publication identity and Save6 (2026-09-06)
@@ -784,19 +785,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L451` 세계 법칙의 명시적 부재 (2026-09-05)
 - `L455` Showcase media save-copy durability (issue #693, 2026-09-08)
 - `L495` Project schema & persistence
-- `L619` Variable arithmetic & loop runtime (2026-08-07)
-- `L623` Canonical event-draft projection (2026-07-30)
-- `L629` P2 general buildings and home decorations (2026-08-25)
-- `L636` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L654` Boot normalizers must not create dangling references (2026-08-30)
-- `L680` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L714` 성장 트리 선택 확장 (2026-09-05)
-- `L720` 마을 설계서 (2026-09-05)
-- `L726` 공포 게임 제작 기능 (2026-09-05)
-  - `L730` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L734` NPC 표시 이름 (2026-09-05)
-- `L747` 연결 실내 도면의 영속성 (2026-09-05)
-- `L751` 개념 장소 형상 (2026-09-05)
+- `L681` Variable arithmetic & loop runtime (2026-08-07)
+- `L685` Canonical event-draft projection (2026-07-30)
+- `L691` P2 general buildings and home decorations (2026-08-25)
+- `L698` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L716` Boot normalizers must not create dangling references (2026-08-30)
+- `L742` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L776` 성장 트리 선택 확장 (2026-09-05)
+- `L782` 마을 설계서 (2026-09-05)
+- `L788` 공포 게임 제작 기능 (2026-09-05)
+  - `L792` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L796` NPC 표시 이름 (2026-09-05)
+- `L809` 연결 실내 도면의 영속성 (2026-09-05)
+- `L813` 개념 장소 형상 (2026-09-05)
 
 ### `openwiki/runtime-sessions.md` — 89KB · 318줄 · ~23,590 토큰 · 통째읽기 잘림
 
@@ -933,7 +934,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/testing.md` — 183KB · 1674줄 · ~50,234 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 185KB · 1691줄 · ~50,822 토큰 · 통째읽기 잘림
 
 - `L1` P5 delivery gates and the P4 regressions they caught (2026-09-09)
   - `L3` Open: checkpoint writes still slow the authoring loop
@@ -997,17 +998,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L1347` `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
 - `L1369` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
   - `L1371` 메뉴 적대적 플레이 회귀 (2026-09-05)
-- `L1491` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
-- `L1498` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
-  - `L1519` Shared fake DOM enhancement contracts (2026-09-08)
-- `L1551` bugfix-sweep 실제 표면 하네스 (2026-08-29)
-- `L1564` 마을 설계서 (2026-09-05)
-- `L1569` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
-- `L1579` 상점 진열 중심 편집 검증 (2026-09-05)
-- `L1587` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
-- `L1593` Request-bound functional acceptance verification (2026-09-07)
-- `L1661` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
-- `L1671` 실내 조립·형상 검증 (2026-09-05)
+- `L1508` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
+- `L1515` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
+  - `L1536` Shared fake DOM enhancement contracts (2026-09-08)
+- `L1568` bugfix-sweep 실제 표면 하네스 (2026-08-29)
+- `L1581` 마을 설계서 (2026-09-05)
+- `L1586` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
+- `L1596` 상점 진열 중심 편집 검증 (2026-09-05)
+- `L1604` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
+- `L1610` Request-bound functional acceptance verification (2026-09-07)
+- `L1678` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
+- `L1688` 실내 조립·형상 검증 (2026-09-05)
 
 ### `openwiki/tile-layer-policy.md` — 5KB · 76줄 · ~1,610 토큰
 

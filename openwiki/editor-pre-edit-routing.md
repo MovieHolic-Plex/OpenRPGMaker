@@ -130,7 +130,8 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 맵에 **이름 붙은 구역**을 그리는 층이다. 캔버스 툴바의 `map-location-layer-toggle` 「로케이션」이
 켜고 끄며, 꺼져 있으면 오버레이가 `pointer-events: none` 이라 타일 편집을 한 픽셀도 막지 않는다.
 
-- 소유 파일: 순수 규칙 `src/project/mapNamedLocations.ts`, 참조·복구 `src/project/mapLocationReferences.ts`,
+- 소유 파일: 순수 규칙 `src/project/mapNamedLocations.ts`, 드나듦(enter/leave) 판정
+  `src/project/locationTransitions.ts`, 참조·복구 `src/project/mapLocationReferences.ts`,
   편집기 상태·store 편집 `src/editor/mapLocationLayerState.ts`, DOM 오버레이·인스펙터
   `src/editor/mapLocationLayer.ts`, 라벨 문장 `src/editor/mapLocationLabels.ts`,
   조수 툴 `src/editor/tools/mapLocationTools.ts`, 스타일 `src/styles/editor/map-location-layer.css`.
@@ -148,6 +149,11 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
   `.phaser-container` 자식이므로 `modalEscapeLayerGate` 대상이 아니다.
 - 모든 편집은 `store.update(..., { scope:"map", mapId, label:"로케이션 …" })` + 저작 단위
   `recordProjectSnapshot` 을 지난다(editor-observability 라벨 계약).
+- **구역에 드나들 때 이벤트를 돌리는 트리거**(`{ kind:"locationTransition" … }`, 2026-09-10)는
+  이 층 위에 얹혀 있다. 저작 표면은 이벤트 편집기의 「시작 방식」이고 소유 파일은
+  `src/editor/locationTriggerAuthoring.ts` 다 — 계약은 `openwiki/editor-event-authoring.md`
+  의 「구역 드나듦 트리거」 절과 `openwiki/runtime-project-schema.md` 의 같은 이름 절.
+  **삭제된 구역의 진단·복구는 조건과 같은 통로를 쓴다**(끊긴 참조 패널·`map-location-missing-ref`).
 - 브라우저 QA: `npm run dev:worktree` 뒤
   `MAP_LOCATION_QA_URL=http://127.0.0.1:<포트> node scripts/qa/map-location-layer.mjs`
   → `verify-shots/oprn-020/SUMMARY.md`.
