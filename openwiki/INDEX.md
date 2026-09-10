@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **62쪽 / 2369KB / 약 661,903 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **62쪽 / 2375KB / 약 663,524 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -20,7 +20,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-database.md` | 257KB | 56KB ⚠상한 초과 — 절을 더 쪼개라 | 1350 | ~73,776 |
 | `openwiki/editor-event-authoring.md` | 134KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 740 | ~38,645 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
-| `openwiki/editor-pre-edit-routing.md` | 94KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 474 | ~26,692 |
+| `openwiki/editor-pre-edit-routing.md` | 96KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 488 | ~27,243 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 29KB | 456 | ~17,604 |
 | `openwiki/runtime-battle.md` | 133KB | 31KB | 539 | ~37,775 |
 | `openwiki/runtime-project-schema.md` | 134KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 859 | ~36,217 |
@@ -40,7 +40,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 109, 122, 123, 125, 128, 129 |
 | `openwiki/editor-observability.md` | 1 | 310 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 295, 304, 311, 313, 336 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 309, 318, 325, 327, 350 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
 
 ## 없는 파일을 가리키는 참조
@@ -509,7 +509,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L455` AI 툴·액션 이유 (2026-09-02)
 - `L465` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 94KB · 474줄 · ~26,692 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 96KB · 488줄 · ~27,243 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L7` Exterior door backing
 - `L17` Tile brush reliability (2026-09-06)
@@ -522,15 +522,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L117` 회귀 이음줌
 - `L129` Pre-edit routing
   - `L131` 명명 로케이션 레이어 (2026-09-10)
-  - `L164` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
-  - `L190` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L249` Automatic usage guides disabled (2026-09-06)
-  - `L259` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L347` Agent cautions
-- `L357` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L388` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L420` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L449` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+  - `L178` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
+  - `L204` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+  - `L263` Automatic usage guides disabled (2026-09-06)
+  - `L273` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L361` Agent cautions
+- `L371` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L402` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L434` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L463` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 1KB · 15줄 · ~333 토큰
 
@@ -1011,7 +1011,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1678` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
 - `L1688` 실내 조립·형상 검증 (2026-09-05)
 
-### `openwiki/tile-layer-policy.md` — 7KB · 97줄 · ~2,136 토큰
+### `openwiki/tile-layer-policy.md` — 10KB · 143줄 · ~3,206 토큰
 
 - `L11` 다섯 부류
 - `L24` 받침(backing) 메타
@@ -1019,8 +1019,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L44` 나무 밑동 290~293 을 상위로 옮기면 안 되는 이유
 - `L52` OPRN-OUT-017 과의 관계 (원인 공유는 미증명)
 - `L63` 테스트
-- `L72` 브라우저 증거 (2026-09-10)
-- `L93` 아직 결정이 필요한 것 (제품 소유자)
+- `L73` 브라우저 증거 (2026-09-10)
+- `L93` 커스텀 칩셋 픽셀 자동 감지 — 출하된 계약
+  - `L116` 임계값 — 실제 시트를 재서 얻은 수치다 (2026-09-10)
+  - `L131` 브라우저 실측 (Modern Exteriors 아틀라스 480칸)
+- `L139` 아직 결정이 필요한 것 (제품 소유자)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,019 토큰
 

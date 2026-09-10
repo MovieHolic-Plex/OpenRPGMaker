@@ -1,7 +1,9 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { setCameraPanBridge } from "@/editor/cameraPanBridge";
 import { editorState } from "@/editor/editorState";
-import { installMapLocationLayer } from "@/editor/mapLocationLayer";
+import { setRegionClientRectResolver } from "@/editor/regionClientRect";
+import { installMapLocationLayer, repositionMapLocationLayer } from "@/editor/mapLocationLayer";
 import {
   createLocationFromRect,
   currentLocations,
@@ -65,6 +67,10 @@ function testId(id: string): HTMLElement | null {
   return document.querySelector<HTMLElement>(`[data-testid="${id}"]`);
 }
 
+function pointerDownAt(clientX: number, clientY: number, init: PointerEventInit = {}): PointerEvent {
+  return new PointerEvent("pointerdown", { bubbles: true, cancelable: true, clientX, clientY, ...init });
+}
+
 describe("map location editor layer", () => {
   beforeEach(() => {
     Object.defineProperty(globalThis, "localStorage", { configurable: true, writable: true, value: new MemoryStorage() });
@@ -79,6 +85,8 @@ describe("map location editor layer", () => {
     document.body.innerHTML = "";
     setLocationLayerEnabled(false);
     Reflect.deleteProperty(globalThis, "localStorage");
+    setCameraPanBridge(null);
+    setRegionClientRectResolver(null);
   });
 
   it("is inert until toggled on: no pointer target and no inspector", () => {
@@ -200,5 +208,104 @@ describe("map location editor layer", () => {
     expect(testId(`map-location-box-${id}`)).toBeNull();
     // 데이터는 그대로다 — 레이어를 끈다고 저작물이 사라지지 않는다.
     expect(store.getCurrent().maps[MAP_ID].locations).toHaveLength(1);
+  });
+
+  it("camera gestures belong to the camera, not to the overlay", () => {
+    mount();
+    setLocationLayerEnabled(true);
+    const overlay = testId("map-location-layer")!;
+    const pans: Array<[number, number]> = [];
+    const bridge = (armed: () => boolean) => ({
+      armed,
+      startPan: (screenX: number, screenY: number) => pans.push([screenX, screenY]),
+    });
+
+    // 「화면 밀기」 도구: 맵을 밀려는 드래그다. 오버레이가 삼키면 구역이 그려진다.
+    editorState.set({ tool: "pan" });
+    setCameraPanBridge(bridge(() => false));
+    overlay.dispatchEvent(pointerDownAt(120, 240));
+    expect(pans).toEqual([[120, 240]]);
+    expect(locationLayerState().drag).toBeNull();
+    expect(currentLocations()).toHaveLength(0);
+
+    // 스페이스 팬은 도구와 무관하게 카메라의 것이다.
+    editorState.set({ tool: "paint" });
+    setCameraPanBridge(bridge(() => true));
+    overlay.dispatchEvent(pointerDownAt(10, 20));
+    expect(pans).toHaveLength(2);
+    expect(currentLocations()).toHaveLength(0);
+
+    // 가운데 버튼 드래그도 같은 길로 간다.
+    setCameraPanBridge(bridge(() => false));
+    overlay.dispatchEvent(pointerDownAt(5, 6, { button: 1, buttons: 4 }));
+    expect(pans).toHaveLength(3);
+    expect(currentLocations()).toHaveLength(0);
+  });
+
+  it("좌클릭은 여전히 오버레이의 것이다 — 카메라 브리지가 있어도", () => {
+    mount();
+    setLocationLayerEnabled(true);
+    const pans: Array<[number, number]> = [];
+    setCameraPanBridge({ armed: () => false, startPan: (x, y) => pans.push([x, y]) });
+    editorState.set({ tool: "paint" });
+
+    // 카메라 좌표 해석기가 없으면(null) 제스처를 시작하지 않는다 — 좌표를 지어내지 않는다.
+    testId("map-location-layer")!.dispatchEvent(pointerDownAt(120, 240));
+    expect(pans).toEqual([]);
+    expect(locationLayerState().drag).toBeNull();
+  });
+
+  it("카메라가 움직이면 상자 좌표만 다시 쓰고 인스펙터는 다시 만들지 않는다", () => {
+    mount();
+    setLocationLayerEnabled(true);
+    let originX = 300;
+    // 카메라가 움직이면 타일 → 화면 변환이 통째로 밀린다. 그 밀림을 흉내 낸다
+    // (16px 타일 · zoom 2 = 타일당 32px, seedProject 의 tileSize 와 맞춘다).
+    const px = 16 * 2;
+    setRegionClientRectResolver((region) => ({
+      x: originX + region.x * px,
+      y: 100 + region.y * px,
+      width: region.width * px,
+      height: region.height * px,
+    }));
+    createLocationFromRect({ x: 2, y: 3, w: 4, h: 5 }, "정문 광장");
+    const id = currentLocations()[0]!.id;
+    const box = testId(`map-location-box-${id}`)!;
+    const nameInput = testId("map-location-name-input");
+    expect(box.style.left).toBe(`${300 + 2 * px}px`);
+    expect(box.style.top).toBe(`${100 + 3 * px}px`);
+
+    originX = 120;
+    repositionMapLocationLayer();
+
+    expect(box.style.left).toBe(`${120 + 2 * px}px`);
+    expect(box.style.width).toBe(`${4 * px}px`);
+    // 노드는 그대로다 — 팬 중에 이름을 입력하고 있을 수 있다.
+    expect(testId(`map-location-box-${id}`)).toBe(box);
+    expect(testId("map-location-name-input")).toBe(nameInput);
+    // 그리고 데이터는 손대지 않는다: 좌표는 카메라가 아니라 저작물의 것이다.
+    expect(currentLocations()[0]).toMatchObject({ x: 2, y: 3, w: 4, h: 5 });
+
+    // 레이어를 끄면 재배치할 것도 없다.
+    setLocationLayerEnabled(false);
+    expect(() => repositionMapLocationLayer()).not.toThrow();
+  });
+
+  it("휠은 캔버스로 넘어간다 — 레이어를 켠 동안에도 맵을 휠로 밀 수 있다", () => {
+    mount();
+    const host = document.querySelector<HTMLElement>(".phaser-container")!;
+    const canvas = document.createElement("canvas");
+    host.append(canvas);
+    setLocationLayerEnabled(true);
+    const seen: WheelEvent[] = [];
+    canvas.addEventListener("wheel", event => seen.push(event as WheelEvent));
+
+    const wheel = new WheelEvent("wheel", { deltaX: 3, deltaY: 120, clientX: 30, clientY: 40, ctrlKey: true, bubbles: true, cancelable: true });
+    testId("map-location-layer")!.dispatchEvent(wheel);
+
+    expect(seen).toHaveLength(1);
+    expect(seen[0]?.deltaY).toBe(120);
+    // 원본은 취소된다 — Ctrl+휠이 브라우저 페이지 확대로 새지 않는다.
+    expect(wheel.defaultPrevented).toBe(true);
   });
 });

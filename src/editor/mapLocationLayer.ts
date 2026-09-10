@@ -13,9 +13,13 @@
 //   - 선택된 구역의 우하단 손잡이 드래그 → 크기 변경
 //   - Delete/Backspace      → 선택 구역 삭제(참조가 있으면 확인 문구를 먼저 보여준다)
 //   - Escape                → 선택 해제, 드래그 취소
+//   - 화면 밀기 도구·스페이스 팬·가운데 버튼, 그리고 휠 → **카메라의 제스처**다. 오버레이가 이걸
+//     삼키면 맵이 안 움직이고 드래그가 위 «빈 곳 그리기» 로 흘러들어 구역이 만들어진다
+//     (`editor/cameraPanBridge.ts` 로 넘긴다, 2026-09-11).
 // 겹침은 허용이므로 클릭 판정은 «가장 구체적인(작은) 구역» 이 이긴다(순수 모듈 규칙).
 
 import { TILE_SIZE } from "@/assets/bundled";
+import { cameraPanArmed, startCameraPan } from "@/editor/cameraPanBridge";
 import { editorState } from "@/editor/editorState";
 import { resolveClientPointTile, resolveRegionClientRect } from "@/editor/regionClientRect";
 import {
@@ -109,6 +113,17 @@ function tileToOverlayRect(rect: Rect): { left: number; top: number; width: numb
   };
 }
 
+/** 상자·고스트·미리보기가 모두 같은 네 값을 쓴다 — 기하를 쓰는 자리를 하나로 모은다. */
+function applyOverlayRect(node: HTMLElement, rect: Rect): void {
+  const geometry = tileToOverlayRect(rect);
+  Object.assign(node.style, {
+    left: `${geometry.left}px`,
+    top: `${geometry.top}px`,
+    width: `${geometry.width}px`,
+    height: `${geometry.height}px`,
+  });
+}
+
 function report(result: LocationActionResult): void {
   if (!result.ok) {
     toast(result.error, "error");
@@ -144,18 +159,12 @@ function renderBoxes(overlay: HTMLElement, map: GameMap, selectedId: string | nu
   const state = locationLayerState();
   if (state.showLayoutRegions) {
     for (const region of map.layoutPlan?.regions ?? []) {
-      const geometry = tileToOverlayRect(region);
       const box = el("div", {
         class: "map-location-region-ghost",
-        dataset: { testid: `map-location-region-${region.id}` },
+        dataset: { testid: `map-location-region-${region.id}`, regionId: region.id },
         children: [el("span", { class: "map-location-region-label", text: `설계 ${region.label}` })],
       });
-      Object.assign(box.style, {
-        left: `${geometry.left}px`,
-        top: `${geometry.top}px`,
-        width: `${geometry.width}px`,
-        height: `${geometry.height}px`,
-      });
+      applyOverlayRect(box, region);
       overlay.append(box);
     }
   }
@@ -163,20 +172,14 @@ function renderBoxes(overlay: HTMLElement, map: GameMap, selectedId: string | nu
   const ordered = [...mapLocations(map)].sort((a, b) => b.w * b.h - a.w * a.h);
   for (const location of ordered) {
     const selected = location.id === selectedId;
-    const geometry = tileToOverlayRect(location);
     const color = locationDisplayColor(location);
     const box = el("div", {
       class: `map-location-box${selected ? " is-selected" : ""}`,
       attrs: { role: "button", tabindex: "0", "aria-label": `구역 ${location.name}`, "aria-pressed": String(selected) },
       dataset: { testid: `map-location-box-${location.id}`, locationId: location.id },
     });
-    Object.assign(box.style, {
-      left: `${geometry.left}px`,
-      top: `${geometry.top}px`,
-      width: `${geometry.width}px`,
-      height: `${geometry.height}px`,
-      "--map-location-color": color,
-    });
+    applyOverlayRect(box, location);
+    box.style.setProperty("--map-location-color", color);
     box.append(
       el("span", {
         class: "map-location-box-label",
@@ -212,16 +215,39 @@ function renderDragPreview(overlay: HTMLElement): void {
       : drag.kind === "resize"
         ? rectFromDrag(drag.anchor, drag.to)
         : { ...drag.origin };
-  const geometry = tileToOverlayRect(rect);
   const preview = el("div", { class: "map-location-draw-preview", dataset: { testid: "map-location-draw-preview" } });
-  Object.assign(preview.style, {
-    left: `${geometry.left}px`,
-    top: `${geometry.top}px`,
-    width: `${geometry.width}px`,
-    height: `${geometry.height}px`,
-  });
+  applyOverlayRect(preview, rect);
   preview.append(el("span", { class: "map-location-draw-size", text: `${rect.w}×${rect.h}` }));
   overlay.append(preview);
+}
+
+/**
+ * 카메라가 움직인 뒤 **좌표만** 다시 쓴다 — 노드는 만들지 않는다.
+ *
+ * 왜 다시 그리지 않는가: 인스펙터에는 이름·사각형 입력이 살아 있다. 팬 한 프레임마다 노드를 새로
+ * 만들면 타이핑이 끊기고 포커스가 날아간다(영역 청크 오버레이가 같은 이유로 같은 계약을 쓴다).
+ * 손 팬·휠·스크롤바·프로그램 팬이 모두 `EditScene.afterCameraMoved` 를 지나므로 호출점은 하나다.
+ * 이 함수가 없으면 상자는 화면에 남고 타일만 미끄러진다(2026-09-11 브라우저 실측: 스크롤바 팬
+ * 한 번에 상자가 제 타일에서 162px 어긋난 채 굳었다).
+ */
+export function repositionMapLocationLayer(): void {
+  const overlay = overlayEl;
+  const state = locationLayerState();
+  if (!overlay || !state.enabled) return;
+  const map = currentLocationMap();
+  if (!map) return;
+  const locations = new Map(mapLocations(map).map((entry) => [entry.id, entry]));
+  for (const box of overlay.querySelectorAll<HTMLElement>(".map-location-box")) {
+    const location = box.dataset.locationId ? locations.get(box.dataset.locationId) : undefined;
+    if (location) applyOverlayRect(box, location);
+  }
+  if (!state.showLayoutRegions) return;
+  // 설계 고스트도 같은 계약이다 — 켜 둔 사람에게만 보이는 층이라 갱신 지점도 여기 하나다.
+  const regions = new Map((map.layoutPlan?.regions ?? []).map((region) => [region.id, region]));
+  for (const ghost of overlay.querySelectorAll<HTMLElement>(".map-location-region-ghost")) {
+    const region = ghost.dataset.regionId ? regions.get(ghost.dataset.regionId) : undefined;
+    if (region) applyOverlayRect(ghost, region);
+  }
 }
 
 // ───────────────────────────────────────────────────────────── 인스펙터
@@ -481,8 +507,30 @@ function overlayPointToTile(event: PointerEvent): { readonly x: number; readonly
   return tile;
 }
 
+/**
+ * 이 포인터는 오버레이가 아니라 **카메라**의 것이다.
+ *
+ * 셋뿐이다: 「화면 밀기」 도구 · 스페이스 팬(진행 중 포함) · 가운데 버튼. 셋 다 맵을 옮기는
+ * 제스처라, 오버레이가 표적이 되어 삼키면 팬이 시작조차 못 하고 그 드래그가 «빈 곳 그리기» 로
+ * 흘러 들어간다 — 맵을 밀려던 사람이 구역을 만들거나 옮겨 버린다(2026-09-11 브라우저 실측:
+ * 좌표 3,3 → 7,5, 그리고 스페이스 드래그가 새 구역을 하나 만들었다).
+ */
+function cameraOwnsPointer(event: PointerEvent): boolean {
+  if (event.button === 1 || (event.buttons & 4) === 4) return true;
+  if (editorState.get().tool === "pan") return true;
+  return cameraPanArmed();
+}
+
 function onPointerDown(event: PointerEvent): void {
-  if (!locationLayerState().enabled || event.button !== 0) return;
+  if (!locationLayerState().enabled) return;
+  if (cameraOwnsPointer(event)) {
+    // 표적은 이미 정해졌으므로 이 pointerdown 을 캔버스에 다시 던질 수 없다. 눌린 좌표를 그대로
+    // 넘겨 팬의 기준점으로 삼게 한다 — 이후 이동은 컨트롤러의 window 가드가 받는다.
+    event.preventDefault();
+    startCameraPan(event.clientX, event.clientY);
+    return;
+  }
+  if (event.button !== 0) return;
   const tile = overlayPointToTile(event);
   if (!tile) return;
   const target = event.target as HTMLElement | null;
@@ -602,6 +650,33 @@ function onKeyDown(event: KeyboardEvent): void {
   confirmDelete(selected);
 }
 
+/**
+ * 휠은 캔버스의 것이다: 휠 = 맵 밀기, Ctrl+휠 = 확대·축소(`EditScene.bindCanvasPanGuards`).
+ * 오버레이가 위에 있으면 캔버스의 리스너가 아예 돌지 않아 레이어를 켠 동안 맵을 휠로 못 움직인다.
+ * 노드를 만들지 않고 이벤트만 그대로 넘긴다 — 원본의 preventDefault 는 여기서 직접 해야 한다
+ * (합성 이벤트의 preventDefault 는 실제 브라우저 제스처를 막지 못한다: Ctrl+휠의 페이지 확대).
+ */
+function onWheel(event: WheelEvent): void {
+  const canvas = ensureHost()?.querySelector("canvas");
+  if (!canvas) return;
+  event.preventDefault();
+  canvas.dispatchEvent(
+    new WheelEvent("wheel", {
+      deltaX: event.deltaX,
+      deltaY: event.deltaY,
+      deltaMode: event.deltaMode,
+      clientX: event.clientX,
+      clientY: event.clientY,
+      ctrlKey: event.ctrlKey,
+      shiftKey: event.shiftKey,
+      altKey: event.altKey,
+      metaKey: event.metaKey,
+      bubbles: true,
+      cancelable: true,
+    }),
+  );
+}
+
 export function installMapLocationLayer(): () => void {
   render();
   const overlay = ensureOverlay();
@@ -609,6 +684,8 @@ export function installMapLocationLayer(): () => void {
   overlay?.addEventListener("pointermove", onPointerMove);
   overlay?.addEventListener("pointerup", onPointerUp);
   overlay?.addEventListener("pointercancel", onPointerUp);
+  // passive: false — 위 onWheel 이 원본 이벤트를 취소해야 한다(Ctrl+휠 페이지 확대 차단).
+  overlay?.addEventListener("wheel", onWheel, { passive: false });
   window.addEventListener("keydown", onKeyDown);
   const offLayer = subscribeLocationLayer(() => render());
   const offEditor = editorState.subscribe(() => render());
@@ -622,6 +699,7 @@ export function installMapLocationLayer(): () => void {
     overlay?.removeEventListener("pointermove", onPointerMove);
     overlay?.removeEventListener("pointerup", onPointerUp);
     overlay?.removeEventListener("pointercancel", onPointerUp);
+    overlay?.removeEventListener("wheel", onWheel);
   };
   return () => {
     teardown?.();
