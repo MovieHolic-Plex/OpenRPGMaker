@@ -1,3 +1,13 @@
+- **좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10):** `playPathfindMove` 는
+  이제 `Promise<MovementResult>` 를 돌려준다(도착 + 실패 6종, 정수 코드가 계약이다).
+  변수 좌표는 `session.variables[id]` **원시 조회**로 읽어야 한다 — `getVariable` 의 `?? 0`
+  은 「변수 없음」과 「값 0」을 지워 나쁜 데이터를 (0,0) 이라는 그럴듯한 목적지로 만든다.
+  해석 실패는 이동 단계를 아예 내지 않으므로 대기 명령이 영원히 멈추지 않는다.
+  결과는 명령이 지정한 변수/스위치에 쓴다 — `session.flags.pathfindSucceeded` 는 호환용
+  전역 한 칸이라 병렬 이벤트가 서로의 결과를 덮는다. `onFailure: "stop"` 은 전경
+  (`playSceneInterpreter`)과 병렬(`playSceneSchedulers`) **양쪽**에 있어야 한다.
+  `MoveRoute.skippable` 은 개별 루트 단계용이라 재사용하지 않았다(사유는 M2 페이지).
+  상세: `openwiki/runtime-m2-flow-controls.md`.
 - **이벤트 명령 실동작 검토 (2026-09-05):** `docs/reviews/2026-09-05-event-runtime-audit.md`. 「철수의 기억」에서 강제 NPC 방향 전환이 `scene.running` 게이트에 막혀 30초 뒤에야 다음 명령으로 진행됐다. `updatePlayScene`은 NPC 업데이트를 호출하고 `updateAutonomousNPCs`가 대화 중 **명령 루트만** 허용한다. 배경 자율 이동과 병렬 이벤트는 기존 설정대로 정지한다. 직접 NPC updater만 호출하는 테스트로는 이 배선 결함을 잡지 못하므로 `test/runtimeMovementStability.test.ts`의 실제 프레임 디스패치 회귀를 유지한다. 저장된 M2 대화 설정의 강제 기본값 초기화도 수정했다(`test/persistedMessageSettings.test.ts`). `Wait Until`, `Pathfind Move`, 메뉴/로드 화면, 좌표 ID 조회, 저장된 M2 영화 명령의 후속 미구현·오연결도 수정했다. 실행 계약과 제한은 `openwiki/runtime-m2-flow-controls.md`의 2026-09-05 항목을 따른다. 카탈로그 배지나 최종 종료만으로 전체 명령을 검증했다고 보고하지 않는다.
 - **실내 화로 불 애니메이션:** `src/editor/tilesetImage.ts`의 `supportsChipsetTileAnimation(tileset,tile)`이 기존 마을 애니메이션과 실내 불 스트립 124/154/184/214만 허용한다. 플레이어 `playSceneMapRuntime.renderTile`과 편집기 `chipsetTileRender.createRawTileObject`가 공통 조건을 쓴다. `isDefaultTilesetTexture`를 넓히면 실내에 마을 길/나무 규칙까지 적용되므로 바꾸지 않는다. `stone_hearth_unlit`의 463은 정지, `stone_hearth_lit`의 아래 가운데 124는 4fps이다. `test/interiorFireRendering.test.ts`는 양 레이어의 실제 렌더 경로를 검사한다.
 - **Shipping pointer-exclusion contract (2026-08-28):** `.player-layout[data-play-input-owner="keyboard-only"]` is keyboard-only regardless of `navigator.webdriver`. The capture blocker rejects mouse, pointer, touch, wheel, context-menu, drag, selection, auxiliary, and native trusted-click channels; Phaser mouse/touch managers are disabled. The root prevents selection, dragging, canvas hit testing, browser scroll, and autoscroll. Exactly two pointer owners exist: `[data-play-input-owner="touch-controls"]`, mounted only by explicit `VITE_TOUCH_CONTROLS` / `OPENRPG_PLAYER_TOUCH_CONTROLS`, and `[data-play-input-owner="host-fullscreen"]`, mounted only when `hostFeatures` advertises fullscreen. Ownership never escapes those subtrees, and keyboard-only runtime content has no native `title` tooltips.
