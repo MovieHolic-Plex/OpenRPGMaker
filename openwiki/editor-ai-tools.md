@@ -1,5 +1,25 @@
 # Editor AI Tools & Vocabulary
 
+## 맵 생성 테두리 옵션은 모델에게 주지 않는다 (2026-09-11)
+
+사용자 보고: "맵을 AI 조수에게 생성시키면 맵 외곽에 벽을 친다". 실측으로 원인은
+`mapTools.ts` `create_map` / `generateMapTool.ts` `generate_map` 의 `border: "wall"` **옵션 자체**였다.
+
+- 기본값은 두 툴 다 `none` 이고, 실제 세션 62건 중 `wall` 은 7건 — 전부 **동굴·던전·지하실** 맵이다.
+  사용자가 벽을 요청한 적은 없다(같은 로그의 사용자 발화 128건에서 테두리 요청 0건). 모델이
+  "동굴이면 막아야 한다"고 스스로 판단해 골랐다.
+- 설명문을 "명시 요청 때만" 으로 바꾸는 것만으로는 멈추지 않는다. 같은 발화·같은 모델에서
+  스키마에 enum 이 있으면 3/3 `wall`, 없으면 0/3 (동반 서비스 직접 호출 A/B, `gemini-3.7-flash`).
+  **선택지를 주는 것 자체가 유인**이다.
+- 그래서 `toOpenAiTools()` 가 내보내는 파라미터에서 `border` 를 뺐다. `run()` 은 인자를 계속
+  받는다 — 스크립트·테스트·과거 대화 재생이 같은 결과를 내야 하기 때문(`ai-tools-deprecation-roadmap`
+  1~2단계와 같은 형태). 오타 값은 스키마 검증 대신 `run()` 안에서 `invalid-args` 로 거부한다.
+- 회귀: `test/toolsMapManagement.test.ts`("모델 노출 스키마에서 border 를 뺐다"),
+  `test/generateMap.test.ts`(같은 이름). 런타임 케이스(`border:"wall"` 봉인, 오타 거부)는 그대로 남는다.
+- 참고: `create_map` 의 테두리는 타일셋과 무관하게 `TILE.WALL`(306) 을 쓴다 — 다른 칩셋에서는
+  다른 그림이므로 애초에 일반 옵션이 아니었다. 실내(place_concept / 실내 세션)의 벽은 설계상 정상이며
+  이 변경과 무관하다.
+
 ## 명명 로케이션 툴 7종 (OPRN-OUT-020 + LOC-ADOPT, 2026-09-10)
 
 `src/editor/tools/mapLocationTools.ts`. 목표 하나다: 사용자가 "정문 광장"이라고 말하면 조수가

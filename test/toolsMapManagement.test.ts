@@ -3,6 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
+import { toOpenAiTools } from "@/editor/tools/toolRegistry";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 
@@ -324,6 +325,15 @@ describe("create_map", () => {
       expect(map.lowerTiles[y * map.width + map.width - 1]).toBe(TILE.WALL);
     }
     expect(map.lowerTiles[1 * map.width + 1]).toBe(TILE.GRASS);
+  });
+
+  // 2026-09-11: 조수가 동굴·던전·지하실 요청마다 스스로 테두리를 골라 맵 4변을 돌벽으로 둘렀다
+  // (실제 대화 62건 중 7건, 전부 그런 맵). 모델 노출 스키마에서 border 를 빼면 0/3 으로 사라진다.
+  it("모델 노출 스키마에서 border 를 뺐다 — 조수가 스스로 외곽 벽을 고를 수 없다", () => {
+    const tool = toOpenAiTools().find((entry) => entry.function.name === "create_map");
+    expect(tool).toBeDefined();
+    expect(Object.keys(tool!.function.parameters.properties ?? {})).not.toContain("border");
+    expect(tool!.function.description).not.toContain("border");
   });
 
   it("256x256 초과 생성은 거부한다", () => {
