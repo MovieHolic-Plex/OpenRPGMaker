@@ -4268,6 +4268,7 @@
  "m2-055-show-animation": {
   "testids": [
    "event-command-edit-summary",
+   "m2-command-deprecated-notice",
    "show-animation-m2-animation-select",
    "show-animation-m2-animation-select-card",
    "show-animation-m2-command-body",
@@ -4293,6 +4294,7 @@
    "change-parameters-field-label",
    "cream-command-form-head",
    "empty",
+   "empty-hint",
    "page3-command-body",
    "party-member-intent",
    "party-member-intent-body",
@@ -4335,7 +4337,7 @@
   ],
   "tags": {
    "button": 2,
-   "div": 14,
+   "div": 15,
    "option": 7,
    "p": 3,
    "select": 3,
@@ -4343,6 +4345,7 @@
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
+   "m2-command-deprecated-notice": "div",
    "show-animation-m2-animation-select": "select",
    "show-animation-m2-animation-select-card": "span",
    "show-animation-m2-command-body": "div",
@@ -4360,7 +4363,7 @@
    "show-animation-m2-intent": "애니메이션 표시대상 위에 전투 애니메이션을 재생합니다.",
    "show-animation-m2-preview": "주인공 · (미선택)전투 애니메이션을 맵에서 재생합니다."
   },
-  "testidCount": 12,
+  "testidCount": 13,
   "controlCount": 5
  },
  "m2-056-flash-event": {
@@ -4488,7 +4491,7 @@
   "selectOptions": {},
   "labels": [],
   "tags": {
-   "div": 6
+   "div": 5
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
@@ -4557,7 +4560,7 @@
   "selectOptions": {},
   "labels": [],
   "tags": {
-   "div": 6
+   "div": 5
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
@@ -4584,7 +4587,7 @@
   "selectOptions": {},
   "labels": [],
   "tags": {
-   "div": 6
+   "div": 5
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
@@ -4621,37 +4624,7 @@
   },
   "selectOptions": {
    "m2-command-resourceId-picker": [
-    "",
-    "tex_easyrpg_chipset_combined_town",
-    "tex_easyrpg_chipset_dungeon",
-    "tex_easyrpg_chipset_interior",
-    "tex_easyrpg_charset_actor1",
-    "tex_easyrpg_charset_actor2",
-    "tex_easyrpg_charset_actor3",
-    "cc0-jetrel-ale",
-    "cc0-jetrel-antidote-green",
-    "cc0-jetrel-antidote-plus",
-    "easyrpg-faceset-actor1-00",
-    "easyrpg-faceset-actor1-01",
-    "easyrpg-faceset-actor1-02",
-    "easyrpg-battle-arrow",
-    "easyrpg-battle-blow",
-    "easyrpg-battle-sword1",
-    "easyrpg-battle-weapon-weapon",
-    "easyrpg-game-over-game-over",
-    "easyrpg-monster-hornet",
-    "easyrpg-backdrop-cosmos1",
-    "easyrpg-backdrop-dawn1",
-    "easyrpg-backdrop-dawn2",
-    "easyrpg-system-royal",
-    "easyrpg-system-system",
-    "easyrpg-system-system-a",
-    "easyrpg-system2-system2-a",
-    "easyrpg-system2-system2-b",
-    "easyrpg-system2-system2-c",
-    "easyrpg-title-title1",
-    "easyrpg-title-title2",
-    "easyrpg-title-title3"
+    ""
    ]
   },
   "labels": [
@@ -4662,7 +4635,7 @@
    "div": 10,
    "input": 1,
    "label": 2,
-   "option": 31,
+   "option": 1,
    "select": 1
   },
   "tagByTestid": {
@@ -4675,7 +4648,7 @@
   },
   "texts": {
    "event-command-edit-summary": "기타 명령",
-   "m2-command-resourceId-preview": "그림을 고르세요"
+   "m2-command-resourceId-preview": "동영상을 고르세요"
   },
   "testidCount": 6,
   "controlCount": 2
@@ -5439,7 +5412,7 @@
   "selectOptions": {},
   "labels": [],
   "tags": {
-   "div": 6
+   "div": 5
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
@@ -5508,7 +5481,7 @@
   "selectOptions": {},
   "labels": [],
   "tags": {
-   "div": 6
+   "div": 5
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
@@ -5823,7 +5796,7 @@
   "selectOptions": {},
   "labels": [],
   "tags": {
-   "div": 6
+   "div": 5
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
@@ -5850,7 +5823,7 @@
   "selectOptions": {},
   "labels": [],
   "tags": {
-   "div": 6
+   "div": 5
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
@@ -5961,7 +5934,7 @@
   "selectOptions": {},
   "labels": [],
   "tags": {
-   "div": 6
+   "div": 5
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",

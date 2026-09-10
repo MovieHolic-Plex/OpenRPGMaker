@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { renderCommandBody } from "@/editor/panels/eventEditor/commandBody";
 import { renderM2CommandBody } from "@/editor/panels/eventEditor/commandBodyM2";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -203,6 +204,45 @@ describe("event editor M2 command body", () => {
     expect(entry?.bodyStrategy).toBe("existing");
   });
 
+  it("renders Call Event as a common-event record selector, not map coordinates", () => {
+    const project = store.getCurrent();
+    project.commonEvents.push({ id: "ce_test", name: "테스트 공통 이벤트", commands: [], trigger: "none" });
+    store.replace(project);
+    const context = contextWithReplaceSpy(vi.fn());
+    const body = renderWithFakeDom(() =>
+      renderM2CommandBody(context, {
+        kind: "m2Command",
+        commandId: "m2-087-call-event",
+        fields: {},
+      }) ?? document.createElement("div")
+    );
+
+    // m2-087은 existingKind:callCommonEvent 별칭이라 제네릭 껍데기만 낸다.
+    // 실제 저작은 네이티브 폼이 맡으므로, 별칭 껍데기가 맵 좌표 입력을 내놓지 않으면 된다.
+    expect(Boolean(findByTestId(body, "m2-command-target-input"))).toBe(false);
+    expect(Boolean(findByTestId(body, "m2-command-mapId-input"))).toBe(false);
+    expect(Boolean(findByTestId(body, "m2-command-x-input"))).toBe(false);
+    expect(Boolean(findByTestId(body, "m2-command-y-input"))).toBe(false);
+  });
+
+  it("renders Play Movie resource ids as movie picks, not image picks", () => {
+    const context = contextWithReplaceSpy(vi.fn());
+    const body = renderWithFakeDom(() =>
+      renderM2CommandBody(context, {
+        kind: "m2Command",
+        commandId: "m2-066-play-movie",
+        fields: {},
+      }) ?? document.createElement("div")
+    );
+
+    const picker = findByTestId(body, "m2-command-resourceId-picker");
+    expect(picker?.attrs["aria-label"]).toBe("영상 선택");
+    expect(body.textContent).not.toContain("합본 마을");
+    expect(body.textContent).not.toContain("tex_easyrpg_chipset_combined_town");
+    expect(body.textContent).toContain("동영상을 고르세요");
+    expect(body.textContent).not.toContain("그림을 고르세요");
+  });
+
   it("explains Wait for All Movement intent for authors", () => {
     const context = contextWithReplaceSpy(vi.fn());
     const body = renderWithFakeDom(() =>
@@ -216,7 +256,23 @@ describe("event editor M2 command body", () => {
     expect(findByTestId(body, "m2-command-body-m2-058-wait-for-all-movement")).not.toBeNull();
     expect(findByTestId(body, "m2-command-note-input")).toBeNull();
     expect(body.textContent).toContain("이 명령은 추가 설정 없이 실행됩니다");
-    expect(body.textContent).toContain("추가 설정 없음");
+    const hints = (body.textContent?.match(/추가 설정 없음/g) ?? []).length;
+    expect(hints).toBeLessThanOrEqual(1);
   });
+  it("announces retired catalog rows inside the dialog", () => {
+    const context = contextWithReplaceSpy(vi.fn());
+    // m2-055는 전용 애니메이션 폼 경로 — 배너가 전용 폼에도 붙는지 본다.
+    const body = renderWithFakeDom(() =>
+      renderCommandBody(context, {
+        kind: "m2Command",
+        commandId: "m2-055-show-animation",
+        fields: {},
+      })
+    );
 
+    expect(findByTestId(body, "show-animation-m2-command-body")).not.toBeNull();
+    const notice = findByTestId(body, "m2-command-deprecated-notice");
+    expect(notice).not.toBeNull();
+    expect(notice?.textContent).toContain("m2-054-show-animation");
+  });
 });

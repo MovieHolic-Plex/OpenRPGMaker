@@ -1758,8 +1758,8 @@ function actorAmountBody(context: CommandEditContext, cmd: ActorAmountCommand): 
           el("p", {
             class: "party-member-intent-body",
             text: supportsPercent
-              ? `${labels.amountTitle}를 고정값 또는 최대치 %로 가감합니다.`
-              : `${labels.amountTitle}를 이벤트에서 가감합니다.`,
+              ? `${labels.amountTitle}${objectParticle(labels.amountTitle)} 고정값 또는 최대치 %로 가감합니다.`
+              : `${labels.amountTitle}${objectParticle(labels.amountTitle)} 이벤트에서 가감합니다.`,
           }),
         ],
       }),
@@ -1837,7 +1837,13 @@ function actorAmountLabels(kind: ActorAmountCommand["kind"]): {
       };
   }
 }
-
+/** 끝음절 받침에 맞는 목적격 조사 — "레벨를" 같은 오기를 막는다(HP/MP는 받침 없음 → 를). */
+function objectParticle(word: string): string {
+  const lastChar = word.at(-1) ?? "";
+  const code = lastChar.charCodeAt(0);
+  if (code < 0xac00 || code > 0xd7a3) return "를";
+  return (code - 0xac00) % 28 !== 0 ? "을" : "를";
+}
 
 function numberInput(value: number, title: string, testId: string): HTMLInputElement {
   return el("input", {
