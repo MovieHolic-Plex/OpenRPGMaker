@@ -10,6 +10,23 @@ export function verificationEvent(id: string, x: number, y: number, commands: Co
   return { id, name: id, x, y, trigger: page.trigger, commands: [], pages: [page] };
 }
 
+/**
+ * 스펙 미지정(`args: null`) 요구를 만드는 선언.
+ *
+ * 예전에는 `successTools` 에 검증 툴만 적고 `verificationChecks` 를 비우면 하네스가 pending
+ * 요구를 심었다. 그건 **하네스가 스스로 만든 해소 불가능한 요구**였다 — 실행도
+ * `correct_verification` 도 반영되지 않아 `set_work_plan` 재선언 말고는 뚫을 수 없었고,
+ * 2026-09-11 실 LLM 턴에서 gemini-3.8-flash 를 포함한 세 모델 모두 재선언하지 못했다.
+ * 이제 그 경로는 요구를 만들지 않는다(assistantSession.adoptVerificationRequirements).
+ *
+ * 남은 pending 경로는 **모델이 직접 쓴 선언이 안 풀리는 경우**다. 그중 가장 단순한 것이
+ * 채택되지 않은 승인 약속을 가리키는 criterion 참조다 — 스펙 미지정의 원자적 해소·위조 방지
+ * 성질은 이 경로에서 그대로 유효하므로, 그 성질을 검증하는 픽스처는 이걸 쓴다.
+ */
+export function unboundCriterionCheck(tool: string, promiseId = "not-adopted-promise") {
+  return { tool, criterion: { promiseId, criterionIndex: 0 } };
+}
+
 export function verificationJourney() {
   const project = createBlankProject();
   const village = project.maps[project.startMapId]!;
