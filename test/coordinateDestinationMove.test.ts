@@ -194,6 +194,28 @@ describe("인터프리터 — 좌표 해석과 실패 정책", () => {
     });
   });
 
+  it("m2Runtime 기록은 해석된 목적지를 남기고 부재 키 경고를 쪼지 않는다", () => {
+    const session = startSession(projectWithVariables());
+    session.variables.var_x = 11;
+    session.variables.var_y = 2;
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    try {
+      // 변수 소스일 때 `x`/`y` 는 저작되지 않을 수 있다 — 그걸 missing-field 로
+      // 경고하면 저작자 콘솔이 도배된다(출하 플레이어 QA 실측).
+      createInterpreter([move({
+        target: "player", xSource: "variable", xVariableId: "var_x",
+        ySource: "variable", yVariableId: "var_y", speed: 4, wait: true,
+      })], session).start();
+      expect(session.m2Runtime?.pathfinding).toContainEqual(
+        expect.objectContaining({ target: "player", x: 11, y: 2 })
+      );
+      const coordinateWarnings = warn.mock.calls
+        .map((call) => String(call[0]))
+        .filter((text) => /missing field: [xy]$/.test(text));
+      expect(coordinateWarnings).toEqual([]);
+    } finally { warn.mockRestore(); }
+  });
+
   it("저장/로드 왕복 뒤에도 같은 목적지가 나온다 (지속성)", () => {
     const project = projectWithVariables();
     project.maps[project.startMapId]!.events = [{

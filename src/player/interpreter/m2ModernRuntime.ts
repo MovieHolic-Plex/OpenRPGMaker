@@ -4,6 +4,7 @@ import { nextSessionRandom, setAudioState, type AudioChannel, type AudioTrackSta
 import { isLoopingChannel } from "@/player/audio/audioResources";
 import { evaluateM2Expression } from "./m2Expression";
 import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
+import { coordinateAxisSpec, resolveDestination } from "@/project/eventCommands/coordinateDestination";
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { planScreenEffect } from "./screenEffectPlan";
 
@@ -32,15 +33,25 @@ export function executeModernCommand(
     case "Remove Event":
       recordRemoveEvent(session, runtime, fields, context);
       return true;
-    case "Pathfind Move":
+    case "Pathfind Move": {
+      // OPRN-OUT-013: 좌표는 축마다 숫자 또는 변수다. 변수 축은 이 상황에서
+      // 상태가 아니라 내가 **해석한 값**이 기록되어야 하고, 있지도 않은 `x` 키를
+      // `fieldNumber` 로 읽으면 저작자 콘솔이 missing-field 경고로 도배된다.
+      // 고정 좌표 명령의 기록은 이전과 바이트 단위로 같다.
+      const destination = resolveDestination(fields, (variableId) => session.variables?.[variableId]);
+      const authored = {
+        x: coordinateAxisSpec(fields, "x"),
+        y: coordinateAxisSpec(fields, "y"),
+      };
       runtime.pathfinding.push({
         target: fieldString(fields, "target", "this-event"),
-        x: fieldNumber(fields, "x", 0),
-        y: fieldNumber(fields, "y", 0),
+        x: destination.ok ? destination.x : authored.x.fixedValue,
+        y: destination.ok ? destination.y : authored.y.fixedValue,
         speed: fieldNumber(fields, "speed", 4),
         wait: fieldBoolean(fields, "wait", true),
       });
       return true;
+    }
     case "Wait Until":
       recordWaitUntil(session, runtime, fields);
       return true;
