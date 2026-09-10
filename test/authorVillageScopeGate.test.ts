@@ -8,10 +8,12 @@
 import { describe, expect, it } from "vitest";
 import { parseAuthorVillageRequest } from "@/editor/construction/parseVillageRequest";
 import { AUTHOR_VILLAGE_TOOL, createAuthorVillageTool } from "@/editor/tools/authorVillageTool";
+import type { GameEvent, GameMap, Project } from "@/project/types";
 import { runToolDefinition } from "@/editor/tools/toolRunner";
 import type { ToolExecResult } from "@/editor/tools/types";
 import type { VillageBuildInspection } from "@/editor/tools/villageBuilder";
 import { TILE } from "@/project/defaults/constants";
+import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { serialize } from "@/project/io";
 import {
   createExistingProject,
@@ -178,5 +180,57 @@ describe("author_village postconditions and parser", () => {
         countPolicy: "exact",
       }),
     ).toThrow();
+  });
+
+  it("new target without dimensions gets the code estimate (same converter as intent)", () => {
+    const context = { project: createEmptyToolProject("estimated village") };
+    const tool = stubTool(20, { mapId: "map_estimated", mutate: false });
+    const result = runToolDefinition(context, tool, {
+      target: { kind: "new", mapId: "map_estimated", name: "추정 마을" },
+      houseCount: 20,
+      countPolicy: "exact",
+      seed: 7,
+      interior: false,
+    });
+    expect(result.ok, JSON.stringify(result.issues ?? [])).toBe(true);
+    // 러너는 draft에 적용 후 ctx.project로 돌려준다 — 결과 맵은 context.project에서 읽는다.
+    const created = context.project.maps.map_estimated;
+    expect(created).toBeDefined();
+    // 집 20채 → estimateVillageSize = 74×52. 모델이 아니라 코드가 정했다.
+    expect(created!.width).toBe(74);
+    expect(created!.height).toBe(52);
+  });
+
+  it("too-small existing map is grown (top-left, grass fill) instead of rejected — events preserved", () => {
+    const context = { project: createExistingProject(12) };
+    const map = context.project.maps.map_existing as GameMap;
+    map.events = [{ id: "ev_keeper", x: 3, y: 3, trigger: "action", commands: [] } as GameEvent];
+    // stub은 (0,0)에 PATH를 찍는다 — 미리 SAND로 놓아 1칸 diff를 보장한다(성장분은 baseline 이전이라 diff 밖).
+    map.lowerTiles[0] = TILE.SAND;
+    const tool = stubTool(1);
+    const result = runToolDefinition(context, tool, {
+      ...BASE,
+      houseCount: 1,
+      target: { kind: "existing", mapId: "map_existing", fullMap: true },
+    });
+    expect(result.ok, JSON.stringify(result.issues ?? [])).toBe(true);
+    const grown = (context.project as Project).maps.map_existing as GameMap;
+    // 성장 하한은 MIN_BOUNDS_SIZE=16(파서 bounds 하한과 같다) — 12×12 → 16×16.
+    expect(grown.width).toBe(16);
+    expect(grown.height).toBe(16);
+    expect(grown.lowerTiles[0]).toBe(TILE.PATH);
+    expect(grown.events.some((event) => event.id === "ev_keeper")).toBe(true);
+    // 확장부는 잔디 — resize_map과 같은 데이터 규약.
+    expect(grown.lowerTiles[(grown.height - 1) * grown.width + (grown.width - 1)]).toBe(TILE.GRASS);
+  });
+  it("bounds-reserved 16x16 region passes on a 14x14 map after growth — bounds는 사용자가 정한 사실", () => {
+    const context = { project: createExistingProject(20) };
+    const tool = stubTool(1);
+    const result = runToolDefinition(context, tool, {
+      ...BASE,
+      houseCount: 1,
+      target: { kind: "existing", mapId: "map_existing", bounds: { x: 0, y: 0, w: 16, h: 16 } },
+    });
+    expect(result.ok, JSON.stringify(result.issues ?? [])).toBe(true);
   });
 });
