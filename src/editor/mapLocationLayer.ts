@@ -19,7 +19,6 @@ import { TILE_SIZE } from "@/assets/bundled";
 import { editorState } from "@/editor/editorState";
 import { resolveClientPointTile, resolveRegionClientRect } from "@/editor/regionClientRect";
 import {
-  adoptLayoutRegions,
   createLocationFromRect,
   currentLocationMap,
   deleteLocation,
@@ -40,7 +39,9 @@ import {
   updateLocationNote,
   type LocationActionResult,
 } from "@/editor/mapLocationLayerState";
+import { openLocationAdoptionPanel } from "@/editor/panels/mapLocationAdoptionPanel";
 import { collectMapLocationReferenceIssues } from "@/project/mapLocationReferences";
+import { DEFAULT_ADOPTION_ROLES, adoptionRoleLabel, surveyMapAdoption } from "@/project/mapLocationAdoption";
 import { locationDisplayColor, mapLocations, rectFromDrag } from "@/project/mapNamedLocations";
 import { store } from "@/project/store";
 import type { GameMap, MapNamedLocation, Rect } from "@/project/types";
@@ -260,14 +261,28 @@ function renderInspector(map: GameMap, selectedId: string | null): HTMLElement {
     toggle.addEventListener("change", () => setShowLayoutRegions(toggle.checked));
     const row = el("label", { class: "map-location-check-row" });
     row.append(toggle, el("span", { text: `빌더 설계 영역 ${map.layoutPlan.regions.length}개 함께 보기` }));
+    // 이 맵 한 장의 현황을 먼저 숫자로 보여 준다 — 버튼 하나로 조용히 수십 개가 생기는 것이
+    // OPRN-OUT-020 이 일괄 이관을 미뤄 둔 이유였다. 실행은 조사 창을 거친다.
+    const survey = surveyMapAdoption(map);
     panel.append(
       row,
+      el("p", {
+        class: "map-location-adopt-survey",
+        dataset: { testid: "map-location-adopt-survey" },
+        text:
+          `이 맵의 기본 역할(${DEFAULT_ADOPTION_ROLES.map(adoptionRoleLabel).join(" · ")}) 승격 후보 ${survey.adoptableCount}개` +
+          `${survey.adoptedCount > 0 ? ` · 이미 승격 ${survey.adoptedCount}개` : ""}` +
+          `${survey.collisions.length > 0 ? ` · 이름 충돌 ${survey.collisions.length}건` : ""}`,
+      }),
       el("button", {
         class: "btn",
-        text: "설계 영역을 구역으로 가져오기",
-        attrs: { type: "button", title: "layoutPlan.regions 를 복사한다. 설계 기록 자체는 바뀌지 않는다." },
+        text: "설계 영역 이관 조사 열기",
+        attrs: {
+          type: "button",
+          title: "맵별로 무엇이 생기는지 먼저 보고 골라서 가져온다. layoutPlan 은 읽기만 한다.",
+        },
         dataset: { testid: "map-location-adopt-regions" },
-        on: { click: () => report(adoptLayoutRegions()) },
+        on: { click: () => openLocationAdoptionPanel() },
       }),
     );
   }

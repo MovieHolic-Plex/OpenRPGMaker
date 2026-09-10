@@ -189,3 +189,131 @@
   font-size: var(--font-size-xs);
   line-height: 1.5;
 }
+
+/* ── 설계 영역 이관 창 (LOC-ADOPT).
+ *
+ * 조사가 먼저 보이고 실행 버튼이 맨 아래에 있다 — 시선 순서가 곧 안전 순서다.
+ * 색은 토큰만 쓴다(hex 리터럴 금지, 위 규칙 2 와 동일). */
+
+.map-location-adopt-survey {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+}
+
+.location-adoption-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: min(46rem, 92vw);
+  max-height: 86vh;
+  overflow: auto;
+  text-align: start;
+}
+.location-adoption-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.location-adoption-lede {
+  margin: var(--space-1) 0 0;
+  color: var(--text-2);
+  font-size: var(--font-size-xs);
+  line-height: 1.6;
+}
+.location-adoption-empty { margin: 0; color: var(--text-2); }
+.location-adoption-summary {
+  margin: 0;
+  padding: var(--space-2);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  font-size: var(--font-size-sm);
+}
+.location-adoption-error { margin: 0; color: var(--danger); font-size: var(--font-size-sm); }
+
+.location-adoption-roles,
+.location-adoption-policy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-s);
+  padding: var(--space-2);
+}
+.location-adoption-roles-why,
+.location-adoption-policy-note {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+}
+.location-adoption-role-row,
+.location-adoption-policy-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  font-size: var(--font-size-sm);
+}
+.location-adoption-role-count { color: var(--text-2); font-size: var(--font-size-xs); }
+.location-adoption-role-caution {
+  flex-basis: 100%;
+  color: var(--warning);
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+}
+.location-adoption-role-row.is-cautious .location-adoption-role-name { color: var(--text-2); }
+
+.location-adoption-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.location-adoption-row {
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-s);
+  padding: var(--space-2);
+}
+.location-adoption-row.is-selected { border-color: var(--accent); }
+.location-adoption-row-main { display: flex; align-items: flex-start; gap: var(--space-2); }
+.location-adoption-row-text { display: flex; flex-direction: column; gap: var(--space-1); }
+.location-adoption-map-name { font-weight: 600; }
+.location-adoption-map-counts,
+.location-adoption-map-roles { color: var(--text-2); font-size: var(--font-size-xs); }
+.location-adoption-collision,
+.location-adoption-orphan {
+  margin: var(--space-1) 0 0;
+  color: var(--warning);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+}
+
+.location-adoption-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+.location-adoption-receipt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  border: var(--stroke-1) solid var(--accent);
+  border-radius: var(--radius-s);
+  padding: var(--space-2);
+}
+.location-adoption-receipt-line { margin: 0; font-size: var(--font-size-sm); line-height: 1.5; }
+.location-adoption-receipt-undo { margin: 0; color: var(--text-2); font-size: var(--font-size-xs); }
+.location-adoption-renamed {
+  margin: 0;
+  padding-inline-start: var(--space-4);
+  color: var(--text-2);
+  font-size: var(--font-size-xs);
+  line-height: 1.6;
+}

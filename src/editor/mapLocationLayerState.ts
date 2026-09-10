@@ -15,7 +15,6 @@ import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import {
   addMapLocation,
-  adoptLayoutRegionsAsLocations,
   deleteMapLocation,
   findLocationById,
   mapLocations,
@@ -264,21 +263,10 @@ export function repairBrokenLocationReferences(missingLocationId: string, plan: 
   };
 }
 
-/** 빌더 설계 영역 승격. layoutPlan 은 읽기만 한다. */
-export function adoptLayoutRegions(): LocationActionResult {
-  let adopted = 0;
-  let skipped = 0;
-  const result = editMap("설계 영역 승격", (map) => {
-    if (!map.layoutPlan) return { ok: false, error: "이 맵에는 빌더 설계 기록(layoutPlan)이 없습니다." };
-    const outcome = adoptLayoutRegionsAsLocations(map);
-    adopted = outcome.adopted.length;
-    skipped = outcome.skipped.length;
-    if (adopted === 0) return { ok: false, error: skipped > 0 ? "이미 전부 승격돼 있습니다." : "승격할 설계 영역이 없습니다." };
-    return { ok: true };
-  });
-  if (!result.ok) return result;
-  return { ok: true, message: `설계 영역 ${adopted}개를 구역으로 가져왔습니다${skipped ? ` (이미 있던 ${skipped}개는 건너뜀)` : ""}.` };
-}
+// 빌더 설계 영역 승격의 **사람 경로는 여기에 없다.** 「설계 영역 이관」 창
+// (`editor/panels/mapLocationAdoptionPanel.ts` + `editor/mapLocationAdoptionState.ts`)이 유일하다:
+// 조사 → 역할 필터 → 맵 선택 → 실행 → 영수증. 예전에 있던 «이 맵 전부 한 방에» 버튼은
+// 무엇이 생기는지 보여 주지 않아 되돌리기 전에는 검토가 불가능했으므로 없앴다.
 
 /** 그 칸에서 선택될 로케이션(겹침 우선순위는 순수 모듈이 정한다). */
 export function locationAt(point: LocationPoint): MapNamedLocation | undefined {
