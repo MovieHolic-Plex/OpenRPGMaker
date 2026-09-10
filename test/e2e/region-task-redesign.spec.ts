@@ -302,49 +302,36 @@ test("이벤트만 놓은 제안도 미리보기에 마커가 뜨고, 목록 hov
   await modal.screenshot({ path: `${OUT}/07-event-marker.png` });
 });
 
-test("「모두 보기」 — 전체 명령이 계열별로 펼쳐지고 추천 줄은 그대로 남는다", async ({ page }) => {
+test("진입 화면은 칩 3개 + 입력 + 버튼 하나다 — 「모두 보기」 시트는 없다", async ({ page }) => {
   await page.evaluate(
     (region) => {
       const harness = window.__oprnRegionTaskHarness!;
-      harness.openModal(harness.currentMapId(), region as never);
+      harness.openModal(harness.currentMapId(), region as never, []);
     },
     REGION,
   );
   const modal = page.getByTestId("region-task-modal");
   await expect(modal).toBeVisible();
 
-  // 예전에는 카테고리 필터 칩 8개가 가로 스크롤러로 상주했고, 누르면 아래 추천 줄이 그
-  // 계열로 갈아치워졌다(= 상태). 이제 범위는 「(+N)」 숫자 하나가 말하고, 전체 목록은
-  // 접이식 시트다 — 추천 줄은 무엇을 눌러도 바뀌지 않는다.
+  // 예전에는 카테고리 필터 칩 8개가 가로 스크롤러로 상주했고, 그 뒤에는 「모두 보기 (+19)」
+  // 접이식 시트가 있었다. 둘 다 같은 값을 노렸다 — "추천이 전부가 아니다" 를 알리기.
+  // 진입 화면에서 스물두 개를 펼쳐 보여 주면 고르는 일이 읽는 일이 된다. 이제 그 사실은
+  // 입력창 안내 한 줄이 말하고, 전체 목록은 `/` 자동완성이 같은 코퍼스로 낸다.
+  await expect(page.getByTestId("region-task-browse-all")).toHaveCount(0);
+  await expect(page.getByTestId("region-task-categories")).toHaveCount(0);
+  await expect(page.getByTestId("region-task-mode-switch")).toHaveCount(0);
+
   const suggestions = page.getByTestId("region-task-suggestions");
-  const before = await suggestions.innerText();
-  const browse = page.getByTestId("region-task-browse-all");
-  await expect(browse).toBeVisible();
-  await expect(browse).toContainText(/모두 보기 \(\+\d+\)/);
-  const sheet = page.getByTestId("region-task-categories");
-  await expect(sheet).toBeHidden();
-  await modal.screenshot({ path: `${OUT}/08-categories.png` });
+  expect(await suggestions.locator("button").count()).toBe(3);
+  const input = page.getByTestId("region-task-input");
+  await expect(input).toHaveAttribute("placeholder", /\/ 로 전체 \d+개/);
+  await modal.screenshot({ path: `${OUT}/08-compose.png` });
 
-  await browse.click();
-  await expect(sheet).toBeVisible();
-  await expect(browse).toHaveAttribute("aria-expanded", "true");
-  const groups = sheet.locator(".region-task-category-group");
-  expect(await groups.count()).toBeGreaterThanOrEqual(5);
-  const labels = (await sheet.locator(".region-task-category-group-title").allInnerTexts()).join(" ");
-  expect(labels).toContain("타일");
-  expect(labels).toContain("NPC");
-  // 시트 안에는 계열 소제목만이 아니라 명령 칩이 함께 있다 — 필터를 거치지 않고 바로 고른다.
-  expect(await sheet.locator(".region-task-suggest-chip").count()).toBeGreaterThanOrEqual(10);
-  // 추천 줄은 그대로다.
-  expect(await suggestions.innerText()).toBe(before);
-  await modal.screenshot({ path: `${OUT}/09-category-npc.png` });
-
-  // 시트의 명령을 고르면 지시 입력창이 채워진다.
-  await sheet.getByTestId("region-category-polish").locator(".region-task-suggest-chip").first().click();
-  await expect(page.getByTestId("region-task-input")).not.toHaveValue("");
-
-  // 같은 칩을 다시 누르면 접힌다 — 여는 문과 닫는 문이 하나다.
-  await browse.click();
-  await expect(sheet).toBeHidden();
-  await expect(browse).toHaveAttribute("aria-expanded", "false");
+  // `/` 를 치면 전체 목록이 나온다 — 시트가 하던 일을 여기서 한다.
+  await input.click();
+  await input.fill("/");
+  const list = page.getByTestId("region-task-autocomplete");
+  await expect(list).toBeVisible();
+  expect(await list.locator("button").count()).toBeGreaterThanOrEqual(10);
+  await modal.screenshot({ path: `${OUT}/09-autocomplete.png` });
 });

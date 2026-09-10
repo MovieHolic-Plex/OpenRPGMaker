@@ -479,6 +479,17 @@ export function isRegionChunkOverlayOpen(): boolean {
   return Boolean(layerEl?.isConnected);
 }
 
+/**
+ * 열기 **전에** "캔버스가 검토를 맡을 수 있나" 를 묻는다.
+ *
+ * 호출부는 이걸로 창 안의 before/after 썸네일 렌더를 건너뛴다 — 캔버스가 검토를 맡으면
+ * 그 두 장은 화면에 뜨지 않고(`is-canvas-review` 가 접는다) 480px 스냅샷 두 번만 태운다.
+ * 헤드리스·테스트에는 `.phaser-container` 가 없어 false 이므로 기존 경로가 그대로 남는다.
+ */
+export function canOpenRegionChunkOverlay(): boolean {
+  return Boolean(host());
+}
+
 /** 호출부가 선택을 바꿨을 때(창의 체크박스 등) 도형·바를 그 상태로 맞춘다. */
 export function syncRegionChunkOverlay(): void {
   if (!config) return;

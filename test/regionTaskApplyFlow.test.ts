@@ -388,7 +388,9 @@ describe("검토 단계 단축키", () => {
     openModal({
       mapId: "m1",
       region: REGION,
-      initialInstruction: "숲으로 채워",
+      // ⚠ 생성기 키워드가 없는 문장이어야 한다 — "숲으로 채워" 는 이제 키워드 라우터가
+      //   forest 생성기로 보내므로 조수 러너(run)가 불리지 않는다(스펙 §5.1).
+      initialInstruction: "상인 NPC 를 놓아줘",
       run: run as never,
       renderSnapshot: () => Promise.resolve(document.createElement("div")),
     });

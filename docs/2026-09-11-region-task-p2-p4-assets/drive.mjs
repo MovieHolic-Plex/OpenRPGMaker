@@ -84,6 +84,9 @@ await page.waitForTimeout(600);
 // 생성기(오퍼레이터) 경로를 쓴다 — LLM 0콜이고 프로덕션 코드다. 하네스 목업(openModal+writes)은
 // runRegionTask 의 독립 검수 게이트(turn.review?.status !== "approved")에 무조건 막혀 HEAD 에서
 // 검토 UI 까지 못 간다(목업 턴에 review 가 없다). 그건 별건이라 여기서 우회한다.
+//
+// P2 부터는 모드 스위치가 없다 — 입력창에 문장을 쓰고 실행을 누르면 키워드 라우터가
+// 생성기로 보낸다. 그래서 이 스크립트가 곧 라우팅 계약의 실 브라우저 검증이기도 하다.
 // HMR 리로드가 하네스를 날릴 수 있으니 매 단계 앞에서 다시 확인한다.
 async function ensureHarness() {
   for (let i = 0; i < 15; i += 1) {
@@ -136,14 +139,46 @@ await page.evaluate(({ mapId, region }) => {
 await page.waitForTimeout(1500);
 await shot("15-compose");
 
-// 생성기 모드 → 만들기
-const genBtn = page.locator('[data-testid="region-task-mode-operator"]').first();
-if (await genBtn.count()) { await genBtn.click(); await page.waitForTimeout(1000); }
-else console.log("WARN: 생성기 모드 버튼 없음");
-await shot("16-operator");
-const runBtn = page.locator('[data-testid="region-task-operator-run"]').first();
-if (await runBtn.count() && await runBtn.isVisible()) { await runBtn.click(); }
-else console.log("WARN: 만들기 버튼이 보이지 않음(오퍼레이터 패널 hidden?)");
+// 진입 화면의 컨트롤 수를 센다 — 스펙 §5.2 의 "7 → 5" 를 실물로 확인한다.
+const composeControls = await page.evaluate(() => {
+  const modal = document.querySelector('[data-testid="region-task-popover"]')
+    ?? document.querySelector('[data-testid="region-task-modal"]');
+  if (!modal) return null;
+  const visible = (el) => {
+    const r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0;
+  };
+  const chips = [...modal.querySelectorAll('[data-testid="region-task-suggestions"] button')].filter(visible);
+  const buttons = [...modal.querySelectorAll(".region-task-actions button")].filter(visible);
+  const inputs = [...modal.querySelectorAll("textarea, input, select")].filter(visible);
+  return {
+    chips: chips.length,
+    actionButtons: buttons.map((b) => b.textContent.trim()),
+    inputs: inputs.length,
+    runLabel: modal.querySelector('[data-testid="region-task-run"]')?.textContent?.trim() ?? null,
+    placeholder: modal.querySelector('[data-testid="region-task-input"]')?.getAttribute("placeholder") ?? null,
+    hasModeSwitch: Boolean(modal.querySelector('[data-testid="region-task-mode-switch"]')),
+    hasBrowseAll: Boolean(modal.querySelector('[data-testid="region-task-browse-all"]')),
+    adjustVisible: (() => {
+      const el = modal.querySelector('[data-testid="region-task-adjust"]');
+      return el ? visible(el) : false;
+    })(),
+  };
+});
+console.log("compose controls:", JSON.stringify(composeControls));
+
+// 문장으로 라우팅한다 — 「울창한 숲…」은 키워드 라우터가 forest 생성기로 보낸다(LLM 0콜).
+const INSTRUCTION = process.argv.includes("--instruction")
+  ? arg("--instruction", "")
+  : "울창한 숲에 오솔길 하나";
+await page.fill('[data-testid="region-task-input"]', INSTRUCTION);
+await page.waitForTimeout(400);
+await shot("16-typed");
+const runLabelAfterTyping = await page.evaluate(
+  () => document.querySelector('[data-testid="region-task-run"]')?.textContent?.trim() ?? null,
+);
+console.log("run label after typing:", runLabelAfterTyping);
+await page.click('[data-testid="region-task-run"]');
 
 await page.waitForFunction(
   () => Boolean(document.querySelector('[data-testid="region-task-chunk-tree"]'))

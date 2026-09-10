@@ -82,19 +82,12 @@ test("compose 단계에 컬러 픽토그램이 없다", async ({ page }) => {
   }
 });
 
-test("추천 칩과 계열 소제목이 모노크롬 svg 아이콘을 쓴다", async ({ page }) => {
+test("추천 칩이 모노크롬 svg 아이콘을 쓴다", async ({ page }) => {
   await openModal(page, { writes: [] });
   await expect(page.getByTestId("region-task-modal")).toBeVisible();
 
-  // 계열은 상시 노출 필터 칩 줄이 아니라 「모두 보기」 시트 안의 소제목이다.
-  await page.getByTestId("region-task-browse-all").click();
-  const categoryTitles = page.locator(".region-task-category-group-title");
-  await expect(categoryTitles.first()).toBeVisible();
-  const categorySvg = categoryTitles.locator("svg");
-  expect(await categorySvg.count(), "계열 소제목 svg 가 4개 미만").toBeGreaterThanOrEqual(4);
-  for (const svg of await categorySvg.all()) {
-    expect(await svg.getAttribute("stroke"), "계열 소제목 svg 가 currentColor 가 아님").toBe("currentColor");
-  }
+  // 계열 소제목 검사는 「모두 보기」 시트와 함께 사라졌다 — 진입 화면에 계열이 없다.
+  // 남은 아이콘 표면은 추천 칩 3개다.
 
   const suggestChips = page.locator(".region-task-suggest-chip");
   await expect(suggestChips.first()).toBeVisible();
