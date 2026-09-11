@@ -254,7 +254,7 @@ export function repairBrokenLocationReferences(missingLocationId: string, plan: 
   let repaired = 0;
   store.update(
     (project) => {
-      repaired = repairMapLocationReferences(project, missingLocationId, plan).repaired;
+      repaired = repairMapLocationReferences(project, missingLocationId, plan, mapId).repaired;
     },
     { scope: "project", label: "로케이션 참조 복구" },
   );
@@ -288,5 +288,7 @@ export function selectedOverlaps(): readonly MapNamedLocation[] {
 }
 
 export function locationReferenceCount(locationId: string): number {
-  return countLocationReferences(store.getCurrent(), locationId);
+  const project = store.getCurrent();
+  const map = currentLocationMap();
+  return countLocationReferences(project, locationId, map?.id);
 }

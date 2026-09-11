@@ -8,7 +8,7 @@
 
 import { editorState, type Layer, type Tool } from "@/editor/editorState";
 import { makeTileBrushControls } from "@/editor/panels/tilePaletteStampStatus";
-import { dismissLocationDrawModeForLayer, isLocationDrawMode } from "@/editor/locationDrawMode";
+import { dismissLocationDrawModeForLayer, dismissLocationDrawModeForTool, isLocationDrawMode } from "@/editor/locationDrawMode";
 import { selectMapModeTool, selectTileTool, selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
 import { uiLabel } from "@/editor/uiCopy";
 import { getEditorChrome, subscribeEditorUiMode } from "@/editor/editorUiMode";
@@ -391,6 +391,7 @@ function makeTilesBody(selectedTile: number, layer: "lower" | "upper", tileset: 
     },
     onSelect: (index) => {
       const home = tileLayerHome(tileset, index);
+      dismissLocationDrawModeForTool("paint");
       editorState.set({
         selectedTile: index, tool: "paint", paintShape: "pen", activePaletteStamp: null,
         layer: home === "both" ? layer : home,

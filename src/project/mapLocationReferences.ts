@@ -186,10 +186,14 @@ export function repairMapLocationReferences(
   project: Project,
   missingLocationId: string,
   plan: LocationRepairPlan,
+  mapId?: string,
 ): LocationRepairResult {
   const notes: string[] = [];
   let repaired = 0;
   for (const map of Object.values(project.maps)) {
+    // 로케이션 ID 는 **맵 안에서만** 유일하다(loc1, loc2 …). 맵을 좁히지 않으면 다른 맵의
+    // 같은 이름 ID(다른 장소)를 함께 고쳐 남의 참조를 망가뜨린다.
+    if (mapId !== undefined && map.id !== mapId) continue;
     for (const [entryIndex, entry] of (map.encounterTable ?? []).entries()) {
       if (entry.conditions?.locationId !== missingLocationId) continue;
       const conditions = { ...entry.conditions };
@@ -419,9 +423,17 @@ function repairCommands(
   return { commands: next, changed };
 }
 
-/** 그 로케이션을 가리키는 참조 수. 삭제 확인 대화창이 "이만큼 끊깁니다" 를 보여줄 때 쓴다. */
-export function countLocationReferences(project: Project, locationId: string): number {
-  return collectMapLocationReferences(project).filter((ref) => ref.locationId === locationId).length;
+/**
+ * 그 로케이션을 가리키는 참조 수. 삭제 확인 대화창이 "이만큼 끊깁니다" 를 보여줄 때 쓴다.
+ *
+ * mapId 를 주면 그 맵 안만 센다. 편집기 화면은 **한 맵의 로케이션**을 보여 주는데 ID 는
+ * 맵마다 다시 쓰이므로(loc1), 맵을 안 좁히면 "참조 3건" 옆에 버튼 하나만 서는 거짓말이 된다.
+ * 삭제 영향은 프로젝트 전량이 맞으므로 인자를 생략한 호출은 그대로 둔다.
+ */
+export function countLocationReferences(project: Project, locationId: string, mapId?: string): number {
+  return collectMapLocationReferences(project).filter(
+    (ref) => ref.locationId === locationId && (mapId === undefined || ref.site.mapId === mapId),
+  ).length;
 }
 
 /** 삭제 전 영향 요약. UI 가 사람이 읽을 문장으로 바로 쓴다. */

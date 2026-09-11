@@ -1,0 +1,161 @@
+{
+  "checks": [
+    {
+      "name": "전제: 예제 프로젝트가 열렸다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "전제: 레이어는 꺼진 채 시작한다",
+      "ok": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "1a. 켜면 레이어가 켜진다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "1b. 팔레트 칸을 고르면 구역 그리기가 끝난다",
+      "ok": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "2. 재개: 켠 상태에서 시작한다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "2a. 타일 레이어끼리의 전환은 그리기를 유지한다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "2b. 사이드바에서 이벤트 레이어로 가면 끝난다",
+      "ok": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "3a. 스페이스 팬은 그리기를 유지한다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "4a. 빈 맵에 고스트가 있다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "4b. 팬 뒤에도 고스트가 있다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "4c. 고스트가 카메라를 따라 움직였다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "5a. 캔버스 중심 타일을 해석했다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "5b. Shift+클릭이 1칸 구역을 만든다",
+      "ok": true,
+      "actual": [
+        "1x1"
+      ],
+      "expected": [
+        "1x1"
+      ]
+    },
+    {
+      "name": "5c. 일반 클릭은 여전히 구역을 만들지 않는다",
+      "ok": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "6a. 좌측 팔레트 루트가 있다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "6b. 드래그 후에도 좌측 팔레트가 같은 노드다",
+      "ok": true,
+      "actual": {
+        "same": true,
+        "exists": true
+      },
+      "expected": {
+        "same": true,
+        "exists": true
+      }
+    },
+    {
+      "name": "6c. 드래그로 구역이 늘었다",
+      "ok": true,
+      "actual": 2,
+      "expected": 2
+    },
+    {
+      "name": "7a. 다시 열어도 레이어가 복원된다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "7b. 복원 직후에도 브러시가 살아 있다 (첫 상태 변화에 꺼지지 않는다)",
+      "ok": true,
+      "actual": "paint",
+      "expected": "paint"
+    },
+    {
+      "name": "8. 예상 밖 페이지 오류 없음",
+      "ok": true,
+      "actual": [],
+      "expected": []
+    }
+  ],
+  "errors": [],
+  "steps": [
+    {
+      "name": "01-palette-dismisses",
+      "note": "팔레트에서 타일을 고르면 로케이션 그리기가 꺼지고 브러시가 돌아온다."
+    },
+    {
+      "name": "02-sidebar-layer-dismisses",
+      "note": "사이드바에서 이벤트 레이어로 가면 구역 그리기가 끝난다."
+    },
+    {
+      "name": "03-ghost-follows-pan",
+      "note": "맵을 민 뒤에도 '여기를 드래그' 고스트가 타일 위에 남는다."
+    },
+    {
+      "name": "04-shift-click-one-tile",
+      "note": "Shift+클릭은 문·단상용 1칸 구역을 만든다."
+    },
+    {
+      "name": "05-draw-keeps-panels",
+      "note": "구역을 드래그하는 동안 좌측 팔레트가 재조립되지 않는다."
+    },
+    {
+      "name": "06-restored-still-on",
+      "note": "어제 켜 둔 레이어가 오늘도 켜진 채 열리고, 브러시가 살아 있다."
+    }
+  ]
+}

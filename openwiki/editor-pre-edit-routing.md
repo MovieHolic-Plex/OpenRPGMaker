@@ -141,12 +141,31 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
   조수 툴 `src/editor/tools/mapLocationTools.ts`, 스타일 `src/styles/editor/map-location-layer.css`.
   켜진 동안의 도구 양보는 `src/editor/locationDrawMode.ts`.
 
-- **켜진 동안은 구역 그리기 도구다 (2026-09-11).** 브러시 `is-active` 를 끄고 토글은
-  「구역 그리기」로 바뀐다. 타일·이벤트 도구(팬 제외)나 이벤트 레이어를 고르면 레이어가 꺼진다 —
-  `dismissLocationDrawModeForTool` / `ForLayer`. 도구 state 는 그대로 두므로 끄면 직전 브러시가
-  바로 돌아온다. 같은 칸 클릭은 구역을 만들지 않는다(`isLocationDrawClick`). 0개일 때 맵 위
-  `map-location-empty-ghost` 「여기를 드래그」가 다음 행동을 그린다. 인스펙터 참조 0건은 쓰는 법을
-  말하고, N건은 사이트 버튼으로 이벤트 편집기·맵 설정 인카운터를 연다.
+- **켜진 동안은 구역 그리기 도구다 (2026-09-11, 같은 날 보강).** 브러시 `is-active` 를 끄고
+  토글은 「구역 그리기」로 바뀐다. **도구 전이는 감시자 하나가 잡는다** —
+  `installLocationDrawModeGuard()` 가 켠 순간의 도구를 기억하고, 다른 도구로 넘어가면 끈다.
+  팔레트 칸·사이드바 레이어·구조 킷·건축 팔레트가 각자 끄지 않는다: 그렇게 한 줄씩 붙이던
+  1차 구현은 팔레트와 `leftLayerSwitcher` 를 빠뜨려 「타일을 골랐는데 클릭이 구역을 만드는」
+  상태를 남겼다. `editorState.set({ tool })` 를 직접 쓰는 진입점이 열 곳 남짓이라 목록으로는
+  다음 진입점이 조용히 빠진다. **팬은 기준선을 바꾸지 않는다** — 지도를 보려고 밀었다가
+  돌아온 사람에게서 그리기를 빼앗으면 안 된다. 도구 state 는 그대로 두므로 끄면 직전 브러시가
+  바로 돌아온다.
+- **같은 칸 클릭은 구역을 만들지 않는다**(`isLocationDrawClick`). 1칸짜리(문·단상)는
+  **Shift+클릭**이 명시 통로다 — 없으면 8×6으로 그린 뒤 인스펙터 숫자를 1로 줄여야 했다.
+- 0개일 때 맵 위 `map-location-empty-ghost` 「여기를 드래그」가 다음 행동을 그린다.
+  **고스트도 카메라 계약을 따른다** — `repositionMapLocationLayer()` 가 상자·설계 고스트와
+  함께 이것도 옮긴다. 빠뜨리면 팬 한 번에 점선 상자가 맵 밖으로 나간다(같은 날 실측).
+- 인스펙터 참조 0건은 쓰는 법을 말하고, N건은 사이트 버튼으로 이벤트 편집기·맵 설정 인카운터·
+  자료집(공통 이벤트·부대)을 연다. **참조 수와 목록은 현재 맵만 센다** — 로케이션 ID 는 맵마다
+  다시 쓰이므로(`loc1`) 프로젝트 전량을 세면 「참조 3건」 옆에 버튼 하나만 서는 거짓말이 된다.
+  같은 이유로 `repairMapLocationReferences(project, id, plan, mapId)` 의 네 번째 인자가
+  편집기 복구 경로에 필수다 — 없으면 다른 맵의 **다른 장소**를 함께 고친다.
+- **도구 켜짐은 localStorage 에 남는다.** 새로고침·다음 방문에 그대로 켜진 채 열리므로
+  감시자는 설치 시점의 도구를 기준선으로 잡고 시작한다(첫 상태 변화에 곧바로 꺼지지 않는다).
+- **그리는 동안 패널을 다시 짓지 마라.** `subscribeLocationLayer` 는 선택·드래그 미리보기까지
+  받으므로, 그 안에서 `scheduleFullPanelRefresh()` 를 부르면 pointermove 마다 좌측 팔레트·맵
+  트리가 재조립된다. `editor.ts` 는 마지막으로 반영한 `enabled` 와 다를 때만 툴바·패널을 다시
+  짓는다(2026-09-11 실측).
 - **`layoutPlan.regions` 를 사람이 편집하는 층으로 쓰지 마라.** `setMapLayoutPlan` 이 통째로
   갈아치우므로 사람 편집이 재시공에서 사라진다. 관계·승격 계약은
   `openwiki/runtime-project-schema.md` 의 「명명 로케이션 레이어」 절이 소유한다.
