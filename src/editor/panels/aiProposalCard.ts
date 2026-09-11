@@ -15,6 +15,8 @@ import { summarizeChanges } from "@/editor/tools";
 import { commitGateNotice } from "@/ai/aiGateNotice";
 import { reviewOverInsertion } from "@/ai/overInsertionReview";
 import { showAiGateNotice } from "@/editor/ui/aiGateModal";
+import { mapDestructionConfirmRequest } from "@/ai/mapDestructionConfirm";
+import { showConfirm } from "@/editor/ui/modal";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import {
   formatLayoutValidationSummary,
@@ -247,6 +249,26 @@ export function createProposalHost(options: {
     const operation = session.getRunOperation();
     const ownsApply = () => controller.session === session && session.getRunOperation() === operation && !operation.signal.aborted;
     if (!ownsApply() || applyingCalls.has(calls) || lastAppliedProposalMessage?.calls === calls) return "rejected";
+    // 맵 규모 파괴만 사람이 한 번 본다 — 정책 예외의 근거는 ai/mapDestructionConfirm 머리말.
+    // applyingCalls.add **앞**에 두는 이유: 취소는 시도가 아니다. 뒤에 두면 취소한 배치가
+    // "적용 중"으로 남아 같은 제안을 다시 눌러도 조용히 거부된다.
+    const mapDestruction = mapDestructionConfirmRequest(calls);
+    if (mapDestruction) {
+      const approved = await showConfirm({
+        title: mapDestruction.title,
+        message: mapDestruction.message,
+        confirmLabel: mapDestruction.confirmLabel,
+        cancelLabel: "그만두기",
+        danger: true,
+      });
+      if (!approved || !ownsApply()) {
+        if (!approved) {
+          appendBubble("system", "맵 전체 청소를 취소했습니다 — 프로젝트는 그대로입니다.");
+          setStatus("대기");
+        }
+        return "rejected";
+      }
+    }
     applyingCalls.add(calls);
     ensureGuestIdentityForAiSurface();
     const before = store.getCurrent();
@@ -326,6 +348,7 @@ export function createProposalHost(options: {
       agentName: loadAiConfig().model,
       summary: aiHistoryLabel(calls),
       toolNames: calls.map((call) => call.name),
+      mapDestructionApproved: mapDestruction !== null,
       diff: summarizeChanges(before, applyProject),
       snapshotLabel: aiHistoryLabel(calls),
       snapshotMapId: currentHistoryMapId(),

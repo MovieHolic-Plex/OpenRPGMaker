@@ -25,6 +25,7 @@ import { assertHouseProtection, captureHouseProtection } from "./houseProtection
 import type { EditActivityField, EditActivityOrigin } from "@/editor/editActivityLog";
 import type { ProjectChangeAnnotation } from "@/project/store";
 import type { RunOperation } from "@/ai/runOperation";
+import { isMapDestruction } from "@/ai/approvalPolicy";
 
 /**
  * AI/툴 적용을 행위 로그에 남길 주석으로 바꾼다.
@@ -64,6 +65,7 @@ const MAP_ONLY_WRITE_TOOLS = new Set([
   "build_village",
   "build_castle",
   "clear_region",
+  "clear_map",
   "set_map_properties",
   "place_npc",
   "upsert_event",
@@ -254,7 +256,14 @@ export interface ApplyProposedProjectOptions {
   readonly diff?: ChangeSummary;
   readonly snapshotLabel?: string;
   readonly snapshotMapId?: string | null;
-  /** reset_project 포함 수락 시 전체 프로젝트 교체(카드 경로 전용). */
+  /**
+   * 맵 규모 파괴(clear_map)를 사용자가 승인했음을 밝히는 플래그. **모델이 아니라 표면이 채운다.**
+   * 채팅 표면은 showConfirm 을 통과한 뒤에만 true 를 넘긴다(aiProposalCard). 자율 런은 이런 배치를
+   * 자동 적용하지 않는다(AssistantSession.maybeAutoApplyMilestone) — 모달을 띄울 사람이 없기 때문이다.
+   * toolNames 로 판정하는 이유: 이 경로는 도구 실행 전에 합의된 스냅샷을 받으므로 args 를 다시
+   * 뜯을 필요가 없고, /pi 처럼 자기 검토 카드를 가진 표면은 실제 툴 이름을 넘기지 않아 스스로 빠진다.
+   */
+  readonly mapDestructionApproved?: boolean;
   readonly resetProject?: boolean;
   readonly reviewStatus?: CommitLogInput["reviewStatus"];
   readonly reason?: string;
@@ -264,7 +273,7 @@ export type ApplyProposedProjectResult =
   | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly commitProject?: Project; readonly wikiWarning?: string; readonly wikiDelivery?: WikiDeliveryMilestone }
   | {
     readonly ok: false;
-    readonly reason: "commit-rejected" | "retired-run" | "stale-base" | "stale-baseline";
+    readonly reason: "commit-rejected" | "retired-run" | "stale-base" | "stale-baseline" | "map-destruction-unapproved";
     /** 대표 사유 한 줄(상태 텍스트·토스트용). */
     readonly issue?: string;
     /**
@@ -294,6 +303,12 @@ export async function applyProposedProject(
   if (!options.baseline.matches(before, options.resetProject === true)) {
     const issue = "초안을 만든 뒤 프로젝트가 수정되었습니다. 최신 프로젝트에서 다시 생성하고 독립 검수를 받아주세요.";
     return { ok: false, reason: "stale-baseline", issue, issues: [issue] };
+  }
+  // 맵 규모 파괴는 사람이 봐야 적용된다. 권위(위)와 불변식(아래) 검사를 통과한 배치라도,
+  // "무엇이 사라졌는지 화면에서 봤다"는 전제 없이는 되돌리기가 유일한 복구라는 정책이 성립하지 않는다.
+  if (options.mapDestructionApproved !== true && options.toolNames.some((name) => isMapDestruction(name))) {
+    const issue = "맵 전체 청소는 사용자 허가가 필요합니다 — 채팅에서 확인 후 적용하세요.";
+    return { ok: false, reason: "map-destruction-unapproved", issue, issues: [issue] };
   }
   const wikiProjectIdentity = JSON.stringify(store.getProjectIdentity());
   // Wiki checkpoints and human codex edits own world documents independently of

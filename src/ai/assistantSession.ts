@@ -49,7 +49,7 @@ import {
 import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
 import { applyProposedProject, captureProposalBase, type ProposalBase, type ApplyProposedProjectResult } from "@/editor/tools/applyChangesetToStore";
 import { AuthoredProjectBaseline, authoredIdentity } from "@/project/authoredProjectBaseline";
-import { isDestructiveOutcome } from "@/ai/approvalPolicy";
+import { isDestructiveOutcome, isMapDestruction } from "@/ai/approvalPolicy";
 import { contextFooterMapId, stripContextFooter } from "@/ai/contextFooter";
 import {
   continuationIntentDeclaration,
@@ -3257,6 +3257,18 @@ export class AssistantSession {
     this.lastMilestoneCompletionItemId = completed.id;
     const calls = this.finalizeProposals(this.turnProposals);
     if (calls.length === 0) return; // 이번 턴에 마일스톤 쓰기가 없으면 적용 대상이 없다.
+    // 맵 규모 파괴는 자동 적용하지 않는다 — 이 경로에는 모달을 띄울 사람이 없다. 초안은 그대로
+    // 남겨 두고, 턴이 끝날 때 표면(aiProposalCard)의 적용 경로에서 사용자가 확인하고 적용한다.
+    // 조용히 통과시키면 "무엇이 사라졌는지 화면에서 봤다"는 승인 전제가 사라진다.
+    const mapDestruction = calls.find((call) => isMapDestruction(call.name));
+    if (mapDestruction) {
+      this.pushAudit({
+        kind: "status",
+        text: `agent_run:map-destruction-needs-approval "${completed.title}" — ${mapDestruction.name} 는 자동 적용하지 않습니다 (프로젝트 저장소 변경 없음)`,
+      });
+      onEvent({ type: "status", text: `맵 전체 청소는 자동 적용하지 않습니다 — 확인 후 적용하세요: ${completed.title}` });
+      return;
+    }
     const proposed = this.getProposedProject();
     await this.prepareCheckpointApply();
     operation.assertCurrent();

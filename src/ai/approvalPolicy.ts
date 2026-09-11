@@ -51,8 +51,22 @@ export function isSilencedSuccess(calls: readonly ProposedCall[], assistantText:
 // #262 판 목록. main 의 라벨용 목록은 3종이었는데, clear_region·delete_resource·
 // delete_database_record 도 소실을 만든다 — diff 가 타일 소실을 구분하지 못하므로 이름으로 잡는다.
 const DESTRUCTIVE_TOOLS: ReadonlySet<string> = new Set([
-  "remove_event", "remove_map", "delete_database_record", "delete_resource", "clear_region", "reset_project",
+  "remove_event", "remove_map", "delete_database_record", "delete_resource", "clear_region",
+  "clear_map", "reset_project",
 ]);
+
+/**
+ * 맵 규모 파괴 — 한 콜로 맵 전체가 바뀐다. 다른 파괴(이벤트 1개·영역 1칸)와 달리 사용자가 화면에서
+ * 보던 것이 통째로 사라지므로, 소실 규모가 승인 UX 를 가른다:
+ * 적용 직전 사용자 허가 모달(`mapDestructionConfirm`)과 자율 런 자동 적용 거부
+ * (`AssistantSession.maybeAutoApplyMilestone`)가 이 집합 하나를 본다.
+ */
+export const MAP_DESTRUCTION_TOOLS: ReadonlySet<string> = new Set(["clear_map"]);
+
+/** 이름 기반 맵 규모 파괴 판정. diff 를 모르는 자리(자동 적용 차단·모달)에서 쓴다. */
+export function isMapDestruction(name: string): boolean {
+  return MAP_DESTRUCTION_TOOLS.has(name);
+}
 
 /**
  * **결과 기반 파괴성 판정** (#262 진단 근본원인 9).
