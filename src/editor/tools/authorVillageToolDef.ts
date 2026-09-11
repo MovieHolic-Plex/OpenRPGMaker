@@ -1,10 +1,12 @@
 import { parseAuthorVillageRequest } from "@/editor/construction/parseVillageRequest";
 import type { AuthorVillageRequest } from "@/editor/construction/contracts";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { TILE, DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { isCombinedTownTileset } from "@/project/tilesetHarness/combinedTown";
-import type { Project } from "@/project/types";
+import { estimateVillageSize } from "@/ai/constructionDeclaration";
+import type { GameMap, Project } from "@/project/types";
 import { createDraft } from "./changeset";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { assertVillageMutationScope, restoreExistingTargetStart } from "./authorVillageScope";
 import {
   assertInnerVillageSuccess,
@@ -186,10 +188,14 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
     },
     run(draft, args): ToolExecResult {
       const designed = resolveVillageDesignInput(draft, args, true);
-      const normalized = normalizeUnknownHouseTemplates(designed, knownTemplateIds(draft));
+      // 신규 맵 크기 생략 시 코드가 유일한 환산기(estimateVillageSize)로 채운다 — 모델 창작 아님.
+      // 파서보다 먼저 채워야 파서의 plannedMap 합성이 target 값을 볼 수 있다(2026-09-11).
+      const sized = fillMissingVillageDimensions(designed);
+      const normalized = normalizeUnknownHouseTemplates(sized, knownTemplateIds(draft));
       const request = parseAuthorVillageRequest(normalized.args);
       // 검증 후 변이: 맵 생성(createExactVillageMap)보다 먼저 타일셋·수용성을 검사한다.
       // 기존 맵 타일셋이 combined_town이 아니면 시공 전에 거부 — 반쯤 지은 draft를 피한다.
+      // 스코프 검사(baseline 스냅샷)가 확장을 "target 변경"으로 읽지 않게 성장은 baseline보다 먼저.
       assertTargetTilesetUsable(draft, request);
       assertTargetCapacity(draft, request);
       const baseline = createDraft(draft);
@@ -270,10 +276,66 @@ function assertTargetCapacity(draft: Project, request: AuthorVillageRequest): vo
       { code: "bounds-out-of-map", mapId: map.id },
     );
   }
-  if (w < MIN_BOUNDS_SIZE || h < MIN_BOUNDS_SIZE) {
-    throw new ToolError(
-      `author_village는 최소 ${MIN_BOUNDS_SIZE}x${MIN_BOUNDS_SIZE} 영역이 필요합니다: ${w}x${h}`,
-      { code: bounds ? "bounds-too-small" : "map-too-small", mapId: map.id },
-    );
+  // 2026-09-11 P2: 부족하면 실패 대신 좌상단-유지 잔디 확장(resize_map과 같은 규약) —
+  // 기존 맵은 이벤트 잘림 없이 커지기만 하므로 비파괴다. 확장부는 잔디(TILE.GRASS)로,
+  // 뒤이은 마을 시공이 그 자리를 채운다. 축소는 하지 않는다 — 이벤트·시작 좌표 가드가 필요해진다.
+  if (w < MIN_BOUNDS_SIZE || h < MIN_BOUNDS_SIZE || w > map.width || h > map.height) {
+    if (bounds) {
+      throw new ToolError(
+        `author_village는 최소 ${MIN_BOUNDS_SIZE}x${MIN_BOUNDS_SIZE} 영역이 필요합니다: ${w}x${h}`,
+        { code: "bounds-too-small", mapId: map.id },
+      );
+    }
+    const width = Math.max(w, MIN_BOUNDS_SIZE);
+    const height = Math.max(h, MIN_BOUNDS_SIZE);
+    growExistingVillageMap(map, width, height);
   }
+}
+
+/** 좌상단 기준 잔디 확장 — resize_map 도구와 같은 데이터 규약(확장부 잔디, 스택 재배치, 이벤트 불변). */
+function growExistingVillageMap(map: GameMap, width: number, height: number): void {
+  const oldW = map.width;
+  const oldH = map.height;
+  const nextLower = new Array<number>(width * height).fill(TILE.GRASS);
+  const nextUpper = new Array<number>(width * height).fill(TILE.EMPTY);
+  for (let y = 0; y < oldH; y += 1) {
+    for (let x = 0; x < oldW; x += 1) {
+      nextLower[y * width + x] = map.lowerTiles[y * oldW + x];
+      nextUpper[y * width + x] = map.upperTiles[y * oldW + x];
+    }
+  }
+  const nextLowerStacks = resizedTileStacks(map.lowerTileStacks, oldW, oldH, width, height);
+  const nextUpperStacks = resizedTileStacks(map.upperTileStacks, oldW, oldH, width, height);
+  map.width = width;
+  map.height = height;
+  map.lowerTiles = nextLower;
+  map.upperTiles = nextUpper;
+  if (nextLowerStacks) map.lowerTileStacks = nextLowerStacks;
+  if (nextUpperStacks) map.upperTileStacks = nextUpperStacks;
+}
+
+/**
+ * 신규 맵 target의 width/height가 없으면 의도 선언과 같은 환산기로 채운다. 기존 맵은 그대로 —
+ * 기존 맵 크기는 사용자가 이미 정한 사실이다(투기 없음). 근거(source)는 결과가 아닌 계산에만
+ * 쓰이므로 args에 흔적을 남기지 않는다.
+ */
+export function fillMissingVillageDimensions(args: Record<string, unknown>): Record<string, unknown> {
+  const target = args.target;
+  if (typeof target !== "object" || target === null || Array.isArray(target)) return args;
+  const record = target as Record<string, unknown>;
+  if (record.kind !== "new") return args;
+  const recordHasNumber = (key: "width" | "height"): key is "width" | "height" =>
+    typeof record[key] === "number" && Number.isSafeInteger(record[key]);
+  if (recordHasNumber("width") && recordHasNumber("height")) return args;
+  const declared = typeof args.houseCount === "number" && Number.isSafeInteger(args.houseCount)
+    ? { houseCount: args.houseCount } : {};
+  const size = estimateVillageSize(declared);
+  return {
+    ...args,
+    target: {
+      ...record,
+      ...(recordHasNumber("width") ? {} : { width: size.width }),
+      ...(recordHasNumber("height") ? {} : { height: size.height }),
+    },
+  };
 }
