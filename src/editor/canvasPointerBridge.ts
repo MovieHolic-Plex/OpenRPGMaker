@@ -24,9 +24,27 @@ export type CanvasGestureClaim = {
   readonly start: () => void;
 };
 
+/**
+ * 오버레이가 캔버스에 넘기는 「이벤트를 열어라」 요청 (2026-09-12).
+ *
+ * 왜 좌표가 아니라 id 인가: 판정(어느 이벤트가 이 칸을 덮는가)은 오버레이가 하고, 여는 일은
+ * 이벤트 편집기를 아는 쪽이 한다. 좌표를 넘기면 그 사이에 맵이 바뀌었을 때 다른 이벤트를 연다.
+ */
+export type CanvasOpenEventRequest = {
+  readonly mapId: string;
+  readonly eventId: string;
+};
+
 export type CanvasPointerBridge = {
   /** 이 pointerdown 의 주인. null 이면 오버레이가 가져간다. */
   readonly claim: (point: CanvasPointerPoint) => CanvasGestureClaim | null;
+  /**
+   * 그 칸을 덮는 이벤트의 id. 로케이션 그리기와 이벤트가 겹칠 때 규칙을 정하는 입력이다.
+   * 창구가 없으면(헤드리스·테스트) null — 좌표를 지어내지 않는다.
+   */
+  readonly eventIdAt: (point: CanvasPointerPoint) => string | null;
+  /** 그 이벤트를 편집기로 연다. 로케이션 오버레이가 손을 떼고 이 경로로 넘긴다. */
+  readonly openEvent: (request: CanvasOpenEventRequest) => void;
 };
 
 let bridge: CanvasPointerBridge | null = null;
@@ -43,5 +61,26 @@ export function claimCanvasPointer(point: CanvasPointerPoint): CanvasGestureClai
   } catch {
     // 씬이 파괴되거나 전환 중일 때 오버레이가 살아 있어도 에러 없이 null 로 안전하게 처리
     return null;
+  }
+}
+
+/** 그 칸을 덮는 이벤트 id. 창구가 없으면 null(겹침 없음으로 취급). */
+export function eventIdAtPoint(point: CanvasPointerPoint): string | null {
+  if (!bridge) return null;
+  try {
+    return bridge.eventIdAt(point);
+  } catch {
+    return null;
+  }
+}
+
+/** 이벤트 편집기를 연다. 창구가 없으면 아무 일도 하지 않는다(테스트·헤드리스). */
+export function openEventFromCanvas(request: CanvasOpenEventRequest): void {
+  if (!bridge) return;
+  try {
+    bridge.openEvent(request);
+  } catch {
+    // 전환 중 실패는 삼킨다 — 이 경로는 «이벤트를 열어 준다» 는 부가 기능이고,
+    // 실패해도 그리기 자체를 막아서는 안 된다.
   }
 }

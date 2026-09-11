@@ -210,6 +210,44 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
   생기면 여기에 줄을 더하지 말고 이 모듈을 불러라. 라벨·문구를 갈아치우기 전에 그 문서를 읽어라:
   문구 고정 테스트(`test/locationTransitionAuthoring.test.ts`)와 용어 정본이 걸려 있다.
 
+### 로케이션 역할과 겹침 클릭 (2026-09-12)
+
+로케이션이 **맵 시스템의 저작 표면**이 된다. `safeZones`(추격자 안전지대)와 `farmableArea`
+(경작지)는 런타임에서 오래 동작했지만 사람이 그릴 표면이 없었다 — 조수 툴과 코드가 좌표를
+찍어 넣고 검사기는 개수만 보여 줬다. 이제 구역에 역할을 주면 그 사각형이 그 배열로 투영된다.
+
+- 소유 파일: 순수 규칙 `src/project/locationRoles.ts`, 스키마 `GameMap.locationRoleProjection`,
+  검증 `shapeEventFields.validateLocationRoleProjection`, 상태 `setLocationRole`,
+  인스펙터 역할 선택기(`map-location-role-<role>`), 스타일 `map-location-layer.css`.
+- **정본은 로케이션 한 방향이다.** `safeZones`/`farmableArea` 는 투영이고, 기록에 없는 항목은
+  손 저작·조수 툴의 것이라 **절대 지우지 않는다**. 추격자 툴(`make_chase_scene`)과 경작 툴이
+  이미 그 배열을 직접 쓰므로 그 툴들을 로케이션 생성으로 바꾸지 마라.
+- **투영 기록은 맵에 둔다(`locationRoleProjection`).** 로케이션 쪽(`origin`)에 두면 구역을
+  지웠을 때 표시도 함께 사라져 옛 사각형을 식별할 수 없고, `safeZones` 에 **유령이 남는다**
+  (2026-09-12 브라우저 QA 가 실측으로 잡았다). 기록은 로케이션 ID → 마지막 투영 사각형이다.
+- **재투영은 `editMap` 한 곳에서 부른다.** 구역 만들기·옮기기·크기·삭제·역할 토글이 모두
+  그 함수를 지난다. 이동 경로에만 붙이면 삭제가 유령을 남기고, 삭제에만 붙이면 이동이 남는다.
+  이동 뒤 재투영을 빠뜨려 QA 가 «옛 자리에 그대로» 를 잡은 것이 이 조항의 근거다.
+- 역할은 **하나만** 갖는다(`tags` 의 전용 낱말). 둘을 겹치면 어느 배열의 정본인지 흐려진다.
+
+#### 로케이션과 이벤트가 같은 칸에서 만날 때 (클릭 소유권)
+
+순수 판정기는 `src/editor/locationPointerPriority.ts` 하나다. 같은 판정을 오버레이의
+`pointerdown` 과 캔버스의 더블클릭 경로가 함께 쓰므로 if 를 복사하지 마라.
+
+- **한 번 클릭은 구역의 것이다.** 그 칸에 NPC 가 서 있어도 마찬가지다 — 면을 칠하려는 사람이
+  이벤트 하나 때문에 막히면 그리기 도구 자체가 못 쓰게 된다.
+- **Alt+클릭 또는 더블클릭은 그 칸의 이벤트를 연다.** 도구를 끄고 레이어를 옮기고 다시 찾는
+  3단계를 한 번의 클릭으로 줄인다. 오버레이는 `openEventFromCanvas` 로 손을 떼고 캔버스에 넘긴다.
+- **클릭 수는 시각 기반이다.** `pointerdown` 의 `detail` 은 이 저장소 실측(2026-08-11)에서
+  **항상 0** 이다. `locationClickCount` 가 500ms 같은-타일 규칙을 쓰고, 그 상수는 `EditScene`
+  의 `EVENT_LAYER_DOUBLE_CLICK_MS` 와 같은 값이어야 한다(같은 손놀림에 같은 답).
+- 이벤트 판정은 캔버스가 한다(`eventIdAt` → `eventIdCoveringClientPoint`). 편집 중 초안
+  (`editorWorkingEvents`) 을 아는 쪽이 씬이라, 오버레이가 store 를 직접 읽으면 «보이는데
+  안 잡히는» 칸이 생긴다.
+- 브라우저 QA: `LOCATION_ROLES_QA_URL=http://127.0.0.1:<포트> node scripts/qa/location-roles.mjs`
+  → `verify-shots/loc-roles/`. 회귀: `test/locationRoles.test.ts`, `test/locationPointerPriority.test.ts`.
+
 ### 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
 
 빌더 `layoutPlan.regions` 를 명명 로케이션으로 **일괄** 옮기는 창. OPRN-OUT-020 이 미뤄 뒀던
