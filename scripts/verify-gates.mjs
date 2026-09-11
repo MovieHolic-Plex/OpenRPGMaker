@@ -7,6 +7,12 @@
 //  2. 이 저장소의 기준선은 이미 빨간불이다(test/ 타입 에러 다수 + 실패 테스트 다수).
 //     따라서 "전부 초록"을 요구하면 게이트가 무용지물이 된다. 기준선 대비 **새로 생긴**
 //     실패만 회귀로 취급해야 실제로 작동한다.
+//  3. 그 «새 실패» 판정도 정확해야 한다(실측 2026-09-11). 실패 파일이 기준선의 failedFiles 에
+//     없으면 곧바로 회귀로 세던 때, 기준선(09-02) 이후 추가된 테스트 파일 1,116개 중 이미 빨간
+//     것들이 전부 회귀로 잡혀 127건이 됐다 — 그중 84건은 그때 **존재하지도 않던 파일**이다.
+//     없는 파일은 회귀할 수 없다. 그래서 «기준선 이후 신규 파일» 을 세 번째 갈래로 **보고**하되,
+//     신규 여부를 확인할 수 없으면 회귀로 남긴다(래칫 보호). 판정 경로는 `baselineNovelty`.
+//     기준선 파일은 자동으로 고치지 않는다 — 갱신은 사람이 `--save-baseline` 으로 하는 결정이다.
 //
 // 사용:
 //   node scripts/verify-gates.mjs                          # 실행 + 요약
@@ -18,6 +24,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { classifyTestFailures } from "./lib/gatesRegression.mjs";
 
 const DEFAULT_BASELINE = resolve(process.cwd(), ".omo/gates-baseline.json");
 const args = process.argv.slice(2);
@@ -41,6 +48,51 @@ function run(command, commandArgs) {
   // spawnSync 의 status 가 진짜 종료 코드다. 파이프를 거치면 마지막 명령의 코드로 뒤바뀐다
   // (`tsc | tail` 이 exit 0 으로 보였던 원인).
   return { code: result.status ?? -1, out: `${result.stdout ?? ""}${result.stderr ?? ""}` };
+}
+
+/**
+ * git 이 아는 파일 목록. 실패하면 `null` — 부르는 쪽이 «확인 불가» 로 처리한다.
+ * 게이트를 git 없이 돌리는 것(압축 배포본 등)을 막지 않되, 그때는 회귀 판정이 보수적으로 남는다.
+ */
+function gitNames(commandArgs) {
+  const { code, out } = run("git", commandArgs);
+  if (code !== 0) return null;
+  return out.split("\n").map((line) => line.trim()).filter(Boolean);
+}
+
+/**
+ * «이 파일이 기준선 시점에 없었다» 를 판정하는 술어를 만든다. 확인할 수 없으면 `null`.
+ *
+ * 세 경로를 순서대로 쓴다:
+ *  1. `baseline.tests.testFiles` — 저장 시점의 전량 목록. 정확하다(신 기준선).
+ *  2. `baseline.gitHead` — 그 커밋의 트리. 정확하다(저장 시 HEAD 를 기록한 경우).
+ *  3. `ranAt` + `git log --diff-filter=A --since` — **근사**다. 날짜 기반이라 리베이스·
+ *     cherry-pick 으로 커밋 날짜가 뒤집히면 틀릴 수 있다. 그래도 «기준선 이후 추가» 만
+ *     세므로 조용히 면제하는 방향으로는 틀리지 않는다(모르면 회귀로 남는다).
+ */
+function baselineNovelty(baseline) {
+  const recorded = baseline?.tests?.testFiles;
+  if (Array.isArray(recorded) && recorded.length > 0) {
+    const existed = new Set(recorded);
+    return { isNewFile: (file) => !existed.has(file), method: "baselineTestFiles" };
+  }
+  const head = baseline?.gitHead;
+  if (typeof head === "string" && head) {
+    const tracked = gitNames(["ls-tree", "-r", "--name-only", head, "--", "test/"]);
+    if (tracked) {
+      const existed = new Set(tracked);
+      return { isNewFile: (file) => !existed.has(file), method: "gitTree" };
+    }
+  }
+  const ranAt = baseline?.tests?.ranAt ?? baseline?.ranAt;
+  if (typeof ranAt === "string" && ranAt) {
+    const added = gitNames(["log", "--diff-filter=A", `--since=${ranAt}`, "--name-only", "--format=", "--", "test/"]);
+    if (added) {
+      const novel = new Set(added);
+      return { isNewFile: (file) => novel.has(file), method: "gitAddedSince" };
+    }
+  }
+  return { isNewFile: null, method: "unknown" };
 }
 
 function typecheckGate() {
@@ -80,17 +132,18 @@ function testsGate() {
   }
   const parsed = JSON.parse(readFileSync(reportPath, "utf8"));
   const results = parsed.testResults ?? [];
-  const failedFiles = [
-    ...new Set(
-      results
-        .filter((entry) => entry.status !== "passed")
-        .map((entry) => {
-          const slashed = String(entry.name ?? "").split("\\").join("/");
-          const index = slashed.indexOf("/test/");
-          return index >= 0 ? slashed.slice(index + 1) : slashed;
-        })
-    ),
-  ].sort();
+  // 파일 경로 정규화는 한 곳에서만 한다 — 실패 목록과 전량 목록이 같은 표기를 써야
+  // 기준선 대조(«이 파일이 그때 있었나»)가 어긋나지 않는다.
+  const normalize = (name) => {
+    const slashed = String(name ?? "").split("\\").join("/");
+    const index = slashed.indexOf("/test/");
+    return index >= 0 ? slashed.slice(index + 1) : slashed;
+  };
+  const failedFiles = [...new Set(results.filter((entry) => entry.status !== "passed").map((entry) => normalize(entry.name)))].sort();
+  // 기준선이 «그때 어떤 테스트 파일이 있었나» 를 스스로 기록할 수 있게 전량을 함께 돌려준다.
+  // 이게 없으면 신규 파일과 기존 파일을 구분할 수 없어, 스위트가 커질수록 «새 실패» 가 부풀고
+  // 래칫이 노이즈에 묻힌다(실측 2026-09-11: 127건 중 84건이 신규 파일).
+  const testFiles = [...new Set(results.map((entry) => normalize(entry.name)))].sort();
   const failedCount = Number(parsed.numFailedTests ?? 0);
   const passedCount = Number(parsed.numPassedTests ?? 0);
   const totalCount = Number(parsed.numTotalTests ?? 0);
@@ -108,7 +161,7 @@ function testsGate() {
     throw new Error(`vitest 가 테스트를 하나도 수집하지 못했다 — runner 로딩 경로를 확인하라 (${reportPath})`);
   }
 
-  return { name: "vitest", exitCode: code, totalCount, failedCount, passedCount, failedFiles };
+  return { name: "vitest", exitCode: code, totalCount, failedCount, passedCount, failedFiles, testFiles };
 }
 
 // CSS 게이트 — 자체 기준선을 가진 두 정적 분석 스크립트를 그대로 실행한다.
@@ -183,6 +236,10 @@ if (flag("--save-baseline")) {
   // CSS/표면 게이트의 `out` 은 사람이 읽는 콘솔 출력이라 기준선에 넣으면 수백 줄이 쌓인다.
   // 애초에 두 게이트는 기준선 대비 비교를 하지 않으므로 종료 코드만 기록으로 남긴다.
   const persisted = { ...rest };
+  // 기준선이 «언제의 나무였나» 를 스스로 남긴다. 이 한 줄이 없으면 다음 비교는 날짜 근사
+  // (`ranAt` + git log)로 내려앉고, 리베이스·cherry-pick 이 섞이면 신규 파일 판정이 흔들린다.
+  const headNow = run("git", ["rev-parse", "HEAD"]);
+  if (headNow.code === 0 && headNow.out.trim()) persisted.gitHead = headNow.out.trim().split("\n")[0];
   if (cssReport) persisted.css = { name: cssReport.name, exitCode: cssReport.exitCode };
   // 표면 게이트는 **어떤 축이 돌았는지**를 기록에 남긴다. 축 파일이 개명·삭제되면
   // check-surface-gates.mjs 가 하드 실패하지만, 선택 축(조건 등)이 조용히 빠지는 것은
@@ -195,7 +252,9 @@ if (flag("--save-baseline")) {
       skippedAxes: surfaceReport.skippedAxes,
     };
   writeFileSync(baselinePath, `${JSON.stringify(persisted, null, 2)}\n`, "utf8");
-  console.log(`기준선 저장: ${baselinePath}`);
+  // «등재» 를 눈에 보이게 한다: 이 숫자가 다음 실행에서 신규 파일을 가려내는 기준이 된다.
+  const enrolled = persisted.tests?.testFiles?.length ?? 0;
+  console.log(`기준선 저장: ${baselinePath}${enrolled > 0 ? ` (테스트 파일 ${enrolled}개 등재)` : ""}`);
 }
 
 // 기준선 대비 회귀 판정 — 새로 깨진 파일만 잡는다.
@@ -212,10 +271,15 @@ if (baseline) {
     }
   }
   if (report.tests && baseline.tests) {
-    const before = new Set(baseline.tests.failedFiles ?? []);
-    for (const file of report.tests.failedFiles) {
-      if (!before.has(file)) regressions.push(`tests ${file}: 새로 실패`);
-    }
+    const novelty = baselineNovelty(baseline);
+    const classified = classifyTestFailures({
+      failedFiles: report.tests.failedFiles,
+      baselineFailedFiles: baseline.tests.failedFiles ?? [],
+      isNewFile: novelty.isNewFile ?? undefined,
+    });
+    regressions.push(...classified.regressions);
+    report.newFileFailures = classified.newFileFailures;
+    report.testAttribution = novelty.method;
   }
 }
 
@@ -258,6 +322,22 @@ if (asJson) {
     }
   }
   if (baseline) {
+    // 신규 파일 실패는 **회귀가 아니다** — 기준선 시점에 없던 파일은 깨질 수가 없다. 다만
+    // 조용히 넘기지 않는다: 몇 건인지, 어떤 파일인지, 그리고 «신규 여부를 어떻게 판정했는지» 를
+    // 함께 찍어야 다음 사람이 이 숫자를 신뢰할지 판단할 수 있다.
+    const newFiles = report.newFileFailures ?? [];
+    const attribution = report.testAttribution;
+    if (newFiles.length > 0) {
+      console.log(`\n기준선 이후 신규 파일 실패 ${newFiles.length}건 (회귀 아님 — 판정: ${attribution}):`);
+      for (const line of newFiles.slice(0, 10)) console.log(`   ${line}`);
+      if (newFiles.length > 10) console.log(`   …외 ${newFiles.length - 10}건 (--json 의 newFileFailures 참조)`);
+    }
+    if (attribution === "unknown") {
+      console.log(
+        "   ⚠ 기준선에 테스트 파일 목록도 gitHead 도 없다 — 신규 파일을 구분할 수 없어 전부 회귀로 셌다.\n" +
+        "     `--save-baseline` 로 갱신하면 다음부터 신규 파일이 분리된다(래칫은 그대로 유지된다)."
+      );
+    }
     console.log(regressions.length === 0
       ? `\n기준선 대비 회귀 없음 (${baselinePath})`
       : `\n기준선 대비 회귀 ${regressions.length}건:`);
