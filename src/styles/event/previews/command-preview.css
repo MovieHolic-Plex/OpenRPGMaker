@@ -386,20 +386,20 @@
   gap: 4px;
   padding: 10px 12px;
   box-sizing: border-box;
-  border: 1px solid var(--runtime-dialogue-glass-border);
+  border: 1px solid var(--runtime-dialogue-glass-border, rgba(154, 170, 226, 0.18));
   border-image: none;
-  border-radius: var(--runtime-dialogue-radius);
+  border-radius: var(--runtime-dialogue-radius, var(--radius-s));
   /* 반투명한 대화창 유리가 불투명 밑판 **위에** 와야 한다. background-color 는 항상 맨
      아래에 깔리므로 유리를 색으로 두면 밑판 그라디언트가 그 위를 덮는다. 그러면 창이
      밝아지고 `--runtime-window-text` 크림색 글자가 사라진다(실측: #FFF6E2 on
      #F7F8F8 = 1.0:1). computed 값만 읽으면 17.8:1 로 보이니 렌더된 픽셀로 확인한다. */
   background:
-    linear-gradient(180deg, var(--runtime-dialogue-glass-surface), var(--runtime-dialogue-glass-surface)),
+    linear-gradient(180deg, var(--runtime-dialogue-glass-surface, rgba(12, 15, 30, 0.82)), var(--runtime-dialogue-glass-surface, rgba(12, 15, 30, 0.82))),
     var(--bg-surface);
-  color: var(--runtime-window-text);
+  color: var(--runtime-window-text, rgba(238, 241, 251, 0.98));
   font: 400 13px/1.45 "Malgun Gothic", Tahoma, sans-serif;
-  box-shadow: var(--runtime-dialogue-glass-shadow);
-  backdrop-filter: var(--runtime-dialogue-glass-filter);
+  box-shadow: var(--runtime-dialogue-glass-shadow, 0 8px 24px rgba(3, 5, 14, 0.55));
+  backdrop-filter: var(--runtime-dialogue-glass-filter, blur(4px) saturate(1.08));
   image-rendering: pixelated;
   position: relative;
 }
@@ -430,7 +430,7 @@
 }
 
 .ecp-message-window[data-dialogue-phase="enter"] {
-  animation: dialogue-box-enter var(--dialogue-enter-ms) var(--runtime-dialogue-enter-ease) both;
+  animation: dialogue-box-enter var(--dialogue-enter-ms, 170ms) var(--runtime-dialogue-enter-ease, cubic-bezier(0.16, 0.84, 0.3, 1)) both;
 }
 
 .ecp-message-window[data-dialogue-emotion="happy"][data-dialogue-phase="enter"],
@@ -440,7 +440,7 @@
 
 .ecp-message-window[data-dialogue-emotion="sad"][data-dialogue-phase="enter"] {
   animation-name: dialogue-box-enter-soft;
-  animation-timing-function: var(--runtime-dialogue-enter-ease-soft);
+  animation-timing-function: var(--runtime-dialogue-enter-ease-soft, cubic-bezier(0.22, 0.61, 0.36, 1));
 }
 
 .ecp-message-window[data-dialogue-motion="off"][data-dialogue-phase="enter"] {
@@ -463,7 +463,7 @@
   background-image: none;
   border-image: none;
   border-style: dashed;
-  border-color: var(--runtime-dialogue-glass-border);
+  border-color: var(--runtime-dialogue-glass-border, rgba(154, 170, 226, 0.18));
   border-width: 1px;
   box-shadow: none;
 }
@@ -488,17 +488,17 @@
   align-items: center;
   max-width: calc(100% - 24px);
   padding: 2px 10px 3px;
-  border: 1px solid var(--runtime-dialogue-glass-border);
-  border-radius: var(--runtime-dialogue-radius-small);
+  border: 1px solid var(--runtime-dialogue-glass-border, rgba(154, 170, 226, 0.18));
+  border-radius: var(--runtime-dialogue-radius-small, 3px);
   /* --runtime-dialogue-glass-surface-strong 은 색이 아니라 linear-gradient 이미지다.
      색상정지 자리에 넣으면 치환 후 선언 전체가 버려져 이름표가 투명해진다(크림 무대 위
      유리 글자). 이미지 슬롯에 통째로 두고, 불투명 밑판은 다음 레이어로 깐다.
      overflow/font 로 가리지 말 것. --shadow-pop 은 이미 그림자 리스트라 길이를 앞에 붙이면 무효. */
   background:
-    var(--runtime-dialogue-glass-surface-strong),
+    var(--runtime-dialogue-glass-surface-strong, linear-gradient(180deg, rgba(23, 28, 52, 0.96), rgba(9, 11, 24, 0.98))),
     var(--bg-surface);
   box-shadow: var(--shadow-pop);
-  color: var(--runtime-window-text);
+  color: var(--runtime-window-text, rgba(238, 241, 251, 0.98));
   font: 700 12px/1.2 "Malgun Gothic", Tahoma, sans-serif;
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -667,15 +667,15 @@
   gap: 5px;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: var(--runtime-dialogue-radius-small);
+  border-radius: var(--runtime-dialogue-radius-small, 3px);
   font-size: 12px;
   padding: 3px 7px;
 }
 
 .ecp-choice:first-child {
-  background: var(--runtime-dialogue-glass-accent-soft);
-  border-color: var(--runtime-dialogue-glass-border);
-  box-shadow: var(--runtime-dialogue-glass-focus-shadow);
+  background: var(--runtime-dialogue-glass-accent-soft, rgba(124, 140, 255, 0.2));
+  border-color: var(--runtime-dialogue-glass-border, rgba(154, 170, 226, 0.18));
+  box-shadow: var(--runtime-dialogue-glass-focus-shadow, inset 2px 0 0 rgba(124, 140, 255, 0.96), inset 0 0 0 1px rgba(211, 232, 255, 0.34));
 }
 
 .ecp-choice.empty { opacity: 0.6; }
@@ -838,7 +838,7 @@
 
 .ecp-result-screen.title { background: var(--accent-active); color: var(--on-accent); }
 
-.ecp-result-screen.ending { background: var(--runtime-glass-scrim); color: var(--runtime-glass-text); }
+.ecp-result-screen.ending { background: var(--runtime-glass-scrim, rgba(6, 8, 18, 0.86)); color: var(--runtime-glass-text, rgba(238, 241, 251, 0.98)); }
 
 /* 숫자 입력 창 — System.png fill 금지, 빈 슬롯 idle 미리보기. */
 .ecp-number-stage {

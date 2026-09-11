@@ -22,9 +22,9 @@
 
 /* editor/palette-player.css:54-64 */
 .event-graphic-summary {
-  background: var(--bg);
+  background: var(--bg, unset);
   border: 1px solid var(--border);
-  color: var(--text-dim);
+  color: var(--text-dim, unset);
   font: 500 12px/1.35 var(--font-mono);
   min-width: 0;
   overflow: hidden;
@@ -74,20 +74,20 @@
 
 /* editor/palette-player.css:108-111 */
 .event-subdialog-note {
-  color: var(--text-dim);
+  color: var(--text-dim, unset);
   font-size: 12px;
 }
 
 /* editor/palette-player.css:113-117 */
 .event-command-picker-group {
-  background: var(--bg);
-  border: 1px solid var(--border-soft);
+  background: var(--bg, unset);
+  border: 1px solid var(--border-soft, unset);
   padding: var(--space-2);
 }
 
 /* editor/palette-player.css:119-124 */
 .event-command-picker-group h4 {
-  color: var(--text-dim);
+  color: var(--text-dim, unset);
   font-size: 11px;
   margin: 0 0 var(--space-1);
   text-transform: uppercase;
@@ -110,10 +110,10 @@
 /* editor/palette-player.css:149-156 */
 .npc-frame-preview,
 .npc-character-cell {
-  background-color: var(--bg-panel-2);
+  background-color: var(--bg-panel-2, unset);
   background-repeat: no-repeat;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-sm, var(--radius-s));
   image-rendering: pixelated;
 }
 
@@ -154,7 +154,7 @@
 
 /* editor/palette-player.css:220-225 */
 .npc-advanced-sprite summary {
-  color: var(--text-dim);
+  color: var(--text-dim, unset);
   cursor: pointer;
   font-size: 11px;
   margin-bottom: var(--space-1);

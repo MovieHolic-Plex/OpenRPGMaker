@@ -12,7 +12,7 @@
 
 /* editor/core.part-2.css:213-220 */
 .event-id-readout-label {
-  color: var(--text-dim);
+  color: var(--text-dim, unset);
   font-size: 11px;
   font-weight: 600;
   grid-column: 1;
@@ -24,9 +24,9 @@
 .event-editor input.event-id-readout-value {
   background: var(--bg-inset);
   border: 1px dashed var(--border);
-  color: var(--text);
+  color: var(--text, unset);
   cursor: text;
-  font: 400 11px/1.4 var(--mono);
+  font: 400 11px/1.4 var(--mono, unset);
   grid-column: 1 / -1;
   grid-row: 2;
   min-width: 0;
@@ -51,9 +51,9 @@
 .event-id-readout-copy {
   align-items: center;
   background: transparent;
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-sm);
-  color: var(--text-dim);
+  border: 1px solid var(--border-soft, unset);
+  border-radius: var(--radius-sm, var(--radius-s));
+  color: var(--text-dim, unset);
   cursor: pointer;
   display: inline-flex;
   font-size: 11px;
@@ -69,12 +69,12 @@
 .event-id-readout-copy:hover,
 .event-id-readout-copy:focus-visible {
   border-color: var(--border);
-  color: var(--text);
+  color: var(--text, unset);
 }
 
 /* editor/core.part-2.css:274-281 */
 .event-id-readout-hint {
-  color: var(--text-dim);
+  color: var(--text-dim, unset);
   font-size: 11px;
   grid-column: 1 / -1;
   grid-row: 3;
@@ -85,7 +85,7 @@
 /* editor/palette-player.css:44-48 */
 .event-editor-event-id {
   align-self: center;
-  color: var(--text-dim);
+  color: var(--text-dim, unset);
   font: 600 12px/1.35 var(--font-mono);
 }
 

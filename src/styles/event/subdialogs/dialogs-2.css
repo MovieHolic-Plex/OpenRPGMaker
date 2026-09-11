@@ -844,7 +844,7 @@
 }
 
 .command-runtime-badge.runtime-partial {
-  background: var(--accent-soft, var(--editor-blue-soft));
+  background: var(--accent-soft, unset);
   color: var(--status-warning, var(--gold));
 }
 
@@ -865,7 +865,7 @@
 
 .event-command-picker-command.is-informational,
 .event-command-picker-command:disabled {
-  background: color-mix(in srgb, var(--surface-soft, var(--bg-input)) 82%, var(--accent-soft, #f7edda));
+  background: color-mix(in srgb, var(--surface-soft, unset) 82%, var(--accent-soft, #f7edda));
   border-color: var(--border-soft, var(--border-subtle));
   color: var(--text-muted, var(--text-2));
   cursor: default;
