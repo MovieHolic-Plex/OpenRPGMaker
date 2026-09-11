@@ -140,7 +140,7 @@ export interface ComposerOptions {
   };
   /** 모델 칩 초기 라벨. null/미지정이면 숨긴 채 만든다(표준 이상 모드에서 패널이 채운다). */
   readonly modelLabel?: string | null;
-  /** 실행 경로 셀렉트(Pi 에이전트 / Pi 팀). 저장은 호출자가 맡는다. */
+  /** 실행 경로 셀렉트(조수 / Pi 에이전트 / Pi 팀). 저장은 호출자가 맡는다. */
   readonly routeChips?: {
     readonly initial: ExecutionRoute;
     readonly onChange: (route: ExecutionRoute) => void;
@@ -303,7 +303,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   }
   paintEffort();
 
-  // ── 실행 경로 셀렉트 ── 지시가 Pi 에이전트 / Pi 팀 중 어디로 가는가. 슬래시 노브가 있으면 그쪽이 이긴다.
+  // ── 실행 경로 셀렉트 ── 지시가 기존 조수 / Pi 에이전트 / Pi 팀 중 어디로 가는가.
   let route: ExecutionRoute = options.routeChips?.initial ?? "pi-agent";
   const routeSelect = options.routeChips
     ? el("select", {
