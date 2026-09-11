@@ -1,5 +1,4 @@
 import { activeItemEffects, itemAllowsMenu, itemAllowsBattle } from "@/project/itemUsage";
-import "@/styles/database/modern/equipment-items.css";
 import {
   avatarChipRow,
   emptyToUndefined,

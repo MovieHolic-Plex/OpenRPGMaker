@@ -12,38 +12,38 @@
     },
     "components": {
       "important": 0,
-      "unlayered": 175,
+      "unlayered": 0,
       "hubs": 0
     },
     "shell": {
       "important": 36,
-      "unlayered": 622,
-      "hubs": 2
+      "unlayered": 0,
+      "hubs": 0
     },
     "map": {
       "important": 28,
-      "unlayered": 428,
-      "hubs": 1
+      "unlayered": 0,
+      "hubs": 0
     },
     "event": {
       "important": 0,
-      "unlayered": 94,
+      "unlayered": 0,
       "hubs": 0
     },
     "database": {
       "important": 313,
-      "unlayered": 5590,
-      "hubs": 8
+      "unlayered": 0,
+      "hubs": 0
     },
     "resources": {
       "important": 6,
-      "unlayered": 172,
+      "unlayered": 0,
       "hubs": 0
     },
     "runtime": {
       "important": 459,
-      "unlayered": 1650,
-      "hubs": 3
+      "unlayered": 0,
+      "hubs": 0
     },
     "overrides": {
       "important": 0,
@@ -52,8 +52,8 @@
     },
     "unassigned": {
       "important": 164,
-      "unlayered": 5460,
-      "hubs": 8
+      "unlayered": 0,
+      "hubs": 0
     }
   },
   "known": [
@@ -245,6 +245,7 @@
     "R2|database/actors.css|.oprn-record-actors .oprn-maximum-button|oprn-maximum-button",
     "R2|database/ai-bar.css|.db-ai-generate-btn.primary:hover:not(:disabled)|primary",
     "R2|database/ai-bar.css|.db-ai-generate-btn.primary|primary",
+    "R2|database/animation-editor.css|.database-modal-backdrop .database-modal-window .db-animation-transport .empty-hint|empty-hint",
     "R2|database/assistant-command-bar.css|.ai-command-menu-item:hover|ai-command-menu-item",
     "R2|database/assistant-command-bar.css|.ai-command-menu-item|ai-command-menu-item",
     "R2|database/assistant-command-bar.css|.ai-command-menu|ai-command-menu",
@@ -696,6 +697,9 @@
     "R2|database/light-theme.css|.database-modal-backdrop .database-modal-window .db-equipment-inspector-title .db-equipment-summary-chip.muted|muted",
     "R2|database/light-theme.css|.database-modal-backdrop .database-modal-window .oprn-detail-equipment > .db-equipment-inspector-header|oprn-detail-equipment",
     "R2|database/modern-controls.css|.database-modal-backdrop .database-modal-window .db-avatar-chip.dimmed|dimmed",
+    "R2|database/modern/enemies.css|.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-media .flying|flying",
+    "R2|database/modern/enemies.css|.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-enemies .oprn-detail-enemies|oprn-detail-enemies",
+    "R2|database/modern/equipment-items.css|.database-modal-backdrop .db-item-ws .db-ws-card.collapsed|collapsed",
     "R2|database/modern/spatial-collections.css|.database-modal-backdrop .database-modal-window .database-modal-body [data-testid=\"spatial-shell-tiles\"] .tileset-db-edit-area.passage-paint|passage-paint",
     "R2|database/modern/tilesets.css|.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench .tileset-db-edit-area.autotile-compose|autotile-compose",
     "R2|database/modern/tilesets.css|.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench .tileset-db-edit-area.passage-paint|passage-paint",
@@ -2736,12 +2740,6 @@
     "R4|database/record-thumbs.css|.db-resource-picker-crop|--db-resource-width",
     "R4|database/record-thumbs.css|.db-resource-picker-crop|--db-resource-x",
     "R4|database/record-thumbs.css|.db-resource-picker-crop|--db-resource-y",
-    "R4|database/skill-item-visuals.css|.db-skill-animation-stage-crosshair|--db-studio-text",
-    "R4|database/skill-item-visuals.css|.db-skill-animation-stage-grid|--db-studio-text",
-    "R4|database/skill-item-visuals.css|.db-skill-animation-stage|--db-studio-dark",
-    "R4|database/skill-item-visuals.css|.db-skill-animation-stage|--db-studio-dark-2",
-    "R4|database/skill-item-visuals.css|.db-skill-animation-stage|--db-studio-line",
-    "R4|database/skill-item-visuals.css|.db-skill-animation-stage|--db-studio-live",
     "R4|database/states.css|.database-modal-body .db-state-animation-preview|--oprn-light",
     "R4|database/states.css|.database-modal-body .db-state-animation-preview|--oprn-mid",
     "R4|database/states.css|.database-modal-body .db-state-animation-preview|--oprn-state-preview-a",
@@ -3679,33 +3677,9 @@
     "R5|shell/from-map-resource-system-part-1.css|.right-tab|.right-tab",
     "R5|shell/shell-density.part-1.css|.stamp-button|.stamp-button",
     "R5|shell/shell-density.part-1.css|.stamp-picker|.stamp-picker",
-    "R6|database/core.css||/* Split wrapper: preserves core.css cascade order. */",
-    "R6|database/enemies.css||/* Split wrapper: preserves enemies.css cascade order. */",
-    "R6|database/tabs-a.css||/* Split wrapper: preserves tabs-a.css cascade order. */",
-    "R6|database/tabs-b-assistant-panel.css||/* 분할 목차: 아래 @import 순서가 캐스케이드를 결정하므로 재배열 금지.",
-    "R6|database/troops.css||/* Split wrapper: preserves troops.css cascade order. */",
-    "R6|editor/core.css||/* Split wrapper: preserves core.css cascade order. */",
-    "R6|editor/event-editor-legacy.css||/* Split wrapper: preserves event-editor-legacy.css cascade order. */",
-    "R6|editor/event-editor-rich-forms.css||/* 분할 목차 — 아래 @import 순서가 캐스케이드(규칙 순서)를 결정하므로 재배열 금지. */",
-    "R6|editor/event-editor.command-preview.css||/* 분할 목차 — 아래 @import 순서가 캐스케이드(규칙 순서)를 결정하므로 재배열 금지. */",
     "R6|editor/event-editor.css||/* Split wrapper: preserves event-editor.css cascade order. */",
-    "R6|editor/event-editor.modern.css||/* 분할 목차 — 아래 @import 순서가 캐스케이드(규칙 순서)를 결정하므로 재배열 금지. */",
-    "R6|editor/event-editor.part-3.css||/* 분할 목차 — 아래 @import 순서가 캐스케이드(규칙 순서)를 결정하므로 재배열 금지. */",
     "R6|editor/left-sidebar.modern.css||좌측 사이드바 모던 레이어 (2026-09-03) — 타일 도크 + 맵 도크 크롬의 마지막 발언자.",
-    "R6|index.css||/* CSS entrypoint: preserves cascade order while moving shared primitives out of",
-    "R6|index.css||/* Collection-specific studio slices must follow the shared studio reset. */",
-    "R6|index.css||/* DB AI 표면(바·생성 대화상자)은 studio-v2 뒤에 읽어 같은 특이성의 옛 오버라이드를 소스 순서로 이긴다. */",
-    "R6|index.css||/* Database Studio v2 — 30탭 공용 셸·레일·목록·폼 문법. 탭별 정제 층(modern/*) 뒤에 와야",
-    "R6|index.css||/* db-ws-* 워크스페이스 프리미티브. studio-theme 뒤에 와야 팔레트를 소비하면서",
-    "R6|index.css||/* 마지막 @import — 그 뒤는 실제 규칙이다. AI 인증 패널 규칙을 여기(가장 늦게) 두면",
-    "R6|index.css||/* 스튜디오 바(톱바 한 줄·메뉴 팝업·보기 메뉴·캔버스 툴바)의 마지막 발언자 — 2026-09-03. */",
-    "R6|index.css||/* 좌측 사이드바(타일·맵 도크) 크롬의 마지막 발언자 — 맵 패널 행 규칙 뒤에 와야 한다. */",
-    "R6|index.css||/* 탭별 정제 레이어. 공용 프리미티브(workspace-modern) 뒤에 와야 그 위에 얹힌다.",
-    "R6|map/resource-system.css||/* Split wrapper: preserves resource-system.css cascade order. */",
-    "R6|runtime/battle.css||@import 순서가 캐스케이드를 결정하므로 재배열 금지. */",
-    "R6|runtime/playerRuntime.css||/* Authoritative player runtime CSS closure. Keep imports in cascade order. */",
     "R6|shell/editor-ui-modes.css||/* 첫 방문 안내라 어떤 셸 레이어보다 앞에 와야 한다 — z-popover(90) 는",
-    "R6|shell/figma-editor.css||/* 분할 목차: 아래 @import 순서가 캐스케이드를 결정하므로 재배열 금지.",
     "R6|shell/studio-bar.modern.css||2026-09-03 개편의 마지막 발언자다. 앞선 세대(figma-editor/01·02·05·07, editor-ui-modes,"
   ]
 }

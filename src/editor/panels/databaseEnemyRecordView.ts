@@ -34,7 +34,6 @@ import { detailHero, emptyState, listToolbar, noticeBar, restoreFocusAfterRerend
 // JS import 로 넣는다 — 번들 순서상 index.css 의 studio-theme.css 뒤에 오므로,
 // studio-theme 이 남긴 `grid-area: combat !important` 같은 잔재를 !important 남발 없이 이긴다.
 // (databaseUtilityRecordViews.ts 가 modern/utility-records.css 를 넣는 방식과 동일.)
-import "@/styles/database/modern/enemies.css";
 import {
   checkboxField,
   conditionLabel,

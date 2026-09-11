@@ -18,9 +18,30 @@ beforeAll(async () => {
   // Preserve the shipped assistant import order, including the late shell constraints.
   // Unrelated runtime/database sheets make happy-dom's selector scans prohibitively slow.
   const filename = resolve("src/styles/index.css");
+  // 배럴 database/tabs-b-assistant-panel.css 는 표면 진입 시트로 대체돼 사라졌다(2026-09-11 Task 7). 그 리프를 같은 순서로 나열한다.
   const css = [
     '@import "./tokens.css";',
-    '@import "./database/tabs-b-assistant-panel.css";',
+    '@import "./database/assistant-proposal.css";',
+    '@import "./database/assistant-command-bar.css";',
+    '@import "./database/assistant-sticky-checklist.css";',
+    '@import "./database/assistant-rising-overlay.css";',
+    '@import "./database/tabs-b-assistant-panel/01-legacy-preview-panel.css";',
+    '@import "./database/tabs-b-assistant-panel/02-chat-dock.css";',
+    '@import "./database/tabs-b-assistant-panel/03-three-tier-ia.css";',
+    '@import "./database/tabs-b-assistant-panel/04-chat-bubbles-proposals.css";',
+    '@import "./database/tabs-b-assistant-panel/05-structure-modal-overlays.css";',
+    '@import "./database/tabs-b-assistant-panel/06-canvas-guides-panel-chrome.css";',
+    '@import "./database/tabs-b-assistant-panel/07-viewer-modal-settings.css";',
+    '@import "./database/tabs-b-assistant-panel/08-studio-mode-start-screen.css";',
+    '@import "./database/tabs-b-assistant-panel/09-ux-polish-density.css";',
+    '@import "./database/tabs-b-assistant-panel/10-dock-mode-rich-doc.css";',
+    '@import "./database/tabs-b-assistant-panel/11-autonomous-run-surface.css";',
+    '@import "./database/tabs-b-assistant-panel/12-assistant-temperature.css";',
+    '@import "./database/assistant-composer.css";',
+    '@import "./database/tabs-b-assistant-panel/18-assistant-deck.css";',
+    '@import "./database/tabs-b-assistant-panel/19-assistant-cards.css";',
+    '@import "./database/tabs-b-assistant-panel/20-team-board.css";',
+    '@import "./database/tabs-b-assistant-panel/21-team-panel.css";',
     '@import "./shell/editor-ui-modes.css";',
   ].join("\n");
   const config = await resolveConfig({ configFile: false, envFile: false }, "serve", "test");

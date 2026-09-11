@@ -1,7 +1,0 @@
-﻿/* 분할 목차 — 아래 @import 순서가 캐스케이드(규칙 순서)를 결정하므로 재배열 금지. */
-@import "./event-editor.modern/01-event-editor-modal-backdrop.css";
-@import "./event-editor.modern/02-fill-overlay-p1-pagetabs.css";
-@import "./event-editor.modern/03-legend-toolbar.css";
-@import "./event-editor.modern/04-depth-parent.css";
-@import "./event-editor.modern/05-changeface-form-selected-card.css";
-@import "./event-editor.modern/06-event-editor-modal-footer.css";

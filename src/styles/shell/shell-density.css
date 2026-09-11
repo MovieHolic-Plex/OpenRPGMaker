@@ -1,7 +1,0 @@
-/* Split wrapper: 원본 한 파일이던 셸 밀도 스타일의 cascade 순서를 보존한다. */
-@import "./shell-density.part-1.css";
-/* shell/shell-density.part-1.css 에서 옮겨 온 map 표면 규칙 — 원본 바로 다음(위치 보존). */
-@import "../map/from-shell-shell-density-part-1.css";
-@import "./shell-density.part-2.css";
-/* shell/shell-density.part-2.css 에서 옮겨 온 map 표면 규칙 — 원본 바로 다음(위치 보존). */
-@import "../map/from-shell-shell-density-part-2.css";

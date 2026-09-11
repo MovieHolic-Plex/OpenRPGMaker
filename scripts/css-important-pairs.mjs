@@ -6,14 +6,17 @@ const registry = JSON.parse(fs.readFileSync("scripts/css-surfaces.json", "utf8")
 const root = path.resolve("src/styles");
 const decls = indexDeclarations(flattenImports(path.resolve("src/styles/index.css")), root);
 const planned = (file) => { // 1단계 배정표(Task 7 Step 1)와 같은 규칙
+  // tabs-b 3종(타이틀·상태 메뉴)은 플레이 런타임 시트 — Task 7 배정표가 runtime 에 둔다.
+  if (/^database\/tabs-b-(title-screen|status-menu-base|status-menu-main)\.css$/.test(file)) return "runtime";
   if (file.startsWith("database/")) return "database";
   if (file.startsWith("shell/")) return "shell";
-  if (/^editor\/(event-editor|storyboard)/.test(file)) return "event";
+  if (/^editor\/(event-editor|storyboard|walk-encounter)/.test(file)) return "event";
   // editor/ 안의 셸 대화상자 — Task 7 Step 1 이 수동으로 shell 에 배정하는 다섯 시트.
   if (/^editor\/(ai-settings-modal|help-modal|audio-test-dialog|cluster-ai-modal|local-diagnostics)\.css$/.test(file)) return "shell";
   if (file.startsWith("editor/")) return "map";
   // map/ 는 registry 의 map 표면 디렉터리. Task 7 Step 1 은 index.css 외에 base 로 떨어지는 파일이 없어야 한다.
   if (file.startsWith("map/")) return "map";
+  if (file.startsWith("event/")) return "event";
   if (file === "tokens.css") return "tokens";
   if (file.startsWith("runtime/") || file === "dialogue.css") return "runtime";
   if (file.startsWith("components/")) return "components";

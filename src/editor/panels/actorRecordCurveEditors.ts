@@ -8,7 +8,6 @@ import { curvePreviewGraph } from "@/editor/panels/databaseCurvePreview";
 // 주인공 곡선 에디터 전용 CSS — 데스크톱(≥901px)에서 display:none 으로 사라진 곡선 컬럼 복원
 // + 다이얼로그 스타일을 모든 화면 폭에서 제공(qa-actors Critical). A 배치의 파일과 충돌하지
 // 않도록 curve* 계열 신규 파일로 분리하고 TS 에서 직접 로드한다.
-import "@/styles/database/curve-editors.css";
 
 const PARAMETER_LABELS: Record<ActorParameterKey, string> = {
   maxHp: "최대 HP",

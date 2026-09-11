@@ -254,6 +254,14 @@ for (const hit of doubles) {
 // ── 슬라이스 디렉터리 수집 ─────────────────────────────────────────────────────
 // 슬라이스 = NN-*.css 를 가진 디렉터리. 형제 배럴은 `<디렉터리>.css`.
 const NUMBERED_RE = /^(\d{2})-.+\.css$/;
+// 표면 진입 시트 — 배럴이 없는 슬라이스 디렉터리의 등록처(검사 3). 레지스트리가 없거나 파일이 없으면 빈 목록.
+const SURFACE_ENTRIES = (() => {
+  const reg = join(ROOT, "scripts/css-surfaces.json");
+  if (!existsSync(reg)) return [];
+  return Object.values(JSON.parse(readFileSync(reg, "utf8")).surfaces ?? {})
+    .map((s) => resolve(ROOT, s.entry))
+    .filter((p) => existsSync(p));
+})();
 const sliceDirs = new Map(); // 디렉터리 절대경로 → 번호 파일명 배열
 for (const abs of universe) {
   if (!NUMBERED_RE.test(basename(abs))) continue;
@@ -265,9 +273,13 @@ for (const abs of universe) {
 // ── 검사 3: 미등록 번호 슬라이스 ───────────────────────────────────────────────
 report.checks.unregisteredSlice = { found: [], allowlisted: [...UNREGISTERED_SLICE_ALLOWLIST], new: [] };
 for (const [dir, files] of [...sliceDirs].sort()) {
-  const barrel = `${dir}.css`;
-  if (!existsSync(barrel)) {
-    fail(`${toRel(dir)} 은 번호 슬라이스인데 형제 배럴 ${toRel(barrel)} 이 없다. 배럴을 만들고 엔트리에 연결하세요.`);
+  // 형제 배럴(<디렉터리>.css)이 있으면 그것이 등록처다. 표면 격리 1단계(2026-09-11) 이후 배럴은
+  // 지워지고 표면 진입 시트(scripts/css-surfaces.json 의 entry)가 슬라이스를 직접 @import 하므로,
+  // 배럴이 없으면 진입 시트들을 등록처로 본다. 둘 다 없으면 여전히 실패다.
+  const siblingBarrel = `${dir}.css`;
+  const barrel = existsSync(siblingBarrel) ? siblingBarrel : SURFACE_ENTRIES.find((e) => readImports(e).some((imp) => dirname(imp.target) === dir));
+  if (!barrel) {
+    fail(`${toRel(dir)} 은 번호 슬라이스인데 형제 배럴 ${toRel(siblingBarrel)} 도, 그 슬라이스를 @import 하는 표면 진입 시트도 없다. 진입 시트에 연결하세요.`);
     continue;
   }
   const registered = new Set(readImports(barrel).map((imp) => imp.target));

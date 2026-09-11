@@ -1,6 +1,5 @@
 /* 모던 레이어(새 규칙 전용). index.css 에 따로 넣지 말 것 — 여기서 한 번만 로드한다.
    셀렉터가 workspace-modern.css 보다 한 클래스 더 구체적이라 순서에 의존하지 않는다. */
-@import "./modern/tilesets.css";
 
 /* 2026-08 모던 개편: 타일셋 탭은 databaseWorkspace 프리미티브(workspaceShell/listPane/
    detailPane)를 쓴다. 예전 손조립 셸(`.oprn-tileset-workspace` 2열 그리드,

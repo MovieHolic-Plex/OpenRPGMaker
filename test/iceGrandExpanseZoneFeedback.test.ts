@@ -383,11 +383,11 @@ describe("facing prompt sees multi-tile footprints", () => {
 describe("standalone player zone feedback CSS", () => {
   it("owns zone feedback through the shared player runtime closure exactly once", () => {
     // Given
-    const runtimeClosure = readFileSync(resolve("src/styles/runtime/playerRuntime.css"), "utf8");
+    const runtimeClosure = readFileSync(resolve("src/styles/runtime/index.css"), "utf8");
     const editorEntry = readFileSync(resolve("src/styles/index.css"), "utf8");
 
     // When
-    const closureImports = runtimeClosure.match(/@import\s+"\.\/zoneFeedback\.css";/gu) ?? [];
+    const closureImports = runtimeClosure.match(/@import\s+"\.\/zoneFeedback\.css" layer\(runtime\);/gu) ?? [];
     const directEditorImports = editorEntry.match(/@import\s+"\.\/runtime\/zoneFeedback\.css";/gu) ?? [];
 
     // Then

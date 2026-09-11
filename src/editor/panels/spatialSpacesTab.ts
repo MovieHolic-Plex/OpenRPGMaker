@@ -5,7 +5,6 @@ import { renderSpatialSpacesCanvas } from "@/editor/panels/spatialSpaceCanvas";
 import { spatialSpacesChrome } from "@/editor/panels/spatialSpaceChrome";
 import { renderSpatialSpacesInspector } from "@/editor/panels/spatialSpaceInspector";
 import { resetSpatialSpacesTabChrome as resetSpaceChromeUi } from "@/editor/panels/spatialSpaceChromeState";
-import "@/styles/database/spatial-spaces.css";
 
 export { spatialSpacesChrome } from "@/editor/panels/spatialSpaceChrome";
 export { bindSpatialAuthoringControllerFactory } from "@/editor/panels/spatialAuthoringAccess";

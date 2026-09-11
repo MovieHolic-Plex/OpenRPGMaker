@@ -1,0 +1,10 @@
+/* components 표면 진입 시트 — 리프 시트를 @layer components 에 넣는다. 규칙을 여기 쓰지 말 것. 순서는 2026-09-11 유효 순서 그대로(세대 접기 전). */
+@import "./from-editor-palette-player.css" layer(components);
+@import "./from-database-tabs-b-resource-manager.css" layer(components);
+@import "./from-map-resource-system-part-1.css" layer(components);
+@import "./from-map-resource-system-part-2.css" layer(components);
+@import "./icons.css" layer(components);
+@import "./app-modal.css" layer(components);
+@import "./empty-state.css" layer(components);
+@import "./grid-4.css" layer(components);
+@import "./from-resources-resource-manager.css" layer(components);

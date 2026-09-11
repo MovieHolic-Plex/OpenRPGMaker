@@ -49,7 +49,6 @@ import { store } from "@/project/store";
 import type { FactionAggression, FactionDef, FactionStance, ProjectFactions } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
-import "@/styles/database/modern/factions.css";
 
 const STANCES = [-2, -1, 0, 1, 2] as const satisfies readonly FactionStance[];
 const AGGRESSIONS = [0, 1, 2, 3] as const satisfies readonly FactionAggression[];

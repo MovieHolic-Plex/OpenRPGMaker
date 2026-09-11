@@ -17,7 +17,6 @@ import { el } from '@/util/dom';
 import { button, checkInput, note, numberInput, section, selectInput, textInput } from './controls';
 import { connectPromotion, connectSkillNodes, deleteSkillNode, deleteSkillTree, duplicateSkillTree, skillTreeDeletionBlocker, setSkillNodeRequirements, editGrowth, editNode, editTree, moveClass } from './actions';
 import { renderGrowthCanvas, type GraphNode } from './canvas';
-import '@/styles/database/growth-tree.css';
 
 type Mode = 'promotion' | 'skill';
 export type GrowthNavigationTarget = Mode | 'actors';

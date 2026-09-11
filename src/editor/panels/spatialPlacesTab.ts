@@ -3,7 +3,6 @@ import type { SpatialAuthoringSession } from "@/editor/panels/spatialAuthoringSe
 import { spatialPlacesChrome, visiblePlaceSelection } from "@/editor/panels/spatialPlaceCommands";
 import { renderSpatialPlacesCanvas } from "@/editor/panels/spatialPlaceCanvas";
 import { renderSpatialPlacesInspector } from "@/editor/panels/spatialPlaceInspector";
-import "@/styles/database/spatial-places.css";
 
 export { bindSpatialAuthoringControllerFactory } from "@/editor/panels/spatialAuthoringAccess";
 export { resetSpatialPlacesTabChrome } from "@/editor/panels/spatialPlaceChromeState";

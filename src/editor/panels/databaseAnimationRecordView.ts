@@ -17,8 +17,6 @@ import type {
 import { el } from "@/util/dom";
 // 전투 애니메이션 편집기 레이아웃 수술(P8 Critical: 196px 압착·+프레임 버튼 가림·프리뷰
 // 비표시) — 배치 A 소유 CSS 파일과 충돌하지 않도록 신규 파일로 분리해 TS 에서 로드한다.
-import "@/styles/database/animation-editor.css";
-import "@/styles/database/battle-studio.css";
 
 const DEFAULT_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5 };
 const DEFAULT_CELL: BattleAnimationCell = { pattern: 0, x: 0, y: 0, zoom: 100, opacity: 255, visible: true };

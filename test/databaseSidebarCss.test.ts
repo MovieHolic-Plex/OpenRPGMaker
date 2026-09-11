@@ -66,18 +66,18 @@ describe("DB 사이드바 CSS (W2, todo 3)", () => {
     expect(css, "도크 레일에서 .db-tab 라벨 숨김이 없다").toMatch(/\.db-tab\s*\{[^}]*color:\s*transparent/);
   });
 
-  it("index.css 가 sidebar.css 를 light-theme.css 다음에 임포트한다", () => {
-    const indexCss = read("src/styles/index.css");
+  it("database 진입 시트가 sidebar.css 를 light-theme.css 다음에 임포트한다", () => {
+    const indexCss = read("src/styles/database/index.css");
     const dbImports = indexCss
       .split("\n")
       .map((line) => line.trim())
-      .filter((line) => line.startsWith('@import "./database/'));
+      .filter((line) => line.startsWith('@import "./'));
     const lightIndex = dbImports.findIndex((line) => line.includes("light-theme.css"));
     const sidebarIndex = dbImports.findIndex((line) => line.includes("sidebar.css"));
-    expect(lightIndex, "index.css 에 ./database/light-theme.css 임포트가 없다").toBeGreaterThanOrEqual(0);
+    expect(lightIndex, "database/index.css 에 ./light-theme.css 임포트가 없다").toBeGreaterThanOrEqual(0);
     expect(
       sidebarIndex,
-      "index.css 에 ./database/sidebar.css 임포트가 없다 — 사이드바 스타일이 로드되지 않는다.",
+      "database/index.css 에 ./sidebar.css 임포트가 없다 — 사이드바 스타일이 로드되지 않는다.",
     ).toBeGreaterThanOrEqual(0);
     expect(
       sidebarIndex,
