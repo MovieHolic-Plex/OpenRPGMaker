@@ -139,6 +139,14 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
   `src/editor/mapLocationLayer.ts`, 라벨 문장 `src/editor/mapLocationLabels.ts`,
   **쓰는 지점의 빈 상태 행동** `src/editor/locationDrawCta.ts`,
   조수 툴 `src/editor/tools/mapLocationTools.ts`, 스타일 `src/styles/editor/map-location-layer.css`.
+  켜진 동안의 도구 양보는 `src/editor/locationDrawMode.ts`.
+
+- **켜진 동안은 구역 그리기 도구다 (2026-09-11).** 브러시 `is-active` 를 끄고 토글은
+  「구역 그리기」로 바뀐다. 타일·이벤트 도구(팬 제외)나 이벤트 레이어를 고르면 레이어가 꺼진다 —
+  `dismissLocationDrawModeForTool` / `ForLayer`. 도구 state 는 그대로 두므로 끄면 직전 브러시가
+  바로 돌아온다. 같은 칸 클릭은 구역을 만들지 않는다(`isLocationDrawClick`). 0개일 때 맵 위
+  `map-location-empty-ghost` 「여기를 드래그」가 다음 행동을 그린다. 인스펙터 참조 0건은 쓰는 법을
+  말하고, N건은 사이트 버튼으로 이벤트 편집기·맵 설정 인카운터를 연다.
 - **`layoutPlan.regions` 를 사람이 편집하는 층으로 쓰지 마라.** `setMapLayoutPlan` 이 통째로
   갈아치우므로 사람 편집이 재시공에서 사라진다. 관계·승격 계약은
   `openwiki/runtime-project-schema.md` 의 「명명 로케이션 레이어」 절이 소유한다.
@@ -178,7 +186,7 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
   `MAP_LOCATION_QA_URL=http://127.0.0.1:<포트> node scripts/qa/map-location-layer.mjs`
   → `verify-shots/oprn-020/SUMMARY.md`. 우클릭 영역 선택·붙여넣기 확정·선택 도구 맵 밖 팬·제스처 중 레이어 끄기 등 실측 엣지 단계를 포함한 16개 단계가 실 브라우저 이벤트 경로로 검증된다.
 - **어포던스 감사 + A 적용(2026-09-11):** 이 층의 효용이 «쓰는 지점» 에서 안 읽힌다는 실측과 후보 수정
-  (B/C/D 는 아직 미적용)은 `openwiki/location-layer-affordance-audit.md` 가 소유한다. 빈 상태의 행동은
+  (A/B/D 적용, C 미적용)은 `openwiki/location-layer-affordance-audit.md` 가 소유한다. 빈 상태의 행동은
   `src/editor/locationDrawCta.ts` 하나가 내고 조건 폼·트리거·인카운터가 그걸 부른다 — 새 표면이
   생기면 여기에 줄을 더하지 말고 이 모듈을 불러라. 라벨·문구를 갈아치우기 전에 그 문서를 읽어라:
   문구 고정 테스트(`test/locationTransitionAuthoring.test.ts`)와 용어 정본이 걸려 있다.

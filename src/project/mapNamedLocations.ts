@@ -358,6 +358,11 @@ export function rectFromDrag(a: LocationPoint, b: LocationPoint): Rect {
   return { x, y, w: Math.abs(a.x - b.x) + 1, h: Math.abs(a.y - b.y) + 1 };
 }
 
+/** 같은 칸에서 누르고 떼면 클릭이다. 드래그가 있을 때만 구역을 만든다. */
+export function isLocationDrawClick(from: LocationPoint, to: LocationPoint): boolean {
+  return from.x === to.x && from.y === to.y;
+}
+
 const LOCATION_PALETTE = ["#7ad9ff", "#ffc857", "#8ce99a", "#ff9ec4", "#c3a6ff", "#ffa94d"] as const;
 
 /** 편집기 레이어 표시색. 저작 색이 없으면 ID 로 결정론적 배정(같은 로케이션은 항상 같은 색). */

@@ -97,6 +97,26 @@ body[data-editor-tool="pan"] .map-location-layer.is-active:active { cursor: grab
   font: var(--font-size-xs) / 1.4 var(--font-ui);
 }
 
+/* 켠 직후 0개일 때 맵 위에 다음 행동을 그린다. 포인터는 통과시켜 그 자리 드래그가 구역이 된다. */
+.map-location-empty-ghost {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  border: var(--stroke-2) dashed var(--accent);
+  border-radius: var(--radius-s);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.map-location-empty-ghost-label {
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-s);
+  background: var(--bg-overlay);
+  color: var(--accent);
+  font: var(--font-weight-bold) var(--font-size-sm) / 1.4 var(--font-ui);
+}
+
 /* 인스펙터 — 캔버스 우상단에 얹히는 비모달 패널. 캔버스를 가리지 않게 폭을 묶는다. */
 .map-location-inspector {
   position: absolute;
@@ -124,6 +144,12 @@ body[data-editor-tool="pan"] .map-location-layer.is-active:active { cursor: grab
   color: var(--text-2);
   font-size: var(--font-size-xs);
 }
+.map-location-ref-sites {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.map-location-ref-site { justify-content: flex-start; text-align: left; }
 .map-location-overlap { color: var(--warning); }
 
 .map-location-check-row { display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-xs); }

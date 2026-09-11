@@ -1,6 +1,7 @@
 import { comboBrushStampFromCatalog, type ComboBrushCatalogEntry } from "@/editor/comboBrushCatalog";
 import { editorState } from "@/editor/editorState";
 import type { EditorBrushSize, PaintShape, Tool } from "@/editor/editorState";
+import { dismissLocationDrawModeForTool, isLocationDrawMode } from "@/editor/locationDrawMode";
 import { defaultPaintLayerForTile } from "@/editor/tileLayerClassification";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import type { TilesetDef } from "@/project/types";
@@ -19,6 +20,7 @@ const TOOL_PATCHES: Record<TileToolId, { readonly tool: Tool; readonly paintShap
 };
 
 export function selectTileTool(tool: TileToolId): void {
+  dismissLocationDrawModeForTool(TOOL_PATCHES[tool].tool);
   const current = editorState.get();
   const next = TOOL_PATCHES[tool];
   editorState.set({
@@ -31,6 +33,7 @@ export function selectTileTool(tool: TileToolId): void {
 }
 
 export function selectMapModeTool(tool: MapModeToolId): void {
+  dismissLocationDrawModeForTool(tool);
   const current = editorState.get();
   editorState.set({
     activePaletteStamp: null,
@@ -50,6 +53,7 @@ export function selectEyedropperTool(): void {
  * (페인트는 activePaletteStamp 를 지우지 않는다. 타일 단일 선택·도구 전환·스포이트만 지운다.)
  */
 export function selectPaletteStamp(stamp: PaletteStamp): void {
+  dismissLocationDrawModeForTool("paint");
   editorState.set({ activePaletteStamp: stamp, tool: "paint", paintShape: "pen", selection: null });
 }
 
@@ -78,6 +82,7 @@ export function setTileBrushSize(size: EditorBrushSize): void {
 }
 
 export function isTileToolbarItemActive(tool: TileToolId, activeTool: Tool, activeShape: PaintShape): boolean {
+  if (isLocationDrawMode()) return false;
   const next = TOOL_PATCHES[tool];
   return activeTool === next.tool && activeShape === next.paintShape;
 }

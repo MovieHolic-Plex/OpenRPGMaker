@@ -103,6 +103,7 @@ const ALL_ROW_CONDITIONS: EventPageCondition[] = [
   { kind: "timePhase", phase: "night" },
   { kind: "season", season: "winter" },
   { kind: "npcActivity", activity: "work" },
+  { kind: "insideLocation", locationId: "loc_shell", inside: true },
   // npcKey 빈칸 = 항상 거짓 경고 분기(위 주석 참고).
   { kind: "friendshipAtLeast", npcKey: "", value: 200 },
   { kind: "relationshipAtLeast", npcKey: "", state: "dating" },
@@ -741,15 +742,15 @@ describe("이벤트에디터 셸 표면 스냅샷", () => {
   it("allRows 변형이 고정 조건 13행을 전부 켠다", () => {
     if (crashed.length) return;
     const chips = actual.allRows.testids.filter((t) => t.startsWith("event-condition-chip-"));
-    expect(chips.length, "조건 칩이 13개가 아니다 — pageConditions.ts 의 행 정의가 바뀌었다").toBe(13);
-    // 13행인데 testid 는 12종이다 — switch1·switch2 가 라벨 "스위치" 를 공유해
+    expect(chips.length, "조건 칩이 14개가 아니다 — pageConditions.ts 의 행 정의가 바뀌었다").toBe(14);
+    // 14행인데 testid 는 13종이다 — switch1·switch2 가 라벨 "스위치" 를 공유해
     // `event-condition-row-스위치` 로 겹친다(pageConditions.ts:53,62). 선행 문제이고
     // 아래 컨트롤 키의 `~1` 접미사가 두 행이 다 렌더됐음을 증명한다.
     const rows = actual.allRows.testids.filter((t) => t.startsWith("event-condition-row-"));
     expect(
       rows.length,
-      `켜진 조건 행 testid 가 12종이 아니다(${rows.length}종) — ALL_ROW_CONDITIONS 가 어떤 kind 를 놓쳤다`,
-    ).toBe(12);
+      `켜진 조건 행 testid 가 13종이 아니다(${rows.length}종) — ALL_ROW_CONDITIONS 가 어떤 kind 를 놓쳤다`,
+    ).toBe(13);
     expect(
       Object.keys(actual.allRows.controls),
       "스위치 행이 하나뿐이다 — switch1/switch2 두 행이 다 켜졌는지 확인하라",

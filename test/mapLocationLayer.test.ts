@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { setCanvasPointerBridge } from "@/editor/canvasPointerBridge";
 import { editorState } from "@/editor/editorState";
-import { setRegionClientRectResolver } from "@/editor/regionClientRect";
+import { setClientPointTileResolver, setRegionClientRectResolver } from "@/editor/regionClientRect";
 import { installMapLocationLayer, repositionMapLocationLayer } from "@/editor/mapLocationLayer";
 import {
   createLocationFromRect,
@@ -87,6 +87,7 @@ describe("map location editor layer", () => {
     Reflect.deleteProperty(globalThis, "localStorage");
     setCanvasPointerBridge(null);
     setRegionClientRectResolver(null);
+    setClientPointTileResolver(null);
   });
 
   it("is inert until toggled on: no pointer target and no inspector", () => {
@@ -449,5 +450,50 @@ describe("map location editor layer", () => {
     expect(seen[0]?.deltaY).toBe(120);
     // 원본은 취소된다 — Ctrl+휠이 브라우저 페이지 확대로 새지 않는다.
     expect(wheel.defaultPrevented).toBe(true);
+  });
+
+  it("켜고 구역이 없으면 맵에 드래그 힌트를 그린다", () => {
+    mount();
+    setLocationLayerEnabled(true);
+    expect(testId("map-location-empty-ghost")?.textContent).toContain("여기를 드래그");
+    createLocationFromRect({ x: 2, y: 2, w: 4, h: 4 });
+    expect(testId("map-location-empty-ghost")).toBeNull();
+  });
+
+  it("같은 칸 클릭은 구역을 만들지 않고 드래그만 만든다", () => {
+    mount();
+    setClientPointTileResolver(({ x, y }) => ({ x: Math.floor(x / 16), y: Math.floor(y / 16) }));
+    setRegionClientRectResolver((region) => ({
+      x: region.x * 16,
+      y: region.y * 16,
+      width: region.width * 16,
+      height: region.height * 16,
+    }));
+    setLocationLayerEnabled(true);
+    const overlay = testId("map-location-layer")!;
+    overlay.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true, clientX: 40, clientY: 40, button: 0 }));
+    overlay.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, cancelable: true, clientX: 40, clientY: 40, button: 0 }));
+    expect(currentLocations()).toHaveLength(0);
+
+    overlay.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true, clientX: 40, clientY: 40, button: 0 }));
+    overlay.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, cancelable: true, clientX: 88, clientY: 72, button: 0 }));
+    overlay.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, cancelable: true, clientX: 88, clientY: 72, button: 0 }));
+    expect(currentLocations()).toHaveLength(1);
+    expect(currentLocations()[0]).toMatchObject({ x: 2, y: 2, w: 4, h: 3 });
+  });
+
+  it("참조 0건이면 쓰는 법을 말하고 인카운터로 가는 버튼을 낸다", () => {
+    mount();
+    setLocationLayerEnabled(true);
+    createLocationFromRect({ x: 1, y: 1, w: 3, h: 3 }, "광장");
+    expect(testId("map-location-refs")?.textContent).toContain("랜덤 전투");
+    expect(testId("map-location-open-encounter")).not.toBeNull();
+
+    const id = currentLocations()[0]!.id;
+    store.update((project) => {
+      project.maps[MAP_ID].encounterTable = [{ troopId: "troop_slime", weight: 1, conditions: { locationId: id } }];
+    }, { scope: "map", mapId: MAP_ID, label: "test encounter" });
+    expect(testId("map-location-refs")?.textContent).toContain("참조 1건");
+    expect(testId("map-location-ref-site-0")?.textContent).toContain("랜덤 전투 1번");
   });
 });

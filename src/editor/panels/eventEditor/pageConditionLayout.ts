@@ -7,7 +7,7 @@ export type AdvancedConditionEntry = {
 };
 
 export function advancedConditionEntries(page: Pick<EventPage, "conditions">): AdvancedConditionEntry[] {
-  const seen = { switch: 0, variable: 0, item: 0, actor: 0, timePhase: 0, season: 0, npcActivity: 0, friendshipAtLeast: 0, relationshipAtLeast: 0, selfSwitch: 0, timer1: 0, timer2: 0 };
+  const seen = { switch: 0, variable: 0, item: 0, actor: 0, timePhase: 0, season: 0, npcActivity: 0, insideLocation: 0, friendshipAtLeast: 0, relationshipAtLeast: 0, selfSwitch: 0, timer1: 0, timer2: 0 };
   const entries: AdvancedConditionEntry[] = [];
   page.conditions.forEach((condition, index) => {
     if (condition.kind === "switch") {
@@ -43,6 +43,11 @@ export function advancedConditionEntries(page: Pick<EventPage, "conditions">): A
     if (condition.kind === "npcActivity") {
       seen.npcActivity += 1;
       if (seen.npcActivity > 1) entries.push({ index, condition });
+      return;
+    }
+    if (condition.kind === "insideLocation") {
+      seen.insideLocation += 1;
+      if (seen.insideLocation > 1) entries.push({ index, condition });
       return;
     }
     if (condition.kind === "relationshipAtLeast") {
@@ -108,6 +113,7 @@ export function pageConditionField(
       case "timePhase": return field("time-phase");
       case "season": return field("season");
       case "npcActivity": return field("npc-activity");
+      case "insideLocation": return field("inside-location");
       case "friendshipAtLeast": return field("friendship-npc-key");
       case "relationshipAtLeast": return field("relationship-npc-key");
       case "run": return { testId: "event-condition-run-flag", scopeTestId: `${prefix}-row-${advancedSuffix}` };
@@ -117,6 +123,7 @@ export function pageConditionField(
   switch (condition.kind) {
     case "switch": return { testId: `event-page-switch${switchSlot === 1 ? "2" : ""}-condition-input` };
     case "variable": case "item": case "actor": return { testId: `event-page-${condition.kind}-condition-input` };
+    case "insideLocation": return { testId: "event-page-inside-location-condition-input" };
     default: return undefined; // Other simple controls already supply the exact field locator.
   }
 }

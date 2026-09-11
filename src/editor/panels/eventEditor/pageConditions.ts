@@ -2,7 +2,7 @@ import { updateEventPage } from "@/editor/eventPages";
 import { el } from "@/util/dom";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { CONDITION_OP_OPTIONS } from "./options";
-import { npcActivitySuggestionList, renderFriendshipAtLeastCondition, renderRelationshipAtLeastCondition, selfSwitchControl, SEASON_OPTIONS, TIME_PHASE_OPTIONS } from "./conditionForm";
+import { npcActivitySuggestionList, renderFriendshipAtLeastCondition, renderInsideLocationCondition, renderRelationshipAtLeastCondition, selfSwitchControl, SEASON_OPTIONS, TIME_PHASE_OPTIONS } from "./conditionForm";
 import { hasCharacterId } from "@/project/socialKey";
 import { renderAdvancedConditions } from "./pageAdvancedConditions";
 import { databaseRecordSelect, switchVariableIdPicker } from "./pageConditionControls";
@@ -136,6 +136,15 @@ export function renderPageConditions(
       enabled: page.conditions.some((item) => item.kind === "npcActivity"),
       suffix: "일 때",
       toggle: (enabled) => toggleSimpleCondition(context, "npcActivity", enabled),
+    },
+    {
+      key: "insideLocation",
+      chipLabel: "구역",
+      label: "구역",
+      build: (markActive) => insideLocationConditionInputs(context, markActive),
+      enabled: page.conditions.some((item) => item.kind === "insideLocation"),
+      suffix: "",
+      toggle: (enabled) => toggleSimpleCondition(context, "insideLocation", enabled),
     },
     {
       key: "friendship",
@@ -482,6 +491,24 @@ function seasonConditionInputs(context: PageConditionContext, markActive: () => 
     updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
   });
   return el("div", { class: "event-condition-control season", children: [season] });
+}
+
+function insideLocationConditionInputs(context: PageConditionContext, markActive: () => void): HTMLElement {
+  const condition = context.page.conditions.find((item) => item.kind === "insideLocation");
+  return renderInsideLocationCondition(
+    condition?.kind === "insideLocation" ? condition : { kind: "insideLocation", locationId: "", inside: true },
+    (next) => {
+      if (next.kind !== "insideLocation") return;
+      const existing = withoutFirstCondition(context.page.conditions, "insideLocation");
+      existing.push(next);
+      markActive();
+      updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: existing });
+    },
+    {
+      className: "event-condition-control inside-location",
+      locationTestId: "event-page-inside-location-condition-input",
+    },
+  );
 }
 
 function npcActivityConditionInputs(context: PageConditionContext, markActive: () => void): HTMLElement {
