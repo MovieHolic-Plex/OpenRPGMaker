@@ -69,11 +69,11 @@ try {
   // 범위: 이벤트 에디터 시트의 **직살** 황동색만 본다. `var(--warning, #d9a441)` 은 경고색 폴백이라
   // 이 주장(액센트는 하나)과 무관하고, --warning 이 토큰으로 정의돼 있어 폴백이 렌더링되지 않는다.
   const brass = rgCount("#d9a441", [
-    "src/styles/editor/event-editor.css",
-    "src/styles/editor/event-editor.mockup.css",
-    "src/styles/editor/event-editor.balanced.css",
-    "src/styles/editor/event-editor.modernize.css",
-    "src/styles/editor/event-editor.modern",
+    "src/styles/event/event-editor.css",
+    "src/styles/event/event-editor.mockup.css",
+    "src/styles/event/event-editor.balanced.css",
+    "src/styles/event/event-editor.modernize.css",
+    "src/styles/event/event-editor.modern",
   ]).filter((line) => !line.includes("var(--warning"));
   const accentVars = await editor.evaluate(() => {
     const root = getComputedStyle(document.documentElement);

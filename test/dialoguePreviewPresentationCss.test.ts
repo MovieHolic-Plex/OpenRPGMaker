@@ -12,7 +12,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const RUNTIME_CSS = "src/styles/dialogue.css";
-const PREVIEW_CSS = "src/styles/editor/event-editor.command-preview/01-event-editor-modern-import.css";
+const PREVIEW_CSS = "src/styles/event/event-editor.command-preview/01-event-editor-modern-import.css";
 
 function read(relative: string): string {
   // 주석은 걷어낸다 — 규칙 앞 주석이 선택자 덩어리에 섞여 들어온다.

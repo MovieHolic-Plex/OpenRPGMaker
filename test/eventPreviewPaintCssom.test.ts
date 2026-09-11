@@ -22,9 +22,9 @@ function loadCss(rel: string): string {
 const SHEET = [
   loadCss("src/styles/tokens.css"),
   loadCss("src/styles/runtime/system.css"),
-  loadCss("src/styles/editor/event-editor.command-preview/01-event-editor-modern-import.css"),
-  loadCss("src/styles/editor/event-editor.command-preview/03-ecp-result-screen.css"),
-  loadCss("src/styles/editor/event-editor.command-preview/04-ecp-variable-stage.css"),
+  loadCss("src/styles/event/event-editor.command-preview/01-event-editor-modern-import.css"),
+  loadCss("src/styles/event/event-editor.command-preview/03-ecp-result-screen.css"),
+  loadCss("src/styles/event/event-editor.command-preview/04-ecp-variable-stage.css"),
 ].join("\n");
 
 const HTML = `<!doctype html>

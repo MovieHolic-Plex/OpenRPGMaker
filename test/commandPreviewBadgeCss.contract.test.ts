@@ -11,7 +11,7 @@ import { describe, expect, it } from "vitest";
 
 // 배지 스타일이 선언된 커맨드 프리뷰 CSS 파일.
 const CSS_FILE = new URL(
-  "../src/styles/editor/event-editor.command-preview/02-changeface-play-mock-larger.css",
+  "../src/styles/event/event-editor.command-preview/02-changeface-play-mock-larger.css",
   import.meta.url,
 );
 

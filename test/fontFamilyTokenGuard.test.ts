@@ -104,7 +104,7 @@ function fontShorthandFamilies(css: string): string[] {
  * Runtime and database consumers include component-loaded stylesheets. Other
  * editor surfaces remain outside this bounded shorthand migration.
  */
-const SHORTHAND_SCOPES = ["src/styles/runtime/", "src/styles/database/", "src/styles/editor/world-panel.css", "src/styles/editor/event-editor-legacy.part-1.css"];
+const SHORTHAND_SCOPES = ["src/styles/runtime/", "src/styles/database/", "src/styles/editor/world-panel.css", "src/styles/event/event-editor-legacy.part-1.css"];
 
 /**
  * 픽셀 글꼴에 없는 기하 심볼(U+25C7 U+2726 U+25C8 ...)을 그리는 슬롯. 토큰으로 바꾸면

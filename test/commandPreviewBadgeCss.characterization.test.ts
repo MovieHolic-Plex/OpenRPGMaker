@@ -9,7 +9,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 
-const BADGE_CSS_PATH = "src/styles/editor/event-editor.command-preview/02-changeface-play-mock-larger.css";
+const BADGE_CSS_PATH = "src/styles/event/event-editor.command-preview/02-changeface-play-mock-larger.css";
 const TOKENS_CSS_PATH = "src/styles/tokens.css";
 
 /** 전경 ≠ 배경 으로 관측되는(즉 보이는) 배지/램프 셀렉터. */

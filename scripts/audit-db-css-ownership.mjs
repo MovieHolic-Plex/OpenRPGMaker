@@ -36,7 +36,7 @@ const classify = file => {
   if (/desktop|light-theme|core|tabs-a|tabs-b\.css|event-editor-legacy/.test(file)) return 'compatibility / legacy composition';
   return 'domain composition';
 };
-const relevant = file => file.startsWith('src/styles/database/') || ['src/styles/editor/event-editor-legacy.part-1.css', 'src/styles/editor/world-panel.css'].includes(file);
+const relevant = file => file.startsWith('src/styles/database/') || ['src/styles/event/event-editor-legacy.part-1.css', 'src/styles/editor/world-panel.css'].includes(file);
 const before = files.filter(relevant).flatMap(file => declarations(readBase(file), file));
 const after = files.filter(relevant).flatMap(file => declarations(readFileSync(file, 'utf8'), file));
 const key = d => JSON.stringify([d.file, d.context, d.selector, d.property, d.value, d.important]);

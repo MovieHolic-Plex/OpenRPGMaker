@@ -61,8 +61,8 @@ const PRE_FEATURE_PICKER_CONTROL_SHA256 = {
 
 /** 이 축이 생기기 전까지 어떤 게이트도 렌더로 증명하지 못했던 두 시트(실측). */
 const BLIND_SHEETS = [
-  "src/styles/editor/event-editor.part-3/06-event-command-picker-favorite.css",
-  "src/styles/editor/event-editor.p1-route.css",
+  "src/styles/event/event-editor.part-3/06-event-command-picker-favorite.css",
+  "src/styles/event/event-editor.p1-route.css",
 ] as const;
 
 /** 테스트 환경 제약으로 뺀 포털 수. 늘어나면 실패한다(조용한 절단 금지). */

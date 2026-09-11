@@ -9,7 +9,7 @@ import { describe, expect, it } from "vitest";
 // (event-editor-modal, event-page-tab-*, event-storyboard) are kept.
 
 const css = readFileSync(
-  new URL("../src/styles/editor/event-editor.balanced.css", import.meta.url),
+  new URL("../src/styles/event/event-editor.balanced.css", import.meta.url),
   "utf8",
 );
 const contentSource = readFileSync(

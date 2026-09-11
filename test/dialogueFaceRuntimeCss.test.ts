@@ -5,7 +5,7 @@
 //   <div class="dialogue-face dialogue-face-image" style="--face-url:…">
 // 로 만든다. 그런데 이 상자의 background-image / width / height 선언은 예전에 `.actor-sheet-crop`
 // 이라는 이름으로
-// src/styles/editor/event-editor-legacy.part-1.css — **에디터 전용 CSS** 에만 있었다.
+// src/styles/event/event-editor-legacy.part-1.css — **에디터 전용 CSS** 에만 있었다.
 // 익스포트한 단독 플레이어는 src/player/player.css(tokens + runtime/playerRuntime)만
 // 불러오므로 그 규칙이 없고, 얼굴은 배경 없는 빈 테두리로 그려졌다.
 // 실제 빌드 산출물로 확인: community-site/public/player-static 의 player CSS 에

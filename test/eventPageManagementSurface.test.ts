@@ -217,7 +217,7 @@ describe("페이지 관리 작업면", () => {
 
   it("좁은 포트 CSS 는 라벨을 지우고 다시 그리는 장치를 쓰지 않는다", () => {
     const css = readFileSync(
-      resolve(process.cwd(), "src/styles/editor/event-editor.balanced.css"),
+      resolve(process.cwd(), "src/styles/event/event-editor.balanced.css"),
       "utf8",
     );
     expect(css).not.toContain("attr(data-compact-label)");

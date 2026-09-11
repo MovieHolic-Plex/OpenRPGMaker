@@ -70,7 +70,7 @@ const UNREGISTERED_SLICE_ALLOWLIST = new Set([]);
 const DUPLICATE_PREFIX_ALLOWLIST = new Set([
   // 07-actor-battle-authoring-surface.css / 07-identifiable-previews.css / 07-screen-effect-stage.css
   // 세 파일 모두 07 — 병렬 워크트리가 각자 "다음 번호"를 07 로 집었다. P0-7 고아도 이 그룹 소속.
-  "src/styles/editor/event-editor.command-preview#07",
+  "src/styles/event/event-editor.command-preview#07",
 ]);
 
 // ── 도구 ────────────────────────────────────────────────────────────────────────

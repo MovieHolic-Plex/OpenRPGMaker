@@ -338,8 +338,8 @@ describe("이벤트 ID 읽기 전용 표시 (OPRN-OUT-014)", () => {
     // 왜 CSS 를 파일로 읽는가: 맵/모달 캔버스는 WebGL 이고 단위 테스트 DOM 에는 레이아웃
     // 엔진이 없다. 「긴 UUID 가 레이아웃을 깨지 않는다」는 약속을 검증 가능한 형태로
     // 고정할 수 있는 지점은 규칙 자체다(값이 사라지면 이 테스트가 먼저 깨진다).
-    const card = readFileSync(resolve(process.cwd(), "src/styles/editor/core.part-2.css"), "utf8");
-    const chip = readFileSync(resolve(process.cwd(), "src/styles/editor/event-editor.balanced.css"), "utf8");
+    const card = readFileSync(resolve(process.cwd(), "src/styles/event/from-editor-core-part-2.css"), "utf8");
+    const chip = readFileSync(resolve(process.cwd(), "src/styles/event/event-editor.balanced.css"), "utf8");
 
     const cardRule = card.slice(card.indexOf(".event-id-readout-value"));
     expect(card).toContain(".event-id-readout");
