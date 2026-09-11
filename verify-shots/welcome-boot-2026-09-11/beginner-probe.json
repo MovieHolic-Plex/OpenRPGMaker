@@ -1,0 +1,9 @@
+{
+  "base": "http://127.0.0.1:9871",
+  "log": [
+    "state: {\"uiMode\":\"beginner\",\"uiClass\":[\"editor-ui-beginner\"],\"coach\":[]}",
+    "state: {\"uiMode\":\"beginner\",\"uiClass\":[\"editor-ui-beginner\"],\"coach\":[]}",
+    "state: {\"uiMode\":\"beginner\",\"uiClass\":[\"editor-ui-beginner\"],\"coach\":[]}",
+    "state: {\"uiMode\":\"beginner\",\"uiClass\":[\"editor-ui-beginner\"],\"coach\":[]}"
+  ]
+}

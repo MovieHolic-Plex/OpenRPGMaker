@@ -16,7 +16,9 @@
 ## 명령
 
 ```bash
+npm run wt create             # 이름 생략 가능 — wt-MMDD-HHMM 자동 부여
 npm run wt create <name>      # 워크트리 생성 (현재 워킹트리를 스냅샷해서 베이스로 삼음)
+npm run wt create <name> --base origin/main   # 깨끗한 최신 main 기반으로 만들 때
 npm run wt adopt [name]       # 이 도구 밖에서 만든 기존 워크트리를 같은 규약으로 보정
 npm run wt list               # 워크트리 + 배정 포트 + dirty/unmerged 표시
 npm run wt remove <name>      # 제거 (--keep-branch 로 브랜치 보존)
@@ -98,6 +100,26 @@ Herd New worktree 훅은 `npm run wt adopt -- --path <checkout>` (또는 `WT_WOR
 
 워크트리에서 dev 서버는 반드시 **`npm run dev:worktree`** 로 띄운다. `npm run dev` 는 9999를
 하드코딩하므로 메인과 충돌한다.
+
+### 동시 생성 (에이전트 수십 개)
+
+`wt create` 는 포트 스캔→기록 구간을 `.git/wt-port.lock` (mkdir 락, 60초 경과 락은 회수)로
+직렬화하므로 병렬로 실행해도 포트가 겹치지 않는다 (2026-09-12, 3개 동시 생성 실측).
+`snapshot()` 도 임시 `GIT_INDEX_FILE` 을 쓰므로 동시 실행에 안전하다.
+
+```bash
+for t in task-a task-b task-c; do npm run wt create "$t" & done; wait
+```
+
+다만 병렬로 늘리면서 공유되는 것들:
+
+- **node_modules 는 메인 것의 심링크 하나** — 어느 워크트리든 `npm install` 로 버전을 바꾸면
+  전부에 적용된다. 의존성 변경은 직렬화하거나 메인에서 먼저 한다.
+- **브랜치 네임스페이스·`.git` 은 공유** — 에이전트의 main 체크아웃·병합·push 금지 규칙이
+  그대로 적용된다.
+- **Supabase 프로젝트 행은 싱글턴** — 저작 콘텐츠 작업은 병렬화 금지(AGENTS.md hard rule).
+- **dev 서버/e2e 는 리소스가 크다** — 수십 개가 동시에 vite·playwright 를 띄우면 CPU/메모리가
+  먼저 한계에 간다. 생성 자체는 가볍고, 서버는 필요한 것만 띄운다.
 
 ### e2e 는 `DEV_SERVER_PORT` 없이 돌리면 **남의 코드를 검증한다** (실측 2026-08-29)
 
@@ -195,6 +217,17 @@ npm run gates -- --only typecheck
 - **커밋 이후에 생긴 미추적 파일** — `git add -A` 는 그 시점에 없던 파일을 담지 못한다.
   워크트리를 지우기 전에 `ls` 로 남은 파일을 직접 확인할 것. 실측: 커밋 후 생성된 831줄 스크립트
   (`scripts/gen-combined-town-chipset-report.mts`)가 정리 중에 발견돼 회수됐다.
+- **tmpfs 워크트리는 재부팅에 통째로 증발한다** — `/dev/shm`, `/tmp` 아래에 둔 워크트리는
+  디렉터리가 사라진 채 등록만 남는다. 이 상태에서 `wt list` 가 `spawnSync git ENOENT` 로
+  죽었는데, 원인은 git 부재가 아니라 `dirtyFiles()` 가 **없는 `cwd` 로 spawn** 하기 때문이었다
+  (2026-09-12 실측). 사라진 등록은 `.git/worktrees/<id>/locked` 를 지우고
+  `git worktree prune` 하면 정리된다. 스크립트는 이제 missing 경로를 `missing(prune 대상)`
+  으로 표시하고 죽지 않는다.
+- **원본 `.env.local` 의 `DEV_SERVER_PORT` 가 복사돼 고유 배정이 무력화됐었다** — 원본에
+  `DEV_SERVER_PORT=9841` 이 있으면 provision 이 그대로 복사해 "이미 배정됨" 으로 건너뛰고,
+  최근 생성분 전부가 9841 을 공유하게 됐다(2026-09-12 실측). 같은 포트를 공유하는 두
+  워크트리에서 e2e 를 돌리면 위의 `reuseExistingServer` 함정에 걸린다. 스크립트는 이제
+  새로 복사하는 `.env.local` 에서 `DEV_SERVER_PORT` 줄을 지우고 새로 배정한다.
 - **`git branch -d` 는 upstream 기준으로 거절한다** — main 에 병합됐어도 upstream 에 push 되지
   않았으면 "not yet merged" 로 막는다. 내용이 main 에 있으면 안전하지만, 거절 자체가
   "아직 push 되지 않았다"는 신호이므로 확인 없이 `-D` 로 밀지 말 것.

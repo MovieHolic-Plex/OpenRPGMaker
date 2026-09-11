@@ -1,0 +1,8 @@
+{
+  "base": "http://127.0.0.1:9871",
+  "log": [
+    "visible: []",
+    "shot: 10-second-visit"
+  ],
+  "errors": []
+}

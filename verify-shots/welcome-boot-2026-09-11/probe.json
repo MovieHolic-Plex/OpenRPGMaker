@@ -1,0 +1,22 @@
+{
+  "base": "http://127.0.0.1:9871",
+  "log": [
+    "surface: welcome",
+    "shot: 01-first-screen",
+    "first-url: ?forceWelcome=1&project=oprn-b03386cc84&name=%EC%83%88+%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8&map=map_blank_start",
+    "first-visible: [\"editor-welcome\",\"editor-welcome-prompt-input\",\"editor-welcome-prompt-submit\",\"editor-welcome-template-card-0\",\"editor-welcome-starter-card-0\",\"editor-welcome-template-card-1\",\"editor-welcome-starter-card-1\",\"editor-welcome-template-card-2\",\"editor-welcome-starter-card-2\",\"editor-welcome-more-toggle\",\"editor-welcome-skip\"]",
+    "shot: 02-welcome-more-worlds",
+    "after-skip-url: ?forceWelcome=1&project=oprn-b03386cc84&name=%EC%83%88+%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8&map=map_blank_start",
+    "after-skip-visible: [\"toast-stack\",\"toast\"]",
+    "login-modal: not shown",
+    "edit-canvas: visible",
+    "shot: 04-editor-settled",
+    "editor-url: ?forceWelcome=1&project=oprn-b03386cc84&name=%EC%83%88+%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8&map=map_blank_start",
+    "editor-visible: [\"toast-stack\",\"toast\"]"
+  ],
+  "errors": [
+    "console: Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "console: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "console: Failed to load resource: net::ERR_CONNECTION_REFUSED"
+  ]
+}

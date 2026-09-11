@@ -1,0 +1,126 @@
+{
+  "headings": [
+    "감독",
+    "어떤 게임을 만들까요?",
+    "한 문장으로 지시하면 이 맵에 초안이 생깁니다. 도구 설명은 결과가 찍힌 뒤에 합니다.",
+    "포스터 오른쪽 위 ⚙ 는 AI 생성 없이 그 장르의 시스템 설정만 적용합니다."
+  ],
+  "buttons": [
+    {
+      "testid": "editor-welcome-prompt-submit",
+      "label": "만들기"
+    },
+    {
+      "testid": "editor-welcome-template-card-0",
+      "label": "몬스터 수집 — 수집 · 조우 · 도감"
+    },
+    {
+      "testid": "editor-welcome-starter-card-0",
+      "label": "몬스터 수집 빈 프로젝트 시스템 프리셋만 적용 (AI 생성 없음)"
+    },
+    {
+      "testid": "editor-welcome-template-card-1",
+      "label": "회상 스토리 — 회상 · 컷신 · 엔딩"
+    },
+    {
+      "testid": "editor-welcome-starter-card-1",
+      "label": "회상 스토리 빈 프로젝트 시스템 프리셋만 적용 (AI 생성 없음)"
+    },
+    {
+      "testid": "editor-welcome-template-card-2",
+      "label": "모험 JRPG — 파티 · 던전"
+    },
+    {
+      "testid": "editor-welcome-starter-card-2",
+      "label": "모험 JRPG 빈 프로젝트 시스템 프리셋만 적용 (AI 생성 없음)"
+    },
+    {
+      "testid": "editor-welcome-more-toggle",
+      "label": "이런 세계도 있어요 (15)"
+    },
+    {
+      "testid": "editor-welcome-template-card-3",
+      "label": "이브 같은 갤러리 호러 — 미술관 · 단서 · 공포"
+    },
+    {
+      "testid": "editor-welcome-starter-card-3",
+      "label": "이브 같은 갤러리 호러 빈 프로젝트 시스템 프리셋만 적용 (AI 생성 없음)"
+    },
+    {
+      "testid": "editor-welcome-template-card-4",
+      "label": "아오오니 같은 학교 호러 — 학교 · 추적 · 공포"
+    },
+    {
+      "testid": "editor-welcome-starter-card-4",
+      "label": "아오오니 같은 학교 호러 빈 프로젝트 시스템 프리셋만 적용 (AI 생성 없음)"
+    },
+    {
+      "testid": "editor-welcome-template-card-5",
+      "label": "농장 생활 — 농장 · 일상"
+    },
+    {
+      "testid": "editor-welcome-starter-card-5",
+      "label": "농장 생활 빈 프로젝트 시스템 프리셋만 적용 (AI 생성 없음)"
+    },
+    {
+      "testid": "editor-welcome-template-card-6",
+      "label": "파트너 육성 — 파트너 · 진화"
+    },
+    {
+      "testid": "editor-welcome-starter-card-6",
+      "label": "파트너 육성 빈 프로젝트 시스템 프리셋만 적용 (AI 생성 없음)"
+    },
+    {
+      "testid": "editor-welcome-template-card-7",
+      "label": "2D 액션 RPG — 필드 공격 · 회피 · 가드"
+    },
+    {
+      "testid": "editor-welcome-starter-card-7",
+      "label": "2D 액션 RPG 빈 프로젝트 시스템 프리셋만 적용 (AI 생성 없음)"
+    },
+    {
+      "testid": "editor-welcome-more-card-0",
+      "label": "심리·꿈 탐험 — 안전한 방과 이상한 꿈세계"
+    },
+    {
+      "testid": "editor-welcome-more-card-1",
+      "label": "초현실 꿈 워프 — 문으로 이어지는 기묘한 세계"
+    },
+    {
+      "testid": "editor-welcome-more-card-2",
+      "label": "감동 스토리 — 회상과 감정이 중심"
+    },
+    {
+      "testid": "editor-welcome-more-card-3",
+      "label": "저택 호러 — 고전 저택 탐험"
+    },
+    {
+      "testid": "editor-welcome-more-card-4",
+      "label": "메타 선택 서사 — 대화와 선택"
+    },
+    {
+      "testid": "editor-welcome-more-card-5",
+      "label": "현대 초능력 JRPG — 현대 마을 배경"
+    },
+    {
+      "testid": "editor-welcome-more-card-6",
+      "label": "눈 마을 여관 — 따뜻한 불빛과 단골손님"
+    },
+    {
+      "testid": "editor-welcome-more-card-7",
+      "label": "숲속 던전 — 입구부터 보스까지"
+    },
+    {
+      "testid": "editor-welcome-more-card-8",
+      "label": "재회 컷신 — 대사와 감정 중심"
+    },
+    {
+      "testid": "editor-welcome-more-card-9",
+      "label": "항구 시장 — 상인과 손님의 하루"
+    },
+    {
+      "testid": "editor-welcome-skip",
+      "label": "빈 맵으로 시작"
+    }
+  ]
+}

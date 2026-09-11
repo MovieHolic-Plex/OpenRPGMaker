@@ -1,0 +1,13 @@
+import { chromium } from "/home/main/z-project/rpg-zzu/node_modules/playwright/index.mjs";
+import { gotoWithRetry } from "/home/main/z-project/rpg-zzu/scripts/lib/goto-retry.mjs";
+const BASE = `http://127.0.0.1:${process.env.DEV_SERVER_PORT ?? 9841}`;
+const OUT = "/home/main/z-project/rpg-zzu/output/evidence/house-full-catalog/app";
+const browser = await chromium.launch();
+const page = await (await browser.newContext({ viewport: { width: 1680, height: 1050 } })).newPage();
+await page.addInitScript(() => window.localStorage.setItem("oprn:editor-ui-mode", "expert"));
+await gotoWithRetry(page, `${BASE}/?freshProject=1`, { timeout: 60000 });
+await page.getByTestId("edit-canvas").waitFor({ state: "visible", timeout: 60000 });
+await page.waitForTimeout(2500);
+const toggles = await page.evaluate(() => [...document.querySelectorAll("[data-testid]")].map((n) => n.getAttribute("data-testid")).filter((v) => /build|palette|tool-button/.test(v)));
+console.log(JSON.stringify(toggles.slice(0, 40)));
+await browser.close();

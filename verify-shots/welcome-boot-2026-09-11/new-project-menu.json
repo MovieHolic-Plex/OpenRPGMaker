@@ -1,0 +1,54 @@
+[
+  {
+    "testid": "menu-project",
+    "text": "새 프로젝트"
+  },
+  {
+    "testid": "menu-tools",
+    "text": "도구"
+  },
+  {
+    "testid": "menu-help",
+    "text": "도움말"
+  },
+  {
+    "testid": "ai-command-menu-toggle",
+    "text": ""
+  },
+  {
+    "testid": "menu-project-new",
+    "text": "새 프로젝트"
+  },
+  {
+    "testid": "menu-project-load",
+    "text": "열기"
+  },
+  {
+    "testid": "menu-project-reload-db",
+    "text": "저장본 다시 불러오기"
+  },
+  {
+    "testid": "menu-project-samples",
+    "text": "예제 프로젝트"
+  },
+  {
+    "testid": "menu-project-import",
+    "text": "가져오기..."
+  },
+  {
+    "testid": "menu-project-export",
+    "text": "프로젝트 파일 내보내기..."
+  },
+  {
+    "testid": "menu-project-publication",
+    "text": "게임 및 배포..."
+  },
+  {
+    "testid": "menu-project-export-web",
+    "text": "웹 게임 내보내기..."
+  },
+  {
+    "testid": "menu-project-export-standalone",
+    "text": "실행형 HTML 내보내기..."
+  }
+]
