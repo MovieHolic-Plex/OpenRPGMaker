@@ -267,6 +267,10 @@ export function repositionMapLocationLayer(): void {
   if (!overlay || !state.enabled) return;
   const map = currentLocationMap();
   if (!map) return;
+  // 빈 상태 고스트도 같은 계약이다 — 다시 그리면 팬 한 프레임마다 노드가 새로 생기고,
+  // 안 옮기면 화면 중심에 남아 타일과 어긋난다(2026-09-11 실측: 팬 뒤 고스트가 맵 밖에 섰다).
+  const ghost = overlay.querySelector<HTMLElement>(".map-location-empty-ghost");
+  if (ghost) applyOverlayRect(ghost, emptyDrawHintRect(map));
   const locations = new Map(mapLocations(map).map((entry) => [entry.id, entry]));
   for (const box of overlay.querySelectorAll<HTMLElement>(".map-location-box")) {
     const location = box.dataset.locationId ? locations.get(box.dataset.locationId) : undefined;
@@ -306,7 +310,7 @@ function renderInspector(map: GameMap, selectedId: string | null): HTMLElement {
       class: "map-location-hint",
       text:
         locations.length === 0
-          ? "맵의 점선 상자 안을 드래그하면 새 구역이 생깁니다. 한 번 클릭만으로는 만들어지지 않습니다."
+          ? "맵의 점선 상자 안을 드래그하면 새 구역이 생깁니다. 한 칸짜리는 Shift+클릭입니다."
           : "구역을 눌러 고르고, 몸통을 끌어 옮기고, 오른쪽 아래 손잡이로 크기를 바꿉니다.",
       dataset: { testid: "map-location-hint" },
     }),
@@ -482,7 +486,29 @@ function openReferenceSite(site: MapLocationReferenceSite): void {
     openMapPropertiesDialog(site.mapId, map?.name ?? site.mapId, { focus: "encounter" });
     return;
   }
-  if (site.eventId) openEventEditorModal(site.mapId, site.eventId);
+  if (site.eventId) {
+    openEventEditorModal(site.mapId, site.eventId);
+    return;
+  }
+  // 공통 이벤트·부대 조건은 이벤트가 아니라 자료집 레코드다. eventId 만 보고 끝내면
+  // 버튼이 눌러도 아무 일도 안 하는 장식이 된다 — 참조가 어디 사는지에 맞는 창을 연다.
+  if (site.kind === "condition" && site.commonEventId) {
+    void import("@/editor/panels/databaseModal").then(({ openDatabaseModal }) => {
+      openDatabaseModal("commonEvents");
+      Array.from(document.querySelectorAll<HTMLElement>("[data-record-id]"))
+        .find((row) => row.dataset.recordId === site.commonEventId)
+        ?.click();
+    });
+    return;
+  }
+  if (site.kind === "condition" && site.troopId) {
+    void import("@/editor/panels/databaseModal").then(({ openDatabaseModal }) => {
+      openDatabaseModal("troops");
+      Array.from(document.querySelectorAll<HTMLElement>("[data-record-id]"))
+        .find((row) => row.dataset.recordId === site.troopId)
+        ?.click();
+    });
+  }
 }
 
 function renderReferenceSites(locationId: string): HTMLElement {
@@ -736,7 +762,10 @@ function onPointerUp(event: PointerEvent): void {
   setLocationDrag(null);
   if (drag.kind === "draw") {
     const rect = rectFromDrag(drag.from, tile ?? drag.to);
-    if (isLocationDrawClick(drag.from, tile ?? drag.to)) return;
+    // 클릭만으로는 만들지 않는다(실수 저작). 다만 문·단상처럼 1칸짜리 구역은 저작 대상이라
+    // Shift+클릭을 명시적 통로로 남긴다 — 없으면 8×6으로 그린 뒤 숫자를 1로 줄여야 한다.
+    const clicked = isLocationDrawClick(drag.from, tile ?? drag.to);
+    if (clicked && !event.shiftKey) return;
     focusNameOnNextRender = true;
     report(createLocationFromRect(rect));
     return;

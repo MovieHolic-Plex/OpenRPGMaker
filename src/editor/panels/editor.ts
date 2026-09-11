@@ -29,7 +29,8 @@ import {
 } from "@/editor/mapEditLocks";
 import { installLayoutBboxOverlay } from "@/editor/layoutBboxOverlay";
 import { installMapLocationLayer } from "@/editor/mapLocationLayer";
-import { subscribeLocationLayer } from "@/editor/mapLocationLayerState";
+import { locationLayerState, subscribeLocationLayer } from "@/editor/mapLocationLayerState";
+import { installLocationDrawModeGuard } from "@/editor/locationDrawMode";
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { bindMapSurfaceFocusHandoff } from "@/editor/mapSurfaceFocus";
 import { installEditorToolHook } from "@/editor/editorToolHook";
@@ -136,6 +137,9 @@ let unsubUiMode: (() => void) | null = null;
 let unsubLayoutBbox: (() => void) | null = null;
 let unsubLocationLayer: (() => void) | null = null;
 let unsubLocationToggle: (() => void) | null = null;
+let unsubLocationDrawGuard: (() => void) | null = null;
+/** 마지막으로 툴바·패널에 반영한 레이어 켜짐. 드래그 중 재렌더를 걸러내는 기준이다. */
+let lastRenderedLocationLayerEnabled: boolean | null = null;
 let unsubWorkspace: (() => void) | null = null;
 // 좌측 도크 마운트 — 패널 호스트를 레이아웃 데이터에서 만든 결과. 구성이 바뀔 때만 다시 짓는다.
 let leftDock: DockMount | null = null;
@@ -231,8 +235,16 @@ export function renderEditor(main: HTMLElement): void {
   unsubLayoutBbox = installLayoutBboxOverlay();
   // 명명 로케이션 레이어. 꺼져 있으면 포인터를 받지 않으므로 타일 편집과 겹치지 않는다.
   unsubLocationLayer = installMapLocationLayer();
+  // 켠 뒤의 도구 전이는 감시자 하나가 잡는다 — 팔레트·사이드바·구조 킷이 각자 끄지 않는다.
+  unsubLocationDrawGuard = installLocationDrawModeGuard();
   // 툴바의 로케이션 토글이 눌린 상태를 그대로 보여야 한다 — 레이어 상태 변화에 토글도 다시 그린다.
   unsubLocationToggle = subscribeLocationLayer(() => {
+    // 이 구독은 선택·드래그 미리보기까지 받는다(레이어 자신이 오버레이를 그린다). 도구 모드가
+    // 바뀔 때만 툴바·패널을 다시 짓는다 — 매 pointermove 마다 도크를 통째로 새로 만들면
+    // 그리는 동안 좌측 팔레트·맵 트리가 계속 재조립된다(2026-09-11 실측).
+    const enabled = locationLayerState().enabled;
+    if (enabled === lastRenderedLocationLayerEnabled) return;
+    lastRenderedLocationLayerEnabled = enabled;
     if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
     scheduleFullPanelRefresh();
   });
@@ -385,6 +397,7 @@ export function teardownEditor(): void {
   unsubLayoutBbox?.();
   unsubLocationLayer?.();
   unsubLocationToggle?.();
+  unsubLocationDrawGuard?.();
   unsubWorkspace?.();
   unsubMapPanel?.();
   unsubMapPanel = null;
@@ -399,6 +412,7 @@ export function teardownEditor(): void {
   unsubLayoutBbox = null;
   unsubLocationLayer = null;
   unsubLocationToggle = null;
+  unsubLocationDrawGuard = null;
   unsubWorkspace = null;
   leftDock = null;
   const ro2 = (window as unknown as Record<string, unknown>)["__oprnLayoutRO"] as ResizeObserver | undefined;
