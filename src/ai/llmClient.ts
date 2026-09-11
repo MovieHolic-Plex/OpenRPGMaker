@@ -7,7 +7,7 @@
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
 import { defaultModelForAuthMode, isModelValidForAuthMode } from "@/ai/modelCatalog";
-import { DEFAULT_EXECUTION_ROUTE, DEFAULT_PI_APPLY, isExecutionRoute, type ExecutionRoute, type PiApplyMode } from "@/ai/piAgent/executionRoute";
+import { DEFAULT_EXECUTION_ROUTE, DEFAULT_PI_APPLY, isExecutionRoute, LEGACY_PI_TEAM_ROUTE, type ExecutionRoute, type PiApplyMode } from "@/ai/piAgent/executionRoute";
 import type { AutonomyLevel } from "@/ai/autonomyLevels";
 import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
 import { PRODUCT_BRAND } from "@/brand";
@@ -65,6 +65,9 @@ export interface AiConfig {
   agentMode?: "auto" | "chat";
   // 지시의 기본 실행 경로(컴포저 「경로」 셀렉트·설정 공용). 미지정 옛 blob 은 Pi 에이전트.
   executionRoute?: ExecutionRoute;
+  // Pi 경로를 팀으로 돌릴지. 팀은 별도 경로가 아니라 실행 모드다 — 경로가 pi-agent 일 때만 뜻이 있다.
+  // 옛 blob 의 `executionRoute: "pi-team"` 은 아래 loadAiConfig 가 이 값으로 승격한다.
+  piTeam?: boolean;
   // Pi 경로의 적용 방식: review = 검토 카드에서 승인 후 적용(기본), auto = 게이트 통과 즉시 적용.
   piApply?: PiApplyMode;
 }
@@ -202,6 +205,8 @@ export function loadAiConfig(): AiConfig {
     const raw = localStorage.getItem(AI_CONFIG_STORAGE_KEY);
     if (!raw) return base;
     const parsed = JSON.parse(raw) as Partial<AiConfig>;
+    // 저장 blob 의 경로 값은 옛 어휘일 수 있다(타입 밖) — unknown 으로 넓혀 두고 아래에서 좁힌다.
+    const storedRoute: unknown = parsed.executionRoute;
     const authMode = "chatgpt" as const;
     if (parsed.authMode === "apiKey") {
       console.warn(
@@ -271,7 +276,13 @@ export function loadAiConfig(): AiConfig {
       agentMode: parsed.agentMode === "chat" ? "chat" : "auto",
       // 자율성 다이얼 백필: 알려진 id 만 인정하고, 없는 옛 blob·이상한 값은 "balanced".
       autonomyLevel: isAutonomyLevel(parsed.autonomyLevel) ? parsed.autonomyLevel : "balanced",
-      executionRoute: isExecutionRoute(parsed.executionRoute) ? parsed.executionRoute : DEFAULT_EXECUTION_ROUTE,
+      // 경로 2값 + 팀 비트(2026-09-11): 옛 세 번째 경로 `pi-team` 은 «Pi + 팀» 이었으므로 길이 유지되게
+      // 승격한다. 저장된 값이 새 어휘면 그대로 존중하고, 모르는 값만 기본으로 떨어뜨린다.
+      // 옛 어휘는 현재 타입 밖이므로 unknown 으로 넓혀 비교한다 — isExecutionRoute 가 좁힌다.
+      executionRoute: isExecutionRoute(storedRoute)
+        ? storedRoute
+        : storedRoute === LEGACY_PI_TEAM_ROUTE ? "pi-agent" : DEFAULT_EXECUTION_ROUTE,
+      piTeam: parsed.piTeam === true || storedRoute === LEGACY_PI_TEAM_ROUTE,
       piApply: parsed.piApply === "auto" ? "auto" : DEFAULT_PI_APPLY,
     };
   } catch {
