@@ -10,15 +10,9 @@
   --oprn-battle-text: #1c2438;
   background: #c8ccd8;
   /* 640px 논리 무대에서 192px 명령 열을 보장하고 필드/파티에 448px를 남긴다. */
-  grid-template-columns: minmax(0, 1fr) 192px !important;
-  grid-template-rows: minmax(0, 1fr) minmax(192px, 32%) !important;
 }
 
 /* 필드는 상단 전체(배경 + 적). */
-.battle-scene[data-battle-skin="mv"] .battle-field {
-  grid-column: 1;
-  grid-row: 1;
-}
 
 /* 적 이름 목록 패널은 숨기고, 적 정보는 스프라이트 아래 hud로 노출. */
 .battle-scene[data-battle-skin="mv"] .battle-enemy-list-panel {
@@ -66,12 +60,8 @@
 
 /* 파티 HUD — 화면 하단 가로 배치, 멤버 카드 균등 폭. */
 .battle-scene[data-battle-skin="mv"] .battle-party {
-  grid-column: 1;
-  grid-row: 2;
-  display: flex;
   flex-direction: row;
   align-items: stretch;
-  gap: 8px;
   overflow: hidden;
 }
 
@@ -98,11 +88,6 @@
 
 /* 커맨드 — 화면 우측 세로 배치. */
 .battle-scene[data-battle-skin="mv"] .battle-command-host {
-  grid-column: 2;
-  grid-row: 1 / 3;
-  align-self: stretch;
-  min-width: 0;
-  display: grid;
   align-content: start;
 }
 
@@ -125,8 +110,6 @@
 }
 
 .battle-scene[data-battle-skin="mv"] .battle-command-host > .battle-command-panel {
-  grid-column: 1 !important;
-  grid-row: 1 !important;
   min-height: 0;
   overflow-y: auto;
   pointer-events: auto;
@@ -149,8 +132,6 @@
 /* Keep status text in its own flex cell instead of allowing it under the portrait. */
 .battle-scene[data-battle-skin="mv"] .battle-party .battle-actor-status {
   flex: 1 1 auto;
-  min-width: 0;
-  overflow: hidden;
 }
 
 

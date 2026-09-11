@@ -19,10 +19,7 @@
 /* Pokemon command selected state stays cream + red rim, slightly larger type. */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"] {
-  background: #fff6f0;
   border-color: var(--pkmn-accent);
-  box-shadow: 0 0 0 2px rgba(228, 59, 68, 0.25), 0 4px 0 rgba(0, 0, 0, 0.08);
-  transform: scale(1.02);
 }
 
 /* --battle-juice-base 는 각 스킨의 정지 transform 과 일치해야 한다. 포켓몬 정지

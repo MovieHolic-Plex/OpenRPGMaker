@@ -1,0 +1,11 @@
+/* event 표면 — database/tabs-b-resource-manager.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 event 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* database/tabs-b-resource-manager.css:108-112 — [레이어 보존] 범용 .btn.small(0,2,0) — 오늘 이기던 button.btn/.event-editor-modal-window button(0,1,1) 과 같은 레이어여야 특이도로 계속 이긴다(샷 DOM 실측) */
+.btn.small {
+  font-size: 10px;
+  padding: 3px 6px;
+  flex: 1;
+}

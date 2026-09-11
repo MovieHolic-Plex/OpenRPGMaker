@@ -174,10 +174,6 @@ body.ai-panel-docked {
   --ai-docked-panel-inset: calc(min(var(--ai-dock-width, 520px), 52vw) + 4px);
 }
 
-body.ai-panel-docked .topbar {
-  padding-right: var(--ai-docked-panel-inset);
-}
-
 body.ai-panel-docked .editor-layout {
   padding-right: var(--ai-docked-panel-inset);
 }
@@ -243,15 +239,6 @@ body.ai-panel-docked .editor-layout {
   50% {
     opacity: 0.35;
   }
-}
-.ai-config-actions {
-  align-items: center;
-  display: flex;
-  gap: var(--space-2);
-}
-.ai-config-saved-hint {
-  color: var(--text-3);
-  font-size: 11px;
 }
 .ai-chat-log {
   background: var(--bg-inset);

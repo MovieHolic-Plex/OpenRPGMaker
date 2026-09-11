@@ -464,21 +464,6 @@
 }
 
 /* 상점 미리보기 기본 접힘 */
-.event-command-edit-columns.shop-preview-collapsed:has(.shop-processing-command-body) {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.event-command-edit-columns.shop-preview-collapsed:has(.shop-processing-command-body) > .event-command-preview-panel {
-  display: none;
-}
-
-.event-command-edit-columns.is-shop-preview-open:has(.shop-processing-command-body) {
-  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
-}
-
-.event-command-edit-columns.is-shop-preview-open:has(.shop-processing-command-body) > .event-command-preview-panel {
-  display: block;
-}
 
 .event-subdialog-window.wide:has(.shop-processing-command-body) {
   width: min(760px, calc(100vw - 24px));

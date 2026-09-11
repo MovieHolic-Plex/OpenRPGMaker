@@ -78,7 +78,6 @@ import { store } from "@/project/store";
 import type { Project, VillageHouseTemplateRecord, VillageLayoutPresetRecord } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
-import "@/styles/database/modern/village.css";
 
 type VillageKind = "template" | "preset";
 

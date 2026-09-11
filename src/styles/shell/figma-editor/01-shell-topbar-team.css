@@ -23,8 +23,6 @@
   }
 
   .topbar {
-    background: var(--editor-shell-bg);
-    border-bottom: 1px solid var(--editor-line);
     color: var(--editor-text);
     display: block;
     padding: 0;

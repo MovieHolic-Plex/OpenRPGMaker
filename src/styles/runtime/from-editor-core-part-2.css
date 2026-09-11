@@ -1,0 +1,65 @@
+/* runtime 표면 — editor/core.part-2.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 runtime 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다.
+   편집기 스코프(2026-09-11 1단계 리뷰 반영): 이 리프는 runtime/index.css 를 통해 출하 플레이어 CSS 사슬(src/player/player.css)에도
+   들어가지만, 원본 editor/core.part-2.css 는 그 사슬에 없었다. 조상 스코프가 없는 .battle-* 규칙이 출하 게임에서 새로 매치되지 않도록
+   모든 선택자 앞에 특이도 0 의 `:where(body:has(.editor-layout))` 을 붙인다 — 특이도·레이어·위치가 그대로라 편집기 캐스케이드는
+   불변이고, 플레이어 문서에는 .editor-layout 이 없어 어느 규칙도 매치되지 않는다. */
+
+/* editor/core.part-2.css:2-5 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
+:where(body:has(.editor-layout)) .battle-enemy:disabled {
+  color: var(--text-muted);
+  opacity: 0.55;
+}
+
+/* editor/core.part-2.css:6-9 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
+:where(body:has(.editor-layout)) .battle-actor {
+  display: flex;
+  align-items: center;
+}
+
+/* editor/core.part-2.css:10-13 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
+:where(body:has(.editor-layout)) .battle-actor.defeated {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+/* editor/core.part-2.css:14-18 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
+:where(body:has(.editor-layout)) .battle-actor-image {
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex: 0 0 auto;
+}
+
+/* editor/core.part-2.css:19-21 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
+:where(body:has(.editor-layout)) .battle-actor-label {
+  flex: 1 1 auto;
+}
+
+/* editor/core.part-2.css:22-27 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
+:where(body:has(.editor-layout)) .battle-command-panel {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-2);
+}
+
+/* editor/core.part-2.css:28-31 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
+:where(body:has(.editor-layout)) .battle-submenu-header {
+  flex: 1 0 100%;
+  font-weight: 700;
+}
+
+/* editor/core.part-2.css:32-35 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
+:where(body:has(.editor-layout)) .battle-command:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* editor/core.part-2.css:36-40 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
+:where(body:has(.editor-layout)) .battle-animation {
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  padding: var(--space-2) var(--space-3);
+}

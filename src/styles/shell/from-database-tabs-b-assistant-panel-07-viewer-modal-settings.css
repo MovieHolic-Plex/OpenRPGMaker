@@ -1,0 +1,92 @@
+/* shell 표면 — database/tabs-b-assistant-panel/07-viewer-modal-settings.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 shell 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:166-172 */
+.ai-config-form {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  color: var(--text-2);
+  font-size: 12px;
+  padding: var(--space-2);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:173-177 */
+.ai-config-form summary {
+  color: var(--text-1);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:178-183 */
+.ai-config-row {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:184-188 */
+.ai-config-label {
+  color: var(--text-2);
+  flex: 0 0 78px;
+  font-size: 11px;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:189-199 */
+.ai-config-input {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font: inherit;
+  min-width: 0;
+  padding: 4px 7px;
+  transition: border-color var(--transition-fast);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:200-204 */
+.ai-config-input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:343-350 */
+.left-panel-stack {
+  background: var(--bg-panel);
+  border: 1px solid;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:351-355 */
+.left-panel-stack[data-testid="left-palette-root"] {
+  overflow-anchor: none;
+  position: relative;
+  scrollbar-gutter: stable;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:356-358 */
+.left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1) {
+  order: 1;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:359-361 */
+.left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2) {
+  order: 2;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:362-364 */
+.left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(3) {
+  order: 3;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:367-369 */
+.ai-config-collapsed {
+  display: none;
+}

@@ -50,18 +50,18 @@ describe("DB 모달 라이트 팔레트 스코프 (W1)", () => {
     }
   });
 
-  it("index.css 가 light-theme.css 를 dock.css 다음에 임포트한다", () => {
-    const indexCss = read("src/styles/index.css");
+  it("database 진입 시트가 light-theme.css 를 dock.css 다음에 임포트한다", () => {
+    const indexCss = read("src/styles/database/index.css");
     const dbImports = indexCss
       .split("\n")
       .map((line) => line.trim())
-      .filter((line) => line.startsWith('@import "./database/'));
+      .filter((line) => line.startsWith('@import "./'));
     const dockIndex = dbImports.findIndex((line) => line.includes("dock.css"));
     const lightIndex = dbImports.findIndex((line) => line.includes("light-theme.css"));
-    expect(dockIndex, "index.css 에 ./database/dock.css 임포트가 없다").toBeGreaterThanOrEqual(0);
+    expect(dockIndex, "database/index.css 에 ./dock.css 임포트가 없다").toBeGreaterThanOrEqual(0);
     expect(
       lightIndex,
-      "index.css 에 ./database/light-theme.css 임포트가 없다 — 라이트 팔레트가 로드되지 않는다.",
+      "database/index.css 에 ./light-theme.css 임포트가 없다 — 라이트 팔레트가 로드되지 않는다.",
     ).toBeGreaterThanOrEqual(0);
     expect(
       lightIndex,

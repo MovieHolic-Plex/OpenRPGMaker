@@ -4,7 +4,6 @@ import { localDiagnostics, startLocalDiagnostics } from "@/editor/localDiagnosti
 import { diagnosticReport } from "@/editor/localDiagnosticReport";
 import { openEventSubdialog } from "./eventEditor/subdialog";
 import { showConfirm } from "@/editor/ui/modal";
-import "@/styles/editor/local-diagnostics.css";
 
 const labels: Record<DiagnosticCategory, string> = {
   conversation: "요청·답변 (역할·글자 수만)", authoring: "편집·저장 세대", movement: "이동 완료 좌표",

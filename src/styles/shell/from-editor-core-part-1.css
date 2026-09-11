@@ -1,0 +1,85 @@
+/* shell 표면 — editor/core.part-1.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 shell 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* editor/core.part-1.css:53-61 */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+/* editor/core.part-1.css:71-76 */
+.topbar {
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  flex-shrink: 0;
+}
+
+/* editor/core.part-1.css:77-82 */
+.topbar .title {
+  font-weight: 600;
+  margin-right: auto;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+}
+
+/* editor/core.part-1.css:83-92 */
+.topbar .mode-badge {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: var(--bg-panel-2);
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* editor/core.part-1.css:153-157 */
+.editor-layout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+/* editor/core.part-1.css:158-164 */
+.editor-layout .left-panel,
+.editor-layout .right-panel {
+  width: 220px;
+  background: var(--bg-panel);
+  overflow-y: auto;
+  padding: var(--space-3);
+}
+
+/* editor/core.part-1.css:165-169 */
+.editor-layout .right-panel {
+  border-right: none;
+  border-left: 1px solid var(--border);
+  width: 320px;
+}
+
+/* editor/core.part-1.css:188-191 */
+body[data-editor-tool] .editor-layout [data-testid="edit-canvas"] {
+  cursor: var(--editor-tool-cursor, default);
+}
+
+/* editor/core.part-1.css:211-214 */
+body[data-editor-tool="pan"] .editor-layout [data-testid="edit-canvas"]:active {
+  cursor: grabbing;
+}
+
+/* editor/core.part-1.css:258-264 */
+.panel-section h3 {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--border-soft);
+}

@@ -1,0 +1,51 @@
+/* base 표면 — 전역 기본값(html/body/::selection/스크롤바). index.css 에서 옮겨 왔다(2026-09-11, Task 7). */
+@layer base {
+  /* ============================================================================
+     전역 기본값 현대화 (UI-0) — 토큰은 ./tokens.css, 가이드는 ./TOKENS.md
+     ========================================================================= */
+
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    font-family: var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: rgba(74, 87, 214, 0.22);
+    color: var(--text-1);
+  }
+
+  /* 얇은 라운드 스크롤바 — 전역 기본 (개별 영역에서 클래스로 재정의 가능) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    background-clip: padding-box;
+    border: 2px solid transparent;
+    border-radius: 999px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    background-clip: padding-box;
+    border: 2px solid transparent;
+  }
+
+  *::-webkit-scrollbar-track,
+  *::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}

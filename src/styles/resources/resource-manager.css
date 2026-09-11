@@ -251,8 +251,7 @@
   text-align: center;
 }
 
-.rm-entry-empty,
-.empty-hint {
+.rm-entry-empty {
   color: var(--text-3);
   font: 400 12px/18px var(--font-ui);
   padding: var(--space-2);

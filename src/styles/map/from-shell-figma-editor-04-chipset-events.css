@@ -1,0 +1,264 @@
+/* map 표면 — shell/figma-editor/04-chipset-events.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 map 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* shell/figma-editor/04-chipset-events.css:1-14 */
+.chipset-sheet {
+    background: var(--bg-inset);
+    border: 1px solid var(--editor-line-strong);
+    border-radius: 0;
+    container-type: inline-size;
+    /* 작은 창: 고정 196px 대신 남는 세로 공간을 먹고 세로 스크롤만 */
+    flex: 1 1 auto;
+    height: auto;
+    max-height: none;
+    min-height: min(220px, 28vh);
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:16-23 */
+.chipset-sheet.tile-palette {
+    flex: 1 1 auto;
+    height: auto;
+    max-height: none;
+    min-height: min(220px, 28vh);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:25-33 */
+.chipset-grid {
+    --chipset-cell: 32px;
+    gap: 2px;
+    grid-template-columns: repeat(auto-fill, var(--chipset-cell));
+    justify-content: start;
+    min-width: 0;
+    padding: 2px;
+    width: 100%;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:35-39 */
+.chipset-tile {
+    border-color: var(--border-default);
+    height: var(--chipset-cell);
+    width: var(--chipset-cell);
+  }
+
+/* shell/figma-editor/04-chipset-events.css:41-46 */
+.chipset-tile.active,
+  .chipset-tile:hover:not(:disabled),
+  .chipset-tile:focus-visible:not(:disabled) {
+    border-color: var(--accent-hover);
+    box-shadow: inset 0 0 0 1px var(--bg-canvas);
+  }
+
+/* shell/figma-editor/04-chipset-events.css:48-56 */
+.left-panel-stack .tile-tool-status {
+    background: transparent;
+    border-top: 1px solid var(--editor-line);
+    display: none;
+    gap: 10px;
+    grid-template-columns: 66px minmax(0, 1fr);
+    margin: 12px 0;
+    padding: 12px 0 0;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:58-62 */
+.left-panel-stack .selected-tile-preview {
+    border: 1px solid var(--editor-line-strong);
+    height: 66px;
+    width: 66px;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:64-68 */
+.left-panel-stack .tile-tool-status-grid {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+/* shell/figma-editor/04-chipset-events.css:70-72 */
+.left-panel-stack .tile-tool-status-cell {
+    min-width: 0;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:74-76 */
+.left-panel-stack .tile-tool-status-cell:nth-child(n + 5) {
+    display: none;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:78-84 */
+.left-panel-stack .tile-tool-status-label {
+    color: var(--editor-text-muted);
+    display: block;
+    font-size: 12px;
+    line-height: 1.1;
+    margin-bottom: 3px;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:86-98 */
+.left-panel-stack .tile-tool-status-value {
+    background: var(--bg-inset);
+    border: 1px solid var(--editor-line);
+    border-radius: 6px;
+    color: var(--editor-text);
+    display: block;
+    font: 500 15px/28px var(--font-ui);
+    min-height: 28px;
+    overflow: hidden;
+    padding: 0 8px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:100-105 */
+.left-panel-stack .brush-control {
+    display: none;
+    gap: 2px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 10px 0 0;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:107-113 */
+.left-panel-stack .brush-control-label {
+    color: var(--editor-text-muted);
+    display: block;
+    grid-column: 1 / -1;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:115-117 */
+.left-panel-stack .brush-size-btn {
+    height: 32px;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:119-127 */
+.left-panel-stack .tile-mapping-inspector {
+    background: transparent;
+    border-top: 1px solid var(--editor-line);
+    color: var(--editor-text);
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:129-133 */
+.left-panel-stack .tile-mapping-title {
+    color: var(--editor-text);
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:135-139 */
+.left-panel-stack .tile-mapping-meta {
+    color: var(--editor-text-muted);
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:147-153 */
+.event-editor-sidebar,
+  .event-list,
+  .event-editor-launch {
+    background: transparent;
+    border: 0;
+    color: var(--editor-text);
+  }
+
+/* shell/figma-editor/04-chipset-events.css:155-161 */
+.event-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:170-179 */
+.left-panel-stack[data-testid="left-palette-root"] .event-list {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:181-187 */
+.left-panel-stack[data-testid="left-palette-root"] .event-list-title {
+    background: var(--editor-panel-bg);
+    flex: 0 0 auto;
+    position: sticky;
+    top: 0;
+    z-index: var(--z-base);
+  }
+
+/* shell/figma-editor/04-chipset-events.css:189-192 */
+.left-panel-stack[data-testid="left-palette-root"] .event-editor-launch,
+  .left-panel-stack[data-testid="left-palette-root"] .event-editor-sidebar > .empty-hint {
+    flex: 0 0 auto;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:194-199 */
+.event-list-title {
+    color: var(--editor-text);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:201-208 */
+.event-list-empty,
+  .event-list-row,
+  .event-editor-launch {
+    background: var(--control-bg);
+    border: 1px solid var(--editor-line);
+    border-radius: 6px;
+    color: var(--editor-text-muted);
+  }
+
+/* shell/figma-editor/04-chipset-events.css:210-214 */
+.event-list-row {
+    min-height: 52px;
+    flex-shrink: 0;
+    padding: 9px 12px;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:216-222 */
+.event-list-row:hover,
+  .event-list-row:focus-visible,
+  .event-list-row.active {
+    background: var(--control-bg-hover);
+    border-color: var(--editor-line-strong);
+    color: var(--editor-text);
+  }
+
+/* shell/figma-editor/04-chipset-events.css:224-227 */
+.event-list-name {
+    color: var(--editor-text);
+    font-weight: 800;
+  }
+
+/* shell/figma-editor/04-chipset-events.css:229-232 */
+.event-list-meta,
+  .event-editor-launch-meta {
+    color: var(--editor-text-muted);
+  }
+
+/* shell/figma-editor/04-chipset-events.css:234-237 */
+.event-list-icon {
+    background: var(--control-bg);
+    border-color: var(--editor-line);
+  }
+
+/* shell/figma-editor/04-chipset-events.css:251-253 */
+.canvas-area {
+    border-left: 0 !important;
+  }

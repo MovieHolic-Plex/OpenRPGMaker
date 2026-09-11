@@ -1,0 +1,27 @@
+/* shell 표면 진입 시트 — 리프 시트를 @layer shell 에 넣는다. 규칙을 여기 쓰지 말 것. 순서는 2026-09-11 유효 순서 그대로(세대 접기 전). */
+@import "./from-editor-core-part-1.css" layer(shell);
+@import "./from-database-tabs-b-shell-layout.css" layer(shell);
+@import "./from-database-tabs-b-assistant-panel-07-viewer-modal-settings.css" layer(shell);
+@import "./from-database-tabs-b-assistant-panel-08-studio-mode-start-screen.css" layer(shell);
+@import "./from-map-resource-system-part-1.css" layer(shell);
+@import "./shell-density.part-1.css" layer(shell);
+@import "./shell-density.part-2.css" layer(shell);
+@import "./editor-welcome.css" layer(shell);
+@import "./from-editor-responsive-a.css" layer(shell);
+@import "./figma-editor/01-shell-topbar-team.css" layer(shell);
+@import "./figma-editor/02-menus-toolbar-tools.css" layer(shell);
+@import "./figma-editor/03-layout-left-palette.css" layer(shell);
+@import "./figma-editor/04-chipset-events.css" layer(shell);
+@import "./figma-editor/05-canvas-statusbar.css" layer(shell);
+@import "./figma-editor/06-db-config-project-picker.css" layer(shell);
+@import "./figma-editor/07-context-menu-responsive.css" layer(shell);
+@import "./figma-editor/08-rm-palette-tools.css" layer(shell);
+@import "./figma-editor/09-rm-chipset-grid.css" layer(shell);
+@import "./figma-editor/11-canvas-toolbar-uxc.css" layer(shell);
+@import "./editor-ui-modes.css" layer(shell);
+@import "./studio-bar.modern.css" layer(shell);
+@import "../editor/cluster-ai-modal.css" layer(shell);
+@import "../editor/audio-test-dialog.css" layer(shell);
+@import "../editor/help-modal.css" layer(shell);
+@import "../editor/ai-settings-modal.css" layer(shell);
+@import "../editor/local-diagnostics.css" layer(shell);

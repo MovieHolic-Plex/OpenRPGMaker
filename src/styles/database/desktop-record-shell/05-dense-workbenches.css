@@ -76,38 +76,14 @@
     overflow: auto;
   }
 
-  .database-modal-body .oprn-record-actors .actor-options {
-    min-height: 190px;
-  }
-
-  .database-modal-body .oprn-record-actors .actor-skill-list {
-    max-height: 190px;
-    min-height: 190px;
-  }
-
-  .database-modal-body .oprn-record-actors .actor-rates {
-    max-height: 168px;
-  }
-
   /* 좁은 폭에서도 같은 이유로 고정 px 를 쓰지 않는다(위 브레이크포인트 주석 참고). */
-  .database-modal-body .oprn-record-classes .db-class-bm88-workbench {
-    grid-template-rows: repeat(4, minmax(min-content, auto)) minmax(56px, auto);
-  }
 
   .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-advanced-panel {
     padding: 9px 10px;
   }
 
-  .database-modal-body .oprn-record-classes :is(.db-class-command-rows, .db-class-command-list) {
-    max-height: 152px;
-  }
-
   .database-modal-body .oprn-record-classes .db-class-skill-table {
     max-height: 220px;
-  }
-
-  .database-modal-body .oprn-detail-enemies > .db-enemy-bm101-workbench {
-    grid-template-rows: 64px 140px 84px 84px minmax(56px, 1fr);
   }
 
   .database-modal-body .oprn-detail-skills,
@@ -150,10 +126,6 @@
     overflow: hidden;
   }
 
-  .database-modal-body .oprn-detail-enemies > .db-enemy-bm101-workbench {
-    grid-template-rows: 60px 128px 76px 76px minmax(112px, 1fr);
-  }
-
   .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel {
     background: var(--bg-raised);
     border-color: var(--db-modern-line, var(--border-subtle));
@@ -162,12 +134,7 @@
 
   .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-graphic {
     gap: 6px;
-    grid-template-rows: auto minmax(104px, 1fr) 24px 24px;
     overflow: hidden;
-  }
-
-  .database-modal-body .db-enemy-graphic-stage {
-    min-height: 104px;
   }
 
   .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-graphic .actor-check {

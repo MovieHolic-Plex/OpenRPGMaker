@@ -1,3 +1,0 @@
-/* Split wrapper: 원본 한 파일이던 셸 밀도 스타일의 cascade 순서를 보존한다. */
-@import "./shell-density.part-1.css";
-@import "./shell-density.part-2.css";

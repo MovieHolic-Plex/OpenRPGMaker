@@ -64,16 +64,9 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card {
   align-items: center;
-  background: var(--db-studio-inset);
-  border: var(--stroke-1) solid var(--db-studio-border-default);
-  border-radius: var(--radius-pill);
-  color: var(--db-studio-text-2);
   display: flex;
-  flex: 1 1 0;
   gap: var(--space-1);
-  min-height: var(--space-6);
   min-width: 0;
-  padding: var(--space-1) var(--space-2);
   text-align: left;
 }
 
@@ -83,13 +76,10 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card.is-ready {
   border-color: color-mix(in srgb, var(--db-studio-success) 34%, transparent);
-  color: var(--db-studio-success);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card.is-needs-setup {
-  background: color-mix(in srgb, var(--db-studio-warning) var(--color-mix-ratio-subtle), var(--db-studio-surface));
   border-color: color-mix(in srgb, var(--db-studio-warning) 34%, transparent);
-  color: var(--db-studio-warning);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body button.db-life-card {

@@ -37,10 +37,11 @@ describe("런타임 대사창 얼굴 CSS", () => {
   });
 
   it("dialogue.css 는 런타임 CSS 사슬 안에 있다", () => {
-    // player.css → runtime/playerRuntime.css → ../dialogue.css 경로가 끊기면
+    // player.css → runtime/playerRuntime.css → runtime/index.css → ../dialogue.css 경로가 끊기면
     // 위 규칙을 넣어도 플레이어 빌드에 들어가지 않는다.
     expect(read("src/player/player.css")).toContain("runtime/playerRuntime.css");
-    expect(read("src/styles/runtime/playerRuntime.css")).toContain("dialogue.css");
+    expect(read("src/styles/runtime/playerRuntime.css")).toContain('@import "./index.css";');
+    expect(read("src/styles/runtime/index.css")).toContain("dialogue.css");
   });
 
   it("화자 이름표 자리를 상속된 글꼴 크기에 의존하지 않는다", () => {

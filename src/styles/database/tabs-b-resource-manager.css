@@ -21,16 +21,11 @@
   font-family: inherit;
 }
 .rm-asset-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-1) 0;
   border-bottom: 1px solid var(--border-soft);
 }
 .rm-preview {
   width: 48px;
   height: 48px;
-  object-fit: contain;
   background:
     linear-gradient(45deg, var(--bg-raised) 25%, transparent 25%, transparent 75%, var(--bg-raised) 75%),
     linear-gradient(45deg, var(--bg-raised) 25%, var(--bg-inset) 25%, var(--bg-inset) 75%, var(--bg-raised) 75%);
@@ -38,18 +33,13 @@
   background-size: 12px 12px;
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-sm);
-  image-rendering: pixelated;
 }
 .rm-asset-info {
   flex: 1;
-  min-width: 0;
 }
 .rm-asset-name {
   font-size: 12px;
   color: var(--text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .rm-asset-kind {
   font-size: 10px;
@@ -61,66 +51,38 @@
   color: var(--text-dim);
 }
 .rm-asset-actions {
-  display: grid;
   flex: 0 0 92px;
-  gap: 2px;
 }
 .rm-asset-actions .btn {
   font-size: 11px;
-  min-height: 22px;
   min-width: 0;
   overflow-wrap: anywhere;
   padding: 2px 4px;
 }
 .rm-profile-row {
-  background: var(--bg);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-sm);
-  color: var(--text-dim);
   font-size: 11px;
   line-height: 1.35;
   margin-bottom: var(--space-1);
-  padding: var(--space-2);
 }
 .rm-profile-thumb {
   width: 48px;
   height: 48px;
-  object-fit: contain;
-  image-rendering: pixelated;
   margin-right: var(--space-2);
   vertical-align: middle;
   background: var(--surface-recessed);
   border: 1px solid var(--border-soft);
 }
 .rm-tile-grid {
-  display: grid;
   grid-template-columns: repeat(8, 1fr);
-  gap: 2px;
   margin-top: var(--space-1);
 }
 .rm-tile-cell {
   aspect-ratio: 1;
   align-items: center;
-  background: var(--bg-panel-2);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  color: var(--text-muted);
   display: flex;
   font-family: var(--font-mono);
   font-size: 9px;
   justify-content: center;
-}
-.resizer {
-  width: 5px;
-  cursor: col-resize;
-  background: var(--border-soft);
-  flex-shrink: 0;
-  transition: background 0.12s;
-  z-index: 5;
-}
-.resizer:hover,
-.resizer:active {
-  background: var(--accent);
 }
 body.resizing {
   cursor: col-resize;
@@ -130,11 +92,6 @@ body.resizing {
   display: flex;
   gap: 4px;
   margin-bottom: var(--space-2);
-}
-.btn.small {
-  font-size: 10px;
-  padding: 3px 6px;
-  flex: 1;
 }
 .system-shell {
   align-items: center;

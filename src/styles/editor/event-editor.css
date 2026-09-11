@@ -1,24 +1,8 @@
 /* Split wrapper: preserves event-editor.css cascade order. */
-@import "./event-editor.part-1.css";
-@import "./event-editor.part-2.css";
-@import "./event-editor.part-4.css";
-@import "./event-editor.part-3.css";
-@import "./event-editor.modern.css";
-@import "./event-editor.command-preview.css";
-@import "./event-editor.modernize.css";
-@import "./event-editor.commerce.css";
-@import "./event-editor.p1-graphic.css";
-@import "./event-editor.p1-route.css";
-@import "./event-editor.p1-pagetabs.css";
 /* 마지막 — 명령 리스트를 블록 캔버스로 덮어쓴다 (DOM 변경 없음). */
-@import "./event-editor.blocks.css";
 /* 목업 셸 — 페이지 탭·레일·헤더 검사 팝오버·액센트. 반드시 blocks 다음. */
-@import "./event-editor.mockup.css";
 /* 창 전체 보기와 드래그 가능한 열 구분선은 최종 레이아웃 기하를 소유한다. */
-@import "./event-editor.windowing.css";
 /* Native selects keep their data contract; this layer owns the visible dropdown UI. */
-@import "./event-editor.custom-select.css";
-@import "./event-editor.shop.css";
 
 /* alias collapse — after imports so the sheet stays valid */
 :root {

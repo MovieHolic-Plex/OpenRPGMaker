@@ -1,0 +1,78 @@
+/* components 표면 — map/resource-system.part-1.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 components 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* map/resource-system.part-1.css:685-693 */
+.oprn-icon-open::before {
+  background: #d8b35e;
+  border: 1px solid var(--border-default);
+  box-shadow: inset 0 2px 0 #f0d48c;
+  height: 9px;
+  left: 2px;
+  top: 5px;
+  width: 12px;
+}
+
+/* map/resource-system.part-1.css:695-703 */
+.oprn-icon-open::after {
+  background: #c79840;
+  border: 1px solid var(--border-default);
+  border-bottom: 0;
+  height: 4px;
+  left: 2px;
+  top: 2px;
+  width: 7px;
+}
+
+/* map/resource-system.part-1.css:705-713 */
+.oprn-icon-save::before {
+  background: var(--accent);
+  border: 1px solid var(--border-strong);
+  box-shadow: inset 0 3px 0 var(--accent-border);
+  height: 12px;
+  left: 2px;
+  top: 2px;
+  width: 12px;
+}
+
+/* map/resource-system.part-1.css:715-722 */
+.oprn-icon-save::after {
+  background: var(--bg-raised);
+  border-top: 1px solid var(--border-strong);
+  height: 4px;
+  left: 5px;
+  top: 9px;
+  width: 7px;
+}
+
+/* map/resource-system.part-1.css:724-732 */
+.oprn-icon-export::before,
+.oprn-icon-import::before {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  height: 9px;
+  left: 2px;
+  top: 5px;
+  width: 9px;
+}
+
+/* map/resource-system.part-1.css:734-739 */
+.oprn-icon-export::after,
+.oprn-icon-import::after {
+  border-bottom: 4px solid transparent;
+  border-top: 4px solid transparent;
+  top: 5px;
+}
+
+/* map/resource-system.part-1.css:741-744 */
+.oprn-icon-export::after {
+  border-left: 6px solid #d66b1f;
+  left: 9px;
+}
+
+/* map/resource-system.part-1.css:746-749 */
+.oprn-icon-import::after {
+  border-right: 6px solid #2f8a43;
+  left: 8px;
+}

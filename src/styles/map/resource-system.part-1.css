@@ -1,11 +1,3 @@
-.left-panel-stack[data-testid="left-palette-root"] > .empty-hint {
-  order: 4;
-}
-
-.left-panel-stack + .left-panel-stack {
-  background: var(--bg-surface);
-}
-
 .right-tabbar {
   background: var(--bg-panel);
   border: 1px solid var(--border-subtle);
@@ -14,80 +6,6 @@
   gap: 0;
   overflow: hidden;
   padding: 2px 2px 0;
-}
-
-.right-tab {
-  border: 1px solid transparent;
-  border-radius: var(--radius-s);
-  color: var(--text);
-  flex: 1 1 0;
-  font-size: 11px;
-  line-height: 1.15;
-  min-height: 24px;
-  min-width: 0;
-  padding: 3px var(--space-2);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.right-panel-collapse {
-  background: var(--bg-panel-2);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-s);
-  color: var(--text);
-  cursor: pointer;
-  flex: 0 0 24px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 1;
-  min-height: 24px;
-  padding: 0;
-}
-
-.right-panel-collapse:hover,
-.right-panel-collapse:focus-visible {
-  background: var(--surface-selected);
-  outline: none;
-}
-
-.right-panel-restore {
-  align-items: center;
-  align-self: stretch;
-  background: var(--bg-panel);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-s);
-  color: var(--text);
-  cursor: pointer;
-  display: flex;
-  flex: 0 0 24px;
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: 700;
-  justify-content: center;
-  padding: 4px 2px;
-  text-orientation: mixed;
-  writing-mode: vertical-rl;
-}
-
-.right-panel-restore:hover,
-.right-panel-restore:focus-visible {
-  background: var(--surface-selected);
-  outline: 2px solid var(--accent-primary);
-  outline-offset: -2px;
-}
-
-.right-panel-restore[hidden] {
-  display: none;
-}
-
-.editor-layout.no-right-panel .right-panel {
-  display: none;
-}
-
-.right-tab.active {
-  background: var(--accent-muted);
-  border-color: var(--accent-border);
-  color: var(--text);
 }
 
 .right-tabbody {
@@ -104,7 +22,6 @@
 .editor-layout .canvas-area {
   /* flex center 금지 — 캔버스가 가용 영역을 가득 채워야 한다 */
   align-items: stretch;
-  background: var(--bg-canvas);
   display: block;
   justify-content: stretch;
   min-height: 0;
@@ -113,39 +30,22 @@
 }
 
 .editor-layout .canvas-area .phaser-container {
-  background: var(--bg-canvas);
-  border: 0;
-  box-shadow: none;
   /* 스크롤 셸을 꽉 채운다. 고정 1024×768은 작은 중앙 영역 + 가로스크롤을 만든다. */
-  box-sizing: border-box;
-  display: block;
-  height: 100%;
-  min-height: 100%;
-  min-width: 100%;
-  overflow: hidden;
-  position: relative;
-  width: 100%;
 }
 
 .editor-layout .canvas-area .phaser-container > canvas {
   /* 버퍼 크기와 별도로 CSS가 호스트를 채우게 — fitCanvas가 버퍼도 맞춤 */
-  display: block;
-  height: 100% !important;
   max-height: 100%;
   max-width: 100%;
-  width: 100% !important;
 }
 
 .editor-canvas-scroll-shell {
   /* 크롬 높이: 상태바 / 툴바 예약. Figma 셸은 figma-editor에서 덮어씀. */
-  bottom: var(--editor-canvas-chrome-bottom, 22px);
   height: auto;
   left: 0;
   /* DOM 스크롤 대신 카메라 팬 — 스크롤바 거터로 영역이 줄어들지 않게 */
-  overflow: hidden;
   position: absolute;
   right: 0;
-  top: var(--editor-canvas-chrome-top, 30px);
   width: auto;
 }
 
@@ -170,273 +70,17 @@
   background: var(--bg-canvas);
 }
 
-.editor-statusbar {
-  align-items: center;
-  background: var(--bg-panel);
-  border-top: 1px solid var(--border-subtle);
-  bottom: 0;
-  color: var(--text);
-  display: flex;
-  font: 11px/1.2 var(--font-ui);
-  gap: 0;
-  height: 22px;
-  left: 0;
-  min-width: 0;
-  overflow: hidden;
-  position: absolute;
-  right: 0;
-  z-index: 22;
-}
-
-.editor-statusbar-cell {
-  border-left: 1px solid var(--border-subtle);
-  border-right: 0;
-  flex: 0 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  padding: 3px 8px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.editor-statusbar-cell.strong {
-  flex: 0 0 auto;
-  font-weight: 700;
-}
-
-.editor-statusbar-cell.db-connection-status {
-  flex: 0 0 auto;
-  font-weight: 700;
-  margin-left: auto;
-  max-width: min(260px, 32vw);
-}
-
-.editor-statusbar-cell.map-edit-lock-status {
-  flex: 0 0 auto;
-  font-weight: 700;
-  max-width: min(220px, 28vw);
-}
-
-.editor-statusbar-cell.map-edit-lock-status.held {
-  color: var(--status-success);
-}
-
-.editor-statusbar-cell.map-edit-lock-status.checking,
-.editor-statusbar-cell.map-edit-lock-status.unavailable {
-  color: var(--status-warning);
-}
-
-.editor-statusbar-cell.map-edit-lock-status.locked {
-  color: var(--status-error);
-}
-
-.editor-statusbar-cell.db-connection-status.ready {
-  color: var(--status-success);
-}
-
-.editor-statusbar-cell.db-connection-status.ready.checking {
-  color: var(--status-warning);
-}
-
-.editor-statusbar-cell.db-connection-status.ready.healthy {
-  color: var(--status-success);
-}
-
-.editor-statusbar-cell.db-connection-status.ready.missing,
-.editor-statusbar-cell.db-connection-status.ready.unreachable {
-  color: var(--status-error);
-}
-
-.editor-statusbar-cell.db-connection-status.disabled,
-.editor-statusbar-cell.db-connection-status.not-configured {
-  color: var(--status-error);
-}
-
-.test-play-modal-backdrop {
-  align-items: center;
-  background: var(--bg-inset);
-  display: flex;
-  inset: 0;
-  justify-content: center;
-  padding: 0;
-  position: fixed;
-  z-index: 1300;
-}
-
-.test-play-window {
-  background: var(--bg-inset);
-  border: 0;
-  box-shadow: none;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  height: 100dvh;
-  max-height: none;
-  max-width: none;
-  position: relative;
-  width: 100vw;
-}
-
-.test-play-window[data-window-mode="windowed"] {
-  align-self: center;
-  border: 1px solid var(--editor-line-strong);
-  box-shadow: var(--shadow-modal);
-  /* 642×512 기본은 전투 씬(논리 640×480)을 배율 1.0 에 가둬 "전투 UI 가 너무 좁다"
-     (감독 지적 4). 화면 대부분을 기본으로 쓰고, 스테이지 스케일이 창에 맞춰 키운다. */
-  height: min(1000px, calc(100dvh - 48px));
-  max-height: calc(100dvh - 32px);
-  max-width: calc(100vw - 32px);
-  min-height: 360px;
-  min-width: 0;
-  resize: both;
-  width: min(1320px, calc(100vw - 64px));
-}
-
-.test-play-titlebar {
-  align-items: center;
-  backdrop-filter: blur(8px);
-  background: var(--bg-glass);
-  color: var(--text-1);
-  display: flex;
-  flex: 0 0 30px;
-  gap: 5px;
-  font: 700 13px/1 var(--font-ui);
-  height: 30px;
-  inset: 0 0 auto 0;
-  min-height: 30px;
-  overflow: hidden;
-  padding: 4px 6px;
-  pointer-events: none;
-  position: absolute;
-  z-index: 30;
-}
-
-.test-play-window[data-window-mode="windowed"] .test-play-titlebar {
-  background: var(--editor-toolbar-bg);
-  border-bottom: 1px solid var(--editor-line);
-  position: relative;
-}
-
-.test-play-title {
-  height: 1px;
-  left: -9999px;
-  overflow: hidden;
-  position: absolute;
-  width: 1px;
-}
-
-.test-play-window[data-window-mode="windowed"] .test-play-title {
-  color: var(--editor-text);
-  flex: 1 1 auto;
-  height: auto;
-  left: auto;
-  min-width: 0;
-  overflow: hidden;
-  position: static;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: auto;
-}
-
-.test-play-close {
-  appearance: none;
-  background: var(--control-bg);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-s);
-  color: var(--text-1);
-  cursor: pointer;
-  font: 700 12px/1 var(--font-ui);
-  min-height: 20px;
-  opacity: 1;
-  padding: 2px 8px;
-  pointer-events: auto;
-  position: relative;
-}
-
-.test-play-window[data-window-mode="fullscreen"] .test-play-close.window-control.maximize,
-.test-play-window[data-window-mode="windowed"] .test-play-close.window-control.restore {
-  display: none;
-}
-
-.test-play-close.icon {
-  font-family: var(--font-mono);
-  padding: 2px 0;
-  text-transform: uppercase;
-  width: 22px;
-}
-
-.test-play-modal-body {
-  background: var(--bg-inset);
-  border: 0;
-  flex: 1 1 auto;
-  height: auto;
-  min-height: 0;
-  overflow: hidden;
-  padding: 0;
-}
-
-.test-play-window[data-window-mode="windowed"] .test-play-modal-body {
-  height: calc(100% - 30px);
-}
-
 @media (max-width: 480px) {
-  .test-play-window[data-window-mode="windowed"] {
-    height: calc(100dvh - 16px);
-    max-height: calc(100dvh - 16px);
-    max-width: calc(100vw - 16px);
-    width: calc(100vw - 16px);
-  }
 
-  .test-play-window[data-window-mode="windowed"] .test-play-titlebar {
-    gap: 3px;
-    padding-inline: 5px;
-  }
-
-  .test-play-window[data-window-mode="windowed"] [data-testid="mode-edit"],
-  .test-play-window[data-window-mode="windowed"] [data-testid="test-play-restart"],
-  .test-play-window[data-window-mode="windowed"] [data-testid="test-play-title"],
-  .test-play-window[data-window-mode="windowed"] [data-testid="test-play-window-maximize"],
   .test-play-window[data-window-mode="windowed"] > .runtime-debug-panel {
     display: none;
   }
 }
 
-.test-play-modal-body > .player-layout {
-  height: 100%;
-  min-height: 0;
-  width: 100%;
-}
-
-.test-play-modal-body > .player-layout.system-shell {
-  align-items: stretch;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr);
-  justify-items: stretch;
-}
-
-.test-play-modal-body > .player-layout.system-shell .play-viewport,
-.test-play-modal-body > .player-layout.system-shell .title-screen {
-  align-self: stretch;
-  justify-self: stretch;
-  height: 100%;
-  min-height: 0;
-  width: 100%;
-}
-
 .canvas-toolbar {
-  align-items: center;
   backdrop-filter: blur(10px);
-  background: var(--bg-glass);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-m);
-  box-shadow: var(--shadow-pop);
   display: flex;
-  gap: 3px;
-  left: 50%;
-  padding: 3px;
   position: absolute;
-  top: var(--space-1);
-  transform: translateX(-50%);
   z-index: 20;
 }
 
@@ -633,34 +277,8 @@
   }
 }
 
-@media (max-width: 520px) {
-  .oprn-menu-bar {
-    display: none;
-  }
-
-  .topbar .title {
-    min-width: 66px;
-  }
-
-  .oprn-toolbar {
-    padding-top: 2px;
-  }
-
-  .oprn-toolbar-status {
-    max-width: 82px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
 .canvas-toolbar-label {
-  color: var(--text);
   font: 600 11px/1 var(--font-ui);
-  padding: 0 var(--space-1);
-}
-
-.zoom-button {
-  min-width: 30px;
 }
 
 .zoom-button.active,
@@ -670,35 +288,9 @@
   color: var(--text-primary);
 }
 
-.panel-section {
-  margin-bottom: 2px;
-}
-
-.panel-section h3 {
-  letter-spacing: 0;
-  margin: 0 0 2px 0;
-  text-transform: none;
-}
-
-.left-panel-stack .panel-section h3 {
-  color: var(--text);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 16px;
-  padding: 0 2px;
-}
-
 .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1) h3,
 .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2) h3 {
   display: none;
-}
-
-.left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1),
-.left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2) {
-  background: var(--bg-panel);
-  border-bottom: 1px solid var(--border-subtle);
-  margin-bottom: 1px;
-  padding-bottom: 1px;
 }
 
 .visually-hidden {
@@ -728,70 +320,4 @@
   display: block;
   image-rendering: pixelated;
   position: absolute;
-}
-
-.oprn-icon-open::before {
-  background: #d8b35e;
-  border: 1px solid var(--border-default);
-  box-shadow: inset 0 2px 0 #f0d48c;
-  height: 9px;
-  left: 2px;
-  top: 5px;
-  width: 12px;
-}
-
-.oprn-icon-open::after {
-  background: #c79840;
-  border: 1px solid var(--border-default);
-  border-bottom: 0;
-  height: 4px;
-  left: 2px;
-  top: 2px;
-  width: 7px;
-}
-
-.oprn-icon-save::before {
-  background: var(--accent);
-  border: 1px solid var(--border-strong);
-  box-shadow: inset 0 3px 0 var(--accent-border);
-  height: 12px;
-  left: 2px;
-  top: 2px;
-  width: 12px;
-}
-
-.oprn-icon-save::after {
-  background: var(--bg-raised);
-  border-top: 1px solid var(--border-strong);
-  height: 4px;
-  left: 5px;
-  top: 9px;
-  width: 7px;
-}
-
-.oprn-icon-export::before,
-.oprn-icon-import::before {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-strong);
-  height: 9px;
-  left: 2px;
-  top: 5px;
-  width: 9px;
-}
-
-.oprn-icon-export::after,
-.oprn-icon-import::after {
-  border-bottom: 4px solid transparent;
-  border-top: 4px solid transparent;
-  top: 5px;
-}
-
-.oprn-icon-export::after {
-  border-left: 6px solid #d66b1f;
-  left: 9px;
-}
-
-.oprn-icon-import::after {
-  border-right: 6px solid #2f8a43;
-  left: 8px;
 }

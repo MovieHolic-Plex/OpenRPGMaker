@@ -33,28 +33,19 @@
   white-space: nowrap;
 }
 
-.battle-actor-state {
-  font-size: 14px;
-}
-
 .battle-actor-hp {
   text-align: right;
 }
 
 .battle-actor-gauge {
-  align-items: center;
-  display: flex;
   gap: 6px;
   grid-column: 1 / -1;
-  min-width: 0;
 }
 
 .battle-atb-bar {
   background: var(--oprn-battle-window-shadow);
   border: 2px solid var(--oprn-battle-window-light);
   display: inline-block;
-  flex: 1 1 auto;
-  height: 12px;
   min-width: 0;
   position: relative;
 }
@@ -85,7 +76,6 @@
 .battle-enemy-list-row:focus-visible {
   border-color: #eef4ff #081849 #081849 #eef4ff;
   color: #fff;
-  outline: 0;
 }
 
 .battle-target-menu .battle-command[data-battle-command-cursor="true"] {

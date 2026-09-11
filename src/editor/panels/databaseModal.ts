@@ -1,3 +1,4 @@
+import "@/styles/database/index.css";
 import { dismissCoachMarks } from "@/editor/coachMarks";
 import { disposeAppearanceSlots } from "@/editor/panels/databaseAppearanceSlots";
 import type { DatabaseCollection } from "@/editor/databaseActions";

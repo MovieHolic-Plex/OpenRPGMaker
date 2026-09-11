@@ -9,46 +9,6 @@
   width: 100%;
 }
 
-.event-command-face-editor {
-  align-items: stretch;
-  display: grid;
-  gap: 0;
-  grid-template-columns: minmax(0, 1fr);
-  min-width: 0;
-  width: 100%;
-}
-
-.event-command-face-preview-host {
-  min-width: 0;
-}
-
-.event-command-face-grid-host,
-.event-command-face-grid-section {
-  min-width: 0;
-}
-
-.event-command-face-resource-actions {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.event-command-face-resource-actions .btn {
-  flex: 0 0 auto;
-  min-width: max-content;
-  white-space: nowrap;
-  width: auto;
-  writing-mode: horizontal-tb;
-}
-
-.event-command-face-hint {
-  color: var(--text-dim, var(--text-2));
-  font: 500 11px/1.45 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  margin: 0;
-}
-
 .event-command-face-preview {
   align-items: center;
   background: var(--surface-recessed, var(--bg-raised));
@@ -69,43 +29,15 @@
 }
 
 .event-command-face-crop {
-  background-image: var(--face-url);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
   border-color: var(--event-rm-shadow) var(--event-rm-light) var(--event-rm-light) var(--event-rm-shadow);
   border-style: solid;
   border-width: 1px;
   flex: 0 0 auto;
-  height: var(--face-display-height, 96px);
-  image-rendering: pixelated;
-  overflow: hidden;
-  width: var(--face-display-width, 96px);
 }
 
 .event-command-face-preview.flipped .event-command-face-crop,
 .event-command-face-crop-shell.flipped .event-command-face-crop {
   transform: scaleX(-1);
-}
-
-.event-command-face-preview-copy {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-}
-
-.event-command-face-preview-copy strong,
-.event-command-face-preview[data-empty="true"] strong {
-  font: 700 12px/1.25 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.event-command-face-preview-copy span,
-.event-command-face-preview[data-empty="true"] span {
-  color: var(--text-dim, var(--text-1));
-  font: 600 11px/1.3 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
 }
 
 .event-command-face-preview-id {
@@ -328,7 +260,6 @@
   border-radius: 6px;
   color: var(--text-muted, var(--text-2));
   font: 750 12px/18px Inter, "Segoe UI", system-ui, sans-serif;
-  min-height: 30px;
 }
 
 .event-command-picker-tab[aria-selected="true"] {

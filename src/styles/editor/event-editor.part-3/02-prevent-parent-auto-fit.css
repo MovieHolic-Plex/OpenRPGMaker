@@ -19,76 +19,34 @@
 
 
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] {
-  align-items: center;
-  justify-content: center;
   overflow: auto;
-  padding: 12px;
 }
 
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-window {
-  background: var(--bg-raised);
-  border: 1px solid var(--border-default);
-  box-shadow: 0 18px 48px var(--shadow-pop);
-  color: var(--text-1);
-  font-family: var(--font-ui);
   width: min(920px, calc(100vw - 24px));
 }
 
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-header {
-  align-items: center;
-  background: var(--bg-raised);
   border-bottom: 1px solid var(--border-default);
-  min-height: 44px;
-  padding: 12px 16px;
-}
-
-.event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-header h3 {
-  color: var(--text-1);
-  font: 700 16px/22px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  margin: 0;
 }
 
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-close {
   background: var(--bg-raised);
-  border: 1px solid var(--border-default);
-  border-radius: 6px;
-  color: var(--text-1);
-  font: 700 16px/1 Inter, "Segoe UI", system-ui, sans-serif;
-  height: 28px;
-  min-width: 28px;
-  padding: 0;
-}
-
-.event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-body {
-  display: block;
-  overflow: hidden;
-  padding: 14px 16px 16px;
 }
 
 .transfer-player-dialog {
   display: grid;
-  gap: 12px;
-  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
-  grid-template-rows: minmax(360px, 42vh) auto auto;
   min-width: 0;
 }
 
 .transfer-player-tree,
 .transfer-player-preview {
   background: var(--bg-raised);
-  border: 1px solid var(--border-default);
-  border-radius: 8px;
   min-height: 0;
   overflow: auto;
 }
 
-.transfer-player-tree {
-  padding: 10px;
-}
-
 .transfer-player-project {
-  color: var(--text-1);
-  font: 700 14px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   letter-spacing: -0.01em;
   margin-bottom: 8px;
   padding: 4px 8px 8px 28px;
@@ -116,11 +74,7 @@
 .transfer-player-map-row {
   background: transparent;
   border: 0;
-  border-radius: 6px;
-  color: var(--text-1);
   cursor: pointer;
-  font: 600 14px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  min-height: 32px;
   overflow: hidden;
   padding: 6px 10px 6px 30px;
   position: relative;
@@ -143,7 +97,6 @@
 
 .transfer-player-map-row.selected {
   background: color-mix(in srgb, var(--accent-soft, #dbeafe) 78%, var(--bg-raised));
-  color: var(--accent, var(--text-1));
 }
 
 .transfer-player-preview {
@@ -152,7 +105,6 @@
   display: flex;
   justify-content: center;
   overflow: hidden;
-  padding: 0;
 }
 
 .transfer-player-preview canvas {
@@ -163,29 +115,20 @@
 }
 
 .transfer-player-controls {
-  display: grid;
-  gap: 10px;
-  grid-column: 1 / -1;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
   min-width: 0;
 }
 
 .transfer-player-direction {
   align-items: center;
-  border: 1px solid var(--border-default);
-  border-radius: 8px;
   display: flex;
   flex-wrap: wrap;
   gap: 10px 14px;
-  margin: 0;
   min-width: 0;
   padding: 10px 14px 12px;
 }
 
 .transfer-player-direction legend {
   color: var(--text-1);
-  font: 700 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  padding: 0 4px;
 }
 
 .transfer-player-direction-options {
@@ -204,11 +147,6 @@
   white-space: nowrap;
 }
 
-.transfer-player-direction-options span {
-  color: var(--text-1);
-  font: 600 14px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-}
-
 .transfer-player-footer {
   align-items: stretch;
   display: grid;
@@ -220,15 +158,10 @@
 .transfer-player-status {
   align-content: center;
   background: var(--bg-raised);
-  border: 1px solid var(--border-default);
-  border-radius: 8px;
-  color: var(--text-1);
   display: grid;
-  font: 700 14px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   letter-spacing: -0.01em;
   min-width: 0;
   overflow: hidden;
-  padding: 0 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -243,19 +176,12 @@
 .transfer-player-button {
   background: var(--bg-raised);
   border: 1px solid var(--border-default);
-  border-radius: 6px;
-  color: var(--text-1);
   cursor: pointer;
-  font: 650 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  min-height: 34px;
   min-width: 44px;
-  padding: 6px 12px;
 }
 
 .transfer-player-zoom-button.active {
   background: color-mix(in srgb, var(--accent-soft, #dbeafe) 78%, var(--bg-raised));
-  border-color: var(--accent, var(--border-default));
-  color: var(--accent, var(--text-1));
 }
 
 @media (max-width: 1240px) {

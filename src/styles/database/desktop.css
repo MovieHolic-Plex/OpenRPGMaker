@@ -37,37 +37,11 @@
   }
 
   .database-modal-body .oprn-record-list-pane {
-    display: grid;
     /* h3 / 검색 / 카테고리 필터 칩(아이템·장비만, 없으면 빈 행) / 목록(1fr) / 푸터 / 툴바.
        칩 행은 컬렉션에 따라 렌더되지 않으므로 각 자식을 명시적 행에 배치한다 — 그래야
        칩 유무와 무관하게 목록이 항상 1fr 행을 차지한다. flex-wrap 칩 행의 max-content
        높이를 그리드가 0 으로 읽는 케이스(align-content: normal/stretch)가 있어
        minmax(max-content, auto) 로 내용 높이를 보장한다(빈 행은 max-content 0 → 0px). */
-    grid-template-rows: auto auto minmax(max-content, auto) minmax(0, 1fr) auto auto;
-  }
-
-  .database-modal-body .oprn-record-list-pane > h3 {
-    grid-row: 1;
-  }
-
-  .database-modal-body .oprn-record-list-pane > .db-search {
-    grid-row: 2;
-  }
-
-  .database-modal-body .oprn-record-list-pane > .db-filter-chips {
-    grid-row: 3;
-  }
-
-  .database-modal-body .oprn-record-list-pane > .db-list {
-    grid-row: 4;
-  }
-
-  .database-modal-body .oprn-record-list-pane > .oprn-record-list-footer {
-    grid-row: 5;
-  }
-
-  .database-modal-body .oprn-record-list-pane > .db-toolbar {
-    grid-row: 6;
   }
 
   .database-modal-body .db-list {
@@ -92,58 +66,32 @@
     white-space: nowrap;
   }
 
-  .database-modal-body .oprn-record-detail-pane {
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  .database-modal-body .oprn-detail-form {
-    min-height: 0;
-    overflow: auto;
-  }
-
   .database-modal-window:has(.oprn-record-enemies) .database-modal-body,
   .database-modal-window:has(.oprn-record-troops) .database-modal-body {
     display: grid;
-    grid-template-rows: auto auto minmax(0, 1fr);
     overflow: hidden;
     padding: 0;
   }
 
   .database-modal-body:has(.oprn-record-enemies) .db-tabs,
   .database-modal-body:has(.oprn-record-troops) .db-tabs {
-    background: var(--bg-raised);
-    border-bottom: 1px solid var(--border-default);
     flex-wrap: nowrap;
-    height: auto;
     margin: 0;
     max-height: none;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 8px 8px 0;
   }
 
   .database-modal-body:has(.oprn-record-enemies) .db-tab,
   .database-modal-body:has(.oprn-record-troops) .db-tab {
-    background: var(--bg-raised);
     border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
-    color: var(--text-primary);
     font-size: 13px;
-    height: 34px;
     margin-right: 2px;
-    min-width: 86px;
-    padding: 0 16px;
   }
 
   .database-modal-body:has(.oprn-record-enemies) .db-tab.active,
   .database-modal-body:has(.oprn-record-troops) .db-tab.active {
-    background: linear-gradient(var(--accent), var(--accent));
-    border-bottom-color: var(--accent-border);
     border-color: var(--accent-border) var(--accent-border) var(--accent-border) var(--accent-border);
-    box-shadow: none;
-    color: var(--text-1);
     margin-bottom: -1px;
   }
 
@@ -201,20 +149,8 @@
     padding: 14px 16px 10px;
   }
 
-  .database-modal-body .oprn-record-enemies .oprn-record-list-pane,
-  .database-modal-body .oprn-record-enemies .oprn-record-detail-pane {
-    background: var(--bg-raised);
-    border: 1px solid var(--border-subtle);
-    border-radius: 6px;
-    box-shadow: none;
-  }
-
   .database-modal-body .oprn-record-enemies .oprn-record-list-pane {
     padding: 16px 14px;
-  }
-
-  .database-modal-body .oprn-record-enemies .oprn-record-detail-pane {
-    padding: 10px;
   }
 
   .database-modal-body:has(.oprn-record-actors) .db-tabs {
@@ -262,7 +198,6 @@
       "critical options actions"
       "state element actions";
     grid-template-columns: minmax(360px, 0.88fr) minmax(360px, 0.9fr) minmax(430px, 1fr);
-    grid-template-rows: auto auto auto auto minmax(170px, 1fr);
   }
 
   .database-modal-window:has(.oprn-record-troops) {
@@ -415,9 +350,6 @@
       "top top"
       "preview events"
       "members events";
-    grid-template-columns: minmax(360px, 0.95fr) minmax(420px, 1fr);
-    grid-template-rows: auto minmax(300px, 1fr) auto;
-    height: 100%;
     min-width: 0;
     width: 100%;
   }
@@ -537,10 +469,6 @@
   .database-modal-body .db-troop-event-condition-strip {
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
-  }
-
-  .database-modal-body .db-troop-event-panel {
-    grid-template-rows: auto auto auto auto minmax(0, 1fr) auto;
   }
 
   .database-modal-body .db-troop-event-command-area {

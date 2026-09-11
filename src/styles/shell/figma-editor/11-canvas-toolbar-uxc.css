@@ -1,115 +1,7 @@
-.canvas-toolbar,
-.persistence-mode-banner ~ .canvas-toolbar {
-  left: auto;
-  max-width: calc(100% - 24px);
-  right: 12px;
-  top: 8px;
-  transform: none;
-}
-
-.persistence-mode-banner ~ .canvas-toolbar {
-  top: 36px;
-}
-
-.canvas-toolbar-zoom-group,
-.canvas-toolbar-save-group {
-  align-items: center;
-  display: flex;
-  gap: 4px;
-}
-
-.canvas-toolbar .zoom-button,
-.canvas-toolbar .canvas-toolbar-save-group {
-  display: none;
-}
-
 /* hover 자동 노출 제거(UX 피드백) — 확장은 오직 ⋯ 버튼(is-expanded)으로만. */
-.canvas-toolbar.is-expanded .zoom-button,
-.canvas-toolbar.is-expanded .canvas-toolbar-save-group {
-  display: inline-flex;
-}
 
 /* 줄 메뉴(1x/2x/4x)는 기본 숨김 — 스테퍼 ± 와 상시 중복 노출되던 결함 수정
    (2026-08-18 초보자 UX 리뷰 P2-11). 배율 버튼 클릭 시에만 펼친다. */
-.canvas-toolbar .canvas-toolbar-zoom-menu {
-  display: none;
-}
-.canvas-toolbar.is-expanded .canvas-toolbar-zoom-menu,
-.canvas-toolbar .canvas-toolbar-zoom-group.is-menu-open .canvas-toolbar-zoom-menu {
-  align-items: center;
-  display: inline-flex;
-  gap: 4px;
-}
-.canvas-toolbar .canvas-toolbar-zoom-group.is-menu-open .zoom-button {
-  display: inline-flex;
-}
-
-.canvas-toolbar-save-group {
-  border-left: 1px solid var(--editor-line);
-  margin-left: 4px;
-  padding-left: 6px;
-}
-
-.canvas-toolbar-expand {
-  align-items: center;
-  background: var(--control-bg);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-s);
-  color: var(--text-1);
-  cursor: pointer;
-  display: inline-flex;
-  font-size: 14px;
-  height: 30px;
-  justify-content: center;
-  min-width: 30px;
-  padding: 0;
-}
-
-.map-save-button {
-  min-width: 66px;
-}
-
-.map-lock-banner {
-  align-items: center;
-  background: var(--danger);
-  border: 1px solid rgba(198, 64, 61, 0.24);
-  border-radius: var(--radius-s);
-  box-shadow: var(--shadow-pop);
-  color: var(--bg-surface);
-  display: flex;
-  gap: 8px;
-  left: 12px;
-  max-width: min(560px, calc(100% - 380px));
-  min-height: 32px;
-  padding: 5px 8px;
-  position: absolute;
-  top: 8px;
-  z-index: var(--z-canvas-chip);
-}
-
-.map-lock-banner.is-hidden {
-  display: none;
-}
-
-.map-lock-banner-text {
-  font-size: 12px;
-  font-weight: 700;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.map-lock-takeover-button {
-  background: var(--control-bg);
-  border: 1px solid rgba(42, 37, 33, 0.18);
-  border-radius: var(--radius-s);
-  color: var(--text-1);
-  cursor: pointer;
-  flex: 0 0 auto;
-  font-size: 12px;
-  min-height: 26px;
-  padding: 3px 8px;
-}
 
 .event-editor-lifecycle-status {
   display: grid;
@@ -129,27 +21,7 @@
 .event-editor-remote-status[data-state="error"] { color: var(--danger, var(--danger)); }
 .event-editor-remote-status[data-state="saved"] { color: var(--status-success, var(--success)); }
 
-@media (max-width: 1320px) {
-  .map-lock-banner {
-    max-width: calc(100% - 260px);
-  }
-
-  .canvas-toolbar-label {
-    font-size: 12px;
-  }
-}
-
 /* ── 캔버스 스크롤 셸 상단 여백 — 10-map-tree.css 에서 이관(2026-09-03, 그 파일은 좌측 사이드바 모던 레이어
    editor/left-sidebar.modern.css 로 흡수됐다). 캐스케이드 위치는 바로 뒤 파일이라 결과가 같다. ── */
 /* UXC editor shell repairs: keep canvas controls in reserved top chrome while the
    statusbar-free canvas extends to the bottom edge. */
-.editor-canvas-scroll-shell {
-  bottom: var(--editor-canvas-chrome-bottom, 0px);
-  top: var(--editor-canvas-chrome-top, 48px);
-}
-
-.persistence-mode-banner ~ .editor-canvas-scroll-shell,
-.canvas-area:has(.persistence-mode-banner) .editor-canvas-scroll-shell {
-  --editor-canvas-chrome-top: 74px;
-  top: var(--editor-canvas-chrome-top, 74px);
-}

@@ -137,11 +137,6 @@
 
 /* The shipped play surface computes scale/placement from its logical
    resolution. Do not resize narration, images or videos independently here. */
-.db-cinematic-workspace .db-cinematic-preview-stage > .play-viewport {
-  height: 100%;
-  min-height: 0;
-  width: 100%;
-}
 
 @media (max-width: 1100px) {
   .database-modal-backdrop .database-modal-window .database-modal-body .db-ws.db-cinematic-workspace {

@@ -187,8 +187,6 @@
 .oprn-status-menu .status-menu-detail-title {
   font-size: 13px;
   line-height: 1.12;
-  margin: 0 0 2px;
-  white-space: normal;
   word-break: keep-all;
 }
 /* 한글은 기본 word-break 로 어절 중간이 잘린다("아이템이 없습니 / 다").

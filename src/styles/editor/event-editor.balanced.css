@@ -2695,6 +2695,14 @@ footer {
   padding: 0 10px;
 }
 
+/* 1단계 잔여 보정: map 의 button.btn.danger 가 event 레이어에 지게 되어 여기서 되살린다. 만기: Task 12/13 */
+.event-editor-modal-window .btn.danger {
+  color: var(--danger);
+}
+.event-editor-modal-window .btn.danger:hover {
+  border-color: var(--danger);
+}
+
 .event-editor-modal-window .event-editor .event-editor-command-tool:disabled,
 .event-editor-modal-window .event-editor .btn.event-page-action-button.disabled,
 .event-editor-modal-window .event-editor .btn.event-page-action-button:disabled {
