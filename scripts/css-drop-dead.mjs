@@ -88,7 +88,7 @@ function main(argv) {
   const surface = flag("--surface");
   const write = args.includes("--write");
   const jsonPath = flag("--json");
-  if (!surface || surface.startsWith("--") || jsonPath === null) { console.error(USAGE); process.exit(1); }
+  if (!surface || surface.startsWith("--") || jsonPath === null || jsonPath?.startsWith("--")) { console.error(USAGE); process.exit(1); }
 
   const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
   const registry = JSON.parse(fs.readFileSync(path.join(repo, "scripts/css-surfaces.json"), "utf8"));
