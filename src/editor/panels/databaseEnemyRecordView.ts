@@ -31,10 +31,8 @@ import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import { detailHero, emptyState, listToolbar, noticeBar, restoreFocusAfterRerender, sectionCard } from "@/editor/panels/databaseWorkspace";
-// JS import 로 넣는다 — 번들 순서상 index.css 의 studio-theme.css 뒤에 오므로,
-// studio-theme 이 남긴 `grid-area: combat !important` 같은 잔재를 !important 남발 없이 이긴다.
-// (databaseUtilityRecordViews.ts 가 modern/utility-records.css 를 넣는 방식과 동일.)
-import "@/styles/database/modern/enemies.css";
+// 이 뷰의 CSS(database/modern/enemies.css)는 database/index.css 진입 시트가 database 레이어 끝에서 읽는다(2026-09-11 Task 7).
+// studio-theme.css 뒤에 오므로 그 잔재(`grid-area: combat !important` 등)를 !important 남발 없이 이긴다.
 import {
   checkboxField,
   conditionLabel,

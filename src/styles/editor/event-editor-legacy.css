@@ -1,3 +1,0 @@
-/* Split wrapper: preserves event-editor-legacy.css cascade order. */
-@import "./event-editor-legacy.part-1.css";
-@import "./event-editor-legacy.part-2.css";

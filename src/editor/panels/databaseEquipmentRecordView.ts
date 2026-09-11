@@ -1,6 +1,5 @@
 import { equipmentSlots } from "@/project/equipmentSlots";
 import { equipmentSlotManager } from "@/editor/panels/equipmentSlotManager";
-import "@/styles/database/modern/equipment-items.css";
 import { equipmentFields } from "@/editor/panels/databaseBasicRecordFields";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import {

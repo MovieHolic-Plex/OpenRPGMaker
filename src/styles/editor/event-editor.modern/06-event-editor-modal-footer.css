@@ -1,13 +1,6 @@
 /* 푸터: 좌측 힌트 | 우측 삭제·테스트·취소·적용·확인·도움말 (목업 순서) */
 .event-editor-modal-footer {
-  align-items: center;
-  background: color-mix(in srgb, var(--bg-raised) 94%, var(--event-modern-field));
-  border-top: 1px solid var(--border-subtle);
-  display: grid;
-  gap: 12px;
   grid-template-columns: minmax(0, 1fr) auto;
-  min-height: 44px;
-  padding: 5px 14px;
 }
 
 .event-editor-footer-leading {
@@ -20,12 +13,8 @@
 
 .event-editor-lifecycle-status {
   align-items: center;
-  display: flex;
   flex-direction: row;
   white-space: nowrap;
-  gap: 8px;
-  margin-right: 0;
-  min-width: 0;
   overflow: hidden;
 }
 
@@ -41,7 +30,6 @@
 }
 
 .event-editor-draft-status {
-  color: var(--event-modern-text-soft, var(--text-2));
   font: 500 12px/1.35 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   min-width: 0;
   overflow: hidden;
@@ -51,9 +39,7 @@
 
 
 .event-editor-footer-actions {
-  display: flex;
   flex-wrap: nowrap;
-  gap: 6px;
   justify-content: flex-end;
 }
 
@@ -86,7 +72,6 @@
   z-index: 4;
 }
 .event-editor-modal-resize-handle:focus-visible {
-  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
@@ -133,10 +118,6 @@
 }
 
 @media (max-width: 820px) {
-  .event-editor-modal-footer {
-    gap: 6px;
-    grid-template-columns: minmax(80px, 1fr) auto;
-  }
 
   .event-editor-footer-leading {
     display: flex;

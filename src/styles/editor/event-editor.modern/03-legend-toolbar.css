@@ -225,10 +225,8 @@
   border: 1px solid var(--event-modern-border);
   border-radius: 8px;
   counter-reset: command-row;
-  display: block;
   height: 100%;
   overflow: auto;
-  padding: 4px 0;
   scrollbar-width: thin;
 }
 

@@ -1,3 +1,4 @@
+import "@/styles/event/index.css";
 import { warmEditorPickerAssets } from "@/assets/editorAssetWarmup";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";

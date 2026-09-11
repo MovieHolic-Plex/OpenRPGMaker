@@ -1,35 +1,4 @@
 /* Map settings: fixed navigation, a single reading column, and one scroller. */
-.event-subdialog-window.wide:has(.map-props-dialog) {
-  width: min(1000px, calc(100vw - 48px));
-  height: min(820px, calc(100dvh - 48px));
-  max-height: calc(100dvh - 48px);
-}
-
-.event-subdialog-window:has(.map-props-dialog) .event-subdialog-header {
-  flex: 0 0 auto;
-  min-height: 76px;
-  padding: 16px 24px;
-  align-items: center;
-}
-
-.event-subdialog-window:has(.map-props-dialog) .event-subdialog-header h3 {
-  font-size: 20px;
-  line-height: 1.5;
-}
-
-.event-subdialog-window:has(.map-props-dialog) .event-subdialog-header p {
-  font-size: 14px;
-  line-height: 1.5;
-  margin: 2px 0 0;
-  overflow-wrap: anywhere;
-}
-
-.event-subdialog-body:has(> .map-props-dialog) {
-  flex: 1;
-  padding: 0;
-  overflow: hidden;
-  min-height: 0;
-}
 
 .map-props-dialog {
   display: grid;
@@ -437,12 +406,6 @@
   border: 0;
 }
 
-.map-props-dialog .event-custom-select-trigger {
-  min-height: 38px;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
 .map-props-dialog .btn {
   min-height: 36px;
   font-size: 14px;
@@ -462,11 +425,6 @@
 
 .map-props-dialog input.map-encounter-weight {
   width: 80px;
-}
-
-.map-props-dialog .map-encounter-row-main .event-custom-select {
-  flex: 1;
-  min-width: 0;
 }
 
 .map-props-resource {
@@ -583,57 +541,6 @@
    바로 위 공용 규칙, 그리고 복사영역·메타 규칙과 완전히 중복이었다. */
 
 /* Map resource pickers share the catalog behavior, with the map window's typography. */
-.db-enemy-dialog-backdrop[data-testid^="map-"] .db-enemy-dialog {
-  width: min(840px, calc(100vw - 48px));
-  min-width: 0;
-  max-height: min(720px, calc(100dvh - 48px));
-  border: 1px solid var(--border-default);
-  border-radius: 10px;
-  overflow: hidden;
-  font: 400 14px/1.5 var(--font-ui);
-}
-
-.db-enemy-dialog-backdrop[data-testid^="map-"] .db-enemy-dialog header {
-  flex: 0 0 auto;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-default);
-  background: var(--bg-surface);
-  color: var(--text-1);
-  font: 700 18px/1.5 var(--font-ui);
-}
-
-.db-enemy-dialog-backdrop[data-testid^="map-"] .db-enemy-dialog main {
-  min-height: 0;
-  padding: 16px 20px;
-  gap: 16px;
-}
-
-.db-enemy-dialog-backdrop[data-testid^="map-"] .db-resource-picker-search {
-  width: 100%;
-  min-height: 38px;
-  padding: 8px 10px;
-  border: 1px solid var(--border-default);
-  border-radius: 6px;
-  font: 400 14px/1.5 var(--font-ui);
-}
-
-.db-enemy-dialog-backdrop[data-testid^="map-"] .db-resource-picker-grid {
-  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-}
-
-.db-enemy-dialog-backdrop[data-testid^="map-"] .db-resource-picker-list {
-  max-height: min(390px, 50vh);
-}
-
-.db-enemy-dialog-backdrop[data-testid^="map-"] button {
-  font: 500 14px/1.5 var(--font-ui);
-}
-
-.db-enemy-dialog-backdrop[data-testid^="map-"] .db-enemy-dialog footer {
-  flex: 0 0 auto;
-  padding: 12px 20px;
-  border-top: 1px solid var(--border-default);
-}
 
 .db-enemy-dialog-backdrop[data-testid^="map-"] .db-enemy-dialog footer .btn {
   min-width: 72px;

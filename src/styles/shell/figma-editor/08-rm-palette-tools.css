@@ -23,17 +23,8 @@
     padding-bottom: 0;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .palette-stamp-status,
   .left-panel-stack[data-testid="left-palette-root"] > .empty-hint {
     display: none;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .palette-option-row {
-    display: grid;
-    gap: 4px;
-    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
-    margin: 0 0 8px;
-    max-width: 508px;
   }
 
   /* 도구막대 행은 ⋯ 트리거를 오른쪽에 고정하는 틀이고, 가로 스크롤은 내부 자식이 맡는다.
@@ -347,108 +338,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .palette-option-button,
-  .left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel .stamp-button {
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 700;
-    height: 32px;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .palette-option-button:not(.active):not([aria-pressed="true"]),
-  .left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel .stamp-button:not(.active):not([aria-pressed="true"]),
-  .left-panel-stack[data-testid="left-palette-root"] .brush-size-btn:not(.active),
-  .left-panel-stack[data-testid="left-palette-root"] .tile-inspector-action:not(.active),
-  .left-panel-stack[data-testid="left-palette-root"] .chipset-band-more {
-    background: var(--control-bg);
-    border-color: var(--editor-line);
-    color: var(--editor-text);
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel {
-    align-items: center;
-    display: grid;
-    gap: 8px;
-    grid-template-columns: minmax(0, 1fr);
-    margin: 0 0 8px;
-    max-width: 100%;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel .stamp-picker {
-    display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    scrollbar-width: thin;
-    white-space: nowrap;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel .tile-brush-label {
-    display: none;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel .stamp-button {
-    flex: 0 0 auto;
-    height: 30px;
-    min-width: 74px;
-    padding: 0 12px;
-    width: auto;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel .stamp-button:disabled {
-    display: none;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .chipset-band-nav {
-    align-items: end;
-    border-bottom: 1px solid var(--editor-line);
-    display: grid;
-    gap: 8px;
-    grid-template-columns: repeat(7, 48px) 32px;
-    margin: 6px 0 8px;
-    padding: 24px 0 10px;
-    position: relative;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .chipset-band-nav::before {
-    color: var(--editor-text);
-    content: "선택 타일";
-    font-size: 14px;
-    font-weight: 800;
-    left: 0;
-    line-height: 1.2;
-    position: absolute;
-    top: 0;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .chipset-band-button {
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 48px 48px;
-    border-radius: 5px;
-    flex: 0 0 48px;
-    height: 48px;
-    padding: 0;
-    width: 48px;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .chipset-band-more {
-    align-items: center;
-    border-radius: 6px;
-    color: var(--editor-text);
-    display: inline-flex;
-    font-size: 20px;
-    height: 32px;
-    justify-content: center;
-    padding: 0;
-    width: 32px;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .tile-palette-title {
-    display: block;
-    font-size: 15px;
-    margin: 0 0 6px;
   }
 
   .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2) > h3:not(.tile-palette-title) {

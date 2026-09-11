@@ -175,21 +175,7 @@
   flex: none;
 }
 .event-command-frame-door-seq {
-  display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-}
-.event-command-frame-door-step.active {
-  border-color: var(--accent, #4A57D6);
-  color: var(--accent, #4A57D6);
-  background: var(--accent-muted, rgba(110, 168, 255, 0.16));
-}
-.event-command-frame-absolute-input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
 }
 
 /* setEventGraphicPattern reuses page graphic (RM2003) picker chrome */

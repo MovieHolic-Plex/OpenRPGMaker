@@ -68,8 +68,6 @@ import type {
   TroopRecord,
 } from "@/project/types";
 import { el } from "@/util/dom";
-import "@/styles/database/battle-studio.css";
-import "@/styles/database/modern/utility-records.css";
 
 const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
 const BATTLE_COMMAND_KINDS: readonly ClassBattleCommandKind[] = [

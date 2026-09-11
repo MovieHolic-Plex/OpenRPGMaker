@@ -30,7 +30,6 @@ import { store } from "@/project/store";
 import type { ActorRateGrade, DatabaseElementRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
-import "@/styles/database/modern/utility-records.css";
 
 const ELEMENT_DAMAGE_GRADES: readonly ActorRateGrade[] = ["A", "B", "C", "D", "E"] as const;
 const DEFAULT_MULTIPLIERS: Record<ActorRateGrade, number> = { A: 200, B: 150, C: 100, D: 50, E: 0 };

@@ -2,14 +2,11 @@
 .event-editor-modal-backdrop.event-editor-modal-backdrop {
   align-content: stretch;
   align-items: stretch;
-  background: var(--bg-scrim);
-  backdrop-filter: blur(2px);
   display: grid;
   inset: 0;
   justify-content: stretch;
   justify-items: stretch;
   overflow: hidden;
-  padding: 12px;
   position: fixed;
   z-index: 1000;
 }
@@ -34,32 +31,14 @@ body.event-editor-modal-open .coach-mark-card {
   --event-modern-success: var(--success);
   --event-modern-text: var(--text-1);
   --event-modern-text-soft: var(--text-2);
-  background: var(--event-modern-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 10px;
-  box-shadow: 0 16px 48px var(--shadow-pop), 0 1px 0 var(--shadow-pop) inset;
   box-sizing: border-box;
-  color: var(--event-modern-text);
   display: grid;
-  font-family: var(--font-ui);
-  grid-template-rows: 52px minmax(0, 1fr) 44px;
   height: min(88dvh, 820px);
-  max-height: calc(100dvh - 80px);
-  max-width: min(1080px, calc(100vw - 80px));
-  width: min(1080px, calc(100vw - 80px));
-  place-self: center;
 }
 
 .event-editor-modal-header {
-  align-items: center;
-  background: var(--bg-raised);
-  border-bottom: 1px solid var(--border-subtle);
   color: var(--text-1);
   cursor: default;
-  display: flex;
-  gap: 10px;
-  min-height: 52px;
-  padding: 6px 18px 6px 26px;
 }
 
 .event-editor-modal-window.dragging .event-editor-modal-header {
@@ -91,15 +70,6 @@ body.event-editor-modal-open .coach-mark-card {
   text-transform: uppercase;
 }
 
-.event-editor-modal-header > .event-editor-window-controls,
-.event-editor-window-controls {
-  align-items: center;
-  display: flex;
-  flex: 0 0 auto;
-  gap: 8px;
-  margin-left: auto;
-}
-
 .event-editor-window-control,
 .event-editor-modal-header .event-editor-modal-close {
   align-items: center;
@@ -125,9 +95,7 @@ body.event-editor-modal-open .coach-mark-card {
 }
 
 .event-editor-modal-body {
-  background: var(--bg-raised);
   border: 0;
-  padding: 20px 25px 8px;
 }
 
 .event-editor-modal-window,
@@ -137,19 +105,7 @@ body.event-editor-modal-open .coach-mark-card {
 }
 
 .event-editor-modal-dynamic .event-editor {
-  background: var(--bg-raised);
-  display: grid;
-  gap: 14px;
-  grid-template-rows: 40px minmax(0, 1fr);
-  height: 100%;
-  min-height: 0;
   min-width: 0;
-  overflow: hidden;
-}
-
-.event-editor-id-row,
-.event-editor-modal-stable {
-  display: none;
 }
 
 .event-editor-top-strip {
@@ -161,12 +117,7 @@ body.event-editor-modal-open .coach-mark-card {
 }
 
 .event-editor-identity-row {
-  align-items: center;
-  display: grid;
-  gap: 14px;
-  grid-template-columns: minmax(0, 1.2fr) minmax(180px, 0.9fr);
   min-height: 40px;
-  min-width: 0;
 }
 
 .event-editor-name-field {
@@ -188,27 +139,6 @@ body.event-editor-modal-open .coach-mark-card {
   gap: 6px;
   grid-template-columns: minmax(0, 1fr);
   min-height: 40px;
-  min-width: 0;
-}
-
-.event-character-id-field-inline .event-character-id-label {
-  align-items: center;
-  display: grid;
-  gap: 8px;
-  grid-template-columns: auto minmax(0, 1fr);
-  min-width: 0;
-}
-
-.event-character-id-field-inline .event-character-id-label > span:first-child {
-  color: var(--text-2, var(--text-1));
-  font: 600 12px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  white-space: nowrap;
-}
-
-.event-character-social-extras {
-  display: grid;
-  gap: 8px;
-  margin: 0 0 8px;
 }
 
 .event-editor-name-field span {
@@ -279,7 +209,6 @@ body.event-editor-modal-open .coach-mark-card {
 
 .event-page-action-buttons .btn {
   min-width: 0;
-  padding: 0 12px;
 }
 
 .event-page-action-buttons .btn,

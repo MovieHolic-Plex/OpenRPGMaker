@@ -1,0 +1,93 @@
+/* shell 표면 — editor/responsive-a.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 shell 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* editor/responsive-a.css:1-4 */
+.map-context-menu-item:hover:not(.disabled),
+.map-context-menu-item:focus-visible:not(.disabled) {
+  outline: none;
+}
+
+/* editor/responsive-a.css:6-10 */
+.map-context-menu-item:active:not(.disabled) {
+  background: var(--surface-recessed);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+  transform: translateY(1px);
+}
+
+/* editor/responsive-a.css:12-14 */
+.map-context-menu-item.disabled {
+  cursor: default;
+}
+
+/* editor/responsive-a.css:16-20 */
+.map-context-menu-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* editor/responsive-a.css:81-83 */
+.topbar {
+  gap: 0;
+}
+
+/* editor/responsive-a.css:85-88 */
+.oprn-menu-bar {
+  min-height: 22px;
+  padding-left: 4px;
+}
+
+/* editor/responsive-a.css:90-92 */
+.oprn-menu-item {
+  min-height: 22px;
+}
+
+/* editor/responsive-a.css:94-96 */
+.oprn-toolbar {
+  gap: 1px;
+}
+
+/* editor/responsive-a.css:98-100 */
+.oprn-toolbar-row.primary-row {
+  min-height: 23px;
+}
+
+/* editor/responsive-a.css:102-105 */
+.oprn-toolbar-row.edit-row {
+  min-height: 23px;
+  padding-top: 1px;
+}
+
+/* editor/responsive-a.css:107-109 */
+.oprn-tool-button.primary {
+  min-width: 34px;
+}
+
+/* editor/responsive-a.css:115-117 */
+.oprn-toolbar-status {
+  height: 22px;
+}
+
+/* editor/responsive-a.css:119-121 */
+.editor-layout.no-right-panel .left-panel {
+  grid-template-rows: minmax(0, 1fr) 180px;
+}
+
+/* editor/responsive-a.css:123-125 */
+.editor-layout.no-right-panel .left-panel-stack {
+  background: var(--surface-panel);
+}
+
+/* editor/responsive-a.css:154-157 */
+.editor-statusbar {
+  background: var(--surface-app);
+  border-top: 1px solid var(--border-default);
+}
+
+/* editor/responsive-a.css:186-189 */
+.editor-layout.no-right-panel .left-panel {
+  min-width: 268px;
+  width: 268px;
+}

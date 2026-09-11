@@ -1,0 +1,64 @@
+/* database 표면 — editor/map-props.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 database 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* editor/map-props.css:586-594 */
+.db-enemy-dialog-backdrop[data-testid^="map-"] .db-enemy-dialog {
+  width: min(840px, calc(100vw - 48px));
+  min-width: 0;
+  max-height: min(720px, calc(100dvh - 48px));
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  overflow: hidden;
+  font: 400 14px/1.5 var(--font-ui);
+}
+
+/* editor/map-props.css:596-603 */
+.db-enemy-dialog-backdrop[data-testid^="map-"] .db-enemy-dialog header {
+  flex: 0 0 auto;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-1);
+  font: 700 18px/1.5 var(--font-ui);
+}
+
+/* editor/map-props.css:605-609 */
+.db-enemy-dialog-backdrop[data-testid^="map-"] .db-enemy-dialog main {
+  min-height: 0;
+  padding: 16px 20px;
+  gap: 16px;
+}
+
+/* editor/map-props.css:611-618 */
+.db-enemy-dialog-backdrop[data-testid^="map-"] .db-resource-picker-search {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  font: 400 14px/1.5 var(--font-ui);
+}
+
+/* editor/map-props.css:620-622 */
+.db-enemy-dialog-backdrop[data-testid^="map-"] .db-resource-picker-grid {
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+}
+
+/* editor/map-props.css:624-626 */
+.db-enemy-dialog-backdrop[data-testid^="map-"] .db-resource-picker-list {
+  max-height: min(390px, 50vh);
+}
+
+/* editor/map-props.css:628-630 */
+.db-enemy-dialog-backdrop[data-testid^="map-"] button {
+  font: 500 14px/1.5 var(--font-ui);
+}
+
+/* editor/map-props.css:632-636 */
+.db-enemy-dialog-backdrop[data-testid^="map-"] .db-enemy-dialog footer {
+  flex: 0 0 auto;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border-default);
+}

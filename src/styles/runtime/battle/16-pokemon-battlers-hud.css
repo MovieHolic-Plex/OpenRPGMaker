@@ -3,17 +3,6 @@
    ========================================================================= */
 
 /* 아군: 좌하단에서 크게, 상대를 바라보도록 스프라이트만 좌우 반전 */
-.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor {
-  transform: translate(-50%, -55%) scale(2.45);
-  height: 240px;
-  width: 220px;
-}
-.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor-sprite,
-.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor-image {
-  transform: scaleX(-1);
-  width: 224px;
-  height: 296px;
-}
 /* (구) 적 노드 scale(1.28) 확대는 18-pokemon-layout-redesign.css 가 이미지 크기
    제어로 대체하며 폐기 — 잔재를 남기면 모션/juice transform 의 덫이 된다. */
 
@@ -22,11 +11,7 @@
   content: "";
   position: absolute;
   left: 50%;
-  bottom: -12px;
-  width: 156px;
-  height: 36px;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse at center, rgba(30, 40, 30, 0.38) 0%, transparent 68%);
   z-index: -1;
 }
 
@@ -37,21 +22,8 @@
 }
 
 /* 적 정보 박스: 숫자 대신 HP 바(포켓몬 문법) */
-.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-hp {
-  display: none;
-}
-.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 104px;
-  align-items: center;
-  gap: 12px;
-}
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar {
   display: inline-block;
-  height: 10px;
-  border: 2px solid #6e6a5c;
-  border-radius: 6px;
-  background: #d8d4c4;
   position: relative;
   overflow: hidden;
 }
@@ -60,7 +32,6 @@
   position: absolute;
   inset: 0;
   width: var(--battle-stat, 100%);
-  background: linear-gradient(180deg, #6fd88a 0%, #3e9d5e 100%);
 }
 .battle-enemy-list-bar { display: none; } /* 클래식은 기존 숫자 표기 유지 */
 
@@ -103,7 +74,6 @@
   margin-left: 12px;
   font-size: 16px;
   font-weight: 800;
-  color: var(--pkmn-muted);
   letter-spacing: 0.02em;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-name,
@@ -148,7 +118,6 @@
   background: #3f423c;
   border: 2px solid #26281f;
   border-radius: 8px;
-  height: 14px;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar::before {
   background: linear-gradient(180deg, #7ee081 0%, #40b24a 100%);
@@ -163,39 +132,16 @@
 /* ── 정보 박스에 "HP" 노란 라벨 (포켓몬 관습) ── */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row::after {
   content: "HP";
-  grid-column: 1;
-  grid-row: 2;
   font-size: 14px;
   font-weight: 800;
   color: #d8a72a;
   align-self: center;
   justify-self: start;
-  margin-top: 2px;
-}
-.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
-  grid-template-columns: 28px minmax(0, 1fr);
-  grid-template-rows: auto auto;
-  align-items: center;
-  gap: 2px 10px;
-}
-.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-name {
-  grid-column: 1 / -1;
-  grid-row: 1;
-}
-.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar {
-  grid-column: 2;
-  grid-row: 2;
 }
 
 /* ── 명령 버튼: 좀 더 큼직하고 포켓몬 감성(둥근 흰 버튼, 선택 시 빨간 테) ── */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command {
-  min-height: 52px;
-  border-radius: 16px;
   border-width: 4px;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
-}
-.battle-scene[data-battle-ui-style="pokemon"] .battle-command-text strong {
-  font-size: 20px;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"]::before,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible::before,

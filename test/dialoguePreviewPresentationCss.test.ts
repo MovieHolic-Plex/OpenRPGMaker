@@ -111,9 +111,11 @@ describe("에디터 프리뷰 연출 CSS", () => {
     }
     // 이름은 정의가 같은 문서에 로드돼야 풀린다. 에디터 셸이 dialogue.css 를 놓치면
     // 프리뷰 규칙은 남고 애니메이션만 사라진다.
-    const runtimeIndex = readFileSync(resolve(__dirname, "..", "src/styles/runtime/playerRuntime.css"), "utf8");
-    expect(runtimeIndex, "playerRuntime.css 가 dialogue.css 를 안 부른다").toContain("../dialogue.css");
+    const runtimeIndex = readFileSync(resolve(__dirname, "..", "src/styles/runtime/index.css"), "utf8");
+    expect(runtimeIndex, "runtime/index.css 가 dialogue.css 를 안 부른다").toContain("../dialogue.css");
+    const forwarder = readFileSync(resolve(__dirname, "..", "src/styles/runtime/playerRuntime.css"), "utf8");
+    expect(forwarder, "playerRuntime.css 가 runtime/index.css 로 전달하지 않는다").toContain('@import "./index.css";');
     const editorIndex = readFileSync(resolve(__dirname, "..", "src/styles/index.css"), "utf8");
-    expect(editorIndex, "index.css 가 playerRuntime.css 를 안 부른다").toContain("runtime/playerRuntime.css");
+    expect(editorIndex, "index.css 가 runtime/index.css 를 안 부른다").toContain("./runtime/index.css");
   });
 });

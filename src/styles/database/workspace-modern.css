@@ -48,7 +48,6 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws {
   display: grid;
-  gap: 10px;
   grid-template-columns: minmax(240px, 268px) minmax(0, 1fr);
   height: 100%;
   min-height: 0;
@@ -95,24 +94,12 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-list-title {
-  color: var(--db-studio-text-1, var(--db-studio-text-1));
-  font: 700 13px/1.4 var(--font-ui);
   letter-spacing: 0;
-  margin: 0;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   text-transform: none;
   white-space: nowrap;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-count {
-  background: var(--db-studio-inset, var(--db-studio-inset));
-  border-radius: 999px;
-  color: var(--db-studio-text-2, var(--db-studio-text-2));
-  flex: 0 0 auto;
-  font: 600 11px/18px var(--font-ui);
-  padding: 0 8px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-search input {

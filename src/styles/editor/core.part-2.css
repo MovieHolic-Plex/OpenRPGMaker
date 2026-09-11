@@ -1,99 +1,3 @@
-@import "../runtime/playSurface.css";
-.battle-enemy-image {
-  width: 64px;
-  height: 64px;
-  object-fit: contain;
-  image-rendering: pixelated;
-}
-.battle-enemy:disabled {
-  color: var(--text-muted);
-  opacity: 0.55;
-}
-.battle-party {
-  position: relative;
-  z-index: 1;
-  grid-column: 2;
-  grid-row: 1;
-  display: grid;
-  gap: var(--space-2);
-  align-self: center;
-}
-.battle-actor {
-  min-height: 56px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg-elev);
-  color: var(--text);
-  font-size: 12px;
-  line-height: 1.35;
-  padding: var(--space-2);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-.battle-actor.defeated {
-  opacity: 0.4;
-  filter: grayscale(1);
-}
-.battle-actor-image {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-  image-rendering: pixelated;
-  flex: 0 0 auto;
-}
-.battle-actor-label {
-  flex: 1 1 auto;
-}
-.battle-command-panel {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: var(--space-2);
-  border-top: 1px solid var(--border);
-  padding-top: var(--space-2);
-}
-.battle-submenu-header {
-  flex: 1 0 100%;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  text-align: right;
-}
-.battle-command {
-  min-width: 72px;
-  min-height: 32px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg-elev);
-  color: var(--text);
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-}
-.battle-command:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.battle-animation {
-  position: absolute;
-  left: 50%;
-  top: 38%;
-  transform: translate(-50%, -50%);
-  border: 1px solid var(--accent);
-  border-radius: var(--radius);
-  background: var(--accent-soft);
-  color: var(--text);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  padding: var(--space-2) var(--space-3);
-  pointer-events: none;
-}
 
 .tile-palette {
   display: grid;
@@ -122,11 +26,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
    flex:1 + min-height:0 ?쇰줈 遺紐??곸뿭??留욎떠 以꾩뼱?ㅺ퀬, ?댁슜???섏튂硫?   .tile-palette ??overflow-y:auto 媛 ?몃줈 ?ㅽ겕濡ㅼ쓣 ?쒓났?쒕떎.
    height:auto ??chipset-sheet??540px 怨좎젙??臾댄슚?뷀븯??遺紐⑥뿉 留욎텣?? */
 .chipset-sheet.tile-palette {
-  flex: 1 1 0;
   min-height: 0;
-  height: auto;
-  max-height: 100%;
-  overflow-y: auto;
 }
 .tile-cell {
   width: 100%;
@@ -156,107 +56,29 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   height: 100%;
   background: #000;
 }
-.player-layout.system-shell {
-  background: #000;
-}
 
 /* ?? ??ъ갹 ?ㅻ쾭?덉씠 ?? */
-.dialogue-overlay {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  pointer-events: none;
-}
 /* ??ъ갹: dialogue-frame.png 瑜?9-slice(border-image)濡??곸슜.
    ?먯뀑? 64x64, slice=16px. 以묒븰? 諛섑닾紐??대몢???ㅼ씠???띿뒪??媛?낆꽦 ?뺣낫. */
 .dialogue-box {
   border-style: solid;
   border-width: 16px;
-  border-image: url("/assets/dialogue-frame.png") 16 / 16px stretch;
   /* border-image 誘몄????먯뀑 ?꾨씫 ???대갚. */
-  background: rgba(247, 243, 234, 0.92);
-  padding: 10px 14px 6px;
   max-width: 720px;
-  margin: 0 auto;
-  pointer-events: auto;
-  cursor: pointer;
-  min-height: 88px;
-  image-rendering: pixelated;
   /* ?댁쭩 ?쒕∼ ??꾩슦濡?寃뚯엫 ?붾㈃怨?遺꾨━. */
   filter: drop-shadow(0 4px 10px rgba(42, 37, 33, 0.10));
 }
 .dialogue-box .speaker {
-  font-weight: 700;
-  color: #8A6B2F;
-  margin-bottom: 6px;
-  font-size: 14px;
   /* 텍스트 그림자으로 가독성 보강(테두리 배경 위). */
-  text-shadow: 0 1px 2px rgba(42, 37, 33, 0.10);
-}
-.dialogue-box .speaker.speaker-nameplate {
-  position: absolute;
-  left: 10px;
-  top: -12px;
-  z-index: 3;
-  display: inline-flex;
-  align-items: center;
-  max-width: calc(100% - 24px);
-  margin: 0;
-  padding: 2px 10px 3px;
-  border: 1px solid rgba(245, 251, 255, 0.9);
-  border-radius: 999px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0)),
-    rgba(12, 28, 84, 0.96);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
-  color: #f8fbff;
-  font-size: 13px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  pointer-events: none;
 }
 .dialogue-box.has-speaker {
   position: relative;
-  overflow: visible;
-}
-.dialogue-box .body {
-  font-size: 15px;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  color: #f0f2f6;
-  text-shadow: 0 1px 2px rgba(42, 37, 33, 0.10);
 }
 .dialogue-box .continue-hint {
-  text-align: right;
-  font-size: 11px;
-  color: var(--text-dim);
   margin-top: 6px;
 }
 .choices {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
   max-width: 720px;
-  margin: 0 auto;
-  pointer-events: auto;
-}
-.choices .choice-btn {
-  background: rgba(247, 243, 234, 0.92);
-  border: 2px solid rgba(42, 37, 33, 0.20);
-  color: #f0f2f6;
-  padding: 8px 14px;
-  border-radius: 2px;
-  cursor: pointer;
-  text-align: left;
-  font-size: 14px;
-  text-shadow: 0 1px 2px rgba(42, 37, 33, 0.10);
-  transition: border-color 0.12s, background 0.12s;
 }
 .choices .choice-btn:hover {
   background: rgba(245, 208, 74, 0.18);
@@ -266,39 +88,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 /* ?? ?대깽???몄쭛湲??? */
 .event-editor .field {
   margin-bottom: var(--space-2);
-}
-.event-editor label {
-  display: block;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-dim);
-  margin-bottom: 3px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-.event-editor input[type="text"],
-.event-editor input[type="number"],
-.event-editor select,
-.event-editor textarea {
-  width: 100%;
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 5px 8px;
-  font-size: 13px;
-  font-family: inherit;
-  transition: border-color 0.1s;
-}
-.event-editor input:focus,
-.event-editor textarea:focus,
-.event-editor select:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-.event-editor textarea {
-  resize: vertical;
-  min-height: 54px;
 }
 
 .event-editor-sidebar {
@@ -314,9 +103,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   display: grid;
   gap: var(--space-2);
   padding: var(--space-2);
-  background: var(--bg-panel-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
 }
 
 .event-editor-launch-title {
@@ -325,7 +111,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 .event-editor-launch-meta {
-  color: var(--text-dim);
   font-size: 12px;
 }
 
@@ -340,95 +125,17 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
  * 270px 이 넘는다. 라벨·복사와 한 줄을 나누면 값에 남는 폭이 185px 뿐이었다(실측) —
  * 줄을 따로 주면 그 폭을 전부 값에 준다. 그래도 남는 초과분은 줄임표로 자르고 전체 값은
  * input value·title·복사 버튼이 보존한다(입력칸이라 줄바꿈이 불가능하다). */
-.event-id-readout {
-  align-items: center;
-  column-gap: var(--space-2);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  min-width: 0;
-  row-gap: var(--space-1);
-}
-
-.event-id-readout-label {
-  color: var(--text-dim);
-  font-size: 11px;
-  font-weight: 600;
-  grid-column: 1;
-  grid-row: 1;
-  letter-spacing: 0.2px;
-}
 
 /* `.event-editor input[type="text"]`(위쪽 279행)이 (0,2,1) 이라 클래스 하나로는 못 이긴다.
  * `input.` 로 같은 특이도를 만들고 더 뒤에 두어 «편집칸이 아니라 판독값»으로 보이게 한다. */
-.event-editor input.event-id-readout-value {
-  background: var(--bg-inset);
-  border: 1px dashed var(--border);
-  color: var(--text);
-  cursor: text;
-  font: 400 11px/1.4 var(--mono);
-  grid-column: 1 / -1;
-  grid-row: 2;
-  min-width: 0;
-  overflow: hidden;
-  /* 좌우 4px — 6px 이면 `ev_`+UUID(39자)가 3px 모자라 마지막 글자가 잘렸다.
-   * 실측(1440×900, expert): 열 269px · 텍스트 258px · 내용폭 6px→255 / 4px→259. */
-  padding: 3px 4px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 100%;
-}
 
 /* 읽기 전용이어도 포커스는 보여야 한다 — 키보드로 값을 집는 것이 이 상자의 주 용도다. */
-.event-editor input.event-id-readout-value:focus-visible {
-  border-color: var(--accent);
-  border-style: solid;
-  outline: var(--focus-outline);
-  outline-offset: 1px;
-}
 
 /* 글자 라벨 단추 — 아이콘 SVG 는 이 저장소에 전역 크기 규칙이 없어 8×8px 로 찍혔다(실측). */
-.event-id-readout-copy {
-  align-items: center;
-  background: transparent;
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-sm);
-  color: var(--text-dim);
-  cursor: pointer;
-  display: inline-flex;
-  font-size: 11px;
-  grid-column: 2;
-  grid-row: 1;
-  justify-content: center;
-  min-height: 20px;
-  padding: 2px 8px;
-  white-space: nowrap;
-}
-
-.event-id-readout-copy:hover,
-.event-id-readout-copy:focus-visible {
-  border-color: var(--border);
-  color: var(--text);
-}
-
-.event-id-readout-hint {
-  color: var(--text-dim);
-  font-size: 11px;
-  grid-column: 1 / -1;
-  grid-row: 3;
-  line-height: 1.4;
-  margin: 0;
-}
 
 .event-list {
-  background: var(--bg);
-  border: 1px solid var(--border-soft);
-  display: flex;
   flex: 1 1 auto;
-  flex-direction: column;
-  gap: 1px;
-  min-height: 0;
   overflow-x: hidden;
-  overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--space-1);
 }
@@ -439,9 +146,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   top: 0;
   z-index: 1;
   background: var(--bg);
-  color: var(--text-dim);
-  font-size: 11px;
-  font-weight: 700;
   padding: 2px var(--space-1) var(--space-1);
   text-transform: uppercase;
 }
@@ -453,40 +157,23 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   min-height: 120px;
   padding: 16px;
   text-align: center;
-  border: 1px dashed var(--border-subtle);
-  border-radius: var(--radius-m);
-  background: var(--bg-surface);
-  color: var(--text-2);
   font-size: 12px;
 }
 
 .event-list-row {
   align-items: center;
   appearance: none;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--text);
   cursor: pointer;
   display: grid;
   font-family: inherit;
   gap: var(--space-1);
   grid-template-columns: 22px minmax(0, 1fr) auto;
-  min-height: 28px;
-  flex-shrink: 0;
-  padding: 2px var(--space-1);
   text-align: left;
 }
 
 .event-list-row:hover,
 .event-list-row:focus-visible {
-  background: var(--bg-panel-2);
-  border-color: var(--border);
   outline: none;
-}
-
-.event-list-row.active {
-  background: var(--accent-soft);
-  border-color: var(--accent);
 }
 
 .event-list-id,
@@ -500,150 +187,12 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 
 .event-list-icon {
   align-items: center;
-  background: var(--surface-recessed);
   border: 1px solid var(--border-soft);
   display: inline-grid;
   height: 22px;
   justify-items: center;
   overflow: hidden;
   width: 20px;
-}
-
-.event-list-icon .event-graphic-preview {
-  border: 0;
-  grid-row: auto;
-  transform: none;
-}
-
-.event-list-icon .event-graphic-preview[data-empty="true"],
-.event-list-icon .event-graphic-preview[data-unsupported="true"] {
-  height: 16px;
-  transform: none;
-  width: 16px;
-}
-
-.db-required-panel {
-  align-content: center;
-  background: var(--bg-base);
-  color: var(--text-1);
-  display: grid;
-  gap: 12px;
-  justify-items: start;
-  min-height: 100%;
-  padding: 32px;
-}
-
-.db-required-panel.db-required-hero {
-  align-content: stretch;
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 20%, color-mix(in srgb, var(--accent, #4A57D6) 10%, transparent), transparent 58%),
-    radial-gradient(ellipse 70% 50% at 90% 80%, color-mix(in srgb, #8A6B2F 8%, transparent), transparent 55%),
-    var(--bg-base, #F7F3EA);
-  gap: 0;
-  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
-  justify-items: stretch;
-  padding: 0;
-}
-
-.db-required-hero-art {
-  min-height: min(100vh, 720px);
-  overflow: hidden;
-  position: relative;
-}
-
-.db-required-hero-image {
-  display: block;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  width: 100%;
-}
-
-.db-required-hero-art::after {
-  background: linear-gradient(90deg, transparent 55%, color-mix(in srgb, var(--bg-base, #F7F3EA) 88%, transparent) 100%);
-  bottom: 0;
-  content: "";
-  left: 0;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-.db-required-copy {
-  align-content: center;
-  display: grid;
-  gap: 14px;
-  justify-items: start;
-  padding: 40px 36px 40px 20px;
-}
-
-.db-required-kicker {
-  color: var(--accent, #4A57D6);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  margin: 0;
-  text-transform: uppercase;
-}
-
-.db-required-panel h1 {
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: 0;
-  margin: 0;
-}
-
-.db-required-hero .db-required-copy h1 {
-  font-size: clamp(26px, 3.2vw, 36px);
-  line-height: 1.2;
-  max-width: 18ch;
-}
-
-.db-required-panel p {
-  color: var(--text-2);
-  font-size: 14px;
-  line-height: 1.6;
-  margin: 0;
-  max-width: 560px;
-}
-
-.db-required-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.db-required-chips li {
-  background: var(--bg-raised, #FFFDF8);
-  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
-  border-radius: 999px;
-  color: var(--text-2);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 6px 12px;
-  box-shadow: 0 1px 4px rgba(60, 48, 32, 0.06);
-}
-
-@media (max-width: 900px) {
-  .db-required-panel.db-required-hero {
-    grid-template-columns: 1fr;
-  }
-
-  .db-required-hero-art {
-    min-height: 220px;
-  }
-
-  .db-required-hero-art::after {
-    background: linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--bg-base, #F7F3EA) 92%, transparent) 100%);
-  }
-
-  .db-required-copy {
-    padding: 20px 24px 32px;
-  }
 }
 
 /* 프로젝트 로드 실패(데이터 무결성) 화면 — 도그푸딩 결함 ②. cream entry language. */
@@ -687,13 +236,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 /* cream ground + hero image soft veil so JPG edges sit on warm cream */
-.db-required-panel.db-required-hero .db-required-hero-image {
-  filter: saturate(1.02) brightness(1.02);
-}
-
-.db-required-copy {
-  background: transparent;
-}
 
 /* 저장 스킵/로컬 저장 모드 배너 — 도그푸딩 결함 ⑩. */
 .persistence-mode-banner {
@@ -774,6 +316,3 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 /* 배너가 있으면 캔버스 위 플로팅 줌 툴바를 아래로 밀어 겹침을 피한다. */
-.persistence-mode-banner ~ .canvas-toolbar {
-  top: 52px;
-}

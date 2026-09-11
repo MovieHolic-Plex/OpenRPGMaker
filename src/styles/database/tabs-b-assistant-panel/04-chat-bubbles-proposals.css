@@ -13,11 +13,9 @@
   box-shadow: none;
   color: var(--text-1);
   font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
-  font-size: 13px;
   line-height: 1.55;
 }
 .ai-command-prefix {
-  color: var(--gold);
   font-weight: 700;
   user-select: none;
 }
@@ -56,7 +54,6 @@
 /* 채팅 버블 — 프리미엄 가독성 (여백·대비·꼬리) */
 .ai-chat-bubble {
   border-radius: 14px;
-  font-size: 13px;
   line-height: 1.6;
   max-width: 72%;
   padding: 10px 14px;
@@ -137,27 +134,17 @@
 .ai-quick-replies {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1);
 }
 .ai-quick-replies.ai-choice-block {
   background: var(--bg-raised);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-s);
-  padding: var(--space-1);
-}
-.ai-quick-replies:empty {
-  display: none;
 }
 .ai-quick-reply-chip {
   background: var(--control-bg);
   border: 1px solid var(--border-default);
-  border-radius: 999px;
   color: var(--text-1);
   cursor: pointer;
   font: inherit;
-  font-size: 11px;
-  padding: 3px 10px;
-  transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 .ai-quick-reply-chip:hover {
   background: var(--gold-wash);
@@ -191,7 +178,6 @@
 .ai-chat-tiles {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
 }
 .ai-tile-thumb-item {
   display: grid;
@@ -201,10 +187,7 @@
 }
 .ai-tile-thumb {
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-s);
-  height: 48px;
   image-rendering: pixelated;
-  width: 48px;
 }
 .ai-tile-thumb-caption {
   color: var(--text-3);

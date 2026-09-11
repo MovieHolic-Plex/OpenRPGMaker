@@ -118,18 +118,20 @@ describe("studio-v2.css — 통합 시트의 불변식", () => {
   const css = read("src/styles/database/studio-v2.css");
   const body = stripComments(css);
 
-  it("index.css 에서 database/modern/* 뒤, 다른 영역 시트 앞에 읽힌다", () => {
-    const lines = read("src/styles/index.css").split("\n").map((line) => line.trim()).filter((line) => line.startsWith("@import"));
-    const v2 = lines.findIndex((line) => line.includes("database/studio-v2.css"));
-    const lastModern = lines.reduce((last, line, index) => (line.includes("database/modern/") ? index : last), -1);
-    const resources = lines.findIndex((line) => line.includes("resources/resource-manager.css"));
+  it("database 진입 시트에서 modern/* 뒤에 읽힌다(다른 표면은 레이어 순서가 가른다)", () => {
+    const lines = read("src/styles/database/index.css").split("\n").map((line) => line.trim()).filter((line) => line.startsWith("@import"));
+    const v2 = lines.findIndex((line) => line.includes("studio-v2.css"));
+    // 옛 index.css 가 부르던 modern/* 만 본다. modern/enemies·equipment-items·factions·village 는 레코드 뷰 TS 가 직접 붙이던
+    // 지연 시트라 오늘도 index.css 뒤에 오며, 진입 시트에서도 database 끝에 둔다 — 순서 불변식의 대상이 아니다.
+    const LAZY_MODERN = /modern\/(enemies|equipment-items|factions|village)\.css/;
+    const lastModern = lines.reduce((last, line, index) => (/["/]modern\//.test(line) && !LAZY_MODERN.test(line) ? index : last), -1);
     expect(v2, "studio-v2.css 가 import 되지 않았다").toBeGreaterThan(-1);
     expect(v2).toBeGreaterThan(lastModern);
-    expect(v2).toBeLessThan(resources);
+    expect(lines.every((line) => / layer\(database\);$/.test(line)), "database 진입 시트는 layer(database) 로만 가져온다").toBe(true);
   });
 
   it("form-hierarchy-modern.css 를 흡수했다 — 옛 시트가 되살아나면 히어로 규칙이 둘이 된다", () => {
-    const indexCss = read("src/styles/index.css");
+    const indexCss = read("src/styles/database/index.css");
     expect(indexCss).not.toContain("form-hierarchy-modern.css");
     expect(() => read("src/styles/database/form-hierarchy-modern.css")).toThrow();
   });

@@ -1254,7 +1254,6 @@ body.region-task-modal-open .ai-authoring-examples {
 
 .region-chunk-cell {
   position: absolute;
-  pointer-events: auto;
   cursor: pointer;
   transition: background-color 120ms ease;
 }

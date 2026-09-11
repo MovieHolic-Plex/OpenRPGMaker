@@ -1,0 +1,3 @@
+@layer s;
+@import "./a.css" layer(s);
+@import "./b.css" layer(s);

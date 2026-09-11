@@ -42,12 +42,51 @@ const REQUIRED_RUNTIME_SELECTORS = [
   ".runtime-missing-resource",
   ".zone-feedback",
 ] as const;
+// 표면 진입 시트 src/styles/runtime/index.css 의 @import 순서(2026-09-11 Task 7 이후). 옛 배럴(battle.css,
+// battle-skins/index.css)은 사라져 슬라이스가 직접 나열된다. playerRuntime.css 는 이 시트로 전달하는 한 줄 허브다.
 const RUNTIME_IMPORTS = [
   "./system.css",
-  "./battle.css",
-  "./battle-skins/index.css",
+  "./playSurface.css",
+  "./from-editor-core-part-2.css",
+  "./from-map-resource-system-part-1.css",
+  "./battle/01-scene-base.css",
+  "./battle/02-intro-reveal.css",
+  "./battle/03-vxace-status-nodes.css",
+  "./battle/04-anim-damage-layers.css",
+  "./battle/05-poses-motion.css",
+  "./battle/06-damage-flash-targeting.css",
+  "./battle/07-640-scene-turn-ribbon.css",
+  "./battle/08-640-target-panels.css",
+  "./battle/09-keyboard-result-panel.css",
+  "./battle/10-compact-hud-stage.css",
+  "./battle/11-compact-hud-row.css",
+  "./battle/12-compact-party-target.css",
+  "./battle/13-compact-victory-box.css",
+  "./battle/14-pokemon-skin-layout.css",
+  "./battle/15-juice-capture-fx.css",
+  "./battle/16-pokemon-battlers-hud.css",
+  "./battle/17-sprint-a-polish.css",
+  "./battle/18-pokemon-layout-redesign.css",
+  "./battle/19-adversarial-review-3.css",
+  "./battle/20-pokemon-reference-restyle.css",
+  "./battle/21-gen1-hud-type-badge.css",
+  "./battle-skins/_pokemon.css",
+  "./battle-skins/_rm2000.css",
+  "./battle-skins/_rm2003.css",
+  "./battle-skins/_octopath.css",
+  "./battle-skins/_chrono.css",
+  "./battle-skins/_bravely.css",
+  "./battle-skins/_dragonquest.css",
+  "./battle-skins/_ff.css",
+  "./battle-skins/_mother.css",
+  "./battle-skins/_goldensun.css",
+  "./battle-skins/_mv.css",
+  "./battle-skins/_hud-templates.css",
+  "./battle-skins/_transitions.css",
+  "./battle-skins/_battlers.css",
+  "./battle-skins/_vxace.css",
+  "./battle-skins/_windowskin.css",
   "./commerce.css",
-  // 4b13aa68 에서 추가됐는데 이 목록이 갱신되지 않아 선행 실패였다(juice.css 와 같은 경우).
   "./shop.css",
   "./title.css",
   "../database/tabs-b-title-screen.css",
@@ -62,13 +101,13 @@ const RUNTIME_IMPORTS = [
   "./transitions.css",
   "./nameEntry.css",
   "./keyboardNav.css",
-  // cd4311cd 에서 playerRuntime.css 에 추가됐는데 이 목록이 갱신되지 않아 선행 실패였다.
   "./juice.css",
   "../dialogue.css",
-  "./playSurface.css",
   "./zoneFeedback.css",
   "./handSlot.css",
   "./minimap.css",
+  "./from-database-system-studio.css",
+  "./from-database-modern-utility-records.css",
 ] as const;
 
 describe("exported player runtime CSS", () => {
@@ -145,25 +184,49 @@ describe("exported player runtime CSS", () => {
 
   it("uses one ordered runtime module list from both CSS entrypoints", async () => {
     // Given: the player-owned aggregator and both host entrypoints.
-    const aggregator = await readFile(resolve("src/styles/runtime/playerRuntime.css"), "utf8");
+    const aggregator = await readFile(resolve("src/styles/runtime/index.css"), "utf8");
+    const forwarder = await readFile(resolve("src/styles/runtime/playerRuntime.css"), "utf8");
     const editorEntry = await readFile(resolve("src/styles/index.css"), "utf8");
     const exportEntry = await readFile(resolve("src/player/player.css"), "utf8");
 
     // When: import order is read from source rather than inferred from a repository grep.
-    const imports = Array.from(aggregator.matchAll(/@import\s+"([^"]+)";/gu), (match) => match[1]);
+    const imports = Array.from(aggregator.matchAll(/@import\s+"([^"]+)"\s+layer\(runtime\);/gu), (match) => match[1]);
 
     // Then: the closure is explicit, ordered, unique, shared, and never pulls editor core into export.
     expect(imports).toEqual(RUNTIME_IMPORTS);
     expect(new Set(imports).size).toBe(imports.length);
-    expect(editorEntry).toContain('@import "./runtime/playerRuntime.css";');
+    expect(editorEntry).toContain('@import "./runtime/index.css";');
+    expect(forwarder.trim()).toBe('@import "./index.css";');
     expect(exportEntry).toContain('@import "../styles/runtime/playerRuntime.css";');
     expect(exportEntry).not.toContain("../styles/index.css");
     expect(aggregator).not.toContain("../editor/");
   });
 
+  it("keeps every editor-origin runtime leaf in the player aggregator editor-scoped", async () => {
+    // Given: the from-*.css leaves that Task 6.5 moved into the runtime layer. They ride the player chain
+    // (player.css → playerRuntime.css → runtime/index.css) although their source sheets never did.
+    const aggregator = await readFile(resolve("src/styles/runtime/index.css"), "utf8");
+    const leaves = Array.from(aggregator.matchAll(/@import\s+"(\.\/from-[^"]+\.css)"\s+layer\(runtime\);/gu), (match) => match[1]);
+    expect(leaves.length).toBeGreaterThan(0);
+
+    // When: every selector of every leaf is read (top-level rule preludes and rules inside at-blocks alike).
+    const EDITOR_SCOPE = /:where\(body:has\(\.editor-layout\)\)|\.test-play-modal-body|\.db-|\.editor-layout/u;
+    const offending: string[] = [];
+    for (const leaf of leaves) {
+      const css = (await readFile(resolve("src/styles/runtime", leaf), "utf8")).replace(/\/\*[\s\S]*?\*\//gu, "");
+      const preludes = Array.from(css.matchAll(/(^|[}{;])\s*([^{}@;]+?)\s*\{/gu), (match) => match[2].trim()).filter((prelude) => prelude.length > 0);
+      for (const prelude of preludes) for (const selector of prelude.split(",")) {
+        if (!EDITOR_SCOPE.test(selector)) offending.push(`${leaf}: ${selector.trim()}`);
+      }
+    }
+
+    // Then: no selector can match in the shipped player document, which has no editor ancestor.
+    expect(offending, "플레이어 사슬의 편집기 유래 리프는 모든 선택자가 편집기 조상으로 스코프돼야 한다").toEqual([]);
+  });
+
   it("detects an omitted required import in a disposable built entry", async () => {
     // Given/When: a disposable closure is built without only the action-HUD import.
-    const fixtureCss = await buildDisposableClosureWithout('@import "./actionHud.css";\n');
+    const fixtureCss = await buildDisposableClosureWithout('@import "./actionHud.css" layer(runtime);\n');
 
     // Then: the omission is visible in bytes while adjacent transition CSS remains.
     // playSurface still references .action-hud to hide it during cutscenes; that reference
@@ -175,7 +238,7 @@ describe("exported player runtime CSS", () => {
   it("detects an omitted edge-dock status-menu module in a disposable built entry", async () => {
     // Given/When: a disposable closure is built without only the final edge-dock presentation import.
     const fixtureCss = await buildDisposableClosureWithout(
-      '@import "./statusMenuEdgeDock.css";\n',
+      '@import "./statusMenuEdgeDock.css" layer(runtime);\n',
     );
 
     // Then: legacy content primitives remain, but the modern dock contract disappears.
@@ -219,7 +282,8 @@ async function buildDisposableClosureWithout(importStatement: string): Promise<s
   try {
     const fixtureStyles = join(fixtureRoot, "styles");
     await cp(resolve("src/styles"), fixtureStyles, { recursive: true });
-    const fixtureAggregator = join(fixtureStyles, "runtime", "playerRuntime.css");
+    // 집합기는 runtime/index.css. 엔트리가 부르는 playerRuntime.css 는 그 시트로 전달한다.
+    const fixtureAggregator = join(fixtureStyles, "runtime", "index.css");
     const source = await readFile(fixtureAggregator, "utf8");
     // 집합기 CSS 는 CRLF 다. importStatement 리터럴은 "\n" 로 끝나므로 문자열 replace 는
     // Windows 체크아웃에서 절대 매치되지 않아 이 가드가 통째로 무력화된다(실측). 줄끝 무관 매치.

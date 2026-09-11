@@ -189,7 +189,7 @@ function m2VisualPreview(cmd: Extract<Command, { kind: "m2Command" }>, context?:
 /**
  * 프리뷰 창에 런타임과 같은 연출 상태를 얹는다. 키프레임 이름과 감정별 매핑은 CSS 가
  * 갖고 있고 프리뷰는 그 규칙을 그대로 재사용한다 — `dialogue.css` 는 에디터 CSS 그래프에도
- * 들어 있다(`styles/index.css` → `runtime/playerRuntime.css` → `../dialogue.css`).
+ * 들어 있다(`styles/index.css` → `runtime/index.css` → `../dialogue.css`, 2026-09-11 Task 7 이후).
  * 그래서 여기서는 dataset 과 변수만 심고 곡선은 손대지 않는다.
  * `test/dialoguePreviewPresentationCss.test.ts` 가 두 선택자 집합이 어긋나지 않게 잠근다.
  */

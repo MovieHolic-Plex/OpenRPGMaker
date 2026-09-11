@@ -5,7 +5,6 @@ import { renderSpatialGeographyCanvas } from "@/editor/panels/spatialGeographyCa
 import { resetSpatialGeographyChrome } from "@/editor/panels/spatialGeographyChromeState";
 import { spatialGeographyChrome, visibleGeographySelection } from "@/editor/panels/spatialGeographyCommands";
 import { renderSpatialGeographyInspector } from "@/editor/panels/spatialGeographyInspector";
-import "@/styles/database/spatial-geography.css";
 
 export { bindSpatialAuthoringControllerFactory } from "@/editor/panels/spatialAuthoringAccess";
 export { renderSpatialGeographyCanvas } from "@/editor/panels/spatialGeographyCanvas";

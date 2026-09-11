@@ -1,0 +1,4 @@
+.k { color: red; margin: 0; }
+.k:hover { color: blue; }
+@media (max-width: 700px) { .k { color: green; } }
+.z { padding: 1px !important; }

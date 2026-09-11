@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const stylesEntry = readFileSync(new URL("../src/styles/index.css", import.meta.url), "utf8");
+// 이벤트 에디터 시트는 표면 진입 시트 src/styles/event/index.css 가 @layer event 로 가져온다(modal.ts 가 import).
+const stylesEntry = readFileSync(new URL("../src/styles/event/index.css", import.meta.url), "utf8");
 const balancedStylesUrl = new URL("../src/styles/editor/event-editor.balanced.css", import.meta.url);
 const contentSource = readFileSync(new URL("../src/editor/panels/eventEditor/content.ts", import.meta.url), "utf8");
 const modalSource = readFileSync(new URL("../src/editor/panels/eventEditor/modal.ts", import.meta.url), "utf8");
@@ -9,7 +10,7 @@ const pagePropsSource = readFileSync(new URL("../src/editor/panels/eventEditor/p
 
 describe("hierarchy event editor presentation layer", () => {
   it("loads the fidelity layer after every earlier event editor stylesheet", () => {
-    expect(stylesEntry).toContain('@import "./editor/event-editor.balanced.css";');
+    expect(stylesEntry).toContain('@import "../editor/event-editor.balanced.css" layer(event);');
     expect(stylesEntry.lastIndexOf("event-editor.balanced.css")).toBeGreaterThan(
       stylesEntry.lastIndexOf("event-editor-help.css"),
     );

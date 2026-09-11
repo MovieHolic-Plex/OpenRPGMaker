@@ -1,7 +1,5 @@
 /* Transfer Player command picker */
 .transfer-command-editor {
-  align-items: center;
-  display: flex;
   gap: 6px;
   min-width: 0;
 }
@@ -28,10 +26,8 @@
   border-width: 1px;
   color: var(--event-rm-text, var(--text-1));
   flex: 1 1 12rem;
-  font: 400 12px/18px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   min-width: 0;
   overflow: hidden;
-  padding: 4px 8px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -49,17 +45,12 @@
   max-height: none;
 }
 
-.event-command-edit-columns:has(.transfer-command-editor-inline) {
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
-}
-
 .event-subdialog-window.wide:has(.transfer-command-editor-inline) {
   width: min(980px, calc(100vw - 24px));
 }
 
 .event-command-edit-columns:has(.transfer-command-editor-inline) > .event-command-edit-body {
   max-height: min(78vh, 720px);
-  overflow: auto;
   padding-right: 2px;
 }
 
@@ -69,7 +60,6 @@
   align-items: stretch;
   display: grid;
   gap: 10px;
-  min-width: 0;
   width: 100%;
 }
 
@@ -140,10 +130,4 @@
 
 .event-subdialog-window.wide:has(.transfer-command-editor-inline) {
   width: min(1040px, calc(100vw - 20px)) !important;
-}
-
-.event-command-edit-columns:has(.transfer-command-editor-inline) > .event-command-edit-body {
-  max-height: min(78vh, 760px);
-  overflow: auto;
-  min-width: 0;
 }

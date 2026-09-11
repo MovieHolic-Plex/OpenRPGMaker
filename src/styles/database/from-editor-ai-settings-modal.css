@@ -1,0 +1,44 @@
+/* database 표면 — editor/ai-settings-modal.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 database 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* editor/ai-settings-modal.css:3-11 — [레이어 보존] AI 설정 대화상자가 DB 모달 크롬(.database-modal-*)을 재사용하며 덮어쓰는 규칙 — database 레이어의 범용 .database-modal-header 를 오늘처럼 특이도로 이기려면 같은 레이어여야 한다 */
+.database-modal-window.ai-settings-window {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: min(780px, calc(100vh - var(--space-5)));
+  max-height: min(780px, calc(100vh - var(--space-5)));
+  max-width: min(680px, calc(100vw - var(--space-5)));
+  overflow: hidden;
+  width: 640px;
+}
+
+/* editor/ai-settings-modal.css:13-18 — [레이어 보존] AI 설정 대화상자가 DB 모달 크롬(.database-modal-*)을 재사용하며 덮어쓰는 규칙 — database 레이어의 범용 .database-modal-header 를 오늘처럼 특이도로 이기려면 같은 레이어여야 한다 */
+.ai-settings-window .database-modal-header {
+  background: var(--bg-raised);
+  border-bottom: var(--stroke-1) solid var(--border-default);
+  min-height: 48px;
+  padding-inline: var(--space-4);
+}
+
+/* editor/ai-settings-modal.css:20-26 — [레이어 보존] AI 설정 대화상자가 DB 모달 크롬(.database-modal-*)을 재사용하며 덮어쓰는 규칙 — database 레이어의 범용 .database-modal-header 를 오늘처럼 특이도로 이기려면 같은 레이어여야 한다 */
+.ai-settings-window .database-modal-header h2 {
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--space-4);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+}
+
+/* editor/ai-settings-modal.css:38-47 — [레이어 보존] AI 설정 대화상자가 DB 모달 크롬(.database-modal-*)을 재사용하며 덮어쓰는 규칙 — database 레이어의 범용 .database-modal-header 를 오늘처럼 특이도로 이기려면 같은 레이어여야 한다 */
+.database-modal-backdrop.ai-settings-modal-backdrop
+  .database-modal-window.ai-settings-window
+  .database-modal-body.ai-settings-body {
+  display: block;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}

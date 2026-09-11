@@ -1,0 +1,595 @@
+/* database 표면 — editor/event-editor-legacy.part-1.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 database 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* editor/event-editor-legacy.part-1.css:2-12 */
+.db-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  margin-bottom: var(--space-2);
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+}
+
+/* editor/event-editor-legacy.part-1.css:13-29 */
+.db-tab {
+  background: var(--bg-elev);
+  border: 1px solid var(--border-soft);
+  border-radius: 0;
+  color: var(--text-dim);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-family: inherit;
+  height: 22px;
+  line-height: 1;
+  max-width: 92px;
+  overflow: hidden;
+  padding: 0 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* editor/event-editor-legacy.part-1.css:30-32 */
+.db-tab:hover {
+  color: var(--text);
+}
+
+/* editor/event-editor-legacy.part-1.css:33-38 */
+.db-tab.active {
+  background: var(--bg-panel-2);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* editor/event-editor-legacy.part-1.css:39-45 */
+.db-body h3 {
+  margin: var(--space-2) 0 var(--space-1) 0;
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+/* editor/event-editor-legacy.part-1.css:46-51 */
+.db-toolbar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+/* editor/event-editor-legacy.part-1.css:52-57 */
+.db-record-workspace {
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: minmax(96px, 38%) minmax(0, 1fr);
+  min-height: 0;
+}
+
+/* editor/event-editor-legacy.part-1.css:58-62 */
+.db-list-pane,
+.db-detail-pane {
+  min-height: 0;
+  min-width: 0;
+}
+
+/* editor/event-editor-legacy.part-1.css:63-69 */
+.db-list {
+  display: grid;
+  gap: 2px;
+  margin-bottom: var(--space-2);
+  max-height: 360px;
+  overflow: auto;
+}
+
+/* editor/event-editor-legacy.part-1.css:70-83 */
+.db-list-row {
+  background: var(--bg);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  overflow: hidden;
+  padding: 5px 6px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* editor/event-editor-legacy.part-1.css:84-88 */
+.db-list-row:hover,
+.db-list-row.active {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* editor/event-editor-legacy.part-1.css:89-91 */
+.db-list-row.active {
+  background: var(--accent-soft);
+}
+
+/* editor/event-editor-legacy.part-1.css:92-98 */
+.db-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+/* editor/event-editor-legacy.part-1.css:99-109 */
+.db-row input[type="text"] {
+  flex: 1;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  min-width: 0;
+}
+
+/* editor/event-editor-legacy.part-1.css:110-115 */
+.db-id {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  min-width: 60px;
+}
+
+/* editor/event-editor-legacy.part-1.css:116-119 */
+.db-meta {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* editor/event-editor-legacy.part-1.css:120-123 */
+.db-del {
+  padding: 1px 6px;
+  font-size: 11px;
+}
+
+/* editor/event-editor-legacy.part-1.css:124-130 */
+.db-detail {
+  margin: var(--space-1) 0 var(--space-2);
+  padding: var(--space-2);
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-soft);
+}
+
+/* editor/event-editor-legacy.part-1.css:131-139 */
+.db-detail label,
+.db-detail-form label {
+  display: block;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin: 6px 0 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* editor/event-editor-legacy.part-1.css:140-153 */
+.db-detail-form input[type="text"],
+.db-detail-form input[type="number"],
+.db-detail-form input[type="search"],
+.db-detail select,
+.db-detail-form select {
+  background: var(--bg-panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  width: 100%;
+}
+
+/* editor/event-editor-legacy.part-1.css:159-164 */
+.db-subpanel {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-2);
+  padding: var(--space-2);
+}
+
+/* editor/event-editor-legacy.part-1.css:165-170 */
+.db-range {
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: 1fr 52px 52px 1fr;
+  margin-bottom: var(--space-2);
+}
+
+/* editor/event-editor-legacy.part-1.css:171-174 */
+.db-range span,
+.db-range button {
+  grid-column: 1 / -1;
+}
+
+/* editor/event-editor-legacy.part-1.css:175-184 */
+.db-preview {
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  margin: var(--space-1) 0;
+  padding: var(--space-2);
+}
+
+/* editor/event-editor-legacy.part-1.css:194-202 */
+.db-state-refs,
+.db-refs {
+  margin: var(--space-2) 0;
+  padding: var(--space-2);
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+}
+
+/* editor/event-editor-legacy.part-1.css:203-210 */
+.db-state-refs h4,
+.db-refs h4 {
+  margin: var(--space-1) 0 2px;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* editor/event-editor-legacy.part-1.css:211-214 */
+.db-ref-row {
+  padding: 2px 0;
+  color: var(--text);
+}
+
+/* editor/event-editor-legacy.part-1.css:215-221 */
+.db-animation-image {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  display: block;
+}
+
+/* editor/event-editor-legacy.part-1.css:222-231 */
+.db-advanced-panel {
+  background: color-mix(in srgb, var(--bg-panel-2) 86%, var(--surface-recessed));
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  min-width: 0;
+  padding: var(--space-2);
+}
+
+/* editor/event-editor-legacy.part-1.css:232-237 */
+.db-advanced-panel legend {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0 var(--space-1);
+}
+
+/* editor/event-editor-legacy.part-1.css:238-240 */
+.db-advanced-panel .db-field {
+  margin-bottom: var(--space-1);
+}
+
+/* editor/event-editor-legacy.part-1.css:241-243 */
+.actor-detail-form {
+  overflow: auto;
+}
+
+/* editor/event-editor-legacy.part-1.css:244-248 */
+.actor-editor-grid {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* editor/event-editor-legacy.part-1.css:249-253 */
+.actor-column {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* editor/event-editor-legacy.part-1.css:254-261 */
+.actor-panel {
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  margin: 0;
+  min-width: 0;
+  padding: var(--space-2);
+}
+
+/* editor/event-editor-legacy.part-1.css:262-267 */
+.actor-panel legend {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0 var(--space-1);
+}
+
+/* editor/event-editor-legacy.part-1.css:268-270 */
+.actor-panel .db-field {
+  margin-bottom: var(--space-1);
+}
+
+/* editor/event-editor-legacy.part-1.css:271-276 */
+.actor-level-row,
+.actor-rate-columns {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* editor/event-editor-legacy.part-1.css:277-285 */
+.db-detail-form .actor-check {
+  align-items: center;
+  color: var(--text-dim);
+  display: flex;
+  gap: var(--space-1);
+  letter-spacing: 0;
+  margin: var(--space-1) 0;
+  text-transform: none;
+}
+
+/* editor/event-editor-legacy.part-1.css:286-288 */
+.db-detail-form .actor-check input {
+  flex: 0 0 auto;
+}
+
+/* editor/event-editor-legacy.part-1.css:289-298 */
+.actor-graphic-preview {
+  align-items: center;
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-soft);
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: 72px minmax(0, 1fr);
+  min-height: 54px;
+  padding: var(--space-2);
+}
+
+/* editor/event-editor-legacy.part-1.css:299-302 */
+.actor-graphic-preview span {
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+/* editor/event-editor-legacy.part-1.css:303-310 */
+.actor-graphic-preview strong {
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* editor/event-editor-legacy.part-1.css:311-321 */
+.actor-graphic-preview img,
+.db-image-preview img {
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border-soft);
+  display: block;
+  height: 48px;
+  image-rendering: pixelated;
+  max-width: 100%;
+  object-fit: contain;
+  width: 72px;
+}
+
+/* editor/event-editor-legacy.part-1.css:322-332 */
+.actor-sheet-crop {
+  background-color: var(--bg-panel-2);
+  background-image: var(--crop-url);
+  background-position: var(--crop-x) var(--crop-y);
+  background-repeat: no-repeat;
+  background-size: var(--crop-sheet-width) var(--crop-sheet-height);
+  border: 1px solid var(--border-soft);
+  height: var(--crop-height);
+  image-rendering: pixelated;
+  width: var(--crop-width);
+}
+
+/* editor/event-editor-legacy.part-1.css:333-335 */
+.db-resource-panel {
+  gap: var(--space-1);
+}
+
+/* editor/event-editor-legacy.part-1.css:336-345 */
+.db-image-preview {
+  align-items: center;
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-soft);
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: 60px minmax(0, 1fr);
+  min-height: 42px;
+  padding: var(--space-1);
+}
+
+/* editor/event-editor-legacy.part-1.css:346-349 */
+.db-image-preview span {
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+/* editor/event-editor-legacy.part-1.css:350-357 */
+.db-image-preview strong {
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* editor/event-editor-legacy.part-1.css:358-361 */
+.db-image-preview img {
+  height: 36px;
+  width: 48px;
+}
+
+/* editor/event-editor-legacy.part-1.css:362-366 */
+.actor-curves-grid {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* editor/event-editor-legacy.part-1.css:367-374 */
+.actor-curve {
+  background: var(--bg);
+  border: 1px solid var(--border-soft);
+  display: grid;
+  gap: 2px;
+  min-height: 76px;
+  padding: var(--space-1);
+}
+
+/* editor/event-editor-legacy.part-1.css:375-379 */
+.actor-curve strong,
+.actor-rate-list strong {
+  color: var(--text);
+  font-size: 10px;
+}
+
+/* editor/event-editor-legacy.part-1.css:380-385 */
+.actor-curve span,
+.actor-exp-row span {
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+/* editor/event-editor-legacy.part-1.css:390-401 */
+.actor-curve-graph {
+  align-items: end;
+  background: var(--surface-recessed);
+  display: grid;
+  gap: 1px;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(var(--curve-samples, 9), minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  height: 40px;
+  overflow: hidden;
+  padding: 2px;
+}
+
+/* editor/event-editor-legacy.part-1.css:404-409 */
+.actor-curve-graph i {
+  background: var(--accent-primary);
+  border-radius: 1px 1px 0 0;
+  display: block;
+  min-height: 1px;
+}
+
+/* editor/event-editor-legacy.part-1.css:412-414 */
+.actor-curve-maxMp .actor-curve-graph i {
+  background: var(--accent-secondary);
+}
+
+/* editor/event-editor-legacy.part-1.css:415-417 */
+.actor-curve-attack .actor-curve-graph i {
+  background: var(--accent-editor);
+}
+
+/* editor/event-editor-legacy.part-1.css:418-420 */
+.actor-curve-defense .actor-curve-graph i {
+  background: #2b8ca8;
+}
+
+/* editor/event-editor-legacy.part-1.css:421-423 */
+.actor-curve-mind .actor-curve-graph i {
+  background: #7c5cd6;
+}
+
+/* editor/event-editor-legacy.part-1.css:424-426 */
+.actor-curve-agility .actor-curve-graph i {
+  background: #b8791f;
+}
+
+/* editor/event-editor-legacy.part-1.css:427-432 */
+.actor-exp-row {
+  align-items: center;
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* editor/event-editor-legacy.part-1.css:433-441 */
+.actor-rate-list {
+  background: var(--bg);
+  border: 1px solid var(--border-soft);
+  display: grid;
+  gap: 2px;
+  max-height: 172px;
+  overflow: auto;
+  padding: var(--space-1);
+}
+
+/* editor/event-editor-legacy.part-1.css:442-450 */
+.db-detail-form .actor-rate-row {
+  align-items: center;
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: minmax(0, 1fr) 44px;
+  letter-spacing: 0;
+  margin: 0;
+  text-transform: none;
+}
+
+/* editor/event-editor-legacy.part-1.css:451-455 */
+.db-detail-form .actor-rate-row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* editor/event-editor-legacy.part-1.css:456-462 */
+.actor-options-grid,
+.actor-skill-header,
+.actor-skill-row {
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* editor/event-editor-legacy.part-1.css:463-466 */
+.actor-skill-header,
+.actor-skill-row {
+  grid-template-columns: 52px minmax(0, 1fr) 44px;
+}
+
+/* editor/event-editor-legacy.part-1.css:467-470 */
+.actor-skill-header {
+  color: var(--text-dim);
+  font-size: 10px;
+}
+
+/* editor/event-editor-legacy.part-1.css:471-476 */
+.actor-skill-list {
+  display: grid;
+  gap: 2px;
+  max-height: 180px;
+  overflow: auto;
+}

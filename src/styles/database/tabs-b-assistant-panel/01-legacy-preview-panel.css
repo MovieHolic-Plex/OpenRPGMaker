@@ -2,18 +2,12 @@
 .ai-assistant-panel {
   background: var(--bg-raised);
   border: 1px solid var(--border-strong);
-  border-radius: var(--radius-m);
   box-shadow: var(--shadow-pop);
   color: var(--text-1);
   position: fixed;
-  right: 14px;
-  top: 118px;
-  width: 286px;
-  max-width: calc(100vw - 16px);
   max-height: calc(100vh - 16px);
   overflow: auto;
   z-index: 30;
-  padding: var(--space-2);
 }
 body:has(.right-panel) .ai-assistant-panel {
   display: none;
@@ -27,7 +21,6 @@ body:has([data-testid='resource-modal']) .right-panel {
   display: none;
 }
 .ai-assistant-header {
-  align-items: start;
   cursor: move;
   display: flex;
   gap: var(--space-2);
@@ -50,12 +43,10 @@ body:has([data-testid='resource-modal']) .right-panel {
 .ai-assistant-status {
   background: var(--control-bg);
   border: 1px solid var(--border-default);
-  border-radius: 999px;
   color: var(--text-2);
   flex: 0 0 auto;
   font-size: 11px;
   font-weight: 700;
-  padding: 2px 9px;
   transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
 }
 .ai-assistant-status[data-status-tone="idle"] {

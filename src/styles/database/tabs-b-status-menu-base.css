@@ -109,19 +109,13 @@
 /* 비활성 쪽 커서 — 잔상만. ::before 마커도 제거해 "활성 커서는 하나" 를 지킨다. */
 .oprn-status-menu.status-menu-detail-focus .status-menu-command.selected,
 .oprn-status-menu:not(.status-menu-detail-focus) .status-menu-detail-action.selected {
-  background: var(--border-subtle);
   border-color: transparent;
-  box-shadow: none;
 }
 .oprn-status-menu.status-menu-detail-focus .status-menu-command.selected::before,
 .oprn-status-menu:not(.status-menu-detail-focus) .status-menu-detail-action.selected::before {
   content: none;
 }
 /* 규칙 2 — 키 입력을 받지 않는 패널 전체를 감광. */
-.oprn-status-menu.status-menu-detail-focus .status-menu-command-rail,
-.oprn-status-menu:not(.status-menu-detail-focus) .status-menu-detail {
-  opacity: 0.62;
-}
 .status-menu-body {
   display: grid;
   gap: 4px;

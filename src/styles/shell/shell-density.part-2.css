@@ -1,15 +1,5 @@
-.left-panel-stack .compact-field .btn {
-  height: 22px;
-  padding: 0 6px;
-}
-
-.left-panel-stack .tile-mapping-inspector {
-  display: none;
-}
-
 .left-panel-stack[data-testid="left-map-root"] {
   background: var(--surface-workbench);
-  color: var(--text-primary);
 }
 
 .left-panel-stack[data-testid="left-map-root"] .panel-section {
@@ -29,15 +19,8 @@
    컨텍스트 메뉴 규칙은 document.body 에 붙는 팝업이라 이 서브트리 밖이며 이관 대상이 아니다. */
 
 .map-context-menu {
-  background: var(--bg-overlay);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-m);
-  box-shadow: var(--shadow-pop);
-  color: var(--text-1);
   display: grid;
   gap: 1px;
-  min-width: 226px;
-  padding: 3px;
   position: fixed;
   z-index: var(--z-popover-high);
 }
@@ -47,19 +30,13 @@
   appearance: none;
   background: transparent;
   border: 1px solid transparent;
-  color: inherit;
   cursor: pointer;
   display: grid;
-  font: 600 12px/1.25 var(--font-ui);
-  column-gap: 7px;
   grid-template-columns: 16px minmax(0, 1fr) max-content;
-  min-height: 26px;
-  padding: 3px 8px 3px 5px;
   text-align: left;
 }
 
 .map-context-menu-shortcut {
-  color: var(--text-secondary);
   font: 600 11px/1.2 var(--mono);
   justify-self: end;
   white-space: nowrap;
