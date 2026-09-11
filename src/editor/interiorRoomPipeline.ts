@@ -20,6 +20,7 @@ import {
   paintInteriorHouseWalls,
   planInteriorHouseWalls,
   shapeInteriorCeiling,
+  southDoorOpening,
 } from "@/editor/interiorHouseWallGrammar";
 import { HOUSE_SHELL_MEMBER_TILES } from "@/project/defaults/interiorHouseWallTiles";
 import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
@@ -794,18 +795,19 @@ export function applyInteriorRoomLayer(
     }
     case "entrance": {
       const next = cloneMap(map);
-      placeEntranceEvent(next, plan.door, {
+      const entranceDoor = plan.concept ? southDoorOpening(plan.door, next.height) : plan.door;
+      placeEntranceEvent(next, entranceDoor, {
         ...(plan.returnMapId === undefined ? {} : { returnMapId: plan.returnMapId }),
         ...(plan.returnX === undefined ? {} : { returnX: plan.returnX }),
         ...(plan.returnY === undefined ? {} : { returnY: plan.returnY }),
       });
-      if (plan.concept) next.upperTiles[plan.door.y * next.width + plan.door.x] = 176;
+      if (plan.concept) next.upperTiles[entranceDoor.y * next.width + entranceDoor.x] = 176;
       // 가구 조사 이벤트는 테마 시공 전용 — 개념 시설은 칩(event/loot/sleep/transfer)이 이벤트를 소유한다.
       if (!plan.concept) attachPropInspectEvents(next);
       return {
         map: next,
         layer,
-        summary: `entrance event at (${plan.door.x},${plan.door.y})`,
+        summary: `entrance event at (${entranceDoor.x},${entranceDoor.y})`,
         warnings,
         ok: true,
       };
@@ -2774,10 +2776,11 @@ function critiqueRoom(map: GameMap, plan: InteriorRoomPlan): string[] {
   }
 
   // entrance event: door cell must hold a page named 입구 (GameEvent has no name)
+  const entranceAt = plan.concept ? southDoorOpening(plan.door, map.height) : plan.door;
   const entrance = (map.events ?? []).find(
-    (e) => e.x === plan.door.x && e.y === plan.door.y && e.pages?.[0]?.name === "입구",
+    (e) => e.x === entranceAt.x && e.y === entranceAt.y && e.pages?.[0]?.name === "입구",
   );
-  if (!entrance) issues.push(`missing entrance event at door (${plan.door.x},${plan.door.y})`);
+  if (!entrance) issues.push(`missing entrance event at door (${entranceAt.x},${entranceAt.y})`);
 
   // floor must exist
   if (!floor.some(Boolean)) issues.push("no floor cells");

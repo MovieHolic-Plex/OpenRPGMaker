@@ -14,6 +14,7 @@ import {
   type InteriorWallMaterial,
   type RoomSpec,
 } from "@/editor/interiorRoomPipeline";
+import { southDoorOpening } from "@/editor/interiorHouseWallGrammar";
 import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import type { Command, EventPageGraphic, GameEvent, GameMap, MapId, Project } from "@/project/types";
 import type { HouseKitId } from "./houseKit";
@@ -389,7 +390,8 @@ export function createHouseInteriorMap(options: {
     wallMaterial,
   });
   const door = groundPlan.door;
-  const entry = { x: door.x, y: Math.max(0, door.y - 1) };
+  const exitAt = groundPlan.concept ? southDoorOpening(door, groundPlan.height) : door;
+  const entry = { x: exitAt.x, y: Math.max(0, exitAt.y - 1) };
 
   const groundBuilt = materializeInteriorMap({
     project: options.project,
@@ -401,7 +403,7 @@ export function createHouseInteriorMap(options: {
     returnX: options.returnX,
     returnY: options.returnY,
     entry,
-    door,
+    door: exitAt,
     seed,
   });
   const ground = groundBuilt.map;
@@ -412,7 +414,7 @@ export function createHouseInteriorMap(options: {
     return {
       map: ground,
       entry,
-      exit: door,
+      exit: exitAt,
       scale,
       program,
       stories: 1,
@@ -530,7 +532,7 @@ export function createHouseInteriorMap(options: {
   return {
     map: ground,
     entry,
-    exit: door,
+    exit: exitAt,
     scale,
     program,
     stories,

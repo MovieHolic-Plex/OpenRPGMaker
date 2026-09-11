@@ -34,6 +34,18 @@ it("marks the lower entrance with tile 176 while keeping it passable", () => {
   expect(isPassable(project, map, entry.x, entry.y)).toBe(true);
 });
 
+it("puts the entrance marker on the south wall opening, not one tile inside", () => {
+  const map = project.maps.tile_review_inn;
+  if (!map) throw new Error("Ground floor missing");
+  const plan = map.roomHarnessPlan?.plan as { door: { x: number; y: number } } | undefined;
+  if (!plan) throw new Error("Plan missing");
+  const entry = map.events.find(event => event.id === `ev_entrance_${map.id}`);
+  if (!entry) throw new Error("Entrance missing");
+  expect(entry).toMatchObject({ x: plan.door.x, y: plan.door.y + 1 });
+  expect(map.upperTiles[plan.door.y * map.width + plan.door.x]).not.toBe(176);
+  expect(map.upperTiles[entry.y * map.width + entry.x]).toBe(176);
+});
+
 it("removes rejected tiles from classification, groups and generated furniture", () => {
   const rejected = [408, 409, 410];
   const tileset = createBlankProject().tilesets.easyrpg_chipset_interior;
