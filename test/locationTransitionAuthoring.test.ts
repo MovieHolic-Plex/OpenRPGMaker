@@ -3,6 +3,7 @@
 // 고르며(좌표 입력 금지), 삭제된 구역은 조건과 **같은** 진단·복구 통로를 탄다.
 import { beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
+import { locationLayerState, setLocationLayerEnabled } from "@/editor/mapLocationLayerState";
 import { validateEventDraftBody } from "@/editor/eventDraftValidator";
 import {
   LOCATION_TRANSITION_TRIGGER_LABEL,
@@ -181,6 +182,12 @@ describe("location transition trigger — 구역은 이름으로 고른다 (좌�
     const error = fields.querySelector<HTMLElement>("[data-testid='event-page-trigger-location-error']");
     expect(error?.hidden).toBe(false);
     expect(error?.textContent).toContain("로케이션");
+    // 어포던스 감사(2026-09-11): 안내 문장만 있던 빈 상태는 막다른 길이었다 — 행동을 함께 낸다.
+    const cta = fields.querySelector<HTMLElement>("[data-testid='event-page-trigger-location-draw']");
+    expect(cta).not.toBeNull();
+    setLocationLayerEnabled(false);
+    cta!.click();
+    expect(locationLayerState().enabled).toBe(true);
   });
 });
 
