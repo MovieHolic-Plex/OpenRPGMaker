@@ -17,6 +17,9 @@ import type { GenreBlankProjectSystemPresetPlan } from "@/editor/genrePacks";
 import { showConfirm } from "@/editor/ui/modal";
 import { readProjectFromUrl } from "@/project/projectUrl";
 import { el } from "@/util/dom";
+import { isAutomationBootContext } from "@/editor/automationBootContext";
+
+export { isAutomationBootContext };
 
 export const EDITOR_WELCOME_DISMISSED_KEY = "oprn:editor-welcome-dismissed";
 
@@ -115,29 +118,6 @@ export function setEditorWelcomeDismissed(dismissed = true): void {
   } catch {
     /* private mode / quota */
   }
-}
-
-/**
- * e2e/dev boot contexts where floating first-run UI must not intercept the surface.
- * Mirrors teamWorkflowUi automation boot detection.
- */
-export function isAutomationBootContext(): boolean {
-  if (typeof window === "undefined") return false;
-  const search = window.location?.search ?? "";
-  const params = new URLSearchParams(search);
-  // Intentional browser-verify / dogfood: force welcome even under Playwright webdriver.
-  if (params.has("forceWelcome")) return false;
-  if (window.__RPG_ZZU_E2E_PROJECT__) return true;
-  if (typeof navigator !== "undefined" && navigator.webdriver) return true;
-  return (
-    params.has("freshProject")
-    || params.has("devProject")
-    || params.has("blankProject")
-    || params.has("aiBridge")
-    || params.has("softConfirm")
-    || params.has("sc2")
-    || params.has("sc3")
-  );
 }
 
 /** Alias for callers that prefer a welcome-scoped name. */

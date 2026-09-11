@@ -6,6 +6,7 @@ Genre packs are editor-side authoring guidance over the single canonical `Projec
 
 - `src/project/genrePackId.ts` owns the six persisted IDs: `adventure-jrpg`, `monster-collect`, `horror-chase`, `story-cutscene`, `farm-life`, and `action-rpg`.
 - `src/editor/genrePacks.ts` owns the machine-readable registry: starter, navigation, vocabulary, recipes, lint mappings, journeys, and runtime requirements.
+- `src/editor/newProjectChoices.ts` owns the eight first-class new-project choices (label, blurb, art, tone, poster caption, featured tier, row art) and the order contract. It is the single source both surfaces derive from.
 - `src/editor/welcomeGenrePresets.ts` maps all eight welcome presets to a real pack and blank-project system-preset recipe. The first-screen briefing shows three featured posters (`monster-collect`, `story-cutscene`, `adventure-jrpg`). Horror, farm, partner-raise, and action-RPG posters stay in the collapsed 「이런 세계도 있어요」 tier. The DOM still carries exactly one `data-pack-id` per official pack. `buildWelcomeGenrePresetPrompt` remains an optional AI enhancement; it is not the pack contract.
 - `src/editor/welcomeGenreSystemPresetAction.ts` is the project-creation boundary shared by AI posters and confirmed manual system presets. It passes a detached result to `store.loadNewRemoteProjectTransactionally`; there is no local-only success fallback.
 - `src/project/genrePresets.ts` only applies standard `system.*` opt-ins. Player/runtime modules must not switch on `system.genre`.
@@ -44,10 +45,11 @@ These checks reuse the canonical `Project`, `projectLint`, `collectProjectRefere
 
 ## Dialog layering and receipt fixtures (2026-09-08)
 
-The exported starter dialog in `src/editor/panels/newProjectDialog.ts` registers with
-`modalStack` and unregisters on every settled result. Escape cancels only that layer;
-it must not dismiss an underlying Database window. This legacy exported panel is distinct
-from the live menu's `src/editor/ui/newProjectDialog.ts` entry.
+The new-project dialog `src/editor/ui/newProjectDialog.ts` registers with `modalStack` and
+unregisters on every settled result. Escape cancels only that layer; it must not dismiss an
+underlying Database window. `src/editor/panels/newProjectDialog.ts` was a stale duplicate of
+the same surface (last touched 2026-09-05, called only by tests) and was removed on 2026-09-11 —
+its Escape-layer coverage moved onto the live `ui/` module.
 `test/modalEscapeLayerGate.test.ts` exercises the real dialog and Database world route.
 Receipt CLI fixtures must fingerprint the normalized loaded project: text-only title graphics
 without a resource are intentionally omitted during loading. Valid evidence alone does not
@@ -55,6 +57,36 @@ make a blank project ready; missing authored commands remain `incomplete` and un
 commands remain `blocked` (`test/genrePackReceiptCli.test.ts`).
 
 ## Validation
+
+## Two new-project surfaces, one choice model (2026-09-11)
+
+`newProjectChoices.ts` is the single source; both surfaces are views of it.
+
+| | First-screen briefing | `새 프로젝트` dialog |
+|---|---|---|
+| Module | `src/editor/editorWelcome.ts` | `src/editor/ui/newProjectDialog.ts` |
+| Chrome | inline posters above the canvas, no Escape layer | modal overlay via `modalStack` |
+| Returns | `EditorWelcomeResult` (`prompt`, `systemPresetPlan`) | `{ title, choiceId }` |
+| Art | poster `thumb` | `newProjectChoiceRowThumb` (falls back to `thumb`) |
+
+Before the merge the two lists had drifted apart with no shared record: `story-cutscene` read
+"회상 스토리" on the first screen and "스토리 컷신" in the dialog, and `horror-chase` was two
+first-screen posters but a single dialog row named "공포 추격". A name chosen on the first screen
+then appeared to vanish. `test/newProjectDialog.test.ts` now asserts that every dialog row's
+label and blurb are character-identical to the first-screen poster's.
+
+The dialog row id is a **choice id**, not a `GenrePackId`. `horror-chase` carries two names
+(`horror-gallery`, `school-horror`) and only the choice id can tell them apart; deriving the AI
+prompt from the pack id silently picked one of them. `menu.ts` resolves the pack for the seed but
+the preset for the prompt from `choiceId`.
+
+Row art is separated only where a poster's art is shared with a sibling of the same pack — the
+dialog shows every option at once, so duplicated art makes the choice unreadable.
+`newProjectChoiceRowThumb` owns that rule.
+
+Automation boot detection moved to `src/editor/automationBootContext.ts`. It used to exist twice
+with different rules (only the welcome copy knew `?forceWelcome=1`), so first-screen QA had to
+satisfy two separate sets.
 
 - `test/genrePackRegistry.test.ts`: exact registry set, complete machine data, all-eight welcome mappings, honest blank-system-preset results, detached preset isolation, farm configuration negative controls, and fail-closed playability.
 - `test/genrePersistence.test.ts`: official-ID serialization roundtrip and rejection of arbitrary IDs.

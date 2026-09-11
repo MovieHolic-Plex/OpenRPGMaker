@@ -2,7 +2,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { showNewProjectDialog } from "@/editor/panels/newProjectDialog";
+import { NEW_PROJECT_DIALOG_TESTIDS, showNewProjectDialog } from "@/editor/ui/newProjectDialog";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
 import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { store } from "@/project/store";
@@ -96,19 +96,19 @@ describe("Escape 계층 게이트", () => {
     document.body.append(bottom);
     let bottomClosed = false;
     registerModal(bottom, () => { bottomClosed = true; bottom.remove(); });
-    const pending = showNewProjectDialog("fixture-title");
+    const pending = showNewProjectDialog({ defaultValue: "fixture-title" });
     expect(modalStackEntryCountForTest()).toBe(2);
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
     await expect(pending).resolves.toBeNull();
     expect(bottomClosed).toBe(false);
     expect(modalStackEntryCountForTest()).toBe(1);
-    expect(document.querySelector('[data-testid="new-project-modal"]')).toBeNull();
+    expect(document.querySelector(`[data-testid="${NEW_PROJECT_DIALOG_TESTIDS.host}"]`)).toBeNull();
   });
 
   it("new-project confirmation unregisters its layer without cancelling the selection", async () => {
-    const pending = showNewProjectDialog("fixture-title");
-    document.querySelector<HTMLButtonElement>('[data-testid="new-project-confirm"]')?.click();
-    await expect(pending).resolves.toEqual({ title: "fixture-title", starter: { kind: "blank" } });
+    const pending = showNewProjectDialog({ defaultValue: "fixture-title" });
+    document.querySelector<HTMLButtonElement>(`[data-testid="${NEW_PROJECT_DIALOG_TESTIDS.confirm}"]`)?.click();
+    await expect(pending).resolves.toEqual({ title: "fixture-title", choiceId: null });
     expect(modalStackEntryCountForTest()).toBe(0);
   });
 
