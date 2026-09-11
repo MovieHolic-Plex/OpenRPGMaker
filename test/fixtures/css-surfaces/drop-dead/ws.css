@@ -1,0 +1,4 @@
+.a  >  .b { color: red; }
+[data-x="A B"] { color: blue; }
+.c,
+.d { margin: 0; }
