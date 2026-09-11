@@ -42,6 +42,7 @@ export type CanvasOwnershipInput = {
  * 5. 왼쪽 버튼(button === 0)이고 tool === "select" && !selectionActive && !paletteStampActive && !deferCameraFocus && !tileInMapBounds → "pan"
  *    (EditScene.shouldPan 의 «선택 도구 + 맵 밖 드래그» 조항과 동일한 조건으로 카메라 팬에 양보).
  * 6. 그 외 → null (오버레이 고유의 드래그/선택 제스처).
+ *    (주의: 전용 eyedropper 도구의 좌클릭은 의도적으로 오버레이가 소유하며(6번), 복원된 스포이트는 우클릭 영역 제스처 경로(3번)를 쓴다).
  */
 export function resolveCanvasGestureOwner(input: CanvasOwnershipInput): CanvasGestureOwner | null {
   const {
