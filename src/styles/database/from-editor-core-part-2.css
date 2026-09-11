@@ -3,11 +3,6 @@
    규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
    각 규칙 앞 주석은 원본 파일:줄 이다. */
 
-/* editor/core.part-2.css:99-101 */
-.player-layout.system-shell {
-  background: #000;
-}
-
 /* editor/core.part-2.css:358-367 */
 .db-required-panel {
   align-content: center;

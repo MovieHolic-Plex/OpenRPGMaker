@@ -202,6 +202,28 @@ describe("exported player runtime CSS", () => {
     expect(aggregator).not.toContain("../editor/");
   });
 
+  it("keeps every editor-origin runtime leaf in the player aggregator editor-scoped", async () => {
+    // Given: the from-*.css leaves that Task 6.5 moved into the runtime layer. They ride the player chain
+    // (player.css → playerRuntime.css → runtime/index.css) although their source sheets never did.
+    const aggregator = await readFile(resolve("src/styles/runtime/index.css"), "utf8");
+    const leaves = Array.from(aggregator.matchAll(/@import\s+"(\.\/from-[^"]+\.css)"\s+layer\(runtime\);/gu), (match) => match[1]);
+    expect(leaves.length).toBeGreaterThan(0);
+
+    // When: every selector of every leaf is read (top-level rule preludes and rules inside at-blocks alike).
+    const EDITOR_SCOPE = /:where\(body:has\(\.editor-layout\)\)|\.test-play-modal-body|\.db-|\.editor-layout/u;
+    const offending: string[] = [];
+    for (const leaf of leaves) {
+      const css = (await readFile(resolve("src/styles/runtime", leaf), "utf8")).replace(/\/\*[\s\S]*?\*\//gu, "");
+      const preludes = Array.from(css.matchAll(/(^|[}{;])\s*([^{}@;]+?)\s*\{/gu), (match) => match[2].trim()).filter((prelude) => prelude.length > 0);
+      for (const prelude of preludes) for (const selector of prelude.split(",")) {
+        if (!EDITOR_SCOPE.test(selector)) offending.push(`${leaf}: ${selector.trim()}`);
+      }
+    }
+
+    // Then: no selector can match in the shipped player document, which has no editor ancestor.
+    expect(offending, "플레이어 사슬의 편집기 유래 리프는 모든 선택자가 편집기 조상으로 스코프돼야 한다").toEqual([]);
+  });
+
   it("detects an omitted required import in a disposable built entry", async () => {
     // Given/When: a disposable closure is built without only the action-HUD import.
     const fixtureCss = await buildDisposableClosureWithout('@import "./actionHud.css" layer(runtime);\n');

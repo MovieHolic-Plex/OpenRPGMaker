@@ -1,6 +1,7 @@
 /** @vitest-environment happy-dom */
 // 선택 칩을 × 로 해제하면 그 턴의 스코프도 사라져야 한다 — 2026-09-03 적대적 리뷰 13(해제 뒤에도 옛 영역 안에만 시공).
 // 그리고 대기 상태(idle)에서도 선택 칩은 보여야 한다 — 스코프가 붙는지 사용자가 볼 수 있어야 × 를 누를 수 있다.
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { preprocessCSS, resolveConfig } from "vite";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -18,30 +19,18 @@ beforeAll(async () => {
   // Preserve the shipped assistant import order, including the late shell constraints.
   // Unrelated runtime/database sheets make happy-dom's selector scans prohibitively slow.
   const filename = resolve("src/styles/index.css");
-  // 배럴 database/tabs-b-assistant-panel.css 는 표면 진입 시트로 대체돼 사라졌다(2026-09-11 Task 7). 그 리프를 같은 순서로 나열한다.
+  // 배럴 database/tabs-b-assistant-panel.css 는 표면 진입 시트로 대체돼 사라졌다(2026-09-11 Task 7). 어시스턴트 리프는
+  // database/index.css 의 assistant-proposal.css … 21-team-panel.css 구간을 그 순서대로 읽어 온다(손으로 베낀 상수는 진입 시트가
+  // 바뀌면 조용히 어긋난다). 진입 시트의 `layer(database)` 접미는 벗긴다 — 이 픽스처는 평탄 순서만 본다.
+  const databaseEntry = readFileSync(resolve("src/styles/database/index.css"), "utf8").split("\n");
+  const first = databaseEntry.findIndex((line) => line.includes("assistant-proposal.css"));
+  const last = databaseEntry.findIndex((line) => line.includes("21-team-panel.css"));
+  if (first < 0 || last < first) throw new Error("database/index.css 에 assistant-proposal.css … 21-team-panel.css 구간이 없다");
+  const assistantLeaves = databaseEntry.slice(first, last + 1).map((line) => line.replace(/\s+layer\(database\);$/u, ";").replace('@import "./', '@import "./database/'));
+  if (assistantLeaves.length !== 21) throw new Error(`어시스턴트 리프 구간이 21장이 아니다: ${assistantLeaves.length}`);
   const css = [
     '@import "./tokens.css";',
-    '@import "./database/assistant-proposal.css";',
-    '@import "./database/assistant-command-bar.css";',
-    '@import "./database/assistant-sticky-checklist.css";',
-    '@import "./database/assistant-rising-overlay.css";',
-    '@import "./database/tabs-b-assistant-panel/01-legacy-preview-panel.css";',
-    '@import "./database/tabs-b-assistant-panel/02-chat-dock.css";',
-    '@import "./database/tabs-b-assistant-panel/03-three-tier-ia.css";',
-    '@import "./database/tabs-b-assistant-panel/04-chat-bubbles-proposals.css";',
-    '@import "./database/tabs-b-assistant-panel/05-structure-modal-overlays.css";',
-    '@import "./database/tabs-b-assistant-panel/06-canvas-guides-panel-chrome.css";',
-    '@import "./database/tabs-b-assistant-panel/07-viewer-modal-settings.css";',
-    '@import "./database/tabs-b-assistant-panel/08-studio-mode-start-screen.css";',
-    '@import "./database/tabs-b-assistant-panel/09-ux-polish-density.css";',
-    '@import "./database/tabs-b-assistant-panel/10-dock-mode-rich-doc.css";',
-    '@import "./database/tabs-b-assistant-panel/11-autonomous-run-surface.css";',
-    '@import "./database/tabs-b-assistant-panel/12-assistant-temperature.css";',
-    '@import "./database/assistant-composer.css";',
-    '@import "./database/tabs-b-assistant-panel/18-assistant-deck.css";',
-    '@import "./database/tabs-b-assistant-panel/19-assistant-cards.css";',
-    '@import "./database/tabs-b-assistant-panel/20-team-board.css";',
-    '@import "./database/tabs-b-assistant-panel/21-team-panel.css";',
+    ...assistantLeaves,
     '@import "./shell/editor-ui-modes.css";',
   ].join("\n");
   const config = await resolveConfig({ configFile: false, envFile: false }, "serve", "test");

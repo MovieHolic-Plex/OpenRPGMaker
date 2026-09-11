@@ -6,8 +6,8 @@ import type { ActorParameterKey, ActorRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { curvePreviewGraph } from "@/editor/panels/databaseCurvePreview";
 // 주인공 곡선 에디터 전용 CSS — 데스크톱(≥901px)에서 display:none 으로 사라진 곡선 컬럼 복원
-// + 다이얼로그 스타일을 모든 화면 폭에서 제공(qa-actors Critical). A 배치의 파일과 충돌하지
-// 않도록 curve* 계열 신규 파일로 분리하고 TS 에서 직접 로드한다.
+// + 다이얼로그 스타일을 모든 화면 폭에서 제공(qa-actors Critical). curve* 계열 파일(database/curve-editors.css)로
+// 분리돼 있고, database/index.css 진입 시트가 database 레이어 끝에서 읽는다(2026-09-11 Task 7).
 
 const PARAMETER_LABELS: Record<ActorParameterKey, string> = {
   maxHp: "최대 HP",

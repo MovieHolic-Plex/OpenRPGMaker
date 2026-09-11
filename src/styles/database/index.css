@@ -1,4 +1,7 @@
-/* database 표면 진입 시트 — 리프 시트를 @layer database 에 넣는다. 규칙을 여기 쓰지 말 것. 순서는 2026-09-11 유효 순서 그대로(세대 접기 전). */
+/* database 표면 진입 시트 — 리프 시트를 @layer database 에 넣는다. 규칙을 여기 쓰지 말 것. 순서는 2026-09-11 유효 순서 그대로(세대 접기 전).
+   첫 줄의 @layer 선언은 허용된 유일한 비-import 줄이다: index.css 와 같은 순서 선언을 멱등으로 되풀이해, dev 모드에서 이 시트가
+   index.css 보다 먼저 파싱되더라도(모듈 평가 순서) 레이어 순서가 import 순서에 기대지 않게 한다. */
+@layer tokens, base, components, shell, map, event, database, resources, runtime, overrides;
 @import "./from-editor-core-part-2.css" layer(database);
 @import "./from-editor-harness-suggestion.css" layer(database);
 @import "./from-editor-event-editor-legacy-part-1.css" layer(database);
