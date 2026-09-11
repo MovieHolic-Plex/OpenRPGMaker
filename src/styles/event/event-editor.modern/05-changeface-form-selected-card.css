@@ -53,9 +53,9 @@
 }
 
 .event-command-face-crop.event-command-face-bust {
-  background-position: bottom center !important;
-  background-repeat: no-repeat !important;
-  background-size: contain !important;
+  background-position: bottom center;
+  background-repeat: no-repeat;
+  background-size: contain;
   border: 1px solid var(--border-subtle);
   /* Do not force background-image:none — inline url from bustVisual must show. */
 }

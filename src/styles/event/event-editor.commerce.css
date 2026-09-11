@@ -9,7 +9,7 @@
    **클래스**를 노리던 이전 규칙은 그런 클래스가 코드에 없어서 아무것도 숨기지 못했다.
    상점 폼만 좁혀서 고친다(다른 명령 창은 지금 모습을 유지). */
 .cream-command-form-head:has(+ .shop-processing-command-body) {
-  display: none !important;
+  display: none;
 }
 
 .event-command-edit-body .commerce-command-body,
@@ -351,9 +351,9 @@
 .shop-processing-item-detail-icon-wrap .rich-record-initial,
 .shop-processing-item-detail-icon-wrap img,
 .shop-processing-item-detail-icon {
-  height: 32px !important;
+  height: 32px;
   image-rendering: pixelated;
-  width: 32px !important;
+  width: 32px;
 }
 
 .shop-processing-item-detail-title {

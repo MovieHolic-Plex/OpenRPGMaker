@@ -42,7 +42,7 @@
 
 .event-command-face-preview-id {
   color: var(--text-dim, var(--text-2));
-  font: 500 10px/1.3 var(--font-mono, "Cascadia Mono", Consolas, monospace) !important;
+  font: 500 10px/1.3 var(--font-mono, "Cascadia Mono", Consolas, monospace);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -178,7 +178,6 @@
 
 @media (max-width: 720px) {
   .event-editor-workbench {
-    grid-template-columns: minmax(0, 1fr) !important;
     grid-template-rows: minmax(220px, 1fr) auto;
   }
   .event-editor-column-resizer {

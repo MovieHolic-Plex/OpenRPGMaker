@@ -19,9 +19,6 @@
 .event-command-edit-columns:has(.transfer-command-editor-inline) > .event-command-preview-panel {
   display: none;
 }
-.event-command-edit-columns:has(.transfer-command-editor-inline) {
-  grid-template-columns: minmax(0, 1fr);
-}
 
 /* 장소 이동: 인라인 맵 피커 폭 확보 (우측 중복 프리뷰는 위 규칙에서 숨김) */
 .event-subdialog-window.wide:has(.transfer-command-editor-inline) {
@@ -241,8 +238,8 @@
 .ecp-message-window.transparent {
   background: transparent;
   backdrop-filter: none;
-  background-image: none !important;
-  border-image: none !important;
+  background-image: none;
+  border-image: none;
   border-style: dashed;
   border-color: var(--runtime-dialogue-glass-border);
   border-width: 1px;

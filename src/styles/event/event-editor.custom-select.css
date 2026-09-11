@@ -9,16 +9,6 @@
   width: 100%;
 }
 
-.event-custom-select-native {
-  height: 100% !important;
-  inset: 0 !important;
-  margin: 0 !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  position: absolute !important;
-  width: 100% !important;
-}
-
 .event-editor-modal-body .event-custom-select-trigger,
 .event-subdialog-body .event-custom-select-trigger,
 .ai-settings-form .event-custom-select-trigger {

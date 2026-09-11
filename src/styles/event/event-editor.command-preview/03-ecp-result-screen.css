@@ -141,8 +141,8 @@
   background: linear-gradient(180deg, var(--bg-surface), var(--bg-surface));
   color: var(--text-1);
   box-shadow: var(--shadow-pop);
-  border-image: none !important;
-  background-image: none !important;
+  border-image: none;
+  background-image: none;
 }
 
 .ecp-number-title {

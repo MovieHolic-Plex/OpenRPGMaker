@@ -72,12 +72,12 @@
 
 .event-command-edit-body .transfer-player-dialog,
 .event-command-edit-body .transfer-player-dialog-inline {
-  display: grid !important;
-  gap: 12px !important;
-  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr) !important;
-  grid-template-rows: minmax(280px, 38vh) auto auto !important;
-  min-width: 0 !important;
-  width: 100% !important;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  grid-template-rows: minmax(280px, 38vh) auto auto;
+  min-width: 0;
+  width: 100%;
 }
 
 .event-command-edit-body .transfer-player-tree {
@@ -125,9 +125,5 @@
 }
 
 .event-command-edit-columns:has(.transfer-command-editor-inline) {
-  grid-template-columns: minmax(0, 1.4fr) minmax(220px, 300px) !important;
-}
-
-.event-subdialog-window.wide:has(.transfer-command-editor-inline) {
-  width: min(1040px, calc(100vw - 20px)) !important;
+  grid-template-columns: minmax(0, 1.4fr) minmax(220px, 300px);
 }

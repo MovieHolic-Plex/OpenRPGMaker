@@ -10,10 +10,10 @@
 .event-command-edit-body .rich-command-form.actor-amount-command-body,
 .event-command-edit-body .rich-command-form.page3-command-body {
   align-content: start;
-  display: flex !important;
+  display: flex;
   flex-direction: column;
   gap: 12px;
-  grid-template-columns: none !important;
+  grid-template-columns: none;
   min-width: 0;
   width: 100%;
 }
@@ -25,9 +25,8 @@
 .event-command-edit-body .page3-layout,
 .event-command-edit-body .page3-command-layout {
   align-items: start;
-  display: grid !important;
+  display: grid;
   gap: 12px;
-  grid-template-columns: minmax(0, 1.35fr) minmax(220px, 0.95fr) !important;
   min-width: 0;
   width: 100%;
 }
@@ -35,21 +34,10 @@
 
 .event-command-edit-body .change-equipment-layout {
   align-items: start;
-  display: grid !important;
+  display: grid;
   gap: 10px;
-  grid-template-columns: minmax(0, 1fr) !important;
   min-width: 0;
   width: 100%;
-}
-
-@media (max-width: 900px) {
-  .event-command-edit-body .party-member-layout,
-  .event-command-edit-body .change-parameters-layout,
-  .event-command-edit-body .actor-m2-layout,
-  .event-command-edit-body .page3-layout,
-  .event-command-edit-body .page3-command-layout {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
 }
 
 
@@ -65,7 +53,7 @@
 .event-command-edit-body .actor-m2-preview,
 .event-command-edit-body .page3-preview,
 .event-command-edit-body .page3-command-preview {
-  display: grid !important;
+  display: grid;
   gap: 10px;
   min-width: 0;
 }
@@ -101,7 +89,7 @@
 .event-command-edit-body .actor-m2-presets,
 .event-command-edit-body .page3-presets {
   align-items: center;
-  display: flex !important;
+  display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }

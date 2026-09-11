@@ -25,9 +25,17 @@ describe("hierarchy event editor presentation layer", () => {
     expect(css).toMatch(/--(?:hierarchy|balanced)-footer-height:\s*40px/);
     expect(css).toMatch(/\.event-editor-modal-dynamic \.event-editor\s*\{[^}]*display:\s*grid/s);
     expect(css).toMatch(/\.event-editor-modal-body\s*\{[^}]*display:\s*flex/s);
-    expect(css).toMatch(/grid-template-rows:\s*var\(--hierarchy-pages-height\)\s+minmax\(0,\s*1fr\)\s+!important/);
+    expect(css).toMatch(/grid-template-rows:\s*var\(--hierarchy-pages-height\)\s+minmax\(0,\s*1fr\)/);
     expect(css).toContain(".event-editor-render-error");
-    expect(css).toMatch(/grid-template-columns: 228px minmax\(0, 1fr\) 340px !important/);
+    // 워크벤치 트랙은 event 표면의 마지막 시트인 이 파일이 소유한다 — 레이어 순서·특이도·선언 순서로 이기므로
+    // !important 가 없어야 한다(2026-09-11 Task 12: 이벤트 편집기 시트에서 !important 를 모두 뗐다).
+    expect(css).toMatch(
+      /\.event-editor \.event-editor-workbench,\s*\.event-editor \.event-editor-workbench:not\(\.has-command-inspector\)\s*\{\s*grid-template-columns: var\(--balanced-settings-width\) minmax\(0, 1fr\) var\(--event-inspector-reserved-track, 0px\);/,
+    );
+    expect(css).toMatch(
+      /\.event-editor \.event-editor-workbench\.has-command-inspector\s*\{\s*grid-template-columns: var\(--balanced-settings-width\) minmax\(0, 1fr\) var\(--balanced-inspector-width\);/,
+    );
+    expect(css).not.toContain("!important");
     expect(css).toContain("overflow-y: auto");
   });
 

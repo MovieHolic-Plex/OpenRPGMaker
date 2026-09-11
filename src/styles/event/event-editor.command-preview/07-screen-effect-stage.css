@@ -243,7 +243,7 @@
 /* 값을 읽지 않는 효과(fadeIn/fadeOut)에서는 `값` 행을 감춘다 — .field 는 flex/grid 라
    [hidden] 이 display 규칙에 져서 그냥 두면 계속 보인다(D9). */
 .event-editor .field[data-testid="m2-screen-effect-value-field"][hidden] {
-  display: none !important;
+  display: none;
 }
 
 /* ── 인라인 인스펙터 프리뷰 (D5) ──────────────────────────────────────

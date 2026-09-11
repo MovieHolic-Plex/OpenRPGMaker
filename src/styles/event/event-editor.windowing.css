@@ -31,7 +31,6 @@
   max-height: none;
   max-width: none;
   place-self: stretch;
-  transform: none !important;
   width: calc(100vw - 12px);
 }
 
@@ -90,26 +89,9 @@
   opacity: 1;
 }
 
-body.event-editor-column-resizing,
-body.event-editor-column-resizing * {
-  cursor: col-resize !important;
-  user-select: none !important;
-}
-
-@media (max-width: 1180px) {
-  .event-editor .event-editor-workbench,
-  .event-editor .event-editor-workbench.has-command-inspector {
-    grid-template-columns:
-      minmax(0, var(--event-editor-settings-track))
-      12px
-      minmax(300px, 1fr) !important;
-  }
-}
-
 @media (max-width: 720px) {
   .event-editor .event-editor-workbench,
   .event-editor .event-editor-workbench.has-command-inspector {
-    grid-template-columns: minmax(0, 1fr) !important;
     grid-template-rows: auto auto;
   }
 

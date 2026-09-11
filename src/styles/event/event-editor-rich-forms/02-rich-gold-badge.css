@@ -92,7 +92,7 @@
 }
 
 .event-command-exp-controls {
-  display: grid !important;
+  display: grid;
   gap: 10px;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   width: 100%;
@@ -169,10 +169,10 @@
 .event-command-edit-body .battle-processing-command-body,
 .event-command-edit-body .rich-command-form.battle-processing-command-body {
   align-content: start;
-  display: flex !important;
+  display: flex;
   flex-direction: column;
   gap: 12px;
-  grid-template-columns: none !important;
+  grid-template-columns: none;
   min-width: 0;
   width: 100%;
 }

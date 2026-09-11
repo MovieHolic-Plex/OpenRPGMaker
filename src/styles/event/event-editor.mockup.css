@@ -123,11 +123,11 @@
 }
 
 /* 옛 p1-pagetabs 의 absolute 오버레이(번호/배지)를 가로 스트립용 플로우로 복원.
- * 옛 시트가 position:absolute + inset 을 주므로 !important 로 끊는다. */
+ * 옛 시트(p1-pagetabs)가 position:absolute + inset 을 주지만 이 선택자(0,4,0)가 더 특이해 그대로 이긴다. */
 .event-editor .event-page-number-tabs > .event-page-tab-rich > .event-page-tab-number,
 .event-editor .event-page-number-tabs > .event-page-tab-rich > .event-page-tab-badges {
-  position: static !important;
-  inset: auto !important;
+  position: static;
+  inset: auto;
 }
 
 .event-editor .event-page-number-tabs > .event-page-tab-rich > .event-page-tab-number {
@@ -313,7 +313,7 @@
 }
 
 .event-editor .event-editor-inspector-column[hidden] {
-  display: none !important;
+  display: none;
 }
 
 .event-editor .event-inspector-head {
@@ -517,7 +517,6 @@
 /* 더 좁은 뷰포트(900px 이하)에서 4컬럼 붕괴 방지 — 2행 스택 폴백 */
 @media (max-width: 900px) {
   .event-editor .event-editor-workbench {
-    grid-template-columns: minmax(0, 1fr) !important;
     grid-template-rows: auto auto;
   }
   .event-editor .event-editor-settings-column,
@@ -1154,7 +1153,7 @@
   overflow: hidden;
 }
 
-/* `[hidden]` 은 (0,4,0) 이라 위 display:grid 규칙 (0,3,0) 을 이미 이긴다 — !important 는 불필요했다. */
+/* `[hidden]` 은 (0,4,0) 이라 위 display:grid 규칙 (0,3,0) 을 이미 이긴다 — 중요 플래그는 불필요했다. */
 .event-editor .event-contents-fieldset > .event-page-preview-host[hidden],
 .event-editor .event-contents-fieldset > .event-page-flow-host[hidden] {
   display: none;
@@ -1173,7 +1172,7 @@
 
 .event-editor .event-contents-fieldset > .event-storyboard-host > [hidden],
 .event-editor .event-contents-fieldset > .cmd-list[hidden] {
-  display: none !important;
+  display: none;
 }
 .event-editor .event-storyboard-card {
   align-self: flex-start;
@@ -1222,9 +1221,9 @@
 /* 탭 검사 배지가 조건 요약 위로 겹쳐 작은 숫자로 보였다.
  * 그리드 마지막 칸에 고정하고 절대배치를 끊는다. */
 .event-editor .event-page-tab-rich > .event-page-validation-badge {
-  position: static !important;
-  inset: auto !important;
-  transform: none !important;
+  position: static;
+  inset: auto;
+  transform: none;
   align-self: center;
   justify-self: end;
   margin: 0;
@@ -1274,9 +1273,9 @@
 /* 탭 검사 배지는 ::after(attr(data-label)) 로 그려지고 절대배치라 겹쳤다. */
 .event-editor .event-page-tab-rich > .event-page-validation-badge::after,
 .event-editor .event-page-tab-rich > .event-page-validation-badge::before {
-  position: static !important;
-  inset: auto !important;
-  transform: none !important;
+  position: static;
+  inset: auto;
+  transform: none;
 }
 
 .event-editor .event-editor-settings-column > .event-editor-card {

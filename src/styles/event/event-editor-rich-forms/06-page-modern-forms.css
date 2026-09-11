@@ -383,7 +383,7 @@
 /* ---- AI 그림 생성 큐 (aiImageGenerateField) ---- */
 /* 단발 버튼 대신 작업 목록: 만드는 동안에도 프롬프트를 계속 쌓고, 실패해도 프롬프트가
    증발하지 않으며, 취소·재시도를 그 자리에서 한다. 전역 .page3-resource-row 레이아웃은
-   그대로 두고 목록 부분만 이 시트가 맡는다. 토큰만 쓰고 hex·!important 없음. */
+   그대로 두고 목록 부분만 이 시트가 맡는다. 토큰만 쓰고 hex·중요 플래그 없음. */
 .ai-image-queue {
   align-items: stretch;
   display: grid;

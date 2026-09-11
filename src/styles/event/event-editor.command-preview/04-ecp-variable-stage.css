@@ -17,8 +17,8 @@
   background: linear-gradient(180deg, var(--bg-surface), var(--bg-surface));
   color: var(--text-1);
   box-shadow: var(--shadow-pop);
-  border-image: none !important;
-  background-image: none !important;
+  border-image: none;
+  background-image: none;
 }
 
 .ecp-variable-title {
@@ -59,8 +59,8 @@
   color: var(--text-1);
   box-shadow: var(--shadow-pop);
   /* applySystemGraphic 이 실수로 붙어도 fill 이 새지 않게 */
-  border-image: none !important;
-  background-image: none !important;
+  border-image: none;
+  background-image: none;
 }
 .ecp-shop-title {
   font-weight: 700;
