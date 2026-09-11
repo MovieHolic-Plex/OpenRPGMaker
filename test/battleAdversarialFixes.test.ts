@@ -13,6 +13,7 @@ import { startSession } from "@/project/session";
 import { giveMonster } from "@/project/monsterCollection";
 import type { EquipmentRuntimeEffects } from "@/battle/battleBattlers";
 import { deserialize } from "@/project/io";
+import battleFixture from "./fixtures/projects/battle-v3.json";
 import type { Project, SkillId } from "@/project/types";
 import type { BattleActionResultSnapshot, BattleBattlerSnapshot } from "@/battle/types";
 
@@ -296,5 +297,203 @@ describe("SC12 — enemy x>150 recentered (M4)", () => {
     troop.members = [{ enemyId: troop.members?.[0]?.enemyId ?? "enemy_pkmn_larvea", x: 200, y: 52, hidden: false }];
     const battlers = enemyBattlers(project, troop);
     expect(battlers[0].battleX).toBeLessThanOrEqual(150);
+  });
+});
+
+// ── 실플레이 적대 리뷰 후속(2026-09): 모델 파리티 회귀 ─────────────────────
+// 1) gen1 + RM 스킨 커맨드의 죽은 공격 — beginActorCommand 가 적법성 검사 없이
+//    대상 선택을 열어 확정 후 조용히 무시되던 결함.
+// 2) gauge 방어가 적 행동 1회마다 풀리던 결함 — 방어는 "다음 자기 행동까지".
+// 3) gauge turn 이 적 행동 단위로 오르던 결함 — strict 와 같이 사이클(전원 행동) 단위.
+// 4) predictSkillDamage rm2k3 경로의 상태 배율·MIN_DAMAGE 누락.
+
+function battleV3Project(): Project {
+  return deserialize(JSON.stringify(battleFixture));
+}
+
+function twoSlimeTroop(project: Project): void {
+  const troop = project.database.troops.find((entry) => entry.id === "troop_slime");
+  const member = troop?.members?.[0];
+  if (!troop || !member) throw new Error("missing troop_slime");
+  // deserialize 가 enemyIds → members 를 합성하므로 members 를 직접 늘려야 한다.
+  troop.members = [member, { ...member }];
+}
+
+function enemyActCount(rt: ReturnType<typeof createBattleRuntime>): number {
+  return rt.snapshot().timeline.filter(
+    (entry) => entry.side === "enemy" && (entry.kind === "action" || entry.kind === "damage" || entry.kind === "miss")
+  ).length;
+}
+
+describe("gen1 attack command legality (dead-command fix)", () => {
+  it("gen1 + gauge(RM 커맨드): 사용 가능한 기술이 있으면 attack 이 대상 선택을 열지 않는다", () => {
+    const project = scarloxyProject();
+    const rt = createBattleRuntime({
+      project,
+      troopId: "troop_pkmn_grass_a",
+      canEscape: true,
+      canLose: true,
+      battleFlow: "gauge",
+      rng: () => 0.5,
+    });
+    for (let i = 0; i < 1000 && rt.snapshot().phase !== "actorCommand"; i++) rt.tick(1000);
+    const actor = rt.snapshot().actors[0];
+    expect(actor?.skillIds.length ?? 0).toBeGreaterThan(0);
+    rt.beginActorCommand({ kind: "attack" });
+    // 예전: targetSelect 진입 → 대상 확정 후 isValidActorCommand 에서 조용히 무시.
+    expect(rt.snapshot().phase).toBe("actorCommand");
+    expect(rt.snapshot().targetSelection).toBeUndefined();
+  });
+
+  it("gen1 + gauge: 모든 기술의 PP 가 소진되면 attack(Struggle)은 대상 선택을 연다", () => {
+    const project = scarloxyProject();
+    const actorId = project.system.startActorIds[0];
+    const actorRecord = project.database.actors.find((entry) => entry.id === actorId);
+    if (!actorId || !actorRecord) throw new Error("missing start actor");
+    // 배틀러 skillIds 는 레코드가 아니라 레벨 습득에서 온다 — PP 기술은 전부 0,
+    // 비-PP 기술(0코스트 포함, 예: skill_sword_slash)은 코스트를 올려서
+    // "쓸 수 있는 기술"을 완전히 없앤다.
+    const pp0: Record<string, number> = {};
+    for (const skill of project.database.skills) {
+      if (skill.maxPp !== undefined) pp0[skill.id] = 0;
+      else skill.mpCost = { ...skill.mpCost, flat: 999 };
+    }
+    const rt = createBattleRuntime({
+      project,
+      troopId: "troop_pkmn_grass_a",
+      canEscape: true,
+      canLose: true,
+      battleFlow: "gauge",
+      party: { levels: {}, experience: {}, skillPp: { [actorId]: pp0 }, vitals: { [actorId]: { hp: 100, mp: 0 } } },
+      rng: () => 0.5,
+    });
+    for (let i = 0; i < 1000 && rt.snapshot().phase !== "actorCommand"; i++) rt.tick(1000);
+    rt.beginActorCommand({ kind: "attack" });
+    expect(rt.snapshot().phase).toBe("targetSelect");
+  });
+});
+
+describe("gauge defend duration (until next own action)", () => {
+  it("방어 자세는 적 행동이 지나가도 유지되고, 액터가 다시 행동할 때 해제된다", () => {
+    const project = battleV3Project();
+    twoSlimeTroop(project);
+    const rt = createBattleRuntime({
+      project,
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+      battleFlow: "gauge",
+      rng: () => 0.5,
+    });
+    for (let i = 0; i < 400 && rt.snapshot().phase !== "actorCommand"; i++) rt.tick(1000);
+    rt.performActorCommand({ kind: "defend" });
+    expect(rt.snapshot().actors[0]?.defending).toBe(true);
+
+    const actsAtDefend = enemyActCount(rt);
+    let lastCheckedActs = actsAtDefend;
+    let guardSurvivedEnemyAction = false;
+    let guardDroppedOnOwnAction = false;
+    for (let i = 0; i < 600 && !rt.snapshot().result; i++) {
+      const snap = rt.snapshot();
+      if (snap.phase === "actorCommand") {
+        if (enemyActCount(rt) > actsAtDefend) {
+          // 적 행동이 지나간 뒤 다음 명령 단계 — 방어가 살아 있어야 한다.
+          expect(snap.actors[0]?.defending).toBe(true);
+          rt.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+          expect(rt.snapshot().actors[0]?.defending).toBe(false);
+          guardDroppedOnOwnAction = true;
+          break;
+        }
+        rt.performActorCommand({ kind: "defend" });
+      } else {
+        rt.tick(1000);
+      }
+      if (enemyActCount(rt) > lastCheckedActs) {
+        lastCheckedActs = enemyActCount(rt);
+        // 적 행동 직후에도 방어는 유지된다(예전 코드는 여기서 전원 해제했다).
+        expect(rt.snapshot().actors[0]?.defending).toBe(true);
+        guardSurvivedEnemyAction = true;
+      }
+    }
+    expect(guardSurvivedEnemyAction).toBe(true);
+    expect(guardDroppedOnOwnAction).toBe(true);
+  });
+});
+
+describe("gauge turn cadence (per action cycle)", () => {
+  it("turn 은 적 행동 단위가 아니라 생존 배틀러 전원이 행동한 사이클에서만 증가한다", () => {
+    const project = battleV3Project();
+    twoSlimeTroop(project);
+    const rt = createBattleRuntime({
+      project,
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+      battleFlow: "gauge",
+      rng: () => 0.5,
+    });
+    // 액터가 행동(방어)한다 — 사이클의 첫 슬롯 소비. turn 은 아직 0.
+    for (let i = 0; i < 400 && rt.snapshot().phase !== "actorCommand"; i++) rt.tick(1000);
+    rt.performActorCommand({ kind: "defend" });
+    expect(rt.snapshot().turn).toBe(0);
+
+    // 첫 적 행동: 예전 코드는 여기서 turn=1 이 됐다.
+    for (let i = 0; i < 400 && enemyActCount(rt) < 1 && !rt.snapshot().result; i++) {
+      if (rt.snapshot().phase === "actorCommand") rt.performActorCommand({ kind: "defend" });
+      else rt.tick(1000);
+    }
+    expect(rt.snapshot().turn).toBe(0);
+
+    // 두 번째 적까지 행동하면 전원(액터+적 2)이 슬롯을 소비해 사이클이 닫힌다.
+    for (let i = 0; i < 400 && enemyActCount(rt) < 2 && !rt.snapshot().result; i++) {
+      if (rt.snapshot().phase === "actorCommand") rt.performActorCommand({ kind: "defend" });
+      else rt.tick(1000);
+    }
+    expect(enemyActCount(rt)).toBeGreaterThanOrEqual(2);
+    expect(rt.snapshot().turn).toBe(1);
+  });
+});
+
+describe("predictSkillDamage rm2k3 parity", () => {
+  const snap = (overrides: Record<string, unknown>): BattleBattlerSnapshot =>
+    ({
+      id: "b1",
+      recordId: "actor_hero",
+      name: "Hero",
+      hp: 100,
+      maxHp: 100,
+      mp: 50,
+      maxMp: 50,
+      gauge: 0,
+      stateIds: [],
+      stateTurns: {},
+      skillIds: [],
+      defeated: false,
+      defending: false,
+      level: 1,
+      effectiveStats: { attack: 40, defense: 20, mind: 10, agility: 30 },
+      ...overrides,
+    }) as unknown as BattleBattlerSnapshot;
+
+  it("공격 상승 상태 배율이 예측 피해에 반영된다", () => {
+    const project = battleV3Project();
+    const burn = project.database.states.find((state) => state.id === "state_burn");
+    if (!burn) throw new Error("missing state_burn");
+    (burn as { runtimeEffects?: Record<string, unknown> }).runtimeEffects = { attackMultiplier: 2 };
+    const base = predictSkillDamage(project, snap({}), { power: 10, statistic: "attack", effect: "damage" }, snap({ recordId: "enemy_slime" }));
+    const buffed = predictSkillDamage(project, snap({ stateIds: ["state_burn"] }), { power: 10, statistic: "attack", effect: "damage" }, snap({ recordId: "enemy_slime" }));
+    // runtime: stat = round(attack * 2) — 예전 예측은 배율을 무시했다.
+    expect(buffed.amount).toBeGreaterThan(base.amount);
+    expect(buffed.amount).toBe(10 + Math.floor(80 / 2) - Math.floor(20 / 2));
+  });
+
+  it("뺄셈식 붕괴 구간에서 MIN_DAMAGE_RATIO 하한을 예측한다", () => {
+    const project = battleV3Project();
+    // power 100, 공격 0 → preDefense 100 → 하한 floor(100 * 0.125) = 12.
+    // 예전 예측은 100 - floor(9999/2) < 0 → 0 을 반환했다.
+    const target = snap({ recordId: "enemy_slime", effectiveStats: { attack: 0, defense: 9999, mind: 0, agility: 1 } });
+    const user = snap({ effectiveStats: { attack: 0, defense: 0, mind: 0, agility: 1 } });
+    const predicted = predictSkillDamage(project, user, { power: 100, statistic: "attack", effect: "damage" }, target);
+    expect(predicted.amount).toBe(12);
   });
 });

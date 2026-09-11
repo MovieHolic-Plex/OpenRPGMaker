@@ -5,6 +5,7 @@ import { deserialize } from "@/project/io";
 import { mountBattleScene } from "@/player/battleDom";
 import { introDirectorState } from "@/player/battleDirectorDom";
 import { store } from "@/project/store";
+import { createScarloxyPokemonDemoProject } from "@/project/defaults";
 import battleFixture from "./fixtures/projects/battle-v3.json";
 import "./battleOverhaulContracts.cases";
 
@@ -192,4 +193,49 @@ describe("battle dom keyboard and status rows", () => {
     controller.destroy();
   });
 
+});
+
+// ── 실플레이 적대 리뷰 후속: gen1+RM 스킨의 죽은 공격 버튼 / 스크롤 큐 ──
+describe("gen1+RM dead-attack guard UI and scroll cue", () => {
+  it("gen1 + gauge: 사용 가능한 기술이 있으면 통상 공격 버튼이 inert+사유로 렌더된다", () => {
+    vi.useFakeTimers();
+    const project = createScarloxyPokemonDemoProject();
+    store.replace(project);
+    const host = document.createElement("div");
+    document.body.append(host);
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_pkmn_grass_a",
+      canEscape: true,
+      canLose: true,
+      battleFlow: "gauge",
+      rng: () => 0.5,
+    });
+    const controller = mountBattleScene({ host, runtime, onResult: () => undefined, introHold: false });
+    untilActorCommand(runtime);
+    vi.advanceTimersByTime(250);
+
+    const attack = controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-attack']");
+    expect(attack).toBeTruthy();
+    expect(attack?.disabled).toBe(true);
+    expect(attack?.dataset.previewOnly).toBe("true");
+    expect(attack?.getAttribute("aria-label")).toContain("통상 공격을 쓸 수 없습니다");
+    // 그리고 런타임도 같은 규칙으로 막는다 — 버튼이 아니라 계약이 정본이다.
+    runtime.beginActorCommand({ kind: "attack" });
+    expect(runtime.snapshot().phase).toBe("actorCommand");
+    controller.destroy();
+    vi.useRealTimers();
+  });
+
+  it("커맨드 메뉴에 스크롤 큐 요소가 붙는다(happy-dom 에는 레이아웃이 없어 표시 판정은 브라우저 QA 가 담당)", () => {
+    vi.useFakeTimers();
+    const { runtime, controller } = setup();
+    untilActorCommand(runtime);
+    vi.advanceTimersByTime(250);
+    const menu = controller.root.querySelector("[data-testid='battle-command-grid']");
+    expect(menu).toBeTruthy();
+    expect(menu?.querySelector("[data-testid='battle-command-scroll-cue']")).toBeTruthy();
+    controller.destroy();
+    vi.useRealTimers();
+  });
 });
