@@ -3,7 +3,7 @@ import { PI_TEAM_ROLES, teamRoleSummaries } from "@/ai/piAgent/team";
 import { createTeamBoardState, markTeamBoardAborted, markTeamBoardApplied, plainLine, reduceTeamBoard, teamBoardTotals } from "@/ai/piAgent/teamBoardState";
 import { selectPiToolDefinitions } from "@/ai/piAgent/toolAdapter";
 import type { PiAgentEvent } from "@/ai/piAgent/protocol";
-import { parsePiDirective } from "@/editor/panels/aiPiAgentCommand";
+import { parsePiCommand } from "@/editor/panels/aiPiAgentCommand";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 
@@ -37,13 +37,9 @@ describe("팀 역할", () => {
 describe("/pi team 파서", () => {
   const project = seeded();
   it("team 키워드는 팀 모드, 맵 목록은 후보", () => {
-    const commandOf = (text: string) => {
-      const parsed = parsePiDirective(text, project, "map_a");
-      return parsed?.kind === "command" ? parsed.command : null;
-    };
-    expect(commandOf("/pi team 마을 셋")).toEqual({ mode: "team", mapIds: [], task: "마을 셋", loop: 1 });
-    expect(commandOf("/pi team map_a,map_b 마을")).toEqual({ mode: "team", mapIds: ["map_a", "map_b"], task: "마을", loop: 1 });
-    expect(commandOf("/pi 마을")).toEqual({ mode: "single", mapIds: ["map_a"], task: "마을", loop: 1 });
+    expect(parsePiCommand("/pi team 마을 셋", project, "map_a")).toEqual({ mode: "team", mapIds: [], task: "마을 셋" });
+    expect(parsePiCommand("/pi team map_a,map_b 마을", project, "map_a")).toEqual({ mode: "team", mapIds: ["map_a", "map_b"], task: "마을" });
+    expect(parsePiCommand("/pi 마을", project, "map_a")).toEqual({ mode: "single", mapIds: ["map_a"], task: "마을" });
   });
 });
 

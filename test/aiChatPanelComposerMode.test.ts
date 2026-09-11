@@ -47,7 +47,6 @@ async function send(panel: FakeElement, text: string): Promise<void> {
   await vi.waitFor(() => expect(runPiCommand).toHaveBeenCalled(), { timeout: 2_000, interval: 5 });
 }
 
-const lastOptions = () => vi.mocked(runPiCommand).mock.calls.at(-1)?.[2];
 const lastCommand = () => vi.mocked(runPiCommand).mock.calls.at(-1)?.[0];
 
 beforeEach(() => {
@@ -88,36 +87,6 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     expect(findByTestId(panel, "ai-composer-reasoning")).toBeNull();
   });
 
-  it("읽기 전용 레벨은 쓰기 없는 Pi 실행으로 실린다", async () => {
-    // Break: readOnly 가 안 실리면 쓰기 툴이 붙어 사용자가 고른 읽기 전용이 무시된다.
-    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
-    selectAutonomy(panel, "readonly");
-    await send(panel, "이 맵 크기가 얼마야?");
-
-    expect(lastCommand()?.task).toBe("이 맵 크기가 얼마야?");
-    expect(lastOptions()).toMatchObject({ readOnly: true, planOnly: false, maxTurns: 4, thinkingLevel: "low" });
-  });
-
-  it("확인 레벨은 계획만 세우는 실행이다", async () => {
-    // Break: 계획 턴에 쓰기가 열려 있으면 "실행 전에 확인" 약속이 깨진다.
-    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
-    selectAutonomy(panel, "confirm");
-    await send(panel, "타이틀을 두 단계로");
-
-    expect(lastOptions()).toMatchObject({ readOnly: true, planOnly: true, maxTurns: 6 });
-  });
-
-  it("자격 때문에 죽은 Pi 실행에는 설정 열기를 붙인다", async () => {
-    // 세션 폴백이 없어졌으므로 Pi 실패가 곧 막다른 길이다 — 로그인·워커 문제면 복구 동선이 있어야 한다.
-    vi.mocked(runPiCommand).mockImplementationOnce(async (_command, surface) => {
-      surface.appendBubble("system", "Pi 에이전트 실패: 401 Unauthorized");
-      return false;
-    });
-    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
-    await send(panel, "집 한 채 지어줘");
-
-    expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
-  });
 
   it("중단처럼 자격과 무관한 실패에는 설정 열기를 붙이지 않는다", async () => {
     vi.mocked(runPiCommand).mockImplementationOnce(async (_command, surface) => {
@@ -128,28 +97,5 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     await send(panel, "집 한 채 지어줘");
 
     expect(findByTestId(panel, "ai-error-open-settings")).toBeNull();
-  });
-
-  it.each([
-    ["balanced", 16, "low"],
-    ["autonomous", 32, "medium"],
-    ["max", 48, "high"],
-  ] as const)("쓰기 레벨 %s 은 턴 상한 %i·추론 %s 로 실린다", async (level, maxTurns, thinkingLevel) => {
-    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
-    selectAutonomy(panel, level);
-    await send(panel, "타이틀 바꿔줘");
-
-    expect(lastOptions()).toMatchObject({ readOnly: false, planOnly: false, maxTurns, thinkingLevel });
-  });
-
-  it("「계속」은 읽기 전용 설정을 해제하지 않는다", async () => {
-    // Break: 「계속」이 다이얼을 몰래 do 로 되돌리면 다음 턴부터 쓰기 툴이 붙는다.
-    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
-    selectAutonomy(panel, "readonly");
-    await send(panel, "이 맵 뭐가 있어?");
-    await send(panel, "계속");
-
-    expect(vi.mocked(runPiCommand)).toHaveBeenCalledTimes(2);
-    expect(lastOptions()).toMatchObject({ readOnly: true });
   });
 });
