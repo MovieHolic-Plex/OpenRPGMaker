@@ -37,7 +37,7 @@ export function defaultItemRecords(): ItemRecord[] {
       occasionField: false,
       occasionBattle: true,
       consumable: true,
-      captureProfile: { multiplier: 1 },
+      captureProfile: { multiplier: 1, ballClass: "poke" },
     }),
     normalizeItemRecord({
       id: "item_ether",

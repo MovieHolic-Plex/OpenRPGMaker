@@ -104,6 +104,7 @@ export function expandedDefaultItemRecords(): ItemRecord[] {
     catalogItem({ id: "item_hoe", name: "괭이", price: 50, description: "농경지의 흙을 갈아 씨앗을 심을 밭으로 만드는 농기구입니다.", icon: "cc0-jetrel-hoe", farmTool: "hoe" }),
     catalogItem({ id: "item_pickaxe", name: "곡괭이", price: 100, description: "광산과 들판의 바위를 깨뜨려 광물을 캐는 농기구입니다.", icon: "cc0-jetrel-pickaxe", farmTool: "pickaxe" }),
     catalogItem({ id: "item_watering_can", name: "물뿌리개", price: 80, description: "농경지의 작물에 물을 주어 성장을 돕는 농기구입니다.", icon: "cc0-jetrel-watering-can", farmTool: "wateringCan" }),
+    catalogItem({ id: "item_axe", name: "도끼", price: 100, description: "숲의 나무를 베어 목재를 얻는 농기구입니다.", icon: "cc0-jetrel-gen-axe-great", farmTool: "axe" }),
 
     // Ammunition, crafting materials, harvests, and sellable goods.
     catalogItem({ id: "item_arrow_bundle", name: "화살 묶음", price: 25, description: "활과 함정을 제작할 때 쓰는 곧은 화살 묶음입니다.", icon: "cc0-jetrel-arrow-bundle" }),

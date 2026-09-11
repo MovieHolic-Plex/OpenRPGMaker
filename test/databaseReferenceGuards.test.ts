@@ -277,6 +277,29 @@ describe("database reference guards for command-bearing records", () => {
     expect(store.getCurrent().database.items.some((item) => item.id === itemId)).toBe(true);
   });
 
+  it("blocks deleting a switch that a switch item activates", () => {
+    const switchItem = store.getCurrent().database.items.find(
+      (item) => item.type === "switch" && item.switchId
+    );
+    expect(switchItem).toBeDefined();
+
+    expect(switchVariableReferenceMessage("switch", switchItem!.switchId!)).not.toBeNull();
+    expect(deleteSwitch(switchItem!.switchId!)).toMatchObject({ ok: false });
+    expect(store.getCurrent().switches.some((entry) => entry.id === switchItem!.switchId)).toBe(true);
+  });
+
+  it("blocks deleting a switch that a skill switch effect activates", () => {
+    store.update((project) => {
+      project.switches.push({ id: "sw_skill_effect", name: "스킬 스위치" });
+      const skill = project.database.skills[0];
+      skill.effect = { kind: "switch", switchId: "sw_skill_effect" };
+    });
+
+    expect(switchVariableReferenceMessage("switch", "sw_skill_effect")).not.toBeNull();
+    expect(deleteSwitch("sw_skill_effect")).toMatchObject({ ok: false });
+    expect(store.getCurrent().switches.some((entry) => entry.id === "sw_skill_effect")).toBe(true);
+  });
+
   it("still deletes a switch that has no references at all", () => {
     store.update((project) => {
       project.switches = [{ id: "sw_orphan", name: "Orphan Switch" }];

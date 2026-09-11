@@ -76657,6 +76657,144 @@
         "stateEffects": []
       },
       {
+        "id": "skill_ice",
+        "name": "빙결",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_ice_shatter",
+        "description": "얼음 속성으로 적을 얼립니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "ice",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_thunder",
+        "name": "낙뢰",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_thunder_strike",
+        "description": "번개 속성으로 적을 내리칩니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "thunder",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_earth",
+        "name": "암석 파쇄",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_earth_spike",
+        "description": "대지 속성으로 적을 짓누릅니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "earth",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_wind",
+        "name": "질풍참",
+        "scope": "enemy",
+        "power": 28,
+        "animationId": "anim_gen_wind_slice",
+        "description": "바람 속성으로 적을 베어냅니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "wind",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_dark",
+        "name": "암흑 파동",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_shadow_pulse",
+        "description": "어둠 속성으로 적을 침식합니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "dark",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_holy",
+        "name": "성광",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_holy_beam",
+        "description": "신성 속성으로 적을 정화합니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "holy",
+        "stateEffects": []
+      },
+      {
         "id": "skill_item_holy_water",
         "name": "성수 효과",
         "scope": "enemy",
@@ -77031,7 +77169,7 @@
         "price": 50,
         "skillId": "skill_item_potion",
         "description": "아군 하나의 HP를 50 회복합니다.",
-        "type": "normalGoods",
+        "type": "medicine",
         "occasion": "always",
         "consumable": true,
         "animationId": "anim_heal",
@@ -77101,7 +77239,7 @@
         "price": 120,
         "skillId": "skill_item_ether",
         "description": "아군 하나의 MP를 30 회복합니다.",
-        "type": "normalGoods",
+        "type": "medicine",
         "occasion": "always",
         "consumable": true,
         "animationId": "anim_magic",
@@ -78516,7 +78654,8 @@
           "stateResistanceChance": 0
         },
         "captureProfile": {
-          "multiplier": 1
+          "multiplier": 1,
+          "ballClass": "poke"
         }
       },
       {
@@ -80960,6 +81099,75 @@
           "stateResistanceChance": 0
         },
         "farmTool": "wateringCan"
+      },
+      {
+        "id": "item_axe",
+        "name": "도끼",
+        "imageResourceId": "cc0-jetrel-gen-axe-great",
+        "iconResourceId": "cc0-jetrel-gen-axe-great",
+        "scope": "none",
+        "price": 100,
+        "description": "숲의 나무를 베어 목재를 얻는 농기구입니다.",
+        "type": "normalGoods",
+        "occasion": "never",
+        "consumable": false,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": false,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        },
+        "farmTool": "axe"
       },
       {
         "id": "item_arrow_bundle",
@@ -88422,6 +88630,1245 @@
         }
       },
       {
+        "id": "item_catalog_attack_manual",
+        "name": "투척술 교범",
+        "imageResourceId": "cc0-jetrel-book-sword",
+        "iconResourceId": "cc0-jetrel-book-sword",
+        "scope": "ally",
+        "price": 240,
+        "description": "선택한 아군에게 원거리에서 단검을 던지는 투척술을 가르칩니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_throwing_knife",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_fire_grimoire",
+        "name": "홍염 마도서",
+        "imageResourceId": "cc0-jetrel-book-magic",
+        "iconResourceId": "cc0-jetrel-book-magic",
+        "scope": "ally",
+        "price": 390,
+        "description": "선택한 아군에게 불꽃을 다루는 화염 마법을 가르칩니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_fire",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_water_grimoire",
+        "name": "청류 마도서",
+        "imageResourceId": "cc0-jetrel-book-magic",
+        "iconResourceId": "cc0-jetrel-book-magic",
+        "scope": "ally",
+        "price": 380,
+        "description": "선택한 아군이 물줄기를 쏘는 물대포 기술을 배웁니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_water",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_leaf_scroll",
+        "name": "푸른 잎 비전서",
+        "imageResourceId": "cc0-jetrel-scroll",
+        "iconResourceId": "cc0-jetrel-scroll",
+        "scope": "ally",
+        "price": 350,
+        "description": "선택한 아군에게 날카로운 잎날 공격법을 전수합니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_leaf",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_healing_tome",
+        "name": "온기의 치유서",
+        "imageResourceId": "cc0-jetrel-skill-book",
+        "iconResourceId": "cc0-jetrel-skill-book",
+        "scope": "ally",
+        "price": 420,
+        "description": "선택한 아군이 상처를 회복시키는 치유 기술을 익힙니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_heal",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_poison_codex",
+        "name": "독침 연구서",
+        "imageResourceId": "cc0-jetrel-notebook",
+        "iconResourceId": "cc0-jetrel-notebook",
+        "scope": "ally",
+        "price": 370,
+        "description": "선택한 아군에게 독을 묻힌 침 공격 요령을 가르칩니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_poison_sting",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_sleep_scroll",
+        "name": "꿈안개 주문서",
+        "imageResourceId": "cc0-jetrel-scroll",
+        "iconResourceId": "cc0-jetrel-scroll",
+        "scope": "ally",
+        "price": 410,
+        "description": "선택한 아군이 적을 잠재우는 수면 안개를 습득합니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_sleep_mist",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_weaken_manual",
+        "name": "쇠약의 전술서",
+        "imageResourceId": "cc0-jetrel-skill-book",
+        "iconResourceId": "cc0-jetrel-skill-book",
+        "scope": "ally",
+        "price": 400,
+        "description": "선택한 아군에게 적의 방어를 낮추는 약화술을 전합니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_weaken",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_balance_seed",
+        "name": "균형의 씨앗",
+        "imageResourceId": "cc0-jetrel-seed-bag",
+        "iconResourceId": "cc0-jetrel-seed-bag",
+        "scope": "ally",
+        "price": 540,
+        "description": "선택한 아군의 공격력과 방어력을 영구히 1씩 높입니다.",
+        "type": "seed",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 1,
+          "defense": 1,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_insight_seed",
+        "name": "통찰의 씨앗",
+        "imageResourceId": "cc0-jetrel-gen2-wisdom-seed",
+        "iconResourceId": "cc0-jetrel-gen2-wisdom-seed",
+        "scope": "ally",
+        "price": 560,
+        "description": "선택한 아군의 정신력과 민첩성을 영구히 1씩 더합니다.",
+        "type": "seed",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 1,
+          "agility": 1
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_mastery_seed",
+        "name": "숙련의 씨앗",
+        "imageResourceId": "cc0-jetrel-gen2-might-seed",
+        "iconResourceId": "cc0-jetrel-gen2-might-seed",
+        "scope": "ally",
+        "price": 1200,
+        "description": "선택한 아군의 네 가지 전투 능력을 영구히 1씩 올립니다.",
+        "type": "seed",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 1,
+          "defense": 1,
+          "mind": 1,
+          "agility": 1
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_gate_relay",
+        "name": "성문 기동패",
+        "imageResourceId": "cc0-jetrel-gen2-bridge-relay",
+        "iconResourceId": "cc0-jetrel-gen2-bridge-relay",
+        "scope": "none",
+        "price": 0,
+        "description": "메뉴에서 사용해 성문 개방 이벤트 스위치를 켭니다.",
+        "type": "switch",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "switchId": "sw_catalog_gate_open",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_lighthouse_relay",
+        "name": "등대 점화패",
+        "imageResourceId": "cc0-jetrel-gen2-sun-relay",
+        "iconResourceId": "cc0-jetrel-gen2-sun-relay",
+        "scope": "none",
+        "price": 0,
+        "description": "메뉴에서 사용해 등대 불빛 점화 스위치를 작동시킵니다.",
+        "type": "switch",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "switchId": "sw_catalog_lighthouse_lit",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_lift_relay",
+        "name": "승강기 기동패",
+        "imageResourceId": "cc0-jetrel-gear",
+        "iconResourceId": "cc0-jetrel-gear",
+        "scope": "none",
+        "price": 0,
+        "description": "메뉴에서 사용해 광산 승강기 운행 스위치를 켭니다.",
+        "type": "switch",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "switchId": "sw_catalog_mine_lift",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_fountain_relay",
+        "name": "분수 작동패",
+        "imageResourceId": "cc0-jetrel-crystal",
+        "iconResourceId": "cc0-jetrel-crystal",
+        "scope": "none",
+        "price": 0,
+        "description": "메뉴에서 사용해 광장 분수의 작동 스위치를 전환합니다.",
+        "type": "switch",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "switchId": "sw_catalog_fountain_flow",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_archive_relay",
+        "name": "서고 해제패",
+        "imageResourceId": "cc0-jetrel-old-key-scroll",
+        "iconResourceId": "cc0-jetrel-old-key-scroll",
+        "scope": "none",
+        "price": 0,
+        "description": "메뉴에서 사용해 비밀 서고의 잠금 해제 스위치를 켭니다.",
+        "type": "switch",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "switchId": "sw_catalog_archive_unlock",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_beacon_relay",
+        "name": "봉화 점화패",
+        "imageResourceId": "cc0-jetrel-torch",
+        "iconResourceId": "cc0-jetrel-torch",
+        "scope": "none",
+        "price": 0,
+        "description": "메뉴에서 사용해 산마루 봉화 점화 스위치를 작동시킵니다.",
+        "type": "switch",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "switchId": "sw_catalog_beacon_lit",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_aqueduct_relay",
+        "name": "수로 전환패",
+        "imageResourceId": "cc0-jetrel-gen2-moon-relay",
+        "iconResourceId": "cc0-jetrel-gen2-moon-relay",
+        "scope": "none",
+        "price": 0,
+        "description": "메뉴에서 사용해 지하 수로의 흐름 전환 스위치를 켭니다.",
+        "type": "switch",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "switchId": "sw_catalog_aqueduct_route",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
         "id": "item_gen_potion_small",
         "name": "작은 물약",
         "imageResourceId": "cc0-jetrel-gen-potion-small",
@@ -90136,7 +91583,8 @@
           "stateResistanceChance": 0
         },
         "captureProfile": {
-          "multiplier": 1.1
+          "multiplier": 1.5,
+          "ballClass": "great"
         }
       },
       {
@@ -90208,7 +91656,81 @@
           "stateResistanceChance": 0
         },
         "captureProfile": {
-          "multiplier": 1.2
+          "multiplier": 2,
+          "ballClass": "ultra"
+        }
+      },
+      {
+        "id": "item_gen_master_orb",
+        "name": "마스터 구슬",
+        "imageResourceId": "cc0-jetrel-gen-capture-sphere",
+        "iconResourceId": "cc0-jetrel-gen-capture-sphere",
+        "scope": "enemy",
+        "price": 5000,
+        "description": "어떤 몬스터든 반드시 포획하는 전설의 구슬입니다.",
+        "type": "special",
+        "occasion": "battle",
+        "consumable": true,
+        "animationId": "anim_gen_capture_seal",
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": false,
+        "occasionBattle": true,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        },
+        "captureProfile": {
+          "multiplier": 100,
+          "ballClass": "master"
         }
       },
       {
@@ -95155,6 +96677,523 @@
         "stateDefenseIds": [],
         "stateDefenseMode": "resist",
         "stateResistanceChance": 0
+      },
+      {
+        "id": "equip_fill_shield_buckler",
+        "name": "매사냥꾼 원형 방패",
+        "imageResourceId": "cc0-jetrel-gen-shield-wood",
+        "iconResourceId": "cc0-jetrel-gen-shield-wood",
+        "slot": "shield",
+        "price": 145,
+        "description": "가벼운 원형 틀이 팔의 움직임을 살려 빠른 반격과 급소 공격을 돕습니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 6,
+          "mind": 0,
+          "agility": 1
+        },
+        "equippableActorIds": [
+          "actor_guardian",
+          "actor_ranger",
+          "actor_scout"
+        ],
+        "equippableClassIds": [
+          "class_guardian",
+          "class_ranger",
+          "class_scout"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 2,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [],
+        "stateDefenseIds": [],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 0
+      },
+      {
+        "id": "equip_fill_shield_ember_ward",
+        "name": "잿불 수호 방패",
+        "imageResourceId": "cc0-jetrel-gen-shield-iron",
+        "iconResourceId": "cc0-jetrel-gen-shield-iron",
+        "slot": "shield",
+        "price": 275,
+        "description": "겹친 철판 사이의 내열재가 화염을 흩어 뜨거운 전장에서 전열을 지킵니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 9,
+          "mind": 2,
+          "agility": 0
+        },
+        "equippableActorIds": [
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "equippableClassIds": [
+          "class_guardian",
+          "class_cleric"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [
+          "fire"
+        ],
+        "stateDefenseIds": [],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 0
+      },
+      {
+        "id": "equip_fill_shield_fortress",
+        "name": "요새문 대방패",
+        "imageResourceId": "cc0-jetrel-gen-shield-tower",
+        "iconResourceId": "cc0-jetrel-gen-shield-tower",
+        "slot": "shield",
+        "price": 470,
+        "description": "성문처럼 두꺼운 판이 타격을 받아 내지만 무거워서 움직임이 크게 둔해집니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 16,
+          "mind": 0,
+          "agility": 0
+        },
+        "equippableActorIds": [
+          "actor_guardian"
+        ],
+        "equippableClassIds": [
+          "class_guardian"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": true
+        },
+        "elementalDefenseIds": [
+          "hit"
+        ],
+        "stateDefenseIds": [],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 0
+      },
+      {
+        "id": "equip_fill_shield_hymn",
+        "name": "성가대 은방패",
+        "imageResourceId": "cc0-jetrel-gen-shield-mirror",
+        "iconResourceId": "cc0-jetrel-gen-shield-mirror",
+        "slot": "shield",
+        "price": 315,
+        "description": "은빛 공명판이 주문의 흐름을 붙들어 침묵 저주 속에서도 기도를 이어 가게 합니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 8,
+          "mind": 5,
+          "agility": 0
+        },
+        "equippableActorIds": [
+          "actor_cleric"
+        ],
+        "equippableClassIds": [
+          "class_cleric"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [],
+        "stateDefenseIds": [
+          "state_silence"
+        ],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 35
+      },
+      {
+        "id": "equip_fill_shield_moon_mirror",
+        "name": "월광 거울 방패",
+        "imageResourceId": "cc0-jetrel-gen-shield-mirror",
+        "iconResourceId": "cc0-jetrel-gen-shield-mirror",
+        "slot": "shield",
+        "price": 420,
+        "description": "달빛으로 닦은 거울 면이 암흑 마력을 흘려보내고 정확한 방패술을 보조합니다.",
+        "statBonuses": {
+          "attack": 1,
+          "defense": 11,
+          "mind": 4,
+          "agility": 0
+        },
+        "equippableActorIds": [
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "equippableClassIds": [
+          "class_guardian",
+          "class_cleric"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 99,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [
+          "dark"
+        ],
+        "stateDefenseIds": [],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 0
+      },
+      {
+        "id": "equip_fill_armor_storm_chain",
+        "name": "폭풍고리 사슬갑옷",
+        "imageResourceId": "cc0-jetrel-gen-armor-chain",
+        "iconResourceId": "cc0-jetrel-gen-armor-chain",
+        "slot": "armor",
+        "price": 430,
+        "description": "절연 가죽으로 엮은 가벼운 사슬이 번개를 분산하면서 기동성을 유지합니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 12,
+          "mind": 2,
+          "agility": 1
+        },
+        "equippableActorIds": [
+          "actor_guardian",
+          "actor_ranger",
+          "actor_scout"
+        ],
+        "equippableClassIds": [
+          "class_guardian",
+          "class_ranger",
+          "class_scout"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [
+          "thunder"
+        ],
+        "stateDefenseIds": [],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 0
+      },
+      {
+        "id": "equip_fill_armor_oath_plate",
+        "name": "불퇴서약 판금갑옷",
+        "imageResourceId": "cc0-jetrel-gen-armor-plate",
+        "iconResourceId": "cc0-jetrel-gen-armor-plate",
+        "slot": "armor",
+        "price": 650,
+        "description": "맞물린 판금과 고정 끈이 공격을 약화시키는 위압에도 자세가 무너지지 않게 합니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 19,
+          "mind": 1,
+          "agility": 0
+        },
+        "equippableActorIds": [
+          "actor_guardian"
+        ],
+        "equippableClassIds": [
+          "class_guardian"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [],
+        "stateDefenseIds": [
+          "state_attack_down"
+        ],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 40
+      },
+      {
+        "id": "equip_fill_helmet_falcon",
+        "name": "매눈 정찰 투구",
+        "imageResourceId": "cc0-jetrel-gen-helm-leather",
+        "iconResourceId": "cc0-jetrel-gen-helm-leather",
+        "slot": "helmet",
+        "price": 150,
+        "description": "넓은 시야를 남긴 가죽 덮개가 민첩한 정찰과 빈틈을 찌르는 공격에 알맞습니다.",
+        "statBonuses": {
+          "attack": 1,
+          "defense": 4,
+          "mind": 0,
+          "agility": 2
+        },
+        "equippableActorIds": [
+          "actor_ranger",
+          "actor_scout"
+        ],
+        "equippableClassIds": [
+          "class_ranger",
+          "class_scout"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 2,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [],
+        "stateDefenseIds": [],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 0
+      },
+      {
+        "id": "equip_fill_helmet_frost_hood",
+        "name": "설원 현자 두건",
+        "imageResourceId": "cc0-jetrel-gen-helm-leather",
+        "iconResourceId": "cc0-jetrel-gen-helm-leather",
+        "slot": "helmet",
+        "price": 225,
+        "description": "서리풀을 누빈 두건이 냉기를 막고 긴 야영 중에도 정신을 맑게 유지합니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 3,
+          "mind": 5,
+          "agility": 1
+        },
+        "equippableActorIds": [
+          "actor_mage",
+          "actor_cleric",
+          "actor_ranger"
+        ],
+        "equippableClassIds": [
+          "class_mage",
+          "class_cleric",
+          "class_ranger"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [
+          "ice"
+        ],
+        "stateDefenseIds": [
+          "state_sleep"
+        ],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 25
+      },
+      {
+        "id": "equip_fill_helmet_rune",
+        "name": "침묵파쇄 룬투구",
+        "imageResourceId": "cc0-jetrel-gen-helm-iron",
+        "iconResourceId": "cc0-jetrel-gen-helm-iron",
+        "slot": "helmet",
+        "price": 335,
+        "description": "관자놀이의 룬 각인이 정신을 보호해 적의 침묵 마법에도 주문 집중을 붙잡습니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 7,
+          "mind": 4,
+          "agility": 0
+        },
+        "equippableActorIds": [
+          "actor_guardian",
+          "actor_mage",
+          "actor_cleric"
+        ],
+        "equippableClassIds": [
+          "class_guardian",
+          "class_mage",
+          "class_cleric"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [],
+        "stateDefenseIds": [
+          "state_silence"
+        ],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 45
+      },
+      {
+        "id": "equip_fill_helmet_vanguard",
+        "name": "선봉대 뿔투구",
+        "imageResourceId": "cc0-jetrel-gen-helm-horned",
+        "iconResourceId": "cc0-jetrel-gen-helm-horned",
+        "slot": "helmet",
+        "price": 410,
+        "description": "앞으로 굽은 뿔과 보강 이마판이 돌격의 위력을 높이고 공격 약화를 버텨 냅니다.",
+        "statBonuses": {
+          "attack": 3,
+          "defense": 9,
+          "mind": 1,
+          "agility": 0
+        },
+        "equippableActorIds": [
+          "actor_hero",
+          "actor_guardian"
+        ],
+        "equippableClassIds": [
+          "class_hero",
+          "class_guardian"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 4,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [],
+        "stateDefenseIds": [
+          "state_attack_down"
+        ],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 30
       }
     ],
     "enemies": [
@@ -97742,7 +99781,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -97819,7 +99859,8 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_fire",
@@ -97828,7 +99869,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -97897,7 +99939,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_green",
@@ -97906,7 +99949,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -97975,7 +100019,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_ice",
@@ -97984,7 +100029,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -98053,7 +100099,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_scratch",
@@ -98062,7 +100109,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -98131,7 +100179,8 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_splash",
@@ -98140,7 +100189,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -98209,16 +100259,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_slash_steel",
         "name": "강철 베기",
         "resourceId": "generated-battle-anim-slash-steel",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -98341,16 +100393,18 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_fire_burst",
         "name": "화염 폭발",
         "resourceId": "generated-battle-anim-fire-burst",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -98500,6 +100554,12 @@
               "durationFrames": 6
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 6
+          }
         ]
       },
       {
@@ -98507,9 +100567,10 @@
         "name": "얼음 파쇄",
         "resourceId": "generated-battle-anim-ice-shatter",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -98651,6 +100712,12 @@
               "durationFrames": 5
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_cleanse_sparkle",
+            "startFrame": 6
+          }
         ]
       },
       {
@@ -98658,9 +100725,10 @@
         "name": "번개 강타",
         "resourceId": "generated-battle-anim-thunder-strike",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "head",
@@ -98810,16 +100878,18 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_water_column",
         "name": "물기둥",
         "resourceId": "generated-battle-anim-water-column",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "feet",
@@ -98961,16 +101031,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_wind_slice",
         "name": "바람 칼날",
         "resourceId": "generated-battle-anim-wind-slice",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -99112,16 +101184,18 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_earth_spike",
         "name": "대지 창",
         "resourceId": "generated-battle-anim-earth-spike",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "feet",
@@ -99258,6 +101332,12 @@
               "durationFrames": 7
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 5
+          }
         ]
       },
       {
@@ -99265,9 +101345,10 @@
         "name": "몸통박치기 충격",
         "resourceId": "generated-battle-anim-tackle-impact",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -99390,16 +101471,18 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_claw_rake",
         "name": "발톱 할퀴기",
         "resourceId": "generated-battle-anim-claw-rake",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -99517,16 +101600,18 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_bite_crunch",
         "name": "물어뜯기",
         "resourceId": "generated-battle-anim-bite-crunch",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -99649,16 +101734,18 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_projectile_shot",
         "name": "에너지 투사체",
         "resourceId": "generated-battle-anim-projectile-shot",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -99776,16 +101863,18 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_leaf_volley",
         "name": "잎날 난사",
         "resourceId": "generated-battle-anim-leaf-volley",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -99927,16 +102016,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_psychic_wave",
         "name": "염동 파동",
         "resourceId": "generated-battle-anim-psychic-wave",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -100078,16 +102169,18 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_shadow_pulse",
         "name": "암흑 파동",
         "resourceId": "generated-battle-anim-shadow-pulse",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -100229,6 +102322,12 @@
               "durationFrames": 6
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 6
+          }
         ]
       },
       {
@@ -100236,9 +102335,10 @@
         "name": "성광",
         "resourceId": "generated-battle-anim-holy-beam",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -100380,6 +102480,12 @@
               "durationFrames": 6
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_cleanse_sparkle",
+            "startFrame": 6
+          }
         ]
       },
       {
@@ -100387,9 +102493,10 @@
         "name": "수면 가루",
         "resourceId": "generated-battle-anim-sleep-dust",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "head",
@@ -100531,16 +102638,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_power_aura",
         "name": "강화 오라",
         "resourceId": "generated-battle-anim-power-aura",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -100682,16 +102791,18 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_guard_barrier",
         "name": "방어 장벽",
         "resourceId": "generated-battle-anim-guard-barrier",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -100833,16 +102944,18 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_capture_seal",
         "name": "포획 봉인",
         "resourceId": "generated-battle-anim-capture-seal",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 12
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 12,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -101013,16 +103126,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_critical_burst",
         "name": "치명타 폭발",
         "resourceId": "generated-battle-anim-critical-burst",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -101145,6 +103260,12 @@
               "durationFrames": 5
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 4
+          }
         ]
       },
       {
@@ -101152,9 +103273,10 @@
         "name": "음파 충격",
         "resourceId": "generated-battle-anim-sonic-wave",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "allTargets",
         "position": "center",
@@ -101272,16 +103394,18 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_drain_orbs",
         "name": "생명력 흡수",
         "resourceId": "generated-battle-anim-drain-orbs",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -101423,16 +103547,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_revive_rise",
         "name": "부활의 빛",
         "resourceId": "generated-battle-anim-revive-rise",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "feet",
@@ -101574,16 +103700,18 @@
               "durationFrames": 7
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_cleanse_sparkle",
         "name": "정화의 반짝임",
         "resourceId": "generated-battle-anim-cleanse-sparkle",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -101725,16 +103853,18 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_paralysis_bind",
         "name": "마비 속박",
         "resourceId": "generated-battle-anim-paralysis-bind",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -101876,16 +104006,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_blind_veil",
         "name": "암흑 장막",
         "resourceId": "generated-battle-anim-blind-veil",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "head",
@@ -102027,16 +104159,18 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_confusion_spiral",
         "name": "혼란 나선",
         "resourceId": "generated-battle-anim-confusion-spiral",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "head",
@@ -102178,16 +104312,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_silence_lock",
         "name": "침묵 봉인",
         "resourceId": "generated-battle-anim-silence-lock",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -102329,16 +104465,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_summon_portal",
         "name": "소환 차원문",
         "resourceId": "generated-battle-anim-summon-portal",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 12
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 12,
+          "assetScale": 0.5
         },
         "scope": "allTargets",
         "position": "screen",
@@ -102350,7 +104488,7 @@
                 "pattern": 0,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102362,7 +104500,7 @@
                 "pattern": 1,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102374,7 +104512,7 @@
                 "pattern": 2,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102386,7 +104524,7 @@
                 "pattern": 3,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102398,7 +104536,7 @@
                 "pattern": 4,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102410,7 +104548,7 @@
                 "pattern": 5,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102422,7 +104560,7 @@
                 "pattern": 6,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102434,7 +104572,7 @@
                 "pattern": 7,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102446,7 +104584,7 @@
                 "pattern": 8,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102458,7 +104596,7 @@
                 "pattern": 9,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102470,7 +104608,7 @@
                 "pattern": 10,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102482,7 +104620,7 @@
                 "pattern": 11,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102509,16 +104647,18 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_smoke_vanish",
         "name": "연막 소멸",
         "resourceId": "generated-battle-anim-smoke-vanish",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -102626,16 +104766,18 @@
             "frameIndex": 3,
             "soundResourceId": "easyrpg-sound-fog1"
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_meteor_fall",
         "name": "운석 낙하",
         "resourceId": "generated-battle-anim-meteor-fall",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 12
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 12,
+          "assetScale": 0.5
         },
         "scope": "allTargets",
         "position": "screen",
@@ -102647,7 +104789,7 @@
                 "pattern": 0,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102659,7 +104801,7 @@
                 "pattern": 1,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102671,7 +104813,7 @@
                 "pattern": 2,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102683,7 +104825,7 @@
                 "pattern": 3,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102695,7 +104837,7 @@
                 "pattern": 4,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102707,7 +104849,7 @@
                 "pattern": 5,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102719,7 +104861,7 @@
                 "pattern": 6,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102731,7 +104873,7 @@
                 "pattern": 7,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102743,7 +104885,7 @@
                 "pattern": 8,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102755,7 +104897,7 @@
                 "pattern": 9,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102767,7 +104909,7 @@
                 "pattern": 10,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102779,7 +104921,7 @@
                 "pattern": 11,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -102805,6 +104947,12 @@
               "speed": 6,
               "durationFrames": 9
             }
+          }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 8
           }
         ]
       }
@@ -103204,25 +105352,42 @@
         "graphic": {
           "monsterResourceId": "generated-enemy-slime-01",
           "graphicHue": 0,
-          "transparent": true,
+          "transparent": false,
           "flying": false
         },
         "types": [
-          "normal"
+          "grass"
         ],
         "baseStats": {
-          "maxHp": 20,
-          "maxMp": 10,
+          "maxHp": 18,
+          "maxMp": 4,
           "attack": 10,
-          "defense": 8,
-          "mind": 8,
-          "agility": 10
+          "defense": 7,
+          "mind": 6,
+          "agility": 16
         },
-        "captureRate": 0.4,
+        "expCurve": {
+          "base": 2,
+          "extra": 1,
+          "acceleration": 1
+        },
+        "captureRate": 0.7,
         "skillsByLevel": [
           {
             "level": 1,
             "skillId": "skill_attack"
+          },
+          {
+            "level": 7,
+            "skillId": "skill_leaf"
+          }
+        ],
+        "evolutions": [
+          {
+            "toSpeciesId": "species_king_slime",
+            "requires": {
+              "level": 7
+            }
           }
         ]
       },
@@ -103231,3330 +105396,36 @@
         "name": "초원 슬라임",
         "graphic": {
           "monsterResourceId": "generated-enemy-slime-01",
-          "graphicHue": 0,
-          "transparent": true,
+          "graphicHue": 45,
+          "transparent": false,
           "flying": false
         },
         "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 22,
-          "maxMp": 10,
-          "attack": 11,
-          "defense": 9,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_cave_bat",
-        "name": "동굴 박쥐",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-bat-01",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 24,
-          "maxMp": 10,
-          "attack": 12,
-          "defense": 10,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_stone_golem",
-        "name": "돌 골렘",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-golem-01",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 26,
-          "maxMp": 10,
-          "attack": 13,
-          "defense": 11,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_ember_drake",
-        "name": "붉은 드래곤",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-dragon-01",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 28,
-          "maxMp": 10,
-          "attack": 14,
-          "defense": 12,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_006",
-        "name": "좀비",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-zombie-01-species_extra_006",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 30,
-          "maxMp": 10,
-          "attack": 15,
-          "defense": 13,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_007",
-        "name": "사마귀",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-mantis-01-species_extra_007",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 32,
-          "maxMp": 10,
-          "attack": 16,
-          "defense": 14,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_008",
-        "name": "오크",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-orc-01-species_extra_008",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 34,
-          "maxMp": 10,
-          "attack": 17,
-          "defense": 15,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_009",
-        "name": "실프",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-sylph-01-species_extra_009",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 36,
-          "maxMp": 10,
-          "attack": 18,
-          "defense": 16,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_010",
-        "name": "레모라",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-lemora-01-species_extra_010",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 38,
-          "maxMp": 10,
-          "attack": 19,
-          "defense": 17,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_011",
-        "name": "스피릿",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-spirit-01-species_extra_011",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 40,
-          "maxMp": 10,
-          "attack": 20,
-          "defense": 18,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_012",
-        "name": "게",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-crab-01-species_extra_012",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
+          "water",
+          "grass"
         ],
         "baseStats": {
           "maxHp": 42,
           "maxMp": 10,
-          "attack": 21,
-          "defense": 19,
-          "mind": 8,
-          "agility": 10
+          "attack": 18,
+          "defense": 14,
+          "mind": 10,
+          "agility": 12
         },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_013",
-        "name": "잭 오 랜턴",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-jackolantern-01-species_extra_013",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 44,
-          "maxMp": 10,
-          "attack": 22,
-          "defense": 20,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_014",
-        "name": "타란툴라",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-spider-01-species_extra_014",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 46,
-          "maxMp": 10,
-          "attack": 23,
-          "defense": 21,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_015",
-        "name": "카벙클",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-carbuncle-01-species_extra_015",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 48,
-          "maxMp": 10,
-          "attack": 24,
-          "defense": 22,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_016",
-        "name": "구울",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-zombie-01-species_extra_016",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 50,
-          "maxMp": 10,
-          "attack": 25,
-          "defense": 23,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_017",
-        "name": "스펙터",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-specter-01-species_extra_017",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 52,
-          "maxMp": 10,
-          "attack": 26,
-          "defense": 24,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_018",
-        "name": "마왕의 기사",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_018",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 54,
-          "maxMp": 10,
-          "attack": 27,
-          "defense": 25,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_019",
-        "name": "섀도우 울프",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-wolf-01-species_extra_019",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 56,
-          "maxMp": 10,
-          "attack": 28,
-          "defense": 26,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_020",
-        "name": "거대 지네",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-centipede-01-species_extra_020",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 58,
-          "maxMp": 10,
-          "attack": 29,
-          "defense": 27,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_021",
-        "name": "하피",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-harpy-01-species_extra_021",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 60,
-          "maxMp": 10,
-          "attack": 30,
-          "defense": 28,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_022",
-        "name": "샐러맨더",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-salamander-01-species_extra_022",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 62,
-          "maxMp": 10,
-          "attack": 31,
-          "defense": 29,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_023",
-        "name": "네펜데스",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-plant-01-species_extra_023",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 64,
-          "maxMp": 10,
-          "attack": 32,
-          "defense": 30,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_024",
-        "name": "전갈",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-scorpion-01-species_extra_024",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 66,
-          "maxMp": 10,
-          "attack": 33,
-          "defense": 31,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_025",
-        "name": "유니콘",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-unicorn-01-species_extra_025",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 68,
-          "maxMp": 10,
-          "attack": 34,
-          "defense": 32,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_026",
-        "name": "켈베로스",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-wolf-01-species_extra_026",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 70,
-          "maxMp": 10,
-          "attack": 35,
-          "defense": 33,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_027",
-        "name": "리치",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_027",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 72,
-          "maxMp": 10,
-          "attack": 36,
-          "defense": 34,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_028",
-        "name": "가고일",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_028",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 74,
-          "maxMp": 10,
-          "attack": 37,
-          "defense": 35,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_029",
-        "name": "바실리스크",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-snake-01-species_extra_029",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 76,
-          "maxMp": 10,
-          "attack": 38,
-          "defense": 36,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_030",
-        "name": "사이클롭스",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-orc-01-species_extra_030",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 78,
-          "maxMp": 10,
-          "attack": 39,
-          "defense": 37,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_031",
-        "name": "피닉스",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-harpy-01-species_extra_031",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 80,
-          "maxMp": 10,
-          "attack": 40,
-          "defense": 38,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_032",
-        "name": "레버넌트",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-zombie-01-species_extra_032",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 82,
-          "maxMp": 10,
-          "attack": 41,
-          "defense": 39,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_033",
-        "name": "키메라",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_033",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 84,
-          "maxMp": 10,
-          "attack": 42,
-          "defense": 40,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_034",
-        "name": "히드라",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-snake-01-species_extra_034",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 86,
-          "maxMp": 10,
-          "attack": 43,
-          "defense": 41,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_035",
-        "name": "메두사",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_035",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 88,
-          "maxMp": 10,
-          "attack": 44,
-          "defense": 42,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_036",
-        "name": "미노타우로스",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-orc-01-species_extra_036",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 90,
-          "maxMp": 10,
-          "attack": 45,
-          "defense": 43,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_037",
-        "name": "네크로맨서",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_037",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 92,
-          "maxMp": 10,
-          "attack": 46,
-          "defense": 44,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_038",
-        "name": "데스나이트",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-skeleton-01-species_extra_038",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 94,
-          "maxMp": 10,
-          "attack": 47,
-          "defense": 45,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_039",
-        "name": "만드라고라",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-plant-01-species_extra_039",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 96,
-          "maxMp": 10,
-          "attack": 48,
-          "defense": 46,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_040",
-        "name": "아이스 골렘",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-golem-01-species_extra_040",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 98,
-          "maxMp": 10,
-          "attack": 49,
-          "defense": 47,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_041",
-        "name": "스톰 이글",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-harpy-01-species_extra_041",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 100,
-          "maxMp": 10,
-          "attack": 50,
-          "defense": 48,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_042",
-        "name": "이프리트",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-salamander-01-species_extra_042",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 102,
-          "maxMp": 10,
-          "attack": 51,
-          "defense": 49,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_043",
-        "name": "시바",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_043",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 104,
-          "maxMp": 10,
-          "attack": 52,
-          "defense": 50,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_044",
-        "name": "라무",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_044",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 106,
-          "maxMp": 10,
-          "attack": 53,
-          "defense": 51,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_045",
-        "name": "웬디고",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_045",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 108,
-          "maxMp": 10,
-          "attack": 54,
-          "defense": 52,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_046",
-        "name": "크라켄",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-fish-01-species_extra_046",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 110,
-          "maxMp": 10,
-          "attack": 55,
-          "defense": 53,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_047",
-        "name": "벨제붑",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_047",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 112,
-          "maxMp": 10,
-          "attack": 56,
-          "defense": 54,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_048",
-        "name": "레비아탄",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-fish-01-species_extra_048",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 114,
-          "maxMp": 10,
-          "attack": 57,
-          "defense": 55,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_049",
-        "name": "듀라한",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-skeleton-01-species_extra_049",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 116,
-          "maxMp": 10,
-          "attack": 58,
-          "defense": 56,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_050",
-        "name": "베히모스",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-orc-01-species_extra_050",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 118,
-          "maxMp": 10,
-          "attack": 59,
-          "defense": 57,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_051",
-        "name": "그리폰",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-harpy-01-species_extra_051",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 120,
-          "maxMp": 10,
-          "attack": 60,
-          "defense": 58,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_052",
-        "name": "세이렌",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-harpy-01-species_extra_052",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 122,
-          "maxMp": 10,
-          "attack": 61,
-          "defense": 59,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_053",
-        "name": "스핑크스",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_053",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 124,
-          "maxMp": 10,
-          "attack": 62,
-          "defense": 60,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_054",
-        "name": "가름",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-wolf-01-species_extra_054",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 126,
-          "maxMp": 10,
-          "attack": 63,
-          "defense": 61,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_055",
-        "name": "파프니르",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-dragon-01-species_extra_055",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 128,
-          "maxMp": 10,
-          "attack": 64,
-          "defense": 62,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_056",
-        "name": "아수라",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_056",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 130,
-          "maxMp": 10,
-          "attack": 65,
-          "defense": 63,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_057",
-        "name": "발키리",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_057",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 132,
-          "maxMp": 10,
-          "attack": 66,
-          "defense": 64,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_058",
-        "name": "티타니아",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_058",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 134,
-          "maxMp": 10,
-          "attack": 67,
-          "defense": 65,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_059",
-        "name": "오베론",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_059",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 136,
-          "maxMp": 10,
-          "attack": 68,
-          "defense": 66,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_060",
-        "name": "와이번",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-dragon-01-species_extra_060",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 138,
-          "maxMp": 10,
-          "attack": 69,
-          "defense": 67,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_061",
-        "name": "나이트메어",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_061",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 140,
-          "maxMp": 10,
-          "attack": 70,
-          "defense": 68,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_062",
-        "name": "밴시",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-specter-01-species_extra_062",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 142,
-          "maxMp": 10,
-          "attack": 71,
-          "defense": 69,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_063",
-        "name": "위스프",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-spirit-01-species_extra_063",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 144,
-          "maxMp": 10,
-          "attack": 72,
-          "defense": 70,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_064",
-        "name": "드라이어드",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-plant-01-species_extra_064",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 146,
-          "maxMp": 10,
-          "attack": 73,
-          "defense": 71,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_065",
-        "name": "트렌트",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-plant-01-species_extra_065",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 148,
-          "maxMp": 10,
-          "attack": 74,
-          "defense": 72,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_066",
-        "name": "임프",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_066",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 150,
-          "maxMp": 10,
-          "attack": 75,
-          "defense": 73,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_067",
-        "name": "체셔 캣",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-cat-01-species_extra_067",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 152,
-          "maxMp": 10,
-          "attack": 76,
-          "defense": 74,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_068",
-        "name": "가고일 킹",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_068",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 154,
-          "maxMp": 10,
-          "attack": 77,
-          "defense": 75,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_069",
-        "name": "아이언 골렘",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-golem-01-species_extra_069",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 156,
-          "maxMp": 10,
-          "attack": 78,
-          "defense": 76,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_070",
-        "name": "미믹",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-crab-01-species_extra_070",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 158,
-          "maxMp": 10,
-          "attack": 79,
-          "defense": 77,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_071",
-        "name": "아누비스",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_071",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 160,
-          "maxMp": 10,
-          "attack": 80,
-          "defense": 78,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_072",
-        "name": "오시리스",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_072",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 162,
-          "maxMp": 10,
-          "attack": 81,
-          "defense": 79,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_073",
-        "name": "바스테트",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_073",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 164,
-          "maxMp": 10,
-          "attack": 82,
-          "defense": 80,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_074",
-        "name": "펜릴",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-wolf-01-species_extra_074",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 166,
-          "maxMp": 10,
-          "attack": 83,
-          "defense": 81,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_075",
-        "name": "이그드라실 드래곤",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-dragon-01-species_extra_075",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 168,
-          "maxMp": 10,
-          "attack": 84,
-          "defense": 82,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_076",
-        "name": "서큘버스",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_076",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 170,
-          "maxMp": 10,
-          "attack": 85,
-          "defense": 83,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_077",
-        "name": "인큐버스",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_077",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 172,
-          "maxMp": 10,
-          "attack": 86,
-          "defense": 84,
-          "mind": 8,
-          "agility": 10
+        "expCurve": {
+          "base": 3,
+          "extra": 2,
+          "acceleration": 1
         },
-        "captureRate": 0.4,
+        "captureRate": 0.2,
         "skillsByLevel": [
           {
             "level": 1,
             "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_078",
-        "name": "리바이어던 킹",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_078",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 174,
-          "maxMp": 10,
-          "attack": 87,
-          "defense": 85,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_079",
-        "name": "베히모스 킹",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-orc-01-species_extra_079",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 176,
-          "maxMp": 10,
-          "attack": 88,
-          "defense": 86,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_080",
-        "name": "다크 드레이크",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-dragon-01-species_extra_080",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 178,
-          "maxMp": 10,
-          "attack": 89,
-          "defense": 87,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_081",
-        "name": "바하무트",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_081",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 180,
-          "maxMp": 10,
-          "attack": 90,
-          "defense": 88,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_082",
-        "name": "바포메트",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_082",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 182,
-          "maxMp": 10,
-          "attack": 91,
-          "defense": 89,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_083",
-        "name": "아바돈",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_083",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 184,
-          "maxMp": 10,
-          "attack": 92,
-          "defense": 90,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_084",
-        "name": "루시퍼",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_084",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 186,
-          "maxMp": 10,
-          "attack": 93,
-          "defense": 91,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_085",
-        "name": "메타트론",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_085",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 188,
-          "maxMp": 10,
-          "attack": 94,
-          "defense": 92,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_086",
-        "name": "지니어스",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_086",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 190,
-          "maxMp": 10,
-          "attack": 95,
-          "defense": 93,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_087",
-        "name": "카오스",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_087",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 192,
-          "maxMp": 10,
-          "attack": 96,
-          "defense": 94,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_088",
-        "name": "오메가 드래곤",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-dragon-01-species_extra_088",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 194,
-          "maxMp": 10,
-          "attack": 97,
-          "defense": 95,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_089",
-        "name": "아포칼립스",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-dragon-01-species_extra_089",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 196,
-          "maxMp": 10,
-          "attack": 98,
-          "defense": 96,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_090",
-        "name": "발록",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-orc-01-species_extra_090",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 198,
-          "maxMp": 10,
-          "attack": 99,
-          "defense": 97,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_091",
-        "name": "티폰",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-dragon-01-species_extra_091",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 200,
-          "maxMp": 10,
-          "attack": 100,
-          "defense": 98,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_092",
-        "name": "레비아탄 프라임",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-fish-01-species_extra_092",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 202,
-          "maxMp": 10,
-          "attack": 101,
-          "defense": 99,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_093",
-        "name": "솔라 골렘",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-golem-01-species_extra_093",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 204,
-          "maxMp": 10,
-          "attack": 102,
-          "defense": 100,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_094",
-        "name": "다크 아수라",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_094",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 206,
-          "maxMp": 10,
-          "attack": 103,
-          "defense": 101,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_095",
-        "name": "제우스의 사자",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_095",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 208,
-          "maxMp": 10,
-          "attack": 104,
-          "defense": 102,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_096",
-        "name": "에인헤랴르",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-skeleton-01-species_extra_096",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 210,
-          "maxMp": 10,
-          "attack": 105,
-          "defense": 103,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_097",
-        "name": "크로노스 섀도우",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-specter-01-species_extra_097",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 212,
-          "maxMp": 10,
-          "attack": 106,
-          "defense": 104,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_098",
-        "name": "제로 슬라임",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_098",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 214,
-          "maxMp": 10,
-          "attack": 107,
-          "defense": 105,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_099",
-        "name": "신룡",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-dragon-01-species_extra_099",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 216,
-          "maxMp": 10,
-          "attack": 108,
-          "defense": 106,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_100",
-        "name": "멸망의 전조",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-dragon-01-species_extra_100",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 218,
-          "maxMp": 10,
-          "attack": 109,
-          "defense": 107,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_101",
-        "name": "숲 말벌",
-        "graphic": {
-          "monsterResourceId": "easyrpg-monster-hornet-species_extra_101",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 220,
-          "maxMp": 10,
-          "attack": 110,
-          "defense": 108,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_102",
-        "name": "킬러 비",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-sylph-hornet-species_extra_102",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 222,
-          "maxMp": 10,
-          "attack": 111,
-          "defense": 109,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_103",
-        "name": "개구리 닌자",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-orc-01-species_extra_103",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 224,
-          "maxMp": 10,
-          "attack": 112,
-          "defense": 110,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_104",
-        "name": "자이언트 스파이더",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-spider-01-species_extra_104",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 226,
-          "maxMp": 10,
-          "attack": 113,
-          "defense": 111,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_105",
-        "name": "해골 검사",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-skeleton-01-species_extra_105",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 228,
-          "maxMp": 10,
-          "attack": 114,
-          "defense": 112,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_106",
-        "name": "해골 궁수",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-skeleton-01-species_extra_106",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 230,
-          "maxMp": 10,
-          "attack": 115,
-          "defense": 113,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_107",
-        "name": "미니 드래곤",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-dragon-01-species_extra_107",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 232,
-          "maxMp": 10,
-          "attack": 116,
-          "defense": 114,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_108",
-        "name": "블루 슬라임",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_108",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 234,
-          "maxMp": 10,
-          "attack": 117,
-          "defense": 115,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_109",
-        "name": "킹슬라임",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-king-slime-01-species_extra_109",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 236,
-          "maxMp": 10,
-          "attack": 118,
-          "defense": 116,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_110",
-        "name": "아쿠아링",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-aqualing-01-species_extra_110",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 238,
-          "maxMp": 10,
-          "attack": 119,
-          "defense": 117,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_111",
-        "name": "스파킷",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-sparkit-01-species_extra_111",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 240,
-          "maxMp": 10,
-          "attack": 120,
-          "defense": 118,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_112",
-        "name": "리프링",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-leafling-01-species_extra_112",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 242,
-          "maxMp": 10,
-          "attack": 121,
-          "defense": 119,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_113",
-        "name": "고스트 팬텀",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-ghost-01-species_extra_113",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 244,
-          "maxMp": 10,
-          "attack": 122,
-          "defense": 120,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_114",
-        "name": "섀도우 스펙터",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-specter-01-species_extra_114",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 246,
-          "maxMp": 10,
-          "attack": 123,
-          "defense": 121,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_115",
-        "name": "독 뱀",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-snake-01-species_extra_115",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 248,
-          "maxMp": 10,
-          "attack": 124,
-          "defense": 122,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_116",
-        "name": "황금 골렘",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-golem-01-species_extra_116",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 250,
-          "maxMp": 10,
-          "attack": 125,
-          "defense": 123,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_117",
-        "name": "메탈 슬라임",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_117",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 252,
-          "maxMp": 10,
-          "attack": 126,
-          "defense": 124,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_118",
-        "name": "용왕",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-dragon-01-species_extra_118",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 254,
-          "maxMp": 10,
-          "attack": 127,
-          "defense": 125,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_119",
-        "name": "야생 슬라임",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01-species_extra_119",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 256,
-          "maxMp": 10,
-          "attack": 128,
-          "defense": 126,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
-          {
-            "level": 1,
-            "skillId": "skill_attack"
-          }
-        ]
-      },
-      {
-        "id": "species_extra_120",
-        "name": "엠버 드레이크",
-        "graphic": {
-          "monsterResourceId": "generated-enemy-dragon-01-species_extra_120",
-          "graphicHue": 0,
-          "transparent": true,
-          "flying": false
-        },
-        "types": [
-          "normal"
-        ],
-        "baseStats": {
-          "maxHp": 258,
-          "maxMp": 10,
-          "attack": 129,
-          "defense": 127,
-          "mind": 8,
-          "agility": 10
-        },
-        "captureRate": 0.4,
-        "skillsByLevel": [
+          },
           {
-            "level": 1,
-            "skillId": "skill_attack"
+            "level": 7,
+            "skillId": "skill_water"
           }
         ]
       }

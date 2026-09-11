@@ -54,6 +54,38 @@ describe("default item catalog quality", () => {
       expect(animationIds.has(skill!.animationId!), skillId).toBe(true);
     }
   });
+
+  it("스위치 아이템이 올리는 스위치는 프로젝트 스위치 정의에 선언돼 있다", () => {
+    const project = createBlankProject();
+    const declared = new Set(project.switches.map((entry) => entry.id));
+    const dangling = project.database.items
+      .filter((item) => item.switchId && !declared.has(item.switchId))
+      .map((item) => `${item.id} → ${item.switchId}`);
+    expect(dangling).toEqual([]);
+  });
+
+  it("포획 아이템은 gen1 포획식이 읽는 볼 등급을 지정하고 등급 사다리가 완성돼 있다", () => {
+    const items = createBlankProject().database.items;
+    const missing = items
+      .filter((item) => item.captureProfile && !item.captureProfile.ballClass)
+      .map((item) => item.id);
+    expect(missing).toEqual([]);
+    const classes = new Set(
+      items.flatMap((item) => (item.captureProfile?.ballClass ? [item.captureProfile.ballClass] : []))
+    );
+    for (const ballClass of ["poke", "great", "ultra", "master"] as const) {
+      expect(classes.has(ballClass), ballClass).toBe(true);
+    }
+  });
+
+  it("런타임이 지원하는 네 농기구 종류 전부에 기본 아이템이 있다", () => {
+    const kinds = new Set(
+      createBlankProject().database.items
+        .map((item) => item.farmTool)
+        .filter((tool) => tool !== undefined)
+    );
+    for (const tool of VALID_FARM_TOOLS) expect(kinds.has(tool), tool).toBe(true);
+  });
 });
 
 function assertRuntimeEquipmentAxisContract(equipment: EquipmentRecord): void {

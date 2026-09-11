@@ -8,7 +8,7 @@
 //      화면에서 전부 같은 점이었다 → 스크린샷으로 아이템 효과를 증명할 수 없었다.
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { battleField } from "@/player/battleFieldDom";
+import { battleField, battlePartyStatus, syncBattleParty } from "@/player/battleFieldDom";
 import { createBattleRuntime } from "@/battle/runtime";
 import { deserialize } from "@/project/io";
 import { store } from "@/project/store";
@@ -52,6 +52,58 @@ describe("전투 상태 배지 토큰", () => {
     expect(tokenFor("state_paralysis")).toBe("paralysis");
     expect(tokenFor("state_silence")).toBe("silence");
     expect(tokenFor("state_death")).toBe("death");
+  });
+
+  it("아군 상태는 파티 상태 행에도 배지로 남는다 — 정면 스킨(필드 노드 없음)에서도 효과가 보여야 한다", () => {
+    const project = deserialize(JSON.stringify(battleFixture));
+    store.replace(project);
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+      rng: () => 0.5,
+    });
+    const snapshot = runtime.snapshot();
+    const actor = snapshot.actors[0];
+    const buffed = {
+      ...snapshot,
+      actors: snapshot.actors.map((entry, index) =>
+        index === 0 ? { ...entry, stateIds: ["state_attack_up"] } : entry),
+    };
+    const party = battlePartyStatus(buffed);
+    const row = party.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${actor.recordId}"]`);
+    expect(row?.querySelector("[data-testid='battle-status-" + actor.id + "-atk-up']")).not.toBeNull();
+
+    // 동기화 경로도 같은 계약이다 — 전투 중 상태가 새로 걸려도 배지가 갱신돼야 한다.
+    const fresh = battlePartyStatus(snapshot);
+    syncBattleParty(fresh, buffed);
+    const freshRow = fresh.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${actor.recordId}"]`);
+    expect(freshRow?.querySelector("[data-testid='battle-status-" + actor.id + "-atk-up']")).not.toBeNull();
+  });
+
+  it("필드 노드를 그리는 스킨은 상태 행에 배지를 중복으로 달지 않는다", () => {
+    const project = deserialize(JSON.stringify(battleFixture));
+    project.system.battleUiStyle = "chrono"; // partyFacing "front" — 아군 필드 노드가 있다
+    store.replace(project);
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+      rng: () => 0.5,
+    });
+    const snapshot = runtime.snapshot();
+    const buffed = {
+      ...snapshot,
+      actors: snapshot.actors.map((entry, index) =>
+        index === 0 ? { ...entry, stateIds: ["state_attack_up"] } : entry),
+    };
+    // 행에는 배지가 없고(중복 testid 금지), 필드 노드에만 단다.
+    const party = battlePartyStatus(buffed);
+    expect(party.querySelector(".battle-status-icons")).toBeNull();
+    const field = battleField(buffed);
+    expect(field.querySelectorAll("[data-testid$='-atk-up']")).toHaveLength(1);
   });
 
   it("토큰마다 글리프 CSS 규칙이 있다(빈 배지 금지)", () => {

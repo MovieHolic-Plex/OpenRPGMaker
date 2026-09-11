@@ -16,6 +16,7 @@ import { defaultFeatureCropRecords } from "./defaultFeatureItemRecords";
 import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID, DEFAULT_TILE_SIZE } from "./constants";
 import { defaultStarterActorIds } from "./defaultDatabasePartyRecords";
 import { placeableKey, type PlaceableObjectState } from "@/project/placeables";
+import { ensureItemSwitchDefs } from "@/project/itemSwitchDefs";
 import {
   defaultAssetSet,
   defaultResourceProfiles,
@@ -1653,6 +1654,9 @@ function initialDefinitionSlots(prefix: "sw" | "var"): { id: string; name: strin
 }
 
 export function ensureSwitchVariableSlots(project: Project): boolean {
+  // 스위치 아이템이 켜는 스위치는 항상 정의가 존재해야 한다 — 없으면 저작자가
+  // 스위치 탭에서 후속 조건을 연결할 방법이 없다(기본 카탈로그 기동석 11종 참조).
+  const itemSwitchDefsChanged = ensureItemSwitchDefs(project);
   const switchesChanged = ensureDefinitionSlots({
     defs: project.switches,
     session: project.session.switches,
@@ -1663,7 +1667,7 @@ export function ensureSwitchVariableSlots(project: Project): boolean {
     session: project.session.variables,
     defaultValue: 0,
   });
-  return switchesChanged || variablesChanged;
+  return itemSwitchDefsChanged || switchesChanged || variablesChanged;
 }
 
 function ensureDefinitionSlots<TValue>(options: {

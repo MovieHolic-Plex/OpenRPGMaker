@@ -105,6 +105,7 @@ export const GENERATED_BATTLE_EFFECT_ITEM_BINDINGS: Readonly<Record<string, stri
   item_gen_holy_water: animation("holy-beam"),
   item_gen_net_trap: animation("capture-seal"),
   item_gen_capture_sphere: animation("capture-seal"),
+  item_gen_master_orb: animation("capture-seal"),
   item_gen2_war_draught: animation("power-aura"),
   item_gen2_stone_salve: animation("guard-barrier"),
   item_gen2_swift_incense: animation("wind-slice"),
