@@ -14,16 +14,16 @@
 
 /* editor/palette-player.css:227-231 */
 .cmd-list {
-  border-left: 2px solid var(--border-soft);
+  border-left: 2px solid var(--border-soft, unset);
   margin-left: var(--space-1);
   padding-left: var(--space-2);
 }
 
 /* editor/palette-player.css:232-238 */
 .cmd-item {
-  background: var(--bg);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-sm);
+  background: var(--bg, unset);
+  border: 1px solid var(--border-soft, unset);
+  border-radius: var(--radius-sm, var(--radius-s));
   padding: var(--space-2);
   margin-bottom: var(--space-1);
 }
@@ -111,7 +111,7 @@
 .cmd-summary-token.badge-off {
   background: var(--success-muted);
   border: 1px solid var(--success);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-sm, var(--radius-s));
   color: var(--success);
   flex: 0 0 auto;
   font-size: 10px;
@@ -202,9 +202,9 @@
 
 /* editor/palette-player.css:374-382 */
 .cmd-item .cmd-actions button {
-  background: var(--bg-panel-2);
+  background: var(--bg-panel-2, unset);
   border: 1px solid var(--border);
-  color: var(--text);
+  color: var(--text, unset);
   border-radius: 2px;
   padding: 1px 5px;
   font-size: 11px;
@@ -216,7 +216,7 @@
   user-select: none;
   font-size: 14px;
   line-height: 1;
-  color: var(--text-muted);
+  color: var(--text-muted, unset);
   padding: 0 2px;
   flex: 0 0 auto;
 }

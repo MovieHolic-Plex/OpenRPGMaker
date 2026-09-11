@@ -692,7 +692,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 0 8px 28px 0;
-  scrollbar-color: color-mix(in srgb, var(--text-muted) 55%, transparent) transparent;
+  scrollbar-color: color-mix(in srgb, var(--text-muted, unset) 55%, transparent) transparent;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
 }
@@ -702,7 +702,7 @@
 }
 
 .event-subdialog-backdrop[data-testid="event-command-picker"] .event-command-picker-panel::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--text-muted) 55%, transparent);
+  background: color-mix(in srgb, var(--text-muted, unset) 55%, transparent);
   background-clip: padding-box;
   border: 2px solid transparent;
   border-radius: 999px;

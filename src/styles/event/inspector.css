@@ -1,7 +1,7 @@
 /* event 표면 — inspector.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
 
 .event-command-edit-action {
-  background: var(--surface-button);
+  background: var(--surface-button, unset);
   border-color: var(--event-rm-light) var(--event-rm-shadow) var(--event-rm-shadow) var(--event-rm-light);
   border-style: solid;
   border-width: 1px;

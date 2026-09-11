@@ -9,7 +9,7 @@
   display: block;
   font-size: 11px;
   font-weight: 500;
-  color: var(--text-dim);
+  color: var(--text-dim, unset);
   margin-bottom: 3px;
   text-transform: uppercase;
   letter-spacing: 0.4px;
@@ -21,10 +21,10 @@
 .event-editor select,
 .event-editor textarea {
   width: 100%;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg, unset);
+  color: var(--text, unset);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-sm, var(--radius-s));
   padding: 5px 8px;
   font-size: 13px;
   font-family: inherit;
@@ -74,7 +74,7 @@
 /* editor/palette-player.css:27-31 */
 .event-editor-modal-header p {
   margin: 2px 0 0;
-  color: var(--text-dim);
+  color: var(--text-dim, unset);
   font-size: 12px;
 }
 
@@ -824,7 +824,7 @@ body.event-editor-modal-open .coach-mark-card {
   }
 }
 
-/* Split wrapper: preserves event-editor.css cascade order. */
+/* Split wrapper: event-editor.css 의 레거시 규칙 묶음. */
 /* 마지막 — 명령 리스트를 블록 캔버스로 덮어쓴다 (DOM 변경 없음). */
 /* 목업 셸 — 페이지 탭·레일·헤더 검사 팝오버·액센트. 반드시 blocks 다음. */
 /* 창 전체 보기와 드래그 가능한 열 구분선은 최종 레이아웃 기하를 소유한다. */

@@ -946,7 +946,7 @@
 
 .companion-portrait.is-initial {
   align-items: center;
-  color: var(--text-muted);
+  color: var(--text-muted, unset);
   display: inline-flex;
   font: 700 11px/1 var(--font-ui);
   justify-content: center;

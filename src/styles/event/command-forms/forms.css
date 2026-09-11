@@ -8,14 +8,15 @@
 }
 
 .db-field-hint {
-  color: var(--text-muted);
+  color: var(--text-muted, unset);
   font-size: 11px;
   line-height: 1.4;
   margin: var(--space-1) 0;
   padding: var(--space-1) var(--space-2);
   border-left: 2px solid var(--accent);
-  background: var(--bg-panel-2);
+  background: var(--bg-panel-2, unset);
 }
+
 /* 열 개수를 `--curve-samples` 로 받는다 — 예전에는 `repeat(9, 1fr)` 로 하드코딩돼 있었고
    렌더러는 막대 33개를 발행해서, 33개가 9열에 4행으로 접히며 막대 높이가 4~7px 로 뭉개졌다.
    CSS 는 TS 상수를 읽을 수 없으므로 렌더러(`databaseCurvePreview.ts`)가 인라인 스타일로

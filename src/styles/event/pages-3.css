@@ -111,7 +111,7 @@
 }
 
 .event-schedule-help {
-  color: var(--text-muted);
+  color: var(--text-muted, unset);
   font-size: 11px;
   margin: 0;
 }
