@@ -19,7 +19,6 @@
 .battle-key-prompts,
 .battle-target-prompt {
   color: #fff7c6;
-  font-size: 30px;
   grid-column: 1;
 }
 
@@ -46,7 +45,6 @@
 .battle-key-prompts {
   align-items: center;
   display: flex;
-  gap: 56px;
   grid-row: 4;
   justify-content: center;
 }
@@ -59,13 +57,6 @@
   font: inherit;
   padding: 4px 16px;
   text-shadow: none;
-}
-
-.battle-party {
-  grid-column: 3;
-  grid-row: 3;
-  padding: 20px 28px;
-  z-index: 6;
 }
 
 .battle-resource-preview {
@@ -82,13 +73,6 @@
   padding-bottom: 12px;
 }
 
-.battle-actor-status {
-  display: grid;
-  gap: 8px 20px;
-  grid-template-columns: minmax(148px, 1fr) auto minmax(168px, auto);
-  padding: 0;
-}
-
 .battle-actor-name,
 .battle-actor-state,
 .battle-actor-hp {
@@ -97,7 +81,6 @@
 
 .battle-actor-gauge {
   /* Keep ATB row visible so System2 AT fill chrome is actually consumed. */
-  display: flex;
 }
 
 .battle-risk-label {
@@ -106,15 +89,8 @@
   font-size: 34px;
 }
 
-.battle-enemy-list-panel {
-  display: none;
-}
-
 .battle-message-window {
-  bottom: calc(var(--battle-hud-height) + 36px);
   font-size: 34px;
-  left: 48px;
-  right: 48px;
 }
 
 .battle-scene[data-battle-director-step="result"] {
@@ -158,16 +134,11 @@
   background: linear-gradient(180deg, #08286a, #020d2b);
   border: 6px solid var(--battle-metal);
   box-shadow: inset 0 0 0 4px rgba(255, 218, 116, 0.38), 0 0 80px rgba(0, 0, 0, 0.78);
-  display: grid;
-  gap: 32px;
   left: 50%;
-  min-width: 0;
-  padding: 52px 96px 44px;
   position: absolute;
   text-align: center;
   top: 46%;
   transform: translate(-50%, -50%);
-  width: min(1640px, 58vw);
   z-index: 8;
 }
 
@@ -182,37 +153,18 @@
 
 .battle-result-title {
   color: #ffe69a;
-  font-size: 92px;
   font-weight: 900;
-  margin: 0;
   text-shadow: 0 0 28px rgba(255, 216, 102, 0.75), 0 6px 0 #000;
 }
 
-.battle-result-cards {
-  display: grid;
-  gap: 36px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
 .battle-result-reward-card {
-  align-content: center;
   background: linear-gradient(180deg, rgba(15, 48, 109, 0.98), rgba(3, 14, 44, 0.98));
   border: 4px solid rgba(255, 216, 102, 0.72);
-  display: grid;
-  gap: 24px;
-  min-height: 304px;
-  padding: 32px;
-  text-align: center;
-}
-
-.battle-result-reward-label {
-  font-size: 40px;
 }
 
 .battle-result-reward-icon {
   align-self: center;
   border-radius: 0;
-  display: block;
   height: 116px;
   justify-self: center;
   width: 140px;
@@ -220,7 +172,6 @@
 
 .battle-result-reward-value {
   color: #ffe98b;
-  font-size: 56px;
 }
 
 .battle-result-quest {
@@ -246,10 +197,7 @@
   border: 4px solid rgba(255, 216, 102, 0.8);
   color: #fff;
   font: inherit;
-  font-size: 40px;
   justify-self: center;
-  min-width: 520px;
-  padding: 20px 48px;
 }
 
 .battle-result-progress {
@@ -297,7 +245,6 @@
 
 .battle-result-progress-icon-next::before {
   color: #cfe8ff;
-  content: "!";
   display: grid;
   font-size: 76px;
   font-weight: 900;
@@ -343,7 +290,6 @@
 .battle-result-next-prompt {
   bottom: -388px;
   color: #fff;
-  font-size: 38px;
   left: 50%;
   position: absolute;
   transform: translateX(-50%);

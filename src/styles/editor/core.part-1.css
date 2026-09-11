@@ -69,12 +69,9 @@ body {
 
 /* ?? ?곷떒 硫붾돱諛??? */
 .topbar {
-  display: flex;
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
-  background: var(--bg-panel);
-  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 .topbar .title {
@@ -162,7 +159,6 @@ button.btn:disabled {
 .editor-layout .right-panel {
   width: 220px;
   background: var(--bg-panel);
-  border-right: 1px solid var(--border);
   overflow-y: auto;
   padding: var(--space-3);
 }
@@ -173,15 +169,8 @@ button.btn:disabled {
 }
 .editor-layout .canvas-area {
   /* 가운데 정렬하면 캔버스가 작을 때 사방에 빈 여백이 남음 → stretch로 가용 영역 가득 */
-  align-items: stretch;
-  background: var(--bg-canvas);
-  display: flex;
   flex: 1;
-  justify-content: stretch;
-  min-height: 0;
-  min-width: 0;
   overflow: hidden;
-  position: relative;
 }
 /* 맵 캔버스: 브라우저 기본 우클릭 메뉴와 겹치지 않도록 (EditScene도 DOM preventDefault). */
 .editor-layout .canvas-area .phaser-container,
@@ -226,9 +215,6 @@ body[data-editor-tool="pan"] .editor-layout [data-testid="edit-canvas"]:active {
 
 .editor-layout .canvas-area .phaser-container {
   /* block + relative: 선택 칩/배지 absolute 오버레이가 캔버스 flex 레이아웃을 밀지 않음 */
-  display: block;
-  overflow: hidden;
-  position: relative;
 }
 
 .agent-focus-highlight {
@@ -247,7 +233,6 @@ body[data-editor-tool="pan"] .editor-layout [data-testid="edit-canvas"]:active {
   border: 2px dashed rgba(99, 230, 190, 0.82);
   box-shadow: 0 0 0 1px rgba(18, 184, 134, 0.26), 0 0 14px rgba(32, 201, 151, 0.18);
   box-sizing: border-box;
-  pointer-events: none;
   position: absolute;
   z-index: 3;
 }
@@ -270,17 +255,10 @@ body[data-editor-tool="pan"] .editor-layout [data-testid="edit-canvas"]:active {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
-
-.panel-section {
-  margin-bottom: var(--space-4);
-}
 .panel-section h3 {
-  margin: 0 0 var(--space-2) 0;
   font-size: 11px;
   font-weight: 700;
-  text-transform: uppercase;
   color: var(--text-dim);
-  letter-spacing: 0.8px;
   padding-bottom: var(--space-1);
   border-bottom: 1px solid var(--border-soft);
 }
@@ -304,13 +282,6 @@ body[data-editor-tool="pan"] .editor-layout [data-testid="edit-canvas"]:active {
   height: 24px;
   min-width: 0;
   padding: 0 var(--space-1);
-}
-
-.brush-size-btn.active {
-  background: var(--accent-muted);
-  border-color: var(--accent);
-  color: var(--text-1);
-  font-weight: 700;
 }
 
 .tile-tool-status {

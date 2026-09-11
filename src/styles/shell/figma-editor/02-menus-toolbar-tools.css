@@ -178,12 +178,8 @@
   }
 
   .editor-layout .left-panel {
-    background: var(--editor-panel-bg);
-    border-right: 1px solid var(--editor-line-strong);
     container-type: inline-size;
     gap: 0;
-    grid-template-rows: minmax(0, 1fr) 6px var(--map-tree-height, 300px);
-    min-width: 184px;
     padding: 0;
   }
 

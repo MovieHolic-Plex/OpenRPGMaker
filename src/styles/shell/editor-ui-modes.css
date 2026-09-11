@@ -644,48 +644,8 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   line-height: 1;
 }
 
-
-.workspace-panels-menu {
-  gap: 1px;
-  min-width: 216px;
-}
-
-.workspace-menu-group {
-  color: var(--text-3, #8A7F70);
-  font: 700 10px/1 var(--font-ui, system-ui, sans-serif);
-  letter-spacing: 0.08em;
-  padding: 6px 8px 3px;
-  text-transform: uppercase;
-}
-
-.workspace-panel-row {
-  align-items: center;
-  display: flex;
-  gap: 2px;
-}
-
 .workspace-panel-row .workspace-panel-toggle {
-  flex: 1 1 auto;
   text-align: left;
-}
-
-.workspace-panel-dock-chip {
-  appearance: none;
-  background: transparent;
-  border: 1px solid var(--border-subtle, rgba(60, 48, 32, 0.18));
-  border-radius: var(--radius-s, 2px);
-  color: var(--text-2, #5C5348);
-  cursor: pointer;
-  flex: 0 0 auto;
-  font: 600 10px/1 var(--font-ui, system-ui, sans-serif);
-  padding: 4px 6px;
-}
-
-.workspace-panel-dock-chip:hover,
-.workspace-panel-dock-chip:focus-visible {
-  border-color: var(--border-strong, rgba(60, 48, 32, 0.4));
-  color: var(--text-1, #2E2A24);
-  outline: none;
 }
 
 

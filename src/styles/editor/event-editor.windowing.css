@@ -1,10 +1,4 @@
 /* 이벤트 에디터 창 모드와 작업 영역 분할선. event-editor.mockup.css 뒤에서 최종 기하를 소유한다. */
-
-.event-editor-modal-header {
-  align-items: center;
-  display: flex;
-  gap: 12px;
-}
 .event-editor-modal-header > .event-editor-window-controls,
 .event-editor-window-controls {
   align-items: center;
@@ -49,21 +43,6 @@
   display: none;
 }
 
-.event-editor .event-editor-workbench {
-  grid-template-columns:
-    minmax(0, var(--event-editor-settings-track))
-    12px
-    minmax(0, 1fr) !important;
-}
-
-.event-editor .event-editor-workbench.has-command-inspector {
-  grid-template-columns:
-    minmax(0, var(--event-editor-settings-track))
-    12px
-    minmax(0, 1fr)
-    348px !important;
-}
-
 .event-editor .event-editor-column-resizer {
   align-self: stretch;
   background:
@@ -72,10 +51,8 @@
   border-radius: 0;
   cursor: col-resize;
   min-height: 0;
-  position: relative;
   touch-action: none;
   transition: background-color 120ms ease;
-  width: 12px;
 }
 
 .event-editor .event-editor-column-resizer::before {

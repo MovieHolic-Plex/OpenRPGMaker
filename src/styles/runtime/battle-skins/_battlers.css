@@ -30,8 +30,6 @@
    시선 방향(우상단 적 응시)은 자산에 구웠다(ally-creature-back.png 재생성, 머리 우측 프로필)
    — 한때 쓰던 rotate(5deg) 트릭은 제거. */
 .battle-scene[data-battle-skin="pokemon"] .battle-actor .battle-skin-actor-image {
-  width: calc(26px * var(--battle-actor-scale, 1)) !important;
-  height: calc(36px * var(--battle-actor-scale, 1)) !important;
   transform: none !important;
 }
 

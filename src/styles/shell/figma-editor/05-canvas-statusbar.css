@@ -7,8 +7,6 @@
 
   .editor-canvas-scroll-shell {
     background: var(--editor-canvas-bg);
-    bottom: var(--editor-canvas-chrome-bottom, 0px);
-    top: var(--editor-canvas-chrome-top, 48px);
   }
 
   .editor-layout .canvas-area .phaser-container {
@@ -36,15 +34,7 @@
   }
 
   .canvas-toolbar {
-    background: var(--bg-glass);
-    border: 1px solid var(--editor-line-strong);
-    border-radius: var(--radius-m);
-    box-shadow: var(--shadow-pop);
     box-sizing: border-box;
-    gap: 6px;
-    max-width: calc(100% - 24px);
-    padding: 8px;
-    top: 12px;
   }
 
   .canvas-toolbar-label {
@@ -66,15 +56,8 @@
   }
 
   .map-lock-takeover-button {
-    background: var(--control-bg);
-    border: 1px solid var(--editor-line-strong);
-    border-radius: var(--radius-s);
-    color: var(--editor-text);
-    cursor: pointer;
     font: 700 12px/1 var(--font-ui);
     margin-left: 8px;
-    min-height: 24px;
-    padding: 0 8px;
     white-space: nowrap;
   }
 
@@ -103,8 +86,6 @@
   .oprn-menu-command {
     max-width: 100%;
     min-width: 0;
-    overflow-wrap: anywhere;
-    white-space: normal;
   }
 
 

@@ -106,23 +106,8 @@
   width: 6px;
 }
 
-.oprn-icon-bucket::before {
-  background: var(--bg-overlay);
-  border: 1px solid var(--text-3);
-  height: 7px;
-  left: 3px;
-  top: 4px;
-  transform: skewX(-14deg);
-  width: 9px;
-}
-
 .oprn-icon-bucket::after {
-  background: var(--accent);
   box-shadow: 2px 2px 0 var(--accent-border), 5px 3px 0 var(--accent-border);
-  height: 3px;
-  left: 7px;
-  top: 11px;
-  width: 3px;
 }
 
 .oprn-icon-dropper::before {
@@ -167,10 +152,6 @@
 
 .oprn-icon-select::before {
   border: 1px dashed var(--text-3);
-  height: 11px;
-  left: 2px;
-  top: 2px;
-  width: 11px;
 }
 
 .oprn-icon-select::after {
@@ -224,24 +205,6 @@
   left: 7px;
   top: 7px;
   width: 3px;
-}
-
-.oprn-icon-eraser::before {
-  background: #f4b6c8;
-  border: 1px solid var(--text-3);
-  height: 7px;
-  left: 3px;
-  top: 5px;
-  transform: rotate(-25deg);
-  width: 11px;
-}
-
-.oprn-icon-eraser::after {
-  background: var(--bg-raised);
-  height: 2px;
-  left: 2px;
-  top: 13px;
-  width: 12px;
 }
 
 .oprn-icon-lower::before {

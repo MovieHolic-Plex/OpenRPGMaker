@@ -12,8 +12,6 @@
 /* AI busy 중 입력 큐 표시(결함 ⑨). */
 .ai-pending-queue {
   color: var(--text-2);
-  font-size: 11px;
-  padding: 2px 4px;
 }
 
 /* 0건 프로포절 패시브 알림(결함 ⑤) — 자동 소거. */
@@ -25,7 +23,6 @@
 
 .ai-proposal-title {
   color: var(--text-1);
-  font-size: 14px;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.35;
@@ -151,7 +148,6 @@
 .ai-proposal-lines {
   color: var(--text-2);
   display: grid;
-  font-size: 11px;
   gap: 2px;
   max-height: 120px;
   overflow-y: auto;

@@ -1,43 +1,17 @@
 @import "../runtime/playSurface.css";
-.battle-enemy-image {
-  width: 64px;
-  height: 64px;
-  object-fit: contain;
-  image-rendering: pixelated;
-}
 .battle-enemy:disabled {
   color: var(--text-muted);
   opacity: 0.55;
 }
-.battle-party {
-  position: relative;
-  z-index: 1;
-  grid-column: 2;
-  grid-row: 1;
-  display: grid;
-  gap: var(--space-2);
-  align-self: center;
-}
 .battle-actor {
-  min-height: 56px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg-elev);
-  color: var(--text);
-  font-size: 12px;
-  line-height: 1.35;
-  padding: var(--space-2);
   display: flex;
   align-items: center;
-  gap: var(--space-2);
 }
 .battle-actor.defeated {
   opacity: 0.4;
   filter: grayscale(1);
 }
 .battle-actor-image {
-  width: 48px;
-  height: 48px;
   object-fit: contain;
   image-rendering: pixelated;
   flex: 0 0 auto;
@@ -46,53 +20,23 @@
   flex: 1 1 auto;
 }
 .battle-command-panel {
-  position: relative;
-  z-index: 1;
-  display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: var(--space-2);
   border-top: 1px solid var(--border);
   padding-top: var(--space-2);
 }
 .battle-submenu-header {
   flex: 1 0 100%;
-  font-size: 11px;
   font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  text-align: right;
-}
-.battle-command {
-  min-width: 72px;
-  min-height: 32px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg-elev);
-  color: var(--text);
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
 }
 .battle-command:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
 .battle-animation {
-  position: absolute;
-  left: 50%;
-  top: 38%;
-  transform: translate(-50%, -50%);
-  border: 1px solid var(--accent);
   border-radius: var(--radius);
-  background: var(--accent-soft);
-  color: var(--text);
   font-family: var(--font-mono);
-  font-size: 12px;
   padding: var(--space-2) var(--space-3);
-  pointer-events: none;
 }
 
 .tile-palette {
@@ -122,11 +66,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
    flex:1 + min-height:0 ?쇰줈 遺紐??곸뿭??留욎떠 以꾩뼱?ㅺ퀬, ?댁슜???섏튂硫?   .tile-palette ??overflow-y:auto 媛 ?몃줈 ?ㅽ겕濡ㅼ쓣 ?쒓났?쒕떎.
    height:auto ??chipset-sheet??540px 怨좎젙??臾댄슚?뷀븯??遺紐⑥뿉 留욎텣?? */
 .chipset-sheet.tile-palette {
-  flex: 1 1 0;
   min-height: 0;
-  height: auto;
-  max-height: 100%;
-  overflow-y: auto;
 }
 .tile-cell {
   width: 100%;
@@ -161,102 +101,27 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 /* ?? ??ъ갹 ?ㅻ쾭?덉씠 ?? */
-.dialogue-overlay {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  pointer-events: none;
-}
 /* ??ъ갹: dialogue-frame.png 瑜?9-slice(border-image)濡??곸슜.
    ?먯뀑? 64x64, slice=16px. 以묒븰? 諛섑닾紐??대몢???ㅼ씠???띿뒪??媛?낆꽦 ?뺣낫. */
 .dialogue-box {
   border-style: solid;
   border-width: 16px;
-  border-image: url("/assets/dialogue-frame.png") 16 / 16px stretch;
   /* border-image 誘몄????먯뀑 ?꾨씫 ???대갚. */
-  background: rgba(247, 243, 234, 0.92);
-  padding: 10px 14px 6px;
   max-width: 720px;
-  margin: 0 auto;
-  pointer-events: auto;
-  cursor: pointer;
-  min-height: 88px;
-  image-rendering: pixelated;
   /* ?댁쭩 ?쒕∼ ??꾩슦濡?寃뚯엫 ?붾㈃怨?遺꾨━. */
   filter: drop-shadow(0 4px 10px rgba(42, 37, 33, 0.10));
 }
 .dialogue-box .speaker {
-  font-weight: 700;
-  color: #8A6B2F;
-  margin-bottom: 6px;
-  font-size: 14px;
   /* 텍스트 그림자으로 가독성 보강(테두리 배경 위). */
-  text-shadow: 0 1px 2px rgba(42, 37, 33, 0.10);
-}
-.dialogue-box .speaker.speaker-nameplate {
-  position: absolute;
-  left: 10px;
-  top: -12px;
-  z-index: 3;
-  display: inline-flex;
-  align-items: center;
-  max-width: calc(100% - 24px);
-  margin: 0;
-  padding: 2px 10px 3px;
-  border: 1px solid rgba(245, 251, 255, 0.9);
-  border-radius: 999px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0)),
-    rgba(12, 28, 84, 0.96);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
-  color: #f8fbff;
-  font-size: 13px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  pointer-events: none;
 }
 .dialogue-box.has-speaker {
   position: relative;
-  overflow: visible;
-}
-.dialogue-box .body {
-  font-size: 15px;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  color: #f0f2f6;
-  text-shadow: 0 1px 2px rgba(42, 37, 33, 0.10);
 }
 .dialogue-box .continue-hint {
-  text-align: right;
-  font-size: 11px;
-  color: var(--text-dim);
   margin-top: 6px;
 }
 .choices {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
   max-width: 720px;
-  margin: 0 auto;
-  pointer-events: auto;
-}
-.choices .choice-btn {
-  background: rgba(247, 243, 234, 0.92);
-  border: 2px solid rgba(42, 37, 33, 0.20);
-  color: #f0f2f6;
-  padding: 8px 14px;
-  border-radius: 2px;
-  cursor: pointer;
-  text-align: left;
-  font-size: 14px;
-  text-shadow: 0 1px 2px rgba(42, 37, 33, 0.10);
-  transition: border-color 0.12s, background 0.12s;
 }
 .choices .choice-btn:hover {
   background: rgba(245, 208, 74, 0.18);
@@ -314,9 +179,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   display: grid;
   gap: var(--space-2);
   padding: var(--space-2);
-  background: var(--bg-panel-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
 }
 
 .event-editor-launch-title {
@@ -325,7 +187,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 .event-editor-launch-meta {
-  color: var(--text-dim);
   font-size: 12px;
 }
 
@@ -420,15 +281,8 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 .event-list {
-  background: var(--bg);
-  border: 1px solid var(--border-soft);
-  display: flex;
   flex: 1 1 auto;
-  flex-direction: column;
-  gap: 1px;
-  min-height: 0;
   overflow-x: hidden;
-  overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--space-1);
 }
@@ -439,9 +293,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   top: 0;
   z-index: 1;
   background: var(--bg);
-  color: var(--text-dim);
-  font-size: 11px;
-  font-weight: 700;
   padding: 2px var(--space-1) var(--space-1);
   text-transform: uppercase;
 }
@@ -453,40 +304,23 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   min-height: 120px;
   padding: 16px;
   text-align: center;
-  border: 1px dashed var(--border-subtle);
-  border-radius: var(--radius-m);
-  background: var(--bg-surface);
-  color: var(--text-2);
   font-size: 12px;
 }
 
 .event-list-row {
   align-items: center;
   appearance: none;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--text);
   cursor: pointer;
   display: grid;
   font-family: inherit;
   gap: var(--space-1);
   grid-template-columns: 22px minmax(0, 1fr) auto;
-  min-height: 28px;
-  flex-shrink: 0;
-  padding: 2px var(--space-1);
   text-align: left;
 }
 
 .event-list-row:hover,
 .event-list-row:focus-visible {
-  background: var(--bg-panel-2);
-  border-color: var(--border);
   outline: none;
-}
-
-.event-list-row.active {
-  background: var(--accent-soft);
-  border-color: var(--accent);
 }
 
 .event-list-id,
@@ -500,7 +334,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 
 .event-list-icon {
   align-items: center;
-  background: var(--surface-recessed);
   border: 1px solid var(--border-soft);
   display: inline-grid;
   height: 22px;
@@ -774,6 +607,3 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 /* 배너가 있으면 캔버스 위 플로팅 줌 툴바를 아래로 밀어 겹침을 피한다. */
-.persistence-mode-banner ~ .canvas-toolbar {
-  top: 52px;
-}

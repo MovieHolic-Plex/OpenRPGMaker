@@ -26,19 +26,12 @@
 
 /* ── 페이지 탭: 좌측 세로 스택 → 상단 가로 스트립 ─────────────────── */
 .event-editor .event-page-number-tabs {
-  display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  align-items: stretch;
-  gap: 4px;
-  overflow-x: auto;
-  overflow-y: hidden;
   background: transparent;
   border-bottom: 0;
   border-radius: 0;
-  padding: 0;
   width: 100%;
-  min-height: 50px;
 }
 
 .event-editor .event-page-number-tabs > .event-page-tab-rich {
@@ -156,11 +149,7 @@
   align-self: center;
   margin: 0 6px;
   padding: 2px 11px;
-  background: transparent;
-  border: 1px dashed var(--mk-line);
   border-radius: 3px;
-  color: var(--mk-t2);
-  font-size: 14px;
   line-height: 1.4;
 }
 
@@ -171,13 +160,9 @@
 
 /* ── 좌측 설정 컬럼 = 레일 ───────────────────────────────────────── */
 .event-editor .event-editor-settings-column {
-  background: var(--mk-surface);
-  border-right: 1px solid var(--mk-line);
   /* 페이지 탭 스트립이 상단으로 나갔으므로 자식은 settings-main 하나다.
      기존 정의(56px + 1fr)를 그대로 두면 본문이 56px 칸에 갇힌다. */
   grid-template-columns: minmax(0, 1fr);
-  gap: 0;
-  padding: 10px 12px;
 }
 
 /* 상단 식별 스트립을 이벤트 카드처럼 — 시선 진입점 만들기. */
@@ -237,9 +222,6 @@
 
 /* ── 명령 툴바 ───────────────────────────────────────────────────── */
 .event-editor .event-editor-command-toolbar {
-  gap: 6px;
-  padding: 7px 10px;
-  background: var(--mk-surface);
   border-bottom: 1px solid var(--mk-line);
 }
 
@@ -327,30 +309,7 @@
 
 /* ── 우측 인라인 인스펙터 ────────────────────────────────────────── */
 .event-editor .event-editor-workbench {
-  --event-editor-settings-track: 312px;
   position: relative;
-  grid-template-columns:
-    minmax(0, var(--event-editor-settings-track))
-    0
-    minmax(0, 1fr) !important;
-  gap: 0;
-}
-
-.event-editor .event-editor-workbench.has-command-inspector {
-  grid-template-columns:
-    minmax(0, var(--event-editor-settings-track))
-    0
-    minmax(0, 1fr)
-    348px !important;
-}
-
-.event-editor .event-editor-inspector-column {
-  background: var(--mk-surface);
-  border-left: 1px solid var(--mk-line);
-  min-width: 0;
-  min-height: 0;
-  overflow-y: auto;
-  display: block;
 }
 
 .event-editor .event-editor-inspector-column[hidden] {
@@ -363,8 +322,6 @@
   z-index: 2;
   background: var(--mk-surface);
   border-bottom: 1px solid var(--mk-line-soft);
-  padding: 9px 12px;
-  display: grid;
   gap: 3px;
 }
 
@@ -378,14 +335,7 @@
 }
 
 .event-editor .event-inspector-title {
-  font-size: 12.5px;
   font-weight: 600;
-  color: var(--mk-t1);
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
   overflow-wrap: anywhere;
 }
 
@@ -395,10 +345,6 @@
   -webkit-line-clamp: 2;
   overflow: hidden;
   overflow-wrap: anywhere;
-}
-
-.event-editor .event-inspector-body {
-  padding: 11px 12px 22px;
 }
 
 .event-editor .event-inspector-empty {
@@ -554,13 +500,6 @@
 }
 
 @media (max-width: 1180px) {
-  .event-editor .event-editor-workbench,
-  .event-editor .event-editor-workbench.has-command-inspector {
-    grid-template-columns:
-      minmax(0, var(--event-editor-settings-track))
-      8px
-      minmax(300px, 1fr) !important;
-  }
   /* 인스펙터는 1180px 이하에서도 자기 그리드 트랙에 그대로 있다.
      이전에는 `position: absolute; inset: 0 0 0 auto; width: min(348px, 46vw)` 오버레이여서
      1024x768 실측 시 명령 컬럼(x=684 w=340)과 인스펙터(x=676 w=348)가 겹치며
@@ -687,10 +626,7 @@
  * 기준이다. 목업 배치로 자식이 6개가 되면서 행 배분이 깨져 200~350px 빈 칸이 생겼다.
  * 같은 스코프에서 flex column 으로 바꿔 행 높이를 내용에 맡긴다. */
 .event-editor-modal-dynamic .event-editor {
-  display: flex;
   flex-direction: column;
-  gap: 8px;
-  grid-template-rows: none;
 }
 
 .event-editor-modal-dynamic .event-editor > .event-editor-workbench {
@@ -702,13 +638,6 @@
  * 열 구분은 레일/인스펙터의 border-right/left 1px 이 한다.
  * (옛 .event-editor-modal-body padding 20px 25px 8px 와 .event-editor gap 8px 가
  *  페이지바 아래 20px·좌우 25px·열 사이 8px 죽은 여백을 만들었다) */
-.event-editor-modal-body {
-  padding: 0;
-}
-
-.event-editor-modal-dynamic .event-editor {
-  gap: 0;
-}
 
 .event-editor-modal-dynamic .event-editor > .event-page-number-tabs,
 .event-editor-modal-dynamic .event-editor > .event-editor-top-strip,
@@ -733,13 +662,6 @@
 }
 
 /* 탭 검사 배지가 이름/조건 위로 겹쳐 보였다. 그리드 마지막 칸으로 고정. */
-.event-editor .event-page-tab-rich > .event-page-validation-badge {
-  position: static;
-  inset: auto;
-  align-self: center;
-  justify-self: end;
-  margin: 0;
-}
 
 /* ── 이벤트 카드 (목업 evcard) ───────────────────────────────────── */
 .event-editor .event-editor-card {
@@ -755,8 +677,6 @@
 }
 
 .event-editor .event-editor-card-sprite {
-  width: 54px;
-  height: 70px;
   flex: 0 0 54px;
   display: grid;
   place-items: center;
@@ -784,9 +704,6 @@
 }
 
 .event-editor .event-editor-card .event-editor-id-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   max-height: none;
   margin: 0;
   font-family: var(--mk-mono);
@@ -796,11 +713,6 @@
 
 /* 설정 컬럼: 카드는 내용 높이, 설정 본문이 남는 높이를 갖고 스크롤한다.
  * grid 로 두면 카드가 stretch 되어 400px 넘게 늘어난다. */
-.event-editor .event-editor-settings-column {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
 
 .event-editor .event-editor-settings-column > .event-editor-card {
   flex: 0 0 auto;
@@ -1190,10 +1102,6 @@
 
 /* ── D: 블록 캔버스 값 맞추기 ──────────────────────────────────── */
 /* 목업 .canvas: padding 9px 11px · gap 3px */
-.event-editor .cmd-list {
-  padding: 9px 11px;
-  gap: 3px;
-}
 
 /* 목업 .mark: 블록이 아닌 흐름색 텍스트 줄 — 04-depth-parent 의
  * 배경 밴드·사선 텍스처를 끊고 글자만으로 그린다. */
@@ -1214,18 +1122,12 @@
 /* 목업 .canvas-col: padding 10px 12px 12px · gap 8px · head 32px.
  * 실제 필드셋은 padding 12/12/10 + head 32 + gap 8, 열 자체도 좌우 인셋을
  * 더해 캔버스를 목업(816)보다 좁게 만든다 → 열/필드셋 값을 목업에 맞춘다. */
-.event-editor .event-editor-commands-column {
-  padding: 0;
-}
 
 /* 행 구조: 1 툴바 · 2 콘텐츠(목록/스토리보드 중 하나, 1fr).
  * 제목/보기 전환은 위 페이지바로 올리고, 좌우 인셋도 줄여 명령 보드를 확장한다. */
 .event-editor .event-contents-fieldset {
   position: relative;
-  padding: 8px 8px 10px;
   gap: 6px;
-  min-height: 0;
-  grid-template-rows: 32px minmax(0, 1fr);
 }
 
 .event-editor .event-contents-fieldset > .event-editor-command-toolbar {
@@ -1261,11 +1163,6 @@
 /* 목록 모드에서는 빈 스토리보드 호스트가 콘텐츠 트랙을 차지하지 않게 통째로 접는다. */
 .event-editor .event-contents-fieldset:has(.event-storyboard[hidden]) > .event-storyboard-host {
   display: none;
-}
-
-.event-editor .event-contents-fieldset > .event-storyboard-host > [hidden],
-.event-editor .event-contents-fieldset > .cmd-list[hidden] {
-  display: none !important;
 }
 
 .event-editor .event-contents-fieldset > .cmd-list {
@@ -1311,8 +1208,6 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
-  color: var(--text-2);
-  font-size: 12px;
   line-height: 1.3;
 }
 .event-editor .event-storyboard-host > .event-storyboard[hidden],
@@ -1384,11 +1279,6 @@
   transform: none !important;
 }
 
-
-.event-editor .event-editor-settings-column {
-  padding: 0;
-}
-
 .event-editor .event-editor-settings-column > .event-editor-card {
   margin: 0;
   padding: 12px;
@@ -1447,7 +1337,6 @@
 
 .event-editor .event-contents-fieldset {
   /* 위 실행 내용 2행 정의와 반드시 일치시킬 것 — 여기가 나중이라 항상 이긴다. */
-  grid-template-rows: 32px minmax(0, 1fr);
 }
 
 .event-editor .event-contents-fieldset > .event-editor-command-toolbar {
@@ -1458,7 +1347,6 @@
 }
 
 .event-editor .event-editor-command-toolbar > [data-testid="event-command-toolbar-add"] {
-  order: 1;
   min-width: 84px;
   padding: 0 13px;
 }
@@ -1619,11 +1507,6 @@
 .event-editor-modal-footer .event-editor-remote-status {
   display: inline-block;
   font: 500 12px/1.35 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-}
-
-.event-editor-modal-footer {
-  min-height: 44px;
-  padding: 5px 14px;
 }
 .event-editor-modal-footer .btn.event-editor-footer-button,
 .event-editor-modal-footer .event-editor-footer-more-summary {

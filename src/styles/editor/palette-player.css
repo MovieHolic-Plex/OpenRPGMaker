@@ -1,5 +1,4 @@
 .event-list-meta {
-  color: var(--text-dim);
   font: 500 11px/1.35 var(--font-mono);
   min-width: 0;
   overflow: hidden;
@@ -8,42 +7,20 @@
 }
 
 .event-editor-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 45;
-  display: grid;
   place-items: center;
-  padding: var(--space-4);
-  background: rgba(42, 37, 33, 0.18);
 }
 
 .event-editor-modal-window {
-  display: flex;
   flex-direction: column;
   width: min(900px, calc(100vw - 32px));
-  max-height: calc(100vh - 32px);
-  background: var(--bg-panel);
-  color: var(--text);
-  border: 1px solid var(--border-strong);
-  box-shadow: var(--shadow-popover);
 }
 
 .event-editor-modal-header {
-  position: sticky;
   top: 0;
-  z-index: 2;
-  display: flex;
-  align-items: start;
   justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-3);
-  background: var(--bg-panel);
-  border-bottom: 1px solid var(--border);
 }
 
 .event-editor-modal-header h2 {
-  margin: 0;
-  color: var(--text);
   font-size: 16px;
 }
 
@@ -51,16 +28,6 @@
   margin: 2px 0 0;
   color: var(--text-dim);
   font-size: 12px;
-}
-
-.event-editor-modal-close {
-  min-width: 28px;
-}
-
-.event-editor-modal-body {
-  min-height: 0;
-  overflow: auto;
-  padding: var(--space-3);
 }
 
 .event-editor-modal-body .panel-section {
@@ -78,23 +45,6 @@
   align-self: center;
   color: var(--text-dim);
   font: 600 12px/1.35 var(--font-mono);
-}
-
-.event-editor-workbench {
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: minmax(260px, 340px) minmax(360px, 1fr);
-}
-
-.event-editor-settings-column,
-.event-editor-commands-column {
-  min-width: 0;
-}
-
-.event-graphic-control {
-  display: grid;
-  gap: var(--space-1);
-  grid-template-columns: minmax(0, 1fr) auto;
 }
 
 .event-graphic-control input {
@@ -126,21 +76,13 @@
 .event-subdialog-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 55;
-  display: grid;
   place-items: center;
-  padding: var(--space-4);
-  background: rgba(42, 37, 33, 0.18);
 }
 
 .event-subdialog-window {
   display: flex;
   flex-direction: column;
   max-height: calc(100vh - 48px);
-  background: var(--bg-panel);
-  border: 1px solid var(--border-strong);
-  box-shadow: var(--shadow-popover);
-  color: var(--text);
 }
 
 .event-subdialog-window.narrow {
@@ -152,68 +94,20 @@
 }
 
 .event-subdialog-header {
-  align-items: start;
   border-bottom: 1px solid var(--border);
-  display: flex;
-  gap: var(--space-3);
-  justify-content: space-between;
-  padding: var(--space-3);
 }
 
 .event-subdialog-header h3 {
-  color: var(--text);
   font-size: 14px;
-  margin: 0;
 }
 
 .event-subdialog-header p {
-  color: var(--text-dim);
   font-size: 12px;
-  margin: 2px 0 0;
-}
-
-.event-subdialog-close {
-  min-width: 28px;
-}
-
-.event-subdialog-body {
-  display: grid;
-  gap: var(--space-2);
-  min-height: 0;
-  overflow: auto;
-  padding: var(--space-3);
 }
 
 .event-subdialog-note {
   color: var(--text-dim);
   font-size: 12px;
-}
-
-.event-command-picker-grid {
-  display: grid;
-  gap: var(--space-2);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.event-command-picker-group-heading {
-  align-items: center;
-  color: var(--text-dim);
-  display: flex;
-  font: 700 11px/14px var(--font-mono);
-  gap: var(--space-2);
-  grid-column: 1 / -1;
-  margin-top: 2px;
-}
-
-.event-command-picker-group-heading::after {
-  background: var(--border-soft);
-  content: "";
-  flex: 1;
-  height: 1px;
-}
-
-.event-command-picker-group-heading:first-child {
-  margin-top: 0;
 }
 
 .event-command-picker-group {
@@ -519,10 +413,8 @@
 }
 
 .empty-hint {
-  color: var(--text-muted);
   font-size: 12px;
   font-style: italic;
-  padding: var(--space-3) var(--space-2);
   text-align: center;
   line-height: 1.5;
 }
@@ -623,19 +515,13 @@
 /* ?? ?곗륫 而⑦뀓?ㅽ듃 ???? */
 .right-tabbar {
   display: flex;
-  gap: 2px;
-  padding: var(--space-2) var(--space-2) 0;
   border-bottom: 1px solid var(--border-soft);
   flex-shrink: 0;
 }
 .right-tab {
   background: transparent;
-  border: none;
   border-bottom: 2px solid transparent;
-  color: var(--text-dim);
-  padding: 6px var(--space-2);
   cursor: pointer;
-  font-size: 12px;
   font-family: inherit;
   font-weight: 500;
 }
@@ -643,13 +529,10 @@
   color: var(--text);
 }
 .right-tab.active {
-  color: var(--accent);
   border-bottom-color: var(--accent);
 }
 .right-tabbody {
-  flex: 1;
   overflow-y: auto;
-  padding: var(--space-2);
 }
 
 

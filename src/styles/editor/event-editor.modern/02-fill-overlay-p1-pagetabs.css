@@ -1,7 +1,4 @@
 /* 리치 페이지 탭: 캐릭터 그래픽 fill + 하단 번호 overlay (세부 스타일은 p1-pagetabs) */
-.event-page-number-tabs .btn.event-page-tab-rich {
-  min-height: 72px;
-}
 
 .event-page-number-tabs .event-page-tab-add {
   align-items: center;
@@ -284,5 +281,4 @@
   grid-template-rows: minmax(220px, 1fr) auto;
   min-width: 0;
   overflow: hidden;
-  position: relative;
 }

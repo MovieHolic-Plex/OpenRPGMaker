@@ -27,19 +27,11 @@
 }
 
 .left-panel-stack .brush-control {
-  display: none;
-  gap: 1px;
-  grid-template-columns: 28px repeat(3, minmax(0, 1fr));
   margin-top: 1px;
   width: 100%;
 }
 
-.left-panel-stack .brush-control-label {
-  font-size: 10px;
-}
-
 .left-panel-stack .brush-size-btn {
-  height: 20px;
   padding: 0 1px;
 }
 
@@ -56,11 +48,7 @@
 .layer-btn,
 .brush-size-btn,
 .tool-command-row .icon-btn {
-  background: var(--control-bg);
   border-color: var(--border-default);
-  border-radius: var(--radius-s);
-  box-shadow: none;
-  color: var(--text-1);
   transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
@@ -86,10 +74,7 @@
 .layer-btn[aria-pressed="true"],
 .brush-size-btn.active,
 .brush-size-btn[aria-pressed="true"] {
-  background: var(--surface-selected);
-  border-color: var(--accent-primary);
   box-shadow: inset 3px 0 0 var(--accent-primary);
-  color: var(--text-primary);
   font-weight: 700;
 }
 
@@ -103,22 +88,8 @@
 }
 
 .left-panel-stack .tile-tool-status {
-  display: none;
-  gap: 2px;
-  grid-template-columns: 34px minmax(0, 1fr);
   margin-top: 1px;
-  padding: 2px;
   width: 100%;
-}
-
-.left-panel-stack .selected-tile-preview {
-  height: 32px;
-  width: 32px;
-}
-
-.left-panel-stack .tile-tool-status-grid {
-  gap: 1px;
-  grid-template-columns: 1fr 1fr;
 }
 
 .left-panel-stack .tile-tool-status-cell:nth-child(n + 3) {
@@ -131,15 +102,8 @@
 }
 
 .chipset-sheet {
-  background: var(--bg-panel-2);
-  border: 1px solid var(--border);
-  container-type: inline-size;
   display: block;
-  height: min(540px, calc(100vh - 214px));
-  max-height: min(540px, calc(100vh - 214px));
   min-height: min(280px, 36vh);
-  overflow-x: hidden;
-  overflow-y: auto;
   overscroll-behavior: contain;
   position: relative;
   scrollbar-gutter: stable;
@@ -151,9 +115,6 @@
 .palette-option-row {
   align-items: center;
   display: grid;
-  gap: 1px;
-  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
-  margin-bottom: 2px;
 }
 
 .palette-option-label {
@@ -164,8 +125,6 @@
 }
 
 .palette-option-button {
-  font-size: 11px;
-  height: 22px;
   min-width: 0;
   padding: 0 4px;
 }
@@ -590,12 +549,7 @@
 }
 
 .tile-search-input {
-  background: var(--surface-workbench);
-  border: 1px solid var(--border-default);
-  color: var(--text-primary);
   font-size: 11px;
-  height: 24px;
-  padding: 0 var(--space-1);
   width: 100%;
 }
 
@@ -622,7 +576,6 @@
 .tile-brush-assist {
   background: var(--surface-panel);
   border: 1px solid var(--border-default);
-  display: grid;
   gap: 2px;
   margin-bottom: var(--space-1);
   padding: var(--space-1);
@@ -632,8 +585,6 @@
 .tile-brush-neighborhood {
   align-items: center;
   display: grid;
-  gap: 3px;
-  grid-template-columns: 34px minmax(0, 1fr);
   min-height: 22px;
 }
 
@@ -686,8 +637,6 @@
 .stamp-button,
 .used-location-button {
   flex: 0 0 auto;
-  font-size: 10px;
-  height: 22px;
   padding: 0 5px;
 }
 
@@ -697,14 +646,8 @@
   row-gap: 3px;
 }
 
-.structure-stamp-panel .stamp-button {
-  min-width: 44px;
-}
-
 .stamp-button.active,
 .stamp-button[aria-pressed="true"] {
-  background: var(--surface-selected);
-  border-color: var(--accent-primary);
   font-weight: 700;
 }
 
@@ -819,18 +762,11 @@
 }
 
 .chipset-grid {
-  --chipset-cell: 32px;
   box-sizing: border-box;
   display: grid;
-  gap: 1px;
   /* 패널 안에 들어가는 칸만 배치 — 가로 스크롤 없음 */
-  grid-template-columns: repeat(auto-fill, var(--chipset-cell));
   grid-auto-rows: var(--chipset-cell);
-  justify-content: start;
-  padding: 2px;
   position: static;
-  width: 100%;
-  min-width: 0;
   max-width: 100%;
 }
 
@@ -841,12 +777,10 @@
   border: 1px solid transparent;
   box-sizing: border-box;
   cursor: crosshair;
-  height: var(--chipset-cell);
   overflow: hidden;
   padding: 0;
   position: relative;
   min-width: 0;
-  width: var(--chipset-cell);
 }
 
 .chipset-tile-preview {
@@ -871,14 +805,7 @@
 
 .chipset-tile:hover:not(:disabled),
 .chipset-tile:focus-visible:not(:disabled) {
-  border-color: var(--accent-hover);
-  box-shadow: inset 0 0 0 1px var(--bg-canvas);
   outline: none;
-}
-
-.chipset-tile.active {
-  border-color: var(--accent);
-  box-shadow: inset 0 0 0 1px var(--bg-canvas);
 }
 
 .chipset-tile.stamp-source {
@@ -1035,19 +962,13 @@
 
 .chipset-band-nav {
   display: grid;
-  gap: 1px;
   grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
-  margin-bottom: 2px;
 }
 
 .chipset-band-button {
-  background: var(--control-bg);
   border-color: var(--border-default);
-  border-radius: var(--radius-s);
   box-shadow: none;
-  font-size: 11px;
   font-weight: 600;
-  height: 22px;
   min-width: 0;
   padding: 0;
   transition: background var(--transition-fast), border-color var(--transition-fast);
@@ -1055,10 +976,7 @@
 
 .chipset-band-button.active,
 .chipset-band-button[aria-pressed="true"] {
-  background: var(--accent-muted);
-  border-color: var(--accent-border);
   box-shadow: none;
-  color: var(--text-1);
 }
 
 .chipset-band-button:hover:not(:disabled) {
@@ -1071,22 +989,10 @@
   outline-offset: -2px;
 }
 
-.chipset-scroll-controls {
-  gap: 1px;
-  grid-template-columns: 24px minmax(0, 1fr) 24px;
-  margin-top: 2px;
-}
-
 .chipset-scroll-button {
   background: var(--control-bg);
   border-color: var(--border-default);
   border-radius: var(--radius-s);
-  height: 22px;
-}
-
-.chipset-scroll-hint {
-  font-size: 10px;
-  line-height: 20px;
 }
 
 .left-panel-stack .compact-field {

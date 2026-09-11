@@ -6,70 +6,16 @@
     border-color: var(--accent-border);
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel,
-  .left-panel-stack[data-testid="left-palette-root"] .palette-stamp-status,
-  .left-panel-stack[data-testid="left-palette-root"] .palette-option-row,
-  .left-panel-stack[data-testid="left-palette-root"] > .empty-hint {
-    display: none;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .chipset-band-nav {
-    align-items: center;
-    border-bottom: 1px solid var(--editor-line);
-    display: flex;
-    gap: 10px;
-    margin: 0 0 6px;
-    padding: 2px 0 8px;
-  }
-
   .left-panel-stack[data-testid="left-palette-root"] .chipset-band-nav::before {
-    color: var(--editor-text);
-    content: "선택 타일";
     flex: 0 0 76px;
-    font-size: 13px;
-    font-weight: 800;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .chipset-band-button {
-    flex: 0 0 48px;
-    height: 48px;
-    width: 48px;
   }
 
   .left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.tile-palette {
-    flex: 1 1 auto;
-    height: auto;
-    max-height: none;
     min-height: min(200px, 26vh);
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .tile-tool-status {
-    display: grid;
-    gap: 10px;
-    grid-template-columns: 70px minmax(0, 1fr);
-    margin: 0 0 8px;
-    padding: 0;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .tile-tool-status-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .brush-control {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    margin: 6px 0 0;
   }
 
   .left-panel-stack[data-testid="left-palette-root"] .brush-control-label {
-    display: block;
     grid-column: 1 / -1;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .brush-size-btn {
-    height: 32px;
   }
 
   .map-context-menu-item:focus:not(:focus-visible) {

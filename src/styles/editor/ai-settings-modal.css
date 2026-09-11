@@ -270,7 +270,6 @@
 
 .ai-model-warning {
   grid-column: 2;
-  margin-top: calc(var(--space-2) * -1);
 }
 
 .ai-config-actions {

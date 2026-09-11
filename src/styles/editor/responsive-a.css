@@ -1,7 +1,5 @@
 .map-context-menu-item:hover:not(.disabled),
 .map-context-menu-item:focus-visible:not(.disabled) {
-  background: var(--surface-selected);
-  border-color: var(--accent-primary);
   outline: none;
 }
 
@@ -12,15 +10,7 @@
 }
 
 .map-context-menu-item.disabled {
-  color: var(--text-secondary);
   cursor: default;
-  opacity: 0.62;
-}
-
-.map-context-menu-item.separator-before {
-  border-top-color: var(--border-default);
-  margin-top: 3px;
-  padding-top: 5px;
 }
 
 .map-context-menu-label {
@@ -89,11 +79,7 @@
 }
 
 .topbar {
-  background: var(--surface-app);
-  border-bottom: 1px solid var(--border-default);
-  color: var(--text-primary);
   gap: 0;
-  padding: 0;
 }
 
 .oprn-menu-bar {
@@ -103,18 +89,10 @@
 
 .oprn-menu-item {
   min-height: 22px;
-  padding: 0 12px;
 }
 
 .oprn-toolbar {
-  border-top: 1px solid var(--border-default);
   gap: 1px;
-  padding: 1px 4px 2px;
-}
-
-.oprn-toolbar-row {
-  gap: 2px;
-  min-height: 23px;
 }
 
 .oprn-toolbar-row.primary-row {
@@ -124,15 +102,6 @@
 .oprn-toolbar-row.edit-row {
   min-height: 23px;
   padding-top: 1px;
-}
-
-.oprn-tool-button {
-  height: 22px;
-  min-width: 26px;
-}
-
-.oprn-tool-button.icon-only {
-  width: 26px;
 }
 
 .oprn-tool-button.primary {
@@ -149,8 +118,6 @@
 
 .editor-layout.no-right-panel .left-panel {
   grid-template-rows: minmax(0, 1fr) 180px;
-  min-width: 268px;
-  width: 268px;
 }
 
 .editor-layout.no-right-panel .left-panel-stack {
@@ -182,11 +149,6 @@
   position: sticky;
   top: 0;
   z-index: 5;
-}
-
-.editor-layout.no-right-panel .quick-tile-grid,
-.editor-layout.no-right-panel .chipset-grid {
-  justify-content: center;
 }
 
 .editor-statusbar {

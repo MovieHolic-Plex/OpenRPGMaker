@@ -1,7 +1,4 @@
   .editor-layout .resizer-left {
-    background: var(--editor-toolbar-bg);
-    border-left: 1px solid var(--editor-line);
-    border-right: 1px solid var(--border-strong);
     position: relative;
     width: 6px;
   }
@@ -13,26 +10,16 @@
   .editor-layout .resizer-left:hover,
   .editor-layout .resizer-left:active,
   .editor-layout .resizer-left:focus-visible {
-    background: var(--accent-muted);
-    outline: 1px solid var(--accent);
     outline-offset: -1px;
   }
 
   .editor-layout .resizer-map-tree {
-    background: var(--editor-toolbar-bg);
-    border-bottom: 1px solid var(--border-strong);
-    border-top: 1px solid var(--editor-line);
     box-sizing: border-box;
     cursor: ns-resize;
     display: block;
     height: 6px;
     min-height: 6px;
     width: 100%;
-  }
-
-  .editor-layout .resizer-map-tree:hover,
-  .editor-layout .resizer-map-tree:active {
-    background: var(--accent-muted);
   }
 
   .editor-layout.no-right-panel .left-panel-stack,
@@ -47,7 +34,6 @@
 
   .left-panel-stack {
     border-bottom: 1px solid var(--editor-line);
-    padding: 10px 12px;
   }
 
   /* 예전 구조: 1=도구섹션(숨김), 2=타일 팔레트.
@@ -70,13 +56,6 @@
 
   .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2):not(.palette-work-shell) h3 {
     display: block;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    overflow: hidden;
   }
 
   .left-panel-stack[data-testid="left-palette-root"] > .panel-section.palette-work-shell {

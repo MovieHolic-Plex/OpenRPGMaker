@@ -45,16 +45,11 @@
   --battle-green: #8df064;
   --battle-cyan: #8deaff;
   --battle-black: #00040d;
-  --battle-hud-height: 34%;
   background: #000;
   display: grid;
   font-family: var(--runtime-ui-font);
   font-size: var(--runtime-font-size-11);
-  gap: 16px;
-  grid-template-columns: minmax(560px, 30%) minmax(1040px, 1fr) minmax(600px, 28%);
-  grid-template-rows: 184px minmax(0, 1fr) minmax(500px, 34%);
   line-height: 1.25;
-  padding: 36px 44px;
   text-shadow: 0 4px 0 rgba(0, 0, 0, 0.8);
 }
 
@@ -63,8 +58,6 @@
      숫자를 두 곳에 두지 않도록 --battle-field-border-width 로 묶었다. */
   border: var(--battle-field-border-width) solid rgba(213, 228, 255, 0.65);
   box-shadow: inset 0 0 0 2px rgba(23, 62, 119, 0.9), 0 0 52px rgba(0, 12, 40, 0.8);
-  grid-column: 1 / -1;
-  grid-row: 1 / 3;
   overflow: hidden;
 }
 
@@ -188,17 +181,10 @@
 
 .battle-enemy {
   filter: drop-shadow(0 40px 16px rgba(0, 0, 0, 0.4));
-  transform: translate(-50%, -100%);
-}
-
-.battle-enemy-image {
-  height: 72px;
-  width: 64px;
 }
 
 .battle-actor-group .battle-actor {
   filter: drop-shadow(0 28px 8px rgba(0, 0, 0, 0.38));
-  transform: translate(-50%, -100%);
   z-index: 3;
 }
 

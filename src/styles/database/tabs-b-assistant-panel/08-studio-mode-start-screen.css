@@ -1113,31 +1113,13 @@ body.ai-studio-open .coach-mark-card {
   margin-bottom: 8px;
 }
 
-.ai-studio-tool-grid {
-  display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr));
-}
-
 .ai-studio-tool-card {
-  align-items: center;
-  background: var(--bg-inset);
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: var(--text-1);
   cursor: pointer;
-  display: flex;
   font: inherit;
-  gap: 10px;
-  min-height: 52px;
-  padding: 8px 10px;
-  text-align: left;
   transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .ai-studio-tool-card:hover {
-  background: var(--bg-raised);
-  border-color: var(--accent-border);
   transform: translateY(-1px);
 }
 
@@ -1146,7 +1128,6 @@ body.ai-studio-open .coach-mark-card {
 }
 
 .ai-studio-tool-card:focus-visible {
-  outline: var(--focus-outline);
   outline-offset: 1px;
 }
 
@@ -1641,7 +1622,6 @@ body.ai-studio-open .coach-mark-card {
 /* 레거시 텍스트 스킬 카드(다른 진입점 호환) */
 .ai-start-grid {
   display: grid;
-  gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 6px;
 }
@@ -1650,20 +1630,16 @@ body.ai-studio-open .coach-mark-card {
   align-items: center;
   background: var(--bg-raised);
   border: 1.5px solid var(--border-subtle);
-  border-radius: 12px;
   cursor: pointer;
   display: flex;
   gap: 8px;
   min-height: 52px;
-  padding: 10px 12px;
   text-align: left;
-  transition: background 0.14s, border-color 0.14s, transform 0.12s;
 }
 
 .ai-start-card:hover {
   border-color: color-mix(in srgb, var(--accent, #4c6ef5) 28%, var(--border-subtle));
   background: var(--control-bg-hover);
-  transform: translateY(-1px);
 }
 
 .ai-start-card:focus-visible {

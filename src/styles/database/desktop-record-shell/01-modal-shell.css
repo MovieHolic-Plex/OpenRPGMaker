@@ -26,29 +26,8 @@
     .db-utility-form,
     .db-common-events-workspace,
     .tileset-db-workspace
-  )) {
-    background: var(--db-studio-surface, var(--bg-raised, #FFFFFF));
-    border: 1px solid var(--db-studio-border-default, rgba(15,23,42,.10));
-    border-radius: 10px;
-    box-shadow: var(--db-studio-shadow-pop, 0 4px 16px rgba(15,23,42,.10));
-  }
-
-  .database-modal-window:has(:is(
-    .oprn-record-workspace,
-    .db-record-workspace,
-    .db-elements-classic,
-    .db-parity-form,
-    .db-system-form,
-    .db-terms-form,
-    .db-utility-form,
-    .db-common-events-workspace,
-    .tileset-db-workspace
   )) .database-modal-header {
-    background: var(--db-studio-surface, var(--bg-raised));
-    border-bottom: 1px solid var(--db-studio-border-default, rgba(15,23,42,.10));
     color: var(--db-studio-text-1, #0F172A);
-    min-height: 44px;
-    padding: 0 12px;
     position: sticky;
     top: 0;
     z-index: 3;
@@ -64,27 +43,8 @@
     .db-utility-form,
     .db-common-events-workspace,
     .tileset-db-workspace
-  )) .database-modal-header h2 {
-    color: var(--db-studio-text-1, #0F172A);
-    font: 600 14px/1.2 var(--font-ui);
-    text-shadow: none;
-  }
-
-  .database-modal-window:has(:is(
-    .oprn-record-workspace,
-    .db-record-workspace,
-    .db-elements-classic,
-    .db-parity-form,
-    .db-system-form,
-    .db-terms-form,
-    .db-utility-form,
-    .db-common-events-workspace,
-    .tileset-db-workspace
   )) .database-modal-body {
-    background: var(--bg-raised);
     display: grid;
-    grid-template-rows: auto auto minmax(0, 1fr);
-    overflow: hidden;
     padding: 0;
   }
 
@@ -99,15 +59,12 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) .db-tabs {
-    background: var(--bg-raised);
-    border-bottom: 1px solid var(--border-default);
     flex-wrap: nowrap;
     height: auto;
     margin: 0;
     max-height: none;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 3px 4px 0;
   }
 
   .database-modal-body:has(:is(
@@ -121,15 +78,10 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) .db-tab {
-    background: var(--bg-raised);
     border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
-    color: var(--text-primary);
     flex: 0 0 auto;
     font-size: 12px;
-    height: 26px;
     margin-right: 1px;
-    min-width: 46px;
-    padding: 0 4px;
   }
 
   .database-modal-body:has(:is(
@@ -143,12 +95,8 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) .db-tab.active {
-    background: linear-gradient(var(--accent), var(--accent));
-    border-bottom-color: var(--accent-border);
     border-color: var(--accent-border) var(--accent-border) var(--accent-border) var(--accent-border);
     box-shadow: none;
-    color: var(--text-1);
-    margin-bottom: -1px;
   }
 
   .database-modal-body:has(:is(
@@ -162,15 +110,10 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) .db-body {
-    background: var(--bg-raised);
     border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
     border-style: solid;
     border-width: 1px;
     height: auto;
-    margin: 0;
-    min-height: 0;
-    overflow: hidden;
-    padding: 10px;
   }
 
   .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) {

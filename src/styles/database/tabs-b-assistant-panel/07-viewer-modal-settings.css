@@ -347,12 +347,8 @@
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 2px;
 }
 .left-panel-stack[data-testid="left-palette-root"] {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
   overflow-anchor: none;
   position: relative;
   scrollbar-gutter: stable;
@@ -425,7 +421,6 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  font-size: 11px;
   min-height: 24px;
   padding: 2px 0;
   text-align: left;
@@ -443,17 +438,13 @@
   border: none;
   color: var(--text-3);
   cursor: pointer;
-  font-size: 11px;
   padding: 2px 0;
   text-align: left;
   width: 100%;
 }
 .ai-reasoning-body {
   color: var(--text-3);
-  font-size: 11px;
-  line-height: 1.5;
   margin-top: 4px;
-  max-height: 220px;
   overflow-y: auto;
   white-space: pre-wrap;
 }
@@ -469,8 +460,6 @@
 
 .ai-tool-activity-line {
   color: var(--text-2);
-  font-size: 11px;
-  line-height: 1.4;
 }
 .ai-tool-failure {
   color: var(--text-3);

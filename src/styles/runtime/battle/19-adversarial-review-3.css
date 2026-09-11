@@ -25,23 +25,18 @@
    스프라이트 머리를 가렸다. 한 줄(이름|바) 행으로 줄이고, 죽은 적 행은 걷어낸다. */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-panel {
   width: min(42%, 250px);
-  padding: 6px 12px;
 }
 /* 초기 구조의 이름/HP 2행을 한 줄 [이름|HP|바]로 눌러 같은 정보를 절반 높이에 담는다.
    이 리뷰 partial은 앞선 pokemon 레이아웃보다 뒤에서 로드되어 같은 특이성의 규칙을 이긴다. */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 24px 96px;
   grid-template-rows: auto;
   align-items: center;
   gap: 0 6px;
-  min-height: 0;
-  padding: 2px 2px;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-name {
   grid-column: 1;
   grid-row: 1;
-  font-size: 15px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -110,7 +105,6 @@
 }
 
 .battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command {
-  min-height: 44px;
   padding: 2px 8px;
 }
 

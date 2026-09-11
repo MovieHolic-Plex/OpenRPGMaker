@@ -7,10 +7,8 @@
 }
 
 .event-command-menu-icon {
-  height: 16px;
   justify-self: center;
   position: relative;
-  width: 16px;
 }
 
 .event-command-context-menu button:disabled .event-command-menu-icon {
@@ -148,21 +146,11 @@
   width: 13px;
 }
 
-.event-page-props {
-  display: grid;
-  gap: 6px;
-  min-height: 0;
-}
-
 .event-conditions-grid,
 .event-condition-row,
 .event-page-movement,
 .event-page-movement-basics {
   gap: 3px;
-}
-
-.event-conditions-grid {
-  display: grid;
 }
 
 /* 조건 칩 팔레트 — 종류는 늘 다 보이고, 켠 것만 아래 목록에 행으로 내려간다.
@@ -224,30 +212,11 @@
 }
 
 .event-editor-modal-body .event-condition-row {
-  align-items: center;
-  column-gap: 6px;
-  display: grid;
-  grid-template-columns: 14px 4.5rem minmax(0, 1fr) auto;
   justify-content: start;
-  min-height: 22px;
-  min-width: 0;
-  row-gap: 0;
 }
 
 .event-editor-modal-body .event-condition-control {
-  align-items: center;
-  display: grid;
   gap: 2px 4px;
-  min-width: 0;
-}
-
-.event-editor-modal-body .event-condition-control.record {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.event-editor-modal-body .event-condition-control.variable {
-  gap: 4px;
-  grid-template-columns: minmax(0, 1fr);
 }
 
 .event-condition-main {
@@ -256,27 +225,8 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
-.event-condition-id-picker {
-  display: grid;
-  gap: 2px;
-  grid-template-columns: minmax(0, 1fr) 22px;
-  min-width: 0;
-}
-
 .event-condition-threshold {
-  display: grid;
-  gap: 4px;
-  grid-template-columns: 64px 48px;
   justify-content: start;
-}
-
-.event-editor-modal-body .event-condition-control.timer {
-  grid-template-columns: 36px max-content 36px max-content;
-  justify-content: start;
-}
-
-.event-condition-time-unit {
-  font: 700 12px/16px "Malgun Gothic", sans-serif;
 }
 
 .event-editor-modal-body .event-condition-control input,
@@ -291,8 +241,6 @@
 
 .event-condition-id-picker .btn.small {
   font: 700 11px/16px "Malgun Gothic", sans-serif;
-  min-height: 20px;
-  min-width: 22px;
   padding-inline: 0;
 }
 
@@ -384,7 +332,6 @@
 .event-advanced-condition-add {
   display: grid;
   gap: 3px;
-  grid-template-columns: 98px 66px;
   margin-top: 3px;
 }
 
@@ -397,9 +344,6 @@
 
 .event-graphic-control {
   align-items: center;
-  display: grid;
-  gap: 6px 10px;
-  grid-template-columns: 58px minmax(0, 1fr);
   min-height: 66px;
 }
 
@@ -566,17 +510,11 @@
 .event-graphic-control .btn {
   align-self: start;
   justify-self: start;
-  min-height: 25px;
-  min-width: 84px;
   padding-inline: 12px;
 }
 
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] {
-  align-items: center;
-  justify-content: center;
   overflow: auto;
-  padding: 8px;
-  z-index: 145;
 }
 
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-subdialog-window.narrow {
@@ -587,44 +525,18 @@
   --event-rm-light: var(--border-strong);
   --event-rm-mid: var(--border-default);
   --event-rm-shadow: var(--border-subtle);
-  background: var(--event-rm-chrome);
   border-color: var(--event-rm-light) var(--event-rm-shadow) var(--event-rm-shadow) var(--event-rm-light);
   border-style: solid;
   border-width: 2px;
-  box-shadow: 2px 2px 0 var(--shadow-pop);
-  color: var(--event-rm-text);
-  font-family: var(--font-ui);
   width: min(628px, calc(100vw - 20px));
 }
 
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-subdialog-header {
-  align-items: center;
-  background: var(--event-rm-face);
   border-bottom: 1px solid var(--event-rm-mid);
-  min-height: 38px;
-  padding: 6px 8px;
-}
-
-.event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-subdialog-header h3 {
-  color: var(--event-rm-text);
-  font: 400 18px/24px Arial, sans-serif;
 }
 
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-subdialog-close {
   background: transparent;
-  border: 0;
-  box-shadow: none;
-  color: var(--event-rm-text);
-  font: 400 24px/24px Arial, sans-serif;
-  min-height: 26px;
-  min-width: 26px;
-  padding: 0;
-}
-
-.event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-subdialog-body {
-  display: block;
-  overflow: hidden;
-  padding: 12px;
 }
 
 .event-graphic-rm-picker {
@@ -637,9 +549,7 @@
   border-style: solid;
   border-width: 2px;
   display: grid;
-  gap: 8px;
   grid-template-columns: 270px minmax(0, 1fr);
-  padding: 8px;
 }
 
 .event-graphic-resource-list {
@@ -648,23 +558,17 @@
   border-style: solid;
   border-width: 2px;
   display: grid;
-  grid-auto-rows: 22px;
   max-height: 402px;
   overflow-y: auto;
-  padding: 0;
 }
 
 .event-graphic-resource-row {
   align-items: center;
   background: transparent;
   border: 0;
-  color: var(--event-rm-text);
   display: inline-grid;
-  font: 400 16px/20px Arial, sans-serif;
   gap: 5px;
   grid-template-columns: 16px minmax(0, 1fr);
-  min-height: 22px;
-  padding: 1px 3px;
   text-align: left;
   white-space: nowrap;
 }
@@ -676,7 +580,6 @@
 .event-graphic-resource-row:not(.disabled):hover,
 .event-graphic-resource-row.active {
   background: var(--accent);
-  color: var(--text-1);
 }
 
 .event-graphic-resource-icon {
@@ -718,20 +621,10 @@
   background-color: transparent;
   background-repeat: no-repeat;
   border: 2px solid transparent;
-  border-radius: 0;
   box-shadow: none;
   cursor: pointer;
   image-rendering: pixelated;
   padding: 0;
-}
-
-.event-graphic-preview-panel .npc-character-cell:hover {
-  border-color: var(--event-rm-light);
-}
-
-.event-graphic-preview-panel .npc-character-cell.active {
-  border-color: var(--event-rm-light);
-  box-shadow: 0 0 0 1px var(--event-rm-shadow);
 }
 
 .event-graphic-option-area {
@@ -748,22 +641,13 @@
   border-width: 2px;
   display: grid;
   gap: 4px 8px;
-  margin: 0;
   min-height: 82px;
   padding: 8px 8px 7px;
 }
 
-.event-graphic-radio-group legend {
-  color: var(--event-rm-text);
-  font: 400 18px/20px Arial, sans-serif;
-  padding: 0 4px;
-}
-
 .event-graphic-radio-option {
   align-items: center;
-  color: var(--event-rm-text);
   display: inline-flex;
-  font: 400 16px/20px Arial, sans-serif;
   gap: 5px;
   min-height: 20px;
   white-space: nowrap;
@@ -822,9 +706,7 @@
   border-color: var(--event-rm-mid) var(--event-rm-light) var(--event-rm-light) var(--event-rm-mid);
   border-style: solid;
   border-width: 2px;
-  font: 400 14px/18px "Malgun Gothic", sans-serif;
   height: 24px;
-  padding: 1px 4px;
   width: 100%;
 }
 
@@ -837,22 +719,11 @@
   image-rendering: pixelated;
 }
 
-.event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-graphic-picker-footer {
-  display: flex;
-  gap: 10px;
-  justify-content: end;
-}
-
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-graphic-picker-footer .btn {
   background: var(--event-rm-field);
   border-color: var(--event-rm-light) var(--event-rm-shadow) var(--event-rm-shadow) var(--event-rm-light);
   border-style: solid;
   border-width: 2px;
-  border-radius: 0;
-  box-shadow: none;
-  color: var(--event-rm-text);
-  font: 400 16px/22px Arial, sans-serif;
-  min-height: 32px;
   min-width: 132px;
 }
 
@@ -1183,15 +1054,7 @@
   white-space: nowrap;
 }
 
-.event-priority-block {
-  display: grid;
-  gap: 5px;
-}
-
 .event-overlap-label {
-  align-items: center;
-  display: inline-flex;
-  gap: 5px;
   min-height: 20px;
 }
 
@@ -1207,39 +1070,8 @@
 }
 
 .event-editor-modal-footer {
-  align-items: center;
   background: var(--event-rm-chrome);
-  border-top: 1px solid var(--event-rm-mid);
-  display: flex;
-  gap: 12px;
   justify-content: end;
-  padding: 7px 10px;
-}
-
-.event-editor-footer-button {
-  min-height: 25px;
-  min-width: 112px;
-}
-
-.event-editor-modal-resize-handle {
-  bottom: 2px;
-  cursor: nwse-resize;
-  height: 16px;
-  position: absolute;
-  right: 2px;
-  touch-action: none;
-  width: 16px;
-  z-index: 2;
-}
-
-.event-editor-modal-resize-handle::before {
-  background:
-    linear-gradient(135deg, transparent 0 48%, var(--event-rm-mid) 48% 52%, transparent 52%),
-    linear-gradient(135deg, transparent 0 64%, var(--event-rm-mid) 64% 68%, transparent 68%),
-    linear-gradient(135deg, transparent 0 80%, var(--event-rm-mid) 80% 84%, transparent 84%);
-  content: "";
-  inset: 2px;
-  position: absolute;
 }
 
 @media (max-width: 1488px) {

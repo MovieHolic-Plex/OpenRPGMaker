@@ -130,16 +130,11 @@
 }
 
 .event-command-picker-tab {
-  align-items: center;
-  display: inline-flex;
-  gap: 5px;
-  justify-content: center;
   min-height: 34px;
   padding-inline: 16px;
 }
 
 .event-command-picker-tab::before {
-  content: attr(data-glyph);
   font-size: 11px;
   opacity: 0.75;
 }
@@ -160,7 +155,6 @@
   background: color-mix(in srgb, var(--cmdcat, var(--text-dim)) 18%, transparent);
   border-radius: 4px;
   color: var(--cmdcat, var(--text-dim, currentColor));
-  content: attr(data-glyph);
   display: inline-flex;
   flex: 0 0 auto;
   font-size: 10px;
@@ -181,9 +175,7 @@
 .event-command-picker-command[data-category="modern"] { --cmdcat: var(--cmdcat-modern); }
 
 .event-command-picker-command-icon {
-  align-items: center;
   color: var(--cmdcat, var(--text-dim, currentColor));
-  display: inline-flex;
   flex: 0 0 auto;
   font-size: 10px;
   height: 16px;
@@ -191,10 +183,6 @@
   margin-right: 7px;
   opacity: 0.9;
   width: 16px;
-}
-
-.event-command-picker-command-icon::before {
-  content: attr(data-glyph);
 }
 
 .event-command-picker-page-chip {
@@ -379,8 +367,6 @@
 
 .event-command-text-editor {
   align-content: start;
-  display: grid;
-  gap: 12px;
   grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   width: 100%;

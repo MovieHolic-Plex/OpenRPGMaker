@@ -1,17 +1,10 @@
 ﻿.event-editor-name-field {
-  background: var(--event-rm-face);
   border-color: var(--event-rm-light) var(--event-rm-mid) var(--event-rm-mid) var(--event-rm-light);
   border-style: solid;
   border-width: 1px;
-  display: grid;
-  gap: 1px;
-  min-height: 46px;
-  padding: 2px 9px 5px;
 }
 
 .event-editor-name-field span {
-  color: var(--event-rm-text);
-  font: 700 18px/18px "Malgun Gothic", sans-serif;
   text-transform: none;
 }
 
@@ -19,14 +12,9 @@
 .event-editor-modal-body input,
 .event-editor-modal-body select,
 .event-editor-modal-body textarea {
-  background: var(--event-rm-field);
   border-color: var(--event-rm-mid) var(--event-rm-light) var(--event-rm-light) var(--event-rm-mid);
   border-style: solid;
   border-width: 2px;
-  box-shadow: none;
-  color: var(--event-rm-text);
-  font: 400 12px/16px "Malgun Gothic", sans-serif;
-  min-height: 20px;
 }
 
 .event-editor-modal-body input:disabled,
@@ -37,18 +25,13 @@
 }
 
 .event-page-tabs {
-  display: grid;
   justify-content: start;
-  min-height: 44px;
   min-width: 0;
 }
 
 .event-page-action-buttons {
   align-items: stretch;
-  display: grid;
-  gap: 6px;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  justify-content: start;
   max-width: 100%;
 }
 @media (max-width: 640px) {
@@ -61,22 +44,15 @@
 .event-page-action-buttons .btn,
 .event-page-number-tabs .btn,
 .event-editor-modal-footer .btn {
-  background: var(--event-rm-face);
   border-color: var(--event-rm-light) var(--event-rm-mid) var(--event-rm-mid) var(--event-rm-light);
   border-style: solid;
   border-width: 2px;
-  box-shadow: inset -1px -1px 0 var(--event-rm-shadow), inset 1px 1px 0 var(--event-rm-light);
-  color: var(--event-rm-text);
-  font: 700 12px/17px "Malgun Gothic", sans-serif;
-  min-height: 27px;
   overflow: hidden;
-  padding: 2px 8px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .event-page-action-buttons .btn:disabled {
-  color: var(--event-rm-disabled);
   text-shadow: 1px 1px 0 var(--event-rm-light);
 }
 
@@ -88,38 +64,22 @@
 }
 
 .event-page-number-tabs {
-  align-items: end;
-  display: flex;
-  margin: -2px 0 -1px;
-  min-height: 30px;
   padding-left: 0;
 }
 
 .event-page-number-tabs .btn {
   border-bottom-color: var(--event-rm-chrome);
   font-weight: 400;
-  min-height: 30px;
-  min-width: 56px;
-}
-
-.event-page-number-tabs .btn.active {
-  background: var(--event-rm-chrome);
 }
 
 
 .event-editor-workbench {
   --event-editor-settings-track: 540px;
-  display: grid;
-  gap: 0;
-  grid-template-columns: var(--event-editor-settings-track) 8px minmax(620px, 1fr);
-  min-height: 0;
 }
 
 .event-editor-settings-column,
 .event-editor-commands-column {
-  background: var(--event-rm-chrome);
   border: 0;
-  display: grid;
   min-height: 0;
   padding: 0;
 }
@@ -127,29 +87,7 @@
 .event-editor-settings-column {
   align-content: start;
   grid-template-rows: auto auto;
-  overflow: auto;
   padding-right: 2px;
-}
-
-.event-editor-commands-column {
-  grid-template-rows: minmax(0, 1fr);
-  overflow: hidden;
-}
-
-.event-editor-column-resizer {
-  cursor: col-resize;
-  min-height: 0;
-  position: relative;
-  touch-action: none;
-}
-
-.event-editor-column-resizer::before {
-  background:
-    linear-gradient(90deg, var(--event-rm-light) 0 1px, transparent 1px 3px, var(--event-rm-mid) 3px 4px),
-    var(--event-rm-chrome);
-  content: "";
-  inset: 0 2px;
-  position: absolute;
 }
 
 .event-editor-column-resizer:hover::before,
@@ -157,10 +95,6 @@
   background:
     linear-gradient(90deg, var(--event-rm-light) 0 1px, transparent 1px 3px, var(--accent) 3px 4px),
     var(--event-rm-chrome);
-}
-
-.event-editor-modal-backdrop {
-  overflow: auto;
 }
 
 .event-editor-modal-window {
@@ -202,65 +136,29 @@
   border-color: var(--event-rm-mid) var(--event-rm-light) var(--event-rm-light) var(--event-rm-mid);
   border-style: solid;
   border-width: 1px;
-  margin: 0;
-  min-width: 0;
-  padding: 10px 8px 7px;
-}
-
-.event-oprn-fieldset legend {
-  background: var(--event-rm-chrome);
-  color: var(--event-rm-text);
-  font: 700 12px/1 "Malgun Gothic", sans-serif;
-  padding: 0 3px;
-}
-
-.event-contents-fieldset {
-  display: grid;
-  grid-template-rows: minmax(0, 1fr);
-  min-height: 0;
 }
 
 .event-contents-fieldset .cmd-list {
-  background: var(--event-rm-field);
   border-color: var(--event-rm-mid) var(--event-rm-light) var(--event-rm-light) var(--event-rm-mid);
   border-style: solid;
   border-width: 2px;
-  display: block;
-  height: 100%;
   margin: 0;
   min-height: 0;
-  overflow: auto;
-  padding: 0;
 }
 
 .event-contents-fieldset .cmd-item {
   background: transparent;
-  border: 0;
   border-radius: 0;
-  margin: 0;
-  padding: 0;
 }
 
 .event-contents-fieldset .cmd-head,
 .event-contents-fieldset .cmd-line-marker,
 .event-contents-fieldset .cmd-empty-line {
-  align-items: center;
   background: transparent;
-  border: 0;
-  border-radius: 0;
   box-shadow: none;
-  color: var(--event-rm-text, var(--text-1));
-  display: flex;
-  font: 400 16px/21px "Malgun Gothic", sans-serif;
-  gap: 2px;
-  min-height: 21px;
   min-width: 0;
-  overflow: hidden;
   /* modern.css 스레드 레일(28px)과 동일 step — 이 파일이 먼저 로드돼도 깊이가 안 줄어들게. */
-  padding: 0 6px 0 calc(10px + (var(--cmd-depth, 0) * 28px));
   text-align: left;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   width: 100%;
 }
 
@@ -320,25 +218,8 @@
   white-space: nowrap;
 }
 
-.event-contents-fieldset .cmd-prefix {
-  color: var(--oprn-command-blue, var(--accent));
-  flex: 0 0 auto;
-}
-
-.event-contents-fieldset .cmd-kind {
-  color: var(--event-rm-text, var(--text-1));
-}
-
 .event-contents-fieldset .cmd-summary-token {
   color: inherit;
-}
-
-.event-contents-fieldset .cmd-summary-token.command {
-  color: var(--oprn-command-blue, var(--accent));
-}
-
-.event-contents-fieldset .cmd-summary-token.value {
-  color: var(--oprn-command-teal, var(--success));
 }
 
 /* 연산 토큰 — 증가/감소/대입이 색으로 바로 읽히게. */
@@ -419,29 +300,12 @@
 }
 
 /* 분기 마커 라인 기본: 본 커맨드와 구분되는 이탤릭 보조 텍스트. */
-.event-contents-fieldset .cmd-line-marker {
-  color: var(--text-2);
-  font-style: italic;
-}
-
-.event-contents-fieldset .cmd-empty-line {
-  color: var(--oprn-command-blue, var(--accent));
-}
 
 /* fork(if 분기) 마커는 액센트 계열 — '@>' 프리픽스와 같은 톤으로 정렬. */
-.event-contents-fieldset .cmd-line-marker.cmd-marker-fork {
-  color: var(--oprn-command-blue, var(--accent));
-}
 
 /* 선택지 마커는 fork 와 구분되는 웜 톤. */
-.event-contents-fieldset .cmd-line-marker.cmd-marker-choices {
-  color: var(--warning);
-}
 
 /* 상점 분기 마커. */
-.event-contents-fieldset .cmd-line-marker.cmd-marker-shop {
-  color: var(--success);
-}
 
 /* 선택 행에서도 프리픽스/토큰/마커의 고유색을 그대로 유지한다
    (--accent-muted 반투명 배경 위에서 충분히 읽히므로 색 반전이 필요 없다). */
@@ -453,18 +317,13 @@
 }
 
 .event-contents-fieldset .cmd-item.editing .cmd-inline-editor {
-  background: var(--event-rm-chrome);
   border-color: var(--event-rm-mid) var(--event-rm-light) var(--event-rm-light) var(--event-rm-mid);
   border-style: solid;
   border-width: 1px;
-  display: grid;
-  margin: 0 6px 4px calc(6px + (var(--cmd-depth, 0) * 18px));
-  padding: 6px;
 }
 
 .event-command-edit-dialog {
   display: grid;
-  gap: 10px;
   min-width: 0;
 }
 
@@ -473,15 +332,6 @@
   border-color: var(--event-rm-mid) var(--event-rm-light) var(--event-rm-light) var(--event-rm-mid);
   border-style: solid;
   border-width: 1px;
-  display: grid;
-  gap: 8px;
-  min-height: 170px;
-  padding: 10px;
-}
-
-.event-command-edit-body > div {
-  display: grid;
-  gap: 8px;
 }
 
 .event-command-edit-body textarea {
@@ -495,25 +345,12 @@
   max-width: 100%;
 }
 
-.event-command-edit-actions {
-  display: flex;
-  gap: 6px;
-  justify-content: end;
-}
-
 .event-command-edit-action {
   background: var(--surface-button);
   border-color: var(--event-rm-light) var(--event-rm-shadow) var(--event-rm-shadow) var(--event-rm-light);
   border-style: solid;
   border-width: 1px;
-  color: var(--event-rm-text);
-  font: 700 12px/18px "Malgun Gothic", sans-serif;
   min-width: 76px;
-  padding: 3px 12px;
-}
-
-.event-command-edit-action.primary {
-  color: var(--accent);
 }
 
 .event-command-edit-action:active {
@@ -522,7 +359,6 @@
 
 .event-command-choices-inline {
   display: grid;
-  gap: 12px;
   min-width: 0;
 }
 
@@ -697,7 +533,6 @@
 
 .event-command-choice-branch .cmd-list {
   min-height: 24px;
-  min-width: 0;
 }
 
 .event-command-choice-branch-actions {
@@ -783,8 +618,6 @@
 }
 
 .m2-command-body {
-  display: grid;
-  gap: 12px;
   min-width: 0;
 }
 
@@ -1040,46 +873,9 @@
   border-color: var(--event-rm-light, var(--border-subtle)) var(--event-rm-shadow, rgba(42,37,33,.20)) var(--event-rm-shadow, rgba(42,37,33,.20)) var(--event-rm-light, var(--border-subtle));
   border-style: solid;
   border-width: 1px;
-  box-shadow: 2px 2px 2px var(--shadow-pop);
-  display: grid;
-  font: 400 14px/20px "Malgun Gothic", sans-serif;
-  min-width: 214px;
-  padding: 2px;
-  position: fixed;
-  z-index: var(--z-popover-top);
-}
-
-.event-command-context-menu button {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  color: var(--event-rm-text, var(--text-1));
-  display: grid;
-  font: inherit;
-  grid-template-columns: 22px minmax(78px, 1fr) 64px;
-  min-height: 24px;
-  padding: 1px 8px 1px 2px;
-  text-align: left;
-  white-space: nowrap;
-}
-
-.event-command-context-menu button:hover,
-.event-command-context-menu button:focus {
-  background: var(--oprn-command-selected, var(--accent));
-  color: var(--text-inverse, var(--text-1));
-  outline: 0;
-}
-
-.event-command-context-menu button:disabled {
-  background: transparent;
-  color: var(--event-rm-disabled, var(--text-2));
 }
 
 .event-command-menu-label,
 .event-command-menu-shortcut {
   line-height: 20px;
-}
-
-.event-command-menu-shortcut {
-  justify-self: end;
 }

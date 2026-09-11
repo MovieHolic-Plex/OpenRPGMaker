@@ -104,7 +104,6 @@
 .editor-layout .canvas-area {
   /* flex center 금지 — 캔버스가 가용 영역을 가득 채워야 한다 */
   align-items: stretch;
-  background: var(--bg-canvas);
   display: block;
   justify-content: stretch;
   min-height: 0;
@@ -113,39 +112,22 @@
 }
 
 .editor-layout .canvas-area .phaser-container {
-  background: var(--bg-canvas);
-  border: 0;
-  box-shadow: none;
   /* 스크롤 셸을 꽉 채운다. 고정 1024×768은 작은 중앙 영역 + 가로스크롤을 만든다. */
-  box-sizing: border-box;
-  display: block;
-  height: 100%;
-  min-height: 100%;
-  min-width: 100%;
-  overflow: hidden;
-  position: relative;
-  width: 100%;
 }
 
 .editor-layout .canvas-area .phaser-container > canvas {
   /* 버퍼 크기와 별도로 CSS가 호스트를 채우게 — fitCanvas가 버퍼도 맞춤 */
-  display: block;
-  height: 100% !important;
   max-height: 100%;
   max-width: 100%;
-  width: 100% !important;
 }
 
 .editor-canvas-scroll-shell {
   /* 크롬 높이: 상태바 / 툴바 예약. Figma 셸은 figma-editor에서 덮어씀. */
-  bottom: var(--editor-canvas-chrome-bottom, 22px);
   height: auto;
   left: 0;
   /* DOM 스크롤 대신 카메라 팬 — 스크롤바 거터로 영역이 줄어들지 않게 */
-  overflow: hidden;
   position: absolute;
   right: 0;
-  top: var(--editor-canvas-chrome-top, 30px);
   width: auto;
 }
 
@@ -172,8 +154,6 @@
 
 .editor-statusbar {
   align-items: center;
-  background: var(--bg-panel);
-  border-top: 1px solid var(--border-subtle);
   bottom: 0;
   color: var(--text);
   display: flex;
@@ -424,19 +404,9 @@
 }
 
 .canvas-toolbar {
-  align-items: center;
   backdrop-filter: blur(10px);
-  background: var(--bg-glass);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-m);
-  box-shadow: var(--shadow-pop);
   display: flex;
-  gap: 3px;
-  left: 50%;
-  padding: 3px;
   position: absolute;
-  top: var(--space-1);
-  transform: translateX(-50%);
   z-index: 20;
 }
 
@@ -654,13 +624,7 @@
 }
 
 .canvas-toolbar-label {
-  color: var(--text);
   font: 600 11px/1 var(--font-ui);
-  padding: 0 var(--space-1);
-}
-
-.zoom-button {
-  min-width: 30px;
 }
 
 .zoom-button.active,
@@ -670,22 +634,10 @@
   color: var(--text-primary);
 }
 
-.panel-section {
-  margin-bottom: 2px;
-}
-
 .panel-section h3 {
   letter-spacing: 0;
   margin: 0 0 2px 0;
   text-transform: none;
-}
-
-.left-panel-stack .panel-section h3 {
-  color: var(--text);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 16px;
-  padding: 0 2px;
 }
 
 .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1) h3,
