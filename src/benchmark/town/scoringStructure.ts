@@ -35,7 +35,7 @@ import {
 import { autotileNeighborMask, autotileVariantForMask } from "@/project/defaults/autotileEngine";
 import { DEFAULT_ROAD_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import {
-  AFRAME_GRID,
+  ROOF_GRID,
   DOOR_GRID,
   FENCE_GRID,
   ROAD_GRID,
@@ -511,62 +511,62 @@ function scoreHouseShell(layers: Layers, reference: PlacementReference, groundTr
 
 // ── 6번 지붕 대각 ─────────────────────────────────────────────────────────
 
-function scoreAframeRoof(layers: Layers, reference: PlacementReference, groundTruth: TownGroundTruth): AxisScore {
-  const plan = AFRAME_GRID.house;
+function scoreRoofDiagonal(layers: Layers, reference: PlacementReference, groundTruth: TownGroundTruth): AxisScore {
+  const plan = ROOF_GRID.house;
   const bands = houseBands(plan);
   const families = kitFamilies(plan);
-  const pyramidRows = Math.floor((plan.width - 1) / 2);
+  const roof = ROOF_GRID.house;
 
-  // 피라미드: 행마다 좌우 1칸씩 안으로 — 채워진 칸의 좌·우 끝이 정확히 그 자리인가.
-  let stepRows = 0;
-  let capRows = 0;
-  let apexRows = 0;
-  for (let row = 0; row < pyramidRows; row += 1) {
-    const y = bands.top + row;
-    const inset = pyramidRows - row;
-    const expectedLeft = bands.left + inset;
-    const expectedRight = bands.right - inset;
-    let actualLeft = -1;
-    let actualRight = -1;
-    for (let x = bands.left; x <= bands.right; x += 1) {
-      if (!filledAt(layers, x, y)) continue;
-      if (actualLeft < 0) actualLeft = x;
-      actualRight = x;
-    }
-    if (actualLeft === expectedLeft && actualRight === expectedRight) stepRows += 1;
-
-    if (expectedLeft === expectedRight) {
-      // 꼭짓점 행: 불투명 한 칸이므로 하위 레이어에 있어야 한다.
-      const index = y * layers.width + expectedLeft;
-      if ((layers.lower[index] ?? EMPTY_CELL) !== EMPTY_CELL) apexRows += 1;
-      continue;
-    }
-    // 사선 캡은 투명 조각이므로 상위 레이어에 있어야 한다.
-    const leftIndex = y * layers.width + expectedLeft;
-    const rightIndex = y * layers.width + expectedRight;
-    const leftCap = (layers.upper[leftIndex] ?? EMPTY_CELL) !== EMPTY_CELL;
-    const rightCap = (layers.upper[rightIndex] ?? EMPTY_CELL) !== EMPTY_CELL;
-    if (leftCap && rightCap) capRows += 1;
-  }
-  const apexRowCount = pyramidRows > 0 && bands.left + pyramidRows === bands.right - pyramidRows ? 1 : 0;
-  const capRowCount = pyramidRows - apexRowCount;
-
-  // 처마 행은 벽과 같은 폭으로 꽉 차 있어야 한다.
+  // 표준 사선 지붕의 문법: 용마루 행(인셋 폭) → 몸통 행(인셋, 좌우 트림 열) → 처마 행(벽 폭).
+  // 인셋 폭은 벽보다 좌우 1칸 좁다 — 그 바깥 열이 트림이고, 용마루/처마 모서리에는
+  // 투명 캡이 얹힌다(bright 킷의 국소 규칙, houseKit.ts).
+  const insetLeft = bands.left + 1;
+  const insetRight = bands.right - 1;
+  const ridgeY = bands.top;
   const eavesY = bands.wallTopY - 1;
+
+  // 1) 용마루 행은 인셋 폭으로 꽉 차 있는가(불투명 → 하위).
+  let ridgeFilled = 0;
+  let ridgeOnLower = 0;
+  for (let x = insetLeft; x <= insetRight; x += 1) {
+    const index = ridgeY * layers.width + x;
+    if (filledAt(layers, x, ridgeY)) ridgeFilled += 1;
+    if ((layers.lower[index] ?? EMPTY_CELL) !== EMPTY_CELL) ridgeOnLower += 1;
+  }
+  const ridgeWidth = insetRight - insetLeft + 1;
+  const ridgeFull = ratio(ridgeFilled, ridgeWidth);
+  const ridgeOpaque = ratio(ridgeOnLower, ridgeWidth);
+
+  // 2) 용마루 모서리 캡은 투명 → 상위 레이어에 있어야 한다.
+  const capLeft = (layers.upper[ridgeY * layers.width + bands.left] ?? EMPTY_CELL) !== EMPTY_CELL ? 1 : 0;
+  const capRight = (layers.upper[ridgeY * layers.width + bands.right] ?? EMPTY_CELL) !== EMPTY_CELL ? 1 : 0;
+  const ridgeCaps = ratio(capLeft + capRight, 2);
+
+  // 3) 몸통 행: 좌우 바깥 열이 트림(하위, 벽과 다른 타일), 가운데는 몸통(하위)으로 채워진다.
+  const bodyRows = Math.max(1, eavesY - ridgeY - 1);
+  let bodyTrimmed = 0;
+  for (let y = ridgeY + 1; y < eavesY; y += 1) {
+    const leftTile = layers.lower[y * layers.width + bands.left] ?? EMPTY_CELL;
+    const rightTile = layers.lower[y * layers.width + bands.right] ?? EMPTY_CELL;
+    let middle = 0;
+    for (let x = insetLeft; x <= insetRight; x += 1) if (filledAt(layers, x, y)) middle += 1;
+    const trimsDiffer = leftTile !== EMPTY_CELL && rightTile !== EMPTY_CELL && leftTile !== rightTile;
+    if (trimsDiffer && middle >= ridgeWidth) bodyTrimmed += 1;
+  }
+  const bodyTrim = ratio(bodyTrimmed, bodyRows);
+
+  // 4) 처마 행은 벽과 같은 폭으로 꽉 차 있어야 한다.
   let eavesFilled = 0;
   for (let x = bands.left; x <= bands.right; x += 1) if (filledAt(layers, x, eavesY)) eavesFilled += 1;
+  const eavesFullWidth = ratio(eavesFilled, plan.width);
 
   const wall = wallBandChecks(layers, bands, families, groundTruth);
   const discipline = layerDiscipline(layers, groundTruth);
-  const stepInward = ratio(stepRows, pyramidRows);
-  const capsOnUpper = ratio(capRows, capRowCount);
-  const apexOnLower = ratio(apexRows, apexRowCount);
-  const eavesFullWidth = ratio(eavesFilled, plan.width);
   const outside = outsideClean(layers, [bands]);
   const nineSlice = nineSliceRows(layers, bands);
   const palette = paletteClean(layers, houseKitPalette(plan.kitId));
   const structural = combine(
-    [stepInward, capsOnUpper, apexOnLower, eavesFullWidth, wall.isWall, wall.solid, nineSlice],
+    [ridgeFull, ridgeOpaque, ridgeCaps, bodyTrim, eavesFullWidth, wall.isWall, wall.solid, nineSlice],
     [outside, discipline.score, palette],
   );
   const match = identity(reference, layers);
@@ -577,9 +577,10 @@ function scoreAframeRoof(layers: Layers, reference: PlacementReference, groundTr
     detail: Object.freeze({
       identity: match.score,
       structural,
-      stepInward,
-      diagonalCapsOnUpper: capsOnUpper,
-      apexOnLower,
+      ridgeFull,
+      ridgeOpaque,
+      ridgeDiagonalCapsOnUpper: ridgeCaps,
+      bodyTrimRows: bodyTrim,
       eavesFullWidth,
       outsideClean: outside,
       layerDiscipline: discipline.score,
@@ -587,7 +588,6 @@ function scoreAframeRoof(layers: Layers, reference: PlacementReference, groundTr
       wallBandSolid: wall.solid,
       nineSlice,
       paletteClean: palette,
-      pyramidRows,
     }),
   });
 }
@@ -929,7 +929,7 @@ export function scoreTownPlacement(input: {
     treeGrid: "layer",
     roadGrid: "road",
     wallGrid: "wallOutline",
-    aframeGrid: "roofDiagonal",
+    roofGrid: "roofDiagonal",
     doorGrid: "door",
     fenceGrid: "fenceEnd",
     villageGrid: "village",
@@ -954,8 +954,8 @@ export function scoreTownPlacement(input: {
       return scoreRoad(layers, reference, groundTruth);
     case "wallGrid":
       return scoreHouseShell(layers, reference, groundTruth);
-    case "aframeGrid":
-      return scoreAframeRoof(layers, reference, groundTruth);
+    case "roofGrid":
+      return scoreRoofDiagonal(layers, reference, groundTruth);
     case "doorGrid":
       return scoreDoor(layers, reference, groundTruth);
     case "fenceGrid":

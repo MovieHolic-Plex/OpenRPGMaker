@@ -224,7 +224,7 @@ const KIT_SPECS: {
   { kitId: "amber-wood", x: 32, y: 2, ownerName: "호박 목조", chimney: true, fence: true },
   { kitId: "slate-wood", x: 2, y: 15, ownerName: "청회 목조", fence: true },
   { kitId: "timber-hall", x: 17, y: 15, ownerName: "목골 회관", chimney: true, banner: true },
-  { kitId: "aframe-stone", x: 32, y: 15, ownerName: "석조 저택", chimney: true, fence: true, banner: true },
+  { kitId: "blue-stone", x: 32, y: 15, ownerName: "석조 저택", chimney: true, fence: true, banner: true },
 ];
 const kitDoors: Record<string, { x: number; y: number }> = {};
   for (const spec of KIT_SPECS) {
@@ -256,7 +256,7 @@ const INTERIOR_SETS: {
   id: string; name: string; seed: number;
   exterior: Record<string, unknown>; returnKit: string;
 }[] = [
-  { id: "map_sc_int_manor", name: "실내 · 대저택", seed: 20, exterior: { program: "manor", stories: 2, kitId: "aframe-stone" }, returnKit: "aframe-stone" },
+  { id: "map_sc_int_manor", name: "실내 · 대저택", seed: 20, exterior: { program: "manor", stories: 2, kitId: "blue-stone" }, returnKit: "blue-stone" },
   { id: "map_sc_int_cottage_l", name: "실내 · L형 민가", seed: 5, exterior: { program: "dwelling", stories: 1, templateId: "cottage-l" }, returnKit: "blue-stone" },
   { id: "map_sc_int_house2f", name: "실내 · 2층 민가", seed: 8, exterior: { program: "dwelling", stories: 2, kitId: "amber-wood" }, returnKit: "amber-wood" },
   { id: "map_sc_int_inn", name: "실내 · 여관", seed: 16, exterior: { program: "inn", stories: 2, kitId: "timber-hall" }, returnKit: "timber-hall" },

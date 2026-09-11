@@ -152,7 +152,7 @@ type ShapeResolution = {
 /**
  * 형태 어휘 해석. templateId 가 있으면 wings[0] 을 앵커로 카탈로그 날개를 전개하고,
  * 그 템플릿이 강제하는 킷·층수·낮은벽·옥상데크를 인자보다 우선 적용한다
- * (aframe 은 h 가 폭에 종속, rooftop-deck 은 파랑 평지붕 전용 — 어기면 시공이 깨진다).
+ * (rooftop-deck 은 파랑 평지붕 전용 — 어기면 시공이 깨진다).
  */
 function parseShape(
   record: BoundaryRecord,
@@ -210,17 +210,23 @@ function parseWings(values: readonly unknown[], scope: string): readonly HouseWi
   return values.map((value, index) => {
     const wingScope = `${scope}.wings[${index}]`;
     const wing = requireRecord(value, wingScope);
-    rejectUnknownKeys(wing, ["x", "y", "w", "h"], wingScope);
+    rejectUnknownKeys(wing, ["x", "y", "w", "h", "stories"], wingScope);
     const x = requiredInteger(wing, "x", wingScope);
     const y = requiredInteger(wing, "y", wingScope);
     const w = requiredInteger(wing, "w", wingScope);
     const h = requiredInteger(wing, "h", wingScope);
+    // 날개별 층수(계단식 집). 생략하면 계획 전체의 stories 를 쓴다.
+    const wingStories = optionalInteger(wing, "stories", wingScope);
+    if (wingStories !== undefined && wingStories !== 1 && wingStories !== 2 && wingStories !== 3) {
+      throw new ToolError(`${wingScope}.stories must be 1, 2 or 3.`, { code: "invalid-args" });
+    }
     // LLM이 최소 크기를 어기는 경우가 잦으므로 클램프로 자동 보정 (에러→재시도 왕복 제거).
     return {
       x: Math.max(0, x),
       y: Math.max(0, y),
       w: Math.max(3, w),
       h: Math.max(5, h),
+      ...(wingStories === undefined ? {} : { stories: wingStories as 1 | 2 | 3 }),
     };
   });
 }

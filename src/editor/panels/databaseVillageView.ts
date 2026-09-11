@@ -547,14 +547,12 @@ function templateBasicFields(
 /**
  * 층수 카드용 미리보기 레코드.
  * 보통은 8×9 한 날개(1·2·3층 열 최소 5/7/9 를 모두 통과)에 지금 킷을 찍는다.
- * A자 킷은 높이가 폭에 묶여 8×9 스탬프가 거절되므로, 그 레코드의 날개를 그대로 쓴다.
  */
 function storiesCardRecord(
   record: VillageHouseTemplateRecord,
   stories: 1 | 2 | 3,
   kitId: HouseKitId,
 ): VillageHouseTemplateRecord {
-  if (kitId === "aframe-stone") return { ...record, stories, kitId };
   return {
     id: record.id,
     name: record.name,
@@ -1562,7 +1560,13 @@ function presetTemplateWhitelist(
               ...(template.lowWall ? { lowWall: true } : {}),
               ...(template.kitId ? { kitId: template.kitId } : record.kitMix && record.kitMix !== "mixed" ? { kitId: record.kitMix } : {}),
               ...(template.roofDeck ? { roofDeck: true } : {}),
-              wings: template.wings.map((wing) => ({ x: wing.x, y: wing.y, w: wing.w, h: wing.h })),
+              wings: template.wings.map((wing) => ({
+                x: wing.x,
+                y: wing.y,
+                w: wing.w,
+                h: wing.h,
+                ...(wing.stories === undefined ? {} : { stories: wing.stories }),
+              })),
             }, project, "card", {
               testid: `db-village-preset-template-${template.id}-shot`,
               label: `${template.name} 집 그림`,

@@ -106,7 +106,7 @@ describe("integrated village production surface", () => {
     { size: 50, seed: 11, kitId: "amber-wood", templateId: "annex" },
     { size: 50, seed: 13, kitId: "slate-wood", templateId: "rect-2f" },
     { size: 50, seed: 15, kitId: "timber-hall", templateId: "rect-large" },
-    { size: 50, seed: 17, kitId: "aframe-stone", templateId: "aframe-mid" },
+    { size: 50, seed: 17, kitId: "blue-stone", templateId: "z-offset" },
     { size: 100, seed: 41, kitId: "blue-stone", templateId: "rooftop-deck" },
   ])("seals $kitId/$templateId on $size snow map, reloads and accepts useful fill/forest outside", ({ size, seed, kitId, templateId }) => {
     const ctx = { project: createExistingProject(size) };

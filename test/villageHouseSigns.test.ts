@@ -91,7 +91,7 @@ describe("house-owned village signs", () => {
     // Given real kit facades, including minimum-width and tall houses with windows.
     const map = createExistingProject().maps.map_existing;
     const wallRows = 2 * stories + 1;
-    const bbox = { x: 5, y: 5, w, h: wallRows + (kitId === "aframe-stone" ? Math.floor((w - 1) / 2) + 1 : 3) };
+    const bbox = { x: 5, y: 5, w, h: wallRows + 3 };
     const stamped = stampFootprintHouseKit(map, { kitId, stories, wings: [bbox] });
     expect(stamped.ok).toBe(true);
     if (!stamped.doorAt) throw new Error("Fixture house has no door");

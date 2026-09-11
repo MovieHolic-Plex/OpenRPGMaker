@@ -38,7 +38,7 @@ import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCo
 import type { AutotileGroup, GameMap, PassFlag, TilesetDef } from "@/project/types";
 import { digestOf } from "../interior/hash";
 import {
-  AFRAME_GRID,
+  ROOF_GRID,
   AUTOTILE_EXPECTED_ROLE_COUNTS,
   AUTOTILE_SHAPE_HEIGHT,
   AUTOTILE_SHAPE_WIDTH,
@@ -434,22 +434,19 @@ function shellHousePlacement(): { readonly reference: PlacementReference; readon
   };
 }
 
-function aframePlacement(): PlacementReference {
-  const { width, height, house } = AFRAME_GRID;
-  if (house.width % 2 === 0) {
-    throw new Error("town groundTruth: aframe 지붕은 폭이 홀수여야 꼭짓점(374)이 생긴다");
-  }
+function roofPlacement(): PlacementReference {
+  const { width, height, house } = ROOF_GRID;
   const map = blankMap(width, height);
-  stampHouse(map, house, "aframeGrid 집");
+  stampHouse(map, house, "roofGrid 집");
   return placement(
-    "aframeGrid",
+    "roofGrid",
     width,
     height,
     map.lowerTiles,
     map.upperTiles,
     EMPTY_GRID(width, height),
     EMPTY_GRID(width, height),
-    `stampRectHouseKit(${house.kitId}) — 피라미드 ${Math.floor((house.width - 1) / 2)}행`,
+    `stampRectHouseKit(${house.kitId}, 폭 ${house.width}, 지붕 몸통 ${house.roofBodyRows}행)`,
   );
 }
 
@@ -591,7 +588,7 @@ export function buildTownGroundTruth(): TownGroundTruth {
     treeGrid: treePlacement(),
     roadGrid: roadPlacement(),
     wallGrid: shell.reference,
-    aframeGrid: aframePlacement(),
+    roofGrid: roofPlacement(),
     doorGrid: doorPlacement(shell.reference, shell.doorAt),
     fenceGrid: fencePlacement(shell.reference),
     villageGrid: villagePlacement(),

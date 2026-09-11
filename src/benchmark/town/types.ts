@@ -163,7 +163,7 @@ export type TownPlacementKey =
   | "treeGrid"
   | "roadGrid"
   | "wallGrid"
-  | "aframeGrid"
+  | "roofGrid"
   | "doorGrid"
   | "fenceGrid"
   | "villageGrid";
@@ -285,7 +285,7 @@ export type TownImageKey =
   | "treeGrid"
   | "roadGrid"
   | "wallGrid"
-  | "aframeGrid"
+  | "roofGrid"
   | "doorGrid"
   | "fenceGrid"
   | "villageGrid";

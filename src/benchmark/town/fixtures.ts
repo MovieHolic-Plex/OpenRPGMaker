@@ -6,7 +6,7 @@
 //
 // 이 파일은 순수 데이터다 — 엔진(스탬퍼/오토타일)을 호출하지 않는다. 기하가
 // 엔진 제약을 만족하는지는 groundTruth.ts 가 실제로 스탬프를 돌려 fail-fast 로
-// 확인한다(예: aframe 은 폭이 홀수여야 하고 높이가 폭에 종속된다).
+// 확인한다(예: 지붕 몸통 행 수·층수 조합이 시공 가능해야 한다).
 
 import type { HouseKitId } from "@/editor/houseKit";
 import type { TownPlacementKey } from "./types";
@@ -254,16 +254,18 @@ export const WALL_GRID: TownGridFixture & { readonly house: FixtureHousePlan } =
   house: SHELL_HOUSE,
 });
 
-// ── 6번 지붕 대각 그리드 ──────────────────────────────────────────────────
+// ── 6번 지붕 대각(표준 사선 지붕) ─────────────────────────────────────────
 
 /**
- * A자(피라미드) 지붕 — 사선 캡 354/355 가 행마다 1칸씩 안으로 들어오고 홀수 폭의
- * 꼭짓점에 374 가 한 칸 놓인다. 폭 7 · 1층 → 피라미드 행수 floor((7-1)/2) = 3,
- * 높이 = 3 + 1(처마) + 3(벽) = 7. 폭이 짝수면 꼭짓점이 사라지고, 높이를 잘못
- * 잡으면 stampRectHouseKit 이 거부한다 — groundTruth.ts 가 그걸 fail-fast 로 잡는다.
+ * 표준 사선 지붕 — 용마루 행·몸통 행·처마 행 + **투명 대각 캡**(354/355/384/385)이
+ * 이 축의 실제 난이도다. 불투명 조각(용마루 374·트림 376/377·몸통 404·처마 405)은
+ * 전부 하위 레이어, 캡만 상위 레이어 — 레이어 규율과 사선 마감을 함께 본다.
+ *
+ * 폭 7 · 1층 · 지붕 몸통 2행 → rectHouseHeight = 1 + 2 + 1 + 3 = 7.
+ * 2026-09-11: 예전 A자(피라미드) 지붕은 제품에서 삭제됐다(사용자 지시).
  */
-export const AFRAME_GRID: TownGridFixture & { readonly house: FixtureHousePlan } = Object.freeze({
-  key: "aframeGrid" as const,
+export const ROOF_GRID: TownGridFixture & { readonly house: FixtureHousePlan } = Object.freeze({
+  key: "roofGrid" as const,
   width: 9,
   height: 9,
   house: Object.freeze({
@@ -271,8 +273,8 @@ export const AFRAME_GRID: TownGridFixture & { readonly house: FixtureHousePlan }
     y: 1,
     width: 7,
     stories: 1 as const,
-    roofBodyRows: 1,
-    kitId: "aframe-stone" as HouseKitId,
+    roofBodyRows: 2,
+    kitId: "bright-plaster" as HouseKitId,
     windows: false as const,
   }),
 });
@@ -372,7 +374,7 @@ export const TOWN_GRID_FIXTURES: Readonly<Record<TownPlacementKey, TownGridFixtu
   treeGrid: TREE_GRID,
   roadGrid: ROAD_GRID,
   wallGrid: WALL_GRID,
-  aframeGrid: AFRAME_GRID,
+  roofGrid: ROOF_GRID,
   doorGrid: DOOR_GRID,
   fenceGrid: FENCE_GRID,
   villageGrid: VILLAGE_GRID,
