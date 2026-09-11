@@ -231,7 +231,7 @@ export function buildHouses(
       if (!forcedTemplateId && usedTemplateIds.size < requiredTemplateKinds && usedTemplateIds.has(candidate.template.id)) continue;
       const unusedKits = HOUSE_KITS.filter((id) => !usedKitIds.has(id));
       const mixedKitPool = usedKitIds.size < Math.min(3, target) && unusedKits.length > 0 ? unusedKits : HOUSE_KITS;
-      // 템플릿 강제 킷(aframe/옥상 데크)이 최우선 — 지오메트리가 킷에 종속이라 다른 킷이면 시공이 깨진다.
+      // 템플릿 강제 킷(옥상 데크 등)이 최우선 — 지오메트리가 킷에 종속이라 다른 킷이면 시공이 깨진다.
       const kitId = candidate.template.kitId
         ?? forced
         ?? (intent.kitMix === "mixed"

@@ -75,9 +75,9 @@ base64 인라인 때문에 개당 1.3~11.9MB 였고, 합계 46MB 가 `docs/` 를
 | 제거된 파일 | 복구 방법 |
 |---|---|
 | `2026-07-20-showcase-project.html` (11.9MB) | `npx tsx scripts/gen-showcase-project-html.mts` |
-| `2026-07-20-house-variety-catalog.html` (6.0MB) | `npx tsx scripts/gen-house-variety-catalog-html.mts` |
+| `2026-07-20-house-variety-catalog.html` (6.0MB) | `npx tsx scripts/render-house-full-catalog.mts && npx tsx scripts/gen-house-full-catalog-html.mts` |
 | `2026-07-20-interior-ceiling-canon-report.html` (3.3MB) | `npx tsx scripts/gen-interior-ceiling-report-html.mts` |
-| `2026-07-20-house-decor-stamp-report.html` (1.6MB) | `npx tsx scripts/gen-house-decor-stamp-report-html.mts` |
+| `2026-07-20-house-decor-stamp-report.html` (1.6MB) | git 히스토리 (A자 지붕 삭제로 생성 스크립트 제거, 2026-09-11) |
 | `2026-07-19-castle-town-100.html` (3.0MB) | git 히스토리 (생성 스크립트 없음) |
 | `2026-07-19-stamp-house-variation.html` (2.1MB) | git 히스토리 (생성 스크립트 없음) |
 | `2026-07-18-castle-variants.html` (2.0MB) | git 히스토리 (생성 스크립트 없음) |

@@ -24,7 +24,7 @@ import {
   DEFAULT_ROAD_AUTOTILE_GROUP,
 } from "@/project/defaults/autotileGroups";
 import type { AutotileGroup } from "@/project/types";
-import { AFRAME_GRID, VILLAGE_GRID, WALL_GRID } from "./fixtures";
+import { ROOF_GRID, VILLAGE_GRID, WALL_GRID } from "./fixtures";
 import type { TownImageKey } from "./types";
 
 function ascending(values: Iterable<number>): readonly number[] {
@@ -64,7 +64,7 @@ export const TREE_PALETTE = ascending(deriveTreePairs().flatMap((pair) => [...pa
 export const DOOR_PALETTE: readonly number[] = Object.freeze([116, 146, 329, 359]);
 
 export const WALL_KIT_PALETTE = houseKitPalette(WALL_GRID.house.kitId);
-export const AFRAME_KIT_PALETTE = houseKitPalette(AFRAME_GRID.house.kitId);
+export const ROOF_KIT_PALETTE = houseKitPalette(ROOF_GRID.house.kitId);
 
 /** 마을 팔레트 — 세 키트 + 문 + 흙길 + 포석 + 울타리 + 나무. */
 export const VILLAGE_PALETTE = ascending([
@@ -85,7 +85,7 @@ export const TOWN_PALETTES: Readonly<Partial<Record<TownImageKey, readonly numbe
   treeGrid: TREE_PALETTE,
   roadGrid: ROAD_PALETTE,
   wallGrid: WALL_KIT_PALETTE,
-  aframeGrid: AFRAME_KIT_PALETTE,
+  roofGrid: ROOF_KIT_PALETTE,
   doorGrid: DOOR_PALETTE,
   fenceGrid: FENCE_PALETTE,
   villageGrid: VILLAGE_PALETTE,

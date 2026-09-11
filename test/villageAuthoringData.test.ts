@@ -294,34 +294,4 @@ describe("사용자 저작 마을 데이터 — 시공 반영", () => {
     expect(low).toHaveProperty("template");
   });
 
-  // A자 지붕은 피라미드라 날개 하나 + 높이가 폭에 묶인다. 내장 A자 4종이 이 공식을
-  // 만족하는 건 위 34종 왕복이 증명한다 — 여기서는 어긋난 값이 걸리는지만 본다.
-  it("A자 지붕 킷은 폭에 맞는 높이만 받는다", () => {
-    const wrong = templateFromRecord({
-      ...USER_TEMPLATE,
-      kitId: "aframe-stone",
-      w: 5,
-      h: 8,
-      wings: [{ x: 0, y: 0, w: 5, h: 8 }],
-    });
-    expect("reason" in wrong && wrong.reason).toContain("정확히 6칸");
-
-    const right = templateFromRecord({
-      ...USER_TEMPLATE,
-      kitId: "aframe-stone",
-      w: 5,
-      h: 6,
-      wings: [{ x: 0, y: 0, w: 5, h: 6 }],
-    });
-    expect(right).toHaveProperty("template");
-
-    const twoWings = templateFromRecord({
-      ...USER_TEMPLATE,
-      kitId: "aframe-stone",
-      w: 8,
-      h: 9,
-      wings: [{ x: 0, y: 0, w: 8, h: 5 }, { x: 0, y: 5, w: 4, h: 4 }],
-    });
-    expect("reason" in twoWings && twoWings.reason).toContain("날개 하나");
-  });
 });

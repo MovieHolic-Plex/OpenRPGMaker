@@ -130,9 +130,7 @@ const WALL_PLASTER_12: ReadonlySet<number> = new Set<number>([12, 13, 14, 42, 43
 const WALL_WOOD_102: ReadonlySet<number> = new Set<number>([102, 103, 104, 132, 133, 134, 162, 163, 164]);
 
 const BLUE_ROOF_TILES: ReadonlySet<number> = new Set<number>([406, 407, 467, 356, 357, 386, 387]);
-/** 사선 트림 376/377 은 bright 전용 — aframe 은 캡(354/355)만 쓴다. */
 const BRIGHT_ROOF_TRIM: ReadonlySet<number> = new Set<number>([376, 377]);
-const AFRAME_ROOF_TILES: ReadonlySet<number> = new Set<number>([354, 355, 384, 385]);
 
 const ROOF_COLOR_BY_KIT: Readonly<Record<HouseKitId, HouseRoofColor>> = {
   "blue-stone": "blue",
@@ -140,7 +138,6 @@ const ROOF_COLOR_BY_KIT: Readonly<Record<HouseKitId, HouseRoofColor>> = {
   "bright-plaster": "orange",
   "amber-wood": "orange",
   "timber-hall": "red",
-  "aframe-stone": "red",
 };
 
 export function roofColorForKit(kitId: HouseKitId): HouseRoofColor {
@@ -250,7 +247,6 @@ function classifyKit(map: GameMap, cells: readonly number[]): HouseKitId | null 
   let wood102 = false;
   let blueRoof = false;
   let brightTrim = false;
-  let aframeCap = false;
   for (const index of cells) {
     for (const tile of [map.lowerTiles[index] ?? TILE.EMPTY, map.upperTiles[index] ?? TILE.EMPTY]) {
       if (tile === TILE.EMPTY) continue;
@@ -260,13 +256,11 @@ function classifyKit(map: GameMap, cells: readonly number[]): HouseKitId | null 
       if (WALL_WOOD_102.has(tile)) wood102 = true;
       if (BLUE_ROOF_TILES.has(tile)) blueRoof = true;
       if (BRIGHT_ROOF_TRIM.has(tile)) brightTrim = true;
-      if (AFRAME_ROOF_TILES.has(tile)) aframeCap = true;
     }
   }
   if (post) return "timber-hall";
   if (blueRoof) return wood102 ? "slate-wood" : stone15 ? "blue-stone" : null;
   if (brightTrim) return wood102 ? "amber-wood" : plaster12 ? "bright-plaster" : null;
-  if (aframeCap) return plaster12 ? "aframe-stone" : wood102 ? "amber-wood" : null;
   return null;
 }
 
@@ -455,7 +449,7 @@ export function houseVarietyReport(houses: readonly DetectedHouse[]): HouseVarie
   if (houses.length > 1 && distinctRoofColors <= 1 && distinctKits > 0) {
     advice.push(
       `지붕색이 ${roofColors[0]?.[0] ?? "?"} 한 가지다. kitId 6종은 지붕색 3가지(blue: blue-stone·slate-wood / `
-      + `orange: bright-plaster·amber-wood / red: timber-hall·aframe-stone)로 접히니 색군을 섞어라.`,
+      + `orange: bright-plaster·amber-wood / red: timber-hall)로 접히니 색군을 섞어라.`,
     );
   } else if (repeatedKits.length > 0 && unusedKitIds.length > 0) {
     advice.push(`안 쓴 킷: ${unusedKitIds.join(", ")}.`);

@@ -50,12 +50,17 @@ export function houseExteriorPlan(options: HouseShapeOptions): HouseExteriorPlan
   };
 }
 
-/** 실내 층수는 외장과 같아야 한다 — 명시값이 정본, 없을 때만 높이 휴리스틱(2026-08-31 어긋남 교정). */
+/** 실내 층수는 외장과 같아야 한다 — 명시값이 정본, 그다음 날개 선언 층수, 없을 때만 높이 휴리스틱(2026-08-31 어긋남 교정). */
 export function houseInteriorStories(
   explicit: HouseStoryCount | undefined,
   wings: readonly FootprintWing[],
 ): HouseStoryCount {
   if (explicit) return explicit;
+  // 날개가 층수를 선언한 계단식 집: 실내는 가장 높은 날개 층수를 따른다.
+  // 높이 휴리스틱만 보면 1층 날개가 길게 늘어진 계단식(h≥9·h≥11)이 실내까지 부풀려진다.
+  const declared = wings.map((wing) => wing.stories ?? 0);
+  const maxDeclared = Math.max(...declared);
+  if (maxDeclared > 0) return maxDeclared as HouseStoryCount;
   return wings.some((wing) => wing.h >= 11) ? 3 : wings.some((wing) => wing.h >= 9) ? 2 : 1;
 }
 

@@ -23,7 +23,7 @@
 | 3 | `layer` 상·하위 레이어 | `t2-layer-probe`, `t3-tree-layers` | 균형 정확도 + 줄기/캐노피 쌍 규칙 |
 | 4 | `road` 길 | `t4-passability-probe`, `t5-road-network` | 균형 정확도 + 구조(연결·오토타일 합법성) |
 | 5 | `wallOutline` 벽 외곽 | `t6-wall-probe`, `t7-house-shell` | 균형 정확도 + mean(정본 일치, 구조) |
-| 6 | `roofDiagonal` 지붕 대각 | `t8-aframe-roof` | mean(정본 일치, 구조: 계단 인셋·꼭짓점·캡 레이어) |
+| 6 | `roofDiagonal` 지붕 대각 | `t8-roof-diagonal` | mean(정본 일치, 구조: 용마루 인셋·세로 트림·대각 캡 레이어) |
 | 7 | `door` 문 | `t9-door` | 구조만 — 세로 짝·같은 벌·문 앞 통행. 두 벌 중 어느 쪽이든 옳게 짝지으면 만점 |
 | 8 | `fenceEnd` 울타리 끝 | `t10-fence-ends` | 문법 규칙 8개 통과율 |
 | 9 | `village` 마을 | `t11-village` | 자동 감사 7항 × 감점 3항 |

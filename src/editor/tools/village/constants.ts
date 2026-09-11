@@ -127,7 +127,7 @@ export function environmentalRoadAt(map: GameMap): (x: number, y: number) => boo
 }
 
 export const DEFAULT_ROAD_STYLE: RoadStyle = "sand";
-// 랜덤 믹스 대상 킷만 — aframe-stone은 지오메트리 종속이라 템플릿이 강제할 때만 쓴다.
+// 랜덤 믹스 대상 킷.
 export const HOUSE_KITS: readonly HouseKitId[] = MIXABLE_HOUSE_KIT_IDS;
 /** 집마다 seed로 고르는 마당 꾸밈 테마(place_props 태그). */
 // 마당 랜덤 가방 규칙(2026-07-16):
@@ -212,7 +212,7 @@ export interface HouseTemplate {
   readonly h: number;
   /** 낮은 벽(상단+하단 2행) — 헛간·창고·오두막. */
   readonly lowWall?: boolean;
-  /** 킷 강제 — aframe처럼 지오메트리가 킷에 종속인 템플릿. 랜덤 믹스보다 우선. */
+  /** 킷 강제 — 옥상 데크처럼 지오메트리가 킷에 종속인 템플릿. 랜덤 믹스보다 우선. */
   readonly kitId?: HouseKitId;
   /** 옥상 판자 데크 + 벽면 사다리(파랑 평지붕 전용) — houses.ts applyRoofDeck. */
   readonly roofDeck?: boolean;
@@ -297,7 +297,7 @@ export interface VillageAudit {
 
 // 형태 카탈로그 — 선언형 데이터 정본은 project/defaults/houseTemplateCatalog.ts(34종)에 있다.
 // 여기서는 시공 코드가 쓰는 wingsAt(x, y) 표면만 씌운다 — 데이터 → 함수 어댑터.
-// 카탈로그 규칙(층 구간 최소 높이·w 상한·estate·aframe 공식)은 그 파일 머리 주석에 있다.
+// 카탈로그 규칙(층 구간 최소 높이·w 상한·estate·계단식 2층)은 그 파일 머리 주석에 있다.
 export const HOUSE_TEMPLATES: readonly HouseTemplate[] = HOUSE_TEMPLATE_DEFS.map((def): HouseTemplate => ({
   ...def,
   wingsAt: (x: number, y: number) => houseTemplateWingsAt(def, x, y),

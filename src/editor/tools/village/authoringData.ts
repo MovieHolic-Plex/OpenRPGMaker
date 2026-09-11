@@ -5,7 +5,7 @@
 // 우선순위: 명시 인자(AI가 문장에서 뽑은 값) > 사용자 프리셋 > 테마 추론 > 씨앗값 파생.
 // 저장된 레코드는 신뢰하지 않는다 — 열거형·범위를 여기서 좁히고, 못 쓰는 값은 경고로 흘린다.
 
-import { HOUSE_KITS, isHouseKitId, type HouseKitId } from "@/editor/houseKit";
+import { isHouseKitId, type HouseKitId } from "@/editor/houseKit";
 import { HOUSE_TEMPLATE_DEFS, houseTemplateWingsAt, type HouseTemplateDef } from "@/project/defaults/houseTemplateCatalog";
 import type { Project } from "@/project/types";
 import type { VillageHouseTemplateRecord, VillageLayoutPresetRecord, VillageTemplateWing } from "@/project/types/village";
@@ -166,6 +166,7 @@ export function templateFromRecord(record: VillageHouseTemplateRecord): { templa
   if (wings.length === 0) return { reason: "날개가 없습니다" };
   for (const wing of wings) {
     if (![wing.x, wing.y, wing.w, wing.h].every((value) => Number.isInteger(value))) return { reason: "날개 좌표가 정수가 아닙니다" };
+    if (wing.stories !== undefined && ![1, 2, 3].includes(wing.stories)) return { reason: "날개 층수는 1·2·3 중 하나여야 합니다" };
     if (wing.x < 0 || wing.y < 0) return { reason: "날개 좌표가 음수입니다" };
     if (wing.w < wingW.min || wing.h < wingH.min) return { reason: `날개는 최소 ${wingW.min}×${wingH.min}칸이어야 합니다` };
     if (wing.x + wing.w > w || wing.y + wing.h > h) return { reason: "날개가 바운딩 박스를 넘습니다" };
@@ -183,7 +184,13 @@ export function templateFromRecord(record: VillageHouseTemplateRecord): { templa
     ...(record.lowWall ? { lowWall: true } : {}),
     ...(record.kitId !== undefined && isHouseKitId(record.kitId) ? { kitId: record.kitId } : {}),
     ...(record.roofDeck ? { roofDeck: true } : {}),
-    wings: wings.map((wing) => ({ x: wing.x, y: wing.y, w: wing.w, h: wing.h })),
+    wings: wings.map((wing) => ({
+      x: wing.x,
+      y: wing.y,
+      w: wing.w,
+      h: wing.h,
+      ...(wing.stories === undefined ? {} : { stories: wing.stories }),
+    })),
   };
   return { template: defToTemplate(def) };
 }
@@ -204,7 +211,6 @@ export function minWingRun(options: { readonly stories?: number; readonly lowWal
  *  · 벽 밴드 = lowWall ? 2 : 2 + (2×층수 − 1) 행. 그 위에 지붕이 최소 2행 더 붙는다.
  *  · 그래서 **열마다** 이어진 칸이 (벽 밴드 + 2) 행 이상이어야 한다. 위 예에서 오른쪽
  *    열은 4행뿐이라 1층 기준 5행을 못 채운다.
- *  · A자 지붕 킷은 지붕이 피라미드라 날개 하나 + 높이가 폭에 묶인다.
  */
 function shapeReason(record: {
   readonly w: number;
@@ -214,27 +220,28 @@ function shapeReason(record: {
   readonly kitId?: string;
   readonly wings: readonly VillageTemplateWing[];
 }): string | undefined {
-  const wallBandRows = record.lowWall ? 2 : 2 + (2 * record.stories - 1);
-  const minRun = minWingRun(record);
-  if (record.kitId !== undefined && isHouseKitId(record.kitId) && HOUSE_KITS[record.kitId].roof.kind === "aframe") {
-    if (record.wings.length !== 1) return "A자 지붕 킷은 날개 하나짜리 직사각형만 됩니다";
-    const wing = record.wings[0]!;
-    const required = wallBandRows + Math.floor((wing.w - 1) / 2) + 1;
-    if (wing.h !== required) {
-      return `A자 지붕 킷은 폭 ${wing.w}일 때 높이가 정확히 ${required}칸이어야 합니다 (지금 ${wing.h})`;
-    }
-  }
   const filled = (x: number, y: number): boolean =>
     record.wings.some((wing) => x >= wing.x && x < wing.x + wing.w && y >= wing.y && y < wing.y + wing.h);
+  /**
+   * 그 열을 덮는 날개의 층수 — 계단식 2층은 열마다 벽 밴드가 다르다.
+   * 층수를 선언한 날개가 이긴다(시공기 `storiesAt` 과 같은 규칙).
+   */
+  const storiesAtColumn = (x: number): number => {
+    const containing = record.wings.filter((wing) => x >= wing.x && x < wing.x + wing.w);
+    for (const wing of containing) if (wing.stories !== undefined) return wing.stories;
+    return record.stories;
+  };
   for (let x = 0; x < record.w; x += 1) {
+    const columnBand = record.lowWall ? 2 : 2 + (2 * storiesAtColumn(x) - 1);
+    const columnRun = minWingRun({ stories: storiesAtColumn(x), lowWall: record.lowWall });
     let run = 0;
     for (let y = 0; y <= record.h; y += 1) {
       if (y < record.h && filled(x, y)) {
         run += 1;
         continue;
       }
-      if (run > 0 && run < minRun) {
-        return `x=${x} 열이 이어서 ${run}칸뿐입니다 — 한 열은 ${minRun}칸 이상이어야 합니다 (벽 ${wallBandRows} + 지붕 2)`;
+      if (run > 0 && run < columnRun) {
+        return `x=${x} 열이 이어서 ${run}칸뿐입니다 — 이 열(${storiesAtColumn(x)}층)은 ${columnRun}칸 이상이어야 합니다 (벽 ${columnBand} + 지붕 2)`;
       }
       run = 0;
     }

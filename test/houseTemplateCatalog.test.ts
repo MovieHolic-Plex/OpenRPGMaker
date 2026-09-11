@@ -105,7 +105,11 @@ describe("집 형태 카탈로그 데이터화", () => {
       // t-porch처럼 날개가 세로로 붙는 형태는 합집합으로 봐야 하고,
       // estate-*처럼 마당으로 끊긴 형태는 묶음마다 따로 성립해야 한다.
       for (const interval of columnIntervals(def)) {
-        expect(interval.height, `${def.id} x=${interval.x} 열 구간 높이`).toBeGreaterThanOrEqual(wallBand(def) + 2);
+        // 계단식 2층은 열마다 층수가 다르다 — 그 열을 덮는 날개의 층수로 최소 높이를 잰다.
+        const wing = def.wings.find((entry) => interval.x >= entry.x && interval.x < entry.x + entry.w);
+        const stories = wing?.stories ?? def.stories ?? 1;
+        const band = def.lowWall ? 2 : 2 + (2 * stories - 1);
+        expect(interval.height, `${def.id} x=${interval.x} 열 구간 높이`).toBeGreaterThanOrEqual(band + 2);
       }
       // bbox는 날개 합집합과 정확히 일치해야 한다 — 울타리·문 판정이 bbox를 믿는다.
       expect(Math.max(...def.wings.map((wing) => wing.x + wing.w)), `${def.id} bbox 폭`).toBe(def.w);
@@ -113,13 +117,20 @@ describe("집 형태 카탈로그 데이터화", () => {
     }
   });
 
-  it("aframe-*는 킷을 강제하고 폭 종속 높이 공식을 지킨다", () => {
-    const aframes = HOUSE_TEMPLATE_DEFS.filter((def) => def.id.startsWith("aframe-"));
-    expect(aframes.length).toBeGreaterThanOrEqual(4);
-    for (const def of aframes) {
-      expect(def.kitId, def.id).toBe("aframe-stone");
-      const band = def.lowWall ? 2 : 2 + (2 * (def.stories ?? 1) - 1);
-      expect(def.h, `${def.id} h = 벽 밴드 + floor((w-1)/2) + 1`).toBe(band + Math.floor((def.w - 1) / 2) + 1);
+  it("계단식 2층(tier-*)은 날개마다 층수를 적고 전개가 그대로 남는다", () => {
+    const tiers = HOUSE_TEMPLATE_DEFS.filter((def) => def.id.startsWith("tier-"));
+    expect(tiers.length).toBeGreaterThanOrEqual(4);
+    for (const def of tiers) {
+      // 층수를 선언한 날개가 하나 이상, 그리고 그 값이 2층이다(위층이 드러나는 실루엣의 근거).
+      const declared = def.wings.filter((wing) => wing.stories !== undefined);
+      expect(declared.length, def.id).toBeGreaterThan(0);
+      expect(declared.some((wing) => wing.stories === 2), `${def.id} 2층 날개`).toBe(true);
+      // 열마다 자기 층수의 최소 높이(벽 밴드 + 지붕 2)를 넘겨야 시공이 성립한다.
+      for (const interval of columnIntervals(def)) {
+        const wingStories = def.wings.find((wing) =>
+          interval.x >= wing.x && interval.x < wing.x + wing.w)?.stories ?? def.stories ?? 1;
+        expect(interval.height, `${def.id} x=${interval.x} 열 구간`).toBeGreaterThanOrEqual(2 + (2 * wingStories - 1) + 2);
+      }
     }
   });
 });

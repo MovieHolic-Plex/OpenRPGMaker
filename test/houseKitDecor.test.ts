@@ -46,18 +46,6 @@ describe("굴뚝 — houseKit 지붕 문법 채택", () => {
     expect(map.upperTiles[4 * 15 + 11]).toBe(CHIMNEY_TILE);
   });
 
-  it("A자 지붕: 사선 캡 안쪽 몸통 위에 326", () => {
-    const map = grassMap(13, 12);
-    const result = stampFootprintHouseKit(map, {
-      wings: [{ x: 2, y: 2, w: 9, h: 8 }],
-      kitId: "aframe-stone",
-      chimney: true,
-    });
-    expect(result.ok).toBe(true);
-    // eaveY = 2+8-3-1 = 6, x = 2+9-3 = 8 → (8,5)
-    expect(map.upperTiles[5 * 13 + 8]).toBe(CHIMNEY_TILE);
-  });
-
   it("기본은 꺼짐 — 옵션 없이는 326이 없다", () => {
     const map = grassMap(15, 14);
     stampFootprintHouseKit(map, { wings: [{ x: 3, y: 3, w: 9, h: 8 }], kitId: "blue-stone" });

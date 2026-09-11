@@ -57,7 +57,7 @@ const HOUSE_EXTERIOR_HINT_SCHEMA: JsonSchema = {
     stories: { type: "integer", enum: [1, 2, 3], description: "외관 층수" },
     kitId: {
       type: "string",
-      enum: ["blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall", "aframe-stone"],
+      enum: ["blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall"],
       description: "외관 키트 id",
     },
     templateId: { type: "string", description: "외관 템플릿 id (author_house/village 결과)" },

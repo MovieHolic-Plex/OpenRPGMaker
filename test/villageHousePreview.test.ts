@@ -75,15 +75,6 @@ describe("집 미리보기 — 재료 킷 해석", () => {
     const b = previewKitFor(record({ id: "house-b" }));
     expect(Object.keys(HOUSE_KITS)).toContain(a);
     expect(Object.keys(HOUSE_KITS)).toContain(b);
-    // A자 지붕은 강제 킷이므로 섞기 후보에서 빠진다.
-    expect(a).not.toBe("aframe-stone");
-    expect(b).not.toBe("aframe-stone");
-  });
-
-  // A자 지붕은 피라미드라 날개 높이가 폭에 묶인다 — 다른 킷으로는 스탬프 자체가 실패한다.
-  it("A자 형태에서 복제한 레코드는 A자 킷으로 푼다", () => {
-    expect(previewKitFor(record({ clonedFrom: "aframe-mid", kitId: undefined }))).toBe("aframe-stone");
-    expect(previewKitFor(record({ id: "aframe-copy", kitId: undefined }))).toBe("aframe-stone");
   });
 });
 
