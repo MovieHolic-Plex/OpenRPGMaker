@@ -1,6 +1,7 @@
 import { drawMapTileLayers, loadTilesetImage, MapTileDrawError } from "@/editor/mapTileDraw";
 import { SpatialCompileError } from "@/editor/spatial/compilerTypes";
-import { geographyTerrain, paintGeographyRoute } from "@/editor/spatial/geographyTerrain";
+import { geographyTerrain, paintGeographyRoute, settlementTerrain } from "@/editor/spatial/geographyTerrain";
+import { settlementVillageBuild } from "@/editor/spatial/settlementVillageBuild";
 import { ToolError } from "@/editor/tools/types";
 import type { GeographyDesign } from "@/editor/panels/spatialGeographyDraft";
 import { worldCrossingPoints } from "@/editor/panels/spatialGeographyGeometry";
@@ -49,9 +50,16 @@ export function geographyPreviewMap(
   const id = geographyPreviewMapId(design, occurrenceId);
   const identity = { id, name: design.name };
   const next = structuredClone(project);
+  const settlement = "settlement" in design ? design.settlement : undefined;
   let terrain: GameMap;
   try {
-    terrain = geographyTerrain(next, design.terrain, identity);
+    terrain = settlement
+      ? settlementTerrain(next, design.terrain, identity)
+      : geographyTerrain(next, design.terrain, identity);
+    if (settlement) {
+      next.maps[id] = terrain;
+      settlementVillageBuild(next, { mapId: id, presetId: settlement.presetId, seed: settlement.seed, interior: false });
+    }
   } catch (error) {
     const typed = typedPreviewError(error);
     if (!typed) throw error;

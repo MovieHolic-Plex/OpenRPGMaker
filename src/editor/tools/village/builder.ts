@@ -104,6 +104,7 @@ import {
 import { COORD_SCHEMA, VILLAGE_HOUSE_PLAN_SCHEMA, VILLAGE_NPC_PLAN_SCHEMA } from "../schemaShapes";
 
 import { resolveVillageDesignInput, designTemplateCatalog, villageDesignWorldRules, villageDesignRequirements, assertLegacyVillageSession } from "./designContract";
+import { bindSettlementVillageBuild } from "@/editor/spatial/settlementVillageBuild";
 
 export type VillageBuildDomainArgs = Readonly<Record<string, unknown>>;
 
@@ -1651,3 +1652,7 @@ function setVillageHarnessLayoutPlan(
     notes: "직접 저작 자연 마을의 비대칭 집·중앙 루프·네 방향 출구·층별 창 분리 문법을 적용한 하네스 설계도",
   });
 }
+
+// 정주지 지역 컴파일/미리보기가 쓰는 등록 지점 — 정적 import 순환(houseKit → … → spatial/preview
+// → compileRegions → compileGeography → builder)을 끊기 위해 리프 훅에 바인드한다.
+bindSettlementVillageBuild(buildVillageDomain);

@@ -58,6 +58,28 @@ One-way overview links and nonzero overview child levels are unsupported and
 reject. Polylines, markers, terrain areas and structure landings must remain
 bounded. Every mandatory port/marker must be reachable before a proposal returns.
 
+## Settlement regions (2026-09-12)
+
+A `RegionDesign` may carry `settlement: { presetId, seed }` — the region is then a
+정주지 whose map body is built by the village pipeline instead of the World
+terrain raster. `spatialAuthoring` library parse accepts the field via
+`guards.ts`; unknown fields still reject.
+
+- Settlement terrain must use the combined-town atlas
+  (`easyrpg_chipset_combined_town`). `settlementTerrain()` in
+  `geographyTerrain.ts` produces a grass-filled map; `geographyTerrain()` still
+  rejects non-World tilesets, so the two paths stay separate.
+- `compileGeography` stamps `buildVillageDomain(project, { mapId, presetId,
+  seed, interior: false })` onto the region raster. Authored `routes` on a
+  settlement region reject — village roads are generated, not drawn.
+- Recompile idempotency: retained `ev_village_`/`ev_house_*`/`ev_entrance_`/
+  `ev_exit_` events are stripped before stamping, and a retained
+  `village-harness` `layoutPlan` is dropped — `protectedHouseCells` reads it and
+  would otherwise block the rebuilt house sites, splitting placement between
+  runs. The builder writes a fresh plan.
+- Contract: `test/spatialSettlementRegion.test.ts` — stamping, byte-identical
+  recompile, io round-trip, route and tileset rejection.
+
 ## Ownership and regeneration
 
 Regeneration verifies original owned digests across the whole write set before

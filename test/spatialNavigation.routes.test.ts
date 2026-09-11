@@ -45,7 +45,7 @@ describe("legacy spatial route replacement", () => {
     ["structureKits", "spatialObjects"],
     ["tilesetSpaces", "spatialSpaces"],
     ["scratchConcepts", "spatialPlaces"],
-    ["villages", "spatialPlaces"],
+    ["villages", "spatialRegions"],
     ["worldGen", "spatialRegions"],
   ] as const)("maps %s to %s without seeding catalogs", (legacy, canonical) => {
     expect(resolveCanonicalDatabaseTab(legacy)).toBe(canonical);
@@ -67,16 +67,18 @@ describe("legacy spatial route replacement", () => {
     expect(store.getCurrent().tilesets[Object.keys(store.getCurrent().tilesets)[0]!]?.scratchConceptBundles).toBeUndefined();
   });
 
-  it("clears villages compatibility when the Places rail is clicked again", () => {
+  it("clears villages compatibility when the canonical Regions rail is clicked again", () => {
     renderDatabasePanel(host);
     switchDatabaseActiveTab("villages", host);
     expect(spatialSession().legacyOrigin).toBe("villages");
-    const places = host.querySelector<HTMLButtonElement>("[data-testid='db-tab-spatial-places']");
-    expect(places).not.toBeNull();
-    places?.click();
-    expect(getDatabaseActiveTab()).toBe("spatialPlaces");
+    expect(spatialSession().tab).toBe("regions");
+    expect(spatialSession().regionKindFilter).toBe("settlement");
+    const regions = host.querySelector<HTMLButtonElement>("[data-testid='db-tab-spatial-regions']");
+    expect(regions).not.toBeNull();
+    regions?.click();
+    expect(getDatabaseActiveTab()).toBe("spatialRegions");
     expect(spatialSession().legacyOrigin).toBeNull();
-    expect(spatialSession().placeKindFilter).toBeNull();
+    expect(spatialSession().regionKindFilter).toBeNull();
     expect(host.querySelector(".spatial-legacy-host")).toBeNull();
   });
 });

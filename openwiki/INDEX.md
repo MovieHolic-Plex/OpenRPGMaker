@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **63쪽 / 2417KB / 약 676,364 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **63쪽 / 2420KB / 약 677,067 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,7 +17,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 377KB | 97KB ⚠상한 초과 — 절을 더 쪼개라 | 1870 | ~106,403 |
 | `openwiki/editor-ai-tools.md` | 176KB | 80KB ⚠상한 초과 — 절을 더 쪼개라 | 1317 | ~48,821 |
-| `openwiki/editor-database.md` | 262KB | 56KB ⚠상한 초과 — 절을 더 쪼개라 | 1371 | ~75,416 |
+| `openwiki/editor-database.md` | 263KB | 56KB ⚠상한 초과 — 절을 더 쪼개라 | 1379 | ~75,590 |
 | `openwiki/editor-event-authoring.md` | 134KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 740 | ~38,707 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
 | `openwiki/editor-pre-edit-routing.md` | 103KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 561 | ~29,453 |
@@ -74,7 +74,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
 | `openwiki/se-catalog.md` | 7 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
-| `openwiki/testing.md` | 18 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
+| `openwiki/testing.md` | 17 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
 | `openwiki/village-design.md` | 1 | `output/village-direction/index.html` |
@@ -330,7 +330,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1280` 실제 이미지 입력 보존 (2026-09-07)
 - `L1294` Physical tile passage exposure (2026-09-08)
 
-### `openwiki/editor-database.md` — 262KB · 1371줄 · ~75,416 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 263KB · 1379줄 · ~75,590 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L1` Placed-place child proposal adapter (2026-09-08)
 - `L6` Monster resource metadata worksheet (2026-09-07)
@@ -388,22 +388,22 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L1034` 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
   - `L1077` 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
 - `L1086` '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
-  - `L1102` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
-- `L1145` 날개마다 층수를 정한다 — 계단식 2층 (2026-09-11)
-  - `L1158` 지붕 가장자리 판정은 "다른 지붕면인가"다 (2026-09-11 실측 결함)
-- `L1166` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
-  - `L1182` AI로 몬스터·아이템 생성 (2026-08-30)
-  - `L1203` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
-  - `L1237` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
-- `L1253` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
-- `L1330` 직업 승급 트리 · 스킬 트리 (2026-09-05)
-- `L1336` 미회수 편집 후속 통합 (2026-09-05)
-- `L1340` 마을 설계서 (2026-09-05)
-- `L1345` 구조물 증분 메타 정정 (2026-09-05)
-- `L1353` 개념 회수 UI 직접 렌더 QA (2026-09-05)
-- `L1357` Battle-animation preview-first graphic controls (Phase 2, 2026-09-05)
-- `L1364` 검토한 실내 기본값의 원격 반영 (2026-09-05)
-- `L1368` 특정 꾸러미의 명시적 교체 (2026-09-06)
+  - `L1110` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
+- `L1153` 날개마다 층수를 정한다 — 계단식 2층 (2026-09-11)
+  - `L1166` 지붕 가장자리 판정은 "다른 지붕면인가"다 (2026-09-11 실측 결함)
+- `L1174` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
+  - `L1190` AI로 몬스터·아이템 생성 (2026-08-30)
+  - `L1211` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
+  - `L1245` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
+- `L1261` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
+- `L1338` 직업 승급 트리 · 스킬 트리 (2026-09-05)
+- `L1344` 미회수 편집 후속 통합 (2026-09-05)
+- `L1348` 마을 설계서 (2026-09-05)
+- `L1353` 구조물 증분 메타 정정 (2026-09-05)
+- `L1361` 개념 회수 UI 직접 렌더 QA (2026-09-05)
+- `L1365` Battle-animation preview-first graphic controls (Phase 2, 2026-09-05)
+- `L1372` 검토한 실내 기본값의 원격 반영 (2026-09-05)
+- `L1376` 특정 꾸러미의 명시적 교체 (2026-09-06)
 
 ### `openwiki/editor-event-authoring.md` — 134KB · 740줄 · ~38,707 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
@@ -881,19 +881,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L179` Exact connection cleanup
 - `L248` Verification and remaining integration
 
-### `openwiki/spatial-geography-compiler.md` — 7KB · 123줄 · ~1,849 토큰
+### `openwiki/spatial-geography-compiler.md` — 8KB · 145줄 · ~2,166 토큰
 
 - `L8` Public path
 - `L31` Terrain and structures
-- `L61` Ownership and regeneration
-- `L84` Contract fixtures and proof
+- `L61` Settlement regions (2026-09-12)
+- `L83` Ownership and regeneration
+- `L106` Contract fixtures and proof
 
-### `openwiki/spatial-geography-ui.md` — 3KB · 74줄 · ~884 토큰
+### `openwiki/spatial-geography-ui.md` — 4KB · 88줄 · ~1,096 토큰
 
 - `L7` Public modules
-- `L26` Authoring rules
-- `L60` Fixtures
-- `L66` Proof
+- `L26` Settlement regions (2026-09-12)
+- `L40` Authoring rules
+- `L74` Fixtures
+- `L80` Proof
 
 ### `openwiki/spatial-manual-build.md` — 11KB · 177줄 · ~2,738 토큰
 

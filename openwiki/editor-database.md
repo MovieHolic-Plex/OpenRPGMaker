@@ -1085,6 +1085,14 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
 
 ## '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
 
+> **2026-09-12 — 표면 위치 변경.** 마을은 장소가 아니라 **지역**이다. `villages`
+> 레거시 라우트는 이제 `spatialRegions` 로 가고, 세션은 `tab:"regions"` +
+> `regionKindFilter:"settlement"` 로 열린다 — 이 탭의 저작 화면은 지역 스테이지의
+> `.spatial-legacy-host` 에 마운트된다. `villagePresets` 는 지역 갤러리의
+> `regionKind:"settlement"` 카드이자 정주지 지역(`RegionDesign.settlement`)의
+> 레시피, `villageTemplates`(집 형태)는 계속 장소 카드다. 계약:
+> `openwiki/spatial-geography-ui.md` 「Settlement regions」.
+
 마을 생성의 값은 전부 코드 상수였다. 집 형태 34종은 `HOUSE_TEMPLATES` 의 `wingsAt()` 함수였고, 길 폭·광장 모양·마당 스타일은 씨앗값과 테마 문자열에서 파생됐다. 사용자가 바꿀 자리가 없었고, AI 도 코드 요약만 읽었으므로 "내가 정한 대로 깔아 줘" 가 성립하지 않았다. 이 탭이 그 입력단이다.
 
 - **레일 위치**: 세계 그룹, 타일셋 폴더(`공간 종류`)와 `지형 효과` 사이. `id: "villages"`, `data-testid="db-tab-villages"`. 배지 숫자는 사용자 레코드 수(`villageTemplates.length + villagePresets.length`)이며 **내장 34종은 세지 않는다**.

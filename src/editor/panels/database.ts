@@ -204,7 +204,7 @@ export const LEGACY_SPATIAL_ROUTE: Partial<Record<DatabaseTab, DatabaseTab>> = {
   structureKits: "spatialObjects",
   tilesetSpaces: "spatialSpaces",
   scratchConcepts: "spatialPlaces",
-  villages: "spatialPlaces",
+  villages: "spatialRegions",
   worldGen: "spatialRegions",
 };
 
@@ -704,8 +704,8 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
   spatialTiles: "타일셋 통행 지형 tilesets",
   spatialObjects: "구조물 부품 보관함 오브젝트 structureKits",
   spatialSpaces: "공간 종류 기존 방 규칙 tilesetSpaces",
-  spatialPlaces: "개념 꾸러미 마을 시설 scratchConcepts villages",
-  spatialRegions: "생성 규칙 지역 worldGen",
+  spatialPlaces: "개념 꾸러미 시설 scratchConcepts",
+  spatialRegions: "생성 규칙 지역 마을 정주지 worldGen villages",
   spatialWorlds: "세계 맵",
 };
 

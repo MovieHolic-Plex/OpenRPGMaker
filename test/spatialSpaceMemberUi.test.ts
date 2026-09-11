@@ -34,6 +34,7 @@ function designSession(): SpatialAuthoringSession {
     breadcrumb: [],
     legacyOrigin: null,
     placeKindFilter: null,
+    regionKindFilter: null,
     inspectorOpen: true,
   };
 }

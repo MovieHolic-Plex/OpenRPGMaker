@@ -1,4 +1,5 @@
 import { assertNever, findOccurrenceChildId, spatialId } from "@/project/spatial/domain";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { genId } from "@/util/id";
 import type {
   RegionDesign,
@@ -204,6 +205,23 @@ export function blankRegionDesign(project: Project): RegionDesign {
     places: [],
     ports: [],
     routes: [],
+  };
+}
+
+/** 정주지 지역 — 지형은 combined_town(마을 시공 전용 칩셋), 본문은 설계서+시드가 채운다. */
+export function blankSettlementRegionDesign(project: Project, presetId: string, name = ""): RegionDesign {
+  const side = 50;
+  return {
+    id: freshGeographyId(project, "region"),
+    name,
+    revision: 1,
+    tags: ["settlement"],
+    provenance: { origin: "user" },
+    terrain: { tilesetId: DEFAULT_TILESET_ID, width: side, height: side, floor: "ground", areas: [] },
+    places: [],
+    ports: [{ id: spatialId(genId("port")), name: "남쪽 출구", x: Math.floor(side / 2), y: side - 1 }],
+    routes: [],
+    settlement: { presetId, seed: 1 },
   };
 }
 

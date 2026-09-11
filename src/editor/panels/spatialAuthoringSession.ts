@@ -6,6 +6,7 @@ export type SpatialAuthoringMode = "design" | "instances";
 export type SpatialSourceFilter = "all" | "defaults" | "own";
 export type SpatialLegacyOrigin = "tilesetSpaces" | "villages" | "worldGen";
 export type SpatialPlaceKindFilter = "facility" | "settlement" | "natural";
+export type SpatialRegionKindFilter = "terrain" | "settlement";
 export type SpatialCamera = { readonly x: number; readonly y: number; readonly zoom: number };
 
 export type SpatialBreadcrumb = {
@@ -29,6 +30,7 @@ export type SpatialAuthoringSession = SpatialTabSlice & {
   readonly breadcrumb: readonly SpatialBreadcrumb[];
   readonly legacyOrigin: SpatialLegacyOrigin | null;
   readonly placeKindFilter: SpatialPlaceKindFilter | null;
+  readonly regionKindFilter: SpatialRegionKindFilter | null;
   readonly inspectorOpen: boolean;
 };
 
@@ -44,6 +46,7 @@ type StoredSession = {
   readonly breadcrumb: readonly SpatialBreadcrumb[];
   readonly legacyOrigin: SpatialLegacyOrigin | null;
   readonly placeKindFilter: SpatialPlaceKindFilter | null;
+  readonly regionKindFilter: SpatialRegionKindFilter | null;
   readonly inspectorOpen: boolean;
 };
 
@@ -61,6 +64,7 @@ function defaultStored(tab: SpatialShellTab = "places"): StoredSession {
     breadcrumb: [],
     legacyOrigin: null,
     placeKindFilter: null,
+    regionKindFilter: null,
     inspectorOpen: false,
   };
 }
@@ -72,6 +76,7 @@ function view(stored: StoredSession): SpatialAuthoringSession {
     breadcrumb: stored.breadcrumb,
     legacyOrigin: stored.legacyOrigin,
     placeKindFilter: stored.placeKindFilter,
+    regionKindFilter: stored.regionKindFilter,
     inspectorOpen: stored.inspectorOpen,
   };
 }
@@ -120,13 +125,14 @@ export function patchSpatialSession(patch: Partial<SpatialAuthoringSession>): Sp
     breadcrumb: patch.breadcrumb ?? current.breadcrumb,
     legacyOrigin: patch.legacyOrigin === undefined ? current.legacyOrigin : patch.legacyOrigin,
     placeKindFilter: patch.placeKindFilter === undefined ? current.placeKindFilter : patch.placeKindFilter,
+    regionKindFilter: patch.regionKindFilter === undefined ? current.regionKindFilter : patch.regionKindFilter,
     inspectorOpen: patch.inspectorOpen === undefined ? current.inspectorOpen : patch.inspectorOpen,
   });
 }
 
 export function setSpatialTab(tab: SpatialShellTab): SpatialAuthoringSession {
   const current = stored();
-  if (current.tab === tab && current.legacyOrigin === null && current.placeKindFilter === null) {
+  if (current.tab === tab && current.legacyOrigin === null && current.placeKindFilter === null && current.regionKindFilter === null) {
     return view(current);
   }
   return write({
@@ -134,6 +140,7 @@ export function setSpatialTab(tab: SpatialShellTab): SpatialAuthoringSession {
     tab,
     legacyOrigin: null,
     placeKindFilter: null,
+    regionKindFilter: null,
     breadcrumb: current.tab === tab ? current.breadcrumb : [],
   });
 }
@@ -141,19 +148,20 @@ export function setSpatialTab(tab: SpatialShellTab): SpatialAuthoringSession {
 export function rememberLegacySpatialRoute(origin: SpatialLegacyOrigin | null): SpatialAuthoringSession {
   if (origin === "villages") {
     return patchSpatialSession({
-      tab: "places",
+      tab: "regions",
       mode: "design",
       legacyOrigin: origin,
-      placeKindFilter: "settlement",
+      placeKindFilter: null,
+      regionKindFilter: "settlement",
     });
   }
   if (origin === "tilesetSpaces") {
-    return patchSpatialSession({ tab: "spaces", mode: "design", legacyOrigin: origin, placeKindFilter: null });
+    return patchSpatialSession({ tab: "spaces", mode: "design", legacyOrigin: origin, placeKindFilter: null, regionKindFilter: null });
   }
   if (origin === "worldGen") {
-    return patchSpatialSession({ tab: "regions", mode: "design", legacyOrigin: origin, placeKindFilter: null });
+    return patchSpatialSession({ tab: "regions", mode: "design", legacyOrigin: origin, placeKindFilter: null, regionKindFilter: null });
   }
-  return patchSpatialSession({ legacyOrigin: null, placeKindFilter: null });
+  return patchSpatialSession({ legacyOrigin: null, placeKindFilter: null, regionKindFilter: null });
 }
 
 export function selectSpatialDesign(designId: string | null): SpatialAuthoringSession {
