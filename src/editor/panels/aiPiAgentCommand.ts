@@ -9,6 +9,8 @@
 // 이 파일은 패널의 나머지와 최소 접점(말풍선·상태 표시·로그 붙이기)만 공유한다 — 기존 세션 루프는 건드리지 않는다.
 
 import { runPiAgentViaCompanion } from "@/ai/piAgent/client";
+import { deriveRunOutcome } from "@/ai/runOutcome";
+import type { RunOutcome, RunOutcomeFacts } from "@/ai/runOutcome";
 import { startPiRunLog, type PiRunContext, type PiRunFacts } from "@/ai/piAgent/activityLog";
 import { mergeMapBundles } from "@/ai/piAgent/mapBundle";
 import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentMode, type PiAgentThinkingLevel } from "@/ai/piAgent/protocol";
@@ -115,6 +117,8 @@ export interface PiCommandSurface {
    * 조수 세션이 하던 그 카드이고, Pi 경로에도 같은 계약(DESIGN.md 「Receipt card」)이 걸린다.
    */
   readonly showChangeReceipt?: (input: PiChangeReceipt) => void;
+  /** 실행 종료 4축(실행·목표·전달·이미지) — 패널의 ai-run-outcome 라인이 그린다. 생략하면 아무도 안 보고 안 그린다. */
+  readonly setRunOutcome?: (outcome: RunOutcome) => void;
 }
 
 export async function runPiCommand(
@@ -135,6 +139,38 @@ export async function runPiCommand(
   // 조회 턴에 팀을 켜면 시공 팀원이 아무것도 못 하는 채로 예산만 태운다 — 읽기 전용은 언제나 단독이다.
   const team = command.mode === "team" && !readOnly;
   const groups = team ? [command.mapIds] : command.mapIds.length > 0 ? command.mapIds.map((id) => [id]) : [[] as string[]];
+
+  // 실행 결과 4축 — 세션 경로(assistantSession.getRunOutcome)와 같은 deriveRunOutcome 을 쓴다.
+  // 실행부는 사실만 정하고 판정(목표)은 수용 검사가 소유하므로 Pi 경로에선 unassessed 가 정직한 값이다.
+  const streamErrors: string[] = [];
+  const spilledKeys: string[] = [];
+  let toolErrorCount = 0;
+  let changedCount = 0;
+  let applied = false;
+  /** 사실 팩 하나를 4축으로 투영한다 — 목표 축은 수용 검사의 소유라 여기선 늘 unassessed. */
+  const publishOutcome = (facts: Omit<RunOutcomeFacts, "acceptance" | "visualDelivery">): void => {
+    surface.setRunOutcome?.(deriveRunOutcome({ ...facts, acceptance: null }));
+  };
+  /** 종료 시점의 4축 하나를 게시한다. 종료 경로가 여러 개라서 하나로 모은다. */
+  const publishFinalOutcome = (): void => {
+    if (!surface.setRunOutcome) return;
+    const hasPendingDraft = changedCount > 0 && (config.piApply ?? "review") !== "auto";
+    publishOutcome({
+      execution: surface.signal?.aborted ? "cancelled"
+        : streamErrors.length > 0 && changedCount === 0 ? "blocked" : "response-final",
+      hasPendingDraft,
+      hasApplied: applied,
+      persistence: "none",
+    });
+  };
+  /** 성공·실패 캡션에 오류를 묻는다 — "실패 1" 배지가 "적용됨" 캡션에 묻히지 않게(실측 2026-09-11). */
+  const errorDigest = (): string => {
+    if (streamErrors.length === 0 && toolErrorCount === 0) return "";
+    const counts = [streamErrors.length > 0 ? `오류 ${streamErrors.length}건` : null, toolErrorCount > 0 ? `툴 실패 ${toolErrorCount}건` : null].filter((part) => part !== null);
+    const first = streamErrors[0] ?? "";
+    const separator = counts.length > 0 ? " — " : "";
+    return ` (⚠ ${counts.join(", ")}${separator}${first})`;
+  };
   // 이 실행 하나가 활동 로그 행 하나다. 시작은 pending, 끝은 같은 id 로 upsert —
   // 죽은 실행도 "무슨 지시였고 언제 시작했는지" 가 남는다(세션 턴과 같은 관례).
   const logContext: PiRunContext = {
@@ -175,6 +211,7 @@ export async function runPiCommand(
     if (event.type === "assistant") lastAssistantText = event.text;
     if (team) { push(event); return; }
     const agentId = mapIds.join(",") || `agent-${index + 1}`;
+    if (event.type === "error") { if (streamErrors.length < 3) streamErrors.push(event.message); }
     if (event.type === "start") {
       push({ type: "agent_spawn", agentId, role: "builder", mapId: mapIds[0] ?? null, mapName: mapIds[0] ? base.maps[mapIds[0]]?.name ?? null : null, task: command.task });
     }
@@ -203,6 +240,8 @@ export async function runPiCommand(
     )));
   } catch (error) {
     if (surface.signal?.aborted) {
+      // fetch 는 abort 에서 AbortError 를 던진다 — 실패가 아니라 중단이므로 중단 경로로 돌린다(실측 2026-09-11).
+      publishFinalOutcome();
       boardState = markTeamBoardAborted(boardState); sync();
       finishLog({ applied: false, changedCount: 0, stoppedReason: "중단" });
       surface.setStatus("대기");
@@ -210,6 +249,8 @@ export async function runPiCommand(
       return false;
     }
     const message = error instanceof Error ? error.message : String(error);
+    streamErrors.push(message);
+    publishFinalOutcome();
     boardState = markTeamBoardFailed(boardState, message); sync();
     finishLog({ applied: false, changedCount: 0, error: message });
     surface.setStatus("Pi 에이전트 실패");
@@ -217,6 +258,7 @@ export async function runPiCommand(
     return false;
   }
   if (surface.signal?.aborted) {
+    publishFinalOutcome();
     boardState = markTeamBoardAborted(boardState); sync();
     finishLog({ applied: false, changedCount: 0, stoppedReason: "중단" });
     surface.setStatus("대기");
@@ -230,18 +272,21 @@ export async function runPiCommand(
   if (merged.conflicts.length > 0) {
     surface.appendBubble("system", `에이전트 둘 이상이 같은 맵을 바꿨습니다(뒤의 결과 채택): ${merged.conflicts.map((id) => `\`${id}\``).join(", ")}`);
   }
+  spilledKeys.push(...merged.spills.flatMap((spill) => spill.keys));
   for (const spill of merged.spills) {
     surface.appendBubble("system", `범위 밖 변경을 버렸습니다 \`${spill.mapIds.join(",")}\`: ${spill.keys.map((key) => `\`${key}\``).join(", ")}`);
   }
   const changed = summarizeChanges(base, merged.project);
   const toolCalls = results.reduce((sum, done) => sum + done.stats.toolCalls, 0);
+  toolErrorCount += results.reduce((sum, done) => sum + done.stats.toolErrors, 0);
   const changedKeys = changedProjectKeys(base, merged.project);
-  const changedCount = changedKeys.length;
+  changedCount = changedKeys.length;
   if (changedCount === 0) {
     // 계획 턴은 바뀌지 않는 것이 정상이다 — "프로젝트에 바뀐 것이 없다" 로 끝내면 실패로 읽힌다.
     const idle = options.planOnly
       ? "계획만 세웠습니다. 실행하려면 같은 지시를 다시 보내세요."
       : "Pi 에이전트가 끝났지만 프로젝트에 바뀐 것이 없습니다.";
+    publishFinalOutcome();
     boardState = markTeamBoardApplied(boardState, options.planOnly ? "계획만 세웠습니다." : "바뀐 것이 없습니다."); sync();
     finishLog({ applied: false, changedCount: 0, stoppedReason: options.planOnly ? "계획만" : "변경 없음" });
     surface.setStatus("대기");
@@ -254,7 +299,7 @@ export async function runPiCommand(
   const receiptMapId = changedKeys.find((key) => key.startsWith("maps."))?.slice("maps.".length)
     ?? command.mapIds[0] ?? surface.getCurrentMapId();
   const apply = async (): Promise<boolean> => {
-    const applied = await applyProposedProject(merged.project, {
+    const appliedResult = await applyProposedProject(merged.project, {
     base: proposalBase,
     baseline,
     source: "agent",
@@ -266,15 +311,19 @@ export async function runPiCommand(
     snapshotMapId: command.mapIds[0] ?? surface.getCurrentMapId(),
     reason: `Pi ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회`,
   });
-    if (!applied.ok) {
-      const reason = `적용 실패(${applied.reason}): ${applied.issue ?? "무결성 오류"}`;
+    if (!appliedResult.ok) {
+      const reason = `적용 실패(${appliedResult.reason}): ${appliedResult.issue ?? "무결성 오류"}`;
+      publishFinalOutcome();
       boardState = markTeamBoardFailed(boardState, reason); sync();
       finishLog({ applied: false, changedCount, error: reason });
       surface.setStatus("적용 실패");
       surface.appendBubble("system", reason);
       return false;
     }
-    const appliedText = `적용했습니다 — ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개.`;
+    applied = true;
+    publishFinalOutcome();
+    const spillNotice = spilledKeys.length > 0 ? `, 범위 밖 ${spilledKeys.length}건 버림(${spilledKeys.map((key) => `\`${key}\``).join(", ")})` : "";
+    const appliedText = `적용했습니다 — ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개${spillNotice}${errorDigest()}.`;
     boardState = markTeamBoardApplied(boardState, appliedText); sync();
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
     surface.setStatus(team ? "Pi 팀 적용 완료" : "Pi 에이전트 적용 완료");
@@ -294,11 +343,14 @@ export async function runPiCommand(
   // 기준(base)이 그 사이 바뀌면 applyProposedProject 가 stale-base 로 거절한다.
   if ((config.piApply ?? "review") === "auto") return apply();
   boardState = markTeamBoardReview(boardState, changePreviewChips(changed)); sync();
+  publishFinalOutcome();
   finishLog({ applied: false, changedCount, stoppedReason: "검토 대기" });
   board.setReview({
     onApply: () => { board.setReview(null); void apply(); },
     onDiscard: () => {
       board.setReview(null);
+      changedCount = 0;
+      publishFinalOutcome();
       boardState = markTeamBoardDiscarded(boardState); sync();
       finishLog({ applied: false, changedCount, stoppedReason: "버림" });
       surface.setStatus("대기");
