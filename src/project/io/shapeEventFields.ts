@@ -100,6 +100,10 @@ function validateFieldSpawns(label: string, value: unknown): void {
     requireString(`${label}[${index}].id`, entry.id);
     requireString(`${label}[${index}].troopId`, entry.troopId);
     validateRect(`${label}[${index}].area`, entry.area);
+    if (entry.locationId !== undefined) {
+      const locationId = requireString(`${label}[${index}].locationId`, entry.locationId);
+      assert(locationId.trim().length > 0, `${label}[${index}].locationId는 비울 수 없습니다.`);
+    }
     if (entry.maxAlive !== undefined) {
       const maxAlive = requireNumber(`${label}[${index}].maxAlive`, entry.maxAlive);
       assert(Number.isInteger(maxAlive) && maxAlive > 0, `${label}[${index}].maxAlive는 1 이상의 정수여야 합니다.`);
