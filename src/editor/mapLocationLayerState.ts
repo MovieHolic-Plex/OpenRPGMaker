@@ -77,6 +77,12 @@ function writeStoredEnabled(enabled: boolean): void {
   }
 }
 
+function writeLocationDrawFlag(enabled: boolean): void {
+  if (typeof document === "undefined") return;
+  if (enabled) document.body.dataset.locationDraw = "1";
+  else delete document.body.dataset.locationDraw;
+}
+
 export function locationLayerState(): LocationLayerState {
   return state;
 }
@@ -102,6 +108,7 @@ function set(patch: Partial<LocationLayerState>): void {
 
 export function setLocationLayerEnabled(enabled: boolean): void {
   writeStoredEnabled(enabled);
+  writeLocationDrawFlag(enabled);
   // 레이어를 끄면 선택과 진행 중 드래그를 반드시 버린다 — 남겨 두면 다시 켤 때
   // 사라진 로케이션을 가리키는 유령 선택이 살아난다.
   set(enabled ? { enabled } : { enabled, selectedId: null, drag: null });

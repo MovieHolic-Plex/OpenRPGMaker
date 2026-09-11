@@ -1,5 +1,6 @@
 import { updateEventPage } from "@/editor/eventPages";
 import { store } from "@/project/store";
+import { editorState } from "@/editor/editorState";
 import type { Condition, EventPage, EventPageCondition, MapId } from "@/project/types";
 
 export type PageConditionContext = {
@@ -17,7 +18,7 @@ export type SwitchConditionParams = PageConditionContext & {
 
 export { advancedConditionEntries, type AdvancedConditionEntry } from "./pageConditionLayout";
 
-export type SimpleConditionKind = "actor" | "item" | "variable" | "timePhase" | "season" | "npcActivity" | "friendshipAtLeast" | "relationshipAtLeast";
+export type SimpleConditionKind = "actor" | "item" | "variable" | "timePhase" | "season" | "npcActivity" | "insideLocation" | "friendshipAtLeast" | "relationshipAtLeast";
 
 export function switchConditionAt(page: EventPage, slot: 0 | 1): Extract<Condition, { kind: "switch" }> | undefined {
   return page.conditions.filter((item): item is Extract<Condition, { kind: "switch" }> => item.kind === "switch")[slot];
@@ -96,6 +97,10 @@ export function defaultSimpleCondition(kind: SimpleConditionKind): EventPageCond
       return { kind: "season", season: "spring" };
     case "npcActivity":
       return { kind: "npcActivity", activity: "work" };
+    case "insideLocation": {
+      const mapId = editorState.get().currentMapId ?? project.startMapId;
+      return { kind: "insideLocation", locationId: project.maps[mapId]?.locations?.[0]?.id ?? "", inside: true };
+    }
     case "friendshipAtLeast":
       return { kind: "friendshipAtLeast", value: 100 };
     case "relationshipAtLeast":

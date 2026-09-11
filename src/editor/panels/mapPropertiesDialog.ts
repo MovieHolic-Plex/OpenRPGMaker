@@ -13,10 +13,11 @@ import { selectEditorMap } from "@/editor/mapSelection";
 import type { MapId } from "@/project/types";
 
 /** 창을 열자마자 초점을 둘 컨트롤. `tileset` = 「타일 그림판」 선택. */
-export type MapPropertiesFocus = "tileset";
+export type MapPropertiesFocus = "tileset" | "encounter";
 
 const FOCUS_TESTID: Record<MapPropertiesFocus, string> = {
   tileset: "map-props-tileset-select",
+  encounter: "map-props-tab-encounter",
 };
 
 export function openMapPropertiesDialog(
@@ -51,6 +52,7 @@ function focusMapPropertiesControl(mapId: MapId, controlTestId: string): void {
     dialog.querySelector<HTMLElement>(`[data-custom-select-for="${controlTestId}"]`)
     ?? dialog.querySelector<HTMLElement>(`[data-testid="${controlTestId}"]`);
   if (!target) return;
+  if (target.dataset.testid?.startsWith("map-props-tab-")) target.click();
   target.scrollIntoView?.({ block: "center" });
   target.focus?.({ preventScroll: true });
   // 프로그램 초점은 :focus-visible 링을 못 그리는 브라우저가 많다 — 어디로 보내졌는지 1.6초 동안

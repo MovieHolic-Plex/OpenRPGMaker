@@ -108,11 +108,14 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   const locationLayerOn = locationLayerState().enabled;
   container.append(el("button", {
     class: `btn map-location-layer-button${locationLayerOn ? " is-active" : ""}`,
-    text: "로케이션",
+    text: locationLayerOn ? "구역 그리기" : "로케이션",
     attrs: {
       type: "button",
-      title: "이름 붙인 구역 레이어 켜기/끄기 — 그리고 이름을 붙이면 이벤트 조건과 랜덤 인카운터가 가리킬 수 있습니다",
+      title: locationLayerOn
+        ? "구역 그리기 도구가 켜져 있습니다. 맵을 드래그해 이름 붙은 구역을 만듭니다. 타일 칠하기는 이 버튼을 끄거나 브러시를 다시 고르면 돌아옵니다."
+        : "구역 그리기 — 켜면 맵을 드래그해 이름 붙은 구역을 만듭니다. 이벤트 조건과 랜덤 인카운터가 그 이름을 가리킬 수 있습니다.",
       "aria-pressed": String(locationLayerOn),
+      ...(locationLayerOn ? { "aria-current": "true" } : {}),
     },
     dataset: { testid: "map-location-layer-toggle" },
     on: { click: () => toggleLocationLayer() },

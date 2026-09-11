@@ -234,6 +234,7 @@ export function renderEditor(main: HTMLElement): void {
   // 툴바의 로케이션 토글이 눌린 상태를 그대로 보여야 한다 — 레이어 상태 변화에 토글도 다시 그린다.
   unsubLocationToggle = subscribeLocationLayer(() => {
     if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
+    scheduleFullPanelRefresh();
   });
 
   unsubStore = store.subscribe((_project, change) => refreshPanels(change));

@@ -32,9 +32,15 @@ import {
   type LocationActionResult,
 } from "@/editor/mapLocationLayerState";
 import { openLocationAdoptionPanel } from "@/editor/panels/mapLocationAdoptionPanel";
-import { collectMapLocationReferenceIssues } from "@/project/mapLocationReferences";
+import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
+import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
+import {
+  collectMapLocationReferenceIssues,
+  collectMapLocationReferences,
+  type MapLocationReferenceSite,
+} from "@/project/mapLocationReferences";
 import { DEFAULT_ADOPTION_ROLES, adoptionRoleLabel, surveyMapAdoption } from "@/project/mapLocationAdoption";
-import { locationDisplayColor, mapLocations, rectFromDrag } from "@/project/mapNamedLocations";
+import { isLocationDrawClick, locationDisplayColor, mapLocations, rectFromDrag } from "@/project/mapNamedLocations";
 import { store } from "@/project/store";
 import type { GameMap, MapNamedLocation, Rect } from "@/project/types";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
@@ -122,6 +128,33 @@ function report(result: LocationActionResult): void {
   if (result.message) toast(result.message, "info");
 }
 
+function emptyDrawHintRect(map: GameMap): Rect {
+  const bounds = overlayEl?.getBoundingClientRect?.();
+  const center = bounds
+    ? resolveClientPointTile({ x: bounds.left + bounds.width / 2, y: bounds.top + bounds.height / 2 })
+    : null;
+  const w = Math.min(8, Math.max(1, map.width));
+  const h = Math.min(6, Math.max(1, map.height));
+  const cx = center?.x ?? Math.floor(map.width / 2);
+  const cy = center?.y ?? Math.floor(map.height / 2);
+  const x = Math.max(0, Math.min(map.width - w, cx - Math.floor(w / 2)));
+  const y = Math.max(0, Math.min(map.height - h, cy - Math.floor(h / 2)));
+  return { x, y, w, h };
+}
+
+function renderEmptyDrawHint(overlay: HTMLElement, map: GameMap): void {
+  if (locationLayerState().drag) return;
+  if (mapLocations(map).length > 0) return;
+  const ghost = el("div", {
+    class: "map-location-empty-ghost",
+    dataset: { testid: "map-location-empty-ghost" },
+    attrs: { "aria-hidden": "true" },
+    children: [el("span", { class: "map-location-empty-ghost-label", text: "여기를 드래그" })],
+  });
+  applyOverlayRect(ghost, emptyDrawHintRect(map));
+  overlay.append(ghost);
+}
+
 // ───────────────────────────────────────────────────────────────── 렌더
 
 function render(): void {
@@ -131,6 +164,10 @@ function render(): void {
   if (!overlay || !inspector) return;
   overlay.classList.toggle("is-active", state.enabled);
   inspector.classList.toggle("is-active", state.enabled);
+  if (typeof document !== "undefined") {
+    if (state.enabled) document.body.dataset.locationDraw = "1";
+    else delete document.body.dataset.locationDraw;
+  }
   if (!state.enabled) {
     cleanupYield?.();
     cleanupYield = null;
@@ -144,6 +181,7 @@ function render(): void {
   clearChildren(inspector);
   if (!map) return;
   renderBoxes(overlay, map, state.selectedId);
+  renderEmptyDrawHint(overlay, map);
   renderDragPreview(overlay);
   inspector.append(renderInspector(map, state.selectedId));
 }
@@ -268,7 +306,7 @@ function renderInspector(map: GameMap, selectedId: string | null): HTMLElement {
       class: "map-location-hint",
       text:
         locations.length === 0
-          ? "빈 곳을 드래그하면 새 구역이 생깁니다. 구역은 이름으로 이벤트 조건과 랜덤 인카운터가 가리킵니다."
+          ? "맵의 점선 상자 안을 드래그하면 새 구역이 생깁니다. 한 번 클릭만으로는 만들어지지 않습니다."
           : "구역을 눌러 고르고, 몸통을 끌어 옮기고, 오른쪽 아래 손잡이로 크기를 바꿉니다.",
       dataset: { testid: "map-location-hint" },
     }),
@@ -400,10 +438,13 @@ function renderSelectedEditor(location: MapNamedLocation): HTMLElement {
   box.append(
     el("p", {
       class: "map-location-refs",
-      text: references === 0 ? "이 구역을 가리키는 조건·인카운터가 없습니다." : `이 구역을 가리키는 참조 ${references}건.`,
+      text: references === 0
+        ? "이벤트 조건 「구역」, 시작 방식 「구역에 드나들면」, 맵 설정의 랜덤 전투에서 이 이름을 고를 수 있습니다."
+        : `이 구역을 가리키는 참조 ${references}건.`,
       dataset: { testid: "map-location-refs" },
     }),
   );
+  box.append(renderReferenceSites(location.id));
 
   box.append(
     el("button", {
@@ -421,6 +462,64 @@ function renderSelectedEditor(location: MapNamedLocation): HTMLElement {
       name.focus();
       name.select();
     });
+  }
+  return box;
+}
+
+function siteLabel(site: MapLocationReferenceSite): string {
+  const project = store.getCurrent();
+  if (site.kind === "encounter") return `랜덤 전투 ${site.entryIndex + 1}번`;
+  const eventName = site.eventId
+    ? project.maps[site.mapId]?.events.find((event) => event.id === site.eventId)?.name ?? site.eventId
+    : null;
+  if (site.kind === "trigger") return eventName ? `${eventName} · 시작 방식` : site.path;
+  return eventName ? `${eventName} · 출현 조건` : site.path;
+}
+
+function openReferenceSite(site: MapLocationReferenceSite): void {
+  if (site.kind === "encounter") {
+    const map = store.getCurrent().maps[site.mapId];
+    openMapPropertiesDialog(site.mapId, map?.name ?? site.mapId, { focus: "encounter" });
+    return;
+  }
+  if (site.eventId) openEventEditorModal(site.mapId, site.eventId);
+}
+
+function renderReferenceSites(locationId: string): HTMLElement {
+  const map = currentLocationMap();
+  const project = store.getCurrent();
+  const sites = collectMapLocationReferences(project).filter((entry) => {
+    if (entry.locationId !== locationId) return false;
+    return !map || entry.site.mapId === map.id;
+  });
+  const box = el("div", { class: "map-location-ref-sites", dataset: { testid: "map-location-ref-sites" } });
+  if (sites.length === 0) {
+    box.append(
+      el("button", {
+        class: "btn",
+        text: "맵 설정에서 인카운터에 쓰기",
+        attrs: { type: "button" },
+        dataset: { testid: "map-location-open-encounter" },
+        on: {
+          click: () => {
+            const current = currentLocationMap();
+            if (current) openMapPropertiesDialog(current.id, current.name, { focus: "encounter" });
+          },
+        },
+      }),
+    );
+    return box;
+  }
+  for (const [index, entry] of sites.entries()) {
+    box.append(
+      el("button", {
+        class: "btn btn-ghost map-location-ref-site",
+        text: siteLabel(entry.site),
+        attrs: { type: "button" },
+        dataset: { testid: `map-location-ref-site-${index}` },
+        on: { click: () => openReferenceSite(entry.site) },
+      }),
+    );
   }
   return box;
 }
@@ -637,6 +736,7 @@ function onPointerUp(event: PointerEvent): void {
   setLocationDrag(null);
   if (drag.kind === "draw") {
     const rect = rectFromDrag(drag.from, tile ?? drag.to);
+    if (isLocationDrawClick(drag.from, tile ?? drag.to)) return;
     focusNameOnNextRender = true;
     report(createLocationFromRect(rect));
     return;

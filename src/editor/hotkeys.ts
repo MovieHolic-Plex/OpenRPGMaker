@@ -12,6 +12,7 @@
 
 import { deleteSelectedEditorEvent } from "@/editor/eventDeletion";
 import { EDITOR_ZOOM_LEVELS, editorState, type EditorState, type Layer, type Tool } from "@/editor/editorState";
+import { dismissLocationDrawModeForLayer, dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
 import { pendingHistoryLabels, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { toast } from "@/util/toast";
 
@@ -208,6 +209,7 @@ const TOOL_LETTER_HOTKEYS: Readonly<Record<string, Tool>> = {
 
 /** 레이어 전환 시 이벤트 레이어면 도구를 event로, 나가면 paint로 되돌린다. */
 export function applyLayer(layer: Layer): void {
+  dismissLocationDrawModeForLayer(layer);
   const state = editorState.get();
   if (layer === "event") {
     editorState.set({ layer, tool: "event" });
@@ -258,6 +260,7 @@ export function handleEditorKey(event: KeyboardEvent): boolean {
     const tool = TOOL_HOTKEYS[toolIndex];
     // 이벤트 도구는 이벤트 레이어로 강제. 그 외 도구는 이벤트 레이어에서 타일 도구로 빠지지 않게 가드.
     const state = editorState.get();
+    dismissLocationDrawModeForTool(tool);
     if (tool === "event") {
       editorState.set({ tool: "event", layer: "event" });
     } else if (state.layer === "event") {
@@ -275,10 +278,13 @@ export function handleEditorKey(event: KeyboardEvent): boolean {
     event.preventDefault();
     const state = editorState.get();
     if (letterTool === "event") {
+      dismissLocationDrawModeForTool(letterTool);
       editorState.set({ tool: "event", layer: "event" });
     } else if (state.layer === "event") {
+      dismissLocationDrawModeForTool(letterTool);
       editorState.set(toolPatch(letterTool, "lower"));
     } else {
+      dismissLocationDrawModeForTool(letterTool);
       editorState.set(toolPatch(letterTool));
     }
     return true;
