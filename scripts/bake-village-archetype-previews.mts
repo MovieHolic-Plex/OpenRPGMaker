@@ -20,6 +20,7 @@ import { runTool, runToolDefinition } from "@/editor/tools/toolRunner";
 import { presetRecordFromArchetype } from "@/editor/panels/databaseVillageModel";
 import { VILLAGE_ARCHETYPES } from "@/editor/tools/village/authoringData";
 import { chipsetQuarterComposition } from "@/project/defaults/terrainQuarterAutotile";
+import { tileBackingTile } from "@/editor/tileLayerPolicy";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 
 const T = 16;
@@ -69,6 +70,11 @@ function render(map: GameMap, tileset: TilesetDef): PNG {
       const index = y * map.width + x;
       const dx = x * T;
       const dy = y * T;
+      // 투명 칩(나무 밑동)이 하위에 앉으면 아래가 뚫려 검은 사각형이 남는다 — 정책이
+      // 정한 받침을 먼저 깐다. 편집기·런타임이 쓰는 **같은 함수**이고, 이 스크립트가
+      // 빠져 있어 구운 원형 전경 카드에 구멍이 보였다(실측: 1.51% → 0.00%).
+      const backing = tileBackingTile(tileset, map.lowerTiles[index]!);
+      if (backing !== null) blit(backing, dx, dy);
       const composition = chipsetQuarterComposition(map, tileset as never, x, y);
       if (composition) {
         blit(composition.underlayTile ?? map.lowerTiles[index]!, dx, dy);
