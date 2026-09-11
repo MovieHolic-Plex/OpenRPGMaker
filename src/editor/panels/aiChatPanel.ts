@@ -50,9 +50,9 @@ import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyResolution } from "@/ai/autonomyLevels";
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
 import { store } from "@/project/store";
-import { parsePiCommand, runPiCommand } from "./aiPiAgentCommand";
+import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, type PiChangeReceipt } from "./aiPiAgentCommand";
 import { createTeamPanel } from "./aiTeamPanel";
-import { DEFAULT_EXECUTION_ROUTE, DEFAULT_PI_TEAM, EXECUTION_ROUTE_LABEL, resolveExecutionRoute } from "@/ai/piAgent/executionRoute";
+import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
@@ -534,9 +534,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       controller.session?.updateConfig(config);
       composerShell.setModelLabel(modelChipLabel());
       composerShell.syncEffort(isAutonomyLevel(config.autonomyLevel) ? config.autonomyLevel : "balanced");
-      // 경로·팀은 컴포저와 설정이 함께 쓰는 값이다. 설정에서 바꾼 것을 컴포저가 계속 옛 값으로
-      // 보여 주면 화면이 거짓말을 한다 — 다음 전송은 저장값을 읽기 때문이다.
-      composerShell.setRoute(config.executionRoute ?? DEFAULT_EXECUTION_ROUTE);
+      // 팀 비트도 같은 값이다 — 설정에서 끄면 컴포저 토글이 따라와야 다음 평문이 어긋나지 않는다.
       composerShell.setPiTeam(config.piTeam ?? DEFAULT_PI_TEAM);
     },
     extraSections: settingsExtraSections,
@@ -726,6 +724,32 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     };
     studioShell?.setChangePreview(lastStudioChange);
     appendChangeCard(card);
+  };
+
+  /**
+   * Pi 경로의 적용 영수증 — 조수 세션의 변경 카드와 같은 것(지금 → 적용 후 두 장 + 칩 + 되돌리기).
+   *
+   * Pi 명령은 «무엇이 바뀌었나» 만 알고 카드·되돌리기·스튜디오 「변경」 탭은 패널에 있다. 그래서
+   * 렌더를 명령에 넣지 않고 이 훅으로 되돌린다 — 명령은 DOM 을 모른 채로 남는다.
+   */
+  const showPiChangeReceipt = (input: PiChangeReceipt): void => {
+    // 맵이 안 바뀐 실행은 그릴 영역이 없다 — 칩만 남은 가짜 카드를 만들지 않는다.
+    if (!input.mapId) return;
+    const preview: ChangePreviewInput = {
+      before: input.before,
+      after: input.after,
+      mapId: input.mapId,
+      title: input.title,
+      detail: input.detail,
+      chips: [...input.chips],
+      onUndo: () => {
+        noteAiChangeUndone({ toolNames: [...input.toolNames] });
+        undoMapEdit();
+      },
+    };
+    lastStudioChange = preview;
+    studioShell?.setChangePreview(preview);
+    appendChangeCard(renderChangePreviewCard(preview));
   };
 
   /**
@@ -1355,7 +1379,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const drainPendingSends = (): void => {
     const next = pendingSends.shift();
     refreshQueueIndicator();
-    if (next) void sendText(next.text, next.displayAs);
+    if (next) {
+      const { command, plan } = plainPiTurn(next.text);
+      void runPiTurn(command, next.displayAs ?? next.text, plan);
+    }
   };
 
   // ── 할 일 목록 표면(작업 계획 체크리스트) ─────────────────────────────────
@@ -1823,6 +1850,52 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     toast("AI 응답 완료 — 시연 실행 창 뒤에 결과/제안이 있습니다. '편집으로'를 눌러 확인하세요.", "info");
   };
 
+  /**
+   * Pi 턴 하나 — 조수 채팅의 유일한 실행 경로다(2026-09-11). 명시 `/pi` 든 평문이든 여기로 모인다:
+   * 중단 버튼·상태·보드·영수증 배선이 한 곳에 있어야 두 입구가 어긋나지 않는다.
+   */
+  const runPiTurn = async (command: ParsedPiCommand, displayText: string, plan: PiRunPlan | null): Promise<void> => {
+    if (turnBusy) {
+      toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
+      return;
+    }
+    if (displayText) appendBubble("user", displayText);
+    // 기존 턴과 같은 중단 버튼을 쓴다 — 컨트롤러를 활성 자리에 앉히고 실행 중 표시(turnBusy)를 켠다.
+    piRunController = new AbortController();
+    activeAbortController = piRunController;
+    abortNoticeShown = false;
+    runSurface.turnBusy = true;
+    refreshAbortButton();
+    // 유휴 판정을 갱신해야 로그 카드가 펼쳐진다 — 이 경로는 세션 턴 러너를 거치지 않아 스스로 부른다.
+    syncGlassIdle();
+    try {
+      await runPiCommand(command, {
+        appendBubble: (role, line) => appendBubble(role, line),
+        appendCard: (element) => { appendChangeCard(element); log.scrollTop = log.scrollHeight; },
+        setStatus,
+        getCurrentMapId: () => editorState.get().currentMapId ?? null,
+        signal: piRunController.signal,
+        showChangeReceipt: showPiChangeReceipt,
+      }, plan ? {
+        readOnly: plan.readOnly,
+        planOnly: plan.planOnly,
+        maxTurns: plan.maxTurns,
+        thinkingLevel: plan.thinkingLevel,
+      } : {});
+    } finally {
+      if (activeAbortController === piRunController) activeAbortController = null;
+      piRunController = null;
+      runSurface.turnBusy = false;
+      refreshAbortButton();
+      syncGlassIdle();
+    }
+  };
+  /** 평문 한 줄 → Pi 명령 + 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
+  const plainPiTurn = (text: string): { readonly command: ParsedPiCommand; readonly plan: PiRunPlan } => {
+    const plan = resolvePiRunPlan(currentAutonomy());
+    const team = (loadAiConfig().piTeam ?? DEFAULT_PI_TEAM) && !plan.readOnly;
+    return { command: plainPiCommand(text, team ? "team" : "single", editorState.get().currentMapId ?? null), plan };
+  };
   const send = async (): Promise<void> => {
     const text = input.value.trim();
     if (!text) {
@@ -1843,56 +1916,25 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     input.value = "";
     syncInputHeight();
     refreshSendEnabled();
-    // 실행 경로: 컴포저 셀렉트(설정과 같은 값)가 기본을 정하고, 질문·계획·선택 영역은 기존 조수로 간다.
-    // `/pi …` 는 언제나 명시적 Pi 경로다. 팀은 경로가 아니라 그 Pi 의 실행 모드 — 설정의 비트
-    // (`piTeam`)가 평문을 팀으로 돌리고, 명시 `/pi team …` 이 그 위에 선다(파서가 최종 권위).
-    const sendConfig = loadAiConfig();
-    const decision = resolveExecutionRoute({
-      text,
-      // The composer no longer carries mode chips (#731); the autonomy dial derives it.
-      composerMode: derivedComposerMode(),
-      preferred: sendConfig.executionRoute ?? DEFAULT_EXECUTION_ROUTE,
-      selectionTaskActive: Boolean(selectionTaskActive && currentSelectionForRegionTask()),
-    });
-    const team = sendConfig.piTeam ?? DEFAULT_PI_TEAM;
+    // 조수 채팅의 실행 경로는 Pi 하나다(2026-09-11). 질문·계획은 자율성 다이얼이 Pi 노브
+    // (읽기 전용·계획만·턴 상한·추론)로 풀고, 선택 영역 작업만 영역 파이프라인으로 간다.
+    // 명시 `/pi …` 는 언제나 우선이고 다이얼의 읽기 전용·계획보다 세다 — 사용자가 직접 쓴 명령이다.
     const explicit = parsePiCommand(text, store.getCurrent(), editorState.get().currentMapId ?? null);
-    const piCommand = explicit
-      ?? (decision.route === "session"
-        ? null
-        : parsePiCommand(`/pi ${team ? "team " : ""}${text}`, store.getCurrent(), editorState.get().currentMapId ?? null));
-    if (piCommand) {
+    if (explicit) {
+      await runPiTurn(explicit, text, null);
+      return;
+    }
+    if (selectionTaskActive && currentSelectionForRegionTask()) {
+      // 영역 작업은 별도 파이프라인(하드 클립·블렌드 폴리시·고스트 프리뷰)을 쓴다 — Pi 이관은 별도 작업.
       if (turnBusy) {
         toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
         return;
       }
-      appendBubble("user", text);
-      // 기존 턴과 같은 중단 버튼을 쓴다 — 컨트롤러를 활성 자리에 앉히고 실행 중 표시(turnBusy)를 켠다.
-      piRunController = new AbortController();
-      activeAbortController = piRunController;
-      abortNoticeShown = false;
-      runSurface.turnBusy = true;
-      refreshAbortButton();
-      // 유휴 판정을 갱신해야 로그 카드가 펼쳐진다 — 이 경로는 세션 턴 러너를 거치지 않아 스스로 부른다.
-      syncGlassIdle();
-      try {
-        await runPiCommand(piCommand, {
-          appendBubble: (role, line) => appendBubble(role, line),
-          appendCard: (element) => { appendChangeCard(element); log.scrollTop = log.scrollHeight; },
-          setStatus,
-          getCurrentMapId: () => editorState.get().currentMapId ?? null,
-          signal: piRunController.signal,
-        });
-      } finally {
-        if (activeAbortController === piRunController) activeAbortController = null;
-        piRunController = null;
-        runSurface.turnBusy = false;
-        refreshAbortButton();
-        syncGlassIdle();
-      }
+      await sendSelectionRegionTask(text);
       return;
     }
-    if (selectionTaskActive && currentSelectionForRegionTask()) await sendSelectionRegionTask(text);
-    else await sendText(text);
+    const { command, plan } = plainPiTurn(text);
+    await runPiTurn(command, text, plan);
   };
 
   sendButton.addEventListener("click", () => void send());
@@ -2552,16 +2594,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     onPlanningOpen: () => planningReuse.refresh(),
     // 바깥 클릭 판정은 데크 전체 — 레일의 ⋯ 가 바 밖에 있다(데크 조립 전엔 바 기준).
     isInside: (target) => (deckRoot ?? composerShell.commandBar).contains(target),
-    routeChips: {
-      initial: loadAiConfig().executionRoute ?? DEFAULT_EXECUTION_ROUTE,
+    teamToggleOptions: {
       initialTeam: loadAiConfig().piTeam ?? DEFAULT_PI_TEAM,
-      onChange: (route) => {
-        saveAiConfig({ ...loadAiConfig(), executionRoute: route });
-        setStatus(`지시 경로: ${EXECUTION_ROUTE_LABEL[route]}`);
-      },
       onTeamChange: (team) => {
         saveAiConfig({ ...loadAiConfig(), piTeam: team });
-        setStatus(team ? "Pi 팀으로 실행합니다 — 팀장이 맵을 나눠 배정하고 검수합니다." : "Pi 에이전트 하나로 실행합니다.");
+        setStatus(team ? "Pi 팀 실행" : "Pi 에이전트 하나");
       },
     },
     effortChips: {
@@ -3065,7 +3102,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("AI 분석을 시작할 수 없습니다.", "error");
       return;
     }
-    void sendText(kickoff.prompt, kickoff.displayAs);
+    const { command, plan } = plainPiTurn(kickoff.prompt);
+    void runPiTurn(command, kickoff.displayAs, plan);
   };
 
   if (typeof window !== "undefined") {
@@ -3246,7 +3284,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       } catch {
         /* headless */
       }
-      await sendText(text);
+      const { command, plan } = plainPiTurn(text);
+      await runPiTurn(command, text, plan);
     },
   });
   // 부팅 복원 — 이 프로젝트 범위의 최신 대화를 이어받는다. 전역 최신 하나만 집어 스코프를 대조하는

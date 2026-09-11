@@ -30,8 +30,11 @@ export interface PiAgentRequest {
   readonly toolDomains?: readonly string[];
   /** 팀 모드의 팀원 명세. 비우면 기본 팀. */
   readonly team?: PiTeamSpec;
+  /** 읽기 전용 실행: 쓰기 툴을 주지 않고 조회·보고만 한다(자율성 「읽기 전용」·계획 턴). */
+  readonly readOnly?: boolean;
+  /** 한 실행의 시간 상한(ms). 비우면 런타임 기본 10분. 팀은 하위 에이전트마다 같은 값이 걸린다. */
+  readonly timeoutMs?: number;
 }
-
 export interface PiAgentStats {
   readonly ms: number;
   readonly turns: number;

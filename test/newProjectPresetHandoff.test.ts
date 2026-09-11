@@ -11,7 +11,13 @@ import { renderTopbar } from "@/editor/panels/menu";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
-import { emptyWikiResponse, isWikiExtraction } from "./wikiTransportFixture";
+import { runPiCommand } from "@/editor/panels/aiPiAgentCommand";
+
+// 부팅 프리셋도 컴포저와 같은 경로로 간다 — 조수 채팅은 Pi 하나다(2026-09-11).
+vi.mock("@/editor/panels/aiPiAgentCommand", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/editor/panels/aiPiAgentCommand")>()),
+  runPiCommand: vi.fn(async () => true),
+}));
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -60,6 +66,7 @@ afterEach(async () => {
   await signal(whenAiChatPanelSettled());
   bootIntent.clearPendingAiBootIntent();
   document.body.replaceChildren();
+  vi.mocked(runPiCommand).mockClear();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
@@ -76,19 +83,12 @@ it("New Project preset waits for project creation AND conversation adoption befo
       try { await target.send?.(text); } finally { completed.resolve(); }
     } } : null);
   });
-  const modelRequests: unknown[] = [];
-  const requested = deferred<{ body: { messages: unknown[] }; signal: AbortSignal }>();
-  vi.stubGlobal("fetch", vi.fn(async (_url: unknown, init?: RequestInit) => {
-    const body = JSON.parse(String(init?.body ?? "{}"));
-    if (!Array.isArray(body.messages)) return new Response("{}");
-    if (isWikiExtraction(body.messages)) return emptyWikiResponse();
-    if (!body.response_format) {
-      modelRequests.push(body);
-      requested.resolve({ body, signal: init!.signal! });
-    }
-    return Response.json({ choices: [{ message: { role: "assistant", content: body.response_format
-      ? '{"mode":"other","needsPlan":false}' : "done" }, finish_reason: "stop" }] });
-  }));
+  // 이 턴의 관찰점은 Pi 호출 하나다 — 부팅 프리셋도 세션이 아니라 Pi 로 간다.
+  const requested = deferred<string>();
+  vi.mocked(runPiCommand).mockImplementation(async (command) => {
+    requested.resolve(command.task);
+    return true;
+  });
   document.body.append(renderAiChatPanel());
   await signal(whenAiChatPanelSettled());
 
@@ -133,6 +133,7 @@ it("New Project preset waits for project creation AND conversation adoption befo
     expect(candidate.system.monsterCollection).toBe(true);
     expect(createProject).toHaveBeenCalledOnce();
     expect(handoff).not.toHaveBeenCalled();
+    expect(runPiCommand).not.toHaveBeenCalled();
     expect(control<HTMLTextAreaElement>("ai-input").value).toBe("");
     creation.resolve();
     await signal(adoptionStarted.promise);
@@ -141,12 +142,11 @@ it("New Project preset waits for project creation AND conversation adoption befo
     expect(control<HTMLTextAreaElement>("ai-input").value).toBe("");
     expect(document.querySelector('[data-testid="ai-chat-log"]')?.textContent).not.toContain(handoff.mock.calls[0]![0]);
     adoption.resolve(null);
-    const request = await signal(requested.promise);
+    const task = await signal(requested.promise);
     await signal(completed.promise);
     await signal(whenAiChatPanelSettled());
-    expect(modelRequests).toHaveLength(1);
-    expect(request.signal.aborted).toBe(false);
-    expect(request.body.messages).toEqual(expect.arrayContaining([expect.objectContaining({ role: "user", content: expect.stringContaining(handoff.mock.calls[0]![0]) })]));
+    expect(runPiCommand).toHaveBeenCalledTimes(1);
+    expect(task).toContain(handoff.mock.calls[0]![0]);
     expect(handoff).toHaveBeenCalledOnce();
     expect(store.getCurrent().system.monsterCollection).toBe(true);
   } finally {

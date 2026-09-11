@@ -3,7 +3,7 @@
 // 여기서는 `runPiCommand` 를 가로채 **패널이 넘기는 값**만 본다(명령 내부는 piAgentCommandLoop 테스트가 본다).
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clearConversations } from "@/ai/conversationStore";
-import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
+import { AI_CONFIG_STORAGE_KEY, defaultAiConfig, loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { runPiCommand } from "@/editor/panels/aiPiAgentCommand";
@@ -40,14 +40,18 @@ function selectAutonomy(panel: FakeElement, level: string): void {
   dial.dispatchEvent(new Event("change"));
 }
 
+/** 전송 한 번 — 호출이 «새로» 일어난 것과 턴이 정산된 것(중단 버튼이 숨은 것)을 둘 다 기다린다. */
 async function send(panel: FakeElement, text: string): Promise<void> {
+  const before = vi.mocked(runPiCommand).mock.calls.length;
   const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
   input.value = text;
   findByTestId(panel, "ai-send")?.click();
-  await vi.waitFor(() => expect(runPiCommand).toHaveBeenCalled(), { timeout: 2_000, interval: 5 });
+  await vi.waitFor(() => expect(vi.mocked(runPiCommand).mock.calls.length).toBeGreaterThan(before), { timeout: 2_000, interval: 5 });
+  await vi.waitFor(() => expect((findByTestId(panel, "ai-abort") as unknown as { hidden?: boolean } | null)?.hidden).toBe(true));
 }
 
 const lastCommand = () => vi.mocked(runPiCommand).mock.calls.at(-1)?.[0];
+const lastPlan = () => vi.mocked(runPiCommand).mock.calls.at(-1)?.[2];
 
 beforeEach(() => {
   vi.stubEnv("VITE_LLM_API_URL", "");
@@ -85,6 +89,44 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     // Break: 수동 추론 override 가 남아 있으면 다이얼이 저장한 프리셋 값과 갈라진다.
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
     expect(findByTestId(panel, "ai-composer-reasoning")).toBeNull();
+  });
+
+  it("경로 셀렉트는 없다 — 루프는 Pi 하나다", () => {
+    // Break: 셀렉트가 남으면 «조수» 라는 두 번째 루프가 UI 에 살아 있는 것처럼 보인다(세션 deprecated).
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    expect(findByTestId(panel, "ai-composer-route")).toBeNull();
+  });
+
+  it("다이얼의 읽기 전용·계획이 Pi 노브로 실린다", async () => {
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    selectAutonomy(panel, "readonly");
+    await send(panel, "이벤트가 몇 개지?");
+    expect(lastPlan()).toMatchObject({ readOnly: true, planOnly: false, maxTurns: 4 });
+    // 확인(계획만)은 쓰기까지 막는다 — 계획을 세우면서 실행하면 그건 계획이 아니다.
+    selectAutonomy(panel, "confirm");
+    await send(panel, "마을 계획을 세워줘");
+    expect(lastPlan()).toMatchObject({ readOnly: true, planOnly: true, maxTurns: 6 });
+    expect(lastCommand()?.mode).toBe("single");
+  });
+
+  it("팀 비트가 실행 모드를 정하고, 조회 턴은 단독으로 돈다", async () => {
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    saveAiConfig({ ...loadAiConfig(), piTeam: true });
+    await send(panel, "집 한 채 지어줘");
+    expect(lastCommand()?.mode).toBe("team");
+    // 읽기 전용이면 팀을 켜 둬도 단독이다 — 시공·검수 팀원이 아무것도 못 하는 채로 예산만 탄다.
+    selectAutonomy(panel, "readonly");
+    await send(panel, "이 맵에 뭐가 있지?");
+    expect(lastCommand()?.mode).toBe("single");
+  });
+
+  it("명시 /pi 는 다이얼보다 세다", async () => {
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    selectAutonomy(panel, "readonly");
+    await send(panel, "/pi 집 한 채 지어줘");
+    // 사용자가 직접 쓴 명령이다 — 읽기 전용으로 강등하면 아무 일도 일어나지 않는다.
+    expect(lastPlan()).toEqual({});
+    expect(lastCommand()?.task).toBe("집 한 채 지어줘");
   });
 
 
