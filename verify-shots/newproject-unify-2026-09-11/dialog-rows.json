@@ -1,0 +1,56 @@
+[
+  {
+    "choiceId": "blank",
+    "label": "빈 프로젝트",
+    "blurb": "장르 설정 없이 빈 맵으로 시작합니다",
+    "art": null
+  },
+  {
+    "choiceId": "monster-collect",
+    "label": "몬스터 수집",
+    "blurb": "수집 · 조우 · 도감",
+    "art": "/assets/generated/welcome/slide-01.png"
+  },
+  {
+    "choiceId": "story-cutscene",
+    "label": "회상 스토리",
+    "blurb": "회상 · 컷신 · 엔딩",
+    "art": "/assets/generated/welcome/mini-03-moon.png"
+  },
+  {
+    "choiceId": "adventure-jrpg",
+    "label": "모험 JRPG",
+    "blurb": "파티 · 던전",
+    "art": "/assets/generated/welcome/slide-04.png"
+  },
+  {
+    "choiceId": "horror-gallery",
+    "label": "이브 같은 갤러리 호러",
+    "blurb": "미술관 · 단서 · 공포",
+    "art": "/assets/generated/welcome/slide-05.png"
+  },
+  {
+    "choiceId": "school-horror",
+    "label": "아오오니 같은 학교 호러",
+    "blurb": "학교 · 추적 · 공포",
+    "art": "/assets/generated/welcome/slide-06.png"
+  },
+  {
+    "choiceId": "farm-life",
+    "label": "농장 생활",
+    "blurb": "농장 · 일상",
+    "art": "/assets/generated/welcome/slide-03.png"
+  },
+  {
+    "choiceId": "partner-raise",
+    "label": "파트너 육성",
+    "blurb": "파트너 · 진화",
+    "art": "/assets/generated/welcome/slide-02.png"
+  },
+  {
+    "choiceId": "action-rpg",
+    "label": "2D 액션 RPG",
+    "blurb": "필드 공격 · 회피 · 가드",
+    "art": "/assets/generated/welcome/slide-00-hero.png"
+  }
+]

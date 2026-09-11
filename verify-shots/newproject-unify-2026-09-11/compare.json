@@ -1,0 +1,12 @@
+{
+  "base": "http://127.0.0.1:9872",
+  "posterCount": 8,
+  "rowCount": 9,
+  "mismatches": [
+    {
+      "choiceId": "blank",
+      "reason": "첫 화면에 같은 선택지 없음"
+    }
+  ],
+  "errors": []
+}

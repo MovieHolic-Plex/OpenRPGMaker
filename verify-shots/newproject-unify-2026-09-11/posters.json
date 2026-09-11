@@ -1,0 +1,58 @@
+[
+  {
+    "choiceId": "monster-collect",
+    "label": "몬스터 수집",
+    "blurb": "수집 · 조우 · 도감",
+    "title": "몬스터 수집",
+    "art": "/assets/generated/welcome/slide-01.png"
+  },
+  {
+    "choiceId": "story-cutscene",
+    "label": "회상 스토리",
+    "blurb": "회상 · 컷신 · 엔딩",
+    "title": "회상 스토리",
+    "art": "/assets/generated/welcome/mini-03-moon.png"
+  },
+  {
+    "choiceId": "adventure-jrpg",
+    "label": "모험 JRPG",
+    "blurb": "파티 · 던전",
+    "title": "모험 JRPG",
+    "art": "/assets/generated/welcome/slide-04.png"
+  },
+  {
+    "choiceId": "horror-gallery",
+    "label": "이브 같은 갤러리 호러",
+    "blurb": "미술관 · 단서 · 공포",
+    "title": "갤러리 호러",
+    "art": "/assets/generated/welcome/slide-05.png"
+  },
+  {
+    "choiceId": "school-horror",
+    "label": "아오오니 같은 학교 호러",
+    "blurb": "학교 · 추적 · 공포",
+    "title": "학교 호러",
+    "art": "/assets/generated/welcome/slide-06.png"
+  },
+  {
+    "choiceId": "farm-life",
+    "label": "농장 생활",
+    "blurb": "농장 · 일상",
+    "title": "농장 생활",
+    "art": "/assets/generated/welcome/slide-03.png"
+  },
+  {
+    "choiceId": "partner-raise",
+    "label": "파트너 육성",
+    "blurb": "파트너 · 진화",
+    "title": "파트너 육성",
+    "art": "/assets/generated/welcome/slide-02.png"
+  },
+  {
+    "choiceId": "action-rpg",
+    "label": "2D 액션 RPG",
+    "blurb": "필드 공격 · 회피 · 가드",
+    "title": "2D 액션 RPG",
+    "art": "/assets/generated/welcome/slide-04.png"
+  }
+]
