@@ -126,18 +126,23 @@ function placeLotFence(map: GameMap, house: BuiltHouse, houseIndex: number, seed
   }
 }
 
-/** 모든 키트의 하위(벽·지붕·기둥) 타일 — "이 칸은 건물이다" 판정용. */
-const HOUSE_LOWER_TILES = (() => {
-  const tiles = new Set<number>();
-  for (const kit of Object.values(HOUSE_KIT_DEFS)) {
-    for (const slice of [kit.wall.top, kit.wall.mid, kit.wall.bottom]) for (const tile of slice) tiles.add(tile);
-    if (kit.postColumn) for (const tile of kit.postColumn.tiles) tiles.add(tile);
-    for (const value of Object.values(kit.roof)) if (typeof value === "number") tiles.add(value);
-    // 용마루(374)·사선 트림(376/377)·꼭짓점은 하위로 이관됨(2026-07-17) — 포함.
-    for (const value of Object.values(kit.roof.upper)) if (typeof value === "number") tiles.add(value);
+/** 모든 키트의 하위(벽·지붕·기둥) 타일 — "이 칸은 건물이다" 판정용.
+ * 지연 초기화 — compileGeography→builder 경로의 모듈 순환에서 초기화 시점 역참조를 피한다. */
+let houseLowerTilesCache: Set<number> | undefined;
+function houseLowerTiles(): Set<number> {
+  if (!houseLowerTilesCache) {
+    const tiles = new Set<number>();
+    for (const kit of Object.values(HOUSE_KIT_DEFS)) {
+      for (const slice of [kit.wall.top, kit.wall.mid, kit.wall.bottom]) for (const tile of slice) tiles.add(tile);
+      if (kit.postColumn) for (const tile of kit.postColumn.tiles) tiles.add(tile);
+      for (const value of Object.values(kit.roof)) if (typeof value === "number") tiles.add(value);
+      // 용마루(374)·사선 트림(376/377)·꼭짓점은 하위로 이관됨(2026-07-17) — 포함.
+      for (const value of Object.values(kit.roof.upper)) if (typeof value === "number") tiles.add(value);
+    }
+    houseLowerTilesCache = tiles;
   }
-  return tiles;
-})();
+  return houseLowerTilesCache;
+}
 
 /**
  * estate 필지 둘레 울타리 — 앞줄(게이트 뚫음) + 좌우 세로 변 + 뒷줄.
@@ -177,7 +182,7 @@ function placeEstatePerimeterFence(map: GameMap, house: BuiltHouse, lot: Rect, a
   for (let x = lot.x; x <= lastX; x += 1) {
     const belowIndex = (lot.y + 1) * map.width + x;
     const belowBusy = (map.upperTiles[belowIndex] ?? TILE.EMPTY) !== TILE.EMPTY
-      || HOUSE_LOWER_TILES.has(map.lowerTiles[belowIndex] ?? TILE.EMPTY);
+      || houseLowerTiles().has(map.lowerTiles[belowIndex] ?? TILE.EMPTY);
     if (belowBusy) continue;
     const tile = x === lot.x ? FENCE_TOP_LEFT : x === lastX ? FENCE_TOP_RIGHT : FENCE_TOP_RAIL;
     setFence(x, lot.y, tile);

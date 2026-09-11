@@ -103,9 +103,14 @@ const route: Parser<S.SpatialRoute> = (v, p) => {
   assert(points.length >= 2, `${p}.points: route needs at least two points`);
   return { ...localConnection({ id: r.id, from: r.from, to: r.to, bidirectional: r.bidirectional }, p), points };
 };
+const settlement: Parser<S.RegionSettlement> = (v, p) => {
+  const r = record(v, p, "presetId seed");
+  return { presetId: text(r.presetId, `${p}.presetId`), seed: integer([0, Number.MAX_SAFE_INTEGER])(r.seed, `${p}.seed`) };
+};
 const region: Parser<S.RegionDesign> = (v, p) => {
-  const r = record(v, p, `${baseFields} terrain places ports routes`);
-  return { ...base(r, p), terrain: terrain(r.terrain, `${p}.terrain`), places: list(r.places, `${p}.places`, child(choice(["place"] as const))), ports: ports(r.ports, `${p}.ports`), routes: list(r.routes, `${p}.routes`, route) };
+  const r = record(v, p, `${baseFields} terrain places ports routes settlement`);
+  return { ...base(r, p), terrain: terrain(r.terrain, `${p}.terrain`), places: list(r.places, `${p}.places`, child(choice(["place"] as const))), ports: ports(r.ports, `${p}.ports`), routes: list(r.routes, `${p}.routes`, route),
+    ...(r.settlement === undefined ? {} : { settlement: settlement(r.settlement, `${p}.settlement`) }) };
 };
 const world: Parser<S.WorldDesign> = (v, p) => {
   const r = record(v, p, `${baseFields} terrain regions ports connections entryPort`);

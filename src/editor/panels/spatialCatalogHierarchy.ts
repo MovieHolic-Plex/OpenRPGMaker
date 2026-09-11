@@ -63,22 +63,6 @@ function placeCards(): SpatialGalleryCard[] {
       subtitle: "호환 집 형태",
     });
   }
-  for (const preset of project.villagePresets ?? []) {
-    const id = spatialPresentationId("house-preset", "house-shape", preset.id);
-    if (known.has(id)) continue;
-    known.add(id);
-    cards.push({
-      id,
-      localId: preset.id,
-      name: preset.name,
-      source: "own",
-      kind: "places",
-      usage: 0,
-      placeKind: "settlement",
-      compatibility: "house-shape",
-      subtitle: "호환 집 형태",
-    });
-  }
   for (const place of Object.values(project.spatialAuthoring?.library.places ?? {})) {
     const id = spatialPresentationId("library-place", "library", place.id);
     if (known.has(id)) continue;
@@ -108,6 +92,7 @@ function regionCards(): SpatialGalleryCard[] {
     kind: "regions" as const,
     usage: 0,
     tilesetId: GEOGRAPHY_TERRAIN.tilesetId,
+    regionKind: "terrain" as const,
     subtitle: region.label,
   }));
   const known = new Set(cards.map((card) => card.id));
@@ -124,6 +109,23 @@ function regionCards(): SpatialGalleryCard[] {
       kind: "regions",
       usage: 0,
       tilesetId: region.terrain.tilesetId,
+      regionKind: region.settlement ? "settlement" as const : "terrain" as const,
+    });
+  }
+  const project = visibleAuthoringProject();
+  for (const preset of project.villagePresets ?? []) {
+    const id = spatialPresentationId("house-preset", "village", preset.id);
+    if (known.has(id)) continue;
+    known.add(id);
+    cards.push({
+      id,
+      localId: preset.id,
+      name: preset.name,
+      source: "own",
+      kind: "regions",
+      usage: 0,
+      regionKind: "settlement",
+      subtitle: "마을 설계서",
     });
   }
   return cards;

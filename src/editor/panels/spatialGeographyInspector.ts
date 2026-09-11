@@ -1,6 +1,7 @@
 import type { GeographyView } from "@/editor/panels/spatialGeographyCanvas";
 import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
 import {
+  createSettlementRegion,
   geographyDeletePreview,
   mutateWorkingGeography,
   workingGeography,
@@ -30,6 +31,16 @@ export function renderSpatialGeographyInspector(view: GeographyView, rerender: (
           : []),
       ],
     }));
+    // 마을 설계서 카드 — 지역 설계가 아니라 레시피이므로 정주지 지역으로 승격하는 액션을 단다.
+    if (kind === "region" && card.regionKind === "settlement" && !card.canonicalSource && card.localId) {
+      body.push(el("button", {
+        class: "spatial-open-child",
+        text: "정주지 지역 만들기",
+        attrs: { type: "button" },
+        dataset: { testid: "spatial-settlement-create" },
+        on: { click: () => createSettlementRegion(card, rerender) },
+      }));
+    }
   }
   if (design && target) {
     body.push(el("label", {
@@ -55,6 +66,36 @@ export function renderSpatialGeographyInspector(view: GeographyView, rerender: (
       text: `${design.terrain.width}×${design.terrain.height} · ${design.terrain.floor}`,
       dataset: { testid: "spatial-geography-size" },
     }));
+    if ("settlement" in design && design.settlement) {
+      const settlement = design.settlement;
+      body.push(el("p", {
+        class: "spatial-inspector-sub",
+        text: `정주지 — 설계서 ${settlement.presetId}`,
+        dataset: { testid: "spatial-geography-settlement" },
+      }));
+      body.push(el("label", {
+        class: "spatial-geography-field",
+        children: [
+          el("span", { text: "시드" }),
+          el("input", {
+            attrs: { type: "number", value: String(settlement.seed), min: "0", step: "1" },
+            dataset: { testid: "spatial-settlement-seed" },
+            on: {
+              change: (event) => {
+                const input = event.target;
+                if (!(input instanceof HTMLInputElement)) return;
+                const seed = Number.parseInt(input.value, 10);
+                if (!Number.isFinite(seed) || seed < 0) return;
+                mutateWorkingGeography(target, (current) => "settlement" in current && current.settlement
+                  ? { ...current, settlement: { ...current.settlement, seed } }
+                  : current);
+                rerender();
+              },
+            },
+          }),
+        ],
+      }));
+    }
     const child = geographyViewChildren(workingProject(), design, target.occurrenceId).find((entry) => entry.id === geographyChromeState.selectedChildId);
     if (child) {
       body.push(el("p", {

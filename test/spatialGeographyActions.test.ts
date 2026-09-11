@@ -81,6 +81,7 @@ function regionSession(id: string, mode: SpatialAuthoringSession["mode"] = "desi
     breadcrumb: [],
     legacyOrigin: null,
     placeKindFilter: null,
+    regionKindFilter: null,
     inspectorOpen: true,
   };
 }
@@ -96,6 +97,7 @@ function worldSession(id: string): SpatialAuthoringSession {
     breadcrumb: [],
     legacyOrigin: null,
     placeKindFilter: null,
+    regionKindFilter: null,
     inspectorOpen: true,
   };
 }

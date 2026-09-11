@@ -3,6 +3,7 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { isWorldTileset, WORLD_SEA_TILE } from "@/project/defaults/worldCoastMapping";
 import { WORLD_TERRAIN_BLOCKS } from "@/project/defaults/worldTerrainAutotiles";
 import { own } from "@/project/spatial/domain";
+import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { SpatialPoint, SpatialRoute, SpatialTerrain } from "@/project/spatial/types";
 import type { GameMap, Project } from "@/project/types";
 import { MAP_GENERATION_PROFILES } from "../tools/mapGenerationProfiles";
@@ -35,6 +36,16 @@ export function geographyTerrain(project: Project, terrain: SpatialTerrain, iden
   for (const group of autotileGroupsForTileset(tileset)) resolveAutotile(group, cells, map);
   geographyMountains(project, map, terrain.areas);
   return map;
+}
+
+/** 정주지 지역의 바탕 — 지형을 칠하는 월드 래스터 대신 마을 시공기가 채울 combined_town 잔디 맵. */
+export function settlementTerrain(project: Project, terrain: SpatialTerrain, identity: { readonly id: string; readonly name: string }): GameMap {
+  const tileset = own(project.tilesets, terrain.tilesetId);
+  if (terrain.tilesetId !== DEFAULT_TILESET_ID) throw new SpatialCompileError("atlas", `${identity.id}:${terrain.tilesetId}`);
+  return { ...identity, tilesetId: terrain.tilesetId, tileSize: tileset.tileSize,
+    width: terrain.width, height: terrain.height,
+    lowerTiles: Array<number>(terrain.width * terrain.height).fill(TILE.GRASS),
+    upperTiles: Array<number>(terrain.width * terrain.height).fill(TILE.EMPTY), events: [] };
 }
 
 export function routeCells(route: Pick<SpatialRoute, "id" | "points">): readonly SpatialPoint[] {

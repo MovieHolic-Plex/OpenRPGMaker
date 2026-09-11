@@ -239,6 +239,7 @@ describe("spatial catalog source fidelity", () => {
 
     const objects = listSpatialGalleryCards(sessionFor({ tab: "objects", source: "own", mode: "design" }));
     const places = listSpatialGalleryCards(sessionFor({ tab: "places", source: "own", mode: "design" }));
+    const regions = listSpatialGalleryCards(sessionFor({ tab: "regions", source: "own", mode: "design" }));
     const byName = (name: string) => objects.find((card) => card.name === name);
     expect(byName("Colon-scope bed")?.tilesetId).toBe("atlas::west");
     expect(byName("Colon-scope bed")?.objectId).toBe("bed");
@@ -250,9 +251,12 @@ describe("spatial catalog source fidelity", () => {
     expect(byName("Unicode colon-local")?.objectId).toBe("한::침대");
     expect(objects.filter((card) => card.name === "Colon-scope bed" || card.name === "Colon-local bed")).toHaveLength(2);
     expect(objects.filter((card) => card.name === "Tileset-library desk" || card.name === "Canonical library desk")).toHaveLength(2);
-    expect(places.filter((card) => card.name === "Template Cottage" || card.name === "Preset Cottage")).toHaveLength(2);
+    expect(places.filter((card) => card.name === "Template Cottage")).toHaveLength(1);
+    expect(regions.filter((card) => card.name === "Preset Cottage")).toHaveLength(1);
+    expect(regions.find((card) => card.name === "Preset Cottage")?.regionKind).toBe("settlement");
     expect(new Set(objects.map((card) => card.id)).size).toBe(objects.length);
     expect(new Set(places.map((card) => card.id)).size).toBe(places.length);
+    expect(new Set(regions.map((card) => card.id)).size).toBe(regions.length);
     expect(spatialPresentationId("tileset-kit", "atlas::west", "bed")).not.toBe(
       spatialPresentationId("tileset-kit", "atlas", "west::bed"),
     );

@@ -13,6 +13,7 @@ import { selectSpatialDesign } from "@/editor/panels/spatialAuthoringSession";
 import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
 import {
   blankRegionDesign,
+  blankSettlementRegionDesign,
   blankWorldDesign,
   commitGeographyEdit,
   editGeography,
@@ -104,6 +105,7 @@ export function visibleGeographySelection(
     source: "own",
     kind: kind === "region" ? "regions" : "worlds",
     usage: 0,
+    ...(kind === "region" && "settlement" in design && design.settlement ? { regionKind: "settlement" as const } : {}),
   };
 }
 
@@ -159,6 +161,7 @@ function applyGeography(rerender: () => void): void {
 }
 
 function addBlank(kind: GeographyKind, rerender: () => void): void {
+  if (!spatialDocumentPresent(rerender)) return;
   let createdId: SpatialId | undefined;
   const result = editAuthoringDraft((project) => {
     const created = kind === "region" ? blankRegionDesign(project) : blankWorldDesign(project);
@@ -168,6 +171,32 @@ function addBlank(kind: GeographyKind, rerender: () => void): void {
   if (result.kind === "ok" && createdId) {
     geographyChromeState.createdDesignId = createdId;
     selectSpatialDesign(libraryGeographyCardId(kind, createdId));
+  }
+  note(spatialAuthoringErrorText(result), result.kind === "ok" ? "초안" : geographyChromeState.saveState);
+  rerender();
+}
+
+/** 레거시 프로젝트는 spatialAuthoring 문서가 없어 upsert가 조용히 무시된다 — 사전에 표면에 올린다. */
+function spatialDocumentPresent(rerender: () => void): boolean {
+  if (workingProject().spatialAuthoring) return true;
+  geographyChromeState.previewError = "spatialAuthoring 문서가 없는 레거시 프로젝트입니다 — 공간 설계 활성화 후 지역·세계를 만들 수 있습니다";
+  rerender();
+  return false;
+}
+
+/** 마을 설계서 카드 → 정주지 지역 설계 생성. */
+export function createSettlementRegion(card: SpatialGalleryCard, rerender: () => void): void {
+  if (!card.localId) return;
+  if (!spatialDocumentPresent(rerender)) return;
+  let createdId: SpatialId | undefined;
+  const result = editAuthoringDraft((project) => {
+    const created = blankSettlementRegionDesign(project, card.localId!, card.name);
+    createdId = created.id;
+    return upsertGeography(project, "region", created);
+  });
+  if (result.kind === "ok" && createdId) {
+    geographyChromeState.createdDesignId = createdId;
+    selectSpatialDesign(libraryGeographyCardId("region", createdId));
   }
   note(spatialAuthoringErrorText(result), result.kind === "ok" ? "초안" : geographyChromeState.saveState);
   rerender();
