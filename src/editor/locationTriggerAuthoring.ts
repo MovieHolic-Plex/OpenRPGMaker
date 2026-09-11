@@ -15,6 +15,7 @@ import { store } from "@/project/store";
 import { mapLocations } from "@/project/mapNamedLocations";
 import { mapLocationLabel } from "@/editor/mapLocationLabels";
 import type { MapNamedLocation, Project, Trigger } from "@/project/types";
+import { renderLocationDrawCta } from "@/editor/locationDrawCta";
 
 export type LocationTransitionTrigger = Extract<Trigger, { kind: "locationTransition" }>;
 
@@ -121,12 +122,14 @@ export function renderLocationTransitionTriggerFields(
   side.addEventListener("change", apply);
   syncError();
 
+  const drawCta = renderLocationDrawCta({ testId: "event-page-trigger-location-draw" });
   return el("div", {
     class: "event-trigger-location-fields",
     dataset: { testid: "event-page-trigger-location-fields" },
     children: [
       el("div", { class: "field", children: [el("label", { text: "구역" }), picker] }),
       error,
+      ...(drawCta ? [drawCta] : []),
       el("div", { class: "field", children: [el("label", { text: "시점" }), side] }),
     ],
   });

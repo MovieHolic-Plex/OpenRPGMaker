@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **62쪽 / 2382KB / 약 665,787 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **63쪽 / 2394KB / 약 669,258 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,12 +15,12 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 375KB | 98KB ⚠상한 초과 — 절을 더 쪼개라 | 1834 | ~105,788 |
+| `openwiki/editor-ai-panel.md` | 373KB | 97KB ⚠상한 초과 — 절을 더 쪼개라 | 1830 | ~105,323 |
 | `openwiki/editor-ai-tools.md` | 170KB | 79KB ⚠상한 초과 — 절을 더 쪼개라 | 1264 | ~47,145 |
 | `openwiki/editor-database.md` | 257KB | 56KB ⚠상한 초과 — 절을 더 쪼개라 | 1350 | ~73,776 |
 | `openwiki/editor-event-authoring.md` | 134KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 740 | ~38,707 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
-| `openwiki/editor-pre-edit-routing.md` | 96KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 489 | ~27,331 |
+| `openwiki/editor-pre-edit-routing.md` | 97KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 496 | ~27,540 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 29KB | 456 | ~17,604 |
 | `openwiki/runtime-battle.md` | 133KB | 31KB | 539 | ~37,775 |
 | `openwiki/runtime-project-schema.md` | 134KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 859 | ~36,217 |
@@ -33,14 +33,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 1480, 1481, 1482, 1483, 1484, 1485, 1497, 1507 |
+| `openwiki/editor-ai-panel.md` | 25 | 1476, 1477, 1478, 1479, 1480, 1481, 1493, 1503 |
 | `openwiki/editor-ai-tools.md` | 6 | 911, 912, 916, 918, 920, 1107 |
 | `openwiki/editor-database.md` | 7 | 556, 560, 561, 562, 571, 597, 600 |
 | `openwiki/editor-event-authoring.md` | 16 | 310, 311, 314, 319, 320, 321, 322, 323 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 109, 122, 123, 125, 128, 129 |
 | `openwiki/editor-observability.md` | 1 | 310 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 310, 319, 326, 328, 351 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 317, 326, 333, 335, 358 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
 
 ## 없는 파일을 가리키는 참조
@@ -243,7 +243,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L46` 설치 지점
 - `L52` 테스트
 
-### `openwiki/editor-ai-panel.md` — 375KB · 1834줄 · ~105,788 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 373KB · 1830줄 · ~105,323 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
 - `L44` Run outcome line: four independent axes (2026-09-09)
@@ -272,21 +272,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1240` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
 - `L1249` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
 - `L1265` 패널 셸 · 도크 · 접기 · 컴포저
-- `L1409` 세션 수명 · 대화 컨텍스트
-- `L1426` 제안 적용 · 복구 · 완성도 린트
-- `L1511` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L1573` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L1597` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L1611` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L1637` 저장 · 내보내기 · 프로젝트 생성
-- `L1645` 제공자 · OAuth · 동반 서비스
-- `L1675` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L1718` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L1751` 배치 의존성과 완료 멱등성 (2026-09-06)
-- `L1759` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L1764` Assistant clean conversation — Phase 1 (2026-09-06)
-- `L1801` Assistant deck width resize (2026-09-07)
-  - `L1813` Legacy AI contract verification (2026-09-08)
+- `L1405` 세션 수명 · 대화 컨텍스트
+- `L1422` 제안 적용 · 복구 · 완성도 린트
+- `L1507` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L1569` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L1593` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L1607` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L1633` 저장 · 내보내기 · 프로젝트 생성
+- `L1641` 제공자 · OAuth · 동반 서비스
+- `L1671` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L1714` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L1747` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L1755` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L1760` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L1797` Assistant deck width resize (2026-09-07)
+  - `L1809` Legacy AI contract verification (2026-09-08)
 
 ### `openwiki/editor-ai-tools.md` — 170KB · 1264줄 · ~47,145 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -512,7 +512,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L455` AI 툴·액션 이유 (2026-09-02)
 - `L465` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 96KB · 489줄 · ~27,331 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 97KB · 496줄 · ~27,540 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L7` Exterior door backing
 - `L17` Tile brush reliability (2026-09-06)
@@ -525,15 +525,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L117` 회귀 이음줌
 - `L129` Pre-edit routing
   - `L131` 명명 로케이션 레이어 (2026-09-10)
-  - `L179` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
-  - `L205` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L264` Automatic usage guides disabled (2026-09-06)
-  - `L274` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L362` Agent cautions
-- `L372` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L403` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L435` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L464` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+  - `L186` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
+  - `L212` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+  - `L271` Automatic usage guides disabled (2026-09-06)
+  - `L281` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L369` Agent cautions
+- `L379` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L410` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L442` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L471` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 1KB · 15줄 · ~333 토큰
 
@@ -643,6 +643,18 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L381` 관련 위키
 - `L389` author_village 스코프 계약 (2026-09-04 적대 리뷰 반영)
 - `L398` 대로 병합 검증 (2026-09-05)
+
+### `openwiki/location-layer-affordance-audit.md` — 12KB · 123줄 · ~3,727 토큰
+
+- `L10` 결론
+- `L17` 분류 — «구역이 존재하는 화면» 은 로케이션 레이어다 (2026-09-11 확인)
+- `L32` 실측 (2026-09-11, A 적용 **전** 기준선)
+- `L45` 막혀 있는 채널 (설계 결정이므로 우회하지 마라)
+- `L52` 검증 공백 (실측)
+- `L71` 후보 수정 (A 만 적용, B/C/D 미적용)
+- `L84` A 구현 (2026-09-11)
+- `L105` 남은 일 (B/D)
+- `L112` 검증 좌표
 
 ### `openwiki/monster-resource-editor.md` — 3KB · 60줄 · ~860 토큰
 

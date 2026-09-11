@@ -137,6 +137,7 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
   `src/project/locationTransitions.ts`, 참조·복구 `src/project/mapLocationReferences.ts`,
   편집기 상태·store 편집 `src/editor/mapLocationLayerState.ts`, DOM 오버레이·인스펙터
   `src/editor/mapLocationLayer.ts`, 라벨 문장 `src/editor/mapLocationLabels.ts`,
+  **쓰는 지점의 빈 상태 행동** `src/editor/locationDrawCta.ts`,
   조수 툴 `src/editor/tools/mapLocationTools.ts`, 스타일 `src/styles/editor/map-location-layer.css`.
 - **`layoutPlan.regions` 를 사람이 편집하는 층으로 쓰지 마라.** `setMapLayoutPlan` 이 통째로
   갈아치우므로 사람 편집이 재시공에서 사라진다. 관계·승격 계약은
@@ -176,6 +177,12 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 - 브라우저 QA: `npm run dev:worktree` 뒤
   `MAP_LOCATION_QA_URL=http://127.0.0.1:<포트> node scripts/qa/map-location-layer.mjs`
   → `verify-shots/oprn-020/SUMMARY.md`. 우클릭 영역 선택·붙여넣기 확정·선택 도구 맵 밖 팬·제스처 중 레이어 끄기 등 실측 엣지 단계를 포함한 16개 단계가 실 브라우저 이벤트 경로로 검증된다.
+- **어포던스 감사 + A 적용(2026-09-11):** 이 층의 효용이 «쓰는 지점» 에서 안 읽힌다는 실측과 후보 수정
+  (B/C/D 는 아직 미적용)은 `openwiki/location-layer-affordance-audit.md` 가 소유한다. 빈 상태의 행동은
+  `src/editor/locationDrawCta.ts` 하나가 내고 조건 폼·트리거·인카운터가 그걸 부른다 — 새 표면이
+  생기면 여기에 줄을 더하지 말고 이 모듈을 불러라. 라벨·문구를 갈아치우기 전에 그 문서를 읽어라:
+  문구 고정 테스트(`test/locationTransitionAuthoring.test.ts`)와 용어 정본이 걸려 있다.
+
 ### 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
 
 빌더 `layoutPlan.regions` 를 명명 로케이션으로 **일괄** 옮기는 창. OPRN-OUT-020 이 미뤄 뒀던

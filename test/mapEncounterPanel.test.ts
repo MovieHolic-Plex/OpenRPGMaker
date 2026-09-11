@@ -117,4 +117,15 @@ describe("map properties — 인카운터 탭 UI", () => {
     change(findByTestId(container, "map-encounter-region-w-0"), "6");
     expect(currentMap().encounterTable?.[0]?.conditions?.region?.w).toBe(6);
   });
+
+  it("구역이 없는 맵에서도 이름 붙은 구역 필드와 그리기 버튼을 낸다", () => {
+    // 어포던스 감사(2026-09-11): 0개 맵에서 이 필드를 통째로 숨기던 것이 «기능의 존재를 배울
+    // 기회가 없다» 의 가장 강한 근거였다. 자리는 남기고, 빈 이유와 행동을 함께 낸다.
+    const container = openEncounterTab();
+    findByTestId(container, "map-encounter-row-add")?.click();
+
+    expect(findByTestId(container, "map-encounter-location-0")).not.toBeNull();
+    expect(findByTestId(container, "map-encounter-location-empty-0")).not.toBeNull();
+    expect(findByTestId(container, "map-encounter-location-draw-0")).not.toBeNull();
+  });
 });
