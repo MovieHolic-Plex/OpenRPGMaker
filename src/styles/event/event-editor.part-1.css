@@ -624,7 +624,6 @@
   height: min(936px, calc(100vh - 12px));
   height: min(936px, calc(100dvh - 12px));
   max-height: calc(100vh - 12px);
-  max-height: calc(100dvh - 12px);
   min-height: 0;
   overflow: hidden;
   position: relative;

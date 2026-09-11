@@ -189,13 +189,6 @@
   font-weight: 700;
 }
 
-.play-audio-meta-id,
-.play-audio-meta-url {
-  color: var(--text-dim, var(--text-2));
-  font: 500 10px/1.35 var(--font-mono, "Cascadia Mono", Consolas, monospace);
-  overflow-wrap: anywhere;
-}
-
 .play-audio-actions {
   display: flex;
   flex-wrap: wrap;

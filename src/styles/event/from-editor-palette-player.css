@@ -151,19 +151,6 @@
   min-width: 0;
 }
 
-/* editor/palette-player.css:138-140 */
-.npc-sheet-select {
-  min-width: 0;
-}
-
-/* editor/palette-player.css:142-147 */
-.npc-picker-layout {
-  display: grid;
-  grid-template-columns: 72px minmax(0, 1fr);
-  gap: var(--space-2);
-  align-items: start;
-}
-
 /* editor/palette-player.css:149-156 */
 .npc-frame-preview,
 .npc-character-cell {
@@ -199,8 +186,7 @@
 }
 
 /* editor/palette-player.css:179-182 */
-.npc-character-cell:hover,
-.npc-option-button:hover {
+.npc-character-cell:hover {
   border-color: var(--accent-hover);
 }
 
@@ -209,40 +195,6 @@
 .npc-option-button.active {
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--accent), inset 0 1px 0 rgba(42, 37, 33, 0.12);
-}
-
-/* editor/palette-player.css:190-195 */
-.npc-labeled-options {
-  display: grid;
-  grid-template-columns: 36px minmax(0, 1fr);
-  gap: var(--space-2);
-  align-items: center;
-}
-
-/* editor/palette-player.css:197-200 */
-.npc-labeled-options > span {
-  color: var(--text-dim);
-  font-size: 11px;
-}
-
-/* editor/palette-player.css:202-206 */
-.npc-option-row {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(28px, 1fr));
-  gap: var(--space-1);
-}
-
-/* editor/palette-player.css:208-218 */
-.npc-option-button {
-  min-height: 28px;
-  background: var(--bg-panel-2);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 12px;
-  line-height: 1;
 }
 
 /* editor/palette-player.css:220-225 */

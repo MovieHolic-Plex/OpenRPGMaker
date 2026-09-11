@@ -27,7 +27,6 @@
   }
 }
 
-.change-equipment-main,
 .change-equipment-preview {
   display: grid;
   gap: 8px;
@@ -205,7 +204,6 @@
 
 .change-equipment-preview-caption,
 .change-equipment-preview-empty,
-.change-equipment-db-note,
 .change-equipment-preview-bonuses {
   color: var(--text-2, #5C5348);
   font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;

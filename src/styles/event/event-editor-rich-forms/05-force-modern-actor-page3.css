@@ -161,8 +161,7 @@
   display: none;
 }
 
-.actor-m2-field-label,
-.actor-m2-presets-label {
+.actor-m2-field-label {
   color: var(--text-2, #5C5348);
   font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
@@ -208,14 +207,6 @@
 
 .actor-m2-text-input {
   min-width: 180px;
-}
-
-.actor-m2-check {
-  align-items: center;
-  color: var(--text-1, #2A2521);
-  display: inline-flex;
-  gap: 8px;
-  font: 600 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .actor-m2-preview {

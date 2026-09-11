@@ -1,27 +1,3 @@
-.ts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
-  gap: 3px;
-  margin-top: 4px;
-}
-@media (max-width: 380px) {
-  .ts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-.ts-cell {
-  background: var(--bg-panel-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 4px;
-  font-size: 10px;
-  text-align: center;
-  cursor: pointer;
-  color: var(--text-dim);
-}
-.ts-cell:hover {
-  border-color: var(--accent);
-  color: var(--text);
-}
-
 .tileset-db-preview-scale button.scroll {
   font-family: var(--font-mono);
   min-width: 24px;

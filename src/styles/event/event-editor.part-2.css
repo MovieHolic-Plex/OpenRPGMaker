@@ -98,9 +98,7 @@
 }
 
 .event-editor-modal-window {
-  max-width: calc(100vw - 12px);
   min-width: 0;
-  width: min(1476px, calc(100vw - 12px));
 }
 
 .event-editor-top-strip,

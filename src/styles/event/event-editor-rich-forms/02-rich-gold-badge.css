@@ -116,20 +116,6 @@
   display: none;
 }
 
-.rich-exp-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 28px;
-  height: 20px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
-  color: var(--accent);
-  font: 700 10px/1 Inter, "Segoe UI", system-ui, sans-serif;
-  letter-spacing: 0.04em;
-}
-
 
 /* 특수기 변경: 세로 스택 + 짧은 세그먼트 */
 .learn-skill-command-body {
@@ -260,8 +246,7 @@
   font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
-.battle-processing-hover-row,
-.battle-processing-hover-more {
+.battle-processing-hover-row {
   color: var(--text-2, #5C5348);
   font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
@@ -278,21 +263,4 @@
   margin: 0;
   color: var(--text-2, #5C5348);
   font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-}
-
-.change-battle-commands-slot-editor {
-  display: grid;
-  gap: 6px;
-  width: 100%;
-}
-
-.change-battle-commands-slot-row {
-  display: grid;
-  grid-template-columns: 24px 1fr auto auto;
-  gap: 6px;
-  align-items: center;
-  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
-  border-radius: 6px;
-  padding: 4px 6px;
-  background: color-mix(in srgb, var(--bg-inset, #EFE9DC) 80%, transparent);
 }

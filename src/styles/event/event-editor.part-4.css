@@ -1070,7 +1070,6 @@
 }
 
 .event-editor-modal-footer {
-  background: var(--event-rm-chrome);
   justify-content: end;
 }
 
