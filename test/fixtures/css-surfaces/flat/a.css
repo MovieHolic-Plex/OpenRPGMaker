@@ -1,0 +1,2 @@
+.x { color: blue; }
+@media (max-width: 700px) { .x { color: green !important; } }

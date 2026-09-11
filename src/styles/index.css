@@ -86,7 +86,6 @@
 @import "./shell/editor-ui-modes.css";
 /* 스튜디오 바(톱바 한 줄·메뉴 팝업·보기 메뉴·캔버스 툴바)의 마지막 발언자 — 2026-09-03. */
 @import "./shell/studio-bar.modern.css";
-@import "./editor/village-info.css";
 @import "./editor/world-panel.css";
 @import "./editor/cluster-ai-modal.css";
 @import "./editor/map-history.css";

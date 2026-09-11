@@ -1,0 +1,11 @@
+{
+  "layerOrder": ["tokens", "base", "alpha", "beta", "overrides"],
+  "surfaces": {
+    "tokens": { "dir": "styles/tokens.css", "entry": "styles/tokens.css", "prefixes": [], "roots": [":root"] },
+    "alpha":  { "dir": "styles/alpha", "entry": "styles/alpha/index.css", "prefixes": ["al-"], "roots": [] },
+    "beta":   { "dir": "styles/beta", "entry": "styles/beta/index.css", "prefixes": ["bt-"], "roots": [] }
+  },
+  "sharedStatePrefixes": ["is-", "has-", "active", "selected", "disabled", "hidden", "open", "empty", "error", "warning", "locked"],
+  "orderCommentPatterns": ["뒤에 와야"],
+  "dynamicPrefixMinLength": 3
+}

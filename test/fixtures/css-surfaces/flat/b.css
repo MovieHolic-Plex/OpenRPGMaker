@@ -1,0 +1,1 @@
+@layer two { .y#id:hover > b::before { margin: 0; } }

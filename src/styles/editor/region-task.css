@@ -313,7 +313,7 @@
   gap: var(--space-1);
   padding: 1px var(--space-1);
 }
-.region-task-chunk-label:hover { background: var(--editor-row-hover); }
+.region-task-chunk-label:hover { background: var(--bg-hover); }
 .region-task-chunk-label:focus-within { outline: 2px solid var(--accent); outline-offset: 1px; }
 
 .region-task-chunk-cb {
@@ -921,7 +921,7 @@ body.region-task-modal-open .ai-authoring-examples {
   text-align: left;
 }
 .region-task-autocomplete-item:hover {
-  background: var(--editor-row-hover);
+  background: var(--bg-hover);
 }
 .region-task-autocomplete-item.is-selected {
   background: var(--accent);

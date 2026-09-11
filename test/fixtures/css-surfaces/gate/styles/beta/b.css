@@ -1,0 +1,2 @@
+.bt-row { padding: 0; }
+.bt-row.is-active { --bt-tone: red; color: var(--bt-tone); }
