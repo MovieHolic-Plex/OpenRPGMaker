@@ -3,14 +3,7 @@
 
 /* ---- 공통 commerce 골격 ---- */
 
-/* 창 헤더가 이미 "상점" 제목을 갖고 있으므로 폼 위의 중복 제목 줄을 숨긴다.
-   commandBody.ts 는 이 줄을 `class="cream-command-form-head"` +
-   `data-testid="event-command-edit-summary"` 로 그린다 — `.event-command-edit-summary`
-   **클래스**를 노리던 이전 규칙은 그런 클래스가 코드에 없어서 아무것도 숨기지 못했다.
-   상점 폼만 좁혀서 고친다(다른 명령 창은 지금 모습을 유지). */
-.cream-command-form-head:has(+ .shop-processing-command-body) {
-  display: none;
-}
+/* 상점 폼 위 중복 제목 줄(.cream-command-form-head) 숨김은 overrides.css 에 있다 — auto-fit 격자 (0,25,2) 를 레이어로만 이길 수 있어서다. */
 
 .event-command-edit-body .commerce-command-body,
 .event-command-edit-body .shop-processing-command-body {

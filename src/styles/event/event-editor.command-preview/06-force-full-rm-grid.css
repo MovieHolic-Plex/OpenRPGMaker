@@ -1,6 +1,7 @@
 /* Force full RM grid even inside command body (override part-3 auto-fit). */
 .event-command-frame-editor .event-graphic-picker-frame {
   display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
   gap: 10px;
   min-height: 360px;
   align-items: start;

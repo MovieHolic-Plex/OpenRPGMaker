@@ -23,6 +23,7 @@
   align-items: start;
   display: grid;
   gap: 12px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(220px, 0.95fr);
   min-width: 0;
   width: 100%;
 }
@@ -32,8 +33,17 @@
   align-items: start;
   display: grid;
   gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   width: 100%;
+}
+
+@media (max-width: 900px) {
+  .event-command-edit-body .change-parameters-layout,
+  .event-command-edit-body .actor-m2-layout,
+  .event-command-edit-body .page3-command-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 
