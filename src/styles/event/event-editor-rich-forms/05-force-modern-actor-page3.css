@@ -1,11 +1,9 @@
 /* ---- force modern actor/page3 forms out of auto-fit collapse ---- */
-.event-command-edit-body .party-member-command-body,
 .event-command-edit-body .change-equipment-command-body,
 .event-command-edit-body .change-parameters-command-body,
 .event-command-edit-body .actor-m2-command-body,
 .event-command-edit-body .page3-command-body,
 .event-command-edit-body .actor-amount-command-body,
-.event-command-edit-body .rich-command-form.party-member-command-body,
 .event-command-edit-body .rich-command-form.change-equipment-command-body,
 .event-command-edit-body .rich-command-form.actor-amount-command-body,
 .event-command-edit-body .rich-command-form.page3-command-body {
@@ -19,10 +17,8 @@
 }
 
 
-.event-command-edit-body .party-member-layout,
 .event-command-edit-body .change-parameters-layout,
 .event-command-edit-body .actor-m2-layout,
-.event-command-edit-body .page3-layout,
 .event-command-edit-body .page3-command-layout {
   align-items: start;
   display: grid;
@@ -41,17 +37,12 @@
 }
 
 
-.event-command-edit-body .party-member-main,
-.event-command-edit-body .change-equipment-main,
 .event-command-edit-body .change-parameters-main,
 .event-command-edit-body .actor-m2-main,
-.event-command-edit-body .page3-main,
 .event-command-edit-body .page3-command-main,
-.event-command-edit-body .party-member-followups,
 .event-command-edit-body .change-equipment-preview,
 .event-command-edit-body .change-parameters-preview,
 .event-command-edit-body .actor-m2-preview,
-.event-command-edit-body .page3-preview,
 .event-command-edit-body .page3-command-preview {
   display: grid;
   gap: 10px;
@@ -61,11 +52,8 @@
 
 .event-command-edit-body .party-member-intent,
 .event-command-edit-body .actor-m2-presets,
-.event-command-edit-body .page3-presets,
 .event-command-edit-body .change-parameters-param-chips,
 .event-command-edit-body .actor-m2-chip-grid,
-.event-command-edit-body .page3-chip-grid,
-.event-command-edit-body .party-member-followup-buttons,
 .event-command-edit-body .record-browser {
   min-width: 0;
   width: 100%;
@@ -75,8 +63,7 @@
 .event-command-edit-body .party-member-field-label,
 .event-command-edit-body .change-equipment-field-label,
 .event-command-edit-body .change-parameters-field-label,
-.event-command-edit-body .actor-m2-field-label,
-.event-command-edit-body .page3-field-label {
+.event-command-edit-body .actor-m2-field-label {
   writing-mode: horizontal-tb;
 }
 
@@ -84,10 +71,7 @@
 .event-command-edit-body .rich-segment-group,
 .event-command-edit-body .change-parameters-param-chips,
 .event-command-edit-body .actor-m2-chip-grid,
-.event-command-edit-body .page3-chip-grid,
-.event-command-edit-body .party-member-followup-buttons,
-.event-command-edit-body .actor-m2-presets,
-.event-command-edit-body .page3-presets {
+.event-command-edit-body .actor-m2-presets {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
@@ -95,7 +79,6 @@
 }
 
 
-.event-command-edit-columns > .event-command-edit-body:has(.party-member-command-body),
 .event-command-edit-columns > .event-command-edit-body:has(.change-equipment-command-body),
 .event-command-edit-columns > .event-command-edit-body:has(.change-parameters-command-body),
 .event-command-edit-columns > .event-command-edit-body:has(.actor-m2-command-body),

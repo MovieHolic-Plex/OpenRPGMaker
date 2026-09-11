@@ -27,11 +27,6 @@
   min-width: 0;
 }
 
-.page3-chip.is-active {
-  border-color: var(--accent, #4A57D6);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 40%, transparent);
-}
-
 .page3-command-preview {
   background: var(--bg-raised);
   border: 1px solid var(--border-subtle, rgba(42,37,33,.12));
@@ -116,18 +111,6 @@
 .page3-tint-preview[data-tint="black"] { background: #111; }
 .page3-tint-preview[data-tint="white"] { background: #fff; }
 .page3-tint-preview[data-tint="neutral"] { background: var(--text-2); }
-
-@keyframes page3-flash-pulse {
-  0%, 100% { opacity: 0.12; }
-  50% { opacity: 0.55; }
-}
-
-@keyframes page3-shake-wobble {
-  0%, 100% { transform: translate(0, 0); }
-  25% { transform: translate(2px, -1px); }
-  50% { transform: translate(-2px, 1px); }
-  75% { transform: translate(1px, 2px); }
-}
 
 /* ---- Page 3 form controls + native preview stages ---- */
 .page3-slider-row,

@@ -191,8 +191,7 @@
 }
 
 /* editor/palette-player.css:184-188 */
-.npc-character-cell.active,
-.npc-option-button.active {
+.npc-character-cell.active {
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--accent), inset 0 1px 0 rgba(42, 37, 33, 0.12);
 }
