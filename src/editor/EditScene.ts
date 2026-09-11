@@ -460,7 +460,11 @@ export class EditScene extends PhaserRuntime.Scene {
     setClientPointTileResolver((point) => this.clientPointToTile(point));
     // 로케이션 오버레이는 포인터의 **표적**이 되므로 캔버스의 팬/영역 제스처를 스스로 시작할 수 없다.
     // 카메라와 장면 제스처를 가진 쪽이 «양보할 때인가»와 «이미 지나간 좌표에서 제스처를 시작하라»를 꽂는다.
-    setCanvasPointerBridge({ claim: (point) => this.claimCanvasPointer(point) });
+    setCanvasPointerBridge({
+      claim: (point) => this.claimCanvasPointer(point),
+      eventIdAt: (point) => this.eventIdCoveringClientPoint(point),
+      openEvent: (request) => openEventEditorModal(request.mapId as MapId, request.eventId),
+    });
     // scene 정지/파괴 시 구독 해제(이중 호출 방지).
     this.events.once(PhaserRuntime.Scenes.Events.SHUTDOWN, () => this.cleanup());
     this.events.once(PhaserRuntime.Scenes.Events.DESTROY, () => this.cleanup());
@@ -860,6 +864,23 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   /** 오버레이가 삼킨 pointerdown 을 캔버스 제스처로 되살린다. 판정은 순수 모듈 하나가 갖는다. */
+  /**
+   * 그 화면 좌표를 덮는 이벤트의 id (2026-09-12).
+   *
+   * 로케이션 오버레이가 «이 칸에 이벤트가 있는가» 를 물을 때 쓴다. 오버레이는 store 를
+   * 읽을 수도 있지만, 편집 중 초안(`editorWorkingEvents`) 을 아는 쪽은 씬이다 — 초안과
+   * 저장본이 갈라지는 순간 오버레이가 «보이는데 안 잡히는» 판정을 하게 된다.
+   */
+  private eventIdCoveringClientPoint(point: CanvasPointerPoint): string | null {
+    const mapId = this.mapId();
+    if (!mapId) return null;
+    const map = store.getCurrent().maps[mapId];
+    if (!map) return null;
+    const tile = this.clientPointToTile({ x: point.clientX, y: point.clientY });
+    if (!tile) return null;
+    return findEventCoveringPoint(editorWorkingEvents(map.events), tile.x, tile.y)?.id ?? null;
+  }
+
   private claimCanvasPointer(point: CanvasPointerPoint): CanvasGestureClaim | null {
     const state = editorState.get();
     const tool = state.tool;

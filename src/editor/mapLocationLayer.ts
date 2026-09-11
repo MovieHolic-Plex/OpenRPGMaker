@@ -7,12 +7,18 @@
 // 겹침은 허용이므로 클릭 판정은 «가장 구체적인(작은) 구역» 이 이긴다(순수 모듈 규칙).
 
 import { TILE_SIZE } from "@/assets/bundled";
-import { claimCanvasPointer, type CanvasPointerPoint } from "@/editor/canvasPointerBridge";
+import { claimCanvasPointer, eventIdAtPoint, openEventFromCanvas, type CanvasPointerPoint } from "@/editor/canvasPointerBridge";
 import { editorState } from "@/editor/editorState";
+import {
+  locationClickCount,
+  resolveLocationOverlapPointer,
+  type LocationClickTrace,
+} from "@/editor/locationPointerPriority";
 import { resolveClientPointTile, resolveRegionClientRect } from "@/editor/regionClientRect";
 import {
   createLocationFromRect,
   currentLocationMap,
+  currentLocationMapId,
   deleteLocation,
   locationAt,
   locationDeletionImpact,
@@ -25,6 +31,7 @@ import {
   selectedLocation,
   selectedOverlaps,
   setLocationDrag,
+  setLocationRole,
   setShowLayoutRegions,
   subscribeLocationLayer,
   toggleLocationLayer,
@@ -40,6 +47,7 @@ import {
   type MapLocationReferenceSite,
 } from "@/project/mapLocationReferences";
 import { DEFAULT_ADOPTION_ROLES, adoptionRoleLabel, surveyMapAdoption } from "@/project/mapLocationAdoption";
+import { LOCATION_ROLES, LOCATION_ROLE_LABELS, locationRoleTag } from "@/project/locationRoles";
 import { isLocationDrawClick, locationDisplayColor, mapLocations, rectFromDrag } from "@/project/mapNamedLocations";
 import { store } from "@/project/store";
 import type { GameMap, MapNamedLocation, Rect } from "@/project/types";
@@ -55,6 +63,8 @@ let cleanupYield: (() => void) | null = null;
 let yieldTimer: number | null = null;
 /** 방금 만든 구역의 이름 칸에 초점을 준다 — 그리자마자 이름을 붙이는 게 이 레이어의 목적이다. */
 let focusNameOnNextRender = false;
+/** 마지막 좌클릭 좌표·시각. 이벤트와 겹칠 때 더블클릭을 판정한다. */
+let lastOverlapClick: LocationClickTrace | null = null;
 function ensureHost(): HTMLElement | null {
   const host = document.querySelector<HTMLElement>(".phaser-container");
   if (!host) return null;
@@ -438,6 +448,8 @@ function renderSelectedEditor(location: MapNamedLocation): HTMLElement {
     );
   }
 
+  box.append(renderRolePicker(location));
+
   const references = locationReferenceCount(location.id);
   box.append(
     el("p", {
@@ -467,6 +479,43 @@ function renderSelectedEditor(location: MapNamedLocation): HTMLElement {
       name.select();
     });
   }
+  return box;
+}
+
+
+/**
+ * 역할 선택기 (2026-09-12). 켜면 `safeZones`/`farmableArea` 로 투영된다.
+ *
+ * 왜 라디오처럼 보이는 버튼인가: 역할은 하나만 갖는다(안전지대이면서 경작지인 구역은
+ * 어느 배열의 정본인지 흐려진다). 체크박스 두 개면 그 상태를 만들 수 있다.
+ */
+function renderRolePicker(location: MapNamedLocation): HTMLElement {
+  const active = locationRoleTag(location);
+  const box = el("div", { class: "map-location-roles", dataset: { testid: "map-location-roles" } });
+  box.append(el("span", { class: "map-location-roles-label", text: "맵 시스템 역할" }));
+  const row = el("div", { class: "map-location-roles-row" });
+  for (const role of LOCATION_ROLES) {
+    const on = active === role;
+    row.append(
+      el("button", {
+        class: "btn" + (on ? " is-active" : ""),
+        text: LOCATION_ROLE_LABELS[role],
+        attrs: { type: "button", "aria-pressed": String(on) },
+        dataset: { testid: `map-location-role-${role}` },
+        on: { click: () => report(setLocationRole(location.id, on ? null : role)) },
+      }),
+    );
+  }
+  box.append(row);
+  box.append(
+    el("p", {
+      class: "map-location-roles-hint",
+      dataset: { testid: "map-location-roles-hint" },
+      text: active
+        ? `이 구역은 이 맵의 ${LOCATION_ROLE_LABELS[active]}입니다. 구역을 옮기면 그 사각형도 따라갑니다.`
+        : "안전지대는 추격자가 들어오지 못하고, 경작지는 밭을 일굴 수 있습니다.",
+    }),
+  );
   return box;
 }
 
@@ -671,6 +720,29 @@ function onPointerDown(event: PointerEvent): void {
   if (!locationLayerState().enabled) return;
   const point: CanvasPointerPoint = { button: event.button, buttons: event.buttons, clientX: event.clientX, clientY: event.clientY };
   const claim = claimCanvasPointer(point);
+  // 좌클릭 그리기와 그 칸의 이벤트가 겹치면 규칙 하나가 정한다 — Alt/더블클릭이면 이벤트를 연다.
+  // 규칙은 순수 모듈이 갖는다: 같은 판정을 캔버스의 더블클릭 경로도 써야 하기 때문이다.
+  if (!claim && event.button === 0) {
+    const tile = overlayPointToTile(event);
+    const mapId = currentLocationMapId() ?? "";
+    // 클릭 수는 시각 기반이다 — pointerdown 의 detail 은 항상 0 이다(Chromium 실측).
+    const clickCount =
+      tile && mapId
+        ? locationClickCount(lastOverlapClick, { mapId, x: tile.x, y: tile.y, at: Date.now() })
+        : 1;
+    if (tile && mapId) lastOverlapClick = { mapId, x: tile.x, y: tile.y, at: Date.now() };
+    const priority = resolveLocationOverlapPointer({
+      locationLayerEnabled: true,
+      eventIdAtPoint: eventIdAtPoint(point),
+      altKey: event.altKey,
+      clickCount,
+    });
+    if (priority.kind === "openEvent") {
+      openEventFromCanvas({ mapId, eventId: priority.eventId });
+      event.preventDefault();
+      return;
+    }
+  }
   if (claim) {
     // 영역 제스처는 **취소하면 안 된다.** pointerdown 을 preventDefault 하면 브라우저가 그 포인터
     // 열의 호환 마우스 이벤트(mousedown/mousemove/mouseup)를 통째로 삼킨다. Phaser 는 캔버스의

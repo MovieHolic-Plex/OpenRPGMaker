@@ -48,6 +48,7 @@ export function validateMaps(value: unknown): Record<string, unknown> {
     if (map.safeZones !== undefined) validateSafeZones(`map ${id}.safeZones`, map.safeZones);
     if (map.farmableArea !== undefined) validateRectArray(`map ${id}.farmableArea`, map.farmableArea);
     if (map.locations !== undefined) validateMapNamedLocations(`map ${id}.locations`, map.locations, width, height);
+    if (map.locationRoleProjection !== undefined) validateLocationRoleProjection(`map ${id}.locationRoleProjection`, map.locationRoleProjection);
     if (map.planningItems !== undefined) validatePlanningItems(`map ${id}.planningItems`, map.planningItems);
     if (map.defaultLighting !== undefined) validateLightingState(`map ${id}.defaultLighting`, map.defaultLighting);
     for (const [eventIndex, eventValue] of requireArray(`map ${id}.events`, map.events).entries()) {
@@ -181,6 +182,25 @@ function validatePlanningItems(label: string, value: unknown): void {
     assert(isMapPlanningItemOrigin(row.origin), `${label}[${index}].origin이 잘못되었습니다.`);
     for (const key of ["createdAt", "updatedAt", "specAssetId"] as const) {
       if (row[key] !== undefined) requireString(`${label}[${index}].${key}`, row[key]);
+    }
+  }
+}
+
+/**
+ * 역할 투영 기록 (2026-09-12). 로케이션 ID → 그때 넣은 사각형.
+ *
+ * 알 수 없는 역할 키를 허용하지 않는 이유: 이 기록은 «우리가 넣은 사각형» 을 찾는 용도라,
+ * 모르는 키가 들어오면 그 사각형이 영원히 걷어내지지 않는다(유령).
+ */
+function validateLocationRoleProjection(label: string, value: unknown): void {
+  const record = requireRecord(label, value);
+  for (const role of ["safeZone", "farmable"]) {
+    const entries = record[role];
+    if (entries === undefined) continue;
+    const perLocation = requireRecord(`${label}.${role}`, entries);
+    for (const [locationId, rect] of Object.entries(perLocation)) {
+      assert(locationId.trim().length > 0, `${label}.${role}의 로케이션 ID가 비었습니다.`);
+      validateRect(`${label}.${role}.${locationId}`, rect);
     }
   }
 }
