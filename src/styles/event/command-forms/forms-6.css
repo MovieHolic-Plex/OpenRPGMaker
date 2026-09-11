@@ -1,0 +1,546 @@
+/* event 표면 — command-forms/forms-6.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* ---- Page 3 맵·연출 modern forms ---- */
+/* NOTE: functional preview colors kept (weather/tint/flash/picture/scroll stage grounds, chroma/mix accents) */
+.page3-command-body {
+  gap: 12px;
+  width: 100%;
+}
+
+.page3-command-layout {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.9fr);
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .page3-command-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.page3-command-main {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.page3-weather-preview,
+.page3-tint-preview {
+  inset: 0;
+  position: absolute;
+}
+
+.page3-weather-preview[data-weather="rain"] {
+  background:
+    repeating-linear-gradient(
+      -18deg,
+      transparent 0 10px,
+      color-mix(in srgb, #8ec8ff 35%, transparent) 10px 11px
+    );
+  opacity: 0.7;
+}
+
+.page3-weather-preview[data-weather="storm"] {
+  background:
+    repeating-linear-gradient(
+      -22deg,
+      transparent 0 8px,
+      color-mix(in srgb, #b8d8ff 45%, transparent) 8px 9px
+    ),
+    radial-gradient(circle at 70% 20%, color-mix(in srgb, #fff 40%, transparent), transparent 28%);
+  opacity: 0.8;
+}
+
+.page3-weather-preview[data-weather="snow"] {
+  background-image:
+    radial-gradient(circle at 20% 30%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 50%, #fff 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 40% 75%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 85% 20%, #fff 0 1px, transparent 2px);
+  opacity: 0.85;
+}
+
+.page3-weather-preview[data-weather="fog"] {
+  background: linear-gradient(180deg, color-mix(in srgb, #c9d4e8 35%, transparent), color-mix(in srgb, #9aabbf 45%, transparent));
+  opacity: 0.55;
+}
+
+.page3-tint-preview {
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+}
+
+.page3-tint-preview[data-tint="red"] { background: #ff6b6b; }
+
+.page3-tint-preview[data-tint="green"] { background: #6bff8a; }
+
+.page3-tint-preview[data-tint="blue"] { background: #6b9bff; }
+
+.page3-tint-preview[data-tint="yellow"] { background: #ffe066; }
+
+.page3-tint-preview[data-tint="purple"] { background: #c084fc; }
+
+.page3-tint-preview[data-tint="black"] { background: #111; }
+
+.page3-tint-preview[data-tint="white"] { background: #fff; }
+
+.page3-tint-preview[data-tint="neutral"] { background: var(--text-2); }
+
+/* ---- Page 3 form controls + native preview stages ---- */
+.page3-slider-row,
+.page3-color-row,
+.page3-coord-row,
+.page3-resource-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+.page3-more-fields {
+  border-top: 1px solid color-mix(in srgb, var(--line, #d8cbb8) 70%, transparent);
+  margin-top: 4px;
+  padding-top: 6px;
+}
+
+.page3-more-fields > summary {
+  color: var(--ink-dim, #6b5e4e);
+  cursor: pointer;
+  font-size: 12px;
+  list-style: none;
+}
+
+.page3-more-fields > summary::-webkit-details-marker {
+  display: none;
+}
+
+.page3-resource-name {
+  color: var(--ink, #2a241c);
+  flex: 1 1 auto;
+  font-size: 13px;
+  min-width: 0;
+}
+
+.page3-range-input {
+  accent-color: var(--accent, #4A57D6);
+  flex: 1 1 140px;
+  min-width: 120px;
+}
+
+.page3-color-swatch {
+  background: transparent;
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.12));
+  border-radius: 6px;
+  cursor: pointer;
+  height: 32px;
+  padding: 0;
+  width: 42px;
+}
+
+.page3-anim-surface-head {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+}
+
+.page3-anim-surface-title {
+  color: var(--text-2);
+  font: 700 11px/1.2 var(--font-ui);
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.page3-anim-play-host {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.page3-anim-preview {
+  display: grid;
+  gap: var(--space-1);
+}
+
+/* 96px 셀이 좁은 미리보기 열에서 잘리지 않게 레이어만 줄인다(셀 인라인 transform 보존). */
+.page3-anim-cells {
+  scale: 0.8;
+}
+
+/* 프레임이 없는 레코드: 런타임과 같은 섬광을 라벨과 함께 보여 준다(빈 스테이지 금지). */
+.page3-anim-fallback-flash {
+  animation: page3-anim-fallback-pulse 1.6s ease-in-out infinite;
+  background: radial-gradient(circle at 50% 52%, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0) 62%);
+  inset: 0;
+  position: absolute;
+}
+
+.page3-anim-fallback-label {
+  border: 1px dashed rgba(255, 255, 255, 0.42);
+  border-radius: var(--radius-s);
+  bottom: var(--space-2);
+  color: #f4f0e8;
+  font: 600 10px/1.3 var(--font-ui);
+  left: var(--space-2);
+  padding: 3px 6px;
+  position: absolute;
+  right: var(--space-2);
+  text-align: center;
+}
+
+@keyframes page3-anim-fallback-pulse {
+  0%, 100% { opacity: 0.28; }
+  50% { opacity: 0.72; }
+}
+
+/* ---- AI 그림 생성 큐 (aiImageGenerateField) ---- */
+/* 단발 버튼 대신 작업 목록: 만드는 동안에도 프롬프트를 계속 쌓고, 실패해도 프롬프트가
+   증발하지 않으며, 취소·재시도를 그 자리에서 한다. 전역 .page3-resource-row 레이아웃은
+   그대로 두고 목록 부분만 이 시트가 맡는다. 토큰만 쓰고 hex·중요 플래그 없음. */
+.ai-image-queue {
+  align-items: stretch;
+  display: grid;
+  gap: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page3-anim-fallback-flash {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+/* 이모트 선택 격자 — 실제 시트를 배경으로 깔아 그림으로 고르게 한다.
+   확대 배율은 정수(3배)여야 한다. 소수 배율이면 16px 픽셀아트가 뭉개진다. */
+.emote-swatch-grid {
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.emote-swatch {
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  padding: var(--space-1);
+}
+
+.emote-swatch:hover {
+  border-color: var(--border-strong);
+}
+
+.emote-swatch.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.emote-swatch-icon {
+  background-repeat: no-repeat;
+  background-size: 576px 48px;
+  block-size: 48px;
+  image-rendering: pixelated;
+  inline-size: 48px;
+}
+
+.emote-swatch-label {
+  color: var(--text-2);
+  font: 500 11px/1.4 var(--font-ui);
+  margin-block-start: var(--space-2);
+  text-align: center;
+}
+
+.storage-chest-command-body {
+  width: 100%;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+
+.storage-chest-purpose-card {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-m);
+  background: linear-gradient(135deg, var(--bg-raised), var(--accent-muted));
+}
+
+.storage-chest-glyph {
+  position: relative;
+  display: block;
+  width: 42px;
+  height: 36px;
+  filter: drop-shadow(0 3px 2px rgba(60, 48, 32, 0.14));
+}
+
+.storage-chest-glyph-lid,
+.storage-chest-glyph-body {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  border: 2px solid var(--gold);
+  background: var(--gold-soft);
+}
+
+.storage-chest-glyph-lid {
+  top: 3px;
+  height: 10px;
+  border-radius: 7px 7px 2px 2px;
+}
+
+.storage-chest-glyph-body {
+  top: 14px;
+  bottom: 1px;
+  border-radius: 2px 2px 6px 6px;
+}
+
+.storage-chest-glyph-body::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 3px;
+  width: 7px;
+  height: 8px;
+  border: 2px solid var(--gold);
+  border-radius: 2px;
+  background: var(--bg-raised);
+  transform: translateX(-50%);
+}
+
+.storage-chest-purpose-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.storage-chest-purpose-copy strong {
+  color: var(--text-1);
+  font-size: 13px;
+}
+
+.storage-chest-purpose-copy span {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.storage-chest-purpose-badge {
+  padding: 3px 9px;
+  border: 1px solid var(--success);
+  border-radius: 999px;
+  background: var(--success-muted);
+  color: var(--success);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.storage-chest-scope-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  background: var(--bg-surface);
+}
+
+.storage-chest-section-label {
+  color: var(--text-1);
+  font-size: 12px;
+}
+
+.storage-chest-scope-hint,
+.storage-chest-shared-settings .rich-form-hint {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.storage-chest-shared-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0 var(--space-3) var(--space-2);
+}
+
+.storage-chest-shared-settings[data-active="false"] {
+  display: none;
+}
+
+.storage-chest-shared-settings .inline-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+  color: var(--text-2);
+  font-size: 11px;
+}
+
+.storage-chest-shared-id {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+  color: var(--text-1);
+  padding: 8px 10px;
+  font: 12px/1.3 var(--font-ui);
+}
+
+.storage-chest-shared-id:focus {
+  border-color: var(--accent);
+  outline: var(--focus-outline);
+  outline-offset: 1px;
+}
+
+.storage-chest-treasure-note {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--warning);
+  border-radius: 0 var(--radius-s) var(--radius-s) 0;
+  background: var(--warning-muted);
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.storage-chest-treasure-note strong {
+  color: var(--warning);
+}
+
+@media (max-width: 720px) {
+  .storage-chest-purpose-card {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .storage-chest-purpose-badge {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+/* Command Story */
+.event-editor .story,
+.event-editor .event-storyboard,
+.event-editor .cmd-list {
+  background: var(--bg-base);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 4px 16px 24px;
+}
+
+/* 커스텀 셀렉트는 콘텐츠 폭을 요구하지 않아 그리드가 0까지 눌러 버린다.
+   «이상» 이 «이..» 로 잘리던 원인. */
+.event-editor .event-conditions-grid select,
+.event-editor .event-conditions-grid .event-custom-select,
+.event-editor .event-conditions-grid .event-custom-select-trigger {
+  min-width: 76px;
+}
+
+.event-editor .event-custom-select-trigger[data-custom-select-for="event-page-advanced-condition-kind"] {
+  min-width: 124px;
+}
+
+.event-editor .event-schedule-label .event-custom-select,
+.event-editor .event-schedule-label .event-custom-select-trigger,
+.event-editor .event-schedule-row select,
+.event-editor .event-schedule-row input[type="text"],
+.event-editor .event-schedule-row input[type="number"] {
+  max-width: none;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-editor .event-schedule-row input[type="text"],
+.event-editor .event-schedule-row input[type="number"] {
+  box-sizing: border-box;
+  font: 500 12px/18px var(--font-ui);
+  padding: 5px 7px;
+}
+
+/* 대비 — 틴트 위 보조 글자는 --text-2. --text-3 는 순백 위에서만 4.75:1 을 넘긴다. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-meta,
+.event-editor-modal-window .event-editor .event-editor-column-hint,
+.event-editor-modal-window .event-editor .event-editor-column-count,
+.event-editor-modal-window .event-editor .cmd-list .cmd-item > .cmd-head > .cmd-step,
+.event-editor-modal-window .event-editor .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle,
+.event-editor-modal-window .event-editor .cmd-list .cmd-line-marker,
+.event-editor-modal-window .event-editor .event-storyboard-card-title .kind,
+.event-editor-modal-window .event-editor .event-storyboard-card-title,
+.event-editor-modal-window .event-editor .event-storyboard-branch-label,
+.event-editor-modal-window .event-editor .event-storyboard-branch-step,
+.event-editor-modal-window .event-editor .evt-page-segment-cond,
+.event-editor-modal-window .event-editor .ai-event-prompt-help,
+.event-editor-modal-window .event-editor .ai-event-target,
+.event-editor-modal-window .event-editor .kicker,
+.event-editor-modal-window .event-editor .event-command-text-palette-hint,
+.event-editor-modal-window .event-editor .event-command-text-tool-label,
+.event-editor-modal-window .event-editor .event-command-text-limit-hint,
+.event-editor-modal-window .event-editor .event-command-text-speaker-hint,
+.event-editor-modal-window .event-editor .event-command-text-control-summary-note,
+.event-editor-modal-window .event-editor .event-command-text-control-hint,
+.event-editor-modal-window .event-editor-modal-footer .event-editor-draft-status,
+.event-editor-modal-window .event-editor-modal-footer .event-editor-remote-status {
+  color: var(--text-2);
+}
+
+/* 1단계 잔여 보정: map 의 button.btn.danger 가 event 레이어에 지게 되어 여기서 되살린다. 만기: Task 12/13 */
+.event-editor-modal-window .btn.danger {
+  color: var(--danger);
+}
+
+/* 1 채움: 한 화면에 하나씩(툴바 「+ 명령」, 푸터 「저장하고 닫기」, AI 「초안 만들기」). */
+.event-editor-modal-window .btn.primary,
+.event-editor-modal-window .event-editor .event-editor-command-tool.primary,
+.event-editor-modal-window .event-editor .ai-event-btn.primary {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+  height: 30px;
+  min-height: 30px;
+}
+
+/* 3 유령: 배경 없음 · 글자 --text-2 · 30px. 보기 토글·세그먼트·취소·테스트·빈 줄. */
+.event-editor-modal-window .btn.ghost,
+.event-editor-modal-window .event-editor .event-view-toggle-btn,
+.event-editor-modal-window .event-editor .rich-segment,
+.event-editor-modal-window .event-editor .cmd-empty-line,
+.event-editor-modal-window .event-editor .event-storyboard-add,
+.event-editor-modal-window .event-editor-modal-header .event-editor-header-test {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-2);
+  font-weight: 500;
+  height: 30px;
+  min-height: 30px;
+}
+
+.event-editor-modal-window .event-editor .event-view-toggle-btn[aria-selected="true"],
+.event-editor-modal-window .event-editor .rich-segment.selected {
+  background: var(--accent-muted);
+  color: var(--accent);
+  font-weight: 600;
+}

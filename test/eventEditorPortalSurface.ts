@@ -10,8 +10,9 @@
 //   표면이 바뀌고 그때 생기는 피커 testid 1,928개가 축 밖으로 나갔다.
 //
 //   CSS 게이트로 정량화한 결과, 표면 기준선을 정본으로 쓰는 새 CSS 게이트에서도
-//     · src/styles/event/event-editor.part-3/06-event-command-picker-favorite.css (456줄)
-//     · src/styles/event/event-editor.p1-route.css (117줄)
+//     · (옛) src/styles/event/event-editor.part-3/06-event-command-picker-favorite.css (456줄)
+//     · (옛) src/styles/event/event-editor.p1-route.css (117줄)
+//     (2026-09-11 Task 13 부터 두 시트의 규칙은 구성 요소 버킷 src/styles/event/subdialogs/dialogs*.css 에 있다)
 //   을 통째로 비워도 게이트가 통과했다. 어떤 축도 이 클래스들을 렌더로 증명하지 못했기 때문이다.
 //   즉 이 축이 없으면 "명령 피커를 리팩터하다 즐겨찾기 UI 를 통째로 날려도 모든 게이트가 초록"이다.
 //

@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { readEventSurfaceCss } from "./helpers/eventSurfaceCss";
 
 // PIN-RED: event-editor hierarchy chrome contract (after.html).
 //
@@ -8,10 +9,8 @@ import { describe, expect, it } from "vitest";
 // baseline. Implementation flips this file to green. The required shell testids
 // (event-editor-modal, event-page-tab-*, event-storyboard) are kept.
 
-const css = readFileSync(
-  new URL("../src/styles/event/event-editor.balanced.css", import.meta.url),
-  "utf8",
-);
+// 2026-09-11 Task 13: balanced.css 는 구성 요소 버킷(shell/pages/footer …)으로 흩어졌다 → 이벤트 표면 전체를 읽는다.
+const css = readEventSurfaceCss();
 const contentSource = readFileSync(
   new URL("../src/editor/panels/eventEditor/content.ts", import.meta.url),
   "utf8",

@@ -33,11 +33,16 @@ const declarations = (css, file) => {
 const classify = file => {
   if (/assistant|tabs-b-(?:shell-layout|status-menu|title-screen|resource-manager)/.test(file)) return 'non-DB or mixed external consumer: retained';
   if (/studio-v2|studio-theme|sidebar|workspace-modern|modern-controls|record-thumbs|virtual-list/.test(file)) return 'shared chrome';
-  if (/desktop|light-theme|core|tabs-a|tabs-b\.css|event-editor-legacy/.test(file)) return 'compatibility / legacy composition';
+  if (/desktop|light-theme|core|tabs-a|tabs-b\.css|event-editor-legacy|event\/command-forms\/forms\.css/.test(file)) return 'compatibility / legacy composition';
   return 'domain composition';
 };
-const relevant = file => file.startsWith('src/styles/database/') || ['src/styles/event/event-editor-legacy.part-1.css', 'src/styles/editor/world-panel.css'].includes(file);
-const before = files.filter(relevant).flatMap(file => declarations(readBase(file), file));
+// 2026-09-11 Task 13: 이벤트 시트의 DB 계열 규칙(.db-field / .db-field-hint)을 갖던 event-editor-legacy.part-1.css 는
+// 구성 요소 버킷 command-forms/forms.css 로 접혔다. 기준 트리(재편성 전)에서는 옛 경로로 읽되 새 경로 이름으로 기록해,
+// 파일 이동이 "삭제된 선언" 으로 잡히지 않게 한다.
+const EVENT_LEGACY_MOVED = { from: 'src/styles/event/event-editor-legacy.part-1.css', to: 'src/styles/event/command-forms/forms.css' };
+const relevant = file => file.startsWith('src/styles/database/') || [EVENT_LEGACY_MOVED.to, 'src/styles/editor/world-panel.css'].includes(file);
+const baseSource = file => (file === EVENT_LEGACY_MOVED.to && !baseFiles.has(file) ? readBase(EVENT_LEGACY_MOVED.from) : readBase(file));
+const before = files.filter(relevant).flatMap(file => declarations(baseSource(file), file));
 const after = files.filter(relevant).flatMap(file => declarations(readFileSync(file, 'utf8'), file));
 const key = d => JSON.stringify([d.file, d.context, d.selector, d.property, d.value, d.important]);
 const remaining = new Map();

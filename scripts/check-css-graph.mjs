@@ -65,13 +65,10 @@ const UNREGISTERED_SLICE_ALLOWLIST = new Set([]);
 // 병렬 워크트리에서 각자 다음 번호를 집어 생긴 충돌이다. 번호가 곧 cascade 순서라
 // 겹치면 로드 순서가 배럴 줄 순서에만 의존하게 되고, 리네임 한 번에 조용히 뒤집힌다.
 // 키 형식: "<슬라이스 디렉터리>#<NN>"
-// 실측: 8개 슬라이스 디렉터리(총 94개 번호 파일)를 전수 조사한 결과 충돌 그룹은 **1개**뿐이다.
-// 다만 그 그룹에 파일이 3개라 쌍(pair)으로 세면 3건 — 보고서의 "3건"은 이 쌍 수를 센 것이다.
-const DUPLICATE_PREFIX_ALLOWLIST = new Set([
-  // 07-actor-battle-authoring-surface.css / 07-identifiable-previews.css / 07-screen-effect-stage.css
-  // 세 파일 모두 07 — 병렬 워크트리가 각자 "다음 번호"를 07 로 집었다. P0-7 고아도 이 그룹 소속.
-  "src/styles/event/event-editor.command-preview#07",
-]);
+// 실측: 8개 슬라이스 디렉터리(총 94개 번호 파일)를 전수 조사한 결과 충돌 그룹은 **1개**뿐이었다
+// (event-editor.command-preview 의 07 세 파일). 2026-09-11 Task 13 이 이벤트 시트를 번호 없는 구성 요소 버킷으로
+// 접어 그 그룹이 사라졌다 → 유예 목록은 비어 있다.
+const DUPLICATE_PREFIX_ALLOWLIST = new Set([]);
 
 // ── 도구 ────────────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);

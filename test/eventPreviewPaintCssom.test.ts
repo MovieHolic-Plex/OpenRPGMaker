@@ -6,8 +6,9 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { chromium, type Browser, type Locator, type Page } from "playwright";
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { relative, resolve, sep } from "node:path";
 import { PNG } from "pngjs";
+import { eventSurfaceFiles } from "./helpers/eventSurfaceCss";
 
 const ROOT = resolve(__dirname, "..");
 const FROM_HEAD = process.env.EVENT_PREVIEW_PAINT_FROM === "HEAD";
@@ -19,12 +20,16 @@ function loadCss(rel: string): string {
   return source.replace(/@font-face\s*\{[\s\S]*?\}/g, "");
 }
 
+// 2026-09-11 Task 13: 옛 event-editor.command-preview/01·03·04 시트의 규칙은 구성 요소 버킷 previews/command-preview*.css 에
+// 있다 → 프리뷰 버킷 시트를 등록 순서대로 모두 싣는다(같은 어휘의 나머지 규칙도 함께 실리므로 실제 캐스케이드에 더 가깝다).
+const PREVIEW_SHEETS = eventSurfaceFiles()
+  .map((abs) => relative(ROOT, abs).split(sep).join("/"))
+  .filter((rel) => rel.startsWith("src/styles/event/previews/"));
+if (PREVIEW_SHEETS.length === 0) throw new Error("이벤트 표면에 previews 버킷 시트가 없다");
 const SHEET = [
   loadCss("src/styles/tokens.css"),
   loadCss("src/styles/runtime/system.css"),
-  loadCss("src/styles/event/event-editor.command-preview/01-event-editor-modern-import.css"),
-  loadCss("src/styles/event/event-editor.command-preview/03-ecp-result-screen.css"),
-  loadCss("src/styles/event/event-editor.command-preview/04-ecp-variable-stage.css"),
+  ...PREVIEW_SHEETS.map(loadCss),
 ].join("\n");
 
 const HTML = `<!doctype html>

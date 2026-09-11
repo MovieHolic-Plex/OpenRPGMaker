@@ -8,8 +8,12 @@
 // 램프까지 포함해 여섯 셀렉터가 실제로 배경과 다른 전경색을 갖는지 토큰 해석까지 거쳐 기록한다.
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
+import { eventSurfaceFileContaining } from "./helpers/eventSurfaceCss";
 
-const BADGE_CSS_PATH = "src/styles/event/event-editor.command-preview/02-changeface-play-mock-larger.css";
+// 2026-09-11 Task 13 부터 옛 02-changeface-play-mock-larger.css 의 규칙은 구성 요소 버킷(previews/command-preview*.css) 에 있다
+// → 배지 규칙을 가진 리프 시트를 찾아 읽는다(옛 파일과 같이 그 한 시트만 본다).
+const BADGE_CSS_PATH = eventSurfaceFileContaining(/\n\.ecp-gold-badge \{/u);
+if (!BADGE_CSS_PATH) throw new Error("이벤트 표면에 .ecp-gold-badge 규칙을 가진 시트가 없다");
 const TOKENS_CSS_PATH = "src/styles/tokens.css";
 
 /** 전경 ≠ 배경 으로 관측되는(즉 보이는) 배지/램프 셀렉터. */
