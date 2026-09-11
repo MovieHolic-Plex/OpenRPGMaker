@@ -525,7 +525,7 @@ function houseKitSection(): string {
     "추가 형태 축: stories(1~3, 2층은 h≥9) · lowWall(헛간·창고) · chimney · roofDeck(파랑 평지붕 전용).",
     "### 색: kitId",
     ...kits,
-    "kitId 6종은 지붕색 3가지로 접힌다 — blue: blue-stone·slate-wood / orange: bright-plaster·amber-wood / red: timber-hall·aframe-stone. 색군까지 섞어라.",
+    "kitId 5종은 지붕색 3가지로 접힌다 — blue: blue-stone·slate-wood / orange: bright-plaster·amber-wood / red: timber-hall. 색군까지 섞어라.",
     "### 시공·검증",
     "2채 이상은 author_house kind=lots + houses[]로 한 번에 호출(개별 single 반복 금지).",
     "집을 깐 직후 **look_at_houses(mapId)** 로 눈으로 확인하라. verdict 가 monotonous/mixed 면 advice 의 안 쓴 templateId 를 골라 다시 깔아라.",

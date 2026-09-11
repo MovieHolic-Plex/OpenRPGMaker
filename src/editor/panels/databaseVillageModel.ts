@@ -25,7 +25,7 @@ export const HOUSE_SHAPE_PRESETS: readonly { readonly defId: string; readonly la
   { defId: "courtyard", label: "ㅁ자 중정" },
   { defId: "t-porch", label: "T자 현관" },
   { defId: "estate-shed-r", label: "필지+헛간" },
-  { defId: "aframe-mid", label: "A자 지붕" },
+  { defId: "tier-front", label: "계단식 2층" },
   { defId: "barn-low", label: "낮은 헛간" },
 ];
 
@@ -35,7 +35,7 @@ export const HOUSE_SHAPE_PRESETS: readonly { readonly defId: string; readonly la
  */
 export function houseTemplateGroupLabel(id: string): string {
   if (id.startsWith("estate-")) return "필지(헛간 딸린 큰 집)";
-  if (id.startsWith("aframe")) return "A자 지붕";
+  if (id.startsWith("tier-")) return "계단식 2층";
   if (id.startsWith("rooftop")) return "옥상 데크";
   if (id.endsWith("-low")) return "헛간·오두막";
   if (id.startsWith("rect")) return "네모";
@@ -68,7 +68,13 @@ export function templateRecordFromDef(def: HouseTemplateDef, id: string, name?: 
     ...(def.lowWall ? { lowWall: true } : {}),
     ...(def.kitId ? { kitId: def.kitId } : {}),
     ...(def.roofDeck ? { roofDeck: true } : {}),
-    wings: def.wings.map((wing) => ({ x: wing.x, y: wing.y, w: wing.w, h: wing.h })),
+    wings: def.wings.map((wing) => ({
+      x: wing.x,
+      y: wing.y,
+      w: wing.w,
+      h: wing.h,
+      ...(wing.stories === undefined ? {} : { stories: wing.stories }),
+    })),
     clonedFrom: def.id,
   };
 }

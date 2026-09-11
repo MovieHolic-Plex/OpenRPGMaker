@@ -18,7 +18,7 @@ import {
   WALL_PROBE_TILES,
 } from "./fixtures";
 import {
-  AFRAME_KIT_PALETTE,
+  ROOF_KIT_PALETTE,
   DOOR_PALETTE,
   FENCE_PALETTE,
   ROAD_PALETTE,
@@ -130,15 +130,16 @@ export function buildHouseShellPrompt(): string {
 
 // ── 6번 지붕 대각 ─────────────────────────────────────────────────────────
 
-export function buildAframeRoofPrompt(): string {
+export function buildRoofDiagonalPrompt(): string {
   return (
-    `${IMAGE_PALETTE_GRID} The marked rectangle is the footprint of one house with a steep triangular roof. Build it. ` +
-    "The roof is a pyramid: each row above the eaves steps inward by one cell on the left and one cell on the right, " +
-    "the diagonal caps ride on those two stepping edges, and the topmost row is a single apex cell. " +
-    "Below the pyramid come the eaves row and then the wall as a nine-slice with a top row, middle rows and a bottom row. " +
-    "Opaque pieces go on the lower layer; the see-through diagonal caps go on the layer above. " +
+    `${IMAGE_PALETTE_GRID} The marked rectangle is the footprint of one house. Build it. ` +
+    "The roof has a ridge row on top, roof-face rows under it, and an eaves row that overhangs the wall on both sides. " +
+    "The roof face is inset by one cell on each side, so its two slanted flanks need the vertical trim pieces. " +
+    "Where the ridge row and the eaves row meet those slanted flanks, close the corner with the diagonal caps. " +
+    "Below the eaves comes the wall as a nine-slice: its own left edge, repeating middle and right edge, with a top row, middle rows and a bottom row. " +
+    "Opaque pieces (ridge, roof face, trim, eaves, wall) go on the lower layer; only the see-through caps go on the layer above. " +
     "Leave every cell outside the footprint empty. " +
-    `${palette(AFRAME_KIT_PALETTE)} ${JSON_LAYERED}`
+    `${palette(ROOF_KIT_PALETTE)} ${JSON_LAYERED}`
   );
 }
 

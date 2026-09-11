@@ -66,8 +66,6 @@ const pendingKeys = new Map<string, Set<HTMLCanvasElement>>();
 export function previewKitFor(record: VillageHouseTemplateRecord): HouseKitId {
   const explicit = record.kitId;
   if (explicit && (ALL_HOUSE_KIT_IDS as readonly string[]).includes(explicit)) return explicit as HouseKitId;
-  // aframe 는 날개 높이가 폭에 종속인 피라미드라 다른 킷으로는 스탬프가 실패한다.
-  if (/^aframe/.test(record.clonedFrom ?? record.id)) return "aframe-stone";
   const pool = MIXABLE_HOUSE_KIT_IDS;
   return pool[hash(record.id) % pool.length] as HouseKitId;
 }
@@ -96,7 +94,13 @@ export function housePreviewMap(
   if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) return undefined;
   const map = createBlankMap(record.name || record.id, width, height, tileset.id, tileset.tileSize);
   const stamped = stampFootprintHouseKit(map, {
-    wings: wings.map((wing) => ({ x: wing.x + MARGIN, y: wing.y + MARGIN, w: wing.w, h: wing.h })),
+    wings: wings.map((wing) => ({
+      x: wing.x + MARGIN,
+      y: wing.y + MARGIN,
+      w: wing.w,
+      h: wing.h,
+      ...(wing.stories === undefined ? {} : { stories: wing.stories }),
+    })),
     kitId: previewKitFor(record),
     stories: record.stories === 3 ? 3 : record.stories === 2 ? 2 : 1,
     ...(record.lowWall ? { lowWall: true } : {}),

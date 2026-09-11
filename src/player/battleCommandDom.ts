@@ -57,6 +57,7 @@ export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPan
     panel.append(targetPrompt(snapshot, terms));
     const targetMenu = targetSelectionMenu(snapshot, options, terms);
     targetMenu.append(targetCancelButton(options, terms));
+    attachScrollCue(targetMenu);
     panel.append(targetMenu);
     panel.append(keyPrompts());
     return panel;
@@ -71,9 +72,32 @@ export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPan
   if (options.submenu && !(options.submenu.kind === "switch" && snapshot.forcedSwitchActorId)) {
     menu.append(submenuBackButton(options, terms));
   }
+  attachScrollCue(menu);
   panel.append(menu);
   panel.append(keyPrompts());
   return panel;
+}
+
+/**
+ * 스크롤 가능한 커맨드 메뉴(4행 스크롤포트) 아래에 항목이 더 있으면 "▾" 신호를 띄운다.
+ * sticky + bottom:0 이라 잘린 동안은 뷰포트 하단에 떠 있다가, 끝까지 스크롤하면 마지막
+ * 행 자리에 도킹된다. 도주/교체가 카드 밖에 잘려 존재 자체가 안 보이던 문제
+ * (실플레이 11판 적대 리뷰)를 막는다. 스크롤이 없는 스킨에서는 hidden 처리된다.
+ */
+function attachScrollCue(menu: HTMLElement): void {
+  const cue = document.createElement("div");
+  cue.className = "battle-command-scroll-cue";
+  cue.setAttribute("aria-hidden", "true");
+  cue.dataset.testid = "battle-command-scroll-cue";
+  cue.textContent = "▾";
+  cue.hidden = true;
+  menu.append(cue);
+  const syncCue = (): void => {
+    if (!menu.isConnected) return;
+    cue.hidden = menu.scrollHeight - menu.clientHeight <= 1;
+  };
+  // 패널은 detached 상태로 만들어진다 — 레이아웃이 잡힌 다음 프레임에 넘침을 잰다.
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(syncCue);
 }
 
 export function enemyListPanel(snapshot: BattleSnapshot): HTMLElement {
@@ -209,10 +233,19 @@ function commandControl(
   const terms = resolveTerms(store.getCurrent());
   const label = battleCommandKindLabel(command, terms);
   switch (command.kind) {
-    case "attack":
+    case "attack": {
+      // gen1 모델에서 사용 가능한 기술이 남아 있으면 통상 공격은 런타임이 거부한다
+      // (Struggle 폴백 전용). 예전에는 버튼이 살아 있어 대상까지 고른 뒤 조용히
+      // 무시됐다 — pokemon 스킨의 Fight 와 같은 의미로 비활성 + 사유를 표시한다.
+      const project = store.getCurrent();
+      const gen1Blocked = project.system.battleModel === "gen1"
+        && actor != null
+        && actor.skillIds.some((skillId) => !battleSkillUseFailure(project, actor, skillId));
       return commandButton(label, commandTestId(command), "sword", "", () => {
-        options.beginTargetCommand({ kind: "attack" });
-      }, targetMode);
+        if (!targetMode) options.beginTargetCommand({ kind: "attack" });
+      }, targetMode || gen1Blocked,
+        gen1Blocked ? "사용 가능한 기술이 있어 통상 공격을 쓸 수 없습니다." : undefined);
+    }
     case "skill": {
       const skillIds = listedSkillIds(actor, command);
       const project = store.getCurrent();

@@ -23,7 +23,7 @@
 // remove 는 미커밋 변경이나 미병합 커밋이 있으면 거부한다. 커밋되지 않은 작업은 reflog 로도
 // 회수할 수 없으므로, 정말 버릴 때만 --force-dirty 를 명시한다.
 import { execFileSync } from "node:child_process";
-import { existsSync, copyFileSync, readFileSync, writeFileSync, symlinkSync, mkdtempSync, unlinkSync, rmSync, rmdirSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, symlinkSync, mkdtempSync, mkdirSync, statSync, unlinkSync, rmSync, rmdirSync } from "node:fs";
 import { join, dirname, basename, resolve } from "node:path";
 import { tmpdir } from "node:os";
 
@@ -60,6 +60,47 @@ function listWorktrees() {
   }
   if (current.path) entries.push(current);
   return entries.filter((entry) => resolve(entry.path) !== REPO);
+}
+
+let gitCommonDirCache;
+function gitCommonDir() {
+  if (!gitCommonDirCache) {
+    try {
+      gitCommonDirCache = git(["rev-parse", "--path-format=absolute", "--git-common-dir"]);
+    } catch {
+      gitCommonDirCache = join(REPO, ".git");
+    }
+  }
+  return gitCommonDirCache;
+}
+
+/**
+ * create 가 동시에 여러 개 돌면 스캔→기록 사이에 같은 포트를 고를 수 있다.
+ * .git 아래의 mkdir 락(원자적)으로 포트 스캔+기록 구간만 직렬화한다.
+ * 락을 쥔 프로세스가 죽으면 디렉터리가 남으므로 60초 지난 락은 회수한다.
+ */
+function withPortLock(fn) {
+  const lockDir = join(gitCommonDir(), "wt-port.lock");
+  const tick = new Int32Array(new SharedArrayBuffer(4));
+  for (;;) {
+    try {
+      mkdirSync(lockDir);
+      break;
+    } catch (error) {
+      if (error.code !== "EEXIST") throw error;
+      try {
+        if (Date.now() - statSync(lockDir).mtimeMs > 60_000) rmdirSync(lockDir);
+      } catch {
+        /* 회수 경합 — 다음 루프에서 재시도 */
+      }
+      Atomics.wait(tick, 0, 0, 50);
+    }
+  }
+  try {
+    return fn();
+  } finally {
+    rmdirSync(lockDir);
+  }
 }
 
 /** 이미 쓰이는 포트를 피해 다음 빈 포트를 고른다(워크트리 .env.local 스캔). */
@@ -117,8 +158,16 @@ function provision(path, { force = false } = {}) {
 
   for (const file of COPIED_ENV_FILES) {
     const destination = join(path, file);
-    if ((force || !existsSync(destination)) && existsSync(join(source, file))) {
-      copyFileSync(join(source, file), destination);
+    const existed = existsSync(destination);
+    if ((force || !existed) && existsSync(join(source, file))) {
+      let content = readFileSync(join(source, file), "utf8");
+      // 원본 .env.local 의 DEV_SERVER_PORT 는 원본의 배정이다. 그대로 복사하면 아래 포트
+      // 배정이 "이미 있음"으로 건너뛰어 모든 워크트리가 같은 포트를 갖는다 — 새로 복사되는
+      // 경우에만 지워서 고유 배정이 동작하게 한다.
+      if (file === ".env.local" && !existed) {
+        content = content.replace(/^DEV_SERVER_PORT=\d+\n?/gm, "");
+      }
+      writeFileSync(destination, content, "utf8");
       applied.push(`${file} 복사`);
     }
   }
@@ -128,8 +177,15 @@ function provision(path, { force = false } = {}) {
   const current = existsSync(envLocal) ? readFileSync(envLocal, "utf8") : "";
   let port = /^DEV_SERVER_PORT=(\d+)$/m.exec(current)?.[1];
   if (!port) {
-    port = String(nextFreePort());
-    writeFileSync(envLocal, `${current.trimEnd()}\nDEV_SERVER_PORT=${port}\n`.trimStart(), "utf8");
+    port = withPortLock(() => {
+      // 락 안에서 다시 읽는다 — 기다리는 동안 다른 프로세스가 배정했을 수 있다.
+      const latest = existsSync(envLocal) ? readFileSync(envLocal, "utf8") : "";
+      const existing = /^DEV_SERVER_PORT=(\d+)$/m.exec(latest)?.[1];
+      if (existing) return existing;
+      const assigned = String(nextFreePort());
+      writeFileSync(envLocal, `${latest.trimEnd()}\nDEV_SERVER_PORT=${assigned}\n`.trimStart(), "utf8");
+      return assigned;
+    });
     applied.push(`DEV_SERVER_PORT=${port}`);
   }
   return { port, applied };
@@ -144,10 +200,37 @@ function announce(path, branch, port) {
   console.log(`  dev 서버는 'npm run dev:worktree' (포트 ${port}). 'npm run dev' 는 9999 하드코딩이라 메인과 충돌한다.`);
 }
 
+/** 이름 생략 시 자동 이름. 경로와 브랜치 ref 둘 다 충돌하지 않을 때까지 suffix 를 올린다. */
+function nextAutoName() {
+  const now = new Date();
+  const stamp =
+    `${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}` +
+    `-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}`;
+  for (let i = 0; ; i += 1) {
+    const name = i === 0 ? `wt-${stamp}` : `wt-${stamp}-${i + 1}`;
+    if (existsSync(worktreePath(name))) continue;
+    try {
+      git(["rev-parse", "--verify", "--quiet", `refs/heads/${branchName(name)}`]);
+      continue; // 브랜치가 이미 있다
+    } catch {
+      return name;
+    }
+  }
+}
+
 function create(name, baseRef) {
-  if (!name) throw new Error("워크트리 이름이 필요합니다: create <name>");
+  if (!name) {
+    name = nextAutoName();
+    console.log(`[name] 자동 이름: ${name}`);
+  }
   const path = worktreePath(name);
   if (existsSync(path)) throw new Error(`이미 존재합니다: ${path}`);
+  try {
+    git(["rev-parse", "--verify", "--quiet", `refs/heads/${branchName(name)}`]);
+    throw new Error(`브랜치가 이미 존재합니다: ${branchName(name)}`);
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith("브랜치가")) throw error;
+  }
 
   const base = baseRef ?? snapshot(`snapshot: agent worktree base for ${name}`);
   if (!baseRef) console.log(`[base] 현재 워킹트리를 스냅샷했습니다 → ${base.slice(0, 12)}`);
@@ -209,6 +292,9 @@ function resolveWorktree(name) {
 
 /** 워크트리에 미커밋 변경이 있으면 목록을, 없으면 빈 배열을 준다. */
 function dirtyFiles(path) {
+  // 경로가 사라진 워크트리(/dev/shm·/tmp 등 tmpfs 는 재부팅에 지워진다)에 spawn 하면
+  // git ENOENT 가 아니라 cwd ENOENT 로 죽는다 — 존재 확인이 먼저다.
+  if (!existsSync(path)) return [];
   const raw = git(["status", "--porcelain"], { cwd: path });
   return raw ? raw.split("\n") : [];
 }
@@ -329,9 +415,11 @@ function list() {
       : "?";
     // 미커밋 변경과 main 대비 뒤처짐은 워크트리 안에만 보여서 `git branch -vv` 로는 안 보인다.
     // 회수되지 않은 작업을 상시 드러내려고 함께 출력한다.
+    const missing = !existsSync(entry.path);
     const dirty = dirtyFiles(entry.path).length;
     const behind = entry.branch ? unmergedForDisplay(entry.branch) : null;
     const flagged = [
+      missing ? "missing(prune 대상)" : null,
       dirty > 0 ? `dirty=${dirty}` : null,
       behind === null ? "unmerged=?" : behind > 0 ? `unmerged=${behind}` : null,
     ].filter(Boolean);

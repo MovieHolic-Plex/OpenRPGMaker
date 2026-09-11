@@ -16,6 +16,11 @@ export interface VillageTemplateWing {
   y: number;
   w: number;
   h: number;
+  /**
+   * 이 날개만의 층수 — 계단식 2층(위층이 드러나는 집). 생략하면 레코드 전체 `stories`.
+   * 시공기 `storiesAt()` 과 저작 검증 `shapeReason()` 이 같은 규칙으로 읽는다.
+   */
+  stories?: 1 | 2 | 3;
 }
 
 /** 사용자가 만든 집 형태 한 종. */

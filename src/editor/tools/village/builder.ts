@@ -1591,7 +1591,6 @@ function setVillageHarnessLayoutPlan(
     "amber-wood": "오렌지 통나무",
     "slate-wood": "파랑 통나무",
     "timber-hall": "빨간 널지붕 목조홀",
-    "aframe-stone": "빨간 A자 석벽",
   };
   const explicitKits = intent.houseKits.slice(0, houses.length);
   const explicitTemplates = intent.houseTemplates.slice(0, houses.length);

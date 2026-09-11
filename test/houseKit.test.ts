@@ -492,7 +492,6 @@ describe("house interior — L cottage (reference plan)", () => {
     expect(wallMaterialForKit("bright-plaster")).toBe("cream");
     expect(wallMaterialForKit("amber-wood")).toBe("cream");
     expect(wallMaterialForKit("timber-hall")).toBe("cream");
-    expect(wallMaterialForKit("aframe-stone")).toBe("cream");
   });
 
   it("maps catalog template families to interior scale", () => {

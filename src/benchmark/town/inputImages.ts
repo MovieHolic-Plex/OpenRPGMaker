@@ -19,7 +19,7 @@ import { rectHouseHeight } from "@/editor/houseKit";
 import { expandRect } from "@/editor/tools/village/constants";
 import { sha256HexBytes } from "../interior/hash";
 import {
-  AFRAME_GRID,
+  ROOF_GRID,
   AUTOTILE_SHAPE_HEIGHT,
   AUTOTILE_SHAPE_ROWS,
   AUTOTILE_SHAPE_WIDTH,
@@ -80,7 +80,7 @@ export const TOWN_IMAGE_KEYS: readonly TownImageKey[] = Object.freeze([
   "treeGrid",
   "roadGrid",
   "wallGrid",
-  "aframeGrid",
+  "roofGrid",
   "doorGrid",
   "fenceGrid",
   "villageGrid",
@@ -239,7 +239,7 @@ function marksFor(key: TownPlacementKey | "autotileShape"): GridMark[] {
     return marks;
   }
   if (key === "wallGrid") return footprintMarks(WALL_GRID.house, MARK_FOOTPRINT);
-  if (key === "aframeGrid") return footprintMarks(AFRAME_GRID.house, MARK_FOOTPRINT);
+  if (key === "roofGrid") return footprintMarks(ROOF_GRID.house, MARK_FOOTPRINT);
   if (key === "doorGrid") {
     return [{ x: DOOR_GRID.doorAt.x, y: DOOR_GRID.doorAt.y, colour: MARK_ANCHOR, outline: true }];
   }
@@ -281,7 +281,7 @@ function gridShapeFor(key: TownPlacementKey | "autotileShape"): { width: number;
   if (key === "treeGrid") return TREE_GRID;
   if (key === "roadGrid") return ROAD_GRID;
   if (key === "wallGrid") return WALL_GRID;
-  if (key === "aframeGrid") return AFRAME_GRID;
+  if (key === "roofGrid") return ROOF_GRID;
   if (key === "doorGrid") return DOOR_GRID;
   if (key === "fenceGrid") return FENCE_GRID;
   return VILLAGE_GRID;

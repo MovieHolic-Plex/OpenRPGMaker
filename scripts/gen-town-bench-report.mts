@@ -221,9 +221,9 @@ const AXIS_NOTES: readonly AxisNote[] = [
   {
     axis: "roofDiagonal",
     whoDoesItInProduct: "코드",
-    harnessCode: "houseKit 엔진(aframe 분기)",
-    measures: "A자 지붕은 행마다 좌우 1칸씩 좁아지는 피라미드이고, 사선 캡은 투명이라 상위·꼭짓점은 불투명이라 하위다. 이 계단과 레이어 분담을 모델이 재현하는가.",
-    items: ["identity", "stepInward", "diagonalCapsOnUpper", "apexOnLower", "eavesFullWidth", "nineSlice", "×outsideClean"],
+    harnessCode: "houseKit 엔진(표준 사선 지붕 국소 규칙)",
+    measures: "지붕은 용마루 행 → 몸통 행 → 처마 행이고 몸통은 벽보다 좌우 1칸 좁다 — 그 바깥 열이 세로 트림이다. 용마루·처마 모서리의 투명 대각 캡만 상위 레이어다. 이 인셋과 레이어 분담을 모델이 재현하는가.",
+    items: ["identity", "ridgeFull", "ridgeOpaque", "ridgeDiagonalCapsOnUpper", "bodyTrimRows", "eavesFullWidth", "nineSlice", "×outsideClean"],
   },
   {
     axis: "door",
@@ -255,7 +255,7 @@ const TASK_PALETTE_NOTE: Readonly<Partial<Record<TownImageKey, string>>> = {
   treeGrid: "나무 4종의 캐노피 + 줄기 — 수종 선택은 모델 자유",
   roadGrid: "흙길 11역할",
   wallGrid: "밝은 오렌지 지붕 + 흰 회벽 키트 한 벌",
-  aframeGrid: "빨간 A자 지붕 + 석벽 키트 한 벌",
+  roofGrid: "밝은 오렌지 지붕 + 흰 회벽 키트 한 벌",
   doorGrid: "문 두 벌 — 짝을 섞으면 안 된다",
   fenceGrid: "울타리 둘레 세트 8종",
   villageGrid: "세 키트 + 문 + 흙길 + 포석 + 울타리 + 나무",

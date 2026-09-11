@@ -39,7 +39,7 @@ const SHAPE_PROPERTIES = {
     enum: TEMPLATE_IDS,
     description:
       `외장 형태 카탈로그(${TEMPLATE_IDS.length}종). **집마다 서로 다른 값을 써서 실루엣을 갈라라** — `
-      + `ㄱ자·ㄷ자·중정·현관 돌출·A자 지붕·옥상 데크는 이 값으로만 나온다. 목록: ${TEMPLATE_CATALOG}`,
+      + `ㄱ자·ㄷ자·중정·현관 돌출·계단식 2층·옥상 데크는 이 값으로만 나온다. 목록: ${TEMPLATE_CATALOG}`,
   },
   stories: {
     type: "integer",
@@ -82,7 +82,7 @@ const EXAMPLE = {
     { kitId: "blue-stone", templateId: "l", wings: [{ x: 2, y: 1, w: 6, h: 8 }], interior: "linked-interior", door: true, ownerName: "대장장이", windows: {}, chimney: true, yard: ["firewood", "pot"] },
     { kitId: "bright-plaster", templateId: "rect-2f", wings: [{ x: 12, y: 1, w: 7, h: 9 }], interior: "linked-interior", door: true, ownerName: "약초사", windows: { spacing: 2 }, yard: ["flowers", "bench_h"] },
     { kitId: "amber-wood", templateId: "barn-low", wings: [{ x: 7, y: 14, w: 6, h: 5 }], interior: "linked-interior", door: true, ownerName: "어부", windows: {}, yard: ["mailbox"] },
-    { kitId: "aframe-stone", templateId: "aframe-mid", wings: [{ x: 18, y: 14, w: 7, h: 7 }], interior: "linked-interior", door: true, ownerName: "사냥꾼", windows: {}, yard: ["jar"] },
+    { kitId: "amber-wood", templateId: "z-offset", wings: [{ x: 18, y: 14, w: 8, h: 10 }], interior: "linked-interior", door: true, ownerName: "사냥꾼", windows: {}, yard: ["jar"] },
   ],
   seed: 42,
 } as const;

@@ -333,14 +333,7 @@ export function resolveHouseInteriorProgram(
 export function wallMaterialForKit(kitId: HouseKitId | undefined): InteriorWallMaterial | undefined {
   if (!kitId) return undefined;
   if (kitId === "blue-stone" || kitId === "slate-wood") return "stone-brick";
-  if (
-    kitId === "bright-plaster"
-    || kitId === "amber-wood"
-    || kitId === "timber-hall"
-    || kitId === "aframe-stone"
-  ) {
-    return "cream";
-  }
+  if (kitId === "bright-plaster" || kitId === "amber-wood" || kitId === "timber-hall") return "cream";
   return undefined;
 }
 
