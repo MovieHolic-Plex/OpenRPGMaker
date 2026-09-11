@@ -11,7 +11,7 @@
 import { runPiAgentViaCompanion } from "@/ai/piAgent/client";
 import { startPiRunLog, type PiRunContext, type PiRunFacts } from "@/ai/piAgent/activityLog";
 import { mergeMapBundles } from "@/ai/piAgent/mapBundle";
-import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentMode } from "@/ai/piAgent/protocol";
+import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentMode, type PiAgentThinkingLevel } from "@/ai/piAgent/protocol";
 import {
   createTeamBoardState,
   markTeamBoardAborted,
@@ -66,6 +66,42 @@ export function parsePiCommand(text: string, project: Project, currentMapId: str
   return { mode, mapIds: fallback, task: rest };
 }
 
+/** 슬래시 없는 평문 지시 — 컴포저가 고른 실행 모드(팀 비트)를 그대로 싣는다. */
+export function plainPiCommand(text: string, mode: PiAgentMode, currentMapId: string | null): ParsedPiCommand {
+  return { mode, mapIds: mode === "team" ? [] : currentMapId ? [currentMapId] : [], task: text.trim() };
+}
+
+/**
+ * 계획 턴의 지시문 머리. Pi 에는 세션 플래너가 없으므로 «실행하지 말고 계획만» 을 말로 만든다 —
+ * 강제는 툴 목록이 한다(request.readOnly). 계획은 도구 결과가 아니라 말로 남으므로 항목 목록을 요구한다.
+ */
+const PLAN_ONLY_PREFIX = "[계획 턴] 이번 실행에서는 프로젝트를 바꾸지 않는다. 쓰기 도구가 제공되지 않는다. "
+  + "요청을 실행 순서가 있는 항목 목록으로만 보고하라. 각 항목은 «무엇을 · 어디에 · 왜» 를 담고, 마지막에 예상 위험을 한 줄로 적어라. ";
+
+/** 이 실행 하나가 해도 되는 것. 패널이 자율성 다이얼에서 풀어 넘긴다(`resolvePiRunPlan`). */
+export interface PiRunOptions {
+  /** 쓰기 툴 미제공 — 질문(읽기 전용) 턴. */
+  readonly readOnly?: boolean;
+  /** 실행하지 않고 계획만. readOnly 와 함께 켜진다(자율성 「확인」). */
+  readonly planOnly?: boolean;
+  /** 다이얼의 작업 예산 → Pi 턴 상한. */
+  readonly maxTurns?: number;
+  /** 다이얼의 추론 강도 → Pi thinking level. */
+  readonly thinkingLevel?: PiAgentThinkingLevel;
+}
+
+/** 적용 뒤 영수증(지금 → 적용 후) 재료. 렌더는 패널이 한다 — 되돌리기와 스튜디오 「변경」 탭이 거기 있다. */
+export interface PiChangeReceipt {
+  readonly before: Project;
+  readonly after: Project;
+  readonly mapId: string | null;
+  readonly title: string;
+  readonly detail: string;
+  readonly chips: readonly string[];
+  /** 되돌리기 신호에 남길 툴 이름(성향 기억이 «가장 강한 부정» 을 이 이름으로 기록한다). */
+  readonly toolNames: readonly string[];
+}
+
 export interface PiCommandSurface {
   readonly appendBubble: (role: "system" | "assistant", text: string) => unknown;
   /** 로그에 카드 같은 임의 요소를 붙인다(변경 영수증과 같은 자리). */
@@ -74,9 +110,18 @@ export interface PiCommandSurface {
   readonly getCurrentMapId: () => string | null;
   /** 패널의 중단 버튼. 끊기면 진행 중인 요청을 모두 취소하고 아무것도 적용하지 않는다. */
   readonly signal?: AbortSignal;
+  /**
+   * 적용이 끝난 뒤 영수증 카드(지금 → 적용 후)를 남긴다. 없으면 카드 없이 끝난다 —
+   * 조수 세션이 하던 그 카드이고, Pi 경로에도 같은 계약(DESIGN.md 「Receipt card」)이 걸린다.
+   */
+  readonly showChangeReceipt?: (input: PiChangeReceipt) => void;
 }
 
-export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandSurface): Promise<boolean> {
+export async function runPiCommand(
+  command: ParsedPiCommand,
+  surface: PiCommandSurface,
+  options: PiRunOptions = {},
+): Promise<boolean> {
   if (!command.task) {
     surface.appendBubble("system", "사용법: /pi <지시> · /pi 맵id,맵id <지시> · /pi team <지시>");
     return false;
@@ -86,7 +131,9 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
   const baseline = new AuthoredProjectBaseline(base);
   const config = loadAiConfig();
   const provider = config.providerId ?? "google-antigravity";
-  const team = command.mode === "team";
+  const readOnly = options.readOnly === true;
+  // 조회 턴에 팀을 켜면 시공 팀원이 아무것도 못 하는 채로 예산만 태운다 — 읽기 전용은 언제나 단독이다.
+  const team = command.mode === "team" && !readOnly;
   const groups = team ? [command.mapIds] : command.mapIds.length > 0 ? command.mapIds.map((id) => [id]) : [[] as string[]];
   // 이 실행 하나가 활동 로그 행 하나다. 시작은 pending, 끝은 같은 id 로 upsert —
   // 죽은 실행도 "무슨 지시였고 언제 시작했는지" 가 남는다(세션 턴과 같은 관례).
@@ -121,7 +168,11 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
   surface.setStatus(team ? "Pi 팀 실행 중…" : `Pi 에이전트 ${groups.length}개 실행 중…`);
 
   // 단일·병렬 모드의 평평한 이벤트는 그룹 단위 행으로 감싸 보드에 넣는다. 팀 모드는 런타임이 이미 감싸서 보낸다.
+  // 질문(읽기 전용)·계획 턴의 결과는 «바뀐 것» 이 아니라 **말**이다. 보드는 마지막 한 줄만 남기므로
+  // 답이 될 문장을 따로 붙잡아 둔다 — 이게 없으면 질문 모드가 220자로 잘린 한 줄이 된다.
+  let lastAssistantText = "";
   const wrap = (mapIds: readonly string[], index: number) => (event: PiAgentEvent): void => {
+    if (event.type === "assistant") lastAssistantText = event.text;
     if (team) { push(event); return; }
     const agentId = mapIds.join(",") || `agent-${index + 1}`;
     if (event.type === "start") {
@@ -136,7 +187,18 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
   let results: PiAgentDoneEvent[];
   try {
     results = await Promise.all(groups.map((mapIds, index) => runPiAgentViaCompanion(
-      { mode: command.mode, provider, model: config.model, task: command.task, mapIds, project: base, ...(teamSpec ? { team: teamSpec } : {}) },
+      {
+        mode: team ? "team" : "single",
+        provider,
+        model: config.model,
+        task: options.planOnly ? `${PLAN_ONLY_PREFIX}${command.task}` : command.task,
+        mapIds,
+        project: base,
+        ...(readOnly ? { readOnly: true } : {}),
+        ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
+        ...(options.thinkingLevel === undefined ? {} : { thinkingLevel: options.thinkingLevel }),
+        ...(teamSpec ? { team: teamSpec } : {}),
+      },
       { signal: surface.signal, onEvent: wrap(mapIds, index) },
     )));
   } catch (error) {
@@ -173,14 +235,24 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
   }
   const changed = summarizeChanges(base, merged.project);
   const toolCalls = results.reduce((sum, done) => sum + done.stats.toolCalls, 0);
-  const changedCount = changedProjectKeys(base, merged.project).length;
+  const changedKeys = changedProjectKeys(base, merged.project);
+  const changedCount = changedKeys.length;
   if (changedCount === 0) {
-    boardState = markTeamBoardApplied(boardState, "바뀐 것이 없습니다."); sync();
-    finishLog({ applied: false, changedCount: 0, stoppedReason: "변경 없음" });
+    // 계획 턴은 바뀌지 않는 것이 정상이다 — "프로젝트에 바뀐 것이 없다" 로 끝내면 실패로 읽힌다.
+    const idle = options.planOnly
+      ? "계획만 세웠습니다. 실행하려면 같은 지시를 다시 보내세요."
+      : "Pi 에이전트가 끝났지만 프로젝트에 바뀐 것이 없습니다.";
+    boardState = markTeamBoardApplied(boardState, options.planOnly ? "계획만 세웠습니다." : "바뀐 것이 없습니다."); sync();
+    finishLog({ applied: false, changedCount: 0, stoppedReason: options.planOnly ? "계획만" : "변경 없음" });
     surface.setStatus("대기");
-    surface.appendBubble("system", "Pi 에이전트가 끝났지만 프로젝트에 바뀐 것이 없습니다.");
+    surface.appendBubble("system", idle);
+    // 읽기 전용(질문)·계획 턴은 답이 곧 결과다 — 보드의 잘린 한 줄 대신 본문을 그대로 남긴다.
+    if (lastAssistantText.trim()) surface.appendBubble("assistant", lastAssistantText.trim());
     return true;
   }
+  // 영수증이 그릴 맵: 먼저 바뀐 맵, 없으면 지시 범위의 첫 맵.
+  const receiptMapId = changedKeys.find((key) => key.startsWith("maps."))?.slice("maps.".length)
+    ?? command.mapIds[0] ?? surface.getCurrentMapId();
   const apply = async (): Promise<boolean> => {
     const applied = await applyProposedProject(merged.project, {
     base: proposalBase,
@@ -207,6 +279,15 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
     surface.setStatus(team ? "Pi 팀 적용 완료" : "Pi 에이전트 적용 완료");
     surface.appendBubble("system", appliedText);
+    surface.showChangeReceipt?.({
+      before: base,
+      after: merged.project,
+      mapId: receiptMapId,
+      title: `${team ? "Pi 팀" : `Pi 에이전트 ${groups.length}개`} — ${scopeText}`,
+      detail: appliedText,
+      chips: changePreviewChips(changed),
+      toolNames: [team ? "pi_team" : "pi_agent"],
+    });
     return true;
   };
   // 기본은 검토 후 적용: 보드 발의 검토 카드에서 사용자가 승인해야 프로젝트가 바뀐다.

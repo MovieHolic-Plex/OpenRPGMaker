@@ -1,5 +1,34 @@
 # Editor AI Panel & Tools
 
+## 조수 채팅은 Pi 하나다 — 세션 경로를 걷어냈다 (2026-09-11)
+
+조수 세션이 deprecated 되면서 «어느 루프로 가는가» 를 답하던 경로 enum(`session` · `pi-agent`)이
+사라졌다. 남은 축은 둘뿐이다: **무엇을 해도 되는가**(자율성 다이얼 → Pi 노브)와 **몇 명이 도는가**
+(`AiConfig.piTeam`).
+
+| 표면 | 값 | 소유 |
+|---|---|---|
+| 실행 계획 | `readOnly` · `planOnly` · `maxTurns` · `thinkingLevel` | `resolvePiRunPlan`(`src/ai/piAgent/executionRoute.ts`) ← 자율성 다이얼 |
+| 팀 | boolean | `AiConfig.piTeam` — 컴포저 「팀」 토글(`ai-composer-team`) · 설정 「Pi 팀 실행」(`ai-config-pi-team`) |
+| 명시 입력 | `/pi …` · `/pi team …` | `parsePiCommand` — 언제나 최우선. 다이얼의 읽기 전용·계획보다 **세다** |
+
+- 컴포저의 「경로」 셀렉트(`ai-composer-route`)와 설정의 「지시 실행 경로」(`ai-config-route`)는 **없다** —
+  그 자리를 팀 토글이 대신한다. 토글은 다이얼이 쓰기를 허용할 때만 보인다(읽기 전용·계획 턴에서는
+  쓰기 툴이 없어 팀이 예산만 태운다).
+- 질문(다이얼 「읽기 전용」)·계획(「확인」)은 세션이 아니라 Pi 가 맡는다: `readOnly` 는 요청에 실려
+  워커가 쓰기 툴을 주지 않고(`readOnlyTools` + 시스템 프롬프트 한 줄), 계획 턴은 지시문 머리에 계획
+  지시가 붙는다(`PLAN_ONLY_PREFIX`). 바뀐 것이 없으면 그 턴의 **답·계획 본문**을 assistant 말풍선으로
+  남긴다 — 보드의 220자 한 줄이 답이 되면 질문 모드가 쓸 수 없다.
+- 옛 blob 의 `executionRoute: "pi-team"` 은 **팀 비트**로 승격된다(`loadAiConfig`,
+  `LEGACY_PI_TEAM_ROUTE`). `session`·`pi-agent` 는 둘 다 «Pi» 이므로 버린다. 이 승격이 이 변경의
+  유일한 데이터 위험이고 `test/piAgentExecutionRoute.test.ts` 가 세 값을 전부 고정한다.
+- Pi 적용은 조수 세션과 같은 **영수증 카드**(`ai-change-card`, 지금 → 적용 후 두 장)를 남긴다: Pi 명령이
+  재료(`PiChangeReceipt`)를 넘기고 패널이 그린다(`showChangeReceipt` → 로그 + 스튜디오 「변경」 탭 +
+  되돌리기). 검토 카드에서 적용해도 같은 경로다.
+- **남은 세션 호출자**(deprecated 재고): 선택 영역 작업·영역 생성기(`runRegionTask`/`runOperatorTask`),
+  클러스터 AI 모달, 조수 QA 브리지(`aiAssistantBridge` — DB AI 바가 이걸 쓴다), 벤치마크/QA 스크립트.
+  각자 표면의 엔진이라 조수 창 경로와 무관하고, Pi 이관은 별도 작업이다.
+
 ## Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
 
 An assistant `BuildSpec` remains **session** state: `assistantSession.specsByMap` replaces the
