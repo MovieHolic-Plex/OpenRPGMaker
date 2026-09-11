@@ -148,7 +148,7 @@ function main(argv) {
   const write = args.includes("--write");
   const keepFallbacks = !args.includes("--prune-fallbacks");
   const jsonPath = flag("--json");
-  if (all === Boolean(surface) || surface === null || jsonPath === null) { console.error(USAGE); process.exit(1); }
+  if (all === Boolean(surface) || surface === null || surface?.startsWith("--") || jsonPath === null || jsonPath?.startsWith("--")) { console.error(USAGE); process.exit(1); }
 
   const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
   const root = path.join(repo, "src/styles");

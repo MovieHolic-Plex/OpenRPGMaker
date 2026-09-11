@@ -1,0 +1,984 @@
+/* event 표면 — command-list-2.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* ── 진입 CTA: 말하기 / 장소 옮기기 / 상점 열기 ─────────────── */
+.event-storyboard-quick-starts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.event-storyboard-quick-start {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.22));
+  background: var(--bg-raised, #FFFDF8);
+  cursor: pointer;
+  text-align: left;
+}
+
+.event-storyboard-quick-start:hover {
+  border-color: var(--accent, #C2703D);
+}
+
+.event-storyboard-quick-start-label {
+  font: 700 13px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-1, #2A2521);
+}
+
+.event-storyboard-quick-start-hint {
+  font: 500 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-2, #5B5347);
+}
+
+/* ---- [중간-1] 커맨드 리스트: 카테고리 색 레일 + kind 아이콘 ---- */
+.cmd-item[data-command-category="dialogue"] { --cmdcat: var(--cmdcat-dialogue); }
+
+.cmd-item[data-command-category="flow"] { --cmdcat: var(--cmdcat-flow); }
+
+.cmd-item[data-command-category="map"] { --cmdcat: var(--cmdcat-map); }
+
+.cmd-item[data-command-category="reward"] { --cmdcat: var(--cmdcat-reward); }
+
+.cmd-item[data-command-category="sound"] { --cmdcat: var(--cmdcat-sound); }
+
+.cmd-item[data-command-category="actor"] { --cmdcat: var(--cmdcat-actor); }
+
+.cmd-item[data-command-category="screen"] { --cmdcat: var(--cmdcat-screen); }
+
+.cmd-item[data-command-category="system"] { --cmdcat: var(--cmdcat-system); }
+
+.cmd-item[data-command-category="battle"] { --cmdcat: var(--cmdcat-battle); }
+
+.cmd-item[data-command-category="modern"] { --cmdcat: var(--cmdcat-modern); }
+
+.cmd-item[data-command-category] > .cmd-head {
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--cmdcat, transparent) 78%, transparent);
+}
+
+.cmd-cat-icon {
+  align-items: center;
+  color: var(--cmdcat, var(--text-dim, currentColor));
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 10px;
+  height: 16px;
+  justify-content: center;
+  line-height: 16px;
+  opacity: 0.9;
+  width: 13px;
+}
+
+/* 글리프는 생성 콘텐츠로 — 줄 textContent/접근성 이름을 오염시키지 않는다. */
+.cmd-cat-icon::before {
+  content: attr(data-glyph);
+}
+
+/* ---- [P1] 커맨드 리스트 인라인 썸네일 (16px 상한 — 줄 높이 불변) ---- */
+.cmd-thumb {
+  background-repeat: no-repeat;
+  display: inline-block;
+  flex: 0 0 auto;
+  height: 16px;
+  image-rendering: pixelated;
+  vertical-align: middle;
+  width: 16px;
+}
+
+.cmd-thumb-face {
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px var(--shadow-pop);
+}
+
+.cmd-thumb-map {
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px var(--shadow-pop);
+  overflow: hidden;
+  position: relative;
+  width: 24px;
+}
+
+.cmd-thumb-map-canvas {
+  image-rendering: pixelated;
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+.cmd-kind .cmd-thumb {
+  margin: 0 3px -3px 1px;
+}
+
+[data-testid="cmd-speaker-face"] {
+  margin-right: 4px;
+}
+
+/* ---- [P2] 모던 전용 파생 뷰: 라이브 미리보기 / 플로우차트 (기본 접힘) ---- */
+/* 보조 도구 본문은 event-editor.modern.css 에서 칩 행 위 absolute 오버레이로 배치.
+   인플로우 flex-grow 로 cmd-list 를 밀어내지 않는다. */
+.event-editor-commands-column {
+  position: relative;
+}
+
+.event-command-empty-experience {
+  display: grid;
+  gap: 12px;
+  min-height: 200px;
+  place-content: center;
+  padding: 18px;
+  border: 1px dashed var(--border-subtle);
+  border-radius: 8px;
+  background: var(--bg-surface);
+}
+
+.event-command-empty-copy {
+  display: grid;
+  gap: 3px;
+}
+
+.event-command-template-actions {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.event-command-template-button {
+  background: var(--surface-panel, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  color: var(--text-1);
+  cursor: pointer;
+  min-height: 34px;
+  padding: 6px 8px;
+}
+
+.event-command-template-button:hover,
+.event-command-template-button:focus-visible {
+  border-color: var(--accent, var(--accent-border));
+}
+
+.event-command-issue-badge.info { color: var(--accent, #4A57D6); }
+
+@media (max-width: 900px) {
+  .event-command-template-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.event-flowchart-body {
+  min-height: 0;
+  overflow: auto;
+  padding: 12px 14px 16px;
+}
+
+/* 순차 노드를 잇는 세로 스파인 — 흐름 방향(위→아래)을 보여주는 레일.
+   노드가 왼쪽 정렬되므로 고정 x(아이콘 포트 중심)에 둬 모든 노드를 관통한다. */
+.event-flow-column {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  position: relative;
+}
+
+.event-flow-column::before {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: linear-gradient(
+    var(--border-strong),
+    color-mix(in srgb, var(--border-strong) 30%, transparent)
+  );
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 노드 카드: 평평한 칩이 아니라 떠 있는 카드 + 좌측 컬러 스트립 */
+.event-flow-node {
+  position: relative;
+  z-index: 1;
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-left: 3px solid var(--cmdcat, var(--border-strong));
+  border-radius: 7px;
+  box-shadow: 0 1px 2px var(--shadow-pop);
+  display: inline-flex;
+  font: 600 11px/16px var(--font-ui);
+  gap: 7px;
+  max-width: 440px;
+  padding: 4px 10px 4px 8px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.event-flow-node:hover {
+  border-color: color-mix(in srgb, var(--cmdcat, var(--accent)) 60%, var(--border-default));
+  box-shadow: 0 2px 7px color-mix(in srgb, var(--cmdcat, var(--accent)) 24%, rgba(42,37,33,.10));
+}
+
+/* 노드는 인스펙터를 채우는 버튼이다 — UA 버튼 기본값(가운데 정렬·상속 안 되는 색)만 되돌린다. */
+.event-flow-node {
+  color: var(--text-1);
+  cursor: pointer;
+  text-align: left;
+}
+
+.event-flow-node:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 미리보기가 보던 단계. 두 보기를 잇는 유일한 표시라 색 하나로는 부족하다 — 링까지 둘러
+   스크롤 안에서 눈에 띄게 한다(`aria-current="step"` 도 같이 붙는다). */
+.event-flow-node.is-current {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent) 32%, transparent),
+    0 2px 8px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.event-flow-node[data-category="dialogue"] { --cmdcat: var(--cmdcat-dialogue); }
+
+.event-flow-node[data-category="flow"] { --cmdcat: var(--cmdcat-flow); }
+
+.event-flow-node[data-category="map"] { --cmdcat: var(--cmdcat-map); }
+
+.event-flow-node[data-category="reward"] { --cmdcat: var(--cmdcat-reward); }
+
+.event-flow-node[data-category="sound"] { --cmdcat: var(--cmdcat-sound); }
+
+.event-flow-node[data-category="actor"] { --cmdcat: var(--cmdcat-actor); }
+
+.event-flow-node[data-category="screen"] { --cmdcat: var(--cmdcat-screen); }
+
+.event-flow-node[data-category="system"] { --cmdcat: var(--cmdcat-system); }
+
+.event-flow-node[data-category="battle"] { --cmdcat: var(--cmdcat-battle); }
+
+.event-flow-node[data-category="modern"] { --cmdcat: var(--cmdcat-modern); }
+
+/* 아이콘을 컬러 포트(원형)로 — 노드의 입출력 핀 느낌 */
+.event-flow-node-icon {
+  align-items: center;
+  background: color-mix(in srgb, var(--cmdcat, var(--text-3)) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cmdcat, var(--text-3)) 55%, transparent);
+  border-radius: 50%;
+  color: var(--cmdcat, var(--text-2));
+  display: inline-flex;
+  font-size: 10px;
+  height: 16px;
+  justify-content: center;
+  width: 16px;
+}
+
+.event-flow-node-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 분기 그룹: 부모 노드에서 드롭되는 서브 플로우 컨테이너.
+   width:fit-content 로 상단 버스(보더)가 분기 폭에만 걸치게 한다. */
+.event-flow-branches {
+  position: relative;
+  z-index: 1;
+  width: fit-content;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 4px 0 6px 12px;
+  padding: 12px 12px 10px 14px;
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  border: 1px solid var(--border-subtle);
+  border-top: 2px solid var(--border-strong);
+  border-left: 2px solid color-mix(in srgb, var(--cmdcat, var(--accent)) 55%, var(--border-strong));
+  border-radius: 8px;
+}
+
+/* 부모 스파인 → 분기 버스로 내려오는 드롭 커넥터 */
+.event-flow-branches::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -8px;
+  width: 2px;
+  height: 10px;
+  background: var(--border-strong);
+}
+
+.event-flow-branch {
+  display: grid;
+  gap: 5px;
+  min-width: 130px;
+  position: relative;
+}
+
+/* 버스(컨테이너 상단 보더)에서 각 분기로 내려오는 가지 드롭 */
+.event-flow-branch::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -12px;
+  width: 2px;
+  height: 12px;
+  background: var(--border-strong);
+}
+
+/* 분기 라벨: 흐름 칩/배지 — 포트 라벨 느낌 */
+.event-flow-branch-label {
+  align-self: start;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+  border-radius: 999px;
+  color: var(--text-1);
+  font: 700 10px/1 var(--font-ui);
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+/* 빈 분기: 점선 노드 자리 — "여기엔 아직 노드 없음" */
+.event-flow-empty {
+  align-items: center;
+  border: 1px dashed var(--border-default);
+  border-radius: 6px;
+  color: var(--text-3);
+  display: inline-flex;
+  font: 500 10px/1 var(--font-ui);
+  gap: 5px;
+  padding: 6px 10px;
+}
+
+.event-flow-empty::before {
+  content: "∅";
+  color: var(--text-3);
+}
+
+/* ---- [P2] 크로스 컨테이너 드래그: 무효 드롭 대상 표시 ---- */
+.cmd-item.cmd-drop-invalid > .cmd-head {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--danger, #C6403D) 65%, transparent);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 이벤트 명령 리스트 → 블록 캔버스.
+ *
+ * DOM 은 건드리지 않는다. commandList.ts 가 이미 내보내는 것만 쓴다:
+ *   .cmd-item[data-command-category][data-cmd-depth]  — 카테고리 키 · 들여쓰기 깊이
+ *   .cmd-head                                          — 행 본체
+ *   .cmd-prefix (◆)                                    — 여기서 3px 색 거터로 바꾼다
+ *   .cmd-cat-icon[data-glyph]                          — 카테고리 글리프
+ * 따라서 testid 계약이 그대로 유지되고 기존 테스트가 깨지지 않는다.
+ *
+ * 색 규칙(검증기 결과 반영):
+ *   6색 전부를 all-pairs 로 구분하는 것은 불가능하다. 그래서 색은 식별자가 아니라
+ *   스캔 보조이고, 식별은 항상 함께 있는 명령 텍스트가 담당한다.
+ *   상위 3종(대사·흐름·데이터)만 색 단독으로 갈리고, 나머지 3종은 사선 텍스처를
+ *   2차 채널로 얹는다.
+ */
+.event-contents-fieldset .cmd-list {
+  --blk-radius: 5px;
+  --blk-indent: 18px;
+  /* 미분류 폴백. 반드시 부모에 둔다 — .cmd-item 에 두면 카테고리 규칙과 특이도가
+     같아 소스 순서로 폴백이 이겨 버린다(실제로 그렇게 깨졌다). 커스텀 속성은
+     상속되므로 부모 선언은 자식의 카테고리 선언에 항상 진다. */
+  --blk-cat: var(--bg-surface);
+  display: grid;
+  gap: 3px;
+  align-content: start;
+  padding: 8px 10px;
+}
+
+/* 빈 이벤트 — 1500x1000 같은 넓은 창에서 캔버스 세로 절반 이상이 죽은 검은
+   공백으로 남던 것을 교정한다. 시작 유형 블록만 있을 때는 캔버스 가운데로 모은다.
+   (명령이 하나라도 있으면 :has 가 안 걸리므로 위 align-content:start 가 그대로 산다.) */
+/* P0 빈 상태 CTA를 대형으로 승격 — 리스트 자체를 패딩 카드로 */
+.event-contents-fieldset .cmd-list:has(> .event-command-empty-experience) {
+  align-content: center;
+  justify-items: center;
+}
+
+.event-contents-fieldset .cmd-list > .event-command-empty-experience {
+  width: min(100%, 620px);
+}
+
+/* ── 카테고리 색 (dataviz 검증 통과 · 다크 서피스 기준) ───────────── */
+.event-contents-fieldset .cmd-item[data-command-category="dialogue"] { --blk-cat: var(--cmdcat-dialogue); }
+
+.event-contents-fieldset .cmd-item[data-command-category="flow"]     { --blk-cat: var(--cmdcat-flow); }
+
+.event-contents-fieldset .cmd-item[data-command-category="reward"]   { --blk-cat: var(--cmdcat-reward); }
+
+.event-contents-fieldset .cmd-item[data-command-category="map"]      { --blk-cat: var(--cmdcat-map); }
+
+.event-contents-fieldset .cmd-item[data-command-category="actor"]    { --blk-cat: var(--cmdcat-actor); }
+
+.event-contents-fieldset .cmd-item[data-command-category="screen"]   { --blk-cat: var(--cmdcat-screen); }
+
+.event-contents-fieldset .cmd-item[data-command-category="sound"]    { --blk-cat: var(--cmdcat-sound); }
+
+.event-contents-fieldset .cmd-item[data-command-category="battle"]   { --blk-cat: var(--cmdcat-battle); }
+
+.event-contents-fieldset .cmd-item[data-command-category="system"]   { --blk-cat: var(--cmdcat-system); }
+
+.event-contents-fieldset .cmd-item[data-command-category="modern"]   { --blk-cat: var(--cmdcat-modern); }
+
+/* 2차 채널 — 색만으로 갈리지 않는 후순위 3종에 사선 텍스처. */
+.event-contents-fieldset .cmd-item[data-command-category="map"] > .cmd-head > .cmd-prefix,
+.event-contents-fieldset .cmd-item[data-command-category="actor"] > .cmd-head > .cmd-prefix,
+.event-contents-fieldset .cmd-item[data-command-category="screen"] > .cmd-head > .cmd-prefix,
+.event-contents-fieldset .cmd-item[data-command-category="sound"] > .cmd-head > .cmd-prefix,
+.event-contents-fieldset .cmd-item[data-command-category="battle"] > .cmd-head > .cmd-prefix,
+.event-contents-fieldset .cmd-item[data-command-category="system"] > .cmd-head > .cmd-prefix,
+.event-contents-fieldset .cmd-item[data-command-category="modern"] > .cmd-head > .cmd-prefix {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.5) 0 2px,
+    transparent 2px 4px
+  );
+}
+
+/* ── 블록 ────────────────────────────────────────────────────────── */
+.event-contents-fieldset .cmd-list .cmd-item {
+  background: transparent;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  /* 깊이는 블록 자체를 들여쓴다 — 텍스트 들여쓰기가 아니라 구조로 보이게. */
+  margin-left: calc(var(--cmd-depth, 0) * var(--blk-indent));
+  position: relative;
+}
+
+/* 들여쓰기 가이드 — 분기 안쪽임을 세로선으로 알린다. 3단부터 모호하던 1px를 2px로 두껍게 하고, 경계가 보이도록 accent를 22% 섞는다. */
+.event-contents-fieldset .cmd-list .cmd-item[data-cmd-depth]:not([data-cmd-depth="0"])::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--blk-indent) * -0.5);
+  top: 2px;
+  bottom: 2px;
+  width: 2px;
+  background: color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 22%, var(--border-default, var(--mk-line, #2a3449)));
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head {
+  display: grid;
+  /* 자식 수는 얼굴·지원·검사 배지 유무로 달라진다. 요약을 고정된 minmax 트랙에
+     넣어 선택 요소가 생겨도 얼굴이 1fr 를 차지하거나 요약이 암시 auto 트랙으로 밀리지 않는다. */
+  grid-template-columns: auto auto 3px auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+  background: color-mix(in srgb, var(--blk-cat) 5%, var(--bg-surface));
+  border: 1px solid color-mix(in srgb, var(--blk-cat) 20%, var(--border-subtle));
+  border-radius: var(--blk-radius);
+  transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:hover {
+  background: color-mix(in srgb, var(--blk-cat) 9%, var(--bg-raised));
+  border-color: color-mix(in srgb, var(--blk-cat) 38%, var(--border-default));
+  box-shadow: 0 2px 7px rgba(42, 37, 33, 0.08);
+}
+
+.event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head {
+  border-color: var(--accent);
+  border-width: 2px;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 32%, transparent), 0 2px 10px rgba(42,37,33,.10);
+  background: color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 7%, var(--bg-raised, var(--mk-raised, #FFFDF8)));
+}
+
+/* ── 실행 순서 번호 ──────────────────────────────────────────────────
+   칼럼 라벨은 «위에서 아래로 차례대로 실행됩니다» 라고 약속하지만 예전에는 그 순서를
+   화면에 적는 것이 하나도 없었다. 번호는 자기 컨테이너 안에서 1 부터 다시 시작한다. */
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-step {
+  color: var(--text-3);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  min-width: 14px;
+  text-align: right;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head > .cmd-step,
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:hover > .cmd-step {
+  color: var(--blk-cat);
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-summary {
+  align-items: center;
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-summary > .cmd-kind {
+  flex: 1 1 auto;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .event-command-issue-badge { grid-column: 7; }
+
+/* ── ◆ 접두 문자를 색 거터로 ─────────────────────────────────────── */
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-prefix {
+  /* 글자를 지우고 3px 막대만 남긴다. 텍스트 정본은 요약문이 계속 들고 있다. */
+  font-size: 0;
+  line-height: 0;
+  width: 3px;
+  min-width: 3px;
+  align-self: stretch;
+  min-height: 16px;
+  margin: 0;
+  border-radius: 2px;
+  background-color: var(--blk-cat);
+  background-repeat: repeat;
+}
+
+/* ── 드래그 핸들 · 글리프 ────────────────────────────────────────── */
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle {
+  color: var(--text-3);
+  opacity: 0;
+  transition: opacity 0.12s;
+  cursor: grab;
+  font-size: 11px;
+  letter-spacing: -1px;
+  min-width: 22px;
+  min-height: 22px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 4px;
+  margin: -4px 0;
+  padding: 2px 3px;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:hover > .cmd-drag-handle,
+.event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head > .cmd-drag-handle,
+.event-contents-fieldset .cmd-list .cmd-item:focus-within > .cmd-head > .cmd-drag-handle {
+  opacity: 1;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle:hover {
+  background: color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 12%, transparent);
+  color: var(--text-1, var(--mk-t1, #2A2521));
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle:active {
+  cursor: grabbing;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-cat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: auto;
+  min-width: 50px;
+  height: 22px;
+  padding: 0 7px;
+  color: var(--blk-cat);
+  background: color-mix(in srgb, var(--blk-cat) 12%, var(--bg-raised));
+  border: 1px solid color-mix(in srgb, var(--blk-cat) 28%, var(--border-subtle));
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 750;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-cat-icon::after {
+  content: attr(data-label);
+}
+
+/* 좁은 폭에서도 **낱말을 지우지 않는다**. 예전에는 24px 글리프만 남겨서, 이 줄이 어떤
+   종류의 일인지 알려주는 유일한 표시가 칼럼이 좁아질 때 정확히 사라졌다. 실제 폭별 행·요약
+   기하는 `output/evidence/event-do-column/after/*.json` 이 기록한다. */
+@media (max-width: 1050px) {
+  .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-cat-icon {
+    min-width: 0;
+    padding: 0 5px;
+    font-size: 9px;
+  }
+}
+
+/* ── 액션 버튼 — 평소 숨기고 hover/선택 시만 ─────────────────────── */
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-actions {
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:hover > .cmd-actions,
+.event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head > .cmd-actions {
+  opacity: 1;
+}
+
+/* 키보드 접근성 — 포커스는 항상 보이게. */
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:focus-visible > .cmd-actions,
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:focus-visible > .cmd-drag-handle {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-contents-fieldset .cmd-list .cmd-item > .cmd-head,
+  .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-actions,
+  .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle {
+    transition: none;
+  }
+}
+
+.event-contents-fieldset .cmd-list > .event-command-empty-experience {
+  min-height: 220px;
+  place-content: center;
+  border: 1px dashed var(--border-subtle);
+  border-radius: 8px;
+  background: var(--bg-surface);
+}
+
+/* 스토리 보기 카드/분기 줄도 목록과 **같은** 카테고리 색을 쓴다.
+   `.cmd-item` 만 매핑돼 있어서 스토리 카드는 색 채널이 통째로 없었다. */
+.event-contents-fieldset .event-storyboard [data-command-category="dialogue"] { --blk-cat: var(--cmdcat-dialogue); }
+
+.event-contents-fieldset .event-storyboard [data-command-category="flow"]     { --blk-cat: var(--cmdcat-flow); }
+
+.event-contents-fieldset .event-storyboard [data-command-category="reward"]   { --blk-cat: var(--cmdcat-reward); }
+
+.event-contents-fieldset .event-storyboard [data-command-category="map"]      { --blk-cat: var(--cmdcat-map); }
+
+.event-contents-fieldset .event-storyboard [data-command-category="actor"]    { --blk-cat: var(--cmdcat-actor); }
+
+.event-contents-fieldset .event-storyboard [data-command-category="screen"]   { --blk-cat: var(--cmdcat-screen); }
+
+.event-contents-fieldset .event-storyboard [data-command-category="sound"]    { --blk-cat: var(--cmdcat-sound); }
+
+.event-contents-fieldset .event-storyboard [data-command-category="battle"]   { --blk-cat: var(--cmdcat-battle); }
+
+.event-contents-fieldset .event-storyboard [data-command-category="system"]   { --blk-cat: var(--cmdcat-system); }
+
+.event-contents-fieldset .event-storyboard [data-command-category="modern"]   { --blk-cat: var(--cmdcat-modern); }
+
+/* ── 액센트 통일 — 셸 인디고 ─────────────────────────────────────── */
+.event-editor .event-editor-command-tool.primary,
+.event-editor .btn.primary {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+  color: var(--mk-accent-ink);
+}
+
+.event-editor .event-editor-command-tool.primary:hover,
+.event-editor .btn.primary:hover {
+  filter: brightness(1.07);
+}
+
+.event-editor .cmd-list .cmd-item.selected > .cmd-head {
+  border-color: var(--mk-accent);
+  box-shadow: 0 0 0 1px var(--mk-accent);
+  background: var(--mk-raised);
+}
+
+.event-editor .cmd-list .cmd-item > .cmd-head:focus-visible {
+  outline-color: var(--mk-accent);
+}
+
+/* ── 명령 툴바 ───────────────────────────────────────────────────── */
+.event-editor .event-editor-command-toolbar {
+  border-bottom: 1px solid var(--mk-line);
+}
+
+.event-editor .event-editor-command-tool {
+  border-radius: 3px;
+  font-size: 11.5px;
+}
+
+.event-editor .event-editor-command-header > .event-view-toggle {
+  flex: 0 0 auto;
+}
+
+/* ── D: 블록 캔버스 값 맞추기 ──────────────────────────────────── */
+/* 목업 .canvas: padding 9px 11px · gap 3px */
+/* 목업 .mark: 블록이 아닌 흐름색 텍스트 줄 — 04-depth-parent 의
+ * 배경 밴드·사선 텍스처를 끊고 글자만으로 그린다. */
+.event-editor .cmd-list > .cmd-line-marker {
+  background-color: transparent;
+  background-image: none;
+  border: 0;
+  border-radius: 0;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 11.5px;
+  line-height: 16px;
+  height: 22px;
+  min-height: 22px;
+  padding: 3px 2px 3px 4px;
+}
+
+/* 목업 .canvas-col: padding 10px 12px 12px · gap 8px · head 32px.
+ * 실제 필드셋은 padding 12/12/10 + head 32 + gap 8, 열 자체도 좌우 인셋을
+ * 더해 캔버스를 목업(816)보다 좁게 만든다 → 열/필드셋 값을 목업에 맞춘다. */
+/* 행 구조: 1 툴바 · 2 콘텐츠(목록/스토리보드 중 하나, 1fr).
+ * 제목/보기 전환은 위 페이지바로 올리고, 좌우 인셋도 줄여 명령 보드를 확장한다. */
+.event-editor .event-contents-fieldset {
+  position: relative;
+  gap: 6px;
+}
+
+.event-editor .event-contents-fieldset > .event-editor-command-toolbar {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  min-height: 32px;
+}
+
+.event-editor .event-contents-fieldset > .event-storyboard-host {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* 목록 모드에서는 빈 스토리보드 호스트가 콘텐츠 트랙을 차지하지 않게 통째로 접는다. */
+.event-editor .event-contents-fieldset:has(.event-storyboard[hidden]) > .event-storyboard-host {
+  display: none;
+}
+
+.event-editor .event-contents-fieldset > .cmd-list {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.event-editor .event-contents-fieldset > .event-storyboard-host > [hidden],
+.event-editor .event-contents-fieldset > .cmd-list[hidden] {
+  display: none;
+}
+
+.event-editor .event-storyboard-card {
+  align-self: flex-start;
+  max-height: 120px;
+  overflow: hidden;
+}
+
+.event-editor .event-storyboard-card-branches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.event-editor .event-storyboard-branch {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 1px 7px;
+  background: var(--bg-inset);
+  color: var(--text-2);
+  font-size: 11px;
+}
+
+.event-editor .event-storyboard-branch-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor .event-storyboard-host > .event-storyboard[hidden],
+.event-editor .event-storyboard-host > .event-graph-placeholder[hidden] {
+  display: none;
+}
+
+@media (max-height: 800px) {
+  .event-editor .event-contents-fieldset .cmd-list:has(> .event-command-empty-experience) {
+    align-content: start;
+  }
+
+  .event-editor .event-storyboard-card {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-content: center;
+    align-self: start;
+    column-gap: 8px;
+    row-gap: 2px;
+    box-sizing: border-box;
+    height: 56px;
+    overflow: hidden;
+    padding: 8px;
+  }
+
+  .event-editor .event-storyboard-card-thumb {
+    grid-row: 1 / 3;
+  }
+
+  .event-editor .event-storyboard-card-title,
+  .event-editor .event-storyboard-card-detail {
+    grid-column: 2;
+  }
+
+  .event-editor .event-storyboard-card-branches {
+    display: none;
+  }
+
+  .event-editor .event-storyboard-card-detail {
+    -webkit-line-clamp: 1;
+  }
+}
+
+.event-editor .event-editor-command-edit-summary,
+.event-editor .event-editor-command-tools-summary,
+.event-editor-footer-more-summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.event-editor .event-editor-command-edit-summary::-webkit-details-marker,
+.event-editor .event-editor-command-tools-summary::-webkit-details-marker,
+.event-editor-footer-more-summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-editor .event-editor-command-edit-summary::after,
+.event-editor .event-editor-command-tools-summary::after,
+.event-editor-footer-more-summary::after {
+  content: "▾";
+  margin-left: 7px;
+  color: var(--mk-t3, var(--mk-t2));
+  font-size: 9px;
+}
+
+.event-editor .event-editor-command-edit-menu[open] > .event-editor-command-edit-summary,
+.event-editor .event-editor-command-tools-menu[open] > .event-editor-command-tools-summary,
+.event-editor-footer-more[open] > .event-editor-footer-more-summary {
+  color: var(--mk-t1);
+  border-color: color-mix(in srgb, var(--mk-accent) 48%, var(--mk-line));
+}
+
+.event-editor .event-contents-fieldset {
+  /* 위 실행 내용 2행 정의와 반드시 일치시킬 것 — 여기가 나중이라 항상 이긴다. */
+}
+
+.event-editor .event-contents-fieldset > .event-editor-command-toolbar {
+  justify-content: flex-end;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.event-editor .event-editor-command-toolbar > [data-testid="event-command-toolbar-add"] {
+  min-width: 84px;
+  padding: 0 13px;
+}
+
+.event-editor .event-editor-command-edit-popover {
+  position: absolute;
+  z-index: 16;
+  top: calc(100% + 5px);
+  right: 0;
+  display: grid;
+  width: 238px;
+  padding: 8px;
+  gap: 6px;
+  background: var(--mk-raised);
+  border: 1px solid var(--mk-line);
+  border-radius: 6px;
+  box-shadow: 0 12px 28px var(--shadow-pop);
+}
+
+.event-editor .event-editor-command-edit-menu:not([open]) > .event-editor-command-edit-popover {
+  display: none;
+}
+
+.event-editor .event-editor-command-edit-popover .event-editor-command-tool-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.event-editor .event-editor-command-edit-popover .event-editor-command-tool-group + .event-editor-command-tool-group,
+.event-editor .event-editor-command-edit-popover .event-editor-command-tool-group + .event-editor-command-tool {
+  margin: 0;
+  padding: 6px 0 0;
+  border-left: 0;
+  border-top: 1px solid var(--mk-line-soft);
+}
+
+.event-editor .event-editor-command-edit-popover .event-editor-command-tool {
+  width: 100%;
+  padding: 0 8px;
+  justify-content: flex-start;
+}
+
+.event-editor .event-editor-command-toolbar {
+  position: relative;
+}
+
+.event-editor .event-editor-command-tools-menu {
+  order: 3;
+  position: static;
+}
+
+.event-editor .event-editor-command-tools-summary {
+  min-height: 30px;
+  padding: 7px 11px;
+  border: 1px solid var(--mk-line);
+  border-radius: 3px;
+  color: var(--mk-t2);
+  font-size: 11.5px;
+  line-height: 14px;
+}
+
+.event-editor .event-editor-command-tools-popover {
+  position: absolute;
+  z-index: 18;
+  top: calc(100% + 5px);
+  right: 0;
+  width: min(620px, 100%);
+  padding: 8px;
+  background: var(--mk-raised);
+  border: 1px solid var(--mk-line);
+  border-radius: 6px;
+  box-shadow: 0 12px 28px var(--shadow-pop);
+}
+
+.event-editor .event-editor-command-tools-menu:not([open]) > .event-editor-command-tools-popover {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+
+  .event-editor .event-storyboard-card {
+    flex-basis: 158px;
+  }
+}
+
+.ai-image-queue-list {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ai-image-queue-empty {
+  color: var(--text-3);
+  font: 400 12px/1.5 var(--font-ui);
+  margin: 0;
+}
+
+.ai-image-queue-head {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.ai-image-queue-count {
+  color: var(--text-2);
+  font: 600 12px/1.4 var(--font-ui);
+}

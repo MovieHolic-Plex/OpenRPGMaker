@@ -8,8 +8,8 @@
 //   1) 화면에 뜨는 문자열이 **저장된 event.id 그 자체**여야 한다(순번·이름·characterId 유도 금지)
 //   2) 그 표시를 만지는 것으로 프로젝트도 이벤트 드래프트도 더러워지지 않아야 한다
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { eventSurfaceFileContaining } from "./helpers/eventSurfaceCss";
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { editorState } from "@/editor/editorState";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
@@ -338,8 +338,14 @@ describe("이벤트 ID 읽기 전용 표시 (OPRN-OUT-014)", () => {
     // 왜 CSS 를 파일로 읽는가: 맵/모달 캔버스는 WebGL 이고 단위 테스트 DOM 에는 레이아웃
     // 엔진이 없다. 「긴 UUID 가 레이아웃을 깨지 않는다」는 약속을 검증 가능한 형태로
     // 고정할 수 있는 지점은 규칙 자체다(값이 사라지면 이 테스트가 먼저 깨진다).
-    const card = readFileSync(resolve(process.cwd(), "src/styles/editor/core.part-2.css"), "utf8");
-    const chip = readFileSync(resolve(process.cwd(), "src/styles/editor/event-editor.balanced.css"), "utf8");
+    // 2026-09-11 Task 13: 카드 변형(옛 from-editor-core-part-2.css)과 칩 변형(옛 event-editor.balanced.css)은 이제 구성 요소
+    // 버킷(pages*.css) 에 있다. 파일 이름 대신 각 변형의 선택자를 가진 리프 시트를 찾아 읽는다.
+    const cardFile = eventSurfaceFileContaining(".event-editor input.event-id-readout-value");
+    const chipFile = eventSurfaceFileContaining(".event-editor-modal-header .event-id-readout {");
+    expect(cardFile, "카드 변형 규칙을 가진 이벤트 시트").toBeDefined();
+    expect(chipFile, "칩 변형 규칙을 가진 이벤트 시트").toBeDefined();
+    const card = readFileSync(cardFile!, "utf8");
+    const chip = readFileSync(chipFile!, "utf8");
 
     const cardRule = card.slice(card.indexOf(".event-id-readout-value"));
     expect(card).toContain(".event-id-readout");

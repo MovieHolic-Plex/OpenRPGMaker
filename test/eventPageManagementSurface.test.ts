@@ -11,8 +11,7 @@
 //   D7 탭 우클릭 메뉴가 없었다(명령 목록에는 있다).
 //   D8 role=tab 에 aria-pressed 를 함께 쓰고, tabindex·방향키가 없었다.
 import { beforeEach, describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readEventSurfaceCss } from "./helpers/eventSurfaceCss";
 import { editorState } from "@/editor/editorState";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { renderClassicPageTabStrip, renderPageActions } from "@/editor/panels/eventEditor/pageProps";
@@ -216,10 +215,8 @@ describe("페이지 관리 작업면", () => {
   });
 
   it("좁은 포트 CSS 는 라벨을 지우고 다시 그리는 장치를 쓰지 않는다", () => {
-    const css = readFileSync(
-      resolve(process.cwd(), "src/styles/editor/event-editor.balanced.css"),
-      "utf8",
-    );
+    // 2026-09-11 Task 13: 페이지 버튼 규칙을 갖던 event-editor.balanced.css 는 구성 요소 버킷으로 흩어졌다 → 표면 전체를 본다.
+    const css = readEventSurfaceCss();
     expect(css).not.toContain("attr(data-compact-label)");
     expect(css).not.toMatch(/\.event-page-button-label\s*\{[^}]*font-size:\s*0/u);
   });

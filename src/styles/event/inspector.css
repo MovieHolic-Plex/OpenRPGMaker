@@ -1,0 +1,420 @@
+/* event 표면 — inspector.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+.event-command-edit-action {
+  background: var(--surface-button);
+  border-color: var(--event-rm-light) var(--event-rm-shadow) var(--event-rm-shadow) var(--event-rm-light);
+  border-style: solid;
+  border-width: 1px;
+  min-width: 76px;
+}
+
+.event-command-edit-summary {
+  background: var(--event-popup-field, var(--bg-raised));
+  border-color: var(--event-rm-shadow) var(--event-rm-light) var(--event-rm-light) var(--event-rm-shadow);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--oprn-command-blue, var(--accent));
+  font: 700 12px/1.35 var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .event-editor-inspector-column {
+    max-height: 42vh;
+    overflow: auto;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 8px;
+    background: var(--bg-surface);
+    border-radius: 8px;
+  }
+}
+
+/* ── 인라인 인스펙터 프리뷰 (D5) ──────────────────────────────────────
+   행 한 번 클릭으로 열리는 인스펙터에는 프리뷰가 없었고 `↻ 미리보기 새로고침` 은
+   빈 패널을 다시 그렸다. 편집 모달과 같은 스테이지를 여기에도 둔다. */
+.event-editor .event-inspector-preview {
+  padding: var(--space-2) var(--space-2) 0;
+}
+
+.event-editor .event-editor-inspector-column[hidden] {
+  display: none;
+}
+
+.event-editor .event-inspector-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--mk-surface);
+  border-bottom: 1px solid var(--mk-line-soft);
+  gap: 3px;
+}
+
+.event-editor .event-inspector-kind {
+  font-family: var(--mk-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--mk-accent);
+}
+
+.event-editor .event-inspector-title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.event-editor .event-inspector-card-hint {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.event-editor .event-inspector-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 100%;
+  padding: 10px;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--mk-t2);
+}
+
+.event-editor .event-inspector-idle-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+
+/* 한글 라벨에 mono + uppercase + 자간을 주면 글자가 짓눌려 보인다(실측: "현재 페이지"
+ * 가 겹쳐 읽혔다). 라벨은 산세리프로 두고 강조는 굵기·색으로만 한다. */
+.event-editor .event-inspector-idle-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--mk-accent);
+}
+
+.event-editor .event-inspector-idle-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--mk-t1);
+  overflow-wrap: anywhere;
+}
+
+.event-editor .event-inspector-stats {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+}
+
+.event-editor .event-inspector-stat {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* 라벨과 값 사이 점선 리더 — 값이 오른쪽 정렬로 떠 보이지 않게 잇는다. */
+.event-editor .event-inspector-stat::after {
+  content: "";
+  grid-column: 2;
+  height: 0;
+  border-bottom: 1px dotted var(--mk-line);
+  transform: translateY(-3px);
+}
+
+.event-editor .event-inspector-stat-label {
+  grid-column: 1;
+  color: var(--mk-t2);
+  font-size: 11px;
+  max-width: 92px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.event-editor .event-inspector-stat-value {
+  grid-column: 3;
+  color: var(--mk-t1);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--mk-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  max-width: min(190px, 42vw);
+  overflow-wrap: anywhere;
+}
+
+.event-editor .event-inspector-recent {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 2px 0;
+}
+
+.event-editor .event-inspector-recent-title {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mk-t2);
+  padding-top: 5px;
+  border-top: 1px solid var(--mk-line-soft);
+}
+
+.event-editor .event-inspector-recent-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.event-editor .event-inspector-recent-gutter {
+  flex: 0 0 3px;
+  width: 3px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--lg-cat, var(--mk-t2));
+}
+
+.event-editor .event-inspector-recent-gutter[data-category="dialogue"] { --lg-cat: #3987e5; }
+
+.event-editor .event-inspector-recent-gutter[data-category="flow"]     { --lg-cat: #d95926; }
+
+.event-editor .event-inspector-recent-gutter[data-category="reward"]   { --lg-cat: #199e70; }
+
+.event-editor .event-inspector-recent-gutter[data-category="map"]      { --lg-cat: #9085e9; }
+
+.event-editor .event-inspector-recent-gutter[data-category="screen"]   { --lg-cat: #d55181; }
+
+.event-editor .event-inspector-recent-gutter[data-category="system"]   { --lg-cat: #c98500; }
+
+/* 후순위 3종은 단색과 구분되는 45° 텍스처를 겹친다. */
+.event-editor .event-inspector-recent-gutter[data-category="map"],
+.event-editor .event-inspector-recent-gutter[data-category="screen"],
+.event-editor .event-inspector-recent-gutter[data-category="system"] {
+  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.5) 0 2px, transparent 2px 4px);
+}
+
+.event-editor .event-inspector-recent-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--mk-t2);
+  font-size: 10.5px;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-editor .event-inspector-idle-hint {
+  margin-top: auto;
+  color: var(--mk-t3, #626b7d);
+  font-size: 10px;
+  line-height: 1.6;
+  padding-top: 6px;
+  border-top: 1px dotted var(--mk-line-soft);
+}
+
+@media (max-width: 1180px) {
+  /* 인스펙터는 1180px 이하에서도 자기 그리드 트랙에 그대로 있다.
+     이전에는 `position: absolute; inset: 0 0 0 auto; width: min(348px, 46vw)` 오버레이여서
+     1024x768 실측 시 명령 컬럼(x=684 w=340)과 인스펙터(x=676 w=348)가 겹치며
+     [+ 명령] 버튼과 cmd-list 행이 elementFromPoint 기준으로 도달 불가능해졌다.
+     트랙 포함 레이아웃은 event-editor.balanced.css 가 소유한다. */
+  .event-editor .event-editor-inspector-column {
+    box-shadow: none;
+    inset: auto;
+    position: static;
+    width: auto;
+    z-index: auto;
+  }
+}
+
+.event-editor .event-inspector-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  line-height: 1.3;
+}
+
+.event-editor .event-editor-command-edit-summary {
+  min-height: 30px;
+  padding: 7px 11px;
+  border: 1px solid var(--mk-line);
+  border-radius: 3px;
+  color: var(--mk-t2);
+  font-size: 11.5px;
+  line-height: 14px;
+}
+
+@media (max-width: 1280px) {
+  .event-editor .event-inspector-stat-label { max-width: 84px; font-size: 10.5px; }
+  .event-editor .event-inspector-stat-value { font-size: 11px; }
+}
+
+.event-inspector-body {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.event-inspector-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 8px;
+  align-items: start;
+}
+
+.event-inspector-density-toggle {
+  justify-self: end;
+}
+
+.event-inspector-card-host, .event-inspector-form-host { display: grid; gap: 10px; }
+
+.event-inspector-card { display: grid; gap: 6px; padding: 12px; border-radius: 12px; background: var(--bg-surface); border: 1px solid var(--border-subtle); }
+
+.event-inspector-card-title { font: 700 13px var(--font-ui); color: var(--text-1); }
+
+.event-inspector-card-hint { font: 500 11px var(--font-ui); color: var(--text-2); }
+
+.event-inspector-density-toggle { appearance: none; justify-self: start; padding: 6px 10px; border-radius: 9999px; border: 1px solid var(--border-default); background: var(--control-bg); color: var(--text-2); font: 600 11px var(--font-ui); cursor: pointer; }
+
+.event-inspector-density-toggle:hover { background: var(--control-bg-hover); color: var(--text-1); }
+
+.event-inspector-advanced { border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--bg-inset); overflow: hidden; }
+
+.event-inspector-advanced-summary { padding: 10px 12px; font: 700 10px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); cursor: pointer; list-style: none; }
+
+.event-inspector-advanced-summary::-webkit-details-marker { display: none; }
+
+.event-inspector-advanced[open] .event-inspector-advanced-summary { border-bottom: 1px solid var(--border-subtle); background: var(--bg-surface); }
+
+.event-inspector-advanced-body { padding: 12px; }
+
+@media (min-width: 721px) {
+
+  .event-editor .event-editor-workbench.has-command-inspector > .event-editor-inspector-column {
+    grid-column: 3;
+  }
+}
+
+/* Right Column: Preview-First Inspector */
+.event-editor .event-editor-inspector-column,
+.event-editor .inspector {
+  background: var(--bg-raised);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  grid-column: 3;
+  grid-row: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.event-editor .ins-head,
+.event-editor .event-inspector-head {
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+}
+
+.event-editor .ins-head span,
+.event-editor .event-inspector-title {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.event-editor .event-inspector-close {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  margin-left: auto;
+  padding: 0 4px;
+}
+
+.event-editor .fields,
+.event-editor .event-inspector-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px 16px;
+}
+
+.event-editor .field input,
+.event-editor .field textarea,
+.event-editor .event-inspector-body input,
+.event-editor .event-inspector-body textarea {
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text-1);
+  font: inherit;
+  font-size: 13px;
+  padding: 8px 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.event-editor .field textarea,
+.event-editor .event-inspector-body textarea {
+  line-height: 1.5;
+  min-height: 92px;
+  resize: none;
+}
+
+.event-editor .event-editor-workbench,
+.event-editor .event-editor-workbench:not(.has-command-inspector) {
+  grid-template-columns: var(--balanced-settings-width) minmax(0, 1fr) var(--event-inspector-reserved-track, 0px);
+}
+
+.event-editor .event-editor-workbench.has-command-inspector {
+  grid-template-columns: var(--balanced-settings-width) minmax(0, 1fr) var(--balanced-inspector-width);
+}
+
+/* 1024x768(최소 지원 뷰포트)에서도 세 컬럼이 겹치지 않고 나란히 선다.
+   인스펙터가 열린 동안만 설정·인스펙터 트랙을 좁혀 명령 목록에 폭을 넘긴다
+   (1024 기준 236 + 464 + 324). 닫혀 있을 때의 268px 설정 폭은 그대로 둔다. */
+@media (max-width: 1180px) {
+  .event-editor .event-editor-workbench.has-command-inspector {
+    --balanced-settings-width: 236px;
+    --balanced-inspector-width: 324px;
+  }
+}
+
+/* 제목 15px — 인스펙터 머리와 카드 제목. */
+.event-editor-modal-window .event-editor .event-inspector-kind,
+.event-editor-modal-window .event-editor .event-editor-column-label {
+  font-size: 15px;
+}
+
+/* 이벤트(페이지) 이름 18px 은 이미 그렇다. 닫기·전체 보기 버튼은 아이콘이라 글자 크기가 없다. */
+.event-editor-modal-window .event-editor-modal-header .icon-btn,
+.event-editor-modal-window .event-editor .event-inspector-close {
+  font-size: 13px;
+}

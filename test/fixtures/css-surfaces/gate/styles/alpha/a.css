@@ -2,3 +2,4 @@
 .al-card .bt-row { margin: 0 !important; }
 .al-ghost { color: blue; }
 .al-card .selected-tile { color: red; }
+.al-glyph-cells-11 { display: grid; }

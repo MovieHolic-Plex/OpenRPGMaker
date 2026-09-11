@@ -45,6 +45,10 @@ describe("check-css-surfaces", () => {
     const r5 = by("R5").map((v) => v.message).sort();
     expect(r5).toEqual([expect.stringContaining(".al-ghost"), expect.stringContaining(".al-nested"), expect.stringContaining(".unlayered-leak")]);
   });
+  it("R5 템플릿 중간(공백 뒤)의 동적 접두어도 살아 있는 것으로 본다 (`al-glyph al-glyph-${kind}` → .al-glyph-cells-11)", () => {
+    const r5 = by("R5").map((v) => v.sel);
+    expect(r5).not.toContain(".al-glyph-cells-11");
+  });
   it("R6 순서 주석을 잡는다", () => {
     expect(by("R6")).toEqual([expect.objectContaining({ file: "alpha/index.css", line: 1, detail: "/* 반드시 beta 뒤에 와야 이긴다 */" })]);
   });

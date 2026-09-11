@@ -63,7 +63,8 @@ function collectSourceTokens(srcRoot, minLen) {
     if (f.includes(`${path.sep}styles${path.sep}`)) continue;
     const src = fs.readFileSync(f, "utf8");
     for (const m of src.matchAll(/[\w-]+/g)) literal.add(m[0]);
-    for (const m of src.matchAll(/`([\w-]*[-_])\$\{/g)) if (m[1].length >= minLen) dynamicPrefixes.add(m[1]);
+    // 접두어는 백틱 바로 뒤뿐 아니라 템플릿 중간(공백·따옴표 뒤)에도 온다: `a a-${kind}` 의 `a-`.
+    for (const m of src.matchAll(/(?:^|[`\s"'])([\w-]*[-_])\$\{/g)) if (m[1].length >= minLen) dynamicPrefixes.add(m[1]);
     for (const m of src.matchAll(/["']([\w-]*[-_])["']\s*\+/g)) if (m[1].length >= minLen) dynamicPrefixes.add(m[1]);
   }
   return { literal, dynamicPrefixes: [...dynamicPrefixes] };

@@ -1,0 +1,132 @@
+/* event 표면 — pages-5.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* ── 「언제」 / 「어디로」 블록 ────────────────────────────────────────── */
+.event-editor .event-schedule-condition-grid,
+.event-editor .event-schedule-target-grid {
+  align-items: start;
+  background: var(--bg-inset);
+  border-radius: 7px;
+  display: grid;
+  gap: 8px 10px;
+  min-width: 0;
+  padding: 9px 10px 10px;
+}
+
+.event-editor .event-schedule-condition-grid::before,
+.event-editor .event-schedule-target-grid::before {
+  color: var(--text-2);
+  font: 700 10px/1 var(--font-ui);
+  grid-column: 1 / -1;
+  letter-spacing: .06em;
+}
+
+.event-editor .event-schedule-condition-grid::before {
+  content: "언제";
+}
+
+.event-editor .event-schedule-target-grid::before {
+  content: "어디로";
+}
+
+/* 기본은 1열(레일이 아래로 접히는 좁은 폭). 여러 열은 넓은 시트에서만 켠다 —
+   1열에서 explicit `grid-row` 가 남으면 방향·활동이 같은 칸에 겹친다(실측). */
+.event-editor .event-schedule-condition-grid,
+.event-editor .event-schedule-target-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 1441px) {
+  .event-editor .event-schedule-condition-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* 맵 | X | Y  /  활동 | 방향 —
+     자유 입력인 「활동」이 넓은 칸을, 값이 네 개뿐인 「방향」이 좁은 칸을 쓴다. */
+  .event-editor .event-schedule-target-grid {
+    grid-template-columns: minmax(0, 1fr) 72px 72px;
+  }
+
+  /* 방향(4번째)과 활동(5번째)의 자리를 시각적으로 맞바꾼다. */
+  .event-editor .event-schedule-target-grid > .event-schedule-label:nth-child(4) {
+    grid-column: 2 / -1;
+    grid-row: 3;
+  }
+
+  .event-editor .event-schedule-target-grid > .event-schedule-label:nth-child(5) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+}
+
+/* ── 라벨: 캡션 위 · 컨트롤 아래 ──────────────────────────────────────── */
+.event-editor .event-schedule-label {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-editor .event-schedule-label > span:first-child {
+  color: var(--text-2);
+  font: 600 10.5px/1.2 var(--font-ui);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor .event-schedule-row input:disabled {
+  color: var(--text-disabled);
+  opacity: .6;
+}
+
+/* 체크박스 + 시작–끝: 체크박스는 고정, 숫자칸이 남은 폭을 나눈다. */
+.event-editor .event-schedule-range {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-editor .event-schedule-range > input[type="checkbox"] {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.event-editor .event-schedule-range > span {
+  color: var(--text-3);
+  font: 500 11px/1 var(--font-ui);
+  text-align: center;
+}
+
+/* ── 뒤 일정을 가리는 무조건 행 경고 ──────────────────────────────────── */
+.event-editor .event-schedule-shadow-warning {
+  background: var(--warning-muted);
+  border-left: 3px solid var(--warning);
+  border-radius: 6px;
+  color: var(--warning);
+  font: 600 11px/1.45 var(--font-ui);
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 7px 10px;
+}
+
+.event-editor-modal-window .event-editor .event-editor-command-tool:disabled,
+.event-editor-modal-window .event-editor .btn.event-page-action-button.disabled,
+.event-editor-modal-window .event-editor .btn.event-page-action-button:disabled {
+  color: var(--text-3);
+}
+
+/* 선택된 페이지 탭. */
+.event-editor-modal-window .event-editor .btn.evt-page-segment[aria-selected="true"],
+.event-editor-modal-window .event-editor .btn.evt-page-segment.is-active {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--text-1);
+}
+
+.event-editor-modal-window .event-editor-modal-header .event-name {
+  flex: 0 1 240px;
+  min-width: 80px;
+}

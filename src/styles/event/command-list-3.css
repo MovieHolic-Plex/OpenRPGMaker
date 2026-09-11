@@ -1,0 +1,978 @@
+/* event 표면 — command-list-3.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+.ai-image-queue-clear {
+  background: transparent;
+  border: 0;
+  color: var(--text-2);
+  cursor: pointer;
+  font: 600 12px/1.4 var(--font-ui);
+  padding: 2px 4px;
+  text-decoration: underline;
+}
+
+.ai-image-queue-clear:hover {
+  color: var(--text-1);
+}
+
+.ai-image-queue-items {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ai-image-queue-item {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  display: flex;
+  gap: 8px;
+  padding: 6px 8px 6px 10px;
+}
+
+.ai-image-queue-item.is-running {
+  border-color: var(--accent-border);
+}
+
+.ai-image-queue-item.is-error {
+  border-color: var(--danger);
+}
+
+.ai-image-queue-label {
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font: 500 12.5px/1.4 var(--font-ui);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-image-queue-status {
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font: 500 12px/1.4 var(--font-ui);
+  max-width: 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-image-queue-item.is-done .ai-image-queue-status {
+  color: var(--success);
+}
+
+.ai-image-queue-item.is-error .ai-image-queue-status {
+  color: var(--danger);
+}
+
+.ai-image-queue-cancel,
+.ai-image-queue-retry {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 600 12px/1 var(--font-ui);
+  height: 26px;
+  padding: 0 8px;
+}
+
+.ai-image-queue-cancel:hover,
+.ai-image-queue-retry:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+/* 이벤트 에디터 AI 명령 작성기 (aiAssist.ts 전용).
+   토큰만 사용(TOKENS.md) — 하드코딩 색 금지.
+
+   기하 계약: 「이 페이지가 하는 일」 칼럼의 **마지막 그리드 행**에 인플로우로 붙는 도크다.
+   position:absolute 로 띄우면 자기가 명령을 넣을 목록을 덮는다(실측: 1440 폭에서 목록
+   면적의 46%).
+
+   도크는 **내용 높이**만 차지한다(max-height/스크롤러 없음). 초안 결과가 도크 안의 카드에서
+   목록 자리(cmd-staged)로 옮겨가면서 본문이 입력 + 상태줄로 줄었기 때문이다. 예전에는
+   max-height: min(46vh,420px) + 본문에 flex:1/overflow-y:auto 였는데, 이 조합은 <details>
+   안에서 Chromium UA `::details-content` 익명 블록에 막혀 스크롤이 죽는다(상점 카탈로그
+   실측: 자식 3050px / 부모 clientH 300, 휠 무반응). 스크롤러를 없애 그 함정을 피한다. */
+.ai-event-assist {
+  background: var(--bg-raised);
+  border-top: 1px solid var(--border-default);
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  margin-top: 0;
+  min-height: 0;
+}
+
+.ai-event-assist-summary {
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--space-2);
+  min-height: 34px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  user-select: none;
+}
+
+.ai-event-assist-summary:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.ai-event-assist[open] > .ai-event-assist-summary {
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-1);
+}
+
+/* 접힌 도크 바는 폭을 다 쓰고 배지를 오른쪽 끝으로 밀어낸다. */
+.ai-event-assist-summary > .event-aux-chip-label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ai-event-assist-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+}
+
+.ai-event-compose {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 11px 14px 12px;
+}
+
+.ai-event-caret {
+  color: var(--text-3);
+  flex: 0 0 auto;
+  font-size: 10px;
+  line-height: 1;
+  transition: transform var(--transition-fast);
+}
+
+.ai-event-assist[open] > .ai-event-assist-summary .ai-event-caret {
+  transform: rotate(180deg);
+}
+
+.ai-event-prompt-label {
+  color: var(--text-1);
+  display: block;
+  font: 700 13px/1.4 var(--font-ui);
+  margin: 0;
+  min-width: 0;
+}
+
+.event-editor-modal-body .ai-event-input {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  box-sizing: border-box;
+  color: var(--text-1);
+  font: 500 13px/1.65 var(--font-ui);
+  max-height: 140px;
+  min-height: 66px;
+  padding: 9px 11px;
+  resize: vertical;
+  width: 100%;
+}
+
+.event-editor-modal-body .ai-event-input:focus {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent-muted);
+}
+
+.event-editor-modal-body .ai-event-input::placeholder {
+  color: var(--text-3);
+}
+
+/* 도움말과 예시를 한 줄에 둔다. 예전에는 제목·설명·라벨·플레이스홀더가 같은 말을
+   네 번 반복해 소개 블록만 93px 을 먹었다. */
+.ai-event-hintrow {
+  align-items: center;
+  column-gap: var(--space-2);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  row-gap: 5px;
+}
+
+.ai-event-prompt-help {
+  color: var(--text-3);
+  font: 400 11px/1.5 var(--font-ui);
+  margin: 0;
+  min-width: 0;
+}
+
+.ai-event-examples {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 5px;
+}
+
+.ai-event-example {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  font: 600 11px/1 var(--font-ui);
+  padding: 5px 9px;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.ai-event-example:hover {
+  background: var(--control-bg-hover);
+  border-color: var(--accent-border);
+  color: var(--text-1);
+}
+
+.ai-event-generate-row {
+  align-items: center;
+  column-gap: var(--space-2);
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+.ai-event-btn {
+  align-items: center;
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-flex;
+  font: 700 12px/1 var(--font-ui);
+  gap: 6px;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 12px;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.ai-event-btn:hover {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+.ai-event-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: var(--on-accent);
+}
+
+.ai-event-btn.primary:hover {
+  background: var(--accent-hover);
+}
+
+.ai-event-btn:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.ai-event-generate {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+/* 생성 중 — 채움 버튼 안에서 표식만 돌고(transform 만 움직인다) 글자는 그대로다. */
+.ai-event-spinner {
+  animation: ai-event-spin 0.8s linear infinite;
+  border: 2px solid color-mix(in srgb, var(--on-accent) 45%, transparent);
+  border-radius: 50%;
+  border-top-color: var(--on-accent);
+  box-sizing: border-box;
+  display: inline-block;
+  flex: 0 0 auto;
+  height: 12px;
+  width: 12px;
+}
+
+.ai-event-spinner[hidden] {
+  display: none;
+}
+
+@keyframes ai-event-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-event-spinner {
+    animation: none;
+  }
+}
+
+.ai-event-assist.is-generating .ai-event-input {
+  cursor: progress;
+}
+
+/* 반영 직후 칩 — 초록으로 「끝난 일」을 말한다(작성 중·오류와 구분). */
+.event-aux-chip-status[data-kind="applied"] {
+  border-color: color-mix(in srgb, var(--success) 45%, transparent);
+  color: var(--success);
+}
+
+.ai-event-kbd {
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-s);
+  font: 600 10px/1 var(--font-mono);
+  opacity: 0.8;
+  padding: 3px 4px;
+}
+
+/* 삽입 위치는 프롬프트를 쓰는 동안 계속 보여야 하는 정보다 — 상태 문구와 달리
+   비어 있는 순간이 없다. */
+.ai-event-target {
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font: 600 11px/1.4 var(--font-ui);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-event-status {
+  color: var(--text-2);
+  flex: 1 1 120px;
+  font: 400 11px/1.5 var(--font-ui);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ai-event-status.error {
+  color: var(--danger);
+}
+
+.ai-event-status.busy {
+  color: var(--accent);
+}
+
+.ai-event-status:not(:empty) {
+  /* 삽입 위치 문구와 밀척 붙으면 한 문장으로 읽힌다. */
+  border-left: 1px solid var(--border-subtle);
+  padding-left: 9px;
+}
+
+.ai-event-status:empty {
+  flex-basis: 0;
+}
+
+/* 결과 줄은 한 줄이다 — 제목·안내가 왼쪽, 「이대로 하기·취소」가 오른쪽. 두 줄(헤더 + 버튼 행)로
+   쌓으면 도크가 목록에서 40px 을 더 가져갔다. 좁으면 flex-wrap 으로 내려간다. */
+.ai-event-result {
+  align-items: center;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px var(--space-3);
+  min-height: 0;
+  padding: 8px 14px 10px;
+}
+
+.ai-event-result[hidden] {
+  display: none;
+}
+
+.ai-event-result-header {
+  align-items: baseline;
+  display: flex;
+  flex: 1 1 320px;
+  flex-wrap: wrap;
+  gap: 2px var(--space-2);
+  justify-content: flex-start;
+  min-width: 0;
+  padding: 0;
+}
+
+.ai-event-result-title {
+  color: var(--text-1);
+  font: 700 12px/1.4 var(--font-ui);
+  margin: 0;
+}
+
+.ai-event-result-meta {
+  color: var(--text-3);
+  font: 400 11px/1.4 var(--font-ui);
+}
+
+.ai-event-preview-actions[hidden] {
+  display: none;
+}
+
+.ai-event-preview-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  margin-left: auto;
+  padding: 0;
+}
+
+/* ── 초안을 목록 자리에 겹쳐 보이기 ───────────────────────────────────────────
+   stagedDiffView.ts 가 그리는 행들. `.cmd-item` / `.cmd-kind` / `.cmd-summary-token` /
+   `.cmd-line-marker` 를 그대로 물려받아 **실제 목록과 같은 모양**을 유지하고, 여기서는
+   상태 표시(왼쪽 색 레일 + 기호)와 「이건 빼기」 토글만 더한다. */
+.cmd-staged-host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.cmd-staged-host[hidden] {
+  display: none;
+}
+
+/* 실제 목록(.cmd-list, balanced.css 「행은 줄이다」)과 같은 여백·들여쓰기 — 초안이 목록 자리에서
+   같은 기하로 보여야 「넣으면 어떻게 보일지」가 예측된다. 예전엔 여백 0 이라 행이 칼럼 가장자리에
+   붙어 다른 표면처럼 읽혔다. */
+.cmd-staged {
+  --blk-indent: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 12px 24px;
+}
+
+.cmd-staged-row {
+  border-left: 3px solid transparent;
+  position: relative;
+}
+
+.cmd-staged-head {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  min-height: 34px;
+  padding: 0 6px 0 calc(6px + var(--cmd-depth, 0) * var(--blk-indent, 16px));
+}
+
+.cmd-staged-mark {
+  color: var(--text-3);
+  flex: 0 0 auto;
+  font: 700 12px/1 var(--font-mono);
+  width: 12px;
+}
+
+.cmd-staged-head > .cmd-step {
+  color: var(--text-3);
+  flex: 0 0 14px;
+  font: 700 10px/1 var(--font-mono);
+  text-align: right;
+}
+
+.cmd-staged-row[data-staged-status="add"] {
+  background: color-mix(in srgb, var(--success) 9%, transparent);
+  border-left-color: var(--success);
+  border-top: 1px dashed color-mix(in srgb, var(--success) 55%, transparent);
+  border-bottom: 1px dashed color-mix(in srgb, var(--success) 55%, transparent);
+}
+
+.cmd-staged-row[data-staged-status="add"] .cmd-staged-mark {
+  color: var(--success);
+}
+
+.cmd-staged-row[data-staged-status="remove"] {
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+  border-left-color: var(--danger);
+}
+
+.cmd-staged-row[data-staged-status="remove"] .cmd-kind {
+  opacity: 0.7;
+  text-decoration: line-through;
+}
+
+.cmd-staged-row[data-staged-status="remove"] .cmd-staged-mark {
+  color: var(--danger);
+}
+
+.cmd-staged-row[data-staged-status="change"] {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-left-color: var(--accent);
+}
+
+.cmd-staged-row[data-staged-status="change"] .cmd-staged-mark {
+  color: var(--accent);
+}
+
+.cmd-staged-pair {
+  align-items: center;
+  column-gap: 7px;
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  min-width: 0;
+  row-gap: 2px;
+}
+
+.cmd-staged-before {
+  opacity: 0.65;
+  text-decoration: line-through;
+}
+
+.cmd-staged-arrow {
+  color: var(--accent);
+  flex: 0 0 auto;
+  font: 700 11px/1 var(--font-mono);
+}
+
+/* 되돌린 행은 "그대로"로 보여야 한다 — 결정을 취소했다는 사실만 왼쪽 점선으로 남긴다. */
+.cmd-staged-row[data-staged-reverted="true"] {
+  background: transparent;
+  border-left-style: dotted;
+  border-left-color: var(--border-strong);
+  opacity: 0.72;
+}
+
+/* 행마다 붙는 토글은 조용해야 한다 — 9줄이면 알약 9개가 글자와 경쟁했다. 글자는 보조 12px,
+   테두리는 hover·focus 에서만. 되돌린 행(aria-pressed)만 액센트로 「결정을 취소했다」를 남긴다. */
+.cmd-staged-toggle {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 500 12px/1 var(--font-ui);
+  margin-left: auto;
+  padding: 4px 8px;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.cmd-staged-toggle:hover {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+  color: var(--text-1);
+}
+
+.cmd-staged-toggle[aria-pressed="true"] {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.cmd-staged-marker[data-staged-status="add"] {
+  color: var(--success);
+}
+
+.cmd-staged-marker[data-staged-status="remove"] {
+  color: var(--danger);
+  text-decoration: line-through;
+}
+
+.event-storyboard-host { min-height: 0; }
+
+.event-view-toggle { display: inline-flex; gap: 3px; padding: 3px; border-radius: 8px; background: var(--bg-inset); border: 1px solid var(--border-subtle); width: fit-content; }
+
+.event-view-toggle-btn { appearance: none; min-height: 28px; padding: 4px 10px; border-radius: 6px; border: 1px solid transparent; background: transparent; color: var(--text-2); font: 700 12px var(--font-ui); cursor: pointer; }
+
+/* 선택 상태의 출처는 `aria-selected` 다 (event-editor.balanced.css 와 동일 규약). */
+.event-view-toggle-btn[aria-selected="true"] { background: var(--bg-surface); color: var(--text-1); border-color: var(--border-default); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+
+.event-view-toggle-btn:hover { color: var(--text-1); }
+
+.event-view-toggle-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.event-storyboard { min-height: 100%; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 6px; }
+
+.event-storyboard-track { min-height: 0; display: grid; align-content: start; gap: 0; padding: 5px 8px 8px; overflow: auto; }
+
+.event-storyboard-scene { position: relative; display: grid; gap: 4px; min-width: 0; padding-bottom: 7px; }
+
+.event-storyboard-scene::after { content: ""; position: absolute; z-index: 0; left: 23px; top: 44px; bottom: -1px; width: 1px; background: var(--border-default); }
+
+.event-storyboard-card { --storyboard-accent: #626b7d; appearance: none; position: relative; z-index: 1; width: 100%; min-width: 0; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 8px; align-items: center; text-align: left; padding: 6px 9px; border-radius: 8px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-left: 3px solid var(--storyboard-accent); color: var(--text-1); cursor: pointer; }
+
+.event-storyboard-card:hover { border-color: var(--border-strong); border-left-color: var(--storyboard-accent); background: var(--bg-raised); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(42,37,33,.08); }
+
+.event-storyboard-card.is-selected { border-color: var(--accent); border-left-color: var(--storyboard-accent); background: color-mix(in srgb, var(--accent-muted) 35%, var(--bg-surface)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent); }
+
+.event-storyboard-card:focus-visible, .event-storyboard-branch-command:focus-visible, .event-storyboard-add:focus-visible, .event-storyboard-branch-overflow:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.event-storyboard-card-thumb { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; background: var(--storyboard-accent); color: #fff; font: 800 11px var(--font-mono); box-shadow: 0 0 0 2px var(--bg-surface); }
+
+.event-storyboard-card-copy { display: grid; gap: 2px; min-width: 0; }
+
+.event-storyboard-card-title { font: 750 13px/1.25 var(--font-ui); color: var(--text-1); }
+
+.event-storyboard-card-detail { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 500 12px/1.4 var(--font-ui); color: var(--text-2); }
+
+.event-storyboard-card-action { padding: 4px 7px; border-radius: 6px; background: var(--bg-inset); color: var(--text-3); font: 700 10px var(--font-ui); }
+
+.event-storyboard-branches { position: relative; z-index: 1; display: grid; gap: 4px; margin-left: 38px; padding-left: 10px; border-left: 2px solid color-mix(in srgb, var(--border-strong) 70%, transparent); }
+
+.event-storyboard-branch-panel { display: grid; gap: 3px; min-width: 0; padding: 5px; border-radius: 8px; background: var(--bg-inset); border: 1px solid var(--border-subtle); }
+
+.event-storyboard-branch-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; padding: 0 2px 2px; }
+
+.event-storyboard-branch-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 750 12px var(--font-ui); color: var(--text-1); }
+
+.event-storyboard-branch-label::before { content: "↳ "; color: var(--text-3); }
+
+.event-storyboard-branch-count { flex: 0 0 auto; padding: 2px 6px; border-radius: 999px; background: var(--bg-surface); color: var(--text-3); font: 600 10px var(--font-mono); }
+
+.event-storyboard-branch-command { --storyboard-accent: #626b7d; appearance: none; width: 100%; min-width: 0; display: grid; grid-template-columns: 3px minmax(0, 1fr) auto; gap: 7px; align-items: center; text-align: left; min-height: 31px; padding: 4px 7px 4px 5px; border-radius: 6px; background: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--text-1); cursor: pointer; }
+
+.event-storyboard-branch-command:hover { border-color: var(--border-strong); background: var(--bg-raised); }
+
+.event-storyboard-branch-command.is-selected { border-color: var(--accent); background: color-mix(in srgb, var(--accent-muted) 35%, var(--bg-surface)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent); }
+
+.event-storyboard-branch-command-mark { align-self: stretch; min-height: 21px; border-radius: 999px; background: var(--storyboard-accent); }
+
+.event-storyboard-branch-command-copy { display: grid; gap: 1px; min-width: 0; }
+
+.event-storyboard-branch-command-copy strong { font: 700 12px/1.25 var(--font-ui); color: var(--text-1); }
+
+.event-storyboard-branch-command-copy span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 500 11px/1.35 var(--font-ui); color: var(--text-2); }
+
+.event-storyboard-branch-command-index { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 999px; background: var(--bg-inset); color: var(--text-3); font: 700 9px var(--font-mono); }
+
+.event-storyboard-branch-command-tree { display: grid; gap: 3px; min-width: 0; }
+
+.event-storyboard-branch-descendants { border-left: 1px solid var(--border-default); display: grid; gap: 3px; margin-left: 12px; padding-left: 8px; }
+
+.event-storyboard-branch-empty { appearance: none; width: 100%; padding: 7px 8px; border: 1px dashed var(--border-subtle); border-radius: 7px; background: transparent; color: var(--text-3); cursor: pointer; font: 500 12px var(--font-ui); text-align: left; }
+
+.event-storyboard-branch-empty:hover, .event-storyboard-branch-empty:focus-visible { border-color: var(--accent); color: var(--accent); }
+
+.event-storyboard-branch-overflow { appearance: none; justify-self: start; padding: 3px 5px; border: 0; background: transparent; color: var(--accent); min-height: 32px; font: 650 11px var(--font-ui); cursor: pointer; }
+
+.event-storyboard-branch-overflow:hover { text-decoration: underline; }
+
+.event-storyboard-empty { display: grid; gap: 4px; padding: 24px 18px; border: 1px dashed var(--border-default); border-radius: 10px; background: var(--bg-surface); text-align: center; }
+
+.event-storyboard-empty strong { color: var(--text-1); font: 750 13px var(--font-ui); }
+
+.event-storyboard-empty span { color: var(--text-2); font: 500 11px var(--font-ui); }
+
+.event-storyboard-hint { position: relative; padding: 6px 9px; border-top: 1px solid var(--border-subtle); background: color-mix(in srgb, var(--bg-surface) 94%, transparent); color: var(--text-3); font: 500 11px var(--font-ui); backdrop-filter: blur(4px); }
+
+.event-storyboard-add { appearance: none; position: relative; z-index: 1; width: 100%; min-width: 0; display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 10px; align-items: center; text-align: left; padding: 9px 10px; border-radius: 10px; border: 1px dashed var(--border-default); background: color-mix(in srgb, var(--bg-inset) 72%, transparent); cursor: pointer; }
+
+.event-storyboard-add:hover { border-color: var(--accent); background: var(--bg-surface); }
+
+.event-storyboard-add-plus { width: 30px; height: 30px; border-radius: 8px; background: var(--bg-raised); border: 1px solid var(--border-default); display: grid; place-items: center; color: var(--accent); font: 800 16px var(--font-ui); }
+
+.event-storyboard-add-copy { display: grid; gap: 1px; min-width: 0; }
+
+.event-storyboard-add-label { font: 750 12px var(--font-ui); color: var(--text-1); }
+
+.event-storyboard-add-hint { font: 500 11px var(--font-ui); color: var(--text-3); }
+
+.event-storyboard-add-action { padding: 4px 7px; border-radius: 6px; background: var(--accent-muted); color: var(--accent); font: 700 10px var(--font-ui); }
+
+@media (max-width: 1180px) {
+    .event-storyboard-track { padding-inline: 4px; }
+    .event-storyboard-card-action, .event-storyboard-add-action { display: none; }
+    .event-storyboard-branches { margin-left: 24px; padding-left: 8px; }
+  }
+
+.event-editor-modal-header .btn.primary {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+.event-editor-modal-header .btn.ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-2);
+}
+
+@media (min-width: 721px) {
+
+  .event-editor .event-editor-workbench.has-command-inspector > .event-editor-commands-column {
+    grid-column: 2;
+  }
+}
+
+.event-editor .event-contents-fieldset {
+  background: transparent;
+  border: 0;
+  display: grid;
+  flex: 1;
+  grid-template-rows: 44px minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.event-editor .toolbar,
+.event-editor .event-editor-command-toolbar {
+  align-items: center;
+  background: var(--bg-base);
+  display: flex;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+}
+
+.event-editor .search,
+.event-editor .event-editor-command-search {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text-1);
+  font-size: 12px;
+  height: 30px;
+  min-width: 140px;
+  padding: 0 10px;
+  width: 200px;
+}
+
+.event-editor .seg,
+.event-editor .event-view-toggle {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  margin-left: auto;
+  padding: 2px;
+}
+
+.event-editor .seg button,
+.event-editor .event-view-toggle-btn {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 12px;
+  height: 26px;
+  padding: 0 10px;
+}
+
+/* 보기 세그먼트의 선택 상태는 `aria-selected` 하나가 출처다. 예전엔 TS 가 `on` 과
+ * `is-active` 두 클래스를 같이 달아 두 CSS 세대(여기 + storyboard.css)를 동시에 먹였다.
+ * 상태를 ARIA 에서 읽으면 접근성 트리와 화면이 어긋날 수 없다. */
+.event-editor .seg button.on,
+.event-editor .event-view-toggle-btn[aria-selected="true"] {
+  background: var(--accent-muted);
+  color: var(--accent);
+  font-weight: 650;
+}
+
+.event-editor .row,
+.event-editor .event-storyboard-card {
+  align-items: start;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: none;
+  cursor: pointer;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 28px 52px minmax(0, 1fr);
+  padding: 10px 12px;
+  text-align: left;
+  width: 100%;
+}
+
+/* `.event-storyboard-card-thumb` 은 여기 끼워 넣지 말 것.
+   (2026-09-11 Task 13 재편성 전 문맥: 이 규칙이 있던 시트는 레이어 밖이라 옛 storyboard.css 의
+   `@layer editor` 규칙을 무조건 이겼다. 지금은 둘 다 @layer event 평면이고 순서로 이긴다.) 예전에
+   `color: var(--text-3)`(#64748B) 가 거기서 정한 `color: #fff` 를 덮어, 배지 배경 #626B7D
+   위에 숫자가 명암비 1.05:1 로 찍혔다 — WCAG 1.4.3 기준 4.5:1. 실측 스크린샷에서 800%
+   확대해야 «5» 가 보였다. 배지는 배경이 있는 칩이고 여기 규칙은 배경 없는 목록 인덱스
+   (`.row .n`) 용이다. `padding-top` 도 배지의 `place-items: center` 를 깨뜨렸다.
+   배지 span 은 `class="n event-storyboard-card-thumb"` 라 `.row .n` 으로도 걸린다 —
+   선택자에서 배지 클래스만 빼는 것으로는 부족했고 `:not()` 이 필요하다. */
+.event-editor .row .n:not(.event-storyboard-card-thumb) {
+  color: var(--text-3);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  padding-top: 3px;
+}
+
+.event-editor .row .kind,
+.event-editor .event-storyboard-card-title {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 550;
+  padding-top: 4px;
+}
+
+.event-editor .row .line,
+.event-editor .event-storyboard-card-detail {
+  color: var(--text-1);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.event-editor .row.selected,
+.event-editor .row.is-selected,
+.event-editor .event-storyboard-card.is-selected,
+.event-editor .cmd-item.selected {
+  background: var(--bg-raised);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+/* 선택 상태도 마찬가지다. 배지에 `--accent`(#4A57D6) 를 주면 #626B7D 배경 위에서
+   1.06:1 이 된다. 배지는 흰 숫자를 유지하고 선택 표시는 카드 테두리가 맡는다. */
+.event-editor .row.selected .n:not(.event-storyboard-card-thumb),
+.event-editor .row.is-selected .n:not(.event-storyboard-card-thumb) {
+  color: var(--accent);
+}
+
+.event-editor .branch,
+.event-editor .event-storyboard-branches {
+  border-left: 1px solid var(--border-strong);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 0 6px 38px;
+  padding: 2px 0 4px 14px;
+}
+
+.event-editor .branch-h,
+.event-editor .event-storyboard-branch-head {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.03em;
+  padding: 8px 8px 4px;
+}
+
+.event-editor .leaf,
+.event-editor .event-storyboard-branch-command {
+  align-items: start;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 24px 52px minmax(0, 1fr) auto;
+  padding: 8px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.event-editor .add-next,
+.event-editor .event-storyboard-add {
+  align-items: center;
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  border-radius: 8px;
+  color: var(--text-3);
+  cursor: pointer;
+  display: flex;
+  font-size: 12px;
+  height: 34px;
+  justify-content: center;
+  margin: 10px 0 0 28px;
+}
+
+/* Selecting a command must not rewrap the toolbar or move rows between the two
+   clicks of a double-click. Authoring views keep the existing inspector slot;
+   preview/flow and staged proposals can still use the full command column. */
+@media (min-width: 721px) {
+  .event-editor .event-editor-workbench:has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden])) {
+    --event-inspector-reserved-track: var(--balanced-inspector-width);
+  }
+
+  .event-editor .event-editor-workbench:not(.has-command-inspector):has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden]))::after {
+    content: "명령을 선택하면 여기에서 편집합니다";
+    grid-column: 3;
+    grid-row: 1;
+    padding: var(--space-4);
+    border-left: 1px solid var(--border);
+    background: var(--bg-raised);
+    color: var(--text-2);
+    font: 400 13px/1.5 var(--font-ui);
+  }
+}
+
+@media (min-width: 721px) and (max-width: 1180px) {
+  .event-editor .event-editor-workbench:has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden])) {
+    --balanced-settings-width: 236px;
+    --balanced-inspector-width: 324px;
+  }
+}
+
+.event-editor .event-editor-command-aux-group .event-editor-command-tool {
+  font-size: 11px;
+  height: 26px;
+  padding: 0 7px;
+}
+
+/* Toolbar reading order: primary add left, secondary middle, view/aux right. */
+.event-editor .event-editor-command-toolbar > * {
+  order: 4;
+}
+
+.event-editor .event-editor-command-toolbar > [data-testid="event-command-toolbar-add"] {
+  order: 0;
+}
+
+.event-editor .event-editor-command-toolbar > .event-editor-command-search {
+  order: 1;
+}
+
+.event-editor .event-editor-command-toolbar > .event-view-toggle {
+  margin-left: auto;
+  order: 8;
+}
+
+.event-editor .event-editor-command-toolbar > .event-editor-command-aux-group {
+  border-left: 1px solid var(--border);
+  margin-left: 6px;
+  order: 9;
+  padding-left: 6px;
+}
+
+/* ============================================================================
+   3뷰 토글(목록/스토리/미리보기) 수정 — 2026-08-29
+
+   측정된 결함과 이 블록이 담당하는 부분:
+    · 스토리 카드가 클릭 대상으로 안 보였다 → hover/focus 표시를 준다.
+    · 스토리에는 순서 변경·삭제 수단이 아예 없었다 → 목록의 `.cmd-actions` 와 같은
+      hover 노출 액션 트랙을 카드/분기 줄 오른쪽에 붙인다.
+    · 카테고리 색 레일이 목록에만 있었다 → 같은 시각 언어의 배지를 카드에 준다.
+    · 검색창과 실제 필터가 어긋났다 → 일치 개수·지우기 버튼으로 상태를 보이게 한다.
+    · 편집 팝오버의 이동/복사가 조용히 죽어 있었다 → 대상 문구 + disabled 로 정직하게.
+   새 색은 만들지 않는다 — 전부 기존 토큰(`--cmdcat-*`, `--control-bg`, `--danger`)이다.
+   ========================================================================= */
+/* 스토리 카드 트랙: 번호 · 카테고리 배지 · 종류 · 요약 · 액션 */
+.event-editor .event-storyboard-card {
+  grid-template-columns: 28px auto 52px minmax(0, 1fr) auto;
+}
+
+.event-editor .event-storyboard-branch-command {
+  grid-template-columns: 24px 52px minmax(0, 1fr) auto;
+}
+
+.event-editor .event-storyboard-branch-step {
+  align-self: start;
+  background: var(--storyboard-accent, var(--text-3));
+  border-radius: 999px;
+  color: var(--bg-overlay);
+  display: grid;
+  font: 800 10px var(--font-mono);
+  height: 20px;
+  margin-top: 1px;
+  place-items: center;
+  width: 20px;
+}
+
+.event-editor .event-storyboard-card:focus-visible,
+.event-editor .event-storyboard-branch-command:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
