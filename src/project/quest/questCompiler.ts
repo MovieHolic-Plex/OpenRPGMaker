@@ -8,6 +8,7 @@ import { resolveEventPlacement, upsertEventIntoMap } from "@/editor/tools/eventT
 import { ensureNamedSwitch, ensureNamedVariable } from "@/editor/tools/flagHelpers";
 import { resolveGraphic, type GraphicSpec } from "@/editor/tools/eventCompile";
 import { isPassable } from "@/project/collision";
+import { resolveAnchorPoint } from "@/project/locationAnchors";
 import type { Command, EventPage, EventPageCondition, EventPageGraphic, GameEvent, GameMap, Project, SimpleTriggerKind } from "@/project/types";
 import {
   isValidQuestKey,
@@ -53,10 +54,23 @@ function placeQuestEvent(
   map: GameMap,
   x: number,
   y: number,
-  options: { kind: "character" | "interaction"; steppable?: boolean; label: string; code: string; eventId: string },
+  options: {
+    kind: "character" | "interaction";
+    steppable?: boolean;
+    label: string;
+    code: string;
+    eventId: string;
+    /** 구역 앵커. 있으면 그 중심 칸을 쓴다 — 좌표는 폴백이다(2026-09-12). */
+    locationId?: string;
+  },
   sink: CompileSink
 ): { x: number; y: number } {
-  const placement = resolveEventPlacement(project, map, x, y, {
+  // 구역을 가리키면 중심 칸이 목적지다. 구역이 지워졌거나 옛 정의면 좌표 그대로 돈다 —
+  // 조용히 목적지를 잃지 않게 하는 폴백이고, 끊긴 참조는 lint 가 따로 올린다.
+  const anchored = resolveAnchorPoint(project, map.id, { locationId: options.locationId }, { x, y });
+  const targetX = anchored.x;
+  const targetY = anchored.y;
+  const placement = resolveEventPlacement(project, map, targetX, targetY, {
     kind: options.kind,
     steppable: options.steppable,
     ignoreEventId: options.eventId,
@@ -64,7 +78,7 @@ function placeQuestEvent(
     code: options.code,
   });
   if (placement.adjusted) {
-    sink.warnings.push(`${options.label} 위치 자동 조정: (${x}, ${y}) → (${placement.x}, ${placement.y})`);
+    sink.warnings.push(`${options.label} 위치 자동 조정: (${targetX}, ${targetY}) → (${placement.x}, ${placement.y})`);
   }
   return { x: placement.x, y: placement.y };
 }
@@ -222,6 +236,7 @@ function materializeStep(
         label: "전투 블로커",
         code: "quest-kill-impassable",
         eventId: id,
+        ...(step.at.locationId === undefined ? {} : { locationId: step.at.locationId }),
       }, counters);
       upsertEventIntoMap(map, event(id, at.x, at.y, "action", [idle, fight, cleared]));
       counters.events += 1;
@@ -241,6 +256,7 @@ function materializeStep(
         label: "도달 지점",
         code: "quest-reach-impassable",
         eventId: id,
+        ...(step.locationId === undefined ? {} : { locationId: step.locationId }),
       }, counters);
       upsertEventIntoMap(map, event(id, at.x, at.y, "playerTouch", [arrive]));
       counters.events += 1;
@@ -294,6 +310,7 @@ function materializeCollectSource(
       label: "수집물",
       code: "quest-pickup-impassable",
       eventId: id,
+      ...(source.locationId === undefined ? {} : { locationId: source.locationId }),
     }, counters);
     upsertEventIntoMap(map, event(id, at.x, at.y, "action", [look, pick, empty]));
     counters.events += 1;
@@ -324,6 +341,7 @@ function materializeCollectSource(
       label: "드롭 전투",
       code: "quest-drop-impassable",
       eventId: id,
+      ...(source.locationId === undefined ? {} : { locationId: source.locationId }),
     }, counters);
     upsertEventIntoMap(map, event(id, at.x, at.y, "action", [idle, fight, cleared]));
     counters.events += 1;
@@ -407,6 +425,7 @@ function buildGate(project: Project, def: QuestDef, flags: QuestFlagIds, gate: Q
   // 잠긴 페이지는 priority "same"(차단 이벤트)이다. 플레이어는 이 칸을 밟지 못하고 옆 칸에서
   // 부딪혀 발동시키므로 계약상 steppable이 아니다 → kind "interaction"(벽 위 허용, 도달 가능만 요구).
   const at = placeQuestEvent(project, map, gate.x, gate.y, {
+    ...(gate.locationId === undefined ? {} : { locationId: gate.locationId }),
     kind: "interaction",
     label: "퀘스트 게이트",
     code: "quest-gate-impassable",

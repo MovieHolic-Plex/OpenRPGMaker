@@ -4,7 +4,19 @@ import { ToolError, type JsonSchema } from "./types";
 
 const string: JsonSchema = { type: "string", minLength: 1 };
 const lines: JsonSchema = { type: "array", items: { type: "string" } };
-const position = { mapId: string, x: { type: "integer" }, y: { type: "integer" } } satisfies Record<string, JsonSchema>;
+
+/**
+ * 좌표 앵커 (2026-09-12). `locationId` 를 주면 그 구역의 **중심 칸**을 목적지로 쓴다 —
+ * 구역을 옮기면 퀘스트 목적지·블로커·게이트도 따라온다. `x`/`y` 는 폴백으로 남긴다
+ * (옛 저장본 + 구역이 지워졌을 때). 좌표를 필수에서 빼지 않는 이유: 로케이션이 하나도
+ * 없는 맵에서는 좌표가 유일한 길이고, 두 값을 다 받아야 마이그레이션이 없다.
+ */
+const position = {
+  mapId: string,
+  x: { type: "integer" },
+  y: { type: "integer" },
+  locationId: { ...string, description: "같은 맵의 로케이션(구역) ID 또는 이름. 주면 x/y 대신 그 구역 중심 칸을 쓴다." },
+} satisfies Record<string, JsonSchema>;
 const npc: JsonSchema = {
   type: "object",
   properties: { ...position, name: string, graphicQuery: string, textureKey: string, characterIndex: { type: "integer", minimum: 0 } },

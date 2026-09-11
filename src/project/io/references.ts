@@ -1154,6 +1154,11 @@ function validateMapRecords(
     for (const [index, spawn] of (map.fieldSpawns ?? []).entries()) {
       if (!context.troopIds.has(spawn.troopId)) issues.push(`map ${map.id}: fieldSpawns[${index}].troopId does not exist: ${spawn.troopId}`);
       capture(issues, () => validateOptionalResource(`map ${map.id}: fieldSpawns[${index}].graphic.sprite`, spawn.graphic?.sprite?.id, resourceIds));
+      // 구역 앵커가 끊겼는지. 런타임은 옛 area 로 폴백하므로 조용히 «옮긴 구역을 안 따라오는»
+      // 상태가 된다 — 참조 검증이 그 사실을 올려야 한다(인카운터의 locationId 와 같은 규칙).
+      if (spawn.locationId && !(map.locations ?? []).some((location) => location.id === spawn.locationId)) {
+        issues.push(`map ${map.id}: fieldSpawns[${index}].locationId does not exist: ${spawn.locationId}`);
+      }
     }
     const fieldSpawnIds = new Set((map.fieldSpawns ?? []).map((spawn) => spawn.id));
     for (const [slotIndex, slot] of (map.roguelikeRoom?.encounterSlots ?? []).entries()) {

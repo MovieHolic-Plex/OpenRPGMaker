@@ -31,6 +31,7 @@ import { genId } from "@/util/id";
 import { resolveWikiCombatMode } from "@/ai/projectWikiContext";
 import { isActionCombatMap } from "@/project/actionCombat";
 import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
+import { mapLocations, resolveLocation } from "@/project/mapNamedLocations";
 import { applyMapShift } from "@/editor/mapShiftActions";
 import { visitProjectCommands } from "./commandTraversal";
 import {
@@ -1319,6 +1320,22 @@ function parseFieldSpawn(draft: Project, map: GameMap, value: unknown, label: st
     troopId,
     area: parseRect(input.area, `${label}.area`, map),
   };
+  // 구역 앵커. 이름(ID 또는 표시명)을 받아 같은 맵의 로케이션으로 해석한다 —
+  // 없으면 오류다: 오타를 조용히 좌표로 되돌리면 «구역을 옮겼는데 스폰이 안 따라오는»
+  // 상태를 디버깅하게 된다. area 는 폴백으로 항상 함께 남는다.
+  if (input.locationId !== undefined) {
+    const locationId = stringField(input, "locationId", label).trim();
+    if (!locationId) throw new ToolError(`${label}.locationId는 비울 수 없습니다.`, { code: "invalid-location-anchor", mapId: map.id });
+    const location = resolveLocation(map, locationId);
+    if (!location) {
+      const known = mapLocations(map).map((entry) => `${entry.name}(${entry.id})`).join(", ") || "(없음)";
+      throw new ToolError(`${label}.locationId를 찾을 수 없습니다: ${locationId}. 이 맵의 로케이션: ${known}`, {
+        code: "location-not-found",
+        mapId: map.id,
+      });
+    }
+    spawn.locationId = location.id;
+  }
   if (input.maxAlive !== undefined) {
     const maxAlive = integerField(input, "maxAlive", label);
     if (maxAlive <= 0) throw new ToolError(`${label}.maxAlive는 1 이상이어야 합니다.`, { code: "invalid-max-alive", mapId: map.id });
@@ -1689,6 +1706,11 @@ const makeHuntingGround: ToolDefinition = {
       mapId: { type: "string" },
       area: rectSchema,
       troopId: { type: "string" },
+      locationId: {
+        type: "string",
+        description:
+          "이 맵의 로케이션(구역) ID 또는 이름. 주면 area 대신 그 구역 사각형을 스폰 영역으로 쓴다 — 구역을 옮기면 스폰도 따라온다. area 는 폴백으로 함께 보낸다.",
+      },
       maxAlive: { type: "integer" },
       respawnSec: { type: "integer" },
       chase: { type: "boolean" },
@@ -1715,6 +1737,7 @@ const makeHuntingGround: ToolDefinition = {
       id: nextFieldSpawnId(map, troopId),
       troopId,
       area,
+      ...(args.locationId !== undefined ? { locationId: args.locationId } : {}),
       ...(args.maxAlive !== undefined ? { maxAlive: args.maxAlive } : {}),
       ...(args.respawnSec !== undefined ? { respawnSec: args.respawnSec } : {}),
       chase: args.chase === true,

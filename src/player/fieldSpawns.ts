@@ -15,6 +15,7 @@ import type {
   Rect,
 } from "@/project/types";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
+import { resolveLocationAnchorRect } from "@/project/locationAnchors";
 import type { RuntimeEventPositions } from "@/project/runtimeEventState"
 import type { RoguelikeRunState } from "@/project/roguelikeRun";
 import { resolveRoguelikeRoomFieldSpawns, roguelikeRoomGenerationKey } from "@/project/roguelikeRooms";
@@ -93,7 +94,7 @@ export function createFieldSpawnRuntime(
     mapId: map.id,
     ...(generationKey ? { roguelikeGenerationKey: generationKey, roguelikeRunRef: roguelikeRun } : {}),
     entries: spawns.map((spawn) => ({
-      spawn: normalizeFieldSpawn(project, spawn),
+      spawn: normalizeFieldSpawn(project, map, spawn),
       alive: [],
       respawnTimersMs: [],
       persistedDead: generationKey ? 0 : Math.max(0, Math.round(killedCounts?.[spawn.id] ?? 0)),
@@ -160,7 +161,7 @@ export function addFieldSpawnEntry(
 ): void {
   if (state.entries.some((entry) => entry.spawn.id === spawn.id)) return;
   const entry: FieldSpawnRuntimeEntry = {
-    spawn: normalizeFieldSpawn(project, spawn),
+    spawn: normalizeFieldSpawn(project, map, spawn),
     alive: [],
     respawnTimersMs: [],
     persistedDead: Math.max(0, Math.round(killedCount)),
@@ -399,15 +400,20 @@ function fieldSpawnEvent(instance: FieldSpawnInstance): GameEvent {
   };
 }
 
-function normalizeFieldSpawn(project: Project, spawn: FieldSpawnDef): NormalizedFieldSpawn {
+function normalizeFieldSpawn(project: Project, map: GameMap, spawn: FieldSpawnDef): NormalizedFieldSpawn {
+  // 로케이션이 있으면 그 사각형을 쓴다 — 옮긴 구역을 스폰이 따라가야 한다.
+  // 끊긴 참조(구역 삭제)는 옛 area 로 폴백한다: 조용히 스폰이 사라지는 것보다 낫고,
+  // lint 가 그 끊김을 따로 올린다.
+  const anchored = resolveLocationAnchorRect(project, map.id, { locationId: spawn.locationId });
+  const area = anchored ?? spawn.area;
   return {
     id: spawn.id,
     troopId: spawn.troopId,
     area: {
-      x: Math.trunc(spawn.area.x),
-      y: Math.trunc(spawn.area.y),
-      w: Math.max(0, Math.trunc(spawn.area.w)),
-      h: Math.max(0, Math.trunc(spawn.area.h)),
+      x: Math.trunc(area.x),
+      y: Math.trunc(area.y),
+      w: Math.max(0, Math.trunc(area.w)),
+      h: Math.max(0, Math.trunc(area.h)),
     },
     maxAlive: positiveInteger(spawn.maxAlive, DEFAULT_FIELD_SPAWN_MAX_ALIVE),
     respawnMs: Math.max(0, Math.round((spawn.respawnSec ?? DEFAULT_FIELD_SPAWN_RESPAWN_SEC) * 1000)),
