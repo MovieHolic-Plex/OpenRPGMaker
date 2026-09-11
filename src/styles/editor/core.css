@@ -1,3 +1,11 @@
 /* Split wrapper: preserves core.css cascade order. */
 @import "./core.part-1.css";
+/* editor/core.part-1.css 에서 옮겨 온 shell 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../shell/from-editor-core-part-1.css";
 @import "./core.part-2.css";
+/* editor/core.part-2.css 에서 옮겨 온 event 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../event/from-editor-core-part-2.css";
+/* editor/core.part-2.css 에서 옮겨 온 database 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../database/from-editor-core-part-2.css";
+/* editor/core.part-2.css 에서 옮겨 온 runtime 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../runtime/from-editor-core-part-2.css";

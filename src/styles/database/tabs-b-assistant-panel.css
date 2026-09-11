@@ -17,7 +17,15 @@
 @import "./tabs-b-assistant-panel/05-structure-modal-overlays.css";
 @import "./tabs-b-assistant-panel/06-canvas-guides-panel-chrome.css";
 @import "./tabs-b-assistant-panel/07-viewer-modal-settings.css";
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css 에서 옮겨 온 shell 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../shell/from-database-tabs-b-assistant-panel-07-viewer-modal-settings.css";
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css 에서 옮겨 온 map 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../map/from-database-tabs-b-assistant-panel-07-viewer-modal-settings.css";
 @import "./tabs-b-assistant-panel/08-studio-mode-start-screen.css";
+/* database/tabs-b-assistant-panel/08-studio-mode-start-screen.css 에서 옮겨 온 map 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../map/from-database-tabs-b-assistant-panel-08-studio-mode-start-screen.css";
+/* database/tabs-b-assistant-panel/08-studio-mode-start-screen.css 에서 옮겨 온 shell 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../shell/from-database-tabs-b-assistant-panel-08-studio-mode-start-screen.css";
 @import "./tabs-b-assistant-panel/09-ux-polish-density.css";
 @import "./tabs-b-assistant-panel/10-dock-mode-rich-doc.css";
 @import "./tabs-b-assistant-panel/11-autonomous-run-surface.css";

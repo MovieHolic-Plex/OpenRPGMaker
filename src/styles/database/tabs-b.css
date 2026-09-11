@@ -1,6 +1,12 @@
 @import "./tabs-b-resource-manager.css";
+/* database/tabs-b-resource-manager.css 에서 옮겨 온 event 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../event/from-database-tabs-b-resource-manager.css";
+/* database/tabs-b-resource-manager.css 에서 옮겨 온 components 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../components/from-database-tabs-b-resource-manager.css";
 @import "./tabs-b-title-screen.css";
 @import "./tabs-b-status-menu-base.css";
 @import "./tabs-b-status-menu-main.css";
 @import "./tabs-b-shell-layout.css";
+/* database/tabs-b-shell-layout.css 에서 옮겨 온 shell 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../shell/from-database-tabs-b-shell-layout.css";
 @import "./tabs-b-assistant-panel.css";

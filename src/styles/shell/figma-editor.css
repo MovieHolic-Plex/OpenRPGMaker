@@ -2,12 +2,28 @@
    부분 파일을 순서대로 이어붙이면 원본과 동일(순수 기계 분할). */
 @import "./figma-editor/01-shell-topbar-team.css";
 @import "./figma-editor/02-menus-toolbar-tools.css";
+/* shell/figma-editor/02-menus-toolbar-tools.css 에서 옮겨 온 map 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../map/from-shell-figma-editor-02-menus-toolbar-tools.css";
 @import "./figma-editor/03-layout-left-palette.css";
+/* shell/figma-editor/03-layout-left-palette.css 에서 옮겨 온 map 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../map/from-shell-figma-editor-03-layout-left-palette.css";
 @import "./figma-editor/04-chipset-events.css";
+/* shell/figma-editor/04-chipset-events.css 에서 옮겨 온 map 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../map/from-shell-figma-editor-04-chipset-events.css";
 @import "./figma-editor/05-canvas-statusbar.css";
+/* shell/figma-editor/05-canvas-statusbar.css 에서 옮겨 온 map 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../map/from-shell-figma-editor-05-canvas-statusbar.css";
 @import "./figma-editor/06-db-config-project-picker.css";
 @import "./figma-editor/07-context-menu-responsive.css";
+/* shell/figma-editor/07-context-menu-responsive.css 에서 옮겨 온 map 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../map/from-shell-figma-editor-07-context-menu-responsive.css";
 @import "./figma-editor/08-rm-palette-tools.css";
+/* shell/figma-editor/08-rm-palette-tools.css 에서 옮겨 온 map 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../map/from-shell-figma-editor-08-rm-palette-tools.css";
 @import "./figma-editor/09-rm-chipset-grid.css";
+/* shell/figma-editor/09-rm-chipset-grid.css 에서 옮겨 온 map 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../map/from-shell-figma-editor-09-rm-chipset-grid.css";
 /* 10-map-tree.css 는 editor/left-sidebar.modern.css 로 흡수됐다(2026-09-03). 번호는 비워 둔다. */
 @import "./figma-editor/11-canvas-toolbar-uxc.css";
+/* shell/figma-editor/11-canvas-toolbar-uxc.css 에서 옮겨 온 map 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../map/from-shell-figma-editor-11-canvas-toolbar-uxc.css";

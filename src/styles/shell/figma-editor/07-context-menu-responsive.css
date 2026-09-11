@@ -6,18 +6,6 @@
     border-color: var(--accent-border);
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .chipset-band-nav::before {
-    flex: 0 0 76px;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.tile-palette {
-    min-height: min(200px, 26vh);
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .brush-control-label {
-    grid-column: 1 / -1;
-  }
-
   .map-context-menu-item:focus:not(:focus-visible) {
     background: transparent;
     border-color: transparent;
@@ -46,28 +34,6 @@
       margin-right: 10px;
     }
 
-    .canvas-toolbar {
-      gap: 4px;
-      left: 12px;
-      padding: 7px;
-      right: 12px;
-      transform: none;
-    }
-
-    .canvas-toolbar-label {
-      font-size: 13px;
-      padding: 0 4px;
-    }
-
-    .zoom-button {
-      min-width: 38px;
-      padding: 0 7px;
-    }
-
-    .canvas-toolbar [data-testid="editor-map-screenshot-button"] {
-      min-width: 62px;
-    }
-
     .editor-statusbar-cell {
       padding: 0 10px;
     }
@@ -92,25 +58,6 @@
   }
 
   @media (min-width: 901px) and (max-width: 1320px) {
-    .canvas-toolbar {
-      flex-wrap: wrap;
-      gap: 4px;
-      padding: 6px;
-    }
-
-    .canvas-toolbar-label {
-      font-size: 13px;
-      padding: 0 4px;
-    }
-
-    .zoom-button {
-      min-width: 34px;
-      padding: 0 6px;
-    }
-
-    .canvas-toolbar [data-testid="editor-map-screenshot-button"] {
-      min-width: 60px;
-    }
 
     .editor-statusbar {
       font-size: 12px;

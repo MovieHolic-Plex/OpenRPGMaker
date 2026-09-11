@@ -147,11 +147,6 @@
    빠져 있었다. TS 에서 마커 클래스를 붙이면 안 된다 — renderActiveTab 이 body 를
    replaceChildren 만 해서 className/dataset 이 탭 전환 후에도 남아 다른 탭으로 샌다.
    sidebar.css 쪽이 특이도가 높지만 display 를 건드리지 않으므로 충돌하지 않는다. */
-.db-body.db-shared-workspace:has(.structure-kit-album-workspace),
-.db-body.db-shared-workspace:has(.tileset-spaces-workspace) {
-  display: flex;
-  flex-direction: column;
-}
 
 .structure-kit-album-workspace {
   display: flex;
@@ -799,12 +794,6 @@
 }
 
   /* 공간 종류 인스펙터의 db-field 는 라벨 위·입력 아래. 앨범 인스펙터 폭 352px. */
-.tileset-spaces-workspace .structure-kit-inspector .db-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin: 0 0 10px;
-}
 
 .tileset-spaces-workspace .structure-kit-inspector input[type="text"] {
   width: 100%;
@@ -838,10 +827,6 @@
    .db-enemy-dialog 는 여러 다이얼로그가 공유하므로 전역으로 키우면 안 된다.
    편집기 백드롭은 z 1200 으로 DB 모달(z 900)과 독립이라 모달 크기에 갇히지 않는다 —
    예전에는 주어진 공간의 절반(732/1350)만 쓰고 있었다. */
-[data-testid="structure-kit-editor"] > .db-enemy-dialog {
-  width: min(1424px, calc(100vw - 16px));
-  height: min(884px, calc(100vh - 16px));
-}
 
 /* main 은 display:grid 라 자식이 auto 높이가 된다 — 1fr 로 본문 전체를 채우게 한다.
    min-height:0 이 없으면 grid 자식이 콘텐츠 아래로 안 줄어들어 스크롤이 바깥으로 샌다. */

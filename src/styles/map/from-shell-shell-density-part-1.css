@@ -1,0 +1,1065 @@
+/* map 표면 — shell/shell-density.part-1.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 map 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* shell/shell-density.part-1.css:1-5 */
+.left-panel-stack .layer-row {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* shell/shell-density.part-1.css:7-9 */
+.left-panel-stack .layer-caption {
+  display: none;
+}
+
+/* shell/shell-density.part-1.css:11-21 */
+.left-panel-stack .layer-btn {
+  align-items: center;
+  display: flex;
+  gap: 3px;
+  font-size: 10px;
+  height: 22px;
+  justify-content: center;
+  line-height: 1;
+  min-width: 0;
+  padding: 0 2px;
+}
+
+/* shell/shell-density.part-1.css:29-32 */
+.left-panel-stack .brush-control {
+  margin-top: 1px;
+  width: 100%;
+}
+
+/* shell/shell-density.part-1.css:34-36 */
+.left-panel-stack .brush-size-btn {
+  padding: 0 1px;
+}
+
+/* shell/shell-density.part-1.css:38-45 */
+.left-panel-stack .tool-command-row {
+
+  display: none;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
+  margin-top: 1px;
+  width: 100%;
+}
+
+/* shell/shell-density.part-1.css:47-53 */
+.tool-grid .btn,
+.layer-btn,
+.brush-size-btn,
+.tool-command-row .icon-btn {
+  border-color: var(--border-default);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+/* shell/shell-density.part-1.css:55-61 */
+.tool-grid .btn:hover:not(:disabled),
+.layer-btn:hover:not(:disabled),
+.brush-size-btn:hover:not(:disabled),
+.tool-command-row .icon-btn:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+/* shell/shell-density.part-1.css:63-69 */
+.tool-grid .btn:focus-visible,
+.layer-btn:focus-visible,
+.brush-size-btn:focus-visible,
+.tool-command-row .icon-btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+}
+
+/* shell/shell-density.part-1.css:71-79 */
+.tool-grid .btn.active,
+.tool-grid .btn[aria-pressed="true"],
+.layer-btn.active,
+.layer-btn[aria-pressed="true"],
+.brush-size-btn.active,
+.brush-size-btn[aria-pressed="true"] {
+  box-shadow: inset 3px 0 0 var(--accent-primary);
+  font-weight: 700;
+}
+
+/* shell/shell-density.part-1.css:81-88 */
+.tool-grid .btn:active:not(:disabled),
+.layer-btn:active:not(:disabled),
+.brush-size-btn:active:not(:disabled),
+.tool-command-row .icon-btn:active:not(:disabled) {
+  background: var(--control-bg-active);
+  border-color: var(--accent-border);
+  box-shadow: none;
+}
+
+/* shell/shell-density.part-1.css:90-93 */
+.left-panel-stack .tile-tool-status {
+  margin-top: 1px;
+  width: 100%;
+}
+
+/* shell/shell-density.part-1.css:95-97 */
+.left-panel-stack .tile-tool-status-cell:nth-child(n + 3) {
+  display: none;
+}
+
+/* shell/shell-density.part-1.css:99-102 */
+.left-panel-stack .tile-tool-status-label,
+.left-panel-stack .tile-tool-status-value {
+  font-size: 9px;
+}
+
+/* shell/shell-density.part-1.css:104-113 */
+.chipset-sheet {
+  display: block;
+  min-height: min(280px, 36vh);
+  overscroll-behavior: contain;
+  position: relative;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  touch-action: pan-y;
+  width: 100%;
+}
+
+/* shell/shell-density.part-1.css:115-118 */
+.palette-option-row {
+  align-items: center;
+  display: grid;
+}
+
+/* shell/shell-density.part-1.css:120-125 */
+.palette-option-label {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  padding-left: 3px;
+}
+
+/* shell/shell-density.part-1.css:127-130 */
+.palette-option-button {
+  min-width: 0;
+  padding: 0 4px;
+}
+
+/* shell/shell-density.part-1.css:133-140 */
+.palette-work-shell {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+  width: 100%;
+}
+
+/* shell/shell-density.part-1.css:142-145 */
+.palette-work-shell .palette-work-pane.is-paint {
+  flex: 1 1 auto;
+  min-height: 120px;
+}
+
+/* shell/shell-density.part-1.css:148-153 */
+.palette-work-shell [data-testid="tile-palette-clusters"],
+.palette-work-shell [data-testid="tile-palette"] {
+  flex: 1 1 auto;
+  min-height: 160px;
+  overflow: auto;
+}
+
+/* shell/shell-density.part-1.css:157-161 */
+.palette-work-shell .palette-work-pane.is-paint {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* shell/shell-density.part-1.css:163-167 */
+.palette-work-shell .palette-work-pane.is-paint > .palette-filter-bar,
+.palette-work-shell .palette-work-pane.is-paint > .palette-brush-assist-wrap,
+.palette-work-shell .palette-work-pane.is-paint > .palette-collapsible {
+  flex: 0 0 auto;
+}
+
+/* shell/shell-density.part-1.css:170-174 */
+.palette-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* shell/shell-density.part-1.css:176-180 */
+.palette-filter-search-row {
+  display: grid;
+  gap: 3px;
+  grid-template-columns: minmax(0, 1fr) 28px;
+}
+
+/* shell/shell-density.part-1.css:182-184 */
+.palette-filter-search-row .tile-search-input {
+  min-width: 0;
+}
+
+/* shell/shell-density.part-1.css:190-198 */
+.palette-filter-bar .tile-category-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  margin-bottom: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+/* shell/shell-density.part-1.css:200-202 */
+.palette-filter-bar .tile-category-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* shell/shell-density.part-1.css:204-209 */
+.palette-filter-bar .tile-category-tab {
+  flex: 0 0 auto;
+  height: 20px;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+/* shell/shell-density.part-1.css:211-218 */
+.palette-filter-status {
+  align-items: center;
+  color: var(--text-2);
+  display: flex;
+  font-size: 10px;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+/* shell/shell-density.part-1.css:220-223 */
+.palette-filter-empty {
+  padding: 8px 4px;
+  text-align: center;
+}
+
+/* shell/shell-density.part-1.css:226-229 */
+.chipset-tile.is-filtered-out {
+  filter: grayscale(1);
+  opacity: 0.22;
+}
+
+/* shell/shell-density.part-1.css:231-233 */
+.chipset-tile.is-filtered-out:hover {
+  opacity: 0.5;
+}
+
+/* shell/shell-density.part-1.css:237-246 */
+.tile-props-dialog-backdrop {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: fixed;
+  /* 이벤트 에디터 모달(1000)·서브다이얼로그(--z-popover-high 1200)보다 위, 앱 모달(--z-app-modal 2600)보다 아래. */
+  z-index: 2400;
+}
+
+/* shell/shell-density.part-1.css:248-259 */
+.tile-props-dialog-panel {
+  background: var(--bg-surface, var(--bg-inset));
+  border: 1px solid var(--border-strong, var(--border-default));
+  border-radius: var(--radius-m, 8px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  max-height: 82vh;
+  max-width: 92vw;
+  min-width: 300px;
+  width: 380px;
+}
+
+/* shell/shell-density.part-1.css:261-267 */
+.tile-props-dialog-head {
+  align-items: center;
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  gap: 7px;
+  padding: 8px 10px;
+}
+
+/* shell/shell-density.part-1.css:269-273 */
+.tile-props-dialog-head h2 {
+  flex: 0 0 auto;
+  font-size: 13px;
+  margin: 0;
+}
+
+/* shell/shell-density.part-1.css:275-281 */
+.tile-props-dialog-thumb {
+  border: 1px solid var(--border-default);
+  flex: 0 0 auto;
+  height: 24px;
+  image-rendering: pixelated;
+  width: 24px;
+}
+
+/* shell/shell-density.part-1.css:283-292 */
+.tile-props-dialog-tileset {
+  color: var(--text-2);
+  flex: 1 1 auto;
+  font-size: 10px;
+  min-width: 0;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* shell/shell-density.part-1.css:294-303 */
+.tile-props-dialog-close {
+  background: none;
+  border: 0;
+  color: var(--text-2);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 17px;
+  line-height: 1;
+  padding: 0 3px;
+}
+
+/* shell/shell-density.part-1.css:305-307 */
+.tile-props-dialog-close:hover {
+  color: var(--text-1);
+}
+
+/* shell/shell-density.part-1.css:309-312 */
+.tile-props-dialog-body {
+  overflow: auto;
+  padding: 10px;
+}
+
+/* shell/shell-density.part-1.css:315-319 */
+.palette-collapsible {
+  border: 1px solid var(--border-subtle, var(--border-default));
+  border-radius: var(--radius-s);
+  min-width: 0;
+}
+
+/* shell/shell-density.part-1.css:321-329 */
+.palette-collapsible > summary {
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-2);
+  list-style: none;
+  padding: 4px 6px;
+  user-select: none;
+}
+
+/* shell/shell-density.part-1.css:331-333 */
+.palette-collapsible > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* shell/shell-density.part-1.css:335-340 */
+.palette-collapsible > summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 4px;
+  transition: transform var(--transition-fast, 120ms);
+}
+
+/* shell/shell-density.part-1.css:342-344 */
+.palette-collapsible[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+/* shell/shell-density.part-1.css:346-348 */
+.palette-collapsible > summary:hover {
+  color: var(--text-1);
+}
+
+/* shell/shell-density.part-1.css:350-352 */
+.palette-collapsible > *:not(summary) {
+  padding: 0 6px 6px;
+}
+
+/* shell/shell-density.part-1.css:357-361 */
+.palette-inline-section {
+  border: 1px solid var(--border-subtle, var(--border-default));
+  border-radius: var(--radius-s);
+  min-width: 0;
+}
+
+/* shell/shell-density.part-1.css:363-370 */
+.palette-inline-header {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 2px 5px;
+}
+
+/* shell/shell-density.part-1.css:372-384 */
+.palette-inline-toggle {
+  align-items: center;
+  background: none;
+  border: 0;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 600;
+  gap: 3px;
+  padding: 2px 0;
+}
+
+/* shell/shell-density.part-1.css:386-388 */
+.palette-inline-toggle:hover {
+  color: var(--text-1);
+}
+
+/* shell/shell-density.part-1.css:390-394 */
+.palette-inline-caret {
+  display: inline-block;
+  font-size: 9px;
+  width: 8px;
+}
+
+/* shell/shell-density.part-1.css:396-401 */
+.palette-inline-header > .tile-brush-mode-row {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* shell/shell-density.part-1.css:406-408 */
+.palette-inline-header .tile-brush-hint {
+  display: none;
+}
+
+/* shell/shell-density.part-1.css:410-413 */
+.palette-inline-header .tile-brush-label {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* shell/shell-density.part-1.css:415-417 */
+.palette-inline-section > .tile-brush-assist {
+  padding: 0 5px 5px;
+}
+
+/* shell/shell-density.part-1.css:420-429 */
+.selected-tile-props-button {
+  background: none;
+  border: 0;
+  color: var(--text-2);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 11px;
+  line-height: 1;
+  padding: 1px 2px;
+}
+
+/* shell/shell-density.part-1.css:431-433 */
+.selected-tile-props-button:hover {
+  color: var(--text-1);
+}
+
+/* shell/shell-density.part-1.css:435-437 */
+.tile-mapping-meta.is-muted {
+  color: var(--text-3, var(--text-2));
+}
+
+/* shell/shell-density.part-1.css:444-457 */
+.tile-palette.show-index .chipset-tile::before {
+  background: rgba(0, 0, 0, 0.68);
+  border-radius: 2px;
+  bottom: 1px;
+  color: #fff;
+  content: attr(data-tile-index);
+  font-size: 8px;
+  font-variant-numeric: tabular-nums;
+  left: 1px;
+  line-height: 1.1;
+  padding: 0 2px;
+  pointer-events: none;
+  position: absolute;
+}
+
+/* shell/shell-density.part-1.css:459-461 */
+.tile-palette.show-index .chipset-tile {
+  position: relative;
+}
+
+/* shell/shell-density.part-1.css:464-477 */
+.selected-tile-status {
+  align-items: center;
+  background: var(--surface-workbench, var(--bg-inset));
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  display: flex;
+  font-size: 11px;
+  font-weight: 600;
+  gap: 5px;
+  line-height: 1.3;
+  min-width: 0;
+  padding: 3px 6px;
+}
+
+/* shell/shell-density.part-1.css:479-485 */
+.selected-tile-status .selected-tile-thumb {
+  border: 1px solid var(--border-strong, var(--border-default));
+  border-radius: 2px;
+  flex: 0 0 auto;
+  height: 16px;
+  width: 16px;
+}
+
+/* shell/shell-density.part-1.css:487-493 */
+.selected-tile-status .selected-tile-label {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* shell/shell-density.part-1.css:495-506 */
+.selected-tile-status .selected-tile-tileset {
+  color: var(--text-2, var(--text-secondary));
+  flex: 0 1 auto;
+  font-size: 10px;
+  font-weight: 400;
+  max-width: 42%;
+  min-width: 0;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* shell/shell-density.part-1.css:508-513 */
+.palette-work-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+}
+
+/* shell/shell-density.part-1.css:515-518 */
+.palette-work-pane.is-paint .tile-palette-title {
+  font-size: 12px;
+  margin: 0;
+}
+
+/* shell/shell-density.part-1.css:520-525 */
+.quick-tile-picker {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  margin-bottom: var(--space-1);
+  padding: var(--space-1);
+}
+
+/* shell/shell-density.part-1.css:527-532 */
+.tile-category-tabs {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: var(--space-1);
+}
+
+/* shell/shell-density.part-1.css:534-542 */
+.tile-category-tab {
+  font-size: 10px;
+  height: 22px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 2px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* shell/shell-density.part-1.css:544-549 */
+.tile-category-tab.active,
+.tile-category-tab[aria-selected="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  font-weight: 700;
+}
+
+/* shell/shell-density.part-1.css:551-554 */
+.tile-search-input {
+  font-size: 11px;
+  width: 100%;
+}
+
+/* shell/shell-density.part-1.css:556-559 */
+.tile-search-input:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+}
+
+/* shell/shell-density.part-1.css:561-567 */
+.quick-tile-toolbar {
+  align-items: center;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-bottom: var(--space-1);
+}
+
+/* shell/shell-density.part-1.css:569-574 */
+.tile-number-toggle {
+  font-size: 10px;
+  height: 24px;
+  min-width: 40px;
+  padding: 0 5px;
+}
+
+/* shell/shell-density.part-1.css:576-582 */
+.tile-brush-assist {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  gap: 2px;
+  margin-bottom: var(--space-1);
+  padding: var(--space-1);
+}
+
+/* shell/shell-density.part-1.css:584-589 */
+.tile-brush-row,
+.tile-brush-neighborhood {
+  align-items: center;
+  display: grid;
+  min-height: 22px;
+}
+
+/* shell/shell-density.part-1.css:591-594 */
+.tile-brush-row.hidden,
+.tile-brush-neighborhood.hidden {
+  display: none;
+}
+
+/* shell/shell-density.part-1.css:596-604 */
+.tile-brush-label {
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* shell/shell-density.part-1.css:606-619 */
+.tile-brush-chip,
+.tile-brush-neighborhood-value {
+  background: var(--surface-workbench);
+  border: 1px solid var(--border-soft);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 18px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* shell/shell-density.part-1.css:621-625 */
+.tile-brush-chip.active {
+  background: var(--surface-selected);
+  border-color: var(--accent-primary);
+  font-weight: 700;
+}
+
+/* shell/shell-density.part-1.css:643-647 */
+.structure-stamp-panel .stamp-picker {
+  flex-wrap: wrap;
+  overflow-x: visible;
+  row-gap: 3px;
+}
+
+/* shell/shell-density.part-1.css:649-652 */
+.stamp-button.active,
+.stamp-button[aria-pressed="true"] {
+  font-weight: 700;
+}
+
+/* shell/shell-density.part-1.css:654-659 */
+.tile-brush-mini-cell {
+  flex: 0 0 24px;
+  height: 24px;
+  min-width: 24px;
+  width: 24px;
+}
+
+/* shell/shell-density.part-1.css:661-666 */
+.tile-brush-empty {
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 22px;
+  padding: 0 2px;
+}
+
+/* shell/shell-density.part-1.css:668-681 */
+.quick-tile-grid {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-default);
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(6, 32px);
+  justify-content: start;
+  max-height: 118px;
+  min-height: 54px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 2px;
+  scrollbar-gutter: stable;
+}
+
+/* shell/shell-density.part-1.css:683-696 */
+.quick-tile-cell {
+  align-items: start;
+  appearance: none;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: 1px solid transparent;
+  cursor: crosshair;
+  display: flex;
+  height: 32px;
+  justify-content: start;
+  min-width: 32px;
+  padding: 0;
+  position: relative;
+}
+
+/* shell/shell-density.part-1.css:698-703 */
+.quick-tile-cell:hover:not(:disabled),
+.quick-tile-cell:focus-visible:not(:disabled) {
+  border-color: var(--accent-hover);
+  box-shadow: inset 0 0 0 1px var(--bg-canvas);
+  outline: none;
+}
+
+/* shell/shell-density.part-1.css:705-708 */
+.quick-tile-cell.active {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--bg-canvas);
+}
+
+/* shell/shell-density.part-1.css:710-716 */
+.quick-tile-cell.muted::after {
+  background: rgba(42, 37, 33, 0.06);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+/* shell/shell-density.part-1.css:718-728 */
+.quick-tile-index {
+  background: rgba(42, 37, 33, 0.82);
+  color: var(--warning);
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 1px 2px;
+  pointer-events: none;
+}
+
+/* shell/shell-density.part-1.css:730-732 */
+.quick-tile-picker.show-index .quick-tile-index {
+  display: block;
+}
+
+/* shell/shell-density.part-1.css:734-738 */
+.quick-tile-empty {
+  grid-column: 1 / -1;
+  min-height: 48px;
+  padding: var(--space-2);
+}
+
+/* shell/shell-density.part-1.css:740-743 */
+.chipset-sheet::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+/* shell/shell-density.part-1.css:745-750 */
+.chipset-sheet::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: 999px;
+}
+
+/* shell/shell-density.part-1.css:752-754 */
+.chipset-sheet::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* shell/shell-density.part-1.css:756-762 */
+.chipset-sheet-image {
+  display: none;
+  height: var(--chipset-height);
+  image-rendering: pixelated;
+  max-width: none;
+  width: var(--chipset-width);
+}
+
+/* shell/shell-density.part-1.css:764-771 */
+.chipset-grid {
+  box-sizing: border-box;
+  display: grid;
+  /* 패널 안에 들어가는 칸만 배치 — 가로 스크롤 없음 */
+  grid-auto-rows: var(--chipset-cell);
+  position: static;
+  max-width: 100%;
+}
+
+/* shell/shell-density.part-1.css:773-784 */
+.chipset-tile {
+  appearance: none;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: 1px solid transparent;
+  box-sizing: border-box;
+  cursor: crosshair;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  min-width: 0;
+}
+
+/* shell/shell-density.part-1.css:786-792 */
+.chipset-tile-preview {
+  display: block;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+}
+
+/* shell/shell-density.part-1.css:794-804 */
+.chipset-tile-preview img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  left: 0;
+  max-width: none;
+  position: absolute;
+  top: 0;
+  transform-origin: top left;
+  user-select: none;
+}
+
+/* shell/shell-density.part-1.css:806-809 */
+.chipset-tile:hover:not(:disabled),
+.chipset-tile:focus-visible:not(:disabled) {
+  outline: none;
+}
+
+/* shell/shell-density.part-1.css:811-816 */
+.chipset-tile.stamp-source {
+  border-color: var(--success);
+  box-shadow:
+    inset 0 0 0 1px var(--bg-canvas),
+    inset 0 0 0 2px var(--success-muted);
+}
+
+/* shell/shell-density.part-1.css:818-822 */
+.chipset-tile.classified {
+  filter: saturate(0.72);
+  opacity: 0.55;
+  position: relative;
+}
+
+/* shell/shell-density.part-1.css:824-842 */
+.chipset-tile.classified::after {
+  align-items: center;
+  background: rgba(74, 87, 214, 0.30);
+  border: 1px solid rgba(42, 37, 33, 0.12);
+  border-radius: 999px;
+  color: var(--text-inverse);
+  content: "✓";
+  display: flex;
+  font-size: 8px;
+  font-weight: 700;
+  height: 11px;
+  justify-content: center;
+  line-height: 1;
+  opacity: 0.75;
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  width: 11px;
+}
+
+/* shell/shell-density.part-1.css:846-848 */
+.chipset-sheet.oprn-palette {
+  container-type: inline-size;
+}
+
+/* shell/shell-density.part-1.css:850-863 */
+.chipset-grid.oprn-palette-grid {
+  --oprn-cols: 6;
+  --chipset-cell: min(32px, calc((100cqi - 12px) / 6));
+  box-sizing: border-box;
+  display: grid;
+  gap: 2px;
+  grid-auto-rows: var(--chipset-cell);
+  grid-template-columns: repeat(6, var(--chipset-cell)) !important;
+  justify-content: start;
+  max-width: 100%;
+  min-width: 0;
+  padding: 2px;
+  width: max-content;
+}
+
+/* shell/shell-density.part-1.css:865-871 */
+.chipset-grid.oprn-palette-grid .chipset-tile {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  height: var(--chipset-cell);
+  min-width: 0;
+  width: var(--chipset-cell);
+}
+
+/* shell/shell-density.part-1.css:875-877 */
+.chipset-tile.oprn-autotile {
+  position: relative;
+}
+
+/* shell/shell-density.part-1.css:898-905 */
+.chipset-tile.range-selected {
+  border-color: var(--accent);
+  box-shadow:
+    inset 0 0 0 1px var(--bg-canvas),
+    inset 0 0 0 3px var(--accent-soft);
+  filter: none;
+  opacity: 1;
+}
+
+/* shell/shell-density.part-1.css:907-918 */
+.chipset-range-marquee {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 0 1px rgba(42, 37, 33, 0.14);
+  height: max(2px, var(--range-height, 0px));
+  left: var(--range-left, 0);
+  pointer-events: none;
+  position: absolute;
+  top: var(--range-top, 0);
+  width: max(2px, var(--range-width, 0px));
+  z-index: var(--z-canvas-raised);
+}
+
+/* shell/shell-density.part-1.css:920-922 */
+.chipset-range-marquee.hidden {
+  display: none;
+}
+
+/* shell/shell-density.part-1.css:924-938 */
+.sheet-range-classify {
+  background: var(--accent);
+  border: 1px solid var(--accent-hover);
+  border-radius: 4px;
+  box-shadow: var(--shadow-pop);
+  color: var(--text-inverse);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 8px;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  z-index: var(--z-canvas-chrome);
+}
+
+/* shell/shell-density.part-1.css:940-944 */
+.sheet-range-classify:hover,
+.sheet-range-classify:focus-visible {
+  background: var(--accent-hover);
+  outline: 1px solid var(--text-inverse);
+}
+
+/* shell/shell-density.part-1.css:946-949 */
+.chipset-tile.muted {
+  background: rgba(42, 37, 33, 0.06);
+  cursor: default;
+}
+
+/* shell/shell-density.part-1.css:951-953 */
+.chipset-tile.muted .chipset-tile-preview {
+  opacity: 0.45;
+}
+
+/* shell/shell-density.part-1.css:955-957 */
+.chipset-tile.band-dimmed {
+  background: rgba(42, 37, 33, 0.06);
+}
+
+/* shell/shell-density.part-1.css:959-961 */
+.chipset-tile.band-dimmed.muted {
+  background: rgba(42, 37, 33, 0.06);
+}
+
+/* shell/shell-density.part-1.css:963-966 */
+.chipset-band-nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+}
+
+/* shell/shell-density.part-1.css:968-975 */
+.chipset-band-button {
+  border-color: var(--border-default);
+  box-shadow: none;
+  font-weight: 600;
+  min-width: 0;
+  padding: 0;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+/* shell/shell-density.part-1.css:977-980 */
+.chipset-band-button.active,
+.chipset-band-button[aria-pressed="true"] {
+  box-shadow: none;
+}
+
+/* shell/shell-density.part-1.css:982-985 */
+.chipset-band-button:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+/* shell/shell-density.part-1.css:987-990 */
+.chipset-band-button:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+}
+
+/* shell/shell-density.part-1.css:992-996 */
+.chipset-scroll-button {
+  background: var(--control-bg);
+  border-color: var(--border-default);
+  border-radius: var(--radius-s);
+}
+
+/* shell/shell-density.part-1.css:998-1004 */
+.left-panel-stack .compact-field {
+  align-items: center;
+  display: grid;
+  gap: 2px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  margin-top: 2px;
+}

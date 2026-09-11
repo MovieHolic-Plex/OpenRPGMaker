@@ -1,43 +1,4 @@
 @import "../runtime/playSurface.css";
-.battle-enemy:disabled {
-  color: var(--text-muted);
-  opacity: 0.55;
-}
-.battle-actor {
-  display: flex;
-  align-items: center;
-}
-.battle-actor.defeated {
-  opacity: 0.4;
-  filter: grayscale(1);
-}
-.battle-actor-image {
-  object-fit: contain;
-  image-rendering: pixelated;
-  flex: 0 0 auto;
-}
-.battle-actor-label {
-  flex: 1 1 auto;
-}
-.battle-command-panel {
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  border-top: 1px solid var(--border);
-  padding-top: var(--space-2);
-}
-.battle-submenu-header {
-  flex: 1 0 100%;
-  font-weight: 700;
-}
-.battle-command:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.battle-animation {
-  border-radius: var(--radius);
-  font-family: var(--font-mono);
-  padding: var(--space-2) var(--space-3);
-}
 
 .tile-palette {
   display: grid;
@@ -96,9 +57,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   height: 100%;
   background: #000;
 }
-.player-layout.system-shell {
-  background: #000;
-}
 
 /* ?? ??ъ갹 ?ㅻ쾭?덉씠 ?? */
 /* ??ъ갹: dialogue-frame.png 瑜?9-slice(border-image)濡??곸슜.
@@ -131,39 +89,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 /* ?? ?대깽???몄쭛湲??? */
 .event-editor .field {
   margin-bottom: var(--space-2);
-}
-.event-editor label {
-  display: block;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-dim);
-  margin-bottom: 3px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-.event-editor input[type="text"],
-.event-editor input[type="number"],
-.event-editor select,
-.event-editor textarea {
-  width: 100%;
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 5px 8px;
-  font-size: 13px;
-  font-family: inherit;
-  transition: border-color 0.1s;
-}
-.event-editor input:focus,
-.event-editor textarea:focus,
-.event-editor select:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-.event-editor textarea {
-  resize: vertical;
-  min-height: 54px;
 }
 
 .event-editor-sidebar {
@@ -201,84 +126,13 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
  * 270px 이 넘는다. 라벨·복사와 한 줄을 나누면 값에 남는 폭이 185px 뿐이었다(실측) —
  * 줄을 따로 주면 그 폭을 전부 값에 준다. 그래도 남는 초과분은 줄임표로 자르고 전체 값은
  * input value·title·복사 버튼이 보존한다(입력칸이라 줄바꿈이 불가능하다). */
-.event-id-readout {
-  align-items: center;
-  column-gap: var(--space-2);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  min-width: 0;
-  row-gap: var(--space-1);
-}
-
-.event-id-readout-label {
-  color: var(--text-dim);
-  font-size: 11px;
-  font-weight: 600;
-  grid-column: 1;
-  grid-row: 1;
-  letter-spacing: 0.2px;
-}
 
 /* `.event-editor input[type="text"]`(위쪽 279행)이 (0,2,1) 이라 클래스 하나로는 못 이긴다.
  * `input.` 로 같은 특이도를 만들고 더 뒤에 두어 «편집칸이 아니라 판독값»으로 보이게 한다. */
-.event-editor input.event-id-readout-value {
-  background: var(--bg-inset);
-  border: 1px dashed var(--border);
-  color: var(--text);
-  cursor: text;
-  font: 400 11px/1.4 var(--mono);
-  grid-column: 1 / -1;
-  grid-row: 2;
-  min-width: 0;
-  overflow: hidden;
-  /* 좌우 4px — 6px 이면 `ev_`+UUID(39자)가 3px 모자라 마지막 글자가 잘렸다.
-   * 실측(1440×900, expert): 열 269px · 텍스트 258px · 내용폭 6px→255 / 4px→259. */
-  padding: 3px 4px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 100%;
-}
 
 /* 읽기 전용이어도 포커스는 보여야 한다 — 키보드로 값을 집는 것이 이 상자의 주 용도다. */
-.event-editor input.event-id-readout-value:focus-visible {
-  border-color: var(--accent);
-  border-style: solid;
-  outline: var(--focus-outline);
-  outline-offset: 1px;
-}
 
 /* 글자 라벨 단추 — 아이콘 SVG 는 이 저장소에 전역 크기 규칙이 없어 8×8px 로 찍혔다(실측). */
-.event-id-readout-copy {
-  align-items: center;
-  background: transparent;
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-sm);
-  color: var(--text-dim);
-  cursor: pointer;
-  display: inline-flex;
-  font-size: 11px;
-  grid-column: 2;
-  grid-row: 1;
-  justify-content: center;
-  min-height: 20px;
-  padding: 2px 8px;
-  white-space: nowrap;
-}
-
-.event-id-readout-copy:hover,
-.event-id-readout-copy:focus-visible {
-  border-color: var(--border);
-  color: var(--text);
-}
-
-.event-id-readout-hint {
-  color: var(--text-dim);
-  font-size: 11px;
-  grid-column: 1 / -1;
-  grid-row: 3;
-  line-height: 1.4;
-  margin: 0;
-}
 
 .event-list {
   flex: 1 1 auto;
@@ -342,143 +196,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   width: 20px;
 }
 
-.event-list-icon .event-graphic-preview {
-  border: 0;
-  grid-row: auto;
-  transform: none;
-}
-
-.event-list-icon .event-graphic-preview[data-empty="true"],
-.event-list-icon .event-graphic-preview[data-unsupported="true"] {
-  height: 16px;
-  transform: none;
-  width: 16px;
-}
-
-.db-required-panel {
-  align-content: center;
-  background: var(--bg-base);
-  color: var(--text-1);
-  display: grid;
-  gap: 12px;
-  justify-items: start;
-  min-height: 100%;
-  padding: 32px;
-}
-
-.db-required-panel.db-required-hero {
-  align-content: stretch;
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 20%, color-mix(in srgb, var(--accent, #4A57D6) 10%, transparent), transparent 58%),
-    radial-gradient(ellipse 70% 50% at 90% 80%, color-mix(in srgb, #8A6B2F 8%, transparent), transparent 55%),
-    var(--bg-base, #F7F3EA);
-  gap: 0;
-  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
-  justify-items: stretch;
-  padding: 0;
-}
-
-.db-required-hero-art {
-  min-height: min(100vh, 720px);
-  overflow: hidden;
-  position: relative;
-}
-
-.db-required-hero-image {
-  display: block;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  width: 100%;
-}
-
-.db-required-hero-art::after {
-  background: linear-gradient(90deg, transparent 55%, color-mix(in srgb, var(--bg-base, #F7F3EA) 88%, transparent) 100%);
-  bottom: 0;
-  content: "";
-  left: 0;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-.db-required-copy {
-  align-content: center;
-  display: grid;
-  gap: 14px;
-  justify-items: start;
-  padding: 40px 36px 40px 20px;
-}
-
-.db-required-kicker {
-  color: var(--accent, #4A57D6);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  margin: 0;
-  text-transform: uppercase;
-}
-
-.db-required-panel h1 {
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: 0;
-  margin: 0;
-}
-
-.db-required-hero .db-required-copy h1 {
-  font-size: clamp(26px, 3.2vw, 36px);
-  line-height: 1.2;
-  max-width: 18ch;
-}
-
-.db-required-panel p {
-  color: var(--text-2);
-  font-size: 14px;
-  line-height: 1.6;
-  margin: 0;
-  max-width: 560px;
-}
-
-.db-required-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.db-required-chips li {
-  background: var(--bg-raised, #FFFDF8);
-  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
-  border-radius: 999px;
-  color: var(--text-2);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 6px 12px;
-  box-shadow: 0 1px 4px rgba(60, 48, 32, 0.06);
-}
-
-@media (max-width: 900px) {
-  .db-required-panel.db-required-hero {
-    grid-template-columns: 1fr;
-  }
-
-  .db-required-hero-art {
-    min-height: 220px;
-  }
-
-  .db-required-hero-art::after {
-    background: linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--bg-base, #F7F3EA) 92%, transparent) 100%);
-  }
-
-  .db-required-copy {
-    padding: 20px 24px 32px;
-  }
-}
-
 /* 프로젝트 로드 실패(데이터 무결성) 화면 — 도그푸딩 결함 ②. cream entry language. */
 .project-load-error-message {
   background: var(--bg-raised, #FFFDF8);
@@ -520,13 +237,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 /* cream ground + hero image soft veil so JPG edges sit on warm cream */
-.db-required-panel.db-required-hero .db-required-hero-image {
-  filter: saturate(1.02) brightness(1.02);
-}
-
-.db-required-copy {
-  background: transparent;
-}
 
 /* 저장 스킵/로컬 저장 모드 배너 — 도그푸딩 결함 ⑩. */
 .persistence-mode-banner {

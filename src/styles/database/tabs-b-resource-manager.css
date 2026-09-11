@@ -84,18 +84,6 @@
   font-size: 9px;
   justify-content: center;
 }
-.resizer {
-  width: 5px;
-  cursor: col-resize;
-  background: var(--border-soft);
-  flex-shrink: 0;
-  transition: background 0.12s;
-  z-index: 5;
-}
-.resizer:hover,
-.resizer:active {
-  background: var(--accent);
-}
 body.resizing {
   cursor: col-resize;
   user-select: none;
@@ -104,11 +92,6 @@ body.resizing {
   display: flex;
   gap: 4px;
   margin-bottom: var(--space-2);
-}
-.btn.small {
-  font-size: 10px;
-  padding: 3px 6px;
-  flex: 1;
 }
 .system-shell {
   align-items: center;

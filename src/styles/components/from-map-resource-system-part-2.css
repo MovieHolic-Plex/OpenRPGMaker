@@ -1,0 +1,433 @@
+/* components 표면 — map/resource-system.part-2.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 components 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* map/resource-system.part-2.css:1-9 */
+.oprn-icon-database::before {
+  background: #d6e5f2;
+  border: 1px solid var(--accent-border);
+  box-shadow: 0 4px 0 #b8c9d8, 0 8px 0 var(--border-default);
+  height: 3px;
+  left: 2px;
+  top: 3px;
+  width: 12px;
+}
+
+/* map/resource-system.part-2.css:11-17 */
+.oprn-icon-database::after {
+  background: var(--accent);
+  height: 2px;
+  left: 4px;
+  top: 13px;
+  width: 8px;
+}
+
+/* map/resource-system.part-2.css:19-27 */
+.oprn-icon-resources::before {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  box-shadow: inset 0 0 0 2px #7bc0c8;
+  height: 11px;
+  left: 2px;
+  top: 2px;
+  width: 12px;
+}
+
+/* map/resource-system.part-2.css:29-36 */
+.oprn-icon-resources::after {
+  background: #c43a3a;
+  box-shadow: 4px 0 0 #f5d04a, 8px 0 0 #2f8a43;
+  height: 3px;
+  left: 4px;
+  top: 5px;
+  width: 3px;
+}
+
+/* map/resource-system.part-2.css:38-45 */
+.oprn-icon-play::before {
+  border-bottom: 7px solid transparent;
+  border-left: 10px solid #d87b22;
+  border-top: 7px solid transparent;
+  filter: drop-shadow(1px 1px 0 #6f3c12);
+  left: 4px;
+  top: 1px;
+}
+
+/* map/resource-system.part-2.css:47-60 */
+.oprn-icon-zoom-1::before,
+.oprn-icon-zoom-2::before,
+.oprn-icon-zoom-4::before,
+.oprn-icon-zoom-8::before {
+  color: var(--text-1);
+  content: attr(class);
+  font: 700 13px/16px var(--font-mono);
+  height: 16px;
+  left: 0;
+  overflow: hidden;
+  text-indent: -999px;
+  top: 0;
+  width: 16px;
+}
+
+/* map/resource-system.part-2.css:62-72 */
+.oprn-icon-zoom-1::after,
+.oprn-icon-zoom-2::after,
+.oprn-icon-zoom-4::after,
+.oprn-icon-zoom-8::after {
+  color: var(--text-1);
+  font: 700 13px/16px var(--font-mono);
+  height: 16px;
+  left: 1px;
+  top: 0;
+  width: 16px;
+}
+
+/* map/resource-system.part-2.css:74-76 */
+.oprn-icon-zoom-1::after {
+  content: "1";
+}
+
+/* map/resource-system.part-2.css:78-80 */
+.oprn-icon-zoom-2::after {
+  content: "2";
+}
+
+/* map/resource-system.part-2.css:82-84 */
+.oprn-icon-zoom-4::after {
+  content: "4";
+}
+
+/* map/resource-system.part-2.css:86-88 */
+.oprn-icon-zoom-8::after {
+  content: "8";
+}
+
+/* map/resource-system.part-2.css:90-97 */
+.oprn-icon-pencil::before {
+  background: #f7d77a;
+  height: 12px;
+  left: 7px;
+  top: 2px;
+  transform: rotate(45deg);
+  width: 4px;
+}
+
+/* map/resource-system.part-2.css:99-107 */
+.oprn-icon-pencil::after {
+  background: var(--text-3);
+  box-shadow: -2px -2px 0 #a13b32;
+  height: 3px;
+  left: 3px;
+  top: 11px;
+  transform: rotate(45deg);
+  width: 6px;
+}
+
+/* map/resource-system.part-2.css:109-111 */
+.oprn-icon-bucket::after {
+  box-shadow: 2px 2px 0 var(--accent-border), 5px 3px 0 var(--accent-border);
+}
+
+/* map/resource-system.part-2.css:113-121 */
+.oprn-icon-dropper::before {
+  background: var(--accent-muted);
+  border: 1px solid var(--text-3);
+  height: 11px;
+  left: 7px;
+  top: 2px;
+  transform: rotate(45deg);
+  width: 4px;
+}
+
+/* map/resource-system.part-2.css:123-129 */
+.oprn-icon-dropper::after {
+  background: var(--accent);
+  height: 3px;
+  left: 2px;
+  top: 12px;
+  width: 5px;
+}
+
+/* map/resource-system.part-2.css:131-143 */
+.oprn-icon-hand::before {
+  background: #f3c984;
+  box-shadow:
+    3px -3px 0 #f3c984,
+    6px -3px 0 #f3c984,
+    9px -1px 0 #f3c984,
+    2px 4px 0 #c88945,
+    5px 5px 0 #c88945;
+  height: 8px;
+  left: 2px;
+  top: 5px;
+  width: 10px;
+}
+
+/* map/resource-system.part-2.css:145-151 */
+.oprn-icon-hand::after {
+  border: 1px solid var(--text-3);
+  height: 10px;
+  left: 1px;
+  top: 3px;
+  width: 12px;
+}
+
+/* map/resource-system.part-2.css:153-155 */
+.oprn-icon-select::before {
+  border: 1px dashed var(--text-3);
+}
+
+/* map/resource-system.part-2.css:157-166 */
+.oprn-icon-select::after {
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid var(--border-subtle);
+  border-top: 5px solid transparent;
+  filter: drop-shadow(1px 1px 0 rgba(42, 37, 33, 0.35));
+  height: 0;
+  left: 7px;
+  top: 7px;
+  width: 0;
+}
+
+/* map/resource-system.part-2.css:168-182 */
+.oprn-icon-collision::before {
+  background: var(--danger);
+  box-shadow:
+    3px 3px 0 var(--danger),
+    6px 6px 0 var(--danger),
+    9px 9px 0 var(--danger),
+    9px 0 0 var(--danger),
+    6px 3px 0 var(--danger),
+    3px 6px 0 var(--danger),
+    0 9px 0 var(--danger);
+  height: 3px;
+  left: 2px;
+  top: 2px;
+  width: 3px;
+}
+
+/* map/resource-system.part-2.css:184-190 */
+.oprn-icon-collision::after {
+  border: 1px solid var(--text-3);
+  height: 11px;
+  left: 1px;
+  top: 1px;
+  width: 11px;
+}
+
+/* map/resource-system.part-2.css:192-200 */
+.oprn-icon-event::before {
+  background: var(--accent);
+  border: 1px solid var(--text-3);
+  height: 9px;
+  left: 4px;
+  top: 3px;
+  transform: rotate(45deg);
+  width: 9px;
+}
+
+/* map/resource-system.part-2.css:202-208 */
+.oprn-icon-event::after {
+  background: var(--bg-raised);
+  height: 3px;
+  left: 7px;
+  top: 7px;
+  width: 3px;
+}
+
+/* map/resource-system.part-2.css:210-218 */
+.oprn-icon-lower::before {
+  background: #2f8a43;
+  border: 1px solid var(--border-strong);
+  box-shadow: inset 0 0 0 2px #66b85b;
+  height: 11px;
+  left: 2px;
+  top: 3px;
+  width: 12px;
+}
+
+/* map/resource-system.part-2.css:220-226 */
+.oprn-icon-lower::after {
+  background: #1d5f2b;
+  height: 2px;
+  left: 4px;
+  top: 11px;
+  width: 8px;
+}
+
+/* map/resource-system.part-2.css:228-236 */
+.oprn-icon-upper::before {
+  background: var(--accent);
+  border: 1px solid var(--border-strong);
+  box-shadow: 3px -3px 0 var(--border-subtle), inset 0 0 0 2px var(--accent-border);
+  height: 9px;
+  left: 2px;
+  top: 6px;
+  width: 10px;
+}
+
+/* map/resource-system.part-2.css:238-244 */
+.oprn-icon-upper::after {
+  background: var(--accent);
+  height: 2px;
+  left: 5px;
+  top: 4px;
+  width: 7px;
+}
+
+/* map/resource-system.part-2.css:246-253 */
+.oprn-icon-undo::before,
+.oprn-icon-redo::before {
+  border-color: var(--text-2);
+  border-style: solid;
+  height: 8px;
+  top: 5px;
+  width: 9px;
+}
+
+/* map/resource-system.part-2.css:255-258 */
+.oprn-icon-undo::before {
+  border-width: 2px 0 0 2px;
+  left: 5px;
+}
+
+/* map/resource-system.part-2.css:260-263 */
+.oprn-icon-redo::before {
+  border-width: 2px 2px 0 0;
+  right: 5px;
+}
+
+/* map/resource-system.part-2.css:265-270 */
+.oprn-icon-undo::after,
+.oprn-icon-redo::after {
+  border-bottom: 4px solid transparent;
+  border-top: 4px solid transparent;
+  top: 2px;
+}
+
+/* map/resource-system.part-2.css:272-275 */
+.oprn-icon-undo::after {
+  border-right: 6px solid var(--text-2);
+  left: 1px;
+}
+
+/* map/resource-system.part-2.css:277-280 */
+.oprn-icon-redo::after {
+  border-left: 6px solid var(--text-2);
+  right: 1px;
+}
+
+/* map/resource-system.part-2.css:282-290 */
+.oprn-icon-copy::before,
+.oprn-icon-paste::before {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  height: 10px;
+  left: 5px;
+  top: 3px;
+  width: 8px;
+}
+
+/* map/resource-system.part-2.css:292-299 */
+.oprn-icon-copy::after {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-strong);
+  height: 10px;
+  left: 2px;
+  top: 6px;
+  width: 8px;
+}
+
+/* map/resource-system.part-2.css:301-309 */
+.oprn-icon-paste::after {
+  background: #875b2d;
+  border: 1px solid var(--border-strong);
+  box-shadow: inset 0 2px 0 #c58e48;
+  height: 4px;
+  left: 4px;
+  top: 1px;
+  width: 8px;
+}
+
+/* map/resource-system.part-2.css:311-319 */
+.oprn-icon-panel-left::before,
+.oprn-icon-panel-right::before {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  height: 11px;
+  left: 2px;
+  top: 3px;
+  width: 12px;
+}
+
+/* map/resource-system.part-2.css:321-327 */
+.oprn-icon-panel-left::after,
+.oprn-icon-panel-right::after {
+  background: var(--accent);
+  height: 9px;
+  top: 5px;
+  width: 4px;
+}
+
+/* map/resource-system.part-2.css:329-331 */
+.oprn-icon-panel-left::after {
+  left: 3px;
+}
+
+/* map/resource-system.part-2.css:333-335 */
+.oprn-icon-panel-right::after {
+  right: 3px;
+}
+
+/* map/resource-system.part-2.css:337-345 */
+.oprn-icon-play-window::before {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  box-shadow: inset 0 2px 0 var(--accent-border);
+  height: 12px;
+  left: 1px;
+  top: 2px;
+  width: 14px;
+}
+
+/* map/resource-system.part-2.css:347-353 */
+.oprn-icon-play-window::after {
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid #d87b22;
+  border-top: 4px solid transparent;
+  left: 6px;
+  top: 6px;
+}
+
+/* map/resource-system.part-2.css:355-363 */
+.oprn-icon-folder::before {
+  background: #d8b35e;
+  border: 1px solid var(--border-default);
+  box-shadow: inset 0 2px 0 #f0d48c;
+  height: 10px;
+  left: 2px;
+  top: 5px;
+  width: 12px;
+}
+
+/* map/resource-system.part-2.css:365-373 */
+.oprn-icon-folder::after {
+  background: #c79840;
+  border: 1px solid var(--border-default);
+  border-bottom: 0;
+  height: 4px;
+  left: 3px;
+  top: 2px;
+  width: 6px;
+}
+
+/* map/resource-system.part-2.css:375-382 */
+.oprn-icon-map-child::before {
+  background: #d8b35e;
+  border: 1px solid var(--border-default);
+  height: 9px;
+  left: 1px;
+  top: 5px;
+  width: 10px;
+}

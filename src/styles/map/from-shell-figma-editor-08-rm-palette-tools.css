@@ -1,0 +1,132 @@
+/* map 표면 — shell/figma-editor/08-rm-palette-tools.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 map 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* shell/figma-editor/08-rm-palette-tools.css:26-29 */
+.left-panel-stack[data-testid="left-palette-root"] .palette-stamp-status {
+    display: none;
+  }
+
+/* shell/figma-editor/08-rm-palette-tools.css:31-37 */
+.left-panel-stack[data-testid="left-palette-root"] .palette-option-row {
+    display: grid;
+    gap: 4px;
+    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+    margin: 0 0 8px;
+    max-width: 508px;
+  }
+
+/* shell/figma-editor/08-rm-palette-tools.css:352-358 */
+.left-panel-stack[data-testid="left-palette-root"] .palette-option-button,
+  .left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel .stamp-button {
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    height: 32px;
+  }
+
+/* shell/figma-editor/08-rm-palette-tools.css:360-368 */
+.left-panel-stack[data-testid="left-palette-root"] .palette-option-button:not(.active):not([aria-pressed="true"]),
+  .left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel .stamp-button:not(.active):not([aria-pressed="true"]),
+  .left-panel-stack[data-testid="left-palette-root"] .brush-size-btn:not(.active),
+  .left-panel-stack[data-testid="left-palette-root"] .tile-inspector-action:not(.active),
+  .left-panel-stack[data-testid="left-palette-root"] .chipset-band-more {
+    background: var(--control-bg);
+    border-color: var(--editor-line);
+    color: var(--editor-text);
+  }
+
+/* shell/figma-editor/08-rm-palette-tools.css:370-377 */
+.left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel {
+    align-items: center;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: minmax(0, 1fr);
+    margin: 0 0 8px;
+    max-width: 100%;
+  }
+
+/* shell/figma-editor/08-rm-palette-tools.css:379-385 */
+.left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel .stamp-picker {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    white-space: nowrap;
+  }
+
+/* shell/figma-editor/08-rm-palette-tools.css:387-389 */
+.left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel .tile-brush-label {
+    display: none;
+  }
+
+/* shell/figma-editor/08-rm-palette-tools.css:391-397 */
+.left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel .stamp-button {
+    flex: 0 0 auto;
+    height: 30px;
+    min-width: 74px;
+    padding: 0 12px;
+    width: auto;
+  }
+
+/* shell/figma-editor/08-rm-palette-tools.css:399-401 */
+.left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel .stamp-button:disabled {
+    display: none;
+  }
+
+/* shell/figma-editor/08-rm-palette-tools.css:403-412 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-band-nav {
+    align-items: end;
+    border-bottom: 1px solid var(--editor-line);
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(7, 48px) 32px;
+    margin: 6px 0 8px;
+    padding: 24px 0 10px;
+    position: relative;
+  }
+
+/* shell/figma-editor/08-rm-palette-tools.css:414-423 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-band-nav::before {
+    color: var(--editor-text);
+    content: "선택 타일";
+    font-size: 14px;
+    font-weight: 800;
+    left: 0;
+    line-height: 1.2;
+    position: absolute;
+    top: 0;
+  }
+
+/* shell/figma-editor/08-rm-palette-tools.css:425-434 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-band-button {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 48px 48px;
+    border-radius: 5px;
+    flex: 0 0 48px;
+    height: 48px;
+    padding: 0;
+    width: 48px;
+  }
+
+/* shell/figma-editor/08-rm-palette-tools.css:436-446 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-band-more {
+    align-items: center;
+    border-radius: 6px;
+    color: var(--editor-text);
+    display: inline-flex;
+    font-size: 20px;
+    height: 32px;
+    justify-content: center;
+    padding: 0;
+    width: 32px;
+  }
+
+/* shell/figma-editor/08-rm-palette-tools.css:448-452 */
+.left-panel-stack[data-testid="left-palette-root"] .tile-palette-title {
+    display: block;
+    font-size: 15px;
+    margin: 0 0 6px;
+  }

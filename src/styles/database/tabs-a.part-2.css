@@ -412,12 +412,3 @@
 }
 
 /* ?? ?덉씠????됲꽣 ?? */
-.layer-row {
-  display: flex;
-  gap: 3px;
-}
-.layer-btn {
-  flex: 1;
-  font-size: 11px;
-  padding: 6px 2px;
-}

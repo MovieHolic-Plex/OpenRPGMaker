@@ -52,11 +52,7 @@
     margin: 0 6px;
   }
 
-  .oprn-tool-button,
-  .tool-grid .btn,
-  .layer-btn,
-  .brush-size-btn,
-  .tool-command-row .icon-btn {
+  .oprn-tool-button {
     background: var(--control-bg);
     border: 1px solid var(--editor-line);
     border-radius: 6px;
@@ -76,9 +72,7 @@
   }
 
   .oprn-tool-button:hover:not(:disabled),
-  .oprn-tool-button:focus-visible,
-  .tool-grid .btn:hover:not(:disabled),
-  .tool-grid .btn:focus-visible {
+  .oprn-tool-button:focus-visible {
     background: var(--control-bg-hover);
     border-color: var(--editor-line-strong);
     outline: none;
@@ -86,13 +80,7 @@
 
   .oprn-tool-button.active,
   .oprn-tool-button[aria-pressed="true"],
-  .oprn-tool-button.primary,
-  .tool-grid .btn.active,
-  .tool-grid .btn[aria-pressed="true"],
-  .layer-btn.active,
-  .layer-btn[aria-pressed="true"],
-  .brush-size-btn.active,
-  .brush-size-btn[aria-pressed="true"] {
+  .oprn-tool-button.primary {
     background: var(--accent);
     border-color: var(--accent-border);
     color: var(--on-accent);

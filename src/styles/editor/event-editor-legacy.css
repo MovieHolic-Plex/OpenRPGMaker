@@ -1,3 +1,7 @@
 /* Split wrapper: preserves event-editor-legacy.css cascade order. */
 @import "./event-editor-legacy.part-1.css";
+/* editor/event-editor-legacy.part-1.css 에서 옮겨 온 database 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../database/from-editor-event-editor-legacy-part-1.css";
 @import "./event-editor-legacy.part-2.css";
+/* editor/event-editor-legacy.part-2.css 에서 옮겨 온 database 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "../database/from-editor-event-editor-legacy-part-2.css";

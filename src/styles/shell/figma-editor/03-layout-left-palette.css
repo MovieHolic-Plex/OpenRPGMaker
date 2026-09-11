@@ -70,38 +70,6 @@
     padding-bottom: 0;
   }
 
-  .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane {
-    flex: 1 1 auto;
-    min-height: 0;
-    min-width: 0;
-    /* 가로 스크롤 금지 — 자식이 넘치면 줄바꿈/클립, 시트만 세로 스크롤 */
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint .panel-section {
-    flex: 0 0 auto;
-    margin-bottom: 8px;
-    max-width: 100%;
-    min-width: 0;
-  }
-
-  .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint .chipset-sheet.tile-palette,
-  .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint [data-testid="tile-palette-clusters"] {
-    flex: 1 1 auto;
-    min-height: 0;
-    min-width: 0;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    width: 100%;
-  }
-
   .panel-section {
     margin-bottom: 14px;
   }
@@ -131,8 +99,7 @@
 
   .left-panel-stack select,
   .left-panel-stack input,
-  .left-panel-stack textarea,
-  .tile-search-input {
+  .left-panel-stack textarea {
     appearance: none;
     background: var(--bg-inset);
     border: 1px solid var(--editor-line-strong);
@@ -170,12 +137,6 @@
     justify-content: center;
   }
 
-  .palette-option-row {
-    gap: 2px;
-    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
-    margin-bottom: 8px;
-  }
-
   .palette-option-button,
   .chipset-band-button,
   .stamp-button,
@@ -186,53 +147,5 @@
     color: var(--editor-text);
     font-size: 15px;
     height: 30px;
-  }
-
-  .palette-option-button.active,
-  .palette-option-button[aria-pressed="true"],
-  .chipset-band-button.active,
-  .chipset-band-button[aria-pressed="true"],
-  .stamp-button.active,
-  .stamp-button[aria-pressed="true"] {
-    background: var(--accent);
-    border-color: var(--accent-border);
-    color: var(--on-accent);
-  }
-
-  .tile-brush-row,
-  .tile-brush-neighborhood {
-    gap: 8px;
-    grid-template-columns: 72px minmax(0, 1fr);
-  }
-
-  .structure-stamp-panel {
-    display: block;
-    margin: 8px 0 10px;
-  }
-
-  .structure-stamp-panel .tile-brush-label,
-  .tile-brush-assist,
-  .quick-tile-picker {
-    display: none;
-  }
-
-  .structure-stamp-panel .stamp-picker {
-    display: grid;
-    gap: 8px;
-    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
-  }
-
-  .structure-stamp-panel .stamp-button {
-    min-width: 0;
-    width: 100%;
-  }
-
-  .chipset-band-nav {
-    gap: 2px;
-    margin-bottom: 10px;
-  }
-
-  .chipset-band-button {
-    height: 34px;
   }
 

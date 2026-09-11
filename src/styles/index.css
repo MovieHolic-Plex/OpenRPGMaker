@@ -5,8 +5,14 @@
 @import "./runtime/system.css";
 @import "./editor/core.css";
 @import "./editor/palette-player.css";
+/* editor/palette-player.css 에서 옮겨 온 components 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./components/from-editor-palette-player.css";
+/* editor/palette-player.css 에서 옮겨 온 event 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./event/from-editor-palette-player.css";
 @import "./editor/tile-palette-clusters.css";
 @import "./editor/harness-suggestion.css";
+/* editor/harness-suggestion.css 에서 옮겨 온 database 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./database/from-editor-harness-suggestion.css";
 @import "./editor/event-editor-legacy.css";
 @import "./database/core.css";
 @import "./database/tabs-a.css";
@@ -22,6 +28,10 @@
 @import "./shell/shell-density.css";
 @import "./shell/editor-welcome.css";
 @import "./editor/responsive-a.css";
+/* editor/responsive-a.css 에서 옮겨 온 database 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./database/from-editor-responsive-a.css";
+/* editor/responsive-a.css 에서 옮겨 온 shell 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./shell/from-editor-responsive-a.css";
 @import "./editor/inline-assist.css";
 @import "./editor/ghost-phase-chip.css";
 @import "./editor/delayed-tooltip.css";
@@ -48,6 +58,8 @@
 @import "./database/play-resolution.css";
 @import "./database/system-font-section.css";
 @import "./database/system-studio.css";
+/* database/system-studio.css 에서 옮겨 온 runtime 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./runtime/from-database-system-studio.css";
 @import "./database/world-gen.css";
 @import "./database/scratch-concept.css";
 @import "./database/studio-theme.css";
@@ -65,6 +77,8 @@
 @import "./database/modern/spatial-collections.css";
 @import "./database/modern/troops.css";
 @import "./database/modern/utility-records.css";
+/* database/modern/utility-records.css 에서 옮겨 온 runtime 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./runtime/from-database-modern-utility-records.css";
 @import "./database/modern/weather-animals.css";
 /* Database Studio v2 — 30탭 공용 셸·레일·목록·폼 문법. 탭별 정제 층(modern/*) 뒤에 와야
    두 세대(.oprn-record-* / .db-ws-*)를 같은 규칙으로 덮는다. !important 없음 — 앞선 층의
@@ -78,18 +92,30 @@
 @import "./database/ai-bar.css";
 @import "./database/character-appearances.css";
 @import "./resources/resource-manager.css";
+/* resources/resource-manager.css 에서 옮겨 온 components 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./components/from-resources-resource-manager.css";
 @import "./editor/event-editor.css";
 @import "./editor/event-editor-rich-forms.css";
 @import "./editor/event-editor-ai.css";
 @import "./shell/figma-editor.css";
 /* Basic/expert density after figma shell so icon-rail overflow/padding wins the cascade. */
 @import "./shell/editor-ui-modes.css";
+/* shell/editor-ui-modes.css 에서 옮겨 온 map 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./map/from-shell-editor-ui-modes.css";
 /* 스튜디오 바(톱바 한 줄·메뉴 팝업·보기 메뉴·캔버스 툴바)의 마지막 발언자 — 2026-09-03. */
 @import "./shell/studio-bar.modern.css";
+/* shell/studio-bar.modern.css 에서 옮겨 온 map 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./map/from-shell-studio-bar-modern.css";
 @import "./editor/world-panel.css";
+/* editor/world-panel.css 에서 옮겨 온 database 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./database/from-editor-world-panel.css";
 @import "./editor/cluster-ai-modal.css";
 @import "./editor/map-history.css";
 @import "./editor/map-props.css";
+/* editor/map-props.css 에서 옮겨 온 database 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./database/from-editor-map-props.css";
+/* editor/map-props.css 에서 옮겨 온 event 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./event/from-editor-map-props.css";
 @import "./editor/map-panel.modern.css";
 /* 좌측 사이드바(타일·맵 도크) 크롬의 마지막 발언자 — 맵 패널 행 규칙 뒤에 와야 한다. */
 @import "./editor/left-sidebar.modern.css";
@@ -101,6 +127,8 @@
 @import "./editor/map-event-search.css";
 @import "./editor/event-marker-tooltip.css";
 @import "./editor/audio-test-dialog.css";
+/* editor/audio-test-dialog.css 에서 옮겨 온 database 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./database/from-editor-audio-test-dialog.css";
 @import "./editor/help-modal.css";
 @import "./editor/storyboard.css";
 @import "./editor/event-editor-help.css";
@@ -109,6 +137,8 @@
 /* 마지막 @import — 그 뒤는 실제 규칙이다. AI 인증 패널 규칙을 여기(가장 늦게) 두면
    database/tabs-b.css 경유로 먼저 들어온 옛 규칙을 !important 없이 이긴다. */
 @import "./editor/ai-settings-modal.css";
+/* editor/ai-settings-modal.css 에서 옮겨 온 database 표면 규칙 — 원본 바로 다음(위치 보존). */
+@import "./database/from-editor-ai-settings-modal.css";
 /* 표면 경계 예외(@layer overrides). 오늘은 비어 있다. Task 7 이 레이어 진입 시트 뒤로 옮긴다. */
 @import "./overrides.css";
 
