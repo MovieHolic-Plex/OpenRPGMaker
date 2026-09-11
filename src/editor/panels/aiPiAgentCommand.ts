@@ -9,7 +9,6 @@
 // 이 파일은 패널의 나머지와 최소 접점(말풍선·상태 표시·로그 붙이기)만 공유한다 — 기존 세션 루프는 건드리지 않는다.
 
 import { runPiAgentViaCompanion } from "@/ai/piAgent/client";
-import { startPiRunLog, type PiRunContext, type PiRunFacts } from "@/ai/piAgent/activityLog";
 import { mergeMapBundles } from "@/ai/piAgent/mapBundle";
 import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentMode } from "@/ai/piAgent/protocol";
 import {
@@ -88,22 +87,6 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
   const provider = config.providerId ?? "google-antigravity";
   const team = command.mode === "team";
   const groups = team ? [command.mapIds] : command.mapIds.length > 0 ? command.mapIds.map((id) => [id]) : [[] as string[]];
-  // 이 실행 하나가 활동 로그 행 하나다. 시작은 pending, 끝은 같은 id 로 upsert —
-  // 죽은 실행도 "무슨 지시였고 언제 시작했는지" 가 남는다(세션 턴과 같은 관례).
-  const logContext: PiRunContext = {
-    instruction: command.task,
-    mode: command.mode,
-    mapIds: command.mapIds,
-    mapId: command.mapIds[0] ?? surface.getCurrentMapId(),
-    mapName: command.mapIds[0] ? base.maps[command.mapIds[0]]?.name ?? null : null,
-    provider,
-    model: config.model,
-  };
-  const runLog = startPiRunLog(logContext);
-  // boardState 는 push 마다 새 객체로 갈아 끼워지므로 호출 시점의 것을 싣는다.
-  const finishLog = (facts: Omit<PiRunFacts, "board">): void => {
-    void runLog.finish({ ...facts, board: boardState });
-  };
 
   let boardState: TeamBoardState = createTeamBoardState(command.mode, command.task);
   const board = createTeamBoard(boardState);
@@ -142,21 +125,18 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
   } catch (error) {
     if (surface.signal?.aborted) {
       boardState = markTeamBoardAborted(boardState); sync();
-      finishLog({ applied: false, changedCount: 0, stoppedReason: "중단" });
       surface.setStatus("대기");
       surface.appendBubble("system", "Pi 에이전트를 중단했습니다. 적용된 변경은 없습니다.");
       return false;
     }
     const message = error instanceof Error ? error.message : String(error);
     boardState = markTeamBoardFailed(boardState, message); sync();
-    finishLog({ applied: false, changedCount: 0, error: message });
     surface.setStatus("Pi 에이전트 실패");
     surface.appendBubble("system", `Pi 에이전트 실패: ${message}`);
     return false;
   }
   if (surface.signal?.aborted) {
     boardState = markTeamBoardAborted(boardState); sync();
-    finishLog({ applied: false, changedCount: 0, stoppedReason: "중단" });
     surface.setStatus("대기");
     surface.appendBubble("system", "Pi 에이전트를 중단했습니다. 적용된 변경은 없습니다.");
     return false;
@@ -176,7 +156,6 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
   const changedCount = changedProjectKeys(base, merged.project).length;
   if (changedCount === 0) {
     boardState = markTeamBoardApplied(boardState, "바뀐 것이 없습니다."); sync();
-    finishLog({ applied: false, changedCount: 0, stoppedReason: "변경 없음" });
     surface.setStatus("대기");
     surface.appendBubble("system", "Pi 에이전트가 끝났지만 프로젝트에 바뀐 것이 없습니다.");
     return true;
@@ -195,16 +174,13 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
     reason: `Pi ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회`,
   });
     if (!applied.ok) {
-      const reason = `적용 실패(${applied.reason}): ${applied.issue ?? "무결성 오류"}`;
-      boardState = markTeamBoardFailed(boardState, reason); sync();
-      finishLog({ applied: false, changedCount, error: reason });
+      boardState = markTeamBoardFailed(boardState, `적용 실패(${applied.reason}): ${applied.issue ?? "무결성 오류"}`); sync();
       surface.setStatus("적용 실패");
-      surface.appendBubble("system", reason);
+      surface.appendBubble("system", `적용 실패(${applied.reason}): ${applied.issue ?? "무결성 오류"}`);
       return false;
     }
     const appliedText = `적용했습니다 — ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개.`;
     boardState = markTeamBoardApplied(boardState, appliedText); sync();
-    finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
     surface.setStatus(team ? "Pi 팀 적용 완료" : "Pi 에이전트 적용 완료");
     surface.appendBubble("system", appliedText);
     return true;
@@ -213,17 +189,16 @@ export async function runPiCommand(command: ParsedPiCommand, surface: PiCommandS
   // 기준(base)이 그 사이 바뀌면 applyProposedProject 가 stale-base 로 거절한다.
   if ((config.piApply ?? "review") === "auto") return apply();
   boardState = markTeamBoardReview(boardState, changePreviewChips(changed)); sync();
-  finishLog({ applied: false, changedCount, stoppedReason: "검토 대기" });
   board.setReview({
     onApply: () => { board.setReview(null); void apply(); },
     onDiscard: () => {
       board.setReview(null);
       boardState = markTeamBoardDiscarded(boardState); sync();
-      finishLog({ applied: false, changedCount, stoppedReason: "버림" });
       surface.setStatus("대기");
       surface.appendBubble("system", "Pi 결과를 버렸습니다. 프로젝트는 그대로입니다.");
     },
   });
+  surface.setStatus("검토 대기 — 보드에서 적용 또는 버리기");
   return true;
 }
 

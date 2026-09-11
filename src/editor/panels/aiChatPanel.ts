@@ -52,7 +52,7 @@ import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai
 import { store } from "@/project/store";
 import { parsePiCommand, runPiCommand } from "./aiPiAgentCommand";
 import { createTeamPanel } from "./aiTeamPanel";
-import { DEFAULT_EXECUTION_ROUTE, DEFAULT_PI_TEAM, EXECUTION_ROUTE_LABEL, resolveExecutionRoute } from "@/ai/piAgent/executionRoute";
+import { DEFAULT_EXECUTION_ROUTE, EXECUTION_ROUTE_LABEL, resolveExecutionRoute } from "@/ai/piAgent/executionRoute";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
@@ -534,10 +534,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       controller.session?.updateConfig(config);
       composerShell.setModelLabel(modelChipLabel());
       composerShell.syncEffort(isAutonomyLevel(config.autonomyLevel) ? config.autonomyLevel : "balanced");
-      // 경로·팀은 컴포저와 설정이 함께 쓰는 값이다. 설정에서 바꾼 것을 컴포저가 계속 옛 값으로
-      // 보여 주면 화면이 거짓말을 한다 — 다음 전송은 저장값을 읽기 때문이다.
-      composerShell.setRoute(config.executionRoute ?? DEFAULT_EXECUTION_ROUTE);
-      composerShell.setPiTeam(config.piTeam ?? DEFAULT_PI_TEAM);
     },
     extraSections: settingsExtraSections,
   }));
@@ -1844,22 +1840,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncInputHeight();
     refreshSendEnabled();
     // 실행 경로: 컴포저 셀렉트(설정과 같은 값)가 기본을 정하고, 질문·계획·선택 영역은 기존 조수로 간다.
-    // `/pi …` 는 언제나 명시적 Pi 경로다. 팀은 경로가 아니라 그 Pi 의 실행 모드 — 설정의 비트
-    // (`piTeam`)가 평문을 팀으로 돌리고, 명시 `/pi team …` 이 그 위에 선다(파서가 최종 권위).
-    const sendConfig = loadAiConfig();
+    // `/pi …` 는 언제나 명시적 Pi 경로다.
     const decision = resolveExecutionRoute({
       text,
       // The composer no longer carries mode chips (#731); the autonomy dial derives it.
       composerMode: derivedComposerMode(),
-      preferred: sendConfig.executionRoute ?? DEFAULT_EXECUTION_ROUTE,
+      preferred: loadAiConfig().executionRoute ?? DEFAULT_EXECUTION_ROUTE,
       selectionTaskActive: Boolean(selectionTaskActive && currentSelectionForRegionTask()),
     });
-    const team = sendConfig.piTeam ?? DEFAULT_PI_TEAM;
     const explicit = parsePiCommand(text, store.getCurrent(), editorState.get().currentMapId ?? null);
     const piCommand = explicit
       ?? (decision.route === "session"
         ? null
-        : parsePiCommand(`/pi ${team ? "team " : ""}${text}`, store.getCurrent(), editorState.get().currentMapId ?? null));
+        : parsePiCommand(`/pi ${decision.route === "pi-team" ? "team " : ""}${text}`, store.getCurrent(), editorState.get().currentMapId ?? null));
     if (piCommand) {
       if (turnBusy) {
         toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
@@ -2554,14 +2547,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     isInside: (target) => (deckRoot ?? composerShell.commandBar).contains(target),
     routeChips: {
       initial: loadAiConfig().executionRoute ?? DEFAULT_EXECUTION_ROUTE,
-      initialTeam: loadAiConfig().piTeam ?? DEFAULT_PI_TEAM,
       onChange: (route) => {
         saveAiConfig({ ...loadAiConfig(), executionRoute: route });
         setStatus(`지시 경로: ${EXECUTION_ROUTE_LABEL[route]}`);
-      },
-      onTeamChange: (team) => {
-        saveAiConfig({ ...loadAiConfig(), piTeam: team });
-        setStatus(team ? "Pi 팀으로 실행합니다 — 팀장이 맵을 나눠 배정하고 검수합니다." : "Pi 에이전트 하나로 실행합니다.");
       },
     },
     effortChips: {

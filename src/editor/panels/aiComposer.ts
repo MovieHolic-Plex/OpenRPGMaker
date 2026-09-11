@@ -76,10 +76,7 @@ export interface ComposerElements {
   readonly autonomySelect: HTMLSelectElement | null;
   /** 실행 경로 셀렉트. `routeChips` 를 주지 않았으면 null. */
   readonly routeSelect: HTMLSelectElement | null;
-  /** 팀 토글. `routeChips` 를 주지 않았으면 null. 경로가 Pi 일 때만 보인다. */
-  readonly teamToggle: HTMLElement | null;
   readonly setRoute: (route: ExecutionRoute) => void;
-  readonly setPiTeam: (team: boolean) => void;
   readonly syncEffort: (autonomy: AutonomyLevel) => void;
   readonly setModelLabel: (label: string | null) => void;
   readonly openPopover: (kind: ComposerPopover | null) => void;
@@ -143,12 +140,10 @@ export interface ComposerOptions {
   };
   /** 모델 칩 초기 라벨. null/미지정이면 숨긴 채 만든다(표준 이상 모드에서 패널이 채운다). */
   readonly modelLabel?: string | null;
-  /** 실행 경로 셀렉트(조수 / Pi 에이전트)와 팀 토글. 저장은 호출자가 맡는다. */
+  /** 실행 경로 셀렉트(조수 / Pi 에이전트 / Pi 팀). 저장은 호출자가 맡는다. */
   readonly routeChips?: {
     readonly initial: ExecutionRoute;
-    readonly initialTeam: boolean;
     readonly onChange: (route: ExecutionRoute) => void;
-    readonly onTeamChange: (team: boolean) => void;
   };
 }
 
@@ -308,11 +303,8 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   }
   paintEffort();
 
-  // ── 실행 경로 · 팀 ── 지시가 기존 조수 / Pi 에이전트 중 어디로 가는가, 그리고 그 Pi 를 팀으로
-  // 돌릴지. 팀은 경로가 아니다(2026-09-11): «어느 루프인가» 와 «그 루프를 몇 명이 도는가» 는 다른
-  // 축이고, 한 비트를 경로 enum 으로 한 번 더 인코딩하면 라우트→문자열→파서 왕복이 생긴다.
+  // ── 실행 경로 셀렉트 ── 지시가 기존 조수 / Pi 에이전트 / Pi 팀 중 어디로 가는가.
   let route: ExecutionRoute = options.routeChips?.initial ?? "pi-agent";
-  let piTeam = options.routeChips?.initialTeam ?? false;
   const routeSelect = options.routeChips
     ? el("select", {
       class: "ai-composer-effort-select ai-composer-route-select",
@@ -321,49 +313,19 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       children: EXECUTION_ROUTES.map((key) => el("option", { attrs: { value: key }, text: EXECUTION_ROUTE_LABEL[key] })),
     }) as HTMLSelectElement
     : null;
-  const teamToggle = options.routeChips
-    ? el("label", {
-      class: "ai-composer-team-toggle",
-      attrs: { title: "Pi 팀 — 팀장이 맵을 나눠 시공·검수 에이전트를 띄운다. 느리지만 검수와 수정 배정이 붙는다" },
-      dataset: { testid: "ai-composer-team" },
-      children: [
-        el("input", { attrs: { type: "checkbox" }, dataset: { testid: "ai-composer-team-input" } }) as HTMLInputElement,
-        el("span", { text: "팀" }),
-      ],
-    })
-    : null;
-  const teamInput = teamToggle ? teamToggle.querySelector("input") : null;
-  // 두 컨트롤은 서로를 알아야 한다 — 팀은 Pi 경로에서만 보이고, 값은 둘 다 호출자가 저장한다.
-  const paintRouteControls = (): void => {
-    if (routeSelect) routeSelect.value = route;
-    if (teamInput) teamInput.checked = piTeam;
-    if (teamToggle) teamToggle.hidden = route !== "pi-agent";
+  const setRoute = (next: ExecutionRoute): void => {
+    route = next;
+    if (routeSelect) routeSelect.value = next;
   };
   if (routeSelect) {
+    routeSelect.value = route;
     routeSelect.addEventListener("change", () => {
       const next = routeSelect.value;
-      if (!isExecutionRoute(next)) { paintRouteControls(); return; }
+      if (!isExecutionRoute(next)) { routeSelect.value = route; return; }
       route = next;
-      paintRouteControls();
       options.routeChips?.onChange(next);
     });
   }
-  if (teamInput) {
-    teamInput.addEventListener("change", () => {
-      piTeam = teamInput.checked;
-      paintRouteControls();
-      options.routeChips?.onTeamChange(piTeam);
-    });
-  }
-  const setRoute = (next: ExecutionRoute): void => {
-    route = next;
-    paintRouteControls();
-  };
-  const setPiTeam = (next: boolean): void => {
-    piTeam = next;
-    paintRouteControls();
-  };
-  paintRouteControls();
 
   // ── 모델 칩 ──
   const modelChip = el("span", { class: "ai-composer-model", dataset: { testid: "ai-composer-model" } });
@@ -383,7 +345,6 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
         class: "ai-composer-actions-lead",
         children: [
           ...(routeSelect ? [routeSelect] : []),
-          ...(teamToggle ? [teamToggle] : []),
           ...(autonomySelect ? [autonomySelect] : []),
           options.undoAppliedButton,
           options.contextChips,
@@ -538,9 +499,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     planningPopover,
     autonomySelect,
     routeSelect,
-    teamToggle,
     setRoute,
-    setPiTeam,
     syncEffort,
     setModelLabel,
     openPopover,

@@ -1,14 +1,20 @@
-// 패널 배선: 자율성 다이얼 하나가 세션 sendUserMessage 옵션(composerMode)을 유도한다.
+// 패널 배선: 자율성 다이얼 하나가 Pi 실행 옵션(쓰기 금지·계획만·턴 상한·추론)을 유도한다.
 // 예전의 모드 3칩(지시/질문/계획)은 없다 — 「질문」은 다이얼 readonly, 「계획」은 confirm(planOnly).
+// 여기서는 `runPiCommand` 를 가로채 **패널이 넘기는 값**만 본다(명령 내부는 piAgentCommandLoop 테스트가 본다).
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { clearConversations } from "@/ai/conversationStore";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { runPiCommand } from "@/editor/panels/aiPiAgentCommand";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+
+vi.mock("@/editor/panels/aiPiAgentCommand", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/editor/panels/aiPiAgentCommand")>()),
+  runPiCommand: vi.fn(async () => true),
+}));
 
 let restoreDom: (() => void) | null = null;
 
@@ -26,7 +32,7 @@ function installFakeLocalStorage(): void {
   });
 }
 
-/** 다이얼을 고른다 — 패널이 저장·세션 반영까지 하는 실제 경로를 그대로 탄다. */
+/** 다이얼을 고른다 — 패널이 저장까지 하는 실제 경로를 그대로 탄다. */
 function selectAutonomy(panel: FakeElement, level: string): void {
   const dial = findByTestId(panel, "ai-composer-autonomy");
   if (!dial) throw new Error("ai-composer-autonomy missing");
@@ -34,9 +40,20 @@ function selectAutonomy(panel: FakeElement, level: string): void {
   dial.dispatchEvent(new Event("change"));
 }
 
+async function send(panel: FakeElement, text: string): Promise<void> {
+  const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+  input.value = text;
+  findByTestId(panel, "ai-send")?.click();
+  await vi.waitFor(() => expect(runPiCommand).toHaveBeenCalled(), { timeout: 2_000, interval: 5 });
+}
+
+const lastOptions = () => vi.mocked(runPiCommand).mock.calls.at(-1)?.[2];
+const lastCommand = () => vi.mocked(runPiCommand).mock.calls.at(-1)?.[0];
+
 beforeEach(() => {
   vi.stubEnv("VITE_LLM_API_URL", "");
   vi.stubEnv("VITE_LLM_API_KEY", "");
+  vi.mocked(runPiCommand).mockClear();
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
@@ -54,7 +71,7 @@ afterEach(async () => {
   vi.unstubAllEnvs();
 });
 
-describe("자율성 다이얼 → 세션 composerMode", () => {
+describe("자율성 다이얼 → Pi 실행 계획", () => {
   it("모드 3칩은 더 이상 존재하지 않는다", () => {
     // Break: 칩이 남아 있으면 같은 노브를 두 컨트롤이 만지고, 둘이 어긋날 때 어느 쪽이
     // 이기는지 사용자가 알 수 없다.
@@ -71,88 +88,68 @@ describe("자율성 다이얼 → 세션 composerMode", () => {
     expect(findByTestId(panel, "ai-composer-reasoning")).toBeNull();
   });
 
-  it("읽기 전용 레벨은 composerMode:\"ask\" 로 실린다", async () => {
-    // Break: 유도가 없으면 세션은 쓰기 툴을 노출한다 — 사용자가 읽기 전용을 골랐는데도
-    // 프로젝트가 바뀔 수 있다. ask 레일(스키마 미노출·호출 거부·초안 불변)의 유일한 수동 트리거다.
-    const spy = vi
-      .spyOn(AssistantSession.prototype, "sendUserMessage")
-      .mockResolvedValue({ assistantText: "", proposedCalls: [], stoppedReason: "final" });
+  it("읽기 전용 레벨은 쓰기 없는 Pi 실행으로 실린다", async () => {
+    // Break: readOnly 가 안 실리면 쓰기 툴이 붙어 사용자가 고른 읽기 전용이 무시된다.
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
-
     selectAutonomy(panel, "readonly");
-    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
-    input.value = "이 맵 크기가 얼마야?";
-    findByTestId(panel, "ai-send")?.click();
+    await send(panel, "이 맵 크기가 얼마야?");
 
-    await vi.waitFor(() => expect(spy).toHaveBeenCalled(), { timeout: 2_000, interval: 5 });
-    expect(spy.mock.calls[0]?.[3]?.composerMode).toBe("ask");
+    expect(lastCommand()?.task).toBe("이 맵 크기가 얼마야?");
+    expect(lastOptions()).toMatchObject({ readOnly: true, planOnly: false, maxTurns: 4, thinkingLevel: "low" });
   });
 
-  it.each(["confirm", "balanced", "autonomous", "max"] as const)(
-    "쓰기 레벨 %s 은 composerMode:\"do\" 로 실린다",
-    async (level) => {
-      // Break: 쓰기 레벨이 ask 로 유도되면 조수가 아무것도 만들지 못한다.
-      const spy = vi
-        .spyOn(AssistantSession.prototype, "sendUserMessage")
-        .mockResolvedValue({ assistantText: "", proposedCalls: [], stoppedReason: "final" });
-      const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+  it("확인 레벨은 계획만 세우는 실행이다", async () => {
+    // Break: 계획 턴에 쓰기가 열려 있으면 "실행 전에 확인" 약속이 깨진다.
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    selectAutonomy(panel, "confirm");
+    await send(panel, "타이틀을 두 단계로");
 
-      selectAutonomy(panel, level);
-      const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
-      input.value = "타이틀 바꿔줘";
-      findByTestId(panel, "ai-send")?.click();
+    expect(lastOptions()).toMatchObject({ readOnly: true, planOnly: true, maxTurns: 6 });
+  });
 
-      await vi.waitFor(() => expect(spy).toHaveBeenCalled(), { timeout: 2_000, interval: 5 });
-      expect(spy.mock.calls[0]?.[3]?.composerMode).toBe("do");
-    },
-  );
-
-  it("확인(planOnly) 레벨은 자율 예산 없이 계획 체크리스트를 그린다", async () => {
-    // Break: 체크리스트가 자율 런(agentMode auto)에서만 열리면 확인 레벨의 계획 카드가
-    // 아예 안 보인다(예전 계획 칩 e2e 실측).
-    const plan = {
-      goal: "타이틀 2단계",
-      createdAt: new Date().toISOString(),
-      currentItemId: "i1",
-      layers: [{ id: "l1", title: "타이틀", items: [
-        { id: "i1", title: "1차", instruction: "set_title_screen", status: "pending" },
-        { id: "i2", title: "2차", instruction: "set_title_screen", status: "pending" },
-      ] }],
-    };
-    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockImplementation(async (_text, onEvent) => {
-      onEvent?.({ type: "work_plan", plan } as unknown as SessionEvent);
-      return { assistantText: "계획을 세워두었습니다.", proposedCalls: [], stoppedReason: "final" };
+  it("자격 때문에 죽은 Pi 실행에는 설정 열기를 붙인다", async () => {
+    // 세션 폴백이 없어졌으므로 Pi 실패가 곧 막다른 길이다 — 로그인·워커 문제면 복구 동선이 있어야 한다.
+    vi.mocked(runPiCommand).mockImplementationOnce(async (_command, surface) => {
+      surface.appendBubble("system", "Pi 에이전트 실패: 401 Unauthorized");
+      return false;
     });
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "집 한 채 지어줘");
 
-    selectAutonomy(panel, "confirm");
-    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
-    input.value = "타이틀을 두 단계로";
-    findByTestId(panel, "ai-send")?.click();
+    expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
+  });
 
-    await vi.waitFor(() => expect(findByTestId(panel, "ai-work-plan-checklist")).toBeTruthy(), { timeout: 2_000, interval: 5 });
-    expect(findByTestId(panel, "ai-autonomous-budget")).toBeNull();
+  it("중단처럼 자격과 무관한 실패에는 설정 열기를 붙이지 않는다", async () => {
+    vi.mocked(runPiCommand).mockImplementationOnce(async (_command, surface) => {
+      surface.appendBubble("system", "Pi 에이전트를 중단했습니다. 적용된 변경은 없습니다.");
+      return false;
+    });
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "집 한 채 지어줘");
+
+    expect(findByTestId(panel, "ai-error-open-settings")).toBeNull();
+  });
+
+  it.each([
+    ["balanced", 16, "low"],
+    ["autonomous", 32, "medium"],
+    ["max", 48, "high"],
+  ] as const)("쓰기 레벨 %s 은 턴 상한 %i·추론 %s 로 실린다", async (level, maxTurns, thinkingLevel) => {
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    selectAutonomy(panel, level);
+    await send(panel, "타이틀 바꿔줘");
+
+    expect(lastOptions()).toMatchObject({ readOnly: false, planOnly: false, maxTurns, thinkingLevel });
   });
 
   it("「계속」은 읽기 전용 설정을 해제하지 않는다", async () => {
-    // Break: 예전 코드는 userResume 에서 composerMode 를 "do" 로 리셋했다. 모드가 턴 단위일
-    // 때는 무해했지만 다이얼은 지속 설정이다 — 「계속」이 사용자의 읽기 전용을 몰래 풀면
-    // 다음 턴부터 쓰기 툴이 붙는다.
-    const spy = vi
-      .spyOn(AssistantSession.prototype, "sendUserMessage")
-      .mockResolvedValue({ assistantText: "", proposedCalls: [], stoppedReason: "final" });
+    // Break: 「계속」이 다이얼을 몰래 do 로 되돌리면 다음 턴부터 쓰기 툴이 붙는다.
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
-
     selectAutonomy(panel, "readonly");
-    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
-    input.value = "이 맵 뭐가 있어?";
-    findByTestId(panel, "ai-send")?.click();
-    await vi.waitFor(() => expect(spy).toHaveBeenCalledTimes(1), { timeout: 2_000, interval: 5 });
+    await send(panel, "이 맵 뭐가 있어?");
+    await send(panel, "계속");
 
-    input.value = "계속";
-    findByTestId(panel, "ai-send")?.click();
-    await vi.waitFor(() => expect(spy).toHaveBeenCalledTimes(2), { timeout: 2_000, interval: 5 });
-
-    expect(spy.mock.calls[1]?.[3]?.composerMode).toBe("ask");
+    expect(vi.mocked(runPiCommand)).toHaveBeenCalledTimes(2);
+    expect(lastOptions()).toMatchObject({ readOnly: true });
   });
 });

@@ -1,4 +1,4 @@
-# Pi 에이전트 경로
+# Pi 에이전트 경로 (실험)
 
 기존 브라우저 세션 루프(`src/ai/assistantSession.ts`)와 **나란히** 놓인 두 번째 실행 경로다.
 루프는 Bun 쪽 `@oh-my-pi/pi-agent-core` 가 돌리고, 툴·커밋 게이트·적용 함수는 기존 것을 그대로 쓴다.
@@ -17,15 +17,8 @@
 
 ## 기본 경로가 Pi 다
 
-컴포저의 **「경로」 셀렉트**(조수 / Pi 에이전트, 설정 모달의 「지시 실행 경로」와 같은 값,
-`oprn:ai-config.executionRoute`)가 지시의 기본 경로를 정한다. 기본값은 **Pi 에이전트**.
-`/pi` 를 몰라도 된다. 결정은 `src/ai/piAgent/executionRoute.ts` 의 순수 함수 하나가 한다.
-
-**팀은 경로가 아니라 Pi 의 실행 모드다(2026-09-11).** 컴포저의 「팀」 토글(`ai-composer-team`)과
-설정의 「Pi 팀 실행」(`ai-config-pi-team`)이 `AiConfig.piTeam` 한 값을 쓰고, 켜져 있으면 평문 지시가
-`/pi team …` 과 같은 파서를 통과한다. 예전의 세 번째 경로 `pi-team` 은 한 비트를 라우트 enum →
-문자열 → 파서 → mode 로 네 번 인코딩했을 뿐이라 없앴다. 옛 blob 의 `executionRoute: "pi-team"` 은
-읽을 때 Pi 경로 + 팀 비트로 승격된다(`loadAiConfig`, 회귀: `test/piAgentExecutionRoute.test.ts`).
+컴포저의 **「경로」 셀렉트**(조수 / Pi 에이전트 / Pi 팀, 설정 모달의 「지시 실행 경로」와 같은 값, `oprn:ai-config.executionRoute`)가 지시의 기본
+경로를 정한다. 기본값은 **Pi 에이전트**. `/pi` 를 몰라도 된다. 결정은 `src/ai/piAgent/executionRoute.ts` 의 순수 함수 하나가 한다.
 
 | 입력 | 경로 |
 | --- | --- |
@@ -35,15 +28,6 @@
 
 **적용은 기본이 「검토 후 적용」** (`piApply: review`). Pi 결과는 보드 발의 검토 카드(변경 칩 + 적용/버리기)로 나오고, 사용자가 적용을
 눌러야 `applyProposedProject` 를 탄다. 그 사이 프로젝트가 바뀌었으면 stale-base 로 거절된다. 설정에서 「바로 적용」으로 바꿀 수 있다.
-
-## 활동 로그 (2026-09-11 추가)
-
-Pi 실행은 세션 턴과 같은 관례로 감사 기록을 남긴다(`src/ai/piAgent/activityLog.ts`,
-`channel: "pi"`): 시작할 때 pending 행 하나를 쓰고, 끝날 때 같은 id 로 upsert 한다(검토 대기 →
-적용/버림도 같은 행을 다시 갱신한다). 하위 에이전트는 `pi:시공` 같은 toolCalls 로, 팀장·검수 서사와
-범위 밖 버림은 audit 으로 실려서 `npm run ai:log` / `npm run ai:log --failed` 가 이 경로를 본다.
-이 기록이 없던 동안 기본 경로의 실패는 어디에도 안 남았다(실측 2026-09-11: 최근 400행에 pi 행 0).
-회귀: `test/piAgentRunLog.test.ts`.
 
 ## 쓰는 법
 

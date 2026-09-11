@@ -6,11 +6,9 @@ import type { ConstructionAuditRecord } from "@/editor/construction/construction
 /**
  * `ui` = 턴 밖에서 일어난 프론트 액션 묶음(src/ai/uiEventLog.ts). 턴 «안» 의 액션은 그 턴 행의
  * `uiEvents` 에도 함께 실린다 — 턴 행은 읽는 서사이고 ui 행은 빠짐없는 스트림이라, 둘 다 필요하다.
- * `pi` = Pi 에이전트 경로 실행 하나(단일·병렬·팀). 세션 턴과 달리 루프가 Bun 쪽에 있으므로
- * 패널이 시작 pending 행과 종료 행을 같은 id 로 남긴다(src/ai/piAgent/activityLog.ts).
  * DB 쪽 `channel` 컬럼에는 CHECK 제약이 없으므로 값 추가에 마이그레이션이 필요하지 않다.
  */
-export type AiActivityChannel = "chat" | "region" | "tileset-analysis" | "ui" | "pi" | "other";
+export type AiActivityChannel = "chat" | "region" | "tileset-analysis" | "ui" | "other";
 
 export type AiActivityToolCall = {
   readonly name: string;

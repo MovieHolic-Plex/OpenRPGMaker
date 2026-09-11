@@ -1,31 +1,5 @@
 # Editor AI Panel & Tools
 
-## 실행 경로는 둘, 팀은 비트 하나 (2026-09-11)
-
-Pi 경로가 2026-09-10 부터 생 입력의 기본이 되면서 UI 라벨은 셋(조수 / Pi 에이전트 / Pi 팀)이었지만
-엔진은 둘이고, 그중 하나는 모드 비트를 경로 enum 으로 한 번 더 인코딩한 것이었다. 그 인코딩을 없앴다.
-
-| 표면 | 값 | 소유 |
-|---|---|---|
-| 실행 경로 | `session`(조수) · `pi-agent`(Pi) | `src/ai/piAgent/executionRoute.ts` `EXECUTION_ROUTES` |
-| 팀 | boolean | `AiConfig.piTeam` — 컴포저 「팀」 토글(`ai-composer-team`) · 설정 「Pi 팀 실행」(`ai-config-pi-team`) |
-| 명시 입력 | `/pi …` · `/pi team …` | `parsePiCommand` — 언제나 최우선 |
-
-- 경로 결정은 여전히 순수 함수 하나(`resolveExecutionRoute`)다: 질문·계획·선택 영역은 세션 고정,
-  `/pi` 는 명시 Pi, 나머지는 저장된 기본 경로. 팀은 이 결정에 끼지 않는다 — 경로가 Pi 일 때
-  평문 앞에 `team` 을 붙이는 것은 같은 파서를 통과하므로 `/pi team` 과 규칙이 갈릴 수 없다.
-- 옛 blob 의 `executionRoute: "pi-team"` 은 **Pi 경로 + 팀 비트**로 승격된다(`loadAiConfig`,
-  `LEGACY_PI_TEAM_ROUTE`). 이 승격이 이 변경의 유일한 데이터 위험이고
-  `test/piAgentExecutionRoute.test.ts` 가 고정한다.
-- 컴포저의 팀 토글은 경로가 Pi 일 때만 보인다 — 세션 경로에는 «몇 명이 도는가» 축이 없다.
-- Pi 실행은 이제 활동 로그를 남긴다(`channel: "pi"`, `src/ai/piAgent/activityLog.ts`): 시작 pending 행 →
-  같은 id 로 종료/적용/버림 upsert. 하위 에이전트는 `pi:시공` 같은 toolCalls 로, 팀장·검수 서사와
-  범위 밖 버림은 audit 으로 실린다. 이 기록이 없던 동안 `npm run ai:log --failed` 는 기본 경로의
-  실패를 통째로 못 봤다(실측 2026-09-11: 최근 400행에 pi 행 0).
-- 검증: `test/piAgentExecutionRoute.test.ts`(경로 결정 + `pi-team` 승격), `test/piAgentRunLog.test.ts`
-  (pending→종료 upsert, 하위 에이전트 매핑, 실패 기록). 경로 문서는 `docs/pi-agent.md`.
-
-
 ## Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
 
 An assistant `BuildSpec` remains **session** state: `assistantSession.specsByMap` replaces the

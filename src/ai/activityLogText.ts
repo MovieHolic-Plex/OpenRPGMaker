@@ -21,7 +21,6 @@ const CHANNEL_LABEL: Readonly<Record<string, string>> = {
   region: "영역 작업",
   "tileset-analysis": "타일셋 분석",
   ui: "화면 조작",
-  pi: "Pi 에이전트",
   other: "기타",
 };
 

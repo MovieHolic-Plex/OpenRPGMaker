@@ -978,39 +978,6 @@
   padding: 0 4px;
 }
 
-/* 팀 토글 — Pi 경로에서만 보이는 28px 알약. 켜지면 액센트(선택 칩과 같은 토큰). */
-:is(.ai-deck, .ai-studio-composer) .ai-composer-team-toggle {
-  align-items: center;
-  border: 1px solid var(--border-default);
-  border-radius: 999px;
-  color: var(--ai-deck-secondary, var(--text-2));
-  cursor: pointer;
-  display: inline-flex;
-  flex: 0 0 auto;
-  font-size: 12px;
-  gap: 4px;
-  height: 28px;
-  padding: 0 8px;
-  white-space: nowrap;
-}
-
-:is(.ai-deck, .ai-studio-composer) .ai-composer-team-toggle[hidden] {
-  display: none;
-}
-
-:is(.ai-deck, .ai-studio-composer) .ai-composer-team-toggle:has(input:checked) {
-  background: var(--accent-muted);
-  border-color: var(--accent-border);
-  color: var(--accent-active);
-}
-
-:is(.ai-deck, .ai-studio-composer) .ai-composer-team-toggle input {
-  accent-color: var(--accent);
-  height: 12px;
-  margin: 0;
-  width: 12px;
-}
-
 /* 모델 칩 */
 .ai-composer-model {
   align-items: center;
