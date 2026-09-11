@@ -250,6 +250,35 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 
 ### 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
 
+### 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
+
+인카운터(`conditions.locationId`)가 이미 하던 일을 필드 스폰과 퀘스트로 넓힌다. 소유 파일은
+순수 해석기 `src/project/locationAnchors.ts` 하나이고, 소비자는 각자 그걸 부른다.
+
+- **추가 필드다. 좌표를 지우지 마라.** `FieldSpawnDef.locationId`,
+  `PickupSpec`/`DropSpec`/`BlockerSpec`/`reach`/`QuestGate` 의 `locationId` 는 전부 optional 이고
+  `x`/`y`(스폰은 `area`)가 그대로 남는다. 이유 셋: 옛 저장본이 그대로 돌고(마이그레이션 없음),
+  구역이 지워지면 lint 가 끊김을 올리는 동안 옛 좌표로 계속 동작하며, 로케이션이 하나도 없는
+  맵에서는 좌표가 유일한 길이다.
+- **둘 다 있으면 `locationId` 가 이긴다** — 인카운터와 같은 규칙이다.
+- **앵커는 구역의 중심 칸이다**(`locationCenter`). 목적지·블로커·게이트가 좌표 한 점을 요구하기
+  때문이다. 통행 조정(`resolveEventPlacement`)이 한 칸 옮길 수 있고 그건 경고로 보고된다 —
+  QA 단언도 «정확한 중심» 이 아니라 «구역 안» 을 계약으로 잡는다.
+- **해석기는 맵을 명시로 받는다.** 로케이션 ID 는 맵 안에서만 유일하고(`loc1`), 퀘스트 목적지는
+  다른 맵의 구역을 가리킬 수 있다. 맵을 안 좁히면 다른 장소를 집는다(참조 수 집계에서 같은
+  함정을 이미 실측했다 — `countLocationReferences` 의 `mapId` 인자).
+- **필드 스폰은 `normalizeFieldSpawn(project, map, spawn)` 에서 푼다.** 런타임 진입이 두 곳
+  (`createFieldSpawnRuntime`, `addFieldSpawnEntry`)이라 정규화 한 곳에서 풀어야 갈라지지 않는다.
+  저작 툴은 `parseFieldSpawn` 에서 이름을 같은 맵 로케이션으로 해석하고, 못 찾으면 오류다 —
+  오타를 조용히 좌표로 되돌리면 «구역을 옮겼는데 스폰이 안 따라오는» 상태를 디버깅하게 된다.
+- **퀘스트는 `placeQuestEvent` 한 곳에서 푼다.** 대화 NPC·전투 블로커·도달 지점·수집물·드롭·
+  게이트가 모두 그 함수를 지난다. 호출부마다 붙이면 다음 단계 종류가 조용히 빠진다.
+- 툴 스키마는 `questToolSchemas.ts` 의 `position` 하나를 넓혀 reach·pickup·drop·blocker·gate·기버
+  NPC 가 한꺼번에 앵커를 받는다.
+- 회귀: `test/locationAnchors.test.ts`(9건). 브라우저 QA:
+  `LOCATION_ANCHOR_QA_URL=http://127.0.0.1:<포트> node scripts/qa/location-quest-anchor.mjs`
+  → `verify-shots/loc-anchor/`.
+
 빌더 `layoutPlan.regions` 를 명명 로케이션으로 **일괄** 옮기는 창. OPRN-OUT-020 이 미뤄 뒀던
 항목이고, 자동 승격은 여전히 없다 — 사람이 보고 고르는 수단이 생겼을 뿐이다.
 

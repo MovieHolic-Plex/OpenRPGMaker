@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **63쪽 / 2420KB / 약 677,067 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **63쪽 / 2423KB / 약 678,000 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -20,7 +20,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-database.md` | 263KB | 56KB ⚠상한 초과 — 절을 더 쪼개라 | 1379 | ~75,590 |
 | `openwiki/editor-event-authoring.md` | 134KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 740 | ~38,707 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
-| `openwiki/editor-pre-edit-routing.md` | 103KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 561 | ~29,453 |
+| `openwiki/editor-pre-edit-routing.md` | 105KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 590 | ~30,240 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 29KB | 456 | ~17,604 |
 | `openwiki/runtime-battle.md` | 133KB | 31KB | 539 | ~37,775 |
 | `openwiki/runtime-project-schema.md` | 134KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 859 | ~36,217 |
@@ -40,7 +40,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 109, 122, 123, 125, 128, 129 |
 | `openwiki/editor-observability.md` | 1 | 310 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 382, 391, 398, 400, 423 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 411, 420, 427, 429, 452 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
 
 ## 없는 파일을 가리키는 참조
@@ -518,7 +518,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L455` AI 툴·액션 이유 (2026-09-02)
 - `L465` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 103KB · 561줄 · ~29,453 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 105KB · 590줄 · ~30,240 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L7` Exterior door backing
 - `L17` Tile brush reliability (2026-09-06)
@@ -533,14 +533,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L131` 명명 로케이션 레이어 (2026-09-10)
   - `L213` 로케이션 역할과 겹침 클릭 (2026-09-12)
   - `L251` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
-  - `L277` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L336` Automatic usage guides disabled (2026-09-06)
-  - `L346` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L434` Agent cautions
-- `L444` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L475` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L507` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L536` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+  - `L253` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
+  - `L306` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+  - `L365` Automatic usage guides disabled (2026-09-06)
+  - `L375` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L463` Agent cautions
+- `L473` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L504` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L536` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L565` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 1KB · 15줄 · ~333 토큰
 
@@ -889,13 +890,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L83` Ownership and regeneration
 - `L106` Contract fixtures and proof
 
-### `openwiki/spatial-geography-ui.md` — 4KB · 88줄 · ~1,096 토큰
+### `openwiki/spatial-geography-ui.md` — 5KB · 98줄 · ~1,242 토큰
 
 - `L7` Public modules
 - `L26` Settlement regions (2026-09-12)
-- `L40` Authoring rules
-- `L74` Fixtures
-- `L80` Proof
+- `L50` Authoring rules
+- `L84` Fixtures
+- `L90` Proof
 
 ### `openwiki/spatial-manual-build.md` — 11KB · 177줄 · ~2,738 토큰
 

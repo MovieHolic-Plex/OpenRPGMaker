@@ -1,0 +1,105 @@
+{
+  "checks": [
+    {
+      "name": "준비: 트룹이 있다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "1a. 런타임 스폰 영역이 좌표가 아니라 구역을 쓴다",
+      "ok": true,
+      "actual": {
+        "x": 4,
+        "y": 4,
+        "w": 6,
+        "h": 4
+      },
+      "expected": {
+        "x": 4,
+        "y": 4,
+        "w": 6,
+        "h": 4
+      }
+    },
+    {
+      "name": "1b. 저작한 좌표 area 는 폴백으로 남는다",
+      "ok": true,
+      "actual": {
+        "x": 1,
+        "y": 1,
+        "w": 2,
+        "h": 2
+      },
+      "expected": {
+        "x": 1,
+        "y": 1,
+        "w": 2,
+        "h": 2
+      }
+    },
+    {
+      "name": "2. 구역을 옮기면 스폰 영역도 따라온다",
+      "ok": true,
+      "actual": {
+        "x": 12,
+        "y": 9,
+        "w": 6,
+        "h": 4
+      },
+      "expected": {
+        "x": 12,
+        "y": 9,
+        "w": 6,
+        "h": 4
+      }
+    },
+    {
+      "name": "3a. 구역이 지워지면 옛 좌표로 폴백한다 — 스폰이 사라지지 않는다",
+      "ok": true,
+      "actual": {
+        "x": 1,
+        "y": 1,
+        "w": 2,
+        "h": 2
+      },
+      "expected": {
+        "x": 1,
+        "y": 1,
+        "w": 2,
+        "h": 2
+      }
+    },
+    {
+      "name": "3b. 그 끊김을 참조 검증이 올린다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "4a. 도달 지점이 좌표 0,0 이 아니라 구역 안에 선다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "4b. 통행 조정이 일어났다면 경고로 말한다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "4c. 도달 이벤트가 만들어졌다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "5. 예상 밖 페이지 오류 없음",
+      "ok": true,
+      "actual": [],
+      "expected": []
+    }
+  ],
+  "errors": []
+}

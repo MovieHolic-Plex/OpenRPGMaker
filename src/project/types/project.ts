@@ -345,6 +345,12 @@ export interface FieldSpawnDef {
   id: string;
   troopId: TroopId;
   area: Rect;
+  /**
+   * 같은 맵의 `locations[].id`. 있으면 **사각형 대신** 이 구역을 스폰 영역으로 쓴다 —
+   * 구역을 옮기면 스폰도 따라간다(2026-09-12). `area` 는 그대로 남는다:
+   * 옛 저장본 호환 + 구역이 지워졌을 때의 폴백.
+   */
+  locationId?: string;
   maxAlive?: number;
   respawnSec?: number;
   graphic?: EventPageGraphic;
