@@ -558,7 +558,7 @@ describe("펼쳐보기 폭 규칙의 캐스케이드 승자", () => {
     const winner = declarations.reduce((best, next) =>
       next.weight > best.weight || (next.weight === best.weight && next.order > best.order) ? next : best);
 
-    expect(winner.value).toBe("var(--space-6)");
+    expect(winner.value).toBe("26px");
     expect(winner.selector).not.toContain("history");
   });
 });

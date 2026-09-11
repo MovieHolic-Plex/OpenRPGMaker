@@ -124,10 +124,10 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 6px;
   height: 100%;
   min-height: 0;
-  padding: var(--space-2);
+  padding: 6px;
   position: relative;
   width: var(--basic-rail-width);
 }
@@ -149,7 +149,7 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
   display: flex;
   gap: var(--space-1);
   justify-content: center;
-  min-height: var(--space-6);
+  min-height: 26px;
   min-width: 0;
   padding: var(--space-1);
 }
@@ -506,7 +506,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 .basic-rail-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
 }
 
 .basic-selected-tile {
