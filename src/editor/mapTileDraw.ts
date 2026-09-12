@@ -12,6 +12,7 @@ import {
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { createTransparentColorKeyCanvas, isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
+import { tileBackingTile } from "@/editor/tileLayerPolicy";
 import type { GameMap, TilesetDef } from "@/project/types";
 
 export type TilesetCanvasImage = HTMLImageElement | HTMLCanvasElement;
@@ -65,9 +66,19 @@ function drawLayer(
   for (let index = 0; index < tiles.length; index += 1) {
     const tile = tiles[index] ?? -1;
     if (tile < 0) continue;
-    const x = index % map.width;
-    const y = Math.floor(index / map.width);
-    // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함(supportsChipsetQuarterComposition).
+      const x = index % map.width;
+      const y = Math.floor(index / map.width);
+      // 투명 칩이 하위에 단독으로 앉으면 그 아래가 검게 뚫린다 — 정책이 정한 받침을
+      // 먼저 깔고 합성한다. 런타임(`playSceneMapRuntime`)·편집기 캔버스
+      // (`chipsetTileRender`)가 이미 하는 처리이고, 캔버스 계열 렌더러(맵 썸네일·
+      // 스크린샷·미니맵·구운 마을 전경)만 빠져 있어 나무 밑동 아래 검은 사각형이
+      // 남았다(실측: 마을 40×40 에서 밑동 57칸 6,641px, 원형 전경 1.51%).
+      // 받침은 **하위 레이어에만** 의미가 있다 — 상위는 아래 지면이 이미 있다.
+      if (tiles === map.lowerTiles) {
+        const backing = tileBackingTile(tileset, tile);
+        if (backing !== null) drawRawTile(context, image, tileset, backing, x, y, scale);
+      }
+      // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함(supportsChipsetQuarterComposition).
     if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile, tileset)) {
       drawLakeAutotile(context, image, map, tileset, x, y, scale);
       continue;
