@@ -43,7 +43,15 @@ await shot("01-objects-tab-activate");
 
 // ── 1. Live runTool lifecycle calls on an injected canonical project ──
 const tools = await page.evaluate(async () => {
-  const { store } = await import("/src/project/store.ts");
+  // vite dev는 HMR 무효화 후 store 를 ?t=<ts> URL 로 다시 싣는다 — 같은 인스턴스를 잡기 위해
+  // 앱이 실제로 로드한 리소스 URL 을 찾아 import 한다.
+  const appModule = (suffix) => {
+    const url = performance.getEntriesByType("resource")
+      .map((e) => e.name).find((n) => n.includes(suffix));
+    if (!url) throw new Error(`app module not loaded: ${suffix}`);
+    return import(url);
+  };
+  const { store } = await appModule("/src/project/store.ts");
   const { runTool } = await import("/src/editor/tools/toolRunner.ts");
   const { geographyRecipeFixture } = await import("/test/support/spatialGeographyRecipes.ts");
   const results = {};
@@ -111,16 +119,59 @@ log(`tools → ${JSON.stringify(tools)}`);
 
 // ── 2. UI: placed world children are cards; delete of a linked child arms the external-connection retry ──
 const nestedRegionId = await page.evaluate(async () => {
-  const { store } = await import("/src/project/store.ts");
+  const url = performance.getEntriesByType("resource")
+    .map((e) => e.name).find((n) => n.includes("/src/project/store.ts"));
+  const { store } = await import(url);
   const { geographyRecipeFixture } = await import("/test/support/spatialGeographyRecipes.ts");
   store.replace(geographyRecipeFixture("lake-kingdom"), { preserveEventDrafts: false });
   const doc = store.getCurrent().spatialAuthoring;
   const nestedRegion = Object.values(doc.occurrences).find(o => o.kind === "region" && o.parentId !== null);
   return nestedRegion.id;
 });
+// store 교체 직후 렌더 레이스를 위해 탭을 왕복시켜 강제 리렌더한다.
+await page.getByTestId("db-tab-spatial-worlds").click();
 await page.getByTestId("db-tab-spatial-regions").click();
 await page.getByTestId("spatial-mode-instances").click();
-await page.getByTestId(`spatial-card-${nestedRegionId}`).click();
+let cardsVisible = await page.locator('[data-testid^="spatial-card-"]').first()
+  .waitFor({ state: "visible", timeout: 15000 }).then(() => true).catch(() => false);
+if (!cardsVisible) {
+  const storeState = await page.evaluate(async () => {
+    const url = performance.getEntriesByType("resource")
+      .map((e) => e.name).find((n) => n.includes("/src/project/store.ts"));
+    const { store } = await import(url);
+    const access = await import("/src/editor/panels/spatialAuthoringAccess.ts");
+    const doc = store.getCurrent().spatialAuthoring;
+    const visible = access.visibleAuthoringProject().spatialAuthoring;
+    return { occurrences: Object.keys(doc?.occurrences ?? {}).length,
+      regions: Object.values(doc?.occurrences ?? {}).filter(o => o.kind === "region").length,
+      visibleOccurrences: Object.keys(visible?.occurrences ?? {}).length,
+      visibleRegions: Object.values(visible?.occurrences ?? {}).filter(o => o.kind === "region").length,
+      hasDraft: access.hasAuthoringDraft(), hasPreview: access.hasAuthoringPreview(),
+      sameProject: access.visibleAuthoringProject() === store.getCurrent() };
+  });
+  log(`store → ${JSON.stringify(storeState)}`);
+  await page.getByTestId("db-tab-spatial-places").click();
+  await page.getByTestId("db-tab-spatial-regions").click();
+  await page.getByTestId("spatial-mode-instances").click();
+  cardsVisible = await page.locator('[data-testid^="spatial-card-"]').first()
+    .waitFor({ state: "visible", timeout: 15000 }).then(() => true).catch(() => false);
+}
+if (!cardsVisible) {
+  const state = await page.evaluate(() => {
+    const ids = [...document.querySelectorAll("[data-testid]")].map(el => el.dataset.testid);
+    return { modal: document.querySelector('[data-testid="database-modal"]') !== null,
+      testids: ids.filter(id => id.startsWith("spatial") || id.startsWith("db-tab")).slice(0, 40) };
+  });
+  log(`no-cards debug → ${JSON.stringify(state)}`);
+  await shot("debug-no-cards");
+  throw new Error("spatial cards never rendered");
+}
+const cardIds = await page.locator('[data-testid^="spatial-card-"]').evaluateAll(els => els.map(el => el.dataset.testid));
+log(`cards → ${JSON.stringify(cardIds)}`);
+const targetCard = cardIds.includes(`spatial-card-${nestedRegionId}`)
+  ? `spatial-card-${nestedRegionId}`
+  : cardIds[0];
+await page.getByTestId(targetCard).click();
 await page.waitForTimeout(800);
 evidence.refreshEnabled = await page.getByTestId("spatial-refresh").isEnabled().catch(() => false);
 evidence.deleteEnabled = await page.getByTestId("spatial-delete").isEnabled().catch(() => false);

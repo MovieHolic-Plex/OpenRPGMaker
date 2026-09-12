@@ -29,9 +29,18 @@ for (let attempt = 1; attempt <= 5 && !ok; attempt++) {
 }
 if (!ok) throw new Error("editor never booted");
 
+// vite dev는 HMR 무효화 후 앱이 쓰는 store 를 ?t=<ts> URL 로 다시 싣는다 — 같은 인스턴스를
+// 잡기 위해 앱이 실제 로드한 리소스 URL 을 찾아 import 한다 (clean 경로는 두 번째 복제 모듈이 된다).
+const appStore = `(() => {
+  const url = performance.getEntriesByType("resource")
+    .map((e) => e.name).find((n) => n.includes("/src/project/store.ts"));
+  if (!url) throw new Error("app store module not loaded");
+  return import(url);
+})()`;
+
 // ── 1. Real tool calls inside the running editor, on the real store project ──
-const legacy = await page.evaluate(async () => {
-  const { store } = await import("/src/project/store.ts");
+const legacy = await page.evaluate(async (appStoreSrc) => {
+  const { store } = await eval(appStoreSrc);
   const { runTool } = await import("/src/editor/tools/toolRunner.ts");
   const { allTools } = await import("/src/editor/tools/toolRegistry.ts");
   const { buildToolCapabilityIndex, buildTaskRecipes } = await import("/src/ai/toolCapabilityIndex.ts");
@@ -51,7 +60,7 @@ const legacy = await page.evaluate(async () => {
     capabilityIndexWorldLine: buildToolCapabilityIndex().split("\n").find(l => l.includes("월드")) ?? null,
     spatialRecipe: buildTaskRecipes().split("\n").find(l => l.includes("spatial-world")) ?? null,
   };
-});
+}, appStore);
 log(`legacy list → active=${legacy.list.data?.active} · get code=${legacy.get.issues?.[0]?.code} · upsert code=${legacy.upsert.issues?.[0]?.code} · preview code=${legacy.preview.issues?.[0]?.code}`);
 log(`vocabulary → ok=${legacy.vocabulary.ok} worldTilesets=${JSON.stringify(legacy.vocabulary.data?.terrain?.worldTilesetIds)}`);
 
@@ -74,8 +83,8 @@ await shot("02-activate-rejected-visible");
 log(`activation click → ${legacy.activateErrorText}`);
 
 // ── 3. Contrast: canonical project → button hidden, tools live ──
-const canonical = await page.evaluate(async () => {
-  const { store } = await import("/src/project/store.ts");
+const canonical = await page.evaluate(async (appStoreSrc) => {
+  const { store } = await eval(appStoreSrc);
   const { runTool } = await import("/src/editor/tools/toolRunner.ts");
   const { geographyRecipeFixture } = await import("/test/support/spatialGeographyRecipes.ts");
   const fixture = geographyRecipeFixture("lake-country");
@@ -86,7 +95,7 @@ const canonical = await page.evaluate(async () => {
     regions: Object.keys(project.spatialAuthoring?.library?.regions ?? {}),
     list: runTool({ project }, "list_spatial_designs", { kind: "region" }),
   };
-});
+}, appStore);
 log(`canonical list → active=${canonical.list.data?.active} designs=${canonical.list.data?.designs?.length}`);
 
 // re-render stage chrome and check the button is gone
