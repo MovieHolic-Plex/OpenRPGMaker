@@ -26,7 +26,8 @@ function result<T>(action: () => T): SpatialAuthoringResult<T> {
       code: "invalid", message: error.message, detail: error.code,
     } };
     if (error instanceof ProjectFormatError || error instanceof SpatialOperationError || error instanceof ProjectRoutingError) {
-      return { kind: "error", error: { code: "invalid", message: error.message } };
+      return { kind: "error", error: { code: "invalid", message: error.message,
+        ...(error instanceof SpatialOperationError ? { detail: `${error.code}: ${error.message}` } : {}) } };
     }
     throw error;
   }

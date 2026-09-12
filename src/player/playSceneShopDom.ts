@@ -10,7 +10,6 @@ import { store } from "@/project/store";
 import {
   applyAffordability,
   detailHero,
-  detailStatGrid,
   entryPurse,
   goldPanel,
   keyHints,
@@ -29,7 +28,7 @@ import {
   type ShopMode,
 } from "@/player/playSceneShopParts";
 import { emitRuntimeJuice, type RuntimeJuiceOptions } from "@/player/runtimeJuice";
-import { SHOP_CONFIRM_KEY_LABEL, SHOP_FOCUS_GROUP_KEY_LABEL } from "@/player/keyBindings";
+import { CANCEL_KEY_LABEL, SHOP_CONFIRM_KEY_LABEL, SHOP_FOCUS_GROUP_KEY_LABEL } from "@/player/keyBindings";
 import type { ShopStep } from "@/player/playSceneShop";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { ResolvedTerms } from "@/project/terms";
@@ -109,7 +108,8 @@ export function renderShopMenu(
   for (const action of shopMenuActions(step)) {
     choices.append(shopMenuButton(action, terms, showItems, finish, step));
   }
-  menu.append(choices, keyHints([["↑↓", "선택"], ["Enter", "결정"], ["Esc", "나가기"]]));
+  // 선택지는 가로 한 줄 — 힌트가 ↑↓ 라고 가르치면 레이아웃과 어긋난다(둘 다 먹지만 주축은 ←→).
+  menu.append(choices, keyHints([["←→", "선택"], [SHOP_CONFIRM_KEY_LABEL, "결정"], [CANCEL_KEY_LABEL, "나가기"]]));
   shell.append(shopWindow("runtime-shop-greeting-panel", [menu]));
   return shell;
 }
@@ -173,8 +173,8 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
       shopPrompt(request, first),
       keyHints(
         (request.step.quantityMode ?? "single") === "select"
-          ? [[SHOP_FOCUS_GROUP_KEY_LABEL, "영역"], ["↑↓", "선택"], ["←→", "수량"], [SHOP_CONFIRM_KEY_LABEL, "결정"], ["Esc", "뒤로"]]
-          : [[SHOP_FOCUS_GROUP_KEY_LABEL, "영역"], ["↑↓", "선택"], [SHOP_CONFIRM_KEY_LABEL, "결정"], ["Esc", "뒤로"]]
+          ? [[SHOP_FOCUS_GROUP_KEY_LABEL, "영역"], ["↑↓", "선택"], ["←→", "수량"], [SHOP_CONFIRM_KEY_LABEL, "결정"], [CANCEL_KEY_LABEL, "뒤로"]]
+          : [[SHOP_FOCUS_GROUP_KEY_LABEL, "영역"], ["↑↓", "선택"], [SHOP_CONFIRM_KEY_LABEL, "결정"], [CANCEL_KEY_LABEL, "뒤로"]]
       ),
     ])
   );
@@ -182,20 +182,21 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
 }
 
 /** 빈 상점 안내 — 예전에는 아무것도 안 띄우고 이벤트가 조용히 지나갔다(유령 상점). */
-export function renderShopNotice(message: string, terms: ResolvedTerms, close: () => void): HTMLElement {
+export function renderShopNotice(message: string, _terms: ResolvedTerms, close: () => void): HTMLElement {
   const shell = el("div", { class: "runtime-shop-shell runtime-shop-menu-shell" });
   const menu = el("div", { class: "runtime-shop-menu runtime-shop-menu-notice" });
   menu.append(shopMenuMessage(message));
   const choices = el("div", { class: "runtime-shop-menu-choices" });
+  // 안내를 읽고 닫는 동작이다 — 거래 취소가 아니므로 shopCancel(취소) 라벨을 빌리지 않는다.
   const button = el("button", {
     class: "runtime-shop-menu-choice",
-    text: terms.shopCancel,
+    text: "닫기",
     dataset: { testid: "shop-notice-close" },
     attrs: { type: "button" },
     on: { click: close },
   });
   choices.append(button);
-  menu.append(choices);
+  menu.append(choices, keyHints([[SHOP_CONFIRM_KEY_LABEL, "닫기"], [CANCEL_KEY_LABEL, "닫기"]]));
   shell.append(shopWindow("runtime-shop-greeting-panel", [menu]));
   return shell;
 }
@@ -239,12 +240,10 @@ export function updateShopHelpLine(overlay: HTMLElement, step: ShopStep, item: S
     clear(heroSlot);
     heroSlot.append(detailHero(goods));
   }
-  const statSlot = overlay.querySelector<HTMLElement>("[data-testid='shop-stat-slot']");
-  if (statSlot) {
-    clear(statSlot);
-    const grid = detailStatGrid(goods);
-    if (grid) statSlot.append(grid);
-  }
+  // shop-stat-slot 은 여기서 만지지 않는다 — 그 슬롯의 소유자는 updateComparison(비교 요약)이다.
+  // 예전에는 여기서 원시 보너스 격자를 넣고 같은 틱에 비교 요약이 덮어써서
+  // 죽은 렌더 경로 + "살 물건의 순수 보너스는 어디에도 안 보이는" 결과가 나왔다.
+  // 원시 보너스 표기는 상세 오버레이(renderShopComparison)로 옮겼다.
 }
 
 /**
@@ -334,7 +333,8 @@ export function updateShopConfirmLabel(overlay: HTMLElement, terms: ResolvedTerm
 /* ────────────────────────── 내부 ────────────────────────── */
 
 function shopItemList(request: ShopItemsRenderRequest, goods: readonly ShopGoods[]): HTMLElement {
-  const wrap = el("div", { class: "runtime-shop-item-list", attrs: { role: "list" } });
+  // 행을 고르고 결정키로 활성하는 패턴 — role=listbox 가 정확하다(행은 role=option).
+  const wrap = el("div", { class: "runtime-shop-item-list", attrs: { role: "listbox", "aria-label": "상품 목록" } });
   if (goods.length === 0) {
     wrap.append(
       el("div", {
@@ -376,9 +376,8 @@ function detailCard(scene: PlaySceneContext, step: ShopStep, goods: ShopGoods | 
   });
   const ownedSlot = el("div", { class: "runtime-shop-slot runtime-shop-owned-panel", dataset: { testid: "shop-owned-slot" } });
   ownedSlot.append(ownedPanel(scene, goods));
+  // 비어 두는 슬롯 — 첫 커서 확정(onSelect → updateComparison) 때 비교 요약이 채운다.
   const statSlot = el("div", { class: "runtime-shop-slot", dataset: { testid: "shop-stat-slot" } });
-  const grid = detailStatGrid(goods);
-  if (grid) statSlot.append(grid);
   card.append(heroSlot, helpLine, statSlot, ownedSlot);
   return card;
 }
@@ -401,7 +400,7 @@ function shopPrompt(request: ShopItemsRenderRequest, first: ShopGoods | undefine
     })
   );
   if ((step.quantityMode ?? "single") === "select") {
-    wrap.append(quantityControl(terms, first, mode, (dir) => adjustShopQuantity(wrapOverlay(wrap), dir)));
+    wrap.append(quantityControl(terms, first, mode));
   }
   wrap.append(el("span", { class: "runtime-shop-balance-after", dataset: {
     testid: "shop-balance-after", gold: String(request.scene.session.gold), mode, goldUnit: terms.gold,
@@ -416,7 +415,7 @@ function shopPrompt(request: ShopItemsRenderRequest, first: ShopGoods | undefine
       class: "runtime-shop-confirm",
       text: mode === "sell" ? terms.shopSell : terms.shopBuy,
       dataset: { testid: "shop-confirm" },
-      attrs: { type: "button", tabindex: "-1", ...(first ? {} : { disabled: "" }) },
+      attrs: { type: "button", ...(first ? {} : { disabled: "" }) },
       on: {
         click: () => {
           // 마우스로 결정 버튼을 눌렀을 때는 커서가 얹힌 행을 거래한다.
@@ -570,56 +569,102 @@ export type ShopHaggleRenderRequest = {
   readonly patience: number;
   readonly merchantLine: string;
   readonly goldLabel: string;
-  readonly onDelta: (dir: -1 | 1) => void;
+  /** 플레이어 소지금 — 얼마까지 부를 수 있는지 문맥이 없으면 제시가가 공중에 뜬다. */
+  readonly playerGold: number;
+  /** 거래 수량 — 제시가는 단가이므로 합계를 함께 보여야 실제 지출이 읽힌다. */
+  readonly count: number;
+  readonly mode: ShopMode;
+  /** ±N 조절. 제자리 갱신(updateShopHaggleOffer)이라 전체 재렌더가 필요 없다. */
+  readonly onAdjust: (delta: number) => void;
   readonly onPropose: () => void;
   readonly onCancel: () => void;
 };
 
+function haggleProposeLabel(request: Pick<ShopHaggleRenderRequest, "offer" | "goldLabel" | "mode">): string {
+  const verb = request.mode === "sell" ? "요구" : "제시";
+  return `${verb} ${request.offer}${request.goldLabel}`;
+}
+
 export function renderShopHaggle(request: ShopHaggleRenderRequest): HTMLElement {
-  const shell = el("div", { class: "runtime-shop-shell runtime-shop-haggle-shell" });
-  const panel = el("div", { class: "runtime-shop-haggle", dataset: { testid: "shop-haggle-panel" } });
+  const shell = el("div", { class: "runtime-shop-shell runtime-shop-menu-shell runtime-shop-haggle-shell" });
+  const panel = el("div", { class: "runtime-shop-menu runtime-shop-haggle", dataset: { testid: "shop-haggle-panel" } });
+  const unit = request.goldLabel;
   panel.append(
-    el("div", { class: "runtime-shop-message", text: request.merchantLine }),
-    el("div", { text: `${request.itemName} · 기준가 ${request.reference} ${request.goldLabel}` }),
+    shopMenuMessage(request.merchantLine),
     el("div", {
+      class: "runtime-shop-haggle-item",
+      text: `${request.itemName} · 기준가 ${request.reference}${unit} ×${request.count} · 내 소지금 ${request.playerGold}${unit}`,
+    }),
+  );
+  const offerRow = el("div", { class: "runtime-shop-haggle-offer-row" });
+  offerRow.append(
+    el("span", {
+      class: "runtime-shop-haggle-offer-label",
+      text: request.mode === "sell" ? "내 요구가" : "내 제시가",
+    }),
+    el("strong", {
       class: "runtime-shop-haggle-offer",
       dataset: { testid: "shop-haggle-offer" },
-      text: String(request.offer),
+      text: `${request.offer}${unit}`,
     }),
-    el("div", { text: `인내 ${request.patience}` }),
+    el("span", {
+      class: "runtime-shop-haggle-offer-total",
+      dataset: { testid: "shop-haggle-total" },
+      text: `합계 ${request.offer * request.count}${unit}`,
+    }),
   );
-  const actions = el("div", { class: "runtime-shop-prompt-actions" });
+  panel.append(offerRow);
+  // 인내 = 상인이 더 들어주는 횟수. 생 수치(인내 3)는 무엇인지 설명이 없어 읽히지 않았다.
+  panel.append(el("div", {
+    class: "runtime-shop-haggle-patience",
+    dataset: { testid: "shop-haggle-patience-left" },
+    text: `상인이 ${request.patience}번 더 들어줍니다`,
+  }));
+  const actions = el("div", { class: "runtime-shop-prompt-actions runtime-shop-haggle-actions" });
+  const stepButton = (delta: number, testid: string) => el("button", {
+    class: "runtime-shop-menu-choice runtime-shop-haggle-step",
+    text: `${delta > 0 ? "+" : "−"}${Math.abs(delta)}`,
+    dataset: { testid },
+    attrs: { type: "button", "aria-label": `제시가 ${delta > 0 ? "+" : "−"}${Math.abs(delta)}${unit}` },
+    on: { click: () => request.onAdjust(delta) },
+  });
   actions.append(
-    el("button", {
-      class: "runtime-shop-menu-choice",
-      text: "-",
-      dataset: { testid: "shop-haggle-down" },
-      attrs: { type: "button" },
-      on: { click: () => request.onDelta(-1) },
-    }),
+    stepButton(-10, "shop-haggle-down10"),
+    stepButton(10, "shop-haggle-up10"),
     el("button", {
       class: "runtime-shop-confirm",
-      text: "제시",
+      text: haggleProposeLabel(request),
       dataset: { testid: "shop-haggle-propose" },
       attrs: { type: "button" },
       on: { click: request.onPropose },
     }),
     el("button", {
-      class: "runtime-shop-menu-choice",
-      text: "+",
-      dataset: { testid: "shop-haggle-up" },
-      attrs: { type: "button" },
-      on: { click: () => request.onDelta(1) },
-    }),
-    el("button", {
       class: "runtime-shop-cancel",
-      text: "포기",
+      text: "그만두기",
       dataset: { testid: "shop-haggle-cancel" },
       attrs: { type: "button" },
       on: { click: request.onCancel },
     }),
   );
   panel.append(actions);
-  shell.append(shopWindow("runtime-shop-prompt-panel", [panel]));
+  // ←→ 는 어디서든 제시가 ±1 — 버튼 사이를 오가는 이동은 ↑↓ 가 담당한다.
+  panel.append(keyHints([["←→", "금액 조절"], ["↑↓", "버튼 이동"], [SHOP_CONFIRM_KEY_LABEL, "결정"], [CANCEL_KEY_LABEL, "돌아가기"]]));
+  shell.append(shopWindow("runtime-shop-greeting-panel", [panel]));
   return shell;
+}
+
+/** 제시가 조절은 제자리 갱신 — 전체 재렌더는 커서를 튀게 하고 매 단계 비용이 크다. */
+export function updateShopHaggleOffer(
+  overlay: HTMLElement,
+  offer: number,
+  count: number,
+  goldLabel: string,
+  mode: ShopMode
+): void {
+  const offerNode = overlay.querySelector<HTMLElement>("[data-testid='shop-haggle-offer']");
+  if (offerNode) offerNode.textContent = `${offer}${goldLabel}`;
+  const totalNode = overlay.querySelector<HTMLElement>("[data-testid='shop-haggle-total']");
+  if (totalNode) totalNode.textContent = `합계 ${offer * count}${goldLabel}`;
+  const propose = overlay.querySelector<HTMLElement>("[data-testid='shop-haggle-propose']");
+  if (propose) propose.textContent = haggleProposeLabel({ offer, goldLabel, mode });
 }

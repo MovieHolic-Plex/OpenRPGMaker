@@ -11,11 +11,12 @@ const WIDE_BUDGET = 40_000;
 // tokenBudget.calibratedBudgetChars 하한(CALIBRATION_CLAMP_MIN_RATIO 0.5 × 12000).
 const CALIBRATED_MIN_BUDGET = 6000;
 // 색인 문자 상한: 툴 추가/이름 변경으로 프롬프트가 조용히 부푸는 것을 막는 카나리아.
-// 실측: 파사드 37개를 들이기 전 3,170자 → 들인 후 3,843자(활성 툴 185개). 상한은 그 위로 여유를 둔다.
+// 실측: 파사드 37개를 들이기 전 3,170자 → 들인 후 3,843자(활성 툴 185개)
+// → canonical spatial 여섯 도구 시대 4,701자(활성 툴 220개). 상한은 그 위로 여유를 둔다.
 // 이 상한이 프롬프트 예산을 잡아먹지는 않는다 — buildSystemPrompt 가 색인 길이만큼 예산을 늘려
 // 기존 섹션 자리를 지키기 때문이다(아래 "does not push ... over its budget" 케이스가 그것을 고정한다).
 // 상한을 올릴 때는 이 주석의 실측 자수를 함께 갱신한다 — 조용한 상향은 금지다.
-const INDEX_CHAR_CEILING = 4600;
+const INDEX_CHAR_CEILING = 4800;
 
 function liveToolNames(): readonly string[] {
   return activeTools().filter((tool) => tool.supersededBy === undefined).map((tool) => tool.name);

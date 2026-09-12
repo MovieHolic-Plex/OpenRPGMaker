@@ -7,7 +7,9 @@ const h = vi.hoisted(() => ({
   requests: [] as Record<string, unknown>[],
   results: [] as { project: unknown; toolCalls?: number; toolErrors?: number }[],
   errorEvents: [] as string[],
+  assistantTexts: [] as string[],
   outcomes: [] as (Record<string, unknown> | null)[], // 호출 순서 보존
+  boardStates: [] as { phase?: string; applied?: string | null }[],
   spills: [] as { mapIds: readonly string[]; keys: readonly string[] }[],
   bubbles: [] as string[],
   project: {
@@ -22,7 +24,10 @@ vi.mock("@/ai/piAgent/client", () => ({
     const next = h.results.shift() ?? { project: request.project };
     for (const message of h.errorEvents.splice(0)) options?.onEvent?.({ type: "error", message });
     options?.onEvent?.({ type: "start", provider: "p", model: "m", toolCount: 1 });
-    options?.onEvent?.({ type: "tool_end", id: "t1", name: "paint", ok: (next.toolErrors ?? 0) === 0, summary: (next.toolErrors ?? 0) > 0 ? "OAuth token expired before request — please retry; AuthStorage will refresh on the next attempt." : "칠함" });
+    if ((next.toolCalls ?? 1) > 0) {
+      options?.onEvent?.({ type: "tool_end", id: "t1", name: "paint", ok: (next.toolErrors ?? 0) === 0, summary: (next.toolErrors ?? 0) > 0 ? "OAuth token expired before request — please retry; AuthStorage will refresh on the next attempt." : "칠함" });
+    }
+    for (const text of h.assistantTexts.splice(0)) options?.onEvent?.({ type: "assistant", text });
     const done = {
       type: "done", project: next.project,
       stats: { ms: 1, turns: 1, toolCalls: next.toolCalls ?? 1, toolErrors: next.toolErrors ?? 0 },
@@ -33,7 +38,7 @@ vi.mock("@/ai/piAgent/client", () => ({
   },
 }));
 vi.mock("@/editor/panels/aiTeamBoard", () => ({
-  createTeamBoard: () => ({ root: { nodeType: 1 } as unknown as HTMLElement, update: () => {}, setReview: (review: { onDiscard: () => void } | null) => { h.outcomes.push(review); } }),
+  createTeamBoard: () => ({ root: { nodeType: 1 } as unknown as HTMLElement, update: (state: { phase?: string; applied?: string | null }) => { h.boardStates.push(state); }, setReview: (review: { onDiscard: () => void } | null) => { h.outcomes.push(review); } }),
 }));
 vi.mock("@/editor/panels/aiChangePreview", () => ({ changePreviewChips: () => [] }));
 vi.mock("@/ai/piAgent/teamActivity", () => ({ publishTeamActivity: () => {} }));
@@ -72,6 +77,7 @@ const harness = () => {
 
 beforeEach(() => {
   h.requests.length = 0; h.results.length = 0; h.bubbles.length = 0;
+  h.assistantTexts.length = 0; h.boardStates.length = 0;
   h.project = { maps: { map_a: { id: "map_a", name: "A", width: 4, height: 4 } } };
   h.piApply = "auto";
 });
@@ -120,6 +126,26 @@ describe("Pi 경로 실행 결과 4축", () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "다듬어라" }, surface());
 
     expect(outcomeCalls.at(-1)).toMatchObject({ execution: "response-final", goal: "unassessed", delivery: "no-change" });
+  });
+
+  // 깨질 것: 질문 턴(툴 0 · 변경 0 · 답 본문)이 「적용됨」 배지와 실패 톤 캡션으로 끝나면
+  // 성공한 답변이 "아무것도 못 한 실행"으로 읽힌다(2026-09-12 실측 스크린샷).
+  it("답이 남은 변경-0 턴: 보드는 「완료」·본문 말풍선이 시스템 줄보다 먼저 온다", async () => {
+    h.results.push({ project: h.project, toolCalls: 0 });
+    h.assistantTexts.push("현재 맵은 빈 맵(map_blank_start), 20×15 타일입니다.");
+    const { surface } = harness();
+
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "맵 정보 알려줘" }, surface());
+
+    expect(h.boardStates.at(-1)?.phase).toBe("완료");
+    expect(h.boardStates.at(-1)?.phase).not.toBe("적용됨");
+    const assistantIndex = h.bubbles.findIndex((line) => line.startsWith("assistant:"));
+    const systemIndex = h.bubbles.findIndex((line) => line.startsWith("system:"));
+    expect(assistantIndex).toBeGreaterThanOrEqual(0);
+    expect(h.bubbles[assistantIndex]).toContain("빈 맵(map_blank_start)");
+    expect(systemIndex).toBeGreaterThan(assistantIndex);
+    expect(h.bubbles[systemIndex]).toContain("프로젝트는 바뀌지 않았습니다");
+    expect(h.bubbles.some((line) => line.includes("바뀐 것이 없습니다") && !line.includes("프로젝트는"))).toBe(false);
   });
 
   it("스트림 오류(토큰 만료 등)가 있어도 끝까지 가면 성공이지만 오류 다이제스트가 캡션에 남는다", async () => {

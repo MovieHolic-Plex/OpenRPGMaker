@@ -75,6 +75,22 @@ describe("팀 보드 렌더", () => {
     // 원인이 아닌 첫 시공 행에는 붙지 않는다.
     expect(rows.find((row) => row.getAttribute("data-agent-id") === "b1")!.querySelector("[data-testid='ai-team-fix-of']")).toBeNull();
   });
+
+  // 깨질 것: 단일 /pi 실행은 행이 사용자 지시를 그대로 물고 와 같은 문장이 카드 제목·행·말풍선에
+  // 세 번 나왔다(2026-09-12 질문 턴 실측). 보드 지시와 같은 행 지시는 echo 다.
+  it("행 지시가 보드 지시와 같으면 echo 를 그리지 않고, 다른 지시는 남긴다", () => {
+    let state = createTeamBoardState("single", "맵 정보 알려줘");
+    state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "a1", role: "builder", mapId: "map_a", mapName: "빈 맵", task: "맵 정보 알려줘" });
+    let board = createTeamBoard(state);
+    let row = board.root.querySelector("[data-testid='ai-team-agent']")!;
+    expect(row.querySelector(".ai-team-task")).toBeNull();
+
+    // 팀 모드에서 팀장이 다르게 써 내린 위임 지시는 여전히 보인다.
+    state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "a2", role: "builder", mapId: "map_a", mapName: "빈 맵", task: "맵 이름과 크기만 조회" });
+    board.update(state);
+    row = board.root.querySelector("[data-agent-id='a2']")!;
+    expect(row.querySelector(".ai-team-task")?.textContent).toContain("맵 이름과 크기만 조회");
+  });
 });
 
 describe("팀 패널 「지금」 렌더", () => {

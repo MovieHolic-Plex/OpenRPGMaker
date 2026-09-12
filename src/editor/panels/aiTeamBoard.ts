@@ -18,7 +18,7 @@ export interface TeamBoardHandle {
 }
 
 const PHASE_TONE: Record<TeamBoardState["phase"], string> = {
-  "준비": "idle", "실행 중": "running", "적용 중": "running", "검토 대기": "review", "적용됨": "done", "버림": "muted", "중단": "muted", "실패": "error",
+  "준비": "idle", "실행 중": "running", "적용 중": "running", "검토 대기": "review", "적용됨": "done", "완료": "done", "버림": "muted", "중단": "muted", "실패": "error",
 };
 const AGENT_TONE: Record<TeamBoardAgent["state"], string> = {
   "대기": "idle", "실행 중": "running", "완료": "done", "실패": "error", "중단": "muted",
@@ -29,7 +29,7 @@ function agentTitle(agent: TeamBoardAgent): string {
   return agent.mapName ? `${agent.mapName}` : agent.mapId ?? "";
 }
 
-function renderAgent(agent: TeamBoardAgent, startedAt: number): HTMLElement {
+function renderAgent(agent: TeamBoardAgent, startedAt: number, hideTask: boolean): HTMLElement {
   const counters = [
     agent.turns > 0 ? `${agent.turns}턴` : null,
     agent.toolCalls > 0 ? `툴 ${agent.toolCalls}${agent.toolErrors ? ` (실패 ${agent.toolErrors})` : ""}` : null,
@@ -57,7 +57,7 @@ function renderAgent(agent: TeamBoardAgent, startedAt: number): HTMLElement {
     // 같은 맵에 시공 행이 둘 쌓였을 때 어느 것이 검수 지적 때문에 다시 돈 것인지 밝힌다.
     row.append(el("p", { class: "ai-team-fix-of", text: "검수 지적을 고치러 다시 배정됨", dataset: { testid: "ai-team-fix-of", fixOf: agent.fixOf } }));
   }
-  if (agent.task && agent.role !== "orchestrator") {
+  if (agent.task && !hideTask && agent.role !== "orchestrator") {
     // 팀장이 쓴 작업 지시는 길다 — 두 줄로 접고, 누르면 펼친다.
     const task = el("p", { class: "ai-team-task is-clamped", text: agent.task, attrs: { role: "button", tabindex: "0", "aria-expanded": "false", title: "누르면 전체 지시를 펼칩니다" } });
     const toggle = () => { const open = task.classList.toggle("is-clamped"); task.setAttribute("aria-expanded", String(!open)); };
@@ -135,7 +135,9 @@ export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
     totals.textContent = sum.agents > 0
       ? `에이전트 ${sum.agents}${sum.running ? ` (${sum.running} 실행 중)` : ""} · 툴 ${sum.toolCalls}${sum.toolErrors ? ` (실패 ${sum.toolErrors})` : ""} · ${elapsed}초`
       : `${elapsed}초`;
-    list.replaceChildren(...state.agents.map((agent) => renderAgent(agent, startedAt)));
+    // 행의 지시가 보드 지시(=사용자 발화, 이미 카드 제목)와 같으면 echo 를 생략한다 —
+    // 단일 /pi 실행은 행이 지시를 그대로 물고 와 같은 문장이 세 번 나왔다(2026-09-12 실측).
+    list.replaceChildren(...state.agents.map((agent) => renderAgent(agent, startedAt, agent.task === state.task)));
     const footParts: HTMLElement[] = [];
     if (state.report) footParts.push(el("p", { class: "ai-team-report", text: state.report, dataset: { testid: "ai-team-report" } }));
     if (state.error) footParts.push(el("p", { class: "ai-team-error", text: state.error }));

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { PI_TEAM_ROLES, teamRoleSummaries } from "@/ai/piAgent/team";
-import { createTeamBoardState, markTeamBoardAborted, markTeamBoardApplied, plainLine, reduceTeamBoard, teamBoardTotals } from "@/ai/piAgent/teamBoardState";
+import { createTeamBoardState, markTeamBoardAborted, markTeamBoardApplied, markTeamBoardDone, plainLine, reduceTeamBoard, teamBoardTotals } from "@/ai/piAgent/teamBoardState";
 import { selectPiToolDefinitions } from "@/ai/piAgent/toolAdapter";
 import type { PiAgentEvent } from "@/ai/piAgent/protocol";
 import { parsePiCommand } from "@/editor/panels/aiPiAgentCommand";
@@ -77,6 +77,9 @@ describe("팀 보드 리듀서", () => {
     state = reduceTeamBoard(state, { type: "done", project: seeded(), stats: { ms: 1, turns: 1, toolCalls: 1, toolErrors: 0 }, changedKeys: ["maps.map_a"] });
     expect(state.phase).toBe("적용 중");
     expect(markTeamBoardApplied(state, "적용").phase).toBe("적용됨");
+    // 「적용됨」은 커밋된 실행에만 쓴다 — 적용 없이 끝난 정상 종료(계획·답변·무변경)는 「완료」다.
+    expect(markTeamBoardDone(state, "답변").phase).toBe("완료");
+    expect(markTeamBoardDone(state, "답변").applied).toBe("답변");
   });
   // 깨질 것: 팀원 이름이 roleLabel 을 덮으면 그 행이 시공인지 검수인지 알 방법이 사라진다
   // (팀 패널의 「지금」 구획에서 정원사 행에 종류 배지가 없던 이유).

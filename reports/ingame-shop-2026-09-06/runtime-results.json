@@ -14,7 +14,7 @@
           "width": 1024,
           "height": 768
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 300,
         "inventory": {
           "item_potion": 1,
@@ -96,7 +96,7 @@
           "width": 640,
           "height": 480
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 300,
         "inventory": {
           "item_potion": 1,
@@ -178,7 +178,7 @@
           "width": 320,
           "height": 240
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 300,
         "inventory": {
           "item_potion": 1,
@@ -260,7 +260,7 @@
           "width": 1024,
           "height": 768
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 300,
         "inventory": {
           "item_potion": 1,
@@ -318,6 +318,7 @@
         "totalAmount": 50,
         "status": "무엇을 구매하시겠습니까?",
         "equippedText": "보유1",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 68,
@@ -368,19 +369,19 @@
             "bottom": 707
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 638.9375,
+            "x": 446.90625,
             "y": 635.40625,
             "width": 48,
             "height": 32,
-            "right": 686.9375,
+            "right": 494.90625,
             "bottom": 667.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 734.9375,
+            "x": 506.90625,
             "y": 639.8125,
             "width": 64.0625,
             "height": 23.1875,
-            "right": 799,
+            "right": 570.96875,
             "bottom": 663
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -411,53 +412,53 @@
         "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -472,7 +473,7 @@
           "width": 640,
           "height": 480
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 300,
         "inventory": {
           "item_potion": 1,
@@ -530,6 +531,7 @@
         "totalAmount": 50,
         "status": "무엇을 구매하시겠습니까?",
         "equippedText": "보유1",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 8,
@@ -580,19 +582,19 @@
             "bottom": 471
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 83,
+            "x": 47,
             "y": 403.40625,
             "width": 32,
             "height": 32,
-            "right": 115,
+            "right": 79,
             "bottom": 435.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 163,
+            "x": 91,
             "y": 409.25,
             "width": 55.796875,
             "height": 20.296875,
-            "right": 218.796875,
+            "right": 146.796875,
             "bottom": 429.546875
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -623,53 +625,53 @@
         "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -684,7 +686,7 @@
           "width": 320,
           "height": 240
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 300,
         "inventory": {
           "item_potion": 1,
@@ -742,6 +744,7 @@
         "totalAmount": 50,
         "status": "무엇을 구매하시겠습니까?",
         "equippedText": "보유1",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 4,
@@ -755,133 +758,133 @@
             "x": 5,
             "y": 5,
             "width": 310,
-            "height": 47.796875,
+            "height": 43.796875,
             "right": 315,
-            "bottom": 52.796875
+            "bottom": 48.796875
           },
           ".runtime-shop-item-list": {
             "x": 9,
-            "y": 80.796875,
+            "y": 76.796875,
             "width": 302,
-            "height": 36.203125,
+            "height": 54.28125,
             "right": 311,
-            "bottom": 117
+            "bottom": 131.078125
           },
           ".runtime-shop-item-row.selected": {
             "x": 13,
-            "y": 80.796875,
+            "y": 76.796875,
             "width": 294,
             "height": 30.796875,
             "right": 307,
-            "bottom": 111.59375
+            "bottom": 107.59375
           },
           ".runtime-shop-side": {
             "x": 5,
-            "y": 121,
+            "y": 135.078125,
             "width": 310,
-            "height": 42.5,
+            "height": 20.421875,
             "right": 315,
-            "bottom": 163.5
+            "bottom": 155.5
           },
           ".runtime-shop-prompt-panel": {
             "x": 5,
-            "y": 163.5,
+            "y": 155.5,
             "width": 310,
-            "height": 71.5,
+            "height": 79.5,
             "right": 315,
             "bottom": 235
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 41,
-            "y": 187,
+            "x": 13,
+            "y": 179,
             "width": 24,
             "height": 24,
-            "right": 65,
-            "bottom": 211
+            "right": 37,
+            "bottom": 203
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 101,
-            "y": 190.296875,
+            "x": 45,
+            "y": 182.296875,
             "width": 47.546875,
             "height": 17.390625,
-            "right": 148.546875,
-            "bottom": 207.6875
+            "right": 92.546875,
+            "bottom": 199.6875
           },
           "[data-testid=\"shop-confirm\"]": {
-            "x": 227,
-            "y": 187,
+            "x": 104.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 263,
-            "bottom": 211
+            "right": 140.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-item-cancel\"]": {
-            "x": 271,
-            "y": 187,
+            "x": 148.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 307,
-            "bottom": 211
+            "right": 184.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-player-gold\"]": {
             "x": 221.828125,
-            "y": 9,
+            "y": 16.25,
             "width": 85.171875,
             "height": 20.296875,
             "right": 307,
-            "bottom": 29.296875
+            "bottom": 36.546875
           }
         },
         "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -896,7 +899,7 @@
           "width": 1024,
           "height": 768
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 300,
         "inventory": {
           "item_potion": 1,
@@ -954,6 +957,7 @@
         "totalAmount": 150,
         "status": "무엇을 구매하시겠습니까?",
         "equippedText": "보유1",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 68,
@@ -1004,19 +1008,19 @@
             "bottom": 707
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 629.796875,
+            "x": 437.765625,
             "y": 635.40625,
             "width": 48,
             "height": 32,
-            "right": 677.796875,
+            "right": 485.765625,
             "bottom": 667.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 725.796875,
+            "x": 497.765625,
             "y": 639.8125,
             "width": 73.203125,
             "height": 23.1875,
-            "right": 799,
+            "right": 570.96875,
             "bottom": 663
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -1047,53 +1051,53 @@
         "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -1108,7 +1112,7 @@
           "width": 640,
           "height": 480
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 300,
         "inventory": {
           "item_potion": 1,
@@ -1166,6 +1170,7 @@
         "totalAmount": 150,
         "status": "무엇을 구매하시겠습니까?",
         "equippedText": "보유1",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 8,
@@ -1216,19 +1221,19 @@
             "bottom": 471
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 83,
+            "x": 47,
             "y": 403.40625,
             "width": 32,
             "height": 32,
-            "right": 115,
+            "right": 79,
             "bottom": 435.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 163,
+            "x": 91,
             "y": 409.25,
             "width": 63.8125,
             "height": 20.296875,
-            "right": 226.8125,
+            "right": 154.8125,
             "bottom": 429.546875
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -1259,53 +1264,53 @@
         "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -1320,7 +1325,7 @@
           "width": 320,
           "height": 240
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 300,
         "inventory": {
           "item_potion": 1,
@@ -1378,6 +1383,7 @@
         "totalAmount": 150,
         "status": "무엇을 구매하시겠습니까?",
         "equippedText": "보유1",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 4,
@@ -1391,133 +1397,133 @@
             "x": 5,
             "y": 5,
             "width": 310,
-            "height": 47.796875,
+            "height": 43.796875,
             "right": 315,
-            "bottom": 52.796875
+            "bottom": 48.796875
           },
           ".runtime-shop-item-list": {
             "x": 9,
-            "y": 80.796875,
+            "y": 76.796875,
             "width": 302,
-            "height": 36.203125,
+            "height": 54.28125,
             "right": 311,
-            "bottom": 117
+            "bottom": 131.078125
           },
           ".runtime-shop-item-row.selected": {
             "x": 13,
-            "y": 80.796875,
+            "y": 76.796875,
             "width": 294,
             "height": 30.796875,
             "right": 307,
-            "bottom": 111.59375
+            "bottom": 107.59375
           },
           ".runtime-shop-side": {
             "x": 5,
-            "y": 121,
+            "y": 135.078125,
             "width": 310,
-            "height": 42.5,
+            "height": 20.421875,
             "right": 315,
-            "bottom": 163.5
+            "bottom": 155.5
           },
           ".runtime-shop-prompt-panel": {
             "x": 5,
-            "y": 163.5,
+            "y": 155.5,
             "width": 310,
-            "height": 71.5,
+            "height": 79.5,
             "right": 315,
             "bottom": 235
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 41,
-            "y": 187,
+            "x": 13,
+            "y": 179,
             "width": 24,
             "height": 24,
-            "right": 65,
-            "bottom": 211
+            "right": 37,
+            "bottom": 203
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 101,
-            "y": 190.296875,
+            "x": 45,
+            "y": 182.296875,
             "width": 54.40625,
             "height": 17.390625,
-            "right": 155.40625,
-            "bottom": 207.6875
+            "right": 99.40625,
+            "bottom": 199.6875
           },
           "[data-testid=\"shop-confirm\"]": {
-            "x": 227,
-            "y": 187,
+            "x": 104.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 263,
-            "bottom": 211
+            "right": 140.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-item-cancel\"]": {
-            "x": 271,
-            "y": 187,
+            "x": 148.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 307,
-            "bottom": 211
+            "right": 184.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-player-gold\"]": {
             "x": 221.828125,
-            "y": 9,
+            "y": 16.25,
             "width": 85.171875,
             "height": 20.296875,
             "right": 307,
-            "bottom": 29.296875
+            "bottom": 36.546875
           }
         },
         "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -1532,7 +1538,7 @@
           "width": 1024,
           "height": 768
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 150,
         "inventory": {
           "item_potion": 4,
@@ -1591,11 +1597,12 @@
         "mode": "buy",
         "selected": "shop-buy-item_potion",
         "quantity": "3",
-        "quantityMax": "6",
+        "quantityMax": "3",
         "total": "합계 150G",
         "totalAmount": 150,
         "status": "회복약 구매 — -150G",
         "equippedText": "보유4",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 68,
@@ -1646,19 +1653,19 @@
             "bottom": 707
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 629.796875,
+            "x": 451.5,
             "y": 635.40625,
             "width": 48,
             "height": 32,
-            "right": 677.796875,
+            "right": 499.5,
             "bottom": 667.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 725.796875,
+            "x": 511.5,
             "y": 639.8125,
             "width": 73.203125,
             "height": 23.1875,
-            "right": 799,
+            "right": 584.703125,
             "bottom": 663
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -1686,58 +1693,56 @@
             "bottom": 111.796875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 6, current funds/inventory 3"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -1752,7 +1757,7 @@
           "width": 640,
           "height": 480
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 150,
         "inventory": {
           "item_potion": 4,
@@ -1811,11 +1816,12 @@
         "mode": "buy",
         "selected": "shop-buy-item_potion",
         "quantity": "3",
-        "quantityMax": "6",
+        "quantityMax": "3",
         "total": "합계 150G",
         "totalAmount": 150,
         "status": "회복약 구매 — -150G",
         "equippedText": "보유4",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 8,
@@ -1866,19 +1872,19 @@
             "bottom": 471
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 83,
+            "x": 47,
             "y": 403.40625,
             "width": 32,
             "height": 32,
-            "right": 115,
+            "right": 79,
             "bottom": 435.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 163,
+            "x": 91,
             "y": 409.25,
             "width": 63.8125,
             "height": 20.296875,
-            "right": 226.8125,
+            "right": 154.8125,
             "bottom": 429.546875
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -1906,58 +1912,56 @@
             "bottom": 40.1875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 6, current funds/inventory 3"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -1972,7 +1976,7 @@
           "width": 320,
           "height": 240
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 150,
         "inventory": {
           "item_potion": 4,
@@ -2031,11 +2035,12 @@
         "mode": "buy",
         "selected": "shop-buy-item_potion",
         "quantity": "3",
-        "quantityMax": "6",
+        "quantityMax": "3",
         "total": "합계 150G",
         "totalAmount": 150,
         "status": "회복약 구매 — -150G",
         "equippedText": "보유4",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 4,
@@ -2049,135 +2054,133 @@
             "x": 5,
             "y": 5,
             "width": 310,
-            "height": 47.796875,
+            "height": 43.796875,
             "right": 315,
-            "bottom": 52.796875
+            "bottom": 48.796875
           },
           ".runtime-shop-item-list": {
             "x": 9,
-            "y": 80.796875,
+            "y": 76.796875,
             "width": 302,
-            "height": 36.203125,
+            "height": 54.28125,
             "right": 311,
-            "bottom": 117
+            "bottom": 131.078125
           },
           ".runtime-shop-item-row.selected": {
             "x": 13,
-            "y": 80.796875,
+            "y": 76.796875,
             "width": 294,
             "height": 30.796875,
             "right": 307,
-            "bottom": 111.59375
+            "bottom": 107.59375
           },
           ".runtime-shop-side": {
             "x": 5,
-            "y": 121,
+            "y": 135.078125,
             "width": 310,
-            "height": 42.5,
+            "height": 20.421875,
             "right": 315,
-            "bottom": 163.5
+            "bottom": 155.5
           },
           ".runtime-shop-prompt-panel": {
             "x": 5,
-            "y": 163.5,
+            "y": 155.5,
             "width": 310,
-            "height": 71.5,
+            "height": 79.5,
             "right": 315,
             "bottom": 235
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 41,
-            "y": 187,
+            "x": 13,
+            "y": 179,
             "width": 24,
             "height": 24,
-            "right": 65,
-            "bottom": 211
+            "right": 37,
+            "bottom": 203
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 101,
-            "y": 190.296875,
+            "x": 45,
+            "y": 182.296875,
             "width": 54.40625,
             "height": 17.390625,
-            "right": 155.40625,
-            "bottom": 207.6875
+            "right": 99.40625,
+            "bottom": 199.6875
           },
           "[data-testid=\"shop-confirm\"]": {
-            "x": 227,
-            "y": 187,
+            "x": 104.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 263,
-            "bottom": 211
+            "right": 140.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-item-cancel\"]": {
-            "x": 271,
-            "y": 187,
+            "x": 148.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 307,
-            "bottom": 211
+            "right": 184.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-player-gold\"]": {
             "x": 221.828125,
-            "y": 9,
+            "y": 16.25,
             "width": 85.171875,
             "height": 20.296875,
             "right": 307,
-            "bottom": 29.296875
+            "bottom": 36.546875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 6, current funds/inventory 3"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -2192,7 +2195,7 @@
           "width": 1024,
           "height": 768
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 150,
         "inventory": {
           "item_potion": 4,
@@ -2251,12 +2254,12 @@
         "mode": "buy",
         "selected": "shop-buy-equip_sword",
         "quantity": "1",
-        "quantityMax": "3",
+        "quantityMax": "1",
         "total": "합계 100G",
         "totalAmount": 100,
         "status": "회복약 구매 — -150G",
         "equippedText": "보유0장비2",
-        "statsText": "공격▲8",
+        "summaryText": "주인공 · 무기현재 장비: 청동 검같은 장비 · 변화 없음",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 68,
@@ -2307,19 +2310,19 @@
             "bottom": 707
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 629.796875,
+            "x": 444.640625,
             "y": 635.40625,
             "width": 48,
             "height": 32,
-            "right": 677.796875,
+            "right": 492.640625,
             "bottom": 667.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 725.796875,
+            "x": 504.640625,
             "y": 639.8125,
             "width": 73.203125,
             "height": 23.1875,
-            "right": 799,
+            "right": 577.84375,
             "bottom": 663
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -2347,58 +2350,56 @@
             "bottom": 111.796875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 3, current funds/inventory 1"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -2413,7 +2414,7 @@
           "width": 640,
           "height": 480
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 150,
         "inventory": {
           "item_potion": 4,
@@ -2472,12 +2473,12 @@
         "mode": "buy",
         "selected": "shop-buy-equip_sword",
         "quantity": "1",
-        "quantityMax": "3",
+        "quantityMax": "1",
         "total": "합계 100G",
         "totalAmount": 100,
         "status": "회복약 구매 — -150G",
         "equippedText": "보유0장비2",
-        "statsText": "공격▲8",
+        "summaryText": "주인공 · 무기현재 장비: 청동 검같은 장비 · 변화 없음",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 8,
@@ -2528,19 +2529,19 @@
             "bottom": 471
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 83,
+            "x": 47,
             "y": 403.40625,
             "width": 32,
             "height": 32,
-            "right": 115,
+            "right": 79,
             "bottom": 435.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 163,
+            "x": 91,
             "y": 409.25,
             "width": 63.8125,
             "height": 20.296875,
-            "right": 226.8125,
+            "right": 154.8125,
             "bottom": 429.546875
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -2568,58 +2569,56 @@
             "bottom": 40.1875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 3, current funds/inventory 1"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -2634,7 +2633,7 @@
           "width": 320,
           "height": 240
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 150,
         "inventory": {
           "item_potion": 4,
@@ -2693,12 +2692,12 @@
         "mode": "buy",
         "selected": "shop-buy-equip_sword",
         "quantity": "1",
-        "quantityMax": "3",
+        "quantityMax": "1",
         "total": "합계 100G",
         "totalAmount": 100,
         "status": "회복약 구매 — -150G",
         "equippedText": "보유0장비2",
-        "statsText": "공격▲8",
+        "summaryText": "주인공 · 무기현재 장비: 청동 검같은 장비 · 변화 없음",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 4,
@@ -2712,135 +2711,133 @@
             "x": 5,
             "y": 5,
             "width": 310,
-            "height": 47.796875,
+            "height": 43.796875,
             "right": 315,
-            "bottom": 52.796875
+            "bottom": 48.796875
           },
           ".runtime-shop-item-list": {
             "x": 9,
-            "y": 80.796875,
+            "y": 76.796875,
             "width": 302,
-            "height": 36.203125,
+            "height": 54.28125,
             "right": 311,
-            "bottom": 117
+            "bottom": 131.078125
           },
           ".runtime-shop-item-row.selected": {
             "x": 13,
-            "y": 80.390625,
+            "y": 76.390625,
             "width": 294,
             "height": 30.796875,
             "right": 307,
-            "bottom": 111.1875
+            "bottom": 107.1875
           },
           ".runtime-shop-side": {
             "x": 5,
-            "y": 121,
+            "y": 135.078125,
             "width": 310,
-            "height": 42.5,
+            "height": 20.421875,
             "right": 315,
-            "bottom": 163.5
+            "bottom": 155.5
           },
           ".runtime-shop-prompt-panel": {
             "x": 5,
-            "y": 163.5,
+            "y": 155.5,
             "width": 310,
-            "height": 71.5,
+            "height": 79.5,
             "right": 315,
             "bottom": 235
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 41,
-            "y": 187,
+            "x": 13,
+            "y": 179,
             "width": 24,
             "height": 24,
-            "right": 65,
-            "bottom": 211
+            "right": 37,
+            "bottom": 203
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 101,
-            "y": 190.296875,
+            "x": 45,
+            "y": 182.296875,
             "width": 54.40625,
             "height": 17.390625,
-            "right": 155.40625,
-            "bottom": 207.6875
+            "right": 99.40625,
+            "bottom": 199.6875
           },
           "[data-testid=\"shop-confirm\"]": {
-            "x": 227,
-            "y": 187,
+            "x": 104.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 263,
-            "bottom": 211
+            "right": 140.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-item-cancel\"]": {
-            "x": 271,
-            "y": 187,
+            "x": 148.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 307,
-            "bottom": 211
+            "right": 184.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-player-gold\"]": {
             "x": 221.828125,
-            "y": 9,
+            "y": 16.25,
             "width": 85.171875,
             "height": 20.296875,
             "right": 307,
-            "bottom": 29.296875
+            "bottom": 36.546875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 3, current funds/inventory 1"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -2855,7 +2852,7 @@
           "width": 1024,
           "height": 768
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 50,
         "inventory": {
           "item_potion": 4,
@@ -2919,12 +2916,12 @@
         "mode": "buy",
         "selected": "shop-buy-equip_sword",
         "quantity": "1",
-        "quantityMax": "3",
+        "quantityMax": "1",
         "total": "합계 100G",
         "totalAmount": 100,
         "status": "청동 검 구매 — -100G",
         "equippedText": "보유1장비2",
-        "statsText": "공격▲8",
+        "summaryText": "주인공 · 무기현재 장비: 청동 검같은 장비 · 변화 없음",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 68,
@@ -2975,19 +2972,19 @@
             "bottom": 707
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 629.796875,
+            "x": 447.75,
             "y": 635.40625,
             "width": 48,
             "height": 32,
-            "right": 677.796875,
+            "right": 495.75,
             "bottom": 667.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 725.796875,
+            "x": 507.75,
             "y": 639.8125,
             "width": 73.203125,
             "height": 23.1875,
-            "right": 799,
+            "right": 580.953125,
             "bottom": 663
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -3015,58 +3012,56 @@
             "bottom": 111.796875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 3, current funds/inventory 1"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -3081,7 +3076,7 @@
           "width": 640,
           "height": 480
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 50,
         "inventory": {
           "item_potion": 4,
@@ -3145,12 +3140,12 @@
         "mode": "buy",
         "selected": "shop-buy-equip_sword",
         "quantity": "1",
-        "quantityMax": "3",
+        "quantityMax": "1",
         "total": "합계 100G",
         "totalAmount": 100,
         "status": "청동 검 구매 — -100G",
         "equippedText": "보유1장비2",
-        "statsText": "공격▲8",
+        "summaryText": "주인공 · 무기현재 장비: 청동 검같은 장비 · 변화 없음",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 8,
@@ -3201,19 +3196,19 @@
             "bottom": 471
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 83,
+            "x": 47,
             "y": 403.40625,
             "width": 32,
             "height": 32,
-            "right": 115,
+            "right": 79,
             "bottom": 435.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 163,
+            "x": 91,
             "y": 409.25,
             "width": 63.8125,
             "height": 20.296875,
-            "right": 226.8125,
+            "right": 154.8125,
             "bottom": 429.546875
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -3241,58 +3236,56 @@
             "bottom": 40.1875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 3, current funds/inventory 1"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -3307,7 +3300,7 @@
           "width": 320,
           "height": 240
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 50,
         "inventory": {
           "item_potion": 4,
@@ -3371,12 +3364,12 @@
         "mode": "buy",
         "selected": "shop-buy-equip_sword",
         "quantity": "1",
-        "quantityMax": "3",
+        "quantityMax": "1",
         "total": "합계 100G",
         "totalAmount": 100,
         "status": "청동 검 구매 — -100G",
         "equippedText": "보유1장비2",
-        "statsText": "공격▲8",
+        "summaryText": "주인공 · 무기현재 장비: 청동 검같은 장비 · 변화 없음",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 4,
@@ -3390,135 +3383,133 @@
             "x": 5,
             "y": 5,
             "width": 310,
-            "height": 47.796875,
+            "height": 43.796875,
             "right": 315,
-            "bottom": 52.796875
+            "bottom": 48.796875
           },
           ".runtime-shop-item-list": {
             "x": 9,
-            "y": 80.796875,
+            "y": 76.796875,
             "width": 302,
-            "height": 36.203125,
+            "height": 54.28125,
             "right": 311,
-            "bottom": 117
+            "bottom": 131.078125
           },
           ".runtime-shop-item-row.selected": {
             "x": 13,
-            "y": 80.390625,
+            "y": 76.390625,
             "width": 294,
             "height": 30.796875,
             "right": 307,
-            "bottom": 111.1875
+            "bottom": 107.1875
           },
           ".runtime-shop-side": {
             "x": 5,
-            "y": 121,
+            "y": 135.078125,
             "width": 310,
-            "height": 42.5,
+            "height": 20.421875,
             "right": 315,
-            "bottom": 163.5
+            "bottom": 155.5
           },
           ".runtime-shop-prompt-panel": {
             "x": 5,
-            "y": 163.5,
+            "y": 155.5,
             "width": 310,
-            "height": 71.5,
+            "height": 79.5,
             "right": 315,
             "bottom": 235
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 41,
-            "y": 187,
+            "x": 13,
+            "y": 179,
             "width": 24,
             "height": 24,
-            "right": 65,
-            "bottom": 211
+            "right": 37,
+            "bottom": 203
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 101,
-            "y": 190.296875,
+            "x": 45,
+            "y": 182.296875,
             "width": 54.40625,
             "height": 17.390625,
-            "right": 155.40625,
-            "bottom": 207.6875
+            "right": 99.40625,
+            "bottom": 199.6875
           },
           "[data-testid=\"shop-confirm\"]": {
-            "x": 227,
-            "y": 187,
+            "x": 104.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 263,
-            "bottom": 211
+            "right": 140.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-item-cancel\"]": {
-            "x": 271,
-            "y": 187,
+            "x": 148.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 307,
-            "bottom": 211
+            "right": 184.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-player-gold\"]": {
             "x": 229.84375,
-            "y": 9,
+            "y": 16.25,
             "width": 77.15625,
             "height": 20.296875,
             "right": 307,
-            "bottom": 29.296875
+            "bottom": 36.546875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 3, current funds/inventory 1"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -3533,7 +3524,7 @@
           "width": 1024,
           "height": 768
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 50,
         "inventory": {
           "item_potion": 4,
@@ -3602,6 +3593,7 @@
         "totalAmount": 600,
         "status": "소지금이 부족합니다.",
         "equippedText": "보유0",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 68,
@@ -3652,19 +3644,19 @@
             "bottom": 707
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 629.796875,
+            "x": 440.890625,
             "y": 635.40625,
             "width": 48,
             "height": 32,
-            "right": 677.796875,
+            "right": 488.890625,
             "bottom": 667.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 725.796875,
+            "x": 500.890625,
             "y": 639.8125,
             "width": 73.203125,
             "height": 23.1875,
-            "right": 799,
+            "right": 574.09375,
             "bottom": 663
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -3695,53 +3687,53 @@
         "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -3756,7 +3748,7 @@
           "width": 640,
           "height": 480
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 50,
         "inventory": {
           "item_potion": 4,
@@ -3825,6 +3817,7 @@
         "totalAmount": 600,
         "status": "소지금이 부족합니다.",
         "equippedText": "보유0",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 8,
@@ -3875,19 +3868,19 @@
             "bottom": 471
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 83,
+            "x": 47,
             "y": 403.40625,
             "width": 32,
             "height": 32,
-            "right": 115,
+            "right": 79,
             "bottom": 435.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 163,
+            "x": 91,
             "y": 409.25,
             "width": 63.8125,
             "height": 20.296875,
-            "right": 226.8125,
+            "right": 154.8125,
             "bottom": 429.546875
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -3918,53 +3911,53 @@
         "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -3979,7 +3972,7 @@
           "width": 320,
           "height": 240
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 50,
         "inventory": {
           "item_potion": 4,
@@ -4048,6 +4041,7 @@
         "totalAmount": 600,
         "status": "소지금이 부족합니다.",
         "equippedText": "보유0",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 4,
@@ -4061,133 +4055,133 @@
             "x": 5,
             "y": 5,
             "width": 310,
-            "height": 47.796875,
+            "height": 43.796875,
             "right": 315,
-            "bottom": 52.796875
+            "bottom": 48.796875
           },
           ".runtime-shop-item-list": {
             "x": 9,
-            "y": 80.796875,
+            "y": 76.796875,
             "width": 302,
-            "height": 36.203125,
+            "height": 54.28125,
             "right": 311,
-            "bottom": 117
+            "bottom": 131.078125
           },
           ".runtime-shop-item-row.selected": {
             "x": 13,
-            "y": 82.1875,
+            "y": 96.1875,
             "width": 294,
             "height": 30.796875,
             "right": 307,
-            "bottom": 112.984375
+            "bottom": 126.984375
           },
           ".runtime-shop-side": {
             "x": 5,
-            "y": 121,
+            "y": 135.078125,
             "width": 310,
-            "height": 42.5,
+            "height": 20.421875,
             "right": 315,
-            "bottom": 163.5
+            "bottom": 155.5
           },
           ".runtime-shop-prompt-panel": {
             "x": 5,
-            "y": 163.5,
+            "y": 155.5,
             "width": 310,
-            "height": 71.5,
+            "height": 79.5,
             "right": 315,
             "bottom": 235
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 41,
-            "y": 187,
+            "x": 13,
+            "y": 179,
             "width": 24,
             "height": 24,
-            "right": 65,
-            "bottom": 211
+            "right": 37,
+            "bottom": 203
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 101,
-            "y": 190.296875,
+            "x": 45,
+            "y": 182.296875,
             "width": 54.40625,
             "height": 17.390625,
-            "right": 155.40625,
-            "bottom": 207.6875
+            "right": 99.40625,
+            "bottom": 199.6875
           },
           "[data-testid=\"shop-confirm\"]": {
-            "x": 227,
-            "y": 187,
+            "x": 104.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 263,
-            "bottom": 211
+            "right": 140.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-item-cancel\"]": {
-            "x": 271,
-            "y": 187,
+            "x": 148.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 307,
-            "bottom": 211
+            "right": 184.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-player-gold\"]": {
             "x": 229.84375,
-            "y": 9,
+            "y": 16.25,
             "width": 77.15625,
             "height": 20.296875,
             "right": 307,
-            "bottom": 29.296875
+            "bottom": 36.546875
           }
         },
         "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/ether-blue.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -4202,7 +4196,7 @@
           "width": 1024,
           "height": 768
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 100,
         "inventory": {
           "item_potion": 2,
@@ -4266,11 +4260,12 @@
         "mode": "sell",
         "selected": "shop-sell-item_potion",
         "quantity": "2",
-        "quantityMax": "4",
+        "quantityMax": "2",
         "total": "합계 50G",
         "totalAmount": 50,
         "status": "회복약 판매 — +50G",
         "equippedText": "보유2",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 68,
@@ -4321,19 +4316,19 @@
             "bottom": 707
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 638.9375,
+            "x": 446.90625,
             "y": 635.40625,
             "width": 48,
             "height": 32,
-            "right": 686.9375,
+            "right": 494.90625,
             "bottom": 667.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 734.9375,
+            "x": 506.90625,
             "y": 639.8125,
             "width": 64.0625,
             "height": 23.1875,
-            "right": 799,
+            "right": 570.96875,
             "bottom": 663
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -4361,58 +4356,56 @@
             "bottom": 111.796875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 4, current funds/inventory 2"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/antidote-green.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/antidote-green.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/antidote-green.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/antidote-green.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -4427,7 +4420,7 @@
           "width": 640,
           "height": 480
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 100,
         "inventory": {
           "item_potion": 2,
@@ -4491,11 +4484,12 @@
         "mode": "sell",
         "selected": "shop-sell-item_potion",
         "quantity": "2",
-        "quantityMax": "4",
+        "quantityMax": "2",
         "total": "합계 50G",
         "totalAmount": 50,
         "status": "회복약 판매 — +50G",
         "equippedText": "보유2",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 8,
@@ -4546,19 +4540,19 @@
             "bottom": 471
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 83,
+            "x": 47,
             "y": 403.40625,
             "width": 32,
             "height": 32,
-            "right": 115,
+            "right": 79,
             "bottom": 435.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 163,
+            "x": 91,
             "y": 409.25,
             "width": 55.796875,
             "height": 20.296875,
-            "right": 218.796875,
+            "right": 146.796875,
             "bottom": 429.546875
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -4586,58 +4580,56 @@
             "bottom": 40.1875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 4, current funds/inventory 2"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/antidote-green.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/antidote-green.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/antidote-green.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/antidote-green.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -4652,7 +4644,7 @@
           "width": 320,
           "height": 240
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 100,
         "inventory": {
           "item_potion": 2,
@@ -4716,11 +4708,12 @@
         "mode": "sell",
         "selected": "shop-sell-item_potion",
         "quantity": "2",
-        "quantityMax": "4",
+        "quantityMax": "2",
         "total": "합계 50G",
         "totalAmount": 50,
         "status": "회복약 판매 — +50G",
         "equippedText": "보유2",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 4,
@@ -4734,135 +4727,133 @@
             "x": 5,
             "y": 5,
             "width": 310,
-            "height": 47.796875,
+            "height": 43.796875,
             "right": 315,
-            "bottom": 52.796875
+            "bottom": 48.796875
           },
           ".runtime-shop-item-list": {
             "x": 9,
-            "y": 80.796875,
+            "y": 76.796875,
             "width": 302,
-            "height": 36.203125,
+            "height": 52,
             "right": 311,
-            "bottom": 117
+            "bottom": 128.796875
           },
           ".runtime-shop-item-row.selected": {
             "x": 13,
-            "y": 80.796875,
+            "y": 76.796875,
             "width": 294,
             "height": 30.796875,
             "right": 307,
-            "bottom": 111.59375
+            "bottom": 107.59375
           },
           ".runtime-shop-side": {
             "x": 5,
-            "y": 121,
+            "y": 131.1875,
             "width": 310,
-            "height": 42.5,
+            "height": 24.3125,
             "right": 315,
-            "bottom": 163.5
+            "bottom": 155.5
           },
           ".runtime-shop-prompt-panel": {
             "x": 5,
-            "y": 163.5,
+            "y": 155.5,
             "width": 310,
-            "height": 71.5,
+            "height": 79.5,
             "right": 315,
             "bottom": 235
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 41,
-            "y": 187,
+            "x": 13,
+            "y": 179,
             "width": 24,
             "height": 24,
-            "right": 65,
-            "bottom": 211
+            "right": 37,
+            "bottom": 203
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 101,
-            "y": 190.296875,
+            "x": 45,
+            "y": 182.296875,
             "width": 47.546875,
             "height": 17.390625,
-            "right": 148.546875,
-            "bottom": 207.6875
+            "right": 92.546875,
+            "bottom": 199.6875
           },
           "[data-testid=\"shop-confirm\"]": {
-            "x": 227,
-            "y": 187,
+            "x": 104.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 263,
-            "bottom": 211
+            "right": 140.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-item-cancel\"]": {
-            "x": 271,
-            "y": 187,
+            "x": 148.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 307,
-            "bottom": 211
+            "right": 184.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-player-gold\"]": {
             "x": 221.828125,
-            "y": 9,
+            "y": 16.25,
             "width": 85.171875,
             "height": 20.296875,
             "right": 307,
-            "bottom": 29.296875
+            "bottom": 36.546875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 4, current funds/inventory 2"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/antidote-green.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/antidote-green.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/antidote-green.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/antidote-green.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -4877,7 +4868,7 @@
           "width": 1024,
           "height": 768
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 130,
         "inventory": {
           "item_potion": 2,
@@ -4949,7 +4940,7 @@
         "totalAmount": 50,
         "status": "해독초 판매 — +30G",
         "equippedText": "보유1장비2",
-        "statsText": "공격▲8",
+        "summaryText": "주인공 · 무기현재 장비: 청동 검같은 장비 · 변화 없음",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 68,
@@ -5000,19 +4991,19 @@
             "bottom": 707
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 638.9375,
+            "x": 446.90625,
             "y": 635.40625,
             "width": 48,
             "height": 32,
-            "right": 686.9375,
+            "right": 494.90625,
             "bottom": 667.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 734.9375,
+            "x": 506.90625,
             "y": 639.8125,
             "width": 64.0625,
             "height": 23.1875,
-            "right": 799,
+            "right": 570.96875,
             "bottom": 663
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -5043,46 +5034,46 @@
         "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -5097,7 +5088,7 @@
           "width": 640,
           "height": 480
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 130,
         "inventory": {
           "item_potion": 2,
@@ -5169,7 +5160,7 @@
         "totalAmount": 50,
         "status": "해독초 판매 — +30G",
         "equippedText": "보유1장비2",
-        "statsText": "공격▲8",
+        "summaryText": "주인공 · 무기현재 장비: 청동 검같은 장비 · 변화 없음",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 8,
@@ -5220,19 +5211,19 @@
             "bottom": 471
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 83,
+            "x": 47,
             "y": 403.40625,
             "width": 32,
             "height": 32,
-            "right": 115,
+            "right": 79,
             "bottom": 435.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 163,
+            "x": 91,
             "y": 409.25,
             "width": 55.796875,
             "height": 20.296875,
-            "right": 218.796875,
+            "right": 146.796875,
             "bottom": 429.546875
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -5263,46 +5254,46 @@
         "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -5317,7 +5308,7 @@
           "width": 320,
           "height": 240
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 130,
         "inventory": {
           "item_potion": 2,
@@ -5389,7 +5380,7 @@
         "totalAmount": 50,
         "status": "해독초 판매 — +30G",
         "equippedText": "보유1장비2",
-        "statsText": "공격▲8",
+        "summaryText": "주인공 · 무기현재 장비: 청동 검같은 장비 · 변화 없음",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 4,
@@ -5403,126 +5394,126 @@
             "x": 5,
             "y": 5,
             "width": 310,
-            "height": 47.796875,
+            "height": 43.796875,
             "right": 315,
-            "bottom": 52.796875
+            "bottom": 48.796875
           },
           ".runtime-shop-item-list": {
             "x": 9,
-            "y": 80.796875,
+            "y": 76.796875,
             "width": 302,
-            "height": 36.203125,
+            "height": 52,
             "right": 311,
-            "bottom": 117
+            "bottom": 128.796875
           },
           ".runtime-shop-item-row.selected": {
             "x": 13,
-            "y": 81.59375,
+            "y": 93.59375,
             "width": 294,
             "height": 30.796875,
             "right": 307,
-            "bottom": 112.390625
+            "bottom": 124.390625
           },
           ".runtime-shop-side": {
             "x": 5,
-            "y": 121,
+            "y": 125.34375,
             "width": 310,
-            "height": 42.5,
+            "height": 30.15625,
             "right": 315,
-            "bottom": 163.5
+            "bottom": 155.5
           },
           ".runtime-shop-prompt-panel": {
             "x": 5,
-            "y": 163.5,
+            "y": 155.5,
             "width": 310,
-            "height": 71.5,
+            "height": 79.5,
             "right": 315,
             "bottom": 235
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 41,
-            "y": 187,
+            "x": 13,
+            "y": 179,
             "width": 24,
             "height": 24,
-            "right": 65,
-            "bottom": 211
+            "right": 37,
+            "bottom": 203
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 101,
-            "y": 190.296875,
+            "x": 45,
+            "y": 182.296875,
             "width": 47.546875,
             "height": 17.390625,
-            "right": 148.546875,
-            "bottom": 207.6875
+            "right": 92.546875,
+            "bottom": 199.6875
           },
           "[data-testid=\"shop-confirm\"]": {
-            "x": 227,
-            "y": 187,
+            "x": 104.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 263,
-            "bottom": 211
+            "right": 140.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-item-cancel\"]": {
-            "x": 271,
-            "y": 187,
+            "x": 148.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 307,
-            "bottom": 211
+            "right": 184.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-player-gold\"]": {
             "x": 221.828125,
-            "y": 9,
+            "y": 16.25,
             "width": 85.171875,
             "height": 20.296875,
             "right": 307,
-            "bottom": 29.296875
+            "bottom": 36.546875
           }
         },
         "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/bronze-sword.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -5537,7 +5528,7 @@
           "width": 1024,
           "height": 768
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 180,
         "inventory": {
           "item_potion": 2
@@ -5603,11 +5594,12 @@
         "mode": "sell",
         "selected": "shop-sell-item_potion",
         "quantity": "1",
-        "quantityMax": "4",
+        "quantityMax": "2",
         "total": "합계 25G",
         "totalAmount": 25,
         "status": "청동 검 판매 — +50G",
         "equippedText": "보유2",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 68,
@@ -5658,19 +5650,19 @@
             "bottom": 707
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 638.9375,
+            "x": 446.90625,
             "y": 635.40625,
             "width": 48,
             "height": 32,
-            "right": 686.9375,
+            "right": 494.90625,
             "bottom": 667.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 734.9375,
+            "x": 506.90625,
             "y": 639.8125,
             "width": 64.0625,
             "height": 23.1875,
-            "right": 799,
+            "right": 570.96875,
             "bottom": 663
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -5698,44 +5690,42 @@
             "bottom": 111.796875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 4, current funds/inventory 2"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -5750,7 +5740,7 @@
           "width": 640,
           "height": 480
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 180,
         "inventory": {
           "item_potion": 2
@@ -5816,11 +5806,12 @@
         "mode": "sell",
         "selected": "shop-sell-item_potion",
         "quantity": "1",
-        "quantityMax": "4",
+        "quantityMax": "2",
         "total": "합계 25G",
         "totalAmount": 25,
         "status": "청동 검 판매 — +50G",
         "equippedText": "보유2",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 8,
@@ -5871,19 +5862,19 @@
             "bottom": 471
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 83,
+            "x": 47,
             "y": 403.40625,
             "width": 32,
             "height": 32,
-            "right": 115,
+            "right": 79,
             "bottom": 435.40625
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 163,
+            "x": 91,
             "y": 409.25,
             "width": 55.796875,
             "height": 20.296875,
-            "right": 218.796875,
+            "right": 146.796875,
             "bottom": 429.546875
           },
           "[data-testid=\"shop-confirm\"]": {
@@ -5911,44 +5902,42 @@
             "bottom": 40.1875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 4, current funds/inventory 2"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -5963,7 +5952,7 @@
           "width": 320,
           "height": 240
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 180,
         "inventory": {
           "item_potion": 2
@@ -6029,11 +6018,12 @@
         "mode": "sell",
         "selected": "shop-sell-item_potion",
         "quantity": "1",
-        "quantityMax": "4",
+        "quantityMax": "2",
         "total": "합계 25G",
         "totalAmount": 25,
         "status": "청동 검 판매 — +50G",
         "equippedText": "보유2",
+        "summaryText": "장비가 아닌 물건은 장착 비교를 제공하지 않습니다.",
         "geometry": {
           ".runtime-shop-shell": {
             "x": 4,
@@ -6047,121 +6037,119 @@
             "x": 5,
             "y": 5,
             "width": 310,
-            "height": 47.796875,
+            "height": 43.796875,
             "right": 315,
-            "bottom": 52.796875
+            "bottom": 48.796875
           },
           ".runtime-shop-item-list": {
             "x": 9,
-            "y": 80.796875,
+            "y": 76.796875,
             "width": 302,
-            "height": 36.203125,
+            "height": 52,
             "right": 311,
-            "bottom": 117
+            "bottom": 128.796875
           },
           ".runtime-shop-item-row.selected": {
             "x": 13,
-            "y": 81.796875,
+            "y": 80.796875,
             "width": 294,
             "height": 30.796875,
             "right": 307,
-            "bottom": 112.59375
+            "bottom": 111.59375
           },
           ".runtime-shop-side": {
             "x": 5,
-            "y": 121,
+            "y": 119.984375,
             "width": 310,
-            "height": 42.5,
+            "height": 35.515625,
             "right": 315,
-            "bottom": 163.5
+            "bottom": 155.5
           },
           ".runtime-shop-prompt-panel": {
             "x": 5,
-            "y": 163.5,
+            "y": 155.5,
             "width": 310,
-            "height": 71.5,
+            "height": 79.5,
             "right": 315,
             "bottom": 235
           },
           "[data-testid=\"shop-quantity-input\"]": {
-            "x": 41,
-            "y": 187,
+            "x": 13,
+            "y": 179,
             "width": 24,
             "height": 24,
-            "right": 65,
-            "bottom": 211
+            "right": 37,
+            "bottom": 203
           },
           "[data-testid=\"shop-quantity-total\"]": {
-            "x": 101,
-            "y": 190.296875,
+            "x": 45,
+            "y": 182.296875,
             "width": 47.546875,
             "height": 17.390625,
-            "right": 148.546875,
-            "bottom": 207.6875
+            "right": 92.546875,
+            "bottom": 199.6875
           },
           "[data-testid=\"shop-confirm\"]": {
-            "x": 227,
-            "y": 187,
+            "x": 104.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 263,
-            "bottom": 211
+            "right": 140.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-item-cancel\"]": {
-            "x": 271,
-            "y": 187,
+            "x": 148.9375,
+            "y": 207,
             "width": 36,
             "height": 24,
-            "right": 307,
-            "bottom": 211
+            "right": 184.9375,
+            "bottom": 231
           },
           "[data-testid=\"shop-player-gold\"]": {
             "x": 221.828125,
-            "y": 9,
+            "y": 16.25,
             "width": 85.171875,
             "height": 20.296875,
             "right": 307,
-            "bottom": 29.296875
+            "bottom": 36.546875
           }
         },
-        "warnings": [
-          "stale quantity max: DOM 4, current funds/inventory 2"
-        ],
+        "warnings": [],
         "layoutFailures": [],
         "artworkUrls": [
-          "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
-          "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+          "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
+          "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png"
         ],
         "artwork": [
           {
-            "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+            "url": "http://127.0.0.1:46681/assets/cc0/jetrel/icons/potion-red.png",
             "loaded": true,
             "width": 128,
             "height": 128
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/Actor2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People1/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
           },
           {
-            "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+            "url": "http://127.0.0.1:46681/assets/easyrpg/faceset/People2/00.png",
             "loaded": true,
             "width": 48,
             "height": 48
@@ -6176,7 +6164,7 @@
           "width": 1024,
           "height": 768
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 180,
         "inventory": {
           "item_potion": 2
@@ -6254,7 +6242,7 @@
           "width": 640,
           "height": 480
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 180,
         "inventory": {
           "item_potion": 2
@@ -6332,7 +6320,7 @@
           "width": 320,
           "height": 240
         },
-        "url": "http://127.0.0.1:40579/player.html",
+        "url": "http://127.0.0.1:46681/player.html",
         "gold": 180,
         "inventory": {
           "item_potion": 2

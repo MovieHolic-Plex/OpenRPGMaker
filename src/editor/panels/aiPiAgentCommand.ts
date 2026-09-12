@@ -19,6 +19,7 @@ import {
   markTeamBoardAborted,
   markTeamBoardApplied,
   markTeamBoardDiscarded,
+  markTeamBoardDone,
   markTeamBoardFailed,
   markTeamBoardReview,
   reduceTeamBoard,
@@ -282,17 +283,24 @@ export async function runPiCommand(
   const changedKeys = changedProjectKeys(base, merged.project);
   changedCount = changedKeys.length;
   if (changedCount === 0) {
-    // 계획 턴은 바뀌지 않는 것이 정상이다 — "프로젝트에 바뀐 것이 없다" 로 끝내면 실패로 읽힌다.
-    const idle = options.planOnly
+    const answer = lastAssistantText.trim();
+    // 「적용됨」은 커밋된 실행에만 쓴다 — 계획 턴과 답(질문) 턴은 바뀌지 않는 것이 정상이고,
+    // "바뀐 것이 없다" 로 끝내면 성공한 질문이 실패로 읽힌다(2026-09-12 실측).
+    const caption = options.planOnly
       ? "계획만 세웠습니다. 실행하려면 같은 지시를 다시 보내세요."
-      : "Pi 에이전트가 끝났지만 프로젝트에 바뀐 것이 없습니다.";
+      : answer
+        ? "프로젝트는 바뀌지 않았습니다."
+        : "Pi 에이전트가 끝났지만 프로젝트에 바뀐 것이 없습니다.";
     publishFinalOutcome();
-    boardState = markTeamBoardApplied(boardState, options.planOnly ? "계획만 세웠습니다." : "바뀐 것이 없습니다."); sync();
-    finishLog({ applied: false, changedCount: 0, stoppedReason: options.planOnly ? "계획만" : "변경 없음" });
+    boardState = markTeamBoardDone(
+      boardState,
+      options.planOnly ? "계획만 세웠습니다." : answer ? "답변했습니다 — 프로젝트는 그대로입니다." : "바뀐 것이 없습니다.",
+    ); sync();
+    finishLog({ applied: false, changedCount: 0, stoppedReason: options.planOnly ? "계획만" : answer ? "답변" : "변경 없음" });
     surface.setStatus("대기");
-    surface.appendBubble("system", idle);
-    // 읽기 전용(질문)·계획 턴은 답이 곧 결과다 — 보드의 잘린 한 줄 대신 본문을 그대로 남긴다.
-    if (lastAssistantText.trim()) surface.appendBubble("assistant", lastAssistantText.trim());
+    // 답이 곧 결과인 턴은 본문 말풍선이 먼저다 — 보드의 잘린 한 줄·시스템 줄이 답 앞에 서지 않게 한다.
+    if (answer) surface.appendBubble("assistant", answer);
+    surface.appendBubble("system", caption);
     return true;
   }
   // 영수증이 그릴 맵: 먼저 바뀐 맵, 없으면 지시 범위의 첫 맵.

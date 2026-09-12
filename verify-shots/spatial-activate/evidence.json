@@ -1,0 +1,741 @@
+{
+  "legacy": {
+    "spatialAuthoringPresent": false,
+    "spatialToolNames": [
+      "list_spatial_designs",
+      "get_geography_vocabulary",
+      "get_spatial_design",
+      "upsert_spatial_design",
+      "preview_spatial_build",
+      "apply_spatial_build"
+    ],
+    "list": {
+      "ok": true,
+      "summary": "공간 저작 비활성 — canonical 문서가 없는 레거시 프로젝트(0 spatial designs)",
+      "data": {
+        "active": false,
+        "designs": []
+      }
+    },
+    "get": {
+      "ok": false,
+      "summary": "'get_spatial_design' 실행 실패: 이 프로젝트에는 canonical 공간 저작 문서(spatialAuthoring)가 없다 — 레거시 프로젝트다. 활성화는 데이터베이스 공간 탭의 「공간 설계 활성화」로만 할 수 있으며 AI 도구로는 못 한다. 비활성 상태에서는 레거시 도구(place_concept 등)를 쓴다.",
+      "issues": [
+        {
+          "severity": "error",
+          "code": "spatial-inactive",
+          "message": "이 프로젝트에는 canonical 공간 저작 문서(spatialAuthoring)가 없다 — 레거시 프로젝트다. 활성화는 데이터베이스 공간 탭의 「공간 설계 활성화」로만 할 수 있으며 AI 도구로는 못 한다. 비활성 상태에서는 레거시 도구(place_concept 등)를 쓴다."
+        }
+      ]
+    },
+    "upsert": {
+      "ok": false,
+      "summary": "'upsert_spatial_design' 실행 실패: 이 프로젝트에는 canonical 공간 저작 문서(spatialAuthoring)가 없다 — 레거시 프로젝트다. 활성화는 데이터베이스 공간 탭의 「공간 설계 활성화」로만 할 수 있으며 AI 도구로는 못 한다. 비활성 상태에서는 레거시 도구(place_concept 등)를 쓴다.",
+      "issues": [
+        {
+          "severity": "error",
+          "code": "spatial-inactive",
+          "message": "이 프로젝트에는 canonical 공간 저작 문서(spatialAuthoring)가 없다 — 레거시 프로젝트다. 활성화는 데이터베이스 공간 탭의 「공간 설계 활성화」로만 할 수 있으며 AI 도구로는 못 한다. 비활성 상태에서는 레거시 도구(place_concept 등)를 쓴다."
+        }
+      ]
+    },
+    "preview": {
+      "ok": false,
+      "summary": "'preview_spatial_build' 실행 실패: 이 프로젝트에는 canonical 공간 저작 문서(spatialAuthoring)가 없다 — 레거시 프로젝트다. 활성화는 데이터베이스 공간 탭의 「공간 설계 활성화」로만 할 수 있으며 AI 도구로는 못 한다. 비활성 상태에서는 레거시 도구(place_concept 등)를 쓴다.",
+      "issues": [
+        {
+          "severity": "error",
+          "code": "spatial-inactive",
+          "message": "이 프로젝트에는 canonical 공간 저작 문서(spatialAuthoring)가 없다 — 레거시 프로젝트다. 활성화는 데이터베이스 공간 탭의 「공간 설계 활성화」로만 할 수 있으며 AI 도구로는 못 한다. 비활성 상태에서는 레거시 도구(place_concept 등)를 쓴다."
+        }
+      ]
+    },
+    "vocabulary": {
+      "ok": true,
+      "summary": "지형 어휘: 월드 칩셋 1종 · 재료 16종",
+      "data": {
+        "active": false,
+        "terrain": {
+          "worldTilesetIds": [
+            "easyrpg_chipset_world"
+          ],
+          "settlementTilesetId": "easyrpg_chipset_combined_town",
+          "materials": [
+            "ground",
+            "water",
+            "dirt",
+            "sand",
+            "marsh",
+            "snow",
+            "tall-grass",
+            "snow-forest",
+            "snow-mountain",
+            "forest",
+            "mountain",
+            "metal-pit",
+            "rock-pit"
+          ],
+          "structures": {
+            "mountain:grass|dirt|snow": "rect 영역 하나가 계단 포함 한 단 산 — polygon 거부",
+            "bridge": "물 위를 지나는 직선 route 가 자동으로 석교를 시공한다"
+          },
+          "rules": [
+            "region.routes: 직교 polyline(points≥2), 끝점은 배치된 자식 좌표와 일치",
+            "world.connections: points 없음 — 가로→세로 횡단은 컴파일러가 그린다",
+            "world.entryPort 필수 — 세계 진입 선택자",
+            "settlement 지역은 routes 거부 — 마을 도로는 생성된다",
+            "settlement 지역 terrain.tilesetId 는 settlementTilesetId 여야 한다"
+          ]
+        },
+        "settlementPresets": []
+      }
+    },
+    "capabilityIndexWorldLine": "- 월드: list_spatial_designs, get_geography_vocabulary, get_spatial_design, upsert_spatial_design, preview_spatial_build, plan_world, link_maps, build_world, lint_world",
+    "spatialRecipe": "- spatial-world: READ list_spatial_designs -> get_spatial_design -> get_geography_vocabulary | WRITE upsert_spatial_design -> preview_spatial_build -> apply_spatial_build | VERIFY check_reachability -> run_lint -> play_walkthrough. Canonical object→space→place→region→world. spatial-inactive or data.active=false = legacy project — use legacy tools. Author bottom-up; references must exist. Read get_geography_vocabulary before region/world terrain. Apply the issued previewId before any other write. Source edits never refresh built occurrences.",
+    "activateErrorText": "공간 설계 활성화 실패: Load the legacy target before explicit activation."
+  },
+  "canonical": {
+    "spatialAuthoringPresent": true,
+    "regions": [
+      "lake-country",
+      "deep-forest",
+      "harbor-coast",
+      "snow-frontier",
+      "high-pass",
+      "ancient-ruins"
+    ],
+    "list": {
+      "ok": true,
+      "summary": "6 spatial designs",
+      "data": {
+        "active": true,
+        "designs": [
+          {
+            "id": "lake-country",
+            "name": "lake-country",
+            "revision": 1,
+            "tags": [],
+            "provenance": {
+              "origin": "user"
+            },
+            "terrain": {
+              "tilesetId": "easyrpg_chipset_world",
+              "width": 128,
+              "height": 96,
+              "floor": "ground",
+              "areas": [
+                {
+                  "kind": "rect",
+                  "material": "water",
+                  "x": 55,
+                  "y": 0,
+                  "width": 10,
+                  "height": 96
+                }
+              ]
+            },
+            "places": [
+              {
+                "x": 20,
+                "y": 40,
+                "id": "lake-village",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:lake-village"
+                },
+                "level": 0
+              },
+              {
+                "x": 100,
+                "y": 40,
+                "id": "working-mine",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:working-mine"
+                },
+                "level": 0
+              }
+            ],
+            "ports": [
+              {
+                "x": 10,
+                "y": 40,
+                "id": "entry",
+                "name": "Entry"
+              }
+            ],
+            "routes": [
+              {
+                "id": "authored-road",
+                "from": {
+                  "childId": "lake-village",
+                  "portId": "entry"
+                },
+                "to": {
+                  "childId": "working-mine",
+                  "portId": "entry"
+                },
+                "bidirectional": true,
+                "points": [
+                  {
+                    "x": 20,
+                    "y": 40
+                  },
+                  {
+                    "x": 100,
+                    "y": 40
+                  }
+                ]
+              }
+            ],
+            "kind": "region",
+            "children": [
+              {
+                "id": "lake-village",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:lake-village"
+                },
+                "quantity": 1
+              },
+              {
+                "id": "working-mine",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:working-mine"
+                },
+                "quantity": 1
+              }
+            ]
+          },
+          {
+            "id": "deep-forest",
+            "name": "deep-forest",
+            "revision": 1,
+            "tags": [],
+            "provenance": {
+              "origin": "user"
+            },
+            "terrain": {
+              "tilesetId": "easyrpg_chipset_world",
+              "width": 128,
+              "height": 96,
+              "floor": "ground",
+              "areas": [
+                {
+                  "kind": "rect",
+                  "material": "forest",
+                  "x": 40,
+                  "y": 24,
+                  "width": 40,
+                  "height": 40
+                }
+              ]
+            },
+            "places": [
+              {
+                "x": 20,
+                "y": 40,
+                "id": "forest-hamlet",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:forest-hamlet"
+                },
+                "level": 0
+              },
+              {
+                "x": 100,
+                "y": 40,
+                "id": "forest-sanctuary",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:forest-sanctuary"
+                },
+                "level": 0
+              }
+            ],
+            "ports": [
+              {
+                "x": 10,
+                "y": 40,
+                "id": "entry",
+                "name": "Entry"
+              }
+            ],
+            "routes": [
+              {
+                "id": "authored-road",
+                "from": {
+                  "childId": "forest-hamlet",
+                  "portId": "entry"
+                },
+                "to": {
+                  "childId": "forest-sanctuary",
+                  "portId": "entry"
+                },
+                "bidirectional": true,
+                "points": [
+                  {
+                    "x": 20,
+                    "y": 40
+                  },
+                  {
+                    "x": 20,
+                    "y": 16
+                  },
+                  {
+                    "x": 100,
+                    "y": 16
+                  },
+                  {
+                    "x": 100,
+                    "y": 40
+                  }
+                ]
+              }
+            ],
+            "kind": "region",
+            "children": [
+              {
+                "id": "forest-hamlet",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:forest-hamlet"
+                },
+                "quantity": 1
+              },
+              {
+                "id": "forest-sanctuary",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:forest-sanctuary"
+                },
+                "quantity": 1
+              }
+            ]
+          },
+          {
+            "id": "harbor-coast",
+            "name": "harbor-coast",
+            "revision": 1,
+            "tags": [],
+            "provenance": {
+              "origin": "user"
+            },
+            "terrain": {
+              "tilesetId": "easyrpg_chipset_world",
+              "width": 128,
+              "height": 96,
+              "floor": "sand",
+              "areas": [
+                {
+                  "kind": "polygon",
+                  "material": "water",
+                  "points": [
+                    {
+                      "x": 0,
+                      "y": 60
+                    },
+                    {
+                      "x": 60,
+                      "y": 70
+                    },
+                    {
+                      "x": 127,
+                      "y": 60
+                    },
+                    {
+                      "x": 127,
+                      "y": 95
+                    },
+                    {
+                      "x": 0,
+                      "y": 95
+                    }
+                  ]
+                }
+              ]
+            },
+            "places": [
+              {
+                "x": 20,
+                "y": 40,
+                "id": "harbor-town",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:harbor-town"
+                },
+                "level": 0
+              },
+              {
+                "x": 100,
+                "y": 40,
+                "id": "warehouse",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:warehouse"
+                },
+                "level": 0
+              }
+            ],
+            "ports": [
+              {
+                "x": 10,
+                "y": 40,
+                "id": "entry",
+                "name": "Entry"
+              }
+            ],
+            "routes": [
+              {
+                "id": "authored-road",
+                "from": {
+                  "childId": "harbor-town",
+                  "portId": "entry"
+                },
+                "to": {
+                  "childId": "warehouse",
+                  "portId": "entry"
+                },
+                "bidirectional": true,
+                "points": [
+                  {
+                    "x": 20,
+                    "y": 40
+                  },
+                  {
+                    "x": 100,
+                    "y": 40
+                  }
+                ]
+              }
+            ],
+            "kind": "region",
+            "children": [
+              {
+                "id": "harbor-town",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:harbor-town"
+                },
+                "quantity": 1
+              },
+              {
+                "id": "warehouse",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:warehouse"
+                },
+                "quantity": 1
+              }
+            ]
+          },
+          {
+            "id": "snow-frontier",
+            "name": "snow-frontier",
+            "revision": 1,
+            "tags": [],
+            "provenance": {
+              "origin": "user"
+            },
+            "terrain": {
+              "tilesetId": "easyrpg_chipset_world",
+              "width": 128,
+              "height": 96,
+              "floor": "snow",
+              "areas": [
+                {
+                  "kind": "rect",
+                  "material": "snow-forest",
+                  "x": 30,
+                  "y": 55,
+                  "width": 70,
+                  "height": 25
+                }
+              ]
+            },
+            "places": [
+              {
+                "x": 20,
+                "y": 40,
+                "id": "snow-outpost",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:snow-outpost"
+                },
+                "level": 0
+              },
+              {
+                "x": 100,
+                "y": 40,
+                "id": "hunter-cabin",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:hunter-cabin"
+                },
+                "level": 0
+              }
+            ],
+            "ports": [
+              {
+                "x": 10,
+                "y": 40,
+                "id": "entry",
+                "name": "Entry"
+              }
+            ],
+            "routes": [
+              {
+                "id": "authored-road",
+                "from": {
+                  "childId": "snow-outpost",
+                  "portId": "entry"
+                },
+                "to": {
+                  "childId": "hunter-cabin",
+                  "portId": "entry"
+                },
+                "bidirectional": true,
+                "points": [
+                  {
+                    "x": 20,
+                    "y": 40
+                  },
+                  {
+                    "x": 100,
+                    "y": 40
+                  }
+                ]
+              }
+            ],
+            "kind": "region",
+            "children": [
+              {
+                "id": "snow-outpost",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:snow-outpost"
+                },
+                "quantity": 1
+              },
+              {
+                "id": "hunter-cabin",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:hunter-cabin"
+                },
+                "quantity": 1
+              }
+            ]
+          },
+          {
+            "id": "high-pass",
+            "name": "high-pass",
+            "revision": 1,
+            "tags": [],
+            "provenance": {
+              "origin": "user"
+            },
+            "terrain": {
+              "tilesetId": "easyrpg_chipset_world",
+              "width": 128,
+              "height": 96,
+              "floor": "ground",
+              "areas": [
+                {
+                  "kind": "rect",
+                  "material": "mountain:grass",
+                  "x": 40,
+                  "y": 15,
+                  "width": 31,
+                  "height": 20
+                }
+              ]
+            },
+            "places": [
+              {
+                "x": 55,
+                "y": 45,
+                "id": "mountain-pass",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:mountain-pass"
+                },
+                "level": 0
+              },
+              {
+                "x": 55,
+                "y": 25,
+                "id": "working-mine",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:working-mine"
+                },
+                "level": 0
+              }
+            ],
+            "ports": [
+              {
+                "x": 10,
+                "y": 40,
+                "id": "entry",
+                "name": "Entry"
+              }
+            ],
+            "routes": [
+              {
+                "id": "authored-road",
+                "from": {
+                  "childId": "mountain-pass",
+                  "portId": "entry"
+                },
+                "to": {
+                  "childId": "working-mine",
+                  "portId": "entry"
+                },
+                "bidirectional": true,
+                "points": [
+                  {
+                    "x": 55,
+                    "y": 45
+                  },
+                  {
+                    "x": 55,
+                    "y": 25
+                  }
+                ]
+              }
+            ],
+            "kind": "region",
+            "children": [
+              {
+                "id": "mountain-pass",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:mountain-pass"
+                },
+                "quantity": 1
+              },
+              {
+                "id": "working-mine",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:working-mine"
+                },
+                "quantity": 1
+              }
+            ]
+          },
+          {
+            "id": "ancient-ruins",
+            "name": "ancient-ruins",
+            "revision": 1,
+            "tags": [],
+            "provenance": {
+              "origin": "user"
+            },
+            "terrain": {
+              "tilesetId": "easyrpg_chipset_world",
+              "width": 128,
+              "height": 96,
+              "floor": "dirt",
+              "areas": [
+                {
+                  "kind": "rect",
+                  "material": "rock-pit",
+                  "x": 40,
+                  "y": 24,
+                  "width": 40,
+                  "height": 40
+                }
+              ]
+            },
+            "places": [
+              {
+                "x": 20,
+                "y": 40,
+                "id": "old-ruins",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:old-ruins"
+                },
+                "level": 0
+              },
+              {
+                "x": 100,
+                "y": 40,
+                "id": "forest-sanctuary",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:forest-sanctuary"
+                },
+                "level": 0
+              }
+            ],
+            "ports": [
+              {
+                "x": 10,
+                "y": 40,
+                "id": "entry",
+                "name": "Entry"
+              }
+            ],
+            "routes": [
+              {
+                "id": "authored-road",
+                "from": {
+                  "childId": "old-ruins",
+                  "portId": "entry"
+                },
+                "to": {
+                  "childId": "forest-sanctuary",
+                  "portId": "entry"
+                },
+                "bidirectional": true,
+                "points": [
+                  {
+                    "x": 20,
+                    "y": 40
+                  },
+                  {
+                    "x": 20,
+                    "y": 75
+                  },
+                  {
+                    "x": 100,
+                    "y": 75
+                  },
+                  {
+                    "x": 100,
+                    "y": 40
+                  }
+                ]
+              }
+            ],
+            "kind": "region",
+            "children": [
+              {
+                "id": "old-ruins",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:old-ruins"
+                },
+                "quantity": 1
+              },
+              {
+                "id": "forest-sanctuary",
+                "source": {
+                  "kind": "place",
+                  "id": "contract-place:forest-sanctuary"
+                },
+                "quantity": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "activateButtonCount": 1,
+    "activateButtonEnabled": false
+  }
+}

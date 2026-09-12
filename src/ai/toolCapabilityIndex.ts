@@ -28,6 +28,9 @@ export const TASK_RECIPES = [
     policy: "Read original world/quests/flags via originalContext or get_original_context. Reuse existing identities and links; plan/build only requested new world work. Verify travel and quest completion with real executable results." },
   { id: "life", read: ["get_database_records", "get_event"], write: ["upsert_craft_recipe", "configure_life_economy"],
     verify: ["run_lint", "play_walkthrough"], policy: "Read original system recipes/economy and referenced crops/items/animals. Verify authored interactions and resource deltas; lint alone does not prove runtime progression." },
+  { id: "spatial-world", read: ["list_spatial_designs", "get_spatial_design", "get_geography_vocabulary"],
+    write: ["upsert_spatial_design", "preview_spatial_build", "apply_spatial_build", "edit_spatial_occurrence"], verify: ["check_reachability", "run_lint", "play_walkthrough"],
+    policy: "Canonical object→space→place→region→world. spatial-inactive or data.active=false = legacy project — use legacy tools. Author bottom-up; references must exist. Read get_geography_vocabulary before region/world terrain. Apply the issued previewId before any other write. Source edits never refresh built occurrences — call edit_spatial_occurrence refresh to rebuild them; move/delete/detach/clone/link/unlink edit existing occurrences through the same tool." },
 ] as const;
 
 // 에디터 작업 영역 순서(사람이 읽는 순서 = 안정 정렬 키). 도메인이 없거나 미지의 값이면 CATCH_ALL.
@@ -38,7 +41,7 @@ const AREA_ORDER: readonly { readonly domain: ToolDomain; readonly label: string
   { domain: "event", label: "이벤트" },
   { domain: "database", label: "데이터베이스" },
   { domain: "quest", label: "퀘스트" },
-  { domain: "world", label: "월드 그래프" },
+  { domain: "world", label: "월드" },
   { domain: "battle", label: "전투" },
   { domain: "system", label: "시스템" },
 ];
