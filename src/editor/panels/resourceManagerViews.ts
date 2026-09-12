@@ -1,8 +1,10 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { getMonsterResource, listMonsterResources, type MonsterResource } from "@/assets/monsterResourceCatalog";
 import { store } from "@/project/store";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
-import type { ResourceProfile, UploadedAsset } from "@/project/types";
+import type { Project, ResourceProfile, UploadedAsset } from "@/project/types";
 import { el } from "@/util/dom";
+import { monsterResourceStatus } from "./monsterResourcePresentation";
 import { makeResourcePreviewGrid, resourceKindFromUpload, uploadedResourceKindLabel } from "./resourceManagerUtils";
 
 export type UploadedAssetActions = {
@@ -46,8 +48,17 @@ let currentViewMode: ViewMode = "grid";
 let currentFilterTab: FilterTab = "all";
 
 export function renderResourceWorkbench(container: HTMLElement, options: ResourceWorkbenchOptions): void {
-  const selectedProfiles = options.profiles.filter((profile) => profile.kind === options.selectedKind);
-  const selectedUploaded = options.uploaded.filter((asset) => resourceKindFromUpload(asset.kind) === options.selectedKind);
+  const project = store.getCurrent();
+  // 몬스터 탭의 정본은 프로필 표가 아니라 소재 카탈로그다 — 번들 RTP 에는 몬스터 그림이
+  // 1장뿐이라, 프로필만 보여주면 생성 아트·Scarloxy 팩 160여 종이 전부 숨는다.
+  const monsterResources = listMonsterResources(project);
+  let selectedProfiles = options.profiles.filter((profile) => profile.kind === options.selectedKind);
+  let selectedUploaded = options.uploaded.filter((asset) => resourceKindFromUpload(asset.kind) === options.selectedKind);
+  if (options.selectedKind === "monster") {
+    const derived = monsterResourceEntries(project, monsterResources);
+    selectedProfiles = derived.profiles;
+    selectedUploaded = derived.uploaded;
+  }
   
   let selectedItem: ResourceItem | null = null;
   if (selectedUploaded.length > 0) {
@@ -95,7 +106,7 @@ export function renderResourceWorkbench(container: HTMLElement, options: Resourc
   };
 
   shell.append(
-    resourceCategoryList(options),
+    resourceCategoryList(options, monsterResources.length),
     options.audioPanes?.entries ?? resourceEntryList(selectedProfiles, selectedUploaded, options.actions, handleSelect, () => selectedItem, options.onImport, options.selectedKind, options.recentAssetId),
     options.audioPanes?.commands ?? resourceCommandPanel(options, previewWell, () => selectedItem)
   );
@@ -182,7 +193,35 @@ function resourceProfileRow(
   return row;
 }
 
-function resourceCategoryList(options: ResourceWorkbenchOptions): HTMLElement {
+/**
+ * 몬스터 소재 카탈로그를 기존 프로필/업로드 버킷으로 펼친다. 카탈로그가 이미 id 충돌
+ * (업로드 > 번들 > 프로필) 정리를 끝냈으므로 여기서는 화면용 프로필만 합성한다.
+ */
+function monsterResourceEntries(
+  project: Project,
+  resources: readonly MonsterResource[]
+): { profiles: ResourceProfile[]; uploaded: UploadedAsset[] } {
+  const profiles: ResourceProfile[] = [];
+  const uploaded: UploadedAsset[] = [];
+  for (const resource of resources) {
+    if (resource.origin === "uploaded") {
+      const asset = project.assets.uploaded[resource.resourceId];
+      if (asset !== undefined) uploaded.push(asset);
+      continue;
+    }
+    const existing = resource.origin === "profile"
+      ? project.resourceProfiles.find((p) => p.kind === "monster" && p.assetId === resource.resourceId)
+      : undefined;
+    profiles.push(
+      existing !== undefined
+        ? { ...existing, name: resource.name }
+        : { kind: "monster", name: resource.name, assetId: resource.resourceId }
+    );
+  }
+  return { profiles, uploaded };
+}
+
+function resourceCategoryList(options: ResourceWorkbenchOptions, monsterTotal: number): HTMLElement {
   const list = el("div", {
     class: "rm-category-list rm-modern-category-sidebar",
     attrs: { role: "listbox", "aria-label": "리소스 종류" },
@@ -210,7 +249,7 @@ function resourceCategoryList(options: ResourceWorkbenchOptions): HTMLElement {
     const selected = category.kind === options.selectedKind;
     const countProfiles = options.profiles.filter(p => p.kind === category.kind).length;
     const countUploaded = options.uploaded.filter(u => resourceKindFromUpload(u.kind) === category.kind).length;
-    const totalCount = countProfiles + countUploaded;
+    const totalCount = category.kind === "monster" ? monsterTotal : countProfiles + countUploaded;
 
     const icon = el("span", { class: "rm-category-icon", text: getCategoryIcon(category.kind) });
     const labelSpan = el("span", { class: "rm-category-label", text: category.label });
@@ -810,6 +849,10 @@ function renderInspector(
   const name = isUploaded ? item.asset.name : item.profile.name;
   const kind = isUploaded ? (resourceKindFromUpload(item.asset.kind) ?? currentKind) : item.profile.kind;
   const spec = getResourceProfileSpec(kind);
+  const resourceId = isUploaded ? item.asset.id : item.profile.assetId;
+  const monsterResource = kind === "monster" && resourceId !== undefined
+    ? getMonsterResource(project, resourceId)
+    : undefined;
 
   let previewUrl = "";
   let dimensions = "";
@@ -857,8 +900,22 @@ function renderInspector(
       ]}) : null,
       el("div", { class: "rm-inspector-meta-row", children: [
         el("span", { class: "rm-meta-label", text: "에셋 ID" }),
-        el("span", { class: "rm-meta-val font-mono", text: isUploaded ? item.asset.id : item.profile.assetId }),
+        el("span", { class: "rm-meta-val font-mono", text: resourceId }),
       ]}),
+      ...(monsterResource === undefined ? [] : [
+        el("div", { class: "rm-inspector-meta-row", children: [
+          el("span", { class: "rm-meta-label", text: "상태" }),
+          el("span", { class: "rm-meta-val", text: monsterResourceStatus(monsterResource) }),
+        ]}),
+        ...(monsterResource.tags.length > 0 ? [el("div", { class: "rm-inspector-meta-row", children: [
+          el("span", { class: "rm-meta-label", text: "태그" }),
+          el("span", { class: "rm-meta-val", text: monsterResource.tags.join(" · "), attrs: { title: monsterResource.tags.join(" · ") } }),
+        ]})] : []),
+        ...(monsterResource.description.length > 0 ? [el("div", { class: "rm-inspector-meta-row", children: [
+          el("span", { class: "rm-meta-label", text: "설명" }),
+          el("span", { class: "rm-meta-val", text: monsterResource.description, attrs: { title: monsterResource.description } }),
+        ]})] : []),
+      ]),
     ].filter(Boolean) as HTMLElement[],
   });
 
