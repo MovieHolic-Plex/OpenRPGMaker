@@ -232,10 +232,10 @@ describe("상점 접근성·제자리 갱신", () => {
     expect(overlay.querySelector("[data-testid='shop-buy-item_potion']")).toBe(before);
   });
 
-  it("목록에 list 시맨틱이 있다", () => {
+  it("목록에 listbox 시맨틱이 있다", () => {
     const overlay = render();
-    expect(overlay.querySelector(".runtime-shop-item-list")?.getAttribute("role")).toBe("list");
-    expect(overlay.querySelector("[data-testid='shop-buy-item_potion']")?.getAttribute("role")).toBe("listitem");
+    expect(overlay.querySelector(".runtime-shop-item-list")?.getAttribute("role")).toBe("listbox");
+    expect(overlay.querySelector("[data-testid='shop-buy-item_potion']")?.getAttribute("role")).toBe("option");
   });
 
   it("다 팔린 행은 목록에서 빠진다", () => {

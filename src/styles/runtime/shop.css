@@ -126,8 +126,7 @@
 .runtime-shop-menu-choice,
 .runtime-shop-detail-open,
 .runtime-shop-actor,
-.runtime-shop-slot-choice,
-.runtime-shop-step {
+.runtime-shop-slot-choice {
   appearance: none;
   border: var(--shop-line-width) solid var(--shop-line);
   border-radius: var(--shop-radius-small);
@@ -340,8 +339,6 @@
 .runtime-shop-confirm { color: var(--shop-ink); background: var(--shop-accent-soft); border-color: var(--shop-accent); }
 .runtime-shop-quantity-wrap { display: flex; align-items: center; gap: var(--shop-space-1); flex: 0 0 auto; }
 .runtime-shop-quantity-label { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
-.runtime-shop-step { width: var(--shop-control); height: var(--shop-control); padding: 0; display: grid; place-items: center; }
-.runtime-shop-step svg { width: var(--shop-space-3); height: var(--shop-space-3); }
 .runtime-shop-overlay .runtime-commerce-quantity-input {
   width: var(--shop-art-row);
   height: var(--shop-control);
@@ -377,7 +374,17 @@
 .runtime-shop-menu-choice-label { font-size: var(--shop-text-section); font-weight: 700; }
 .runtime-shop-menu-choice-hint { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
 .runtime-shop-entry-purse { padding-block: var(--shop-space-3); border-block: var(--shop-line-width) solid var(--shop-line); }
-.runtime-shop-haggle-shell { background: var(--shop-surface); border: var(--shop-line-width) solid var(--shop-line-strong); }
+.runtime-shop-haggle-shell { background: var(--shop-surface); border: var(--shop-line-width) solid var(--shop-line-strong); border-radius: var(--shop-radius); }
+.runtime-shop-haggle { min-width: 0; }
+.runtime-shop-haggle-item { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-haggle-offer-row { display: flex; align-items: baseline; gap: var(--shop-space-3); flex-wrap: wrap; }
+.runtime-shop-haggle-offer-label { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-haggle-offer { font-size: var(--shop-text-title); font-variant-numeric: tabular-nums; }
+.runtime-shop-haggle-offer-total,
+.runtime-shop-haggle-patience { color: var(--shop-ink-dim); font-size: var(--shop-text-small); font-variant-numeric: tabular-nums; }
+.runtime-shop-haggle-actions { gap: var(--shop-space-2); }
+.runtime-shop-haggle-step { flex: 0 0 auto; min-width: var(--shop-control); padding-inline: var(--shop-space-2); }
+.runtime-shop-overlay .runtime-shop-haggle-actions .runtime-shop-menu-choice.selected { background: var(--shop-accent-soft); border-color: var(--shop-accent); }
 .runtime-shop-overlay :is(button, input, .runtime-shop-detail-scroll):focus-visible { outline: var(--shop-focus-width) solid var(--shop-ink); outline-offset: var(--shop-line-width); }
 /* One complete preview ledger; the existing inline flex containment remains
    structural only. No trade action lives in this shell. */
@@ -517,7 +524,11 @@
   .runtime-shop-list-panel { padding: var(--shop-space-1); gap: 0; }
   .runtime-shop-catbar { padding-bottom: 0; }
   .runtime-shop-main { flex-direction: column; }
-  .runtime-shop-side { flex: 0 0 auto; border-left: 0; border-top: var(--shop-line-width) solid var(--shop-line); }
+  /* 본문이 세로로 쌓이는 크기에서는 상세 패널이 목록을 짓누르면 선택 행이 한 줄도 안 보인다
+     (320x240 실측: 'selected row clipped by list viewport'). 목록에 최소 두 행 분량을
+     보장하고 상세는 나머지에서 잘린다 — 상세는 요약 슬롯만 보이면 충분하다. */
+  .runtime-shop-side { flex: 0 1 auto; max-height: 42%; overflow: hidden; border-left: 0; border-top: var(--shop-line-width) solid var(--shop-line); }
+  .runtime-shop-item-list { min-height: calc(var(--shop-art-row) * 2 + var(--shop-space-1)); }
   .runtime-shop-detail-panel { padding: var(--shop-space-1) var(--shop-space-2); overflow: hidden; }
   .runtime-shop-detail { display: grid; grid-template-columns: 1fr 1fr; gap: var(--shop-space-2); align-items: center; }
   .runtime-shop-detail-hero { flex-direction: row; align-items: center; gap: var(--shop-space-2); }
@@ -546,7 +557,10 @@
   .runtime-shop-topbar .runtime-shop-brand-title,
   .runtime-shop-topbar .runtime-shop-brand-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .runtime-shop-prompt-actions { margin-left: 0; }
-  .runtime-shop-prompt-panel .runtime-shop-keyhint:not(:first-child) { display: none; }
+  /* 이 크기에서 프롬프트 패널은 이미 화면의 1/3 이상 — 키 힌트는 입구 메뉴가 이미 가르쳤다. */
+  .runtime-shop-prompt-panel .runtime-shop-keyhints { display: none; }
+  /* 상인 지갑은 보조 정보 — 한 줄이라도 아끼는 크기에서는 버린다. */
+  .runtime-shop-merchant-gold { display: none; }
   .runtime-shop-comparison { --shop-text-small: 12px; }
   .runtime-shop-comparison .runtime-shop-key { font-size: var(--shop-text-small); }
   .runtime-shop-comparison > .runtime-shop-keyhints { display: grid; grid-template-columns: minmax(0, 1fr) auto; }

@@ -18,8 +18,23 @@
         "x": 14,
         "y": 18,
         "gold": 300,
-        "battleResult": null
-      }
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "seed",
+          "seed": 1
+        }
+      ]
     },
     {
       "index": 1,
@@ -31,8 +46,35 @@
         "x": 14,
         "y": 18,
         "gold": 300,
-        "battleResult": null
-      }
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_lantern_village",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "face",
+          "dir": "right"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "shop-mode-buy",
+          "state": "present"
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "shop-mode-buy"
+        }
+      ]
     }
   ]
 }
