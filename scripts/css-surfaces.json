@@ -28,7 +28,7 @@
                     "value", "variable", "warn-text", "who", "with-bust", "with-face"],
                     "roots": [".event-editor-modal-backdrop", ".event-editor-modal-window", ".event-subdialog-backdrop"] },
     "database":   { "dir": "src/styles/database", "entry": "src/styles/database/index.css",
-                    "prefixes": ["database-", "db-", "oprn-record-", "oprn-tileset-", "actor-", "enemy-", "troop-", "tileset-", "palette-preset-", "ai-chat-", "ai-command-bar-", "ai-deck-", "ai-studio-", "ai-assistant-", "ai-status-", "ai-abort-", "ai-sticky-", "spatial-", "world-gen-", "scratch-", "title-", "system-", "growth-", "battle-studio-", "animation-", "curve-"],
+                    "prefixes": ["database-", "db-", "oprn-db-", "oprn-record-", "oprn-tileset-", "passage-", "actor-", "enemy-", "troop-", "tileset-", "palette-preset-", "ai-chat-", "ai-command-bar-", "ai-deck-", "ai-studio-", "ai-assistant-", "ai-status-", "ai-abort-", "ai-sticky-", "spatial-", "world-gen-", "scratch-", "title-", "system-", "growth-", "battle-studio-", "animation-", "curve-"],
                     "roots": [".database-modal-backdrop", ".database-modal-window", "body.ai-studio-open", "body.ai-panel-docked", "body.ai-command-bar-active"] },
     "resources":  { "dir": "src/styles/resources", "entry": "src/styles/resources/index.css", "prefixes": ["resource-manager-", "rm-"], "roots": [] },
     "runtime":    { "dir": "src/styles/runtime", "entry": "src/styles/runtime/index.css", "prefixes": ["*"], "roots": [] },
