@@ -51,6 +51,11 @@ export function villageDesignIssue(value: unknown): string | undefined {
     if (!Number.isInteger(o.multiStoreyCount) || o.multiStoreyCount < 0 || o.multiStoreyCount > c.min) return "2층 이상 건물 수는 전체 최소 집 수 이하여야 합니다.";
     if (!o.previewSize || ![o.previewSize.width, o.previewSize.height].every(n => Number.isInteger(n) && n >= 20 && n <= 256)) return "기준 맵 크기는 20~256칸이어야 합니다.";
     if (d.interior) return "저장 건물 외형의 실내 공간은 별도로 연결해야 합니다.";
+    if (o.decorations !== undefined && (!Array.isArray(o.decorations) || o.decorations.length > 32
+      || o.decorations.some(r => !r || typeof r.spaceId !== "string" || !r.spaceId.trim()
+        || !["house", "commons", "market", "shore", "road"].includes(r.zone)
+        || !Number.isInteger(r.maxCount) || r.maxCount < 1 || r.maxCount > 32)
+      || new Set(o.decorations.map(r => r.spaceId)).size !== o.decorations.length)) return "마을 장식 공간은 중복 없는 ID와 배치 구역, 1~32회 반복 한도가 필요합니다.";
   }
   const n = d.nature;
   if (!n || !["none", "river", "lake", "river-lake"].includes(n.water) || !["none", "sparse", "normal", "dense", "impassable"].includes(n.forest)) return "물과 숲 종류가 올바르지 않습니다.";

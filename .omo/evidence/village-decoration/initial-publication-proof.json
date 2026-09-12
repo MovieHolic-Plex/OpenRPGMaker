@@ -1,0 +1,445 @@
+{
+  "projectId": "rpg-zzu-house-template-gallery",
+  "mapId": "spatial-geography:30:small-village:example:20260913",
+  "houses": 26,
+  "singleStorey": 23,
+  "multiStorey": 3,
+  "houseRastersPreserved": true,
+  "housePositionsPreserved": true,
+  "spaces": 20,
+  "counts": {
+    "house": 21,
+    "commons": 3,
+    "market": 4,
+    "shore": 4,
+    "road": 8
+  },
+  "placements": [
+    {
+      "label": "작은 텃밭과 수확물",
+      "x": 30,
+      "y": 28,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:kitchen-yard",
+        "zone:house",
+        "house:village_house_1"
+      ]
+    },
+    {
+      "label": "벤치와 항아리의 문간 쉼터",
+      "x": 27,
+      "y": 68,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:porch-yard",
+        "zone:house",
+        "house:village_house_3"
+      ]
+    },
+    {
+      "label": "좁은 문간의 화분과 항아리",
+      "x": 32,
+      "y": 13,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:narrow-garden",
+        "zone:house",
+        "house:village_house_5"
+      ]
+    },
+    {
+      "label": "좁은 문간의 화분과 항아리",
+      "x": 46,
+      "y": 11,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:narrow-garden",
+        "zone:house",
+        "house:village_house_6"
+      ]
+    },
+    {
+      "label": "좁은 골목의 장작과 상자",
+      "x": 33,
+      "y": 58,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:narrow-store",
+        "zone:house",
+        "house:village_house_7"
+      ]
+    },
+    {
+      "label": "꽃과 화분이 있는 앞마당",
+      "x": 43,
+      "y": 66,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:flower-yard",
+        "zone:house",
+        "house:village_house_8"
+      ]
+    },
+    {
+      "label": "작은 텃밭과 수확물",
+      "x": 16,
+      "y": 37,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:kitchen-yard",
+        "zone:house",
+        "house:village_house_9"
+      ]
+    },
+    {
+      "label": "장작을 쌓아 둔 작업 마당",
+      "x": 64,
+      "y": 25,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:wood-yard",
+        "zone:house",
+        "house:village_house_10"
+      ]
+    },
+    {
+      "label": "벤치와 항아리의 문간 쉼터",
+      "x": 7,
+      "y": 58,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:porch-yard",
+        "zone:house",
+        "house:village_house_11"
+      ]
+    },
+    {
+      "label": "식료품점 앞 진열 공간",
+      "x": 36,
+      "y": 57,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:shop-yard",
+        "zone:house",
+        "house:village_house_12"
+      ]
+    },
+    {
+      "label": "좁은 문간의 화분과 항아리",
+      "x": 5,
+      "y": 27,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:narrow-garden",
+        "zone:house",
+        "house:village_house_13"
+      ]
+    },
+    {
+      "label": "좁은 문간의 화분과 항아리",
+      "x": 54,
+      "y": 37,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:narrow-garden",
+        "zone:house",
+        "house:village_house_14"
+      ]
+    },
+    {
+      "label": "꽃과 화분이 있는 앞마당",
+      "x": 58,
+      "y": 59,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:flower-yard",
+        "zone:house",
+        "house:village_house_16"
+      ]
+    },
+    {
+      "label": "좁은 문간의 화분과 항아리",
+      "x": 52,
+      "y": 28,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:narrow-garden",
+        "zone:house",
+        "house:village_house_18"
+      ]
+    },
+    {
+      "label": "벤치와 항아리의 문간 쉼터",
+      "x": 12,
+      "y": 67,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:porch-yard",
+        "zone:house",
+        "house:village_house_19"
+      ]
+    },
+    {
+      "label": "식료품점 앞 진열 공간",
+      "x": 65,
+      "y": 45,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:shop-yard",
+        "zone:house",
+        "house:village_house_20"
+      ]
+    },
+    {
+      "label": "공방의 야외 작업대",
+      "x": 10,
+      "y": 37,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:workshop-yard",
+        "zone:house",
+        "house:village_house_21"
+      ]
+    },
+    {
+      "label": "좁은 골목의 장작과 상자",
+      "x": 16,
+      "y": 67,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:narrow-store",
+        "zone:house",
+        "house:village_house_23"
+      ]
+    },
+    {
+      "label": "장작을 쌓아 둔 작업 마당",
+      "x": 65,
+      "y": 59,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:wood-yard",
+        "zone:house",
+        "house:village_house_24"
+      ]
+    },
+    {
+      "label": "장작을 쌓아 둔 작업 마당",
+      "x": 14,
+      "y": 12,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:wood-yard",
+        "zone:house",
+        "house:village_house_25"
+      ]
+    },
+    {
+      "label": "장작을 쌓아 둔 작업 마당",
+      "x": 37,
+      "y": 25,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:wood-yard",
+        "zone:house",
+        "house:village_house_26"
+      ]
+    },
+    {
+      "label": "공동 우물과 물 긷는 자리",
+      "x": 39,
+      "y": 30,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:well-court",
+        "zone:commons"
+      ]
+    },
+    {
+      "label": "마을 안내와 작은 쉼터",
+      "x": 35,
+      "y": 30,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:notice-court",
+        "zone:commons"
+      ]
+    },
+    {
+      "label": "울타리 옆 공동 텃밭",
+      "x": 39,
+      "y": 26,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:shared-garden",
+        "zone:commons"
+      ]
+    },
+    {
+      "label": "장터 천막과 보관 통",
+      "x": 34,
+      "y": 33,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:market-tent",
+        "zone:market"
+      ]
+    },
+    {
+      "label": "장터 뒤 물품 적재 공간",
+      "x": 35,
+      "y": 39,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:market-storage",
+        "zone:market"
+      ]
+    },
+    {
+      "label": "장터 뒤 물품 적재 공간",
+      "x": 40,
+      "y": 33,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:market-storage",
+        "zone:market"
+      ]
+    },
+    {
+      "label": "항아리와 포장 작업대",
+      "x": 40,
+      "y": 41,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:market-pottery",
+        "zone:market"
+      ]
+    },
+    {
+      "label": "물 위로 이어지는 작은 잔교",
+      "x": 55,
+      "y": 60,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:fishing-dock",
+        "zone:shore"
+      ]
+    },
+    {
+      "label": "물가 낚시와 짐 놓는 자리",
+      "x": 64,
+      "y": 63,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:fishing-bank",
+        "zone:shore"
+      ]
+    },
+    {
+      "label": "돌과 덤불이 섞인 물가",
+      "x": 59,
+      "y": 61,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:rock-bank",
+        "zone:shore"
+      ]
+    },
+    {
+      "label": "호숫가 꽃과 휴식 자리",
+      "x": 69,
+      "y": 60,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:shore-flowers",
+        "zone:shore"
+      ]
+    },
+    {
+      "label": "골목 모퉁이의 짧은 울타리와 꽃",
+      "x": 26,
+      "y": 29,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:road-garden",
+        "zone:road"
+      ]
+    },
+    {
+      "label": "골목 모퉁이의 짧은 울타리와 꽃",
+      "x": 44,
+      "y": 25,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:road-garden",
+        "zone:road"
+      ]
+    },
+    {
+      "label": "골목 모퉁이의 짧은 울타리와 꽃",
+      "x": 25,
+      "y": 39,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:road-garden",
+        "zone:road"
+      ]
+    },
+    {
+      "label": "골목 모퉁이의 짧은 울타리와 꽃",
+      "x": 53,
+      "y": 39,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:road-garden",
+        "zone:road"
+      ]
+    },
+    {
+      "label": "골목 모퉁이의 짧은 울타리와 꽃",
+      "x": 33,
+      "y": 68,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:road-garden",
+        "zone:road"
+      ]
+    },
+    {
+      "label": "갈림길 안내와 덤불",
+      "x": 40,
+      "y": 46,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:road-sign",
+        "zone:road"
+      ]
+    },
+    {
+      "label": "갈림길 안내와 덤불",
+      "x": 16,
+      "y": 41,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:road-sign",
+        "zone:road"
+      ]
+    },
+    {
+      "label": "갈림길 안내와 덤불",
+      "x": 8,
+      "y": 28,
+      "tags": [
+        "village-decoration",
+        "space:village-dressing:space:road-sign",
+        "zone:road"
+      ]
+    }
+  ],
+  "allDestinationsReachable": true,
+  "unrelatedMapsPreserved": true,
+  "saved": true,
+  "reloaded": true,
+  "canonicalSHA256": "3e48f49f292b2ff389e6520db0fc24bca3c5911bc1b9383a7629c2e1502fbfe8"
+}

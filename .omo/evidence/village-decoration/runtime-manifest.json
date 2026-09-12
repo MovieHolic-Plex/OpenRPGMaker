@@ -1,0 +1,684 @@
+{
+  "scenarioId": "small-village",
+  "projectPath": "output/evidence/village-decoration/reloaded-project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "start",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-geography:30:small-village:example:20260913",
+        "x": 39,
+        "y": 43,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "market-approach",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-geography:30:small-village:example:20260913",
+        "x": 39,
+        "y": 43,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 39,
+          "y": 43
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 39,
+          "y": 43
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "market-walk",
+      "note": "저장 후 재로드한 market 접근로를 실제 13걸음 이동",
+      "shot": "04-market-walk.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-geography:30:small-village:example:20260913",
+        "x": 32,
+        "y": 37,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 32,
+          "y": 37
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "house-approach",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-geography:30:small-village:example:20260913",
+        "x": 7,
+        "y": 52,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 7,
+          "y": 52
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 7,
+          "y": 52
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "house-walk",
+      "note": "저장 후 재로드한 house 접근로를 실제 12걸음 이동",
+      "shot": "06-house-walk.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-geography:30:small-village:example:20260913",
+        "x": 12,
+        "y": 55,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 12,
+          "y": 55
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "lakeside-approach",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-geography:30:small-village:example:20260913",
+        "x": 53,
+        "y": 59,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 53,
+          "y": 59
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 53,
+          "y": 59
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "id": "lakeside-walk",
+      "note": "저장 후 재로드한 lakeside 접근로를 실제 12걸음 이동",
+      "shot": "08-lakeside-walk.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-geography:30:small-village:example:20260913",
+        "x": 63,
+        "y": 61,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 63,
+          "y": 61
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "id": "well-approach",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-geography:30:small-village:example:20260913",
+        "x": 38,
+        "y": 40,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 38,
+          "y": 40
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 38,
+          "y": 40
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "id": "well-walk",
+      "note": "저장 후 재로드한 well 접근로를 실제 12걸음 이동",
+      "shot": "10-well-walk.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-geography:30:small-village:example:20260913",
+        "x": 41,
+        "y": 31,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 41,
+          "y": 31
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "id": "dock-approach",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-geography:30:small-village:example:20260913",
+        "x": 51,
+        "y": 55,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 51,
+          "y": 55
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 51,
+          "y": 55
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "id": "dock-walk",
+      "note": "저장 후 재로드한 dock 접근로를 실제 12걸음 이동",
+      "shot": "12-dock-walk.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-geography:30:small-village:example:20260913",
+        "x": 55,
+        "y": 63,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 55,
+          "y": 63
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "id": "tent-approach",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-geography:30:small-village:example:20260913",
+        "x": 39,
+        "y": 43,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 39,
+          "y": 43
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 39,
+          "y": 43
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "id": "tent-walk",
+      "note": "저장 후 재로드한 tent 접근로를 실제 12걸음 이동",
+      "shot": "14-tent-walk.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-geography:30:small-village:example:20260913",
+        "x": 35,
+        "y": 35,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial-geography:30:small-village:example:20260913",
+          "x": 35,
+          "y": 35
+        }
+      ]
+    }
+  ]
+}

@@ -60,6 +60,18 @@ export function renderVillageDesignDetail(project: Project, preset: VillageLayou
     interior: [policy("interior"), card("들어갈 수 있는 집", [field("집마다 실내를 만들고 문으로 연결", interiorInput), note("켜면 현재 집 시공기가 실내를 만들고 왕복 출입 이벤트를 연결합니다. 시설 종류별 구성은 타일셋의 공용 개념 꾸러미에서 관리합니다.")], "db-village-design-interiors")],
     residents: [policy("residents"), card("마을의 주민 수", [controls.scale[1]!, note("인원은 설계서가 정합니다. AI 캐스트 라이터가 이름·역할·대사를 작성하고, 기존 주민과 세계관을 참조합니다.")], "db-village-design-residents"), card("이 세계에서 가져오는 맥락", [note(canon?.name ? `세계: ${canon.name}` : "아직 「이 세계」를 작성하지 않았습니다."), note(canon?.premise || "세계관의 전제와 금지 요소는 자료집 「이 세계」에서 정합니다."), ...(canon?.absences?.length ? [note(`등장하지 않는 것: ${canon.absences.join(" · ")}`)] : [])], "db-village-design-canon")],
   };
+  if (design.objectVillage?.decorations?.length) {
+    const zones = { house: "집 주변", commons: "공용 공간", market: "장터", shore: "호숫가", road: "길가" };
+    panels.layout.push(card("마을 생활 공간", [
+      note("공간에 저장한 소품 구성과 접근로를 사용합니다. 기존 길과 현관을 막는 자리는 건너뛰며, 반복 한도까지 배치합니다."),
+      ...design.objectVillage.decorations.map((rule, index) => numberField(
+        `${project.spatialAuthoring?.library.spaces[rule.spaceId]?.name ?? rule.spaceId} · ${zones[rule.zone]}`,
+        `db-village-decoration-limit-${index}`, rule.maxCount,
+        value => update({ objectVillage: { ...design.objectVillage!, decorations: design.objectVillage!.decorations!.map((r, i) => i === index ? { ...r, maxCount: value } : r) } }),
+        { min: 1, max: 32, step: 1 },
+      )),
+    ], "db-village-decoration-spaces"));
+  }
   const pane = el("div", { class: "db-village-design-fields" });
   const nav = el("nav", { class: "db-village-design-tabs", attrs: { "aria-label": "마을 설계서 항목" } });
   const show = (tab: Tab): void => {

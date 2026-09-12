@@ -856,3 +856,14 @@ serialized reload, blocked-position lint and `move_event` recovery are covered b
 ## 개념 장소 형상 (2026-09-05)
 
 `ConceptPlaceRecord.shape?: "rect"|"l"|"alcove"`는 장소의 선택적 바닥 형태다. 생략은 이전 직사각형과 동일하다. cloneConceptBundle·plan 파서·validateTileset·방 하네스 플랜·serialize/deserialize가 보존/검증한다. 모양을 바꾸어도 장소 id나 이벤트 소유 공간이 여러 개로 분할되지 않는다. 구체 도면은 `project/interiorRoomFootprint.ts`의 사각형 합집합으로 해석한다.
+
+## Optional village decoration attachments (2026-09-13)
+
+`VillageDesign.objectVillage.decorations?: VillageDecorationRule[]` persists outdoor space IDs,
+placement zones (`house`, `commons`, `market`, `shore`, `road`) and repetition ceilings (1–32).
+Historical designs omit the field and retain their previous behavior. `villageDesignIssue` validates
+its shape; generation validates referenced spaces and graphics before painting. Ordinary serialize /
+deserialize preserves the field and authored spatial library. Generated maps freeze actual space,
+object revisions, graphics and placements in `villageDesignSource.resolvedSettings.spaceDecorations`;
+this is authored provenance, not runtime state. The shipping player consumes the generated map through
+its existing raster/collision path. See `small-village-generation.md` for the attachment contract.

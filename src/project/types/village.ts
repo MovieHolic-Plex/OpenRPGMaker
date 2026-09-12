@@ -84,6 +84,11 @@ export interface VillageLayoutPresetRecord {
 }
 
 export type VillageDesignPolicy = "fixed" | "free";
+export interface VillageDecorationRule {
+  spaceId: string;
+  zone: "house" | "commons" | "market" | "shore" | "road";
+  maxCount: number;
+}
 export interface VillageDesign {
   version: 1;
   revision: number;
@@ -100,6 +105,8 @@ export interface VillageDesign {
     multiStoreyCount: number;
     clustering: "balanced" | "tight";
     previewSize: { width: number; height: number };
+    /** Outdoor spaces placed after construction; omitted on historical designs. */
+    decorations?: VillageDecorationRule[];
   };
   nature: {
     water: "none" | "river" | "lake" | "river-lake";

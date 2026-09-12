@@ -82,6 +82,14 @@ try {
   assert.ok(profileBox.width >= 300, "The design editor must have room for readable controls");
   assert.ok(profileBox.x + profileBox.width <= previewBox.x || profileBox.y + profileBox.height <= previewBox.y, "Editor and preview overlap");
   await page.screenshot({ path: `${out}/editor-small-village-design.png`, fullPage: true });
+  const decorations = expected.villagePresets.find(p => p.id === "small-village-dense").design.objectVillage.decorations;
+  if (decorations?.length) {
+    await page.getByTestId("db-village-design-tab-layout").click();
+    await page.getByTestId("db-village-decoration-spaces").scrollIntoViewIfNeeded();
+    assert.equal(await page.locator('input[data-testid^="db-village-decoration-limit-"]').count(), decorations.length);
+    for (const [i, rule] of decorations.entries()) assert.equal(await page.getByTestId(`db-village-decoration-limit-${i}`).inputValue(), String(rule.maxCount));
+    await page.screenshot({ path: `${out}/editor-decoration-rules.png`, fullPage: true });
+  }
   await page.getByTestId("spatial-village-back").click();
   assert.ok(await page.getByTestId("spatial-gallery").isVisible());
   fs.writeFileSync(`${out}/editor-design-proof.json`, JSON.stringify({ projectId, rules, previewReady: true, previewHouses: 26, source: "real Supabase project and database design studio", contentWrites: 0 }, null, 2));

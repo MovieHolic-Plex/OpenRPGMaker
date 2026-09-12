@@ -1,0 +1,71 @@
+{
+  "passed": 13,
+  "failed": 0,
+  "tests": [
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/revisedHouseVillage.test.ts",
+      "name": "combines all three house catalogs and counts a three- and four-storey landmark in the exact upstairs quota",
+      "status": "passed"
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/revisedHouseVillage.test.ts",
+      "name": "keeps four settlement roof contours connected after removing log walls and map decoration",
+      "status": "passed"
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/smallVillageDesign.test.ts",
+      "name": "small-village saved canonical contract builds from presetId alone with exactly three upstairs exteriors, seed 20260913",
+      "status": "passed"
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/smallVillageDesign.test.ts",
+      "name": "small-village saved canonical contract builds from presetId alone with exactly three upstairs exteriors, seed 7",
+      "status": "passed"
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/smallVillageDesign.test.ts",
+      "name": "small-village saved canonical contract shows the actual saved composition in the editor preset preview",
+      "status": "passed"
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/smallVillageDesign.test.ts",
+      "name": "small-village saved canonical contract rejects fixed overrides atomically and preserves optional legacy floor semantics",
+      "status": "passed"
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/smallVillageDesign.test.ts",
+      "name": "small-village saved canonical contract counts fixed landmarks in the same quota and rejects four fixed upstairs houses",
+      "status": "passed"
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/smallVillageDesign.test.ts",
+      "name": "small-village saved canonical contract compiles a real settlement region and rebuilds only after ownership verification",
+      "status": "passed"
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageSpaceDecoration.test.ts",
+      "name": "roundtrips reusable spaces and bounds repetition without losing existing walkable cells",
+      "status": "passed"
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageSpaceDecoration.test.ts",
+      "name": "does not fragment a narrow walkway or overwrite a protected house, without partial placement",
+      "status": "passed"
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageSpaceDecoration.test.ts",
+      "name": "rejects missing definitions before painting any part of the map",
+      "status": "passed"
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageSpaceDecoration.test.ts",
+      "name": "connects every dock cell to land and freezes a deterministic reusable definition",
+      "status": "passed"
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageSpaceDecoration.test.ts",
+      "name": "can preview every attachment as an ordinary standalone outdoor space",
+      "status": "passed"
+    }
+  ]
+}

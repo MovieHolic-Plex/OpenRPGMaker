@@ -12,6 +12,7 @@ import { HOUSE_STUDIES, bakeHouseStudy } from "../scripts/lib/houseStudyDesigns.
 import { buildSettlementReferenceHouses } from "../scripts/lib/settlementReferenceHouses.mts";
 import { inspectHouse30 } from "../scripts/lib/house30Authoring.mts";
 import { smallVillageDefinition } from "../scripts/lib/smallVillageDefinition.mts";
+import { registerVillageDecorationCatalog } from "../scripts/lib/villageDecorationCatalog.mts";
 
 it("combines all three house catalogs and counts a three- and four-storey landmark in the exact upstairs quota", () => {
   const entries = [
@@ -30,6 +31,7 @@ it("combines all three house catalogs and counts a three- and four-storey landma
     anchors: e.doors.map((d, i) => ({ id: `door:${i}`, name: "현관 앞", x: d.x, y: d.y + 1 })),
   }]));
   const preset = smallVillageDefinition(entries.map(e => e.id));
+  preset.design!.objectVillage!.decorations = registerVillageDecorationCatalog(project);
   preset.design!.stories = [1, 2, 3, 4];
   project.villagePresets = [preset];
   const context = { project };
@@ -47,6 +49,10 @@ it("combines all three house catalogs and counts a three- and four-storey landma
   expect(houses.some(r => r.objectExterior!.objectId.startsWith("compact-village-"))).toBe(true);
   const reachable = computeReachableCells(context.project, map, context.project.startPos.x, context.project.startPos.y);
   expect(houses.flatMap(r => r.objectExterior!.doorApproaches).every(d => reachable.has(`${d.x},${d.y}`))).toBe(true);
+  const decorations = map.layoutPlan!.regions.filter(r => r.tags?.includes("village-decoration"));
+  for (const zone of ["house", "commons", "market", "shore", "road"]) expect(decorations.some(r => r.tags?.includes(`zone:${zone}`))).toBe(true);
+  expect(decorations.every(r => reachable.has(`${r.front!.x},${r.front!.y}`))).toBe(true);
+  expect(map.villageDesignSource?.resolvedSettings.spaceDecorations).toBeDefined();
 }, 90_000);
 
 it("keeps four settlement roof contours connected after removing log walls and map decoration", () => {

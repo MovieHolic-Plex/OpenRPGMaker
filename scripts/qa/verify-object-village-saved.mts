@@ -30,14 +30,15 @@ const regions = map.layoutPlan!.regions, houses = regions.filter(r => r.objectEx
 const doors = houses.flatMap(r => r.objectExterior!.doorApproaches);
 const market = regions.filter(r => r.tags?.includes("market-display"));
 const shores = regions.filter(r => r.tags?.includes("lakeside"));
+const decorations = regions.filter(r => r.tags?.includes("village-decoration"));
 const seen = computeReachableCells(project!, map, project!.startPos.x, project!.startPos.y);
-const targets = [...doors, ...market.map(r => r.front!), ...shores.map(r => r.front!)];
+const targets = [...doors, ...market.map(r => r.front!), ...shores.map(r => r.front!), ...decorations.map(r => r.front!)];
 assert.ok(targets.every(p => seen.has(`${p.x},${p.y}`)));
 const proof = { projectId: config.projectId, mapId, canonicalSHA256: snapshot.sha256, canonicalRevisionMatches: true, authoredContentMatches: true,
   compactHouseLibraryCount: Object.keys(project.spatialAuthoring!.library.objects).filter(id => id.startsWith("compact-village:object:")).length, libraryHouseCount:
   Object.keys(project!.spatialAuthoring!.library.objects).filter(id => id.startsWith("house30:object:")).length,
   maps: Object.keys(project!.maps).length, houses: houses.length, doors: doors.length, marketDisplays: market.length,
-  lakesideAccess: shores.length, exactDestinationsReachable: targets.length,
+  lakesideAccess: shores.length, decorationSpaces: decorations.length, exactDestinationsReachable: targets.length,
   // Hash a fixed tuple of actual raster fields, independent of object key order after normalization.
   rasterSHA256: createHash("sha256").update(JSON.stringify([map.width, map.height, map.lowerTiles, map.upperTiles,
     map.lowerTileStacks ?? {}, map.upperTileStacks ?? {}])).digest("hex"), verifiedAt: new Date().toISOString() };

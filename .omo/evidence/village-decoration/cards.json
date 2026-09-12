@@ -1,0 +1,182 @@
+[
+  {
+    "name": "꽃과 화분이 있는 앞마당",
+    "x": 2,
+    "y": 2,
+    "width": 4,
+    "height": 2,
+    "zone": "house",
+    "maxCount": 6
+  },
+  {
+    "name": "작은 텃밭과 수확물",
+    "x": 12,
+    "y": 2,
+    "width": 5,
+    "height": 3,
+    "zone": "house",
+    "maxCount": 6
+  },
+  {
+    "name": "장작을 쌓아 둔 작업 마당",
+    "x": 22,
+    "y": 2,
+    "width": 3,
+    "height": 2,
+    "zone": "house",
+    "maxCount": 6
+  },
+  {
+    "name": "벤치와 항아리의 문간 쉼터",
+    "x": 32,
+    "y": 2,
+    "width": 3,
+    "height": 2,
+    "zone": "house",
+    "maxCount": 6
+  },
+  {
+    "name": "식료품점 앞 진열 공간",
+    "x": 2,
+    "y": 10,
+    "width": 3,
+    "height": 2,
+    "zone": "house",
+    "maxCount": 3
+  },
+  {
+    "name": "공방의 야외 작업대",
+    "x": 12,
+    "y": 10,
+    "width": 5,
+    "height": 2,
+    "zone": "house",
+    "maxCount": 3
+  },
+  {
+    "name": "좁은 문간의 화분과 항아리",
+    "x": 22,
+    "y": 10,
+    "width": 2,
+    "height": 2,
+    "zone": "house",
+    "maxCount": 8
+  },
+  {
+    "name": "좁은 골목의 장작과 상자",
+    "x": 32,
+    "y": 10,
+    "width": 2,
+    "height": 2,
+    "zone": "house",
+    "maxCount": 8
+  },
+  {
+    "name": "공동 우물과 물 긷는 자리",
+    "x": 2,
+    "y": 18,
+    "width": 3,
+    "height": 3,
+    "zone": "commons",
+    "maxCount": 1
+  },
+  {
+    "name": "마을 안내와 작은 쉼터",
+    "x": 12,
+    "y": 18,
+    "width": 4,
+    "height": 2,
+    "zone": "commons",
+    "maxCount": 1
+  },
+  {
+    "name": "울타리 옆 공동 텃밭",
+    "x": 22,
+    "y": 18,
+    "width": 5,
+    "height": 4,
+    "zone": "commons",
+    "maxCount": 1
+  },
+  {
+    "name": "장터 천막과 보관 통",
+    "x": 32,
+    "y": 18,
+    "width": 4,
+    "height": 3,
+    "zone": "market",
+    "maxCount": 1
+  },
+  {
+    "name": "장터 뒤 물품 적재 공간",
+    "x": 2,
+    "y": 26,
+    "width": 3,
+    "height": 2,
+    "zone": "market",
+    "maxCount": 2
+  },
+  {
+    "name": "항아리와 포장 작업대",
+    "x": 12,
+    "y": 26,
+    "width": 4,
+    "height": 2,
+    "zone": "market",
+    "maxCount": 1
+  },
+  {
+    "name": "물 위로 이어지는 작은 잔교",
+    "x": 22,
+    "y": 26,
+    "width": 2,
+    "height": 4,
+    "zone": "shore",
+    "maxCount": 1
+  },
+  {
+    "name": "물가 낚시와 짐 놓는 자리",
+    "x": 32,
+    "y": 26,
+    "width": 3,
+    "height": 2,
+    "zone": "shore",
+    "maxCount": 1
+  },
+  {
+    "name": "돌과 덤불이 섞인 물가",
+    "x": 2,
+    "y": 34,
+    "width": 3,
+    "height": 2,
+    "zone": "shore",
+    "maxCount": 3
+  },
+  {
+    "name": "호숫가 꽃과 휴식 자리",
+    "x": 12,
+    "y": 34,
+    "width": 3,
+    "height": 2,
+    "zone": "shore",
+    "maxCount": 2
+  },
+  {
+    "name": "골목 모퉁이의 짧은 울타리와 꽃",
+    "x": 22,
+    "y": 34,
+    "width": 3,
+    "height": 3,
+    "zone": "road",
+    "maxCount": 5
+  },
+  {
+    "name": "갈림길 안내와 덤불",
+    "x": 32,
+    "y": 34,
+    "width": 3,
+    "height": 2,
+    "zone": "road",
+    "maxCount": 3
+  }
+]
