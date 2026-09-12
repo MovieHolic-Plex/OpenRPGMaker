@@ -66,9 +66,11 @@ describe("spatial Database geography mount", () => {
     expect(host.querySelector("[data-testid='spatial-geography-raster']")).not.toBeNull();
     expect(host.querySelector("[data-testid='spatial-geography-board']")?.getAttribute("data-kind")).toBe("region");
     expect(host.querySelector("[data-testid='spatial-geography-child-lake-village']")).not.toBeNull();
+    // 초안이 없는 읽기 전용 선택에서는 미리보기가 비활성이어야 한다 — enabled 였을 때
+    // 클릭하면 authoring-draft-missing 내부 토큰이 화면에 새던 회귀의 방지선.
     const preview = host.querySelector<HTMLButtonElement>("[data-testid='spatial-preview']");
     expect(preview).not.toBeNull();
-    expect(preview?.disabled).toBe(false);
+    expect(preview?.disabled).toBe(true);
   });
 
   it("mounts a world source canvas with region children and atlas raster", () => {

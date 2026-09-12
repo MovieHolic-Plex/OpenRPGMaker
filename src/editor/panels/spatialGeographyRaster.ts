@@ -130,3 +130,51 @@ export function renderGeographyRaster(
   const node = el("div", { class: "spatial-geography-raster-wrap", children: [canvas] });
   return { node, ...(preview.map ? { map: preview.map } : {}), ...(preview.error ? { error: preview.error } : {}) };
 }
+
+/** 카드 썸네일용 축소 지형 래스터 — 4px/타일로 굽고 CSS 가 나머지를 맞춘다. */
+const GEOGRAPHY_THUMB_TILE_PX = 4;
+
+/** 프리뷰 컴파일은 비싸다 — 설계 객체 단위로 메모한다(불변이라 리비전 상승 = 새 객체). */
+const geographyThumbCache = new WeakMap<GeographyDesign, GeographyPreviewMap | null>();
+
+function geographyThumbPreview(project: Project, design: GeographyDesign): GeographyPreviewMap | undefined {
+  let preview = geographyThumbCache.get(design);
+  if (preview === undefined) {
+    preview = geographyPreviewMap(project, design);
+    geographyThumbCache.set(design, preview);
+  }
+  return preview ?? undefined;
+}
+
+export function geographyThumbMap(project: Project, design: GeographyDesign): GameMap | undefined {
+  return geographyThumbPreview(project, design)?.map;
+}
+
+export function renderGeographyThumb(project: Project, design: GeographyDesign): HTMLElement {
+  const preview = geographyThumbPreview(project, design);
+  const map = preview?.map;
+  if (!map) {
+    return el("div", { class: "spatial-card-fallback", dataset: { previewError: "compile" } });
+  }
+  // 지형 컴파일이 사설 아틀라스(world_structures_*)로 갈아끼운 맵도 있다 — 그 타일셋은
+  // 프리뷰 프로젝트에만 존재하므로 여기서도 프리뷰 프로젝트를 봐야 한다.
+  const tileset = preview!.project.tilesets[map.tilesetId];
+  if (!tileset) return el("div", { class: "spatial-card-fallback" });
+  const tile = map.tileSize || tileset.tileSize || 16;
+  const scale = GEOGRAPHY_THUMB_TILE_PX / tile;
+  const canvas = document.createElement("canvas");
+  canvas.className = "spatial-card-image";
+  canvas.width = Math.max(1, Math.round(map.width * GEOGRAPHY_THUMB_TILE_PX));
+  canvas.height = Math.max(1, Math.round(map.height * GEOGRAPHY_THUMB_TILE_PX));
+  canvas.dataset.painted = "pending";
+  void loadTilesetImage(tileset).then((image) => {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.imageSmoothingEnabled = false;
+    drawMapTileLayers(ctx, image, map, tileset, scale);
+    canvas.dataset.painted = "atlas";
+  }).catch(() => {
+    canvas.dataset.painted = "missing-atlas";
+  });
+  return canvas;
+}

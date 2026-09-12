@@ -4,6 +4,7 @@ import {
   applyAuthoringPreview,
   clearAuthoringSession,
   editAuthoringDraft,
+  hasAuthoringDraft,
   hasAuthoringPreview,
   previewAuthoringDraft,
   spatialAuthoringController,
@@ -111,10 +112,10 @@ export function spatialPlacesChrome(card: SpatialGalleryCard | undefined, rerend
     previewError: placeChromeState.previewError,
     deleteOpen: placeChromeState.deleteOpen,
     add: controller ? () => addBlankPlace(rerender) : undefined,
-    duplicate: target && !builtinLocked ? () => clonePlace(target, rerender) : undefined,
-    delete: target && !builtinLocked ? () => { placeChromeState.deleteOpen = true; rerender(); } : undefined,
-    onDeleteConfirm: target && placeChromeState.deleteOpen ? () => confirmDelete(target, rerender) : undefined,
-    preview: controller ? () => previewPlace(rerender) : undefined,
+    duplicate: controller && target && !builtinLocked ? () => clonePlace(target, rerender) : undefined,
+    delete: controller && target && !builtinLocked ? () => { placeChromeState.deleteOpen = true; rerender(); } : undefined,
+    onDeleteConfirm: controller && target && placeChromeState.deleteOpen ? () => confirmDelete(target, rerender) : undefined,
+    preview: controller && hasAuthoringDraft() ? () => previewPlace(rerender) : undefined,
     build: controller && !spatialBuildDisabledReason(card) ? () => {
       const seed = placeChromeState.buildSeed;
       if (seed === null) {
@@ -166,6 +167,11 @@ function applyPlace(rerender: () => void): void {
 }
 
 function addBlankPlace(rerender: () => void): void {
+  if (!visibleAuthoringProject().spatialAuthoring) {
+    placeChromeState.previewError = "이 프로젝트에는 공간 설계 문서가 없습니다 — 새 설계를 만들 수 없습니다";
+    rerender();
+    return;
+  }
   let createdId: ReturnType<typeof freshPlaceId> | undefined;
   const result = editAuthoringDraft((project) => {
     const created = blankPlaceDesign(project);

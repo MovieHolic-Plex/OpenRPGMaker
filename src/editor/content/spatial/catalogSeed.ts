@@ -130,6 +130,20 @@ function placeDesign(placeId: string): PlaceDesign {
   };
 }
 
+// 카탈로그 지형 재료는 공간 카탈로그와 같은 슬롯 이름을 쓰지만, 지리 컴파일러는
+// 월드 칩셋 어휘(ground/water + WORLD_TERRAIN_BLOCKS 키)만 안다. 시드가 번역한다.
+const WORLD_TERRAIN_MATERIAL: Readonly<Record<string, string>> = {
+  ground: "ground",
+  water: "water",
+  groundAlt: "forest",
+  cliff: "mountain",
+  path: "dirt",
+};
+
+function worldTerrainMaterial(material: string): string {
+  return WORLD_TERRAIN_MATERIAL[material] ?? material;
+}
+
 function regionDesign(regionId: string): RegionDesign {
   const region = REGION_CATALOG.find((entry) => entry.id === regionId);
   if (!region) throw new TypeError(`Unknown catalog region: ${regionId}`);
@@ -139,8 +153,8 @@ function regionDesign(regionId: string): RegionDesign {
       tilesetId: GEOGRAPHY_TERRAIN.tilesetId,
       width: GEOGRAPHY_TERRAIN.width,
       height: GEOGRAPHY_TERRAIN.height,
-      floor: region.floor,
-      areas: region.areas.map((area) => ({ kind: "rect", material: area.material, x: area.x, y: area.y, width: area.width, height: area.height })),
+      floor: worldTerrainMaterial(region.floor),
+      areas: region.areas.map((area) => ({ kind: "rect", material: worldTerrainMaterial(area.material), x: area.x, y: area.y, width: area.width, height: area.height })),
     },
     places: region.places.map((child) => ({
       id: spatialId(child.id),
@@ -172,7 +186,7 @@ function worldDesign(worldId: string): WorldDesign {
       tilesetId: GEOGRAPHY_TERRAIN.tilesetId,
       width: GEOGRAPHY_TERRAIN.width,
       height: GEOGRAPHY_TERRAIN.height,
-      floor: world.floor,
+      floor: worldTerrainMaterial(world.floor),
       areas: [],
     },
     regions: world.regions.map((child) => ({
@@ -192,6 +206,34 @@ function worldDesign(worldId: string): WorldDesign {
     // 시작 지역은 계획서가 지정한 그 지역이다.
     entryPort: { childId: spatialId(entry.id), portId: spatialId(entry.id) },
   };
+}
+
+// 카탈로그 설계는 불변 정본이라 같은 id 는 한 번만 조립한다 — 갤러리·스테이지가
+// 렌더마다 부르므로 메모하지 않으면 카드 수만큼 재생성된다.
+const catalogDesignCache = new Map<string, RegionDesign | WorldDesign>();
+
+/** 카탈로그 지역을 설계로 조립한다(읽기 전용 프리뷰용 — 라이브러리 upsert 없음). */
+export function catalogRegionDesign(id: string): RegionDesign | undefined {
+  if (!REGION_CATALOG.some((entry) => entry.id === id)) return undefined;
+  const key = `region:${id}`;
+  let design = catalogDesignCache.get(key);
+  if (!design) {
+    design = regionDesign(id);
+    catalogDesignCache.set(key, design);
+  }
+  return design as RegionDesign;
+}
+
+/** 카탈로그 세계를 설계로 조립한다(읽기 전용 프리뷰용). */
+export function catalogWorldDesign(id: string): WorldDesign | undefined {
+  if (!WORLD_CATALOG.some((entry) => entry.id === id)) return undefined;
+  const key = `world:${id}`;
+  let design = catalogDesignCache.get(key);
+  if (!design) {
+    design = worldDesign(id);
+    catalogDesignCache.set(key, design);
+  }
+  return design as WorldDesign;
 }
 
 /** 배송 카탈로그 전부를 라이브러리 레코드로 조립한다. 저장하지 않는다. */

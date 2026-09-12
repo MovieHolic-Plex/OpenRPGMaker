@@ -148,7 +148,7 @@ describe("source build chrome on the real Database controller", () => {
     // When
     click("spatial-apply");
     // Then
-    expect(control<HTMLElement>("spatial-preview-error").textContent).toBe("Project changed since preview");
+    expect(control<HTMLElement>("spatial-preview-error").textContent).toBe("미리보기를 만든 뒤 프로젝트가 바뀌었습니다 — 미리보기를 다시 실행하세요");
     expect(store.getCurrent()).toEqual(before);
     expect(getMapEditHistoryEntries()).toEqual(history);
     expect(spatialSession()).toEqual(selection);
@@ -168,7 +168,7 @@ describe("source build chrome on the real Database controller", () => {
     // When
     click("spatial-build");
     // Then
-    expect(control<HTMLElement>("spatial-preview-error").textContent).toBe("build-proposal-pending");
+    expect(control<HTMLElement>("spatial-preview-error").textContent).toBe("적용되지 않은 시공 미리보기가 있습니다 — 먼저 적용하세요");
     expect(spatialBuildProposal()?.input).toEqual(original?.input);
     expect(visibleAuthoringProject().spatialAuthoring?.library.spaces[spaceDesign]?.width).toBe(14);
     expect(store.getCurrent().spatialAuthoring?.library.spaces[spaceDesign]?.width).not.toBe(14);

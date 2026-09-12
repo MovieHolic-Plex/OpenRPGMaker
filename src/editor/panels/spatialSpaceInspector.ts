@@ -1,4 +1,7 @@
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
+import { cardSubtitle, spatialSourceLabel } from "@/editor/panels/spatialFeedback";
+import { roomKindOf } from "@/editor/panels/spatialGallery";
+import { interiorThemeCards } from "@/editor/panels/structureKitDbSources";
 import { spaceChromeState } from "@/editor/panels/spatialSpaceChromeState";
 import { mutateWorkingSpace, spaceDeletePreview, workingProject, workingSpace } from "@/editor/panels/spatialSpaceCommands";
 import {
@@ -21,16 +24,37 @@ export function renderSpatialSpacesInspector(
   const body: HTMLElement[] = [];
   if (card) {
     body.push(el("h3", { class: "spatial-inspector-name", text: card.name }));
-    if (card.subtitle) body.push(el("p", { class: "spatial-inspector-sub", text: card.subtitle }));
+    const subtitle = cardSubtitle(card);
+    if (subtitle) body.push(el("p", { class: "spatial-inspector-sub", text: subtitle }));
     body.push(el("dl", {
       class: "spatial-inspector-facts",
       children: [
-        el("dt", { text: "원본" }),
-        el("dd", { text: card.source === "default" ? "기본 설계" : card.source === "own" ? "내 설계" : "배치" }),
+        el("dt", { text: "분류" }),
+        el("dd", { text: spatialSourceLabel(card) }),
         ...(card.missingSource
           ? [el("dt", { text: "원본" }), el("dd", { class: "spatial-card-badge is-missing", text: "없음" })]
           : []),
       ],
+    }));
+  }
+  // 설계 레코드가 있는 카드는 방 종류로 오인하면 안 된다 — id 충돌 방지로 !space 일 때만 본다.
+  const kind = card && !space ? roomKindOf(card) : undefined;
+  if (kind) {
+    const theme = interiorThemeCards(undefined, [kind])[0];
+    body.push(el("dl", {
+      class: "spatial-inspector-facts",
+      dataset: { testid: "spatial-space-kind-facts" },
+      children: [
+        el("dt", { text: "필수 역할" }),
+        el("dd", { text: theme && theme.roles.length > 0 ? theme.roles.map((role) => role.label).join(", ") : "없음" }),
+        el("dt", { text: "분위기" }),
+        el("dd", { text: theme && theme.modifierLabels.length > 0 ? theme.modifierLabels.join(", ") : "—" }),
+      ],
+    }));
+    body.push(el("p", {
+      class: "spatial-readonly-note",
+      text: "방 종류는 읽기 전용입니다 — 「시공」으로 실내를 만들거나 「추가」로 설계를 시작하세요.",
+      dataset: { testid: "spatial-readonly-note" },
     }));
   }
   if (space && target) {

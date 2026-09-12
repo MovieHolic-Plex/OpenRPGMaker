@@ -79,6 +79,13 @@ export function hasAuthoringPreview(): boolean {
   return activeSession().preview !== null;
 }
 
+/** 미리보기만 걷어 초안으로 되돌린다 — Escape 의 "한 단계 뒤로" 계층. */
+export function dismissAuthoringPreview(): void {
+  const current = activeSession();
+  current.preview = null;
+  current.buildInput = null;
+}
+
 /** Build disclosure has the same project/session lifetime as its issued handles. */
 export function authoringBuildProposal(): SpatialBuildProposal | null {
   const current = activeSession();

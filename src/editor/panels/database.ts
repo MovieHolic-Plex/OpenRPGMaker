@@ -631,9 +631,9 @@ function databaseTabCount(tab: DatabaseTab): number | null {
     case "spatialPlaces":
       return spatialAllSourceDesignCount("places");
     case "spatialRegions":
-      return Object.values(project.spatialAuthoring?.library.regions ?? {}).length;
+      return spatialAllSourceDesignCount("regions");
     case "spatialWorlds":
-      return Object.values(project.spatialAuthoring?.library.worlds ?? {}).length;
+      return spatialAllSourceDesignCount("worlds");
     case "worldCanon":
       return worldCanonHasContent(project.worldCanon) ? 1 : 0;
     case "worldCodex":
@@ -951,7 +951,11 @@ function renderActiveTabUnguarded(
   stopSkillAnimationStagesIn(body);
   body.replaceChildren();
   const content = mapView ? el("div", { class: "db-map-content" }) : body;
-  if (mapView) body.append(renderMapContextNav(tab, container), content);
+  if (mapView) {
+    // 링크가 하나도 없으면 빈 내비 바만 남는다 — 그 경우 아예 안 단다.
+    const contextNav = renderMapContextNav(tab, container);
+    body.append(...(contextNav ? [contextNav, content] : [content]));
+  }
   const rerender = (): void => {
     // A debounced callback from a tab that has since been detached must not repaint
     // whichever tab is currently visible. Its cache entry is simply made cold.
@@ -1172,7 +1176,8 @@ function isDatabaseTab(value: string | null): value is DatabaseTab {
   return tabs.some((tab) => tab.id === value);
 }
 
-function renderMapContextNav(tab: DatabaseTab, container: HTMLElement): HTMLElement {
+/** 맵 그룹의 관련 편집 링크 바. 걸 링크가 없으면 null — 빈 바를 그리지 않는다. */
+function renderMapContextNav(tab: DatabaseTab, container: HTMLElement): HTMLElement | null {
   const nav = el("nav", {
     class: "db-map-context-nav",
     attrs: { "aria-label": "맵 관련 편집" },
@@ -1182,7 +1187,10 @@ function renderMapContextNav(tab: DatabaseTab, container: HTMLElement): HTMLElem
     nav.append(el("button", {
       class: "btn small",
       text: `${back ? "← " : ""}${databaseTabLabel(target)}${back ? " 돌아가기" : ""}`,
-      attrs: { type: "button" },
+      attrs: {
+        type: "button",
+        ...(target === "terrain" ? { title: "타일별 지형 효과(통행·이동 판정)를 편집합니다" } : {}),
+      },
       dataset: { testid: back ? "db-context-back" : `db-context-${target}`, tab: target },
       on: { click: () => switchDatabaseActiveTab(target, container) },
     }));
@@ -1196,5 +1204,5 @@ function renderMapContextNav(tab: DatabaseTab, container: HTMLElement): HTMLElem
       addLink(child as DatabaseTab);
     }
   }
-  return nav;
+  return nav.childElementCount > 0 ? nav : null;
 }

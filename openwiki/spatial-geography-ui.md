@@ -47,6 +47,28 @@ through the `__RPG_ZZU_E2E_PROJECT__` dev hook — build it with
 `convertLegacySpatialSnapshot(serialize(project))`, never by editing raw
 JSON by hand.
 
+## Catalog read-only rendering (2026-09-12)
+
+Region/world gallery cards without a library draft render from the shipped
+catalog, not from an empty stage: `catalogRegionDesign` / `catalogWorldDesign`
+in `catalogSeed.ts` rebuild the `RegionDesign`/`WorldDesign` from
+`geographyCatalog.ts`, and the canvas/inspector show read-only facts plus a
+「추가」 hint. Preview stays disabled until `hasAuthoringDraft()`.
+
+Two traps fixed while wiring thumbnails:
+
+- **Catalog materials are not compiler materials.** The catalog reuses the
+  space-catalog slot names (`groundAlt`, `cliff`, `path`) but
+  `geographyTerrain` only knows the world-chipset vocabulary (ground/water +
+  `WORLD_TERRAIN_BLOCKS` keys). `catalogSeed` translates via
+  `WORLD_TERRAIN_MATERIAL` (`groundAlt→forest`, `cliff→mountain`, `path→dirt`)
+  so every shipped region compiles for preview.
+- **Private atlases live in the preview clone only.** `geographyTerrain` can
+  retarget a map to a `world_structures_*` atlas that exists only inside the
+  cloned preview project. `renderGeographyThumb` therefore resolves
+  `map.tilesetId` against `preview.project`, not the live project — otherwise
+  the card silently falls back.
+
 ## Authoring rules
 
 Edits go through the project-scoped detached draft. Preview and apply

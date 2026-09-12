@@ -142,6 +142,35 @@ function facilityMaps(project: Project, card: SpatialGalleryCard): readonly Plac
   });
 }
 
+/**
+ * 스테이지용 — 설계 레코드가 없는 카드(꾸러미 시설 등)도 읽기 전용 래스터를 그린다.
+ * 편집용 previewPlaceRasters 와 달리 프로젝트를 바꾸지 않고, 실패를 error 문자열로 돌려준다.
+ */
+export function placeCatalogRasters(project: Project, card: SpatialGalleryCard, scale: number): PlaceRasterPreview {
+  try {
+    const maps = facilityMaps(project, card);
+    const stamps = maps.map(({ map, x, y }) => {
+      const canvas = mapCanvas(own(project.tilesets, map.tilesetId), map, scale);
+      canvas.classList.add("spatial-place-raster");
+      canvas.style.left = `${x * TILE_SIZE * scale}px`;
+      canvas.style.top = `${y * TILE_SIZE * scale}px`;
+      return { x, y, canvas };
+    });
+    return {
+      stamps,
+      width: Math.max(0, ...maps.map(({ map, x }) => x + map.width)),
+      height: Math.max(0, ...maps.map(({ map, y }) => y + map.height)),
+      error: null,
+    };
+  } catch (error) {
+    try {
+      return { stamps: [], width: 0, height: 0, error: previewError(error).text };
+    } catch {
+      return { stamps: [], width: 0, height: 0, error: "미리보기를 만들 수 없습니다" };
+    }
+  }
+}
+
 export function renderPlaceCardThumb(card: SpatialGalleryCard): HTMLElement {
   const project = visibleAuthoringProject();
   try {

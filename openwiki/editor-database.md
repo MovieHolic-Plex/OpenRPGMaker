@@ -676,6 +676,45 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
 `structureKits`·`interiorRoomKinds`·`scratchConceptBundles`·지형·마을 데이터는 그대로 둔다.
 회귀: `databaseConceptFirstNav`, `databaseTilesetFolder`, `tilesetTabActivation`, `scratchConceptTab`.
 
+## 맵 그룹 — 공간 저작 셸 UX 계약 (2026-09-12)
+
+타일·오브젝트·공간·장소·지역·세계 6탭은 `spatialShell.ts`+`spatialStage.ts`+`spatialGallery.ts`
+공유 셸을 쓴다. 적대적 리뷰(`output/evidence/spatial-ux-review/`) 후 아래 계약이 생겼다.
+
+- **기본 설계는 읽기 전용 카탈로그다.** draft 가 없는 카드도 스테이지·인스펙터가 실제
+  내용을 렌더한다 — 지역·세계는 `catalogRegionDesign`/`catalogWorldDesign`(`catalogSeed.ts`)
+  + 지형 래스터, 공간은 방 종류 요약(필수 역할·분위기), 장소는 카탈로그 번들 래스터.
+  인스펙터에 「읽기 전용」안내와 사실표를 둔다.
+- **미리보기는 `hasAuthoringDraft()` 일 때만 enabled.** draft 없이 누르면 생기던
+  `authoring-draft-missing` 노출을 막는다. 「추가」는 `spatialDocumentPresent` 없으면
+  사람 말 안내를 띄운다 — `spatialAuthoring` 문서 없는(레거시·dev) 프로젝트는 읽기 전용이다.
+- **내부 토큰은 `spatialFeedback.ts` 의 `humanizeSpatialError` 가 한국어 문구로 바꾼다.**
+  `code:path` 는 코드만 번역하고 경로를 보존. 모르는 문자열은 그대로 통과.
+  `syncSpatialFeedbackSelection` 이 탭·모드·선택이 바뀔 때 stale 오류·삭제 확인을 걷는다 —
+  지난 화면의 배너가 따라오지 않는다.
+- **Escape 는 얕은 전이 상태부터 걷는다:** 지리 제스처 → 오류/삭제 확인 → 미리보기 →
+  인스펙터 → breadcrumb → 모달. 리렌더로 포커스가 셸 밖(body)으로 나가도 동작하도록
+  캡처 단계 document 리스너(`installSpatialEscapeLayer`)가 모달 닫기보다 먼저 소비한다.
+- **카드 썸네일은 카드마다 달라야 한다.** 지역·세계는 프리뷰 컴파일 결과를 4px/타일로
+  구운 `renderGeographyThumb`(사설 아틀라스 `world_structures_*` 맵은 프리뷰 프로젝트
+  안에서 찾아야 한다 — 라이브 프로젝트에는 없다). 배치 맵 카드는 칩셋 통째 이미지가
+  아니라 `cellsFromMapRect` 로 실제 맵을 굽는다. 공간은 `spaceCanvasLayout` 레이아웃,
+  방 종류는 마루+필수 역할 가구 스프라이트 조합.
+- **부제 중복 금지:** `cardSubtitle` 은 name==subtitle 이면 숨긴다. 계층 카탈로그 부제는
+  이름 반복 대신 「장소 2곳」 같은 자식 수.
+- **툴바 단어 버튼은 네이티브 `title` 로 설명**(`ACTION_HINT`) — 아이콘 전용 지연 툴팁
+  롤아웃(`delayed-tooltip.md`) 대상이 아니다. 되돌아갈 부모가 없을 때 `←` 는 렌더하지
+  않는다(항상 disabled 버튼 금지).
+- **빈 상태는 카피가 있어야 한다:** 갤러리 `spatial-gallery-empty`(배치된 곳 없음/내 설계
+  없음), 캔버스 `spatial-canvas-empty`, 인스펙터 「선택된 항목이 없습니다」.
+- **1024×768:** 갤러리가 세로 카드 그리드에서 160px 가로 필름스트립으로 전환되고,
+  캡션은 `flex: 0 0 auto` 로 내용 높이를 지킨다(썸네일이 나머지를 흡수).
+- 시공 대상 폼은 접힌 `<details>`(`시공 대상 — 어느 맵의 어느 영역에 지을지`) 안에 있고
+  시드는 정수 검증 + 설명을 단다.
+- 회귀: `test/spatialFeedback.test.ts` + 기존 spatial 스위트. 브라우저 검증 스크립트
+  `output/spatial-ux-verify.mjs`(52 체크, netns 격리 실행)와 스크린샷
+  `output/evidence/spatial-ux-fixed/`.
+
 ## 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
 
 옛 `tilesetAutotile` 경로와 내부 자동 연결 탭은 같은 면이다. 예전의 멤버 번호 나열·16칸

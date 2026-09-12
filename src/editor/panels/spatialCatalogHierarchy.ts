@@ -93,7 +93,8 @@ function regionCards(): SpatialGalleryCard[] {
     usage: 0,
     tilesetId: GEOGRAPHY_TERRAIN.tilesetId,
     regionKind: "terrain" as const,
-    subtitle: region.label,
+    // 이름과 같은 부제는 카드·인스펙터에서 이중 출력된다 — 자리가 말해 주는 것을 쓴다.
+    subtitle: `장소 ${region.places.length}곳`,
   }));
   const known = new Set(cards.map((card) => card.id));
   for (const region of Object.values(visibleAuthoringProject().spatialAuthoring?.library.regions ?? {})) {
@@ -140,7 +141,7 @@ function worldCards(): SpatialGalleryCard[] {
     kind: "worlds" as const,
     usage: 0,
     tilesetId: GEOGRAPHY_TERRAIN.tilesetId,
-    subtitle: world.label,
+    subtitle: `지역 ${world.regions.length}곳`,
   }));
   const known = new Set(cards.map((card) => card.id));
   for (const world of Object.values(visibleAuthoringProject().spatialAuthoring?.library.worlds ?? {})) {

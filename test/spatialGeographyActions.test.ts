@@ -373,10 +373,11 @@ describe("spatial geography actions", () => {
     const straight = setRegionRoute(region, spatialId("authored-road"), [{ x: 20, y: 40 }, { x: 100, y: 40 }]);
     expect(straight.kind).toBe("ok");
     const live = store.getCurrent();
-    const chrome = spatialRegionsChrome(regionCard("deep-forest", "placed"), () => undefined);
     if (straight.kind !== "ok") throw new Error("expected route");
     const accepted = commitWorkingGeography(geographyDraftTarget(regionCard("deep-forest", "placed"), "region"), straight);
     expect(accepted).toBe(true);
+    // 미리보기는 초안이 있을 때만 열린다 — 실제 UI 도 편집 후 다시 렌더해 새 chrome 을 만든다.
+    const chrome = spatialRegionsChrome(regionCard("deep-forest", "placed"), () => undefined);
     chrome.preview?.();
     expect(store.getCurrent()).toBe(live);
     expect(hasAuthoringPreview()).toBe(false);
