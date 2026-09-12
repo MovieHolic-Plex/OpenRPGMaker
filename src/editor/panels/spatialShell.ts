@@ -21,6 +21,12 @@ import {
 } from "@/editor/panels/spatialAuthoringSession";
 import { setSelectedTileset } from "@/editor/panels/tilesetSettingsPanel";
 import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
+import {
+  dismissSpatialFeedback,
+  spatialGalleryEmptyCopy,
+  syncSpatialFeedbackSelection,
+} from "@/editor/panels/spatialFeedback";
+import { dismissAuthoringPreview, hasAuthoringPreview } from "@/editor/panels/spatialAuthoringAccess";
 import { el } from "@/util/dom";
 
 export function renderSpatialAuthoringShell(
@@ -38,6 +44,8 @@ export function renderSpatialAuthoringShell(
     session = spatialSession();
   }
   const selected = visibleSpatialSelection(session);
+  // 지난 화면의 오류 배너·삭제 확인이 새 선택에 따라오면 안 된다.
+  syncSpatialFeedbackSelection(`${session.tab}:${session.mode}:${session.source}:${selected?.id ?? ""}`);
 
   const refresh = (): void => rerender();
 
@@ -68,10 +76,22 @@ export function renderSpatialAuthoringShell(
     dataset: { testid: "spatial-gallery" },
     children: [
       renderSpatialSourceChips(session, onSource),
-      el("div", {
-        class: "spatial-gallery-grid",
-        children: cards.map((card) => renderSpatialGalleryCard(card, card.id === selected?.id, onSelect)),
-      }),
+      cards.length === 0
+        ? (() => {
+          const copy = spatialGalleryEmptyCopy(session.mode, session.tab);
+          return el("div", {
+            class: "spatial-gallery-empty",
+            dataset: { testid: "spatial-gallery-empty" },
+            children: [
+              el("p", { class: "spatial-gallery-empty-title", text: copy.title }),
+              el("p", { class: "spatial-gallery-empty-body", text: copy.body }),
+            ],
+          });
+        })()
+        : el("div", {
+          class: "spatial-gallery-grid",
+          children: cards.map((card) => renderSpatialGalleryCard(card, card.id === selected?.id, onSelect)),
+        }),
     ],
   });
 
@@ -90,7 +110,36 @@ export function renderSpatialAuthoringShell(
     children: [chrome, el("div", { class: "spatial-body", children: [gallery, stage] })],
   });
   shell.addEventListener("keydown", (event) => handleShellKey(event, selected, refresh));
+  latestShellRefresh = refresh;
+  installSpatialEscapeLayer();
   host.append(shell);
+}
+
+let latestShellRefresh: (() => void) | null = null;
+let escapeLayerInstalled = false;
+
+/**
+ * 포커스가 셸 밖(document/body)에 있어도, 오류 배너·미리보기 같은 전이 UI 가 떠 있으면
+ * 첫 Escape 는 그것만 걷어야 한다. 모달의 닫기는 document 버블 단계라 캡처에서 앞선다.
+ * 모듈에 한 번만 단다 — 셸은 매 렌더마다 다시 만들어지므로 리스너를 따라가지 않는다.
+ */
+function installSpatialEscapeLayer(): void {
+  if (escapeLayerInstalled) return;
+  escapeLayerInstalled = true;
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || event.defaultPrevented) return;
+    if (!document.querySelector(".database-modal-body .spatial-shell")) return;
+    const target = event.target;
+    if (target instanceof HTMLElement) {
+      const tag = target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable) return;
+    }
+    if (!dismissSpatialFeedback() && !hasAuthoringPreview()) return;
+    dismissAuthoringPreview();
+    event.preventDefault();
+    event.stopPropagation();
+    latestShellRefresh?.();
+  }, true);
 }
 
 function wireMode(chrome: HTMLElement, testid: string, onClick: () => void): void {
@@ -112,6 +161,18 @@ function handleShellKey(event: KeyboardEvent, selected: SpatialGalleryCard | und
       geographyChromeState.gesture = null;
       geographyChromeState.routeDraft = [];
       geographyChromeState.previewError = null;
+      refresh();
+      return;
+    }
+    // 떠 있는 오류·미리보기부터 단계적으로 걷는다 — 한 번의 Escape 가 모달까지 닫으면 안 된다.
+    if (dismissSpatialFeedback()) {
+      event.preventDefault();
+      refresh();
+      return;
+    }
+    if (hasAuthoringPreview()) {
+      event.preventDefault();
+      dismissAuthoringPreview();
       refresh();
       return;
     }

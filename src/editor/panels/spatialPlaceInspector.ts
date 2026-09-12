@@ -1,4 +1,5 @@
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
+import { cardSubtitle, humanizeSpatialError, spatialSourceLabel } from "@/editor/panels/spatialFeedback";
 import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
 import { mutateWorkingPlace, placeDeletePreview, workingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
 import { placeDraftTarget, withPlaceKind, withPlaceLayout, withPlaceName } from "@/editor/panels/spatialPlaceDraft";
@@ -9,6 +10,7 @@ import {
   selectedPlacedChild,
   setPlacedChildLevel,
 } from "@/editor/panels/spatialPlacePlaced";
+import { conceptFacilityTemplateById } from "@/project/defaults/conceptFacilityTemplates";
 import type { PlaceDesign } from "@/project/spatial/types";
 import { el } from "@/util/dom";
 
@@ -38,17 +40,41 @@ export function renderSpatialPlacesInspector(
   const body: HTMLElement[] = [];
   if (card) {
     body.push(el("h3", { class: "spatial-inspector-name", text: card.name }));
-    if (card.subtitle) body.push(el("p", { class: "spatial-inspector-sub", text: card.subtitle }));
+    const subtitle = cardSubtitle(card);
+    if (subtitle) body.push(el("p", { class: "spatial-inspector-sub", text: subtitle }));
     body.push(el("dl", {
       class: "spatial-inspector-facts",
       children: [
-        el("dt", { text: "원본" }),
-        el("dd", { text: card.source === "default" ? "기본 설계" : card.source === "own" ? "내 설계" : "배치" }),
+        el("dt", { text: "분류" }),
+        el("dd", { text: spatialSourceLabel(card) }),
         ...(card.missingSource
           ? [el("dt", { text: "원본" }), el("dd", { class: "spatial-card-badge is-missing", text: "없음" })]
           : []),
       ],
     }));
+  }
+  if (card && !place) {
+    // 꾸러미 시설 카드 — 편집할 PlaceDesign 이 없어도 번들 사실을 보여 준다.
+    const bundle = card.source === "default"
+      ? conceptFacilityTemplateById(card.localId ?? card.id)
+      : project.tilesets[card.tilesetId ?? ""]?.scratchConceptBundles?.find((entry) => entry.id === card.localId);
+    if (bundle) {
+      body.push(el("dl", {
+        class: "spatial-inspector-facts",
+        dataset: { testid: "spatial-place-bundle-facts" },
+        children: [
+          el("dt", { text: "시설" }),
+          el("dd", { text: `${bundle.facilities.length}곳` }),
+          el("dt", { text: "장소" }),
+          el("dd", { text: `${bundle.places.length}곳` }),
+        ],
+      }));
+      body.push(el("p", {
+        class: "spatial-readonly-note",
+        text: "기본 설계는 읽기 전용입니다 — 「추가」로 내 설계를 만들면 편집할 수 있습니다.",
+        dataset: { testid: "spatial-readonly-note" },
+      }));
+    }
   }
   if (place && target) {
     body.push(el("label", {
@@ -138,18 +164,20 @@ export function renderSpatialPlacesInspector(
         dataset: { testid: "spatial-place-child-label" },
       }));
     }
-    body.push(el("button", {
-      class: "spatial-open-child",
-      text: "열기",
-      attrs: { type: "button", ...((placedChild || sourceChild) ? {} : { disabled: "" }) },
-      dataset: { testid: "spatial-open-child" },
-      on: {
-        click: () => {
-          openPlaceChild(target, place, project);
-          rerender();
+    if (placedChild || sourceChild) {
+      body.push(el("button", {
+        class: "spatial-open-child",
+        text: "열기",
+        attrs: { type: "button" },
+        dataset: { testid: "spatial-open-child" },
+        on: {
+          click: () => {
+            openPlaceChild(target, place, project);
+            rerender();
+          },
         },
-      },
-    }));
+      }));
+    }
     const placedLink = target.occurrenceId
       ? ordinaryPlacedConnections(project, target.occurrenceId).find((link) => link.id === placeChromeState.selectedConnectionId)
       : undefined;
@@ -190,7 +218,7 @@ export function renderSpatialPlacesInspector(
   if (placeChromeState.previewError) {
     body.push(el("p", {
       class: "spatial-preview-error",
-      text: placeChromeState.previewError,
+      text: humanizeSpatialError(placeChromeState.previewError) ?? placeChromeState.previewError,
       dataset: { testid: "spatial-place-status" },
     }));
   }

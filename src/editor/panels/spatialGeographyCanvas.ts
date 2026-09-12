@@ -2,7 +2,7 @@ import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import type { SpatialAuthoringSession } from "@/editor/panels/spatialAuthoringSession";
 import { setSpatialCamera } from "@/editor/panels/spatialAuthoringSession";
 import { bindGeographyBoard, geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
-import { commitWorkingGeography, workingGeography, workingProject } from "@/editor/panels/spatialGeographyCommands";
+import { commitWorkingGeography, viewableGeography, workingProject } from "@/editor/panels/spatialGeographyCommands";
 import { geographyDraftTarget, type GeographyDesign, type GeographyKind } from "@/editor/panels/spatialGeographyDraft";
 import {
   moveGeographyChild,
@@ -47,7 +47,7 @@ const pendingDrop: { run: (event: PointerEvent) => void } = { run() { return; } 
 /** One stable subscription: a rerender replaces pendingDrop.run, so the listener identity must not change. */
 const dropListener = (event: PointerEvent): void => pendingDrop.run(event);
 
-function childButton(child: SpatialChildSlot<"place" | "region">, board: HTMLElement, tilePx: number): HTMLElement {
+function childButton(child: SpatialChildSlot<"place" | "region">, board: HTMLElement, tilePx: number, readonly: boolean): HTMLElement {
   const selected = geographyChromeState.selectedChildId === child.id;
   return el("button", {
     class: `spatial-geography-child${selected ? " is-selected" : ""}`,
@@ -65,7 +65,7 @@ function childButton(child: SpatialChildSlot<"place" | "region">, board: HTMLEle
         event.stopPropagation();
         geographyChromeState.selectedChildId = child.id;
         if (event.currentTarget instanceof HTMLElement) event.currentTarget.classList.add("is-selected");
-        if (geographyChromeState.tool !== "select") return;
+        if (readonly || geographyChromeState.tool !== "select") return;
         geographyChromeState.gesture = { childId: child.id, originX: child.x, originY: child.y };
         if (event instanceof PointerEvent) captureBoard(board, event);
         document.addEventListener("pointerup", dropListener);
@@ -140,13 +140,13 @@ function hitChildId(event: PointerEvent): SpatialId | undefined {
 export function renderSpatialGeographyCanvas(view: GeographyView, rerender: () => void): HTMLElement {
   const { session, card, kind } = view;
   bindGeographyBoard(`${session.mode}:${session.tab}:${card?.id ?? ""}`);
-  const design = workingGeography(card, kind);
-  const target = card ? geographyDraftTarget(card, kind) : undefined;
+  const { design, readonly } = viewableGeography(card, kind);
+  const target = card && !readonly ? geographyDraftTarget(card, kind) : undefined;
   const tilePx = GEOGRAPHY_TILE_PX * session.camera.zoom;
   const board = el("div", {
     class: "spatial-geography-board",
     attrs: { tabindex: "0", "aria-label": kind === "region" ? "지역 지도" : "세계 지도" },
-    dataset: { testid: "spatial-geography-board", kind, tilePx: String(tilePx) },
+    dataset: { testid: "spatial-geography-board", kind, tilePx: String(tilePx), ...(readonly ? { readonly: "1" } : {}) },
   });
   const children = design ? geographyViewChildren(workingProject(), design, target?.occurrenceId) : [];
   if (design) {
@@ -155,11 +155,11 @@ export function renderSpatialGeographyCanvas(view: GeographyView, rerender: () =
     const raster = renderGeographyRaster(workingProject(), design, target?.occurrenceId);
     if (raster.error) geographyChromeState.previewError = `${raster.error.code}:${raster.error.path}`;
     board.append(raster.node, routeLayer(design, children, tilePx, rerender));
-    for (const child of children) board.append(childButton(child, board, tilePx));
+    for (const child of children) board.append(childButton(child, board, tilePx, readonly));
   }
   const finishMove = (event: PointerEvent) => {
     const gesture = geographyChromeState.gesture;
-    if (!gesture || !target || !design) return;
+    if (!gesture || !target || !design || readonly) return;
     geographyChromeState.gesture = null;
     document.removeEventListener("pointerup", dropListener);
     const tile = tileOf(event, board);
@@ -169,7 +169,7 @@ export function renderSpatialGeographyCanvas(view: GeographyView, rerender: () =
   };
   pendingDrop.run = finishMove;
   board.addEventListener("pointerup", (event) => {
-    if (!target || !design) return;
+    if (!target || !design || readonly) return;
     if (geographyChromeState.gesture) {
       finishMove(event);
       return;
@@ -201,7 +201,7 @@ export function renderSpatialGeographyCanvas(view: GeographyView, rerender: () =
       rerender();
       return;
     }
-    if (event.key.startsWith("Arrow") && geographyChromeState.selectedChildId && design && target) {
+    if (event.key.startsWith("Arrow") && geographyChromeState.selectedChildId && design && target && !readonly) {
       const child = children.find((entry) => entry.id === geographyChromeState.selectedChildId);
       if (!child) return;
       event.preventDefault();
@@ -214,7 +214,7 @@ export function renderSpatialGeographyCanvas(view: GeographyView, rerender: () =
       rerender();
       return;
     }
-    if (event.key !== "Enter" || !design) return;
+    if (event.key !== "Enter" || !design || readonly) return;
     event.preventDefault();
     openSelectedChild(session, design, rerender);
   });
@@ -236,7 +236,13 @@ export function renderSpatialGeographyCanvas(view: GeographyView, rerender: () =
     attrs: { tabindex: "0", "aria-label": kind === "region" ? "지역 캔버스" : "세계 캔버스" },
     dataset: { testid: "spatial-canvas" },
     children: [
-      renderGeographyTools(kind, rerender),
+      readonly
+        ? el("p", {
+          class: "spatial-readonly-note",
+          text: "기본 설계 — 읽기 전용입니다. 「추가」로 내 설계를 만들면 편집할 수 있습니다.",
+          dataset: { testid: "spatial-readonly-note" },
+        })
+        : renderGeographyTools(kind, rerender),
       design && target ? renderGeographyMaterials(design, target, rerender) : el("div"),
       camera,
     ],

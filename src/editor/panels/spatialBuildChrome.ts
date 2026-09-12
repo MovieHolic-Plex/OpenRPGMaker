@@ -180,7 +180,10 @@ export function renderSpatialBuildChrome(
   if (tab !== "objects" && tab !== "spaces" && tab !== "places") return [];
   const seed = el("input", {
     class: "spatial-build-seed",
-    attrs: { type: "number", step: "1", "aria-label": "시공 시드" },
+    attrs: {
+      type: "number", step: "1", "aria-label": "시공 시드",
+      title: "시공 난수 씨앗 — 같은 시드는 항상 같은 결과를 냅니다 (기본값 7)",
+    },
     value: chrome?.buildSeedText ?? (chrome?.buildSeed === null ? "" : String(chrome?.buildSeed ?? DEFAULT_SPATIAL_BUILD_SEED)),
     dataset: { testid: "spatial-build-seed" },
   });
@@ -196,13 +199,13 @@ export function renderSpatialBuildChrome(
     el("button", {
       class: "spatial-action",
       text: "시공",
-      attrs: { type: "button", ...(enabled ? {} : { disabled: "" }) },
+      attrs: { type: "button", title: "선택한 설계를 실제 맵으로 생성합니다", ...(enabled ? {} : { disabled: "" }) },
       dataset: { testid: "spatial-build", buildEligible: chrome?.build ? "1" : "0" },
       on: chrome?.build ? { click: chrome.build } : undefined,
     }),
     el("label", {
       class: "spatial-build-seed-field",
-      children: [el("span", { text: "시드" }), seed],
+      children: [el("span", { text: "시드", attrs: { title: "시공 난수 씨앗 — 같은 시드는 같은 결과" } }), seed],
     }),
   ];
 }
@@ -251,26 +254,29 @@ export function renderObjectBuildFields(): HTMLElement {
     objectChromeState.buildMapId = next.length === 0 ? null : next;
     syncSpatialBuildEnabled();
   });
-  return el("fieldset", {
-    class: "spatial-object-build",
-    dataset: { testid: "spatial-build-target" },
-    children: [
-      el("legend", { text: "시공 대상" }),
-      el("label", { class: "spatial-object-field", children: [el("span", { text: "맵" }), map] }),
-      numberField("X", "spatial-build-rect-x", objectChromeState.buildRectX, (next) => { objectChromeState.buildRectX = next; }),
-      numberField("Y", "spatial-build-rect-y", objectChromeState.buildRectY, (next) => { objectChromeState.buildRectY = next; }),
-      numberField("너비", "spatial-build-rect-width", objectChromeState.buildRectWidth, (next) => { objectChromeState.buildRectWidth = next; }),
-      numberField("높이", "spatial-build-rect-height", objectChromeState.buildRectHeight, (next) => { objectChromeState.buildRectHeight = next; }),
-      el("div", {
-        class: "spatial-object-entry",
-        dataset: { testid: "spatial-build-entry" },
-        children: [
-          numberField("진입 X", "spatial-build-entry-x", objectChromeState.buildEntryX, (next) => { objectChromeState.buildEntryX = next; }),
-          numberField("진입 Y", "spatial-build-entry-y", objectChromeState.buildEntryY, (next) => { objectChromeState.buildEntryY = next; }),
-        ],
-      }),
-    ],
-  });
+  // 오브젝트 시공 대상은 선택 전까지 빈 폼으로 자리만 먹는다 — details로 접어 둔다.
+  const details = document.createElement("details");
+  details.className = "spatial-object-build";
+  details.dataset.testid = "spatial-build-target";
+  const summary = document.createElement("summary");
+  summary.textContent = "시공 대상 — 어느 맵의 어느 영역에 지을지";
+  details.append(
+    summary,
+    el("label", { class: "spatial-object-field", children: [el("span", { text: "맵" }), map] }),
+    numberField("X", "spatial-build-rect-x", objectChromeState.buildRectX, (next) => { objectChromeState.buildRectX = next; }),
+    numberField("Y", "spatial-build-rect-y", objectChromeState.buildRectY, (next) => { objectChromeState.buildRectY = next; }),
+    numberField("너비", "spatial-build-rect-width", objectChromeState.buildRectWidth, (next) => { objectChromeState.buildRectWidth = next; }),
+    numberField("높이", "spatial-build-rect-height", objectChromeState.buildRectHeight, (next) => { objectChromeState.buildRectHeight = next; }),
+    el("div", {
+      class: "spatial-object-entry",
+      dataset: { testid: "spatial-build-entry" },
+      children: [
+        numberField("진입 X", "spatial-build-entry-x", objectChromeState.buildEntryX, (next) => { objectChromeState.buildEntryX = next; }),
+        numberField("진입 Y", "spatial-build-entry-y", objectChromeState.buildEntryY, (next) => { objectChromeState.buildEntryY = next; }),
+      ],
+    }),
+  );
+  return details;
 }
 
 

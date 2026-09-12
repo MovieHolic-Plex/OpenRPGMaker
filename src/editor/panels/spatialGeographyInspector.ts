@@ -4,10 +4,11 @@ import {
   createSettlementRegion,
   geographyDeletePreview,
   mutateWorkingGeography,
-  workingGeography,
+  viewableGeography,
   workingProject,
 } from "@/editor/panels/spatialGeographyCommands";
 import { geographyDraftTarget, withGeographyName } from "@/editor/panels/spatialGeographyDraft";
+import { cardSubtitle, humanizeSpatialError, spatialSourceLabel } from "@/editor/panels/spatialFeedback";
 import { worldCrossingPoints } from "@/editor/panels/spatialGeographyGeometry";
 import { geographyViewChildren } from "@/editor/panels/spatialGeographyQuery";
 import { openSelectedChild } from "@/editor/panels/spatialGeographyNavigate";
@@ -15,17 +16,18 @@ import { el } from "@/util/dom";
 
 export function renderSpatialGeographyInspector(view: GeographyView, rerender: () => void): HTMLElement {
   const { session, card, kind } = view;
-  const design = workingGeography(card, kind);
-  const target = card ? geographyDraftTarget(card, kind) : undefined;
+  const { design, readonly } = viewableGeography(card, kind);
+  const target = card && !readonly ? geographyDraftTarget(card, kind) : undefined;
   const body: HTMLElement[] = [];
   if (card) {
     body.push(el("h3", { class: "spatial-inspector-name", text: card.name }));
-    if (card.subtitle) body.push(el("p", { class: "spatial-inspector-sub", text: card.subtitle }));
+    const subtitle = cardSubtitle(card);
+    if (subtitle) body.push(el("p", { class: "spatial-inspector-sub", text: subtitle }));
     body.push(el("dl", {
       class: "spatial-inspector-facts",
       children: [
-        el("dt", { text: "원본" }),
-        el("dd", { text: card.source === "default" ? "기본 설계" : card.source === "own" ? "내 설계" : "배치" }),
+        el("dt", { text: "분류" }),
+        el("dd", { text: spatialSourceLabel(card) }),
         ...(card.missingSource
           ? [el("dt", { text: "원본" }), el("dd", { class: "spatial-card-badge is-missing", text: "없음" })]
           : []),
@@ -41,6 +43,30 @@ export function renderSpatialGeographyInspector(view: GeographyView, rerender: (
         on: { click: () => createSettlementRegion(card, rerender) },
       }));
     }
+  }
+  if (design) {
+    body.push(el("p", {
+      class: "spatial-inspector-sub",
+      text: `${design.terrain.width}×${design.terrain.height} · ${design.terrain.floor}`,
+      dataset: { testid: "spatial-geography-size" },
+    }));
+  }
+  if (design && readonly) {
+    const childCount = "places" in design ? design.places.length : design.regions.length;
+    body.push(el("dl", {
+      class: "spatial-inspector-facts",
+      children: [
+        el("dt", { text: kind === "region" ? "장소" : "지역" }),
+        el("dd", { text: `${childCount}곳`, dataset: { testid: "spatial-geography-children-count" } }),
+        el("dt", { text: "포트" }),
+        el("dd", { text: `${design.ports.length}곳` }),
+      ],
+    }));
+    body.push(el("p", {
+      class: "spatial-readonly-note",
+      text: "기본 설계는 읽기 전용입니다. 「추가」로 내 설계를 만들면 편집할 수 있습니다.",
+      dataset: { testid: "spatial-readonly-note" },
+    }));
   }
   if (design && target) {
     body.push(el("label", {
@@ -60,11 +86,6 @@ export function renderSpatialGeographyInspector(view: GeographyView, rerender: (
           },
         }),
       ],
-    }));
-    body.push(el("p", {
-      class: "spatial-inspector-sub",
-      text: `${design.terrain.width}×${design.terrain.height} · ${design.terrain.floor}`,
-      dataset: { testid: "spatial-geography-size" },
     }));
     if ("settlement" in design && design.settlement) {
       const settlement = design.settlement;
@@ -153,7 +174,7 @@ export function renderSpatialGeographyInspector(view: GeographyView, rerender: (
   if (geographyChromeState.previewError) {
     body.push(el("p", {
       class: "spatial-preview-error",
-      text: geographyChromeState.previewError,
+      text: humanizeSpatialError(geographyChromeState.previewError) ?? geographyChromeState.previewError,
       dataset: { testid: "spatial-preview-error" },
     }));
   }

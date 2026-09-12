@@ -3,6 +3,7 @@ import {
   applyAuthoringPreview,
   clearAuthoringSession,
   editAuthoringDraft,
+  hasAuthoringDraft,
   hasAuthoringPreview,
   previewAuthoringDraft,
   spatialAuthoringController,
@@ -10,6 +11,7 @@ import {
   visibleAuthoringProject,
 } from "@/editor/panels/spatialAuthoringAccess";
 import { selectSpatialDesign } from "@/editor/panels/spatialAuthoringSession";
+import { catalogRegionDesign, catalogWorldDesign } from "@/editor/content/spatial/catalogSeed";
 import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
 import {
   blankRegionDesign,
@@ -91,6 +93,23 @@ export function workingGeography(card: SpatialGalleryCard | undefined, kind: Geo
   return geographyFromProject(workingProject(), geographyDraftTarget(card, kind));
 }
 
+/**
+ * 스테이지·인스펙터 공통 표시 설계 — 라이브러리 설계가 없는 기본 설계 카드는
+ * 카탈로그 정본을 읽기 전용으로 돌려준다. `readonly` 면 편집 도구·필드를 달지 않는다.
+ */
+export function viewableGeography(
+  card: SpatialGalleryCard | undefined,
+  kind: GeographyKind,
+): { design: GeographyDesign | undefined; readonly: boolean } {
+  const live = workingGeography(card, kind);
+  if (live) return { design: live, readonly: false };
+  if (card?.source === "default" && card.localId) {
+    const catalog = kind === "region" ? catalogRegionDesign(card.localId) : catalogWorldDesign(card.localId);
+    if (catalog) return { design: catalog, readonly: true };
+  }
+  return { design: undefined, readonly: false };
+}
+
 export function visibleGeographySelection(
   card: SpatialGalleryCard | undefined,
   kind: GeographyKind,
@@ -132,12 +151,12 @@ export function spatialGeographyChrome(
     deleteOpen: geographyChromeState.deleteOpen || external !== null,
     activate: workingProject().spatialAuthoring || geographyChromeState.activating ? undefined : () => activateSpatialDocument(rerender),
     add: controller ? () => addBlank(kind, rerender) : undefined,
-    duplicate: target && !builtinLocked ? () => cloneGeography(target, rerender) : undefined,
-    delete: target && !builtinLocked ? () => { geographyChromeState.pendingExternal = null; geographyChromeState.deleteOpen = true; rerender(); } : undefined,
+    duplicate: controller && target && !builtinLocked ? () => cloneGeography(target, rerender) : undefined,
+    delete: controller && target && !builtinLocked ? () => { geographyChromeState.pendingExternal = null; geographyChromeState.deleteOpen = true; rerender(); } : undefined,
     onDeleteConfirm: external
       ? () => { geographyChromeState.pendingExternal = null; queueOperation(withRemovedExternal(external), rerender); }
-      : target && geographyChromeState.deleteOpen ? () => confirmDelete(target, rerender) : undefined,
-    preview: controller ? () => previewGeography(rerender) : undefined,
+      : controller && target && geographyChromeState.deleteOpen ? () => confirmDelete(target, rerender) : undefined,
+    preview: controller && hasAuthoringDraft() ? () => previewGeography(rerender) : undefined,
     apply: controller && hasAuthoringPreview() ? () => applyGeography(rerender) : undefined,
     undo: controller ? () => { controller.undo(); rerender(); } : undefined,
     redo: controller ? () => { controller.redo(); rerender(); } : undefined,

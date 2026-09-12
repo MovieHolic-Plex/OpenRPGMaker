@@ -5,7 +5,6 @@ import { listSpatialGalleryCards, spatialCardById, type SpatialGalleryCard } fro
 import { renderSpatialCardThumb } from "@/editor/panels/spatialGallery";
 import {
   patchSpatialSession,
-  popSpatialBreadcrumb,
   spatialSession,
   type SpatialAuthoringSession,
 } from "@/editor/panels/spatialAuthoringSession";
@@ -38,6 +37,7 @@ import {
   spatialWorldsChrome,
 } from "@/editor/panels/spatialWorldsTab";
 import { restoreGeographyParent } from "@/editor/panels/spatialGeographyNavigate";
+import { cardSubtitle, humanizeSpatialError, spatialSourceLabel } from "@/editor/panels/spatialFeedback";
 import { activateSpatialDocument, workingProject } from "@/editor/panels/spatialGeographyCommands";
 import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
 import { el } from "@/util/dom";
@@ -51,29 +51,35 @@ const TAB_LABEL = {
   worlds: "세계",
 } as const;
 
+/** 액션 라벨만으로는 분리·시공·적용의 차이를 알 수 없다 — 네이티브 title 로 설명을 단다. */
+const ACTION_HINT: Readonly<Record<string, string>> = {
+  "spatial-add": "새 설계 초안을 만듭니다",
+  "spatial-duplicate": "선택한 설계를 복제해 내 설계로 만듭니다",
+  "spatial-delete": "선택한 설계·배치를 삭제합니다",
+  "spatial-preview": "편집 초안을 프로젝트에 미리 적용해 봅니다",
+  "spatial-apply": "미리보기 상태를 프로젝트에 확정합니다",
+  "spatial-refresh": "배치된 곳을 최신 설계로 다시 생성합니다",
+  "spatial-detach": "배치를 원본 설계에서 분리해 독립 사본으로 만듭니다",
+  "spatial-undo": "마지막 편집을 되돌립니다",
+  "spatial-redo": "되돌린 편집을 다시 실행합니다",
+};
+
 function actionButton(id: string, label: string, enabled: boolean, onClick?: () => void): HTMLElement {
   return el("button", {
     class: "spatial-action",
     text: label,
-    attrs: { type: "button", ...(enabled ? {} : { disabled: "" }) },
+    attrs: {
+      type: "button",
+      ...(ACTION_HINT[id] ? { title: ACTION_HINT[id] } : {}),
+      ...(enabled ? {} : { disabled: "" }),
+    },
     dataset: { testid: id },
     on: enabled && onClick ? { click: onClick } : undefined,
   });
 }
 
 export function inspectorSourceLabel(card: SpatialGalleryCard): string {
-  if (card.mapUsage) return "맵 사용";
-  if (card.compatibility === "room-rule") return "호환 방 규칙";
-  if (card.compatibility === "house-shape") return "호환 집 형태";
-  switch (card.source) {
-    case "default": return "기본 설계";
-    case "own": return "내 설계";
-    case "placed": return "배치";
-    default: {
-      const exhaustive: never = card.source;
-      return exhaustive;
-    }
-  }
+  return spatialSourceLabel(card);
 }
 
 function domainChrome(session: SpatialAuthoringSession, onChange: () => void): SpatialDomainChrome | undefined {
@@ -112,13 +118,13 @@ export function renderSpatialChrome(
           el("button", {
             class: `spatial-mode${session.mode === "design" ? " is-active" : ""}`,
             text: "설계",
-            attrs: { type: "button", "aria-pressed": String(session.mode === "design") },
+            attrs: { type: "button", "aria-pressed": String(session.mode === "design"), title: "설계 — 편집 가능한 설계 도서관" },
             dataset: { testid: "spatial-mode-design" },
           }),
           el("button", {
             class: `spatial-mode${session.mode === "instances" ? " is-active" : ""}`,
             text: "배치된 곳",
-            attrs: { type: "button", "aria-pressed": String(session.mode === "instances") },
+            attrs: { type: "button", "aria-pressed": String(session.mode === "instances"), title: "배치된 곳 — 실제 맵에 놓인 결과물" },
             dataset: { testid: "spatial-mode-instances" },
           }),
           el("button", {
@@ -145,26 +151,18 @@ export function renderSpatialChrome(
         attrs: { "aria-label": "공간 위치" },
         dataset: { testid: "spatial-breadcrumb" },
         children: [
-          el("button", {
+          // 항상 disabled인 ← 는 자리만 차지한다 — 되돌아갈 부모가 있을 때만 단다.
+          ...(session.breadcrumb.length > 0 ? [el("button", {
             class: "spatial-back",
             text: "←",
-            attrs: {
-              type: "button",
-              "aria-label": "뒤로",
-              ...(session.breadcrumb.length === 0 ? { disabled: "" } : {}),
-            },
+            attrs: { type: "button", "aria-label": "뒤로", title: "상위 항목으로 돌아갑니다" },
             dataset: { testid: "spatial-back" },
             on: {
               click: () => {
-                if (session.tab === "regions" || session.tab === "worlds" || session.breadcrumb.length > 0) {
-                  restoreGeographyParent(onChange);
-                  return;
-                }
-                popSpatialBreadcrumb();
-                onChange();
+                restoreGeographyParent(onChange);
               },
             },
-          }),
+          })] : []),
           el("span", { class: "spatial-crumb-label", text: crumbLabel, dataset: { testid: "spatial-name" } }),
         ],
       }),
@@ -182,7 +180,12 @@ export function renderSpatialChrome(
           actionButton("spatial-detach", "분리", Boolean(chrome?.detach), chrome?.detach),
           actionButton("spatial-undo", "되돌리기", Boolean(chrome?.undo), chrome?.undo),
           actionButton("spatial-redo", "다시 실행", Boolean(chrome?.redo), chrome?.redo),
-          el("span", { class: "spatial-save-state", text: chrome?.saveState ?? "읽기", dataset: { testid: "spatial-save-state" } }),
+          el("span", {
+            class: "spatial-save-state",
+            text: chrome?.saveState ?? "읽기",
+            attrs: { title: "편집 상태 — 읽기 · 초안 · 미리보기 · 적용" },
+            dataset: { testid: "spatial-save-state" },
+          }),
           el("button", {
             class: "spatial-delete-confirm",
             text: "확인",
@@ -192,8 +195,8 @@ export function renderSpatialChrome(
           }),
           el("span", {
             class: "spatial-preview-error",
-            text: previewError ?? "",
-            attrs: previewError ? {} : { hidden: "" },
+            text: humanizeSpatialError(previewError) ?? "",
+            attrs: { role: "status", ...(previewError ? {} : { hidden: "" }) },
             dataset: { testid: "spatial-preview-error" },
           }),
         ],
@@ -239,7 +242,13 @@ export function renderSpatialCanvas(
   if (session.tab === "regions") return renderSpatialRegionsCanvas(session, card, rerender);
   if (session.tab === "worlds") return renderSpatialWorldsCanvas(session, card, rerender);
   const legacy = renderLegacyStage(session, rerender);
-  const art = card ? renderSpatialCardThumb(card) : el("div", { class: "spatial-canvas-empty" });
+  const art = card
+    ? renderSpatialCardThumb(card)
+    : el("div", {
+      class: "spatial-canvas-empty",
+      text: "선택된 항목이 없습니다 — 왼쪽 목록에서 고르세요",
+      dataset: { testid: "spatial-canvas-empty" },
+    });
   art.classList.add("spatial-canvas-art");
   return el("div", {
     class: "spatial-canvas",
@@ -277,21 +286,18 @@ export function renderSpatialInspector(
   const body: HTMLElement[] = [];
   if (card) {
     body.push(el("h3", { class: "spatial-inspector-name", text: card.name }));
-    if (card.subtitle) body.push(el("p", { class: "spatial-inspector-sub", text: card.subtitle }));
+    const subtitle = cardSubtitle(card);
+    if (subtitle) body.push(el("p", { class: "spatial-inspector-sub", text: subtitle }));
     body.push(el("dl", {
       class: "spatial-inspector-facts",
       children: [
-        el("dt", { text: "원본" }),
+        el("dt", { text: "분류" }),
         el("dd", { text: inspectorSourceLabel(card) }),
         ...(card.usage > 0 ? [el("dt", { text: "사용" }), el("dd", { text: String(card.usage) })] : []),
       ],
     }));
-    body.push(el("button", {
-      class: "spatial-open-child",
-      text: "열기",
-      attrs: { type: "button", disabled: "" },
-      dataset: { testid: "spatial-open-child" },
-    }));
+  } else {
+    body.push(el("p", { class: "spatial-inspector-sub", text: "선택된 항목이 없습니다" }));
   }
   return el("aside", {
     class: `spatial-inspector${open ? " is-open" : ""}`,

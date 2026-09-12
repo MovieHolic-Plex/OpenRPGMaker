@@ -2,6 +2,7 @@ import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import type { SpatialDomainChrome } from "@/editor/panels/spatialTilesTab";
 import {
   applyAuthoringPreview,
+  hasAuthoringDraft,
   hasAuthoringPreview,
   previewAuthoringDraft,
   spatialAuthoringController,
@@ -47,7 +48,7 @@ export function spatialSpacesChrome(card: SpatialGalleryCard | undefined, rerend
     duplicate: controller && target && !builtinLocked ? () => queueClone(target, rerender) : undefined,
     delete: controller && target && !builtinLocked ? () => { spaceChromeState.deleteOpen = true; rerender(); } : undefined,
     onDeleteConfirm: controller && target && spaceChromeState.deleteOpen ? () => queueDelete(target, rerender) : undefined,
-    preview: controller ? () => previewSpace(rerender) : undefined,
+    preview: controller && hasAuthoringDraft() ? () => previewSpace(rerender) : undefined,
     build: controller && !spatialBuildDisabledReason(card) ? () => {
       const seed = spaceChromeState.buildSeed;
       if (seed === null) {
@@ -95,6 +96,11 @@ function applySpace(rerender: () => void): void {
 }
 
 function addBlankSpace(rerender: () => void): void {
+  if (!visibleAuthoringProject().spatialAuthoring) {
+    spaceChromeState.previewError = "이 프로젝트에는 공간 설계 문서가 없습니다 — 새 설계를 만들 수 없습니다";
+    rerender();
+    return;
+  }
   let createdId: ReturnType<typeof freshSpatialId> | undefined;
   mutateSpaceDraft((project) => {
     const created = blankInteriorSpace(project);

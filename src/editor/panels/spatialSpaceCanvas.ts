@@ -1,4 +1,5 @@
-import { renderSpatialCardThumb } from "@/editor/panels/spatialGallery";
+import { renderSpatialCardThumb, roomKindOf } from "@/editor/panels/spatialGallery";
+import { interiorThemeCards } from "@/editor/panels/structureKitDbSources";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import type { SpatialAuthoringSession } from "@/editor/panels/spatialAuthoringSession";
 import { spaceChromeState } from "@/editor/panels/spatialSpaceChromeState";
@@ -201,6 +202,50 @@ export function renderSpatialSpacesCanvas(
     addSpaceObjectAt(target, objectId, eventTile(event, eventBoard(event)));
     rerender();
   });
+  /**
+   * 방 종류 카드(기본 7종·호환 규칙)는 편집용 SpaceDesign 이 없다 — 빈 보드 대신
+   * 종류 문법을 읽기 전용으로 요약해서 보여 준다.
+   */
+  function roomKindPanel(card: SpatialGalleryCard): HTMLElement | undefined {
+    const kind = roomKindOf(card);
+    if (!kind) return undefined;
+    const tileset = card.tilesetId && Object.hasOwn(workingProject().tilesets, card.tilesetId)
+      ? workingProject().tilesets[card.tilesetId]
+      : undefined;
+    const theme = interiorThemeCards(tileset, [kind])[0];
+    return el("section", {
+      class: "spatial-space-kind",
+      dataset: { testid: "spatial-space-kind", roomKind: kind.id },
+      children: [
+        el("h4", { class: "spatial-space-kind-name", text: kind.label }),
+        el("p", {
+          class: "spatial-space-kind-note",
+          text: kind.walkway
+            ? "통로 공간 — 방이 아니라 이동 경로로 쓰입니다."
+            : card.compatibility === "room-rule"
+              ? "호환 방 규칙 — 이 타일셋이 정의한 방 종류입니다."
+              : "기본 방 종류 — 실내를 만들 때 이 문법으로 채웁니다.",
+        }),
+        el("dl", {
+          class: "spatial-inspector-facts",
+          children: [
+            el("dt", { text: "필수 역할" }),
+            el("dd", {
+              dataset: { testid: "spatial-space-kind-roles" },
+              text: theme && theme.roles.length > 0 ? theme.roles.map((role) => role.label).join(", ") : "없음",
+            }),
+            el("dt", { text: "분위기" }),
+            el("dd", {
+              dataset: { testid: "spatial-space-kind-modifiers" },
+              text: theme && theme.modifierLabels.length > 0 ? theme.modifierLabels.join(", ") : "—",
+            }),
+          ],
+        }),
+        el("div", { class: "spatial-space-kind-thumb", children: [renderSpatialCardThumb(card)] }),
+      ],
+    });
+  }
+  const kindPanel = !space && card ? roomKindPanel(card) : undefined;
   const filters: Array<typeof spaceChromeState.environment> = ["all", "interior", "outdoor"];
   return el("div", {
     class: "spatial-canvas spatial-spaces-canvas",
@@ -218,7 +263,7 @@ export function renderSpatialSpacesCanvas(
         })),
       }),
       gallery,
-      el("div", { class: "spatial-canvas-camera", children: [board] }),
+      kindPanel ?? el("div", { class: "spatial-canvas-camera", children: [board] }),
     ],
   });
 }

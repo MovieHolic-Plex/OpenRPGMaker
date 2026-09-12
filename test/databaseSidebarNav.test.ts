@@ -173,7 +173,8 @@ describe("database sidebar navigation", () => {
     const visible = panelRoot.querySelectorAll(".db-tab").filter((node) => !node.hidden);
     expect(visible.map((node) => node.dataset.tab)).toEqual(["spatialRegions"]);
     expect(findByTestId(panelRoot, "db-tab-world-gen")).toBeNull();
-    expect(findTab(panelRoot, "db-tab-spatial-regions").dataset.count).toBeUndefined();
+    // 지역 탭 배지는 카탈로그 기본 설계 수 — 키워드 규칙 행은 세지 않는다.
+    expect(findTab(panelRoot, "db-tab-spatial-regions").dataset.count).toBe("6");
   });
 
   // Break caught: the new navigation entry has no aggregate count or routed view.

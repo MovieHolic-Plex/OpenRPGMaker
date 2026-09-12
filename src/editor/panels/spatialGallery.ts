@@ -1,13 +1,29 @@
-import { interiorObjectById } from "@/editor/interiorObjectCatalog";
-import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
-import { INTERIOR_OBJECT_THUMB_BACKGROUND_TILE } from "@/editor/panels/structureKitDbSources";
+import { interiorObjectById, interiorObjectsForTheme } from "@/editor/interiorObjectCatalog";
+import { cellsFromMapRect, assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
+import { INTERIOR_OBJECT_THUMB_BACKGROUND_TILE, interiorThemeCards } from "@/editor/panels/structureKitDbSources";
 import { interiorObjectCanvas } from "@/editor/panels/structureKitInspector";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
 import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
+import { cardSubtitle } from "@/editor/panels/spatialFeedback";
+import {
+  catalogRegionDesign,
+  catalogWorldDesign,
+} from "@/editor/content/spatial/catalogSeed";
 import { renderPlaceCardThumb } from "@/editor/panels/spatialPlacePreview";
+import { spaceCanvasLayout } from "@/editor/panels/spatialSpaceLayoutView";
+import {
+  blankSettlementRegionDesign,
+  geographyDraftTarget,
+  geographyFromProject,
+  type GeographyDesign,
+} from "@/editor/panels/spatialGeographyDraft";
+import { renderGeographyThumb } from "@/editor/panels/spatialGeographyRaster";
+import { spatialId } from "@/project/spatial/domain";
 import { resolveSpatialGraphic } from "@/project/spatial/assets";
-import type { SectionStructureKitDef, TilesetDef } from "@/project/types";
+import { BUILTIN_INTERIOR_ROOM_KINDS } from "@/project/defaults/interiorRoomKinds";
+import type { InteriorRoomKindRecord, SectionStructureKitDef, TilesetDef } from "@/project/types";
+import type { SpaceDesign } from "@/project/spatial/types";
 import { el } from "@/util/dom";
 
 function tilesetOf(card: SpatialGalleryCard): TilesetDef | undefined {
@@ -65,17 +81,112 @@ function renderObjectThumb(card: SpatialGalleryCard): HTMLElement {
   return el("div", { class: "spatial-card-fallback" });
 }
 
-function renderSpaceThumb(card: SpatialGalleryCard): HTMLElement {
-  const tileset = tilesetOf(card);
+/** 라이브러리·배치 공간은 실제 레이아웃을 굽는다 — 카드마다 다른 그림이 나와야 한다. */
+function renderSpaceDesignThumb(space: SpaceDesign): HTMLElement {
+  const project = visibleAuthoringProject();
+  const tileset = project.tilesets[space.tilesetId];
   if (!tileset) return el("div", { class: "spatial-card-fallback" });
-  return renderTileCellsToCanvas({
+  try {
+    const layout = spaceCanvasLayout(project, space);
+    const { map } = layout;
+    const scale = Math.min(2, 128 / Math.max(1, map.height * 16));
+    return renderTileCellsToCanvas({
+      tileset,
+      widthTiles: map.width,
+      heightTiles: map.height,
+      cells: cellsFromMapRect(map, { x: 0, y: 0, width: map.width, height: map.height }),
+      scale,
+      backgroundTile: INTERIOR_OBJECT_THUMB_BACKGROUND_TILE,
+    });
+  } catch {
+    return el("div", { class: "spatial-card-fallback" });
+  }
+}
+
+/**
+ * 기본 방 종류(침실·선술집…)는 설계 레코드가 없다 — 종류 문법으로 알아볼 수 있는
+ * 조합 그림을 만든다: 마루 바탕 + 필수 역할 가구 스프라이트. 통로는 바닥 띠만 낸다.
+ */
+function renderRoomKindThumb(card: SpatialGalleryCard, kind: InteriorRoomKindRecord): HTMLElement {
+  const tileset = tilesetOf(card);
+  const wrap = el("div", { class: "spatial-card-room", dataset: { roomKind: kind.id } });
+  if (!tileset) {
+    wrap.append(el("span", { class: "spatial-card-room-label", text: kind.label }));
+    return wrap;
+  }
+  const floorCells = kind.walkway
+    ? Array.from({ length: 12 }, (_, i) => ({
+      dx: i % 6, dy: 1 + Math.floor(i / 6), layer: "lower" as const,
+      tile: INTERIOR_OBJECT_THUMB_BACKGROUND_TILE,
+    }))
+    : [];
+  const floor = renderTileCellsToCanvas({
     tileset,
     widthTiles: 6,
-    heightTiles: 4,
-    cells: [],
+    heightTiles: kind.walkway ? 3 : 4,
+    cells: floorCells,
     scale: 2,
-    backgroundTile: INTERIOR_OBJECT_THUMB_BACKGROUND_TILE,
+    backgroundTile: kind.walkway ? null : INTERIOR_OBJECT_THUMB_BACKGROUND_TILE,
   });
+  floor.classList.add("spatial-card-room-floor");
+  wrap.append(floor);
+  const theme = interiorThemeCards(tileset, [kind])[0];
+  const roleObjects = (theme?.roles ?? []).flatMap((role) => (role.object ? [role.object] : []));
+  const pool = roleObjects.length > 0 ? roleObjects : interiorObjectsForTheme(kind.id).slice(0, 3);
+  const sprites = el("div", {
+    class: "spatial-card-room-sprites",
+    children: pool.slice(0, 3).map((object) => interiorObjectCanvas(tileset, object, 1.5)),
+  });
+  wrap.append(sprites);
+  return wrap;
+}
+
+/** 카드가 가리키는 방 종류 레코드 — 기본 7종 또는 타일셋 저작 호환 규칙. */
+export function roomKindOf(card: SpatialGalleryCard): InteriorRoomKindRecord | undefined {
+  const builtin = BUILTIN_INTERIOR_ROOM_KINDS.find((entry) => entry.id === card.localId);
+  if (builtin) return builtin;
+  return tilesetOf(card)?.interiorRoomKinds?.find((entry) => entry.id === card.localId);
+}
+
+function renderSpaceThumb(card: SpatialGalleryCard): HTMLElement {
+  const project = visibleAuthoringProject();
+  const spaceId = card.canonicalSource?.kind === "space"
+    ? card.canonicalSource.id
+    : card.localId !== undefined && card.source !== "default" ? spatialId(card.localId) : undefined;
+  const space = spaceId ? project.spatialAuthoring?.library.spaces[spaceId] : undefined;
+  if (space) return renderSpaceDesignThumb(space);
+  const kind = roomKindOf(card);
+  if (kind) return renderRoomKindThumb(card, kind);
+  return el("div", { class: "spatial-card-fallback" });
+}
+
+/** 마을 설계서 카드용 정주지 프리뷰 설계 — 레시피 id 당 한 번만 만든다. */
+const settlementThumbDesigns = new Map<string, GeographyDesign>();
+
+function geographyThumbDesign(card: SpatialGalleryCard): GeographyDesign | undefined {
+  const kind = card.kind === "worlds" ? "world" : "region";
+  const project = visibleAuthoringProject();
+  const live = geographyFromProject(project, geographyDraftTarget(card, kind));
+  if (live) return live;
+  if (card.source !== "default" || !card.localId) {
+    // 마을 설계서 카드: 레시피이지만 정주지 프리뷰로 무엇을 만드는지 보여 준다.
+    if (kind === "region" && card.regionKind === "settlement" && card.localId) {
+      let design = settlementThumbDesigns.get(card.localId);
+      if (!design) {
+        design = blankSettlementRegionDesign(project, card.localId, card.name);
+        settlementThumbDesigns.set(card.localId, design);
+      }
+      return design;
+    }
+    return undefined;
+  }
+  return kind === "region" ? catalogRegionDesign(card.localId) : catalogWorldDesign(card.localId);
+}
+
+function renderGeographyCardThumb(card: SpatialGalleryCard): HTMLElement {
+  const design = geographyThumbDesign(card);
+  if (!design) return el("div", { class: "spatial-card-fallback" });
+  return renderGeographyThumb(visibleAuthoringProject(), design);
 }
 
 function renderMapThumb(card: SpatialGalleryCard): HTMLElement {
@@ -84,6 +195,18 @@ function renderMapThumb(card: SpatialGalleryCard): HTMLElement {
   const tilesetId = map?.tilesetId ?? card.tilesetId;
   const tileset = tilesetId && Object.hasOwn(project.tilesets, tilesetId) ? project.tilesets[tilesetId] : undefined;
   if (!tileset) return el("div", { class: "spatial-card-fallback" });
+  if (map) {
+    // 배치 카드는 실제 맵 내용을 보여 준다 — 칩셋 통째 이미지는 모든 카드가 똑같아진다.
+    const scale = Math.min(2, 160 / Math.max(1, map.width * 16), 128 / Math.max(1, map.height * 16));
+    return renderTileCellsToCanvas({
+      tileset,
+      widthTiles: map.width,
+      heightTiles: map.height,
+      cells: cellsFromMapRect(map, { x: 0, y: 0, width: map.width, height: map.height }),
+      scale: Math.max(scale, 0.25),
+      backgroundTile: null,
+    });
+  }
   return el("img", {
     class: "spatial-card-image",
     attrs: { src: tilesetImageUrl(tileset), alt: "", draggable: "false" },
@@ -92,6 +215,7 @@ function renderMapThumb(card: SpatialGalleryCard): HTMLElement {
 
 export function renderSpatialCardThumb(card: SpatialGalleryCard): HTMLElement {
   if (card.kind === "places") return renderPlaceCardThumb(card);
+  if (card.kind === "regions" || card.kind === "worlds") return renderGeographyCardThumb(card);
   if (card.mapId) return renderMapThumb(card);
   if (card.kind === "tiles") {
     const tileset = tilesetOf(card);
@@ -132,6 +256,7 @@ export function renderSpatialGalleryCard(
       dataset: { testid: "spatial-source-missing" },
     }));
   }
+  const subtitle = cardSubtitle(card);
   return el("button", {
     class: `spatial-card${selected ? " is-selected" : ""}`,
     attrs: { type: "button", title: card.name },
@@ -141,7 +266,7 @@ export function renderSpatialGalleryCard(
       el("div", { class: "spatial-card-thumb", children: [thumb] }),
       el("div", { class: "spatial-card-caption", children: [
         el("span", { class: "spatial-card-name", text: card.name }),
-        ...(card.subtitle ? [el("span", { class: "spatial-card-sub", text: card.subtitle })] : []),
+        ...(subtitle ? [el("span", { class: "spatial-card-sub", text: subtitle })] : []),
         el("span", { class: "spatial-card-badges", children: badges }),
       ] }),
     ],

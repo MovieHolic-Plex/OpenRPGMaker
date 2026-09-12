@@ -416,7 +416,8 @@ describe("spatial place actions", () => {
       missingSource: true,
     }, () => undefined);
     expect(chrome.refresh).toBeUndefined();
-    expect(chrome.preview).toBeTypeOf("function");
+    // 미리보기는 초안이 있을 때만 열린다 — 아직 아무 편집도 안 했으므로 비활성.
+    expect(chrome.preview).toBeUndefined();
   });
 
   it("does not treat a diamond revisit as reaching an unrelated place", () => {

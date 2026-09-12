@@ -25,7 +25,8 @@ import {
   selectedPlacedChild,
 } from "@/editor/panels/spatialPlacePlaced";
 import { childrenOnFloor } from "@/editor/panels/spatialPlaceQuery";
-import { previewPlaceRasters } from "@/editor/panels/spatialPlacePreview";
+import { placeCatalogRasters, previewPlaceRasters } from "@/editor/panels/spatialPlacePreview";
+import { humanizeSpatialError } from "@/editor/panels/spatialFeedback";
 import { placedPlaceChildren } from "@/editor/spatial/placedPlaceEdits";
 import { el } from "@/util/dom";
 
@@ -96,7 +97,7 @@ export function renderSpatialPlacesCanvas(
     if (preview.error) {
       world.append(el("p", {
         class: "spatial-place-preview-error",
-        text: preview.error,
+        text: humanizeSpatialError(preview.error) ?? preview.error,
         dataset: { testid: "spatial-place-preview-error" },
       }));
     }
@@ -110,6 +111,32 @@ export function renderSpatialPlacesCanvas(
       world.append(sourceLinkLayer(place, new Set(visibleSource.map((child) => child.id)), rerender));
       for (const child of visibleSource) world.append(sourceChildToken(place, child.id, rerender));
     }
+  } else if (card && session.mode !== "instances") {
+    // 꾸러미 시설 등 설계 레코드가 없는 카드 — 카탈로그 래스터로 무엇인지 보여 준다(읽기 전용).
+    const preview = placeCatalogRasters(project, card, PLACE_TILE_PX / 16);
+    world.style.width = `${Math.max(preview.width, 8) * PLACE_TILE_PX}px`;
+    world.style.height = `${Math.max(preview.height, 6) * PLACE_TILE_PX}px`;
+    for (const stamp of preview.stamps) world.append(stamp.canvas);
+    if (preview.error) {
+      world.append(el("p", {
+        class: "spatial-place-preview-error",
+        text: humanizeSpatialError(preview.error) ?? preview.error,
+        dataset: { testid: "spatial-place-preview-error" },
+      }));
+    }
+    if (preview.stamps.length > 0) {
+      world.append(el("p", {
+        class: "spatial-readonly-note",
+        text: "기본 설계 미리보기 — 읽기 전용입니다.",
+        dataset: { testid: "spatial-readonly-note" },
+      }));
+    }
+  } else if (!card) {
+    world.append(el("p", {
+      class: "spatial-empty-copy",
+      text: "선택된 장소가 없습니다 — 왼쪽 목록에서 고르세요.",
+      dataset: { testid: "spatial-empty-copy" },
+    }));
   }
   board.append(world);
   const viewport = el("div", {
