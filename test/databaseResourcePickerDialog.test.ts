@@ -8,7 +8,7 @@ vi.mock("@/assets/transparentColorKeyBackground", () => ({
   },
 }));
 
-import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
+import { AUTHORABLE_FACESET_FACE_ASSETS, GENERATED_FACESET_FACE_IDS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import {
   listDatabaseResourceOptionsForTest,
   openDatabaseResourcePickerDialog,
@@ -50,13 +50,15 @@ describe("database resource picker catalog", () => {
     expect(charsets.some((entry) => entry.id.includes("charset"))).toBe(true);
   });
 
-  // 얼굴 한 칸 = 파일 한 장. 피커는 낱장 112장을 그대로 나열하고, 분할 전 시트 id 는 목록에서 빠진다.
+  // 얼굴 한 칸 = 파일 한 장. 피커는 저작 가능한 낱장만 나열하고, 분할 전 시트 id 와
+  // 생성 시리즈(hero-XX-face) 낱장은 목록에서 빠진다.
   it("lists one option per standalone face file and drops the legacy sheets", () => {
     const project = createBlankProject();
     const faces = listDatabaseResourceOptionsForTest("faceset", project);
     const ids = faces.map((entry) => entry.id);
-    for (const asset of FACESET_FACE_ASSETS) expect(ids).toContain(asset.id);
+    for (const asset of AUTHORABLE_FACESET_FACE_ASSETS) expect(ids).toContain(asset.id);
     for (const sheetId of LEGACY_FACESET_SHEET_IDS) expect(ids).not.toContain(sheetId);
+    for (const generatedId of GENERATED_FACESET_FACE_IDS) expect(ids).not.toContain(generatedId);
   });
 });
 

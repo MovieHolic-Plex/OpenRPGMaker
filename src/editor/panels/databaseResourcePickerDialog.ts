@@ -12,7 +12,7 @@ import {
   EASYRPG_TITLE_ASSETS,
   charsetFrameSource,
 } from "@/assets/easyrpgRtp";
-import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
+import { AUTHORABLE_FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { listMonsterResources } from "@/assets/monsterResourceCatalog";
@@ -430,8 +430,9 @@ export function listDatabaseResourceOptions(
       }
       break;
     case "faceset":
-      // 낱장 얼굴 112장. 분할 전 시트 id 는 저장본 호환을 위해 등록만 남고 피커에서는 빠진다.
-      for (const asset of FACESET_FACE_ASSETS) add(asset.id, asset.name);
+      // 낱장 얼굴 — 분할 전 시트 id 는 저장본 호환으로 등록만 남고 피커에서는 빠진다.
+      // 생성 시리즈(hero-XX-face)도 리소스 관리자와 같은 규칙으로 목록에서 내린다.
+      for (const asset of AUTHORABLE_FACESET_FACE_ASSETS) add(asset.id, asset.name);
       break;
     case "charset":
       for (const asset of CHARSET_ASSETS) add(asset.id, asset.name);

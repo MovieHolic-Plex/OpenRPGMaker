@@ -141,6 +141,47 @@ export const FACESET_FACE_ASSETS: readonly FacesetFaceAsset[] = [
   { id: "generated-actor-hero-02-face-15", name: "hero-02-face 얼굴 16", path: "assets/generated/starter/hero-02-face/15.png", sheetResourceId: "generated-actor-hero-02-face", sheetIndex: 15 },
 ];
 
+/** 생성 시리즈(hero-XX-face) 낱장 얼굴 id. 저장본 해석·검증을 위해 FACESET_FACE_ASSETS 등록은
+ *  유지하지만, 저작 목록(리소스 관리자·얼굴 피커·AI 카탈로그)에는 올리지 않는다. */
+export const GENERATED_FACESET_FACE_IDS: ReadonlySet<string> = new Set([
+  "generated-actor-hero-01-face-00",
+  "generated-actor-hero-01-face-01",
+  "generated-actor-hero-01-face-02",
+  "generated-actor-hero-01-face-03",
+  "generated-actor-hero-01-face-04",
+  "generated-actor-hero-01-face-05",
+  "generated-actor-hero-01-face-06",
+  "generated-actor-hero-01-face-07",
+  "generated-actor-hero-01-face-08",
+  "generated-actor-hero-01-face-09",
+  "generated-actor-hero-01-face-10",
+  "generated-actor-hero-01-face-11",
+  "generated-actor-hero-01-face-12",
+  "generated-actor-hero-01-face-13",
+  "generated-actor-hero-01-face-14",
+  "generated-actor-hero-01-face-15",
+  "generated-actor-hero-02-face-00",
+  "generated-actor-hero-02-face-01",
+  "generated-actor-hero-02-face-02",
+  "generated-actor-hero-02-face-03",
+  "generated-actor-hero-02-face-04",
+  "generated-actor-hero-02-face-05",
+  "generated-actor-hero-02-face-06",
+  "generated-actor-hero-02-face-07",
+  "generated-actor-hero-02-face-08",
+  "generated-actor-hero-02-face-09",
+  "generated-actor-hero-02-face-10",
+  "generated-actor-hero-02-face-11",
+  "generated-actor-hero-02-face-12",
+  "generated-actor-hero-02-face-13",
+  "generated-actor-hero-02-face-14",
+  "generated-actor-hero-02-face-15",
+]);
+
+/** 저작 목록에 보이는 낱장 얼굴 — 생성 시리즈를 뺀 목록이다. */
+export const AUTHORABLE_FACESET_FACE_ASSETS: readonly FacesetFaceAsset[] =
+  FACESET_FACE_ASSETS.filter((face) => !GENERATED_FACESET_FACE_IDS.has(face.id));
+
 const FACE_ID_BY_SHEET_CELL = new Map<string, string>(
   FACESET_FACE_ASSETS.map((face) => [`${face.sheetResourceId}#${face.sheetIndex}`, face.id])
 );
