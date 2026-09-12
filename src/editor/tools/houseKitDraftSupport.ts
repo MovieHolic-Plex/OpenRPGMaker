@@ -15,6 +15,12 @@ import { applyRoofDeck } from "./village/houses";
 
 /** 외장 형태 축 — templateId 가 카탈로그에서 정해 주거나 호출자가 직접 준다. */
 export type HouseShapeOptions = {
+  /**
+   * 형태 id — 날개 템플릿(houseTemplateCatalog) 또는 저작 형태(authoredHouseFormCatalog).
+   * 저작 형태면 스탬프 자체가 레시피로 바뀐다(stampHouseExterior). houseExteriorPlan 은
+   * 이 축을 stampOptions 에 넣지 않는다 — 스탬퍼 선택자일 뿐이다.
+   */
+  readonly templateId?: string;
   /** 외장 층수 — 벽 밴드 행 수를 늘린다. 없으면 1층. */
   readonly stories?: HouseStoryCount;
   /** 낮은 벽(상단+하단 2행) — 헛간·창고. stories 를 무시한다. */

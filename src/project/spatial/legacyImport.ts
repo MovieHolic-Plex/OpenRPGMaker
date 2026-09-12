@@ -34,11 +34,7 @@ function base(tuple: readonly string[], name: string): SpatialDesignBase {
   return { id: legacySpatialId(tuple), name, revision: 1, tags: [], provenance: { origin: "legacy", sourceId: JSON.stringify(tuple) } };
 }
 function furnitureKit(kit: StructureKitDef): boolean {
-  switch (kit.kind) {
-    case "section": return kit.learnedFrom === "interior-catalog" || ["wall-north", "wall-any", "floor", "free"].includes(kit.ai?.snap ?? "") || Boolean(kit.ai?.interiorRole?.trim());
-    case "house": return false;
-    default: return unreachable(kit);
-  }
+  return kit.learnedFrom === "interior-catalog" || ["wall-north", "wall-any", "floor", "free"].includes(kit.ai?.snap ?? "") || Boolean(kit.ai?.interiorRole?.trim());
 }
 function unreachable(value: never): never { throw new TypeError(`Unknown legacy variant: ${String(value)}`); }
 
@@ -80,7 +76,8 @@ export function convertLegacySpatialSnapshot(json: string): LegacySpatialConvers
   };
   for (const [tilesetId, tileset] of Object.entries(source.tilesets)) {
     validateLegacyImportKits(tilesetId, tileset);
-    const kits = tileset.structureKits ?? [];
+    // section 만 오브젝트가 된다 — kind:"house" 같은 인터트 잔재는 등록하지 않는다.
+    const kits = (tileset.structureKits ?? []).filter((kit) => kit.kind === "section");
     const fallback = tilesetId === INTERIOR_TILESET_ID && !kits.some(furnitureKit) ? INTERIOR_OBJECT_CATALOG : [];
     const catalog = new Map(fallback.map(object => [object.id, object.label]));
     for (const kit of kits) catalog.set(kit.id, kit.name ?? kit.id);

@@ -1,13 +1,18 @@
 import { ALL_HOUSE_KIT_IDS } from "@/editor/houseKit";
+import { AUTHORED_HOUSE_FORM_DEFS } from "@/project/defaults/authoredHouseFormCatalog";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { executeAuthorHouse } from "./authorHouseExecution";
 import { CONCEPT_PLAN_SCHEMA } from "./schemaShapes";
 import type { ToolDefinition } from "./types";
 
 const KIT_IDS = [...ALL_HOUSE_KIT_IDS];
-const TEMPLATE_IDS = HOUSE_TEMPLATE_DEFS.map((def) => def.id);
+// 날개 템플릿 + 저작 형태(고정 셀 레시피) — 같은 templateId 축을 공유한다.
+const TEMPLATE_IDS = [...HOUSE_TEMPLATE_DEFS.map((def) => def.id), ...AUTHORED_HOUSE_FORM_DEFS.map((def) => def.id)];
 /** 스키마 설명용 — "이 id 는 이런 꼴" 을 모델이 알아야 골라 쓴다. */
-const TEMPLATE_CATALOG = HOUSE_TEMPLATE_DEFS.map((def) => `${def.id}(${def.name} ${def.w}×${def.h})`).join(", ");
+const TEMPLATE_CATALOG = [
+  ...HOUSE_TEMPLATE_DEFS.map((def) => `${def.id}(${def.name} ${def.w}×${def.h})`),
+  ...AUTHORED_HOUSE_FORM_DEFS.map((def) => `${def.id}(${def.name} ${def.w}×${def.h} 고정 레시피)`),
+].join(", ");
 
 const WING_SCHEMA = {
   type: "object",

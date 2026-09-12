@@ -1,9 +1,9 @@
 import {
   HOUSE_KITS,
-  stampFootprintHouseKit,
   type FootprintWing,
   type HouseKitId,
 } from "@/editor/houseKit";
+import { stampHouseExterior } from "@/editor/authoredHouseFormStamp";
 import {
   createHouseInteriorMap,
   registerInteriorMaps,
@@ -118,7 +118,8 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
   const bbox = houseBBox(input.wings);
   assertHousePlacement(map, bbox);
   const shape = houseExteriorPlan(input);
-  const result = stampFootprintHouseKit(map, { kitId: input.kitId, wings: input.wings, ...shape.stampOptions });
+  // 저작 형태(셀 레시피) id 면 스탬프가 레시피로 바뀐다 — wings[0] 은 파서가 둔 앵커.
+  const result = stampHouseExterior(map, { kitId: input.kitId, wings: input.wings, templateId: input.templateId, ...shape.stampOptions });
   if (!result.ok) throw new ToolError(result.reason ?? "집 시공 실패", { code: "house-kit-failed", mapId: input.mapId });
 
   const warnings: string[] = [];
@@ -232,7 +233,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
     ...(deckApplied ? { tags: ["roof-deck"] } : {}),
   });
   if (deckApplied) decorNotes.push("옥상 데크+사다리");
-  const windowNote = input.windows === false ? "창문 없음" : "창문 자동";
+  const windowNote = result.formId ? "창문 레시피" : input.windows === false ? "창문 없음" : "창문 자동";
   const baseData: HouseKitBuildBaseData = {
     doorAt: result.doorAt ?? null,
     kitId: input.kitId,

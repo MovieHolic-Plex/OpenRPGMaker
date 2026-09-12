@@ -21,10 +21,15 @@ export function spatialAssetFixture() {
 
 export const authoredGraphics: readonly StructureKitDef[] = [
   { id: "bed_h", kind: "section", width: 1, height: 1, rows: [{ tiles: [72], upperTiles: [405] }], learnedFrom: "user-paint" },
-  { id: "bed_h", kind: "house", houseKitId: "historical-house", wings: [{ x: 0, y: 0, w: 4, h: 4 }], learnedFrom: "user-paint" },
   // Deliberately malformed section dimensions: never swap this authored record for a builtin.
   { id: "bed_h", kind: "section", width: 0, height: 1, rows: [], learnedFrom: "user-paint" },
 ];
+
+/** 제거된 파라메트릭 집 킷(kind:"house")의 저장 잔재 — 인터트 레코드. untyped stored data로만 존재한다. */
+export const legacyInertHouseKit: Readonly<Record<string, unknown>> = {
+  id: "bed_h", kind: "house", houseKitId: "historical-house",
+  wings: [{ x: 0, y: 0, w: 4, h: 4 }], learnedFrom: "user-paint",
+};
 
 export const ineligibleAtlases: readonly { readonly name: string; readonly change: Partial<TilesetDef> }[] = [
   { name: "uploaded-lookalike", change: { image: { type: "uploaded", id: "tex_easyrpg_chipset_interior" } } },

@@ -36,9 +36,10 @@ export type AuthorHousePlan = {
   readonly windows?: HouseWindowOptions;
   readonly yard: readonly HouseYardIntent[];
   /**
-   * 형태 카탈로그(houseTemplateCatalog, 34종) id. 주면 wings 는 **앵커**로만 쓰이고
-   * (wings[0].x, wings[0].y 를 원점으로) 카탈로그 날개가 전개된다 — ㄱ자·ㄷ자·중정·
-   * 현관 돌출 같은 비사각 형태를 여기로만 얻을 수 있다.
+   * 형태 id — 날개 카탈로그(houseTemplateCatalog) 또는 저작 형태 카탈로그
+   * (authoredHouseFormCatalog)의 id. 주면 wings 는 **앵커**로만 쓰인다
+   * (wings[0].x, wings[0].y 를 원점으로). 날개 템플릿은 날개가 전개되고,
+   * 저작 형태는 형태 bbox 단일 rect + 셀 레시피가 시공된다.
    */
   readonly templateId?: string;
   readonly stories?: HouseStories;
