@@ -28,6 +28,7 @@ import {
   shopItemRowEl,
   shopPromptText,
   updateShopGoldPanel,
+  updateShopHaggleOffer,
   updateShopHelpLine,
   updateShopOwnedPanel,
   updateShopQuantityTotal,
@@ -92,8 +93,11 @@ export function playShop(
     let mode: ShopMode = defaultShopMode(step);
     let haggleItem: (typeof stockItems)[number] | undefined;
     let haggleOffer = 0;
+    let haggleCount = 1;
     let haggleSetup: HaggleSetup | undefined;
     let haggleLine = "";
+    // 흥정 버튼 커서 — 재렌더(제시 거절) 후에도 제시 버튼에 남도록 보존한다. undefined 면 「제시」.
+    let haggleCursor: number | undefined;
 
     // 판매는 소지품 목록이다 — 진열품을 그대로 보여주면 보유 0 인 행을 눌러 실패만 한다.
     let viewItems: ShopGoods[] = stockItems;
@@ -168,11 +172,29 @@ export function playShop(
       endShopVisit(scene, step, merchantGold, identity);
       finishCommerce(scene, overlay, resolve, transactionCompleted ? true : failedResult());
     };
+    /** 제시가는 제자리 갱신 — 재렌더할 필요가 없어서 커서도 그대로다. */
+    const adjustHaggleOffer = (delta: number): void => {
+      const next = Math.max(0, haggleOffer + delta);
+      if (next === haggleOffer) {
+        emitRuntimeJuice({ event: "menu-invalid", project: store.getCurrent(), session: scene.session });
+        return;
+      }
+      haggleOffer = next;
+      emitRuntimeJuice({ event: "menu-select", project: store.getCurrent(), session: scene.session });
+      updateShopHaggleOffer(overlay, haggleOffer, haggleCount, terms.gold, mode);
+    };
     const attachShopCursor = (): (() => void) => {
       if (view === "haggle") {
         return attachCursorMenu(overlay, {
-          items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice, .runtime-shop-confirm")),
+          // 그만두기(runtime-shop-cancel)도 커서로 닿아야 한다 — 예전 셀렉터는
+          // Esc로만 닫을 수 있어 ↑↓로는 영원히 도달 못 하는 버튼이었다.
+          items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice, .runtime-shop-confirm, .runtime-shop-cancel")),
           cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-haggle-cancel']"),
+          // [-10][+10][제시][그만두기] — 첫 진입은 제시 버튼(2번)에서 시작한다.
+          initialIndex: haggleCursor ?? 2,
+          onSelect: (index) => { haggleCursor = index; },
+          // ←→ 는 어디서든 제시가 ±1. 버튼 간 이동은 ↑↓ 가 담당한다.
+          onHorizontal: (dir) => { adjustHaggleOffer(dir); return true; },
           sound: true, audioContext: { project: store.getCurrent(), session: scene.session },
         });
       }
@@ -212,15 +234,16 @@ export function playShop(
           patience: haggleSetup.patience,
           merchantLine: haggleLine || "가격을 불러 보시오.",
           goldLabel: terms.gold,
-          onDelta: (dir) => {
-            haggleOffer = Math.max(0, haggleOffer + dir);
-            renderShop();
-          },
+          playerGold: scene.session.gold,
+          count: haggleCount,
+          mode,
+          onAdjust: adjustHaggleOffer,
           onPropose: () => proposeCurrentHaggle(),
           onCancel: () => {
             view = "items";
             haggleItem = undefined;
             haggleSetup = undefined;
+            haggleCursor = undefined;
             renderShop();
           },
         }));
@@ -296,7 +319,6 @@ export function playShop(
       flashGoldDelta(overlay, delta, terms.gold);
       applyTransactionResult(item, nextMode, result.status);
     };
-    let haggleCount = 1;
     const beginHaggle = (item: (typeof stockItems)[number], nextMode: ShopMode, count: number): void => {
       const cfg = normalizeHaggleConfig(step.economy?.haggle);
       const dayKey = shopDayKey(scene.session);
@@ -331,6 +353,7 @@ export function playShop(
       };
       haggleOffer = reference;
       haggleLine = "가격을 불러 보시오.";
+      haggleCursor = undefined;
       view = "haggle";
       renderShop();
     };

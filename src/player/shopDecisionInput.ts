@@ -29,6 +29,7 @@ export function attachShopDecisionInput(root: HTMLElement, options: {
       row.classList.toggle("selected", i === index);
       if (i === index) row.setAttribute("aria-current", "true");
       else row.removeAttribute("aria-current");
+      row.setAttribute("aria-selected", i === index ? "true" : "false");
     });
     options.onSelect(index);
   };
@@ -94,8 +95,14 @@ export function attachShopDecisionInput(root: HTMLElement, options: {
         emitRuntimeJuice({ event: "menu-select" });
       }
     } else if (isConfirmKey(event.key)) {
-      // The focused native action is the sole confirm route. Inputs/scroll never trade.
-      if (active instanceof HTMLButtonElement && root.contains(active) && !active.disabled) active.click();
+      // 수량 입력칸 위의 결정키는 선택 행의 결정과 같다 — 여기서 Enter 가 죽어 있으면
+      // 힌트의 "E/Z/Enter/Space 결정" 이 거짓말이 된다(수량 타이핑 후 Enter = 그 수량으로 거래).
+      if (active instanceof HTMLElement && active.dataset.testid === "shop-quantity-input") {
+        root.querySelector<HTMLElement>(".runtime-shop-item-row.selected")?.click();
+      } else if (active instanceof HTMLButtonElement && root.contains(active) && !active.disabled) {
+        // The focused native action is the sole confirm route. Inputs/scroll never trade.
+        active.click();
+      }
     }
   }, { signal });
   if (rows.length) { select(selected); focus(rows[selected]); }

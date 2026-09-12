@@ -67,11 +67,6 @@ function lockIcon(): SVGSVGElement {
   );
 }
 
-function caretIcon(direction: "left" | "right"): SVGSVGElement {
-  const d = direction === "left" ? "M14.5 6.5 9 12l5.5 5.5" : "M9.5 6.5 15 12l-5.5 5.5";
-  return svg(`<path d="${d}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`);
-}
-
 /* ────────────────────────── 상단 바 ────────────────────────── */
 
 /** 가게 문구 + 거래 문장. 파티 얼굴을 상인 초상으로 사용하지 않는다. */
@@ -246,7 +241,10 @@ export function shopItemRow(options: {
   button.dataset.category = goods.category;
   // 합계 계산이 선택 행의 단가를 읽어간다.
   button.dataset.unitPrice = String(price);
-  button.setAttribute("role", "listitem");
+  // 목록은 선택+활성 패턴이다 — list/listitem 보다 listbox/option 이 정확하고
+  // 커서가 얹힌 행이 aria-selected 로도 읽힌다.
+  button.setAttribute("role", "option");
+  button.setAttribute("aria-selected", selected ? "true" : "false");
   button.append(
     shopItemIcon(goods),
     el("span", {
@@ -512,14 +510,17 @@ export function partyPreview(scene: PlaySceneContext): HTMLElement {
 /* ────────────────────────── 수량 · 조작 힌트 ────────────────────────── */
 
 /**
- * 수량 스테퍼 + 합계. 예전에는 18행 목록의 마지막 자식이라 화면 밖에 있었다(1280x800 실측:
+ * 수량 입력 + 합계. 예전에는 18행 목록의 마지막 자식이라 화면 밖에 있었다(1280x800 실측:
  * 입력칸 y=760, 목록 접힘선 밖). 프롬프트 줄로 올려 항상 보이게 한다.
+ *
+ * 조절은 ←→(행 포커스 또는 입력칸 포커스)가 담당한다 — 예전에 있던 ‹ › 스테퍼 버튼은
+ * tabindex=-1 이라 키보드로 못 닿았고, 런타임은 포인터 입력을 막으므로 마우스로도 못 누르는
+ * 양쪽 다 죽은 장식이었다.
  */
 export function quantityControl(
   terms: ResolvedTerms,
   goods: ShopGoods | undefined,
-  mode: ShopMode,
-  onStep: (dir: -1 | 1) => void
+  mode: ShopMode
 ): HTMLElement {
   const wrap = el("div", { class: "runtime-commerce-quantity-wrap runtime-shop-quantity-wrap" });
   const input = document.createElement("input");
@@ -554,16 +555,6 @@ export function quantityControl(
     clamp();
     bubbleTotal(input);
   });
-  const stepper = (dir: -1 | 1) => {
-    const button = el("button", {
-      class: "runtime-shop-step",
-      dataset: { testid: `shop-quantity-${dir < 0 ? "dec" : "inc"}` },
-      attrs: { type: "button", "aria-label": dir < 0 ? "수량 줄이기" : "수량 늘리기", tabindex: "-1" },
-      on: { click: () => onStep(dir) },
-    });
-    button.append(caretIcon(dir < 0 ? "left" : "right"));
-    return button;
-  };
   const unitPrice = goods ? listingPrice(goods, mode) : 0;
   const total = el("span", {
     class: "runtime-shop-quantity-total",
@@ -572,9 +563,7 @@ export function quantityControl(
   });
   wrap.append(
     el("span", { class: "runtime-shop-quantity-label", text: "수량" }),
-    stepper(-1),
     input,
-    stepper(1),
     total
   );
   return wrap;

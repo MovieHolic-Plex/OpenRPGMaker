@@ -1,7 +1,7 @@
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import { emitRuntimeJuice } from "@/player/runtimeJuice";
 import { dialogueHost } from "@/player/playSceneDom";
-import { createShopOverlay, renderShopHaggle, renderShopNotice } from "@/player/playSceneShopDom";
+import { createShopOverlay, renderShopHaggle, renderShopNotice, updateShopHaggleOffer } from "@/player/playSceneShopDom";
 import { shopIsClosed, shopKeyOf, type ShopIdentity } from "@/player/playSceneShopVisit";
 import {
   haggleVisitKey,
@@ -53,17 +53,30 @@ export function playShopkeeper(
     let active: ShopkeeperCustomer | undefined;
     let setup: HaggleSetup | undefined;
     let offer = 0;
+    // 재렌더(제시 거절 등) 뒤에도 커서가 누르던 버튼에 남아 있도록 지킨다.
+    let haggleCursor = 2;
     let line = "손님이 물건을 고르는 중.";
     let dealt = false;
+    // render() 마다 새 메뉴를 붙이므로 이전 리스너를 끊지 않으면 overlay 에 핸들러가
+    // 누적된다 — 떨어진 버튼의 click 핸들러까지 다시 발화해 제시가가 중복 조절된다.
+    let detach: (() => void) | null = null;
     const finish = (result: boolean | "failed") => {
+      detach?.();
+      detach = null;
       overlay.remove();
       scene.syncRuntimeState();
       resolve(result);
     };
     const render = () => {
+      detach?.();
+      detach = null;
       while (overlay.firstChild) overlay.firstChild.remove();
       if (active && setup) {
         const goods = index.get(active.itemId);
+        const adjust = (delta: number) => {
+          offer = Math.max(0, offer + delta);
+          updateShopHaggleOffer(overlay, offer, 1, terms.gold, "sell");
+        };
         overlay.append(renderShopHaggle({
           itemName: `${active.name} · ${goods?.name ?? active.itemId}`,
           reference: setup.reference,
@@ -71,19 +84,26 @@ export function playShopkeeper(
           patience: setup.patience,
           merchantLine: line,
           goldLabel: terms.gold,
-          onDelta: (dir) => { offer = Math.max(0, offer + dir); render(); },
+          playerGold: scene.session.gold,
+          count: 1,
+          mode: "sell",
+          onAdjust: adjust,
           onPropose: () => propose(),
           onCancel: () => { active = undefined; setup = undefined; render(); },
         }));
-        attachCursorMenu(overlay, {
-          items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice, .runtime-shop-confirm")),
+        detach = attachCursorMenu(overlay, {
+          // 그만두기 버튼(runtime-shop-cancel)도 커서 항목에 포함 — Esc 전용이면 안 된다.
+          items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice, .runtime-shop-confirm, .runtime-shop-cancel")),
           cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-haggle-cancel']"),
+          initialIndex: haggleCursor,
+          onSelect: (index) => { haggleCursor = index; },
+          onHorizontal: (dir) => { adjust(dir); return true; },
           sound: true, audioContext: { project: store.getCurrent(), session: scene.session },
         });
         return;
       }
       overlay.append(renderQueue(queue, line, terms.gold, (customer) => start(customer), () => finish(dealt ? true : failedResult())));
-      attachCursorMenu(overlay, {
+      detach = attachCursorMenu(overlay, {
         items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice")),
         cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shopkeeper-close']"),
         sound: true, audioContext: { project: store.getCurrent(), session: scene.session },
