@@ -212,6 +212,13 @@ export interface MapLayoutRegion {
   tags?: string[];
   doorAt?: { x: number; y: number };
   front?: { x: number; y: number };
+  /** Saved exterior provenance; facade floors do not imply interior maps or occurrences. */
+  objectExterior?: {
+    objectId: string;
+    revision: number;
+    doorApproaches: { x: number; y: number }[];
+    privateAccess: { x: number; y: number }[];
+  };
   hasFence?: boolean;
 }
 

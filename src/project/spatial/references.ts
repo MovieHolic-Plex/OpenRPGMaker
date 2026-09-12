@@ -1,5 +1,6 @@
 import { assert } from "../io/guards";
 import { resolveSpatialGraphic } from "./assets";
+import { FACILITY_FLOOR_MAX, isFacilityChildLevelAllowed } from "./facilityLevels";
 import { validateOccurrencePorts, validateParentSlot } from "./associations";
 import { hasProjectedSpatialPort, isOwnedSpatialBinding } from "./bindings";
 import { hasOverviewRouteRepresentation, validateOverviewRoutes } from "./overview";
@@ -100,7 +101,7 @@ function validateLibrary(library: S.SpatialLibrary, context: LibraryContext): Re
     const path = `${context.path}.places.${place.id}`;
     children(place, place.children, `${path}.children`);
     switch (place.kind) {
-      case "facility": place.children.forEach((slot, i) => assert(slot.level >= 1 && slot.level <= 3, `${path}.children[${i}].level: facility supports floors 1..3`)); break;
+      case "facility": place.children.forEach((slot, i) => assert(isFacilityChildLevelAllowed(library, slot), `${path}.children[${i}].level: facility supports floors 1..${FACILITY_FLOOR_MAX} and an outdoor space at level 0`)); break;
       case "settlement": case "natural": break;
       default: assertNever(place.kind);
     }

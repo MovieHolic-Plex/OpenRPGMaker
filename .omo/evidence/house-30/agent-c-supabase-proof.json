@@ -1,0 +1,30 @@
+{
+  "projectId": "rpg-zzu-house-30-c-20260912",
+  "batch": "c",
+  "houses": 10,
+  "saved": true,
+  "reloaded": true,
+  "mirror": "synced",
+  "oldMapsPreserved": true,
+  "oldStartPreserved": true,
+  "objects": [
+    "house30:object:21",
+    "house30:object:22",
+    "house30:object:23",
+    "house30:object:24",
+    "house30:object:25",
+    "house30:object:26",
+    "house30:object:27",
+    "house30:object:28",
+    "house30:object:29",
+    "house30:object:30"
+  ],
+  "maps": [
+    "map_house_30_c_20260912"
+  ],
+  "connectedRoofs": 10,
+  "excludedTileUses": 0,
+  "idempotent": true,
+  "librarySHA256": "f7343608e68fcd3f83029c5ff183f02b72d4debd8538ebfd0efd9524cf8c06e9",
+  "verifiedAt": "2026-09-12T13:20:04.149Z"
+}

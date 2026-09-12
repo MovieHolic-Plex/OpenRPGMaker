@@ -110,6 +110,11 @@ let presetPreviewSeed = 7;
 let archetypeImportSourceId = VILLAGE_ARCHETYPES[0]!.id;
 let archetypeImportPresetId = "";
 
+/** Open the selected settlement recipe without falling back to the first preset. */
+export function selectVillagePresetDesign(id: string): void {
+  selectedKind = "preset"; selectedPresetId = id; villageSearch = "";
+}
+
 export function renderVillageTab(host: HTMLElement, rerender: () => void): void {
   const project = store.getCurrent();
   const templates = project.villageTemplates ?? [];

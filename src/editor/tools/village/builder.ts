@@ -75,8 +75,8 @@ import {
   type PresetOverrides,
 } from "./authoringData";
 import { auditVillage, critiqueBuiltVillage, critiqueVillageMap, roadComponentNotes } from "./audit";
-import { finishVillageHouseDecor, placeVillageDecor } from "./decor";
-import { placeHouseLotFences } from "./fences";
+import { finishVillageHouseDecor, placeVillageTrees } from "./decor";
+import { finishVillageDecoration, type VillageDecorationPlan } from "./decoration";
 import {
   buildHouses,
   clearHouseRidgeRowProps,
@@ -86,7 +86,6 @@ import {
   terrainBlockedCells,
 } from "./houses";
 import { createVillageHouseInteriors } from "./interiors";
-import { dressVillageLandscape } from "./landscape";
 import { npcOverrides, npcText, placeVillageNpcs } from "./npcs";
 import {
   mergePlanIntoBuildArgs,
@@ -106,6 +105,11 @@ import { COORD_SCHEMA, VILLAGE_HOUSE_PLAN_SCHEMA, VILLAGE_NPC_PLAN_SCHEMA } from
 
 import { resolveVillageDesignInput, designTemplateCatalog, villageDesignWorldRules, villageDesignRequirements, assertLegacyVillageSession } from "./designContract";
 import { bindSettlementVillageBuild } from "@/editor/spatial/settlementVillageBuild";
+import { buildObjectHouses, inspectObjectHouseAccess, villageObjectHouseCatalog } from "./objectHouses";
+import { prepareVillageLakesides, finishVillageLakesides, assertVillagePublicAccess } from "./lakeside";
+import { completeVillageTrees } from "./treeCompletion";
+import { plantCompactVillageTrees, dressCompactVillageGround } from "./compactVegetation";
+import { planOrganicVillageLake, paintOrganicVillageLake } from "./organicLake";
 
 export type VillageBuildDomainArgs = Readonly<Record<string, unknown>>;
 
@@ -115,9 +119,11 @@ export function buildVillageDomain(
 ): ToolExecResult {
   const merged = resolveVillageDesignInput(draft, mergePlanIntoBuildArgs(draft, args));
   const seed = integerArg(merged, "seed", 1);
+  const objectCatalog = villageObjectHouseCatalog(draft, merged);
+  const compact = merged.composition === "compact";
   // houseCount 별칭 소비(2026-07-17) — 예전엔 build_village가 이를 조용히 무시해 8채 고정이었다.
   const housePlan = coerceHousePlan(merged.houses ?? merged.houseCount, merged.housePlans);
-  const interiorEnabled = merged.interior !== false;
+  const interiorEnabled = !objectCatalog && merged.interior !== false;
   const doorEventEnabled = merged.doorEvent !== false;
   // 문 외형의 주인 — 이벤트를 만들면 Object1 문 스프라이트가 문이고, 문 타일은 깔지 않는다.
   const doorEventsPlanned = interiorEnabled && doorEventEnabled;
@@ -162,7 +168,9 @@ export function buildVillageDomain(
   }
   if (merged.npcCount === undefined && presetValues.npcCount !== undefined) merged.npcCount = presetValues.npcCount;
   if (merged.groundTheme === undefined && presetValues.groundTheme !== undefined) merged.groundTheme = presetValues.groundTheme;
-  const intent = resolveVillageIntent(merged, housePlan, presetValues, catalog.templates, preset?.id, preset?.name);
+  const intent = resolveVillageIntent(objectCatalog ? { ...merged,
+    plazaLayout: merged.plazaLayout ?? presetValues.plazaLayout ?? "center" } : merged,
+    housePlan, presetValues, catalog.templates, preset?.id, preset?.name);
   const windows = coerceWindows(merged.windows);
   const overrides = npcOverrides(merged.npcs);
   if (!intent.theme && !hasExplicitVillageIntent(merged) && !merged.planId) {
@@ -196,15 +204,27 @@ export function buildVillageDomain(
     ? { ...inferredRequirements, forestDensity: intent.forestDensity }
     : inferredRequirements);
   const baseArea = villageBuildArea(map, createArgs.bounds);
+  // Generic environmental writes cannot invalidate a spatial compiler's accepted raster digest.
+  // The object-library adapter reads designs; it does not gain ownership of existing occurrences.
+  if (objectCatalog && Object.values(draft.spatialAuthoring?.occurrences ?? {}).some(occurrence =>
+    occurrence.bindings.some(binding => binding.kind !== "projection" && binding.mapId === mapId
+      && binding.rect.x < baseArea.x + baseArea.w && binding.rect.x + binding.rect.width > baseArea.x
+      && binding.rect.y < baseArea.y + baseArea.h && binding.rect.y + binding.rect.height > baseArea.y))) {
+    throw new ToolError("선택 영역에 공간·장소가 소유한 건축물이 있습니다. 빈 영역이나 새 맵을 선택해 주세요.", { code: "village-spatial-owned", mapId });
+  }
   // 명시 bounds가 있으면 하한 16(모델이 화면·선택 크기를 그대로 넘긴다),
   // 맵 전체 시공이면 기존 하한 20을 유지한다 — 19×19 전체맵 거부 계약 그대로.
   assertBuildAreaSize(map, baseArea, createArgs.bounds !== undefined);
   // E 하이브리드: requirements → 제약 마스크 → buildable 영역 + 물/숲 셀 회피
-  const terrainMasks = requirements && requirements.landmarks.length > 0
-    ? buildTerrainConstraintMasks(map, requirements, baseArea, worldGenRules)
+  const terrainRequirements = compact && requirements ? { ...requirements,
+    landmarks: requirements.landmarks.filter(landmark => landmark !== "lake" && landmark !== "forest") } : requirements;
+  const terrainMasks = terrainRequirements && terrainRequirements.landmarks.length > 0
+    ? buildTerrainConstraintMasks(map, terrainRequirements, baseArea, worldGenRules)
     : undefined;
   const reserved = terrainMasks?.buildableRect ?? { x: 0, y: 0, w: map.width, h: map.height };
-  const area = intersectRects(baseArea, reserved);
+  // Variable-sized saved houses can use dry land alongside the lake instead of discarding
+  // the entire lake-side row/column. Their solver and roads share the exact water mask.
+  const area = objectCatalog ? baseArea : intersectRects(baseArea, reserved);
   assertBuildAreaSize(map, area, createArgs.bounds !== undefined);
   if (requirements && requirements.landmarks.length > 0) {
     warnings.push(`상식 스펙 적용: ${requirements.mustExist.join(", ")}`);
@@ -221,6 +241,12 @@ export function buildVillageDomain(
     perfMark = Date.now();
   };
   const plaza = villagePlaza(area, intent.plazaLayout, intent.settlementLayout, rng);
+  if (objectCatalog && (compact || (area.w >= 90 && area.h >= 90))) {
+    const width = compact ? Math.min(16, area.w - 12) : 20, height = compact ? Math.min(10, area.h - 12) : 14;
+    const x = Math.max(area.x + 4, Math.min(area.x + area.w - width - 4, plaza.centerX - Math.floor(width / 2)));
+    const y = Math.max(area.y + 4, Math.min(area.y + area.h - height - 4, plaza.centerRow - Math.floor(height / 2)));
+    Object.assign(plaza, { rect: { x, y, w: width, h: height }, centerX: x + Math.floor(width / 2), centerRow: y + Math.floor(height / 2) });
+  }
   // 면적 비례 기본 집 수(2026-07-17) — 요청이 없으면 100×100에도 8채가 깔리던 밀도 붕괴 방지.
   const targetHouses = housePlan.explicit
     ? housePlan.count
@@ -228,7 +254,26 @@ export function buildVillageDomain(
       ?? Math.min(MAX_HOUSES, Math.max(DEFAULT_HOUSES, Math.round((area.w * area.h) / 380)));
   // 대로 골격(대형 맵, 리서치 spine-first): 곡선 밴드를 집 배치 전에 예약해 구멍 없는 대로 보장.
   const boulevard = villageBoulevard(area, plaza);
+  const reservedWaterCells = new Set<number>();
+  if (terrainMasks) for (let i = 0; i < terrainMasks.roles.length; i++) if (terrainMasks.roles[i] === "water") reservedWaterCells.add(i);
+  const lakeAvoid = new Set(reservedWaterCells);
+  if (compact && requirements?.landmarks.includes("lake")) {
+    if (boulevard) for (const cell of boulevardCells(area, boulevard, intent.settlementLayout === "street-grid" ? undefined : seed)) lakeAvoid.add(cell.y * map.width + cell.x);
+    for (let y = plaza.rect.y - 1; y < plaza.rect.y + plaza.rect.h + 1; y++) for (let x = plaza.rect.x - 1; x < plaza.rect.x + plaza.rect.w + 1; x++) lakeAvoid.add(y * map.width + x);
+    for (const cell of existingCells) lakeAvoid.add(cell.y * map.width + cell.x);
+    for (let y = area.y; y < area.y + area.h; y++) for (let x = area.x; x < area.x + area.w; x++) {
+      const i = y * map.width + x;
+      if (map.lowerTiles[i] !== TILE.GRASS || map.upperTiles[i] !== TILE.EMPTY || map.lowerTileStacks?.[i]?.length || map.upperTileStacks?.[i]?.length) lakeAvoid.add(i);
+    }
+    for (const event of map.events) lakeAvoid.add(event.y * map.width + event.x);
+    if (draft.startMapId === map.id) lakeAvoid.add(draft.startPos.y * map.width + draft.startPos.x);
+  }
+  const organicLake = compact && requirements?.landmarks.includes("lake")
+    ? planOrganicVillageLake(area, seed, { avoid: lakeAvoid, mapWidth: map.width }) : undefined;
+  for (const cell of organicLake?.cells ?? []) reservedWaterCells.add(cell.y * map.width + cell.x);
+  const waterRects = [...terrainMasks?.waterRects ?? [], ...(organicLake ? [organicLake.bounds] : [])];
   const houseBlockedIdx = new Set<number>(terrainBlockedCells(terrainMasks) ?? []);
+  for (const index of reservedWaterCells) houseBlockedIdx.add(index);
   for (const { x, y } of existingCells) houseBlockedIdx.add(y * map.width + x);
   // Existing-target facade restores the accepted start after this invocation.
   // Never let that restoration reopen a house completed here.
@@ -241,7 +286,7 @@ export function buildVillageDomain(
     }
   }
   // 대형 맵은 시가지 코어(61×61)에 집을 압축 — 외곽은 밭·숲·수변 몫 (리서치: 코어 압축 룰).
-  const coreArea = boulevard
+  const coreArea = boulevard && !objectCatalog
     ? intersectRects(area, { x: plaza.centerX - 30, y: plaza.centerRow - 30, w: 61, h: 61 })
     : area;
   // 스케치 프리패스 — 솔버 격자 전에 유기적 후보점을 뽑아 buildHouses에 넘긴다.
@@ -254,7 +299,8 @@ export function buildVillageDomain(
   });
   // 자연 시공 순서: 집 배치·마감·보호 등록 → 광장·대로·집 연결 길 → 울타리
   // (예전엔 길→집이라 길이 집 자리를 선점하는 느낌이 났음)
-  const houses = buildHouses(
+  const houses = objectCatalog ? buildObjectHouses(draft, map, area, plaza, targetHouses,
+    objectCatalog, merged, intent, seed, houseBlockedIdx) : buildHouses(
     map, coreArea, plaza, targetHouses, rng, windows, intent, warnings,
     houseBlockedIdx.size > 0 ? houseBlockedIdx : undefined,
     boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol } : undefined,
@@ -271,11 +317,12 @@ export function buildVillageDomain(
     );
   }
   // Finish all house-owned writes before publishing metadata. No environmental stage gets a bypass.
-  restoreHouseDoors(map, houses);
-  clearHouseRidgeRowProps(map, houses);
   assignShopPrograms(houses, plaza, warnings);
-  ensureInnSignGraft(draft, map.tilesetId);
-  const houseDecorPlaced = decorEnabled ? finishVillageHouseDecor(map, houses, plaza) : 0;
+  const legacyHouses = houses.filter(house => !house.objectExterior);
+  restoreHouseDoors(map, legacyHouses);
+  clearHouseRidgeRowProps(map, legacyHouses);
+  if (legacyHouses.length) ensureInnSignGraft(draft, map.tilesetId);
+  const houseDecorPlaced = decorEnabled ? finishVillageHouseDecor(map, legacyHouses, plaza) : 0;
   const houseInteriors = doorEventsPlanned
     ? createVillageHouseInteriors(draft, map, houses, overrides, seed, warnings)
     : [];
@@ -299,12 +346,17 @@ export function buildVillageDomain(
   }
   assertHouseProtection(existingHouses, draft, []);
   setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout);
+  if (compact && map.layoutPlan) {
+    map.layoutPlan.notes = "작은 회벽·석벽 주택의 조밀한 마을. 10×10 초과 큰집 최대 2채, 모든 집 15×15 이하. 집 → 길 → 군락 나무 → 비대칭 호수·243계열 풀밭·장터·마당.";
+    map.layoutPlan.regions.find(region => region.role === "plaza")?.tags?.push("composition:compact");
+  }
   // Invocation-local immutable values: pipeline retries discard these with their attempt, never a project WeakMap.
   const sealedHouses = captureHouseProtection(draft);
   const assertSealed = (): void => assertHouseProtection(existingHouses, draft, sealedHouses);
   assertSealed();
   perfLap("finishing");
   const hardBlocked = new Set([...houseBlockedCells(houses, map), ...plazaDeckBlockedCells(plaza, intent)]);
+  if (objectCatalog) for (const index of reservedWaterCells) hardBlocked.add(coordKey(index % map.width, Math.floor(index / map.width)));
   // 간선·루프용 스탠드오프 마스크 — 벽에서 1칸 띄운다 (문 앞 행은 개방).
   const throughBlocked = new Set([...hardBlocked, ...houseStandoffCells(houses)]);
   // 침범 금지 구역: 하드 마스크 + 수역(마스크 roles) — 훅이 시공 후 강제 점검한다.
@@ -334,6 +386,20 @@ export function buildVillageDomain(
     boulevard,
     retryReport: roadRetryBox,
   });
+  const lakesides = objectCatalog && waterRects.length
+    ? prepareVillageLakesides(draft, map, area, waterRects, intent.pathStyle, hardBlocked) : [];
+  if (objectCatalog && map.layoutPlan) {
+    for (const [index, rect] of waterRects.entries()) map.layoutPlan.regions.push({
+      id: uniqueHouseRegionId(map, "village_water"),
+      role: index === 0 && (requirements?.landmarks.includes("river") || requirements?.landmarks.includes("harbor")) ? "river" : "lake",
+      label: `마을 수역 ${index + 1}`, ...rect,
+      tags: ["reserved-water", "painted-after-trees"],
+    });
+    for (const shore of lakesides) map.layoutPlan.regions.push({
+      id: uniqueHouseRegionId(map, "village_lakeside"), role: "custom", label: "호숫가 쉼터", ...shore.pad,
+      front: shore.entry, tags: ["lakeside", "public-access"],
+    });
+  }
   assertSealed();
   if (roadRetryBox.report && (roadRetryBox.report.attempts > 0 || roadRetryBox.report.fallbackStraight)) {
     const trace = roadRetryBox.report.violationTrace.join("→");
@@ -343,46 +409,54 @@ export function buildVillageDomain(
     );
   }
   perfLap("roads");
-  // Yard fences remain environmental and cannot modify the sealed house (including its ridge/deck).
-  if (fencesEnabled) {
-    placeHouseLotFences(map, houses, seed, area);
+  // Houses and roads are complete. Reserve future water without painting it.
+  const skipTerrain = args.skipTerrain === true || merged.skipTerrain === true;
+  const deferDecoration = args.deferDecoration === true;
+  const landmarkNotes: string[] = [];
+  const { templateCatalog: _templates, ...decorationIntent } = intent;
+  const decorationPlan: VillageDecorationPlan = {
+    area, plaza, houses, seed, intent: decorationIntent,
+    fences: fencesEnabled, decor: decorEnabled, landscape: boulevard !== null && !objectCatalog,
+  };
+  let decorPlaced = houseDecorPlaced;
+  if (!compact && !skipTerrain && requirements && requirements.landmarks.length > 0) {
+    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings, baseArea, worldGenRules, "trees");
+    landmarkNotes.push(...terrain.notes);
     assertSealed();
   }
+  const compactTrees = compact && decorEnabled ? plantCompactVillageTrees(draft, map, area, seed, reservedWaterCells) : undefined;
+  assertSealed();
+  if (decorEnabled && !compact) {
+    decorPlaced += placeVillageTrees(draft, map, area, plaza, houses, seed, intent, warnings, terrainMasks?.waterRects);
+    assertSealed();
+  }
+  perfLap("trees");
 
-  // E 지형 패스: 마스크의 water/forest를 fill_region·place_props로 채움 (솔버 교체 포인트)
-  // multi-turn 세션은 skipTerrain=true 후 water/forest_big 레이어로 분리 시공
-  const skipTerrain = args.skipTerrain === true || merged.skipTerrain === true;
-  let landmarkNotes: string[] = [];
-  if (!skipTerrain && requirements && requirements.landmarks.length > 0) {
-    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings, baseArea, worldGenRules);
-    landmarkNotes = [...terrain.notes];
-    if (terrain.notes.length > 0) warnings.push(`terrainPass: ${terrain.notes.join("; ")}`);
+  // Final decoration: water, then yards/fences/props and optional landscape.
+  if (!skipTerrain && terrainRequirements && terrainRequirements.landmarks.length > 0) {
+    const terrain = runTerrainConstraintPass(draft, map, terrainRequirements, warnings, baseArea, worldGenRules, "water");
+    landmarkNotes.push(...terrain.notes);
     assertSealed();
   } else if (skipTerrain) {
-    landmarkNotes = ["skipTerrain: multi-turn forest/water layers"];
+    landmarkNotes.push("skipTerrain: multi-turn forest/water layers");
   }
-  perfLap("terrain");
-
-  let decorPlaced = houseDecorPlaced;
-  if (decorEnabled) {
-    decorPlaced += placeVillageDecor(draft, map, area, plaza, houses, seed, intent, warnings);
+  const organicWaterCells = organicLake && !skipTerrain ? paintOrganicVillageLake(draft, map, organicLake) : 0;
+  assertSealed();
+  if (!deferDecoration) {
+    decorPlaced += finishVillageDecoration(draft, map, decorationPlan, warnings);
+    decorPlaced += finishVillageLakesides(draft, map, lakesides);
     assertSealed();
   }
-  // Corruption is rejected at the stage boundary, never repaired into a new baseline.
-  perfLap("decor");
-  // 조경(2026-07-17): 대형 맵(대로 모드)은 시가지 코어 밖을 수변·밭·숲·설원 지구로 채운다.
-  // 문법 규칙(수로=물의 논리, 백사장 접안, 눈↔밭 이격, 어둠+계단 세트)은 landscape.ts가 보증.
-  if (boulevard) {
-    const landscaped = dressVillageLandscape(map, { area, houses, plaza, seed, warnings });
-    warnings.push(`조경 지구 ${landscaped}칸`);
-    assertSealed();
-  }
-  perfLap("landscape");
+  const compactGround = compact && decorEnabled && !deferDecoration
+    ? dressCompactVillageGround(draft, map, area, seed, reservedWaterCells) : undefined;
+  assertSealed();
+  perfLap("decoration");
   // 배치 충돌 정리 — 이후 스테이지(terrain 물·decor 나무·landscape 수로)가 서로 다른
   // 시점에 같은 칸을 차지해 생기는 순서 결함(물 위 수관·통행불가 위 수관)을 지운다.
   // 승인 게이트(validateLayoutPlacement)와 같은 규칙이므로, 지나치면 통과한다.
   const sealedCells = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   const scrubbed = scrubPlacementConflicts(draft, map, (index) => !sealedCells.has(index));
+  const treeCompletion = objectCatalog ? completeVillageTrees(draft, map, area) : undefined;
   assertSealed();
   if (scrubbed.propsOnWater > 0 || scrubbed.treesOnImpassable > 0) {
     warnings.push(`배치 정리: 물 위 ${scrubbed.propsOnWater}칸·통행불가 위 ${scrubbed.treesOnImpassable}칸 소품/수관 제거`);
@@ -435,8 +509,13 @@ export function buildVillageDomain(
 
   // 시작 좌표가 집/울타리 아래로 가면 커밋이 거부된다 — 광장 길로 옮긴다.
   ensureVillageStartPosition(draft, map, plaza);
+  if (objectCatalog) assertVillagePublicAccess(draft, map, draft.startMapId === map.id ? draft.startPos : { x: plaza.centerX, y: plaza.centerRow });
 
   const audit = auditVillage(map, houses, upperBefore, area);
+  const objectAccess = inspectObjectHouseAccess(draft, map, houses);
+  if (objectAccess.reachable !== objectAccess.doors || objectAccess.intact !== objectAccess.doors) {
+    throw new ToolError(`건물 현관 접근 실패: ${objectAccess.reachable}/${objectAccess.doors}. 마당·길·소품 배치를 확인해 주세요.`, { code: "village-object-access", mapId });
+  }
   perfLap("audit");
   warnings.push(`[vperf] ${perf.join(" ")}`);
   if (houses.length < targetHouses) warnings.push(`집 수 미달: ${houses.length}/${targetHouses}`);
@@ -450,11 +529,11 @@ export function buildVillageDomain(
   if (audit.npcCount !== requestedNpcCount) warnings.push(`NPC 수 미달: ${audit.npcCount}/${requestedNpcCount}`);
   if (audit.npcsWithText !== audit.npcCount) warnings.push(`대사 없는 NPC: ${audit.npcCount - audit.npcsWithText}명`);
   if (interiorEnabled && houseInteriors.length !== houses.length) warnings.push(`내부 생성 미달: ${houseInteriors.length}/${houses.length}`);
-  if (fencesEnabled && audit.fencedHouses < houses.length) {
+  if (!deferDecoration && fencesEnabled && audit.fencedHouses < houses.length) {
     warnings.push(`울타리 미달: ${audit.fencedHouses}/${houses.length}`);
   }
 
-  const doorFronts = houses.map((house) => house.front);
+  const doorFronts = houses.flatMap(house => house.objectExterior?.approaches ?? [house.front]);
   const critique = critiqueBuiltVillage(draft, map, doorFronts);
   if (!critique.ok) {
     warnings.push(`비평 루프: ${critique.summary}`);
@@ -470,6 +549,9 @@ export function buildVillageDomain(
         yardStyle: intent.yardStyle, plazaStyle: intent.plazaStyle, plazaLayout: intent.plazaLayout,
         interior: interiorEnabled, npcCount: requestedNpcCount, requirements: structuredClone(requirements),
         worldGen: structuredClone(worldGenRules),
+        ...(objectCatalog ? { composition: merged.composition, houseClustering: merged.houseClustering, multiStoreyCount: merged.multiStoreyCount,
+          exteriors: houses.map(h => ({ objectId: h.objectExterior!.objectId, revision: h.objectExterior!.revision,
+            exteriorStories: h.objectExterior!.exteriorStories, raster: structuredClone(h.objectExterior!.raster) })) } : {}),
         templates: catalog.templates.map(t => ({ id: t.id, name: t.name, w: t.w, h: t.h, stories: t.stories, kitId: t.kitId, wings: structuredClone(t.wings) })),
       },
     };
@@ -490,6 +572,8 @@ export function buildVillageDomain(
       bounds: area,
       requirements: requirements ?? undefined,
       landmarks: landmarkNotes,
+      buildStages: deferDecoration ? ["houses", "roads"] : ["houses", "roads", "trees", "decoration"],
+      ...(deferDecoration ? { decorationPlan } : {}),
       planId: typeof merged.planId === "string" ? merged.planId : undefined,
       theme: intent.theme || undefined,
       critique,
@@ -505,6 +589,8 @@ export function buildVillageDomain(
         settlementLayout: intent.settlementLayout,
       },
       housesBuilt: houses.length,
+      ...(objectCatalog ? { houseSource: "objects", exteriorDoors: objectAccess, treeCompletion } : {}),
+      ...(compact ? { composition: "compact", compactTrees, compactGround, organicWaterCells } : {}),
       // 경고를 결과 데이터로도 노출(2026-07-17) — 재시도 횟수·[vperf]·미달 사유가 호출자에게 보이게.
       warnings: warnings.length > 0 ? [...warnings] : undefined,
       fencesEnabled,
@@ -525,9 +611,12 @@ export function buildVillageDomain(
         const interiorRef = houseInteriors[index];
         return {
           index,
-          kitId: house.kitId,
-          stories: house.stories,
+          kitId: house.objectExterior?.raster.kitId ?? house.kitId,
+          ...(house.objectExterior ? { exteriorStories: house.objectExterior.exteriorStories } : { stories: house.stories }),
           templateId: house.templateId,
+          ...(house.objectExterior ? { objectId: house.objectExterior.objectId, objectRevision: house.objectExterior.revision,
+            exteriorKitId: house.objectExterior.raster.kitId, doorApproaches: house.objectExterior.approaches,
+            privateAccess: house.objectExterior.access, streetGate: house.front } : {}),
           doorAt: house.doorAt,
           front: house.front,
           ownerName: house.ownerName ?? npcText(index, overrides).name,
@@ -568,6 +657,15 @@ export type VillageBuildInspection = {
   readonly actualHouseCount: number;
   readonly npcCount: number;
   readonly structuralQa: VillageStructuralQa;
+  readonly savedExteriors?: {
+    readonly objectIds: readonly string[];
+    readonly doors: number;
+    readonly reachableDoors: number;
+    readonly waterCells: number;
+    readonly treeCells: number;
+    readonly marketDisplays: number;
+    readonly lakesideAccess: number;
+  };
 };
 
 export function inspectVillageBuild(
@@ -641,6 +739,14 @@ export function inspectVillageBuild(
     actualHouseCount,
     npcCount,
     structuralQa,
+    ...(Reflect.get(data, "houseSource") === "objects" ? { savedExteriors: {
+      objectIds: houses.map(house => String(Reflect.get(house, "objectId"))),
+      doors: Number(Reflect.get(Reflect.get(data, "exteriorDoors") as object, "doors")),
+      reachableDoors: Number(Reflect.get(Reflect.get(data, "exteriorDoors") as object, "reachable")),
+      waterCells: countWaterCells(project.maps[exteriorMapId]!), treeCells: countTreeCells(project.maps[exteriorMapId]!),
+      marketDisplays: project.maps[exteriorMapId]!.layoutPlan?.regions.filter(region => region.tags?.includes("market-display")).length ?? 0,
+      lakesideAccess: project.maps[exteriorMapId]!.layoutPlan?.regions.filter(region => region.tags?.includes("lakeside")).length ?? 0,
+    } } : {}),
   };
 }
 
@@ -650,7 +756,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
     description:
       "마을 계층 계획을 검증·정규화한다(맵 타일은 변경하지 않음). " +
       "theme·pathStyle·yardStyle·plazaStyle·edgeTrees·plazaLayout·houses[{kitId,yard,ownerName}]·npcs·" +
-      "buildOrder(시공 레이어 순서: 호수/강이면 water를 settlement 앞)를 넣으면 " +
+      "buildOrder(시공 레이어 순서: 집·길 다음 나무, 마지막 water·decoration)를 넣으면 " +
       "정규화된 VillagePlan + 한 줄 요약 + issues를 돌려준다. 이어서 run_village_session / advance_village_build 또는 build_village({ planId }). " +
       "settlement 내부는 항상 집→길. 빈 계획 금지 — 테마 마을이면 theme을 반드시 넣을 것.",
     mode: "write",
@@ -698,8 +804,8 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         buildOrder: {
           type: "array",
           description:
-            "시공 레이어 순서(LLM 기획). 호수/강: water를 settlement 앞. settlement 내부는 집→길 고정. " +
-            "예: [plan,map,water,settlement,forest_conifer,forest_big,critique,look]",
+            "시공 레이어 순서(LLM 기획). settlement(집→길) → forest_conifer/forest_big → water → decoration 고정. " +
+            "예: [plan,map,settlement,forest_conifer,forest_big,water,decoration,critique,look]",
           items: { type: "string" },
         },
         id: { type: "string", description: "계획 id(없으면 자동 생성)" },
@@ -711,7 +817,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       pathStyle: "sand",
       yardStyle: "market",
       plazaLayout: "south",
-      buildOrder: ["plan", "map", "water", "settlement", "forest_conifer", "forest_big", "critique", "look"],
+      buildOrder: ["plan", "map", "settlement", "forest_conifer", "forest_big", "water", "decoration", "critique", "look"],
       houses: [
         { kitId: "bright-plaster", yard: ["barrel", "wood_box"], ownerName: "어부" },
         { kitId: "blue-stone", yard: ["mailbox", "flowers"], ownerName: "포구지기" },
@@ -1653,15 +1759,18 @@ function setVillageHarnessLayoutPlan(
       ...houses.map((house) => ({
         id: uniqueHouseRegionId(map, "village_house", reservedIds),
         role: "house",
-        label: `${kitLabel[house.kitId]} ${house.stories > 1 ? `${house.stories}층 ` : ""}${house.templateId} 집`,
+        label: house.objectExterior?.name ?? `${kitLabel[house.kitId]} ${house.stories > 1 ? `${house.stories}층 ` : ""}${house.templateId} 집`,
         ...house.bbox,
-        kitId: house.kitId,
+        kitId: house.objectExterior?.raster.kitId ?? house.kitId,
         shape: house.templateId,
         yardTheme: intent.yardStyle,
-        tags: [`${house.stories}f`, `shape:${house.templateId}`, "authored-reference-grammar",
+        tags: [...(house.objectExterior ? ["saved-object-exterior", ...(house.objectExterior.exteriorStories ? [`exterior-stories:${house.objectExterior.exteriorStories}`] : []), `object:${house.objectExterior.objectId}`, `object-revision:${house.objectExterior.revision}`] : [`${house.stories}f`]), `shape:${house.templateId}`, "authored-reference-grammar",
           ...(intent.templateCatalog.find((template) => template.id === house.templateId)?.roofDeck ? ["roof-deck"] : [])],
         doorAt: house.doorAt,
         front: house.front,
+        ...(house.objectExterior ? { objectExterior: { objectId: house.objectExterior.objectId,
+          revision: house.objectExterior.revision, doorApproaches: [...house.objectExterior.approaches],
+          privateAccess: [...house.objectExterior.access] } } : {}),
         hasFence: fencesEnabled,
       })),
     ],

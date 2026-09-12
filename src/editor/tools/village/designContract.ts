@@ -11,7 +11,7 @@ export function selectedVillagePreset(project: Project, args: Record<string, unk
   const id = typeof args.presetId === "string" && args.presetId.trim() ? args.presetId.trim() : project.defaultVillagePresetId;
   if (!id) return undefined;
   const preset = project.villagePresets?.find(p => p.id === id);
-  if (!preset && project.defaultVillagePresetId) throw new ToolError("요청한 마을 설계서가 없습니다. 데이터베이스 → 마을에서 다시 선택하세요.", { code: "village-design-missing" });
+  if (!preset && (project.defaultVillagePresetId || project.villagePresets?.some(p => p.design))) throw new ToolError("요청한 마을 설계서가 없습니다. 데이터베이스 → 마을에서 다시 선택하세요.", { code: "village-design-missing" });
   if (preset?.design) {
     const issue = villageDesignIssue(preset.design);
     if (issue) throw new ToolError(issue, { code: "village-design-invalid" });
@@ -35,7 +35,7 @@ export function resolveVillageDesignInput(project: Project, input: Record<string
   }
   const apply = (key: string, value: unknown, fixed: boolean): void => {
     if (value === undefined) return;
-    if (fixed && args[key] !== undefined && args[key] !== value) conflict(preset, key, value, args[key]);
+    if (fixed && args[key] !== undefined && JSON.stringify(args[key]) !== JSON.stringify(value)) conflict(preset, key, value, args[key]);
     if (fixed || args[key] === undefined) args[key] = value;
   };
   const count = input.houses ?? input.houseCount ?? preset.houseCount ?? design.houseCount.min;
@@ -49,8 +49,18 @@ export function resolveVillageDesignInput(project: Project, input: Record<string
     // 파사드가 받지 않는 값은 시공기에서 같은 계약으로 적용한다.
     if (!facade || key === "groundTheme" || key === "settlementLayout") apply(key, values[key], design.policies.layout === "fixed");
   }
-  if (!facade) apply("kitMix", values.kitMix, design.policies.appearance === "fixed");
-  if (design.policies.appearance === "fixed") designTemplateCatalog(project, preset, villageTemplateCatalog(project, preset.templateIds).templates);
+  if (!facade && !design.objectVillage) apply("kitMix", values.kitMix, design.policies.appearance === "fixed");
+  if (design.policies.appearance === "fixed" && !design.objectVillage) designTemplateCatalog(project, preset, villageTemplateCatalog(project, preset.templateIds).templates);
+  if (design.objectVillage) {
+    const o = design.objectVillage;
+    apply("composition", o.composition, design.policies.layout === "fixed");
+    apply("houseClustering", o.clustering, design.policies.layout === "fixed");
+    apply("houseObjectIds", o.objectIds, design.policies.appearance === "fixed");
+    apply("multiStoreyCount", o.multiStoreyCount, design.policies.appearance === "fixed");
+    if (design.policies.appearance === "fixed" && Array.isArray(args.housePlans)) {
+      for (const plan of args.housePlans) if (plan?.objectId && !o.objectIds.includes(plan.objectId)) conflict(preset, "허용 건물", o.objectIds, plan.objectId);
+    }
+  }
   apply("npcCount", values.npcCount, design.policies.residents === "fixed");
   apply("interior", design.interior, design.policies.interior === "fixed");
   if (design.policies.interior === "fixed" && design.interior && input.doorEvent === false) conflict(preset, "실내 출입", "문 연결", false);
@@ -61,7 +71,7 @@ export function resolveVillageDesignInput(project: Project, input: Record<string
     } else apply("forestDensity", forest, true);
     if (input.skipTerrainPass === true) conflict(preset, "자연 시공", "설계서 적용", "생략");
   }
-  if (design.policies.appearance === "fixed" && Array.isArray(args.housePlans)) {
+  if (design.policies.appearance === "fixed" && !design.objectVillage && Array.isArray(args.housePlans)) {
     const allowed = designTemplateCatalog(project, preset, villageTemplateCatalog(project, preset.templateIds).templates);
     const ids = new Set(allowed.map(t => t.id));
     for (const raw of args.housePlans) {
@@ -82,7 +92,7 @@ export function assertLegacyVillageSession(project: Project, args: Record<string
 /** 형태에 고정된 킷(삼각 지붕·옥상)도 마을의 고정 재료를 우회하지 못한다. */
 export function designTemplateCatalog(project: Project, preset: VillageLayoutPresetRecord | undefined, templates: readonly HouseTemplate[]): readonly HouseTemplate[] {
   const design = preset?.design;
-  if (!design || design.policies.appearance !== "fixed") return templates;
+  if (!design || design.objectVillage || design.policies.appearance !== "fixed") return templates;
   if (preset.templateIds?.length && !preset.templateIds.some(id => templates.some(t => t.id === id))) {
     throw new ToolError("설계서의 집 형태를 찾을 수 없습니다. 허용 형태를 다시 선택하세요.", { code: "village-design-templates" });
   }

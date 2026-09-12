@@ -181,8 +181,8 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
     if (footprint.lower.some(isTreeTrunkTileId)) {
       // Tree pairs need valid ground across the whole object, not just at the trunk.
       // Otherwise cleanup removes a canopy over a wall and runner repair recreates it
-      // after the house is sealed. A trunk write also clears upper, so occupied upper
-      // cells are not free ground. Existing lower trunks still allow canopy overlap.
+      // after the house is sealed. Preexisting occupied upper cells are not free
+      // ground. Existing lower trunks still allow canopy overlap.
       for (let y = Math.max(0, args.area.y); y < Math.min(map.height, args.area.y + args.area.h); y += 1) {
         for (let x = Math.max(0, args.area.x); x < Math.min(map.width, args.area.x + args.area.w); x += 1) {
           const { lower, upper } = tileAt(map, x, y);
@@ -1402,8 +1402,11 @@ function paint(map: GameMap, footprint: Footprint, origin: Point): readonly Poin
       const upper = footprint.upper[source] ?? TILE.EMPTY;
       if (lower === TILE.EMPTY && upper === TILE.EMPTY) continue;
       const target = (origin.y + y) * map.width + origin.x + x;
-      // 밑동(lower) 기록. 수관(upper)은 기존 밑동을 덮지 않음.
-      if (lower !== TILE.EMPTY) setLower(map, origin.x + x, origin.y + y, lower);
+      // Planning permits canopy/trunk overlap between trees in the same batch.
+      // A later trunk must preserve the earlier tree's canopy, independent of
+      // origin order. Ordinary ground replacement still clears its upper layer.
+      if (isTreeTrunkTileId(lower)) map.lowerTiles[target] = lower;
+      else if (lower !== TILE.EMPTY) setLower(map, origin.x + x, origin.y + y, lower);
       if (upper !== TILE.EMPTY) {
         map.upperTiles[target] = upper;
         // 빈 하층 위 수관이면 잔디 받침(투명 수관 아래 검정 방지). 밑동 위면 유지.
@@ -1412,7 +1415,7 @@ function paint(map: GameMap, footprint: Footprint, origin: Point): readonly Poin
           isTreeCanopyTileId(upper)
           && (haveLower === TILE.EMPTY || haveLower < 0)
         ) {
-          setLower(map, origin.x + x, origin.y + y, TILE.GRASS);
+          map.lowerTiles[target] = TILE.GRASS;
         }
       }
       touched.push({ x: origin.x + x, y: origin.y + y });

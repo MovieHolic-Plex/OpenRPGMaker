@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **63쪽 / 2452KB / 약 686,306 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **65쪽 / 2487KB / 약 696,841 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -73,12 +73,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-project-schema.md` | 3 | `.json`, `.png`, `output/evidence/event-command-completion/legacy-persistence/ledger.json` |
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
 | `openwiki/se-catalog.md` | 7 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json` |
-| `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
-| `openwiki/spatial-geography-ui.md` | 1 | `regionReferenceView.ts` |
-| `openwiki/testing.md` | 18 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
+| `openwiki/spatial-geography-compiler.md` | 2 | `.omo/ulw-execute/tile-to-world/execution-policy.md`, `plazaLayout.ts` |
+| `openwiki/testing.md` | 17 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
-| `openwiki/village-design.md` | 1 | `output/village-direction/index.html` |
+| `openwiki/village-design.md` | 2 | `depth-review.json`, `output/village-direction/index.html` |
 | `openwiki/world-structure-authoring.md` | 1 | `verify-shots/runtime-qa/world-structure-tools/SUMMARY.md` |
 
 ## 페이지별 절 좌표
@@ -630,34 +629,37 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L144` 안티-게이밍 규칙
 - `L154` 이 페이지를 갱신해야 하는 변경
 
-### `openwiki/large-village-generation.md` — 17KB · 401줄 · ~4,779 토큰
+### `openwiki/large-village-generation.md` — 26KB · 508줄 · ~7,651 토큰
 
-- `L9` 한 줄 요약
-- `L24` AI tree placement and completed houses (2026-09-05)
-- `L43` Phase 2 construction boundary (2026-09-06)
-- `L73` 관련 파일
-- `L92` 전체 그림
-- `L110` 단계별 설명
-  - `L112` 0단계 — 자리 잡기 (`planLargeVillageBboxes`)
-  - `L142` 1단계 — 맵 생성
-  - `L150` 2단계 — 물
-  - `L161` 3단계 — 집 (다양화)
-  - `L176` 4단계 — 구불구불 길
-  - `L192` 5단계 — 광장 + 시장 하네스
-  - `L203` 6단계 — 울타리 + 마당 (집과 별 개념)
-  - `L226` 7단계 — 나무·마을 소품
-  - `L238` 8단계 — NPC
-  - `L248` 9단계 — QA (품질 게이트)
-  - `L271` 10단계 — 저장
-- `L282` 데이터 개념 3개만 기억하기
-- `L301` 예전에 자주 깨지던 이유 (로직 이슈)
-- `L314` 로그 읽는 법
-- `L334` 다시 만들 때
-- `L350` 고칠 때 어디를 만지나
-- `L364` 아직 약한 부분 (솔직히)
-- `L381` 관련 위키
-- `L389` author_village 스코프 계약 (2026-09-04 적대 리뷰 반영)
-- `L398` 대로 병합 검증 (2026-09-05)
+- `L9` 내장 AI 시공 순서 (2026-09-12, 아래 과거 하네스 순서보다 우선)
+- `L35` 저장된 건물 오브젝트로 마을 만들기 (2026-09-12)
+- `L69` 작은 집 중심의 조밀한 마을 (2026-09-13)
+- `L100` 과거 대형 하네스 순서
+- `L115` AI tree placement and completed houses (2026-09-05)
+- `L150` Phase 2 construction boundary (2026-09-06)
+- `L180` 관련 파일
+- `L199` 전체 그림
+- `L217` 단계별 설명
+  - `L219` 0단계 — 자리 잡기 (`planLargeVillageBboxes`)
+  - `L249` 1단계 — 맵 생성
+  - `L257` 2단계 — 물
+  - `L268` 3단계 — 집 (다양화)
+  - `L283` 4단계 — 구불구불 길
+  - `L299` 5단계 — 광장 + 시장 하네스
+  - `L310` 6단계 — 울타리 + 마당 (집과 별 개념)
+  - `L333` 7단계 — 나무·마을 소품
+  - `L345` 8단계 — NPC
+  - `L355` 9단계 — QA (품질 게이트)
+  - `L378` 10단계 — 저장
+- `L389` 데이터 개념 3개만 기억하기
+- `L408` 예전에 자주 깨지던 이유 (로직 이슈)
+- `L421` 로그 읽는 법
+- `L441` 다시 만들 때
+- `L457` 고칠 때 어디를 만지나
+- `L471` 아직 약한 부분 (솔직히)
+- `L488` 관련 위키
+- `L496` author_village 스코프 계약 (2026-09-04 적대 리뷰 반영)
+- `L505` 대로 병합 검증 (2026-09-05)
 
 ### `openwiki/location-layer-affordance-audit.md` — 13KB · 130줄 · ~3,930 토큰
 
@@ -871,13 +873,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L215` Project sound descriptions
 - `L242` Traps
 
-### `openwiki/spatial-ai-tools.md` — 11KB · 142줄 · ~2,692 토큰
+### `openwiki/small-village-generation.md` — 4KB · 52줄 · ~1,368 토큰
+
+- `L6` 저장과 재사용
+- `L26` 이번 사용자 저작 기준
+- `L42` 검증과 재현
+
+### `openwiki/spatial-ai-tools.md` — 12KB · 156줄 · ~3,283 토큰
 
 - `L3` Ownership
-- `L34` Preview versus publication
-- `L69` Legacy adapters and context
-- `L110` Evidence and integration boundary
-- `L127` Completed region references (2026-09-13)
+- `L34` 사물·공간·장소와 저장된 건물 외형 찾기 (2026-09-12)
+- `L63` Preview versus publication
+- `L98` Legacy adapters and context
+- `L140` Evidence and integration boundary
 
 ### `openwiki/spatial-authoring-controller.md` — 18KB · 294줄 · ~4,590 토큰
 
@@ -890,7 +898,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L179` Exact connection cleanup
 - `L248` Verification and remaining integration
 
-### `openwiki/spatial-geography-compiler.md` — 8KB · 145줄 · ~2,166 토큰
+### `openwiki/spatial-catalog-ui.md` — 4KB · 69줄 · ~1,043 토큰
+
+- `L3` Concept and selection contract (2026-09-12)
+- `L26` Building exterior selection
+- `L43` Facility levels
+- `L53` Verification
+
+### `openwiki/spatial-geography-compiler.md` — 9KB · 158줄 · ~2,420 토큰
 
 - `L8` Public path
 - `L31` Terrain and structures
@@ -898,7 +913,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L83` Ownership and regeneration
 - `L106` Contract fixtures and proof
 
-### `openwiki/spatial-geography-ui.md` — 9KB · 166줄 · ~2,294 토큰
+### `openwiki/spatial-geography-ui.md` — 8KB · 147줄 · ~2,011 토큰
 
 - `L7` Public modules
 - `L26` Settlement regions (2026-09-12)
@@ -906,7 +921,6 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L83` Authoring rules
 - `L123` Fixtures
 - `L129` Proof
-- `L138` Completed map references (2026-09-13)
 
 ### `openwiki/spatial-manual-build.md` — 11KB · 177줄 · ~2,738 토큰
 
@@ -924,9 +938,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L58` Lifecycle and compatibility
 - `L89` Reproduction
 
-### `openwiki/spatial-place-compiler.md` — 2KB · 28줄 · ~405 토큰
+### `openwiki/spatial-place-compiler.md` — 4KB · 57줄 · ~911 토큰
 
-절 제목 없음 (평면 목록 페이지).
+- `L29` Houses with a yard and four floors (2026-09-12)
 
 ### `openwiki/spatial-placed-space-edits.md` — 5KB · 75줄 · ~1,209 토큰
 
@@ -1083,26 +1097,33 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L69` Image capability trap
 - `L81` 2026-09-08 pilot result
 
-### `openwiki/village-design.md` — 6KB · 60줄 · ~2,029 토큰
+### `openwiki/village-design.md` — 20KB · 215줄 · ~6,143 토큰
 
 - `L5` 데이터와 호환성
 - `L13` 단일 시공 계약
-- `L26` 편집 화면과 미리보기
-- `L34` 현재 경계
-- `L40` 기존 맵 재시공의 새 집 터 (2026-09-06)
-- `L55` 검증
+- `L30` 편집 화면과 미리보기
+- `L38` 현재 경계
+- `L44` 기존 맵 재시공의 새 집 터 (2026-09-06)
+- `L59` 검증
+- `L65` 집 외형 연구 — 연결된 지붕 (2026-09-12)
+  - `L92` 3·4층 확장 (2026-09-12)
+  - `L113` 오브젝트·공간·장소 등록 (2026-09-12 후속)
+  - `L142` 새 집 외형 30종 — 독립 제작과 통합 (2026-09-12)
+  - `L173` 저장된 집에서 실제 마을로 (2026-09-12)
+  - `L189` 조밀한 소형 주택 마을로 수정 (2026-09-13)
+- `L208` 저장된 소규모 집 구성 (2026-09-13)
 
-### `openwiki/world-generation-rules.md` — 8KB · 107줄 · ~2,400 토큰
+### `openwiki/world-generation-rules.md` — 8KB · 109줄 · ~2,470 토큰
 
 - `L7` 소유 경계
 - `L20` 절대 하지 말 것 — 미리보기 전용 계산식
 - `L31` 낱말 규칙 (자연어, 정규식 금지)
 - `L42` 수치가 통과하는 경로
-- `L59` 새 규칙 항목을 추가할 때
-- `L71` 필수 랜드마크 하드 게이트 (2026-09-04)
-- `L87` 검증
-- `L95` 마을 설계서 (2026-09-05)
-- `L98` 저장·편집 검토 수정 복구 (2026-09-05)
+- `L61` 새 규칙 항목을 추가할 때
+- `L73` 필수 랜드마크 하드 게이트 (2026-09-04)
+- `L89` 검증
+- `L97` 마을 설계서 (2026-09-05)
+- `L100` 저장·편집 검토 수정 복구 (2026-09-05)
 
 ### `openwiki/world-structure-authoring.md` — 6KB · 104줄 · ~1,832 토큰
 

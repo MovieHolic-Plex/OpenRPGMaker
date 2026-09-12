@@ -25,13 +25,13 @@ export type EdgeTrees = "conifer" | "dense" | "none";
 export type PlazaLayout = "center" | "north" | "south" | "west" | "east";
 
 /**
- * 멀티턴 시공 레이어. LLM이 buildOrder로 순서를 기획한다.
- * 호수/강 마을 → water를 settlement 앞. 일반 마을 → 집·길(settlement) 후 숲.
+ * 멀티턴 시공 레이어: 집·길 → 나무 → 물·마당·맵 장식. 계획은 자리만 예약한다.
  */
 export type VillageBuildLayerId =
   | "plan"
   | "map"
   | "water"
+  | "decoration"
   | "settlement"
   | "forest_conifer"
   | "forest_big"
@@ -41,10 +41,11 @@ export type VillageBuildLayerId =
 export const ALL_VILLAGE_BUILD_LAYERS: readonly VillageBuildLayerId[] = [
   "plan",
   "map",
-  "water",
   "settlement",
   "forest_conifer",
   "forest_big",
+  "water",
+  "decoration",
   "critique",
   "look",
 ] as const;
@@ -82,11 +83,7 @@ export interface VillagePlan {
   readonly mapName?: string;
   readonly width?: number;
   readonly height?: number;
-  /**
-   * 시공 레이어 순서(LLM 기획). 예: 호수마을 ["plan","map","water","settlement","forest_conifer",...],
-   * 산골 ["plan","map","settlement","forest_conifer","forest_big",...].
-   * settlement 내부는 항상 집→길→울타리→소품·NPC.
-   */
+  /** 집·길(settlement) → 나무 → 물 → 마당·맵 장식. 모델의 순서 입력도 이 순서로 정규화한다. */
   readonly buildOrder: readonly VillageBuildLayerId[];
   readonly summary: string;
 }
@@ -235,12 +232,12 @@ export function defaultVillageBuildOrder(
   );
   const hasForest = requirements.landmarks.includes("forest") || edgeTrees !== "none";
   const order: VillageBuildLayerId[] = ["plan", "map"];
-  if (hasWater) order.push("water");
   order.push("settlement");
   if (hasForest) {
     order.push("forest_conifer", "forest_big");
   }
-  order.push("critique", "look");
+  if (hasWater) order.push("water");
+  order.push("decoration", "critique", "look");
   return order;
 }
 
@@ -254,7 +251,7 @@ function normalizeBuildOrder(
   if (!Array.isArray(raw) || raw.length === 0) {
     issues.push({
       severity: "warning",
-      message: `buildOrder 자동: ${fallback.join("→")} (호수/강이면 water 선시공, 그다음 집·길)`,
+      message: `buildOrder 자동: ${fallback.join("→")} (집·길 → 나무 → 물·장식)`,
     });
     return fallback;
   }
@@ -267,39 +264,14 @@ function normalizeBuildOrder(
     }
     if (!parsed.includes(entry as VillageBuildLayerId)) parsed.push(entry as VillageBuildLayerId);
   }
-  // plan/map/critique/look 보장
-  if (!parsed.includes("plan")) parsed.unshift("plan");
-  if (!parsed.includes("map")) {
-    const pi = parsed.indexOf("plan");
-    parsed.splice(pi + 1, 0, "map");
+  // A model may request extra stages, but cannot reverse the construction contract.
+  const wanted = new Set([...fallback, ...parsed]);
+  const ordered = ALL_VILLAGE_BUILD_LAYERS.filter(layer => wanted.has(layer));
+  if (ordered.join(",") !== parsed.join(",")) {
+    issues.push({ severity: "warning", message: "시공 순서를 집·길 → 나무 → 물·장식 → 검수로 정규화했다" });
   }
-  if (!parsed.includes("settlement")) {
-    // water 있으면 water 다음, 아니면 map 다음
-    const wi = parsed.indexOf("water");
-    const insertAt = wi >= 0 ? wi + 1 : parsed.indexOf("map") + 1;
-    parsed.splice(insertAt, 0, "settlement");
-  }
-  if (!parsed.includes("critique")) parsed.push("critique");
-  if (!parsed.includes("look")) parsed.push("look");
-  // requirements 누락 레이어 soft-fill
-  const hasWater = requirements.landmarks.some(
-    (k) => k === "river" || k === "lake" || k === "harbor",
-  );
-  const hasForest = requirements.landmarks.includes("forest") || edgeTrees !== "none";
-  if (hasWater && !parsed.includes("water")) {
-    const mi = parsed.indexOf("map");
-    parsed.splice(mi + 1, 0, "water");
-    issues.push({ severity: "warning", message: "buildOrder에 water 없음 → map 다음에 삽입" });
-  }
-  if (hasForest && !parsed.includes("forest_conifer")) {
-    const si = parsed.indexOf("settlement");
-    parsed.splice(si + 1, 0, "forest_conifer");
-  }
-  if (hasForest && !parsed.includes("forest_big")) {
-    const fi = parsed.indexOf("forest_conifer");
-    parsed.splice(fi + 1, 0, "forest_big");
-  }
-  return parsed;
+  return ordered;
+
 }
 
 /** VillagePlan → build_village args (결정론 시공 입력). */
@@ -523,7 +495,7 @@ export function villagePlanToBuildSpec(
     mapId,
     title: plan.theme || plan.mapName || "village",
     assets,
-    buildOrder: ["road", "house", "prop"],
+    buildOrder: ["house", "road", "prop"],
     pathWidth: 1,
     density: plan.edgeTrees === "dense" ? "dense" : plan.edgeTrees === "none" ? "spacious" : "normal",
     layoutStyle: "straight",

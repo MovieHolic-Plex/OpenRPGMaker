@@ -172,6 +172,7 @@ export function objectInspectorHandlers(
       }
       patchLibrary(target, rerender, { graphic: { tilesetId, kitId } });
     },
+    onExteriorStories: exteriorStories => patchLibrary(target, rerender, { exteriorStories }),
     onAnchor: (index, patch) => {
       if (!design) return;
       const anchors = design.anchors.map((anchor, i) => i === index ? { ...anchor, ...patch } : anchor);

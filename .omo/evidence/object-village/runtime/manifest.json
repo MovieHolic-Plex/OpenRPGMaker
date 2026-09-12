@@ -1,0 +1,382 @@
+{
+  "scenarioId": "object-village",
+  "projectPath": "output/evidence/object-village/reloaded-project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "start",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lakeside_market_village_20260912",
+        "x": 63,
+        "y": 70,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "market-approach",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lakeside_market_village_20260912",
+        "x": 63,
+        "y": 70,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "map_lakeside_market_village_20260912",
+          "x": 63,
+          "y": 70
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_lakeside_market_village_20260912",
+          "x": 63,
+          "y": 70
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "market-walk",
+      "note": "저장 후 재로드한 market 접근로를 실제 17걸음 이동",
+      "shot": "04-market-walk.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lakeside_market_village_20260912",
+        "x": 54,
+        "y": 62,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_lakeside_market_village_20260912",
+          "x": 54,
+          "y": 62
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "courtyard-approach",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lakeside_market_village_20260912",
+        "x": 109,
+        "y": 44,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "map_lakeside_market_village_20260912",
+          "x": 109,
+          "y": 44
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_lakeside_market_village_20260912",
+          "x": 109,
+          "y": 44
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "courtyard-walk",
+      "note": "저장 후 재로드한 courtyard 접근로를 실제 12걸음 이동",
+      "shot": "06-courtyard-walk.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lakeside_market_village_20260912",
+        "x": 112,
+        "y": 35,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_lakeside_market_village_20260912",
+          "x": 112,
+          "y": 35
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "lakeside-approach",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lakeside_market_village_20260912",
+        "x": 37,
+        "y": 31,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "map_lakeside_market_village_20260912",
+          "x": 37,
+          "y": 31
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_lakeside_market_village_20260912",
+          "x": 37,
+          "y": 31
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "id": "lakeside-walk",
+      "note": "저장 후 재로드한 lakeside 접근로를 실제 12걸음 이동",
+      "shot": "08-lakeside-walk.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lakeside_market_village_20260912",
+        "x": 37,
+        "y": 19,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_lakeside_market_village_20260912",
+          "x": 37,
+          "y": 19
+        }
+      ]
+    }
+  ]
+}

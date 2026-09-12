@@ -13,7 +13,8 @@ import type {
 import type { Project } from "@/project/types";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 
-export const FACILITY_FLOOR_MAX = 3;
+import { isFacilityChildLevelAllowed } from "@/project/spatial/facilityLevels";
+export { FACILITY_FLOOR_MAX } from "@/project/spatial/facilityLevels";
 
 export type PlaceDraftTarget = {
   readonly cardId: string;
@@ -163,7 +164,7 @@ export function nestChild(
     default:
       return assertNever(slot.source.kind);
   }
-  if (place.kind === "facility" && (slot.level < 1 || slot.level > FACILITY_FLOOR_MAX)) {
+  if (place.kind === "facility" && !isFacilityChildLevelAllowed(library, slot)) {
     return rejected(place, "floor-limit");
   }
   return { kind: "ok", place: { ...place, children: [...place.children, slot] } };

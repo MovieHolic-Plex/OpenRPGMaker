@@ -1,0 +1,194 @@
+[
+  {
+    "id": "compact-village-home-01-meadow",
+    "name": "들꽃 회벽집",
+    "kind": "home",
+    "width": 5,
+    "height": 6,
+    "floors": 1,
+    "roofCells": 15,
+    "connectedRoof": true,
+    "doors": [
+      {
+        "x": 2,
+        "y": 5
+      }
+    ]
+  },
+  {
+    "id": "compact-village-home-02-shallow-bay",
+    "name": "낮은 문간 돌집",
+    "kind": "home",
+    "width": 7,
+    "height": 7,
+    "floors": 1,
+    "roofCells": 23,
+    "connectedRoof": true,
+    "doors": [
+      {
+        "x": 1,
+        "y": 6
+      }
+    ]
+  },
+  {
+    "id": "compact-village-home-03-front-room",
+    "name": "작은 앞현관집",
+    "kind": "home",
+    "width": 7,
+    "height": 8,
+    "floors": 1,
+    "roofCells": 27,
+    "connectedRoof": true,
+    "doors": [
+      {
+        "x": 3,
+        "y": 7
+      }
+    ]
+  },
+  {
+    "id": "compact-village-home-04-rounded-shoulders",
+    "name": "완만한 어깨 돌집",
+    "kind": "home",
+    "width": 8,
+    "height": 7,
+    "floors": 1,
+    "roofCells": 26,
+    "connectedRoof": true,
+    "doors": [
+      {
+        "x": 4,
+        "y": 6
+      }
+    ]
+  },
+  {
+    "id": "compact-village-home-05-low-east-roof",
+    "name": "낮은 동쪽 지붕집",
+    "kind": "home",
+    "width": 7,
+    "height": 7,
+    "floors": 1,
+    "roofCells": 22,
+    "connectedRoof": true,
+    "doors": [
+      {
+        "x": 2,
+        "y": 6
+      }
+    ]
+  },
+  {
+    "id": "compact-village-home-06-door-niche",
+    "name": "오목문간 회벽집",
+    "kind": "home",
+    "width": 9,
+    "height": 8,
+    "floors": 1,
+    "roofCells": 37,
+    "connectedRoof": true,
+    "doors": [
+      {
+        "x": 4,
+        "y": 5
+      }
+    ]
+  },
+  {
+    "id": "compact-village-home-07-attic-room",
+    "name": "좁은 윗방 회벽집",
+    "kind": "home",
+    "width": 7,
+    "height": 9,
+    "floors": 2,
+    "roofCells": 32,
+    "connectedRoof": true,
+    "doors": [
+      {
+        "x": 3,
+        "y": 8
+      }
+    ]
+  },
+  {
+    "id": "compact-village-home-08-west-upstairs",
+    "name": "서쪽 윗방 돌집",
+    "kind": "home",
+    "width": 9,
+    "height": 10,
+    "floors": 2,
+    "roofCells": 45,
+    "connectedRoof": true,
+    "doors": [
+      {
+        "x": 6,
+        "y": 9
+      }
+    ]
+  },
+  {
+    "id": "compact-village-home-09-east-upstairs",
+    "name": "오른윗방 돌집",
+    "kind": "home",
+    "width": 9,
+    "height": 10,
+    "floors": 2,
+    "roofCells": 41,
+    "connectedRoof": true,
+    "doors": [
+      {
+        "x": 6,
+        "y": 9
+      }
+    ]
+  },
+  {
+    "id": "compact-village-home-10-short-porch",
+    "name": "낮은 현관 이층집",
+    "kind": "home",
+    "width": 8,
+    "height": 10,
+    "floors": 2,
+    "roofCells": 39,
+    "connectedRoof": true,
+    "doors": [
+      {
+        "x": 4,
+        "y": 9
+      }
+    ]
+  },
+  {
+    "id": "compact-village-landmark-01-civic-house",
+    "name": "작은 마을회관",
+    "kind": "landmark",
+    "width": 12,
+    "height": 12,
+    "floors": 2,
+    "roofCells": 70,
+    "connectedRoof": true,
+    "doors": [
+      {
+        "x": 5,
+        "y": 11
+      }
+    ]
+  },
+  {
+    "id": "compact-village-landmark-02-court-inn",
+    "name": "한쪽 뜰 여관",
+    "kind": "landmark",
+    "width": 14,
+    "height": 13,
+    "floors": 2,
+    "roofCells": 96,
+    "connectedRoof": true,
+    "doors": [
+      {
+        "x": 8,
+        "y": 10
+      }
+    ]
+  }
+]

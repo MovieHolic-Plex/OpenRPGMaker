@@ -106,6 +106,8 @@ export type NewVillageTarget = {
 export type AuthorVillageTarget = ExistingVillageTarget | NewVillageTarget;
 
 export type VillageHousePlan = {
+  /** Saved building exterior object. Mutually exclusive with the legacy kit/template. */
+  readonly objectId?: string;
   readonly kitId?: HouseKitId;
   readonly yard: readonly string[];
   readonly ownerName?: string;
@@ -129,6 +131,12 @@ export type AuthorVillageRequest = {
   readonly target: AuthorVillageTarget;
   readonly houseCount: number;
   readonly housePlans?: readonly VillageHousePlan[];
+  /** Candidate pool from the project's object library; geometry is never regenerated. */
+  readonly houseObjectIds?: readonly string[];
+  /** Small masonry homes, at most two landmarks, close lots and composed vegetation/water. */
+  readonly composition?: "compact";
+  readonly multiStoreyCount?: number;
+  readonly houseClustering?: "balanced" | "tight";
   readonly countPolicy: ConstructionCountPolicy;
   readonly groundTheme?: VillageGroundTheme;
   readonly settlementLayout?: VillageSettlementLayout;

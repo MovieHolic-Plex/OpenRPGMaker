@@ -1,3 +1,6 @@
+import { finishVillageDecoration, type VillageDecorationPlan } from "./village/decoration";
+import { yardAreaForHouse } from "./houseLotDecor";
+import { unreservedAreas } from "./village/reservedAreas";
 import { assertLegacyVillageSession } from "./village/designContract";
 // Multi-turn village build: living checklist + one layer per advance.
 // Voyager/SceneCraft-style: observe → act(skill) → verify → next open item.
@@ -76,6 +79,7 @@ export interface VillageBuildSession {
   doorFronts?: readonly { x: number; y: number }[];
   lastLook?: VillageLookReport;
   settlementSummary?: string;
+  decorationPlan?: VillageDecorationPlan;
   /** plan에 안 들어가는 build_village 추가 의도(레이아웃·폭 등) */
   buildOverrides?: Record<string, unknown>;
 }
@@ -85,7 +89,8 @@ const VILLAGE_SESSION_BAG = "villageSessions";
 const LAYER_TITLES: Record<VillageLayerId, string> = {
   plan: "계획 확정",
   map: "빈 맵 생성",
-  settlement: "집→길→울타리·마당·NPC",
+  settlement: "집→길",
+  decoration: "마당·울타리·맵 꾸미기",
   water: "강/호수 지형",
   forest_conifer: "침엽수 숲",
   forest_big: "2×2 활엽수 군락",
@@ -155,8 +160,8 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
         buildOrder: {
           type: "array",
           description:
-            "LLM 시공 순서. 예 호수마을: [plan,map,water,settlement,forest_conifer,forest_big,critique,look]. " +
-            "일반 마을은 water 없이 settlement 먼저. 생략 시 쿼리 상식으로 자동.",
+            "LLM 시공 순서. 예 호수마을: [plan,map,settlement,forest_conifer,forest_big,water,decoration,critique,look]. " +
+            "집·길 → 나무 → 물·장식 순서로 정규화한다. 물은 예약만 먼저 하고 마지막에 칠한다.",
           items: { type: "string" },
         },
       },
@@ -167,7 +172,7 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
       seed: 101,
       width: 50,
       height: 50,
-      buildOrder: ["plan", "map", "water", "settlement", "forest_conifer", "forest_big", "critique", "look"],
+      buildOrder: ["plan", "map", "settlement", "forest_conifer", "forest_big", "water", "decoration", "critique", "look"],
     },
     run(draft, args): ToolExecResult {
       assertLegacyVillageSession(draft, args);
@@ -209,7 +214,7 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
         mapId: { type: "string" },
         layer: {
           type: "string",
-          enum: ["water", "forest_conifer", "forest_big", "settlement", "critique", "look", "all"],
+          enum: ["settlement", "forest_conifer", "forest_big", "water", "decoration", "critique", "look", "all"],
         },
       },
     },
@@ -315,7 +320,7 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
       seed: 101,
       width: 50,
       height: 50,
-      buildOrder: ["plan", "map", "water", "settlement", "forest_conifer", "forest_big", "critique", "look"],
+      buildOrder: ["plan", "map", "settlement", "forest_conifer", "forest_big", "water", "decoration", "critique", "look"],
     },
     run(draft, args): ToolExecResult {
       assertLegacyVillageSession(draft, args);
@@ -379,7 +384,7 @@ function startVillageSession(draft: Project, args: Record<string, unknown>): Too
     || plan.edgeTrees !== "none";
 
   // LLM buildOrder 우선 — plan.normalize가 상식 기반 기본 순서를 채움
-  const layerOrder = plan.buildOrder.length > 0 ? plan.buildOrder : ["plan", "map", "settlement", "critique", "look"] as VillageLayerId[];
+  const layerOrder = plan.buildOrder.length > 0 ? plan.buildOrder : ["plan", "map", "settlement", "decoration", "critique", "look"] as VillageLayerId[];
 
   const checklist: VillageChecklistItem[] = layerOrder.map((id) => {
     let status: ChecklistStatus = "pending";
@@ -546,6 +551,16 @@ function advanceVillageBuild(draft: Project, args: Record<string, unknown>): Too
           else session.memory.push(`settlement: ${session.settlementSummary ?? "ok"}`);
         }
         break;
+      case "decoration": {
+        if (!session.decorationPlan) throw new ToolError("집·길 시공 결과가 없다 — settlement 먼저", { code: "order" });
+        const map = requireMap(draft, session.mapId);
+        const placed = finishVillageDecoration(draft, map, session.decorationPlan, warnings);
+        layerData = { placed };
+        const checked = verifyLayer(draft, session, "decoration");
+        item.status = checked.ok ? "done" : "failed";
+        item.lastVerify = checked.detail;
+        break;
+      }
       case "water":
         layerData = stepWater(draft, session, plan, warnings);
         {
@@ -760,14 +775,17 @@ function stepSettlement(
     decor: plan.decor,
     seed: plan.seed,
     ...(session.buildOverrides ?? {}),
+    deferDecoration: true,
   });
   if (result.warnings) warnings.push(...result.warnings);
   const data = (result.data ?? {}) as {
+    decorationPlan?: VillageDecorationPlan;
     houses?: { front: { x: number; y: number } }[];
     housesBuilt?: number;
     doorsConnected?: number;
     critique?: { ok?: boolean };
   };
+  session.decorationPlan = data.decorationPlan;
   session.doorFronts = data.houses?.map((h) => h.front) ?? [];
   session.settlementSummary = result.summary;
   return {
@@ -815,9 +833,11 @@ function stepForestConifer(
   const map = requireMap(draft, session.mapId);
   const rules = resolveWorldGenRules(draft.system.worldGen);
   const masks = buildTerrainConstraintMasks(map, plan.requirements, undefined, rules);
-  const areas = masks.forestRects.length > 0
+  const reserved = [...masks.waterRects, ...(session.decorationPlan?.houses ?? []).map(house =>
+    yardAreaForHouse(map, [house.bbox], house.doorAt, { depth: 3, pad: 1 }))];
+  const areas = unreservedAreas(masks.forestRects.length > 0
     ? masks.forestRects
-    : edgeBands(map);
+    : edgeBands(map), reserved).filter(area => area.w >= 2 && area.h >= 2);
   const requestedDensity = plan.requirements.forestDensity;
   const density = requestedDensity ?? DEFAULT_FOREST_DENSITY;
   let placed = 0;
@@ -854,9 +874,11 @@ function stepForestBig(
   const map = requireMap(draft, session.mapId);
   const rules = resolveWorldGenRules(draft.system.worldGen);
   const masks = buildTerrainConstraintMasks(map, plan.requirements, undefined, rules);
-  const areas = masks.forestRects.length > 0
+  const reserved = [...masks.waterRects, ...(session.decorationPlan?.houses ?? []).map(house =>
+    yardAreaForHouse(map, [house.bbox], house.doorAt, { depth: 3, pad: 1 }))];
+  const areas = unreservedAreas(masks.forestRects.length > 0
     ? masks.forestRects
-    : edgeBands(map);
+    : edgeBands(map), reserved).filter(area => area.w >= 2 && area.h >= 2);
   const requestedDensity = plan.requirements.forestDensity;
   const density = requestedDensity ?? DEFAULT_FOREST_DENSITY;
   let placed = 0;
@@ -889,15 +911,16 @@ function stepForestBig(
       w: Math.min(6, map.width - (w.x + w.w) - 1),
       h: Math.max(4, w.h - 4),
     };
-    if (bank.w >= 2 && bank.h >= 2) {
+    const banks = unreservedAreas([bank], reserved).filter(area => area.w >= 2 && area.h >= 2);
+    for (const [index, area] of banks.entries()) {
       placed += placeProps(draft, {
         mapId: map.id,
-        area: bank,
+        area,
         material: "활엽수",
         count: 2,
         minGap: rules.forest.broadleafGap,
         naturalness: 0.5,
-        seed: session.seed + 9900,
+        seed: session.seed + 9900 + index,
       }, warnings);
     }
   }
@@ -1132,7 +1155,7 @@ function evaluateVillageLayerTool(project: Project, args: Record<string, unknown
     ? { mapId: session.mapId, doorFronts: session.doorFronts, planId: session.planId }
     : { mapId, doorFronts: undefined, planId: "" };
   if (layer === "all") {
-    const layers = ["water", "forest_conifer", "forest_big", "settlement", "critique", "look"] as const;
+    const layers = ["settlement", "forest_conifer", "forest_big", "water", "decoration", "critique", "look"] as const;
     const results = layers.map((l) => verifyLayer(project, sessionView as VillageBuildSession, l));
     return {
       summary: `레이어 검증: ${results.filter((r) => r.ok).length}/${results.length} 통과`,
@@ -1168,6 +1191,12 @@ function verifyLayer(
   }
   const map = project.maps[mapId]!;
   const plan = session.planId ? loadVillagePlan(project, session.planId) : undefined;
+
+  if (layer === "decoration") {
+    const fronts = session.doorFronts ?? [];
+    const reachable = fronts.length > 0 && checkReachability(project, map.id, project.startMapId === map.id ? project.startPos : fronts[0]!, [...fronts]).reachable;
+    return { ok: reachable, layer, detail: reachable ? "꾸미기 후 모든 집 접근 가능" : "꾸미기 후 집 접근 확인 실패" };
+  }
 
   if (layer === "water") {
     const water = countWater(map);

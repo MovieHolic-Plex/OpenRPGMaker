@@ -1,0 +1,20 @@
+[
+  {
+    "kind": "object",
+    "ok": true,
+    "active": true,
+    "count": 15
+  },
+  {
+    "kind": "space",
+    "ok": true,
+    "active": true,
+    "count": 19
+  },
+  {
+    "kind": "place",
+    "ok": true,
+    "active": true,
+    "count": 15
+  }
+]

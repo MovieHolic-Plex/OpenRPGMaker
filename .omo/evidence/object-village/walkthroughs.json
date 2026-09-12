@@ -1,0 +1,212 @@
+{
+  "mapId": "map_lakeside_market_village_20260912",
+  "mapSHA256": "508ae9aebced10df5c9bafacd4d4533f52185d1ebdc2cdc313dee77dbf58722b",
+  "walks": [
+    {
+      "id": "market",
+      "start": {
+        "x": 63,
+        "y": 70
+      },
+      "end": {
+        "x": 54,
+        "y": 62
+      },
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        }
+      ],
+      "fullPathLength": 17
+    },
+    {
+      "id": "courtyard",
+      "start": {
+        "x": 109,
+        "y": 44
+      },
+      "end": {
+        "x": 112,
+        "y": 35
+      },
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        }
+      ],
+      "fullPathLength": 84
+    },
+    {
+      "id": "lakeside",
+      "start": {
+        "x": 37,
+        "y": 31
+      },
+      "end": {
+        "x": 37,
+        "y": 19
+      },
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        }
+      ],
+      "fullPathLength": 81
+    }
+  ]
+}

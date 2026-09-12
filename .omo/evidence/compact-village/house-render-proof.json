@@ -1,0 +1,7 @@
+{
+  "renderer": "editor/mapTileDraw",
+  "source": "fresh compact material recipes",
+  "houses": 12,
+  "browserErrors": [],
+  "scale": 2
+}

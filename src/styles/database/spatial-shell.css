@@ -37,6 +37,14 @@
   background: var(--db-studio-surface, #fff);
 }
 
+.database-modal-body .spatial-kind-guidance {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--db-studio-text-2, #475569);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .database-modal-body .spatial-modes,
 .database-modal-body .spatial-actions,
 .database-modal-body .spatial-source-chips,
@@ -411,6 +419,9 @@
   color: var(--db-studio-warning);
   font: 500 12px/1.3 inherit;
 }
+.database-modal-body .spatial-preview-error[hidden] {
+  display: none;
+}
 .database-modal-body .spatial-delete-confirm {
   min-height: 32px;
   padding: 0 10px;
@@ -665,4 +676,14 @@
   .database-modal-body .spatial-tiles-editor {
     transition: none;
   }
+}
+
+/* The village studio has its own list and inspector; avoid nesting three rails. */
+.database-modal-body .spatial-shell[data-legacy-origin="villages"] .spatial-body,
+.database-modal-body .spatial-shell[data-legacy-origin="villages"] .spatial-stage {
+  grid-template-columns: minmax(0, 1fr);
+}
+.database-modal-body .spatial-shell[data-legacy-origin="villages"] .spatial-gallery,
+.database-modal-body .spatial-shell[data-legacy-origin="villages"] .spatial-stage > .spatial-inspector {
+  display: none;
 }

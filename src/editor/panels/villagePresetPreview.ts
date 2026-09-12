@@ -42,8 +42,8 @@ export function buildPresetPreview(project: Project, presetId: string, seed: num
   try {
     const built = buildVillageDomain(draft, {
       name: `${preset.name || preset.id} 미리보기`,
-      width: PRESET_PREVIEW_SIZE,
-      height: PRESET_PREVIEW_SIZE,
+      width: preset.design?.objectVillage?.previewSize.width ?? PRESET_PREVIEW_SIZE,
+      height: preset.design?.objectVillage?.previewSize.height ?? PRESET_PREVIEW_SIZE,
       presetId,
       seed,
       ...(preset.design ? {} : { interior: false, doorEvent: false, npcCount: 0 }),

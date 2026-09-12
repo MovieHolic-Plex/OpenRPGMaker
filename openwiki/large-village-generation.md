@@ -6,7 +6,98 @@
 
 ---
 
-## 한 줄 요약
+## 내장 AI 시공 순서 (2026-09-12, 아래 과거 하네스 순서보다 우선)
+
+사용자 지정 정본은 **집 → 길 → 나무 → 호수·마당·맵 꾸미기**다.
+`author_village`, `buildVillageDomain`, 설계서 미리보기와 정주지 지역 시공이 같은 본체를 탄다.
+
+- 계획에서 수역·대로 자리를 예약하지만 타일은 칠하지 않는다. 집 외형·문·실내·벽 장식은
+  집 단계에서 완결·봉인한다. 다음으로 광장·대로·집 진입로를 만든다.
+- `village/decor.ts`의 `placeVillageTrees`는 독립 나무 단계다. 수역 예정지와 집 앞마당은
+  `village/reservedAreas.ts`로 제외하며, 분할된 영역을 나무 전체가 벗어나지 않는다.
+- `villageTerrainPass.ts`는 `trees`와 `water` 단계를 받는다. 숲과 수역의 겹친 예약은
+  숲에서 제외한다. 합성 숲의 바닥 장식·작은 물웅덩이도 최종 단계로 미룬다.
+  마지막 수역이 기존 길·나무를 덮으려 하면 `village-water-conflict`로 거부한다.
+- `village/decoration.ts`의 `finishVillageDecoration`은 울타리·마당·소품·대형 맵 조경을
+  담당한다. 각 단계는 기존 완성 집 보호 검사를 유지한다.
+- 멀티턴 세션은 `settlement → forest_conifer → forest_big → water → decoration → critique → look`.
+  필요 없는 물·숲은 생략한다. 모델이 물 먼저 순서를 보내도 `normalizeVillagePlan`이
+  이 순서로 정규화하고 경고한다. 마당 꾸미기 입력은 세션의 detached memory로 이어진다.
+  **작업 세션은 원래 프로젝트 JSON 저장 대상이 아니다.** 완성된 맵은 기존 저장 경로를 탄다.
+- AI 도구 설명과 컨텍스트도 같은 순서를 안내한다. `build_village` 결과의 `buildStages`는
+  네 단계의 이름을 제공한다.
+
+검증: `test/villageBuildStages.test.ts`는 실제 등록 도구에서 순서·예약지 비점유·집 보존,
+AI 초안 간 꾸미기 이월과 완성 맵 직렬화를 검사한다. 관련 회귀는
+`villageBuilder`, `houseProtectionLifecycle`, `villageDesign`, `forestDensity`,
+`villageProducerProtection`, `authorVillageFacade`다. 이는 엔진 계약 fixture이며 새 데모 저작이 아니다.
+
+## 저장된 건물 오브젝트로 마을 만들기 (2026-09-12)
+
+`author_village.houseObjectIds`는 canonical 라이브러리에 저장된 **건물 외형 후보**다.
+`housePlans[i].objectId`로 집별 형태를 고정할 수도 있다. AI는 오브젝트를 검색한 뒤
+실제 ID를 전달한다. 생략하면 기존 파라미터 집 경로를 유지한다. `interior` 생략 시
+오브젝트 경로는 false이며, true는 거부한다. 외형의 3·4층을 실내 지도 수로 추측하지 않는다.
+
+- `village/objectHouses.ts`는 `snapshotGraphic`으로 원본 타일을 읽어 크기가 다른 필지를
+  배치한다. 지붕·벽·문은 재해석/재색칠하지 않는다. 모든 116/146 현관에 저장된 앵커가
+  있어야 하며, 빈 외형 셀만 통과하는 중정 통로를 먼저 계산한다. 이 통로와 공용 대문은
+  후속 길 정리에서도 보존한다. 같은 배치에서 구형 집 템플릿과 섞거나 고정 외형 설계서와
+  충돌하면 실패한다. 크기 생략 시 실제 외형·마당 면적과 광장 최소 폭을 함께 계산한다.
+- 필지는 수역·대로·광장·기존 기물과 겹치지 않는다. `exact`는 전량, `best-effort`는
+  기존 facade와 같은 85%/최소 4채 하한을 만족해야 한다. 용량 부족은 전체 초안 롤백이다.
+- `roads.ts`는 공용 대문에서 이미 연결된 길까지 장애물을 피하는 경로를 만든다.
+  `market.ts`는 완결된 가판 조각과 상품을 놓고 중앙 통로·손님이 서는 칸을 비워 둔다.
+  `lakeside.ts`는 길 단계에서 쉼터를 연결하고, 물을 칠한 뒤 접근을 막지 않는 벤치를 놓는다.
+  오브젝트 경로에서 기존 대형 조경의 별도 호수·눈밭·지하 계단은 추가하지 않는다.
+- 최종 QA는 원본 외형 셀, 모든 현관의 사유 통로, 시작점부터 현관·가판·쉼터의 **착지 칸**까지
+  실제 `canMove` 도달성을 검사한다. `checkReachability`의 인접 허용 판정만으로 통과시키지 않는다.
+  호수에 닿은 마을 모래길도 실제 출입 앵커가 있으면 도로 성분으로 센다.
+- `MapLayoutRegion.objectExterior`에 원본 ID/revision, 현관 앞, 사유 통로를 저장한다.
+  이는 완성 맵의 출처 메타데이터다. **새 spatial occurrence나 갱신 가능한 장소 인스턴스는 아니다.**
+  canonical 라이브러리/기존 occurrence를 변경하지 않으며, 기존 owned binding에 걸친 시공은 거부한다.
+  실제 실내·층간 연결은 공간·장소 시공으로 따로 저작한다.
+
+검증: `villageObjectHouses`, `villageLakesideAccess`, `villageMarketDisplays`,
+`villageTreeCompletion`, `authorVillageFacade`, `villageBuildStages` 6파일과 기존 시작점 복원 후
+접근성을 재검사하는 회귀 사례를 검증한다.
+실제 저작은 `scripts/publish-object-village.mts --apply`로 등록 도구 실행 → CAS 저장 →
+전체 Supabase 재로드 일치를 확인한다. 기존 저장 마을을 자동 재생성하지 않는다.
+편집기 그림은 `scripts/capture-authored-village.mjs`, 출하 플레이어 검증은
+`scripts/qa/prepare-object-village-walks.mts` 후 `npm run qa:runtime -- --scenario object-village`다.
+
+## 작은 집 중심의 조밀한 마을 (2026-09-13)
+
+저장된 집 후보와 함께 `composition:"compact"`를 전달한다. AI 문맥에도 이 선택을 안내한다.
+일반 주택은 외형 **10×10 이하**, 큰집은 **전체 최대 2채**, 모든 외형은 **15×15 이하**다.
+`compactComposition.ts`는 이름 대신 실제 raster의 크기와 통나무 벽 칩
+102~104 / 132~134 / 162~164를 검사한다. 모든 레이어에서 검사하며 자동 후보에서는 부적합 집을 제외한다.
+일반집은 고유 형태를 먼저 사용하고 이후 작은 면적에 가중치를 주되 반복 상한을 둔다.
+
+사용자가 집별로 고정한 부적합 외형이나 큰집 3채 이상은 오류로 돌려준다. 기존 라이브러리는 보존한다.
+
+- `objectHouses.ts`: 집 양옆·뒤 1칸, 앞 2칸의 필지 여유를 두고 1칸 단위로 배치한다.
+  16×10 장터, 대로, 미래 수역과 겹치지 않으며 큰 외형부터 계획하고 작은 집으로 빈자리를 채운다.
+  크기를 생략하면 필터를 통과한 실제 선택 집과 공용 공간을 기준으로 계산한다.
+- `organicLake.ts`: 집을 찍기 전에 비대칭 수역의 **정확한 셀 마스크**를 예약한다.
+  도로를 피해 가로로 긴 연결 실루엣(가로/세로 1.8 이상, 면적 3.5~8%)을 찾으며,
+  금지 셀을 잘라 구멍을 만들지 않는다.
+  집·길·나무 뒤에 같은 마스크를 칠하고, 집·이벤트·공간 소유 영역·기존 기물을 만나면 원자적으로 거부한다.
+- `compactVegetation.ts`: 길 단계 뒤 완결된 2×2 활엽수 / 1×2 침엽수를 외곽과 내부 숲에 심는다.
+  물·마당·출입구·이벤트 몸체·이동 착지를 보존한다. 마지막 장식 단계에서 243 계열 키큰 풀을
+  연결된 패치로 칠하고 실제 `builtin_tall_grass` 오토타일로 가장자리를 연결한다. 꽃은 상단 레이어다.
+- 새 소형 외형 12종의 원본 저작은 `scripts/lib/compactVillageHouses.mts`에 있다.
+  1층 6종·2층 4종 일반 주택과 회관/여관 2종이며, 회벽·석벽 및 연결된 지붕 조각을 조립한다.
+  `scripts/publish-compact-village.mts --apply`는 실제 `upsert_spatial_design` / `author_village`
+  도구를 실행하고 Supabase CAS 저장·재로드까지 수행한다. 새 맵이 이미 있으면 재생성하지 않는다.
+
+검증 파일은 `villageCompactComposition`, `villageOrganicLake`, `compactVillageVegetation`이다.
+최종 원격 검증 스크립트는 저장 시의 canonical SHA와 독립 재로드의 서버 SHA, 모든 맵·공간 문서·
+마을 타일셋을 비교한다. 다른 역사적 타일셋의 priority 기본값 정규화 차이를 원격 쓰기로 보정하지 않는다.
+근거는 `.omo/evidence/compact-village/`에 둔다. **등록된 도구의 직접 호출 검증이며, LLM 자연어
+세션에서 오브젝트 검색부터 저장까지 자율 수행했다고 주장하지 않는다.**
+
+## 과거 대형 하네스 순서
 
 ```
 자리 잡기(plan) → 맵 → 물 → 집(다양) → 구불 길 → 시장 하네스 → 울타리 → 나무·소품 → NPC → QA → 저장
@@ -39,6 +130,22 @@ runner invariant. Phase 2 moves village registration before roads and environmen
 Coverage: `villageTreePlacement.test.ts` checks both scatter packers and valid
 forest overlap; `villageProducerProtection.test.ts` compares completion snapshots
 with accepted output for ordinary and 100x100 snow villages through toolRunner.
+
+The scatter painter preserves a previously painted canopy when a later origin
+writes a lower trunk. Planning allows cross-layer overlap, so calling the ground
+replacement helper there used to erase companions in random-order batches
+(2026-09-12: the 128×128 object village had 48 conifer and 6 broadleaf errors).
+Adding grass backing to an empty canopy cell also preserves the new upper tile.
+`village/treeCompletion.ts` provides `completeVillageTrees(project, map, area)`
+for the final environmental stage after placement cleanup and before audit. It
+completes vertical and horizontal tree companions using the unchanged hard rules,
+including authored diagonal alternatives. All writes are planned atomically;
+owned geometry, roads, water, stacks and area boundaries cause
+`village-tree-completion-conflict`, rather than being overwritten. If a later prop
+occupies a lost 1×2-tree canopy, only its unattached trunk is removed; broadleaf
+conflicts fail without deleting a half tree. Existing props are preserved. It does not
+enable project-wide runner repair. Coverage: `villageTreeCompletion.test.ts`;
+read-only actual-map evidence: `scripts/verify-village-tree-completion.mts`.
 
 ## Phase 2 construction boundary (2026-09-06)
 

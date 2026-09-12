@@ -67,6 +67,16 @@ afterEach(() => {
 });
 
 describe("spatial catalog source fidelity", () => {
+  it("shows one canonical object for a registered graphic and retains unrelated compatibility kits", () => {
+    const { project, document, tilesetId } = spatialFixture();
+    project.tilesets[tilesetId]!.structureKits!.push(furnitureKit("unregistered", "Unregistered"));
+    store.replace({ ...project, spatialAuthoring: document } as unknown as ReturnType<typeof store.getCurrent>);
+    const cards = listSpatialGalleryCards(sessionFor({ tab: "objects", source: "own", mode: "design" }));
+    expect(cards.filter((card) => card.tilesetId === tilesetId && card.objectId === "kit").map((card) => card.id))
+      .toEqual([spatialPresentationId("library-object", "library", "desk")]);
+    expect(cards.some((card) => card.id === spatialPresentationId("tileset-kit", tilesetId, "unregistered"))).toBe(true);
+  });
+
   it("keeps authored furniture and builtin-id overrides beside defaults", () => {
     // Given: user furniture plus an override that reuses a builtin local id
     const tilesetIds = Object.keys(store.getCurrent().tilesets);

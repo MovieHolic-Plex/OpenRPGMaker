@@ -23,7 +23,7 @@ export function pickerCandidates(library: SpatialLibrary, place: PlaceDesign): r
     source: { kind: "space" as const, id: space.id },
     x: 0,
     y: 0,
-    level: place.kind === "facility" ? 1 : 0,
+    level: place.kind === "facility" && space.environment === "interior" ? 1 : 0,
   }));
   const places = Object.values(library.places)
     .filter((candidate) => !containsPlace(library, candidate.id, place.id))
@@ -32,7 +32,7 @@ export function pickerCandidates(library: SpatialLibrary, place: PlaceDesign): r
       source: { kind: "place" as const, id: candidate.id },
       x: 0,
       y: 0,
-      level: 0,
+      level: place.kind === "facility" ? 1 : 0,
     }));
   return [...spaces, ...places];
 }

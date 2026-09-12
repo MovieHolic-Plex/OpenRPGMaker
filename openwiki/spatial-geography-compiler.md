@@ -142,3 +142,16 @@ remain inherited failures, not green results. Visual/native-player approval,
 Grok-rendered evidence, UI, catalog expansion and remote sample publication remain
 separate tasks; none is claimed by this backend receipt. No browser/server/live
 resource is created by this lane.
+
+For saved-object settlements, the same preset now owns object selection, exact exterior-floor quota
+and tight clustering. After digest and map-extent checks, `compileGeography` temporarily releases
+only its own root binding in the private rebuild draft; other owned bindings still block the village
+builder. This enables byte-identical recompilation while rejecting manual raster edits.
+`test/smallVillageDesign.test.ts` covers this alongside the legacy settlement tests.
+See [the small-village contract](small-village-generation.md) for provenance and persistence.
+
+Compact region rebuilds seed the temporary player location at the shared plaza centre before
+construction. Otherwise the previous final spawn becomes an extra protected vegetation cell and
+shifts the seeded placement stream. The real passable start is selected again after construction.
+`plazaLayout.ts` is a pure geometry leaf; do not import the material catalog into geography draft
+creation, which would close the house-kit initialization cycle.

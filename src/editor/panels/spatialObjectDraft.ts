@@ -117,7 +117,7 @@ export function upsertObjectDesign(project: Project, design: ObjectDesign): Proj
 export function patchObjectDesign(
   project: Project,
   designId: SpatialId,
-  patch: Partial<Pick<ObjectDesign, "name" | "graphic" | "anchors" | "chips">>,
+  patch: Partial<Pick<ObjectDesign, "name" | "graphic" | "anchors" | "chips" | "exteriorStories">>,
 ): Project {
   const current = project.spatialAuthoring?.library.objects[designId];
   if (!current) return project;

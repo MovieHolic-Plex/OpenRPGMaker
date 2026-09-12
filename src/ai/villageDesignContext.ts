@@ -15,7 +15,8 @@ export function villageDesignContext(project: Project): string {
     ...ordered.slice(0, 12).map(p => {
       const d = p.design!;
       const count = d.houseCount.mode === "free" ? "자유" : `${d.houseCount.min}~${d.houseCount.max}`;
-      return `- ${p.name} (${p.id}, 개정 ${d.revision}): 집 ${count}, 재료 ${p.kitMix ?? "자동"}, 층 ${d.stories.join("/")}, 길 ${p.pathStyle ?? "자동"}, 물 ${d.nature.water}, 숲 ${d.nature.forest}, 실내 ${d.interior ? "연결" : "없음"}. ${VILLAGE_DESIGN_GROUPS.map(g => `${VILLAGE_DESIGN_GROUP_LABELS[g]}=${d.policies[g] === "fixed" ? "고정" : "자유"}`).join(", ")}`;
+      const objectRule = d.objectVillage ? ` 저장된 건물 ${d.objectVillage.objectIds.length}종, 2층 이상 총 ${d.objectVillage.multiStoreyCount}채(큰집 포함), 배치 ${d.objectVillage.clustering}, 기준 ${d.objectVillage.previewSize.width}×${d.objectVillage.previewSize.height}. 이 설계서의 이름·설명을 보고 해당 규모에만 선택하며 다른 규모의 기본값으로 일반화하지 않는다.` : "";
+      return `- ${p.name} (${p.id}, 개정 ${d.revision}): 집 ${count}, 재료 ${p.kitMix ?? "자동"}, 층 ${d.stories.join("/")}, 길 ${p.pathStyle ?? "자동"}, 물 ${d.nature.water}, 숲 ${d.nature.forest}, 실내 ${d.interior ? "연결" : "없음"}. ${VILLAGE_DESIGN_GROUPS.map(g => `${VILLAGE_DESIGN_GROUP_LABELS[g]}=${d.policies[g] === "fixed" ? "고정" : "자유"}`).join(", ")}${objectRule}`;
     }),
     ...(designs.length > 12 ? [`외 ${designs.length - 12}개는 데이터베이스 「마을」에서 확인한다.`] : []),
   ].join("\n");
