@@ -1945,7 +1945,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshSendEnabled();
     // 조수 채팅의 실행 경로는 Pi 하나다(2026-09-11). 질문·계획은 자율성 다이얼이 Pi 노브
     // (읽기 전용·계획만·턴 상한·추론)로 풀고, 선택 영역 작업만 영역 파이프라인으로 간다.
-    // 명시 `/pi …` 는 언제나 우선이고 다이얼의 읽기 전용·계획보다 세다 — 사용자가 직접 쓴 명령이다.
+    // 명시 `/pi …`·`/team …` 은 언제나 우선이고 다이얼의 읽기 전용·계획보다 세다 — 사용자가 직접 쓴 명령이다.
     const explicit = parsePiCommand(text, store.getCurrent(), editorState.get().currentMapId ?? null);
     if (explicit) {
       await runPiTurn(explicit, text, null);

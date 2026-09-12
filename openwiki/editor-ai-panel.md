@@ -10,7 +10,7 @@
 |---|---|---|
 | 실행 계획 | `readOnly` · `planOnly` · `maxTurns` · `thinkingLevel` | `resolvePiRunPlan`(`src/ai/piAgent/executionRoute.ts`) ← 자율성 다이얼 |
 | 팀 | boolean | `AiConfig.piTeam` — 컴포저 「팀」 토글(`ai-composer-team`) · 설정 「Pi 팀 실행」(`ai-config-pi-team`) |
-| 명시 입력 | `/pi …` · `/pi team …` | `parsePiCommand` — 언제나 최우선. 다이얼의 읽기 전용·계획보다 **세다** |
+| 명시 입력 | `/pi …` · `/team …`(= `/pi team …`) | `parsePiCommand` — 언제나 최우선. 다이얼의 읽기 전용·계획보다 **세다** |
 
 - 컴포저의 「경로」 셀렉트(`ai-composer-route`)와 설정의 「지시 실행 경로」(`ai-config-route`)는 **없다** —
   그 자리를 팀 토글이 대신한다. 토글은 다이얼이 쓰기를 허용할 때만 보인다(읽기 전용·계획 턴에서는

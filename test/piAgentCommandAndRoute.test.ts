@@ -24,6 +24,15 @@ describe("/pi 명령 파서", () => {
     // 없는 id 는 지시문의 첫 단어일 뿐이다.
     expect(parsePiCommand("/pi map_zzz 집", ctx.project, "map_a")).toEqual({ mode: "single", mapIds: ["map_a"], task: "map_zzz 집" });
   });
+  it("/team 은 /pi team 과 같은 뜻이다 — Pi 가 유일한 경로라 접두사는 의식일 뿐이다", () => {
+    expect(parsePiCommand("/team 마을 셋", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: [], task: "마을 셋" });
+    expect(parsePiCommand("/pi team 마을 셋", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: [], task: "마을 셋" });
+    expect(parsePiCommand("/team map_a,map_b 집 두 채", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: ["map_a", "map_b"], task: "집 두 채" });
+    expect(parsePiCommand("/pi team map_a,map_b 집 두 채", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: ["map_a", "map_b"], task: "집 두 채" });
+    // 팀 키워드로 시작하는 일반 단어는 명령이 아니다.
+    expect(parsePiCommand("/teamspeak 열어줘", ctx.project, "map_a")).toBeNull();
+    expect(parsePiCommand("/team", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: [], task: "" });
+  });
 });
 
 describe("동반 라우터 /v1/agent/run", () => {
