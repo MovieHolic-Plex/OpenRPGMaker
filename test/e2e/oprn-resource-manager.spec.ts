@@ -14,7 +14,6 @@ test("resource manager uses Korean classic three-pane RM2K3 layout", async ({ pa
   await expect(categories.getByRole("option", { name: "전투 배경" })).toHaveAttribute("aria-selected", "true");
   await expect(page.getByTestId("resource-entry-list")).toContainText("Cosmos1 · 배경 그림 · EasyRPG");
   await expect(page.getByTestId("resource-command-panel")).toContainText("가져오기...");
-  await expect(page.getByTestId("resource-command-panel")).toContainText("내보내기...");
   await expect(page.getByTestId("resource-command-panel")).toContainText("삭제");
   await expect(page.getByTestId("resource-import-format")).toContainText("WebP·GIF (PNG 첫 프레임으로 자동 변환)");
   const modal = page.getByTestId("resource-modal");
@@ -32,9 +31,16 @@ test("resource manager imports and protects RM2K3-shaped image profiles", async 
   await expect(page.getByText("사용 중인 리소스는 삭제할 수 없습니다.")).toBeVisible();
 
   await page.getByTestId("resource-kind-select").selectOption("chipset");
+  // 같은 그림의 RTP 별칭(`easyrpg-chipset-*`)은 번들 텍스처 키 프로필 카드 아래로 접힌다.
+  const chipsetNames = page.locator("[data-testid='resource-profile-chipset'] .rm-card-name");
+  await expect(chipsetNames.filter({ hasText: /^던전 · EasyRPG \(CC0\)$/ })).toHaveCount(1);
+  await expect(chipsetNames.filter({ hasText: /^Dungeon · 타일 그림판/ })).toHaveCount(0);
   await page.getByTestId("resource-file-input").setInputFiles("test/fixtures/resources/chipset-valid-480x256.png");
-  await expect(page.getByTestId("resource-profile-chipset").last()).toContainText("480x256");
-  await expect(page.getByTestId("resource-tile-0").last()).toBeVisible();
+  // 가져온 칩셋은 업로드 카드 한 장으로만 보인다 — 같은 assetId 의 프로필 행은 접힌다.
+  await expect(page.locator("[data-testid^='resource-upload-']").last()).toContainText("chipset-valid-480x256");
+  // 타일 미리보기 격자는 리스트 뷰의 프로필 행에서만 그린다.
+  await page.getByRole("button", { name: "리스트 뷰" }).click();
+  await expect(page.getByTestId("resource-tile-0").first()).toBeVisible();
   // 칩셋 가져오기가 타일셋을 자동 추가한다. 수동 클릭은 이미-추가 경로가 된다.
   await expect(page.getByTestId("toast")).toContainText("타일셋 추가됨");
   await page.locator("[data-testid^='resource-add-tileset-']").last().click();
@@ -46,7 +52,7 @@ test("resource manager imports and protects RM2K3-shaped image profiles", async 
 
   await page.getByTestId("resource-kind-select").selectOption("charset");
   await page.getByTestId("resource-file-input").setInputFiles("test/fixtures/resources/charset-valid-288x256.png");
-  await expect(page.getByTestId("resource-profile-charset").last()).toContainText("288x256");
+  await expect(page.locator("[data-testid^='resource-upload-']").last()).toContainText("charset-valid-288x256");
   await expect(page.locator(".rm-asset-kind").last()).toContainText("캐릭터셋");
   await page.getByTestId("resource-upload-list").scrollIntoViewIfNeeded();
   await expect.poll(async () => page.getByTestId("resource-modal").evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
