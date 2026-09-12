@@ -392,12 +392,19 @@
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-source-chips,
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-thumb,
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-sub,
-.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-inspector {
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-inspector,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-inspector-toggle {
   display: none !important;
 }
 
+/* 행도 같이 못박는다 — <1200px 컨테이너 쿼리가 spatial-body 를
+   「갤러리 32% 행 + 나머지」 두 행 필름스트립으로 바꾸는데, 열만 되돌리고 행을 놔두면
+   갤러리·스테이지가 32% 행에 함께 눌려 작업대가 0px 로 붕괴한다(1024×768 실측).
+   !important 없이도 이긴다 — data-testid 선택자가 특이도를 한 단계 올리고
+   이 파일은 tilesets.css 보다 뒤에 로드된다. */
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-body {
-  grid-template-columns: 200px minmax(0, 1fr) !important;
+  grid-template-columns: 200px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-gallery {
@@ -416,10 +423,13 @@
   padding: 2px !important;
 }
 
+/* height:auto 도 필요하다 — <1200px 쿼리의 .spatial-card{height:100%} 가 남아 있으면
+   세로 목록의 카드마다 목록 전체 높이를 물어 첫 카드만 보인다. */
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card {
   display: flex !important;
   align-items: center !important;
   min-height: 36px !important;
+  height: auto;
   padding: 6px 10px !important;
   border-radius: 6px !important;
   grid-template-rows: none !important;
@@ -474,18 +484,51 @@
   align-items: center !important;
   flex-wrap: wrap !important;
   padding: 6px 12px !important;
-  gap: 12px !important;
+  gap: 6px 12px !important;
   margin-bottom: 6px !important;
   background: var(--db-studio-surface) !important;
   border: 1px solid var(--db-studio-border-subtle) !important;
   border-radius: 8px !important;
 }
 
+/* legend-on-top 필드셋은 세로를 두 줄 먹는다 — 시트가 주인공인 셸에서는
+   라벨을 같은 줄 인라인으로 접어 속성 띠를 한 줄 높이로 누른다. */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-properties .oprn-db-fieldset {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 10px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-properties .oprn-db-fieldset legend {
+  float: none;
+  padding: 0;
+  white-space: nowrap;
+  font: 600 11px/1.2 var(--font-ui);
+  color: var(--db-studio-text-3);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-properties .oprn-db-fieldset .db-field {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* 워크벤치+사이드 레일은 가로 2열 그리드다 — flex column 이면 「생성 감사」 세로 레일이
+   본문 아래 빈 가로 띠로 깨지고, 접힘 계약(닫히면 26px 열)도 무력해진다. */
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-main {
-  flex: 1 1 auto !important;
-  display: flex !important;
-  flex-direction: column !important;
-  min-height: 0 !important;
+  flex: 1 1 auto;
+  display: grid;
+  min-height: 0;
+}
+
+/* 1180px 뷰포트 규칙은 독립 타일셋 표면 전용 — 셸 안에서는 레일 토글 계약을 지킨다. */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-main:not(.side-open) .tileset-side-pane-body {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-side-rail {
+  display: flex;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area.passage-paint {
@@ -548,31 +591,64 @@
   gap: 4px !important;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-preview-wrap {
-  grid-column: 1 !important;
-  grid-row: 2 !important;
-  min-height: 0 !important;
-  height: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
+/* 시트 열 핀은 passage-paint(도구행이 1행을 먹는 3행 그리드)에만 필요하다.
+   AI 메타·그룹 모드는 DOM 순서가 [사이드바, 시트]인데 무차별 핀이 시트를 좁은
+   사이드바 열(244px)에 가두고 폼 패널을 1fr 로 늘렸다 — 시트가 주인공이라
+   비페인트 모드도 왼쪽 넓은 열로 못박는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area.passage-paint > .tileset-db-preview-wrap,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area:not(.passage-paint):not(.autotile-compose) > .tileset-db-preview-wrap {
+  grid-column: 1;
 }
 
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area.passage-paint > .tileset-db-preview-wrap {
+  grid-row: 2;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area:not(.passage-paint):not(.autotile-compose) {
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area:not(.passage-paint):not(.autotile-compose) > .tileset-db-preview-wrap {
+  grid-row: 1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area.passage-paint > .tileset-db-edit-sidebar,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area:not(.passage-paint):not(.autotile-compose) > .tileset-db-edit-sidebar {
+  grid-column: 2;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area.passage-paint > .tileset-db-edit-sidebar {
+  grid-row: 2;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area:not(.passage-paint):not(.autotile-compose) > .tileset-db-edit-sidebar {
+  grid-row: 1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-preview-wrap {
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* min-height 는 0 — 480px 강제는 모달이 짧은 화면에서 시트 하단을 overflow:hidden
+   부모에 잘라먹는다. 시트 자체가 스크롤 상자라 작아도 쓸 수 있다. */
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-preview {
-  flex: 1 1 auto !important;
-  min-height: 480px !important;
-  height: 100% !important;
-  background: #fff !important;
-  border: 1px solid var(--db-studio-border-subtle) !important;
-  border-radius: 8px !important;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-sidebar {
-  grid-column: 2 !important;
-  grid-row: 2 !important;
-  min-height: 0 !important;
-  overflow: auto !important;
-  padding: 8px !important;
-  background: var(--db-studio-surface) !important;
-  border: 1px solid var(--db-studio-border-subtle) !important;
-  border-radius: 8px !important;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
 }

@@ -715,6 +715,37 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
   `output/spatial-ux-verify.mjs`(52 체크, netns 격리 실행)와 스크린샷
   `output/evidence/spatial-ux-fixed/`.
 
+## 타일 작업대 — 공간 셸 안 레이아웃 계약 (2026-09-13)
+
+타일 탭(`spatialTilesTab`, `data-testid="spatial-shell-tiles"`)은 공유 공간 셸 안에
+독립 타일셋 표면(`oprn-tileset-main`, `tileset-db-edit-area`)을 내장한다. 셸의
+`<1199px` 컨테이너 쿼리(갤러리 필름스트립·2행 본문)와 독립 표면의 `<1180px`
+뷰포트 규칙이 셸 안에서도 그대로 발동해 생기던 결함과 계약:
+
+- **`.spatial-body` 는 행까지 되돌려야 한다.** 열(`grid-template-columns`)만
+  고치고 `grid-template-rows` 를 놔두면 갤러리+스테이지가 32% 높이 행에 눌려
+  작업대가 ~0px 로 붕괴한다(1024×768 실측 스테이지 178px). 셸 스코프
+  `[data-testid="spatial-shell-tiles"]` 선택자가 `!important` 없이도 이긴다 —
+  `spatial-collections.css` 는 `tilesets.css` 보다 늦게 로드되고 특이도가 높다.
+- **시트는 항상 왼쪽 넓은 열.** 비페인트 모드(ai/group)는 DOM 순서가
+  `[사이드바, 시트]` 인데 무차별 `grid-column:1` 핀이 시트를 좁은 사이드바 열에
+  가뒀다. `passage-paint`(3행 그리드)와 `autotile-compose`(tilesets.css 자체 배치)
+  를 제외한 모드는 `minmax(0,1fr) minmax(260px,340px)` + 시트 `grid-column:1`.
+- **인스펙터 토글은 셸 안에서 숨긴다.** `<1200px` 에서 토글 버튼이 나타나지만
+  인스펙터는 `display:none` 이라 사막 버튼이었다 — 감춘다.
+- **`.oprn-tileset-main` 은 grid 여야 한다.** `flex-direction:column` 이면
+  「생성 감사」세로 레일이 본문 아래 빈 가로 띠로 깨지고 26px 접힘 계약이 깨진다.
+- **시트 프리뷰 `min-height` 는 0.** 480px 강제는 짧은 모달에서 시트 하단을
+  `overflow:hidden` 부모에 잘라먹는다 — 시트 자체가 스크롤 상자다.
+- **줌 1x 추가**(`PREVIEW_SCALES`): 30열 시트(480px)가 스크롤 없이 들어가는 유일한
+  배율.
+- 회귀: `test/spatialTilesShellCss.test.ts`(CSS 계약) +
+  `test/e2e/spatial-tiles-layout.spec.ts`(1024 생존·지식 탭 시트 넓은 열).
+  캡처 `scripts/capture-map-tiles-fix.mjs`, 스샷 `verify-shots/map-tiles-fix/`.
+- 게이트 주의: `oprn-db-`·`passage-` 클래스는 database 표면 어휘로
+  `scripts/css-surfaces.json` 에 등록돼 있다 — 셸 스코프 규칙에서 써도 R2 에 걸리지
+  않는다.
+
 ## 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
 
 옛 `tilesetAutotile` 경로와 내부 자동 연결 탭은 같은 면이다. 예전의 멤버 번호 나열·16칸
