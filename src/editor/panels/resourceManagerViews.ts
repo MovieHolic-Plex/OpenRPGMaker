@@ -3,7 +3,7 @@ import { store } from "@/project/store";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import type { ResourceProfile, UploadedAsset } from "@/project/types";
 import { el } from "@/util/dom";
-import { makeResourcePreviewGrid, resourceKindFromUpload, uploadedResourceKindLabel } from "./resourceManagerUtils";
+import { dedupeListedProfiles, makeResourcePreviewGrid, resourceKindFromUpload, uploadedResourceKindLabel } from "./resourceManagerUtils";
 
 export type UploadedAssetActions = {
   addTileset(asset: UploadedAsset): void;
@@ -46,7 +46,8 @@ let currentViewMode: ViewMode = "grid";
 let currentFilterTab: FilterTab = "all";
 
 export function renderResourceWorkbench(container: HTMLElement, options: ResourceWorkbenchOptions): void {
-  const selectedProfiles = options.profiles.filter((profile) => profile.kind === options.selectedKind);
+  const selectedProfiles = dedupeListedProfiles(options.profiles, options.uploaded)
+    .filter((profile) => profile.kind === options.selectedKind);
   const selectedUploaded = options.uploaded.filter((asset) => resourceKindFromUpload(asset.kind) === options.selectedKind);
   
   let selectedItem: ResourceItem | null = null;
@@ -206,9 +207,10 @@ function resourceCategoryList(options: ResourceWorkbenchOptions): HTMLElement {
     }
   };
 
+  const listedProfiles = dedupeListedProfiles(options.profiles, options.uploaded);
   for (const category of options.categories) {
     const selected = category.kind === options.selectedKind;
-    const countProfiles = options.profiles.filter(p => p.kind === category.kind).length;
+    const countProfiles = listedProfiles.filter(p => p.kind === category.kind).length;
     const countUploaded = options.uploaded.filter(u => resourceKindFromUpload(u.kind) === category.kind).length;
     const totalCount = countProfiles + countUploaded;
 
