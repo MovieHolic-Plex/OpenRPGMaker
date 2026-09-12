@@ -11,6 +11,7 @@ import {
   computeGen1BaseDamage,
   GEN1_RANDOM_MAX,
   GEN1_RANDOM_MEDIAN,
+  MIN_DAMAGE_RATIO,
   usesGen1Damage,
   usesMagicalDefense,
 } from "@/battle/battleDamage";
@@ -201,6 +202,8 @@ export function predictSkillDamage(
       modifiers.typeFactors,
     );
     if (amount > 1) amount = Math.floor((amount * GEN1_RANDOM_MEDIAN) / GEN1_RANDOM_MAX);
+    // runtime.computeGen1Magnitude 와 같은 순서: 랜덤 계수 뒤 방어 자세 반감.
+    if (target.defending) amount = Math.floor(amount / 2);
     const typeProduct = modifiers.typeFactors.reduce((product, factor) => product * factor / 10, 1);
     return {
       amount,
@@ -210,33 +213,32 @@ export function predictSkillDamage(
       elementName: spec.elementId ? elementNameFor(project, spec.elementId) : undefined,
     };
   }
-  // damage
+  // damage — rm2k3 뺄셈식. runtime.applySkillLike/computeMagnitude 와 같은 규칙:
+  // 공격자 상태 배율·대상 방어 배율을 스탯에 먼저 적용하고, 뺄셈 붕괴 구간은
+  // MIN_DAMAGE_RATIO 하한으로 구제한다(예전에는 둘 다 빠져 예측 0 → 실제 플로어
+  // 피해로 어긋났다 — 적대 리뷰).
   const userStats = battlerStats(project, user);
-  const sourceStat = spec.statistic === "mind" ? userStats.mind : userStats.attack;
+  const sourceStat = Math.round(
+    (spec.statistic === "mind" ? userStats.mind : userStats.attack)
+    * attackMultiplierForStates(project, user)
+  );
   const elementMultiplier = elementMultiplierFor(project, spec.elementId, target.recordId, target)
     * typeChartMultiplierForTypes(project, spec.elementId, battlerTypes(project, user), battlerTypes(project, target));
   const targetStats = battlerStats(project, target);
   // 마법 속성(kind="magical") 은 mind(마법 방어력) 로 감소, 물리는 defense (runtime 과 동일).
-  const defenseStat = isMagicalElement(project, spec.elementId) ? targetStats.mind : targetStats.defense;
-  let magnitude: number;
-  if (usesGen1Damage(project)) {
-    // gen1 기댓값: 코어 공식 → 상성/STAB → 랜덤 중앙값(236/255). 크리티컬·벗나감은
-    // rm2k3 예산과 동일하게 제외한다 — runtime 은 같은 공식에 랜덤만 더한다.
-    const base = computeGen1BaseDamage({ level: user.level ?? 1, power: spec.power, attack: sourceStat, defense: defenseStat });
-    magnitude = elementMultiplier < 0 ? Math.round(base * elementMultiplier) : Math.floor(base * elementMultiplier);
-    if (elementMultiplier > 0) {
-      if (magnitude > 1) magnitude = Math.floor((magnitude * GEN1_RANDOM_MEDIAN) / GEN1_RANDOM_MAX);
-      if (target.defending) magnitude = Math.floor(magnitude / 2);
-      magnitude = magnitude <= 0 ? 0 : Math.max(1, magnitude);
-    }
-  } else {
-    magnitude = Math.round((spec.power + Math.floor(sourceStat / 2)) * elementMultiplier);
-    if (elementMultiplier === 0) magnitude = 0;
-    if (elementMultiplier > 0) {
-      magnitude -= Math.floor(defenseStat / 2);
-      if (target.defending) magnitude = Math.floor(magnitude / 2);
-      magnitude = magnitude <= 0 ? 0 : Math.max(1, magnitude);
-    }
+  // effectiveDefense 는 배율 곱을 truncate 하지 않는다 — runtime 도 float 상태로 /2 floor 한다.
+  const defenseStat = (isMagicalElement(project, spec.elementId) ? targetStats.mind : targetStats.defense)
+    * defenseMultiplierForStates(project, target);
+  let magnitude = Math.round((spec.power + Math.floor(sourceStat / 2)) * elementMultiplier);
+  if (elementMultiplier === 0) magnitude = 0;
+  if (elementMultiplier > 0) {
+    // 분산 평균(1.0) 적용 후·방어 차감 전 위력 — 하한 계산 기준(runtime preDefense).
+    const preDefense = magnitude;
+    magnitude -= Math.floor(defenseStat / 2);
+    const floorDamage = preDefense > 0 ? Math.max(1, Math.floor(preDefense * MIN_DAMAGE_RATIO)) : 0;
+    if (magnitude < floorDamage) magnitude = floorDamage;
+    if (target.defending) magnitude = Math.floor(magnitude / 2);
+    magnitude = magnitude <= 0 ? 0 : Math.max(1, magnitude);
   }
   if (elementMultiplier < 0) {
     const absorbGrade = spec.elementId ? elementGradeFor(project, spec.elementId, target.recordId) : undefined;

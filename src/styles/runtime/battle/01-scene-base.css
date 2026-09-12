@@ -269,6 +269,23 @@
   min-width: 0;
 }
 
+/* 커맨드 메뉴가 스크롤포트 밖에 항목을 숨길 때(도주/교체가 잘리는 4행 카드) 보이는
+   "더 있다" 신호. sticky 로 뷰포트 하단에 떠 있다가 끝까지 스크롤하면 도킹된다.
+   battleCommandDom.attachScrollCue 가 넘침이 있을 때만 hidden 을 해제한다. */
+.battle-command-scroll-cue {
+  align-self: end;
+  bottom: 0;
+  color: var(--oprn-battle-muted, #fff7c6);
+  font-size: 12px;
+  grid-column: 1 / -1;
+  justify-self: center;
+  line-height: 1;
+  pointer-events: none;
+  position: sticky;
+  text-shadow: 1px 1px 0 #000;
+  z-index: 3;
+}
+
 .battle-enemy-list-panel {
   grid-column: 1;
   grid-row: 2;
