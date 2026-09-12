@@ -44,6 +44,14 @@ export function villageDesignIssue(value: unknown): string | undefined {
   if (c.mode === "fixed" && c.min !== c.max) return "고정 집 수의 최소·최대는 같아야 합니다.";
   if (!Array.isArray(d.stories) || d.stories.length === 0 || d.stories.some(n => ![1, 2, 3].includes(n))) return "허용 층수를 하나 이상 선택하세요.";
   if (typeof d.interior !== "boolean") return "실내 연결 설정이 올바르지 않습니다.";
+  const o = d.objectVillage;
+  if (o !== undefined) {
+    if (!o || o.composition !== "compact" || !["balanced", "tight"].includes(o.clustering)) return "저장 건물 배치 설정이 올바르지 않습니다.";
+    if (!Array.isArray(o.objectIds) || !o.objectIds.length || o.objectIds.length > 128 || o.objectIds.some(id => typeof id !== "string" || !id.trim()) || new Set(o.objectIds).size !== o.objectIds.length) return "건물 오브젝트 후보는 중복 없는 ID 1~128개여야 합니다.";
+    if (!Number.isInteger(o.multiStoreyCount) || o.multiStoreyCount < 0 || o.multiStoreyCount > c.min) return "2층 이상 건물 수는 전체 최소 집 수 이하여야 합니다.";
+    if (!o.previewSize || ![o.previewSize.width, o.previewSize.height].every(n => Number.isInteger(n) && n >= 20 && n <= 256)) return "기준 맵 크기는 20~256칸이어야 합니다.";
+    if (d.interior) return "저장 건물 외형의 실내 공간은 별도로 연결해야 합니다.";
+  }
   const n = d.nature;
   if (!n || !["none", "river", "lake", "river-lake"].includes(n.water) || !["none", "sparse", "normal", "dense", "impassable"].includes(n.forest)) return "물과 숲 종류가 올바르지 않습니다.";
   if (![n.waterSide, n.forestSide].every(side => ["north", "south", "east", "west"].includes(side))) return "물과 숲 방향이 올바르지 않습니다.";

@@ -22,6 +22,8 @@ export type SpatialDesignBase = {
 };
 export type SpatialGraphic = { readonly tilesetId: string; readonly kitId: string };
 export type ObjectDesign = SpatialDesignBase & {
+  /** Authored facade floors; does not imply playable interior spaces. */
+  readonly exteriorStories?: 1 | 2 | 3 | 4;
   readonly graphic: SpatialGraphic;
   readonly anchors: readonly SpatialPort[];
   readonly chips: readonly string[];

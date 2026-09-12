@@ -17,7 +17,8 @@ export function compactHousePool(catalog: readonly VillageObjectHouse[], fixedId
 
 /** Use ordinary homes for the town fabric; a large catalog cannot flood it with landmarks. */
 export function chooseCompactHouses(pool: readonly VillageObjectHouse[], count: number,
-  plans: readonly Record<string, unknown>[]): readonly VillageObjectHouse[] {
+  plans: readonly Record<string, unknown>[], multiStoreyCount?: unknown): readonly VillageObjectHouse[] {
+  if (multiStoreyCount !== undefined) return chooseStoreyQuota(pool, count, plans, multiStoreyCount);
   const homes = pool.filter(house => !compactLandmark(house)), landmarks = pool.filter(compactLandmark);
   const fixed = plans.map(plan => typeof plan?.objectId === "string" ? pool.find(house => house.design.id === plan.objectId) : undefined);
   const fixedLarge = fixed.filter(house => house && compactLandmark(house)).length;
@@ -46,4 +47,45 @@ export function chooseCompactHouses(pool: readonly VillageObjectHouse[], count: 
     if (!chosen) throw new ToolError("작은 일반 주택 후보가 부족합니다. 10×10 이하 외형을 추가해 주세요.", { code: "village-compact-house" });
     return chosen;
   });
+}
+
+/** Exact authored facade quota, including landmarks. Missing semantics never mean one floor. */
+function chooseStoreyQuota(pool: readonly VillageObjectHouse[], count: number,
+  plans: readonly Record<string, unknown>[], quota: unknown): readonly VillageObjectHouse[] {
+  const fail = (message: string): never => { throw new ToolError(message, { code: "village-storey-quota" }); };
+  if (typeof quota !== "number" || !Number.isInteger(quota) || quota < 0 || quota > count) return fail("2층 이상 건물 수가 올바르지 않습니다.");
+  if (pool.some(h => !h.design.exteriorStories)) return fail("층수 제한을 사용하려면 모든 후보 오브젝트에 외형 층수를 저장해야 합니다.");
+  const high = (h: VillageObjectHouse): boolean => h.design.exteriorStories! >= 2;
+  const selected = Array.from({ length: count }, (_, i) => {
+    const id = plans[i]?.objectId;
+    if (typeof id !== "string") return undefined;
+    return pool.find(h => h.design.id === id) ?? fail(`지정 건물을 찾을 수 없습니다: ${id}`);
+  });
+  const fixed = selected.filter((h): h is VillageObjectHouse => !!h);
+  let upper = fixed.filter(high).length, large = fixed.filter(compactLandmark).length;
+  if (upper > quota || fixed.length - upper > count - quota) return fail("지정한 집들이 2층 이상 건물 수 제한과 충돌합니다.");
+  if (large > 2) return fail("조밀한 마을의 큰집은 최대 2채입니다.");
+  const used = new Map<string, number>();
+  for (const h of fixed) used.set(h.design.id, (used.get(h.design.id) ?? 0) + 1);
+  const put = (h: VillageObjectHouse): void => {
+    const i = selected.findIndex(item => !item);
+    if (i < 0) return fail("건물 수 제한을 충족할 자리가 없습니다.");
+    selected[i] = h; used.set(h.design.id, (used.get(h.design.id) ?? 0) + 1);
+    if (high(h)) upper++;
+    if (compactLandmark(h)) large++;
+  };
+  const maxLarge = Math.min(2, Math.floor(count / 10));
+  for (const h of pool.filter(compactLandmark)) {
+    if (large >= maxLarge) break;
+    const lowCount = selected.filter(Boolean).length - upper;
+    if ((high(h) && upper < quota) || (!high(h) && lowCount < count - quota)) put(h);
+  }
+  const choose = (wantHigh: boolean): VillageObjectHouse => {
+    const candidates = pool.filter(h => !compactLandmark(h) && high(h) === wantHigh);
+    const score = (h: VillageObjectHouse): number => (used.get(h.design.id) ?? 0) * 10000 + h.raster.width * h.raster.height;
+    return candidates.sort((a, b) => score(a) - score(b))[0] ?? fail(wantHigh ? "2층 이상 일반 주택 후보가 부족합니다." : "1층 일반 주택 후보가 부족합니다.");
+  };
+  while (upper < quota) put(choose(true));
+  while (selected.some(h => !h)) put(choose(false));
+  return selected as VillageObjectHouse[];
 }

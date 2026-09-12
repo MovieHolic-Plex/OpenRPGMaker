@@ -1,6 +1,7 @@
 import type { Project } from "@/project/types";
 import type { VillageDesign, VillageLayoutPresetRecord } from "@/project/types/village";
 import { VILLAGE_DESIGN_GROUP_LABELS, VILLAGE_DESIGN_GROUPS } from "@/project/villageDesign";
+import { villageObjectDesignControls } from "./villageObjectDesignControls";
 import { el } from "@/util/dom";
 import { field, numberField, selectField } from "./databaseControls";
 import { detailPane, sectionCard } from "./databaseWorkspace";
@@ -48,13 +49,14 @@ export function renderVillageDesignDetail(project: Project, preset: VillageLayou
   }) });
   const interiorInput = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "db-village-design-interior" } }) as HTMLInputElement;
   interiorInput.checked = design.interior;
+  interiorInput.disabled = !!design.objectVillage;
   interiorInput.addEventListener("change", () => update({ interior: interiorInput.checked }));
   const canon = project.worldCanon;
   const panels: Record<Tab, HTMLElement[]> = {
     mood: [card("설계서 이름과 설명", controls.basics, "db-village-design-basics"), card("분위기의 출발점", controls.archetype, "db-village-design-archetypes"), controls.scale[2]!],
-    houses: [policy("appearance"), card("마을 전체의 외벽과 지붕", [controls.layout[5]!, note("선택한 재료와 호환되는 집 형태만 사용합니다. 형태에 고정된 재료가 다르면 후보에서 제외합니다.")], "db-village-design-material"), card("허용 층수", [stories], "db-village-design-floor"), card("허용할 집 형태", controls.templates, "db-village-design-templates")],
+    houses: [policy("appearance"), ...(design.objectVillage ? villageObjectDesignControls(project, design, update) : [card("마을 전체의 외벽과 지붕", [controls.layout[5]!, note("선택한 재료와 호환되는 집 형태만 사용합니다. 형태에 고정된 재료가 다르면 후보에서 제외합니다.")], "db-village-design-material"), card("허용 층수", [stories], "db-village-design-floor"), card("허용할 집 형태", controls.templates, "db-village-design-templates")]), ...(design.objectVillage ? [card("허용 층수", [stories], "db-village-design-floor")] : [])],
     layout: [policy("layout"), card("집 수와 AI의 범위", countControls(preset, controls.patch), "db-village-design-count"), card("길", controls.road, "db-village-design-roads"), card("광장과 마당", controls.layout.slice(0, 4), "db-village-design-layout")],
-    nature: [policy("nature"), ...natureControls(design, update), card("마을 테두리 나무", [controls.layout[4]!], "db-village-design-edge"), note("숲 구역과 마을 테두리 나무는 별도입니다. 숲 구역이 없어도 테두리 나무는 남습니다. 기본 생성 규칙의 수치를 이 설계서에서 재정의합니다.")],
+    nature: design.objectVillage ? [policy("nature"), note("소형 집 배치는 길과 건물을 보호하며 테두리와 빈터에 숲을 채웁니다. 243 계열 풀밭을 쓰고, 호수는 우하단의 길을 피해 가로로 긴 비대칭 해안으로 만듭니다. 이 구성의 호수 면적은 3.5~8%입니다.")] : [policy("nature"), ...natureControls(design, update), card("마을 테두리 나무", [controls.layout[4]!], "db-village-design-edge"), note("숲 구역과 마을 테두리 나무는 별도입니다. 숲 구역이 없어도 테두리 나무는 남습니다. 기본 생성 규칙의 수치를 이 설계서에서 재정의합니다.")],
     interior: [policy("interior"), card("들어갈 수 있는 집", [field("집마다 실내를 만들고 문으로 연결", interiorInput), note("켜면 현재 집 시공기가 실내를 만들고 왕복 출입 이벤트를 연결합니다. 시설 종류별 구성은 타일셋의 공용 개념 꾸러미에서 관리합니다.")], "db-village-design-interiors")],
     residents: [policy("residents"), card("마을의 주민 수", [controls.scale[1]!, note("인원은 설계서가 정합니다. AI 캐스트 라이터가 이름·역할·대사를 작성하고, 기존 주민과 세계관을 참조합니다.")], "db-village-design-residents"), card("이 세계에서 가져오는 맥락", [note(canon?.name ? `세계: ${canon.name}` : "아직 「이 세계」를 작성하지 않았습니다."), note(canon?.premise || "세계관의 전제와 금지 요소는 자료집 「이 세계」에서 정합니다."), ...(canon?.absences?.length ? [note(`등장하지 않는 것: ${canon.absences.join(" · ")}`)] : [])], "db-village-design-canon")],
   };

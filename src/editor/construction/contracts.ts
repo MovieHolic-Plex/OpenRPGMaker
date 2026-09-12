@@ -135,6 +135,8 @@ export type AuthorVillageRequest = {
   readonly houseObjectIds?: readonly string[];
   /** Small masonry homes, at most two landmarks, close lots and composed vegetation/water. */
   readonly composition?: "compact";
+  readonly multiStoreyCount?: number;
+  readonly houseClustering?: "balanced" | "tight";
   readonly countPolicy: ConstructionCountPolicy;
   readonly groundTheme?: VillageGroundTheme;
   readonly settlementLayout?: VillageSettlementLayout;

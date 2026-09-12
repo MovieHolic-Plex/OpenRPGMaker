@@ -677,3 +677,13 @@
     transition: none;
   }
 }
+
+/* The village studio has its own list and inspector; avoid nesting three rails. */
+.database-modal-body .spatial-shell[data-legacy-origin="villages"] .spatial-body,
+.database-modal-body .spatial-shell[data-legacy-origin="villages"] .spatial-stage {
+  grid-template-columns: minmax(0, 1fr);
+}
+.database-modal-body .spatial-shell[data-legacy-origin="villages"] .spatial-gallery,
+.database-modal-body .spatial-shell[data-legacy-origin="villages"] .spatial-stage > .spatial-inspector {
+  display: none;
+}

@@ -73,9 +73,7 @@ export const DEFAULT_HOUSES = 8;
 export const MIN_HOUSES = 1;
 /** 대형 마을(100×100 등)용 — 예전 12 상한은 대형 시공에 부족 */
 export const MAX_HOUSES = 32;
-export const PLAZA_WIDTH = 8;
-export const PLAZA_HEIGHT = 6;
-export const HOUSE_MARGIN = 2;
+export { PLAZA_WIDTH, PLAZA_HEIGHT, HOUSE_MARGIN } from "./plazaLayout";
 /** 마을 길 기본 폭(칸). 예전은 1칸 폴리라인만 써서 실핀처럼 보였다. */
 export const DEFAULT_ROAD_WIDTH = 2;
 export const MAX_ROAD_WIDTH = 3;
@@ -250,6 +248,7 @@ export interface BuiltHouse {
   readonly program?: HouseInteriorProgram;
   /** Saved exterior geometry and its explicitly planned private access; no implied interior. */
   readonly objectExterior?: {
+    readonly exteriorStories?: 1 | 2 | 3 | 4;
     readonly objectId: string;
     readonly revision: number;
     readonly name: string;

@@ -22,4 +22,4 @@ for (const walk of proof.walks) {
     { kind: "waitForPosition", mapId: proof.mapId, ...walk.end },
   ], expect: { mapId: proof.mapId, ...walk.end, playerSpriteTextureLoaded: true } });
 }
-export default { id: proof.mapId.includes("compact") ? "compact-village" : "object-village", projectFixture, beats };
+export default { id: proof.mapId.includes("small-village") ? "small-village" : proof.mapId.includes("compact") ? "compact-village" : "object-village", projectFixture, beats };

@@ -126,6 +126,8 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
           type: "array", items: { type: "string" },
           description: "저장된 건물 오브젝트 후보 ID. list_spatial_designs(kind:object)로 찾은 건물 외형을 넣으면 지붕·벽·복수 현관을 그대로 사용하고 서로 다른 형태를 먼저 선택한다. 개별 확정은 housePlans[].objectId. 외형은 실내를 뜻하지 않으므로 interior:false; 실제 실내가 필요하면 별도 공간/장소로 연결한다.",
         },
+        multiStoreyCount: { type: "integer", minimum: 0, maximum: 32, description: "2층 이상 외형의 정확한 합계. 큰집도 포함. compact에서 사용." },
+        houseClustering: { type: "string", enum: ["balanced", "tight"], description: "tight는 작은 집을 가까운 주택군으로 모은다. compact에서 사용." },
         composition: { type: "string", enum: ["compact"],
           description: "조밀한 주거 마을 권장값. 저장된 후보 중 통나무 벽과 15×15 초과 집은 제외하며, 10×10 초과 큰집은 최대 2채만 쓴다. 작은 집을 가까이 배치하고 비대칭 호수·풍부한 나무 군락·243계열 풀밭을 조성한다. 집별 objectId를 명시하면 이 기준과의 충돌은 거부한다." },
         housePlans: {
@@ -344,6 +346,8 @@ export function fillMissingVillageDimensions(args: Record<string, unknown>, proj
   const recordHasNumber = (key: "width" | "height"): key is "width" | "height" =>
     typeof record[key] === "number" && Number.isSafeInteger(record[key]);
   if (recordHasNumber("width") && recordHasNumber("height")) return args;
+  const profile = project?.villagePresets?.find(p => p.id === args.presetId)?.design?.objectVillage;
+  if (profile) return { ...args, target: { ...profile.previewSize, ...record } };
   const declared = typeof args.houseCount === "number" && Number.isSafeInteger(args.houseCount)
     ? { houseCount: args.houseCount } : {};
   let size = estimateVillageSize(declared);
@@ -353,7 +357,7 @@ export function fillMissingVillageDimensions(args: Record<string, unknown>, proj
     const sorted = [...objects].sort((a, b) => b.raster.width * b.raster.height - a.raster.width * a.raster.height);
     const plans = Array.isArray(args.housePlans) ? args.housePlans as Record<string, unknown>[] : [];
     const compact = args.composition === "compact";
-    const rasters = compact ? chooseCompactHouses(sorted, count, plans).map(house => house.raster)
+    const rasters = compact ? chooseCompactHouses(sorted, count, plans, args.multiStoreyCount).map(house => house.raster)
       : Array.from({ length: count }, (_, i) => objects.find(h => h.design.id === plans[i]?.objectId)?.raster ?? sorted[i % sorted.length]!.raster);
     const lotArea = rasters.reduce((sum, raster) => sum + (raster.width + (compact ? 2 : 4)) * (raster.height + (compact ? 4 : 6)), 0);
     // Keep room for the market, connected streets and reserved nature in addition to actual lots.

@@ -134,3 +134,13 @@ flock /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.loc
 ```
 
 Integrated browser acceptance is pending parent stage wiring.
+
+The small-village preset exposes saved exterior candidates, the exact count of 2+ storey facades
+(including landmarks), clustering and reference dimensions in the settlement design studio.
+Object inspectors author `exteriorStories` separately from actual interior spaces. Optional fields
+preserve legacy designs. [Small-village contract](small-village-generation.md).
+
+Settlement preset cards open their selected design through 「마을 설계서 편집」. The design studio
+uses the full stage width instead of nesting its list/preview inside gallery and inspector rails;
+「지역 목록으로」 restores the canonical region gallery. New settlement regions use the saved
+reference size and a plaza entry derived from the shared pure plaza geometry.

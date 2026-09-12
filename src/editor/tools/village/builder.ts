@@ -549,6 +549,9 @@ export function buildVillageDomain(
         yardStyle: intent.yardStyle, plazaStyle: intent.plazaStyle, plazaLayout: intent.plazaLayout,
         interior: interiorEnabled, npcCount: requestedNpcCount, requirements: structuredClone(requirements),
         worldGen: structuredClone(worldGenRules),
+        ...(objectCatalog ? { composition: merged.composition, houseClustering: merged.houseClustering, multiStoreyCount: merged.multiStoreyCount,
+          exteriors: houses.map(h => ({ objectId: h.objectExterior!.objectId, revision: h.objectExterior!.revision,
+            exteriorStories: h.objectExterior!.exteriorStories, raster: structuredClone(h.objectExterior!.raster) })) } : {}),
         templates: catalog.templates.map(t => ({ id: t.id, name: t.name, w: t.w, h: t.h, stories: t.stories, kitId: t.kitId, wings: structuredClone(t.wings) })),
       },
     };
@@ -609,7 +612,7 @@ export function buildVillageDomain(
         return {
           index,
           kitId: house.objectExterior?.raster.kitId ?? house.kitId,
-          ...(house.objectExterior ? {} : { stories: house.stories }),
+          ...(house.objectExterior ? { exteriorStories: house.objectExterior.exteriorStories } : { stories: house.stories }),
           templateId: house.templateId,
           ...(house.objectExterior ? { objectId: house.objectExterior.objectId, objectRevision: house.objectExterior.revision,
             exteriorKitId: house.objectExterior.raster.kitId, doorApproaches: house.objectExterior.approaches,
@@ -1761,7 +1764,7 @@ function setVillageHarnessLayoutPlan(
         kitId: house.objectExterior?.raster.kitId ?? house.kitId,
         shape: house.templateId,
         yardTheme: intent.yardStyle,
-        tags: [...(house.objectExterior ? ["saved-object-exterior", `object:${house.objectExterior.objectId}`, `object-revision:${house.objectExterior.revision}`] : [`${house.stories}f`]), `shape:${house.templateId}`, "authored-reference-grammar",
+        tags: [...(house.objectExterior ? ["saved-object-exterior", ...(house.objectExterior.exteriorStories ? [`exterior-stories:${house.objectExterior.exteriorStories}`] : []), `object:${house.objectExterior.objectId}`, `object-revision:${house.objectExterior.revision}`] : [`${house.stories}f`]), `shape:${house.templateId}`, "authored-reference-grammar",
           ...(intent.templateCatalog.find((template) => template.id === house.templateId)?.roofDeck ? ["roof-deck"] : [])],
         doorAt: house.doorAt,
         front: house.front,

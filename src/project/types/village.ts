@@ -91,6 +91,15 @@ export interface VillageDesign {
   houseCount: { mode: "fixed" | "range" | "free"; min: number; max: number };
   stories: (1 | 2 | 3)[];
   interior: boolean;
+  /** Saved exterior composition. Optional for legacy procedural house designs. */
+  objectVillage?: {
+    composition: "compact";
+    objectIds: string[];
+    /** Exact count of ALL two-or-more-storey exteriors, landmarks included. */
+    multiStoreyCount: number;
+    clustering: "balanced" | "tight";
+    previewSize: { width: number; height: number };
+  };
   nature: {
     water: "none" | "river" | "lake" | "river-lake";
     waterSide: "north" | "south" | "east" | "west";

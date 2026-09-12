@@ -6,6 +6,7 @@ import { overviewDesign, resolveOverviewEndpoint } from "@/project/spatial/overv
 import { occurrenceSubtree } from "@/project/spatial/ownership";
 import type { SpatialConnection, SpatialPoint } from "@/project/spatial/types";
 import type { Project } from "@/project/types";
+import { villagePresetPlaza } from "../tools/village/plazaLayout";
 import { ToolError } from "../tools/types";
 import { spatialRasterDigest } from "./compilerValidation";
 import { SpatialCompileError, type SpatialCompileContext } from "./compilerTypes";
@@ -98,6 +99,19 @@ export function compileGeography(context: SpatialCompileContext, compileChild: (
   project.maps[id] = map;
   if (!containsMap(project.mapTree, id)) appendToTree(project.mapTree, id);
   if (settlement) {
+    // releaseGeographyEntries already verified every owned digest, and the exact
+    // root map extent was checked above. Only this compiler's private root binding
+    // is released for its rebuild; unrelated occurrences remain protected.
+    const rebuilding = own(document.occurrences, occurrence.id);
+    document = { ...document, occurrences: { ...document.occurrences, [occurrence.id]: { ...rebuilding, bindings: [] } } };
+    project.spatialAuthoring = document;
+    const preset = project.villagePresets?.find(p => p.id === settlement.presetId);
+    if (preset?.design?.objectVillage) {
+      // The builder relocates the player after decorating. Its old spawn must not
+      // change vegetation RNG on the second compile of the same owned region.
+      const plaza = villagePresetPlaza({ x: 0, y: 0, w: map.width, h: map.height }, preset, settlement.seed);
+      project.startMapId = id; project.startPos = { x: plaza.centerX, y: plaza.centerRow };
+    }
     try {
       settlementVillageBuild(project, { mapId: id, presetId: settlement.presetId, seed: settlement.seed, interior: false });
     } catch (error) {

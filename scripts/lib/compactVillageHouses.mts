@@ -9,6 +9,7 @@ export type CompactVillageHouse = {
   id: string;
   name: string;
   kind: "home" | "landmark";
+  exteriorStories: 1 | 2;
   /** Coordinates of the bottom door tile (146); approach is y + 1. */
   doors: { x: number; y: number }[];
   kit: SectionStructureKitDef;
@@ -117,6 +118,6 @@ export function buildCompactVillageHouses(): CompactVillageHouse[] {
       tags: ["집", "compact-village-house", kind, study.upperStorey ? "2층 외형" : "1층 외형", "회벽·석벽"],
       placementRules: "일반 주택은 폭 5~9칸, 높이 6~10칸. 랜드마크는 마을에 1~2채만 배치한다. 문 아래 접근로를 비운다.",
       role: "structure", repeatability: "fixed", layerHome: "perCell" };
-    return { id, name: study.name, kind, doors: study.doors.map(door => ({ ...door })), kit };
+    return { id, name: study.name, kind, exteriorStories: study.upperStorey ? 2 : 1, doors: study.doors.map(door => ({ ...door })), kit };
   });
 }

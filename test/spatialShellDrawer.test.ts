@@ -104,6 +104,7 @@ describe("spatial inspector drawer", () => {
     expect(spatialSession().legacyOrigin).toBe("villages");
     expect(spatialSession().tab).toBe("regions");
     expect(spatialSession().regionKindFilter).toBe("settlement");
+    expect(host.querySelector("[data-testid=spatial-village-back]")).not.toBeNull();
     host.querySelector<HTMLButtonElement>("[data-testid='db-tab-spatial-regions']")?.click();
     expect(getDatabaseActiveTab()).toBe("spatialRegions");
     expect(spatialSession().tab).toBe("regions");

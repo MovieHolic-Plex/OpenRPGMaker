@@ -36,13 +36,17 @@ export function villageObjectHouseCatalog(project: Project, args: Readonly<Recor
   }
   const presetId = typeof args.presetId === "string" ? args.presetId : project.defaultVillagePresetId;
   const preset = project.villagePresets?.find(entry => entry.id === presetId);
-  if (preset?.design?.policies.appearance === "fixed") {
+  if (preset?.design?.policies.appearance === "fixed" && !preset.design.objectVillage) {
     throw new ToolError("마을 설계서의 고정 집 형태와 오브젝트 후보가 충돌합니다. 설계서의 외형 선택을 자유로 바꿔 주세요.", { code: "village-design-conflict" });
   }
   const ids = [...new Set([...(args.houseObjectIds as string[] | undefined ?? []), ...fixed])];
   const catalog = ids.map(id => {
     const design = project.spatialAuthoring?.library.objects[id];
     if (!design) throw new ToolError(`건물 오브젝트를 찾을 수 없습니다: ${id}`, { code: "village-object-missing" });
+    if (preset?.design?.objectVillage && preset.design.policies.appearance === "fixed"
+      && (!design.exteriorStories || !preset.design.stories.some(n => n === design.exteriorStories))) {
+      throw new ToolError(`「${design.name}」의 외형 층수가 설계서의 허용 층수와 맞지 않습니다.`, { code: "village-design-conflict" });
+    }
     const raster = snapshotGraphic(project, design.graphic);
     const lower = new Map(raster.cells.filter(cell => cell.layer === "lower").map(cell => [`${cell.x},${cell.y}`, cell.tile]));
     // These are authored semantic ports backed by a complete town doorway, not inferred floor counts.
@@ -96,7 +100,8 @@ export function buildObjectHouses(project: Project, map: GameMap, area: Rect, pl
   const pool = [...catalog].map(house => ({ house, order: rng() })).sort((a, b) => a.order - b.order).map(item => item.house);
   const plans = Array.isArray(args.housePlans) ? args.housePlans as Record<string, unknown>[] : [];
   const compact = args.composition === "compact";
-  const compactSelection = compact ? chooseCompactHouses(pool, target, plans) : undefined;
+  const tight = compact && args.houseClustering === "tight";
+  const compactSelection = compact ? chooseCompactHouses(pool, target, plans, args.multiStoreyCount) : undefined;
   const selected = Array.from({ length: target }, (_, index) => {
     const id = plans[index]?.objectId;
     const house = compactSelection?.[index] ?? (typeof id === "string" ? catalog.find(entry => entry.design.id === id) : pool[index % pool.length]);
@@ -130,23 +135,30 @@ export function buildObjectHouses(project: Project, map: GameMap, area: Rect, pl
       const inset = compact ? 5 : 0;
       const desired = { x: area.x + inset + ((slot % cols) + 0.5) * (area.w - inset * 2) / cols,
         y: area.y + inset + (Math.floor(slot / cols) + 0.5) * (area.h - inset * 2) / rows };
+      const group = (item.index + attempt) % 4;
+      const centres = [[0.28, 0.28], [0.72, 0.27], [0.29, 0.70], [0.70, 0.62]] as const;
+      if (tight) { desired.x = area.x + centres[group]![0] * area.w; desired.y = area.y + centres[group]![1] * area.h; }
+      const neighbours = placed.filter(p => (p.index + attempt) % 4 === group);
       const candidates: { bbox: Rect; score: number }[] = [];
       for (let y = area.y + (compact ? 5 : 3); y + h + 5 <= area.y + area.h; y += compact ? 1 : 2) {
         for (let x = area.x + (compact ? 5 : 3); x + w + (compact ? 5 : 3) <= area.x + area.w; x += compact ? 1 : 2) {
-          const score = Math.abs(x + w / 2 - desired.x) + Math.abs(y + h / 2 - desired.y) * 1.3 + random() * 3;
+          const gap = neighbours.length ? Math.min(...neighbours.map(({ bbox: b }) =>
+            Math.max(0, b.x - x - w, x - b.x - b.w) + Math.max(0, b.y - y - h, y - b.y - b.h))) : 2;
+          const score = Math.abs(x + w / 2 - desired.x) + Math.abs(y + h / 2 - desired.y) * 1.3
+            + (tight ? Math.max(0, gap - 2) * 3 : 0) + random() * (tight ? 1 : 3);
           candidates.push({ bbox: { x, y, w, h }, score });
         }
       }
       candidates.sort((a, b) => a.score - b.score);
-      const candidate = candidates.find(({ bbox }) => !lotCells(bbox, map.width, compact).some(i => occupied.has(i)));
+      const candidate = candidates.find(({ bbox }) => !lotCells(bbox, map.width, compact, tight).some(i => occupied.has(i)));
       if (!candidate) { if (compact) continue; else break; }
       placed.push({ ...item, bbox: candidate.bbox });
-      lotCells(candidate.bbox, map.width, compact).forEach(i => occupied.add(i));
+      lotCells(candidate.bbox, map.width, compact, tight).forEach(i => occupied.add(i));
     }
     if (placed.length > planned.length) planned = placed;
     if (planned.length === target) break;
   }
-  const minimum = args.countPolicy === "best-effort" ? Math.min(target, Math.max(4, Math.ceil(target * 0.85))) : target;
+  const minimum = args.multiStoreyCount === undefined && args.countPolicy === "best-effort" ? Math.min(target, Math.max(4, Math.ceil(target * 0.85))) : target;
   if (planned.length < minimum) throw new ToolError(`저장된 건물 ${target}채와 마당이 ${area.w}×${area.h}에 들어가지 않습니다(${planned.length}채). 맵을 넓히거나 집 수/큰집 수를 줄여 주세요.`, { code: "village-object-capacity", mapId: map.id });
   return planned.sort((a, b) => a.index - b.index).map(({ house, bbox, index }) => {
     const absolute = (p: Point): Point => ({ x: bbox.x + p.x, y: bbox.y + p.y });
@@ -163,15 +175,18 @@ export function buildObjectHouses(project: Project, map: GameMap, area: Rect, pl
       ...(intent.houseOwners[index] ? { ownerName: intent.houseOwners[index] } : {}),
       ...(intent.housePrograms[index] ? { program: intent.housePrograms[index] } : {}),
       objectExterior: { objectId: house.design.id, revision: house.design.revision, name: house.design.name,
+        ...(house.design.exteriorStories ? { exteriorStories: house.design.exteriorStories } : {}),
         raster: house.raster, approaches, access } };
   });
 }
 
-function lotCells(bbox: Rect, width: number, compact = false): number[] {
+function lotCells(bbox: Rect, width: number, compact = false, tight = false): number[] {
   const cells: number[] = [];
-  const side = compact ? 1 : 2, front = compact ? 2 : 4;
-  for (let y = bbox.y - side; y < bbox.y + bbox.h + front; y++) {
-    for (let x = bbox.x - side; x < bbox.x + bbox.w + side; x++) cells.push(y * width + x);
+  // Tight lots share one side lane and two rows in front. Asymmetric reservation
+  // counts the gap once, while protecting the complete roof and each doorway.
+  const back = compact ? (tight ? 0 : 1) : 2, right = compact ? 1 : 2, front = compact ? 2 : 4;
+  for (let y = bbox.y - back; y < bbox.y + bbox.h + front; y++) {
+    for (let x = bbox.x - back; x < bbox.x + bbox.w + right; x++) cells.push(y * width + x);
   }
   return cells;
 }

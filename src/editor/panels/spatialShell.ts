@@ -67,7 +67,11 @@ export function renderSpatialAuthoringShell(
     refresh();
   };
 
-  const chrome = renderSpatialChrome(session, refresh);
+  const villageStudio = session.legacyOrigin === "villages" && session.tab === "regions";
+  const chrome = villageStudio ? el("div", { class: "spatial-chrome", children: [el("button", {
+    class: "db-ws-btn", text: "지역 목록으로", attrs: { type: "button" }, dataset: { testid: "spatial-village-back" },
+    on: { click: () => { setSpatialTab("regions"); refresh(); } },
+  }), el("strong", { text: "마을 설계서" })] }) : renderSpatialChrome(session, refresh);
   wireMode(chrome, "spatial-mode-design", () => onMode("design"));
   wireMode(chrome, "spatial-mode-instances", () => onMode("instances"));
 
@@ -105,7 +109,7 @@ export function renderSpatialAuthoringShell(
 
   const shell = el("div", {
     class: "spatial-shell",
-    dataset: { testid: `spatial-shell-${tab}` },
+    dataset: { testid: `spatial-shell-${tab}`, ...(villageStudio ? { legacyOrigin: "villages" } : {}) },
     attrs: { tabindex: "0" },
     children: [chrome, el("div", { class: "spatial-body", children: [gallery, stage] })],
   });

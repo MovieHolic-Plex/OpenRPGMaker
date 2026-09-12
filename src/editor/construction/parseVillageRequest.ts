@@ -28,7 +28,7 @@ import {
   type VillageSettlementLayout,
 } from "./contracts";
 
-const REQUEST_KEYS = ["target", "houseCount", "housePlans", "houseObjectIds", "composition", "countPolicy", "groundTheme", "settlementLayout", "npcCount", "residents", "theme", "forestDensity", "seed", "interior", "presetId", "fullMap"] as const;
+const REQUEST_KEYS = ["target", "houseCount", "housePlans", "houseObjectIds", "composition", "multiStoreyCount", "houseClustering", "countPolicy", "groundTheme", "settlementLayout", "npcCount", "residents", "theme", "forestDensity", "seed", "interior", "presetId", "fullMap"] as const;
 const FOREST_DENSITIES = ["sparse", "normal", "dense", "impassable"] as const;
 const EXISTING_TARGET_KEYS = ["kind", "mapId", "bounds", "fullMap"] as const;
 const NEW_TARGET_KEYS = ["kind", "mapId", "name", "width", "height", "plannedMap"] as const;
@@ -51,6 +51,12 @@ export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest 
   if (request.composition !== undefined && request.composition !== "compact") {
     throw new ToolError("composition must be compact when supplied.", { code: "invalid-args" });
   }
+  const multiStoreyCount = optionalInteger(request, "multiStoreyCount", "authorVillage");
+  if (multiStoreyCount !== undefined && (request.composition !== "compact" || multiStoreyCount < 0 || multiStoreyCount > houseCount)) {
+    throw new ToolError("multiStoreyCount requires compact composition and must be between 0 and houseCount.", { code: "invalid-args" });
+  }
+  const houseClustering = parseOptionalEnum(request.houseClustering, ["balanced", "tight"] as const, "authorVillage.houseClustering");
+  if (houseClustering && request.composition !== "compact") throw new ToolError("houseClustering requires compact composition.", { code: "invalid-args" });
   const houseObjectIds = request.houseObjectIds === undefined ? undefined
     : parseStringArray(requiredArray(request, "houseObjectIds", "authorVillage"), "authorVillage.houseObjectIds");
   if (houseObjectIds && (houseObjectIds.length === 0 || houseObjectIds.length > 128 || new Set(houseObjectIds).size !== houseObjectIds.length)) {
@@ -78,6 +84,8 @@ export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest 
     houseCount,
     countPolicy: parseCountPolicy(request["countPolicy"]),
     ...(housePlans === undefined ? {} : { housePlans }),
+    ...(multiStoreyCount === undefined ? {} : { multiStoreyCount }),
+    ...(houseClustering === undefined ? {} : { houseClustering }),
     ...(houseObjectIds === undefined ? {} : { houseObjectIds }),
     ...(request.composition === "compact" ? { composition: "compact" as const } : {}),
     ...(groundTheme === undefined ? {} : { groundTheme: groundTheme as VillageGroundTheme }),

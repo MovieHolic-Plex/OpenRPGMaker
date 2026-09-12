@@ -27,8 +27,8 @@ const base: Parser<S.SpatialDesignBase> = (v, p) => {
 };
 const baseFields = "id name revision tags provenance";
 const object: Parser<S.ObjectDesign> = (v, p) => {
-  const r = record(v, p, `${baseFields} graphic anchors chips`);
-  return { ...base(r, p), graphic: graphic(r.graphic, `${p}.graphic`), anchors: ports(r.anchors, `${p}.anchors`), chips: texts(r.chips, `${p}.chips`) };
+  const r = record(v, p, `${baseFields} graphic anchors chips exteriorStories`);
+  return { ...base(r, p), ...(r.exteriorStories === undefined ? {} : { exteriorStories: choice([1, 2, 3, 4] as const)(r.exteriorStories, `${p}.exteriorStories`) }), graphic: graphic(r.graphic, `${p}.graphic`), anchors: ports(r.anchors, `${p}.anchors`), chips: texts(r.chips, `${p}.chips`) };
 };
 const placement: Parser<S.SpatialObjectSlot["placement"]> = (v, p) => {
   const r = record(v, p);

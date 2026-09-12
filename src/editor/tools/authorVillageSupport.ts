@@ -95,6 +95,8 @@ export function villageDomainArgs(request: AuthorVillageRequest): VillageBuildDo
     mapId: request.target.mapId,
     houses: request.houseCount,
     countPolicy: request.countPolicy,
+    ...(request.multiStoreyCount === undefined ? {} : { multiStoreyCount: request.multiStoreyCount }),
+    ...(request.houseClustering ? { houseClustering: request.houseClustering } : {}),
     ...(request.composition ? { composition: request.composition } : {}),
     ...(request.target.kind === "existing" && request.target.bounds ? { bounds: request.target.bounds } : {}),
     ...(request.housePlans ? { housePlans: request.housePlans } : {}),
