@@ -1,0 +1,231 @@
+{
+  "houses": 10,
+  "checks": [
+    {
+      "number": 11,
+      "id": "house-30-11-central-ridge",
+      "width": 16,
+      "height": 13,
+      "roofCells": 112,
+      "connectedRoof": true,
+      "exteriorDoorApproaches": 1,
+      "geometrySHA256": "8cd4781579479cb64cbec51aab1059f47788d2027a89b7c1346fa768c624c97e",
+      "silhouetteSHA256": "19b88c53cf9f991f8c9023d78f1d8feeaf11e6a15d259426750395e321882abf",
+      "kitSHA256": "a60c7c85f4770dd90e94c9704492e5ff8bf5f9fae901965f1cd16c5058b6a53e",
+      "exposedUpperFacades": [
+        {
+          "x": 4,
+          "y": 4,
+          "width": 8
+        }
+      ],
+      "twoCellSideSlopes": true,
+      "upperEavesIntact": true,
+      "ridgeCornersIntact": true
+    },
+    {
+      "number": 12,
+      "id": "house-30-12-staggered-upper",
+      "width": 20,
+      "height": 15,
+      "roofCells": 167,
+      "connectedRoof": true,
+      "exteriorDoorApproaches": 1,
+      "geometrySHA256": "c4b528c1172a06b262cec8b4351b8e1361a31c5701f086ffe724b67f6c41555d",
+      "silhouetteSHA256": "6d67dc2bbc8a48f929ed7ae6b6e8155df4c09e2ce5a0616b951c0822125b932a",
+      "kitSHA256": "4d58354d8a3986cd7108a8582af4c83254cfb9f178960610043d70443af14f9a",
+      "exposedUpperFacades": [
+        {
+          "x": 2,
+          "y": 4,
+          "width": 7
+        },
+        {
+          "x": 11,
+          "y": 6,
+          "width": 7
+        }
+      ],
+      "twoCellSideSlopes": true,
+      "upperEavesIntact": true,
+      "ridgeCornersIntact": true
+    },
+    {
+      "number": 13,
+      "id": "house-30-13-long-kitchen",
+      "width": 22,
+      "height": 12,
+      "roofCells": 132,
+      "connectedRoof": true,
+      "exteriorDoorApproaches": 1,
+      "geometrySHA256": "490d397b7750b2835ea9b5ddf1fad927f0cb8e1d775c21a8e4ee1c16985160bc",
+      "silhouetteSHA256": "e36f31daac2c64823e23c20544112c973048bb3a9e10ef7c30ecdfad1643ebf9",
+      "kitSHA256": "0ef0b428d5f546c2eb38334e4dc43633deb6fb5887cf3dd85ec6720331edc690",
+      "exposedUpperFacades": [
+        {
+          "x": 2,
+          "y": 4,
+          "width": 6
+        }
+      ],
+      "twoCellSideSlopes": true,
+      "upperEavesIntact": true,
+      "ridgeCornersIntact": true
+    },
+    {
+      "number": 14,
+      "id": "house-30-14-shop-home",
+      "width": 18,
+      "height": 15,
+      "roofCells": 138,
+      "connectedRoof": true,
+      "exteriorDoorApproaches": 2,
+      "geometrySHA256": "6125e7d71f8553df747052f34721001219b994d17ec70d7a6e1e202ca4a6d604",
+      "silhouetteSHA256": "78127171cce6480cf01ed23b52484ef6e4084761086297e803a58e4d07be9ab3",
+      "kitSHA256": "51999d67af364b5e59e5e5e160b64858d94b84613e622a0420a3af024de2b7f4",
+      "exposedUpperFacades": [
+        {
+          "x": 3,
+          "y": 4,
+          "width": 12
+        }
+      ],
+      "twoCellSideSlopes": true,
+      "upperEavesIntact": true,
+      "ridgeCornersIntact": true
+    },
+    {
+      "number": 15,
+      "id": "house-30-15-stepped-wings",
+      "width": 19,
+      "height": 15,
+      "roofCells": 142,
+      "connectedRoof": true,
+      "exteriorDoorApproaches": 1,
+      "geometrySHA256": "9ad8fc23ede8e52faffed7ca11aebc30e996283a1fd40df155e833099f36b844",
+      "silhouetteSHA256": "2af9bcbadb04a71b1c3ce2558eb17233c575578328e0c29621e1600f0a9f6600",
+      "kitSHA256": "aa724ac61fdaf7d118d0b83b18c1cfbf3c6c42d7287b027dce786f06e0763360",
+      "exposedUpperFacades": [
+        {
+          "x": 5,
+          "y": 4,
+          "width": 8
+        }
+      ],
+      "twoCellSideSlopes": true,
+      "upperEavesIntact": true,
+      "ridgeCornersIntact": true
+    },
+    {
+      "number": 16,
+      "id": "house-30-16-forward-hall",
+      "width": 20,
+      "height": 17,
+      "roofCells": 148,
+      "connectedRoof": true,
+      "exteriorDoorApproaches": 1,
+      "geometrySHA256": "83740f503476455b66f09836aa5de792029f0f9f189447bcf65b1deae00f9a5a",
+      "silhouetteSHA256": "8424d7ecebb333d6271c6894ccad4a7b6f20ad6c151281103e2ab29857ec5ab3",
+      "kitSHA256": "642359954b032ac222b5f868b8b390ffe77994580cef54b9e26e12290c3804d6",
+      "exposedUpperFacades": [
+        {
+          "x": 6,
+          "y": 4,
+          "width": 8
+        }
+      ],
+      "twoCellSideSlopes": true,
+      "upperEavesIntact": true,
+      "ridgeCornersIntact": true
+    },
+    {
+      "number": 17,
+      "id": "house-30-17-deep-side-wing",
+      "width": 18,
+      "height": 17,
+      "roofCells": 138,
+      "connectedRoof": true,
+      "exteriorDoorApproaches": 1,
+      "geometrySHA256": "fcf70434bef6f5f570aa99a50b9e634e6626bd21554b79cf3c62592bd8b282ed",
+      "silhouetteSHA256": "acc37805e8b35dee2c3881522918f9b8c278e9fee42652e244b7a7fad53f7045",
+      "kitSHA256": "756f5081dab92e505eed70efce23215e8dd46da2d99ccd1dd62174af7cf53275",
+      "exposedUpperFacades": [
+        {
+          "x": 2,
+          "y": 4,
+          "width": 7
+        }
+      ],
+      "twoCellSideSlopes": true,
+      "upperEavesIntact": true,
+      "ridgeCornersIntact": true
+    },
+    {
+      "number": 18,
+      "id": "house-30-18-recessed-entry",
+      "width": 18,
+      "height": 14,
+      "roofCells": 128,
+      "connectedRoof": true,
+      "exteriorDoorApproaches": 1,
+      "geometrySHA256": "8fc5bc33cc893ceb41b3722fa040f3da09ed70abd6d741b0f161b6bc05b60ed6",
+      "silhouetteSHA256": "ae2b9c3b529871f6a9fd9e1956eaa48646f6ab53e856464972c05aa3f8fe99d9",
+      "kitSHA256": "fe2c5de75d047e5a01e7916f3aa679980704b2a740b22eb7af75eb48a542c4b9",
+      "exposedUpperFacades": [
+        {
+          "x": 5,
+          "y": 4,
+          "width": 8
+        }
+      ],
+      "twoCellSideSlopes": true,
+      "upperEavesIntact": true,
+      "ridgeCornersIntact": true
+    },
+    {
+      "number": 19,
+      "id": "house-30-19-offset-front",
+      "width": 21,
+      "height": 16,
+      "roofCells": 183,
+      "connectedRoof": true,
+      "exteriorDoorApproaches": 1,
+      "geometrySHA256": "7c8efc2932942627c2b3055211cb844098fd4e4aeb0872083571ebdc7a8afffe",
+      "silhouetteSHA256": "3f6605f85ca2bcae63b988a49488d0695d6afb40bef426ac88195f2d455f6cf6",
+      "kitSHA256": "d6a4627c49ad4b05607b3217d7ec5eb5538b9b988bc372a39473c191619cea1c",
+      "exposedUpperFacades": [
+        {
+          "x": 3,
+          "y": 4,
+          "width": 8
+        }
+      ],
+      "twoCellSideSlopes": true,
+      "upperEavesIntact": true,
+      "ridgeCornersIntact": true
+    },
+    {
+      "number": 20,
+      "id": "house-30-20-double-shoulder-ridge",
+      "width": 16,
+      "height": 14,
+      "roofCells": 120,
+      "connectedRoof": true,
+      "exteriorDoorApproaches": 1,
+      "geometrySHA256": "b56eb5fed296b8fe21337592a948dc1fe6efa19cadc1fd4d3e521a33f875f521",
+      "silhouetteSHA256": "95b98077b0d108bb54d91a9ec2fc072452aae6e015365570575a79bc401d7e4d",
+      "kitSHA256": "0a23dc04e4187e8c7aae2aeaa10c0f172e5c554081dcdd30cd393fc73264fb21",
+      "exposedUpperFacades": [
+        {
+          "x": 5,
+          "y": 4,
+          "width": 6
+        }
+      ],
+      "twoCellSideSlopes": true,
+      "upperEavesIntact": true,
+      "ridgeCornersIntact": true
+    }
+  ],
+  "rejectedControls": 30
+}

@@ -138,3 +138,34 @@
 마을 세션의 강가 추가 활엽수 배치도 물·집 마당 예약지를 뺀 영역에만 수행한다.
 물보다 나무를 먼저 놓는 순서에서 이 보조 배치가 호수 예정지를 침범하던 경로를
 `test/villageBuildStages.test.ts`의 강+호수 세션 사례로 검사한다.
+
+### 새 집 외형 30종 — 독립 제작과 통합 (2026-09-12)
+
+`scripts/lib/house30BatchA.mts`(01–10 단층), `house30BatchB.mts`(11–20 2층),
+`house30BatchC.mts`(21–30 큰집·중정·2~4층)는 각각 다른 Astra xhigh 에이전트가
+원시 벽·지붕 타일로 만든 외형 레시피다. 기존 15종을 교체하거나 색만 바꾼 목록이 아니다.
+`House30Entry`의 `doors`는 문 아래칩 146 자체의 좌표이며 접근 앵커는 그 아래 `y+1`이다.
+층수는 **보이는 외형**의 분류다. 이 작업은 실내 공간·층간 연결을 자동으로 추가하지 않는다.
+
+- `scripts/lib/house30Authoring.mts`: 완성 타일에서 지붕/건물 연결, 금지 칩,
+  문 앞에서 바깥까지 빈 경로, 색·벽 재료를 정규화한 중복 형상을 검사한다.
+  숫자 검사는 시각 검토를 대신하지 않는다. 모든 키트·전시 맵을 먼저 조립한 다음
+  등록된 `upsert_spatial_design`을 연속 호출한다. 도구 호출 사이에 직접 타일셋을 고치면
+  `spatial-tampered-proposal`로 거부되므로 순서를 유지한다.
+- 작업실 프로젝트는 `rpg-zzu-house-30-a-20260912`, `...-b-...`, `...-c-...`로 분리했다.
+  각각 canonical insert-only 생성 후 저장·재로드를 확인했다. 원본
+  `rpg-zzu-house-template-gallery`에는 감독자가 합친 30종만 직렬로 추가한다.
+- `npx tsx scripts/publish-house30.mts --batch a --apply`: A 작업실에 10종 게시.
+  B/C도 동일하다. `--batch all --apply`는 원본 프로젝트에 30종 게시한다.
+  명시된 대상 외 저장을 거부하며, 로드 시 받은 CAS 권한으로 저장하고 전체 재로드 일치를
+  검사한다. `--apply`를 빼면 미리보기만 만든다. 반복 실행은 동일 revision을 유지한다.
+- 통합 전시 맵: `map_house_30_a_20260912`, `map_house_30_b_20260912`,
+  `map_house_30_c_20260912`. 오브젝트 검색 태그는 `집 형태 30종 20260912`.
+- `node scripts/capture-house30.mjs --batch all --base http://127.0.0.1:19841`:
+  Supabase 재로드를 실제 `mapTileDraw`로 렌더한다. 번호별 PNG, 10종 비교판,
+  30종 개요와 클릭 확대가 있는 독립 HTML을 만든다. `--preview`는 미리보기 입력이다.
+- `npx tsx scripts/verify-house30-builds.mts`: 저장된 30개 오브젝트를 각각 독립 검증 맵에
+  실제 `preview_spatial_build` → `apply_spatial_build`로 배치하고 완성 셀 일치를 확인한다.
+  이 검증용 맵은 원격 콘텐츠가 아니며 원본을 저장하지 않는다.
+- `test/house30Authoring.test.ts`: 실제 30종과 금지 칩·분리 지붕·막힌 중정 현관·색갈이
+  중복의 음성 대조. 결과 영수증과 비교 이미지는 `.omo/evidence/house-30/`에 둔다.

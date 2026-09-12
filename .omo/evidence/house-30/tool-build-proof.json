@@ -1,0 +1,248 @@
+{
+  "projectId": "rpg-zzu-house-template-gallery",
+  "provider": null,
+  "mode": "registered-tools",
+  "houses": 30,
+  "results": [
+    {
+      "number": 1,
+      "objectId": "house30:object:1",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 2,
+      "objectId": "house30:object:2",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 3,
+      "objectId": "house30:object:3",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 4,
+      "objectId": "house30:object:4",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 5,
+      "objectId": "house30:object:5",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 6,
+      "objectId": "house30:object:6",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 7,
+      "objectId": "house30:object:7",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 8,
+      "objectId": "house30:object:8",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 9,
+      "objectId": "house30:object:9",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 10,
+      "objectId": "house30:object:10",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 11,
+      "objectId": "house30:object:11",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 12,
+      "objectId": "house30:object:12",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 13,
+      "objectId": "house30:object:13",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 14,
+      "objectId": "house30:object:14",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 2
+    },
+    {
+      "number": 15,
+      "objectId": "house30:object:15",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 16,
+      "objectId": "house30:object:16",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 17,
+      "objectId": "house30:object:17",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 18,
+      "objectId": "house30:object:18",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 19,
+      "objectId": "house30:object:19",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 20,
+      "objectId": "house30:object:20",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 21,
+      "objectId": "house30:object:21",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 22,
+      "objectId": "house30:object:22",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 2
+    },
+    {
+      "number": 23,
+      "objectId": "house30:object:23",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 24,
+      "objectId": "house30:object:24",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 2
+    },
+    {
+      "number": 25,
+      "objectId": "house30:object:25",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 2
+    },
+    {
+      "number": 26,
+      "objectId": "house30:object:26",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    },
+    {
+      "number": 27,
+      "objectId": "house30:object:27",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 2
+    },
+    {
+      "number": 28,
+      "objectId": "house30:object:28",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 2
+    },
+    {
+      "number": 29,
+      "objectId": "house30:object:29",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 2
+    },
+    {
+      "number": 30,
+      "objectId": "house30:object:30",
+      "preview": true,
+      "apply": true,
+      "rasterMatches": true,
+      "ports": 1
+    }
+  ]
+}

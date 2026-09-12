@@ -1,0 +1,186 @@
+{
+  "houses": 10,
+  "negativeControls": 20,
+  "checks": [
+    {
+      "number": 21,
+      "visibleFloors": 2,
+      "upperFacades": [
+        {
+          "x": 7,
+          "y": 5,
+          "width": 10
+        }
+      ],
+      "minimumShoulderWidth": 2,
+      "removedEaveRejected": true,
+      "removedShoulderRejected": true
+    },
+    {
+      "number": 22,
+      "visibleFloors": 2,
+      "upperFacades": [
+        {
+          "x": 10,
+          "y": 5,
+          "width": 10
+        }
+      ],
+      "minimumShoulderWidth": 2,
+      "removedEaveRejected": true,
+      "removedShoulderRejected": true
+    },
+    {
+      "number": 23,
+      "visibleFloors": 3,
+      "upperFacades": [
+        {
+          "x": 9,
+          "y": 4,
+          "width": 6
+        },
+        {
+          "x": 4,
+          "y": 10,
+          "width": 16
+        }
+      ],
+      "minimumShoulderWidth": 2,
+      "removedEaveRejected": true,
+      "removedShoulderRejected": true
+    },
+    {
+      "number": 24,
+      "visibleFloors": 2,
+      "upperFacades": [
+        {
+          "x": 3,
+          "y": 6,
+          "width": 8
+        }
+      ],
+      "minimumShoulderWidth": 2,
+      "removedEaveRejected": true,
+      "removedShoulderRejected": true
+    },
+    {
+      "number": 25,
+      "visibleFloors": 3,
+      "upperFacades": [
+        {
+          "x": 4,
+          "y": 5,
+          "width": 7
+        },
+        {
+          "x": 2,
+          "y": 11,
+          "width": 14
+        }
+      ],
+      "minimumShoulderWidth": 2,
+      "removedEaveRejected": true,
+      "removedShoulderRejected": true
+    },
+    {
+      "number": 26,
+      "visibleFloors": 4,
+      "upperFacades": [
+        {
+          "x": 9,
+          "y": 4,
+          "width": 6
+        },
+        {
+          "x": 7,
+          "y": 10,
+          "width": 10
+        },
+        {
+          "x": 4,
+          "y": 16,
+          "width": 16
+        }
+      ],
+      "minimumShoulderWidth": 2,
+      "removedEaveRejected": true,
+      "removedShoulderRejected": true
+    },
+    {
+      "number": 27,
+      "visibleFloors": 3,
+      "upperFacades": [
+        {
+          "x": 5,
+          "y": 5,
+          "width": 14
+        },
+        {
+          "x": 2,
+          "y": 12,
+          "width": 20
+        }
+      ],
+      "minimumShoulderWidth": 2,
+      "removedEaveRejected": true,
+      "removedShoulderRejected": true
+    },
+    {
+      "number": 28,
+      "visibleFloors": 4,
+      "upperFacades": [
+        {
+          "x": 16,
+          "y": 4,
+          "width": 6
+        },
+        {
+          "x": 13,
+          "y": 10,
+          "width": 11
+        },
+        {
+          "x": 8,
+          "y": 16,
+          "width": 18
+        }
+      ],
+      "minimumShoulderWidth": 2,
+      "removedEaveRejected": true,
+      "removedShoulderRejected": true
+    },
+    {
+      "number": 29,
+      "visibleFloors": 2,
+      "upperFacades": [
+        {
+          "x": 5,
+          "y": 8,
+          "width": 8
+        }
+      ],
+      "minimumShoulderWidth": 2,
+      "removedEaveRejected": true,
+      "removedShoulderRejected": true
+    },
+    {
+      "number": 30,
+      "visibleFloors": 3,
+      "upperFacades": [
+        {
+          "x": 10,
+          "y": 5,
+          "width": 8
+        },
+        {
+          "x": 6,
+          "y": 11,
+          "width": 16
+        }
+      ],
+      "minimumShoulderWidth": 2,
+      "removedEaveRejected": true,
+      "removedShoulderRejected": true
+    }
+  ]
+}
