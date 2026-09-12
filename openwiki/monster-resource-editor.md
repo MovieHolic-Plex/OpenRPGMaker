@@ -46,6 +46,21 @@ write into the replacement. Monster graphic pickers close on projectSwitch.
 Closing removes the store/unload subscriptions and restores an attached opener
 or the current catalog-entry button.
 
+## Resource Manager monster tab (2026-09-12)
+
+리소스 관리자 「몬스터」 카테고리도 같은 `listMonsterResources` 카탈로그를
+표시한다. `resourceManagerViews.renderResourceWorkbench` 가 선택 종류가
+`"monster"` 일 때 카탈로그를 프로필/업로드 버킷으로 펼치고(`monsterResourceEntries`),
+번들 항목은 화면용 프로필(`{kind:"monster", name, assetId: resourceId}`)로 합성한다.
+카탈로그가 이미 id 충돌(업로드 > 번들 > 프로필)과 메타데이터 오버라이드를 정리하므로
+업로드가 번들 id 를 덮어도 카드는 한 장만 나온다. 카드·인스펙터는 카탈로그의
+**효과 이름**(예: EasyRPG Hornet → 「붉은 벌」)을 쓰고, 인스펙터에는 상태(기본
+제공·검토됨)·태그·설명 행이 추가된다. 카테고리 배지는 프로필 수가 아니라 카탈로그
+총수다. 메타데이터 편집은 여전히 DB 워크시트 소유 — RM 은 읽기 전용 뷰이며
+번들 항목에는 삭제 액션이 없다(업로드 항목만 기존 삭제 경로).
+
+회귀: `test/resourceManagerMonsterCatalog.test.ts`.
+
 ## Verification
 
 `test/databaseMonsterMetadata.test.ts` drives the actual database renderer and
