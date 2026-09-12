@@ -386,38 +386,6 @@
     "event-command-face-option-easyrpg-faceset-people2-13",
     "event-command-face-option-easyrpg-faceset-people2-14",
     "event-command-face-option-easyrpg-faceset-people2-15",
-    "event-command-face-option-generated-actor-hero-01-face-00",
-    "event-command-face-option-generated-actor-hero-01-face-01",
-    "event-command-face-option-generated-actor-hero-01-face-02",
-    "event-command-face-option-generated-actor-hero-01-face-03",
-    "event-command-face-option-generated-actor-hero-01-face-04",
-    "event-command-face-option-generated-actor-hero-01-face-05",
-    "event-command-face-option-generated-actor-hero-01-face-06",
-    "event-command-face-option-generated-actor-hero-01-face-07",
-    "event-command-face-option-generated-actor-hero-01-face-08",
-    "event-command-face-option-generated-actor-hero-01-face-09",
-    "event-command-face-option-generated-actor-hero-01-face-10",
-    "event-command-face-option-generated-actor-hero-01-face-11",
-    "event-command-face-option-generated-actor-hero-01-face-12",
-    "event-command-face-option-generated-actor-hero-01-face-13",
-    "event-command-face-option-generated-actor-hero-01-face-14",
-    "event-command-face-option-generated-actor-hero-01-face-15",
-    "event-command-face-option-generated-actor-hero-02-face-00",
-    "event-command-face-option-generated-actor-hero-02-face-01",
-    "event-command-face-option-generated-actor-hero-02-face-02",
-    "event-command-face-option-generated-actor-hero-02-face-03",
-    "event-command-face-option-generated-actor-hero-02-face-04",
-    "event-command-face-option-generated-actor-hero-02-face-05",
-    "event-command-face-option-generated-actor-hero-02-face-06",
-    "event-command-face-option-generated-actor-hero-02-face-07",
-    "event-command-face-option-generated-actor-hero-02-face-08",
-    "event-command-face-option-generated-actor-hero-02-face-09",
-    "event-command-face-option-generated-actor-hero-02-face-10",
-    "event-command-face-option-generated-actor-hero-02-face-11",
-    "event-command-face-option-generated-actor-hero-02-face-12",
-    "event-command-face-option-generated-actor-hero-02-face-13",
-    "event-command-face-option-generated-actor-hero-02-face-14",
-    "event-command-face-option-generated-actor-hero-02-face-15",
     "event-command-face-option-generated-actor-hero-03-face",
     "event-command-face-position",
     "event-command-face-presentation",
@@ -552,38 +520,6 @@
     "event-command-face-option-easyrpg-faceset-people2-13": "button{}",
     "event-command-face-option-easyrpg-faceset-people2-14": "button{}",
     "event-command-face-option-easyrpg-faceset-people2-15": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-00": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-01": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-02": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-03": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-04": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-05": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-06": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-07": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-08": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-09": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-10": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-11": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-12": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-13": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-14": "button{}",
-    "event-command-face-option-generated-actor-hero-01-face-15": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-00": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-01": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-02": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-03": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-04": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-05": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-06": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-07": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-08": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-09": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-10": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-11": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-12": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-13": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-14": "button{}",
-    "event-command-face-option-generated-actor-hero-02-face-15": "button{}",
     "event-command-face-option-generated-actor-hero-03-face": "button{}",
     "event-command-face-position": "select{}",
     "event-command-face-presentation": "select{disabled}",
@@ -616,9 +552,9 @@
     "흉상"
    ],
    "tags": {
-    "button": 118,
-    "div": 131,
-    "img": 113,
+    "button": 86,
+    "div": 99,
+    "img": 81,
     "input": 3,
     "label": 4,
     "option": 5,
@@ -722,38 +658,6 @@
     "event-command-face-option-easyrpg-faceset-people2-13": "button",
     "event-command-face-option-easyrpg-faceset-people2-14": "button",
     "event-command-face-option-easyrpg-faceset-people2-15": "button",
-    "event-command-face-option-generated-actor-hero-01-face-00": "button",
-    "event-command-face-option-generated-actor-hero-01-face-01": "button",
-    "event-command-face-option-generated-actor-hero-01-face-02": "button",
-    "event-command-face-option-generated-actor-hero-01-face-03": "button",
-    "event-command-face-option-generated-actor-hero-01-face-04": "button",
-    "event-command-face-option-generated-actor-hero-01-face-05": "button",
-    "event-command-face-option-generated-actor-hero-01-face-06": "button",
-    "event-command-face-option-generated-actor-hero-01-face-07": "button",
-    "event-command-face-option-generated-actor-hero-01-face-08": "button",
-    "event-command-face-option-generated-actor-hero-01-face-09": "button",
-    "event-command-face-option-generated-actor-hero-01-face-10": "button",
-    "event-command-face-option-generated-actor-hero-01-face-11": "button",
-    "event-command-face-option-generated-actor-hero-01-face-12": "button",
-    "event-command-face-option-generated-actor-hero-01-face-13": "button",
-    "event-command-face-option-generated-actor-hero-01-face-14": "button",
-    "event-command-face-option-generated-actor-hero-01-face-15": "button",
-    "event-command-face-option-generated-actor-hero-02-face-00": "button",
-    "event-command-face-option-generated-actor-hero-02-face-01": "button",
-    "event-command-face-option-generated-actor-hero-02-face-02": "button",
-    "event-command-face-option-generated-actor-hero-02-face-03": "button",
-    "event-command-face-option-generated-actor-hero-02-face-04": "button",
-    "event-command-face-option-generated-actor-hero-02-face-05": "button",
-    "event-command-face-option-generated-actor-hero-02-face-06": "button",
-    "event-command-face-option-generated-actor-hero-02-face-07": "button",
-    "event-command-face-option-generated-actor-hero-02-face-08": "button",
-    "event-command-face-option-generated-actor-hero-02-face-09": "button",
-    "event-command-face-option-generated-actor-hero-02-face-10": "button",
-    "event-command-face-option-generated-actor-hero-02-face-11": "button",
-    "event-command-face-option-generated-actor-hero-02-face-12": "button",
-    "event-command-face-option-generated-actor-hero-02-face-13": "button",
-    "event-command-face-option-generated-actor-hero-02-face-14": "button",
-    "event-command-face-option-generated-actor-hero-02-face-15": "button",
     "event-command-face-option-generated-actor-hero-03-face": "button",
     "event-command-face-position": "select",
     "event-command-face-presentation": "select",
@@ -769,8 +673,8 @@
     "event-command-face-preview": "res#미리보기를 찾을 수 없습니다.",
     "event-command-face-preview-host": "res#미리보기를 찾을 수 없습니다."
    },
-   "testidCount": 135,
-   "controlCount": 124
+   "testidCount": 103,
+   "controlCount": 92
   },
   "classes": [
    "ai-image-queue",
@@ -1006,6 +910,7 @@
      "timePhase",
      "season",
      "npcActivity",
+     "insideLocation",
      "friendshipAtLeast",
      "relationshipAtLeast",
      "battleResult",
@@ -1052,7 +957,7 @@
     "div": 15,
     "input": 1,
     "label": 4,
-    "option": 40,
+    "option": 41,
     "p": 3,
     "section": 2,
     "select": 3,
@@ -1528,7 +1433,8 @@
    ],
    "classes": [
     "cream-command-form",
-    "cream-command-form-head"
+    "cream-command-form-head",
+    "empty-hint"
    ],
    "controls": {
     "event-command-label-name": "input[text]{}"
@@ -1536,7 +1442,7 @@
    "selectOptions": {},
    "labels": [],
    "tags": {
-    "div": 5,
+    "div": 6,
     "input": 1
    },
    "tagByTestid": {
@@ -1551,7 +1457,8 @@
   },
   "classes": [
    "cream-command-form",
-   "cream-command-form-head"
+   "cream-command-form-head",
+   "empty-hint"
   ],
   "probeCount": 1,
   "reactingCount": 0
@@ -1567,7 +1474,8 @@
    ],
    "classes": [
     "cream-command-form",
-    "cream-command-form-head"
+    "cream-command-form-head",
+    "empty-hint"
    ],
    "controls": {
     "event-command-goto-label-name": "input[text]{}"
@@ -1575,7 +1483,7 @@
    "selectOptions": {},
    "labels": [],
    "tags": {
-    "div": 5,
+    "div": 6,
     "input": 1
    },
    "tagByTestid": {
@@ -1590,7 +1498,8 @@
   },
   "classes": [
    "cream-command-form",
-   "cream-command-form-head"
+   "cream-command-form-head",
+   "empty-hint"
   ],
   "probeCount": 1,
   "reactingCount": 0
@@ -3495,7 +3404,8 @@
     "event-command-edit-summary"
    ],
    "classes": [
-    "cream-command-form-head"
+    "cream-command-form-head",
+    "empty-hint"
    ],
    "controls": {
     "event-command-call-common-event-select": "select{}"
@@ -3507,7 +3417,7 @@
    },
    "labels": [],
    "tags": {
-    "div": 3,
+    "div": 5,
     "option": 1,
     "select": 1
    },
@@ -3522,7 +3432,8 @@
    "controlCount": 1
   },
   "classes": [
-   "cream-command-form-head"
+   "cream-command-form-head",
+   "empty-hint"
   ],
   "probeCount": 1,
   "reactingCount": 0

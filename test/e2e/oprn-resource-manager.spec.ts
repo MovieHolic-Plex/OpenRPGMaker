@@ -24,6 +24,28 @@ test("resource manager uses Korean classic three-pane RM2K3 layout", async ({ pa
   await page.screenshot({ path: testInfo.outputPath("resource-manager-classic-layout.png"), fullPage: true });
 });
 
+test("resource manager faceset category hides the generated hero face series", async ({ page }, testInfo) => {
+  // generated-actor-hero-XX-face-NN 낱장 32장은 저장본 호환 등록만 남기고 저작 목록에서 내렸다.
+  // 얼굴 그래픽 카테고리에는 EasyRPG 낱장 80장만 보여야 한다.
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
+  await page.goto("/?freshProject=1&resourceManagerFaceset=1");
+  await page.getByTestId("toolbar-resource-manager").click();
+  await expect(page.getByTestId("resource-modal")).toBeVisible();
+
+  await page.getByTestId("resource-category-list").getByRole("option", { name: "얼굴 그래픽" }).click();
+  const entries = page.getByTestId("resource-entry-list");
+  await expect(entries.getByTestId("resource-profile-faceset")).toHaveCount(80);
+  await expect(entries).toContainText("Actor1 얼굴 1");
+  await expect(entries).not.toContainText("hero-01-face");
+  await expect(entries).not.toContainText("hero-02-face");
+
+  // 목록 보기는 행 텍스트에 assetId 를 싣는다 — id 수준으로도 생성 시리즈가 없음을 확인한다.
+  await page.getByRole("button", { name: "리스트 뷰" }).click();
+  await expect(entries).toContainText("easyrpg-faceset-actor1-00");
+  await expect(entries).not.toContainText("generated-actor-hero");
+  await page.screenshot({ path: testInfo.outputPath("resource-manager-faceset-no-generated.png"), fullPage: true });
+});
+
 test("resource manager imports and protects RM2K3-shaped image profiles", async ({ page }, testInfo) => {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1&resourceManagerWave=1");
