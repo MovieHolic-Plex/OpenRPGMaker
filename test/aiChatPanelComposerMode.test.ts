@@ -16,6 +16,16 @@ vi.mock("@/editor/panels/aiPiAgentCommand", async (importOriginal) => ({
   runPiCommand: vi.fn(async () => true),
 }));
 
+// 의도 선언의 판정만 고정한다 — 나머지(buildIntentFacts·createLlmIntentDeclarer)는 실물을 쓴다.
+const intentDecl = vi.hoisted(() => ({ mode: "other" as string, calls: 0 }));
+vi.mock("@/ai/intentDeclarationClient", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/ai/intentDeclarationClient")>()),
+  declareIntentCached: vi.fn(async () => {
+    intentDecl.calls += 1;
+    return { intent: { mode: intentDecl.mode }, elapsedMs: 1 } as never;
+  }),
+}));
+
 let restoreDom: (() => void) | null = null;
 
 function installFakeLocalStorage(): void {
@@ -57,6 +67,8 @@ beforeEach(() => {
   vi.stubEnv("VITE_LLM_API_URL", "");
   vi.stubEnv("VITE_LLM_API_KEY", "");
   vi.mocked(runPiCommand).mockClear();
+  intentDecl.mode = "other";
+  intentDecl.calls = 0;
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
@@ -129,6 +141,35 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     expect(lastCommand()?.task).toBe("집 한 채 지어줘");
   });
 
+
+  it("do 레벨의 질문 발화는 읽기 전용으로 승격하고 사용자에게 알린다", async () => {
+    // Break: 「균형」에서 "편집하지 마" 질문에 쓰기 툴이 달려 가면 툴 미사용이 모델 선의일 뿐이다.
+    intentDecl.mode = "question";
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "이 맵의 이름과 크기만 알려줘. 편집하지 마.");
+    expect(lastPlan()).toMatchObject({ readOnly: true });
+    expect(intentDecl.calls).toBeGreaterThan(0);
+    // 사용자가 읽기 전용 강등을 모르면 "왜 편집이 안 되지" 가 된다 — 시스템 줄로 알린다.
+    expect(findByTestId(panel, "ai-chat-log")?.textContent ?? "").toContain("읽기 전용");
+  });
+
+  it("do 레벨의 수정 발화는 승격하지 않는다 — 오판 역방향 사고 방지", async () => {
+    // Break: "편집해줘"가 읽기 전용으로 돌면 아무 일도 안 하는 런이 된다.
+    intentDecl.mode = "modify";
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "집 한 채 지어줘");
+    expect(lastPlan()).toMatchObject({ readOnly: false, planOnly: false });
+  });
+
+  it("읽기 전용 다이얼은 분류 호출 자체를 건너뛴다", async () => {
+    // Break: 질문 레벨에서도 선언 LLM 을 부르면 발화당 지연·비용이 이중으로 든다.
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    selectAutonomy(panel, "readonly");
+    intentDecl.calls = 0;
+    await send(panel, "뭐가 있지?");
+    expect(intentDecl.calls).toBe(0);
+    expect(lastPlan()).toMatchObject({ readOnly: true });
+  });
 
   it("중단처럼 자격과 무관한 실패에는 설정 열기를 붙이지 않는다", async () => {
     vi.mocked(runPiCommand).mockImplementationOnce(async (_command, surface) => {
