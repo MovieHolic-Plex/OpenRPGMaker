@@ -28,7 +28,7 @@ export function planOrganicVillageLake(area: Rect, seed: number, options: Organi
   }
   const rng = mulberry32(seed);
   const width = Math.round(area.w * (0.50 + rng() * 0.035));
-  const depth = Math.max(4, Math.round(area.h * (0.22 + rng() * 0.015)));
+  const depth = Math.max(4, Math.min(Math.floor(width / 2), Math.round(area.h * (0.22 + rng() * 0.015))));
   const x = area.x + area.w - width - Math.max(2, Math.round(area.w * 0.065));
   const y = area.y + area.h - depth - Math.max(2, Math.round(area.h * 0.075));
   const preferred = lakeAt({ x, y, w: width, h: depth }, seed, false);
@@ -39,23 +39,27 @@ export function planOrganicVillageLake(area: Rect, seed: number, options: Organi
   }
   const fits = (plan: OrganicVillageLakePlan): boolean => {
     const ratio = plan.cells.length / (area.w * area.h);
-    return ratio >= 0.05 && ratio <= 0.09 && plan.bounds.w >= plan.bounds.h * 1.3
+    return ratio >= 0.035 && ratio <= 0.08 && plan.bounds.w >= plan.bounds.h * 1.8
       && plan.bounds.x >= area.x && plan.bounds.y >= area.y
       && plan.bounds.x + plan.bounds.w <= area.x + area.w && plan.bounds.y + plan.bounds.h <= area.y + area.h
       && plan.cells.every(p => !options.avoid!.has(p.y * stride! + p.x));
   };
   if (fits(preferred)) return preferred;
   // A central cross can leave only ~26 columns in an 80×80 southeast lot.
-  // Broader banks retain 5–9% of the WHOLE village while the lake gets narrower.
+  // Reduce the water share to 3.5–8% before sacrificing the horizontal silhouette.
+  // Try 2:1 first, then 1.8:1 only when the thinner body cannot meet that share.
   // Each candidate is still one complete silhouette; never cut forbidden pixels out.
-  for (const [widthRatio, depthRatio] of [[0.50, 0.23], [0.42, 0.25], [0.35, 0.26], [0.32, 0.25], [0.31, 0.25]] as const) {
-    const w = Math.round(area.w * widthRatio), h = Math.max(4, Math.round(area.h * depthRatio));
-    for (const [right, bottom] of [[1, 4], [1, 8], [4, 3], [1, 2]] as const) {
-      const candidate = lakeAt({ x: area.x + area.w - w - right, y: area.y + area.h - h - bottom, w, h }, seed, widthRatio < 0.5);
-      if (fits(candidate)) return candidate;
+  for (const widthRatio of [0.50, 0.42, 0.35, 0.32, 0.31]) {
+    const w = Math.round(area.w * widthRatio);
+    for (const aspect of [2, 1.8]) {
+      const h = Math.max(4, Math.min(Math.round(area.h * 0.23), Math.floor(w / aspect)));
+      for (const [right, bottom] of [[1, 4], [1, 8], [4, 3], [1, 2]] as const) {
+        const candidate = lakeAt({ x: area.x + area.w - w - right, y: area.y + area.h - h - bottom, w, h }, seed, widthRatio < 0.5);
+        if (fits(candidate)) return candidate;
+      }
     }
   }
-  throw new ToolError("우하단에 길을 피하면서 마을 면적의 5~9%를 차지하는 연결 호수를 놓을 수 없습니다. 길 예약이나 마을 크기를 조정하세요.",
+  throw new ToolError("우하단에 길을 피하면서 마을 면적의 3.5~8%를 차지하는 가로로 긴 연결 호수를 놓을 수 없습니다. 길 예약이나 마을 크기를 조정하세요.",
     { code: "village-lake-capacity" });
 }
 
@@ -63,7 +67,7 @@ function lakeAt(box: Rect, seed: number, broad: boolean): OrganicVillageLakePlan
   const rng = mulberry32(seed ^ 0x4c414b45);
   const { x, y, w: width, h: depth } = box;
   const stations = [0, 0.12, 0.28, 0.43, 0.57, 0.73, 0.90, 1];
-  const north = broad ? [0.47, 0.09, 0.04, 0.16, 0.27, 0.04, 0.12, 0.46] : [0.47, 0.16, 0.08, 0.34, 0.40, 0.10, 0.21, 0.46];
+  const north = broad ? [0.47, 0.05, 0.025, 0.12, 0.30, 0.025, 0.08, 0.46] : [0.47, 0.16, 0.08, 0.34, 0.40, 0.10, 0.21, 0.46];
   const south = broad ? [0.57, 0.92, 0.98, 0.94, 0.85, 0.98, 0.90, 0.57] : [0.57, 0.77, 0.93, 0.96, 0.71, 0.85, 0.78, 0.57];
   for (let i = 1; i < stations.length - 1; i++) {
     stations[i]! += (rng() - 0.5) * 0.035;

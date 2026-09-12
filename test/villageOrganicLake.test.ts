@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { planOrganicVillageLake, paintOrganicVillageLake } from "@/editor/tools/village/organicLake";
+import { boulevardCells, villageBoulevard } from "@/editor/tools/village/roads";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { TILE } from "@/project/defaults/constants";
@@ -17,11 +18,11 @@ function fixture() {
 }
 
 describe("organic village lake planning", () => {
-  it.each([80, 90, 100])("keeps %i maps at 5–9% water with one elongated body, broad bays and no holes", size => {
+  it.each([80, 90, 100])("keeps %i maps at 3.5–8% water with one elongated body, broad bays and no holes", size => {
     for (let seed = 0; seed < 32; seed++) {
       const plan = planOrganicVillageLake({ x: 0, y: 0, w: size, h: size }, seed), b = plan.bounds;
-      expect(plan.cells.length / (size * size)).toBeGreaterThanOrEqual(0.05);
-      expect(plan.cells.length / (size * size)).toBeLessThanOrEqual(0.09);
+      expect(plan.cells.length / (size * size)).toBeGreaterThanOrEqual(0.035);
+      expect(plan.cells.length / (size * size)).toBeLessThanOrEqual(0.08);
       expect(b.w / b.h).toBeGreaterThan(2);
       expect(b.x + b.w / 2).toBeGreaterThan(size * 0.60);
       expect(b.y).toBeGreaterThan(size * 0.65);
@@ -68,6 +69,43 @@ describe("organic village lake planning", () => {
     expect(moved.bounds).toEqual({ ...plan.bounds, x: plan.bounds.x + 11, y: plan.bounds.y + 23 });
   });
 
+  it.each([16, 20, 32])("keeps the minimum %i map connected and horizontally elongated", size => {
+    const project = createBlankProject();
+    for (let seed = 0; seed < 32; seed++) {
+      const map = createBlankMap("Small lake contract", size, size);
+      project.maps[map.id] = map;
+      const plan = planOrganicVillageLake({ x: 0, y: 0, w: size, h: size }, seed);
+      expect(plan.bounds.w / plan.bounds.h).toBeGreaterThanOrEqual(1.8);
+      expect(plan.cells.every(p => p.x >= 0 && p.y >= 0 && p.x < size && p.y < size)).toBe(true);
+      // The independent painter validates tight bounds, uniqueness and four-way connectivity.
+      expect(paintOrganicVillageLake(project, map, plan)).toBe(plan.cells.length);
+    }
+  });
+
+  it.each([[80, 33], [88, 37]])("keeps the actual %i×80 compact request thin and curved beside its seeded boulevard and market", (width, plazaX) => {
+    const area = { x: 0, y: 0, w: width, h: 80 }, seed = 20260913;
+    const plaza = { rect: { x: plazaX, y: 35, w: 16, h: 10 }, centerX: plazaX + 8, centerRow: 40 };
+    const avoid = new Set(boulevardCells(area, villageBoulevard(area, plaza)!, seed).map(p => p.y * area.w + p.x));
+    for (let y = plaza.rect.y - 1; y <= plaza.rect.y + plaza.rect.h; y++) {
+      for (let x = plaza.rect.x - 1; x <= plaza.rect.x + plaza.rect.w; x++) avoid.add(y * area.w + x);
+    }
+    const before = [...avoid], plan = planOrganicVillageLake(area, seed, { avoid, mapWidth: area.w }), b = plan.bounds;
+    expect(plan.cells.every(p => !avoid.has(p.y * area.w + p.x))).toBe(true);
+    expect([...avoid]).toEqual(before);
+    expect(plan.cells.length / (area.w * area.h)).toBeGreaterThanOrEqual(0.035);
+    expect(plan.cells.length / (area.w * area.h)).toBeLessThanOrEqual(0.08);
+    expect(b.w / b.h).toBeGreaterThanOrEqual(2);
+    const north = Array.from({ length: b.w }, (_, dx) => Math.min(...plan.cells.filter(p => p.x === b.x + dx).map(p => p.y)));
+    const bay = Math.max(...north.slice(Math.floor(b.w * 0.40), Math.floor(b.w * 0.62)));
+    expect(bay - Math.min(...north.slice(0, Math.floor(b.w * 0.35)))).toBeGreaterThanOrEqual(3);
+    expect(bay - Math.min(...north.slice(Math.floor(b.w * 0.65)))).toBeGreaterThanOrEqual(3);
+    const { project } = fixture(), map = createBlankMap("Actual compact lake reservation", area.w, area.h);
+    project.maps[map.id] = map;
+    for (const i of avoid) map.lowerTiles[i] = 421;
+    expect(paintOrganicVillageLake(project, map, plan)).toBe(plan.cells.length);
+    expect([...avoid].every(i => map.lowerTiles[i] === 421)).toBe(true);
+  });
+
   it.each([52, 53])("retains whole-village water area southeast of a boulevard reaching column %i", roadRight => {
     const area = { x: 7, y: 11, w: 80, h: 80 }, mapWidth = 104, avoid = new Set<number>();
     for (let y = area.y; y < area.y + area.h; y++) for (let x = area.x; x < area.x + area.w; x++) {
@@ -77,11 +115,11 @@ describe("organic village lake planning", () => {
     for (let seed = 0; seed < 24; seed++) {
       const plan = planOrganicVillageLake(area, seed, { avoid, mapWidth });
       expect(plan.cells.every(p => !avoid.has(p.y * mapWidth + p.x))).toBe(true);
-      expect(plan.cells.length).toBeGreaterThanOrEqual(320);
-      expect(plan.cells.length).toBeLessThanOrEqual(576);
+      expect(plan.cells.length).toBeGreaterThanOrEqual(224);
+      expect(plan.cells.length).toBeLessThanOrEqual(512);
       expect(plan.bounds.x).toBeGreaterThan(area.x + roadRight);
       expect(plan.bounds.y).toBeGreaterThan(area.y + 49);
-      expect(plan.bounds.w / plan.bounds.h).toBeGreaterThanOrEqual(1.3);
+      expect(plan.bounds.w / plan.bounds.h).toBeGreaterThanOrEqual(1.8);
       const { project } = fixture(), map = createBlankMap("Offset reservation", mapWidth, 104);
       project.maps[map.id] = map;
       // Painter independently rejects a disconnected plan, proving the fallback was not clipped.
