@@ -68,14 +68,17 @@
   backdrop-filter: blur(20px) saturate(1.08);
   -webkit-backdrop-filter: blur(20px) saturate(1.08);
   border-radius: var(--ai-deck-radius);
-  bottom: var(--ai-deck-inset);
+  /* 위치는 레일 드래그가 패널에 심는 --ai-deck-right/--ai-deck-bottom 을 따른다
+     (aiDeckMoveChrome.ts). 저장값이 없으면 기존 우하단(inset) 그대로다.
+     right/bottom 앵커라 기록이 열려도 위로만 자라 끌어 놓은 아래 모서리가 안정적이다. */
+  bottom: var(--ai-deck-bottom, var(--ai-deck-inset));
   box-shadow: var(--ai-deck-shadow);
   display: flex;
   flex-direction: column;
   max-height: calc(100% - var(--ai-deck-inset) * 2);
   pointer-events: auto;
   position: absolute;
-  right: var(--ai-deck-inset);
+  right: var(--ai-deck-right, var(--ai-deck-inset));
   transition: width 200ms ease;
   /* 폭 상한은 뷰포트가 아니라 패널(=캔버스 영역) 기준이다 — 100vw 로 재면 좁은 창에서 데크가 좌측 도구
      기둥 위로 넘어간다(e2e assistant-single-dock 900px 실측: x 248 < 캔버스 304). */
@@ -106,16 +109,39 @@
   transition: none;
 }
 
+/* 레일 위치 드래그도 포인터를 정확히 따라야 한다 — 같은 특이도로 transition 을 죽인다. */
+.ai-chat-panel.chat-dock-float.is-dragging:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck {
+  transition: none;
+}
+
+/* 위치 드래그 중에는 텍스트 선택이 아니라 이동이 일어난다. */
+.ai-chat-panel.chat-dock-float.is-dragging {
+  user-select: none;
+}
+
+.ai-chat-panel.chat-dock-float.is-dragging .ai-deck-rail {
+  cursor: grabbing;
+}
+
 /* ── 2. 상태 레일 ─────────────────────────────────────────────── */
+/* 레일은 데크의 드래그 손잡이다(2026-09-12) — 잡을 수 있음을 grab 커서로 알린다.
+   아이콘 줄·팝오버는 손잡이가 아니므로 각자 커서를 되돌린다(버튼은 .ai-composer-menu-btn
+   의 cursor:pointer 가 그대로 이긴다). */
 .ai-deck-rail {
   align-items: center;
   border-bottom: 1px solid var(--ai-deck-line);
+  cursor: grab;
   display: flex;
   flex: 0 0 auto;
   gap: 10px;
   min-height: 38px;
   padding: 0 8px 0 16px;
   position: relative;
+}
+
+.ai-deck-rail-actions,
+.ai-deck-rail .ai-composer-popover {
+  cursor: default;
 }
 
 /* 진행 헤어라인 — 데크 윗변을 따라 흐른다. */
