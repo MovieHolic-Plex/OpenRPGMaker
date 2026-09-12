@@ -12,6 +12,7 @@ import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachabili
 function build(query: string, seed = 7) {
   const context = { project: createBlankProject() };
   const result = runTool(context, "place_concept", {
+    template: true,
     query, mapId: "quality", seed,
   }, { dryRun: false });
   expect(result.ok, result.summary).toBe(true);
@@ -85,7 +86,7 @@ describe("facility furniture composition", () => {
     const authored = structuredClone(bundles);
     runTool(context, "get_concept_facility", { query: "민가" }, { dryRun: false });
     expect(context.project.tilesets[INTERIOR_ROOM_TILESET_ID]?.scratchConceptBundles).toEqual(authored);
-    const result = runTool(context, "place_concept", { query: "민가", mapId: "edited", seed: 7 }, { dryRun: false });
+    const result = runTool(context, "place_concept", { template: true, query: "민가", mapId: "edited", seed: 7 }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
     const map = context.project.maps.edited;
     if (!map) throw new Error("Missing authored house map");
@@ -154,7 +155,7 @@ describe("facility furniture composition", () => {
       expect(data.variants.length).toBeGreaterThan(0);
       for (const variant of data.variants) {
         const result = runTool(context, "place_concept", {
-          query: facility.label, mapId: `variant_${variant.id}`, plan: variant.plan, seed: 7,
+          query: facility.label, mapId: `variant_${variant.id}`, plan: variant.plan, seed: 7, template: true,
         }, { dryRun: false });
         expect(result.ok, result.summary).toBe(true);
         const warnings = [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])];

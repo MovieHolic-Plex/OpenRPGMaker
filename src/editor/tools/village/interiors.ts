@@ -119,6 +119,7 @@ export function createVillageHouseInteriors(
       stories: interior.stories,
       ...(interior.upperMapId ? { upperMapId: interior.upperMapId } : {}),
       floorMapIds: interior.floors.map((f) => f.mapId),
+      designSource: interior.interiorSource,
     });
   }
   return refs;

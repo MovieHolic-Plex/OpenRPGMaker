@@ -59,7 +59,7 @@ describe("개념 꾸러미 — 층", () => {
 
   it("place_concept 이 층마다 맵을 짓고 계단을 양방향으로 잇는다", () => {
     const ctx = projectWith(twoStoryInn());
-    const result = runTool(ctx, "place_concept", { query: "여관", mapId: "map_inn", seed: 7 }, { dryRun: false });
+    const result = runTool(ctx, "place_concept", { template: true, query: "여관", mapId: "map_inn", seed: 7 }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
     const data = result.data as {
       floors: { level: number; mapId: string; name: string }[];
@@ -101,7 +101,7 @@ describe("개념 꾸러미 — 층", () => {
     const bundle = twoStoryInn();
     bundle.things.find((thing) => thing.id === "stairs")!.placeIds = ["corridor"];
     const ctx = projectWith(bundle);
-    const result = runTool(ctx, "place_concept", { query: "여관", mapId: "map_inn", seed: 7 }, { dryRun: false });
+    const result = runTool(ctx, "place_concept", { template: true, query: "여관", mapId: "map_inn", seed: 7 }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
     expect(ctx.project.maps.map_inn_2f).toBeTruthy();
     const warnings = [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])];

@@ -40,7 +40,7 @@ type Built = {
 function buildTemplate(bundle: ConceptBundleRecord, seed = 7): Built {
   const context: ToolContext = { project: createBlankProject() };
   const mapId = `map_${bundle.id}_tpl`;
-  const result = runTool(context, "place_concept", { query: bundle.facilities[0]!.label, mapId, seed }, { dryRun: false });
+  const result = runTool(context, "place_concept", { template: true, query: bundle.facilities[0]!.label, mapId, seed }, { dryRun: false });
   expect(result.ok, `${bundle.id}: ${result.summary}`).toBe(true);
   const data = result.data as { rooms: Built["rooms"]; wallMaterial: string };
   return {
@@ -153,7 +153,7 @@ describe("개념 꾸러미 초안 묶음 — 시드와 호출", () => {
       expect(resolved?.bundle.id, bundle.facilities[0]!.label).toBe(bundle.id);
     }
     expect(resolveConceptFacility(project, "성당")).toBeUndefined();
-    const result = runTool({ project }, "place_concept", { query: "성당", mapId: "map_x" }, { dryRun: false });
+    const result = runTool({ project }, "place_concept", { template: true, query: "성당", mapId: "map_x" }, { dryRun: false });
     expect(result.ok).toBe(false);
     expect(result.summary).toContain("교회");
     expect(result.summary).toContain("여관");

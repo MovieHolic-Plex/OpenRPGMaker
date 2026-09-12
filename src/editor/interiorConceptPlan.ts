@@ -7,7 +7,11 @@ import {
   layoutConceptFacility, liveBundlesForTileset, resolveConceptFacility, thingsForPlace,
   type ConceptOverlayRoom, type ResolvedConceptFacility,
 } from "./conceptBundleResolve";
-import type { InteriorRoomPlan, RoomSpec } from "./interiorRoomPipeline";
+import { plansStructurallyEqual } from "./conceptFacilityScore";
+import { CONCEPT_FACILITY_TEMPLATES } from "@/project/defaults/conceptFacilityTemplates";
+import { interiorVocabFromTileset, type InteriorRoomPlan, type RoomSpec } from "./interiorRoomPipeline";
+import { ConceptPlanError, facilityAsPlan, parseConceptPlan } from "./conceptPlan";
+import { interiorObjectById } from "./interiorObjectCatalog";
 import type { HouseInteriorProgram } from "./houseInteriors";
 import type { Project } from "@/project/types";
 import { ToolError } from "./tools/types";
@@ -32,6 +36,59 @@ export function resolveHouseConcept(project: Project, program: HouseInteriorProg
   return facility;
 }
 
+
+/**
+ * 해석된 시설이 코드 초안 그대로인가 — 초안은 최종 도면이 아니라 씨앗이다(2026-09-12).
+ * 저작된 꾸러미(사용자가 DB에서 구조를 고친 값)만 집 실내의 도면 정본이 된다. 초안 그대로면
+ * createHouseInteriorMap 이 절차 도면(scale × program)으로 실루엣을 내고, 초안의 장소·물건은
+ * 방 테마에 씨앗처럼 묶여 들어간다(bindInteriorConceptPlan).
+ * place_concept 가 한 번이라도 돌면 초안 복제본이 scratch 에 얹히므로(ensureConceptBundles)
+ * 참조가 아니라 구조로 비교한다 — 구조가 같으면 여전히 초안이다.
+ */
+export function isCodeDraftFacility(resolved: ResolvedConceptFacility): boolean {
+  const templateBundle = CONCEPT_FACILITY_TEMPLATES.find((bundle) => bundle.id === resolved.bundle.id);
+  const templateFacility = templateBundle?.facilities.find((facility) => facility.id === resolved.facility.id);
+  if (!templateBundle || !templateFacility) return false;
+  const template = facilityAsPlan(templateBundle, templateFacility);
+  const current = facilityAsPlan(resolved.bundle, resolved.facility);
+  return (template.layout ?? "row") === (current.layout ?? "row")
+    && (template.wall ?? "cream") === (current.wall ?? "cream")
+    && plansStructurallyEqual(template, current);
+}
+
+/**
+ * 호출자가 설계한 연결 실내(place_concept plan 모양)를 꾸러미로 푼다.
+ * 생략하면 undefined 를 돌려주고 경고를 남긴다 — 꾸러미 템플릿을 그대로 찍으면 모든 집의 실내가
+ * 같은 도면이 된다(2026-09-11 사용자 지적: "도면 기반으로 똑같은 것만 찍어낸다").
+ * 물건 어휘는 프로젝트의 실내 타일셋이 정본이다(place_concept 과 같은 규칙).
+ */
+export function resolveDesignedInterior(
+  project: Project,
+  raw: unknown,
+  options: { readonly label: string; readonly warnings: string[] },
+): ResolvedConceptFacility | undefined {
+  if (raw === undefined) {
+    options.warnings.push(
+      "실내를 설계하지 않아 개념 꾸러미 템플릿을 그대로 시공했다 — 모든 집의 실내가 같은 도면이 된다. "
+      + "interiorPlan(장소 수·크기·구역·층·물건)을 넘겨 요청에 맞게 설계하라.",
+    );
+    return undefined;
+  }
+  const tilesetId = TILESET;
+  const vocab = interiorVocabFromTileset(project.tilesets[tilesetId]);
+  try {
+    const parsed = parseConceptPlan(raw, {
+      facilityId: "designed",
+      facilityLabel: options.label,
+      bundleId: "designed",
+      resolveObject: (objectId) => vocab.objectsById.get(objectId) ?? interiorObjectById(objectId),
+    });
+    return { tilesetId, bundle: parsed.bundle, facility: parsed.facility };
+  } catch (error) {
+    if (error instanceof ConceptPlanError) throw new ToolError(error.message, { code: error.code });
+    throw error;
+  }
+}
 export function conceptHouseFloorPlan(
   resolved: ResolvedConceptFacility,
   input: { mapId: string; name: string; seed: number; level: number },

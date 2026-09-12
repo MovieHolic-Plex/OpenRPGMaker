@@ -1,5 +1,126 @@
 # Editor AI Tools & Vocabulary
 
+## 도면 문법에 wing(세로 복도) 추가 — 실루엣 변주와 물건 대체군 (2026-09-11)
+
+사용자 지적: "저 화톳불이랑 집의 구조 뭐 이런걸 좀 변주해야하는 게 아닌가". 실측이 맞았다.
+
+- 도면 문법이 `row` / `double-row` 둘뿐이었고 **둘 다 "북쪽 방 줄 → 가로 복도 → 남쪽 홀"** 로 가로 밴드를
+  쌓는다 → 어떤 시설을 지어도 같은 샌드위치 실루엣(`conceptLayoutDoubleRow.ts`).
+- 물건은 카탈로그 55종인데 초안 19종이 쓰는 건 47종이고, 그마저 `window·box·crate·table_chairs·counter·
+  cabinet·bookshelf·stove·barrel·bed_v·clock·plant` 12종에 쏠려 있다. **난방 계열(`hearth`,
+  `stone_hearth_lit`, `stone_hearth_unlit`, `flue`)은 정의돼 있으나 어느 초안도 안 쓴다**(미사용 8종 중 4종).
+  칩셋 실측: 그림 있는 타일 478칸 중 물건이 쓰는 건 129칸 → 349칸이 미사용(새 물건 재료).
+
+변경:
+
+1. **`layout: "wing"`** — `src/editor/conceptLayoutWing.ts`. 방이 **세로 복도** 좌우(동·서)에 남북으로
+   늘어서고 홀이 맨 남쪽에 선다. 방마다 복도 쪽 열에 문(innerDoors)을 내고, 벽·천장은 파이프라인이
+   바닥 마스크에서 파생하므로 기존 벽 문법이 그대로 성립한다(실측: 18×27 wing, 방 8개, 문에서 BFS 로
+   전 방 도달). `CONCEPT_LAYOUT_KINDS` 에 추가 → plan 스키마 enum·DB UI 라벨·검증이 자동으로 따라온다.
+2. **`get_concept_facility` 응답에 `vocabularyGroups`** — 같은 역할의 대체 물건군(잠자리/난방·조리/
+   식사·작업대/수납/좌석/바닥깔개/벽장식/층계). designHint 에 "템플릿 물건을 그대로 베끼면 모든 실내가
+   같은 구조물로 채워진다 — 같은 역할의 다른 물건을 최소 둘 이상 골라라" 를 명시. levers 에
+   `shape rect|l|alcove`(ㄱ자·벽감)와 `layout wing` 도 실었다.
+
+회귀: `test/conceptWingLayout.test.ts`(복도 동·서 배치, 세로 복도, 홀 남단, 문에서 전 방 도달, 미지 layout 거절).
+
+아직: 새 물건 정의(미사용 349칸)와 배치 문법 변주(같은 물건의 벽·러그·구석 배치를 시드로 흔들기).
+### 후속: 석조 화로는 복도 끝 알코브에 (2026-09-11)
+
+사용자 지적: "석조 난로의 위치는 거실이나 복도의 끝 이런 데에 있어야하지 않겠냐".
+
+- 3×3 석조 화로는 방 하나를 다 먹는 설비인데도 아무 자리에나(작은 객실 벽 등) 앉았다. 카탈로그 role 을
+  손대는 대신 **id 계열**(`hearth`·`stone_hearth_lit`·`stone_hearth_unlit`)로 규칙을 세웠다 — 카탈로그
+  role 은 타일 의미 계약(`test/interiorObjectCatalog.test.ts` 의 role↔타일 세트 검증)이라 임의 값을 넣으면 깨진다.
+- composer: 복도(`walkway`)의 화로는 `north-end` 슬롯(= 복도 끝)으로 보낸다. 거실·홀에서는 종전대로
+  `wall-north` 로 북벽에 앉는다.
+- wing 도면에 **복도 끝 알코브**(`CORRIDOR_NOOK_H = 4`)를 미리 비워 둔다 — 3열 복도를 3칸 막으면 통행이
+  끊기므로, 화로 자리를 방 구간 위에 따로 둔다. 화로가 없으면 넓은 복도 끝으로 남는다.
+- 통행선(lane) 예외: 복도 lane 은 복도 전체를 덮어 막는 물건이 설 자리가 없다. 끝 알코브 전용
+  `freeForEndNook` 이 lane 을 점유로 보지 않되, `preservesAccess` 는 그대로 돌려 **화로 뒤쪽에 남는
+  상호작용(문·계단)이 있으면 후보에서 탈락**시킨다(통로를 끊는 배치는 안 된다).
+- 회귀: `test/conceptWingLayout.test.ts` — 화로가 복도 북단(끝)에 서고, 자리 없음 경고 0, 문에서 모든 방 도달.
+
+
+### 팔레트 확장 — 안 쓰던 칩셋 그림 16종을 물건으로 (2026-09-11)
+
+실측: 실내 칩셋은 그림 있는 타일 **478칸**인데 물건 55종이 쓰던 건 **129칸**뿐이었다. 그래서 어떤 실내든
+`window·box·crate·table_chairs·counter·cabinet·bookshelf·stove·barrel·bed_v·clock·plant` 12종이 돌아왔다.
+
+`INTERIOR_TILE_SEMANTICS` 의 라벨로 미사용 타일을 골라 **16종을 새로 정의**했다:
+`window_white`(54) · `window_lattice`(174) · `glass_pane`(81) · `curtain_red`(142,143,172,173 2×2) ·
+`curtain_tail`(202) · `chair_back`(267) · `chair_red`(446,476) · `chair_fallen`(384) · `table_round`(236) ·
+`altar_stone`(374) · `vase_flowers`(296) · `bottle_set`(237) · `glass_shards`(417) · `armor_leather`(292) ·
+`ladder_tall`(473) · `stairs_plain`(475). 전부 role=null 로 선언한다 — role 은 타일 의미 계약
+(`test/interiorObjectCatalog.test.ts`)이라 임의 값을 넣으면 그 테스트가 깨진다.
+
+**함정(실측):** `INTERIOR_TILE_SEMANTICS` 는 라벨 묶음들을 이어 붙여 만든 **밀집 배열**이라
+`forEach` 의 인덱스(배열 위치) ≠ 타일 id 다. 진짜 id 는 `entry.index` 다. 배열 위치로 고르면
+창문 자리에 풀숲·돌이 나온다(카드 렌더로 16종을 한 장씩 뽑아 눈으로 잡았다 — 이 검증 단계를 건너뛰면
+그림이 깨진 물건이 카탈로그에 들어간다).
+
+`CONCEPT_VOCABULARY_GROUPS`(place_concept 응답)에 새 id 를 연결해 모델이 고를 수 있게 했고,
+갤러리 렌더 16장(문법 3종 × 시설 15종 × 시드)으로 확인했다.
+
+## 실내는 찍어내지 않는다 — place_concept 은 설계를 요구하고, author_house 는 interiorPlan 을 받는다 (2026-09-11)
+
+사용자 지적: "왜 실내를 건설할라 하면 다 똑같이 나오냐 / 도면 기반으로 똑같은 것만 찍어내는 게 문제리라".
+실측이 맞았다 — `oprn-f51b995ac9`(30채 마을)의 집 실내 12개는 전부 13×10 이고 **lower 레이어 해시가 12/12 동일**,
+`oprn-b3ce25d38a`(집 6채)는 전부 16×16·문 (8,13) 에 셀 차이 0.8~7%(침실 러그 유무·침대/시계 자리)뿐이었다.
+
+원인은 두 AI 경로 모두 "설계 없이 시공" 이 기본값이었던 것이다.
+
+- `place_concept` 은 `plan` 을 생략하면 `facilityAsPlan(템플릿)` 을 그대로 지었고(`designNote` 경고만 남겼다),
+  `author_house(interior:"linked-interior")` 는 실내 설계 인자 자체가 없어 `resolveHouseConcept` 이 고른
+  시설 템플릿 1장(민가)을 매번 찍었다. 시드가 흔드는 것은 러그·침대 위치뿐이고, 실내 도면은 코드가
+  `layoutConceptFacility` 로 결정론적으로 만든다(같은 장소 목록 ⇒ 항상 같은 방 배치).
+- 코드에 이미 있던 절차 도면 21종(`buildHouseInteriorPlan`, scale 4 × program 6)은 프로젝트가 있으면
+  전부 우회된다(`resolveHouseConcept` 이 코드 초안으로도 성공한다).
+
+변경:
+
+1. `place_concept` — `plan` 생략은 `concept-plan-required` 로 **거부**하고, 템플릿과 구조가 같은 plan 은
+   `concept-plan-identical` 로 거부한다(`plansStructurallyEqual`). 설계를 요구하는 오류 문구가
+   `get_concept_facility` 로 읽을 것(장소 수·크기·구역·층·물건)을 그대로 알려 준다.
+   사용자가 "템플릿 그대로" 를 명시했을 때만 `template: true` 로 통과하며, 결과에
+   `data.designSource: "template"` + `designNote` 가 실린다.
+2. `author_house` — 집마다 `interiorPlan`(place_concept plan 과 같은 모양, 공용 스키마
+   `schemaShapes.CONCEPT_PLAN_SCHEMA`)을 받아 그 도면을 짓는다(`resolveDesignedInterior` →
+   `createHouseInteriorMap({interiorConcept})`).
+3. 프롬프트(`contextBuilder` 규칙 11)도 같은 문장을 싣는다: 실내는 매번 설계한다.
+
+회귀: `test/placeConceptTool.test.ts`(생략/복사 거부 + `template:true` 탈출구), `test/interiorConceptRoutes.test.ts`
+(`interiorPlan` 이 템플릿 대신 서고, 생략은 경고). 초안 자체를 검사하는 테스트(시설 초안 묶음·타일 계약·inn
+물리 계약 12개 파일)는 이제 `template: true` 로 의도를 명시한다. `docs/tool-catalog.md` 재생성 필요
+(`node scripts/generateToolCatalog.mjs`).
+
+## 초안은 씨앗이고 저작본만 도면 정본이다 — 절차 도면 되살리기 + 실내 다양성 리포트 (2026-09-12)
+
+위 절의 두 미착수 항목을 끝냈다. `createHouseInteriorMap` 의 도면 정본은 이제 세 갈래다
+(`InteriorMapResult.interiorSource`):
+
+- **designed** — 호출자가 `interiorPlan` 을 넘겼다(`resolveDesignedInterior`). 최우선.
+- **authored** — 프로젝트 꾸러미의 시설이 코드 초안과 **구조가 다르다**(`isCodeDraftFacility`:
+  layout·wall·`plansStructurallyEqual` 비교. 라벨만 바꾼 초안은 여전히 초안). 저작본의 도면을 그대로 짓는다.
+- **seed** — 꾸러미가 없거나 초안 그대로다(복제본이 scratch 에 얹혀 있어도 구조가 같으면 초안).
+  절차 도면(`buildHouseInteriorPlan`, scale×program)으로 실루엣을 내고 초안의 장소·물건을 방 테마에
+  묶는다(`bindInteriorConceptPlan` → concept 오버레이는 `facilityId:"composed"`). 씨앗 바인딩이
+  `ToolError` 로 실패하면(테마에 맞는 장소 없음) 도면만 두고 어휘 문법으로 꾸민다.
+
+`build_village` 의 연결 실내도 같은 경로를 탄다(`VillageHouseInteriorRef.designSource`).
+
+실내 다양성 리포트(`src/editor/tools/interiorVariety.ts`)는 외장 `houseVariety` 와 같은 관찰 고리다:
+시공 직후 각 층 맵의 `roomHarnessPlan` 을 되읽어 도면 서명(방 배치·문 — 가구 위치 흔들림은 제외)과
+물건 세트(concept 오버레이 objectId 합집합)를 집계한다. 도면 기록이 없는 맵은 하부 레이어 자체가
+서명이다(최초 실측이 lower 해시 비교였던 계보). `author_house` 는 `data.interiorVariety` + summary
+한 줄(`실내 N채 · 도면 M종 → verdict`)에 싣고, `build_village` 는 `data.interiorVariety` + 경고에 싣는다.
+verdict 는 `diverse`/`mixed`/`monotonous` — 도면 60% 미만이 고유하면 mixed, 1종이면 monotonous 다.
+경고 문구는 반복 도면 라벨×횟수, 물건 세트 동일(`vocabularyGroups` 로 갈라라), seed 출처 채수를 짚는다.
+
+회귀: `test/interiorSeedFallback.test.ts`(초안 판정·seed/authored/designed 출처·리포트 verdict·물건 세트).
+저작본 경로를 검사하던 기존 테스트는 "구조를 고친 꾸러미" 를 쓰도록 고쳤다 — 초안 그대로면 이제
+seed 경로이므로(여관 다층·저택 폴백·`facilityId:"composed"` 단언).
+
 ## 맵 생성 테두리 옵션은 모델에게 주지 않는다 (2026-09-11)
 
 사용자 보고: "맵을 AI 조수에게 생성시키면 맵 외곽에 벽을 친다". 실측으로 원인은

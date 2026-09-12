@@ -61,9 +61,9 @@ describe("scoreConceptFacility", () => {
     expect(review.checks.find((check) => check.id === "entrance-has-counter")?.pass).toBe(false);
   });
 
-  it("초안 여관은 도달·침대·카운터·자리없음을 통과하고, plan 생략은 template-copy 실패다", () => {
+  it("초안 여관은 도달·침대·카운터·자리없음을 통과하고, template:true 는 template-copy 실패다", () => {
     const context = ctx();
-    const result = runTool(context, "place_concept", { query: "여관", mapId: "map_inn_score", seed: 7 }, { dryRun: false });
+    const result = runTool(context, "place_concept", { template: true, query: "여관", mapId: "map_inn_score", seed: 7 }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
     const data = result.data as PlaceResult;
     const map = context.project.maps.map_inn_score as GameMap;
@@ -91,7 +91,7 @@ describe("scoreConceptFacility", () => {
   });
 
   it("place_concept 결과에 review 가 실린다", () => {
-    const result = runTool(ctx(), "place_concept", { query: "여관", mapId: "map_inn_review", seed: 7 }, { dryRun: false });
+    const result = runTool(ctx(), "place_concept", { template: true, query: "여관", mapId: "map_inn_review", seed: 7 }, { dryRun: false });
     expect(result.ok).toBe(true);
     const data = result.data as PlaceResult;
     expect(data.review?.checks.some((check) => check.id === "reach-all-rooms")).toBe(true);

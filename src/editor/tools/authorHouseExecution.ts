@@ -25,6 +25,7 @@ import { buildHouseKit, type HouseKitBuildData } from "./houseKitDomain";
 import { buildHouseLots, type HouseLotBuildData } from "./houseLotDomain";
 import { isYardDecorKind, type YardDecorPlan } from "./houseLotDecor";
 import { detectHouses, houseVarietyReport, houseVarietySummary, type HouseRect } from "./houseVariety";
+import { interiorVarietyReport, interiorVarietySummary } from "./interiorVariety";
 import { ToolError, type ChangeSummary, type ToolExecResult } from "./types";
 
 export function executeAuthorHouse(draft: Project, rawArgs: Record<string, unknown>): ToolExecResult {
@@ -45,10 +46,23 @@ export function executeAuthorHouse(draft: Project, rawArgs: Record<string, unkno
   // 시공한 자리를 즉시 되읽어 모양·킷 분포를 낸다. 단조로우면 경고로 되먹여 다음 턴을 유도한다
   // (2026-08-31: kitId 만 흔들라는 지시 아래 같은 사각형만 깔리던 결함의 관찰 고리).
   const variety = houseVarietyReport(detectHouses(draft.maps[request.mapId] as GameMap, neighbourhood(execution.houses)));
+  // 실내도 같은 관찰 고리 — 지은 층 맵의 도면 서명·물건 세트를 되읽어 찍어내기를 잡는다.
+  const interiorVariety = interiorVarietyReport(
+    execution.houses.flatMap((house) => {
+      if (!house.interior) return [];
+      const maps = house.interior.floorMapIds
+        .map((mapId) => draft.maps[mapId])
+        .filter((floor): floor is GameMap => floor !== undefined);
+      return maps.length > 0 ? [{ source: house.interior.designSource, maps }] : [];
+    }),
+  );
   const varietyWarnings = variety.verdict === "diverse" || variety.houses <= 1
     ? []
     : [`집 다양성 ${variety.verdict}: ${houseVarietySummary(variety)}. ${variety.advice.join(" ")} (확인: look_at_houses)`];
-  const warnings = [...execution.warnings, ...varietyWarnings];
+  const interiorWarnings = interiorVariety.verdict === "diverse" || interiorVariety.interiors <= 1
+    ? []
+    : [`실내 다양성 ${interiorVariety.verdict}: ${interiorVarietySummary(interiorVariety)}. ${interiorVariety.advice.join(" ")}`];
+  const warnings = [...execution.warnings, ...varietyWarnings, ...interiorWarnings];
   const construction: ConstructionOutcome = {
     executionOk: true,
     applied: true,
@@ -64,9 +78,14 @@ export function executeAuthorHouse(draft: Project, rawArgs: Record<string, unkno
     diff: constructionDiff(diff),
     warnings,
   };
-  const data: AuthorHouseResultData = { construction, houses: execution.houses, changes, variety };
+  const data: AuthorHouseResultData = {
+    construction, houses: execution.houses, changes, variety,
+    ...(interiorVariety.interiors > 0 ? { interiorVariety } : {}),
+  };
   return {
-    summary: `${execution.summary} · ${houseVarietySummary(variety)}`,
+    summary: interiorVariety.interiors > 0
+      ? `${execution.summary} · ${houseVarietySummary(variety)} · ${interiorVarietySummary(interiorVariety)}`
+      : `${execution.summary} · ${houseVarietySummary(variety)}`,
     ...(warnings.length === 0 ? {} : { warnings }),
     data,
   };
@@ -102,6 +121,7 @@ function buildRequestedHouses(draft: Project, request: AuthorHouseRequest): Hous
         interior: request.interior === "linked-interior",
         ...(request.ownerName === undefined ? {} : { ownerName: request.ownerName }),
         ...(request.windows === undefined ? {} : { windows: request.windows }),
+        ...(request.interiorPlan === undefined ? {} : { interiorPlan: request.interiorPlan }),
         ...shapeInput(request),
       });
       return {
@@ -121,6 +141,7 @@ function buildRequestedHouses(draft: Project, request: AuthorHouseRequest): Hous
           interior: house.interior === "linked-interior",
           ...(house.ownerName === undefined ? {} : { ownerName: house.ownerName }),
           ...(house.windows === undefined ? {} : { windows: house.windows }),
+          ...(house.interiorPlan === undefined ? {} : { interiorPlan: house.interiorPlan }),
           ...shapeInput(house),
           yard: house.yard.map(yardPlan),
         })),
@@ -214,6 +235,7 @@ function interiorEvidence(exteriorMapId: string, build: HouseKitBuildData): Hous
     floorMapIds: build.floorMapIds,
     doorEventId: build.doorEventId,
     exitEventId: build.exitEventId,
+    designSource: build.designSource,
     transfer,
   };
 }

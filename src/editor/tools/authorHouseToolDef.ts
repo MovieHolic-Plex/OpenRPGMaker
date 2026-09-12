@@ -1,6 +1,7 @@
 import { ALL_HOUSE_KIT_IDS } from "@/editor/houseKit";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { executeAuthorHouse } from "./authorHouseExecution";
+import { CONCEPT_PLAN_SCHEMA } from "./schemaShapes";
 import type { ToolDefinition } from "./types";
 
 const KIT_IDS = [...ALL_HOUSE_KIT_IDS];
@@ -70,6 +71,7 @@ const HOUSE_PLAN_SCHEMA = {
     ownerName: { type: "string", description: "주민 이름 (NPC/이벤트용)" },
     windows: WINDOWS_SCHEMA,
     yard: { type: "array", items: { type: "string", enum: ["firewood", "mailbox", "pot", "jar", "bench_h", "bench_v", "flowers", "fruit_box", "wood_box", "table_h", "sign"] }, description: "마당 소품. 예: [\"firewood\",\"mailbox\",\"pot\",\"bench_h\",\"flowers\"]" },
+    interiorPlan: CONCEPT_PLAN_SCHEMA,
     ...SHAPE_PROPERTIES,
   },
   required: ["kitId", "wings", "door", "yard"],
@@ -90,7 +92,10 @@ const EXAMPLE = {
 export const AUTHOR_HOUSE_TOOL: ToolDefinition = {
   name: "author_house",
   description:
-    "야외 맵에 집 한 채(single) 또는 여러 채(lots)를 원자적으로 시공한다.  집·대장간·상점 같은 건물의 **야외 외장**은 이 facade 로 짓는다 — 벽 타일로 직사각형을 채우지 말 것. 들어가서 걷는 집은 interior:\"linked-interior\"로 한 번에 짓는다(실내맵+문/출구 전이 자동). 개념 꾸러미 시설(여관·상점·술집·민가…)은 place_concept, 외장 없는 독립 실내 방도 get_concept_facility → place_concept(plan). 연결 실내는 현재 개념 꾸러미의 시설·장소·물건으로 시공한다."
+    "야외 맵에 집 한 채(single) 또는 여러 채(lots)를 원자적으로 시공한다.  집·대장간·상점 같은 건물의 **야외 외장**은 이 facade 로 짓는다 — 벽 타일로 직사각형을 채우지 말 것. 들어가서 걷는 집은 interior:\"linked-interior\"로 짓는다(실내맵+문/출구 전이 자동). 개념 꾸러미 시설(여관·상점·술집·민가…)은 place_concept, 외장 없는 독립 실내 방도 get_concept_facility → place_concept(plan). "
+    + "**연결 실내도 설계가 정본이다 — 집마다 interiorPlan(장소 수·크기·구역·층·물건)을 넘겨라.** "
+    + "생략하면 저작된 꾸러미 도면이 서거나, 초안뿐이면 절차 도면(규모×용도)에 초안의 장소·물건을 씨앗처럼 묶어 짓는다 — 어느 쪽이든 실내가 갈리지 않으면 결과의 interiorVariety 리포트와 경고에 실린다. "
+    + "무엇을 설계할지는 get_concept_facility(query) 의 템플릿·물건 어휘·levers 를 읽고 정하라(민가는 3장소, 여관은 층·객실). "
     + "여러 채는 반드시 kind=lots + houses[]로 한 번에 호출한다(개별 반복 호출 금지). "
     + `**모양 다양성이 필수다: 집마다 서로 다른 templateId(${TEMPLATE_IDS.length}종 카탈로그)를 배정하고 kitId 도 섞어라.** `
     + "templateId 를 생략하면 wings 그대로의 사각형이 되어 결과가 단조로워진다. "

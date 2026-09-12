@@ -17,10 +17,11 @@ import {
 import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import type { Command, EventPageGraphic, GameEvent, GameMap, MapId, Project } from "@/project/types";
 import type { HouseKitId } from "./houseKit";
-import { conceptHouseFloorPlan, resolveHouseConcept } from "./interiorConceptPlan";
+import { bindInteriorConceptPlan, conceptHouseFloorPlan, isCodeDraftFacility, resolveHouseConcept } from "./interiorConceptPlan";
 import { createCanonicalHouseInterior } from "./spatial/legacyHouseInterior";
-import { conceptFacilityLevels } from "./conceptBundleResolve";
+import { conceptFacilityLevels, type ResolvedConceptFacility } from "./conceptBundleResolve";
 import { convertEntranceToDescent, findConceptDescent, linkConceptTransfers, listConceptConnections } from "./interiorConceptEvents";
+import { ToolError } from "./tools/types";
 
 /**
  * 마을/집 키트 실내 — villager-room-v1.
@@ -82,6 +83,13 @@ export type InteriorFloorMap = {
   readonly map: GameMap;
 };
 
+/**
+ * 실내 도면의 출처 — designed=호출자가 interiorPlan 으로 설계, authored=저작된 개념 꾸러미,
+ * seed=절차 도면(scale×program) + 초안 장소·물건 씨앗. seed 는 "설계 없음 + 초안뿐" 인
+ * 프로젝트의 기본 경로다(2026-09-12: 초안 템플릿을 찍어 모든 집 실내가 같아지던 결함).
+ */
+export type InteriorBlueprintSource = "designed" | "authored" | "seed";
+
 export type InteriorMapResult = {
   readonly map: GameMap;
   readonly entry: { readonly x: number; readonly y: number };
@@ -92,6 +100,7 @@ export type InteriorMapResult = {
   readonly upperMapId?: MapId;
   readonly upperMap?: GameMap;
   readonly floors: readonly InteriorFloorMap[];
+  readonly interiorSource: InteriorBlueprintSource;
   /** Pipeline critique/furniture warnings. */
   readonly warnings?: readonly string[];
 };
@@ -357,6 +366,11 @@ export function createHouseInteriorMap(options: {
   readonly exterior?: HouseExteriorHint;
   readonly upperMapId?: MapId;
   readonly upperExitEventId?: string;
+  /**
+   * 호출자가 설계한 실내(place_concept plan 을 해석한 꾸러미). 있으면 꾸러미 템플릿 대신 이 도면을 짓는다 —
+   * 같은 시설 템플릿을 매번 찍어내지 않기 위한 설계 입력이다(2026-09-11).
+   */
+  readonly interiorConcept?: ResolvedConceptFacility;
 }): InteriorMapResult {
   const seed = options.seed >>> 0;
   const exterior = options.exterior;
@@ -365,7 +379,23 @@ export function createHouseInteriorMap(options: {
   const scale = options.scale ?? resolveHouseInteriorScale(exterior, seed);
   const program = resolveHouseInteriorProgram(exterior, seed);
   if (options.project?.spatialAuthoring !== undefined) return createCanonicalHouseInterior({ ...options, project: options.project }, { scale, program });
-  const concept = options.project ? resolveHouseConcept(options.project, program) : undefined;
+  // 도면 정본은 설계(interiorPlan) > 저작된 꾸러미 > 절차 도면 순이다. 코드 초안 그대로의
+  // 해석(isCodeDraftFacility)은 도면이 아니라 씨앗 — 절차 도면으로 실루엣을 내고 초안의
+  // 장소·물건을 방 테마에 묶는다(bindInteriorConceptPlan). 초안 그대로 찍으면 같은
+  // program 의 집마다 같은 실내가 찍힌다(2026-09-12).
+  const concept = options.interiorConcept ?? (options.project ? resolveAuthoredHouseConcept(options.project, program) : undefined);
+  const interiorSource: InteriorBlueprintSource =
+    options.interiorConcept !== undefined ? "designed" : concept ? "authored" : "seed";
+  /** 절차 도면을 꾸러미 장소·물건(씨앗)으로 묶는다. 씨앗이 없으면 테마 어휘 문법이 꾸민다. */
+  const seedBlueprint = (plan: InteriorRoomPlan): InteriorRoomPlan => {
+    if (!options.project) return plan;
+    try {
+      return bindInteriorConceptPlan(plan, options.project);
+    } catch (error) {
+      if (error instanceof ToolError) return plan;
+      throw error;
+    }
+  };
   if (concept) {
     stories = Math.min(3, Math.max(stories, ...conceptFacilityLevels(concept.bundle, concept.facility))) as HouseStoryCount;
   }
@@ -378,7 +408,7 @@ export function createHouseInteriorMap(options: {
 
   const groundPlan = concept ? conceptHouseFloorPlan(concept, {
     mapId: options.id, name: stories >= 2 ? `${options.name} (1층)` : options.name, seed, level: 1,
-  }) : buildHouseInteriorPlan({
+  }) : seedBlueprint(buildHouseInteriorPlan({
     mapId: options.id,
     name: stories >= 2 ? `${options.name} (1층)` : options.name,
     seed,
@@ -387,7 +417,7 @@ export function createHouseInteriorMap(options: {
     floor: "ground",
     themeHint: options.theme,
     wallMaterial,
-  });
+  }));
   const door = groundPlan.door;
   const entry = { x: door.x, y: Math.max(0, door.y - 1) };
 
@@ -417,6 +447,7 @@ export function createHouseInteriorMap(options: {
       program,
       stories: 1,
       floors,
+      interiorSource,
       ...(pipelineWarnings.length ? { warnings: pipelineWarnings } : {}),
     };
   }
@@ -438,7 +469,7 @@ export function createHouseInteriorMap(options: {
 
     const floorPlan = concept ? conceptHouseFloorPlan(concept, {
       mapId: floorMapId, name: `${options.name} (${floor}층)`, seed: floorSeed, level: floor,
-    }) : buildHouseInteriorPlan({
+    }) : seedBlueprint(buildHouseInteriorPlan({
       mapId: floorMapId,
       name: `${options.name} (${floor}층)`,
       seed: floorSeed,
@@ -446,7 +477,7 @@ export function createHouseInteriorMap(options: {
       program: floorProgram,
       floor: "upper",
       wallMaterial,
-    });
+    }));
 
     let stairDown = floorPlan.door;
     // 착지 방향: 계단 위 칸이 바닥이면 위(남향 착지), 아니면 아래 — 복도 북단 계단은 아래로 내린다.
@@ -537,8 +568,23 @@ export function createHouseInteriorMap(options: {
     upperMapId: f2?.mapId,
     upperMap: f2?.map,
     floors,
+    interiorSource,
     ...(pipelineWarnings.length ? { warnings: pipelineWarnings } : {}),
   };
+}
+
+/**
+ * 집 실내의 도면 정본은 저작된 꾸러미뿐이다 — 코드 초안은 씨앗으로 되돌린다(2026-09-12).
+ * 꾸러미가 비었거나 이 program 의 시설이 없으면 undefined — 호출부가 절차 도면으로 짓는다.
+ */
+function resolveAuthoredHouseConcept(project: Project, program: HouseInteriorProgram): ResolvedConceptFacility | undefined {
+  try {
+    const resolved = resolveHouseConcept(project, program);
+    return isCodeDraftFacility(resolved) ? undefined : resolved;
+  } catch (error) {
+    if (error instanceof ToolError) return undefined;
+    throw error;
+  }
 }
 
 export function buildHouseInteriorPlan(input: {

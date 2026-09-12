@@ -11,6 +11,7 @@ import {
   type HouseInteriorScale,
   type HouseStoryCount,
 } from "@/editor/houseInteriors";
+import { resolveDesignedInterior } from "@/editor/interiorConceptPlan";
 import type { MapId, Project } from "@/project/types";
 import {
   appendTreeChildOnce,
@@ -51,6 +52,8 @@ export type BuildHouseKitInput = HouseShapeOptions & {
   readonly doorEvent: boolean;
   readonly interior: boolean;
   readonly ownerName?: string;
+  /** 연결 실내의 설계(place_concept plan 모양). 생략하면 꾸러미 템플릿이 그대로 찍힌다 — 경고로 되먹인다. */
+  readonly interiorPlan?: unknown;
   /** 앞마당 울타리+게이트 — 마을 파이프라인 정본(placeHouseLotFences) 재사용. 기본 꺼짐. */
   readonly fence?: boolean;
   /** 문 위 최상단 벽에 깃발 208/209 페어(village/decor 문법). 기본 꺼짐. */
@@ -68,6 +71,8 @@ export type HouseKitInteriorData = {
   readonly program: HouseInteriorProgram;
   readonly stories: HouseStoryCount;
   readonly upperMapId?: MapId;
+  /** 실내 도면의 출처 — planned=호출자가 설계, template=저작된 꾸러미 그대로, seed=절차 도면+초안 씨앗. */
+  readonly designSource: "planned" | "template" | "seed";
 };
 
 type HouseKitBuildBaseData = {
@@ -142,6 +147,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
       const footprintArea = input.wings.reduce((sum, wing) => sum + wing.w * wing.h, 0);
       const stories = houseInteriorStories(input.stories, input.wings);
       const interiorSeed = seedFromString(base);
+      // 설계 생략 경고는 실제로 지은 도면의 출처(템플릿/씨앗)를 본 뒤에 문구를 정한다 — 기본 문구는 버린다.
       const interior = createHouseInteriorMap({
         project: draft,
         id: interiorMapId,
@@ -152,7 +158,9 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
         exitEventId,
         seed: interiorSeed,
         exterior: { stories, kitId: input.kitId, footprintArea, ownerName },
+        interiorConcept: resolveDesignedInterior(draft, input.interiorPlan, { label: `${ownerName}의 집 내부`, warnings: [] }),
       });
+      if (interior.interiorSource !== "designed") warnings.push(`실내를 설계하지 않아 ${interior.interiorSource === "seed" ? "절차 도면(초안 씨앗)" : "개념 꾸러미 템플릿"}으로 지었다 — 요청에 맞는 실내는 interiorPlan(장소 수·크기·구역·층·물건)이 정본이다.`);
       interiorMapId = interior.map.id;
       registerInteriorMaps(draft, interior);
       appendTreeChildOnce(draft.mapTree, interiorMapId, map.id);
@@ -184,6 +192,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
         program: interior.program,
         stories: interior.stories,
         ...(interior.upperMapId ? { upperMapId: interior.upperMapId } : {}),
+        designSource: interior.interiorSource === "designed" ? "planned" : interior.interiorSource === "seed" ? "seed" : "template",
       };
       doorNote = `${doorNote}, 내부 ${interiorMapId}`;
     }
@@ -238,3 +247,4 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
     data,
   };
 }
+

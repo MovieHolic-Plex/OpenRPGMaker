@@ -19,7 +19,7 @@ it("builds distinct upstairs accommodation and a reachable attic from the inn bu
   expect(conceptFacilityLevels(SCRATCH_INN_BUNDLE, facility)).toEqual([1, 2, 3]);
 
   // When the real authoring tool builds it and the project is reloaded.
-  const result = runTool(ctx, "place_concept", { query: "inn", mapId: "explorable_inn", seed: 7 }, { dryRun: false });
+  const result = runTool(ctx, "place_concept", { template: true, query: "inn", mapId: "explorable_inn", seed: 7 }, { dryRun: false });
   expect(result.ok, result.summary).toBe(true);
   expect([...(result.warnings ?? []), ...(result.diff?.warnings ?? [])]).toEqual([]);
   const project = deserialize(serialize(ctx.project));
