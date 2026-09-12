@@ -134,3 +134,32 @@ flock /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.loc
 ```
 
 Integrated browser acceptance is pending parent stage wiring.
+
+## Completed map references (2026-09-13)
+
+The regions gallery includes a read-only **완성 맵 사례** card for the authored
+43×45 walled settlement (`walled-settlement-43x45`). It appears under defaults
+and the settlement filter even in legacy projects. This is a reference catalog,
+not a procedural `RegionDesign`, occurrence, or village generation preset.
+
+- Catalog/lessons: `src/project/regionReferences.ts`.
+- Frozen map and source tileset passage/priority/terrain:
+  `src/project/regionReferences/walled-settlement.json`.
+- Preview: `public/assets/region-references/walled-settlement.png`, captured from
+  that map in the editor; `regionReferenceView.ts` renders the same asset in the
+  card and stage. Inspector lists the actual authoring decisions and limitations.
+- `SpatialGalleryCard.regionReferenceId` routes reference cards before generic
+  geography rendering. Reference selection exposes no activation, mutation, or
+  build actions; ordinary region design actions remain available on other cards.
+- The source map remains in project `rpg-zzu-reference-houses-20260913-6890`.
+  Its fixed reference copy was saved and reloaded from Supabase project
+  `rpg-zzu-region-reference-walled-settlement-v1`; map and tileset metadata were
+  compared with the bundled snapshot. The catalog is bundled so later AI sessions
+  in other projects can find the example without access to the authoring session.
+- This change adds one curated example, not a general “register current map” UI.
+  To revise it, preserve a new remote snapshot, update raster/preview/lessons
+  together, bump the catalog revision, and verify the row reconstruction test.
+
+Verification: `test/regionReferences.test.ts`; browser evidence and remote receipt
+are under `docs/evidence/region-reference/`. Runtime behavior is unchanged; the
+example currently contains no interior connections or interactive well event.

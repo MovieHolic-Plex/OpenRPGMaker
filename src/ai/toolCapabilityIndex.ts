@@ -28,7 +28,7 @@ export const TASK_RECIPES = [
     policy: "Read original world/quests/flags via originalContext or get_original_context. Reuse existing identities and links; plan/build only requested new world work. Verify travel and quest completion with real executable results." },
   { id: "life", read: ["get_database_records", "get_event"], write: ["upsert_craft_recipe", "configure_life_economy"],
     verify: ["run_lint", "play_walkthrough"], policy: "Read original system recipes/economy and referenced crops/items/animals. Verify authored interactions and resource deltas; lint alone does not prove runtime progression." },
-  { id: "spatial-world", read: ["list_spatial_designs", "get_spatial_design", "get_geography_vocabulary"],
+  { id: "spatial-world", read: ["read_region_reference", "list_spatial_designs", "get_spatial_design", "get_geography_vocabulary"],
     write: ["upsert_spatial_design", "preview_spatial_build", "apply_spatial_build", "edit_spatial_occurrence"], verify: ["check_reachability", "run_lint", "play_walkthrough"],
     policy: "Canonical object→space→place→region→world. spatial-inactive or data.active=false = legacy project — use legacy tools. Author bottom-up; references must exist. Read get_geography_vocabulary before region/world terrain. Apply the issued previewId before any other write. Source edits never refresh built occurrences — call edit_spatial_occurrence refresh to rebuild them; move/delete/detach/clone/link/unlink edit existing occurrences through the same tool." },
 ] as const;

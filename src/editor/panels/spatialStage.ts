@@ -92,7 +92,7 @@ function domainChrome(session: SpatialAuthoringSession, onChange: () => void): S
     : session.tab === "worlds" ? spatialWorldsChrome(selected, onChange)
     : undefined;
   // Canonical 문서가 없으면 어느 탭이든 프로젝트 수준 활성화 경로와 그 오류를 표면에 올린다.
-  if (chrome && !workingProject().spatialAuthoring) {
+  if (chrome && !selected?.regionReferenceId && !workingProject().spatialAuthoring) {
     return { ...chrome,
       previewError: chrome.previewError ?? geographyChromeState.previewError,
       activate: chrome.activate ?? (geographyChromeState.activating ? undefined : () => activateSpatialDocument(onChange)) };
@@ -108,7 +108,7 @@ export function renderSpatialChrome(
   const crumbLabel = selected?.name ?? TAB_LABEL[session.tab];
   const chrome = domainChrome(session, onChange);
   const previewError = chrome?.previewError ?? null;
-  const buildPanel = renderSpatialBuildPanel(session.tab);
+  const buildPanel = selected?.regionReferenceId ? undefined : renderSpatialBuildPanel(session.tab);
   return el("div", {
     class: "spatial-chrome",
     children: [
@@ -169,17 +169,19 @@ export function renderSpatialChrome(
       el("div", {
         class: "spatial-actions",
         children: [
-          actionButton("spatial-activate", "공간 설계 활성화", Boolean(chrome?.activate), chrome?.activate),
-          actionButton("spatial-add", "추가", Boolean(chrome?.add), chrome?.add),
-          actionButton("spatial-duplicate", "복제", Boolean(chrome?.duplicate), chrome?.duplicate),
-          actionButton("spatial-delete", "삭제", Boolean(chrome?.delete), chrome?.delete),
-          actionButton("spatial-preview", "미리보기", Boolean(chrome?.preview), chrome?.preview),
-          ...renderSpatialBuildChrome(session.tab, chrome),
-          actionButton("spatial-apply", "적용", Boolean(chrome?.apply), chrome?.apply),
-          actionButton("spatial-refresh", "새로고침", Boolean(chrome?.refresh), chrome?.refresh),
-          actionButton("spatial-detach", "분리", Boolean(chrome?.detach), chrome?.detach),
-          actionButton("spatial-undo", "되돌리기", Boolean(chrome?.undo), chrome?.undo),
-          actionButton("spatial-redo", "다시 실행", Boolean(chrome?.redo), chrome?.redo),
+          ...(selected?.regionReferenceId ? [] : [
+            actionButton("spatial-activate", "공간 설계 활성화", Boolean(chrome?.activate), chrome?.activate),
+            actionButton("spatial-add", "추가", Boolean(chrome?.add), chrome?.add),
+            actionButton("spatial-duplicate", "복제", Boolean(chrome?.duplicate), chrome?.duplicate),
+            actionButton("spatial-delete", "삭제", Boolean(chrome?.delete), chrome?.delete),
+            actionButton("spatial-preview", "미리보기", Boolean(chrome?.preview), chrome?.preview),
+            ...renderSpatialBuildChrome(session.tab, chrome),
+            actionButton("spatial-apply", "적용", Boolean(chrome?.apply), chrome?.apply),
+            actionButton("spatial-refresh", "새로고침", Boolean(chrome?.refresh), chrome?.refresh),
+            actionButton("spatial-detach", "분리", Boolean(chrome?.detach), chrome?.detach),
+            actionButton("spatial-undo", "되돌리기", Boolean(chrome?.undo), chrome?.undo),
+            actionButton("spatial-redo", "다시 실행", Boolean(chrome?.redo), chrome?.redo),
+          ]),
           el("span", {
             class: "spatial-save-state",
             text: chrome?.saveState ?? "읽기",

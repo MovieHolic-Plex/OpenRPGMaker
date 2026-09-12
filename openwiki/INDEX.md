@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **63쪽 / 2449KB / 약 685,587 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **63쪽 / 2452KB / 약 686,306 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -58,7 +58,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 14 | `.omo/evidence/event-command-remediation/U04/api-ownership.md`, `event-editor-rich-forms.css`, `scripts/qa/runtime/event-command-remediation-u02.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u04.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u05.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u06.scenario.mjs`, `test/e2e/event-command-remediation-U02.spec.ts`, `test/e2e/event-command-remediation-U04.spec.ts`, `test/e2e/event-command-remediation-U05.spec.ts`, `test/e2e/event-command-remediation-U06.spec.ts`, `test/eventCommandRemediation/U02.test.ts`, `test/eventCommandRemediation/U04.test.ts`, `test/eventCommandRemediation/U05.test.ts`, `test/eventCommandRemediation/U06.test.ts` |
 | `openwiki/editor-event-commands.md` | 13 | `02-changeface-play-mock-larger.css`, `07-identifiable-previews.css`, `choicesDialog.ts`, `event-editor.command-preview.css`, `event-editor.command-preview/01-event-editor-modern-import.css`, `event-editor.commerce.css`, `event-editor.part-1.css`, `event-editor.part-2/3.css`, `event-editor.shop.css`, `messageCommandDialogs.ts`, `messageDialogControls.ts`, `src/styles/editor/event-editor.part-2.css`, `textCommandDialog.ts` |
 | `openwiki/editor-genre-packs.md` | 1 | `src/editor/panels/newProjectDialog.ts` |
-| `openwiki/editor-interior-room-harness.md` | 6 | `hearth-lit.json`, `hearth-unlit.json`, `output/evidence/concept-v2/index.html`, `output/evidence/inn-exploration-v4/index.html`, `output/evidence/inn-inspection-v5/index.html`, `player/SUMMARY.md` |
+| `openwiki/editor-interior-room-harness.md` | 7 | `hearth-lit.json`, `hearth-unlit.json`, `output/evidence/concept-v2/index.html`, `output/evidence/inn-exploration-v4/index.html`, `output/evidence/inn-inspection-v5/index.html`, `output/evidence/pr618-fixtures/inn.json`, `player/SUMMARY.md` |
 | `openwiki/editor-pre-edit-routing.md` | 10 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `event-editor.part-4.css`, `figma-editor.css`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `src/styles/editor/event-editor.balanced.css`, `worldTools.ts` |
 | `openwiki/editor-validation.md` | 2 | `final-layout.json`, `viewport-matrix.json` |
 | `openwiki/editor-workflows-misc.md` | 7 | `.qa.json`, `default.json`, `game.html`, `release.json`, `runtime.json`, `src/editor/authoringTestGate.ts`, `src/styles/editor/event-editor-help.css` |
@@ -73,9 +73,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-project-schema.md` | 3 | `.json`, `.png`, `output/evidence/event-command-completion/legacy-persistence/ledger.json` |
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
 | `openwiki/se-catalog.md` | 7 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json` |
-| `openwiki/testing.md` | 16 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
+| `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
+| `openwiki/spatial-geography-ui.md` | 1 | `regionReferenceView.ts` |
+| `openwiki/testing.md` | 18 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
+| `openwiki/village-design.md` | 1 | `output/village-direction/index.html` |
 | `openwiki/world-structure-authoring.md` | 1 | `verify-shots/runtime-qa/world-structure-tools/SUMMARY.md` |
 
 ## 페이지별 절 좌표
@@ -868,12 +871,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L215` Project sound descriptions
 - `L242` Traps
 
-### `openwiki/spatial-ai-tools.md` — 10KB · 126줄 · ~2,447 토큰
+### `openwiki/spatial-ai-tools.md` — 11KB · 142줄 · ~2,692 토큰
 
 - `L3` Ownership
 - `L34` Preview versus publication
 - `L69` Legacy adapters and context
 - `L110` Evidence and integration boundary
+- `L127` Completed region references (2026-09-13)
 
 ### `openwiki/spatial-authoring-controller.md` — 18KB · 294줄 · ~4,590 토큰
 
@@ -894,7 +898,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L83` Ownership and regeneration
 - `L106` Contract fixtures and proof
 
-### `openwiki/spatial-geography-ui.md` — 7KB · 137줄 · ~1,820 토큰
+### `openwiki/spatial-geography-ui.md` — 9KB · 166줄 · ~2,294 토큰
 
 - `L7` Public modules
 - `L26` Settlement regions (2026-09-12)
@@ -902,6 +906,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L83` Authoring rules
 - `L123` Fixtures
 - `L129` Proof
+- `L138` Completed map references (2026-09-13)
 
 ### `openwiki/spatial-manual-build.md` — 11KB · 177줄 · ~2,738 토큰
 

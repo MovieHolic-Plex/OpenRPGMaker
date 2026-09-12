@@ -1,3 +1,4 @@
+import { regionReferenceContext } from "@/project/regionReferences";
 // ai/contextBuilder.ts
 // 어시스턴트 시스템 프롬프트(한국어) 조립기. 순수 함수(브라우저 접근 금지).
 // 구성: ① 에디터 소개 + 툴 사용 수칙 ② get_project_summary ③ 현재 맵 get_map_region 요약
@@ -744,6 +745,7 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   // 사라진다 — 사라진 줄 아무도 모르는 것이 이 블록의 최악 실패다(색인을 예산 밖에 둔 이유와 동일).
   const spatial = spatialAuthoringContext(project);
   if (spatial) assembled += `\n\n${spatial}`;
+  assembled += `\n\n${regionReferenceContext()}`;
   const designContract = villageDesignContext(project);
   if (designContract) assembled += `\n\n${designContract}`;
   const wiki = projectWikiContext(project, { query: options.wikiQuery ?? "", mapId: currentMapId });
