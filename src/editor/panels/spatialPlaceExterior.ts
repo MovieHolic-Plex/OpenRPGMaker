@@ -39,7 +39,7 @@ export function renderPlaceExterior(place: PlaceDesign, target: PlaceDraftTarget
     attrs: { type: "text", value: place.exterior?.kitId ?? "" },
     dataset: { testid: "spatial-place-exterior-kit" },
   });
-  const status = el("p", { class: "spatial-preview-error", attrs: { role: "status" } });
+  const status = el("p", { class: "spatial-preview-error", attrs: { role: "status", hidden: "" } });
   return el("div", {
     class: "spatial-place-exterior",
     dataset: { testid: "spatial-place-exterior" },
@@ -62,6 +62,7 @@ export function renderPlaceExterior(place: PlaceDesign, target: PlaceDraftTarget
               const kitId = kit.value.trim();
               if (Boolean(tilesetId) !== Boolean(kitId)) {
                 status.textContent = "타일셋과 키트를 모두 입력하세요.";
+                status.hidden = false;
                 return;
               }
               commit(tilesetId ? { tilesetId, kitId } : undefined);

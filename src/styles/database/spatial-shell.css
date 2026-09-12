@@ -419,6 +419,9 @@
   color: var(--db-studio-warning);
   font: 500 12px/1.3 inherit;
 }
+.database-modal-body .spatial-preview-error[hidden] {
+  display: none;
+}
 .database-modal-body .spatial-delete-confirm {
   min-height: 32px;
   padding: 0 10px;
