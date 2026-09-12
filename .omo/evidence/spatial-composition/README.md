@@ -19,3 +19,11 @@ One canvas currently uses one tileset and level zero. Incompatible atlas assets 
 - App typecheck and full gate results are recorded in the PR. CSS budget/import graph passed.
 
 Snapshot tests cover load/save/recompile equivalence, frozen source independence, exact descendant pixels and manual-map ownership rejection. UI tests cover consecutive keyboard edits, deletion/undo/apply, lower-kind palettes and rejection of canvas shrink across a child footprint without corrupting the draft.
+
+## Final compatibility follow-up
+
+Unsupported legacy source recipes now stay on their previous editor (including overview navigation and multilevel places). Explicit mixed compositions use the new canvas. Selected components can open their source editor with Enter or the source button and return through Back.
+
+The full gate on cf0037e0e completed with exit 1: app typecheck 0, CSS 0, vitest 540 failed / 23010 passed across 176 failed files, and existing surface failures. The earlier attempt terminated with SIGTERM (143) without a report. This is **not** an all-green gate claim; pre-change session measurements were 515–518 failed tests.
+
+The completed gate exposed old selector/navigation assumptions in this area. The follow-up restores unsupported legacy navigation and updates tests to use the compact source picker. Post-fix checks: 26 mixed workspace/legacy navigation/source-build tests passed; all six spatial database destination checks passed separately. The unrelated all-tabs inventory check still lacks the pre-existing characterAppearances sentinel. App typecheck passed again. Browser capture passed again including opening a component source and returning to its parent. Whole gates were not rerun after this focused compatibility fix.

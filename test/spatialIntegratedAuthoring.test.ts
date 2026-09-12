@@ -74,8 +74,8 @@ describe("spatial Database authoring integration", () => {
     setSpatialTab("spaces");
     selectSpatialDesign(librarySpaceCardId(spaceDesign));
     paint();
-    expect(host.querySelector("[data-testid='spatial-space-board']")).not.toBeNull();
-    expect(host.querySelector("[data-testid='spatial-canvas']")?.classList.contains("spatial-spaces-canvas")).toBe(true);
+    expect(host.querySelector("[data-testid='composition-board']")).not.toBeNull();
+    expect(host.querySelector(".spatial-mixed-workspace")).not.toBeNull();
 
     setDatabaseActiveTab("spatialPlaces");
     selectSpatialDesign(libraryPlaceCardId(village().id));
@@ -90,7 +90,9 @@ describe("spatial Database authoring integration", () => {
     setSpatialTab("places");
     selectSpatialDesign(libraryPlaceCardId(selected.id));
     paint();
-    host.querySelector<HTMLButtonElement>(`[data-testid='spatial-card-${libraryPlaceCardId(selected.id)}']`)?.click();
+    const picker = host.querySelector<HTMLSelectElement>("[data-testid='composition-design']");
+    if (picker) { picker.value = libraryPlaceCardId(selected.id); picker.dispatchEvent(new Event("change")); }
+    else host.querySelector<HTMLButtonElement>(`[data-testid='spatial-card-${libraryPlaceCardId(selected.id)}']`)?.click();
     const square = host.querySelector<HTMLButtonElement>("[data-testid='spatial-place-child-square']");
     expect(square, "square child").not.toBeNull();
     square?.dispatchEvent(new Event("pointerdown", { bubbles: true }));
@@ -101,7 +103,7 @@ describe("spatial Database authoring integration", () => {
     expect(getDatabaseActiveTab()).toBe("spatialSpaces");
     expect(spatialSession().tab).toBe("spaces");
     expect(spatialSession().breadcrumb).toHaveLength(1);
-    expect(host.querySelector("[data-testid='spatial-space-board']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='composition-board']")).not.toBeNull();
     expect(host.querySelector("[data-testid='spatial-places-board']")).toBeNull();
     expect(host.querySelector("[data-testid='db-tab-spatial-spaces']")?.classList.contains("active")).toBe(true);
 
@@ -110,7 +112,7 @@ describe("spatial Database authoring integration", () => {
     expect(spatialSession().tab).toBe("places");
     expect(spatialSession().designId).toBe(libraryPlaceCardId(selected.id));
     expect(host.querySelector("[data-testid='spatial-places-board']")).not.toBeNull();
-    expect(host.querySelector("[data-testid='spatial-space-board']")).toBeNull();
+    expect(host.querySelector("[data-testid='composition-board']")).toBeNull();
   });
 
   it("does not keep a created place selected after a later gallery click", () => {
@@ -124,7 +126,9 @@ describe("spatial Database authoring integration", () => {
     const created = Object.values(visibleAuthoringProject().spatialAuthoring?.library.places ?? {})
       .find((place) => !Object.hasOwn(live.spatialAuthoring?.library.places ?? {}, place.id));
     expect(created).toBeDefined();
-    host.querySelector<HTMLButtonElement>(`[data-testid='spatial-card-${libraryPlaceCardId(selected.id)}']`)?.click();
+    const picker = host.querySelector<HTMLSelectElement>("[data-testid='composition-design']");
+    if (picker) { picker.value = libraryPlaceCardId(selected.id); picker.dispatchEvent(new Event("change")); }
+    else host.querySelector<HTMLButtonElement>(`[data-testid='spatial-card-${libraryPlaceCardId(selected.id)}']`)?.click();
     expect(spatialSession().designId).toBe(libraryPlaceCardId(selected.id));
     expect(host.querySelector("[data-testid='spatial-place-name']")?.getAttribute("value")
       ?? host.querySelector<HTMLInputElement>("[data-testid='spatial-place-name']")?.value).toBe(selected.name);

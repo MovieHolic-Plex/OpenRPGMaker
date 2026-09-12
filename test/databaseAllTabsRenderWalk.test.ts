@@ -29,8 +29,15 @@ describe("database all-tabs render walk", () => {
     // Then: its specific destination contains the gallery and canvas, not an empty shell.
     const destination = root.querySelector(DATABASE_PRIMARY_SENTINELS[tab]);
     expect(destination).not.toBeNull();
-    expect(destination?.querySelector("[data-testid='spatial-gallery']")).not.toBeNull();
-    expect(destination?.querySelector("[data-testid='spatial-canvas']")).not.toBeNull();
+    if (tab === "spatialObjects") {
+      expect(destination?.querySelector("[data-testid='spatial-browser-results']")).not.toBeNull();
+      expect(destination?.querySelector(".asset-browser-detail")).not.toBeNull();
+    } else if (tab === "spatialSpaces") {
+      expect(destination?.querySelector("[data-testid='composition-board']") ?? destination?.querySelector("[data-testid='spatial-canvas']")).not.toBeNull();
+    } else {
+      expect(destination?.querySelector("[data-testid='spatial-gallery']")).not.toBeNull();
+      expect(destination?.querySelector("[data-testid='spatial-canvas']")).not.toBeNull();
+    }
   });
 
   it("every registered tab renders a non-empty body without throwing", () => {

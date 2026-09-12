@@ -4,7 +4,7 @@ import { designNode, spatialId } from "@/project/spatial/domain";
 import { COMPOSITION_KINDS, paintComposition } from "@/project/spatial/composition";
 import type { SpatialComposition, SpatialDesignReference, SpatialKind, SpatialPoint } from "@/project/spatial/types";
 import { visibleAuthoringProject } from "./spatialAuthoringAccess";
-import { spatialProjectKey, selectSpatialDesign, type SpatialAuthoringSession } from "./spatialAuthoringSession";
+import { spatialProjectKey, selectSpatialDesign, pushSpatialBreadcrumb, openSpatialDestination, type SpatialAuthoringSession } from "./spatialAuthoringSession";
 import { listSpatialGalleryCards, type SpatialGalleryCard } from "./spatialCatalog";
 import { renderSpatialCardThumb } from "./spatialGallery";
 import { renderSpatialChrome, renderSpatialInspector } from "./spatialStage";
@@ -92,6 +92,13 @@ export function renderSpatialCompositionWorkspace(session: SpatialAuthoringSessi
     slotId: item.occurrence.parentSlot!.slotId, source: item.occurrence.source, x: item.rect.x, y: item.rect.y, width: item.rect.width, height: item.rect.height,
     direct: composition.members.some(member => member.id === item.occurrence.parentSlot?.slotId),
   })) : composition.members.map(member => ({ ...member, id: JSON.stringify(["direct", member.id]), slotId: member.id, width: 1, height: 1, direct: true }));
+  const openMember = (id: string): void => {
+    const member = visualMembers.find(item => item.id === id); if (!member) return;
+    const tab = COMPOSITION_COLLECTIONS[member.source.kind];
+    const target = listSpatialGalleryCards({ ...session, tab, source: "all" }).find(card => card.canonicalSource?.kind === member.source.kind && card.canonicalSource.id === member.source.id);
+    if (!target) return;
+    pushSpatialBreadcrumb(); openSpatialDestination(tab, target.id); rerender();
+  };
   const moveMember = (id: string, at: SpatialPoint | null): void => {
     const member = visualMembers.find(item => item.id === id); if (!member) return;
     if (at && (at.x < 0 || at.y < 0 || at.x + member.width > composition.width || at.y + member.height > composition.height)) { state.error = "캔버스 안에 배치해 주세요."; rerender(); return; }
@@ -104,6 +111,7 @@ export function renderSpatialCompositionWorkspace(session: SpatialAuthoringSessi
     board.append(el("button", { class: `spatial-mixed-member${state.selected === member.id ? " is-selected" : ""}`, attrs: { type: "button", draggable: "true", title: `${COMPOSITION_NAMES[member.source.kind]} · ${child.design.name}`, "aria-label": child.design.name,
       style: `left:${member.x * PX}px;top:${member.y * PX}px;width:${width * PX}px;height:${height * PX}px;${state.tool === "select" ? "" : "pointer-events:none"}` }, dataset: { testid: `composition-member-${member.id}`, memberId: member.id }, on: {
         click: event => { event.stopPropagation(); state.selected = member.id; redrawBoard(); },
+        dblclick: event => { event.stopPropagation(); openMember(member.id); },
         dragstart: event => { if (event instanceof DragEvent) event.dataTransfer?.setData("application/x-spatial-move", member.id); },
       } }));
   }
@@ -137,6 +145,7 @@ export function renderSpatialCompositionWorkspace(session: SpatialAuthoringSessi
   board.addEventListener("keydown", event => {
     if (event.key === "Escape") { stroke = null; state.source = undefined; state.selected = undefined; event.stopPropagation(); rerender(); return; }
     const selected = state.selected; if (!selected) return;
+    if (event.key === "Enter") { event.preventDefault(); event.stopPropagation(); openMember(selected); return; }
     if (event.key === "Delete" || event.key === "Backspace") { event.preventDefault(); moveMember(selected, null); return; }
     const directions: Record<string, SpatialPoint> = { ArrowLeft: { x: -1, y: 0 }, ArrowRight: { x: 1, y: 0 }, ArrowUp: { x: 0, y: -1 }, ArrowDown: { x: 0, y: 1 } };
     const delta = directions[event.key]; if (!delta) return;
@@ -158,11 +167,12 @@ export function renderSpatialCompositionWorkspace(session: SpatialAuthoringSessi
   const selectedMember = visualMembers.find(member => member.id === state.selected);
   const memberControls = selectedMember ? el("div", { class: "spatial-mixed-selection", children: [
     el("strong", { text: designNode(project.spatialAuthoring!.library, selectedMember.source).design.name }),
+    button("원본 열기", () => openMember(selectedMember.id), "composition-open"),
     button("선택 삭제", () => moveMember(selectedMember.id, null), "composition-remove"),
     el("p", { text: "끌어서 이동 · 방향키로 한 칸 이동 · Delete로 삭제" }),
   ] }) : el("p", { text: "배치한 항목을 선택하면 이동하거나 삭제할 수 있습니다." });
   const cards = listSpatialGalleryCards({ ...session, source: "all" });
-  const picker = el("select", { attrs: { "aria-label": `${COMPOSITION_NAMES[source.kind]} 선택` }, children: cards.map(item => el("option", { text: item.name, attrs: { value: item.id, ...(item.id === card.id ? { selected: "" } : {}) } })), on: { change: event => { selectSpatialDesign((event.currentTarget as HTMLSelectElement).value); rerender(); } } });
+  const picker = el("select", { dataset: { testid: "composition-design" }, attrs: { "aria-label": `${COMPOSITION_NAMES[source.kind]} 선택` }, children: cards.map(item => el("option", { text: item.name, attrs: { value: item.id, ...(item.id === card.id ? { selected: "" } : {}) } })), on: { change: event => { selectSpatialDesign((event.currentTarget as HTMLSelectElement).value); rerender(); } } });
   return el("div", { class: "spatial-shell spatial-mixed-workspace", dataset: { testid: `spatial-shell-${session.tab}` }, attrs: { tabindex: "0" }, children: [
     el("header", { class: "asset-browser-top", children: [el("div", { class: "asset-browser-heading", children: [el("h2", { text: `${COMPOSITION_NAMES[source.kind]} 편집` }), el("p", { text: `타일과 ${COMPOSITION_KINDS[source.kind].map(kind => COMPOSITION_NAMES[kind]).join("·")}을 함께 배치하세요.` })] }), picker, renderSpatialChrome(session, rerender, { browser: true })] }),
     el("div", { class: "spatial-mixed-body", children: [palette, el("section", { class: "spatial-mixed-stage", children: [tools, ...(state.error ? [el("p", { class: "spatial-mixed-error", attrs: { role: "alert" }, text: state.error })] : []), camera] }),

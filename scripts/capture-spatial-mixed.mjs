@@ -32,6 +32,12 @@ const board=page.getByTestId('composition-board');
 await board.click({position:{x:4*24+5,y:5*24+5}});
 await page.getByTestId('spatial-preview').click(); await page.getByTestId('spatial-apply').click();
 assert.ok(await page.evaluate(async()=>{const {store}=await import('/src/project/store.ts'); return store.getCurrent().spatialAuthoring.library.spaces['room-design'].composition.tiles.some(c=>c.x===4&&c.y===5);}));
+await page.getByTestId('composition-tool-select').click();
+await page.locator('.spatial-mixed-member').first().click();
+await page.getByTestId('composition-open').click();
+await page.getByTestId('spatial-shell-objects').waitFor();
+await page.getByTestId('spatial-back').click();
+await page.getByTestId('composition-board').waitFor();
 for(const tab of ['places','regions','worlds']){
  await page.evaluate(async tab => {
   const {setSpatialTab,selectSpatialDesign,spatialSession}=await import('/src/editor/panels/spatialAuthoringSession.ts');

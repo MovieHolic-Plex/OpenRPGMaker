@@ -81,3 +81,11 @@ export function editExistingComponent(source: SpatialDesignReference, slotId: st
     return spatialAuthoringErrorText(editAuthoringDraft(() => next));
   } catch (error) { return error instanceof Error ? error.message : String(error); }
 }
+
+/** Keep unsupported legacy maps on their existing editor until an explicit compatible composition exists. */
+export function canUseCompositionWorkspace(source: SpatialDesignReference): boolean {
+  const project = visibleAuthoringProject();
+  const node = designNode(project.spatialAuthoring!.library, source);
+  if (compositionOf(node)) return true;
+  try { compositionPreview(project, source); return true; } catch { return false; }
+}
