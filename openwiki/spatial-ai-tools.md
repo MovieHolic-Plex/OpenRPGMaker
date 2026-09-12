@@ -2,7 +2,7 @@
 
 ## Ownership
 
-`src/editor/tools/spatialTools.ts` registers the five native tools in the existing
+`src/editor/tools/spatialTools.ts` registers the six native tools in the existing
 registry. Tools operate on the runner's detached `Project`, never the singleton
 manual controller's live project. The compiler entry is the same pure
 `previewSpatialAuthoring` used by the shared controller. No tool activates a
@@ -11,11 +11,18 @@ archived legacy data as a live source.
 
 | Tool | Mode | Contract |
 | --- | --- | --- |
-| `list_spatial_designs` | read | Optional `kind`/`query`; searches the active library across tilesets. Missing and empty authoring stay distinct; neither seeds data. |
+| `list_spatial_designs` | read | Optional `kind`/`query`; searches the active library across tilesets. On a legacy project (`spatialAuthoring` absent) returns `data.active: false` with an explicit summary instead of an ambiguous empty list; neither state seeds data. |
+| `get_geography_vocabulary` | read | No args. Returns the accepted region/world authoring vocabulary: world tilesetIds (profiles with `layout: "world"` that are actually `isWorldTileset`), `WORLD_TERRAIN_BLOCKS` material names, the settlement tileset, `mountain:<surface>` structure rules, route/connection constraints, `entryPort` requirement, and the project's `villagePresets` (id/name) for `region.settlement`. |
 | `get_spatial_design` | read | `kind`, `id`; returns the typed design plus resolved transitive revisions and kit cells. Missing/cyclic references reject. |
-| `upsert_spatial_design` | write | `kind`, `expectedRevision`, and exactly the body named `object`, `space`, `place`, `region`, or `world`. Zero creates a fresh ID; replacement requires the current revision and next revision in the body. |
+| `upsert_spatial_design` | write | `kind`, `expectedRevision`, and exactly the body named `object`, `space`, `place`, `region`, or `world`. Zero creates a fresh ID; replacement requires the current revision and next revision in the body. Region bodies accept an optional `settlement: { presetId, seed }`. |
 | `preview_spatial_build` | read | `kind`, `id`, fresh `occurrenceId`, `seed`; object builds also require a compatible `target` map/rectangle/entry. Returns an issued preview ID and actual impact. |
 | `apply_spatial_build` | write | Takes the issued `previewId` into the detached proposal, not the live store. Forged, foreign, stale and consumed IDs reject. |
+
+On a legacy project every tool except `list_spatial_designs` rejects with a typed
+`spatial-inactive` error naming the UI activation path (`공간 설계 활성화`);
+activation stays a user/editor action, not an AI tool. Canonical tools declare
+`world` before `map`/`database` domains so capability bucketing lands on the
+spatial recipe rather than generic map tooling.
 
 The kind-specific schemas describe children, terrain, graphics, ports, quantity,
 placement and chips. The existing spatial parser/reference validator remains the
@@ -62,11 +69,15 @@ AI tool against another live project.
 
 - Active `get_concept_facility` reads canonical designs, never the retired tileset
   catalog. Legacy receipt tuples provide qualified compatibility aliases; labels
-  and opaque design IDs are not parsed as storage identities.
+  and opaque design IDs are not parsed as storage identities. Its description now
+  states the canonical/legacy split explicitly so models do not assume the legacy
+  concept-bundle contract on canonical projects.
 - Active `place_concept` compiles a canonical frozen place. Its legacy `mapId`
   argument becomes the occurrence ID; the response supplies the actual generated
   `mapId`/`mapIds`. A legacy `plan` is rejected with guidance to use typed upsert,
-  not silently converted into a competing library or ignored.
+  not silently converted into a competing library or ignored. Both descriptions
+  name the canonical tool chain (`list/get/upsert_spatial_design`,
+  `preview/apply_spatial_build`) as the authoring path on canonical projects.
 - House and village linked interiors use canonical frozen compilation. Callers
   use the returned actual map IDs. Their scope gates allow only issued new
   occurrences and declared output maps, preserving existing definitions,
@@ -86,6 +97,12 @@ AI tool against another live project.
   parents, compiled map IDs, generator version and missing-source flags. Old
   catalog instructions are omitted in canonical mode. Tests parse the structural
   payload, not prose.
+- The capability index (`src/ai/toolCapabilityIndex.ts`) carries a `spatial-world`
+  recipe: read `list_spatial_designs`/`get_spatial_design`/`get_geography_vocabulary`,
+  write `upsert/preview/apply`, verify `check_reachability`/`run_lint`/`play_walkthrough`.
+  Its policy states the `data.active`/`spatial-inactive` contract, bottom-up
+  authoring, vocabulary-first terrain rules, single-preview sequencing and frozen
+  occurrence semantics.
 
 ## Evidence and integration boundary
 

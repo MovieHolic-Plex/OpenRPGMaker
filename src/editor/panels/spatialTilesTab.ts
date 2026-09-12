@@ -9,6 +9,8 @@ import { el } from "@/util/dom";
 
 export type SpatialDomainChrome = {
   readonly add?: () => void;
+  /** 레거시 프로젝트에서 canonical 공간 문서 활성화 — 문서가 있으면 정의하지 않는다. */
+  readonly activate?: () => void;
   readonly duplicate?: () => void;
   readonly delete?: () => void;
   readonly preview?: () => void;

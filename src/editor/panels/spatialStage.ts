@@ -162,6 +162,7 @@ export function renderSpatialChrome(
       el("div", {
         class: "spatial-actions",
         children: [
+          actionButton("spatial-activate", "공간 설계 활성화", Boolean(chrome?.activate), chrome?.activate),
           actionButton("spatial-add", "추가", Boolean(chrome?.add), chrome?.add),
           actionButton("spatial-duplicate", "복제", Boolean(chrome?.duplicate), chrome?.duplicate),
           actionButton("spatial-delete", "삭제", Boolean(chrome?.delete), chrome?.delete),

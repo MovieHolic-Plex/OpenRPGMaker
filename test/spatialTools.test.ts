@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import { runTool, runToolDefinition } from "@/editor/tools/toolRunner";
 import { allTools } from "@/editor/tools/toolRegistry";
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
-import { own } from "@/project/spatial/domain";
+import { own, spatialId } from "@/project/spatial/domain";
+// 정주지 스탬프는 등록 훅 경유 — builder 모듈 로드가 bindSettlementVillageBuild를 실행한다.
+import "@/editor/tools/village/builder";
+import { createBlankProject } from "@/project/defaults/defaultProject";
 import { fixtureDocument, spaceCompilerFixture, spaceDesign } from "./support/spatialSpaceCompilerFixture";
 
 function previewId(data: unknown): string {
@@ -12,11 +15,54 @@ function previewId(data: unknown): string {
 const build = { kind: "space", id: spaceDesign, occurrenceId: "ai-room", seed: 17 };
 
 describe("registered canonical spatial tools", () => {
-  it("exposes the five native tools when the registry is queried", () => {
+  it("exposes the six native tools when the registry is queried", () => {
     // Given / When
     const names = allTools().filter(tool => !tool.deprecated).map(tool => tool.name);
     // Then
-    expect(names).toEqual(expect.arrayContaining(["list_spatial_designs", "get_spatial_design", "upsert_spatial_design", "preview_spatial_build", "apply_spatial_build"]));
+    expect(names).toEqual(expect.arrayContaining(["list_spatial_designs", "get_geography_vocabulary", "get_spatial_design", "upsert_spatial_design", "preview_spatial_build", "apply_spatial_build"]));
+  });
+  it("reports inactive instead of throwing on a legacy project", () => {
+    // Given
+    const ctx = { project: createBlankProject() };
+    // When
+    const list = runTool(ctx, "list_spatial_designs", {});
+    const get = runTool(ctx, "get_spatial_design", { kind: "space", id: "anything" });
+    const upsert = runTool(ctx, "upsert_spatial_design", { kind: "space", expectedRevision: 0,
+      space: { id: "x", name: "X", revision: 1, tags: [], provenance: { origin: "ai" }, environment: "interior",
+        tilesetId: "easyrpg_chipset_interior", shape: "rect", width: 5, height: 4, floor: "wood", wall: "cream", ports: [], objectSlots: [] } });
+    const preview = runTool(ctx, "preview_spatial_build", { kind: "space", id: "x", occurrenceId: "y", seed: 1 });
+    // Then
+    expect(list.ok, list.summary).toBe(true);
+    expect(list.data).toMatchObject({ active: false, designs: [] });
+    for (const result of [get, upsert, preview]) {
+      expect(result.ok).toBe(false);
+      expect(result.issues?.[0]?.code).toBe("spatial-inactive");
+    }
+  });
+  it("returns the geography vocabulary for region/world authoring", () => {
+    // Given / When
+    const result = runTool({ project: spaceCompilerFixture() }, "get_geography_vocabulary", {});
+    // Then
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as { terrain: { worldTilesetIds: string[]; materials: string[]; settlementTilesetId: string } };
+    expect(data.terrain.worldTilesetIds).toContain("easyrpg_chipset_world");
+    expect(data.terrain.materials).toEqual(expect.arrayContaining(["ground", "water", "dirt", "forest", "mountain"]));
+    expect(data.terrain.settlementTilesetId).toBe("easyrpg_chipset_combined_town");
+  });
+  it("accepts a settlement region design through the schema and domain boundaries", () => {
+    // Given
+    const project = spaceCompilerFixture();
+    project.villagePresets = [{ id: "fixture-preset", name: "시험 마을", houseCount: 1 }];
+    const ctx = { project };
+    const regionId = spatialId("ai-settlement-region");
+    // When
+    const result = runTool(ctx, "upsert_spatial_design", { kind: "region", expectedRevision: 0,
+      region: { id: regionId, name: "AI 정주지", revision: 1, tags: [], provenance: { origin: "ai" },
+        terrain: { tilesetId: "easyrpg_chipset_combined_town", width: 40, height: 32, floor: "ground", areas: [] },
+        places: [], ports: [], routes: [], settlement: { presetId: "fixture-preset", seed: 7 } } });
+    // Then
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.spatialAuthoring?.library.regions[regionId]?.settlement).toEqual({ presetId: "fixture-preset", seed: 7 });
   });
   it("keeps reads pure when a source is discovered and resolved", () => {
     // Given
