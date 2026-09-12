@@ -39,9 +39,16 @@ seed. Preview and compile both stamp the actual village — see
 
 Legacy projects without a `spatialAuthoring` document cannot create
 geography: `upsertGeography` would silently no-op, so 「추가」 and
-「정주지 지역 만들기」 now bail early via `spatialDocumentPresent` and
-surface an activation-required message instead. Browser QA for this
-surface needs a canonical project; when the dev DB lacks the spatial CAS
+「정주지 지역 만들기」 bail early via `spatialDocumentPresent` and
+surface an activation-required message. The stage toolbar now exposes a
+「공간 설계 활성화」 action on exactly those projects —
+`SpatialDomainChrome.activate` / `spatialGeographyChrome` wire it to
+`activateSpatialDocument`, which calls `store.activateSpatialAuthoring()`
+and guards re-entry through `geographyChromeState.activating`. The store
+still enforces remote persistence, a clean working copy and legacy-baseline
+conversion; the button only surfaces that path instead of leaving the
+message dead-ended. Browser QA for this surface needs a canonical project;
+when the dev DB lacks the spatial CAS
 migration (`migration-required` on publish), seed a converted project
 through the `__RPG_ZZU_E2E_PROJECT__` dev hook — build it with
 `convertLegacySpatialSnapshot(serialize(project))`, never by editing raw

@@ -32,7 +32,9 @@ const spaces = object({ ...base, environment: choices(["interior", "outdoor"]), 
 const places = object({ ...base, kind: choices(["facility", "settlement", "natural"]), children: child(["space", "place"]),
   layout: choices(["row", "double-row", "manual"]), ports, connections: array(object(connection)), exterior: graphic,
 }, [...Object.keys(base), "kind", "children", "layout", "ports", "connections"]);
-const regions = object({ ...base, terrain, places: child(["place"]), ports, routes: array(object({ ...connection, points: array(point) })) });
+const settlement = object({ presetId: id, seed: { type: "integer", minimum: 0 } });
+const regions = object({ ...base, terrain, places: child(["place"]), ports, routes: array(object({ ...connection, points: array(point) })), settlement },
+  [...Object.keys(base), "terrain", "places", "ports", "routes"]);
 const worlds = object({ ...base, terrain, regions: child(["region"]), ports, connections: array(object(connection)), entryPort: endpoint });
 
 export const SPATIAL_DESIGN_SCHEMAS = { object: objects, space: spaces, place: places, region: regions, world: worlds } as const;

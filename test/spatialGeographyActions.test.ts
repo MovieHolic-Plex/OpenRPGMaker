@@ -40,6 +40,7 @@ import {
 import { childOccurrenceId, libraryPlaceCardId, libraryRegionCardId, libraryWorldCardId } from "@/editor/panels/spatialGeographyQuery";
 import { GEOGRAPHY_TILE_PX, geographyPreviewMap, geographyRasterTile } from "@/editor/panels/spatialGeographyRaster";
 import { spatialId } from "@/project/spatial/domain";
+import { createBlankProject } from "@/project/defaults/defaultProject";
 import { store } from "@/project/store";
 import type { RegionDesign } from "@/project/spatial/types";
 import { authoringValue } from "./support/spatialAuthoringFixture";
@@ -479,5 +480,20 @@ describe("spatial geography actions", () => {
     spatialRegionsChrome(regionCard("lake-country", "placed"), () => undefined).refresh?.();
     expect(store.getCurrent()).toBe(live);
     expect(getMapEditHistoryEntries()).toEqual([]);
+  });
+
+  it("exposes the activation action only while the canonical document is missing", async () => {
+    // Canonical fixture: activation is already done, no surface.
+    expect(spatialRegionsChrome(regionCard("lake-country"), () => undefined).activate).toBeUndefined();
+    // Legacy project: the stage toolbar must surface the single activation path.
+    store.replace(createBlankProject());
+    const chrome = spatialRegionsChrome(regionCard("lake-country"), () => undefined);
+    expect(chrome.activate).toBeDefined();
+    chrome.activate?.();
+    expect(geographyChromeState.activating).toBe(true);
+    // Without remote persistence the store rejects; the error stays visible, not silent.
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(geographyChromeState.activating).toBe(false);
+    expect(geographyChromeState.previewError).toContain("공간 설계 활성화 실패");
   });
 });

@@ -19,6 +19,7 @@ export const geographyChromeState: {
   gesture: GeographyGesture | null;
   createdDesignId: SpatialId | null;
   boardKey: string;
+  activating: boolean;
 } = {
   saveState: "읽기",
   previewError: null,
@@ -31,6 +32,7 @@ export const geographyChromeState: {
   gesture: null,
   createdDesignId: null,
   boardKey: "",
+  activating: false,
 };
 
 export function resetSpatialGeographyChrome(): void {
@@ -45,6 +47,7 @@ export function resetSpatialGeographyChrome(): void {
   geographyChromeState.gesture = null;
   geographyChromeState.createdDesignId = null;
   geographyChromeState.boardKey = "";
+  geographyChromeState.activating = false;
 }
 
 export function bindGeographyBoard(key: string): void {

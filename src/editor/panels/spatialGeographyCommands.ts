@@ -30,9 +30,11 @@ import { libraryGeographyCardId, previewGeographyDelete } from "@/editor/panels/
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
 import type { SpatialId } from "@/project/spatial/types";
 import type { Project } from "@/project/types";
+import { store } from "@/project/store";
 
 export type SpatialGeographyChrome = {
   readonly add?: () => void;
+  readonly activate?: () => void;
   readonly duplicate?: () => void;
   readonly delete?: () => void;
   readonly preview?: () => void;
@@ -120,9 +122,10 @@ export function spatialGeographyChrome(
   const missing = Boolean(card?.missingSource);
   const occurrenceId = target?.occurrenceId;
   return {
-    saveState: geographyChromeState.saveState,
+    saveState: geographyChromeState.activating ? "활성화 중…" : geographyChromeState.saveState,
     previewError: geographyChromeState.previewError,
     deleteOpen: geographyChromeState.deleteOpen,
+    activate: workingProject().spatialAuthoring || geographyChromeState.activating ? undefined : () => activateSpatialDocument(rerender),
     add: controller ? () => addBlank(kind, rerender) : undefined,
     duplicate: target && !builtinLocked ? () => cloneGeography(target, rerender) : undefined,
     delete: target && !builtinLocked ? () => { geographyChromeState.deleteOpen = true; rerender(); } : undefined,
@@ -179,9 +182,29 @@ function addBlank(kind: GeographyKind, rerender: () => void): void {
 /** 레거시 프로젝트는 spatialAuthoring 문서가 없어 upsert가 조용히 무시된다 — 사전에 표면에 올린다. */
 function spatialDocumentPresent(rerender: () => void): boolean {
   if (workingProject().spatialAuthoring) return true;
-  geographyChromeState.previewError = "spatialAuthoring 문서가 없는 레거시 프로젝트입니다 — 공간 설계 활성화 후 지역·세계를 만들 수 있습니다";
+  geographyChromeState.previewError = "spatialAuthoring 문서가 없는 레거시 프로젝트입니다 — 「공간 설계 활성화」로 canonical 문서를 발행한 뒤 지역·세계를 만들 수 있습니다";
   rerender();
   return false;
+}
+
+/** 원격 베이스라인에서 canonical 문서를 발행하는 유일한 경로 — store 가 권한·저장 상태를 검증한다. */
+export function activateSpatialDocument(rerender: () => void): void {
+  if (geographyChromeState.activating) return;
+  geographyChromeState.activating = true;
+  geographyChromeState.previewError = "공간 설계 문서를 활성화하는 중…";
+  rerender();
+  void store.activateSpatialAuthoring()
+    .then(() => {
+      geographyChromeState.previewError = null;
+      geographyChromeState.saveState = "활성화됨";
+    })
+    .catch((error: unknown) => {
+      geographyChromeState.previewError = `공간 설계 활성화 실패: ${error instanceof Error ? error.message : String(error)}`;
+    })
+    .finally(() => {
+      geographyChromeState.activating = false;
+      rerender();
+    });
 }
 
 /** 마을 설계서 카드 → 정주지 지역 설계 생성. */
