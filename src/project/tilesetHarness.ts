@@ -15,6 +15,7 @@ export {
 export {
   COMBINED_TOWN_HARNESS_PREFIX,
   COMBINED_TOWN_HARNESS_GROUPS,
+  COMBINED_TOWN_ROOF_BODY_TILES,
   COMBINED_TOWN_ROOF_OVERLAY_TILES,
 } from "./tilesetHarness/combinedTownGroups";
 export {

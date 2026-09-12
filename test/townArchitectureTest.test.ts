@@ -12,25 +12,26 @@ describe("town architecture vision test map", () => {
     expect(map.height).toBe(20);
     expect(map.tilesetId).toBe("easyrpg_chipset_combined_town");
 
-    expect(map.upperTiles[at(2, 2)]).not.toBe(TILE.EMPTY);
-    expect(map.upperTiles[at(8, 2)]).not.toBe(TILE.EMPTY);
-    expect(map.lowerTiles[at(2, 11)]).not.toBe(SAND_TILE.BODY);
-    expect(map.upperTiles[at(2, 11)]).toBe(375);
+    // 사선 지붕 몸체(374/375/377)는 불투명 지붕 본체 — 하위 레이어가 홈이다.
+    expect(map.lowerTiles[at(2, 2)]).toBe(375);
+    expect(map.lowerTiles[at(8, 2)]).toBe(375);
+    expect(map.lowerTiles[at(2, 11)]).toBe(375);
+    expect(map.upperTiles[at(2, 11)]).toBe(TILE.EMPTY);
     expect(map.upperTiles[at(8, 11)]).toBe(TILE.EMPTY);
-    expect(map.upperTiles[at(1, 1)]).toBe(374);
-    expect(map.upperTiles[at(2, 1)]).toBe(375);
-    expect(map.upperTiles[at(3, 1)]).toBe(375);
-    expect(map.upperTiles[at(10, 1)]).toBe(377);
-    expect(map.upperTiles[at(1, 2)]).toBe(374);
-    expect(map.upperTiles[at(10, 2)]).toBe(377);
+    expect(map.lowerTiles[at(1, 1)]).toBe(374);
+    expect(map.lowerTiles[at(2, 1)]).toBe(375);
+    expect(map.lowerTiles[at(3, 1)]).toBe(375);
+    expect(map.lowerTiles[at(10, 1)]).toBe(377);
+    expect(map.lowerTiles[at(1, 2)]).toBe(374);
+    expect(map.lowerTiles[at(10, 2)]).toBe(377);
     expect(map.lowerTiles[at(1, 4)]).toBe(102);
     expect(map.lowerTiles[at(7, 4)]).toBe(103);
     expect(map.lowerTiles[at(10, 4)]).toBe(104);
     expect(map.lowerTiles[at(1, 5)]).not.toBe(SAND_TILE.BODY);
     expect(map.lowerTiles[at(10, 8)]).toBe(164);
     expect(map.upperTiles[at(11, 6)]).toBe(TILE.EMPTY);
-    expect(map.upperTiles[at(1, 9)]).toBe(374);
-    expect(map.upperTiles[at(7, 11)]).toBe(377);
+    expect(map.lowerTiles[at(1, 9)]).toBe(374);
+    expect(map.lowerTiles[at(7, 11)]).toBe(377);
     expect(map.lowerTiles[at(1, 12)]).toBe(102);
     expect(map.lowerTiles[at(7, 12)]).toBe(104);
     expect(map.lowerTiles[at(2, 13)]).not.toBe(SAND_TILE.BODY);
@@ -42,9 +43,9 @@ describe("town architecture vision test map", () => {
       map.lowerTiles[at(4, 17)]
     );
 
-    expect(map.upperTiles[at(12, 1)]).toBe(374);
-    expect(map.upperTiles[at(12, 4)]).toBe(374);
-    expect(map.upperTiles[at(18, 4)]).toBe(377);
+    expect(map.lowerTiles[at(12, 1)]).toBe(374);
+    expect(map.lowerTiles[at(12, 4)]).toBe(374);
+    expect(map.lowerTiles[at(18, 4)]).toBe(377);
     expect(map.upperTiles[at(12, 5)]).toBe(404);
     expect(map.upperTiles[at(18, 5)]).toBe(405);
     expect(map.upperTiles[at(14, 8)]).toBe(87);

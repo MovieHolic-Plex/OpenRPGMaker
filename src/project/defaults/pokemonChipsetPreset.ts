@@ -120,6 +120,7 @@ const POKEMON_OVERWORLD_ROLES: readonly PokemonPresetRole[] = [
       `${H}plaster-wall-9slice`,
       `${H}wood-wall-9slice`,
       `${H}timber-stone-wall-9slice`,
+      `${H}roof-body`,
       `${H}roof-overlays`,
       `${H}doors`,
       `${H}wood-door`,

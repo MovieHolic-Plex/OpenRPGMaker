@@ -68,6 +68,7 @@ describe("포켓몬풍 오버월드 프리셋 — role 노출", () => {
     const village = pokemonPresetRole("village_buildings");
     expect(village?.groupIds).toEqual(expect.arrayContaining([
       `${COMBINED_TOWN_HARNESS_PREFIX}plaster-wall-9slice`,
+      `${COMBINED_TOWN_HARNESS_PREFIX}roof-body`,
       `${COMBINED_TOWN_HARNESS_PREFIX}roof-overlays`,
       `${COMBINED_TOWN_HARNESS_PREFIX}doors`,
     ]));

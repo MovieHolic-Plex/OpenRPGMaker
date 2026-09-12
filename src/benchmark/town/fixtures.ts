@@ -99,8 +99,8 @@ export const LAYER_PROBE_TILES: readonly number[] = Object.freeze([
   261, // 나무 캐노피 — upper
   262, // 나무 캐노피 — upper
   288, // 꽃 덤불 — upper
-  374, // 사선 지붕 — upper
-  375, // 사선 지붕 — upper
+  374, // 사선 지붕 몸체 — lower
+  375, // 사선 지붕 몸체 — lower
   384, // 지붕 — upper
   326, // 지붕 장식 — upper
   290, // 나무 줄기 — lower

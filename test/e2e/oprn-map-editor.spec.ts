@@ -113,7 +113,7 @@ function countStackTiles(stacks: Record<string, number[]> | undefined, tile: num
 
 const FILL_TILE = 6;
 const PAINT_TILE = 7;
-const UPPER_TILE = 374;
+const UPPER_TILE = 385; // 투명 지붕 캡 — 374(지붕 몸체)는 하위 홈으로 교정돼 상위 팔레트에 없다.
 
 test("map chipset picker changes only the active map", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
