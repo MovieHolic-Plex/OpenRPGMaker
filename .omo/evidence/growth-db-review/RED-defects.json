@@ -1,0 +1,44 @@
+{
+  "capturedAt": "2026-09-12T22:13:30.788Z",
+  "projectId": "rpg-zzu-growth-presets-20260906-wish2",
+  "defects": {
+    "F1_emptyNodeDescriptions": [
+      "skill-vanguard-tree/skill-vanguard-root \"기초 무예\"",
+      "skill-vanguard-tree/skill-vanguard-endurance \"체력 단련\"",
+      "skill-vanguard-tree/skill-vanguard-discipline \"수비 훈련\"",
+      "skill-vanguard-tree/skill-vanguard-capstone \"불굴의 체력\"",
+      "skill-arcane-tree/skill-arcane-root \"술식 기초\"",
+      "skill-arcane-tree/skill-arcane-endurance \"마력 그릇\"",
+      "skill-arcane-tree/skill-arcane-discipline \"집중 체력\"",
+      "skill-arcane-tree/skill-arcane-capstone \"심화 연구\"",
+      "skill-ranger-tree/skill-ranger-root \"추적자의 발걸음\"",
+      "skill-ranger-tree/skill-ranger-endurance \"야전 체력\"",
+      "skill-ranger-tree/skill-ranger-discipline \"정밀 조준\"",
+      "skill-ranger-tree/skill-ranger-capstone \"숙련된 기동\""
+    ],
+    "F2_levelOnlyPromotions": [
+      "promotion-vanguard-class-0 -> promotion-vanguard-class-1 (level 5 only)",
+      "promotion-vanguard-class-0 -> promotion-vanguard-class-2 (level 5 only)",
+      "promotion-vanguard-class-1 -> promotion-vanguard-class-3 (level 12 only)",
+      "promotion-vanguard-class-2 -> promotion-vanguard-class-4 (level 12 only)",
+      "promotion-arcane-class-0 -> promotion-arcane-class-1 (level 5 only)",
+      "promotion-arcane-class-0 -> promotion-arcane-class-2 (level 5 only)",
+      "promotion-arcane-class-1 -> promotion-arcane-class-3 (level 12 only)",
+      "promotion-arcane-class-2 -> promotion-arcane-class-4 (level 12 only)",
+      "promotion-ranger-class-0 -> promotion-ranger-class-1 (level 5 only)",
+      "promotion-ranger-class-0 -> promotion-ranger-class-2 (level 5 only)",
+      "promotion-ranger-class-1 -> promotion-ranger-class-3 (level 12 only)",
+      "promotion-ranger-class-2 -> promotion-ranger-class-4 (level 12 only)"
+    ],
+    "F4_showcaseActorLevel": [
+      "showcase-promotion-vanguard initialLevel=21",
+      "showcase-promotion-arcane initialLevel=21",
+      "showcase-promotion-ranger initialLevel=21"
+    ],
+    "F6_treeDescriptions": [
+      "skill-vanguard-tree: \"공격 숙련과 생존 훈련을 함께 익히는 전열 전투 경로입니다.\"",
+      "skill-arcane-tree: \"정신력과 마력 용량을 키우며 공격·회복 술식을 연구합니다.\"",
+      "skill-ranger-tree: \"민첩성과 공격력을 단련하고 야전 회복과 전체 사격을 익힙니다.\""
+    ]
+  }
+}
