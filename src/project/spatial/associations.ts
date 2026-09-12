@@ -25,7 +25,7 @@ export function validateParentSlot(occurrence: S.SpatialAssociatedOccurrence, ro
   // Design records have distinct structural child collections (objects have none).
   const childSlots = "children" in root ? root.children : "places" in root ? root.places : "regions" in root ? root.regions : [];
   const objectSlot = "objectSlots" in root ? root.objectSlots.find(slot => slot.id === association.slotId) : undefined;
-  const childSlot = childSlots.find(slot => slot.id === association.slotId);
+  const childSlot = childSlots.find(slot => slot.id === association.slotId) ?? ("composition" in root ? root.composition?.members.find(slot => slot.id === association.slotId) : undefined);
   const source = objectSlot ? { kind: "object", id: objectSlot.objectDesignId } : childSlot?.source;
   assert(source !== undefined, `${path}.slotId: missing frozen parent slot ${association.slotId}`);
   assert(source.kind === occurrence.source.kind && source.id === occurrence.source.id, `${path}.slotId: occurrence source does not match frozen parent slot`);

@@ -23,6 +23,8 @@ export type KitRenderInput = {
   readonly scale?: number;
   /** 빈 칸 밑에 깔 받침 타일. null 이면 받침 없음(어두운 바탕). 기본 잔디. */
   readonly backgroundTile?: number | null;
+  /** 공간 배치 토큰은 빈 셀 뒤의 바닥이 비쳐야 한다. */
+  readonly transparentBackground?: boolean;
 };
 
 const imageCache = new Map<string, HTMLImageElement>();
@@ -40,8 +42,10 @@ export function renderTileCellsToCanvas(input: KitRenderInput): HTMLCanvasElemen
   const context = canvas.getContext("2d");
   if (!context) return canvas;
   context.imageSmoothingEnabled = false;
-  context.fillStyle = "#101318";
-  context.fillRect(0, 0, canvas.width, canvas.height);
+  if (!input.transparentBackground) {
+    context.fillStyle = "#101318";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+  }
 
   const draw = (image: HTMLImageElement): void => {
     const backgroundTile = input.backgroundTile === undefined ? TILE.GRASS : input.backgroundTile;

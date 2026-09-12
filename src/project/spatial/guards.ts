@@ -58,11 +58,20 @@ const area: Parser<S.SpatialFloorArea> = (v, p) => {
     default: return assertNever(areaKind);
   }
 };
+const composition: Parser<S.SpatialComposition> = (v, p) => {
+  const r = record(v, p, "tilesetId width height tiles members");
+  return { tilesetId: id(r.tilesetId, `${p}.tilesetId`), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`),
+    tiles: list(r.tiles, `${p}.tiles`, (v, p) => {
+      const cell = record(v, p, "x y layer tile");
+      return { ...point(cell, p), layer: choice(["lower", "upper"] as const)(cell.layer, `${p}.layer`), tile: integer([-1, Number.MAX_SAFE_INTEGER])(cell.tile, `${p}.tile`) };
+    }), members: list(r.members, `${p}.members`, (v, p) => child(kind)(v, p)) };
+};
+const composable = (r: Record<string, unknown>, p: string): S.SpatialComposable => r.composition === undefined ? {} : { composition: composition(r.composition, `${p}.composition`) };
 const space: Parser<S.SpaceDesign> = (v, p) => {
   const r = record(v, p);
   const environment = choice(["interior", "outdoor"] as const)(r.environment, `${p}.environment`);
-  const common = { ...base(r, p), tilesetId: id(r.tilesetId, `${p}.tilesetId`), shape: choice(["rect", "l", "alcove"] as const)(r.shape, `${p}.shape`), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), floor: text(r.floor, `${p}.floor`), wall: text(r.wall, `${p}.wall`), objectSlots: list(r.objectSlots, `${p}.objectSlots`, objectSlot), ports: ports(r.ports, `${p}.ports`) };
-  const fields = `${baseFields} environment tilesetId shape width height floor wall objectSlots ports`;
+  const common = { ...base(r, p), ...composable(r, p), tilesetId: id(r.tilesetId, `${p}.tilesetId`), shape: choice(["rect", "l", "alcove"] as const)(r.shape, `${p}.shape`), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), floor: text(r.floor, `${p}.floor`), wall: text(r.wall, `${p}.wall`), objectSlots: list(r.objectSlots, `${p}.objectSlots`, objectSlot), ports: ports(r.ports, `${p}.ports`) };
+  const fields = `${baseFields} environment tilesetId shape width height floor wall objectSlots ports composition`;
   switch (environment) {
     case "interior": record(r, p, `${fields} role`); return { ...common, environment, role: choice(["entrance", "walkway", "room"] as const)(r.role, `${p}.role`) };
     case "outdoor": record(r, p, `${fields} floorAreas`); return { ...common, environment, floorAreas: list(r.floorAreas, `${p}.floorAreas`, area) };
@@ -90,8 +99,8 @@ const localConnection: Parser<S.SpatialLocalConnection> = (v, p) => {
   return { id: id(r.id, `${p}.id`), from: endpoint(r.from, `${p}.from`), to: endpoint(r.to, `${p}.to`), bidirectional: boolean(r.bidirectional, `${p}.bidirectional`) };
 };
 const place: Parser<S.PlaceDesign> = (v, p) => {
-  const r = record(v, p, `${baseFields} kind children layout ports connections exterior`);
-  return { ...base(r, p), kind: choice(["facility", "settlement", "natural"] as const)(r.kind, `${p}.kind`), children: list(r.children, `${p}.children`, child(choice(["space", "place"] as const))), layout: choice(["row", "double-row", "manual"] as const)(r.layout, `${p}.layout`), ports: ports(r.ports, `${p}.ports`), connections: list(r.connections, `${p}.connections`, localConnection), ...(r.exterior === undefined ? {} : { exterior: graphic(r.exterior, `${p}.exterior`) }) };
+  const r = record(v, p, `${baseFields} kind children layout ports connections exterior composition`);
+  return { ...base(r, p), ...composable(r, p), kind: choice(["facility", "settlement", "natural"] as const)(r.kind, `${p}.kind`), children: list(r.children, `${p}.children`, child(choice(["space", "place"] as const))), layout: choice(["row", "double-row", "manual"] as const)(r.layout, `${p}.layout`), ports: ports(r.ports, `${p}.ports`), connections: list(r.connections, `${p}.connections`, localConnection), ...(r.exterior === undefined ? {} : { exterior: graphic(r.exterior, `${p}.exterior`) }) };
 };
 const terrain: Parser<S.SpatialTerrain> = (v, p) => {
   const r = record(v, p, "tilesetId width height floor areas");
@@ -108,13 +117,13 @@ const settlement: Parser<S.RegionSettlement> = (v, p) => {
   return { presetId: text(r.presetId, `${p}.presetId`), seed: integer([0, Number.MAX_SAFE_INTEGER])(r.seed, `${p}.seed`) };
 };
 const region: Parser<S.RegionDesign> = (v, p) => {
-  const r = record(v, p, `${baseFields} terrain places ports routes settlement`);
-  return { ...base(r, p), terrain: terrain(r.terrain, `${p}.terrain`), places: list(r.places, `${p}.places`, child(choice(["place"] as const))), ports: ports(r.ports, `${p}.ports`), routes: list(r.routes, `${p}.routes`, route),
+  const r = record(v, p, `${baseFields} terrain places ports routes settlement composition`);
+  return { ...base(r, p), ...composable(r, p), terrain: terrain(r.terrain, `${p}.terrain`), places: list(r.places, `${p}.places`, child(choice(["place"] as const))), ports: ports(r.ports, `${p}.ports`), routes: list(r.routes, `${p}.routes`, route),
     ...(r.settlement === undefined ? {} : { settlement: settlement(r.settlement, `${p}.settlement`) }) };
 };
 const world: Parser<S.WorldDesign> = (v, p) => {
-  const r = record(v, p, `${baseFields} terrain regions ports connections entryPort`);
-  return { ...base(r, p), terrain: terrain(r.terrain, `${p}.terrain`), regions: list(r.regions, `${p}.regions`, child(choice(["region"] as const))), ports: ports(r.ports, `${p}.ports`), connections: list(r.connections, `${p}.connections`, localConnection), entryPort: endpoint(r.entryPort, `${p}.entryPort`) };
+  const r = record(v, p, `${baseFields} terrain regions ports connections entryPort composition`);
+  return { ...base(r, p), ...composable(r, p), terrain: terrain(r.terrain, `${p}.terrain`), regions: list(r.regions, `${p}.regions`, child(choice(["region"] as const))), ports: ports(r.ports, `${p}.ports`), connections: list(r.connections, `${p}.connections`, localConnection), entryPort: endpoint(r.entryPort, `${p}.entryPort`) };
 };
 const library: Parser<S.SpatialLibrary> = (v, p) => {
   const r = record(v, p, "objects spaces places regions worlds");

@@ -1,3 +1,27 @@
+## 복합 공간 편집기 (2026-09-13)
+
+자체 canonical 설계의 공간·장소·지역·세계는 `spatialCompositionWorkspace.ts`를 쓴다.
+오브젝트는 별도 타일셋/오브젝트 브라우저와 타일 화가를 유지한다. 공간 재료는 타일·오브젝트,
+장소는 타일·오브젝트·공간, 지역은 여기에 장소, 세계는 여기에 지역을 추가한다.
+재료 검색, 클릭/드롭 배치, 선택 이동(드래그·방향키), 삭제, 하위/상위 타일 레이어,
+붓·지우개·원래대로, 확대/맞춤, 캔버스 크기를 제공한다. 원래대로는 직접 칠한 셀만 제거한다.
+기존 생성 규칙은 우측 접힌 상세에 남고 기존 슬롯도 선택/이동/삭제한다.
+선택 항목의 원본 열기(Enter)는 해당 종류의 편집기로 이동하고 뒤로 가기로 부모를 복원한다.
+초안은 미리보기→적용 트랜잭션으로 저장하며 잘못된 범위/참조/시공은 초안 반영 전에 거부한다.
+직접 구성 편집 취소는 구성 전용 40단계이며 기존 생성 규칙 변경은 공통 초안 취소를 쓴다.
+
+현재 한 캔버스는 **같은 타일셋** 재료만 조합한다. 다른 타일셋 재료는 비활성 표시한다.
+기존 여러 층 및 개요 지도 routes/connections를 단일 캔버스로 조용히 평탄화하지 않는다:
+구성 없는 기존 설계가 복합 미리보기에 맞지 않으면 기존 편집기로 열어 탐색/층별/개요 편집을 보존한다.
+이미 명시적 구성이 있는 설계의 지원 불가 시공은 오류로 막는다. 복합 구성이 없는 인스턴스는
+기존 층별/개요 시공기를 계속 사용한다. 라이브 콘텐츠를 자동 변환하거나 원격 덮어쓰지 않는다.
+
+검증: `test/spatialMixedComposition.test.ts`, `test/spatialCompositionWorkspace.test.ts`,
+기존 schema/space/place compiler 계약, `scripts/capture-spatial-mixed.mjs`(공간/장소/지역/세계 및1024px),
+오브젝트 브라우저는 `scripts/capture-spatial-browser.mjs`.
+브라우저 fixture 주입에 동적 store import를 쓸 때 Vite HMR 직후에는 쿼리별 store singleton이
+갈릴 수 있다. 이 경우 소유한 dev 서버를 재시작한 뒤 캡처한다.
+
 ## Placed-place child proposal adapter (2026-09-08)
 
 Association-based child lifecycle, frozen actual read models, clone/deletion data and
@@ -677,6 +701,49 @@ DOM은 삭제했고 CSS로 숨기지 않는다. `commonEvents`는 시스템 그�
 Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마을 합성은 후속 단계이며
 `structureKits`·`interiorRoomKinds`·`scratchConceptBundles`·지형·마을 데이터는 그대로 둔다.
 회귀: `databaseConceptFirstNav`, `databaseTilesetFolder`, `tilesetTabActivation`, `scratchConceptTab`.
+
+## 오브젝트·공간 수정 복구 (2026-09-13)
+
+- `spatialObjectMutations.ts`는 컨트롤러가 등록돼 있어도 `spatialAuthoring` 없는 프로젝트의
+  기존 킷 수정·복제·추가·삭제를 기존 store/history 경로로 저장한다. 문서 없는 초안을 만들면
+  `previewSpatialAuthoring`의 문서 검증에서 막히므로 컨트롤러 존재만으로 분기하지 않는다.
+- Canonical 오브젝트의 그림이 코드 카탈로그 참조일 수 있다. 「그림 편집」은 그 그림을 새 킷으로
+  굽고 선택된 설계의 graphic만 초안에서 교체한다. 다른 설계와 기본 카탈로그는 보존한다.
+  그림 편집기 종료는 `openDialog`의 공통 onClose를 사용해 Esc·백드롭으로 닫아도
+  초안 툴바를 갱신한다. 기존 킷 카드도 같은 graphic을 가리키는 설계에 연결하며, 설계가 없는 킷에는 작동하지 않는
+  앵커·칩·graphic 선택 폼을 노출하지 않는다.
+- 공간의 `room-rule` 카드는 `tilesetSpacesTab.renderKindInspector`의 이름·필수 역할·분위기·통로
+  편집 폼을 재사용한다. 기본 방 종류는 「내 설계로 복제」로 고유 ID 사본을 만들고 편집한다.
+  `roomKindOf`는 사용자 카드를 기본 ID보다 먼저 저작 레코드로 해석한다.
+  레거시 수정은 store/history, canonical 프로젝트는 초안 → 미리보기 → 적용을 따른다.
+- Canonical 공간에는 이름 입력이 있으며, 추가 후 「내 설계」 필터와 속성을 연다.
+  방 규칙의 수정은 방 종류 규칙을 바꾸며 이미 시공된 공간을 재시공하지 않는다.
+  좁은 창의 속성은 스테이지 위 스크롤 가능한 drawer로 열어 auto grid 행의 36% 높이로
+  축소되던 입력 폼을 복구한다. 방 규칙 폼도 속성 패널 폭에 맞춘다.
+- 회귀: `test/spatialLegacyEditing.test.ts`, `test/spatialObjectActions.test.ts`,
+  `test/spatialSpaceActions.test.ts`. 브라우저: `node scripts/capture-spatial-edit-repair.mjs <baseURL>`
+  (격리된 blankProject 검증), 증거: `output/evidence/spatial-edit-repair/`.
+
+## 오브젝트 브라우저와 공간 배치 작업대 (2026-09-13)
+
+- 설계 모드의 **오브젝트**는 `spatialAssetBrowser.ts`: 타일셋 목록 → 검색/기본·내 설계 필터 →
+  그림 카드 → 상세 편집이다. 48개씩 페이지를 나누며 선택이 바뀌면 해당 카드가 있는 페이지를 연다.
+  이름 검색은 결과 영역만 갱신하여 포커스를 유지한다. 앵커·칩·직접 graphic 참조는 고급 설정으로 접는다.
+- 오브젝트 그림 편집기의 「타일 브라우저 열기」는 `tilesetTileBrowser.ts`의 독립 모달이다.
+  원본 행·열 배열, 분류·이름·번호 검색, 24/40/64px 확대, 선택 타일 미리보기를 제공한다.
+  확인/더블클릭은 오브젝트 편집기의 브러시만 바꾸고, 취소는 아무것도 바꾸지 않는다.
+- **공간**은 `spatialSpaceWorkspace.ts`의 별도 배치 작업대다. 상단에서 공간을 바꾸고,
+  `spatialSpaceObjectBrowser.ts`에서 같은 타일셋의 ObjectDesign을 찾아 클릭 후 빈칸 클릭 또는
+  드래그로 배치한다. 중앙은 실제 공간, 오른쪽은 이름·형태·크기·선택한 배치의 속성이다.
+  원본 공간의 고정 슬롯은 실제 오브젝트 래스터를 투명 배경으로 표시한다. 새 슬롯은 초안에만
+  기록되며 미리보기 → 적용을 거친다. 기존 방 종류 카드는 호환 규칙 편집을 유지한다.
+- `spatialStage.ts`의 browser 툴바는 추가·복제·미리보기·적용·되돌리기를 노출하고
+  맵 배치/삭제/시공은 「배치·관리」에 둔다. 공간 설계가 없는 프로젝트는 상단 「공간 배치 시작」으로 활성화하며 그 전에는 새 공간 추가를 비활성화한다. 다른 4탭과 배치 모드는 기존 셸을 유지한다.
+- CSS는 `database/asset-browser.css`, 소유 클래스는 `scripts/css-surfaces.json`에 등록한다.
+  중첩 타일 모달은 DB 창 밖에 붙으므로 전역 토큰으로 색을 연결해야 한다.
+- 회귀: `test/spatialAssetBrowsers.test.ts`; UI 증거 재생:
+  `node scripts/capture-spatial-browser.mjs <baseURL>` → `output/evidence/spatial-browser/`.
+  이 스크립트는 원격 저장이 꺼진 격리 테스트이며 콘텐츠 저작/원격 저장 증거가 아니다.
 
 ## 맵 그룹 — 공간 저작 셸 UX 계약 (2026-09-12)
 

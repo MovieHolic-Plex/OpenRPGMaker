@@ -49,6 +49,10 @@ function fill(testid: string, value: string): void {
 }
 
 function click(testid: string): void {
+  const picker = host.querySelector<HTMLSelectElement>("[data-testid='composition-design']");
+  if (testid.startsWith("spatial-card-") && picker) {
+    picker.value = testid.slice("spatial-card-".length); picker.dispatchEvent(new Event("change")); return;
+  }
   control<HTMLButtonElement>(testid).click();
 }
 
