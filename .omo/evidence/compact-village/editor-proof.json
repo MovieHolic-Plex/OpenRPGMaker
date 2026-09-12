@@ -1,0 +1,15 @@
+{
+  "projectId": "rpg-zzu-house-template-gallery",
+  "mapId": "map_compact_market_village_20260913",
+  "currentMapId": "map_compact_market_village_20260913",
+  "source": "real editor URL and Supabase boot load",
+  "remotePersistenceEnabled": true,
+  "housesInLibrary": 30,
+  "compactHousesInLibrary": 12,
+  "maps": 16,
+  "mapMatchesSavedReadback": true,
+  "mapSHA256": "c86887a0177e75a73ad50565e2c2f1d6a88a00dd1d854f40503d3b51ac907587",
+  "errors": [],
+  "blockedRemoteWrites": [],
+  "projectContentWrites": 0
+}

@@ -80,7 +80,9 @@ export function critiqueVillageMap(project: Project, args: Record<string, unknow
 
 export function auditVillage(map: GameMap, houses: readonly BuiltHouse[], upperBefore: readonly number[], area: Rect): VillageAudit {
   const isRoad = environmentalRoadAt(map);
-  const doorsConnected = houses.filter((house) => doorHasRoad(isRoad, house.doorAt)).length;
+  const doorsConnected = houses.filter(house => house.objectExterior
+    ? isRoad(house.front.x, house.front.y) && house.objectExterior.access.every(p => ROAD_TILES.has(map.lowerTiles[p.y * map.width + p.x] ?? -1))
+    : doorHasRoad(isRoad, house.doorAt)).length;
   // 문 칸이 살아있는지(도로 관통 등으로 덮이지 않았는지)도 직접 검사한다.
   // 기준은 시공 직후 기록한 house.doorTiles — 이벤트 문이면 킷 벽 타일, 타일 문이면 116/146.
   const lowerAt = (x: number, y: number): number => map.lowerTiles[y * map.width + x] ?? TILE.EMPTY;
@@ -91,9 +93,10 @@ export function auditVillage(map: GameMap, houses: readonly BuiltHouse[], upperB
   }).length;
   let roadInsideHouses = 0;
   for (const house of houses) {
+    const privateAccess = new Set((house.objectExterior?.access ?? []).map(p => coordKey(p.x, p.y)));
     for (let y = house.bbox.y; y < house.bbox.y + house.bbox.h; y += 1) {
       for (let x = house.bbox.x; x < house.bbox.x + house.bbox.w; x += 1) {
-        if (ROAD_TILES.has(lowerAt(x, y))) roadInsideHouses += 1;
+        if (!privateAccess.has(coordKey(x, y)) && ROAD_TILES.has(lowerAt(x, y))) roadInsideHouses += 1;
       }
     }
   }
@@ -164,6 +167,10 @@ function countRoadComponents(map: GameMap, area: Rect): number {
 }
 
 function collectRoadComponents(map: GameMap, area: Rect): string[][] {
+  const settlementAccess = new Set([
+    ...(map.layoutPlan?.roadAnchors ?? []),
+    ...(map.layoutPlan?.regions ?? []).flatMap(region => region.role === "house" && region.front ? [region.front] : []),
+  ].map(p => coordKey(p.x, p.y)));
   const isRoad = environmentalRoadAt(map);
   const road = new Set<string>();
   for (let y = area.y; y < area.y + area.h; y += 1) {
@@ -222,7 +229,8 @@ function collectRoadComponents(map: GameMap, area: Rect): string[][] {
         || cells.every((key) => DIRT_SURFACE.has(tileAtKey(key)))
       ))
       || (cells.every(isBeachDockCell) && touchesWater());
-    if (!isNatureOutcrop) components.push(cells);
+    // A sandy village street does not become a beach merely by reaching the lake.
+    if (!isNatureOutcrop || cells.some(key => settlementAccess.has(key))) components.push(cells);
   }
   return components;
 }

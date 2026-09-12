@@ -94,8 +94,11 @@ export function villageDomainArgs(request: AuthorVillageRequest): VillageBuildDo
   return {
     mapId: request.target.mapId,
     houses: request.houseCount,
+    countPolicy: request.countPolicy,
+    ...(request.composition ? { composition: request.composition } : {}),
     ...(request.target.kind === "existing" && request.target.bounds ? { bounds: request.target.bounds } : {}),
     ...(request.housePlans ? { housePlans: request.housePlans } : {}),
+    ...(request.houseObjectIds ? { houseObjectIds: request.houseObjectIds } : {}),
     ...(request.theme ? { theme: request.theme } : {}),
     ...(request.forestDensity ? { forestDensity: request.forestDensity } : {}),
     ...(request.groundTheme === undefined ? {} : { groundTheme: request.groundTheme }),
@@ -104,8 +107,8 @@ export function villageDomainArgs(request: AuthorVillageRequest): VillageBuildDo
     ...(request.residents === undefined ? {} : { npcs: request.residents }),
     ...(request.seed === undefined ? {} : { seed: request.seed }),
     ...(request.presetId === undefined ? {} : { presetId: request.presetId }),
-    interior: request.interior ?? true,
-    doorEvent: request.interior ?? true,
+    interior: request.interior ?? !(request.houseObjectIds || request.housePlans?.some(plan => plan.objectId)),
+    doorEvent: request.interior ?? !(request.houseObjectIds || request.housePlans?.some(plan => plan.objectId)),
   };
 }
 
@@ -149,7 +152,8 @@ export function assertVillagePostconditions(
     }
   }
   if (!inspection.structuralQa.ok) {
-    throw new ToolError("Village structural QA failed.", { code: "village-qa-failed", mapId });
+    const qa = inspection.structuralQa;
+    throw new ToolError(`Village structural QA failed: doors ${qa.doorsConnected}/${inspection.actualHouseCount}, intact ${qa.doorsIntact}, roads ${qa.roadComponents}, ridge ${qa.ridgeInvaded}, reachable ${qa.critiqueOk}.`, { code: "village-qa-failed", mapId });
   }
 }
 

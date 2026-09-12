@@ -189,6 +189,9 @@ export function paintVillageRoadsChecked(args: {
     ? boulevardCells(area, boulevard, intent.settlementLayout === "street-grid" ? undefined : seed)
     : [];
   const boulevardProtected = new Set(boulevardBand.map((cell) => coordKey(cell.x, cell.y)));
+  for (const house of houses) for (const cell of house.objectExterior?.access ?? []) {
+    boulevardProtected.add(coordKey(cell.x, cell.y));
+  }
 
   const paintOnce = (runIntent: VillageIntent, runSeed: number): void => {
     if (boulevard) {
@@ -887,6 +890,10 @@ export function connectHousesToRoads(
   warnings: string[],
   houseBlocked: ReadonlySet<string> = EMPTY_BLOCKED,
 ): void {
+  if (houses.length > 0 && houses.every(house => house.objectExterior)) {
+    connectVillageAccessPoints(map, area, houses.map(house => house.front), intent.pathStyle, houseBlocked);
+    return;
+  }
   const pathStyle = intent.pathStyle;
   const leftEdge = plaza.rect.x;
   const rightEdge = plaza.rect.x + plaza.rect.w - 1;
@@ -951,5 +958,49 @@ export function connectHousesToRoads(
       warnings,
       houseBlocked,
     );
+  }
+}
+
+/** Connect each saved house to the nearest connected street, instead of another long plaza spur. */
+export function connectVillageAccessPoints(map: GameMap, area: Rect, gates: readonly Point[], style: RoadStyle,
+  blocked: ReadonlySet<string>): void {
+  const inside = (p: Point): boolean => p.x >= area.x && p.y >= area.y && p.x < area.x + area.w && p.y < area.y + area.h;
+  const neighbors = (p: Point): Point[] => [{ x: p.x, y: p.y + 1 }, { x: p.x - 1, y: p.y }, { x: p.x + 1, y: p.y }, { x: p.x, y: p.y - 1 }];
+  const roadAt = environmentalRoadAt(map), seen = new Set<string>();
+  let network = new Set<string>();
+  for (let y = area.y; y < area.y + area.h; y++) for (let x = area.x; x < area.x + area.w; x++) {
+    const key = coordKey(x, y);
+    if (seen.has(key) || !roadAt(x, y)) continue;
+    const cells = new Set<string>(), queue: Point[] = [{ x, y }];
+    for (let i = 0; i < queue.length; i++) {
+      const p = queue[i]!, k = coordKey(p.x, p.y);
+      if (!inside(p) || seen.has(k) || !roadAt(p.x, p.y)) continue;
+      seen.add(k); cells.add(k); queue.push(...neighbors(p));
+    }
+    if (cells.size > network.size) network = cells;
+  }
+  if (network.size === 0) throw new ToolError("건물 대문을 연결할 공용 도로가 없습니다.", { code: "village-object-road", mapId: map.id });
+  for (const gate of gates) {
+    const gateKey = coordKey(gate.x, gate.y);
+    if (network.has(gateKey)) continue;
+    const previous = new Map<string, Point | null>([[gateKey, null]]), queue: Point[] = [gate];
+    let end: Point | undefined;
+    for (let i = 0; i < queue.length && !end; i++) {
+      const p = queue[i]!;
+      if (network.has(coordKey(p.x, p.y))) { end = p; break; }
+      for (const next of neighbors(p)) {
+        const k = coordKey(next.x, next.y), index = next.y * map.width + next.x;
+        if (!inside(next) || blocked.has(k) || previous.has(k)
+          || (map.lowerTiles[index] !== TILE.GRASS && !ROAD_TILES.has(map.lowerTiles[index] ?? -1))
+          || map.upperTiles[index] !== TILE.EMPTY || map.lowerTileStacks?.[index]?.length || map.upperTileStacks?.[index]?.length
+          || map.events.some(event => event.x === next.x && event.y === next.y)) continue;
+        previous.set(k, p); queue.push(next);
+      }
+    }
+    if (!end) throw new ToolError(`건물 대문(${gate.x},${gate.y})을 길에 연결할 수 없습니다.`, { code: "village-object-road", mapId: map.id });
+    const cells: Point[] = [];
+    for (let p: Point | null = end; p; p = previous.get(coordKey(p.x, p.y)) ?? null) cells.push(p);
+    paintRoadCellsAvoidingHouses(map, style, cells, blocked);
+    for (const p of cells) network.add(coordKey(p.x, p.y));
   }
 }

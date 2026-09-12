@@ -26,6 +26,9 @@ import { villageTemplateCatalog } from "./village/authoringData";
 import { HOUSE_TEMPLATES, MIN_BOUNDS_SIZE } from "./village/constants";
 
 import { resolveVillageDesignInput } from "./village/designContract";
+import { villageObjectHouseCatalog } from "./village/objectHouses";
+import { assertVillagePublicAccess } from "./village/lakeside";
+import { chooseCompactHouses } from "./village/compactComposition";
 
 export type AuthorVillageDependencies = {
   readonly build: (project: Parameters<typeof buildVillageDomain>[0], args: VillageBuildDomainArgs) => ToolExecResult;
@@ -53,6 +56,10 @@ function normalizeUnknownHouseTemplates(
   readonly warnings: readonly string[];
 } {
   if (!Array.isArray(args.housePlans)) return { args, warnings: [] };
+  // Object mode validates an incompatible legacy request; never erase that evidence first.
+  if (args.houseObjectIds !== undefined || args.housePlans.some(entry => entry && typeof entry === "object" && "objectId" in entry)) {
+    return { args, warnings: [] };
+  }
   const warnings: string[] = [];
   const housePlans = args.housePlans.map((entry, index) => {
     if (typeof entry !== "object" || entry === null || Array.isArray(entry)) return entry;
@@ -115,12 +122,19 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
           additionalProperties: false,
         },
         houseCount: { type: "integer", minimum: 1, maximum: 32, description: "Requested exterior houses, 1-32 without clamping. best-effort도 4채 이하는 exact와 같다(하한 85%가 4 미만으로 안 내려간다)." },
+        houseObjectIds: {
+          type: "array", items: { type: "string" },
+          description: "저장된 건물 오브젝트 후보 ID. list_spatial_designs(kind:object)로 찾은 건물 외형을 넣으면 지붕·벽·복수 현관을 그대로 사용하고 서로 다른 형태를 먼저 선택한다. 개별 확정은 housePlans[].objectId. 외형은 실내를 뜻하지 않으므로 interior:false; 실제 실내가 필요하면 별도 공간/장소로 연결한다.",
+        },
+        composition: { type: "string", enum: ["compact"],
+          description: "조밀한 주거 마을 권장값. 저장된 후보 중 통나무 벽과 15×15 초과 집은 제외하며, 10×10 초과 큰집은 최대 2채만 쓴다. 작은 집을 가까이 배치하고 비대칭 호수·풍부한 나무 군락·243계열 풀밭을 조성한다. 집별 objectId를 명시하면 이 기준과의 충돌은 거부한다." },
         housePlans: {
           type: "array",
           description: "Optional per-house plans. Length must equal houseCount.",
           items: {
             type: "object",
             properties: {
+              objectId: { type: "string", description: "이 집에 사용할 저장된 건물 외형 오브젝트 ID. kitId/templateId와 동시 지정 불가." },
               kitId: { type: "string" },
               yard: { type: "array", items: { type: "string" } },
               ownerName: { type: "string" },
@@ -190,7 +204,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       const designed = resolveVillageDesignInput(draft, args, true);
       // 신규 맵 크기 생략 시 코드가 유일한 환산기(estimateVillageSize)로 채운다 — 모델 창작 아님.
       // 파서보다 먼저 채워야 파서의 plannedMap 합성이 target 값을 볼 수 있다(2026-09-11).
-      const sized = fillMissingVillageDimensions(designed);
+      const sized = fillMissingVillageDimensions(designed, draft);
       const normalized = normalizeUnknownHouseTemplates(sized, knownTemplateIds(draft));
       const request = parseAuthorVillageRequest(normalized.args);
       // 검증 후 변이: 맵 생성(createExactVillageMap)보다 먼저 타일셋·수용성을 검사한다.
@@ -217,6 +231,9 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       const inspection = dependencies.inspect(draft, result);
       assertVillagePostconditions(request, inspection);
       restoreExistingTargetStart(baseline, draft, request);
+      if ((request.houseObjectIds || request.housePlans?.some(plan => plan.objectId)) && draft.startMapId === request.target.mapId) {
+        assertVillagePublicAccess(draft, draft.maps[request.target.mapId]!, draft.startPos);
+      }
       const state = { baseline, draft, request, inspection };
       const scopeWarnings = assertVillageMutationScope(state);
       const data = buildVillageFacadeData(state, result);
@@ -319,7 +336,7 @@ function growExistingVillageMap(map: GameMap, width: number, height: number): vo
  * 기존 맵 크기는 사용자가 이미 정한 사실이다(투기 없음). 근거(source)는 결과가 아닌 계산에만
  * 쓰이므로 args에 흔적을 남기지 않는다.
  */
-export function fillMissingVillageDimensions(args: Record<string, unknown>): Record<string, unknown> {
+export function fillMissingVillageDimensions(args: Record<string, unknown>, project?: Project): Record<string, unknown> {
   const target = args.target;
   if (typeof target !== "object" || target === null || Array.isArray(target)) return args;
   const record = target as Record<string, unknown>;
@@ -329,7 +346,25 @@ export function fillMissingVillageDimensions(args: Record<string, unknown>): Rec
   if (recordHasNumber("width") && recordHasNumber("height")) return args;
   const declared = typeof args.houseCount === "number" && Number.isSafeInteger(args.houseCount)
     ? { houseCount: args.houseCount } : {};
-  const size = estimateVillageSize(declared);
+  let size = estimateVillageSize(declared);
+  const objects = project ? villageObjectHouseCatalog(project, args) : undefined;
+  const count = declared.houseCount;
+  if (objects?.length && count && count >= 1 && count <= 32) {
+    const sorted = [...objects].sort((a, b) => b.raster.width * b.raster.height - a.raster.width * a.raster.height);
+    const plans = Array.isArray(args.housePlans) ? args.housePlans as Record<string, unknown>[] : [];
+    const compact = args.composition === "compact";
+    const rasters = compact ? chooseCompactHouses(sorted, count, plans).map(house => house.raster)
+      : Array.from({ length: count }, (_, i) => objects.find(h => h.design.id === plans[i]?.objectId)?.raster ?? sorted[i % sorted.length]!.raster);
+    const lotArea = rasters.reduce((sum, raster) => sum + (raster.width + (compact ? 2 : 4)) * (raster.height + (compact ? 4 : 6)), 0);
+    // Keep room for the market, connected streets and reserved nature in addition to actual lots.
+    const floorArea = lotArea / (compact ? 0.46 : 0.42), side = Math.ceil(Math.sqrt(floorArea));
+    // A central reserved plaza splits the usable span; total area alone cannot fit even
+    // one long house. Reserve a full largest lot on either side of the commons.
+    const minWidth = 2 * (Math.max(...rasters.map(r => r.width)) + (compact ? 2 : 4)) + (compact ? 28 : 24);
+    const minHeight = 2 * (Math.max(...rasters.map(r => r.height)) + (compact ? 4 : 6)) + (compact ? 22 : 18);
+    size = { ...size, width: Math.max(minWidth, recordHasNumber("height") ? Math.ceil(floorArea / Number(record.height)) : side),
+      height: Math.max(minHeight, recordHasNumber("width") ? Math.ceil(floorArea / Number(record.width)) : side) };
+  }
   return {
     ...args,
     target: {

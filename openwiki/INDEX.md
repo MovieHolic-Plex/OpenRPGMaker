@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **64쪽 / 2470KB / 약 691,733 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **64쪽 / 2480KB / 약 694,802 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -64,7 +64,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-workflows-misc.md` | 7 | `.qa.json`, `default.json`, `game.html`, `release.json`, `runtime.json`, `src/editor/authoringTestGate.ts`, `src/styles/editor/event-editor-help.css` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/horror-authoring.md` | 1 | `motion-sheet.png` |
-| `openwiki/large-village-generation.md` | 2 | `HANDOFF.json`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
+| `openwiki/large-village-generation.md` | 6 | `HANDOFF.json`, `compactComposition.ts`, `lakeside.ts`, `objectHouses.ts`, `src/project/defaults/largeRiverMarketVillageBuild.ts`, `village/objectHouses.ts` |
 | `openwiki/night-monster.md` | 1 | `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
 | `openwiki/runtime-action-combat.md` | 1 | `export-player/player.html` |
 | `openwiki/runtime-battle.md` | 7 | `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `reference.png`, `src/styles/runtime/battle.css`, `starter/hires/hero-0N-battle.png` |
@@ -74,10 +74,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
 | `openwiki/se-catalog.md` | 7 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
-| `openwiki/testing.md` | 17 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
+| `openwiki/testing.md` | 18 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
-| `openwiki/village-design.md` | 4 | `depth-review.json`, `house30BatchB.mts`, `house30BatchC.mts`, `output/village-direction/index.html` |
+| `openwiki/village-design.md` | 2 | `depth-review.json`, `output/village-direction/index.html` |
 | `openwiki/world-structure-authoring.md` | 1 | `verify-shots/runtime-qa/world-structure-tools/SUMMARY.md` |
 
 ## 페이지별 절 좌표
@@ -629,35 +629,37 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L144` 안티-게이밍 규칙
 - `L154` 이 페이지를 갱신해야 하는 변경
 
-### `openwiki/large-village-generation.md` — 19KB · 427줄 · ~5,451 토큰
+### `openwiki/large-village-generation.md` — 26KB · 508줄 · ~7,651 토큰
 
 - `L9` 내장 AI 시공 순서 (2026-09-12, 아래 과거 하네스 순서보다 우선)
-- `L35` 한 줄 요약
-- `L50` AI tree placement and completed houses (2026-09-05)
-- `L69` Phase 2 construction boundary (2026-09-06)
-- `L99` 관련 파일
-- `L118` 전체 그림
-- `L136` 단계별 설명
-  - `L138` 0단계 — 자리 잡기 (`planLargeVillageBboxes`)
-  - `L168` 1단계 — 맵 생성
-  - `L176` 2단계 — 물
-  - `L187` 3단계 — 집 (다양화)
-  - `L202` 4단계 — 구불구불 길
-  - `L218` 5단계 — 광장 + 시장 하네스
-  - `L229` 6단계 — 울타리 + 마당 (집과 별 개념)
-  - `L252` 7단계 — 나무·마을 소품
-  - `L264` 8단계 — NPC
-  - `L274` 9단계 — QA (품질 게이트)
-  - `L297` 10단계 — 저장
-- `L308` 데이터 개념 3개만 기억하기
-- `L327` 예전에 자주 깨지던 이유 (로직 이슈)
-- `L340` 로그 읽는 법
-- `L360` 다시 만들 때
-- `L376` 고칠 때 어디를 만지나
-- `L390` 아직 약한 부분 (솔직히)
-- `L407` 관련 위키
-- `L415` author_village 스코프 계약 (2026-09-04 적대 리뷰 반영)
-- `L424` 대로 병합 검증 (2026-09-05)
+- `L35` 저장된 건물 오브젝트로 마을 만들기 (2026-09-12)
+- `L69` 작은 집 중심의 조밀한 마을 (2026-09-13)
+- `L100` 과거 대형 하네스 순서
+- `L115` AI tree placement and completed houses (2026-09-05)
+- `L150` Phase 2 construction boundary (2026-09-06)
+- `L180` 관련 파일
+- `L199` 전체 그림
+- `L217` 단계별 설명
+  - `L219` 0단계 — 자리 잡기 (`planLargeVillageBboxes`)
+  - `L249` 1단계 — 맵 생성
+  - `L257` 2단계 — 물
+  - `L268` 3단계 — 집 (다양화)
+  - `L283` 4단계 — 구불구불 길
+  - `L299` 5단계 — 광장 + 시장 하네스
+  - `L310` 6단계 — 울타리 + 마당 (집과 별 개념)
+  - `L333` 7단계 — 나무·마을 소품
+  - `L345` 8단계 — NPC
+  - `L355` 9단계 — QA (품질 게이트)
+  - `L378` 10단계 — 저장
+- `L389` 데이터 개념 3개만 기억하기
+- `L408` 예전에 자주 깨지던 이유 (로직 이슈)
+- `L421` 로그 읽는 법
+- `L441` 다시 만들 때
+- `L457` 고칠 때 어디를 만지나
+- `L471` 아직 약한 부분 (솔직히)
+- `L488` 관련 위키
+- `L496` author_village 스코프 계약 (2026-09-04 적대 리뷰 반영)
+- `L505` 대로 병합 검증 (2026-09-05)
 
 ### `openwiki/location-layer-affordance-audit.md` — 13KB · 130줄 · ~3,930 토큰
 
@@ -1089,7 +1091,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L69` Image capability trap
 - `L81` 2026-09-08 pilot result
 
-### `openwiki/village-design.md` — 16KB · 172줄 · ~5,048 토큰
+### `openwiki/village-design.md` — 19KB · 207줄 · ~5,917 토큰
 
 - `L5` 데이터와 호환성
 - `L13` 단일 시공 계약
@@ -1101,6 +1103,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L92` 3·4층 확장 (2026-09-12)
   - `L113` 오브젝트·공간·장소 등록 (2026-09-12 후속)
   - `L142` 새 집 외형 30종 — 독립 제작과 통합 (2026-09-12)
+  - `L173` 저장된 집에서 실제 마을로 (2026-09-12)
+  - `L189` 조밀한 소형 주택 마을로 수정 (2026-09-13)
 
 ### `openwiki/world-generation-rules.md` — 8KB · 109줄 · ~2,470 토큰
 

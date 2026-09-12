@@ -6,7 +6,7 @@ import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
 import type { Rng } from "@/util/rng";
 import { inMapBounds } from "../mapHelpers";
-import { protectedHouseCells } from "../houseProtection";
+import { protectedHouseCells, uniqueHouseRegionId } from "../houseProtection";
 import type { PlazaLayout } from "../villagePlan";
 import { marketAisleCells, placeMarketDisplays } from "./market";
 import {
@@ -155,5 +155,13 @@ export function paintPlazaFence(map: GameMap, rect: Rect): number {
 }
 
 export function placeMarketDeckProps(map: GameMap, area: Rect): number {
-  return placeMarketDisplays(map,area).placed;
+  const result = placeMarketDisplays(map, area);
+  if (map.layoutPlan) for (const display of result.displays) {
+    const x = Math.min(...display.cells.map(p => p.x)), y = Math.min(...display.cells.map(p => p.y));
+    map.layoutPlan.regions.push({ id: uniqueHouseRegionId(map, "market_stall"), role: "market",
+      label: ({ produce: "과일 가판", pottery: "그릇 가판", provisions: "식료품 가판" })[display.goods],
+      x, y, w: Math.max(...display.cells.map(p => p.x)) - x + 1, h: Math.max(...display.cells.map(p => p.y)) - y + 1,
+      front: display.frontage[0], tags: ["market-display", display.goods] });
+  }
+  return result.placed;
 }

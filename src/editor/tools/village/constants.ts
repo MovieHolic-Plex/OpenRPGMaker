@@ -20,6 +20,7 @@ import type { Rng } from "@/util/rng";
 import type { YardDecorKind } from "../houseLotDecor";
 import type { ToolDefinition, ToolExecResult } from "../types";
 import type { ForestDensity } from "../forestDensity";
+import type { SpatialKitSnapshot } from "@/project/spatial/types";
 import type {
   EdgeTrees,
   KitMix,
@@ -247,6 +248,15 @@ export interface BuiltHouse {
   readonly ownerName?: string;
   /** Explicit interior program (preferred over ownerName regex). */
   readonly program?: HouseInteriorProgram;
+  /** Saved exterior geometry and its explicitly planned private access; no implied interior. */
+  readonly objectExterior?: {
+    readonly objectId: string;
+    readonly revision: number;
+    readonly name: string;
+    readonly raster: SpatialKitSnapshot;
+    readonly approaches: readonly Point[];
+    readonly access: readonly Point[];
+  };
 }
 
 export interface VillageHouseInteriorRef {
