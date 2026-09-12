@@ -3,10 +3,12 @@ import { INTERIOR_OBJECT_CATALOG } from "@/project/defaults/interiorObjectCatalo
 import * as editorCatalog from "@/editor/interiorObjectCatalog";
 import { deserialize, serialize, serializePretty } from "@/project/io";
 import { resolveSpatialGraphic } from "@/project/spatial/assets";
+import { snapshotGraphic } from "@/project/spatial/snapshotRaster";
+import { SpatialOperationError } from "@/project/spatial/domain";
 import { validateSpatialAuthoring } from "@/project/spatial/guards";
 import { validateSpatialReferences } from "@/project/spatial/references";
 import baseline from "./fixtures/spatial/interiorCatalogBaseline.json";
-import { authoredGraphics, ineligibleAtlases, spatialAssetFixture } from "./support/spatialAssetFixture";
+import { authoredGraphics, ineligibleAtlases, legacyInertHouseKit, spatialAssetFixture } from "./support/spatialAssetFixture";
 import { emptySpatialDocument, spatialFixture, spatialWire } from "./support/spatialSchemaFixture";
 
 describe("qualified live spatial graphic resolution", () => {
@@ -43,6 +45,17 @@ describe("qualified live spatial graphic resolution", () => {
     // Then
     expect(results).toStrictEqual([{ source: "authored", kit }, { source: "authored", kit }]);
     expect(JSON.stringify(project)).toBe(before);
+  });
+
+  it("keeps a stored kind:'house' record as inert authored data — resolves without fallback, refuses to rasterize", () => {
+    // Given: a leftover record of the removed parametric house-kit concept in stored data.
+    const { project, interior } = spatialAssetFixture();
+    interior.structureKits = [structuredClone(legacyInertHouseKit) as never];
+    const graphic = { tilesetId: interior.id, kitId: "bed_h" };
+    // When / Then: the stored record still wins over the builtin catalog entry…
+    expect(resolveSpatialGraphic(project, graphic)).toStrictEqual({ source: "authored", kit: legacyInertHouseKit });
+    // …but the removed kind cannot produce cells.
+    expect(() => snapshotGraphic(project, graphic)).toThrow(SpatialOperationError);
   });
 
   it("keeps authored precedence when the atlas is ineligible for builtins", () => {

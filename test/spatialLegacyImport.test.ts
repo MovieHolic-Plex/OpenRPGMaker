@@ -164,7 +164,7 @@ describe("explicit legacy spatial conversion", () => {
     expect(JSON.stringify(input)).toBe(json);
   });
 
-  it.each([customLegacyKit, { ...customLegacyKit, rows: [{ tiles: [-1], upperTiles: [-1] }] }, legacyHouseKit])("preserves supported authored shapes when converting kit %j", kit => {
+  it.each([customLegacyKit, { ...customLegacyKit, rows: [{ tiles: [-1], upperTiles: [-1] }] }, legacyHouseKit])("preserves authored kit records (inert legacy included) when converting kit %j", kit => {
     // Given
     const input = regressionRaw({ structureKits: [kit] });
     // When

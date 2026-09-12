@@ -430,7 +430,7 @@ export interface SectionStructureKitDef {
   width: number;
   height: number;
   rows: StructureKitRow[];
-  /** 입구·간판·자리 등 부위 목록(상대좌표). section·house 공통 필드. */
+  /** 입구·간판·자리 등 부위 목록(상대좌표). */
   parts?: StructureKitPart[];
   /** 칸별 힌트(증분 축·메모). parts 와 달리 한 칸 단위다. 행렬이 있는 section 에만 뜻이 있다. */
   cellHints?: StructureKitCellHint[];
@@ -441,34 +441,12 @@ export interface SectionStructureKitDef {
 }
 
 /**
- * (삭제됨) 파라메트릭 집 스탬프 — 집 외장은 author_house 정본이 담당한다.
- * 기존 저장 데이터와의 타입 호환용으로만 남긴다. 신규 생성은 금지.
+ * 구조 킷은 section(저작 영역을 그대로 굳힌 행렬)뿐이다. 옛 파라메트릭 집 킷
+ * (kind:"house", houseKitId+wings)은 제거됐다 — 집 외장은 author_house 정본이 담당한다.
+ * 구 저장 데이터에 house 레코드가 남아 있을 수 있으나 런타임은 인터트로 취급한다
+ * (카탈로그 등록·래스터화 대상이 아니다).
  */
-export interface HouseStructureKitDef {
-  id: string;
-  kind: "house";
-  name?: string;
-  houseKitId: string;
-  /** (0,0) 기준 상대 좌표 날개 목록 — 전개 시 origin에 평행이동. */
-  wings: { x: number; y: number; w: number; h: number }[];
-  stories?: 1 | 2 | 3;
-  lowWall?: boolean;
-  windows?: { spacing?: number } | false;
-  /** 남쪽 벽 문 타일(116/146) 포함 여부. 기본 true. */
-  door?: boolean;
-  chimney?: boolean;
-  /** 입구·간판·자리 등 부위 목록(상대좌표). */
-  parts?: StructureKitPart[];
-  /** AI 어휘 메타데이터. 없으면 AI 는 이름과 크기만 본다. */
-  ai?: StructureKitAiMeta;
-  learnedFrom: StructureKitLearnedFrom;
-  createdAt?: string;
-}
-
-export type StructureKitDef = SectionStructureKitDef | HouseStructureKitDef;
-
-/** 구 저장 데이터에 남아 있을 수 있는 내장 파라메트릭 킷 id 접두사. 신규 생성은 없다. */
-export const LEGACY_BUILTIN_HOUSE_KIT_ID_PREFIX = "kit_house_";
+export type StructureKitDef = SectionStructureKitDef;
 
 /** Editor-facing chipset classification. Omitted legacy records are inferred conservatively. */
 export type TilesetKind = "rpg2k" | "custom";

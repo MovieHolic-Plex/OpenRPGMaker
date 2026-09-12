@@ -791,6 +791,7 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
 `src/editor/panels/structureKitDbTab.ts` + 데이터 계층 `src/editor/panels/structureKitDbSources.ts`.
 
 - **목록 규약은 등록 킷**: `tileset.structureKits`. 집 외장은 `author_house` 정본이 담당하므로 내장 파라메트릭 집 선반은 없다.
+- **파라메트릭 집 킷(`kind:"house"`)은 완전히 제거됐다 (2026-09-13):** `StructureKitDef` 런타임 유니온은 `SectionStructureKitDef` 하나뿐이고 `HouseStructureKitDef` 타입·`builtinHouseStructureKits.ts`·`houseKitTools.ts`(빈 배열 스텁)는 삭제됐다. 옛 저장 데이터에 `kind:"house"` 레코드가 남아 있으면 **비활성(inert) 레거시**다 — `legacyImportValidation` 은 기록으로서 받아들이되, `legacyImport` 는 활성 카탈로그에 싣지 않고 `snapshotRaster`·인스턴스화는 `SpatialOperationError` 로 거부한다. 빌트인 지오메트리 폴백도 없다. `houseKit.ts` 의 `HOUSE_KITS`(재료 킷)는 다른 개념 — `author_house` 의 살아있는 실행 어휘다. Tests: `test/spatialLegacyImport.test.ts` 「inert legacy 포함」·`test/spatialInstances.test.ts`·`test/spatialAssetResolver.test.ts`.
 - **타일셋 레일이 앨범 축, 원본 칩이 그 안의 필터**: `structure-kit-source-all` / `-interior` / `-user` (라벨 전체 · 실내 오브젝트 · 내가 저장한 구조물). 각 칩의 숫자는 그 원본이 지금 나열하는 행 수와 같다.
 - **실내 오브젝트는 타일셋 데이터**: `interiorObjectsForTileset` 은 그 타일셋의 실내 가구 킷(`ai.snap` / `ai.interiorRole` / `learnedFrom: interior-catalog`)을 돌려준다. 실내 칩셋은 코드 카탈로그를 시드·폴백한다. **방·공간 종류는 이 탭이 아니다** — `tileset.interiorRoomKinds` 는 형제 탭 `tilesetSpaces` 가 저작한다. "한 타일셋의 구조물은 다른 타일셋에 섞이지 않는다"는 기존 IA 규약을 그대로 지킨다.
 - **행은 실제 래스터**: 오브젝트 행 `structure-kit-object-<id>` 은 `INTERIOR_OBJECT_CATALOG` 의 셀을 `renderTileCellsToCanvas` 로 그린다(받침 타일 `VR.FLOOR`). 킷 행 `structure-kit-db-<kitId>` 은 기존대로 `assembledKitCells`.
@@ -804,7 +805,7 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
 설계는 `docs/superpowers/specs/2026-08-28-db-structures-editor-design.md`.
 
 - **편집 잠금은 계보가 아니라 소유로 판정한다.** 예전에는 `learnedFrom` 을 보고 잠갔는데, 그러면 사람이 만든 킷도 계보 값에 따라 잠긴다. 이제 앨범 엔트리의 `source` 가 `"user"` 인지(= `tileset.structureKits` 에 실제로 들어 있는 프로젝트 데이터인지)로 판정한다. 내장 파라메트릭 킷과 실내 카탈로그 오브젝트는 코드라서 잠긴 채로 남는다. 같은 이유로 `toast()` 만 부르고 아무것도 저장하지 않던 가짜 `[지금 저장]` 버튼은 사라졌다 — 저장은 `store.update()` 즉시 반영이고 취소는 DB 모달의 세션 롤백이 담당한다.
-- **아무 원본이든 편집은 `section` 으로 굽는다(bake).** house 파라미터와 실내 카탈로그 오브젝트를 래스터 `rows` 로 전개한 뒤 편집한다(`structureKitRasterModel.ts`). 즉 복제는 사진을 찍는 행위다 — 원본 코드가 나중에 바뀌어도 구운 사본은 그대로다. 계보는 `learnedFrom: "db-authored"` 로 남는다.
+- **아무 원본이든 편집은 `section` 으로 굽는다(bake).** 실내 카탈로그 오브젝트 등을 래스터 `rows` 로 전개한 뒤 편집한다(`structureKitRasterModel.ts`). 즉 복제는 사진을 찍는 행위다 — 원본 코드가 나중에 바뀌어도 구운 사본은 그대로다. 계보는 `learnedFrom: "db-authored"` 로 남는다. (예전에는 house 파라미터도 여기서 구웠으나, `kind:"house"` 는 제거돼 굽기 대상이 아니다.)
 - **편집기는 DB 모달 위에 뜨는 전용 다이얼로그**(`structureKitEditorDialog.ts`, testid `structure-kit-editor`)다. 인스펙터 열이 352px 고정이라 9×8 킷이 들어가지 않는다는 치수 실측 때문이며, 인스펙터(`structureKitInspector.ts`)는 요약과 액션만 담당하도록 물러났다.
 - 진입점: 도구줄 `structure-kit-new` → 빈 킷으로 직행. 표 행 더블클릭과 인스펙터의 복제·편집 버튼도 같은 편집기를 연다. 편집기 안은 `structure-kit-editor-canvas`, 타일 팔레트 `structure-kit-editor-tile-<tileId>`, 부위 도구 `structure-kit-editor-tool-part`, 부위 목록 `structure-kit-editor-parts`.
 - **칸 계산 함수는 `rect`·`scale` 을 인자로 받는다.** 유닛 테스트 환경이 `environment: "node"` + `FakeElement` 라 `getBoundingClientRect()` 가 전부 0 이고 `getContext()` 는 `null` 이다. 내부에서 `event.clientX - rect.left` 를 읽으면 테스트가 항상 (0,0) 을 보게 되므로 순수 함수 경계를 이렇게 그었다 — 클릭 좌표 → 칸 매핑의 실제 증명은 e2e 몫이다.
@@ -813,7 +814,7 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
 - **구조물 스탬프는 사람 팔레트 전용이다 (2026-08-31).** 집 시공은 `author_house`.
 - **`repeatability` 가 시공 반복을 지배한다.** 이 값이 없으면 우물·간판처럼 한 채로 완결인 구조물도 이어 찍힌다. `ai.repeatability === "fixed"` 면 1회로 고정하고 `undefined` 는 기존 동작을 유지한다 — 하위 호환. 이 반복 규칙은 사람 팔레트/`applyStampStructureKit` 경로의 계약이다.
 - **AI 가 받는 것이 넓어졌다.** `src/ai/contextBuilder.ts` 가 구조물마다 설명·배치규칙·반복 여부를 함께 출력하고(설명은 100자로 자른다), `structureKitTools.ts` 의 도구 응답도 `ai` 를 싣는다. 이름만 보고 추측하던 상태를 끝낸 것이다.
-- **파일 포맷은 `rpgzzu-structure-kits` v1**(`structureKitFile.ts`). 파일에 들어가는 순간 사진이 된다 — house 킷도 구운 래스터로 나가므로 받는 쪽에 같은 코드가 없어도 열린다. 가져오기는 `planImport` 가 3단으로 판정한다: 포맷·버전 검증(미래 버전 거부) → 칩셋 경계 확인(`structure-kit-import-mismatch`) → 서명 기준 중복 판정. 같은 파일을 두 번 넣어도 사본이 쌓이지 않는다.
+- **파일 포맷은 `rpgzzu-structure-kits` v1**(`structureKitFile.ts`). 파일에 들어가는 순간 사진이 된다 — 받는 쪽에 같은 코드가 없어도 열린다. 가져오기는 `planImport` 가 3단으로 판정한다: 포맷·버전 검증(미래 버전 거부) → 칩셋 경계 확인(`structure-kit-import-mismatch`) → 서명 기준 중복 판정. 같은 파일을 두 번 넣어도 사본이 쌓이지 않는다.
 - 내보내기·가져오기 진입점: 도구줄 `structure-kit-export`(체크된 행이 있으면 **지금 보이는 그 선택**만, 없으면 앨범 전체) / `structure-kit-import`, 확인창은 `structure-kit-import-list` + `structure-kit-import-confirm`. 다운로드는 `src/util/downloadBlob.ts` 한 곳을 지난다 — anchor 를 DOM 에 붙였다 떼고 `revokeObjectURL` 을 동기 호출하지 않는, `menu.ts` 에서 겪은 3-버그 회피 패턴이다.
 - 커버리지: `test/structureKitRasterModel.test.ts`(칸 계산·페인트·크기조절·부위 CRUD·굽기), `test/structureKitFile.test.ts`(직렬화·검증·`planImport`·origin 보존), `test/structureKitEditorDialog.test.ts`, `test/structureKitTools.test.ts`(repeatability), `test/downloadBlob.test.ts`, 그리고 브라우저 왕복은 `test/e2e/db-structure-editor.spec.ts` 3케이스.
 

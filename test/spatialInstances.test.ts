@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { deserialize, serialize, serializePretty } from "@/project/io";
 import { own, spatialId, occurrenceChildId, SpatialOperationError } from "@/project/spatial/domain";
 import { duplicateSpatialOccurrence } from "@/project/spatial/duplicate";
@@ -7,7 +7,7 @@ import { emptySpatialLibrary, resolveSpatialDesign, resolveSpatialOccurrenceRefr
 import { INTERIOR_OBJECT_CATALOG } from "@/project/defaults/interiorObjectCatalog";
 import { INTERIOR_TILESET_ID } from "@/project/mapCreateSpec";
 import { instantiateSpatialDesign } from "@/project/spatial/instances";
-import type { SpatialRasterAdapter } from "@/project/spatial/snapshotRaster";
+import * as snapshotRaster from "@/project/spatial/snapshotRaster";
 import { expansionFixture, first, instancesFixture, selectedCells } from "./support/spatialInstancesFixture";
 
 describe("frozen spatial occurrences", () => {
@@ -188,10 +188,11 @@ describe("frozen spatial occurrences", () => {
     expect(SPATIAL_EXPANSION_LIMITS.occurrences).toBe(4096);
   });
 
-  it("rejects unsupported authored houses instead of falling back to builtin pixels", () => {
-    // Given
+  it("rejects inert legacy house records instead of falling back to builtin pixels", () => {
+    // Given: a kind:"house" record left over in stored data — removed concept, raster must refuse it.
     const { project, document, request } = instancesFixture();
-    own(project.tilesets, INTERIOR_TILESET_ID).structureKits = [{ id: "bed_h", kind: "house", houseKitId: "old", wings: [{ x: 0, y: 0, w: 3, h: 3 }], learnedFrom: "db-authored" }];
+    own(project.tilesets, INTERIOR_TILESET_ID).structureKits = JSON.parse(
+      `[{"id":"bed_h","kind":"house","houseKitId":"old","wings":[{"x":0,"y":0,"w":3,"h":3}],"learnedFrom":"db-authored"}]`);
     const input = { ...document, library: { ...document.library, objects: { desk: { ...own(document.library.objects, "desk"), graphic: { tilesetId: INTERIOR_TILESET_ID, kitId: "bed_h" } } } } };
     // When / Then
     expect(() => instantiateSpatialDesign(input, project, request)).toThrow(SpatialOperationError);
@@ -202,31 +203,6 @@ describe("frozen spatial occurrences", () => {
     const { project, document, request } = expansionFixture(depth, repetitions);
     // When / Then
     expect(() => instantiateSpatialDesign(document, project, request)).toThrow(SpatialOperationError);
-  });
-
-  it("accepts a complete caller raster when a stored house needs a pure adapter", () => {
-    // Given
-    const { project, document, request, tilesetId } = instancesFixture();
-    const kit = { id: "kit", kind: "house", houseKitId: "old", wings: [{ x: 0, y: 0, w: 3, h: 3 }], learnedFrom: "db-authored" } as const;
-    own(project.tilesets, tilesetId).structureKits = [{ ...kit, wings: [...kit.wings] }];
-    const rasterizeHouse: SpatialRasterAdapter = (graphic, supplied) => {
-      expect(supplied).toEqual(kit);
-      return { ...graphic, width: 2, height: 2, cells: selectedCells };
-    };
-    // When
-    const result = instantiateSpatialDesign(document, { ...project, rasterizeHouse }, request);
-    // Then
-    expect(result.occurrences[request.rootId]?.snapshot.kitCells.desk?.cells).toEqual(selectedCells);
-    expect(Object.isFrozen(kit.wings)).toBe(false);
-  });
-
-  it.each([{ cells: [] }, { cells: [{ x: 2, y: 0, layer: "lower", tile: 1 }] }, { cells: [{ x: 0, y: 0, layer: "lower", tile: 999999 }] }, { cells: [{ x: 0.5, y: 0, layer: "lower", tile: 1 }] }] as const)("rejects incomplete or schema-invalid adapter cells when raster is $cells", ({ cells }) => {
-    // Given
-    const { project, document, request, tilesetId } = instancesFixture();
-    own(project.tilesets, tilesetId).structureKits = [{ id: "kit", kind: "house", houseKitId: "old", wings: [], learnedFrom: "db-authored" }];
-    const rasterizeHouse: SpatialRasterAdapter = graphic => ({ ...graphic, width: 2, height: 2, cells });
-    // When / Then
-    expect(() => instantiateSpatialDesign(document, { ...project, rasterizeHouse }, request)).toThrow();
   });
 
   it.each(["reject", "remove"] as const)("enforces %s policy for incoming references when deleting a root", externalConnections => {
@@ -283,24 +259,24 @@ describe("frozen spatial occurrences", () => {
   });
 
   it("stops requesting rasters when their transitive copy cost exceeds the cell budget", () => {
-    // Given
+    // Given: nine objects sharing one authored section whose raster is 131,072 cells.
     const { project, document, request, tilesetId } = instancesFixture();
-    own(project.tilesets, tilesetId).structureKits = [{ id: "kit", kind: "house", houseKitId: "old", wings: [], learnedFrom: "db-authored" }];
+    const rows = Array.from({ length: 256 }, () => ({ tiles: Array.from({ length: 256 }, () => 1), upperTiles: Array.from({ length: 256 }, () => 2) }));
+    own(project.tilesets, tilesetId).structureKits = [{ id: "kit", kind: "section", width: 256, height: 256, rows, learnedFrom: "db-authored" }];
     const room = own(document.library.spaces, "room");
     const objects = Array.from({ length: 9 }, (_, index) => ({ ...own(document.library.objects, "desk"), id: spatialId(`desk-${index}`) }));
-    const cells = Array.from({ length: 256 * 256 }, (_, index) => ([
-      { x: index % 256, y: Math.floor(index / 256), layer: "lower", tile: 1 },
-      { x: index % 256, y: Math.floor(index / 256), layer: "upper", tile: 2 },
-    ] as const)).flat();
     const input = { ...document, library: { ...emptySpatialLibrary(), objects: Object.fromEntries(objects.map(object => [object.id, object])), spaces: {
       room: { ...room, objectSlots: objects.map(object => ({ ...first(room.objectSlots), id: object.id, objectDesignId: object.id, quantity: 1 })) },
     } } };
-    let calls = 0;
-    const rasterizeHouse: SpatialRasterAdapter = graphic => { calls++; return { ...graphic, width: 256, height: 256, cells }; };
+    const spy = vi.spyOn(snapshotRaster, "snapshotGraphic");
     // When
-    expect(() => instantiateSpatialDesign(input, { ...project, rasterizeHouse }, { ...request, source: { kind: "space", id: room.id } })).toThrow(SpatialOperationError);
-    // Then: each raster is copied in the parent and object snapshot; do not request the remaining four.
-    expect(calls).toBe(5);
+    try {
+      expect(() => instantiateSpatialDesign(input, project, { ...request, source: { kind: "space", id: room.id } })).toThrow(SpatialOperationError);
+      // Then: each raster is copied in the parent and object snapshot; do not request the remaining four.
+      expect(spy).toHaveBeenCalledTimes(5);
+    } finally {
+      spy.mockRestore();
+    }
   });
 
   it("freezes exact builtin cells when the qualified shared resolver selects them", () => {
