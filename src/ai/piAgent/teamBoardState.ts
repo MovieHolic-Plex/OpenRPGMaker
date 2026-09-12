@@ -35,7 +35,7 @@ export interface TeamBoardAgent {
   readonly stats?: PiAgentStats;
 }
 
-export type TeamBoardPhase = "준비" | "실행 중" | "적용 중" | "검토 대기" | "적용됨" | "버림" | "중단" | "실패";
+export type TeamBoardPhase = "준비" | "실행 중" | "적용 중" | "검토 대기" | "적용됨" | "완료" | "버림" | "중단" | "실패";
 
 export interface TeamBoardState {
   readonly mode: "single" | "team";
@@ -146,6 +146,11 @@ export function reduceTeamBoard(state: TeamBoardState, event: PiAgentEvent): Tea
 
 export function markTeamBoardApplied(state: TeamBoardState, text: string): TeamBoardState {
   return { ...state, phase: "적용됨", applied: text };
+}
+
+/** 적용 없이 끝난 정상 종료 — 계획만·답변·변경 없음. 「적용됨」은 실제 커밋된 실행에만 쓴다. */
+export function markTeamBoardDone(state: TeamBoardState, text: string): TeamBoardState {
+  return { ...state, phase: "완료", applied: text };
 }
 
 /** 결과가 나왔지만 사용자의 승인을 기다린다. */

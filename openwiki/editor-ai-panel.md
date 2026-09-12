@@ -19,6 +19,11 @@
   워커가 쓰기 툴을 주지 않고(`readOnlyTools` + 시스템 프롬프트 한 줄), 계획 턴은 지시문 머리에 계획
   지시가 붙는다(`PLAN_ONLY_PREFIX`). 바뀐 것이 없으면 그 턴의 **답·계획 본문**을 assistant 말풍선으로
   남긴다 — 보드의 220자 한 줄이 답이 되면 질문 모드가 쓸 수 없다.
+- 변경-0 종료의 보드 phase 는 **「완료」**(`markTeamBoardDone`)다 — 「적용됨」은 `applyProposedProject` 가
+  실제 커밋한 실행에만 쓴다(2026-09-12 실측: 질문 턴이 「적용됨」 배지 + 실패 톤 캡션으로 끝났다).
+  답이 남은 턴은 본문 말풍선을 시스템 줄(「프로젝트는 바뀌지 않았습니다」) **앞에** 붙인다. 보드 행의
+  지시가 보드 지시와 같으면 echo(`ai-team-task`)를 그리지 않는다 — 단일 실행에서 같은 문장이
+  카드 제목·행·말풍선에 세 번 나오던 것을 막는다.
 - 옛 blob 의 `executionRoute: "pi-team"` 은 **팀 비트**로 승격된다(`loadAiConfig`,
   `LEGACY_PI_TEAM_ROUTE`). `session`·`pi-agent` 는 둘 다 «Pi» 이므로 버린다. 이 승격이 이 변경의
   유일한 데이터 위험이고 `test/piAgentExecutionRoute.test.ts` 가 세 값을 전부 고정한다.
