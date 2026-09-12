@@ -89,7 +89,8 @@ export interface VillageDesign {
   revision: number;
   policies: Record<"appearance" | "layout" | "nature" | "residents" | "interior", VillageDesignPolicy>;
   houseCount: { mode: "fixed" | "range" | "free"; min: number; max: number };
-  stories: (1 | 2 | 3)[];
+  /** Four-storey exteriors are available only with an authored object composition. */
+  stories: (1 | 2 | 3 | 4)[];
   interior: boolean;
   /** Saved exterior composition. Optional for legacy procedural house designs. */
   objectVillage?: {

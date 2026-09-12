@@ -42,7 +42,7 @@ export function villageDesignIssue(value: unknown): string | undefined {
   const c = d.houseCount;
   if (!c || !["fixed", "range", "free"].includes(c.mode) || !Number.isInteger(c.min) || !Number.isInteger(c.max) || c.min < 1 || c.max > 32 || c.min > c.max) return "집 수 범위는 1~32 안에서 최소 ≤ 최대여야 합니다.";
   if (c.mode === "fixed" && c.min !== c.max) return "고정 집 수의 최소·최대는 같아야 합니다.";
-  if (!Array.isArray(d.stories) || d.stories.length === 0 || d.stories.some(n => ![1, 2, 3].includes(n))) return "허용 층수를 하나 이상 선택하세요.";
+  if (!Array.isArray(d.stories) || d.stories.length === 0 || d.stories.some(n => !(d.objectVillage ? [1, 2, 3, 4] : [1, 2, 3]).includes(n))) return "허용 층수를 하나 이상 선택하세요.";
   if (typeof d.interior !== "boolean") return "실내 연결 설정이 올바르지 않습니다.";
   const o = d.objectVillage;
   if (o !== undefined) {

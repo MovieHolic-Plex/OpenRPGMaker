@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { chromium } from "playwright";
 const option=(name,fallback)=>{const at=process.argv.indexOf(name);return at<0?fallback:process.argv[at+1];};
 const batch=option("--batch","all"), base=option("--base","http://127.0.0.1:19841");
-const out=`output/evidence/house-30/${batch}`;
+const out=option("--out",`output/evidence/house-30/${batch}`);
 const source=process.argv.includes("--preview")?"preview-project.json":"reloaded-project.json";
 const project=JSON.parse(fs.readFileSync(`${out}/${source}`,"utf8"));
 const manifest=JSON.parse(fs.readFileSync(`${out}/manifest.json`,"utf8"));
@@ -51,20 +51,20 @@ try {
     const board=(id,title,items)=>{
       const section=document.createElement("section");section.id=id;
       const header=document.createElement("header"),h1=document.createElement("h1"),hint=document.createElement("p");
-      h1.textContent=title;hint.textContent="새로 조립한 건물 외형 · 실제 에디터 타일 렌더 · 번호로 비교";header.append(h1,hint);section.append(header);
-      const grid=document.createElement("div");grid.className="grid";
+      h1.textContent=title;hint.textContent="저장된 건물 외형 · 실제 에디터 타일 렌더 · 번호로 비교";header.append(h1,hint);section.append(header);
+      const grid=document.createElement("div");grid.className="grid";if(items.length<5)grid.style.gridTemplateColumns=`repeat(${items.length},${width}px)`;
       for(const item of items){const card=document.createElement("article"),art=document.createElement("div"),img=document.createElement("img"),h=document.createElement("h2"),note=document.createElement("p");
         art.className="art";img.src=item.png;img.alt=item.name;art.append(img);h.textContent=`${String(item.number).padStart(2,"0")}  ${item.name}`;
-        note.textContent=`${item.floors}층 외형 · ${item.description}`;card.append(art,h,note);grid.append(card);}
+        note.textContent=`${item.width}×${item.height}칸 · ${item.floors}층 외형 · ${item.description}`;card.append(art,h,note);grid.append(card);}
       section.append(grid);document.body.append(section);
     };
-    for(const [i,key]of["a","b","c"].entries()){
+    for(const [i,key]of["a","b","c","d"].entries()){
       const group=cards.filter(card=>Math.floor((card.number-1)/10)===i);
-      if(group.length)board(`batch-${key}`,`${String(i*10+1).padStart(2,"0")}–${i*10+10} · ${["소형·단층 주택","2층 중심 주택","큰집·중정·다층 주택"][i]}`,group);
+      if(group.length)board(`batch-${key}`,`${String(group[0].number).padStart(2,"0")}–${group.at(-1).number} · ${["소형·단층 주택","2층 중심 주택","큰집·중정·다층 주택","정주지 참고 박공집"][i]}`,group);
     }
-    if(batch==="all")board("overview","집 형태 30종",cards);
+    if(batch==="all")board("overview",`수정 집과 정주지 참고 ${cards.length}종`,cards);
   },{cards:rendered.cards,batch});
-  for(const key of ["a","b","c"])if(await page.locator(`#batch-${key}`).count())await page.locator(`#batch-${key}`).screenshot({path:`${out}/houses-${key}.png`});
+  for(const key of ["a","b","c","d"])if(await page.locator(`#batch-${key}`).count())await page.locator(`#batch-${key}`).screenshot({path:`${out}/houses-${key}.png`});
   if(batch==="all")await page.locator("#overview").screenshot({path:`${out}/houses-30.png`});
   // A standalone inspector uses the same rendered pixels. Click to inspect one house.
   const cardsJSON=JSON.stringify(rendered.cards).replaceAll("<","\\u003c");
@@ -73,7 +73,7 @@ try {
     <h1>집 형태 ${rendered.cards.length}종</h1><p>그림을 누르면 확대됩니다. 층수는 외형 기준입니다.</p><nav></nav><main></main><dialog><button>닫기</button><h2></h2><img></dialog>
     <script>const cards=${cardsJSON};const dialog=document.querySelector('dialog');dialog.querySelector('button').onclick=()=>dialog.close();
     function render(group){document.querySelector('main').replaceChildren();for(const c of cards.filter(c=>group<0||Math.floor((c.number-1)/10)===group)){const a=document.createElement('article'),f=document.createElement('figure'),img=document.createElement('img'),h=document.createElement('h2'),p=document.createElement('p');img.src=c.png;img.alt=c.name;img.onclick=()=>{dialog.querySelector('h2').textContent=h.textContent;dialog.querySelector('img').src=c.png;dialog.querySelector('img').style.width=((c.width+2)*32)+'px';dialog.showModal();};h.textContent=String(c.number).padStart(2,'0')+' '+c.name;p.textContent=c.description;f.append(img);a.append(f,h,p);document.querySelector('main').append(a);}}
-    ['전체','01–10','11–20','21–30'].forEach((name,i)=>{const b=document.createElement('button');b.textContent=name;b.onclick=()=>render(i-1);document.querySelector('nav').append(b);});render(-1);</script>`);
+    ['전체','01–10','11–20','21–30','정주지 참고'].forEach((name,i)=>{const b=document.createElement('button');b.textContent=name;b.onclick=()=>render(i-1);document.querySelector('nav').append(b);});render(-1);</script>`);
   fs.writeFileSync(`${out}/render-proof.json`,JSON.stringify({source,renderer:"editor/mapTileDraw",houses:rendered.cards.length,projectId:manifest.projectId,scale:1},null,2));
   console.log(`${out}/index.html`);
 } finally {await browser.close();}

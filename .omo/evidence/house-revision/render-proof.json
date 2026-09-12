@@ -1,0 +1,7 @@
+{
+  "source": "reloaded-project.json",
+  "renderer": "editor/mapTileDraw",
+  "houses": 34,
+  "projectId": "rpg-zzu-house-template-gallery",
+  "scale": 1
+}

@@ -37,7 +37,7 @@ export function renderVillageDesignDetail(project: Project, preset: VillageLayou
     value => update({ policies: { ...design.policies, [group]: value as "fixed" | "free" } }),
   );
   const card = (title: string, children: HTMLElement[], testid: string): HTMLElement => sectionCard({ title, children, testid });
-  const stories = el("div", { class: "db-village-design-stories", children: ([1, 2, 3] as const).map(floor => {
+  const stories = el("div", { class: "db-village-design-stories", children: (design.objectVillage ? [1, 2, 3, 4] as const : [1, 2, 3] as const).map(floor => {
     const input = el("input", { attrs: { type: "checkbox" }, dataset: { testid: `db-village-design-stories-${floor}` } }) as HTMLInputElement;
     input.checked = design.stories.includes(floor);
     input.addEventListener("change", () => {
