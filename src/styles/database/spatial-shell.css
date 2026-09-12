@@ -518,7 +518,7 @@
   .database-modal-body .spatial-stage {
     position: relative;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(160px, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr);
     overflow: hidden;
   }
   .database-modal-body .spatial-canvas {
@@ -526,11 +526,11 @@
   }
   .database-modal-body .spatial-inspector {
     display: none;
-    position: relative;
-    inset: auto;
+    position: absolute;
+    inset: 8px;
     width: auto;
-    max-height: min(36%, 200px);
-    margin: 8px;
+    max-height: none;
+    margin: 0;
     border: 1px solid var(--db-studio-border-default);
     border-radius: 12px;
     box-shadow: var(--db-studio-shadow-pop);
@@ -665,4 +665,23 @@
   .database-modal-body .spatial-tiles-editor {
     transition: none;
   }
+}
+
+/* The room-rule form also lives inside the narrower spatial inspector. */
+.database-modal-body .spatial-inspector > .structure-kit-inspector {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  overflow: visible;
+}
+.database-modal-body .spatial-inspector .structure-kit-inspector .db-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.database-modal-body .spatial-inspector .structure-kit-inspector input[type="text"] {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }

@@ -85,6 +85,11 @@ export function resolveSpatialDesign(input: unknown, context: SpatialResolutionC
   }
   const rasters = new Map<S.SpatialId, S.SpatialKitSnapshot>();
   let frozenCellCount = 0;
+  for (const [id, entry] of costs) {
+    const node = designNode(library, entry.ref);
+    if (node.kind !== "object") frozenCellCount += (node.design.composition?.tiles.length ?? 0) * (copies.get(id) ?? 0);
+    limit(frozenCellCount, SPATIAL_EXPANSION_LIMITS.frozenCells, `design ${id} painted cells`);
+  }
   for (const [id, graphic] of graphics) {
     const raster = snapshotGraphic(context, graphic);
     frozenCellCount += raster.cells.length * (copies.get(id) ?? 0);

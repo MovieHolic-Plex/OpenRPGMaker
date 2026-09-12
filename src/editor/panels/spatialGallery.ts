@@ -143,9 +143,8 @@ function renderRoomKindThumb(card: SpatialGalleryCard, kind: InteriorRoomKindRec
 
 /** 카드가 가리키는 방 종류 레코드 — 기본 7종 또는 타일셋 저작 호환 규칙. */
 export function roomKindOf(card: SpatialGalleryCard): InteriorRoomKindRecord | undefined {
-  const builtin = BUILTIN_INTERIOR_ROOM_KINDS.find((entry) => entry.id === card.localId);
-  if (builtin) return builtin;
-  return tilesetOf(card)?.interiorRoomKinds?.find((entry) => entry.id === card.localId);
+  if (card.source !== "default") return tilesetOf(card)?.interiorRoomKinds?.find((entry) => entry.id === card.localId);
+  return BUILTIN_INTERIOR_ROOM_KINDS.find((entry) => entry.id === card.localId);
 }
 
 function renderSpaceThumb(card: SpatialGalleryCard): HTMLElement {

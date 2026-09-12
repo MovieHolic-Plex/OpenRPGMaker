@@ -186,6 +186,8 @@ describe("spatial tiles and objects surfaces", () => {
 
 
 function selectDeskCard(host: HTMLElement): void {
+  const search = host.querySelector<HTMLInputElement>("[data-testid='spatial-browser-search']");
+  if (search) { search.value = "desk"; search.dispatchEvent(new Event("input", { bubbles: true })); }
   const card = host.querySelector<HTMLButtonElement>('[data-card-id="library-object/library/desk"]');
   expect(card, "library desk card").not.toBeNull();
   card?.click();

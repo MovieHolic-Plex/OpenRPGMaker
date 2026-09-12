@@ -1,0 +1,135 @@
+/* Object library and the separate space composition workspace. */
+.database-modal-body .spatial-asset-browser {
+  background: var(--db-studio-surface);
+}
+.asset-browser-top { padding: 18px 20px 14px; border-bottom: 1px solid var(--db-studio-border-subtle); }
+.asset-browser-heading h2 { margin: 0 0 5px; font-size: 21px; line-height: 1.3; }
+.asset-browser-heading p { margin: 0 0 14px; color: var(--db-studio-text-3); font-size: 13px; }
+.asset-browser-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.asset-browser-actions .spatial-action,
+.asset-browser-button { padding: 8px 12px; border: 1px solid var(--db-studio-border-default); border-radius: 7px; background: var(--db-studio-surface); color: var(--db-studio-text-1); font: inherit; font-size: 12px; cursor: pointer; }
+.asset-browser-actions .spatial-action:disabled,
+.asset-browser-button:disabled { opacity: .42; cursor: default; }
+.asset-browser-actions [data-testid="spatial-add"],
+.asset-browser-actions [data-testid="spatial-apply"]:not(:disabled) { color: var(--db-studio-surface); background: var(--db-studio-accent); border-color: var(--db-studio-accent); }
+.asset-browser-status { margin-left: auto; font-size: 12px; color: var(--db-studio-text-3); }
+.asset-browser-error { flex-basis: 100%; margin: 4px 0 0; color: var(--db-studio-danger); }
+.asset-browser-error[hidden] { display: none; }
+.asset-browser-more { position: relative; font-size: 12px; }
+.asset-browser-more summary { cursor: pointer; padding: 8px; }
+.asset-browser-more-body { position: absolute; right: 0; top: 100%; width: 300px; max-height: 420px; overflow: auto; padding: 14px; border: 1px solid var(--db-studio-border-default); border-radius: 10px; background: var(--db-studio-surface); box-shadow: var(--db-studio-shadow-pop); z-index: 8; display: flex; flex-wrap: wrap; gap: 8px; }
+.asset-browser-body { display: grid; grid-template-columns: 164px minmax(220px, 1fr) 290px; min-height: 0; overflow: hidden; }
+.asset-browser-rail { overflow: auto; min-height: 0; padding: 14px 8px; border-right: 1px solid var(--db-studio-border-subtle); background: var(--db-studio-inset); }
+.asset-browser-rail h3 { margin: 0 8px 12px; font-size: 12px; color: var(--db-studio-text-3); }
+.asset-browser-tileset { display: flex; align-items: center; gap: 7px; width: 100%; min-height: 44px; margin-bottom: 4px; padding: 8px; text-align: left; border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--db-studio-text-1); cursor: pointer; }
+.asset-browser-tileset img { width: 28px; height: 32px; object-fit: cover; object-position: top left; image-rendering: pixelated; border-radius: 3px; }
+.asset-browser-tileset span { min-width: 0; flex: 1; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
+.asset-browser-tileset small { color: var(--db-studio-text-3); font-size: 11px; }
+.asset-browser-tileset.is-selected { background: var(--db-studio-accent-soft); border-color: var(--db-studio-accent); }
+.asset-browser-collection { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+.asset-browser-filters { flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--db-studio-border-subtle); }
+.asset-browser-search { flex: 1 1 100%; min-width: 0; width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--db-studio-border-default); border-radius: 8px; background: var(--db-studio-surface); color: var(--db-studio-text-1); font: inherit; font-size: 13px; }
+.asset-browser-count { margin-left: auto; font-size: 12px; color: var(--db-studio-text-3); }
+.asset-browser-results { min-height: 0; overflow: auto; padding: 16px; }
+.asset-browser-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap: 12px; align-content: start; }
+.asset-browser-card { display: flex; flex-direction: column; align-items: stretch; padding: 0 0 11px; min-width: 0; border: 1px solid var(--db-studio-border-subtle); border-radius: 10px; overflow: hidden; text-align: left; background: var(--db-studio-surface); color: var(--db-studio-text-1); cursor: pointer; }
+.asset-browser-card:hover { border-color: var(--db-studio-accent); }
+.asset-browser-card.is-selected { border-color: var(--db-studio-accent); box-shadow: 0 0 0 2px var(--db-studio-accent-soft); }
+.asset-browser-card-art { height: 116px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden; background: repeating-conic-gradient(var(--spatial-checker-a) 0% 25%, var(--spatial-checker-b) 0% 50%) 0 0 / 16px 16px; }
+.asset-browser-card-art canvas,
+.asset-browser-card-art img { max-width: 92%; max-height: 96px; object-fit: contain; image-rendering: pixelated; }
+.asset-browser-card strong { padding: 0 10px; font-size: 13px; line-height: 1.5; white-space: normal; overflow-wrap: anywhere; }
+.asset-browser-card > span { padding: 4px 10px 0; font-size: 11px; color: var(--db-studio-text-3); }
+.asset-browser-empty { grid-column: 1 / -1; padding: 60px 20px; text-align: center; color: var(--db-studio-text-3); font-size: 13px; }
+.asset-browser-pagination { display: flex; justify-content: center; align-items: center; gap: 14px; padding: 20px 0 4px; font-size: 12px; }
+.asset-browser-detail { min-width: 0; min-height: 0; overflow: auto; border-left: 1px solid var(--db-studio-border-subtle); padding: 16px; background: var(--db-studio-surface); }
+.database-modal-body .spatial-asset-browser .asset-browser-detail .spatial-inspector { position: static; inset: auto; display: block; width: auto; max-height: none; margin: 0; padding: 0; border: 0; overflow: visible; box-shadow: none; }
+.asset-browser-detail .spatial-object-hero { margin: 12px 0; }
+.asset-browser-detail .spatial-object-actions { margin: 14px 0; }
+.asset-browser-detail .spatial-object-actions button { width: 100%; padding: 10px; border-radius: 7px; }
+@container db-modal (max-width: 1199px) {
+  .asset-browser-body { grid-template-columns: 130px minmax(150px, 1fr) 250px; }
+  .asset-browser-top { padding: 12px; }
+  .asset-browser-heading h2 { font-size: 18px; }
+  .asset-browser-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+  .asset-browser-card-art { height: 96px; }
+  .asset-browser-results, .asset-browser-detail { padding: 10px; }
+}
+
+/* The object painter's source sheet browser is independent of the map brush. */
+.structure-kit-browser-open { padding: 10px 12px; border: 1px solid var(--border-default); border-radius: 8px; background: var(--bg-raised); color: var(--text-1); font: inherit; cursor: pointer; }
+[data-testid="tileset-tile-browser"] .db-enemy-dialog { width: min(1080px, calc(100vw - 40px)); max-width: none; max-height: calc(100vh - 40px); display: flex; flex-direction: column; border-radius: 14px; overflow: hidden; }
+[data-testid="tileset-tile-browser"] .db-enemy-dialog > main { padding: 0; min-height: 0; overflow: hidden; }
+.tile-browser { display: flex; flex-direction: column; height: min(680px, calc(100vh - 160px)); min-height: 300px; color: var(--text-1); background: var(--bg-raised); }
+.tile-browser-heading { padding: 18px 20px 10px; }
+.tile-browser-heading h2 { margin: 0 0 6px; font-size: 19px; }
+.tile-browser-heading p { margin: 0; font-size: 12px; color: var(--text-3); }
+.tile-browser-toolbar { padding: 10px 20px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-default); }
+.tile-browser-categories, .tile-browser-zoom { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; font-size: 12px; }
+.tile-browser-categories .is-selected { background: var(--accent-muted); border-color: var(--accent); }
+.tile-browser-body { display: grid; grid-template-columns: minmax(0, 1fr) 224px; flex: 1; min-height: 0; }
+.tile-browser-results { min-width: 0; min-height: 0; overflow: auto; padding: 18px; }
+.tile-browser-grid { display: grid; grid-template-columns: repeat(auto-fill, var(--tile-browser-size, 40px)); gap: 6px; align-content: start; }
+.tile-browser-grid.is-sheet { grid-template-columns: repeat(var(--tile-browser-columns, 16), var(--tile-browser-size, 40px)); gap: 1px; width: max-content; }
+.tile-browser-tile { box-sizing: border-box; position: relative; width: var(--tile-browser-size, 40px); height: var(--tile-browser-size, 40px); padding: 0; border: 0; cursor: pointer; background: repeating-conic-gradient(var(--bg-inset) 0% 25%, var(--bg-raised) 0% 50%) 0 0 / 12px 12px; }
+.tile-browser-tile span { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+.tile-browser-tile:hover, .tile-browser-tile:focus-visible { outline: 2px solid var(--accent); z-index: 1; }
+.tile-browser-tile.is-selected { outline: 3px solid var(--accent); outline-offset: -3px; z-index: 2; }
+.tile-browser-detail { padding: 20px; border-left: 1px solid var(--border-default); overflow: auto; }
+.tile-browser-large { width: 144px; height: 144px; margin: 0 auto 20px; image-rendering: pixelated; background-color: var(--bg-inset); }
+.tile-browser-detail h3 { font-size: 16px; overflow-wrap: anywhere; }
+.tile-browser-detail p, .tile-browser-detail dl { font-size: 12px; line-height: 1.6; color: var(--text-3); }
+.tile-browser-detail dl { display: grid; grid-template-columns: auto 1fr; gap: 8px; }
+.tile-browser-detail dd { margin: 0; }
+.tile-browser-detail button { width: 100%; margin-top: 15px; }
+
+/* Spaces contain objects: the object browser is beside the placement canvas. */
+.space-workspace-picker { position: relative; margin: 0 0 12px; font-size: 14px; }
+.space-workspace-picker > summary { cursor: pointer; font-weight: 600; padding: 8px 0; }
+.space-workspace-choices { position: absolute; left: 0; top: 100%; z-index: 9; width: min(650px, 80vw); max-height: 400px; overflow: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; padding: 16px; background: var(--db-studio-surface); border: 1px solid var(--db-studio-border-default); border-radius: 10px; box-shadow: var(--db-studio-shadow-pop); }
+.space-workspace-choice { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; padding: 10px; border: 1px solid var(--db-studio-border-subtle); border-radius: 8px; background: var(--db-studio-surface); color: var(--db-studio-text-1); cursor: pointer; }
+.space-workspace-choice canvas { max-width: 110px; max-height: 75px; object-fit: contain; }
+.space-workspace-choice.is-selected { border-color: var(--db-studio-accent); }
+.space-workspace-body { display: grid; grid-template-columns: minmax(0, 1fr) 270px; min-height: 0; overflow: hidden; }
+.database-modal-body .spatial-space-workspace .spatial-inspector { display: block; position: static; inset: auto; margin: 0; padding: 0; max-height: none; width: auto; border: 0; box-shadow: none; overflow: visible; }
+.database-modal-body .space-composition-canvas { display: grid; grid-template-columns: 205px minmax(0, 1fr); min-height: 0; gap: 0; overflow: hidden; }
+.space-object-browser { display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: 14px 10px; border-right: 1px solid var(--db-studio-border-subtle); background: var(--db-studio-inset); }
+.space-object-browser h3 { margin: 0 0 12px; font-size: 14px; }
+.space-object-browser-status { font-size: 11px; line-height: 1.6; color: var(--db-studio-text-3); }
+.space-object-browser .asset-browser-search { flex: none; }
+.space-object-browser-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; gap: 8px; min-height: 0; overflow: auto; }
+.space-object-browser-card { display: flex; flex-direction: column; align-items: stretch; min-width: 0; padding: 6px; border: 1px solid var(--db-studio-border-subtle); border-radius: 8px; background: var(--db-studio-surface); color: var(--db-studio-text-1); cursor: grab; }
+.space-object-browser-card > div { display: flex; align-items: center; justify-content: center; height: 64px; overflow: hidden; }
+.space-object-browser-card canvas { max-width: 100%; max-height: 60px; object-fit: contain; image-rendering: pixelated; }
+.space-object-browser-card span { padding-top: 5px; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.space-object-browser-card.is-selected { border-color: var(--db-studio-accent); box-shadow: inset 0 0 0 1px var(--db-studio-accent); }
+.space-composition-board { display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden; }
+.space-composition-hint { padding: 12px 16px; font-size: 12px; line-height: 1.6; color: var(--db-studio-text-3); border-bottom: 1px solid var(--db-studio-border-subtle); }
+.space-composition-board .spatial-canvas-camera { padding: 28px; min-height: 0; flex: 1; overflow: auto; }
+@container db-modal (max-width: 1199px) {
+  .space-workspace-body { grid-template-columns: minmax(0, 1fr) 215px; }
+  .database-modal-body .space-composition-canvas { grid-template-columns: 155px minmax(0, 1fr); }
+  .space-composition-board .spatial-canvas-camera { padding: 12px; }
+}
+
+[data-testid="tileset-tile-browser"] {
+  --db-studio-border-default: var(--border-default);
+  --db-studio-surface: var(--bg-raised);
+  --db-studio-text-1: var(--text-1);
+  --db-studio-text-3: var(--text-3);
+}
+[data-testid="tileset-tile-browser"] .db-enemy-dialog .tile-browser-heading {
+  display: block;
+  background: var(--bg-raised);
+  color: var(--text-1);
+  border-bottom: 0;
+}
+
+.database-modal-body .spatial-space-slot.spatial-space-slot-art {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.database-modal-body .spatial-space-slot-art canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; pointer-events: none; }
+.database-modal-body .spatial-space-slot-art.is-selected { outline: 2px solid var(--db-studio-accent); outline-offset: 2px; }

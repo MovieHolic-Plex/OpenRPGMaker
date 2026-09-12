@@ -47,9 +47,13 @@ export function objectDraftTarget(card: SpatialGalleryCard): ObjectDraftTarget |
   const tilesetId = card.tilesetId;
   const kitId = card.objectId ?? card.localId;
   if (!tilesetId || !kitId) return undefined;
+  const graphicOwners = card.source === "own"
+    ? Object.values(visibleAuthoringProject().spatialAuthoring?.library.objects ?? {})
+      .filter((entry) => entry.graphic.tilesetId === tilesetId && entry.graphic.kitId === kitId)
+    : [];
   const libraryId = card.id.startsWith("library-object/") && card.localId
     ? spatialId(card.localId)
-    : undefined;
+    : graphicOwners.length === 1 ? graphicOwners[0].id : undefined;
   return {
     cardId: card.id,
     tilesetId,
@@ -192,7 +196,7 @@ export function objectInspectorHandlers(
       const kept = (design?.chips ?? []).filter((chip) => ["pass", "block", "sit", "sleep", "counter"].includes(chip));
       patchLibrary(target, rerender, { chips: [...kept, ...extras] });
     },
-    onEditGraphic: () => openDetachedKitPainter(target.tilesetId, target.kitId, rerender),
+    onEditGraphic: () => openDetachedKitPainter(target.tilesetId, target.kitId, rerender, target.libraryId),
     onCopyBuiltin: () => copyBuiltin(target, rerender),
   };
 }
