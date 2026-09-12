@@ -121,15 +121,22 @@ export function spatialGeographyChrome(
   const builtinLocked = card?.source === "default";
   const missing = Boolean(card?.missingSource);
   const occurrenceId = target?.occurrenceId;
+  // 활성화 실패 문구는 그 프로젝트 전용이다 — canonical 문서가 생긴 뒤에도 남으면 stale 오류가 된다.
+  if (workingProject().spatialAuthoring && geographyChromeState.previewError?.startsWith("공간 설계 활성화")) {
+    geographyChromeState.previewError = null;
+  }
+  const external = geographyChromeState.pendingExternal;
   return {
     saveState: geographyChromeState.activating ? "활성화 중…" : geographyChromeState.saveState,
     previewError: geographyChromeState.previewError,
-    deleteOpen: geographyChromeState.deleteOpen,
+    deleteOpen: geographyChromeState.deleteOpen || external !== null,
     activate: workingProject().spatialAuthoring || geographyChromeState.activating ? undefined : () => activateSpatialDocument(rerender),
     add: controller ? () => addBlank(kind, rerender) : undefined,
     duplicate: target && !builtinLocked ? () => cloneGeography(target, rerender) : undefined,
-    delete: target && !builtinLocked ? () => { geographyChromeState.deleteOpen = true; rerender(); } : undefined,
-    onDeleteConfirm: target && geographyChromeState.deleteOpen ? () => confirmDelete(target, rerender) : undefined,
+    delete: target && !builtinLocked ? () => { geographyChromeState.pendingExternal = null; geographyChromeState.deleteOpen = true; rerender(); } : undefined,
+    onDeleteConfirm: external
+      ? () => { geographyChromeState.pendingExternal = null; queueOperation(withRemovedExternal(external), rerender); }
+      : target && geographyChromeState.deleteOpen ? () => confirmDelete(target, rerender) : undefined,
     preview: controller ? () => previewGeography(rerender) : undefined,
     apply: controller && hasAuthoringPreview() ? () => applyGeography(rerender) : undefined,
     undo: controller ? () => { controller.undo(); rerender(); } : undefined,
@@ -247,6 +254,7 @@ function cloneGeography(target: GeographyDraftTarget, rerender: () => void): voi
 }
 
 function confirmDelete(target: GeographyDraftTarget, rerender: () => void): void {
+  geographyChromeState.deleteOpen = false;
   if (target.occurrenceId) {
     queueOperation({
       operation: { kind: "delete-occurrence", request: { occurrenceId: target.occurrenceId, externalConnections: "reject" } },
@@ -256,7 +264,17 @@ function confirmDelete(target: GeographyDraftTarget, rerender: () => void): void
   }
 }
 
+/** 외부 연결 때문에 거부된 delete/refresh 를 remove 정책으로 한 단계만 되돌린다. */
+function withRemovedExternal(request: SpatialAuthoringRequest): SpatialAuthoringRequest {
+  const operation = request.operation;
+  if ((operation.kind === "delete-occurrence" || operation.kind === "refresh") && operation.request.externalConnections === "reject") {
+    return { ...request, operation: { ...operation, request: { ...operation.request, externalConnections: "remove" } } };
+  }
+  return request;
+}
+
 function queueOperation(request: SpatialAuthoringRequest, rerender: () => void): void {
+  geographyChromeState.pendingExternal = null;
   const edited = editAuthoringDraft((project) => project, request);
   if (edited.kind === "error") {
     note(spatialAuthoringErrorText(edited));
@@ -264,6 +282,12 @@ function queueOperation(request: SpatialAuthoringRequest, rerender: () => void):
     return;
   }
   const previewed = previewAuthoringDraft();
+  if (previewed.kind === "error" && previewed.error.detail?.startsWith("external-connection") && withRemovedExternal(request) !== request) {
+    geographyChromeState.pendingExternal = request;
+    geographyChromeState.previewError = "외부 연결이 걸려 있습니다 — 「확인」을 누르면 외부 연결을 제거하고 실행합니다";
+    rerender();
+    return;
+  }
   note(spatialAuthoringErrorText(previewed), previewed.kind === "ok" ? "미리보기" : geographyChromeState.saveState);
   rerender();
 }

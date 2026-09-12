@@ -2,7 +2,7 @@
 
 ## Ownership
 
-`src/editor/tools/spatialTools.ts` registers the six native tools in the existing
+`src/editor/tools/spatialTools.ts` registers the seven native tools in the existing
 registry. Tools operate on the runner's detached `Project`, never the singleton
 manual controller's live project. The compiler entry is the same pure
 `previewSpatialAuthoring` used by the shared controller. No tool activates a
@@ -17,6 +17,7 @@ archived legacy data as a live source.
 | `upsert_spatial_design` | write | `kind`, `expectedRevision`, and exactly the body named `object`, `space`, `place`, `region`, or `world`. Zero creates a fresh ID; replacement requires the current revision and next revision in the body. Region bodies accept an optional `settlement: { presetId, seed }`. |
 | `preview_spatial_build` | read | `kind`, `id`, fresh `occurrenceId`, `seed`; object builds also require a compatible `target` map/rectangle/entry. Returns an issued preview ID and actual impact. |
 | `apply_spatial_build` | write | Takes the issued `previewId` into the detached proposal, not the live store. Forged, foreign, stale and consumed IDs reject. |
+| `edit_spatial_occurrence` | write | Lifecycle edits on an already-built occurrence: `move` (child inside a region/world parent — `x`/`y`, optional `level`; the containing map recompiles, authored route endpoints must still match), `refresh` (rebuild from the current source revision — the only way an upserted source edit reaches a built map; objects stamp via preview/apply), `delete` (`externalConnections` `reject` default, or explicit `remove`), `detach` (release compiled ownership), `clone` (standalone copy under `newOccurrenceId`; `omit`/`copy` external links), `link`/`unlink` (create/remove a document connection — the containing root occurrence recompiles because overview entries into a child live on their geography owner's write set; cross-tree links reject `unsupported`; compiled overview routes reject). |
 
 On a legacy project every tool except `list_spatial_designs` rejects with a typed
 `spatial-inactive` error naming the UI activation path (`공간 설계 활성화`);
@@ -99,10 +100,12 @@ AI tool against another live project.
   payload, not prose.
 - The capability index (`src/ai/toolCapabilityIndex.ts`) carries a `spatial-world`
   recipe: read `list_spatial_designs`/`get_spatial_design`/`get_geography_vocabulary`,
-  write `upsert/preview/apply`, verify `check_reachability`/`run_lint`/`play_walkthrough`.
-  Its policy states the `data.active`/`spatial-inactive` contract, bottom-up
-  authoring, vocabulary-first terrain rules, single-preview sequencing and frozen
-  occurrence semantics.
+  write `upsert/preview/apply/edit_spatial_occurrence`, verify
+  `check_reachability`/`run_lint`/`play_walkthrough`. Its policy states the
+  `data.active`/`spatial-inactive` contract, bottom-up authoring, vocabulary-first
+  terrain rules, single-preview sequencing, frozen occurrence semantics, and the
+  explicit `edit_spatial_occurrence refresh` path for propagating source edits to
+  built occurrences.
 
 ## Evidence and integration boundary
 

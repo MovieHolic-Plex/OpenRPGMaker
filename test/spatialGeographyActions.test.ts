@@ -482,6 +482,29 @@ describe("spatial geography actions", () => {
     expect(getMapEditHistoryEntries()).toEqual([]);
   });
 
+  it("arms a remove-external retry when delete is blocked by incoming links", () => {
+    // Given — a region child inside a compiled world is crossed by world connections.
+    store.replace(geographyRecipeFixture("lake-kingdom"));
+    const document = store.getCurrent().spatialAuthoring;
+    if (!document) throw new TypeError("Missing spatial document");
+    const child = Object.values(document.occurrences).find(entry => entry.kind === "region" && entry.parentId !== null);
+    if (!child) throw new TypeError("Missing nested region");
+    const card = { id: child.id, localId: child.source.id, name: "child", source: "placed" as const, kind: "regions" as const, usage: 0 };
+    // When — delete → confirm: reject policy fails on the crossing link.
+    spatialRegionsChrome(card, () => undefined).delete?.();
+    expect(geographyChromeState.deleteOpen).toBe(true);
+    spatialRegionsChrome(card, () => undefined).onDeleteConfirm?.();
+    // Then — the failure is armed, not dead-ended.
+    expect(geographyChromeState.previewError).toContain("외부 연결");
+    expect(geographyChromeState.pendingExternal).not.toBeNull();
+    // When — 「확인」 again retries once with externalConnections: "remove".
+    spatialRegionsChrome(card, () => undefined).onDeleteConfirm?.();
+    // Then
+    expect(geographyChromeState.pendingExternal).toBeNull();
+    expect(hasAuthoringPreview()).toBe(true);
+    expect(visibleAuthoringProject().spatialAuthoring?.occurrences[child.id]).toBeUndefined();
+  });
+
   it("exposes the activation action only while the canonical document is missing", async () => {
     // Canonical fixture: activation is already done, no surface.
     expect(spatialRegionsChrome(regionCard("lake-country"), () => undefined).activate).toBeUndefined();

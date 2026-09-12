@@ -38,6 +38,8 @@ import {
   spatialWorldsChrome,
 } from "@/editor/panels/spatialWorldsTab";
 import { restoreGeographyParent } from "@/editor/panels/spatialGeographyNavigate";
+import { activateSpatialDocument, workingProject } from "@/editor/panels/spatialGeographyCommands";
+import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
 import { el } from "@/util/dom";
 
 const TAB_LABEL = {
@@ -76,13 +78,20 @@ export function inspectorSourceLabel(card: SpatialGalleryCard): string {
 
 function domainChrome(session: SpatialAuthoringSession, onChange: () => void): SpatialDomainChrome | undefined {
   const selected = visibleSpatialSelection(session);
-  if (session.tab === "tiles") return spatialTilesChrome();
-  if (session.tab === "objects") return spatialObjectsChrome(selected, onChange);
-  if (session.tab === "spaces") return spatialSpacesChrome(selected, onChange);
-  if (session.tab === "places") return spatialPlacesChrome(visiblePlaceSelection(selected), onChange);
-  if (session.tab === "regions") return spatialRegionsChrome(selected, onChange);
-  if (session.tab === "worlds") return spatialWorldsChrome(selected, onChange);
-  return undefined;
+  const chrome = session.tab === "tiles" ? spatialTilesChrome()
+    : session.tab === "objects" ? spatialObjectsChrome(selected, onChange)
+    : session.tab === "spaces" ? spatialSpacesChrome(selected, onChange)
+    : session.tab === "places" ? spatialPlacesChrome(visiblePlaceSelection(selected), onChange)
+    : session.tab === "regions" ? spatialRegionsChrome(selected, onChange)
+    : session.tab === "worlds" ? spatialWorldsChrome(selected, onChange)
+    : undefined;
+  // Canonical 문서가 없으면 어느 탭이든 프로젝트 수준 활성화 경로와 그 오류를 표면에 올린다.
+  if (chrome && !workingProject().spatialAuthoring) {
+    return { ...chrome,
+      previewError: chrome.previewError ?? geographyChromeState.previewError,
+      activate: chrome.activate ?? (geographyChromeState.activating ? undefined : () => activateSpatialDocument(onChange)) };
+  }
+  return chrome;
 }
 
 export function renderSpatialChrome(

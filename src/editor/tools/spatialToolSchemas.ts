@@ -49,3 +49,14 @@ export const SPATIAL_BUILD_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, id, occu
 export const SPATIAL_GET_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, id });
 export const SPATIAL_LIST_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, query: text }, []);
 export const SPATIAL_APPLY_SCHEMA = object({ previewId: id });
+// Occurrence endpoints use occurrenceId (concrete frozen id), not design childId slots.
+const occurrenceEndpoint = object({ occurrenceId: id, portId: id });
+export const SPATIAL_OCCURRENCE_SCHEMA = object({
+  operation: choices(["move", "delete", "refresh", "detach", "clone", "link", "unlink"]),
+  occurrenceId: id,
+  x: integer, y: integer, level: integer,
+  externalConnections: choices(["reject", "remove", "omit", "copy"]),
+  newOccurrenceId: id,
+  connection: object({ id, from: occurrenceEndpoint, to: occurrenceEndpoint, bidirectional: { type: "boolean" } }),
+  connectionId: id,
+}, ["operation"]);
