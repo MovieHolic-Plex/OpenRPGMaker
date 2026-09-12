@@ -66,6 +66,22 @@ Coverage: `villageTreePlacement.test.ts` checks both scatter packers and valid
 forest overlap; `villageProducerProtection.test.ts` compares completion snapshots
 with accepted output for ordinary and 100x100 snow villages through toolRunner.
 
+The scatter painter preserves a previously painted canopy when a later origin
+writes a lower trunk. Planning allows cross-layer overlap, so calling the ground
+replacement helper there used to erase companions in random-order batches
+(2026-09-12: the 128×128 object village had 48 conifer and 6 broadleaf errors).
+Adding grass backing to an empty canopy cell also preserves the new upper tile.
+`village/treeCompletion.ts` provides `completeVillageTrees(project, map, area)`
+for the final environmental stage after placement cleanup and before audit. It
+completes vertical and horizontal tree companions using the unchanged hard rules,
+including authored diagonal alternatives. All writes are planned atomically;
+owned geometry, roads, water, stacks and area boundaries cause
+`village-tree-completion-conflict`, rather than being overwritten. If a later prop
+occupies a lost 1×2-tree canopy, only its unattached trunk is removed; broadleaf
+conflicts fail without deleting a half tree. Existing props are preserved. It does not
+enable project-wide runner repair. Coverage: `villageTreeCompletion.test.ts`;
+read-only actual-map evidence: `scripts/verify-village-tree-completion.mts`.
+
 ## Phase 2 construction boundary (2026-09-06)
 
 - Finish house doors/roof/deck/banners/signs and linked interiors, register once,
